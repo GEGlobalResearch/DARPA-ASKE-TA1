@@ -1,0 +1,66 @@
+<rdf:RDF
+    xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+    xmlns:mexeq="http://sadl.org/MinimalExampleEquations.sadl#"
+    xmlns:sadlbasemodel="http://sadl.org/sadlbasemodel"
+    xmlns:owl="http://www.w3.org/2002/07/owl#"
+    xmlns:sadlimplicitmodel="http://sadl.org/sadlimplicitmodel"
+    xmlns:builtinfunctions="http://sadl.org/builtinfunctions"
+    xmlns:rdfs="http://www.w3.org/2000/01/rdf-schema#"
+    xmlns:j.0="http://sadl.org/sadlbasemodel#"
+    xmlns:xsd="http://www.w3.org/2001/XMLSchema#"
+  xml:base="http://sadl.org/MinimalExampleEquations.sadl">
+  <owl:Ontology rdf:about="">
+    <owl:imports rdf:resource="ScientificConcepts.sadl"/>
+    <owl:imports rdf:resource="builtinfunctions"/>
+    <owl:imports rdf:resource="sadlimplicitmodel"/>
+    <owl:imports rdf:resource="sadlbasemodel"/>
+    <rdfs:comment xml:lang="en">This ontology was created from a SADL file 'MinimalExampleEquations.sadl' and should not be directly edited.</rdfs:comment>
+  </owl:Ontology>
+  <owl:ObjectProperty rdf:ID="dependsOn">
+    <rdfs:range rdf:resource="sadlimplicitmodel#ScientificConcept"/>
+    <rdfs:domain rdf:resource="sadlimplicitmodel#ScientificConcept"/>
+  </owl:ObjectProperty>
+  <j.0:Equation rdf:ID="velocityOfMass">
+    <j.0:expression rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >Velocity velocityOfMass(Mass m): </j.0:expression>
+  </j.0:Equation>
+  <j.0:Equation rdf:ID="momentumOfMass">
+    <j.0:expression rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >Momentum momentumOfMass(Mass m): </j.0:expression>
+  </j.0:Equation>
+  <j.0:Equation rdf:ID="newtons2ndLawConstantMass">
+    <rdfs:comment xml:lang="en">net Force on a Mass is equal to the Mass times its acceleration for constant Mass.</rdfs:comment>
+    <j.0:expression rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >Force newtons2ndLawConstantMass(Mass m): </j.0:expression>
+  </j.0:Equation>
+  <rdf:Description rdf:about="ScientificConcepts.sadl#Momentum">
+    <mexeq:dependsOn>
+      <rdf:Description rdf:about="ScientificConcepts.sadl#Velocity">
+        <mexeq:dependsOn rdf:resource="ScientificConcepts.sadl#Position"/>
+      </rdf:Description>
+    </mexeq:dependsOn>
+    <mexeq:dependsOn rdf:resource="ScientificConcepts.sadl#Mass"/>
+  </rdf:Description>
+  <j.0:Equation rdf:ID="newtons2ndLaw">
+    <rdfs:comment xml:lang="en">net Force on a Mass is equal to the derivative of the momentum of the Mass with respect to time.</rdfs:comment>
+    <j.0:expression rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >Force newtons2ndLaw(Mass m): </j.0:expression>
+  </j.0:Equation>
+  <rdf:Description rdf:about="ScientificConcepts.sadl#Force">
+    <mexeq:dependsOn>
+      <rdf:Description rdf:about="ScientificConcepts.sadl#Acceleration">
+        <mexeq:dependsOn rdf:resource="ScientificConcepts.sadl#Velocity"/>
+      </rdf:Description>
+    </mexeq:dependsOn>
+    <mexeq:dependsOn rdf:resource="ScientificConcepts.sadl#Velocity"/>
+    <mexeq:dependsOn rdf:resource="ScientificConcepts.sadl#Mass"/>
+  </rdf:Description>
+  <j.0:Equation rdf:ID="accelerationOfMass2">
+    <j.0:expression rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >Acceleration accelerationOfMass2(Mass m): </j.0:expression>
+  </j.0:Equation>
+  <j.0:Equation rdf:ID="accelerationOfMass1">
+    <j.0:expression rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >Acceleration accelerationOfMass1(Mass m): </j.0:expression>
+  </j.0:Equation>
+</rdf:RDF>

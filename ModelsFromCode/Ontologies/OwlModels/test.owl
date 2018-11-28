@@ -1,0 +1,46 @@
+<rdf:RDF
+    xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+    xmlns:sadlbasemodel="http://sadl.org/sadlbasemodel"
+    xmlns:owl="http://www.w3.org/2002/07/owl#"
+    xmlns:sadlimplicitmodel="http://sadl.org/sadlimplicitmodel"
+    xmlns:builtinfunctions="http://sadl.org/builtinfunctions"
+    xmlns:tst="http://sadl.org/test.sadl#"
+    xmlns:rdfs="http://www.w3.org/2000/01/rdf-schema#"
+    xmlns:j.0="http://sadl.org/sadlbasemodel#"
+    xmlns:xsd="http://www.w3.org/2001/XMLSchema#"
+  xml:base="http://sadl.org/test.sadl">
+  <owl:Ontology rdf:about="">
+    <owl:imports rdf:resource="builtinfunctions"/>
+    <owl:imports rdf:resource="sadlimplicitmodel"/>
+    <owl:imports rdf:resource="sadlbasemodel"/>
+    <rdfs:comment xml:lang="en">This ontology was created from a SADL file 'test.sadl' and should not be directly edited.</rdfs:comment>
+  </owl:Ontology>
+  <owl:Class rdf:ID="Velocity">
+    <rdfs:subClassOf rdf:resource="sadlimplicitmodel#UnittedQuantity"/>
+  </owl:Class>
+  <owl:Class rdf:ID="Force">
+    <rdfs:subClassOf rdf:resource="sadlimplicitmodel#UnittedQuantity"/>
+  </owl:Class>
+  <owl:Class rdf:ID="Time">
+    <rdfs:subClassOf rdf:resource="sadlimplicitmodel#UnittedQuantity"/>
+  </owl:Class>
+  <owl:Class rdf:ID="Mass">
+    <rdfs:subClassOf rdf:resource="sadlimplicitmodel#UnittedQuantity"/>
+  </owl:Class>
+  <owl:Class rdf:ID="Momentum">
+    <rdfs:subClassOf rdf:resource="sadlimplicitmodel#UnittedQuantity"/>
+  </owl:Class>
+  <j.0:ExternalEquation rdf:ID="unitResolver">
+    <j.0:externalURI rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >http://sadl.org/unitSelector</j.0:externalURI>
+  </j.0:ExternalEquation>
+  <j.0:Equation rdf:ID="newtons2ndLaw">
+    <rdfs:comment xml:lang="en">Force is equal to the derivative of momentum with respect to time.</rdfs:comment>
+    <j.0:expression rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >Force newtons2ndLaw(Mass m,Velocity v): </j.0:expression>
+  </j.0:Equation>
+  <j.0:ExternalEquation rdf:ID="derivative">
+    <j.0:externalURI rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >http://sadl.org/derivative</j.0:externalURI>
+  </j.0:ExternalEquation>
+</rdf:RDF>

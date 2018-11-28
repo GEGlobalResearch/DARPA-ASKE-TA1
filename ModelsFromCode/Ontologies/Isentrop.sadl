@@ -1,0 +1,35 @@
+uri "http:///Dn".
+
+import "http://sadl.org/Temperature.sadl".
+
+External init() returns None: "/Dn/init".
+External insets() returns Insets: "/Dn/insets".
+External setDefaults() returns None: "/Dn/setDefaults".
+External TQTT(double M, double G) returns double: "/Dn/TQTT".
+External CAL_GAM(double T, double G, double Q) returns double: "/Dn/CAL_GAM".
+External CAL_TT(double T, double M, double G, double Q) returns double: "/Dn/CAL_TT".
+External CAL_T(double TT, double M, double G, double Q) returns double: "/Dn/CAL_T".
+External CAL_PQPT(double TT, double M, double G, double Q) returns double: "/Dn/CAL_PQPT".
+External CAL_DQDT(double TT, double M, double G, double Q) returns double: "/Dn/CAL_DQDT".
+External CAL_ASQA(double TT, double M, double G, double Q) returns double: "/Dn/CAL_ASQA".
+External CAL_GNU(double TT, double M, double G, double Q) returns double: "/Dn/CAL_GNU".
+External CAL_SOS(double T, double G, double R, double Q) returns double: "/Dn/CAL_SOS".
+External CAL_QQP(double TT, double M, double G, double Q) returns double: "/Dn/CAL_QQP".
+External CAL_WCOR(double TT, double M, double G, double Q) returns double: "/Dn/CAL_WCOR".
+External CAL_PQPT_LOOP(double TT, double prattp, double G, double Q) returns double: "/Dn/CAL_PQPT_LOOP".
+External CAL_TQTT_LOOP(double T, double trattp, double G, double Q) returns double: "/Dn/CAL_TQTT_LOOP".
+External CAL_DQDT_LOOP(double TT, double rhorattp, double G, double Q) returns double: "/Dn/CAL_DQDT_LOOP".
+External CAL_AQAS_LOOP(double TT, double arattp, double G, double Q) returns double: "/Dn/CAL_AQAS_LOOP".
+External CAL_QQP_LOOP(double TT, double qrattp, double G, double Q) returns double: "/Dn/CAL_QQP_LOOP".
+External CAL_WCOR_LOOP(double TT, double wcortp, double G, double Q) returns double: "/Dn/CAL_WCOR_LOOP".
+External CAL_MFGNU(double TT, double NU, double G, double Q) returns double: "/Dn/CAL_MFGNU".
+External comPute() returns None: "/Dn/comPute".
+External getIsen() returns None: "/Dn/getIsen".
+External getAir(double mach) returns double: "/Dn/getAir".
+External getMach(int sub, double corair) returns double: "/Dn/getMach".
+External getMachArat() returns None: "/Dn/getMachArat".
+External getMachpm() returns None: "/Dn/getMachpm".
+External loadOut() returns None: "/Dn/loadOut".
+External filter3(double inumbr) returns float: "/Dn/filter3".
+External filter7(double inumbr) returns float: "/Dn/filter7".
+External handleEvent(Event evt) returns boolean: "/Dn/handleEvent".

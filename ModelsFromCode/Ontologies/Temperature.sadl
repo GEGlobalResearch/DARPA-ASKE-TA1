@@ -1,0 +1,6 @@
+ uri "http://sadl.org/Temperature.sadl" alias temp.
+ 
+ import "http://purl.org/dc/elements/1.1/".
+
+ Temperature is a type of UnittedQuantity.
+ 

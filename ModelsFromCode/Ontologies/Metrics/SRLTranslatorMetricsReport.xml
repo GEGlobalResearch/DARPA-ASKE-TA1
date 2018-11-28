@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?><?xml-stylesheet type='text/xsl' href='MetricsReport.xsl' ?>
+<metricsReportType xmlns="com.ge.aviation.systems.platform.assert.metricsreport">
+    <ReportingTool name="SRLTranslator" version="3.0.0.qualifier"/>
+    <CompatibleTool name="SADL" version="3.2.0.qualifier"/>
+    <CompatibleTool name="SRL" version="2.2.0.qualifier"/>
+    <CompatibleTool name="ATG" version=""/>
+    <CompatibleTool name="RAE" version="Error: the bundle was not found: com.ge.research.sadl.rae"/>
+    <Metric xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:type="AggregateMetric" dateTime="2018-11-26T15:54:57.771-05:00" name="SRL Translator full build of project, D:/Users/200005201/aske-workspace/TA1/ModelsFromCode/Ontologies">
+        <SubMetric xsi:type="ElapsedTimeMetricType" time="PT0.000S" dateTime="2018-11-26T15:54:58.194-05:00" name="RAE ACL2s Lisp File Serialization"/>
+        <SubMetric xsi:type="ElapsedTimeMetricType" time="PT0.000S" dateTime="2018-11-26T15:54:58.194-05:00" name="ATG CRRM XML File Serialization"/>
+    </Metric>
+</metricsReportType>

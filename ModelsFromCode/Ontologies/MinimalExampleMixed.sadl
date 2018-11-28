@@ -1,0 +1,33 @@
+uri "http://sadl.org/MinimalExampleMixed.sadl" alias mexmix.
+
+import "http://sadl.org/ScientificConcepts.sadl".
+
+Equation velocityCalc(Position l) returns Velocity: return derivative(l, ^time, 1).
+
+Equation accelerationCalc1(Velocity v) returns Acceleration: return derivative(v, ^time, 1).
+Equation accelerationCalc2(Position l) returns Acceleration: return derivative(l, ^time, 2).
+
+Equation momentumOfMass(Mass m, Velocity v) returns Momentum: 
+	return p
+ where p is a Momentum with ^value (^value of m * ^value of v), with unit unitResolver("*", unit of m, unit of v).
+
+ Rule velocityOfMass:
+ 	if m is a Mass
+ 	then velocity of m is velocityCalc(position of m).
+ 	
+ Rule accelerationOfMass1:
+ 	if m is a Mass 
+ 	then acceleration of m is accelerationCalc1(velocity of m).
+ 	
+ Rule accelerationOfMass2:
+ 	if m is a Mass 
+ 	then acceleration of m is accelerationCalc2(position of m).
+ 
+ Rule momentumOfMassRule:
+ 	if m is a Mass 
+ 	then momentum of m is momentumOfMass(m, velocity of m).
+ 	
+ Rule newtons2ndLaw:
+ 	if m is a Mass and p is momentum of m 
+	then force of m is derivative(p, ^time, 1).
+	

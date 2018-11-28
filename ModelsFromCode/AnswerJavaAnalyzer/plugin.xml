@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?eclipse version="3.0"?>
+<plugin>
+  <extension point="org.eclipse.ui.importWizards"> 
+		<category id="com.ge.research.sadl.darpa.answer" name="Java Model Importer"/>
+		<wizard 
+			id="com.ge.research.sadl.darpa.answer.ImportJava" 
+			name="Java Files" 
+			class="com.ge.research.darpa.answer.imports.JavaFileImportWizard" 
+			icon="icons/import_folder.gif" 
+			category="com.ge.research.sadl.darpa.answer">
+			<description>Import Java files to a SADL project</description> 
+			<!--<selection class="org.eclipse.core.resources.IFile" name="*.Java"/> -->
+		</wizard> 
+   </extension>
+</plugin>

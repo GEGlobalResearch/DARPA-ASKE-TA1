@@ -1,0 +1,44 @@
+uri "http://sadl.org/MinimalExampleEquations.sadl" alias mexeq.
+
+import "http://sadl.org/ScientificConcepts.sadl".
+
+Equation velocityOfMass(Mass m) returns Velocity: return m
+	where v is a Velocity with ^value (derivative(position of m, ^time, 1)), 
+		with unit unitResolver("/", unit of position of m, unit of ^time of m) and
+		velocity of m is v.	
+		
+Equation accelerationOfMass1(Mass m) returns Acceleration: return m
+	where acc is an Acceleration with ^value (derivative(^value of velocity of m, ^time, 1)),
+		with unit unitResolver("/", unit of velocity of m, unit of ^time of m) and
+		acceleration of m is acc.
+Equation accelerationOfMass2(Mass m) returns Acceleration: return m
+	where acc is an Acceleration with ^value (derivative(position of m, ^time, 2)),
+		with unit unitResolver("/", unit of position of m, unit of ^time of m) and
+		acceleration of m is acc.
+
+	Equation momentumOfMass(Mass m) returns Momentum: return m
+	 where v is velocityOfMass(m) and
+	 	p is a Momentum with ^value (^value of m * ^value of v), with unit unitResolver("*", unit of m, unit of v).
+
+Equation newtons2ndLaw
+	(note "net Force on a Mass is equal to the derivative of the momentum of the Mass with respect to time.")
+	(Mass m) returns Force: a Force f with ^value fv, with unit fu
+		return f
+			where mv is a Momentum with ^value (^value of m * ^value of velocity of m), 
+				with unit unitResolver("*", unit of m, unit of velocity of m) and
+				[fv,fu] = derivative(mv, ^time, 1). 
+Equation newtons2ndLawConstantMass
+	(note "net Force on a Mass is equal to the Mass times its acceleration for constant Mass.")
+	(Mass m) returns Force: a Force f with ^value fv, with unit fu
+		return f
+			where [mdotv, mdotu] is derivative(m, ^time, 1) and mdotv is 0 and
+				acc is an Acceleration with ^value accv, 
+				with unit unitResolver("*", unit of m, accu) and
+				[accv,accu] = derivative(velocity of m, ^time, 1). 
+	
+dependsOn describes ScientificConcept with values of type ScientificConcept.
+// from Equations above, 
+Velocity dependsOn Position.
+Acceleration dependsOn Velocity.
+Momentum dependsOn Mass, dependsOn Velocity.
+Force dependsOn Mass, dependsOn Velocity, dependsOn Acceleration.

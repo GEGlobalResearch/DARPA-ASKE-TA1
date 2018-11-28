@@ -1,0 +1,41 @@
+<rdf:RDF
+    xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+    xmlns:sadlbasemodel="http://sadl.org/sadlbasemodel"
+    xmlns:owl="http://www.w3.org/2002/07/owl#"
+    xmlns:sadlimplicitmodel="http://sadl.org/sadlimplicitmodel"
+    xmlns:builtinfunctions="http://sadl.org/builtinfunctions"
+    xmlns:j.0="http://sadl.org/sadlimplicitmodel#"
+    xmlns:rdfs="http://www.w3.org/2000/01/rdf-schema#"
+    xmlns:mexmix="http://sadl.org/MinimalExampleMixed.sadl#"
+    xmlns:j.1="http://sadl.org/sadlbasemodel#"
+    xmlns:xsd="http://www.w3.org/2001/XMLSchema#"
+  xml:base="http://sadl.org/MinimalExampleMixed.sadl">
+  <owl:Ontology rdf:about="">
+    <owl:imports rdf:resource="ScientificConcepts.sadl"/>
+    <owl:imports rdf:resource="builtinfunctions"/>
+    <owl:imports rdf:resource="sadlimplicitmodel"/>
+    <owl:imports rdf:resource="sadlbasemodel"/>
+    <rdfs:comment xml:lang="en">This ontology was created from a SADL file 'MinimalExampleMixed.sadl' and should not be directly edited.</rdfs:comment>
+  </owl:Ontology>
+  <j.0:Rule rdf:ID="newtons2ndLaw"/>
+  <j.0:Rule rdf:ID="momentumOfMassRule"/>
+  <j.1:Equation rdf:ID="momentumOfMass">
+    <j.1:expression rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >Momentum momentumOfMass(Mass m,Velocity v): </j.1:expression>
+  </j.1:Equation>
+  <j.1:Equation rdf:ID="accelerationCalc2">
+    <j.1:expression rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >Acceleration accelerationCalc2(Position l): </j.1:expression>
+  </j.1:Equation>
+  <j.1:Equation rdf:ID="velocityCalc">
+    <j.1:expression rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >Velocity velocityCalc(Position l): </j.1:expression>
+  </j.1:Equation>
+  <j.0:Rule rdf:ID="velocityOfMass"/>
+  <j.0:Rule rdf:ID="accelerationOfMass2"/>
+  <j.0:Rule rdf:ID="accelerationOfMass1"/>
+  <j.1:Equation rdf:ID="accelerationCalc1">
+    <j.1:expression rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >Acceleration accelerationCalc1(Velocity v): </j.1:expression>
+  </j.1:Equation>
+</rdf:RDF>

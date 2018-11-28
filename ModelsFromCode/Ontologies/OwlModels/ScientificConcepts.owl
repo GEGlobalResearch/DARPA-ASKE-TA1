@@ -1,0 +1,218 @@
+<rdf:RDF
+    xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+    xmlns:sadlbasemodel="http://sadl.org/sadlbasemodel"
+    xmlns:owl="http://www.w3.org/2002/07/owl#"
+    xmlns:sadlimplicitmodel="http://sadl.org/sadlimplicitmodel"
+    xmlns:builtinfunctions="http://sadl.org/builtinfunctions"
+    xmlns:j.0="http://sadl.org/sadlimplicitmodel#"
+    xmlns:rdfs="http://www.w3.org/2000/01/rdf-schema#"
+    xmlns:scicncpts="http://sadl.org/ScientificConcepts.sadl#"
+    xmlns:j.1="http://sadl.org/sadlbasemodel#"
+    xmlns:xsd="http://www.w3.org/2001/XMLSchema#"
+  xml:base="http://sadl.org/ScientificConcepts.sadl">
+  <owl:Ontology rdf:about="">
+    <owl:imports rdf:resource="builtinfunctions"/>
+    <owl:imports rdf:resource="sadlimplicitmodel"/>
+    <owl:imports rdf:resource="sadlbasemodel"/>
+    <rdfs:comment xml:lang="en">This ontology was created from a SADL file 'ScientificConcepts.sadl' and should not be directly edited.</rdfs:comment>
+  </owl:Ontology>
+  <owl:Class rdf:ID="Time">
+    <rdfs:subClassOf rdf:resource="sadlimplicitmodel#UnittedQuantity"/>
+  </owl:Class>
+  <owl:Class rdf:ID="Length">
+    <rdfs:subClassOf rdf:resource="sadlimplicitmodel#UnittedQuantity"/>
+  </owl:Class>
+  <owl:Class rdf:ID="Acceleration">
+    <rdfs:subClassOf>
+      <owl:Restriction>
+        <owl:hasValue>
+          <owl:ObjectProperty rdf:ID="time"/>
+        </owl:hasValue>
+        <owl:onProperty>
+          <owl:ObjectProperty rdf:ID="withRespectTo"/>
+        </owl:onProperty>
+      </owl:Restriction>
+    </rdfs:subClassOf>
+    <rdfs:subClassOf>
+      <owl:Restriction>
+        <owl:allValuesFrom>
+          <owl:Class rdf:ID="Velocity"/>
+        </owl:allValuesFrom>
+        <owl:onProperty>
+          <owl:ObjectProperty rdf:ID="derivativeOf"/>
+        </owl:onProperty>
+      </owl:Restriction>
+    </rdfs:subClassOf>
+    <rdfs:subClassOf>
+      <owl:Class>
+        <owl:intersectionOf rdf:parseType="Collection">
+          <rdf:Description rdf:about="sadlimplicitmodel#UnittedQuantity"/>
+          <owl:Class rdf:ID="Derivative"/>
+        </owl:intersectionOf>
+      </owl:Class>
+    </rdfs:subClassOf>
+  </owl:Class>
+  <owl:Class rdf:about="#Velocity">
+    <rdfs:subClassOf>
+      <owl:Class>
+        <owl:intersectionOf rdf:parseType="Collection">
+          <rdf:Description rdf:about="sadlimplicitmodel#UnittedQuantity"/>
+          <owl:Class rdf:about="#Derivative"/>
+        </owl:intersectionOf>
+      </owl:Class>
+    </rdfs:subClassOf>
+    <rdfs:subClassOf>
+      <owl:Restriction>
+        <owl:hasValue>
+          <owl:ObjectProperty rdf:about="#time"/>
+        </owl:hasValue>
+        <owl:onProperty>
+          <owl:ObjectProperty rdf:about="#withRespectTo"/>
+        </owl:onProperty>
+      </owl:Restriction>
+    </rdfs:subClassOf>
+    <rdfs:subClassOf>
+      <owl:Restriction>
+        <owl:allValuesFrom>
+          <owl:Class rdf:ID="Position"/>
+        </owl:allValuesFrom>
+        <owl:onProperty>
+          <owl:ObjectProperty rdf:about="#derivativeOf"/>
+        </owl:onProperty>
+      </owl:Restriction>
+    </rdfs:subClassOf>
+    <rdfs:subClassOf>
+      <owl:Class>
+        <owl:intersectionOf rdf:parseType="Collection">
+          <rdf:Description rdf:about="sadlimplicitmodel#UnittedQuantity"/>
+          <owl:Class rdf:about="#Derivative"/>
+        </owl:intersectionOf>
+      </owl:Class>
+    </rdfs:subClassOf>
+  </owl:Class>
+  <owl:Class rdf:ID="Momentum">
+    <rdfs:subClassOf rdf:resource="sadlimplicitmodel#UnittedQuantity"/>
+  </owl:Class>
+  <owl:Class rdf:ID="Force">
+    <rdfs:subClassOf>
+      <owl:Restriction>
+        <owl:hasValue>
+          <owl:ObjectProperty rdf:about="#time"/>
+        </owl:hasValue>
+        <owl:onProperty>
+          <owl:ObjectProperty rdf:about="#withRespectTo"/>
+        </owl:onProperty>
+      </owl:Restriction>
+    </rdfs:subClassOf>
+    <rdfs:subClassOf>
+      <owl:Restriction>
+        <owl:allValuesFrom rdf:resource="#Momentum"/>
+        <owl:onProperty>
+          <owl:ObjectProperty rdf:about="#derivativeOf"/>
+        </owl:onProperty>
+      </owl:Restriction>
+    </rdfs:subClassOf>
+    <rdfs:subClassOf>
+      <owl:Class>
+        <owl:intersectionOf rdf:parseType="Collection">
+          <rdf:Description rdf:about="sadlimplicitmodel#UnittedQuantity"/>
+          <owl:Class rdf:about="#Derivative"/>
+        </owl:intersectionOf>
+      </owl:Class>
+    </rdfs:subClassOf>
+  </owl:Class>
+  <owl:Class rdf:ID="TimeDerivative">
+    <rdfs:subClassOf>
+      <owl:Restriction>
+        <owl:allValuesFrom>
+          <owl:ObjectProperty rdf:about="#time"/>
+        </owl:allValuesFrom>
+        <owl:onProperty>
+          <owl:ObjectProperty rdf:about="#withRespectTo"/>
+        </owl:onProperty>
+      </owl:Restriction>
+    </rdfs:subClassOf>
+    <rdfs:subClassOf>
+      <owl:Class rdf:about="#Derivative"/>
+    </rdfs:subClassOf>
+  </owl:Class>
+  <owl:Class rdf:about="#Derivative">
+    <rdfs:subClassOf>
+      <owl:Restriction>
+        <owl:cardinality rdf:datatype="http://www.w3.org/2001/XMLSchema#int"
+        >1</owl:cardinality>
+        <owl:onProperty>
+          <owl:ObjectProperty rdf:about="#withRespectTo"/>
+        </owl:onProperty>
+      </owl:Restriction>
+    </rdfs:subClassOf>
+    <rdfs:subClassOf>
+      <owl:Restriction>
+        <owl:cardinality rdf:datatype="http://www.w3.org/2001/XMLSchema#int"
+        >1</owl:cardinality>
+        <owl:onProperty>
+          <owl:ObjectProperty rdf:about="#derivativeOf"/>
+        </owl:onProperty>
+      </owl:Restriction>
+    </rdfs:subClassOf>
+    <rdfs:subClassOf rdf:resource="sadlimplicitmodel#ScientificConcept"/>
+  </owl:Class>
+  <owl:Class rdf:about="#Position">
+    <rdfs:subClassOf rdf:resource="sadlimplicitmodel#UnittedQuantity"/>
+  </owl:Class>
+  <owl:Class rdf:ID="Mass">
+    <rdfs:subClassOf rdf:resource="sadlimplicitmodel#UnittedQuantity"/>
+  </owl:Class>
+  <owl:ObjectProperty rdf:ID="x-coordinate">
+    <rdfs:domain rdf:resource="#Position"/>
+    <rdfs:range rdf:resource="#Length"/>
+  </owl:ObjectProperty>
+  <owl:ObjectProperty rdf:ID="y-coordinate">
+    <rdfs:domain rdf:resource="#Position"/>
+    <rdfs:range rdf:resource="#Length"/>
+  </owl:ObjectProperty>
+  <owl:ObjectProperty rdf:ID="acceleration">
+    <rdfs:domain rdf:resource="#Mass"/>
+    <rdfs:range rdf:resource="#Acceleration"/>
+  </owl:ObjectProperty>
+  <owl:ObjectProperty rdf:about="#derivativeOf">
+    <rdfs:domain rdf:resource="#Derivative"/>
+    <rdfs:range rdf:resource="sadlimplicitmodel#ScientificConcept"/>
+  </owl:ObjectProperty>
+  <owl:ObjectProperty rdf:ID="z-coordinate">
+    <rdfs:domain rdf:resource="#Position"/>
+    <rdfs:range rdf:resource="#Length"/>
+  </owl:ObjectProperty>
+  <owl:ObjectProperty rdf:ID="position">
+    <rdfs:domain rdf:resource="#Mass"/>
+    <rdfs:range rdf:resource="#Position"/>
+  </owl:ObjectProperty>
+  <owl:ObjectProperty rdf:ID="force">
+    <rdfs:range rdf:resource="#Force"/>
+    <rdfs:domain rdf:resource="#Mass"/>
+  </owl:ObjectProperty>
+  <owl:ObjectProperty rdf:ID="momentum">
+    <rdfs:range rdf:resource="#Momentum"/>
+    <rdfs:domain rdf:resource="#Mass"/>
+  </owl:ObjectProperty>
+  <owl:ObjectProperty rdf:ID="velocity">
+    <rdfs:domain rdf:resource="#Mass"/>
+    <rdfs:range rdf:resource="#Velocity"/>
+  </owl:ObjectProperty>
+  <owl:ObjectProperty rdf:about="#withRespectTo">
+    <rdfs:domain rdf:resource="#Derivative"/>
+  </owl:ObjectProperty>
+  <owl:ObjectProperty rdf:about="#time">
+    <rdfs:domain rdf:resource="#Position"/>
+    <rdfs:range rdf:resource="#Time"/>
+  </owl:ObjectProperty>
+  <j.1:ExternalEquation rdf:ID="unitResolver">
+    <j.1:externalURI rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >http://sadl.org/unitSelector</j.1:externalURI>
+  </j.1:ExternalEquation>
+  <j.0:Rule rdf:ID="momentumOfMass"/>
+  <j.1:ExternalEquation rdf:ID="derivative">
+    <j.1:externalURI rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >http://sadl.org/derivative</j.1:externalURI>
+  </j.1:ExternalEquation>
+</rdf:RDF>

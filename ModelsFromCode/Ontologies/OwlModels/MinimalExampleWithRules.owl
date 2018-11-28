@@ -1,0 +1,24 @@
+<rdf:RDF
+    xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+    xmlns:sadlbasemodel="http://sadl.org/sadlbasemodel"
+    xmlns:owl="http://www.w3.org/2002/07/owl#"
+    xmlns:sadlimplicitmodel="http://sadl.org/sadlimplicitmodel"
+    xmlns:builtinfunctions="http://sadl.org/builtinfunctions"
+    xmlns:mexwr="http://sadl.org/MinimalExampleWithRules.sadl#"
+    xmlns:j.0="http://sadl.org/sadlimplicitmodel#"
+    xmlns:rdfs="http://www.w3.org/2000/01/rdf-schema#"
+    xmlns:xsd="http://www.w3.org/2001/XMLSchema#"
+  xml:base="http://sadl.org/MinimalExampleWithRules.sadl">
+  <owl:Ontology rdf:about="">
+    <owl:imports rdf:resource="ScientificConcepts.sadl"/>
+    <owl:imports rdf:resource="builtinfunctions"/>
+    <owl:imports rdf:resource="sadlimplicitmodel"/>
+    <owl:imports rdf:resource="sadlbasemodel"/>
+    <rdfs:comment xml:lang="en">This ontology was created from a SADL file 'MinimalExampleWithRules.sadl' and should not be directly edited.</rdfs:comment>
+  </owl:Ontology>
+  <j.0:Rule rdf:ID="momentumOfMass"/>
+  <j.0:Rule rdf:ID="accelerationOfMass2"/>
+  <j.0:Rule rdf:ID="velocityOfMass"/>
+  <j.0:Rule rdf:ID="accelerationOfMass1"/>
+  <j.0:Rule rdf:ID="newtons2ndLaw"/>
+</rdf:RDF>
