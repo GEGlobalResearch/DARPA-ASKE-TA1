@@ -1,0 +1,5 @@
+Task 1.5: Controlled-English bi-directional interface
+
+Objective: Demonstrate human-readable results generated from queries and knowledge exploration
+
+Approach: Use and possibly extend Semantic Application Design Language (SADL); enhance translation capabilities from K-CHAIN to natural language

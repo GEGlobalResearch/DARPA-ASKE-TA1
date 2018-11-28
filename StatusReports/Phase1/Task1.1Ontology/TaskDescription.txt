@@ -1,0 +1,5 @@
+Task 1.1: Establish base domain ontology
+
+Objective: Bootstrapping scientific knowledge to enable model-driven extraction from code and text
+
+Approach: Identify reusable ontologies, fill gaps with expert-generated

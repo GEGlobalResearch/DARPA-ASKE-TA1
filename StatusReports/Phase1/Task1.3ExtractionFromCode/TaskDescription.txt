@@ -1,0 +1,5 @@
+Task 1.3 Extraction from code
+
+Objective: Demonstrate feasibility of extracting concepts and relationships from Java code instantiating physics-based models 
+
+Approach: Look for parsing and analysis tools; buy or build. When parsing isn’t possible exercise model and use active learning to characterize

@@ -1,0 +1,5 @@
+Task 1.2: Extraction from text
+
+Objective: Demonstrate feasibility of augmenting the base domain ontology with extraction of concepts, relationships, and processes from domain-specific documentation
+
+Approach: Use a custom named entity recognition (NER) system combined with a model-driven approach
