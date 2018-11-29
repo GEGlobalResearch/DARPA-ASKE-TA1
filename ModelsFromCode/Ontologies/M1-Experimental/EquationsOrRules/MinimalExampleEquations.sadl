@@ -8,8 +8,8 @@ Equation velocityOfPhysicalObject(PhysicalObject o) returns PhysicalObject: retu
 		velocity of o is v.	
 		
 Equation accelerationOfPhysicalObject1(PhysicalObject o) returns PhysicalObject: return o
-	where acc is an Acceleration with ^value (derivative(^value of velocity of o, ^time, 1)),
-		with unit unitResolver("/", unit of velocity of o, unit of ^time of position of o) and
+	where acc is an Acceleration with ^value av, with unit au and
+		[av,au] is derivative(velocity of o, ^time, 1) and
 		acceleration of o is acc.
 		
 Equation accelerationOfPhysicalObject2(PhysicalObject o) returns PhysicalObject: return o
@@ -33,8 +33,8 @@ Equation newtons2ndLawConstantMass
 	(note "net Force on a physical object is equal to the mass of the object times its acceleration for constant mass.")
 	(PhysicalObject o) returns Force: a Force f with ^value fv, with unit fu
 		return f
-			where [mdotv, mdotu] is derivative(mass of o, ^time, 1) and mdotv is 0 and
-				acc is an Acceleration with ^value accv, with unit accu and
+			where acc is an Acceleration with ^value accv, with unit accu and
+				[mdotv, mdotu] is derivative(mass of o, ^time, 1) and mdotv is 0 and
 				[accv,accu] = derivative(velocity of o, ^time, 1). 
 				
  External mass-acceleration (Mass m, acceleration acc) returns Force: 
