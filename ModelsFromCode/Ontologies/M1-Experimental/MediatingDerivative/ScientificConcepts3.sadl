@@ -1,0 +1,61 @@
+uri "http://sadl.org/ScientificConcepts3.sadl" alias scicncpts3.
+
+Derivation is a class,
+	described by derivedFrom with a single value of type ScientificConcept,
+	described by produces with a single value of type ScientificConcept,
+	described by withRespectTo with a single value of type class,
+	described by ^order with a single value of type int.
+ 
+Time is a type of UnittedQuantity.
+Length is a type of UnittedQuantity.
+Position is a type of UnittedQuantity,
+	described by x-coordinate with values of type Length,
+	described by y-coordinate with values of type Length,
+	described by z-coordinate with values of type Length,
+	described by ^time with values of type Time.
+	
+Mass is a type of UnittedQuantity.
+ 
+PhysicalObject is a class,
+	described by mass with values of type Mass,
+	described by position with values of type Position.
+	
+Velocity is a type of UnittedQuantity.
+VelocityFromPosition is a type of Derivation.
+derivedFrom of VelocityFromPosition has exactly 1 value of type Position.
+produces of VelocityFromPosition has exactly 1 value of type Velocity.
+withRespectTo of VelocityFromPosition always has value ^time.
+^order of VelocityFromPosition always has value 1.
+velocity describes PhysicalObject with values of type Velocity.
+
+Acceleration is a type of UnittedQuantity.
+AccelerationFromVelocity is a type of Derivation.
+derivedFrom of AccelerationFromVelocity has exactly 1 value of type Velocity.
+produces of AccelerationFromVelocity has exactly 1 value of type Acceleration.
+withRespectTo of AccelerationFromVelocity always has value ^time.
+^order of AccelerationFromVelocity always has value 1.
+AccelerationFromPosition is a type of Derivation.
+derivedFrom of AccelerationFromPosition has exactly 1 value of type Position.
+produces of AccelerationFromPosition has exactly 1 value of type Acceleration.
+withRespectTo of AccelerationFromPosition always has value ^time.
+^order of AccelerationFromPosition always has value 2.
+acceleration describes PhysicalObject with values of type Acceleration.
+ 
+Momentum is a type of UnittedQuantity. 
+momentum describes Mass with values of type Momentum.
+Rule MomentumOfAPhysicalObject:
+ 	if o is a PhysicalObject with mass m, with velocity v and 
+ 		p is a Momentum with ^value (^value of m * ^value of v),
+ 			with unit unitResolver("*", unit of m, unit of v)
+ 	then momentum of o is p.
+
+Force is a type of UnittedQuantity.
+ForceFromMomentum is a type of Derivation.
+derivedFrom of ForceFromMomentum has exactly 1 value of type Momentum.
+produces of ForceFromMomentum has exactly 1 value of type Force.
+withRespectTo of ForceFromMomentum always has value ^time.
+^order of ForceFromMomentum always has value 1.
+force describes PhysicalObject with values of type Force.
+
+External unitResolver(string operation, string u, ...) 
+	returns string: "http://sadl.org/unitSelector".

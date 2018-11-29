@@ -6,12 +6,14 @@
   xml:base="http://com.ge.research.sadl/srl/metricsummary">
   <owl:Ontology rdf:about="">
     <owl:imports rdf:resource="/sadlmetricsmodel"/>
-    <owl:imports rdf:resource="http://sadl.org/ScientificConcepts.sadl.metrics"/>
+    <owl:imports rdf:resource="http://sadl.org/ScientificConcepts1.sadl.metrics"/>
     <owl:imports rdf:resource="http://sadl.org/MinimalExampleWithRules.sadl.metrics"/>
     <owl:imports rdf:resource="http://sadl.org/MinimalExampleMixed.sadl.metrics"/>
+    <owl:imports rdf:resource="http://sadl.org/ScientificConcepts2.sadl.metrics"/>
     <owl:imports rdf:resource="http://sadl.org/MinimalExampleEquations.sadl.metrics"/>
     <owl:imports rdf:resource="http:///Dn.metrics"/>
     <owl:imports rdf:resource="http://sadl.org/test.sadl.metrics"/>
+    <owl:imports rdf:resource="http://sadl.org/ScientificConcepts3.sadl.metrics"/>
     <owl:imports rdf:resource="http://com.ge.research.answer.java/TemperatureConversionmanual.metrics"/>
     <owl:imports rdf:resource="http://sadl.org/Exploratory.sadl.metrics"/>
     <owl:imports rdf:resource="http://com.ge.research.answer.java/TemperatureConversion.metrics"/>

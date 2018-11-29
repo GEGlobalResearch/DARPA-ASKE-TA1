@@ -1,0 +1,91 @@
+<rdf:RDF
+    xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+    xmlns:scicncpts1="http://sadl.org/ScientificConcepts1.sadl#"
+    xmlns:sadlbasemodel="http://sadl.org/sadlbasemodel"
+    xmlns:owl="http://www.w3.org/2002/07/owl#"
+    xmlns:sadlimplicitmodel="http://sadl.org/sadlimplicitmodel"
+    xmlns:builtinfunctions="http://sadl.org/builtinfunctions"
+    xmlns:rdfs="http://www.w3.org/2000/01/rdf-schema#"
+    xmlns:j.0="http://sadl.org/sadlbasemodel#"
+    xmlns:xsd="http://www.w3.org/2001/XMLSchema#"
+  xml:base="http://sadl.org/ScientificConcepts1.sadl">
+  <owl:Ontology rdf:about="">
+    <owl:imports rdf:resource="builtinfunctions"/>
+    <owl:imports rdf:resource="sadlimplicitmodel"/>
+    <owl:imports rdf:resource="sadlbasemodel"/>
+    <rdfs:comment xml:lang="en">This ontology was created from a SADL file 'ScientificConcepts1.sadl' and should not be directly edited.</rdfs:comment>
+  </owl:Ontology>
+  <owl:Class rdf:ID="Velocity">
+    <rdfs:subClassOf rdf:resource="sadlimplicitmodel#UnittedQuantity"/>
+  </owl:Class>
+  <owl:Class rdf:ID="PhysicalObject"/>
+  <owl:Class rdf:ID="Length">
+    <rdfs:subClassOf rdf:resource="sadlimplicitmodel#UnittedQuantity"/>
+  </owl:Class>
+  <owl:Class rdf:ID="Force">
+    <rdfs:subClassOf rdf:resource="sadlimplicitmodel#UnittedQuantity"/>
+  </owl:Class>
+  <owl:Class rdf:ID="Position">
+    <rdfs:subClassOf rdf:resource="sadlimplicitmodel#UnittedQuantity"/>
+  </owl:Class>
+  <owl:Class rdf:ID="Momentum">
+    <rdfs:subClassOf rdf:resource="sadlimplicitmodel#UnittedQuantity"/>
+  </owl:Class>
+  <owl:Class rdf:ID="Time">
+    <rdfs:subClassOf rdf:resource="sadlimplicitmodel#UnittedQuantity"/>
+  </owl:Class>
+  <owl:Class rdf:ID="Mass">
+    <rdfs:subClassOf rdf:resource="sadlimplicitmodel#UnittedQuantity"/>
+  </owl:Class>
+  <owl:Class rdf:ID="Acceleration">
+    <rdfs:subClassOf rdf:resource="sadlimplicitmodel#UnittedQuantity"/>
+  </owl:Class>
+  <owl:ObjectProperty rdf:ID="velocity">
+    <rdfs:range rdf:resource="#Velocity"/>
+    <rdfs:domain rdf:resource="#PhysicalObject"/>
+  </owl:ObjectProperty>
+  <owl:ObjectProperty rdf:ID="x-coordinate">
+    <rdfs:domain rdf:resource="#Position"/>
+    <rdfs:range rdf:resource="#Length"/>
+  </owl:ObjectProperty>
+  <owl:ObjectProperty rdf:ID="y-coordinate">
+    <rdfs:domain rdf:resource="#Position"/>
+    <rdfs:range rdf:resource="#Length"/>
+  </owl:ObjectProperty>
+  <owl:ObjectProperty rdf:ID="z-coordinate">
+    <rdfs:domain rdf:resource="#Position"/>
+    <rdfs:range rdf:resource="#Length"/>
+  </owl:ObjectProperty>
+  <owl:ObjectProperty rdf:ID="position">
+    <rdfs:domain rdf:resource="#PhysicalObject"/>
+    <rdfs:range rdf:resource="#Position"/>
+  </owl:ObjectProperty>
+  <owl:ObjectProperty rdf:ID="time">
+    <rdfs:domain rdf:resource="#Position"/>
+    <rdfs:range rdf:resource="#Time"/>
+  </owl:ObjectProperty>
+  <owl:ObjectProperty rdf:ID="acceleration">
+    <rdfs:range rdf:resource="#Acceleration"/>
+    <rdfs:domain rdf:resource="#PhysicalObject"/>
+  </owl:ObjectProperty>
+  <owl:ObjectProperty rdf:ID="mass">
+    <rdfs:domain rdf:resource="#PhysicalObject"/>
+    <rdfs:range rdf:resource="#Mass"/>
+  </owl:ObjectProperty>
+  <owl:ObjectProperty rdf:ID="force">
+    <rdfs:range rdf:resource="#Force"/>
+    <rdfs:domain rdf:resource="#PhysicalObject"/>
+  </owl:ObjectProperty>
+  <owl:ObjectProperty rdf:ID="momentum">
+    <rdfs:range rdf:resource="#Momentum"/>
+    <rdfs:domain rdf:resource="#PhysicalObject"/>
+  </owl:ObjectProperty>
+  <j.0:ExternalEquation rdf:ID="unitResolver">
+    <j.0:externalURI rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >http://sadl.org/unitSelector</j.0:externalURI>
+  </j.0:ExternalEquation>
+  <j.0:ExternalEquation rdf:ID="derivative">
+    <j.0:externalURI rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >http://sadl.org/derivative</j.0:externalURI>
+  </j.0:ExternalEquation>
+</rdf:RDF>

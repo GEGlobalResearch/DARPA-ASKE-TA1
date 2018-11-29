@@ -4,23 +4,13 @@
     xmlns:rdfs="http://www.w3.org/2000/01/rdf-schema#"
     xmlns:j.0="http://com.ge.research.sadl/sadlmetricsmodel#"
     xmlns:xsd="http://www.w3.org/2001/XMLSchema#"
-  xml:base="http://sadl.org/Exploratory.sadl.metrics">
+  xml:base="http://sadl.org/MinimalExampleEquations.sadl.metrics">
   <owl:Ontology rdf:about="">
     <j.0:marker>
       <j.0:Error>
         <j.0:markerType>
           <j.0:MarkerType rdf:about="http://com.ge.research.sadl/sadlmetricsmodel#TypeCheckFailure"/>
         </j.0:markerType>
-      </j.0:Error>
-    </j.0:marker>
-    <j.0:marker>
-      <j.0:Error>
-        <j.0:markerType rdf:resource="http://com.ge.research.sadl/sadlmetricsmodel#TypeCheckFailure"/>
-      </j.0:Error>
-    </j.0:marker>
-    <j.0:marker>
-      <j.0:Error>
-        <j.0:markerType rdf:resource="http://com.ge.research.sadl/sadlmetricsmodel#TypeCheckFailure"/>
       </j.0:Error>
     </j.0:marker>
     <j.0:marker>

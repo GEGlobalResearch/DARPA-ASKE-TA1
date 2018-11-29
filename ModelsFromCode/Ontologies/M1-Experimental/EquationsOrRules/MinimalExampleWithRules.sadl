@@ -1,0 +1,28 @@
+ uri "http://sadl.org/MinimalExampleWithRules.sadl" alias mexwr.
+ 
+ import "http://sadl.org/ScientificConcepts1.sadl".
+ 
+ Rule velocityOfPhysicalObject:
+ 	if o is a PhysicalObject with position p and [vv, vu] is derivative(p, ^time, 1)
+ 	then ^value of velocity of o is vv and unit of velocity of o is vu.
+ 	
+ Rule accelerationOfPhysicalObject1:
+ 	if o is a PhysicalObject with velocity v and [accv, accu] is derivative(v, ^time, 1)
+ 	then ^value of acceleration of o is accv and unit of acceleration of o is accu.
+ 	
+ Rule accelerationOfPhysicalObject2:
+ 	if o is a PhysicalObject with position p and [accv, accu] is derivative(p, ^time, 2)
+ 	then ^value of acceleration of o is accv and unit of acceleration of o is accu.
+  	
+ Rule momentumOfPhysicalObject:
+ 	if o is a PhysicalObject with velocity v and 
+ 		p is a Momentum with ^value (^value of mass of o * ^value of velocity of o),
+ 			with unit unitResolver("*", unit of mass of o, unit of velocity of o)
+ 	then momentum of o is p.
+
+ Rule newtons2ndLaw:
+ 	if o is a PhysicalObject and p is momentum of o and
+ 		[pv, pu] is derivative(p, ^time, 1) 
+	then there exists (a Force with ^value pv, with unit pu) and
+		force of o is the Force.
+ 

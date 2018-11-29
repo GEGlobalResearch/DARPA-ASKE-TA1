@@ -1,0 +1,30 @@
+uri "http://sadl.org/ScientificConcepts1.sadl" alias scicncpts1.
+ 
+Time is a type of UnittedQuantity.
+Length is a type of UnittedQuantity.
+Position is a type of UnittedQuantity,
+	described by x-coordinate with values of type Length,
+	described by y-coordinate with values of type Length,
+	described by z-coordinate with values of type Length,
+	described by ^time with values of type Time.
+Mass is a type of UnittedQuantity.
+
+PhysicalObject is a class,
+	described by mass with values of type Mass,
+	described by position with values of type Position.
+	
+Velocity is a type of UnittedQuantity.
+velocity describes PhysicalObject with values of type Velocity.
+Acceleration is a type of UnittedQuantity.
+acceleration describes PhysicalObject with values of type Acceleration.
+ 
+Momentum is a type of UnittedQuantity. 
+momentum describes PhysicalObject with values of type Momentum.
+
+Force is a type of UnittedQuantity.
+force describes PhysicalObject with values of type Force.
+
+External unitResolver(string operation, string u, ...) 
+	returns string: "http://sadl.org/unitSelector".
+External derivative(ScientificConcept numerator, anyURI ^time, int n) 
+	returns decimal, string: "http://sadl.org/derivative".

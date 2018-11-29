@@ -1,0 +1,71 @@
+<rdf:RDF
+    xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+    xmlns:mexeq="http://sadl.org/MinimalExampleEquations.sadl#"
+    xmlns:sadlbasemodel="http://sadl.org/sadlbasemodel"
+    xmlns:owl="http://www.w3.org/2002/07/owl#"
+    xmlns:sadlimplicitmodel="http://sadl.org/sadlimplicitmodel"
+    xmlns:builtinfunctions="http://sadl.org/builtinfunctions"
+    xmlns:rdfs="http://www.w3.org/2000/01/rdf-schema#"
+    xmlns:scicncpts1="http://sadl.org/ScientificConcepts1.sadl"
+    xmlns:j.0="http://sadl.org/sadlbasemodel#"
+    xmlns:xsd="http://www.w3.org/2001/XMLSchema#"
+  xml:base="http://sadl.org/MinimalExampleEquations.sadl">
+  <owl:Ontology rdf:about="">
+    <owl:imports rdf:resource="ScientificConcepts1.sadl"/>
+    <owl:imports rdf:resource="builtinfunctions"/>
+    <owl:imports rdf:resource="sadlimplicitmodel"/>
+    <owl:imports rdf:resource="sadlbasemodel"/>
+    <rdfs:comment xml:lang="en">This ontology was created from a SADL file 'MinimalExampleEquations.sadl' and should not be directly edited.</rdfs:comment>
+  </owl:Ontology>
+  <owl:ObjectProperty rdf:ID="dependsOn">
+    <rdfs:range rdf:resource="sadlimplicitmodel#ScientificConcept"/>
+    <rdfs:domain rdf:resource="sadlimplicitmodel#ScientificConcept"/>
+  </owl:ObjectProperty>
+  <j.0:Equation rdf:ID="momentumOfPhysicalObject">
+    <j.0:expression rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >PhysicalObject momentumOfPhysicalObject(PhysicalObject o): </j.0:expression>
+  </j.0:Equation>
+  <j.0:Equation rdf:ID="newtons2ndLaw">
+    <rdfs:comment xml:lang="en">net Force on a physical object is equal to the derivative of the momentum of the object with respect to time.</rdfs:comment>
+    <j.0:expression rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >Force newtons2ndLaw(PhysicalObject o): </j.0:expression>
+  </j.0:Equation>
+  <rdf:Description rdf:about="ScientificConcepts1.sadl#Force">
+    <mexeq:dependsOn>
+      <rdf:Description rdf:about="ScientificConcepts1.sadl#Acceleration">
+        <mexeq:dependsOn>
+          <rdf:Description rdf:about="ScientificConcepts1.sadl#Velocity">
+            <mexeq:dependsOn rdf:resource="ScientificConcepts1.sadl#Position"/>
+          </rdf:Description>
+        </mexeq:dependsOn>
+      </rdf:Description>
+    </mexeq:dependsOn>
+    <mexeq:dependsOn rdf:resource="ScientificConcepts1.sadl#Velocity"/>
+    <mexeq:dependsOn rdf:resource="ScientificConcepts1.sadl#Mass"/>
+  </rdf:Description>
+  <j.0:Equation rdf:ID="velocityOfPhysicalObject">
+    <j.0:expression rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >PhysicalObject velocityOfPhysicalObject(PhysicalObject o): </j.0:expression>
+  </j.0:Equation>
+  <j.0:Equation rdf:ID="accelerationOfPhysicalObject1">
+    <j.0:expression rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >PhysicalObject accelerationOfPhysicalObject1(PhysicalObject o): </j.0:expression>
+  </j.0:Equation>
+  <j.0:Equation rdf:ID="newtons2ndLawConstantMass">
+    <rdfs:comment xml:lang="en">net Force on a physical object is equal to the mass of the object times its acceleration for constant mass.</rdfs:comment>
+    <j.0:expression rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >Force newtons2ndLawConstantMass(PhysicalObject o): </j.0:expression>
+  </j.0:Equation>
+  <rdf:Description rdf:about="ScientificConcepts1.sadl#Momentum">
+    <mexeq:dependsOn rdf:resource="ScientificConcepts1.sadl#Velocity"/>
+    <mexeq:dependsOn rdf:resource="ScientificConcepts1.sadl#Mass"/>
+  </rdf:Description>
+  <j.0:Equation rdf:ID="accelerationOfPhysicalObject2">
+    <j.0:expression rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >PhysicalObject accelerationOfPhysicalObject2(PhysicalObject o): </j.0:expression>
+  </j.0:Equation>
+  <j.0:ExternalEquation rdf:ID="mass-acceleration">
+    <j.0:externalURI rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >http://com.ge.research.darpa.answer/probabilisticNewtonsSecondLaw</j.0:externalURI>
+  </j.0:ExternalEquation>
+</rdf:RDF>

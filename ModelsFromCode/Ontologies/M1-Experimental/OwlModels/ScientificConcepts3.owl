@@ -1,0 +1,332 @@
+<rdf:RDF
+    xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+    xmlns:sadlbasemodel="http://sadl.org/sadlbasemodel"
+    xmlns:owl="http://www.w3.org/2002/07/owl#"
+    xmlns:sadlimplicitmodel="http://sadl.org/sadlimplicitmodel"
+    xmlns:builtinfunctions="http://sadl.org/builtinfunctions"
+    xmlns:j.0="http://sadl.org/sadlimplicitmodel#"
+    xmlns:scicncpts3="http://sadl.org/ScientificConcepts3.sadl#"
+    xmlns:rdfs="http://www.w3.org/2000/01/rdf-schema#"
+    xmlns:j.1="http://sadl.org/sadlbasemodel#"
+    xmlns:xsd="http://www.w3.org/2001/XMLSchema#"
+  xml:base="http://sadl.org/ScientificConcepts3.sadl">
+  <owl:Ontology rdf:about="">
+    <owl:imports rdf:resource="builtinfunctions"/>
+    <owl:imports rdf:resource="sadlimplicitmodel"/>
+    <owl:imports rdf:resource="sadlbasemodel"/>
+    <rdfs:comment xml:lang="en">This ontology was created from a SADL file 'ScientificConcepts3.sadl' and should not be directly edited.</rdfs:comment>
+  </owl:Ontology>
+  <owl:Class rdf:ID="PhysicalObject"/>
+  <owl:Class rdf:ID="ForceFromMomentum">
+    <rdfs:subClassOf>
+      <owl:Restriction>
+        <owl:hasValue rdf:datatype="http://www.w3.org/2001/XMLSchema#int"
+        >1</owl:hasValue>
+        <owl:onProperty>
+          <owl:DatatypeProperty rdf:ID="order"/>
+        </owl:onProperty>
+      </owl:Restriction>
+    </rdfs:subClassOf>
+    <rdfs:subClassOf>
+      <owl:Restriction>
+        <owl:hasValue>
+          <owl:ObjectProperty rdf:ID="time"/>
+        </owl:hasValue>
+        <owl:onProperty>
+          <owl:ObjectProperty rdf:ID="withRespectTo"/>
+        </owl:onProperty>
+      </owl:Restriction>
+    </rdfs:subClassOf>
+    <rdfs:subClassOf>
+      <owl:Restriction>
+        <owl:onClass>
+          <owl:Class rdf:ID="Force"/>
+        </owl:onClass>
+        <owl:qualifiedCardinality rdf:datatype="http://www.w3.org/2001/XMLSchema#long"
+        >1</owl:qualifiedCardinality>
+        <owl:onProperty>
+          <owl:ObjectProperty rdf:ID="produces"/>
+        </owl:onProperty>
+      </owl:Restriction>
+    </rdfs:subClassOf>
+    <rdfs:subClassOf>
+      <owl:Restriction>
+        <owl:onClass>
+          <owl:Class rdf:ID="Momentum"/>
+        </owl:onClass>
+        <owl:qualifiedCardinality rdf:datatype="http://www.w3.org/2001/XMLSchema#long"
+        >1</owl:qualifiedCardinality>
+        <owl:onProperty>
+          <owl:ObjectProperty rdf:ID="derivedFrom"/>
+        </owl:onProperty>
+      </owl:Restriction>
+    </rdfs:subClassOf>
+    <rdfs:subClassOf>
+      <owl:Class rdf:ID="Derivation"/>
+    </rdfs:subClassOf>
+  </owl:Class>
+  <owl:Class rdf:ID="AccelerationFromVelocity">
+    <rdfs:subClassOf>
+      <owl:Restriction>
+        <owl:hasValue rdf:datatype="http://www.w3.org/2001/XMLSchema#int"
+        >1</owl:hasValue>
+        <owl:onProperty>
+          <owl:DatatypeProperty rdf:about="#order"/>
+        </owl:onProperty>
+      </owl:Restriction>
+    </rdfs:subClassOf>
+    <rdfs:subClassOf>
+      <owl:Restriction>
+        <owl:hasValue>
+          <owl:ObjectProperty rdf:about="#time"/>
+        </owl:hasValue>
+        <owl:onProperty>
+          <owl:ObjectProperty rdf:about="#withRespectTo"/>
+        </owl:onProperty>
+      </owl:Restriction>
+    </rdfs:subClassOf>
+    <rdfs:subClassOf>
+      <owl:Restriction>
+        <owl:onClass>
+          <owl:Class rdf:ID="Acceleration"/>
+        </owl:onClass>
+        <owl:qualifiedCardinality rdf:datatype="http://www.w3.org/2001/XMLSchema#long"
+        >1</owl:qualifiedCardinality>
+        <owl:onProperty>
+          <owl:ObjectProperty rdf:about="#produces"/>
+        </owl:onProperty>
+      </owl:Restriction>
+    </rdfs:subClassOf>
+    <rdfs:subClassOf>
+      <owl:Restriction>
+        <owl:onClass>
+          <owl:Class rdf:ID="Velocity"/>
+        </owl:onClass>
+        <owl:qualifiedCardinality rdf:datatype="http://www.w3.org/2001/XMLSchema#long"
+        >1</owl:qualifiedCardinality>
+        <owl:onProperty>
+          <owl:ObjectProperty rdf:about="#derivedFrom"/>
+        </owl:onProperty>
+      </owl:Restriction>
+    </rdfs:subClassOf>
+    <rdfs:subClassOf>
+      <owl:Class rdf:about="#Derivation"/>
+    </rdfs:subClassOf>
+  </owl:Class>
+  <owl:Class rdf:about="#Acceleration">
+    <rdfs:subClassOf rdf:resource="sadlimplicitmodel#UnittedQuantity"/>
+  </owl:Class>
+  <owl:Class rdf:ID="VelocityFromPosition">
+    <rdfs:subClassOf>
+      <owl:Restriction>
+        <owl:hasValue rdf:datatype="http://www.w3.org/2001/XMLSchema#int"
+        >1</owl:hasValue>
+        <owl:onProperty>
+          <owl:DatatypeProperty rdf:about="#order"/>
+        </owl:onProperty>
+      </owl:Restriction>
+    </rdfs:subClassOf>
+    <rdfs:subClassOf>
+      <owl:Restriction>
+        <owl:hasValue>
+          <owl:ObjectProperty rdf:about="#time"/>
+        </owl:hasValue>
+        <owl:onProperty>
+          <owl:ObjectProperty rdf:about="#withRespectTo"/>
+        </owl:onProperty>
+      </owl:Restriction>
+    </rdfs:subClassOf>
+    <rdfs:subClassOf>
+      <owl:Restriction>
+        <owl:onClass>
+          <owl:Class rdf:about="#Velocity"/>
+        </owl:onClass>
+        <owl:qualifiedCardinality rdf:datatype="http://www.w3.org/2001/XMLSchema#long"
+        >1</owl:qualifiedCardinality>
+        <owl:onProperty>
+          <owl:ObjectProperty rdf:about="#produces"/>
+        </owl:onProperty>
+      </owl:Restriction>
+    </rdfs:subClassOf>
+    <rdfs:subClassOf>
+      <owl:Restriction>
+        <owl:onClass>
+          <owl:Class rdf:ID="Position"/>
+        </owl:onClass>
+        <owl:qualifiedCardinality rdf:datatype="http://www.w3.org/2001/XMLSchema#long"
+        >1</owl:qualifiedCardinality>
+        <owl:onProperty>
+          <owl:ObjectProperty rdf:about="#derivedFrom"/>
+        </owl:onProperty>
+      </owl:Restriction>
+    </rdfs:subClassOf>
+    <rdfs:subClassOf>
+      <owl:Class rdf:about="#Derivation"/>
+    </rdfs:subClassOf>
+  </owl:Class>
+  <owl:Class rdf:ID="Mass">
+    <rdfs:subClassOf rdf:resource="sadlimplicitmodel#UnittedQuantity"/>
+  </owl:Class>
+  <owl:Class rdf:ID="Time">
+    <rdfs:subClassOf rdf:resource="sadlimplicitmodel#UnittedQuantity"/>
+  </owl:Class>
+  <owl:Class rdf:ID="Length">
+    <rdfs:subClassOf rdf:resource="sadlimplicitmodel#UnittedQuantity"/>
+  </owl:Class>
+  <owl:Class rdf:ID="AccelerationFromPosition">
+    <rdfs:subClassOf>
+      <owl:Restriction>
+        <owl:hasValue rdf:datatype="http://www.w3.org/2001/XMLSchema#int"
+        >2</owl:hasValue>
+        <owl:onProperty>
+          <owl:DatatypeProperty rdf:about="#order"/>
+        </owl:onProperty>
+      </owl:Restriction>
+    </rdfs:subClassOf>
+    <rdfs:subClassOf>
+      <owl:Restriction>
+        <owl:hasValue>
+          <owl:ObjectProperty rdf:about="#time"/>
+        </owl:hasValue>
+        <owl:onProperty>
+          <owl:ObjectProperty rdf:about="#withRespectTo"/>
+        </owl:onProperty>
+      </owl:Restriction>
+    </rdfs:subClassOf>
+    <rdfs:subClassOf>
+      <owl:Restriction>
+        <owl:onClass rdf:resource="#Acceleration"/>
+        <owl:qualifiedCardinality rdf:datatype="http://www.w3.org/2001/XMLSchema#long"
+        >1</owl:qualifiedCardinality>
+        <owl:onProperty>
+          <owl:ObjectProperty rdf:about="#produces"/>
+        </owl:onProperty>
+      </owl:Restriction>
+    </rdfs:subClassOf>
+    <rdfs:subClassOf>
+      <owl:Restriction>
+        <owl:onClass>
+          <owl:Class rdf:about="#Position"/>
+        </owl:onClass>
+        <owl:qualifiedCardinality rdf:datatype="http://www.w3.org/2001/XMLSchema#long"
+        >1</owl:qualifiedCardinality>
+        <owl:onProperty>
+          <owl:ObjectProperty rdf:about="#derivedFrom"/>
+        </owl:onProperty>
+      </owl:Restriction>
+    </rdfs:subClassOf>
+    <rdfs:subClassOf>
+      <owl:Class rdf:about="#Derivation"/>
+    </rdfs:subClassOf>
+  </owl:Class>
+  <owl:Class rdf:about="#Derivation">
+    <rdfs:subClassOf>
+      <owl:Restriction>
+        <owl:cardinality rdf:datatype="http://www.w3.org/2001/XMLSchema#int"
+        >1</owl:cardinality>
+        <owl:onProperty>
+          <owl:DatatypeProperty rdf:about="#order"/>
+        </owl:onProperty>
+      </owl:Restriction>
+    </rdfs:subClassOf>
+    <rdfs:subClassOf>
+      <owl:Restriction>
+        <owl:cardinality rdf:datatype="http://www.w3.org/2001/XMLSchema#int"
+        >1</owl:cardinality>
+        <owl:onProperty>
+          <owl:ObjectProperty rdf:about="#withRespectTo"/>
+        </owl:onProperty>
+      </owl:Restriction>
+    </rdfs:subClassOf>
+    <rdfs:subClassOf>
+      <owl:Restriction>
+        <owl:cardinality rdf:datatype="http://www.w3.org/2001/XMLSchema#int"
+        >1</owl:cardinality>
+        <owl:onProperty>
+          <owl:ObjectProperty rdf:about="#produces"/>
+        </owl:onProperty>
+      </owl:Restriction>
+    </rdfs:subClassOf>
+    <rdfs:subClassOf>
+      <owl:Restriction>
+        <owl:cardinality rdf:datatype="http://www.w3.org/2001/XMLSchema#int"
+        >1</owl:cardinality>
+        <owl:onProperty>
+          <owl:ObjectProperty rdf:about="#derivedFrom"/>
+        </owl:onProperty>
+      </owl:Restriction>
+    </rdfs:subClassOf>
+  </owl:Class>
+  <owl:Class rdf:about="#Position">
+    <rdfs:subClassOf rdf:resource="sadlimplicitmodel#UnittedQuantity"/>
+  </owl:Class>
+  <owl:Class rdf:about="#Velocity">
+    <rdfs:subClassOf rdf:resource="sadlimplicitmodel#UnittedQuantity"/>
+  </owl:Class>
+  <owl:Class rdf:about="#Force">
+    <rdfs:subClassOf rdf:resource="sadlimplicitmodel#UnittedQuantity"/>
+  </owl:Class>
+  <owl:Class rdf:about="#Momentum">
+    <rdfs:subClassOf rdf:resource="sadlimplicitmodel#UnittedQuantity"/>
+  </owl:Class>
+  <owl:ObjectProperty rdf:ID="position">
+    <rdfs:domain rdf:resource="#PhysicalObject"/>
+    <rdfs:range rdf:resource="#Position"/>
+  </owl:ObjectProperty>
+  <owl:ObjectProperty rdf:about="#withRespectTo">
+    <rdfs:domain rdf:resource="#Derivation"/>
+  </owl:ObjectProperty>
+  <owl:ObjectProperty rdf:ID="y-coordinate">
+    <rdfs:domain rdf:resource="#Position"/>
+    <rdfs:range rdf:resource="#Length"/>
+  </owl:ObjectProperty>
+  <owl:ObjectProperty rdf:ID="velocity">
+    <rdfs:range rdf:resource="#Velocity"/>
+    <rdfs:domain rdf:resource="#PhysicalObject"/>
+  </owl:ObjectProperty>
+  <owl:ObjectProperty rdf:ID="z-coordinate">
+    <rdfs:domain rdf:resource="#Position"/>
+    <rdfs:range rdf:resource="#Length"/>
+  </owl:ObjectProperty>
+  <owl:ObjectProperty rdf:about="#derivedFrom">
+    <rdfs:domain rdf:resource="#Derivation"/>
+    <rdfs:range rdf:resource="sadlimplicitmodel#ScientificConcept"/>
+  </owl:ObjectProperty>
+  <owl:ObjectProperty rdf:ID="mass">
+    <rdfs:domain rdf:resource="#PhysicalObject"/>
+    <rdfs:range rdf:resource="#Mass"/>
+  </owl:ObjectProperty>
+  <owl:ObjectProperty rdf:ID="acceleration">
+    <rdfs:range rdf:resource="#Acceleration"/>
+    <rdfs:domain rdf:resource="#PhysicalObject"/>
+  </owl:ObjectProperty>
+  <owl:ObjectProperty rdf:ID="momentum">
+    <rdfs:range rdf:resource="#Momentum"/>
+    <rdfs:domain rdf:resource="#Mass"/>
+  </owl:ObjectProperty>
+  <owl:ObjectProperty rdf:ID="force">
+    <rdfs:range rdf:resource="#Force"/>
+    <rdfs:domain rdf:resource="#PhysicalObject"/>
+  </owl:ObjectProperty>
+  <owl:ObjectProperty rdf:ID="x-coordinate">
+    <rdfs:domain rdf:resource="#Position"/>
+    <rdfs:range rdf:resource="#Length"/>
+  </owl:ObjectProperty>
+  <owl:ObjectProperty rdf:about="#produces">
+    <rdfs:domain rdf:resource="#Derivation"/>
+    <rdfs:range rdf:resource="sadlimplicitmodel#ScientificConcept"/>
+  </owl:ObjectProperty>
+  <owl:ObjectProperty rdf:about="#time">
+    <rdfs:domain rdf:resource="#Position"/>
+    <rdfs:range rdf:resource="#Time"/>
+  </owl:ObjectProperty>
+  <owl:DatatypeProperty rdf:about="#order">
+    <rdfs:domain rdf:resource="#Derivation"/>
+    <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#int"/>
+  </owl:DatatypeProperty>
+  <j.1:ExternalEquation rdf:ID="unitResolver">
+    <j.1:externalURI rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >http://sadl.org/unitSelector</j.1:externalURI>
+  </j.1:ExternalEquation>
+  <j.0:Rule rdf:ID="MomentumOfAPhysicalObject"/>
+</rdf:RDF>
