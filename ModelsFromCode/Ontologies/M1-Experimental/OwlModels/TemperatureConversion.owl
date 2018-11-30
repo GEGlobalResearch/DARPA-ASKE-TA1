@@ -5,10 +5,10 @@
     xmlns:sadlimplicitmodel="http://sadl.org/sadlimplicitmodel"
     xmlns:builtinfunctions="http://sadl.org/builtinfunctions"
     xmlns:rdfs="http://www.w3.org/2000/01/rdf-schema#"
-    xmlns="http://com.ge.research.answer.java/TemperatureConversion#"
+    xmlns="http://com.ge.research.darpa.answer.imports/TemperatureConversion#"
     xmlns:j.0="http://sadl.org/sadlbasemodel#"
     xmlns:xsd="http://www.w3.org/2001/XMLSchema#"
-  xml:base="http://com.ge.research.answer.java/TemperatureConversion">
+  xml:base="http://com.ge.research.darpa.answer.imports/TemperatureConversion">
   <owl:Ontology rdf:about="">
     <owl:imports rdf:resource="http://sadl.org/Temperature.sadl"/>
     <owl:imports rdf:resource="http://sadl.org/builtinfunctions"/>
@@ -17,12 +17,12 @@
     <rdfs:comment xml:lang="en">* Class to provide temperature conversions between different units</rdfs:comment>
     <rdfs:comment xml:lang="en">This ontology was created from a SADL file 'TemperatureConversion.sadl' and should not be directly edited.</rdfs:comment>
   </owl:Ontology>
-  <j.0:ExternalEquation rdf:ID="convertFtoC">
-    <j.0:externalURI rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
-    >com.ge.research.answer.java/TemperatureConversion/convertFtoC</j.0:externalURI>
-  </j.0:ExternalEquation>
   <j.0:ExternalEquation rdf:ID="convertCtoF">
     <j.0:externalURI rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
-    >com.ge.research.answer.java/TemperatureConversion/convertCtoF</j.0:externalURI>
+    >com.ge.research.darpa.answer.imports/TemperatureConversion/convertCtoF</j.0:externalURI>
+  </j.0:ExternalEquation>
+  <j.0:ExternalEquation rdf:ID="convertFtoC">
+    <j.0:externalURI rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >com.ge.research.darpa.answer.imports/TemperatureConversion/convertFtoC</j.0:externalURI>
   </j.0:ExternalEquation>
 </rdf:RDF>

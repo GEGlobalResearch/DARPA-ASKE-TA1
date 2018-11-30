@@ -1,10 +1,13 @@
-uri "http://com.ge.research.answer.java/TemperatureConversion" (note "* Class to provide temperature conversions between different units").
+uri "http://com.ge.research.darpa.answer.imports/TemperatureConversion"
+ (note "* Class to provide temperature conversions between different units").
 
 import "http://sadl.org/Temperature.sadl".
 
 External convertFtoC (note "* Method to convert from F to C")
-  (float tf (note " -- temperature in degrees F")
-  ) returns float: "com.ge.research.answer.java/TemperatureConversion/convertFtoC".
+   (note "returns  -- temperature in degrees C")
+  (float tf (note " -- temperature in degrees F ")
+  ) returns float: "com.ge.research.darpa.answer.imports/TemperatureConversion/convertFtoC".
 External convertCtoF (note "* Method to convert from C to F")
+   (note "returns  -- temperature in degrees F")
   (float tc (note " -- temperature in degrees C")
-  ) returns float: "com.ge.research.answer.java/TemperatureConversion/convertCtoF".
+  ) returns float: "com.ge.research.darpa.answer.imports/TemperatureConversion/convertCtoF".
