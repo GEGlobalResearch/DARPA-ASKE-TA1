@@ -1,5 +1,5 @@
 Task 1.4: Knowledge capture in K-CHAIN
 
-Objective: Create knowledge storage capable of representing multiple types of scientific domain knowledgeand models
+Objective: Create knowledge storage capable of representing multiple types of scientific domain knowledge and models
 
-Approach: Knowledge-Consistent Hybrid AI Networkcombining semantic languages, equations, and data-driven models with inference and querying
+Approach: Knowledge-Consistent Hybrid AI Network translated from semantic models, which combine equations and data-driven models to allow learning, inference, and querying
