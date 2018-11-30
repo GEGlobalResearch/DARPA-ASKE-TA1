@@ -1,0 +1,31 @@
+ uri "http://sadl.org/ModelFromCode.sadl" alias mfc.
+ 
+ Software is a class.
+ Plugin is a type of Software.
+ JavaClass is a type of Software.
+ uses describes Software with values of type Software.
+ includes describes Software with values of type Software.
+ input describes Software with values of type Data.
+ output describes Software with values of type Data.
+ 
+ Data is a class.
+ JavaSourceCode is a type of Data.
+ Ontology is a type of Data.
+ SadlModel is a type of Ontology.
+ LanguageNeutralExtract is a type of Data.
+ 
+ EclipseJavaDevelopmentTools is a Plugin, includes ASTParser.
+ ASTParser is a JavaClass.
+ 
+ JavaModelExtractor is a JavaClass, uses ASTParser, has input (a JavaSourceCode), has output (a LanguageNeutralExtract).
+ SadlModelGenerator is a JavaClass, has input (a LanguageNeutralExtract), has output (a SadlModel).
+ 
+ AnswerJavaCodeModelExtractor is a Plugin,
+ 	includes JavaModelExtractor,
+ 	includes SadlModelGenerator.
+ 	
+ 
+ 
+ 
+ 
+ 
