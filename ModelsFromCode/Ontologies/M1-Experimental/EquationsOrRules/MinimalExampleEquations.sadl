@@ -35,7 +35,9 @@ Equation newtons2ndLawConstantMass
 		return f
 			where acc is an Acceleration with ^value accv, with unit accu and
 				[mdotv, mdotu] is derivative(mass of o, ^time, 1) and mdotv is 0 and
-				[accv,accu] = derivative(velocity of o, ^time, 1). 
+				[accv,accu] = derivative(velocity of o, ^time, 1) and
+				fv = ^value of mass of o * accv and
+				fu = unitResolver("*", unit of mass of o, accu). 
 				
  External mass-acceleration (Mass m, acceleration acc) returns Force: 
  	"http://com.ge.research.darpa.answer/probabilisticNewtonsSecondLaw".				
