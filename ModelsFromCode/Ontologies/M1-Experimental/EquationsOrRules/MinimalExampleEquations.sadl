@@ -39,7 +39,7 @@ Equation newtons2ndLawConstantMass
 				fv = ^value of mass of o * accv and
 				fu = unitResolver("*", unit of mass of o, accu). 
 				
- External mass-acceleration (Mass m, acceleration acc) returns Force: 
+ External mass-acceleration (Mass m, Acceleration acc) returns Force: 
  	"http://com.ge.research.darpa.answer/probabilisticNewtonsSecondLaw".				
 	
 dependsOn describes ScientificConcept with values of type ScientificConcept.
