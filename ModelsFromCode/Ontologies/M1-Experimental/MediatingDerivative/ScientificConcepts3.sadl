@@ -1,6 +1,6 @@
 uri "http://sadl.org/ScientificConcepts3.sadl" alias scicncpts3.
 
-Derivation is a class,
+Derivation (note "Mediates between a concept and its derivative") is a class,
 	described by derivedFrom with a single value of type ScientificConcept,
 	described by produces with a single value of type ScientificConcept,
 	described by withRespectTo with a single value of type class,

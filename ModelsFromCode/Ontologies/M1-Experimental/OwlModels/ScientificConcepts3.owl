@@ -256,6 +256,7 @@
         </owl:onProperty>
       </owl:Restriction>
     </rdfs:subClassOf>
+    <rdfs:comment xml:lang="en">Mediates between a concept and its derivative</rdfs:comment>
   </owl:Class>
   <owl:Class rdf:about="#Position">
     <rdfs:subClassOf rdf:resource="sadlimplicitmodel#UnittedQuantity"/>

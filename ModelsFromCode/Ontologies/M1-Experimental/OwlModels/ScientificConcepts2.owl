@@ -17,6 +17,26 @@
     <rdfs:comment xml:lang="en">This ontology was created from a SADL file 'ScientificConcepts2.sadl' and should not be directly edited.</rdfs:comment>
   </owl:Ontology>
   <owl:Class rdf:ID="Position">
+    <rdfs:subClassOf>
+      <owl:Restriction>
+        <owl:hasValue>
+          <owl:ObjectProperty rdf:ID="time"/>
+        </owl:hasValue>
+        <owl:onProperty>
+          <owl:ObjectProperty rdf:ID="withRespectTo"/>
+        </owl:onProperty>
+      </owl:Restriction>
+    </rdfs:subClassOf>
+    <rdfs:subClassOf>
+      <owl:Restriction>
+        <owl:allValuesFrom>
+          <owl:Class rdf:ID="Velocity"/>
+        </owl:allValuesFrom>
+        <owl:onProperty>
+          <owl:ObjectProperty rdf:ID="derivativeOf"/>
+        </owl:onProperty>
+      </owl:Restriction>
+    </rdfs:subClassOf>
     <rdfs:subClassOf rdf:resource="sadlimplicitmodel#UnittedQuantity"/>
   </owl:Class>
   <owl:Class rdf:ID="Time">
@@ -28,7 +48,7 @@
         <owl:cardinality rdf:datatype="http://www.w3.org/2001/XMLSchema#int"
         >1</owl:cardinality>
         <owl:onProperty>
-          <owl:ObjectProperty rdf:ID="withRespectTo"/>
+          <owl:ObjectProperty rdf:about="#withRespectTo"/>
         </owl:onProperty>
       </owl:Restriction>
     </rdfs:subClassOf>
@@ -37,7 +57,7 @@
         <owl:cardinality rdf:datatype="http://www.w3.org/2001/XMLSchema#int"
         >1</owl:cardinality>
         <owl:onProperty>
-          <owl:ObjectProperty rdf:ID="derivativeOf"/>
+          <owl:ObjectProperty rdf:about="#derivativeOf"/>
         </owl:onProperty>
       </owl:Restriction>
     </rdfs:subClassOf>
@@ -48,24 +68,12 @@
   </owl:Class>
   <owl:Class rdf:ID="Force">
     <rdfs:subClassOf>
-      <owl:Restriction>
-        <owl:hasValue>
-          <owl:ObjectProperty rdf:ID="time"/>
-        </owl:hasValue>
-        <owl:onProperty>
-          <owl:ObjectProperty rdf:about="#withRespectTo"/>
-        </owl:onProperty>
-      </owl:Restriction>
-    </rdfs:subClassOf>
-    <rdfs:subClassOf>
-      <owl:Restriction>
-        <owl:allValuesFrom>
-          <owl:Class rdf:ID="Momentum"/>
-        </owl:allValuesFrom>
-        <owl:onProperty>
-          <owl:ObjectProperty rdf:about="#derivativeOf"/>
-        </owl:onProperty>
-      </owl:Restriction>
+      <owl:Class>
+        <owl:intersectionOf rdf:parseType="Collection">
+          <rdf:Description rdf:about="sadlimplicitmodel#UnittedQuantity"/>
+          <owl:Class rdf:about="#Derivative"/>
+        </owl:intersectionOf>
+      </owl:Class>
     </rdfs:subClassOf>
     <rdfs:subClassOf>
       <owl:Class>
@@ -78,6 +86,24 @@
   </owl:Class>
   <owl:Class rdf:ID="Acceleration">
     <rdfs:subClassOf>
+      <owl:Class>
+        <owl:intersectionOf rdf:parseType="Collection">
+          <rdf:Description rdf:about="sadlimplicitmodel#UnittedQuantity"/>
+          <owl:Class rdf:about="#Derivative"/>
+        </owl:intersectionOf>
+      </owl:Class>
+    </rdfs:subClassOf>
+    <rdfs:subClassOf>
+      <owl:Class>
+        <owl:intersectionOf rdf:parseType="Collection">
+          <rdf:Description rdf:about="sadlimplicitmodel#UnittedQuantity"/>
+          <owl:Class rdf:about="#Derivative"/>
+        </owl:intersectionOf>
+      </owl:Class>
+    </rdfs:subClassOf>
+  </owl:Class>
+  <owl:Class rdf:ID="Momentum">
+    <rdfs:subClassOf>
       <owl:Restriction>
         <owl:hasValue>
           <owl:ObjectProperty rdf:about="#time"/>
@@ -89,31 +115,11 @@
     </rdfs:subClassOf>
     <rdfs:subClassOf>
       <owl:Restriction>
-        <owl:allValuesFrom>
-          <owl:Class rdf:ID="Velocity"/>
-        </owl:allValuesFrom>
+        <owl:allValuesFrom rdf:resource="#Force"/>
         <owl:onProperty>
           <owl:ObjectProperty rdf:about="#derivativeOf"/>
         </owl:onProperty>
       </owl:Restriction>
-    </rdfs:subClassOf>
-    <rdfs:subClassOf>
-      <owl:Class>
-        <owl:intersectionOf rdf:parseType="Collection">
-          <rdf:Description rdf:about="sadlimplicitmodel#UnittedQuantity"/>
-          <owl:Class rdf:about="#Derivative"/>
-        </owl:intersectionOf>
-      </owl:Class>
-    </rdfs:subClassOf>
-  </owl:Class>
-  <owl:Class rdf:about="#Momentum">
-    <rdfs:subClassOf>
-      <owl:Class>
-        <owl:intersectionOf rdf:parseType="Collection">
-          <rdf:Description rdf:about="sadlimplicitmodel#UnittedQuantity"/>
-          <owl:Class rdf:about="#Derivative"/>
-        </owl:intersectionOf>
-      </owl:Class>
     </rdfs:subClassOf>
     <rdfs:subClassOf>
       <owl:Class>
@@ -126,14 +132,6 @@
   </owl:Class>
   <owl:Class rdf:about="#Velocity">
     <rdfs:subClassOf>
-      <owl:Class>
-        <owl:intersectionOf rdf:parseType="Collection">
-          <rdf:Description rdf:about="sadlimplicitmodel#UnittedQuantity"/>
-          <owl:Class rdf:about="#Derivative"/>
-        </owl:intersectionOf>
-      </owl:Class>
-    </rdfs:subClassOf>
-    <rdfs:subClassOf>
       <owl:Restriction>
         <owl:hasValue>
           <owl:ObjectProperty rdf:about="#time"/>
@@ -145,11 +143,19 @@
     </rdfs:subClassOf>
     <rdfs:subClassOf>
       <owl:Restriction>
-        <owl:allValuesFrom rdf:resource="#Position"/>
+        <owl:allValuesFrom rdf:resource="#Acceleration"/>
         <owl:onProperty>
           <owl:ObjectProperty rdf:about="#derivativeOf"/>
         </owl:onProperty>
       </owl:Restriction>
+    </rdfs:subClassOf>
+    <rdfs:subClassOf>
+      <owl:Class>
+        <owl:intersectionOf rdf:parseType="Collection">
+          <rdf:Description rdf:about="sadlimplicitmodel#UnittedQuantity"/>
+          <owl:Class rdf:about="#Derivative"/>
+        </owl:intersectionOf>
+      </owl:Class>
     </rdfs:subClassOf>
     <rdfs:subClassOf>
       <owl:Class>
@@ -174,7 +180,7 @@
   </owl:ObjectProperty>
   <owl:ObjectProperty rdf:ID="force">
     <rdfs:range rdf:resource="#Force"/>
-    <rdfs:domain rdf:resource="#Mass"/>
+    <rdfs:domain rdf:resource="#PhysicalObject"/>
   </owl:ObjectProperty>
   <owl:ObjectProperty rdf:ID="position">
     <rdfs:domain rdf:resource="#PhysicalObject"/>

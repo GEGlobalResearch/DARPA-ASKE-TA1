@@ -18,13 +18,13 @@ PhysicalObject is a class,
 	described by position with values of type Position.
 		
 Velocity is a type of {UnittedQuantity and Derivative}.
-derivativeOf of Velocity only has values of type Position.
-withRespectTo of Velocity always has value ^time.
+derivativeOf of Position only has values of type Velocity.
+withRespectTo of Position always has value ^time.
 velocity describes PhysicalObject with values of type Velocity.
 
 Acceleration is a type of {UnittedQuantity and Derivative}.
-derivativeOf of Acceleration only has values of type Velocity.
-withRespectTo of Acceleration always has value ^time.
+derivativeOf of Velocity only has values of type Acceleration.
+withRespectTo of Velocity always has value ^time.
 acceleration describes PhysicalObject with values of type Acceleration.
  
 Momentum is a type of {UnittedQuantity and Derivative}. 
@@ -36,9 +36,9 @@ momentum describes Mass with values of type Momentum.
  	then momentum of o is p.
 
 Force is a type of {UnittedQuantity and Derivative}.
-derivativeOf of Force only has values of type Momentum.
-withRespectTo of Force always has value ^time.
-force describes Mass with values of type Force.
+derivativeOf of Momentum only has values of type Force.
+withRespectTo of Momentum always has value ^time.
+force describes PhysicalObject with values of type Force.
 
 External unitResolver(string operation, string u, ...) 
 	returns string: "http://sadl.org/unitSelector".
