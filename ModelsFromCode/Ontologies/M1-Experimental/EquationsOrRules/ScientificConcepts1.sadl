@@ -26,5 +26,6 @@ force describes PhysicalObject with values of type Force.
 
 External unitResolver(string operation, string u, ...) 
 	returns string: "http://sadl.org/unitSelector".
+	
 External derivative(ScientificConcept numerator, anyURI ^time, int n) 
 	returns decimal, string: "http://sadl.org/derivative".
