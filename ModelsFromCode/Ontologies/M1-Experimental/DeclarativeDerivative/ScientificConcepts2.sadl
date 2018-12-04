@@ -13,7 +13,7 @@ Position is a type of UnittedQuantity,
 	described by ^time with values of type Time.
 Mass is a type of UnittedQuantity.
 
-PhysicalObject is a class,
+PhysicalObject is a class, 
 	described by mass with values of type Mass,
 	described by position with values of type Position.
 		
@@ -31,7 +31,7 @@ Momentum is a type of {UnittedQuantity and Derivative}.
 momentum describes Mass with values of type Momentum.
  Rule momentumOfPhysicalObject:
  	if o is a PhysicalObject with velocity v and 
- 		p is a Momentum with ^value (^value of mass of o * ^value of velocity of o),
+ 		p is a Momentum with ^value (^value of mass of o * ^value of velocity of o), 
  			with unit unitResolver("*", unit of mass of o, unit of velocity of o)
  	then momentum of o is p.
 

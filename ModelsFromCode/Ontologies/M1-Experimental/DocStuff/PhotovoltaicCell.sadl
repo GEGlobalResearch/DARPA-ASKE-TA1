@@ -1,0 +1,11 @@
+ uri "http://sadl.org/PhotovoltaicCell.sadl" alias PhotovoltaicCell.
+ 
+ EnergyCollector is a class described by hasEnergySource with values of type Power.
+ Power is a class. 
+ SolarPower is a type of Power.
+ 
+ PhotovoltaicCell is a type of EnergyCollector.
+ hasEnergySource of PhotovoltaicCell only has values of type SolarPower.
+ 
+ PhotovoltaicCell is the same as {EnergyCollector and (hasEnergySource only has values of type SolarPower)}.
+ 

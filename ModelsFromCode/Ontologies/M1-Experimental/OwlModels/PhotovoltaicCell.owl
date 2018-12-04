@@ -1,0 +1,50 @@
+<rdf:RDF
+    xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+    xmlns:sadlbasemodel="http://sadl.org/sadlbasemodel"
+    xmlns:owl="http://www.w3.org/2002/07/owl#"
+    xmlns:sadlimplicitmodel="http://sadl.org/sadlimplicitmodel"
+    xmlns:builtinfunctions="http://sadl.org/builtinfunctions"
+    xmlns:PhotovoltaicCell="http://sadl.org/PhotovoltaicCell.sadl#"
+    xmlns:rdfs="http://www.w3.org/2000/01/rdf-schema#"
+    xmlns:xsd="http://www.w3.org/2001/XMLSchema#"
+  xml:base="http://sadl.org/PhotovoltaicCell.sadl">
+  <owl:Ontology rdf:about="">
+    <owl:imports rdf:resource="builtinfunctions"/>
+    <owl:imports rdf:resource="sadlimplicitmodel"/>
+    <owl:imports rdf:resource="sadlbasemodel"/>
+    <rdfs:comment xml:lang="en">This ontology was created from a SADL file 'PhotovoltaicCell.sadl' and should not be directly edited.</rdfs:comment>
+  </owl:Ontology>
+  <owl:Class rdf:ID="SolarPower">
+    <rdfs:subClassOf>
+      <owl:Class rdf:ID="Power"/>
+    </rdfs:subClassOf>
+  </owl:Class>
+  <owl:Class rdf:ID="PhotovoltaicCell">
+    <owl:equivalentClass>
+      <owl:Class>
+        <owl:intersectionOf rdf:parseType="Collection">
+          <owl:Class rdf:ID="EnergyCollector"/>
+          <owl:Restriction>
+            <owl:allValuesFrom rdf:resource="#SolarPower"/>
+            <owl:onProperty>
+              <owl:ObjectProperty rdf:ID="hasEnergySource"/>
+            </owl:onProperty>
+          </owl:Restriction>
+        </owl:intersectionOf>
+      </owl:Class>
+    </owl:equivalentClass>
+    <rdfs:subClassOf>
+      <owl:Restriction>
+        <owl:allValuesFrom rdf:resource="#SolarPower"/>
+        <owl:onProperty>
+          <owl:ObjectProperty rdf:about="#hasEnergySource"/>
+        </owl:onProperty>
+      </owl:Restriction>
+    </rdfs:subClassOf>
+    <rdfs:subClassOf rdf:resource="#EnergyCollector"/>
+  </owl:Class>
+  <owl:ObjectProperty rdf:about="#hasEnergySource">
+    <rdfs:domain rdf:resource="#EnergyCollector"/>
+    <rdfs:range rdf:resource="#Power"/>
+  </owl:ObjectProperty>
+</rdf:RDF>
