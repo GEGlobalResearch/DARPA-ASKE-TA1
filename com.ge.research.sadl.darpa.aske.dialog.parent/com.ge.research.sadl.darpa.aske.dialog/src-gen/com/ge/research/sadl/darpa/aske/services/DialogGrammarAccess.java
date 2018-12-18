@@ -7,6 +7,8 @@ import com.ge.research.sadl.services.SADLGrammarAccess;
 import com.google.inject.Inject;
 import com.google.inject.Singleton;
 import java.util.List;
+import org.eclipse.xtext.Action;
+import org.eclipse.xtext.Alternatives;
 import org.eclipse.xtext.Assignment;
 import org.eclipse.xtext.EnumRule;
 import org.eclipse.xtext.Grammar;
@@ -35,58 +37,164 @@ public class DialogGrammarAccess extends AbstractGrammarElementFinder {
 	}
 	public class SadlModelElementElements extends AbstractParserRuleElementFinder {
 		private final ParserRule rule = (ParserRule) GrammarUtil.findRuleForName(getGrammar(), "com.ge.research.sadl.darpa.aske.Dialog.SadlModelElement");
-		private final RuleCall cDialogStatementParserRuleCall = (RuleCall)rule.eContents().get(1);
+		private final Alternatives cAlternatives = (Alternatives)rule.eContents().get(1);
+		private final Group cGroup_0 = (Group)cAlternatives.eContents().get(0);
+		private final RuleCall cModifiedAskStatementParserRuleCall_0_0 = (RuleCall)cGroup_0.eContents().get(0);
+		private final RuleCall cEOSParserRuleCall_0_1 = (RuleCall)cGroup_0.eContents().get(1);
+		private final Group cGroup_1 = (Group)cAlternatives.eContents().get(1);
+		private final RuleCall cWhatStatementParserRuleCall_1_0 = (RuleCall)cGroup_1.eContents().get(0);
+		private final RuleCall cEOSParserRuleCall_1_1 = (RuleCall)cGroup_1.eContents().get(1);
+		private final Group cGroup_2 = (Group)cAlternatives.eContents().get(2);
+		private final RuleCall cHowManyValuesStatementParserRuleCall_2_0 = (RuleCall)cGroup_2.eContents().get(0);
+		private final RuleCall cEOSParserRuleCall_2_1 = (RuleCall)cGroup_2.eContents().get(1);
 		
 		//@Override
 		//SadlModelElement sadl::SadlModelElement:
-		//	DialogStatement;
+		//	ModifiedAskStatement EOS | WhatStatement EOS | HowManyValuesStatement EOS;
 		@Override public ParserRule getRule() { return rule; }
 		
-		////		super::SadlModelElement
-		////		super::EquationStatement EOS |
-		////		super::ExternalEquationStatement EOS |
-		//DialogStatement
-		public RuleCall getDialogStatementParserRuleCall() { return cDialogStatementParserRuleCall; }
-	}
-	public class DialogStatementElements extends AbstractParserRuleElementFinder {
-		private final ParserRule rule = (ParserRule) GrammarUtil.findRuleForName(getGrammar(), "com.ge.research.sadl.darpa.aske.Dialog.DialogStatement");
-		private final Group cGroup = (Group)rule.eContents().get(1);
-		private final RuleCall cDialogQuestionParserRuleCall_0 = (RuleCall)cGroup.eContents().get(0);
-		private final RuleCall cEOSParserRuleCall_1 = (RuleCall)cGroup.eContents().get(1);
+		//ModifiedAskStatement EOS | WhatStatement EOS | HowManyValuesStatement EOS
+		public Alternatives getAlternatives() { return cAlternatives; }
 		
-		//DialogStatement sadl::ExpressionScope:
-		//	DialogQuestion EOS;
-		@Override public ParserRule getRule() { return rule; }
+		//ModifiedAskStatement EOS
+		public Group getGroup_0() { return cGroup_0; }
 		
-		//DialogQuestion EOS
-		public Group getGroup() { return cGroup; }
-		
-		//DialogQuestion
-		public RuleCall getDialogQuestionParserRuleCall_0() { return cDialogQuestionParserRuleCall_0; }
+		//ModifiedAskStatement
+		public RuleCall getModifiedAskStatementParserRuleCall_0_0() { return cModifiedAskStatementParserRuleCall_0_0; }
 		
 		//EOS
-		public RuleCall getEOSParserRuleCall_1() { return cEOSParserRuleCall_1; }
+		public RuleCall getEOSParserRuleCall_0_1() { return cEOSParserRuleCall_0_1; }
+		
+		//WhatStatement EOS
+		public Group getGroup_1() { return cGroup_1; }
+		
+		//WhatStatement
+		public RuleCall getWhatStatementParserRuleCall_1_0() { return cWhatStatementParserRuleCall_1_0; }
+		
+		//EOS
+		public RuleCall getEOSParserRuleCall_1_1() { return cEOSParserRuleCall_1_1; }
+		
+		////	WhatValuesStatement EOS	|
+		//HowManyValuesStatement EOS
+		public Group getGroup_2() { return cGroup_2; }
+		
+		////	WhatValuesStatement EOS	|
+		//HowManyValuesStatement
+		public RuleCall getHowManyValuesStatementParserRuleCall_2_0() { return cHowManyValuesStatementParserRuleCall_2_0; }
+		
+		//EOS
+		public RuleCall getEOSParserRuleCall_2_1() { return cEOSParserRuleCall_2_1; }
 	}
-	public class DialogQuestionElements extends AbstractParserRuleElementFinder {
-		private final ParserRule rule = (ParserRule) GrammarUtil.findRuleForName(getGrammar(), "com.ge.research.sadl.darpa.aske.Dialog.DialogQuestion");
+	public class ModifiedAskStatementElements extends AbstractParserRuleElementFinder {
+		private final ParserRule rule = (ParserRule) GrammarUtil.findRuleForName(getGrammar(), "com.ge.research.sadl.darpa.aske.Dialog.ModifiedAskStatement");
 		private final Group cGroup = (Group)rule.eContents().get(1);
-		private final Keyword cWhatKeyword_0 = (Keyword)cGroup.eContents().get(0);
+		private final Action cModifiedAskStatementAction_0 = (Action)cGroup.eContents().get(0);
+		private final Alternatives cAlternatives_1 = (Alternatives)cGroup.eContents().get(1);
+		private final Keyword cAskKeyword_1_0 = (Keyword)cAlternatives_1.eContents().get(0);
+		private final Keyword cAskKeyword_1_1 = (Keyword)cAlternatives_1.eContents().get(1);
+		private final Assignment cExprAssignment_2 = (Assignment)cGroup.eContents().get(2);
+		private final Alternatives cExprAlternatives_2_0 = (Alternatives)cExprAssignment_2.eContents().get(0);
+		private final RuleCall cExprConstructExpressionParserRuleCall_2_0_0 = (RuleCall)cExprAlternatives_2_0.eContents().get(0);
+		private final RuleCall cExprAskExpressionParserRuleCall_2_0_1 = (RuleCall)cExprAlternatives_2_0.eContents().get(1);
+		private final RuleCall cExprExpressionParserRuleCall_2_0_2 = (RuleCall)cExprAlternatives_2_0.eContents().get(2);
+		
+		//ModifiedAskStatement sadl::ExpressionScope:
+		//	{ModifiedAskStatement} ('Ask' | 'ask') expr=(ConstructExpression | AskExpression | Expression);
+		@Override public ParserRule getRule() { return rule; }
+		
+		//{ModifiedAskStatement} ('Ask' | 'ask') expr=(ConstructExpression | AskExpression | Expression)
+		public Group getGroup() { return cGroup; }
+		
+		//{ModifiedAskStatement}
+		public Action getModifiedAskStatementAction_0() { return cModifiedAskStatementAction_0; }
+		
+		//'Ask' | 'ask'
+		public Alternatives getAlternatives_1() { return cAlternatives_1; }
+		
+		//'Ask'
+		public Keyword getAskKeyword_1_0() { return cAskKeyword_1_0; }
+		
+		//'ask'
+		public Keyword getAskKeyword_1_1() { return cAskKeyword_1_1; }
+		
+		//expr=(ConstructExpression | AskExpression | Expression)
+		public Assignment getExprAssignment_2() { return cExprAssignment_2; }
+		
+		//(ConstructExpression | AskExpression | Expression)
+		public Alternatives getExprAlternatives_2_0() { return cExprAlternatives_2_0; }
+		
+		//ConstructExpression
+		public RuleCall getExprConstructExpressionParserRuleCall_2_0_0() { return cExprConstructExpressionParserRuleCall_2_0_0; }
+		
+		//AskExpression
+		public RuleCall getExprAskExpressionParserRuleCall_2_0_1() { return cExprAskExpressionParserRuleCall_2_0_1; }
+		
+		//Expression
+		public RuleCall getExprExpressionParserRuleCall_2_0_2() { return cExprExpressionParserRuleCall_2_0_2; }
+	}
+	public class WhatStatementElements extends AbstractParserRuleElementFinder {
+		private final ParserRule rule = (ParserRule) GrammarUtil.findRuleForName(getGrammar(), "com.ge.research.sadl.darpa.aske.Dialog.WhatStatement");
+		private final Alternatives cAlternatives = (Alternatives)rule.eContents().get(1);
+		private final Group cGroup_0 = (Group)cAlternatives.eContents().get(0);
+		private final Action cWhatStatementAction_0_0 = (Action)cGroup_0.eContents().get(0);
+		private final Alternatives cAlternatives_0_1 = (Alternatives)cGroup_0.eContents().get(1);
+		private final Keyword cWhatKeyword_0_1_0 = (Keyword)cAlternatives_0_1.eContents().get(0);
+		private final Keyword cWhatKeyword_0_1_1 = (Keyword)cAlternatives_0_1.eContents().get(1);
+		private final Assignment cStmtAssignment_0_2 = (Assignment)cGroup_0.eContents().get(2);
+		private final RuleCall cStmtWhatIsStatementParserRuleCall_0_2_0 = (RuleCall)cStmtAssignment_0_2.eContents().get(0);
+		private final RuleCall cWhatValuesStatementParserRuleCall_1 = (RuleCall)cAlternatives.eContents().get(1);
+		
+		//WhatStatement:
+		//	{WhatStatement} ('What' | 'what') stmt=WhatIsStatement
+		//	| WhatValuesStatement;
+		@Override public ParserRule getRule() { return rule; }
+		
+		//{WhatStatement} ('What' | 'what') stmt=WhatIsStatement | WhatValuesStatement
+		public Alternatives getAlternatives() { return cAlternatives; }
+		
+		//{WhatStatement} ('What' | 'what') stmt=WhatIsStatement
+		public Group getGroup_0() { return cGroup_0; }
+		
+		//{WhatStatement}
+		public Action getWhatStatementAction_0_0() { return cWhatStatementAction_0_0; }
+		
+		//'What' | 'what'
+		public Alternatives getAlternatives_0_1() { return cAlternatives_0_1; }
+		
+		//'What'
+		public Keyword getWhatKeyword_0_1_0() { return cWhatKeyword_0_1_0; }
+		
+		//'what'
+		public Keyword getWhatKeyword_0_1_1() { return cWhatKeyword_0_1_1; }
+		
+		//stmt=WhatIsStatement
+		public Assignment getStmtAssignment_0_2() { return cStmtAssignment_0_2; }
+		
+		//WhatIsStatement
+		public RuleCall getStmtWhatIsStatementParserRuleCall_0_2_0() { return cStmtWhatIsStatementParserRuleCall_0_2_0; }
+		
+		//WhatValuesStatement
+		public RuleCall getWhatValuesStatementParserRuleCall_1() { return cWhatValuesStatementParserRuleCall_1; }
+	}
+	public class WhatIsStatementElements extends AbstractParserRuleElementFinder {
+		private final ParserRule rule = (ParserRule) GrammarUtil.findRuleForName(getGrammar(), "com.ge.research.sadl.darpa.aske.Dialog.WhatIsStatement");
+		private final Group cGroup = (Group)rule.eContents().get(1);
+		private final Action cWhatIsStatementAction_0 = (Action)cGroup.eContents().get(0);
 		private final Keyword cIsKeyword_1 = (Keyword)cGroup.eContents().get(1);
 		private final Assignment cArticleAssignment_2 = (Assignment)cGroup.eContents().get(2);
 		private final RuleCall cArticleAnArticleParserRuleCall_2_0 = (RuleCall)cArticleAssignment_2.eContents().get(0);
 		private final Assignment cTargetAssignment_3 = (Assignment)cGroup.eContents().get(3);
-		private final RuleCall cTargetSadlTypeReferenceParserRuleCall_3_0 = (RuleCall)cTargetAssignment_3.eContents().get(0);
-		private final Keyword cQuestionMarkKeyword_4 = (Keyword)cGroup.eContents().get(4);
+		private final RuleCall cTargetSadlResourceParserRuleCall_3_0 = (RuleCall)cTargetAssignment_3.eContents().get(0);
 		
-		//DialogQuestion:
-		//	'What' 'is' article=AnArticle? target=SadlTypeReference '?';
+		//WhatIsStatement:
+		//	{WhatIsStatement} 'is' article=AnArticle? target=SadlResource;
 		@Override public ParserRule getRule() { return rule; }
 		
-		//'What' 'is' article=AnArticle? target=SadlTypeReference '?'
+		//{WhatIsStatement} 'is' article=AnArticle? target=SadlResource
 		public Group getGroup() { return cGroup; }
 		
-		//'What'
-		public Keyword getWhatKeyword_0() { return cWhatKeyword_0; }
+		//{WhatIsStatement}
+		public Action getWhatIsStatementAction_0() { return cWhatIsStatementAction_0; }
 		
 		//'is'
 		public Keyword getIsKeyword_1() { return cIsKeyword_1; }
@@ -97,21 +205,213 @@ public class DialogGrammarAccess extends AbstractGrammarElementFinder {
 		//AnArticle
 		public RuleCall getArticleAnArticleParserRuleCall_2_0() { return cArticleAnArticleParserRuleCall_2_0; }
 		
-		//target=SadlTypeReference
+		//target=SadlResource
 		public Assignment getTargetAssignment_3() { return cTargetAssignment_3; }
 		
-		//SadlTypeReference
-		public RuleCall getTargetSadlTypeReferenceParserRuleCall_3_0() { return cTargetSadlTypeReferenceParserRuleCall_3_0; }
+		//SadlResource
+		public RuleCall getTargetSadlResourceParserRuleCall_3_0() { return cTargetSadlResourceParserRuleCall_3_0; }
+	}
+	public class WhatValuesStatementElements extends AbstractParserRuleElementFinder {
+		private final ParserRule rule = (ParserRule) GrammarUtil.findRuleForName(getGrammar(), "com.ge.research.sadl.darpa.aske.Dialog.WhatValuesStatement");
+		private final Group cGroup = (Group)rule.eContents().get(1);
+		private final Action cWhatValuesStatementAction_0 = (Action)cGroup.eContents().get(0);
+		private final Alternatives cAlternatives_1 = (Alternatives)cGroup.eContents().get(1);
+		private final Keyword cValueKeyword_1_0 = (Keyword)cAlternatives_1.eContents().get(0);
+		private final Keyword cValuesKeyword_1_1 = (Keyword)cAlternatives_1.eContents().get(1);
+		private final Assignment cTypAssignment_2 = (Assignment)cGroup.eContents().get(2);
+		private final Alternatives cTypAlternatives_2_0 = (Alternatives)cTypAssignment_2.eContents().get(0);
+		private final Keyword cTypCanKeyword_2_0_0 = (Keyword)cTypAlternatives_2_0.eContents().get(0);
+		private final Keyword cTypMustKeyword_2_0_1 = (Keyword)cTypAlternatives_2_0.eContents().get(1);
+		private final Assignment cPropAssignment_3 = (Assignment)cGroup.eContents().get(3);
+		private final RuleCall cPropSadlResourceParserRuleCall_3_0 = (RuleCall)cPropAssignment_3.eContents().get(0);
+		private final Keyword cOfKeyword_4 = (Keyword)cGroup.eContents().get(4);
+		private final Assignment cArticleAssignment_5 = (Assignment)cGroup.eContents().get(5);
+		private final RuleCall cArticleAnArticleParserRuleCall_5_0 = (RuleCall)cArticleAssignment_5.eContents().get(0);
+		private final Assignment cClsAssignment_6 = (Assignment)cGroup.eContents().get(6);
+		private final RuleCall cClsSadlPrimaryTypeReferenceParserRuleCall_6_0 = (RuleCall)cClsAssignment_6.eContents().get(0);
+		private final Keyword cHaveKeyword_7 = (Keyword)cGroup.eContents().get(7);
+		
+		//WhatValuesStatement:
+		//	{WhatValuesStatement} ('value' | 'values') typ=('can' | 'must') prop=SadlResource 'of' article=AnArticle?
+		//	cls=SadlPrimaryTypeReference 'have';
+		@Override public ParserRule getRule() { return rule; }
+		
+		//{WhatValuesStatement} ('value' | 'values') typ=('can' | 'must') prop=SadlResource 'of' article=AnArticle?
+		//cls=SadlPrimaryTypeReference 'have'
+		public Group getGroup() { return cGroup; }
+		
+		//{WhatValuesStatement}
+		public Action getWhatValuesStatementAction_0() { return cWhatValuesStatementAction_0; }
+		
+		//'value' | 'values'
+		public Alternatives getAlternatives_1() { return cAlternatives_1; }
+		
+		//'value'
+		public Keyword getValueKeyword_1_0() { return cValueKeyword_1_0; }
+		
+		//'values'
+		public Keyword getValuesKeyword_1_1() { return cValuesKeyword_1_1; }
+		
+		//typ=('can' | 'must')
+		public Assignment getTypAssignment_2() { return cTypAssignment_2; }
+		
+		//('can' | 'must')
+		public Alternatives getTypAlternatives_2_0() { return cTypAlternatives_2_0; }
+		
+		//'can'
+		public Keyword getTypCanKeyword_2_0_0() { return cTypCanKeyword_2_0_0; }
+		
+		//'must'
+		public Keyword getTypMustKeyword_2_0_1() { return cTypMustKeyword_2_0_1; }
+		
+		//prop=SadlResource
+		public Assignment getPropAssignment_3() { return cPropAssignment_3; }
+		
+		//SadlResource
+		public RuleCall getPropSadlResourceParserRuleCall_3_0() { return cPropSadlResourceParserRuleCall_3_0; }
+		
+		//'of'
+		public Keyword getOfKeyword_4() { return cOfKeyword_4; }
+		
+		//article=AnArticle?
+		public Assignment getArticleAssignment_5() { return cArticleAssignment_5; }
+		
+		//AnArticle
+		public RuleCall getArticleAnArticleParserRuleCall_5_0() { return cArticleAnArticleParserRuleCall_5_0; }
+		
+		//cls=SadlPrimaryTypeReference
+		public Assignment getClsAssignment_6() { return cClsAssignment_6; }
+		
+		//SadlPrimaryTypeReference
+		public RuleCall getClsSadlPrimaryTypeReferenceParserRuleCall_6_0() { return cClsSadlPrimaryTypeReferenceParserRuleCall_6_0; }
+		
+		//'have'
+		public Keyword getHaveKeyword_7() { return cHaveKeyword_7; }
+	}
+	public class HowManyValuesStatementElements extends AbstractParserRuleElementFinder {
+		private final ParserRule rule = (ParserRule) GrammarUtil.findRuleForName(getGrammar(), "com.ge.research.sadl.darpa.aske.Dialog.HowManyValuesStatement");
+		private final Group cGroup = (Group)rule.eContents().get(1);
+		private final Action cHowManyValuesStatementAction_0 = (Action)cGroup.eContents().get(0);
+		private final Alternatives cAlternatives_1 = (Alternatives)cGroup.eContents().get(1);
+		private final Keyword cHowKeyword_1_0 = (Keyword)cAlternatives_1.eContents().get(0);
+		private final Keyword cHowKeyword_1_1 = (Keyword)cAlternatives_1.eContents().get(1);
+		private final Keyword cManyKeyword_2 = (Keyword)cGroup.eContents().get(2);
+		private final Keyword cValuesKeyword_3 = (Keyword)cGroup.eContents().get(3);
+		private final Keyword cOfKeyword_4 = (Keyword)cGroup.eContents().get(4);
+		private final Assignment cPropAssignment_5 = (Assignment)cGroup.eContents().get(5);
+		private final RuleCall cPropSadlResourceParserRuleCall_5_0 = (RuleCall)cPropAssignment_5.eContents().get(0);
+		private final Group cGroup_6 = (Group)cGroup.eContents().get(6);
+		private final Keyword cOfKeyword_6_0 = (Keyword)cGroup_6.eContents().get(0);
+		private final Keyword cTypeKeyword_6_1 = (Keyword)cGroup_6.eContents().get(1);
+		private final Assignment cTypAssignment_6_2 = (Assignment)cGroup_6.eContents().get(2);
+		private final RuleCall cTypSadlPrimaryTypeReferenceParserRuleCall_6_2_0 = (RuleCall)cTypAssignment_6_2.eContents().get(0);
+		private final Keyword cCanKeyword_7 = (Keyword)cGroup.eContents().get(7);
+		private final Assignment cArticleAssignment_8 = (Assignment)cGroup.eContents().get(8);
+		private final RuleCall cArticleAnArticleParserRuleCall_8_0 = (RuleCall)cArticleAssignment_8.eContents().get(0);
+		private final Assignment cClsAssignment_9 = (Assignment)cGroup.eContents().get(9);
+		private final RuleCall cClsSadlPrimaryTypeReferenceParserRuleCall_9_0 = (RuleCall)cClsAssignment_9.eContents().get(0);
+		private final Keyword cHaveKeyword_10 = (Keyword)cGroup.eContents().get(10);
+		
+		//HowManyValuesStatement:
+		//	{HowManyValuesStatement} ('How' | 'how') 'many' 'values' 'of' prop=SadlResource ('of' 'type'
+		//	typ=SadlPrimaryTypeReference)? 'can' article=AnArticle? cls=SadlPrimaryTypeReference 'have';
+		@Override public ParserRule getRule() { return rule; }
+		
+		//{HowManyValuesStatement} ('How' | 'how') 'many' 'values' 'of' prop=SadlResource ('of' 'type'
+		//typ=SadlPrimaryTypeReference)? 'can' article=AnArticle? cls=SadlPrimaryTypeReference 'have'
+		public Group getGroup() { return cGroup; }
+		
+		//{HowManyValuesStatement}
+		public Action getHowManyValuesStatementAction_0() { return cHowManyValuesStatementAction_0; }
+		
+		//'How' | 'how'
+		public Alternatives getAlternatives_1() { return cAlternatives_1; }
+		
+		//'How'
+		public Keyword getHowKeyword_1_0() { return cHowKeyword_1_0; }
+		
+		//'how'
+		public Keyword getHowKeyword_1_1() { return cHowKeyword_1_1; }
+		
+		//'many'
+		public Keyword getManyKeyword_2() { return cManyKeyword_2; }
+		
+		//'values'
+		public Keyword getValuesKeyword_3() { return cValuesKeyword_3; }
+		
+		//'of'
+		public Keyword getOfKeyword_4() { return cOfKeyword_4; }
+		
+		//prop=SadlResource
+		public Assignment getPropAssignment_5() { return cPropAssignment_5; }
+		
+		//SadlResource
+		public RuleCall getPropSadlResourceParserRuleCall_5_0() { return cPropSadlResourceParserRuleCall_5_0; }
+		
+		//('of' 'type' typ=SadlPrimaryTypeReference)?
+		public Group getGroup_6() { return cGroup_6; }
+		
+		//'of'
+		public Keyword getOfKeyword_6_0() { return cOfKeyword_6_0; }
+		
+		//'type'
+		public Keyword getTypeKeyword_6_1() { return cTypeKeyword_6_1; }
+		
+		//typ=SadlPrimaryTypeReference
+		public Assignment getTypAssignment_6_2() { return cTypAssignment_6_2; }
+		
+		//SadlPrimaryTypeReference
+		public RuleCall getTypSadlPrimaryTypeReferenceParserRuleCall_6_2_0() { return cTypSadlPrimaryTypeReferenceParserRuleCall_6_2_0; }
+		
+		//'can'
+		public Keyword getCanKeyword_7() { return cCanKeyword_7; }
+		
+		//article=AnArticle?
+		public Assignment getArticleAssignment_8() { return cArticleAssignment_8; }
+		
+		//AnArticle
+		public RuleCall getArticleAnArticleParserRuleCall_8_0() { return cArticleAnArticleParserRuleCall_8_0; }
+		
+		//cls=SadlPrimaryTypeReference
+		public Assignment getClsAssignment_9() { return cClsAssignment_9; }
+		
+		//SadlPrimaryTypeReference
+		public RuleCall getClsSadlPrimaryTypeReferenceParserRuleCall_9_0() { return cClsSadlPrimaryTypeReferenceParserRuleCall_9_0; }
+		
+		//'have'
+		public Keyword getHaveKeyword_10() { return cHaveKeyword_10; }
+	}
+	public class EOSElements extends AbstractParserRuleElementFinder {
+		private final ParserRule rule = (ParserRule) GrammarUtil.findRuleForName(getGrammar(), "com.ge.research.sadl.darpa.aske.Dialog.EOS");
+		private final Alternatives cAlternatives = (Alternatives)rule.eContents().get(1);
+		private final RuleCall cEOSParserRuleCall_0 = (RuleCall)cAlternatives.eContents().get(0);
+		private final Keyword cQuestionMarkKeyword_1 = (Keyword)cAlternatives.eContents().get(1);
+		
+		//@Override
+		//EOS:
+		//	super |
+		//	'?';
+		@Override public ParserRule getRule() { return rule; }
+		
+		//super | '?'
+		public Alternatives getAlternatives() { return cAlternatives; }
+		
+		//super
+		public RuleCall getEOSParserRuleCall_0() { return cEOSParserRuleCall_0; }
 		
 		//'?'
-		public Keyword getQuestionMarkKeyword_4() { return cQuestionMarkKeyword_4; }
+		public Keyword getQuestionMarkKeyword_1() { return cQuestionMarkKeyword_1; }
 	}
 	
 	
 	private final DialogModelElements pDialogModel;
 	private final SadlModelElementElements pSadlModelElement;
-	private final DialogStatementElements pDialogStatement;
-	private final DialogQuestionElements pDialogQuestion;
+	private final ModifiedAskStatementElements pModifiedAskStatement;
+	private final WhatStatementElements pWhatStatement;
+	private final WhatIsStatementElements pWhatIsStatement;
+	private final WhatValuesStatementElements pWhatValuesStatement;
+	private final HowManyValuesStatementElements pHowManyValuesStatement;
+	private final EOSElements pEOS;
 	
 	private final Grammar grammar;
 	
@@ -124,8 +424,12 @@ public class DialogGrammarAccess extends AbstractGrammarElementFinder {
 		this.gaSADL = gaSADL;
 		this.pDialogModel = new DialogModelElements();
 		this.pSadlModelElement = new SadlModelElementElements();
-		this.pDialogStatement = new DialogStatementElements();
-		this.pDialogQuestion = new DialogQuestionElements();
+		this.pModifiedAskStatement = new ModifiedAskStatementElements();
+		this.pWhatStatement = new WhatStatementElements();
+		this.pWhatIsStatement = new WhatIsStatementElements();
+		this.pWhatValuesStatement = new WhatValuesStatementElements();
+		this.pHowManyValuesStatement = new HowManyValuesStatementElements();
+		this.pEOS = new EOSElements();
 	}
 	
 	protected Grammar internalFindGrammar(GrammarProvider grammarProvider) {
@@ -167,7 +471,7 @@ public class DialogGrammarAccess extends AbstractGrammarElementFinder {
 	
 	//@Override
 	//SadlModelElement sadl::SadlModelElement:
-	//	DialogStatement;
+	//	ModifiedAskStatement EOS | WhatStatement EOS | HowManyValuesStatement EOS;
 	public SadlModelElementElements getSadlModelElementAccess() {
 		return pSadlModelElement;
 	}
@@ -176,29 +480,74 @@ public class DialogGrammarAccess extends AbstractGrammarElementFinder {
 		return getSadlModelElementAccess().getRule();
 	}
 	
-	//DialogStatement sadl::ExpressionScope:
-	//	DialogQuestion EOS;
-	public DialogStatementElements getDialogStatementAccess() {
-		return pDialogStatement;
+	//ModifiedAskStatement sadl::ExpressionScope:
+	//	{ModifiedAskStatement} ('Ask' | 'ask') expr=(ConstructExpression | AskExpression | Expression);
+	public ModifiedAskStatementElements getModifiedAskStatementAccess() {
+		return pModifiedAskStatement;
 	}
 	
-	public ParserRule getDialogStatementRule() {
-		return getDialogStatementAccess().getRule();
+	public ParserRule getModifiedAskStatementRule() {
+		return getModifiedAskStatementAccess().getRule();
 	}
 	
-	//DialogQuestion:
-	//	'What' 'is' article=AnArticle? target=SadlTypeReference '?';
-	public DialogQuestionElements getDialogQuestionAccess() {
-		return pDialogQuestion;
+	//WhatStatement:
+	//	{WhatStatement} ('What' | 'what') stmt=WhatIsStatement
+	//	| WhatValuesStatement;
+	public WhatStatementElements getWhatStatementAccess() {
+		return pWhatStatement;
 	}
 	
-	public ParserRule getDialogQuestionRule() {
-		return getDialogQuestionAccess().getRule();
+	public ParserRule getWhatStatementRule() {
+		return getWhatStatementAccess().getRule();
+	}
+	
+	//WhatIsStatement:
+	//	{WhatIsStatement} 'is' article=AnArticle? target=SadlResource;
+	public WhatIsStatementElements getWhatIsStatementAccess() {
+		return pWhatIsStatement;
+	}
+	
+	public ParserRule getWhatIsStatementRule() {
+		return getWhatIsStatementAccess().getRule();
+	}
+	
+	//WhatValuesStatement:
+	//	{WhatValuesStatement} ('value' | 'values') typ=('can' | 'must') prop=SadlResource 'of' article=AnArticle?
+	//	cls=SadlPrimaryTypeReference 'have';
+	public WhatValuesStatementElements getWhatValuesStatementAccess() {
+		return pWhatValuesStatement;
+	}
+	
+	public ParserRule getWhatValuesStatementRule() {
+		return getWhatValuesStatementAccess().getRule();
+	}
+	
+	//HowManyValuesStatement:
+	//	{HowManyValuesStatement} ('How' | 'how') 'many' 'values' 'of' prop=SadlResource ('of' 'type'
+	//	typ=SadlPrimaryTypeReference)? 'can' article=AnArticle? cls=SadlPrimaryTypeReference 'have';
+	public HowManyValuesStatementElements getHowManyValuesStatementAccess() {
+		return pHowManyValuesStatement;
+	}
+	
+	public ParserRule getHowManyValuesStatementRule() {
+		return getHowManyValuesStatementAccess().getRule();
+	}
+	
+	//@Override
+	//EOS:
+	//	super |
+	//	'?';
+	public EOSElements getEOSAccess() {
+		return pEOS;
+	}
+	
+	public ParserRule getEOSRule() {
+		return getEOSAccess().getRule();
 	}
 	
 	//SadlModel:
 	//	'uri' baseUri=STRING ('alias' alias=ID)? ('version' version=STRING)?
-	//	annotations+=SadlAnnotation* EOS
+	//	annotations+=SadlAnnotation* super::EOS
 	//	imports+=SadlImport*
 	//	elements+=super::SadlModelElement*;
 	public SADLGrammarAccess.SadlModelElements getSadlModelAccess() {
@@ -220,7 +569,7 @@ public class DialogGrammarAccess extends AbstractGrammarElementFinder {
 	}
 	
 	//SadlImport:
-	//	'import' importedResource=[SadlModel|STRING] ('as' alias=ID)? EOS;
+	//	'import' importedResource=[SadlModel|STRING] ('as' alias=ID)? super::EOS;
 	public SADLGrammarAccess.SadlImportElements getSadlImportAccess() {
 		return gaSADL.getSadlImportAccess();
 	}
@@ -300,7 +649,7 @@ public class DialogGrammarAccess extends AbstractGrammarElementFinder {
 	//	propertyInitializers+=SadlPropertyInitializer+)?
 	//	| {SadlDisjointClasses.classes+=current} ('and' classes+=SadlResource)+ 'are' 'disjoint') |
 	//	{SadlClassOrPropertyDeclaration} '{' classOrProperty+=SadlResource (',' classOrProperty+=SadlResource)* '}' 'are'
-	//	(('top-level'? 'classes' | 'types' 'of' | 'instances' 'of' superElement=SadlPrimaryTypeReference)
+	//	(('top-level'? 'classes' | (oftype='types' | oftype='instances') 'of' superElement=SadlPrimaryTypeReference)
 	//	describedBy+=SadlPropertyDeclarationInClass*
 	//	| {SadlDisjointClasses.types+=current} 'disjoint'
 	//	| {SadlDifferentFrom.types+=current} complement?='not'? 'the' 'same') | {SadlProperty} AnArticle? 'relationship' 'of'
@@ -1158,12 +1507,12 @@ public class DialogGrammarAccess extends AbstractGrammarElementFinder {
 	
 	//EOS:
 	//	'.';
-	public SADLGrammarAccess.EOSElements getEOSAccess() {
+	public SADLGrammarAccess.EOSElements getSADLEOSAccess() {
 		return gaSADL.getEOSAccess();
 	}
 	
-	public ParserRule getEOSRule() {
-		return getEOSAccess().getRule();
+	public ParserRule getSADLEOSRule() {
+		return getSADLEOSAccess().getRule();
 	}
 	
 	//QNAME:

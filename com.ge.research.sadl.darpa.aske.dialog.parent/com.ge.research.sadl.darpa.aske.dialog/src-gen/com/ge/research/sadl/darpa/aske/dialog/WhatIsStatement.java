@@ -3,27 +3,28 @@
  */
 package com.ge.research.sadl.darpa.aske.dialog;
 
-import com.ge.research.sadl.sADL.ExpressionScope;
-import com.ge.research.sadl.sADL.SadlTypeReference;
+import com.ge.research.sadl.sADL.SadlResource;
+
+import org.eclipse.emf.ecore.EObject;
 
 /**
  * <!-- begin-user-doc -->
- * A representation of the model object '<em><b>Question</b></em>'.
+ * A representation of the model object '<em><b>What Is Statement</b></em>'.
  * <!-- end-user-doc -->
  *
  * <p>
  * The following features are supported:
  * </p>
  * <ul>
- *   <li>{@link com.ge.research.sadl.darpa.aske.dialog.DialogQuestion#getArticle <em>Article</em>}</li>
- *   <li>{@link com.ge.research.sadl.darpa.aske.dialog.DialogQuestion#getTarget <em>Target</em>}</li>
+ *   <li>{@link com.ge.research.sadl.darpa.aske.dialog.WhatIsStatement#getArticle <em>Article</em>}</li>
+ *   <li>{@link com.ge.research.sadl.darpa.aske.dialog.WhatIsStatement#getTarget <em>Target</em>}</li>
  * </ul>
  *
- * @see com.ge.research.sadl.darpa.aske.dialog.DialogPackage#getDialogQuestion()
+ * @see com.ge.research.sadl.darpa.aske.dialog.DialogPackage#getWhatIsStatement()
  * @model
  * @generated
  */
-public interface DialogQuestion extends ExpressionScope
+public interface WhatIsStatement extends EObject
 {
   /**
    * Returns the value of the '<em><b>Article</b></em>' attribute.
@@ -35,14 +36,14 @@ public interface DialogQuestion extends ExpressionScope
    * <!-- end-user-doc -->
    * @return the value of the '<em>Article</em>' attribute.
    * @see #setArticle(String)
-   * @see com.ge.research.sadl.darpa.aske.dialog.DialogPackage#getDialogQuestion_Article()
+   * @see com.ge.research.sadl.darpa.aske.dialog.DialogPackage#getWhatIsStatement_Article()
    * @model
    * @generated
    */
   String getArticle();
 
   /**
-   * Sets the value of the '{@link com.ge.research.sadl.darpa.aske.dialog.DialogQuestion#getArticle <em>Article</em>}' attribute.
+   * Sets the value of the '{@link com.ge.research.sadl.darpa.aske.dialog.WhatIsStatement#getArticle <em>Article</em>}' attribute.
    * <!-- begin-user-doc -->
    * <!-- end-user-doc -->
    * @param value the new value of the '<em>Article</em>' attribute.
@@ -60,21 +61,21 @@ public interface DialogQuestion extends ExpressionScope
    * </p>
    * <!-- end-user-doc -->
    * @return the value of the '<em>Target</em>' containment reference.
-   * @see #setTarget(SadlTypeReference)
-   * @see com.ge.research.sadl.darpa.aske.dialog.DialogPackage#getDialogQuestion_Target()
+   * @see #setTarget(SadlResource)
+   * @see com.ge.research.sadl.darpa.aske.dialog.DialogPackage#getWhatIsStatement_Target()
    * @model containment="true"
    * @generated
    */
-  SadlTypeReference getTarget();
+  SadlResource getTarget();
 
   /**
-   * Sets the value of the '{@link com.ge.research.sadl.darpa.aske.dialog.DialogQuestion#getTarget <em>Target</em>}' containment reference.
+   * Sets the value of the '{@link com.ge.research.sadl.darpa.aske.dialog.WhatIsStatement#getTarget <em>Target</em>}' containment reference.
    * <!-- begin-user-doc -->
    * <!-- end-user-doc -->
    * @param value the new value of the '<em>Target</em>' containment reference.
    * @see #getTarget()
    * @generated
    */
-  void setTarget(SadlTypeReference value);
+  void setTarget(SadlResource value);
 
-} // DialogQuestion
+} // WhatIsStatement

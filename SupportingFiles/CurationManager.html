@@ -1,0 +1,133 @@
+<html>
+
+<head>
+<meta http-equiv="Content-Language" content="en-us">
+<meta name="GENERATOR" content="Microsoft FrontPage 5.0">
+<meta name="ProgId" content="FrontPage.Editor.Document">
+<meta http-equiv="Content-Type" content="text/html; charset=windows-1252">
+<title>New Page 1</title>
+</head>
+
+<body>
+
+<h1>Curation Manager</h1>
+<p>The CurationManager is the mediator between the KnowledgeGraph and the 
+ComputationalModel. It also provides the human-computer interface (HCI) through 
+the Dialog language and IDE.</p>
+<p>
+<img border="0" src="CurationManager.owlCurationManagerdr.PNG" width="613" height="684"></p>
+
+<p>The Dialog grammar is an extension of the SADL grammar and the Dialog IDE is 
+an extension of the SADL IDE. The objective of Dialog is to provide a 
+controlled-English HCI for directing modeling computations, asking questions, 
+providing information, and browsing the scientific knowledge of the 
+KnowledgeGraph and Computational Model. This is accomplished by providing new 
+grammar constructs that contain the graph-based expressions of the SADL grammar.</p>
+<h2>Directing Modeling Computations</h2>
+<ol>
+  <li>What is &lt;expr&gt; when &lt;expr&gt;?</li>
+</ol>
+<h2>Asking Questions</h2>
+<p>Forms 1-2 are very similar to SADL queries.<br>
+Form 3 is a general way to get information about a concept, class, property, or 
+individual, and will return SADL statements that provide information on that 
+concept.<br>
+Form 4 is a very general question about property restrictions.<br>
+Forms 5-7 are more specific questions about property restrictions.</p>
+<ol>
+  <li>Ask &quot;&lt;sparql&gt;&quot;.&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 
+  Allows any SPARQL query to be executed, SADL syntax without colon after Ask 
+  (but OK with)</li>
+  <li>Select|select ....&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 
+  Queries in SADL syntax but without the leading &quot;Ask:&quot;.</li>
+  <li>What is &lt;concept&gt;?&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 
+  Returns what is known about &lt;concept&gt;, reveals enumerated classes, equivalent 
+  classes.</li>
+  <li>What value|values can &lt;prop&gt; of a &lt;class&gt; have?&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 
+  A general question, answer depends on property range and restrictions<ul>
+    <li>If there is the cardinality restriction &quot;wheel of bicycle has exactly 2 
+    values.&quot;<ul>
+      <li>What values of wheel can a bicycle have?&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 
+      Answer: &quot;wheel of bicycle has exactly 2 values.&quot;</li>
+    </ul>
+    </li>
+    <li>If there is the qualified cardinality restriction &quot;digit of hand has 
+    exactly 1 value of type thumb.&quot;<ul>
+      <li>What value can digit of hand have?&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 
+      Answer: &quot;digit of hand has exactly 1 value of type thumb.&quot;</li>
+    </ul>
+    </li>
+    <li>If there is the all values from restriction &quot;president of a country only 
+    has values of type citizen.&quot;<ul>
+      <li>What value can president of a country have?&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 
+      Answer: &quot;president of a country only has values of type citizen.&quot;</li>
+    </ul>
+    </li>
+    <li>If there is the some values from restriction &quot;president of country has 
+    at least one value of type citizen.&quot;<ul>
+      <li>What value can president of a country have?&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 
+      Answer: &quot;president of a country has at least one value of type citizen.&quot;</li>
+    </ul>
+    </li>
+    <li>If there is the has value restriction &quot;color of snow always has value 
+    white.&quot;<ul>
+      <li>What value can color of snow have?&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 
+      Answer: &quot;color of snow always has value white.&quot;</li>
+    </ul>
+    </li>
+  </ul>
+  </li>
+  <li>How many values of &lt;prop&gt; can a &lt;class&gt; have?<ul>
+    <li>If there is the cardinality restriction &quot;wheel of bicycle has exactly 2 
+    values.&quot;<ul>
+      <li>How many values of wheel can a bicycle have?&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 
+      Answer: &quot;wheel of bicycle has exactly 2 values.&quot;</li>
+    </ul>
+    </li>
+  </ul>
+  </li>
+  <li>How many values of &lt;prop&gt; of type &lt;class&gt; can a &lt;class&gt; have?&nbsp;&nbsp;
+  <ul>
+    <li>If there is the qualified cardinality restriction &quot;digit of hand has 
+    exactly 1 value of type thumb.&quot;
+    <ul>
+      <li>How may values of digit of type thumb can a hand have?&nbsp;&nbsp;&nbsp; 
+      Answer: &quot;digit of hand has exactly 1 value of type thumb.&quot;</li>
+    </ul>
+    </li>
+  </ul>
+  </li>
+  <li>What value(s) must &lt;prop&gt; of a &lt;class&gt; have?
+  <ul>
+    <li>If there is the some values from restriction &quot;president of a country has 
+    at least one value of type citizen.&quot;
+    <ul>
+      <li>What value must president of a country have?&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 
+      Answer: &quot;president of a country has at least one value of type citizen.&quot;</li>
+    </ul>
+    </li>
+    <li>If there is the has value restriction &quot;color of snow always has value 
+    white.&quot;<ul>
+      <li>What value must color of snow have?&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 
+      Answer: &quot;color of snow always has value white.&quot;</li>
+    </ul>
+    </li>
+  </ul>
+  </li>
+</ol>
+<h2>Providing Information</h2>
+<ol>
+  <li>&lt;expr&gt;, e.g., &quot;Force depends on Mass, depends on Acceleration.&quot;&nbsp;&nbsp;&nbsp; 
+  Same expression as in SADL ontology.</li>
+</ol>
+<h2>Browsing</h2>
+<ol>
+  <li>This may be already available through the Eclipse EMF navigation 
+  capabilities. For Web-based?</li>
+  <li>Graph|graph|Construct|construct&nbsp; </li>
+</ol>
+<p>&nbsp;</p>
+
+</body>
+
+</html>

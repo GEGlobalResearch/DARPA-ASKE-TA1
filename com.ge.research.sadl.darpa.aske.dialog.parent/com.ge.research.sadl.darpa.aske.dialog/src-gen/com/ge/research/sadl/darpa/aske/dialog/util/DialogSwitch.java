@@ -76,12 +76,44 @@ public class DialogSwitch<T> extends Switch<T>
   {
     switch (classifierID)
     {
-      case DialogPackage.DIALOG_QUESTION:
+      case DialogPackage.WHAT_STATEMENT:
       {
-        DialogQuestion dialogQuestion = (DialogQuestion)theEObject;
-        T result = caseDialogQuestion(dialogQuestion);
-        if (result == null) result = caseExpressionScope(dialogQuestion);
-        if (result == null) result = caseSadlModelElement(dialogQuestion);
+        WhatStatement whatStatement = (WhatStatement)theEObject;
+        T result = caseWhatStatement(whatStatement);
+        if (result == null) result = caseSadlModelElement(whatStatement);
+        if (result == null) result = defaultCase(theEObject);
+        return result;
+      }
+      case DialogPackage.WHAT_IS_STATEMENT:
+      {
+        WhatIsStatement whatIsStatement = (WhatIsStatement)theEObject;
+        T result = caseWhatIsStatement(whatIsStatement);
+        if (result == null) result = defaultCase(theEObject);
+        return result;
+      }
+      case DialogPackage.WHAT_VALUES_STATEMENT:
+      {
+        WhatValuesStatement whatValuesStatement = (WhatValuesStatement)theEObject;
+        T result = caseWhatValuesStatement(whatValuesStatement);
+        if (result == null) result = caseWhatStatement(whatValuesStatement);
+        if (result == null) result = caseSadlModelElement(whatValuesStatement);
+        if (result == null) result = defaultCase(theEObject);
+        return result;
+      }
+      case DialogPackage.HOW_MANY_VALUES_STATEMENT:
+      {
+        HowManyValuesStatement howManyValuesStatement = (HowManyValuesStatement)theEObject;
+        T result = caseHowManyValuesStatement(howManyValuesStatement);
+        if (result == null) result = caseSadlModelElement(howManyValuesStatement);
+        if (result == null) result = defaultCase(theEObject);
+        return result;
+      }
+      case DialogPackage.MODIFIED_ASK_STATEMENT:
+      {
+        ModifiedAskStatement modifiedAskStatement = (ModifiedAskStatement)theEObject;
+        T result = caseModifiedAskStatement(modifiedAskStatement);
+        if (result == null) result = caseExpressionScope(modifiedAskStatement);
+        if (result == null) result = caseSadlModelElement(modifiedAskStatement);
         if (result == null) result = defaultCase(theEObject);
         return result;
       }
@@ -90,17 +122,81 @@ public class DialogSwitch<T> extends Switch<T>
   }
 
   /**
-   * Returns the result of interpreting the object as an instance of '<em>Question</em>'.
+   * Returns the result of interpreting the object as an instance of '<em>What Statement</em>'.
    * <!-- begin-user-doc -->
    * This implementation returns null;
    * returning a non-null result will terminate the switch.
    * <!-- end-user-doc -->
    * @param object the target of the switch.
-   * @return the result of interpreting the object as an instance of '<em>Question</em>'.
+   * @return the result of interpreting the object as an instance of '<em>What Statement</em>'.
    * @see #doSwitch(org.eclipse.emf.ecore.EObject) doSwitch(EObject)
    * @generated
    */
-  public T caseDialogQuestion(DialogQuestion object)
+  public T caseWhatStatement(WhatStatement object)
+  {
+    return null;
+  }
+
+  /**
+   * Returns the result of interpreting the object as an instance of '<em>What Is Statement</em>'.
+   * <!-- begin-user-doc -->
+   * This implementation returns null;
+   * returning a non-null result will terminate the switch.
+   * <!-- end-user-doc -->
+   * @param object the target of the switch.
+   * @return the result of interpreting the object as an instance of '<em>What Is Statement</em>'.
+   * @see #doSwitch(org.eclipse.emf.ecore.EObject) doSwitch(EObject)
+   * @generated
+   */
+  public T caseWhatIsStatement(WhatIsStatement object)
+  {
+    return null;
+  }
+
+  /**
+   * Returns the result of interpreting the object as an instance of '<em>What Values Statement</em>'.
+   * <!-- begin-user-doc -->
+   * This implementation returns null;
+   * returning a non-null result will terminate the switch.
+   * <!-- end-user-doc -->
+   * @param object the target of the switch.
+   * @return the result of interpreting the object as an instance of '<em>What Values Statement</em>'.
+   * @see #doSwitch(org.eclipse.emf.ecore.EObject) doSwitch(EObject)
+   * @generated
+   */
+  public T caseWhatValuesStatement(WhatValuesStatement object)
+  {
+    return null;
+  }
+
+  /**
+   * Returns the result of interpreting the object as an instance of '<em>How Many Values Statement</em>'.
+   * <!-- begin-user-doc -->
+   * This implementation returns null;
+   * returning a non-null result will terminate the switch.
+   * <!-- end-user-doc -->
+   * @param object the target of the switch.
+   * @return the result of interpreting the object as an instance of '<em>How Many Values Statement</em>'.
+   * @see #doSwitch(org.eclipse.emf.ecore.EObject) doSwitch(EObject)
+   * @generated
+   */
+  public T caseHowManyValuesStatement(HowManyValuesStatement object)
+  {
+    return null;
+  }
+
+  /**
+   * Returns the result of interpreting the object as an instance of '<em>Modified Ask Statement</em>'.
+   * <!-- begin-user-doc -->
+   * This implementation returns null;
+   * returning a non-null result will terminate the switch.
+   * <!-- end-user-doc -->
+   * @param object the target of the switch.
+   * @return the result of interpreting the object as an instance of '<em>Modified Ask Statement</em>'.
+   * @see #doSwitch(org.eclipse.emf.ecore.EObject) doSwitch(EObject)
+   * @generated
+   */
+  public T caseModifiedAskStatement(ModifiedAskStatement object)
   {
     return null;
   }

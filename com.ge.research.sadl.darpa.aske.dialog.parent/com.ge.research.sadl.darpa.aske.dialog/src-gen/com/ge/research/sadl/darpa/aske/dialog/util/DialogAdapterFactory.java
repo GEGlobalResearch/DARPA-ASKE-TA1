@@ -79,9 +79,29 @@ public class DialogAdapterFactory extends AdapterFactoryImpl
     new DialogSwitch<Adapter>()
     {
       @Override
-      public Adapter caseDialogQuestion(DialogQuestion object)
+      public Adapter caseWhatStatement(WhatStatement object)
       {
-        return createDialogQuestionAdapter();
+        return createWhatStatementAdapter();
+      }
+      @Override
+      public Adapter caseWhatIsStatement(WhatIsStatement object)
+      {
+        return createWhatIsStatementAdapter();
+      }
+      @Override
+      public Adapter caseWhatValuesStatement(WhatValuesStatement object)
+      {
+        return createWhatValuesStatementAdapter();
+      }
+      @Override
+      public Adapter caseHowManyValuesStatement(HowManyValuesStatement object)
+      {
+        return createHowManyValuesStatementAdapter();
+      }
+      @Override
+      public Adapter caseModifiedAskStatement(ModifiedAskStatement object)
+      {
+        return createModifiedAskStatementAdapter();
       }
       @Override
       public Adapter caseSadlModelElement(SadlModelElement object)
@@ -116,16 +136,76 @@ public class DialogAdapterFactory extends AdapterFactoryImpl
 
 
   /**
-   * Creates a new adapter for an object of class '{@link com.ge.research.sadl.darpa.aske.dialog.DialogQuestion <em>Question</em>}'.
+   * Creates a new adapter for an object of class '{@link com.ge.research.sadl.darpa.aske.dialog.WhatStatement <em>What Statement</em>}'.
    * <!-- begin-user-doc -->
    * This default implementation returns null so that we can easily ignore cases;
    * it's useful to ignore a case when inheritance will catch all the cases anyway.
    * <!-- end-user-doc -->
    * @return the new adapter.
-   * @see com.ge.research.sadl.darpa.aske.dialog.DialogQuestion
+   * @see com.ge.research.sadl.darpa.aske.dialog.WhatStatement
    * @generated
    */
-  public Adapter createDialogQuestionAdapter()
+  public Adapter createWhatStatementAdapter()
+  {
+    return null;
+  }
+
+  /**
+   * Creates a new adapter for an object of class '{@link com.ge.research.sadl.darpa.aske.dialog.WhatIsStatement <em>What Is Statement</em>}'.
+   * <!-- begin-user-doc -->
+   * This default implementation returns null so that we can easily ignore cases;
+   * it's useful to ignore a case when inheritance will catch all the cases anyway.
+   * <!-- end-user-doc -->
+   * @return the new adapter.
+   * @see com.ge.research.sadl.darpa.aske.dialog.WhatIsStatement
+   * @generated
+   */
+  public Adapter createWhatIsStatementAdapter()
+  {
+    return null;
+  }
+
+  /**
+   * Creates a new adapter for an object of class '{@link com.ge.research.sadl.darpa.aske.dialog.WhatValuesStatement <em>What Values Statement</em>}'.
+   * <!-- begin-user-doc -->
+   * This default implementation returns null so that we can easily ignore cases;
+   * it's useful to ignore a case when inheritance will catch all the cases anyway.
+   * <!-- end-user-doc -->
+   * @return the new adapter.
+   * @see com.ge.research.sadl.darpa.aske.dialog.WhatValuesStatement
+   * @generated
+   */
+  public Adapter createWhatValuesStatementAdapter()
+  {
+    return null;
+  }
+
+  /**
+   * Creates a new adapter for an object of class '{@link com.ge.research.sadl.darpa.aske.dialog.HowManyValuesStatement <em>How Many Values Statement</em>}'.
+   * <!-- begin-user-doc -->
+   * This default implementation returns null so that we can easily ignore cases;
+   * it's useful to ignore a case when inheritance will catch all the cases anyway.
+   * <!-- end-user-doc -->
+   * @return the new adapter.
+   * @see com.ge.research.sadl.darpa.aske.dialog.HowManyValuesStatement
+   * @generated
+   */
+  public Adapter createHowManyValuesStatementAdapter()
+  {
+    return null;
+  }
+
+  /**
+   * Creates a new adapter for an object of class '{@link com.ge.research.sadl.darpa.aske.dialog.ModifiedAskStatement <em>Modified Ask Statement</em>}'.
+   * <!-- begin-user-doc -->
+   * This default implementation returns null so that we can easily ignore cases;
+   * it's useful to ignore a case when inheritance will catch all the cases anyway.
+   * <!-- end-user-doc -->
+   * @return the new adapter.
+   * @see com.ge.research.sadl.darpa.aske.dialog.ModifiedAskStatement
+   * @generated
+   */
+  public Adapter createModifiedAskStatementAdapter()
   {
     return null;
   }

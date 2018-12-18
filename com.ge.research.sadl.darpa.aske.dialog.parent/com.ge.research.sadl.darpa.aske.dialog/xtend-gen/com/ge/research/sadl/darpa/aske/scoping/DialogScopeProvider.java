@@ -3,7 +3,15 @@
  */
 package com.ge.research.sadl.darpa.aske.scoping;
 
-import com.ge.research.sadl.darpa.aske.scoping.AbstractDialogScopeProvider;
+import com.ge.research.sadl.sADL.ExpressionScope;
+import com.ge.research.sadl.sADL.SadlModel;
+import com.ge.research.sadl.scoping.SADLScopeProvider;
+import org.eclipse.emf.ecore.EObject;
+import org.eclipse.emf.ecore.EReference;
+import org.eclipse.emf.ecore.resource.Resource;
+import org.eclipse.xtext.EcoreUtil2;
+import org.eclipse.xtext.scoping.IScope;
+import org.eclipse.xtext.xbase.lib.CollectionLiterals;
 
 /**
  * This class contains custom scoping description.
@@ -12,5 +20,16 @@ import com.ge.research.sadl.darpa.aske.scoping.AbstractDialogScopeProvider;
  * on how and when to use it.
  */
 @SuppressWarnings("all")
-public class DialogScopeProvider extends AbstractDialogScopeProvider {
+public class DialogScopeProvider extends SADLScopeProvider {
+  @Override
+  protected IScope getSadlResourceScope(final EObject obj, final EReference reference) {
+    final IScope parent = this.createResourceScope(obj.eResource(), null, CollectionLiterals.<Resource>newHashSet());
+    final ExpressionScope statement = EcoreUtil2.<ExpressionScope>getContainerOfType(obj, ExpressionScope.class);
+    if ((statement != null)) {
+      final SadlModel model = EcoreUtil2.<SadlModel>getContainerOfType(statement, SadlModel.class);
+      IScope newParent = parent;
+      return newParent;
+    }
+    return super.getSadlResourceScope(obj, reference);
+  }
 }

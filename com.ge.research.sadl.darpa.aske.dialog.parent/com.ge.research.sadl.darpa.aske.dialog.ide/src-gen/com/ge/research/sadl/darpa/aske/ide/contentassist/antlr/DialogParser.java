@@ -31,6 +31,15 @@ public class DialogParser extends AbstractContentAssistParser {
 		}
 		
 		private static void init(ImmutableMap.Builder<AbstractElement, String> builder, DialogGrammarAccess grammarAccess) {
+			builder.put(grammarAccess.getSadlModelElementAccess().getAlternatives(), "rule__SadlModelElement__Alternatives");
+			builder.put(grammarAccess.getModifiedAskStatementAccess().getAlternatives_1(), "rule__ModifiedAskStatement__Alternatives_1");
+			builder.put(grammarAccess.getModifiedAskStatementAccess().getExprAlternatives_2_0(), "rule__ModifiedAskStatement__ExprAlternatives_2_0");
+			builder.put(grammarAccess.getWhatStatementAccess().getAlternatives(), "rule__WhatStatement__Alternatives");
+			builder.put(grammarAccess.getWhatStatementAccess().getAlternatives_0_1(), "rule__WhatStatement__Alternatives_0_1");
+			builder.put(grammarAccess.getWhatValuesStatementAccess().getAlternatives_1(), "rule__WhatValuesStatement__Alternatives_1");
+			builder.put(grammarAccess.getWhatValuesStatementAccess().getTypAlternatives_2_0(), "rule__WhatValuesStatement__TypAlternatives_2_0");
+			builder.put(grammarAccess.getHowManyValuesStatementAccess().getAlternatives_1(), "rule__HowManyValuesStatement__Alternatives_1");
+			builder.put(grammarAccess.getEOSAccess().getAlternatives(), "rule__EOS__Alternatives");
 			builder.put(grammarAccess.getSadlAnnotationAccess().getTypeAlternatives_2_0(), "rule__SadlAnnotation__TypeAlternatives_2_0");
 			builder.put(grammarAccess.getSadlParameterDeclarationAccess().getAlternatives(), "rule__SadlParameterDeclaration__Alternatives");
 			builder.put(grammarAccess.getSadlReturnDeclarationAccess().getAlternatives(), "rule__SadlReturnDeclaration__Alternatives");
@@ -41,6 +50,7 @@ public class DialogParser extends AbstractContentAssistParser {
 			builder.put(grammarAccess.getSadlStatementAccess().getAlternatives_0_1_5_2(), "rule__SadlStatement__Alternatives_0_1_5_2");
 			builder.put(grammarAccess.getSadlStatementAccess().getAlternatives_1_6(), "rule__SadlStatement__Alternatives_1_6");
 			builder.put(grammarAccess.getSadlStatementAccess().getAlternatives_1_6_0_0(), "rule__SadlStatement__Alternatives_1_6_0_0");
+			builder.put(grammarAccess.getSadlStatementAccess().getAlternatives_1_6_0_0_1_0(), "rule__SadlStatement__Alternatives_1_6_0_0_1_0");
 			builder.put(grammarAccess.getSadlStatementAccess().getAlternatives_3_2(), "rule__SadlStatement__Alternatives_3_2");
 			builder.put(grammarAccess.getSadlPropertyInitializerAccess().getAlternatives(), "rule__SadlPropertyInitializer__Alternatives");
 			builder.put(grammarAccess.getSadlPropertyInitializerAccess().getAlternatives_0_1(), "rule__SadlPropertyInitializer__Alternatives_0_1");
@@ -115,8 +125,15 @@ public class DialogParser extends AbstractContentAssistParser {
 			builder.put(grammarAccess.getEXPONENTAccess().getAlternatives_1(), "rule__EXPONENT__Alternatives_1");
 			builder.put(grammarAccess.getQNAMEAccess().getAlternatives(), "rule__QNAME__Alternatives");
 			builder.put(grammarAccess.getSadlDataTypeAccess().getAlternatives(), "rule__SadlDataType__Alternatives");
-			builder.put(grammarAccess.getDialogStatementAccess().getGroup(), "rule__DialogStatement__Group__0");
-			builder.put(grammarAccess.getDialogQuestionAccess().getGroup(), "rule__DialogQuestion__Group__0");
+			builder.put(grammarAccess.getSadlModelElementAccess().getGroup_0(), "rule__SadlModelElement__Group_0__0");
+			builder.put(grammarAccess.getSadlModelElementAccess().getGroup_1(), "rule__SadlModelElement__Group_1__0");
+			builder.put(grammarAccess.getSadlModelElementAccess().getGroup_2(), "rule__SadlModelElement__Group_2__0");
+			builder.put(grammarAccess.getModifiedAskStatementAccess().getGroup(), "rule__ModifiedAskStatement__Group__0");
+			builder.put(grammarAccess.getWhatStatementAccess().getGroup_0(), "rule__WhatStatement__Group_0__0");
+			builder.put(grammarAccess.getWhatIsStatementAccess().getGroup(), "rule__WhatIsStatement__Group__0");
+			builder.put(grammarAccess.getWhatValuesStatementAccess().getGroup(), "rule__WhatValuesStatement__Group__0");
+			builder.put(grammarAccess.getHowManyValuesStatementAccess().getGroup(), "rule__HowManyValuesStatement__Group__0");
+			builder.put(grammarAccess.getHowManyValuesStatementAccess().getGroup_6(), "rule__HowManyValuesStatement__Group_6__0");
 			builder.put(grammarAccess.getSadlModelAccess().getGroup(), "rule__SadlModel__Group__0");
 			builder.put(grammarAccess.getSadlModelAccess().getGroup_2(), "rule__SadlModel__Group_2__0");
 			builder.put(grammarAccess.getSadlModelAccess().getGroup_3(), "rule__SadlModel__Group_3__0");
@@ -156,7 +173,6 @@ public class DialogParser extends AbstractContentAssistParser {
 			builder.put(grammarAccess.getSadlStatementAccess().getGroup_1_6_0(), "rule__SadlStatement__Group_1_6_0__0");
 			builder.put(grammarAccess.getSadlStatementAccess().getGroup_1_6_0_0_0(), "rule__SadlStatement__Group_1_6_0_0_0__0");
 			builder.put(grammarAccess.getSadlStatementAccess().getGroup_1_6_0_0_1(), "rule__SadlStatement__Group_1_6_0_0_1__0");
-			builder.put(grammarAccess.getSadlStatementAccess().getGroup_1_6_0_0_2(), "rule__SadlStatement__Group_1_6_0_0_2__0");
 			builder.put(grammarAccess.getSadlStatementAccess().getGroup_1_6_1(), "rule__SadlStatement__Group_1_6_1__0");
 			builder.put(grammarAccess.getSadlStatementAccess().getGroup_1_6_2(), "rule__SadlStatement__Group_1_6_2__0");
 			builder.put(grammarAccess.getSadlStatementAccess().getGroup_2(), "rule__SadlStatement__Group_2__0");
@@ -312,8 +328,18 @@ public class DialogParser extends AbstractContentAssistParser {
 			builder.put(grammarAccess.getValueRowAccess().getGroup_1(), "rule__ValueRow__Group_1__0");
 			builder.put(grammarAccess.getAnyNumberAccess().getGroup(), "rule__AnyNumber__Group__0");
 			builder.put(grammarAccess.getEXPONENTAccess().getGroup(), "rule__EXPONENT__Group__0");
-			builder.put(grammarAccess.getDialogQuestionAccess().getArticleAssignment_2(), "rule__DialogQuestion__ArticleAssignment_2");
-			builder.put(grammarAccess.getDialogQuestionAccess().getTargetAssignment_3(), "rule__DialogQuestion__TargetAssignment_3");
+			builder.put(grammarAccess.getModifiedAskStatementAccess().getExprAssignment_2(), "rule__ModifiedAskStatement__ExprAssignment_2");
+			builder.put(grammarAccess.getWhatStatementAccess().getStmtAssignment_0_2(), "rule__WhatStatement__StmtAssignment_0_2");
+			builder.put(grammarAccess.getWhatIsStatementAccess().getArticleAssignment_2(), "rule__WhatIsStatement__ArticleAssignment_2");
+			builder.put(grammarAccess.getWhatIsStatementAccess().getTargetAssignment_3(), "rule__WhatIsStatement__TargetAssignment_3");
+			builder.put(grammarAccess.getWhatValuesStatementAccess().getTypAssignment_2(), "rule__WhatValuesStatement__TypAssignment_2");
+			builder.put(grammarAccess.getWhatValuesStatementAccess().getPropAssignment_3(), "rule__WhatValuesStatement__PropAssignment_3");
+			builder.put(grammarAccess.getWhatValuesStatementAccess().getArticleAssignment_5(), "rule__WhatValuesStatement__ArticleAssignment_5");
+			builder.put(grammarAccess.getWhatValuesStatementAccess().getClsAssignment_6(), "rule__WhatValuesStatement__ClsAssignment_6");
+			builder.put(grammarAccess.getHowManyValuesStatementAccess().getPropAssignment_5(), "rule__HowManyValuesStatement__PropAssignment_5");
+			builder.put(grammarAccess.getHowManyValuesStatementAccess().getTypAssignment_6_2(), "rule__HowManyValuesStatement__TypAssignment_6_2");
+			builder.put(grammarAccess.getHowManyValuesStatementAccess().getArticleAssignment_8(), "rule__HowManyValuesStatement__ArticleAssignment_8");
+			builder.put(grammarAccess.getHowManyValuesStatementAccess().getClsAssignment_9(), "rule__HowManyValuesStatement__ClsAssignment_9");
 			builder.put(grammarAccess.getSadlModelAccess().getBaseUriAssignment_1(), "rule__SadlModel__BaseUriAssignment_1");
 			builder.put(grammarAccess.getSadlModelAccess().getAliasAssignment_2_1(), "rule__SadlModel__AliasAssignment_2_1");
 			builder.put(grammarAccess.getSadlModelAccess().getVersionAssignment_3_1(), "rule__SadlModel__VersionAssignment_3_1");
@@ -359,7 +385,9 @@ public class DialogParser extends AbstractContentAssistParser {
 			builder.put(grammarAccess.getSadlStatementAccess().getClassesAssignment_0_1_6_1_1(), "rule__SadlStatement__ClassesAssignment_0_1_6_1_1");
 			builder.put(grammarAccess.getSadlStatementAccess().getClassOrPropertyAssignment_1_2(), "rule__SadlStatement__ClassOrPropertyAssignment_1_2");
 			builder.put(grammarAccess.getSadlStatementAccess().getClassOrPropertyAssignment_1_3_1(), "rule__SadlStatement__ClassOrPropertyAssignment_1_3_1");
-			builder.put(grammarAccess.getSadlStatementAccess().getSuperElementAssignment_1_6_0_0_2_2(), "rule__SadlStatement__SuperElementAssignment_1_6_0_0_2_2");
+			builder.put(grammarAccess.getSadlStatementAccess().getOftypeAssignment_1_6_0_0_1_0_0(), "rule__SadlStatement__OftypeAssignment_1_6_0_0_1_0_0");
+			builder.put(grammarAccess.getSadlStatementAccess().getOftypeAssignment_1_6_0_0_1_0_1(), "rule__SadlStatement__OftypeAssignment_1_6_0_0_1_0_1");
+			builder.put(grammarAccess.getSadlStatementAccess().getSuperElementAssignment_1_6_0_0_1_2(), "rule__SadlStatement__SuperElementAssignment_1_6_0_0_1_2");
 			builder.put(grammarAccess.getSadlStatementAccess().getDescribedByAssignment_1_6_0_1(), "rule__SadlStatement__DescribedByAssignment_1_6_0_1");
 			builder.put(grammarAccess.getSadlStatementAccess().getComplementAssignment_1_6_2_1(), "rule__SadlStatement__ComplementAssignment_1_6_2_1");
 			builder.put(grammarAccess.getSadlStatementAccess().getFromAssignment_2_4(), "rule__SadlStatement__FromAssignment_2_4");

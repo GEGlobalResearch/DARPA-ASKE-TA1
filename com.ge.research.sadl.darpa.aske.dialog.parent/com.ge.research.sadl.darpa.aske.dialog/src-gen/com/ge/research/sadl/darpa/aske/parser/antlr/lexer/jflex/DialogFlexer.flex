@@ -205,8 +205,10 @@ ESCAPE_SEQUENCE=\\{ANY_OTHER}
 <YYINITIAL> "does" { return Does; }
 <YYINITIAL> "from" { return From; }
 <YYINITIAL> "gDay" { return GDay; }
+<YYINITIAL> "have" { return Have; }
 <YYINITIAL> "last" { return Last; }
 <YYINITIAL> "long" { return Long; }
+<YYINITIAL> "many" { return Many; }
 <YYINITIAL> "most" { return Most; }
 <YYINITIAL> "must" { return Must; }
 <YYINITIAL> "note" { return Note; }
@@ -217,9 +219,11 @@ ESCAPE_SEQUENCE=\\{ANY_OTHER}
 <YYINITIAL> "time" { return Time; }
 <YYINITIAL> "true" { return True; }
 <YYINITIAL> "type" { return Type; }
+<YYINITIAL> "what" { return What_1; }
 <YYINITIAL> "with" { return With; }
 <YYINITIAL> "..." { return FullStopFullStopFullStop; }
 <YYINITIAL> "Ask" { return Ask; }
+<YYINITIAL> "How" { return How; }
 <YYINITIAL> "The" { return The; }
 <YYINITIAL> "and" { return And; }
 <YYINITIAL> "any" { return Any; }
@@ -229,6 +233,7 @@ ESCAPE_SEQUENCE=\\{ANY_OTHER}
 <YYINITIAL> "can" { return Can; }
 <YYINITIAL> "for" { return For; }
 <YYINITIAL> "has" { return Has; }
+<YYINITIAL> "how" { return How_1; }
 <YYINITIAL> "int" { return Int; }
 <YYINITIAL> "not" { return Not; }
 <YYINITIAL> "one" { return One; }

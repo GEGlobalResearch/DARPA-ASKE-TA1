@@ -233,9 +233,13 @@ From : 'from';
 
 GDay : 'gDay';
 
+Have : 'have';
+
 Last : 'last';
 
 Long : 'long';
+
+Many : 'many';
 
 Most : 'most';
 
@@ -257,11 +261,15 @@ True : 'true';
 
 Type : 'type';
 
+What_1 : 'what';
+
 With : 'with';
 
 FullStopFullStopFullStop : '...';
 
 Ask : 'Ask';
+
+How : 'How';
 
 The : 'The';
 
@@ -280,6 +288,8 @@ Can : 'can';
 For : 'for';
 
 Has : 'has';
+
+How_1 : 'how';
 
 Int : 'int';
 

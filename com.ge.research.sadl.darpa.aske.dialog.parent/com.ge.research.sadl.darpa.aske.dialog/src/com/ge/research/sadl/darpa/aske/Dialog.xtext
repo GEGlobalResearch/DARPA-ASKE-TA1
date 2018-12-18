@@ -17,16 +17,34 @@ DialogModel returns sadl::SadlModel :
 
 @Override
 SadlModelElement returns sadl::SadlModelElement :
-//		super::SadlModelElement
-//		super::EquationStatement EOS |
-//		super::ExternalEquationStatement EOS |
-		DialogStatement 
+	ModifiedAskStatement EOS	|
+	WhatStatement EOS			|
+//	WhatValuesStatement EOS	|
+	HowManyValuesStatement EOS
 ;
 
-DialogStatement returns sadl::ExpressionScope:
-	DialogQuestion EOS
+ModifiedAskStatement returns sadl::ExpressionScope:
+	{ModifiedAskStatement} ('Ask' | 'ask') expr=(ConstructExpression | AskExpression | Expression)
 ;
 
-DialogQuestion:
-	'What' 'is' article=AnArticle?  target=SadlTypeReference '?'
+WhatStatement:
+	{WhatStatement} ('What'|'what') stmt=WhatIsStatement
+	| WhatValuesStatement
+;
+WhatIsStatement:
+	{WhatIsStatement} 'is' article=AnArticle?  target=SadlResource
+;
+
+WhatValuesStatement:
+	{WhatValuesStatement} ('value'|'values') typ=('can'|'must') prop=SadlResource 'of' article=AnArticle? cls=SadlPrimaryTypeReference 'have'
+;
+
+HowManyValuesStatement:
+	{HowManyValuesStatement} ('How'|'how') 'many' 'values' 'of' prop=SadlResource ('of' 'type' typ=SadlPrimaryTypeReference)? 'can' article=AnArticle? cls=SadlPrimaryTypeReference 'have'
+;
+
+@Override
+EOS:
+	super |
+	'?'
 ;

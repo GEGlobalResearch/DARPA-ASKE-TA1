@@ -24,13 +24,49 @@ public interface DialogFactory extends EFactory
   DialogFactory eINSTANCE = com.ge.research.sadl.darpa.aske.dialog.impl.DialogFactoryImpl.init();
 
   /**
-   * Returns a new object of class '<em>Question</em>'.
+   * Returns a new object of class '<em>What Statement</em>'.
    * <!-- begin-user-doc -->
    * <!-- end-user-doc -->
-   * @return a new object of class '<em>Question</em>'.
+   * @return a new object of class '<em>What Statement</em>'.
    * @generated
    */
-  DialogQuestion createDialogQuestion();
+  WhatStatement createWhatStatement();
+
+  /**
+   * Returns a new object of class '<em>What Is Statement</em>'.
+   * <!-- begin-user-doc -->
+   * <!-- end-user-doc -->
+   * @return a new object of class '<em>What Is Statement</em>'.
+   * @generated
+   */
+  WhatIsStatement createWhatIsStatement();
+
+  /**
+   * Returns a new object of class '<em>What Values Statement</em>'.
+   * <!-- begin-user-doc -->
+   * <!-- end-user-doc -->
+   * @return a new object of class '<em>What Values Statement</em>'.
+   * @generated
+   */
+  WhatValuesStatement createWhatValuesStatement();
+
+  /**
+   * Returns a new object of class '<em>How Many Values Statement</em>'.
+   * <!-- begin-user-doc -->
+   * <!-- end-user-doc -->
+   * @return a new object of class '<em>How Many Values Statement</em>'.
+   * @generated
+   */
+  HowManyValuesStatement createHowManyValuesStatement();
+
+  /**
+   * Returns a new object of class '<em>Modified Ask Statement</em>'.
+   * <!-- begin-user-doc -->
+   * <!-- end-user-doc -->
+   * @return a new object of class '<em>Modified Ask Statement</em>'.
+   * @generated
+   */
+  ModifiedAskStatement createModifiedAskStatement();
 
   /**
    * Returns the package supported by this factory.

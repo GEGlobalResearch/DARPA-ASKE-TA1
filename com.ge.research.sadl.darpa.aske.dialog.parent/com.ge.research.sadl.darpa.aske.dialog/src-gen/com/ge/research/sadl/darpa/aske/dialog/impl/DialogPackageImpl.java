@@ -5,7 +5,11 @@ package com.ge.research.sadl.darpa.aske.dialog.impl;
 
 import com.ge.research.sadl.darpa.aske.dialog.DialogFactory;
 import com.ge.research.sadl.darpa.aske.dialog.DialogPackage;
-import com.ge.research.sadl.darpa.aske.dialog.DialogQuestion;
+import com.ge.research.sadl.darpa.aske.dialog.HowManyValuesStatement;
+import com.ge.research.sadl.darpa.aske.dialog.ModifiedAskStatement;
+import com.ge.research.sadl.darpa.aske.dialog.WhatIsStatement;
+import com.ge.research.sadl.darpa.aske.dialog.WhatStatement;
+import com.ge.research.sadl.darpa.aske.dialog.WhatValuesStatement;
 
 import com.ge.research.sadl.sADL.SADLPackage;
 
@@ -29,7 +33,35 @@ public class DialogPackageImpl extends EPackageImpl implements DialogPackage
    * <!-- end-user-doc -->
    * @generated
    */
-  private EClass dialogQuestionEClass = null;
+  private EClass whatStatementEClass = null;
+
+  /**
+   * <!-- begin-user-doc -->
+   * <!-- end-user-doc -->
+   * @generated
+   */
+  private EClass whatIsStatementEClass = null;
+
+  /**
+   * <!-- begin-user-doc -->
+   * <!-- end-user-doc -->
+   * @generated
+   */
+  private EClass whatValuesStatementEClass = null;
+
+  /**
+   * <!-- begin-user-doc -->
+   * <!-- end-user-doc -->
+   * @generated
+   */
+  private EClass howManyValuesStatementEClass = null;
+
+  /**
+   * <!-- begin-user-doc -->
+   * <!-- end-user-doc -->
+   * @generated
+   */
+  private EClass modifiedAskStatementEClass = null;
 
   /**
    * Creates an instance of the model <b>Package</b>, registered with
@@ -102,9 +134,9 @@ public class DialogPackageImpl extends EPackageImpl implements DialogPackage
    * <!-- end-user-doc -->
    * @generated
    */
-  public EClass getDialogQuestion()
+  public EClass getWhatStatement()
   {
-    return dialogQuestionEClass;
+    return whatStatementEClass;
   }
 
   /**
@@ -112,9 +144,9 @@ public class DialogPackageImpl extends EPackageImpl implements DialogPackage
    * <!-- end-user-doc -->
    * @generated
    */
-  public EAttribute getDialogQuestion_Article()
+  public EReference getWhatStatement_Stmt()
   {
-    return (EAttribute)dialogQuestionEClass.getEStructuralFeatures().get(0);
+    return (EReference)whatStatementEClass.getEStructuralFeatures().get(0);
   }
 
   /**
@@ -122,9 +154,149 @@ public class DialogPackageImpl extends EPackageImpl implements DialogPackage
    * <!-- end-user-doc -->
    * @generated
    */
-  public EReference getDialogQuestion_Target()
+  public EClass getWhatIsStatement()
   {
-    return (EReference)dialogQuestionEClass.getEStructuralFeatures().get(1);
+    return whatIsStatementEClass;
+  }
+
+  /**
+   * <!-- begin-user-doc -->
+   * <!-- end-user-doc -->
+   * @generated
+   */
+  public EAttribute getWhatIsStatement_Article()
+  {
+    return (EAttribute)whatIsStatementEClass.getEStructuralFeatures().get(0);
+  }
+
+  /**
+   * <!-- begin-user-doc -->
+   * <!-- end-user-doc -->
+   * @generated
+   */
+  public EReference getWhatIsStatement_Target()
+  {
+    return (EReference)whatIsStatementEClass.getEStructuralFeatures().get(1);
+  }
+
+  /**
+   * <!-- begin-user-doc -->
+   * <!-- end-user-doc -->
+   * @generated
+   */
+  public EClass getWhatValuesStatement()
+  {
+    return whatValuesStatementEClass;
+  }
+
+  /**
+   * <!-- begin-user-doc -->
+   * <!-- end-user-doc -->
+   * @generated
+   */
+  public EAttribute getWhatValuesStatement_Typ()
+  {
+    return (EAttribute)whatValuesStatementEClass.getEStructuralFeatures().get(0);
+  }
+
+  /**
+   * <!-- begin-user-doc -->
+   * <!-- end-user-doc -->
+   * @generated
+   */
+  public EReference getWhatValuesStatement_Prop()
+  {
+    return (EReference)whatValuesStatementEClass.getEStructuralFeatures().get(1);
+  }
+
+  /**
+   * <!-- begin-user-doc -->
+   * <!-- end-user-doc -->
+   * @generated
+   */
+  public EAttribute getWhatValuesStatement_Article()
+  {
+    return (EAttribute)whatValuesStatementEClass.getEStructuralFeatures().get(2);
+  }
+
+  /**
+   * <!-- begin-user-doc -->
+   * <!-- end-user-doc -->
+   * @generated
+   */
+  public EReference getWhatValuesStatement_Cls()
+  {
+    return (EReference)whatValuesStatementEClass.getEStructuralFeatures().get(3);
+  }
+
+  /**
+   * <!-- begin-user-doc -->
+   * <!-- end-user-doc -->
+   * @generated
+   */
+  public EClass getHowManyValuesStatement()
+  {
+    return howManyValuesStatementEClass;
+  }
+
+  /**
+   * <!-- begin-user-doc -->
+   * <!-- end-user-doc -->
+   * @generated
+   */
+  public EReference getHowManyValuesStatement_Prop()
+  {
+    return (EReference)howManyValuesStatementEClass.getEStructuralFeatures().get(0);
+  }
+
+  /**
+   * <!-- begin-user-doc -->
+   * <!-- end-user-doc -->
+   * @generated
+   */
+  public EReference getHowManyValuesStatement_Typ()
+  {
+    return (EReference)howManyValuesStatementEClass.getEStructuralFeatures().get(1);
+  }
+
+  /**
+   * <!-- begin-user-doc -->
+   * <!-- end-user-doc -->
+   * @generated
+   */
+  public EAttribute getHowManyValuesStatement_Article()
+  {
+    return (EAttribute)howManyValuesStatementEClass.getEStructuralFeatures().get(2);
+  }
+
+  /**
+   * <!-- begin-user-doc -->
+   * <!-- end-user-doc -->
+   * @generated
+   */
+  public EReference getHowManyValuesStatement_Cls()
+  {
+    return (EReference)howManyValuesStatementEClass.getEStructuralFeatures().get(3);
+  }
+
+  /**
+   * <!-- begin-user-doc -->
+   * <!-- end-user-doc -->
+   * @generated
+   */
+  public EClass getModifiedAskStatement()
+  {
+    return modifiedAskStatementEClass;
+  }
+
+  /**
+   * <!-- begin-user-doc -->
+   * <!-- end-user-doc -->
+   * @generated
+   */
+  public EReference getModifiedAskStatement_Expr()
+  {
+    return (EReference)modifiedAskStatementEClass.getEStructuralFeatures().get(0);
   }
 
   /**
@@ -157,9 +329,27 @@ public class DialogPackageImpl extends EPackageImpl implements DialogPackage
     isCreated = true;
 
     // Create classes and their features
-    dialogQuestionEClass = createEClass(DIALOG_QUESTION);
-    createEAttribute(dialogQuestionEClass, DIALOG_QUESTION__ARTICLE);
-    createEReference(dialogQuestionEClass, DIALOG_QUESTION__TARGET);
+    whatStatementEClass = createEClass(WHAT_STATEMENT);
+    createEReference(whatStatementEClass, WHAT_STATEMENT__STMT);
+
+    whatIsStatementEClass = createEClass(WHAT_IS_STATEMENT);
+    createEAttribute(whatIsStatementEClass, WHAT_IS_STATEMENT__ARTICLE);
+    createEReference(whatIsStatementEClass, WHAT_IS_STATEMENT__TARGET);
+
+    whatValuesStatementEClass = createEClass(WHAT_VALUES_STATEMENT);
+    createEAttribute(whatValuesStatementEClass, WHAT_VALUES_STATEMENT__TYP);
+    createEReference(whatValuesStatementEClass, WHAT_VALUES_STATEMENT__PROP);
+    createEAttribute(whatValuesStatementEClass, WHAT_VALUES_STATEMENT__ARTICLE);
+    createEReference(whatValuesStatementEClass, WHAT_VALUES_STATEMENT__CLS);
+
+    howManyValuesStatementEClass = createEClass(HOW_MANY_VALUES_STATEMENT);
+    createEReference(howManyValuesStatementEClass, HOW_MANY_VALUES_STATEMENT__PROP);
+    createEReference(howManyValuesStatementEClass, HOW_MANY_VALUES_STATEMENT__TYP);
+    createEAttribute(howManyValuesStatementEClass, HOW_MANY_VALUES_STATEMENT__ARTICLE);
+    createEReference(howManyValuesStatementEClass, HOW_MANY_VALUES_STATEMENT__CLS);
+
+    modifiedAskStatementEClass = createEClass(MODIFIED_ASK_STATEMENT);
+    createEReference(modifiedAskStatementEClass, MODIFIED_ASK_STATEMENT__EXPR);
   }
 
   /**
@@ -194,12 +384,33 @@ public class DialogPackageImpl extends EPackageImpl implements DialogPackage
     // Set bounds for type parameters
 
     // Add supertypes to classes
-    dialogQuestionEClass.getESuperTypes().add(theSADLPackage.getExpressionScope());
+    whatStatementEClass.getESuperTypes().add(theSADLPackage.getSadlModelElement());
+    whatValuesStatementEClass.getESuperTypes().add(this.getWhatStatement());
+    howManyValuesStatementEClass.getESuperTypes().add(theSADLPackage.getSadlModelElement());
+    modifiedAskStatementEClass.getESuperTypes().add(theSADLPackage.getExpressionScope());
 
     // Initialize classes and features; add operations and parameters
-    initEClass(dialogQuestionEClass, DialogQuestion.class, "DialogQuestion", !IS_ABSTRACT, !IS_INTERFACE, IS_GENERATED_INSTANCE_CLASS);
-    initEAttribute(getDialogQuestion_Article(), ecorePackage.getEString(), "article", null, 0, 1, DialogQuestion.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_UNSETTABLE, !IS_ID, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
-    initEReference(getDialogQuestion_Target(), theSADLPackage.getSadlTypeReference(), null, "target", null, 0, 1, DialogQuestion.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, IS_COMPOSITE, !IS_RESOLVE_PROXIES, !IS_UNSETTABLE, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
+    initEClass(whatStatementEClass, WhatStatement.class, "WhatStatement", !IS_ABSTRACT, !IS_INTERFACE, IS_GENERATED_INSTANCE_CLASS);
+    initEReference(getWhatStatement_Stmt(), this.getWhatIsStatement(), null, "stmt", null, 0, 1, WhatStatement.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, IS_COMPOSITE, !IS_RESOLVE_PROXIES, !IS_UNSETTABLE, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
+
+    initEClass(whatIsStatementEClass, WhatIsStatement.class, "WhatIsStatement", !IS_ABSTRACT, !IS_INTERFACE, IS_GENERATED_INSTANCE_CLASS);
+    initEAttribute(getWhatIsStatement_Article(), ecorePackage.getEString(), "article", null, 0, 1, WhatIsStatement.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_UNSETTABLE, !IS_ID, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
+    initEReference(getWhatIsStatement_Target(), theSADLPackage.getSadlResource(), null, "target", null, 0, 1, WhatIsStatement.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, IS_COMPOSITE, !IS_RESOLVE_PROXIES, !IS_UNSETTABLE, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
+
+    initEClass(whatValuesStatementEClass, WhatValuesStatement.class, "WhatValuesStatement", !IS_ABSTRACT, !IS_INTERFACE, IS_GENERATED_INSTANCE_CLASS);
+    initEAttribute(getWhatValuesStatement_Typ(), ecorePackage.getEString(), "typ", null, 0, 1, WhatValuesStatement.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_UNSETTABLE, !IS_ID, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
+    initEReference(getWhatValuesStatement_Prop(), theSADLPackage.getSadlResource(), null, "prop", null, 0, 1, WhatValuesStatement.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, IS_COMPOSITE, !IS_RESOLVE_PROXIES, !IS_UNSETTABLE, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
+    initEAttribute(getWhatValuesStatement_Article(), ecorePackage.getEString(), "article", null, 0, 1, WhatValuesStatement.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_UNSETTABLE, !IS_ID, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
+    initEReference(getWhatValuesStatement_Cls(), theSADLPackage.getSadlTypeReference(), null, "cls", null, 0, 1, WhatValuesStatement.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, IS_COMPOSITE, !IS_RESOLVE_PROXIES, !IS_UNSETTABLE, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
+
+    initEClass(howManyValuesStatementEClass, HowManyValuesStatement.class, "HowManyValuesStatement", !IS_ABSTRACT, !IS_INTERFACE, IS_GENERATED_INSTANCE_CLASS);
+    initEReference(getHowManyValuesStatement_Prop(), theSADLPackage.getSadlResource(), null, "prop", null, 0, 1, HowManyValuesStatement.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, IS_COMPOSITE, !IS_RESOLVE_PROXIES, !IS_UNSETTABLE, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
+    initEReference(getHowManyValuesStatement_Typ(), theSADLPackage.getSadlTypeReference(), null, "typ", null, 0, 1, HowManyValuesStatement.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, IS_COMPOSITE, !IS_RESOLVE_PROXIES, !IS_UNSETTABLE, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
+    initEAttribute(getHowManyValuesStatement_Article(), ecorePackage.getEString(), "article", null, 0, 1, HowManyValuesStatement.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_UNSETTABLE, !IS_ID, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
+    initEReference(getHowManyValuesStatement_Cls(), theSADLPackage.getSadlTypeReference(), null, "cls", null, 0, 1, HowManyValuesStatement.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, IS_COMPOSITE, !IS_RESOLVE_PROXIES, !IS_UNSETTABLE, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
+
+    initEClass(modifiedAskStatementEClass, ModifiedAskStatement.class, "ModifiedAskStatement", !IS_ABSTRACT, !IS_INTERFACE, IS_GENERATED_INSTANCE_CLASS);
+    initEReference(getModifiedAskStatement_Expr(), theSADLPackage.getExpression(), null, "expr", null, 0, 1, ModifiedAskStatement.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, IS_COMPOSITE, !IS_RESOLVE_PROXIES, !IS_UNSETTABLE, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
 
     // Create resource
     createResource(eNS_URI);

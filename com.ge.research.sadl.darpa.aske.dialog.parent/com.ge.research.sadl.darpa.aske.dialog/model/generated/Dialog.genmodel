@@ -6,9 +6,27 @@
     complianceLevel="6.0" copyrightFields="false" runtimeVersion="2.12" usedGenPackages="platform:/resource/com.ge.research.sadl/model/generated/SADL.genmodel#//sADL">
   <genPackages prefix="Dialog" basePackage="com.ge.research.sadl.darpa.aske" disposableProviderFactory="true"
       fileExtensions="dialog" ecorePackage="Dialog.ecore#/">
-    <genClasses ecoreClass="Dialog.ecore#//DialogQuestion">
-      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute Dialog.ecore#//DialogQuestion/article"/>
-      <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference Dialog.ecore#//DialogQuestion/target"/>
+    <genClasses ecoreClass="Dialog.ecore#//WhatStatement">
+      <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference Dialog.ecore#//WhatStatement/stmt"/>
+    </genClasses>
+    <genClasses ecoreClass="Dialog.ecore#//WhatIsStatement">
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute Dialog.ecore#//WhatIsStatement/article"/>
+      <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference Dialog.ecore#//WhatIsStatement/target"/>
+    </genClasses>
+    <genClasses ecoreClass="Dialog.ecore#//WhatValuesStatement">
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute Dialog.ecore#//WhatValuesStatement/typ"/>
+      <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference Dialog.ecore#//WhatValuesStatement/prop"/>
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute Dialog.ecore#//WhatValuesStatement/article"/>
+      <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference Dialog.ecore#//WhatValuesStatement/cls"/>
+    </genClasses>
+    <genClasses ecoreClass="Dialog.ecore#//HowManyValuesStatement">
+      <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference Dialog.ecore#//HowManyValuesStatement/prop"/>
+      <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference Dialog.ecore#//HowManyValuesStatement/typ"/>
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute Dialog.ecore#//HowManyValuesStatement/article"/>
+      <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference Dialog.ecore#//HowManyValuesStatement/cls"/>
+    </genClasses>
+    <genClasses ecoreClass="Dialog.ecore#//ModifiedAskStatement">
+      <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference Dialog.ecore#//ModifiedAskStatement/expr"/>
     </genClasses>
   </genPackages>
 </genmodel:GenModel>

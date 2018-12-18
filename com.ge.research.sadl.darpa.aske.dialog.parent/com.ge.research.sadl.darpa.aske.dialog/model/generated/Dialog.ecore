@@ -2,9 +2,34 @@
 <ecore:EPackage xmi:version="2.0" xmlns:xmi="http://www.omg.org/XMI" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
     xmlns:ecore="http://www.eclipse.org/emf/2002/Ecore" name="dialog" nsURI="http://www.ge.com/research/sadl/darpa/aske/Dialog"
     nsPrefix="dialog">
-  <eClassifiers xsi:type="ecore:EClass" name="DialogQuestion" eSuperTypes="platform:/resource/com.ge.research.sadl/model/generated/SADL.ecore#//ExpressionScope">
+  <eClassifiers xsi:type="ecore:EClass" name="WhatStatement" eSuperTypes="platform:/resource/com.ge.research.sadl/model/generated/SADL.ecore#//SadlModelElement">
+    <eStructuralFeatures xsi:type="ecore:EReference" name="stmt" eType="#//WhatIsStatement"
+        containment="true"/>
+  </eClassifiers>
+  <eClassifiers xsi:type="ecore:EClass" name="WhatIsStatement">
     <eStructuralFeatures xsi:type="ecore:EAttribute" name="article" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EString"/>
-    <eStructuralFeatures xsi:type="ecore:EReference" name="target" eType="ecore:EClass platform:/resource/com.ge.research.sadl/model/generated/SADL.ecore#//SadlTypeReference"
+    <eStructuralFeatures xsi:type="ecore:EReference" name="target" eType="ecore:EClass platform:/resource/com.ge.research.sadl/model/generated/SADL.ecore#//SadlResource"
+        containment="true"/>
+  </eClassifiers>
+  <eClassifiers xsi:type="ecore:EClass" name="WhatValuesStatement" eSuperTypes="#//WhatStatement">
+    <eStructuralFeatures xsi:type="ecore:EAttribute" name="typ" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EString"/>
+    <eStructuralFeatures xsi:type="ecore:EReference" name="prop" eType="ecore:EClass platform:/resource/com.ge.research.sadl/model/generated/SADL.ecore#//SadlResource"
+        containment="true"/>
+    <eStructuralFeatures xsi:type="ecore:EAttribute" name="article" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EString"/>
+    <eStructuralFeatures xsi:type="ecore:EReference" name="cls" eType="ecore:EClass platform:/resource/com.ge.research.sadl/model/generated/SADL.ecore#//SadlTypeReference"
+        containment="true"/>
+  </eClassifiers>
+  <eClassifiers xsi:type="ecore:EClass" name="HowManyValuesStatement" eSuperTypes="platform:/resource/com.ge.research.sadl/model/generated/SADL.ecore#//SadlModelElement">
+    <eStructuralFeatures xsi:type="ecore:EReference" name="prop" eType="ecore:EClass platform:/resource/com.ge.research.sadl/model/generated/SADL.ecore#//SadlResource"
+        containment="true"/>
+    <eStructuralFeatures xsi:type="ecore:EReference" name="typ" eType="ecore:EClass platform:/resource/com.ge.research.sadl/model/generated/SADL.ecore#//SadlTypeReference"
+        containment="true"/>
+    <eStructuralFeatures xsi:type="ecore:EAttribute" name="article" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EString"/>
+    <eStructuralFeatures xsi:type="ecore:EReference" name="cls" eType="ecore:EClass platform:/resource/com.ge.research.sadl/model/generated/SADL.ecore#//SadlTypeReference"
+        containment="true"/>
+  </eClassifiers>
+  <eClassifiers xsi:type="ecore:EClass" name="ModifiedAskStatement" eSuperTypes="platform:/resource/com.ge.research.sadl/model/generated/SADL.ecore#//ExpressionScope">
+    <eStructuralFeatures xsi:type="ecore:EReference" name="expr" eType="ecore:EClass platform:/resource/com.ge.research.sadl/model/generated/SADL.ecore#//Expression"
         containment="true"/>
   </eClassifiers>
 </ecore:EPackage>

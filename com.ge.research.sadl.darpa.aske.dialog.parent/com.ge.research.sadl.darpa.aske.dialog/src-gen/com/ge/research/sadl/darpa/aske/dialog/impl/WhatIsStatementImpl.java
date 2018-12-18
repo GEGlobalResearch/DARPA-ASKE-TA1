@@ -4,11 +4,9 @@
 package com.ge.research.sadl.darpa.aske.dialog.impl;
 
 import com.ge.research.sadl.darpa.aske.dialog.DialogPackage;
-import com.ge.research.sadl.darpa.aske.dialog.DialogQuestion;
+import com.ge.research.sadl.darpa.aske.dialog.WhatIsStatement;
 
-import com.ge.research.sadl.sADL.SadlTypeReference;
-
-import com.ge.research.sadl.sADL.impl.ExpressionScopeImpl;
+import com.ge.research.sadl.sADL.SadlResource;
 
 import org.eclipse.emf.common.notify.Notification;
 import org.eclipse.emf.common.notify.NotificationChain;
@@ -17,22 +15,23 @@ import org.eclipse.emf.ecore.EClass;
 import org.eclipse.emf.ecore.InternalEObject;
 
 import org.eclipse.emf.ecore.impl.ENotificationImpl;
+import org.eclipse.emf.ecore.impl.MinimalEObjectImpl;
 
 /**
  * <!-- begin-user-doc -->
- * An implementation of the model object '<em><b>Question</b></em>'.
+ * An implementation of the model object '<em><b>What Is Statement</b></em>'.
  * <!-- end-user-doc -->
  * <p>
  * The following features are implemented:
  * </p>
  * <ul>
- *   <li>{@link com.ge.research.sadl.darpa.aske.dialog.impl.DialogQuestionImpl#getArticle <em>Article</em>}</li>
- *   <li>{@link com.ge.research.sadl.darpa.aske.dialog.impl.DialogQuestionImpl#getTarget <em>Target</em>}</li>
+ *   <li>{@link com.ge.research.sadl.darpa.aske.dialog.impl.WhatIsStatementImpl#getArticle <em>Article</em>}</li>
+ *   <li>{@link com.ge.research.sadl.darpa.aske.dialog.impl.WhatIsStatementImpl#getTarget <em>Target</em>}</li>
  * </ul>
  *
  * @generated
  */
-public class DialogQuestionImpl extends ExpressionScopeImpl implements DialogQuestion
+public class WhatIsStatementImpl extends MinimalEObjectImpl.Container implements WhatIsStatement
 {
   /**
    * The default value of the '{@link #getArticle() <em>Article</em>}' attribute.
@@ -62,14 +61,14 @@ public class DialogQuestionImpl extends ExpressionScopeImpl implements DialogQue
    * @generated
    * @ordered
    */
-  protected SadlTypeReference target;
+  protected SadlResource target;
 
   /**
    * <!-- begin-user-doc -->
    * <!-- end-user-doc -->
    * @generated
    */
-  protected DialogQuestionImpl()
+  protected WhatIsStatementImpl()
   {
     super();
   }
@@ -82,7 +81,7 @@ public class DialogQuestionImpl extends ExpressionScopeImpl implements DialogQue
   @Override
   protected EClass eStaticClass()
   {
-    return DialogPackage.Literals.DIALOG_QUESTION;
+    return DialogPackage.Literals.WHAT_IS_STATEMENT;
   }
 
   /**
@@ -105,7 +104,7 @@ public class DialogQuestionImpl extends ExpressionScopeImpl implements DialogQue
     String oldArticle = article;
     article = newArticle;
     if (eNotificationRequired())
-      eNotify(new ENotificationImpl(this, Notification.SET, DialogPackage.DIALOG_QUESTION__ARTICLE, oldArticle, article));
+      eNotify(new ENotificationImpl(this, Notification.SET, DialogPackage.WHAT_IS_STATEMENT__ARTICLE, oldArticle, article));
   }
 
   /**
@@ -113,7 +112,7 @@ public class DialogQuestionImpl extends ExpressionScopeImpl implements DialogQue
    * <!-- end-user-doc -->
    * @generated
    */
-  public SadlTypeReference getTarget()
+  public SadlResource getTarget()
   {
     return target;
   }
@@ -123,13 +122,13 @@ public class DialogQuestionImpl extends ExpressionScopeImpl implements DialogQue
    * <!-- end-user-doc -->
    * @generated
    */
-  public NotificationChain basicSetTarget(SadlTypeReference newTarget, NotificationChain msgs)
+  public NotificationChain basicSetTarget(SadlResource newTarget, NotificationChain msgs)
   {
-    SadlTypeReference oldTarget = target;
+    SadlResource oldTarget = target;
     target = newTarget;
     if (eNotificationRequired())
     {
-      ENotificationImpl notification = new ENotificationImpl(this, Notification.SET, DialogPackage.DIALOG_QUESTION__TARGET, oldTarget, newTarget);
+      ENotificationImpl notification = new ENotificationImpl(this, Notification.SET, DialogPackage.WHAT_IS_STATEMENT__TARGET, oldTarget, newTarget);
       if (msgs == null) msgs = notification; else msgs.add(notification);
     }
     return msgs;
@@ -140,20 +139,20 @@ public class DialogQuestionImpl extends ExpressionScopeImpl implements DialogQue
    * <!-- end-user-doc -->
    * @generated
    */
-  public void setTarget(SadlTypeReference newTarget)
+  public void setTarget(SadlResource newTarget)
   {
     if (newTarget != target)
     {
       NotificationChain msgs = null;
       if (target != null)
-        msgs = ((InternalEObject)target).eInverseRemove(this, EOPPOSITE_FEATURE_BASE - DialogPackage.DIALOG_QUESTION__TARGET, null, msgs);
+        msgs = ((InternalEObject)target).eInverseRemove(this, EOPPOSITE_FEATURE_BASE - DialogPackage.WHAT_IS_STATEMENT__TARGET, null, msgs);
       if (newTarget != null)
-        msgs = ((InternalEObject)newTarget).eInverseAdd(this, EOPPOSITE_FEATURE_BASE - DialogPackage.DIALOG_QUESTION__TARGET, null, msgs);
+        msgs = ((InternalEObject)newTarget).eInverseAdd(this, EOPPOSITE_FEATURE_BASE - DialogPackage.WHAT_IS_STATEMENT__TARGET, null, msgs);
       msgs = basicSetTarget(newTarget, msgs);
       if (msgs != null) msgs.dispatch();
     }
     else if (eNotificationRequired())
-      eNotify(new ENotificationImpl(this, Notification.SET, DialogPackage.DIALOG_QUESTION__TARGET, newTarget, newTarget));
+      eNotify(new ENotificationImpl(this, Notification.SET, DialogPackage.WHAT_IS_STATEMENT__TARGET, newTarget, newTarget));
   }
 
   /**
@@ -166,7 +165,7 @@ public class DialogQuestionImpl extends ExpressionScopeImpl implements DialogQue
   {
     switch (featureID)
     {
-      case DialogPackage.DIALOG_QUESTION__TARGET:
+      case DialogPackage.WHAT_IS_STATEMENT__TARGET:
         return basicSetTarget(null, msgs);
     }
     return super.eInverseRemove(otherEnd, featureID, msgs);
@@ -182,9 +181,9 @@ public class DialogQuestionImpl extends ExpressionScopeImpl implements DialogQue
   {
     switch (featureID)
     {
-      case DialogPackage.DIALOG_QUESTION__ARTICLE:
+      case DialogPackage.WHAT_IS_STATEMENT__ARTICLE:
         return getArticle();
-      case DialogPackage.DIALOG_QUESTION__TARGET:
+      case DialogPackage.WHAT_IS_STATEMENT__TARGET:
         return getTarget();
     }
     return super.eGet(featureID, resolve, coreType);
@@ -200,11 +199,11 @@ public class DialogQuestionImpl extends ExpressionScopeImpl implements DialogQue
   {
     switch (featureID)
     {
-      case DialogPackage.DIALOG_QUESTION__ARTICLE:
+      case DialogPackage.WHAT_IS_STATEMENT__ARTICLE:
         setArticle((String)newValue);
         return;
-      case DialogPackage.DIALOG_QUESTION__TARGET:
-        setTarget((SadlTypeReference)newValue);
+      case DialogPackage.WHAT_IS_STATEMENT__TARGET:
+        setTarget((SadlResource)newValue);
         return;
     }
     super.eSet(featureID, newValue);
@@ -220,11 +219,11 @@ public class DialogQuestionImpl extends ExpressionScopeImpl implements DialogQue
   {
     switch (featureID)
     {
-      case DialogPackage.DIALOG_QUESTION__ARTICLE:
+      case DialogPackage.WHAT_IS_STATEMENT__ARTICLE:
         setArticle(ARTICLE_EDEFAULT);
         return;
-      case DialogPackage.DIALOG_QUESTION__TARGET:
-        setTarget((SadlTypeReference)null);
+      case DialogPackage.WHAT_IS_STATEMENT__TARGET:
+        setTarget((SadlResource)null);
         return;
     }
     super.eUnset(featureID);
@@ -240,9 +239,9 @@ public class DialogQuestionImpl extends ExpressionScopeImpl implements DialogQue
   {
     switch (featureID)
     {
-      case DialogPackage.DIALOG_QUESTION__ARTICLE:
+      case DialogPackage.WHAT_IS_STATEMENT__ARTICLE:
         return ARTICLE_EDEFAULT == null ? article != null : !ARTICLE_EDEFAULT.equals(article);
-      case DialogPackage.DIALOG_QUESTION__TARGET:
+      case DialogPackage.WHAT_IS_STATEMENT__TARGET:
         return target != null;
     }
     return super.eIsSet(featureID);
@@ -265,4 +264,4 @@ public class DialogQuestionImpl extends ExpressionScopeImpl implements DialogQue
     return result.toString();
   }
 
-} //DialogQuestionImpl
+} //WhatIsStatementImpl

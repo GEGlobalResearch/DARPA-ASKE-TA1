@@ -10,23 +10,104 @@ ruleDialogModel:
 
 // Rule SadlModelElement
 ruleSadlModelElement:
-	ruleDialogStatement
+	(
+		ruleModifiedAskStatement
+		ruleEOS
+		    |
+		ruleWhatStatement
+		ruleEOS
+		    |
+		ruleHowManyValuesStatement
+		ruleEOS
+	)
 ;
 
-// Rule DialogStatement
-ruleDialogStatement:
-	ruleDialogQuestion
-	ruleEOS
+// Rule ModifiedAskStatement
+ruleModifiedAskStatement:
+	(
+		'Ask'
+		    |
+		'ask'
+	)
+	(
+		ruleConstructExpression
+		    |ruleAskExpression
+		    |ruleExpression
+	)
 ;
 
-// Rule DialogQuestion
-ruleDialogQuestion:
-	'What'
+// Rule WhatStatement
+ruleWhatStatement:
+	(
+		(
+			'What'
+			    |
+			'what'
+		)
+		ruleWhatIsStatement
+		    |
+		ruleWhatValuesStatement
+	)
+;
+
+// Rule WhatIsStatement
+ruleWhatIsStatement:
 	'is'
 	ruleAnArticle
 	?
-	ruleSadlTypeReference
-	'?'
+	ruleSadlResource
+;
+
+// Rule WhatValuesStatement
+ruleWhatValuesStatement:
+	(
+		'value'
+		    |
+		'values'
+	)
+	(
+		'can'
+		    |
+		'must'
+	)
+	ruleSadlResource
+	'of'
+	ruleAnArticle
+	?
+	ruleSadlPrimaryTypeReference
+	'have'
+;
+
+// Rule HowManyValuesStatement
+ruleHowManyValuesStatement:
+	(
+		'How'
+		    |
+		'how'
+	)
+	'many'
+	'values'
+	'of'
+	ruleSadlResource
+	(
+		'of'
+		'type'
+		ruleSadlPrimaryTypeReference
+	)?
+	'can'
+	ruleAnArticle
+	?
+	ruleSadlPrimaryTypeReference
+	'have'
+;
+
+// Rule EOS
+ruleEOS:
+	(
+		superEOS
+		    |
+		'?'
+	)
 ;
 
 // Rule SadlModel
@@ -1855,7 +1936,7 @@ ruleEXPONENT:
 ;
 
 // Rule EOS
-ruleEOS:
+superEOS:
 	'.'
 ;
 

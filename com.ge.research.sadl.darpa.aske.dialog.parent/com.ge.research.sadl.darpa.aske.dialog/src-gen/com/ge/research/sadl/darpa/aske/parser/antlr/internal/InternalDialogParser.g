@@ -94,25 +94,72 @@ ruleSadlModelElement returns [EObject current=null]
 @after {
 	leaveRule();
 }:
-	{
-		newCompositeNode(grammarAccess.getSadlModelElementAccess().getDialogStatementParserRuleCall());
-	}
-	this_DialogStatement_0=ruleDialogStatement
-	{
-		$current = $this_DialogStatement_0.current;
-		afterParserOrEnumRuleCall();
-	}
+	(
+		(
+			{
+				newCompositeNode(grammarAccess.getSadlModelElementAccess().getModifiedAskStatementParserRuleCall_0_0());
+			}
+			this_ModifiedAskStatement_0=ruleModifiedAskStatement
+			{
+				$current = $this_ModifiedAskStatement_0.current;
+				afterParserOrEnumRuleCall();
+			}
+			{
+				newCompositeNode(grammarAccess.getSadlModelElementAccess().getEOSParserRuleCall_0_1());
+			}
+			ruleEOS
+			{
+				afterParserOrEnumRuleCall();
+			}
+		)
+		    |
+		(
+			{
+				newCompositeNode(grammarAccess.getSadlModelElementAccess().getWhatStatementParserRuleCall_1_0());
+			}
+			this_WhatStatement_2=ruleWhatStatement
+			{
+				$current = $this_WhatStatement_2.current;
+				afterParserOrEnumRuleCall();
+			}
+			{
+				newCompositeNode(grammarAccess.getSadlModelElementAccess().getEOSParserRuleCall_1_1());
+			}
+			ruleEOS
+			{
+				afterParserOrEnumRuleCall();
+			}
+		)
+		    |
+		(
+			{
+				newCompositeNode(grammarAccess.getSadlModelElementAccess().getHowManyValuesStatementParserRuleCall_2_0());
+			}
+			this_HowManyValuesStatement_4=ruleHowManyValuesStatement
+			{
+				$current = $this_HowManyValuesStatement_4.current;
+				afterParserOrEnumRuleCall();
+			}
+			{
+				newCompositeNode(grammarAccess.getSadlModelElementAccess().getEOSParserRuleCall_2_1());
+			}
+			ruleEOS
+			{
+				afterParserOrEnumRuleCall();
+			}
+		)
+	)
 ;
 
-// Entry rule entryRuleDialogStatement
-entryRuleDialogStatement returns [EObject current=null]:
-	{ newCompositeNode(grammarAccess.getDialogStatementRule()); }
-	iv_ruleDialogStatement=ruleDialogStatement
-	{ $current=$iv_ruleDialogStatement.current; }
+// Entry rule entryRuleModifiedAskStatement
+entryRuleModifiedAskStatement returns [EObject current=null]:
+	{ newCompositeNode(grammarAccess.getModifiedAskStatementRule()); }
+	iv_ruleModifiedAskStatement=ruleModifiedAskStatement
+	{ $current=$iv_ruleModifiedAskStatement.current; }
 	EOF;
 
-// Rule DialogStatement
-ruleDialogStatement returns [EObject current=null]
+// Rule ModifiedAskStatement
+ruleModifiedAskStatement returns [EObject current=null]
 @init {
 	enterRule();
 }
@@ -120,33 +167,156 @@ ruleDialogStatement returns [EObject current=null]
 	leaveRule();
 }:
 	(
+		(
+			{
+				$current = forceCreateModelElement(
+					grammarAccess.getModifiedAskStatementAccess().getModifiedAskStatementAction_0(),
+					$current);
+			}
+		)
+		(
+			otherlv_1=Ask
+			{
+				newLeafNode(otherlv_1, grammarAccess.getModifiedAskStatementAccess().getAskKeyword_1_0());
+			}
+			    |
+			otherlv_2=Ask_1
+			{
+				newLeafNode(otherlv_2, grammarAccess.getModifiedAskStatementAccess().getAskKeyword_1_1());
+			}
+		)
+		(
+			(
+				(
+					{
+						newCompositeNode(grammarAccess.getModifiedAskStatementAccess().getExprConstructExpressionParserRuleCall_2_0_0());
+					}
+					lv_expr_3_1=ruleConstructExpression
+					{
+						if ($current==null) {
+							$current = createModelElementForParent(grammarAccess.getModifiedAskStatementRule());
+						}
+						set(
+							$current,
+							"expr",
+							lv_expr_3_1,
+							"com.ge.research.sadl.SADL.ConstructExpression");
+						afterParserOrEnumRuleCall();
+					}
+					    |
+					{
+						newCompositeNode(grammarAccess.getModifiedAskStatementAccess().getExprAskExpressionParserRuleCall_2_0_1());
+					}
+					lv_expr_3_2=ruleAskExpression
+					{
+						if ($current==null) {
+							$current = createModelElementForParent(grammarAccess.getModifiedAskStatementRule());
+						}
+						set(
+							$current,
+							"expr",
+							lv_expr_3_2,
+							"com.ge.research.sadl.SADL.AskExpression");
+						afterParserOrEnumRuleCall();
+					}
+					    |
+					{
+						newCompositeNode(grammarAccess.getModifiedAskStatementAccess().getExprExpressionParserRuleCall_2_0_2());
+					}
+					lv_expr_3_3=ruleExpression
+					{
+						if ($current==null) {
+							$current = createModelElementForParent(grammarAccess.getModifiedAskStatementRule());
+						}
+						set(
+							$current,
+							"expr",
+							lv_expr_3_3,
+							"com.ge.research.sadl.SADL.Expression");
+						afterParserOrEnumRuleCall();
+					}
+				)
+			)
+		)
+	)
+;
+
+// Entry rule entryRuleWhatStatement
+entryRuleWhatStatement returns [EObject current=null]:
+	{ newCompositeNode(grammarAccess.getWhatStatementRule()); }
+	iv_ruleWhatStatement=ruleWhatStatement
+	{ $current=$iv_ruleWhatStatement.current; }
+	EOF;
+
+// Rule WhatStatement
+ruleWhatStatement returns [EObject current=null]
+@init {
+	enterRule();
+}
+@after {
+	leaveRule();
+}:
+	(
+		(
+			(
+				{
+					$current = forceCreateModelElement(
+						grammarAccess.getWhatStatementAccess().getWhatStatementAction_0_0(),
+						$current);
+				}
+			)
+			(
+				otherlv_1=What
+				{
+					newLeafNode(otherlv_1, grammarAccess.getWhatStatementAccess().getWhatKeyword_0_1_0());
+				}
+				    |
+				otherlv_2=What_1
+				{
+					newLeafNode(otherlv_2, grammarAccess.getWhatStatementAccess().getWhatKeyword_0_1_1());
+				}
+			)
+			(
+				(
+					{
+						newCompositeNode(grammarAccess.getWhatStatementAccess().getStmtWhatIsStatementParserRuleCall_0_2_0());
+					}
+					lv_stmt_3_0=ruleWhatIsStatement
+					{
+						if ($current==null) {
+							$current = createModelElementForParent(grammarAccess.getWhatStatementRule());
+						}
+						set(
+							$current,
+							"stmt",
+							lv_stmt_3_0,
+							"com.ge.research.sadl.darpa.aske.Dialog.WhatIsStatement");
+						afterParserOrEnumRuleCall();
+					}
+				)
+			)
+		)
+		    |
 		{
-			newCompositeNode(grammarAccess.getDialogStatementAccess().getDialogQuestionParserRuleCall_0());
+			newCompositeNode(grammarAccess.getWhatStatementAccess().getWhatValuesStatementParserRuleCall_1());
 		}
-		this_DialogQuestion_0=ruleDialogQuestion
+		this_WhatValuesStatement_4=ruleWhatValuesStatement
 		{
-			$current = $this_DialogQuestion_0.current;
-			afterParserOrEnumRuleCall();
-		}
-		{
-			newCompositeNode(grammarAccess.getDialogStatementAccess().getEOSParserRuleCall_1());
-		}
-		ruleEOS
-		{
+			$current = $this_WhatValuesStatement_4.current;
 			afterParserOrEnumRuleCall();
 		}
 	)
 ;
 
-// Entry rule entryRuleDialogQuestion
-entryRuleDialogQuestion returns [EObject current=null]:
-	{ newCompositeNode(grammarAccess.getDialogQuestionRule()); }
-	iv_ruleDialogQuestion=ruleDialogQuestion
-	{ $current=$iv_ruleDialogQuestion.current; }
+// Entry rule entryRuleWhatIsStatement
+entryRuleWhatIsStatement returns [EObject current=null]:
+	{ newCompositeNode(grammarAccess.getWhatIsStatementRule()); }
+	iv_ruleWhatIsStatement=ruleWhatIsStatement
+	{ $current=$iv_ruleWhatIsStatement.current; }
 	EOF;
 
-// Rule DialogQuestion
-ruleDialogQuestion returns [EObject current=null]
+// Rule WhatIsStatement
+ruleWhatIsStatement returns [EObject current=null]
 @init {
 	enterRule();
 }
@@ -154,23 +324,26 @@ ruleDialogQuestion returns [EObject current=null]
 	leaveRule();
 }:
 	(
-		otherlv_0=What
-		{
-			newLeafNode(otherlv_0, grammarAccess.getDialogQuestionAccess().getWhatKeyword_0());
-		}
+		(
+			{
+				$current = forceCreateModelElement(
+					grammarAccess.getWhatIsStatementAccess().getWhatIsStatementAction_0(),
+					$current);
+			}
+		)
 		otherlv_1=Is
 		{
-			newLeafNode(otherlv_1, grammarAccess.getDialogQuestionAccess().getIsKeyword_1());
+			newLeafNode(otherlv_1, grammarAccess.getWhatIsStatementAccess().getIsKeyword_1());
 		}
 		(
 			(
 				{
-					newCompositeNode(grammarAccess.getDialogQuestionAccess().getArticleAnArticleParserRuleCall_2_0());
+					newCompositeNode(grammarAccess.getWhatIsStatementAccess().getArticleAnArticleParserRuleCall_2_0());
 				}
 				lv_article_2_0=ruleAnArticle
 				{
 					if ($current==null) {
-						$current = createModelElementForParent(grammarAccess.getDialogQuestionRule());
+						$current = createModelElementForParent(grammarAccess.getWhatIsStatementRule());
 					}
 					set(
 						$current,
@@ -184,25 +357,328 @@ ruleDialogQuestion returns [EObject current=null]
 		(
 			(
 				{
-					newCompositeNode(grammarAccess.getDialogQuestionAccess().getTargetSadlTypeReferenceParserRuleCall_3_0());
+					newCompositeNode(grammarAccess.getWhatIsStatementAccess().getTargetSadlResourceParserRuleCall_3_0());
 				}
-				lv_target_3_0=ruleSadlTypeReference
+				lv_target_3_0=ruleSadlResource
 				{
 					if ($current==null) {
-						$current = createModelElementForParent(grammarAccess.getDialogQuestionRule());
+						$current = createModelElementForParent(grammarAccess.getWhatIsStatementRule());
 					}
 					set(
 						$current,
 						"target",
 						lv_target_3_0,
-						"com.ge.research.sadl.SADL.SadlTypeReference");
+						"com.ge.research.sadl.SADL.SadlResource");
 					afterParserOrEnumRuleCall();
 				}
 			)
 		)
-		otherlv_4=QuestionMark
+	)
+;
+
+// Entry rule entryRuleWhatValuesStatement
+entryRuleWhatValuesStatement returns [EObject current=null]:
+	{ newCompositeNode(grammarAccess.getWhatValuesStatementRule()); }
+	iv_ruleWhatValuesStatement=ruleWhatValuesStatement
+	{ $current=$iv_ruleWhatValuesStatement.current; }
+	EOF;
+
+// Rule WhatValuesStatement
+ruleWhatValuesStatement returns [EObject current=null]
+@init {
+	enterRule();
+}
+@after {
+	leaveRule();
+}:
+	(
+		(
+			{
+				$current = forceCreateModelElement(
+					grammarAccess.getWhatValuesStatementAccess().getWhatValuesStatementAction_0(),
+					$current);
+			}
+		)
+		(
+			otherlv_1=Value
+			{
+				newLeafNode(otherlv_1, grammarAccess.getWhatValuesStatementAccess().getValueKeyword_1_0());
+			}
+			    |
+			otherlv_2=Values
+			{
+				newLeafNode(otherlv_2, grammarAccess.getWhatValuesStatementAccess().getValuesKeyword_1_1());
+			}
+		)
+		(
+			(
+				(
+					lv_typ_3_1=Can
+					{
+						newLeafNode(lv_typ_3_1, grammarAccess.getWhatValuesStatementAccess().getTypCanKeyword_2_0_0());
+					}
+					{
+						if ($current==null) {
+							$current = createModelElement(grammarAccess.getWhatValuesStatementRule());
+						}
+						setWithLastConsumed($current, "typ", lv_typ_3_1, null);
+					}
+					    |
+					lv_typ_3_2=Must
+					{
+						newLeafNode(lv_typ_3_2, grammarAccess.getWhatValuesStatementAccess().getTypMustKeyword_2_0_1());
+					}
+					{
+						if ($current==null) {
+							$current = createModelElement(grammarAccess.getWhatValuesStatementRule());
+						}
+						setWithLastConsumed($current, "typ", lv_typ_3_2, null);
+					}
+				)
+			)
+		)
+		(
+			(
+				{
+					newCompositeNode(grammarAccess.getWhatValuesStatementAccess().getPropSadlResourceParserRuleCall_3_0());
+				}
+				lv_prop_4_0=ruleSadlResource
+				{
+					if ($current==null) {
+						$current = createModelElementForParent(grammarAccess.getWhatValuesStatementRule());
+					}
+					set(
+						$current,
+						"prop",
+						lv_prop_4_0,
+						"com.ge.research.sadl.SADL.SadlResource");
+					afterParserOrEnumRuleCall();
+				}
+			)
+		)
+		otherlv_5=Of
 		{
-			newLeafNode(otherlv_4, grammarAccess.getDialogQuestionAccess().getQuestionMarkKeyword_4());
+			newLeafNode(otherlv_5, grammarAccess.getWhatValuesStatementAccess().getOfKeyword_4());
+		}
+		(
+			(
+				{
+					newCompositeNode(grammarAccess.getWhatValuesStatementAccess().getArticleAnArticleParserRuleCall_5_0());
+				}
+				lv_article_6_0=ruleAnArticle
+				{
+					if ($current==null) {
+						$current = createModelElementForParent(grammarAccess.getWhatValuesStatementRule());
+					}
+					set(
+						$current,
+						"article",
+						lv_article_6_0,
+						"com.ge.research.sadl.SADL.AnArticle");
+					afterParserOrEnumRuleCall();
+				}
+			)
+		)?
+		(
+			(
+				{
+					newCompositeNode(grammarAccess.getWhatValuesStatementAccess().getClsSadlPrimaryTypeReferenceParserRuleCall_6_0());
+				}
+				lv_cls_7_0=ruleSadlPrimaryTypeReference
+				{
+					if ($current==null) {
+						$current = createModelElementForParent(grammarAccess.getWhatValuesStatementRule());
+					}
+					set(
+						$current,
+						"cls",
+						lv_cls_7_0,
+						"com.ge.research.sadl.SADL.SadlPrimaryTypeReference");
+					afterParserOrEnumRuleCall();
+				}
+			)
+		)
+		otherlv_8=Have
+		{
+			newLeafNode(otherlv_8, grammarAccess.getWhatValuesStatementAccess().getHaveKeyword_7());
+		}
+	)
+;
+
+// Entry rule entryRuleHowManyValuesStatement
+entryRuleHowManyValuesStatement returns [EObject current=null]:
+	{ newCompositeNode(grammarAccess.getHowManyValuesStatementRule()); }
+	iv_ruleHowManyValuesStatement=ruleHowManyValuesStatement
+	{ $current=$iv_ruleHowManyValuesStatement.current; }
+	EOF;
+
+// Rule HowManyValuesStatement
+ruleHowManyValuesStatement returns [EObject current=null]
+@init {
+	enterRule();
+}
+@after {
+	leaveRule();
+}:
+	(
+		(
+			{
+				$current = forceCreateModelElement(
+					grammarAccess.getHowManyValuesStatementAccess().getHowManyValuesStatementAction_0(),
+					$current);
+			}
+		)
+		(
+			otherlv_1=How
+			{
+				newLeafNode(otherlv_1, grammarAccess.getHowManyValuesStatementAccess().getHowKeyword_1_0());
+			}
+			    |
+			otherlv_2=How_1
+			{
+				newLeafNode(otherlv_2, grammarAccess.getHowManyValuesStatementAccess().getHowKeyword_1_1());
+			}
+		)
+		otherlv_3=Many
+		{
+			newLeafNode(otherlv_3, grammarAccess.getHowManyValuesStatementAccess().getManyKeyword_2());
+		}
+		otherlv_4=Values
+		{
+			newLeafNode(otherlv_4, grammarAccess.getHowManyValuesStatementAccess().getValuesKeyword_3());
+		}
+		otherlv_5=Of
+		{
+			newLeafNode(otherlv_5, grammarAccess.getHowManyValuesStatementAccess().getOfKeyword_4());
+		}
+		(
+			(
+				{
+					newCompositeNode(grammarAccess.getHowManyValuesStatementAccess().getPropSadlResourceParserRuleCall_5_0());
+				}
+				lv_prop_6_0=ruleSadlResource
+				{
+					if ($current==null) {
+						$current = createModelElementForParent(grammarAccess.getHowManyValuesStatementRule());
+					}
+					set(
+						$current,
+						"prop",
+						lv_prop_6_0,
+						"com.ge.research.sadl.SADL.SadlResource");
+					afterParserOrEnumRuleCall();
+				}
+			)
+		)
+		(
+			otherlv_7=Of
+			{
+				newLeafNode(otherlv_7, grammarAccess.getHowManyValuesStatementAccess().getOfKeyword_6_0());
+			}
+			otherlv_8=Type
+			{
+				newLeafNode(otherlv_8, grammarAccess.getHowManyValuesStatementAccess().getTypeKeyword_6_1());
+			}
+			(
+				(
+					{
+						newCompositeNode(grammarAccess.getHowManyValuesStatementAccess().getTypSadlPrimaryTypeReferenceParserRuleCall_6_2_0());
+					}
+					lv_typ_9_0=ruleSadlPrimaryTypeReference
+					{
+						if ($current==null) {
+							$current = createModelElementForParent(grammarAccess.getHowManyValuesStatementRule());
+						}
+						set(
+							$current,
+							"typ",
+							lv_typ_9_0,
+							"com.ge.research.sadl.SADL.SadlPrimaryTypeReference");
+						afterParserOrEnumRuleCall();
+					}
+				)
+			)
+		)?
+		otherlv_10=Can
+		{
+			newLeafNode(otherlv_10, grammarAccess.getHowManyValuesStatementAccess().getCanKeyword_7());
+		}
+		(
+			(
+				{
+					newCompositeNode(grammarAccess.getHowManyValuesStatementAccess().getArticleAnArticleParserRuleCall_8_0());
+				}
+				lv_article_11_0=ruleAnArticle
+				{
+					if ($current==null) {
+						$current = createModelElementForParent(grammarAccess.getHowManyValuesStatementRule());
+					}
+					set(
+						$current,
+						"article",
+						lv_article_11_0,
+						"com.ge.research.sadl.SADL.AnArticle");
+					afterParserOrEnumRuleCall();
+				}
+			)
+		)?
+		(
+			(
+				{
+					newCompositeNode(grammarAccess.getHowManyValuesStatementAccess().getClsSadlPrimaryTypeReferenceParserRuleCall_9_0());
+				}
+				lv_cls_12_0=ruleSadlPrimaryTypeReference
+				{
+					if ($current==null) {
+						$current = createModelElementForParent(grammarAccess.getHowManyValuesStatementRule());
+					}
+					set(
+						$current,
+						"cls",
+						lv_cls_12_0,
+						"com.ge.research.sadl.SADL.SadlPrimaryTypeReference");
+					afterParserOrEnumRuleCall();
+				}
+			)
+		)
+		otherlv_13=Have
+		{
+			newLeafNode(otherlv_13, grammarAccess.getHowManyValuesStatementAccess().getHaveKeyword_10());
+		}
+	)
+;
+
+// Entry rule entryRuleEOS
+entryRuleEOS returns [String current=null]:
+	{ newCompositeNode(grammarAccess.getEOSRule()); }
+	iv_ruleEOS=ruleEOS
+	{ $current=$iv_ruleEOS.current.getText(); }
+	EOF;
+
+// Rule EOS
+ruleEOS returns [AntlrDatatypeRuleToken current=new AntlrDatatypeRuleToken()]
+@init {
+	enterRule();
+}
+@after {
+	leaveRule();
+}:
+	(
+		{
+			newCompositeNode(grammarAccess.getEOSAccess().getEOSParserRuleCall_0());
+		}
+		this_EOS_0=superEOS
+		{
+			$current.merge(this_EOS_0);
+		}
+		{
+			afterParserOrEnumRuleCall();
+		}
+		    |
+		kw=QuestionMark
+		{
+			$current.merge(kw);
+			newLeafNode(kw, grammarAccess.getEOSAccess().getQuestionMarkKeyword_1());
 		}
 	)
 ;
@@ -11327,15 +11803,15 @@ ruleEXPONENT returns [AntlrDatatypeRuleToken current=new AntlrDatatypeRuleToken(
 	)
 ;
 
-// Entry rule entryRuleEOS
-entryRuleEOS returns [String current=null]:
-	{ newCompositeNode(grammarAccess.getEOSRule()); }
-	iv_ruleEOS=ruleEOS
-	{ $current=$iv_ruleEOS.current.getText(); }
+// Entry rule entrySuperEOS
+entrySuperEOS returns [String current=null]:
+	{ newCompositeNode(grammarAccess.getSADLEOSRule()); }
+	iv_superEOS=superEOS
+	{ $current=$iv_superEOS.current.getText(); }
 	EOF;
 
 // Rule EOS
-ruleEOS returns [AntlrDatatypeRuleToken current=new AntlrDatatypeRuleToken()]
+superEOS returns [AntlrDatatypeRuleToken current=new AntlrDatatypeRuleToken()]
 @init {
 	enterRule();
 }
@@ -11345,7 +11821,7 @@ ruleEOS returns [AntlrDatatypeRuleToken current=new AntlrDatatypeRuleToken()]
 	kw=FullStop
 	{
 		$current.merge(kw);
-		newLeafNode(kw, grammarAccess.getEOSAccess().getFullStopKeyword());
+		newLeafNode(kw, grammarAccess.getSADLEOSAccess().getFullStopKeyword());
 	}
 ;
 

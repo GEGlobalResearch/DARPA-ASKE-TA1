@@ -1,7 +1,13 @@
 uri "http://sadl.org/test.dialog".
 
-//import "http://sadl.org/test.sadl".
+//import "http://sadl.org/ScientificConcepts2.sadl".
 
-What is UnittedQuantity ?
+//Ask "select * where {<Mass> p v}".
+//select ...
 
+What is UnittedQuantity?
+
+what is a ScientificConcept?
+ 
+what is unit.
 

@@ -1,5 +1,6 @@
 <rdf:RDF
     xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+    xmlns:Software="http://sadl.org/Software.sadl"
     xmlns:sadlbasemodel="http://sadl.org/sadlbasemodel"
     xmlns:CurMan="http://sadl.org/CurationManager.sadl#"
     xmlns:owl="http://www.w3.org/2002/07/owl#"
@@ -19,6 +20,9 @@
   <j.0:Human rdf:ID="SampleUser">
     <j.0:uses>
       <rdf:Description rdf:ID="CurationManager">
+        <j.0:uses>
+          <j.0:Plugin rdf:ID="Dialog"/>
+        </j.0:uses>
         <j.0:uses>
           <j.0:Software rdf:ID="ComputationalModel"/>
         </j.0:uses>

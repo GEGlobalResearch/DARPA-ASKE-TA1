@@ -4,7 +4,8 @@
  
  KnowledgeGraph is a Software.
  ComputationalModel is a Software.
- CurationManager is a {Plugin and AI}, uses KnowledgeGraph, uses ComputationalModel.
+ Dialog is a Plugin.
+ CurationManager is a {Plugin and AI}, uses KnowledgeGraph, uses ComputationalModel, uses Dialog.
  SampleUser is a Human.
  SampleUser uses CurationManager.
  

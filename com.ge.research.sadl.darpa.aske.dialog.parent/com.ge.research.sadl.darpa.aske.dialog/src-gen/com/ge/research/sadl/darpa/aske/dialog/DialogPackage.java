@@ -60,14 +60,42 @@ public interface DialogPackage extends EPackage
   DialogPackage eINSTANCE = com.ge.research.sadl.darpa.aske.dialog.impl.DialogPackageImpl.init();
 
   /**
-   * The meta object id for the '{@link com.ge.research.sadl.darpa.aske.dialog.impl.DialogQuestionImpl <em>Question</em>}' class.
+   * The meta object id for the '{@link com.ge.research.sadl.darpa.aske.dialog.impl.WhatStatementImpl <em>What Statement</em>}' class.
    * <!-- begin-user-doc -->
    * <!-- end-user-doc -->
-   * @see com.ge.research.sadl.darpa.aske.dialog.impl.DialogQuestionImpl
-   * @see com.ge.research.sadl.darpa.aske.dialog.impl.DialogPackageImpl#getDialogQuestion()
+   * @see com.ge.research.sadl.darpa.aske.dialog.impl.WhatStatementImpl
+   * @see com.ge.research.sadl.darpa.aske.dialog.impl.DialogPackageImpl#getWhatStatement()
    * @generated
    */
-  int DIALOG_QUESTION = 0;
+  int WHAT_STATEMENT = 0;
+
+  /**
+   * The feature id for the '<em><b>Stmt</b></em>' containment reference.
+   * <!-- begin-user-doc -->
+   * <!-- end-user-doc -->
+   * @generated
+   * @ordered
+   */
+  int WHAT_STATEMENT__STMT = SADLPackage.SADL_MODEL_ELEMENT_FEATURE_COUNT + 0;
+
+  /**
+   * The number of structural features of the '<em>What Statement</em>' class.
+   * <!-- begin-user-doc -->
+   * <!-- end-user-doc -->
+   * @generated
+   * @ordered
+   */
+  int WHAT_STATEMENT_FEATURE_COUNT = SADLPackage.SADL_MODEL_ELEMENT_FEATURE_COUNT + 1;
+
+  /**
+   * The meta object id for the '{@link com.ge.research.sadl.darpa.aske.dialog.impl.WhatIsStatementImpl <em>What Is Statement</em>}' class.
+   * <!-- begin-user-doc -->
+   * <!-- end-user-doc -->
+   * @see com.ge.research.sadl.darpa.aske.dialog.impl.WhatIsStatementImpl
+   * @see com.ge.research.sadl.darpa.aske.dialog.impl.DialogPackageImpl#getWhatIsStatement()
+   * @generated
+   */
+  int WHAT_IS_STATEMENT = 1;
 
   /**
    * The feature id for the '<em><b>Article</b></em>' attribute.
@@ -76,7 +104,7 @@ public interface DialogPackage extends EPackage
    * @generated
    * @ordered
    */
-  int DIALOG_QUESTION__ARTICLE = SADLPackage.EXPRESSION_SCOPE_FEATURE_COUNT + 0;
+  int WHAT_IS_STATEMENT__ARTICLE = 0;
 
   /**
    * The feature id for the '<em><b>Target</b></em>' containment reference.
@@ -85,49 +113,346 @@ public interface DialogPackage extends EPackage
    * @generated
    * @ordered
    */
-  int DIALOG_QUESTION__TARGET = SADLPackage.EXPRESSION_SCOPE_FEATURE_COUNT + 1;
+  int WHAT_IS_STATEMENT__TARGET = 1;
 
   /**
-   * The number of structural features of the '<em>Question</em>' class.
+   * The number of structural features of the '<em>What Is Statement</em>' class.
    * <!-- begin-user-doc -->
    * <!-- end-user-doc -->
    * @generated
    * @ordered
    */
-  int DIALOG_QUESTION_FEATURE_COUNT = SADLPackage.EXPRESSION_SCOPE_FEATURE_COUNT + 2;
-
+  int WHAT_IS_STATEMENT_FEATURE_COUNT = 2;
 
   /**
-   * Returns the meta object for class '{@link com.ge.research.sadl.darpa.aske.dialog.DialogQuestion <em>Question</em>}'.
+   * The meta object id for the '{@link com.ge.research.sadl.darpa.aske.dialog.impl.WhatValuesStatementImpl <em>What Values Statement</em>}' class.
    * <!-- begin-user-doc -->
    * <!-- end-user-doc -->
-   * @return the meta object for class '<em>Question</em>'.
-   * @see com.ge.research.sadl.darpa.aske.dialog.DialogQuestion
+   * @see com.ge.research.sadl.darpa.aske.dialog.impl.WhatValuesStatementImpl
+   * @see com.ge.research.sadl.darpa.aske.dialog.impl.DialogPackageImpl#getWhatValuesStatement()
    * @generated
    */
-  EClass getDialogQuestion();
+  int WHAT_VALUES_STATEMENT = 2;
 
   /**
-   * Returns the meta object for the attribute '{@link com.ge.research.sadl.darpa.aske.dialog.DialogQuestion#getArticle <em>Article</em>}'.
+   * The feature id for the '<em><b>Stmt</b></em>' containment reference.
+   * <!-- begin-user-doc -->
+   * <!-- end-user-doc -->
+   * @generated
+   * @ordered
+   */
+  int WHAT_VALUES_STATEMENT__STMT = WHAT_STATEMENT__STMT;
+
+  /**
+   * The feature id for the '<em><b>Typ</b></em>' attribute.
+   * <!-- begin-user-doc -->
+   * <!-- end-user-doc -->
+   * @generated
+   * @ordered
+   */
+  int WHAT_VALUES_STATEMENT__TYP = WHAT_STATEMENT_FEATURE_COUNT + 0;
+
+  /**
+   * The feature id for the '<em><b>Prop</b></em>' containment reference.
+   * <!-- begin-user-doc -->
+   * <!-- end-user-doc -->
+   * @generated
+   * @ordered
+   */
+  int WHAT_VALUES_STATEMENT__PROP = WHAT_STATEMENT_FEATURE_COUNT + 1;
+
+  /**
+   * The feature id for the '<em><b>Article</b></em>' attribute.
+   * <!-- begin-user-doc -->
+   * <!-- end-user-doc -->
+   * @generated
+   * @ordered
+   */
+  int WHAT_VALUES_STATEMENT__ARTICLE = WHAT_STATEMENT_FEATURE_COUNT + 2;
+
+  /**
+   * The feature id for the '<em><b>Cls</b></em>' containment reference.
+   * <!-- begin-user-doc -->
+   * <!-- end-user-doc -->
+   * @generated
+   * @ordered
+   */
+  int WHAT_VALUES_STATEMENT__CLS = WHAT_STATEMENT_FEATURE_COUNT + 3;
+
+  /**
+   * The number of structural features of the '<em>What Values Statement</em>' class.
+   * <!-- begin-user-doc -->
+   * <!-- end-user-doc -->
+   * @generated
+   * @ordered
+   */
+  int WHAT_VALUES_STATEMENT_FEATURE_COUNT = WHAT_STATEMENT_FEATURE_COUNT + 4;
+
+  /**
+   * The meta object id for the '{@link com.ge.research.sadl.darpa.aske.dialog.impl.HowManyValuesStatementImpl <em>How Many Values Statement</em>}' class.
+   * <!-- begin-user-doc -->
+   * <!-- end-user-doc -->
+   * @see com.ge.research.sadl.darpa.aske.dialog.impl.HowManyValuesStatementImpl
+   * @see com.ge.research.sadl.darpa.aske.dialog.impl.DialogPackageImpl#getHowManyValuesStatement()
+   * @generated
+   */
+  int HOW_MANY_VALUES_STATEMENT = 3;
+
+  /**
+   * The feature id for the '<em><b>Prop</b></em>' containment reference.
+   * <!-- begin-user-doc -->
+   * <!-- end-user-doc -->
+   * @generated
+   * @ordered
+   */
+  int HOW_MANY_VALUES_STATEMENT__PROP = SADLPackage.SADL_MODEL_ELEMENT_FEATURE_COUNT + 0;
+
+  /**
+   * The feature id for the '<em><b>Typ</b></em>' containment reference.
+   * <!-- begin-user-doc -->
+   * <!-- end-user-doc -->
+   * @generated
+   * @ordered
+   */
+  int HOW_MANY_VALUES_STATEMENT__TYP = SADLPackage.SADL_MODEL_ELEMENT_FEATURE_COUNT + 1;
+
+  /**
+   * The feature id for the '<em><b>Article</b></em>' attribute.
+   * <!-- begin-user-doc -->
+   * <!-- end-user-doc -->
+   * @generated
+   * @ordered
+   */
+  int HOW_MANY_VALUES_STATEMENT__ARTICLE = SADLPackage.SADL_MODEL_ELEMENT_FEATURE_COUNT + 2;
+
+  /**
+   * The feature id for the '<em><b>Cls</b></em>' containment reference.
+   * <!-- begin-user-doc -->
+   * <!-- end-user-doc -->
+   * @generated
+   * @ordered
+   */
+  int HOW_MANY_VALUES_STATEMENT__CLS = SADLPackage.SADL_MODEL_ELEMENT_FEATURE_COUNT + 3;
+
+  /**
+   * The number of structural features of the '<em>How Many Values Statement</em>' class.
+   * <!-- begin-user-doc -->
+   * <!-- end-user-doc -->
+   * @generated
+   * @ordered
+   */
+  int HOW_MANY_VALUES_STATEMENT_FEATURE_COUNT = SADLPackage.SADL_MODEL_ELEMENT_FEATURE_COUNT + 4;
+
+  /**
+   * The meta object id for the '{@link com.ge.research.sadl.darpa.aske.dialog.impl.ModifiedAskStatementImpl <em>Modified Ask Statement</em>}' class.
+   * <!-- begin-user-doc -->
+   * <!-- end-user-doc -->
+   * @see com.ge.research.sadl.darpa.aske.dialog.impl.ModifiedAskStatementImpl
+   * @see com.ge.research.sadl.darpa.aske.dialog.impl.DialogPackageImpl#getModifiedAskStatement()
+   * @generated
+   */
+  int MODIFIED_ASK_STATEMENT = 4;
+
+  /**
+   * The feature id for the '<em><b>Expr</b></em>' containment reference.
+   * <!-- begin-user-doc -->
+   * <!-- end-user-doc -->
+   * @generated
+   * @ordered
+   */
+  int MODIFIED_ASK_STATEMENT__EXPR = SADLPackage.EXPRESSION_SCOPE_FEATURE_COUNT + 0;
+
+  /**
+   * The number of structural features of the '<em>Modified Ask Statement</em>' class.
+   * <!-- begin-user-doc -->
+   * <!-- end-user-doc -->
+   * @generated
+   * @ordered
+   */
+  int MODIFIED_ASK_STATEMENT_FEATURE_COUNT = SADLPackage.EXPRESSION_SCOPE_FEATURE_COUNT + 1;
+
+
+  /**
+   * Returns the meta object for class '{@link com.ge.research.sadl.darpa.aske.dialog.WhatStatement <em>What Statement</em>}'.
+   * <!-- begin-user-doc -->
+   * <!-- end-user-doc -->
+   * @return the meta object for class '<em>What Statement</em>'.
+   * @see com.ge.research.sadl.darpa.aske.dialog.WhatStatement
+   * @generated
+   */
+  EClass getWhatStatement();
+
+  /**
+   * Returns the meta object for the containment reference '{@link com.ge.research.sadl.darpa.aske.dialog.WhatStatement#getStmt <em>Stmt</em>}'.
+   * <!-- begin-user-doc -->
+   * <!-- end-user-doc -->
+   * @return the meta object for the containment reference '<em>Stmt</em>'.
+   * @see com.ge.research.sadl.darpa.aske.dialog.WhatStatement#getStmt()
+   * @see #getWhatStatement()
+   * @generated
+   */
+  EReference getWhatStatement_Stmt();
+
+  /**
+   * Returns the meta object for class '{@link com.ge.research.sadl.darpa.aske.dialog.WhatIsStatement <em>What Is Statement</em>}'.
+   * <!-- begin-user-doc -->
+   * <!-- end-user-doc -->
+   * @return the meta object for class '<em>What Is Statement</em>'.
+   * @see com.ge.research.sadl.darpa.aske.dialog.WhatIsStatement
+   * @generated
+   */
+  EClass getWhatIsStatement();
+
+  /**
+   * Returns the meta object for the attribute '{@link com.ge.research.sadl.darpa.aske.dialog.WhatIsStatement#getArticle <em>Article</em>}'.
    * <!-- begin-user-doc -->
    * <!-- end-user-doc -->
    * @return the meta object for the attribute '<em>Article</em>'.
-   * @see com.ge.research.sadl.darpa.aske.dialog.DialogQuestion#getArticle()
-   * @see #getDialogQuestion()
+   * @see com.ge.research.sadl.darpa.aske.dialog.WhatIsStatement#getArticle()
+   * @see #getWhatIsStatement()
    * @generated
    */
-  EAttribute getDialogQuestion_Article();
+  EAttribute getWhatIsStatement_Article();
 
   /**
-   * Returns the meta object for the containment reference '{@link com.ge.research.sadl.darpa.aske.dialog.DialogQuestion#getTarget <em>Target</em>}'.
+   * Returns the meta object for the containment reference '{@link com.ge.research.sadl.darpa.aske.dialog.WhatIsStatement#getTarget <em>Target</em>}'.
    * <!-- begin-user-doc -->
    * <!-- end-user-doc -->
    * @return the meta object for the containment reference '<em>Target</em>'.
-   * @see com.ge.research.sadl.darpa.aske.dialog.DialogQuestion#getTarget()
-   * @see #getDialogQuestion()
+   * @see com.ge.research.sadl.darpa.aske.dialog.WhatIsStatement#getTarget()
+   * @see #getWhatIsStatement()
    * @generated
    */
-  EReference getDialogQuestion_Target();
+  EReference getWhatIsStatement_Target();
+
+  /**
+   * Returns the meta object for class '{@link com.ge.research.sadl.darpa.aske.dialog.WhatValuesStatement <em>What Values Statement</em>}'.
+   * <!-- begin-user-doc -->
+   * <!-- end-user-doc -->
+   * @return the meta object for class '<em>What Values Statement</em>'.
+   * @see com.ge.research.sadl.darpa.aske.dialog.WhatValuesStatement
+   * @generated
+   */
+  EClass getWhatValuesStatement();
+
+  /**
+   * Returns the meta object for the attribute '{@link com.ge.research.sadl.darpa.aske.dialog.WhatValuesStatement#getTyp <em>Typ</em>}'.
+   * <!-- begin-user-doc -->
+   * <!-- end-user-doc -->
+   * @return the meta object for the attribute '<em>Typ</em>'.
+   * @see com.ge.research.sadl.darpa.aske.dialog.WhatValuesStatement#getTyp()
+   * @see #getWhatValuesStatement()
+   * @generated
+   */
+  EAttribute getWhatValuesStatement_Typ();
+
+  /**
+   * Returns the meta object for the containment reference '{@link com.ge.research.sadl.darpa.aske.dialog.WhatValuesStatement#getProp <em>Prop</em>}'.
+   * <!-- begin-user-doc -->
+   * <!-- end-user-doc -->
+   * @return the meta object for the containment reference '<em>Prop</em>'.
+   * @see com.ge.research.sadl.darpa.aske.dialog.WhatValuesStatement#getProp()
+   * @see #getWhatValuesStatement()
+   * @generated
+   */
+  EReference getWhatValuesStatement_Prop();
+
+  /**
+   * Returns the meta object for the attribute '{@link com.ge.research.sadl.darpa.aske.dialog.WhatValuesStatement#getArticle <em>Article</em>}'.
+   * <!-- begin-user-doc -->
+   * <!-- end-user-doc -->
+   * @return the meta object for the attribute '<em>Article</em>'.
+   * @see com.ge.research.sadl.darpa.aske.dialog.WhatValuesStatement#getArticle()
+   * @see #getWhatValuesStatement()
+   * @generated
+   */
+  EAttribute getWhatValuesStatement_Article();
+
+  /**
+   * Returns the meta object for the containment reference '{@link com.ge.research.sadl.darpa.aske.dialog.WhatValuesStatement#getCls <em>Cls</em>}'.
+   * <!-- begin-user-doc -->
+   * <!-- end-user-doc -->
+   * @return the meta object for the containment reference '<em>Cls</em>'.
+   * @see com.ge.research.sadl.darpa.aske.dialog.WhatValuesStatement#getCls()
+   * @see #getWhatValuesStatement()
+   * @generated
+   */
+  EReference getWhatValuesStatement_Cls();
+
+  /**
+   * Returns the meta object for class '{@link com.ge.research.sadl.darpa.aske.dialog.HowManyValuesStatement <em>How Many Values Statement</em>}'.
+   * <!-- begin-user-doc -->
+   * <!-- end-user-doc -->
+   * @return the meta object for class '<em>How Many Values Statement</em>'.
+   * @see com.ge.research.sadl.darpa.aske.dialog.HowManyValuesStatement
+   * @generated
+   */
+  EClass getHowManyValuesStatement();
+
+  /**
+   * Returns the meta object for the containment reference '{@link com.ge.research.sadl.darpa.aske.dialog.HowManyValuesStatement#getProp <em>Prop</em>}'.
+   * <!-- begin-user-doc -->
+   * <!-- end-user-doc -->
+   * @return the meta object for the containment reference '<em>Prop</em>'.
+   * @see com.ge.research.sadl.darpa.aske.dialog.HowManyValuesStatement#getProp()
+   * @see #getHowManyValuesStatement()
+   * @generated
+   */
+  EReference getHowManyValuesStatement_Prop();
+
+  /**
+   * Returns the meta object for the containment reference '{@link com.ge.research.sadl.darpa.aske.dialog.HowManyValuesStatement#getTyp <em>Typ</em>}'.
+   * <!-- begin-user-doc -->
+   * <!-- end-user-doc -->
+   * @return the meta object for the containment reference '<em>Typ</em>'.
+   * @see com.ge.research.sadl.darpa.aske.dialog.HowManyValuesStatement#getTyp()
+   * @see #getHowManyValuesStatement()
+   * @generated
+   */
+  EReference getHowManyValuesStatement_Typ();
+
+  /**
+   * Returns the meta object for the attribute '{@link com.ge.research.sadl.darpa.aske.dialog.HowManyValuesStatement#getArticle <em>Article</em>}'.
+   * <!-- begin-user-doc -->
+   * <!-- end-user-doc -->
+   * @return the meta object for the attribute '<em>Article</em>'.
+   * @see com.ge.research.sadl.darpa.aske.dialog.HowManyValuesStatement#getArticle()
+   * @see #getHowManyValuesStatement()
+   * @generated
+   */
+  EAttribute getHowManyValuesStatement_Article();
+
+  /**
+   * Returns the meta object for the containment reference '{@link com.ge.research.sadl.darpa.aske.dialog.HowManyValuesStatement#getCls <em>Cls</em>}'.
+   * <!-- begin-user-doc -->
+   * <!-- end-user-doc -->
+   * @return the meta object for the containment reference '<em>Cls</em>'.
+   * @see com.ge.research.sadl.darpa.aske.dialog.HowManyValuesStatement#getCls()
+   * @see #getHowManyValuesStatement()
+   * @generated
+   */
+  EReference getHowManyValuesStatement_Cls();
+
+  /**
+   * Returns the meta object for class '{@link com.ge.research.sadl.darpa.aske.dialog.ModifiedAskStatement <em>Modified Ask Statement</em>}'.
+   * <!-- begin-user-doc -->
+   * <!-- end-user-doc -->
+   * @return the meta object for class '<em>Modified Ask Statement</em>'.
+   * @see com.ge.research.sadl.darpa.aske.dialog.ModifiedAskStatement
+   * @generated
+   */
+  EClass getModifiedAskStatement();
+
+  /**
+   * Returns the meta object for the containment reference '{@link com.ge.research.sadl.darpa.aske.dialog.ModifiedAskStatement#getExpr <em>Expr</em>}'.
+   * <!-- begin-user-doc -->
+   * <!-- end-user-doc -->
+   * @return the meta object for the containment reference '<em>Expr</em>'.
+   * @see com.ge.research.sadl.darpa.aske.dialog.ModifiedAskStatement#getExpr()
+   * @see #getModifiedAskStatement()
+   * @generated
+   */
+  EReference getModifiedAskStatement_Expr();
 
   /**
    * Returns the factory that creates the instances of the model.
@@ -153,14 +478,32 @@ public interface DialogPackage extends EPackage
   interface Literals
   {
     /**
-     * The meta object literal for the '{@link com.ge.research.sadl.darpa.aske.dialog.impl.DialogQuestionImpl <em>Question</em>}' class.
+     * The meta object literal for the '{@link com.ge.research.sadl.darpa.aske.dialog.impl.WhatStatementImpl <em>What Statement</em>}' class.
      * <!-- begin-user-doc -->
      * <!-- end-user-doc -->
-     * @see com.ge.research.sadl.darpa.aske.dialog.impl.DialogQuestionImpl
-     * @see com.ge.research.sadl.darpa.aske.dialog.impl.DialogPackageImpl#getDialogQuestion()
+     * @see com.ge.research.sadl.darpa.aske.dialog.impl.WhatStatementImpl
+     * @see com.ge.research.sadl.darpa.aske.dialog.impl.DialogPackageImpl#getWhatStatement()
      * @generated
      */
-    EClass DIALOG_QUESTION = eINSTANCE.getDialogQuestion();
+    EClass WHAT_STATEMENT = eINSTANCE.getWhatStatement();
+
+    /**
+     * The meta object literal for the '<em><b>Stmt</b></em>' containment reference feature.
+     * <!-- begin-user-doc -->
+     * <!-- end-user-doc -->
+     * @generated
+     */
+    EReference WHAT_STATEMENT__STMT = eINSTANCE.getWhatStatement_Stmt();
+
+    /**
+     * The meta object literal for the '{@link com.ge.research.sadl.darpa.aske.dialog.impl.WhatIsStatementImpl <em>What Is Statement</em>}' class.
+     * <!-- begin-user-doc -->
+     * <!-- end-user-doc -->
+     * @see com.ge.research.sadl.darpa.aske.dialog.impl.WhatIsStatementImpl
+     * @see com.ge.research.sadl.darpa.aske.dialog.impl.DialogPackageImpl#getWhatIsStatement()
+     * @generated
+     */
+    EClass WHAT_IS_STATEMENT = eINSTANCE.getWhatIsStatement();
 
     /**
      * The meta object literal for the '<em><b>Article</b></em>' attribute feature.
@@ -168,7 +511,7 @@ public interface DialogPackage extends EPackage
      * <!-- end-user-doc -->
      * @generated
      */
-    EAttribute DIALOG_QUESTION__ARTICLE = eINSTANCE.getDialogQuestion_Article();
+    EAttribute WHAT_IS_STATEMENT__ARTICLE = eINSTANCE.getWhatIsStatement_Article();
 
     /**
      * The meta object literal for the '<em><b>Target</b></em>' containment reference feature.
@@ -176,7 +519,109 @@ public interface DialogPackage extends EPackage
      * <!-- end-user-doc -->
      * @generated
      */
-    EReference DIALOG_QUESTION__TARGET = eINSTANCE.getDialogQuestion_Target();
+    EReference WHAT_IS_STATEMENT__TARGET = eINSTANCE.getWhatIsStatement_Target();
+
+    /**
+     * The meta object literal for the '{@link com.ge.research.sadl.darpa.aske.dialog.impl.WhatValuesStatementImpl <em>What Values Statement</em>}' class.
+     * <!-- begin-user-doc -->
+     * <!-- end-user-doc -->
+     * @see com.ge.research.sadl.darpa.aske.dialog.impl.WhatValuesStatementImpl
+     * @see com.ge.research.sadl.darpa.aske.dialog.impl.DialogPackageImpl#getWhatValuesStatement()
+     * @generated
+     */
+    EClass WHAT_VALUES_STATEMENT = eINSTANCE.getWhatValuesStatement();
+
+    /**
+     * The meta object literal for the '<em><b>Typ</b></em>' attribute feature.
+     * <!-- begin-user-doc -->
+     * <!-- end-user-doc -->
+     * @generated
+     */
+    EAttribute WHAT_VALUES_STATEMENT__TYP = eINSTANCE.getWhatValuesStatement_Typ();
+
+    /**
+     * The meta object literal for the '<em><b>Prop</b></em>' containment reference feature.
+     * <!-- begin-user-doc -->
+     * <!-- end-user-doc -->
+     * @generated
+     */
+    EReference WHAT_VALUES_STATEMENT__PROP = eINSTANCE.getWhatValuesStatement_Prop();
+
+    /**
+     * The meta object literal for the '<em><b>Article</b></em>' attribute feature.
+     * <!-- begin-user-doc -->
+     * <!-- end-user-doc -->
+     * @generated
+     */
+    EAttribute WHAT_VALUES_STATEMENT__ARTICLE = eINSTANCE.getWhatValuesStatement_Article();
+
+    /**
+     * The meta object literal for the '<em><b>Cls</b></em>' containment reference feature.
+     * <!-- begin-user-doc -->
+     * <!-- end-user-doc -->
+     * @generated
+     */
+    EReference WHAT_VALUES_STATEMENT__CLS = eINSTANCE.getWhatValuesStatement_Cls();
+
+    /**
+     * The meta object literal for the '{@link com.ge.research.sadl.darpa.aske.dialog.impl.HowManyValuesStatementImpl <em>How Many Values Statement</em>}' class.
+     * <!-- begin-user-doc -->
+     * <!-- end-user-doc -->
+     * @see com.ge.research.sadl.darpa.aske.dialog.impl.HowManyValuesStatementImpl
+     * @see com.ge.research.sadl.darpa.aske.dialog.impl.DialogPackageImpl#getHowManyValuesStatement()
+     * @generated
+     */
+    EClass HOW_MANY_VALUES_STATEMENT = eINSTANCE.getHowManyValuesStatement();
+
+    /**
+     * The meta object literal for the '<em><b>Prop</b></em>' containment reference feature.
+     * <!-- begin-user-doc -->
+     * <!-- end-user-doc -->
+     * @generated
+     */
+    EReference HOW_MANY_VALUES_STATEMENT__PROP = eINSTANCE.getHowManyValuesStatement_Prop();
+
+    /**
+     * The meta object literal for the '<em><b>Typ</b></em>' containment reference feature.
+     * <!-- begin-user-doc -->
+     * <!-- end-user-doc -->
+     * @generated
+     */
+    EReference HOW_MANY_VALUES_STATEMENT__TYP = eINSTANCE.getHowManyValuesStatement_Typ();
+
+    /**
+     * The meta object literal for the '<em><b>Article</b></em>' attribute feature.
+     * <!-- begin-user-doc -->
+     * <!-- end-user-doc -->
+     * @generated
+     */
+    EAttribute HOW_MANY_VALUES_STATEMENT__ARTICLE = eINSTANCE.getHowManyValuesStatement_Article();
+
+    /**
+     * The meta object literal for the '<em><b>Cls</b></em>' containment reference feature.
+     * <!-- begin-user-doc -->
+     * <!-- end-user-doc -->
+     * @generated
+     */
+    EReference HOW_MANY_VALUES_STATEMENT__CLS = eINSTANCE.getHowManyValuesStatement_Cls();
+
+    /**
+     * The meta object literal for the '{@link com.ge.research.sadl.darpa.aske.dialog.impl.ModifiedAskStatementImpl <em>Modified Ask Statement</em>}' class.
+     * <!-- begin-user-doc -->
+     * <!-- end-user-doc -->
+     * @see com.ge.research.sadl.darpa.aske.dialog.impl.ModifiedAskStatementImpl
+     * @see com.ge.research.sadl.darpa.aske.dialog.impl.DialogPackageImpl#getModifiedAskStatement()
+     * @generated
+     */
+    EClass MODIFIED_ASK_STATEMENT = eINSTANCE.getModifiedAskStatement();
+
+    /**
+     * The meta object literal for the '<em><b>Expr</b></em>' containment reference feature.
+     * <!-- begin-user-doc -->
+     * <!-- end-user-doc -->
+     * @generated
+     */
+    EReference MODIFIED_ASK_STATEMENT__EXPR = eINSTANCE.getModifiedAskStatement_Expr();
 
   }
 
