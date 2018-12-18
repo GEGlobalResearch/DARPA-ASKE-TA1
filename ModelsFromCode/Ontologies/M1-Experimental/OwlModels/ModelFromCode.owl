@@ -2,6 +2,7 @@
     xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
     xmlns:sadlbasemodel="http://sadl.org/sadlbasemodel"
     xmlns:owl="http://www.w3.org/2002/07/owl#"
+    xmlns:j.0="http://sadl.org/Software.sadl#"
     xmlns:sadlimplicitmodel="http://sadl.org/sadlimplicitmodel"
     xmlns:builtinfunctions="http://sadl.org/builtinfunctions"
     xmlns:rdfs="http://www.w3.org/2000/01/rdf-schema#"
@@ -9,77 +10,41 @@
     xmlns:xsd="http://www.w3.org/2001/XMLSchema#"
   xml:base="http://sadl.org/ModelFromCode.sadl">
   <owl:Ontology rdf:about="">
+    <owl:imports rdf:resource="Software.sadl"/>
     <owl:imports rdf:resource="builtinfunctions"/>
     <owl:imports rdf:resource="sadlimplicitmodel"/>
     <owl:imports rdf:resource="sadlbasemodel"/>
     <rdfs:comment xml:lang="en">This ontology was created from a SADL file 'ModelFromCode.sadl' and should not be directly edited.</rdfs:comment>
   </owl:Ontology>
-  <owl:Class rdf:ID="JavaClass">
-    <rdfs:subClassOf>
-      <owl:Class rdf:ID="Software"/>
-    </rdfs:subClassOf>
-  </owl:Class>
-  <owl:Class rdf:ID="SadlModel">
-    <rdfs:subClassOf>
-      <owl:Class rdf:ID="Ontology"/>
-    </rdfs:subClassOf>
-  </owl:Class>
-  <owl:Class rdf:about="#Ontology">
-    <rdfs:subClassOf>
-      <owl:Class rdf:ID="Data"/>
-    </rdfs:subClassOf>
-  </owl:Class>
   <owl:Class rdf:ID="LanguageNeutralExtract">
-    <rdfs:subClassOf rdf:resource="#Data"/>
+    <rdfs:subClassOf rdf:resource="Software.sadl#Data"/>
   </owl:Class>
-  <owl:Class rdf:ID="JavaSourceCode">
-    <rdfs:subClassOf rdf:resource="#Data"/>
-  </owl:Class>
-  <owl:Class rdf:ID="Plugin">
-    <rdfs:subClassOf rdf:resource="#Software"/>
-  </owl:Class>
-  <owl:ObjectProperty rdf:ID="includes">
-    <rdfs:range rdf:resource="#Software"/>
-    <rdfs:domain rdf:resource="#Software"/>
-  </owl:ObjectProperty>
-  <owl:ObjectProperty rdf:ID="uses">
-    <rdfs:range rdf:resource="#Software"/>
-    <rdfs:domain rdf:resource="#Software"/>
-  </owl:ObjectProperty>
-  <owl:ObjectProperty rdf:ID="output">
-    <rdfs:range rdf:resource="#Data"/>
-    <rdfs:domain rdf:resource="#Software"/>
-  </owl:ObjectProperty>
-  <owl:ObjectProperty rdf:ID="input">
-    <rdfs:range rdf:resource="#Data"/>
-    <rdfs:domain rdf:resource="#Software"/>
-  </owl:ObjectProperty>
-  <mfc:Plugin rdf:ID="AnswerJavaCodeModelExtractor">
-    <mfc:includes>
-      <mfc:JavaClass rdf:ID="SadlModelGenerator">
-        <mfc:output>
-          <mfc:SadlModel/>
-        </mfc:output>
-        <mfc:input>
+  <j.0:Plugin rdf:ID="AnswerJavaCodeModelExtractor">
+    <j.0:includes>
+      <j.0:JavaClass rdf:ID="SadlModelGenerator">
+        <j.0:output>
+          <j.0:SadlModel/>
+        </j.0:output>
+        <j.0:input>
           <mfc:LanguageNeutralExtract/>
-        </mfc:input>
-      </mfc:JavaClass>
-    </mfc:includes>
-    <mfc:includes>
-      <mfc:JavaClass rdf:ID="JavaModelExtractor">
-        <mfc:output>
+        </j.0:input>
+      </j.0:JavaClass>
+    </j.0:includes>
+    <j.0:includes>
+      <j.0:JavaClass rdf:ID="JavaModelExtractor">
+        <j.0:output>
           <mfc:LanguageNeutralExtract/>
-        </mfc:output>
-        <mfc:input>
-          <mfc:JavaSourceCode/>
-        </mfc:input>
-        <mfc:uses>
-          <mfc:JavaClass rdf:ID="ASTParser"/>
-        </mfc:uses>
-      </mfc:JavaClass>
-    </mfc:includes>
-  </mfc:Plugin>
-  <mfc:Plugin rdf:ID="EclipseJavaDevelopmentTools">
-    <mfc:includes rdf:resource="#ASTParser"/>
-  </mfc:Plugin>
+        </j.0:output>
+        <j.0:input>
+          <j.0:JavaSourceCode/>
+        </j.0:input>
+        <j.0:uses>
+          <j.0:JavaClass rdf:ID="ASTParser"/>
+        </j.0:uses>
+      </j.0:JavaClass>
+    </j.0:includes>
+  </j.0:Plugin>
+  <j.0:Plugin rdf:ID="EclipseJavaDevelopmentTools">
+    <j.0:includes rdf:resource="#ASTParser"/>
+  </j.0:Plugin>
 </rdf:RDF>

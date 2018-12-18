@@ -1,0 +1,18 @@
+ uri "http://sadl.org/Software.sadl" alias Software.
+ 
+ Agent is a class.
+ {Human, AI} are types of Agent.
+ 
+ Software is a class.
+ uses describes Agent with values of type Software.
+ includes describes Software with values of type Software.
+ input describes Software with values of type Data.
+ output describes Software with values of type Data.
+ Data is a class.
+
+ Plugin is a type of Software.
+ JavaClass is a type of Software.
+ 
+ JavaSourceCode is a type of Data.
+ Ontology is a type of Data.
+ SadlModel is a type of Ontology.

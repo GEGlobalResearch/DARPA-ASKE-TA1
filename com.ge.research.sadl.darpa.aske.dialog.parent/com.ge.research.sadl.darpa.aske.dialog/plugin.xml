@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?eclipse version="3.0"?>
+<plugin>
+	<extension point="org.eclipse.emf.ecore.generated_package">
+		<package 
+			uri = "http://www.ge.com/research/sadl/darpa/aske/Dialog"
+			class = "com.ge.research.sadl.darpa.aske.dialog.DialogPackage"
+			genModel = "model/generated/Dialog.genmodel" />
+	</extension>
+</plugin>

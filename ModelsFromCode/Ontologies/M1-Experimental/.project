@@ -3,6 +3,7 @@
 	<name>M1-Experimental</name>
 	<comment></comment>
 	<projects>
+		<project>DataModelAssurance</project>
 	</projects>
 	<buildSpec>
 		<buildCommand>

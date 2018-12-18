@@ -1,0 +1,62 @@
+<rdf:RDF
+    xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+    xmlns:sadlbasemodel="http://sadl.org/sadlbasemodel"
+    xmlns:owl="http://www.w3.org/2002/07/owl#"
+    xmlns:Software="http://sadl.org/Software.sadl#"
+    xmlns:sadlimplicitmodel="http://sadl.org/sadlimplicitmodel"
+    xmlns:builtinfunctions="http://sadl.org/builtinfunctions"
+    xmlns:rdfs="http://www.w3.org/2000/01/rdf-schema#"
+    xmlns:xsd="http://www.w3.org/2001/XMLSchema#"
+  xml:base="http://sadl.org/Software.sadl">
+  <owl:Ontology rdf:about="">
+    <owl:imports rdf:resource="builtinfunctions"/>
+    <owl:imports rdf:resource="sadlimplicitmodel"/>
+    <owl:imports rdf:resource="sadlbasemodel"/>
+    <rdfs:comment xml:lang="en">This ontology was created from a SADL file 'Software.sadl' and should not be directly edited.</rdfs:comment>
+  </owl:Ontology>
+  <owl:Class rdf:ID="Human">
+    <rdfs:subClassOf>
+      <owl:Class rdf:ID="Agent"/>
+    </rdfs:subClassOf>
+  </owl:Class>
+  <owl:Class rdf:ID="Plugin">
+    <rdfs:subClassOf>
+      <owl:Class rdf:ID="Software"/>
+    </rdfs:subClassOf>
+  </owl:Class>
+  <owl:Class rdf:ID="JavaSourceCode">
+    <rdfs:subClassOf>
+      <owl:Class rdf:ID="Data"/>
+    </rdfs:subClassOf>
+  </owl:Class>
+  <owl:Class rdf:ID="AI">
+    <rdfs:subClassOf rdf:resource="#Agent"/>
+  </owl:Class>
+  <owl:Class rdf:ID="SadlModel">
+    <rdfs:subClassOf>
+      <owl:Class rdf:ID="Ontology"/>
+    </rdfs:subClassOf>
+  </owl:Class>
+  <owl:Class rdf:about="#Ontology">
+    <rdfs:subClassOf rdf:resource="#Data"/>
+  </owl:Class>
+  <owl:Class rdf:ID="JavaClass">
+    <rdfs:subClassOf rdf:resource="#Software"/>
+  </owl:Class>
+  <owl:ObjectProperty rdf:ID="uses">
+    <rdfs:range rdf:resource="#Software"/>
+    <rdfs:domain rdf:resource="#Agent"/>
+  </owl:ObjectProperty>
+  <owl:ObjectProperty rdf:ID="output">
+    <rdfs:range rdf:resource="#Data"/>
+    <rdfs:domain rdf:resource="#Software"/>
+  </owl:ObjectProperty>
+  <owl:ObjectProperty rdf:ID="input">
+    <rdfs:range rdf:resource="#Data"/>
+    <rdfs:domain rdf:resource="#Software"/>
+  </owl:ObjectProperty>
+  <owl:ObjectProperty rdf:ID="includes">
+    <rdfs:range rdf:resource="#Software"/>
+    <rdfs:domain rdf:resource="#Software"/>
+  </owl:ObjectProperty>
+</rdf:RDF>
