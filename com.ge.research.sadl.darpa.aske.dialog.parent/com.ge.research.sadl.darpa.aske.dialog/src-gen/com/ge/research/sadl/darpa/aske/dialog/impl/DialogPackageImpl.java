@@ -7,6 +7,7 @@ import com.ge.research.sadl.darpa.aske.dialog.DialogFactory;
 import com.ge.research.sadl.darpa.aske.dialog.DialogPackage;
 import com.ge.research.sadl.darpa.aske.dialog.HowManyValuesStatement;
 import com.ge.research.sadl.darpa.aske.dialog.ModifiedAskStatement;
+import com.ge.research.sadl.darpa.aske.dialog.StringResponse;
 import com.ge.research.sadl.darpa.aske.dialog.WhatIsStatement;
 import com.ge.research.sadl.darpa.aske.dialog.WhatStatement;
 import com.ge.research.sadl.darpa.aske.dialog.WhatValuesStatement;
@@ -28,6 +29,13 @@ import org.eclipse.emf.ecore.impl.EPackageImpl;
  */
 public class DialogPackageImpl extends EPackageImpl implements DialogPackage
 {
+  /**
+   * <!-- begin-user-doc -->
+   * <!-- end-user-doc -->
+   * @generated
+   */
+  private EClass stringResponseEClass = null;
+
   /**
    * <!-- begin-user-doc -->
    * <!-- end-user-doc -->
@@ -127,6 +135,26 @@ public class DialogPackageImpl extends EPackageImpl implements DialogPackage
     // Update the registry and return the package
     EPackage.Registry.INSTANCE.put(DialogPackage.eNS_URI, theDialogPackage);
     return theDialogPackage;
+  }
+
+  /**
+   * <!-- begin-user-doc -->
+   * <!-- end-user-doc -->
+   * @generated
+   */
+  public EClass getStringResponse()
+  {
+    return stringResponseEClass;
+  }
+
+  /**
+   * <!-- begin-user-doc -->
+   * <!-- end-user-doc -->
+   * @generated
+   */
+  public EAttribute getStringResponse_Str()
+  {
+    return (EAttribute)stringResponseEClass.getEStructuralFeatures().get(0);
   }
 
   /**
@@ -329,6 +357,9 @@ public class DialogPackageImpl extends EPackageImpl implements DialogPackage
     isCreated = true;
 
     // Create classes and their features
+    stringResponseEClass = createEClass(STRING_RESPONSE);
+    createEAttribute(stringResponseEClass, STRING_RESPONSE__STR);
+
     whatStatementEClass = createEClass(WHAT_STATEMENT);
     createEReference(whatStatementEClass, WHAT_STATEMENT__STMT);
 
@@ -384,14 +415,17 @@ public class DialogPackageImpl extends EPackageImpl implements DialogPackage
     // Set bounds for type parameters
 
     // Add supertypes to classes
+    stringResponseEClass.getESuperTypes().add(theSADLPackage.getSadlModelElement());
     whatStatementEClass.getESuperTypes().add(theSADLPackage.getSadlModelElement());
-    whatValuesStatementEClass.getESuperTypes().add(this.getWhatStatement());
     howManyValuesStatementEClass.getESuperTypes().add(theSADLPackage.getSadlModelElement());
     modifiedAskStatementEClass.getESuperTypes().add(theSADLPackage.getExpressionScope());
 
     // Initialize classes and features; add operations and parameters
+    initEClass(stringResponseEClass, StringResponse.class, "StringResponse", !IS_ABSTRACT, !IS_INTERFACE, IS_GENERATED_INSTANCE_CLASS);
+    initEAttribute(getStringResponse_Str(), ecorePackage.getEString(), "str", null, 0, 1, StringResponse.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_UNSETTABLE, !IS_ID, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
+
     initEClass(whatStatementEClass, WhatStatement.class, "WhatStatement", !IS_ABSTRACT, !IS_INTERFACE, IS_GENERATED_INSTANCE_CLASS);
-    initEReference(getWhatStatement_Stmt(), this.getWhatIsStatement(), null, "stmt", null, 0, 1, WhatStatement.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, IS_COMPOSITE, !IS_RESOLVE_PROXIES, !IS_UNSETTABLE, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
+    initEReference(getWhatStatement_Stmt(), ecorePackage.getEObject(), null, "stmt", null, 0, 1, WhatStatement.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, IS_COMPOSITE, !IS_RESOLVE_PROXIES, !IS_UNSETTABLE, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
 
     initEClass(whatIsStatementEClass, WhatIsStatement.class, "WhatIsStatement", !IS_ABSTRACT, !IS_INTERFACE, IS_GENERATED_INSTANCE_CLASS);
     initEAttribute(getWhatIsStatement_Article(), ecorePackage.getEString(), "article", null, 0, 1, WhatIsStatement.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_UNSETTABLE, !IS_ID, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);

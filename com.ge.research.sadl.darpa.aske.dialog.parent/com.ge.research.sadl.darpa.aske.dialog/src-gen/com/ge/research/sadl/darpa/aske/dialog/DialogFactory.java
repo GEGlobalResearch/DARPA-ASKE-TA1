@@ -24,6 +24,15 @@ public interface DialogFactory extends EFactory
   DialogFactory eINSTANCE = com.ge.research.sadl.darpa.aske.dialog.impl.DialogFactoryImpl.init();
 
   /**
+   * Returns a new object of class '<em>String Response</em>'.
+   * <!-- begin-user-doc -->
+   * <!-- end-user-doc -->
+   * @return a new object of class '<em>String Response</em>'.
+   * @generated
+   */
+  StringResponse createStringResponse();
+
+  /**
    * Returns a new object of class '<em>What Statement</em>'.
    * <!-- begin-user-doc -->
    * <!-- end-user-doc -->

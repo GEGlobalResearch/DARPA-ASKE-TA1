@@ -76,6 +76,14 @@ public class DialogSwitch<T> extends Switch<T>
   {
     switch (classifierID)
     {
+      case DialogPackage.STRING_RESPONSE:
+      {
+        StringResponse stringResponse = (StringResponse)theEObject;
+        T result = caseStringResponse(stringResponse);
+        if (result == null) result = caseSadlModelElement(stringResponse);
+        if (result == null) result = defaultCase(theEObject);
+        return result;
+      }
       case DialogPackage.WHAT_STATEMENT:
       {
         WhatStatement whatStatement = (WhatStatement)theEObject;
@@ -95,8 +103,6 @@ public class DialogSwitch<T> extends Switch<T>
       {
         WhatValuesStatement whatValuesStatement = (WhatValuesStatement)theEObject;
         T result = caseWhatValuesStatement(whatValuesStatement);
-        if (result == null) result = caseWhatStatement(whatValuesStatement);
-        if (result == null) result = caseSadlModelElement(whatValuesStatement);
         if (result == null) result = defaultCase(theEObject);
         return result;
       }
@@ -119,6 +125,22 @@ public class DialogSwitch<T> extends Switch<T>
       }
       default: return defaultCase(theEObject);
     }
+  }
+
+  /**
+   * Returns the result of interpreting the object as an instance of '<em>String Response</em>'.
+   * <!-- begin-user-doc -->
+   * This implementation returns null;
+   * returning a non-null result will terminate the switch.
+   * <!-- end-user-doc -->
+   * @param object the target of the switch.
+   * @return the result of interpreting the object as an instance of '<em>String Response</em>'.
+   * @see #doSwitch(org.eclipse.emf.ecore.EObject) doSwitch(EObject)
+   * @generated
+   */
+  public T caseStringResponse(StringResponse object)
+  {
+    return null;
   }
 
   /**

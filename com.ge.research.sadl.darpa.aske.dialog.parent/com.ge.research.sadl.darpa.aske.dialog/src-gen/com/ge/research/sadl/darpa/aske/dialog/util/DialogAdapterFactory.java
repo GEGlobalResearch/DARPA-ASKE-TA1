@@ -79,6 +79,11 @@ public class DialogAdapterFactory extends AdapterFactoryImpl
     new DialogSwitch<Adapter>()
     {
       @Override
+      public Adapter caseStringResponse(StringResponse object)
+      {
+        return createStringResponseAdapter();
+      }
+      @Override
       public Adapter caseWhatStatement(WhatStatement object)
       {
         return createWhatStatementAdapter();
@@ -134,6 +139,21 @@ public class DialogAdapterFactory extends AdapterFactoryImpl
     return modelSwitch.doSwitch((EObject)target);
   }
 
+
+  /**
+   * Creates a new adapter for an object of class '{@link com.ge.research.sadl.darpa.aske.dialog.StringResponse <em>String Response</em>}'.
+   * <!-- begin-user-doc -->
+   * This default implementation returns null so that we can easily ignore cases;
+   * it's useful to ignore a case when inheritance will catch all the cases anyway.
+   * <!-- end-user-doc -->
+   * @return the new adapter.
+   * @see com.ge.research.sadl.darpa.aske.dialog.StringResponse
+   * @generated
+   */
+  public Adapter createStringResponseAdapter()
+  {
+    return null;
+  }
 
   /**
    * Creates a new adapter for an object of class '{@link com.ge.research.sadl.darpa.aske.dialog.WhatStatement <em>What Statement</em>}'.

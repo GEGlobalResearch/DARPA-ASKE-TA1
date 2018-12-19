@@ -17,10 +17,15 @@ DialogModel returns sadl::SadlModel :
 
 @Override
 SadlModelElement returns sadl::SadlModelElement :
+	'CM:' (SadlStatement|EquationStatement|ExternalEquationStatement) EOS |
+	'CM:' StringResponse EOS |
 	ModifiedAskStatement EOS	|
 	WhatStatement EOS			|
-//	WhatValuesStatement EOS	|
 	HowManyValuesStatement EOS
+;
+
+StringResponse:
+	str=STRING
 ;
 
 ModifiedAskStatement returns sadl::ExpressionScope:
@@ -28,8 +33,7 @@ ModifiedAskStatement returns sadl::ExpressionScope:
 ;
 
 WhatStatement:
-	{WhatStatement} ('What'|'what') stmt=WhatIsStatement
-	| WhatValuesStatement
+	{WhatStatement} ('What'|'what') stmt=(WhatIsStatement | WhatValuesStatement)
 ;
 WhatIsStatement:
 	{WhatIsStatement} 'is' article=AnArticle?  target=SadlResource

@@ -269,6 +269,8 @@ FullStopFullStopFullStop : '...';
 
 Ask : 'Ask';
 
+CM : 'CM:';
+
 How : 'How';
 
 The : 'The';

@@ -6,6 +6,8 @@ package com.ge.research.sadl.darpa.aske.dialog;
 import com.ge.research.sadl.sADL.SadlResource;
 import com.ge.research.sadl.sADL.SadlTypeReference;
 
+import org.eclipse.emf.ecore.EObject;
+
 /**
  * <!-- begin-user-doc -->
  * A representation of the model object '<em><b>What Values Statement</b></em>'.
@@ -25,7 +27,7 @@ import com.ge.research.sadl.sADL.SadlTypeReference;
  * @model
  * @generated
  */
-public interface WhatValuesStatement extends WhatStatement
+public interface WhatValuesStatement extends EObject
 {
   /**
    * Returns the value of the '<em><b>Typ</b></em>' attribute.

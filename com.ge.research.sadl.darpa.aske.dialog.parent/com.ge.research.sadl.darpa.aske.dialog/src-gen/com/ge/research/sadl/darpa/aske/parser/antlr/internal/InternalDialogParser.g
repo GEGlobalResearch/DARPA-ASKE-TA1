@@ -96,16 +96,62 @@ ruleSadlModelElement returns [EObject current=null]
 }:
 	(
 		(
+			otherlv_0=CM
 			{
-				newCompositeNode(grammarAccess.getSadlModelElementAccess().getModifiedAskStatementParserRuleCall_0_0());
+				newLeafNode(otherlv_0, grammarAccess.getSadlModelElementAccess().getCMKeyword_0_0());
 			}
-			this_ModifiedAskStatement_0=ruleModifiedAskStatement
+			(
+				{
+					newCompositeNode(grammarAccess.getSadlModelElementAccess().getSadlStatementParserRuleCall_0_1_0());
+				}
+				this_SadlStatement_1=ruleSadlStatement
+				{
+					$current = $this_SadlStatement_1.current;
+					afterParserOrEnumRuleCall();
+				}
+				    |
+				{
+					newCompositeNode(grammarAccess.getSadlModelElementAccess().getEquationStatementParserRuleCall_0_1_1());
+				}
+				this_EquationStatement_2=ruleEquationStatement
+				{
+					$current = $this_EquationStatement_2.current;
+					afterParserOrEnumRuleCall();
+				}
+				    |
+				{
+					newCompositeNode(grammarAccess.getSadlModelElementAccess().getExternalEquationStatementParserRuleCall_0_1_2());
+				}
+				this_ExternalEquationStatement_3=ruleExternalEquationStatement
+				{
+					$current = $this_ExternalEquationStatement_3.current;
+					afterParserOrEnumRuleCall();
+				}
+			)
 			{
-				$current = $this_ModifiedAskStatement_0.current;
+				newCompositeNode(grammarAccess.getSadlModelElementAccess().getEOSParserRuleCall_0_2());
+			}
+			ruleEOS
+			{
+				afterParserOrEnumRuleCall();
+			}
+		)
+		    |
+		(
+			otherlv_5=CM
+			{
+				newLeafNode(otherlv_5, grammarAccess.getSadlModelElementAccess().getCMKeyword_1_0());
+			}
+			{
+				newCompositeNode(grammarAccess.getSadlModelElementAccess().getStringResponseParserRuleCall_1_1());
+			}
+			this_StringResponse_6=ruleStringResponse
+			{
+				$current = $this_StringResponse_6.current;
 				afterParserOrEnumRuleCall();
 			}
 			{
-				newCompositeNode(grammarAccess.getSadlModelElementAccess().getEOSParserRuleCall_0_1());
+				newCompositeNode(grammarAccess.getSadlModelElementAccess().getEOSParserRuleCall_1_2());
 			}
 			ruleEOS
 			{
@@ -115,29 +161,11 @@ ruleSadlModelElement returns [EObject current=null]
 		    |
 		(
 			{
-				newCompositeNode(grammarAccess.getSadlModelElementAccess().getWhatStatementParserRuleCall_1_0());
+				newCompositeNode(grammarAccess.getSadlModelElementAccess().getModifiedAskStatementParserRuleCall_2_0());
 			}
-			this_WhatStatement_2=ruleWhatStatement
+			this_ModifiedAskStatement_8=ruleModifiedAskStatement
 			{
-				$current = $this_WhatStatement_2.current;
-				afterParserOrEnumRuleCall();
-			}
-			{
-				newCompositeNode(grammarAccess.getSadlModelElementAccess().getEOSParserRuleCall_1_1());
-			}
-			ruleEOS
-			{
-				afterParserOrEnumRuleCall();
-			}
-		)
-		    |
-		(
-			{
-				newCompositeNode(grammarAccess.getSadlModelElementAccess().getHowManyValuesStatementParserRuleCall_2_0());
-			}
-			this_HowManyValuesStatement_4=ruleHowManyValuesStatement
-			{
-				$current = $this_HowManyValuesStatement_4.current;
+				$current = $this_ModifiedAskStatement_8.current;
 				afterParserOrEnumRuleCall();
 			}
 			{
@@ -146,6 +174,77 @@ ruleSadlModelElement returns [EObject current=null]
 			ruleEOS
 			{
 				afterParserOrEnumRuleCall();
+			}
+		)
+		    |
+		(
+			{
+				newCompositeNode(grammarAccess.getSadlModelElementAccess().getWhatStatementParserRuleCall_3_0());
+			}
+			this_WhatStatement_10=ruleWhatStatement
+			{
+				$current = $this_WhatStatement_10.current;
+				afterParserOrEnumRuleCall();
+			}
+			{
+				newCompositeNode(grammarAccess.getSadlModelElementAccess().getEOSParserRuleCall_3_1());
+			}
+			ruleEOS
+			{
+				afterParserOrEnumRuleCall();
+			}
+		)
+		    |
+		(
+			{
+				newCompositeNode(grammarAccess.getSadlModelElementAccess().getHowManyValuesStatementParserRuleCall_4_0());
+			}
+			this_HowManyValuesStatement_12=ruleHowManyValuesStatement
+			{
+				$current = $this_HowManyValuesStatement_12.current;
+				afterParserOrEnumRuleCall();
+			}
+			{
+				newCompositeNode(grammarAccess.getSadlModelElementAccess().getEOSParserRuleCall_4_1());
+			}
+			ruleEOS
+			{
+				afterParserOrEnumRuleCall();
+			}
+		)
+	)
+;
+
+// Entry rule entryRuleStringResponse
+entryRuleStringResponse returns [EObject current=null]:
+	{ newCompositeNode(grammarAccess.getStringResponseRule()); }
+	iv_ruleStringResponse=ruleStringResponse
+	{ $current=$iv_ruleStringResponse.current; }
+	EOF;
+
+// Rule StringResponse
+ruleStringResponse returns [EObject current=null]
+@init {
+	enterRule();
+}
+@after {
+	leaveRule();
+}:
+	(
+		(
+			lv_str_0_0=RULE_STRING
+			{
+				newLeafNode(lv_str_0_0, grammarAccess.getStringResponseAccess().getStrSTRINGTerminalRuleCall_0());
+			}
+			{
+				if ($current==null) {
+					$current = createModelElement(grammarAccess.getStringResponseRule());
+				}
+				setWithLastConsumed(
+					$current,
+					"str",
+					lv_str_0_0,
+					"com.ge.research.sadl.SADL.STRING");
 			}
 		)
 	)
@@ -258,30 +357,30 @@ ruleWhatStatement returns [EObject current=null]
 }:
 	(
 		(
-			(
-				{
-					$current = forceCreateModelElement(
-						grammarAccess.getWhatStatementAccess().getWhatStatementAction_0_0(),
-						$current);
-				}
-			)
-			(
-				otherlv_1=What
-				{
-					newLeafNode(otherlv_1, grammarAccess.getWhatStatementAccess().getWhatKeyword_0_1_0());
-				}
-				    |
-				otherlv_2=What_1
-				{
-					newLeafNode(otherlv_2, grammarAccess.getWhatStatementAccess().getWhatKeyword_0_1_1());
-				}
-			)
+			{
+				$current = forceCreateModelElement(
+					grammarAccess.getWhatStatementAccess().getWhatStatementAction_0(),
+					$current);
+			}
+		)
+		(
+			otherlv_1=What
+			{
+				newLeafNode(otherlv_1, grammarAccess.getWhatStatementAccess().getWhatKeyword_1_0());
+			}
+			    |
+			otherlv_2=What_1
+			{
+				newLeafNode(otherlv_2, grammarAccess.getWhatStatementAccess().getWhatKeyword_1_1());
+			}
+		)
+		(
 			(
 				(
 					{
-						newCompositeNode(grammarAccess.getWhatStatementAccess().getStmtWhatIsStatementParserRuleCall_0_2_0());
+						newCompositeNode(grammarAccess.getWhatStatementAccess().getStmtWhatIsStatementParserRuleCall_2_0_0());
 					}
-					lv_stmt_3_0=ruleWhatIsStatement
+					lv_stmt_3_1=ruleWhatIsStatement
 					{
 						if ($current==null) {
 							$current = createModelElementForParent(grammarAccess.getWhatStatementRule());
@@ -289,22 +388,29 @@ ruleWhatStatement returns [EObject current=null]
 						set(
 							$current,
 							"stmt",
-							lv_stmt_3_0,
+							lv_stmt_3_1,
 							"com.ge.research.sadl.darpa.aske.Dialog.WhatIsStatement");
+						afterParserOrEnumRuleCall();
+					}
+					    |
+					{
+						newCompositeNode(grammarAccess.getWhatStatementAccess().getStmtWhatValuesStatementParserRuleCall_2_0_1());
+					}
+					lv_stmt_3_2=ruleWhatValuesStatement
+					{
+						if ($current==null) {
+							$current = createModelElementForParent(grammarAccess.getWhatStatementRule());
+						}
+						set(
+							$current,
+							"stmt",
+							lv_stmt_3_2,
+							"com.ge.research.sadl.darpa.aske.Dialog.WhatValuesStatement");
 						afterParserOrEnumRuleCall();
 					}
 				)
 			)
 		)
-		    |
-		{
-			newCompositeNode(grammarAccess.getWhatStatementAccess().getWhatValuesStatementParserRuleCall_1());
-		}
-		this_WhatValuesStatement_4=ruleWhatValuesStatement
-		{
-			$current = $this_WhatValuesStatement_4.current;
-			afterParserOrEnumRuleCall();
-		}
 	)
 ;
 
@@ -1005,6 +1111,214 @@ ruleSadlImport returns [EObject current=null]
 	)
 ;
 
+// Entry rule entryRuleEquationStatement
+entryRuleEquationStatement returns [EObject current=null]:
+	{ newCompositeNode(grammarAccess.getEquationStatementRule()); }
+	iv_ruleEquationStatement=ruleEquationStatement
+	{ $current=$iv_ruleEquationStatement.current; }
+	EOF;
+
+// Rule EquationStatement
+ruleEquationStatement returns [EObject current=null]
+@init {
+	enterRule();
+}
+@after {
+	leaveRule();
+}:
+	(
+		otherlv_0=Equation
+		{
+			newLeafNode(otherlv_0, grammarAccess.getEquationStatementAccess().getEquationKeyword_0());
+		}
+		{
+			if ($current==null) {
+				$current = createModelElement(grammarAccess.getEquationStatementRule());
+			}
+			newCompositeNode(grammarAccess.getEquationStatementAccess().getEquationSignatureParserRuleCall_1());
+		}
+		this_EquationSignature_1=ruleEquationSignature[$current]
+		{
+			$current = $this_EquationSignature_1.current;
+			afterParserOrEnumRuleCall();
+		}
+		(
+			(
+				{
+					newCompositeNode(grammarAccess.getEquationStatementAccess().getBodyExpressionParserRuleCall_2_0());
+				}
+				lv_body_2_0=ruleExpression
+				{
+					if ($current==null) {
+						$current = createModelElementForParent(grammarAccess.getEquationStatementRule());
+					}
+					set(
+						$current,
+						"body",
+						lv_body_2_0,
+						"com.ge.research.sadl.SADL.Expression");
+					afterParserOrEnumRuleCall();
+				}
+			)
+		)?
+		(
+			otherlv_3=Return
+			{
+				newLeafNode(otherlv_3, grammarAccess.getEquationStatementAccess().getReturnKeyword_3_0());
+			}
+			(
+				(
+					{
+						newCompositeNode(grammarAccess.getEquationStatementAccess().getRetvalExpressionParserRuleCall_3_1_0());
+					}
+					lv_retval_4_0=ruleExpression
+					{
+						if ($current==null) {
+							$current = createModelElementForParent(grammarAccess.getEquationStatementRule());
+						}
+						set(
+							$current,
+							"retval",
+							lv_retval_4_0,
+							"com.ge.research.sadl.SADL.Expression");
+						afterParserOrEnumRuleCall();
+					}
+				)
+			)
+		)?
+		(
+			otherlv_5=Where
+			{
+				newLeafNode(otherlv_5, grammarAccess.getEquationStatementAccess().getWhereKeyword_4_0());
+			}
+			(
+				(
+					{
+						newCompositeNode(grammarAccess.getEquationStatementAccess().getWhereExpressionParserRuleCall_4_1_0());
+					}
+					lv_where_6_0=ruleExpression
+					{
+						if ($current==null) {
+							$current = createModelElementForParent(grammarAccess.getEquationStatementRule());
+						}
+						set(
+							$current,
+							"where",
+							lv_where_6_0,
+							"com.ge.research.sadl.SADL.Expression");
+						afterParserOrEnumRuleCall();
+					}
+				)
+			)
+		)?
+	)
+;
+
+// Entry rule entryRuleExternalEquationStatement
+entryRuleExternalEquationStatement returns [EObject current=null]:
+	{ newCompositeNode(grammarAccess.getExternalEquationStatementRule()); }
+	iv_ruleExternalEquationStatement=ruleExternalEquationStatement
+	{ $current=$iv_ruleExternalEquationStatement.current; }
+	EOF;
+
+// Rule ExternalEquationStatement
+ruleExternalEquationStatement returns [EObject current=null]
+@init {
+	enterRule();
+}
+@after {
+	leaveRule();
+}:
+	(
+		otherlv_0=External
+		{
+			newLeafNode(otherlv_0, grammarAccess.getExternalEquationStatementAccess().getExternalKeyword_0());
+		}
+		{
+			if ($current==null) {
+				$current = createModelElement(grammarAccess.getExternalEquationStatementRule());
+			}
+			newCompositeNode(grammarAccess.getExternalEquationStatementAccess().getEquationSignatureParserRuleCall_1());
+		}
+		this_EquationSignature_1=ruleEquationSignature[$current]
+		{
+			$current = $this_EquationSignature_1.current;
+			afterParserOrEnumRuleCall();
+		}
+		(
+			(
+				lv_uri_2_0=RULE_STRING
+				{
+					newLeafNode(lv_uri_2_0, grammarAccess.getExternalEquationStatementAccess().getUriSTRINGTerminalRuleCall_2_0());
+				}
+				{
+					if ($current==null) {
+						$current = createModelElement(grammarAccess.getExternalEquationStatementRule());
+					}
+					setWithLastConsumed(
+						$current,
+						"uri",
+						lv_uri_2_0,
+						"com.ge.research.sadl.SADL.STRING");
+				}
+			)
+		)
+		(
+			otherlv_3=Located
+			{
+				newLeafNode(otherlv_3, grammarAccess.getExternalEquationStatementAccess().getLocatedKeyword_3_0());
+			}
+			otherlv_4=At
+			{
+				newLeafNode(otherlv_4, grammarAccess.getExternalEquationStatementAccess().getAtKeyword_3_1());
+			}
+			(
+				(
+					lv_location_5_0=RULE_STRING
+					{
+						newLeafNode(lv_location_5_0, grammarAccess.getExternalEquationStatementAccess().getLocationSTRINGTerminalRuleCall_3_2_0());
+					}
+					{
+						if ($current==null) {
+							$current = createModelElement(grammarAccess.getExternalEquationStatementRule());
+						}
+						setWithLastConsumed(
+							$current,
+							"location",
+							lv_location_5_0,
+							"com.ge.research.sadl.SADL.STRING");
+					}
+				)
+			)
+		)?
+		(
+			otherlv_6=Where
+			{
+				newLeafNode(otherlv_6, grammarAccess.getExternalEquationStatementAccess().getWhereKeyword_4_0());
+			}
+			(
+				(
+					{
+						newCompositeNode(grammarAccess.getExternalEquationStatementAccess().getWhereExpressionParserRuleCall_4_1_0());
+					}
+					lv_where_7_0=ruleExpression
+					{
+						if ($current==null) {
+							$current = createModelElementForParent(grammarAccess.getExternalEquationStatementRule());
+						}
+						set(
+							$current,
+							"where",
+							lv_where_7_0,
+							"com.ge.research.sadl.SADL.Expression");
+						afterParserOrEnumRuleCall();
+					}
+				)
+			)
+		)?
+	)
+;
+
 
 // Rule EquationSignature
 ruleEquationSignature[EObject in_current]  returns [EObject current=in_current]
@@ -1297,6 +1611,953 @@ ruleSadlReturnDeclaration returns [EObject current=null]
 					}
 					setWithLastConsumed($current, "unknown", lv_unknown_2_0, "--");
 				}
+			)
+		)
+	)
+;
+
+// Entry rule entryRuleSadlStatement
+entryRuleSadlStatement returns [EObject current=null]:
+	{ newCompositeNode(grammarAccess.getSadlStatementRule()); }
+	iv_ruleSadlStatement=ruleSadlStatement
+	{ $current=$iv_ruleSadlStatement.current; }
+	EOF;
+
+// Rule SadlStatement
+ruleSadlStatement returns [EObject current=null]
+@init {
+	enterRule();
+}
+@after {
+	leaveRule();
+}:
+	(
+		(
+			{
+				newCompositeNode(grammarAccess.getSadlStatementAccess().getSadlResourceParserRuleCall_0_0());
+			}
+			this_SadlResource_0=ruleSadlResource
+			{
+				$current = $this_SadlResource_0.current;
+				afterParserOrEnumRuleCall();
+			}
+			(
+				(
+					(
+						{
+							$current = forceCreateModelElementAndAdd(
+								grammarAccess.getSadlStatementAccess().getSadlClassOrPropertyDeclarationClassOrPropertyAction_0_1_0_0(),
+								$current);
+						}
+					)
+					otherlv_2=Is
+					{
+						newLeafNode(otherlv_2, grammarAccess.getSadlStatementAccess().getIsKeyword_0_1_0_1());
+					}
+					otherlv_3=A_1
+					{
+						newLeafNode(otherlv_3, grammarAccess.getSadlStatementAccess().getAKeyword_0_1_0_2());
+					}
+					(
+						(
+							(
+								otherlv_4=TopLevel
+								{
+									newLeafNode(otherlv_4, grammarAccess.getSadlStatementAccess().getTopLevelKeyword_0_1_0_3_0_0());
+								}
+							)?
+							otherlv_5=Class
+							{
+								newLeafNode(otherlv_5, grammarAccess.getSadlStatementAccess().getClassKeyword_0_1_0_3_0_1());
+							}
+						)
+						    |
+						(
+							otherlv_6=Type
+							{
+								newLeafNode(otherlv_6, grammarAccess.getSadlStatementAccess().getTypeKeyword_0_1_0_3_1_0());
+							}
+							otherlv_7=Of
+							{
+								newLeafNode(otherlv_7, grammarAccess.getSadlStatementAccess().getOfKeyword_0_1_0_3_1_1());
+							}
+							(
+								(
+									{
+										newCompositeNode(grammarAccess.getSadlStatementAccess().getSuperElementSadlPrimaryTypeReferenceParserRuleCall_0_1_0_3_1_2_0());
+									}
+									lv_superElement_8_0=ruleSadlPrimaryTypeReference
+									{
+										if ($current==null) {
+											$current = createModelElementForParent(grammarAccess.getSadlStatementRule());
+										}
+										set(
+											$current,
+											"superElement",
+											lv_superElement_8_0,
+											"com.ge.research.sadl.SADL.SadlPrimaryTypeReference");
+										afterParserOrEnumRuleCall();
+									}
+								)
+							)
+							(
+								(
+									{
+										newCompositeNode(grammarAccess.getSadlStatementAccess().getFacetSadlDataTypeFacetParserRuleCall_0_1_0_3_1_3_0());
+									}
+									lv_facet_9_0=ruleSadlDataTypeFacet
+									{
+										if ($current==null) {
+											$current = createModelElementForParent(grammarAccess.getSadlStatementRule());
+										}
+										set(
+											$current,
+											"facet",
+											lv_facet_9_0,
+											"com.ge.research.sadl.SADL.SadlDataTypeFacet");
+										afterParserOrEnumRuleCall();
+									}
+								)
+							)?
+						)
+					)
+					(
+						(
+							(
+								{
+									newCompositeNode(grammarAccess.getSadlStatementAccess().getDescribedBySadlPropertyDeclarationInClassParserRuleCall_0_1_0_4_0_0());
+								}
+								lv_describedBy_10_0=ruleSadlPropertyDeclarationInClass
+								{
+									if ($current==null) {
+										$current = createModelElementForParent(grammarAccess.getSadlStatementRule());
+									}
+									add(
+										$current,
+										"describedBy",
+										lv_describedBy_10_0,
+										"com.ge.research.sadl.SADL.SadlPropertyDeclarationInClass");
+									afterParserOrEnumRuleCall();
+								}
+							)
+						)+
+						    |
+						(
+							(
+								otherlv_11=Comma
+								{
+									newLeafNode(otherlv_11, grammarAccess.getSadlStatementAccess().getCommaKeyword_0_1_0_4_1_0());
+								}
+							)?
+							(
+								(
+									{
+										newCompositeNode(grammarAccess.getSadlStatementAccess().getRestrictionsSadlPropertyRestrictionParserRuleCall_0_1_0_4_1_1_0());
+									}
+									lv_restrictions_12_0=ruleSadlPropertyRestriction
+									{
+										if ($current==null) {
+											$current = createModelElementForParent(grammarAccess.getSadlStatementRule());
+										}
+										add(
+											$current,
+											"restrictions",
+											lv_restrictions_12_0,
+											"com.ge.research.sadl.SADL.SadlPropertyRestriction");
+										afterParserOrEnumRuleCall();
+									}
+								)
+							)
+						)+
+					)?
+				)
+				    |
+				(
+					(
+						{
+							$current = forceCreateModelElementAndSet(
+								grammarAccess.getSadlStatementAccess().getSadlPropertyNameOrRefAction_0_1_1_0(),
+								$current);
+						}
+					)
+					(
+						(
+							lv_primaryDeclaration_14_0=Is
+							{
+								newLeafNode(lv_primaryDeclaration_14_0, grammarAccess.getSadlStatementAccess().getPrimaryDeclarationIsKeyword_0_1_1_1_0());
+							}
+							{
+								if ($current==null) {
+									$current = createModelElement(grammarAccess.getSadlStatementRule());
+								}
+								setWithLastConsumed($current, "primaryDeclaration", true, "is");
+							}
+						)
+					)
+					otherlv_15=A_1
+					{
+						newLeafNode(otherlv_15, grammarAccess.getSadlStatementAccess().getAKeyword_0_1_1_2());
+					}
+					otherlv_16=Property
+					{
+						newLeafNode(otherlv_16, grammarAccess.getSadlStatementAccess().getPropertyKeyword_0_1_1_3());
+					}
+					(
+						(
+							otherlv_17=Comma
+							{
+								newLeafNode(otherlv_17, grammarAccess.getSadlStatementAccess().getCommaKeyword_0_1_1_4_0());
+							}
+						)?
+						(
+							(
+								{
+									newCompositeNode(grammarAccess.getSadlStatementAccess().getRestrictionsSadlPropertyRestrictionParserRuleCall_0_1_1_4_1_0());
+								}
+								lv_restrictions_18_0=ruleSadlPropertyRestriction
+								{
+									if ($current==null) {
+										$current = createModelElementForParent(grammarAccess.getSadlStatementRule());
+									}
+									add(
+										$current,
+										"restrictions",
+										lv_restrictions_18_0,
+										"com.ge.research.sadl.SADL.SadlPropertyRestriction");
+									afterParserOrEnumRuleCall();
+								}
+							)
+						)
+					)*
+				)
+				    |
+				(
+					(
+						{
+							$current = forceCreateModelElementAndSet(
+								grammarAccess.getSadlStatementAccess().getSadlPropertyNameOrRefAction_0_1_2_0(),
+								$current);
+						}
+					)
+					(
+						(
+							otherlv_20=Comma
+							{
+								newLeafNode(otherlv_20, grammarAccess.getSadlStatementAccess().getCommaKeyword_0_1_2_1_0());
+							}
+						)?
+						(
+							(
+								{
+									newCompositeNode(grammarAccess.getSadlStatementAccess().getRestrictionsSadlPropertyRestrictionParserRuleCall_0_1_2_1_1_0());
+								}
+								lv_restrictions_21_0=ruleSadlPropertyRestriction
+								{
+									if ($current==null) {
+										$current = createModelElementForParent(grammarAccess.getSadlStatementRule());
+									}
+									add(
+										$current,
+										"restrictions",
+										lv_restrictions_21_0,
+										"com.ge.research.sadl.SADL.SadlPropertyRestriction");
+									afterParserOrEnumRuleCall();
+								}
+							)
+						)
+					)+
+				)
+				    |
+				(
+					(
+						{
+							$current = forceCreateModelElementAndSet(
+								grammarAccess.getSadlStatementAccess().getSadlSameAsNameOrRefAction_0_1_3_0(),
+								$current);
+						}
+					)
+					otherlv_23=Is
+					{
+						newLeafNode(otherlv_23, grammarAccess.getSadlStatementAccess().getIsKeyword_0_1_3_1());
+					}
+					otherlv_24=The_1
+					{
+						newLeafNode(otherlv_24, grammarAccess.getSadlStatementAccess().getTheKeyword_0_1_3_2());
+					}
+					otherlv_25=Same
+					{
+						newLeafNode(otherlv_25, grammarAccess.getSadlStatementAccess().getSameKeyword_0_1_3_3());
+					}
+					otherlv_26=As
+					{
+						newLeafNode(otherlv_26, grammarAccess.getSadlStatementAccess().getAsKeyword_0_1_3_4());
+					}
+					(
+						(
+							lv_complement_27_0=Not
+							{
+								newLeafNode(lv_complement_27_0, grammarAccess.getSadlStatementAccess().getComplementNotKeyword_0_1_3_5_0());
+							}
+							{
+								if ($current==null) {
+									$current = createModelElement(grammarAccess.getSadlStatementRule());
+								}
+								setWithLastConsumed($current, "complement", true, "not");
+							}
+						)
+					)?
+					(
+						(
+							{
+								newCompositeNode(grammarAccess.getSadlStatementAccess().getSameAsSadlTypeReferenceParserRuleCall_0_1_3_6_0());
+							}
+							lv_sameAs_28_0=ruleSadlTypeReference
+							{
+								if ($current==null) {
+									$current = createModelElementForParent(grammarAccess.getSadlStatementRule());
+								}
+								set(
+									$current,
+									"sameAs",
+									lv_sameAs_28_0,
+									"com.ge.research.sadl.SADL.SadlTypeReference");
+								afterParserOrEnumRuleCall();
+							}
+						)
+					)
+				)
+				    |
+				(
+					(
+						{
+							$current = forceCreateModelElementAndSet(
+								grammarAccess.getSadlStatementAccess().getSadlDifferentFromNameOrRefAction_0_1_4_0(),
+								$current);
+						}
+					)
+					otherlv_30=Is
+					{
+						newLeafNode(otherlv_30, grammarAccess.getSadlStatementAccess().getIsKeyword_0_1_4_1());
+					}
+					otherlv_31=Not
+					{
+						newLeafNode(otherlv_31, grammarAccess.getSadlStatementAccess().getNotKeyword_0_1_4_2());
+					}
+					otherlv_32=The_1
+					{
+						newLeafNode(otherlv_32, grammarAccess.getSadlStatementAccess().getTheKeyword_0_1_4_3());
+					}
+					otherlv_33=Same
+					{
+						newLeafNode(otherlv_33, grammarAccess.getSadlStatementAccess().getSameKeyword_0_1_4_4());
+					}
+					otherlv_34=As
+					{
+						newLeafNode(otherlv_34, grammarAccess.getSadlStatementAccess().getAsKeyword_0_1_4_5());
+					}
+					(
+						(
+							{
+								newCompositeNode(grammarAccess.getSadlStatementAccess().getNotTheSameAsSadlTypeReferenceParserRuleCall_0_1_4_6_0());
+							}
+							lv_notTheSameAs_35_0=ruleSadlTypeReference
+							{
+								if ($current==null) {
+									$current = createModelElementForParent(grammarAccess.getSadlStatementRule());
+								}
+								set(
+									$current,
+									"notTheSameAs",
+									lv_notTheSameAs_35_0,
+									"com.ge.research.sadl.SADL.SadlTypeReference");
+								afterParserOrEnumRuleCall();
+							}
+						)
+					)
+				)
+				    |
+				(
+					(
+						{
+							$current = forceCreateModelElementAndSet(
+								grammarAccess.getSadlStatementAccess().getSadlInstanceNameOrRefAction_0_1_5_0(),
+								$current);
+						}
+					)
+					(
+						otherlv_37=Is
+						{
+							newLeafNode(otherlv_37, grammarAccess.getSadlStatementAccess().getIsKeyword_0_1_5_1_0());
+						}
+						{
+							newCompositeNode(grammarAccess.getSadlStatementAccess().getAnArticleParserRuleCall_0_1_5_1_1());
+						}
+						ruleAnArticle
+						{
+							afterParserOrEnumRuleCall();
+						}
+						(
+							(
+								{
+									newCompositeNode(grammarAccess.getSadlStatementAccess().getTypeSadlTypeReferenceParserRuleCall_0_1_5_1_2_0());
+								}
+								lv_type_39_0=ruleSadlTypeReference
+								{
+									if ($current==null) {
+										$current = createModelElementForParent(grammarAccess.getSadlStatementRule());
+									}
+									set(
+										$current,
+										"type",
+										lv_type_39_0,
+										"com.ge.research.sadl.SADL.SadlTypeReference");
+									afterParserOrEnumRuleCall();
+								}
+							)
+						)
+					)?
+					(
+						(
+							(
+								{
+									newCompositeNode(grammarAccess.getSadlStatementAccess().getListInitializerSadlValueListParserRuleCall_0_1_5_2_0_0());
+								}
+								lv_listInitializer_40_0=ruleSadlValueList
+								{
+									if ($current==null) {
+										$current = createModelElementForParent(grammarAccess.getSadlStatementRule());
+									}
+									set(
+										$current,
+										"listInitializer",
+										lv_listInitializer_40_0,
+										"com.ge.research.sadl.SADL.SadlValueList");
+									afterParserOrEnumRuleCall();
+								}
+							)
+						)
+						    |
+						(
+							(
+								{
+									newCompositeNode(grammarAccess.getSadlStatementAccess().getPropertyInitializersSadlPropertyInitializerParserRuleCall_0_1_5_2_1_0());
+								}
+								lv_propertyInitializers_41_0=ruleSadlPropertyInitializer
+								{
+									if ($current==null) {
+										$current = createModelElementForParent(grammarAccess.getSadlStatementRule());
+									}
+									add(
+										$current,
+										"propertyInitializers",
+										lv_propertyInitializers_41_0,
+										"com.ge.research.sadl.SADL.SadlPropertyInitializer");
+									afterParserOrEnumRuleCall();
+								}
+							)
+						)+
+					)?
+				)
+				    |
+				(
+					(
+						{
+							$current = forceCreateModelElementAndAdd(
+								grammarAccess.getSadlStatementAccess().getSadlDisjointClassesClassesAction_0_1_6_0(),
+								$current);
+						}
+					)
+					(
+						otherlv_43=And
+						{
+							newLeafNode(otherlv_43, grammarAccess.getSadlStatementAccess().getAndKeyword_0_1_6_1_0());
+						}
+						(
+							(
+								{
+									newCompositeNode(grammarAccess.getSadlStatementAccess().getClassesSadlResourceParserRuleCall_0_1_6_1_1_0());
+								}
+								lv_classes_44_0=ruleSadlResource
+								{
+									if ($current==null) {
+										$current = createModelElementForParent(grammarAccess.getSadlStatementRule());
+									}
+									add(
+										$current,
+										"classes",
+										lv_classes_44_0,
+										"com.ge.research.sadl.SADL.SadlResource");
+									afterParserOrEnumRuleCall();
+								}
+							)
+						)
+					)+
+					otherlv_45=Are
+					{
+						newLeafNode(otherlv_45, grammarAccess.getSadlStatementAccess().getAreKeyword_0_1_6_2());
+					}
+					otherlv_46=Disjoint
+					{
+						newLeafNode(otherlv_46, grammarAccess.getSadlStatementAccess().getDisjointKeyword_0_1_6_3());
+					}
+				)
+			)
+		)
+		    |
+		(
+			(
+				{
+					$current = forceCreateModelElement(
+						grammarAccess.getSadlStatementAccess().getSadlClassOrPropertyDeclarationAction_1_0(),
+						$current);
+				}
+			)
+			otherlv_48=LeftCurlyBracket
+			{
+				newLeafNode(otherlv_48, grammarAccess.getSadlStatementAccess().getLeftCurlyBracketKeyword_1_1());
+			}
+			(
+				(
+					{
+						newCompositeNode(grammarAccess.getSadlStatementAccess().getClassOrPropertySadlResourceParserRuleCall_1_2_0());
+					}
+					lv_classOrProperty_49_0=ruleSadlResource
+					{
+						if ($current==null) {
+							$current = createModelElementForParent(grammarAccess.getSadlStatementRule());
+						}
+						add(
+							$current,
+							"classOrProperty",
+							lv_classOrProperty_49_0,
+							"com.ge.research.sadl.SADL.SadlResource");
+						afterParserOrEnumRuleCall();
+					}
+				)
+			)
+			(
+				otherlv_50=Comma
+				{
+					newLeafNode(otherlv_50, grammarAccess.getSadlStatementAccess().getCommaKeyword_1_3_0());
+				}
+				(
+					(
+						{
+							newCompositeNode(grammarAccess.getSadlStatementAccess().getClassOrPropertySadlResourceParserRuleCall_1_3_1_0());
+						}
+						lv_classOrProperty_51_0=ruleSadlResource
+						{
+							if ($current==null) {
+								$current = createModelElementForParent(grammarAccess.getSadlStatementRule());
+							}
+							add(
+								$current,
+								"classOrProperty",
+								lv_classOrProperty_51_0,
+								"com.ge.research.sadl.SADL.SadlResource");
+							afterParserOrEnumRuleCall();
+						}
+					)
+				)
+			)*
+			otherlv_52=RightCurlyBracket
+			{
+				newLeafNode(otherlv_52, grammarAccess.getSadlStatementAccess().getRightCurlyBracketKeyword_1_4());
+			}
+			otherlv_53=Are
+			{
+				newLeafNode(otherlv_53, grammarAccess.getSadlStatementAccess().getAreKeyword_1_5());
+			}
+			(
+				(
+					(
+						(
+							(
+								otherlv_54=TopLevel
+								{
+									newLeafNode(otherlv_54, grammarAccess.getSadlStatementAccess().getTopLevelKeyword_1_6_0_0_0_0());
+								}
+							)?
+							otherlv_55=Classes
+							{
+								newLeafNode(otherlv_55, grammarAccess.getSadlStatementAccess().getClassesKeyword_1_6_0_0_0_1());
+							}
+						)
+						    |
+						(
+							(
+								(
+									(
+										lv_oftype_56_0=Types
+										{
+											newLeafNode(lv_oftype_56_0, grammarAccess.getSadlStatementAccess().getOftypeTypesKeyword_1_6_0_0_1_0_0_0());
+										}
+										{
+											if ($current==null) {
+												$current = createModelElement(grammarAccess.getSadlStatementRule());
+											}
+											setWithLastConsumed($current, "oftype", lv_oftype_56_0, "types");
+										}
+									)
+								)
+								    |
+								(
+									(
+										lv_oftype_57_0=Instances
+										{
+											newLeafNode(lv_oftype_57_0, grammarAccess.getSadlStatementAccess().getOftypeInstancesKeyword_1_6_0_0_1_0_1_0());
+										}
+										{
+											if ($current==null) {
+												$current = createModelElement(grammarAccess.getSadlStatementRule());
+											}
+											setWithLastConsumed($current, "oftype", lv_oftype_57_0, "instances");
+										}
+									)
+								)
+							)
+							otherlv_58=Of
+							{
+								newLeafNode(otherlv_58, grammarAccess.getSadlStatementAccess().getOfKeyword_1_6_0_0_1_1());
+							}
+							(
+								(
+									{
+										newCompositeNode(grammarAccess.getSadlStatementAccess().getSuperElementSadlPrimaryTypeReferenceParserRuleCall_1_6_0_0_1_2_0());
+									}
+									lv_superElement_59_0=ruleSadlPrimaryTypeReference
+									{
+										if ($current==null) {
+											$current = createModelElementForParent(grammarAccess.getSadlStatementRule());
+										}
+										set(
+											$current,
+											"superElement",
+											lv_superElement_59_0,
+											"com.ge.research.sadl.SADL.SadlPrimaryTypeReference");
+										afterParserOrEnumRuleCall();
+									}
+								)
+							)
+						)
+					)
+					(
+						(
+							{
+								newCompositeNode(grammarAccess.getSadlStatementAccess().getDescribedBySadlPropertyDeclarationInClassParserRuleCall_1_6_0_1_0());
+							}
+							lv_describedBy_60_0=ruleSadlPropertyDeclarationInClass
+							{
+								if ($current==null) {
+									$current = createModelElementForParent(grammarAccess.getSadlStatementRule());
+								}
+								add(
+									$current,
+									"describedBy",
+									lv_describedBy_60_0,
+									"com.ge.research.sadl.SADL.SadlPropertyDeclarationInClass");
+								afterParserOrEnumRuleCall();
+							}
+						)
+					)*
+				)
+				    |
+				(
+					(
+						{
+							$current = forceCreateModelElementAndAdd(
+								grammarAccess.getSadlStatementAccess().getSadlDisjointClassesTypesAction_1_6_1_0(),
+								$current);
+						}
+					)
+					otherlv_62=Disjoint
+					{
+						newLeafNode(otherlv_62, grammarAccess.getSadlStatementAccess().getDisjointKeyword_1_6_1_1());
+					}
+				)
+				    |
+				(
+					(
+						{
+							$current = forceCreateModelElementAndAdd(
+								grammarAccess.getSadlStatementAccess().getSadlDifferentFromTypesAction_1_6_2_0(),
+								$current);
+						}
+					)
+					(
+						(
+							lv_complement_64_0=Not
+							{
+								newLeafNode(lv_complement_64_0, grammarAccess.getSadlStatementAccess().getComplementNotKeyword_1_6_2_1_0());
+							}
+							{
+								if ($current==null) {
+									$current = createModelElement(grammarAccess.getSadlStatementRule());
+								}
+								setWithLastConsumed($current, "complement", true, "not");
+							}
+						)
+					)?
+					otherlv_65=The_1
+					{
+						newLeafNode(otherlv_65, grammarAccess.getSadlStatementAccess().getTheKeyword_1_6_2_2());
+					}
+					otherlv_66=Same
+					{
+						newLeafNode(otherlv_66, grammarAccess.getSadlStatementAccess().getSameKeyword_1_6_2_3());
+					}
+				)
+			)
+		)
+		    |
+		(
+			(
+				{
+					$current = forceCreateModelElement(
+						grammarAccess.getSadlStatementAccess().getSadlPropertyAction_2_0(),
+						$current);
+				}
+			)
+			(
+				{
+					newCompositeNode(grammarAccess.getSadlStatementAccess().getAnArticleParserRuleCall_2_1());
+				}
+				ruleAnArticle
+				{
+					afterParserOrEnumRuleCall();
+				}
+			)?
+			otherlv_69=Relationship
+			{
+				newLeafNode(otherlv_69, grammarAccess.getSadlStatementAccess().getRelationshipKeyword_2_2());
+			}
+			otherlv_70=Of
+			{
+				newLeafNode(otherlv_70, grammarAccess.getSadlStatementAccess().getOfKeyword_2_3());
+			}
+			(
+				(
+					{
+						newCompositeNode(grammarAccess.getSadlStatementAccess().getFromSadlTypeReferenceParserRuleCall_2_4_0());
+					}
+					lv_from_71_0=ruleSadlTypeReference
+					{
+						if ($current==null) {
+							$current = createModelElementForParent(grammarAccess.getSadlStatementRule());
+						}
+						set(
+							$current,
+							"from",
+							lv_from_71_0,
+							"com.ge.research.sadl.SADL.SadlTypeReference");
+						afterParserOrEnumRuleCall();
+					}
+				)
+			)
+			otherlv_72=To
+			{
+				newLeafNode(otherlv_72, grammarAccess.getSadlStatementAccess().getToKeyword_2_5());
+			}
+			(
+				(
+					{
+						newCompositeNode(grammarAccess.getSadlStatementAccess().getToSadlTypeReferenceParserRuleCall_2_6_0());
+					}
+					lv_to_73_0=ruleSadlTypeReference
+					{
+						if ($current==null) {
+							$current = createModelElementForParent(grammarAccess.getSadlStatementRule());
+						}
+						set(
+							$current,
+							"to",
+							lv_to_73_0,
+							"com.ge.research.sadl.SADL.SadlTypeReference");
+						afterParserOrEnumRuleCall();
+					}
+				)
+			)
+			otherlv_74=Is
+			{
+				newLeafNode(otherlv_74, grammarAccess.getSadlStatementAccess().getIsKeyword_2_7());
+			}
+			(
+				(
+					{
+						newCompositeNode(grammarAccess.getSadlStatementAccess().getPropertySadlResourceParserRuleCall_2_8_0());
+					}
+					lv_property_75_0=ruleSadlResource
+					{
+						if ($current==null) {
+							$current = createModelElementForParent(grammarAccess.getSadlStatementRule());
+						}
+						set(
+							$current,
+							"property",
+							lv_property_75_0,
+							"com.ge.research.sadl.SADL.SadlResource");
+						afterParserOrEnumRuleCall();
+					}
+				)
+			)
+		)
+		    |
+		(
+			{
+				newCompositeNode(grammarAccess.getSadlStatementAccess().getAnArticleParserRuleCall_3_0());
+			}
+			ruleAnArticle
+			{
+				afterParserOrEnumRuleCall();
+			}
+			{
+				newCompositeNode(grammarAccess.getSadlStatementAccess().getSadlTypeReferenceParserRuleCall_3_1());
+			}
+			this_SadlTypeReference_77=ruleSadlTypeReference
+			{
+				$current = $this_SadlTypeReference_77.current;
+				afterParserOrEnumRuleCall();
+			}
+			(
+				(
+					(
+						{
+							$current = forceCreateModelElementAndSet(
+								grammarAccess.getSadlStatementAccess().getSadlInstanceTypeAction_3_2_0_0(),
+								$current);
+						}
+					)
+					(
+						(
+							{
+								newCompositeNode(grammarAccess.getSadlStatementAccess().getInstanceSadlResourceParserRuleCall_3_2_0_1_0());
+							}
+							lv_instance_79_0=ruleSadlResource
+							{
+								if ($current==null) {
+									$current = createModelElementForParent(grammarAccess.getSadlStatementRule());
+								}
+								set(
+									$current,
+									"instance",
+									lv_instance_79_0,
+									"com.ge.research.sadl.SADL.SadlResource");
+								afterParserOrEnumRuleCall();
+							}
+						)
+					)?
+					(
+						(
+							{
+								newCompositeNode(grammarAccess.getSadlStatementAccess().getPropertyInitializersSadlPropertyInitializerParserRuleCall_3_2_0_2_0());
+							}
+							lv_propertyInitializers_80_0=ruleSadlPropertyInitializer
+							{
+								if ($current==null) {
+									$current = createModelElementForParent(grammarAccess.getSadlStatementRule());
+								}
+								add(
+									$current,
+									"propertyInitializers",
+									lv_propertyInitializers_80_0,
+									"com.ge.research.sadl.SADL.SadlPropertyInitializer");
+								afterParserOrEnumRuleCall();
+							}
+						)
+					)*
+				)
+				    |
+				(
+					(
+						{
+							$current = forceCreateModelElementAndSet(
+								grammarAccess.getSadlStatementAccess().getSadlNecessaryAndSufficientSubjectAction_3_2_1_0(),
+								$current);
+						}
+					)
+					otherlv_82=Is
+					{
+						newLeafNode(otherlv_82, grammarAccess.getSadlStatementAccess().getIsKeyword_3_2_1_1());
+					}
+					{
+						newCompositeNode(grammarAccess.getSadlStatementAccess().getAnArticleParserRuleCall_3_2_1_2());
+					}
+					ruleAnArticle
+					{
+						afterParserOrEnumRuleCall();
+					}
+					(
+						(
+							{
+								newCompositeNode(grammarAccess.getSadlStatementAccess().getObjectSadlResourceParserRuleCall_3_2_1_3_0());
+							}
+							lv_object_84_0=ruleSadlResource
+							{
+								if ($current==null) {
+									$current = createModelElementForParent(grammarAccess.getSadlStatementRule());
+								}
+								set(
+									$current,
+									"object",
+									lv_object_84_0,
+									"com.ge.research.sadl.SADL.SadlResource");
+								afterParserOrEnumRuleCall();
+							}
+						)
+					)
+					otherlv_85=Only
+					{
+						newLeafNode(otherlv_85, grammarAccess.getSadlStatementAccess().getOnlyKeyword_3_2_1_4());
+					}
+					otherlv_86=If
+					{
+						newLeafNode(otherlv_86, grammarAccess.getSadlStatementAccess().getIfKeyword_3_2_1_5());
+					}
+					(
+						(
+							{
+								newCompositeNode(grammarAccess.getSadlStatementAccess().getPropConditionsSadlPropertyConditionParserRuleCall_3_2_1_6_0());
+							}
+							lv_propConditions_87_0=ruleSadlPropertyCondition
+							{
+								if ($current==null) {
+									$current = createModelElementForParent(grammarAccess.getSadlStatementRule());
+								}
+								add(
+									$current,
+									"propConditions",
+									lv_propConditions_87_0,
+									"com.ge.research.sadl.SADL.SadlPropertyCondition");
+								afterParserOrEnumRuleCall();
+							}
+						)
+					)
+					(
+						otherlv_88=And
+						{
+							newLeafNode(otherlv_88, grammarAccess.getSadlStatementAccess().getAndKeyword_3_2_1_7_0());
+						}
+						(
+							(
+								{
+									newCompositeNode(grammarAccess.getSadlStatementAccess().getPropConditionsSadlPropertyConditionParserRuleCall_3_2_1_7_1_0());
+								}
+								lv_propConditions_89_0=ruleSadlPropertyCondition
+								{
+									if ($current==null) {
+										$current = createModelElementForParent(grammarAccess.getSadlStatementRule());
+									}
+									add(
+										$current,
+										"propConditions",
+										lv_propConditions_89_0,
+										"com.ge.research.sadl.SADL.SadlPropertyCondition");
+									afterParserOrEnumRuleCall();
+								}
+							)
+						)
+					)*
+				)
 			)
 		)
 	)

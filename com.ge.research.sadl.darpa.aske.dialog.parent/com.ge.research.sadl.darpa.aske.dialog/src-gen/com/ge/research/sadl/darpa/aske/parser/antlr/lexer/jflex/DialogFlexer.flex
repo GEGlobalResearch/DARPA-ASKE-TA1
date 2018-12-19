@@ -223,6 +223,7 @@ ESCAPE_SEQUENCE=\\{ANY_OTHER}
 <YYINITIAL> "with" { return With; }
 <YYINITIAL> "..." { return FullStopFullStopFullStop; }
 <YYINITIAL> "Ask" { return Ask; }
+<YYINITIAL> "CM:" { return CM; }
 <YYINITIAL> "How" { return How; }
 <YYINITIAL> "The" { return The; }
 <YYINITIAL> "and" { return And; }

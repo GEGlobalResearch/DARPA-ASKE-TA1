@@ -29,7 +29,8 @@ Require-Bundle: org.eclipse.xtext,
  org.objectweb.asm,
  org.apache.commons.logging,
  org.apache.log4j,
- com.ge.research.sadl.xtextgenerator
+ com.ge.research.sadl.xtextgenerator,
+ com.ge.research.sadl.jena-wrapper-for-sadl
 Bundle-RequiredExecutionEnvironment: JavaSE-1.8
 Export-Package: com.ge.research.sadl.darpa.aske,
  com.ge.research.sadl.darpa.aske.dialog,

@@ -39,51 +39,114 @@ public class DialogGrammarAccess extends AbstractGrammarElementFinder {
 		private final ParserRule rule = (ParserRule) GrammarUtil.findRuleForName(getGrammar(), "com.ge.research.sadl.darpa.aske.Dialog.SadlModelElement");
 		private final Alternatives cAlternatives = (Alternatives)rule.eContents().get(1);
 		private final Group cGroup_0 = (Group)cAlternatives.eContents().get(0);
-		private final RuleCall cModifiedAskStatementParserRuleCall_0_0 = (RuleCall)cGroup_0.eContents().get(0);
-		private final RuleCall cEOSParserRuleCall_0_1 = (RuleCall)cGroup_0.eContents().get(1);
+		private final Keyword cCMKeyword_0_0 = (Keyword)cGroup_0.eContents().get(0);
+		private final Alternatives cAlternatives_0_1 = (Alternatives)cGroup_0.eContents().get(1);
+		private final RuleCall cSadlStatementParserRuleCall_0_1_0 = (RuleCall)cAlternatives_0_1.eContents().get(0);
+		private final RuleCall cEquationStatementParserRuleCall_0_1_1 = (RuleCall)cAlternatives_0_1.eContents().get(1);
+		private final RuleCall cExternalEquationStatementParserRuleCall_0_1_2 = (RuleCall)cAlternatives_0_1.eContents().get(2);
+		private final RuleCall cEOSParserRuleCall_0_2 = (RuleCall)cGroup_0.eContents().get(2);
 		private final Group cGroup_1 = (Group)cAlternatives.eContents().get(1);
-		private final RuleCall cWhatStatementParserRuleCall_1_0 = (RuleCall)cGroup_1.eContents().get(0);
-		private final RuleCall cEOSParserRuleCall_1_1 = (RuleCall)cGroup_1.eContents().get(1);
+		private final Keyword cCMKeyword_1_0 = (Keyword)cGroup_1.eContents().get(0);
+		private final RuleCall cStringResponseParserRuleCall_1_1 = (RuleCall)cGroup_1.eContents().get(1);
+		private final RuleCall cEOSParserRuleCall_1_2 = (RuleCall)cGroup_1.eContents().get(2);
 		private final Group cGroup_2 = (Group)cAlternatives.eContents().get(2);
-		private final RuleCall cHowManyValuesStatementParserRuleCall_2_0 = (RuleCall)cGroup_2.eContents().get(0);
+		private final RuleCall cModifiedAskStatementParserRuleCall_2_0 = (RuleCall)cGroup_2.eContents().get(0);
 		private final RuleCall cEOSParserRuleCall_2_1 = (RuleCall)cGroup_2.eContents().get(1);
+		private final Group cGroup_3 = (Group)cAlternatives.eContents().get(3);
+		private final RuleCall cWhatStatementParserRuleCall_3_0 = (RuleCall)cGroup_3.eContents().get(0);
+		private final RuleCall cEOSParserRuleCall_3_1 = (RuleCall)cGroup_3.eContents().get(1);
+		private final Group cGroup_4 = (Group)cAlternatives.eContents().get(4);
+		private final RuleCall cHowManyValuesStatementParserRuleCall_4_0 = (RuleCall)cGroup_4.eContents().get(0);
+		private final RuleCall cEOSParserRuleCall_4_1 = (RuleCall)cGroup_4.eContents().get(1);
 		
 		//@Override
 		//SadlModelElement sadl::SadlModelElement:
-		//	ModifiedAskStatement EOS | WhatStatement EOS | HowManyValuesStatement EOS;
+		//	'CM:' (SadlStatement | EquationStatement | ExternalEquationStatement) EOS |
+		//	'CM:' StringResponse EOS | ModifiedAskStatement EOS | WhatStatement EOS | HowManyValuesStatement EOS //|
+		//	//	=>CMInput EOS
+		//;
 		@Override public ParserRule getRule() { return rule; }
 		
+		//'CM:' (SadlStatement | EquationStatement | ExternalEquationStatement) EOS | 'CM:' StringResponse EOS |
 		//ModifiedAskStatement EOS | WhatStatement EOS | HowManyValuesStatement EOS
 		public Alternatives getAlternatives() { return cAlternatives; }
 		
-		//ModifiedAskStatement EOS
+		//'CM:' (SadlStatement | EquationStatement | ExternalEquationStatement) EOS
 		public Group getGroup_0() { return cGroup_0; }
 		
-		//ModifiedAskStatement
-		public RuleCall getModifiedAskStatementParserRuleCall_0_0() { return cModifiedAskStatementParserRuleCall_0_0; }
+		//'CM:'
+		public Keyword getCMKeyword_0_0() { return cCMKeyword_0_0; }
+		
+		//SadlStatement | EquationStatement | ExternalEquationStatement
+		public Alternatives getAlternatives_0_1() { return cAlternatives_0_1; }
+		
+		//SadlStatement
+		public RuleCall getSadlStatementParserRuleCall_0_1_0() { return cSadlStatementParserRuleCall_0_1_0; }
+		
+		//EquationStatement
+		public RuleCall getEquationStatementParserRuleCall_0_1_1() { return cEquationStatementParserRuleCall_0_1_1; }
+		
+		//ExternalEquationStatement
+		public RuleCall getExternalEquationStatementParserRuleCall_0_1_2() { return cExternalEquationStatementParserRuleCall_0_1_2; }
 		
 		//EOS
-		public RuleCall getEOSParserRuleCall_0_1() { return cEOSParserRuleCall_0_1; }
+		public RuleCall getEOSParserRuleCall_0_2() { return cEOSParserRuleCall_0_2; }
 		
-		//WhatStatement EOS
+		//'CM:' StringResponse EOS
 		public Group getGroup_1() { return cGroup_1; }
 		
-		//WhatStatement
-		public RuleCall getWhatStatementParserRuleCall_1_0() { return cWhatStatementParserRuleCall_1_0; }
+		//'CM:'
+		public Keyword getCMKeyword_1_0() { return cCMKeyword_1_0; }
+		
+		//StringResponse
+		public RuleCall getStringResponseParserRuleCall_1_1() { return cStringResponseParserRuleCall_1_1; }
 		
 		//EOS
-		public RuleCall getEOSParserRuleCall_1_1() { return cEOSParserRuleCall_1_1; }
+		public RuleCall getEOSParserRuleCall_1_2() { return cEOSParserRuleCall_1_2; }
 		
-		////	WhatValuesStatement EOS	|
-		//HowManyValuesStatement EOS
+		//ModifiedAskStatement EOS
 		public Group getGroup_2() { return cGroup_2; }
 		
-		////	WhatValuesStatement EOS	|
-		//HowManyValuesStatement
-		public RuleCall getHowManyValuesStatementParserRuleCall_2_0() { return cHowManyValuesStatementParserRuleCall_2_0; }
+		//ModifiedAskStatement
+		public RuleCall getModifiedAskStatementParserRuleCall_2_0() { return cModifiedAskStatementParserRuleCall_2_0; }
 		
 		//EOS
 		public RuleCall getEOSParserRuleCall_2_1() { return cEOSParserRuleCall_2_1; }
+		
+		//WhatStatement EOS
+		public Group getGroup_3() { return cGroup_3; }
+		
+		//WhatStatement
+		public RuleCall getWhatStatementParserRuleCall_3_0() { return cWhatStatementParserRuleCall_3_0; }
+		
+		//EOS
+		public RuleCall getEOSParserRuleCall_3_1() { return cEOSParserRuleCall_3_1; }
+		
+		////	WhatValuesStatement EOS	|
+		//HowManyValuesStatement EOS
+		public Group getGroup_4() { return cGroup_4; }
+		
+		////	WhatValuesStatement EOS	|
+		//HowManyValuesStatement
+		public RuleCall getHowManyValuesStatementParserRuleCall_4_0() { return cHowManyValuesStatementParserRuleCall_4_0; }
+		
+		//EOS
+		public RuleCall getEOSParserRuleCall_4_1() { return cEOSParserRuleCall_4_1; }
+	}
+	public class StringResponseElements extends AbstractParserRuleElementFinder {
+		private final ParserRule rule = (ParserRule) GrammarUtil.findRuleForName(getGrammar(), "com.ge.research.sadl.darpa.aske.Dialog.StringResponse");
+		private final Assignment cStrAssignment = (Assignment)rule.eContents().get(1);
+		private final RuleCall cStrSTRINGTerminalRuleCall_0 = (RuleCall)cStrAssignment.eContents().get(0);
+		
+		//StringResponse:
+		//	str=STRING;
+		@Override public ParserRule getRule() { return rule; }
+		
+		//str=STRING
+		public Assignment getStrAssignment() { return cStrAssignment; }
+		
+		//STRING
+		public RuleCall getStrSTRINGTerminalRuleCall_0() { return cStrSTRINGTerminalRuleCall_0; }
 	}
 	public class ModifiedAskStatementElements extends AbstractParserRuleElementFinder {
 		private final ParserRule rule = (ParserRule) GrammarUtil.findRuleForName(getGrammar(), "com.ge.research.sadl.darpa.aske.Dialog.ModifiedAskStatement");
@@ -134,47 +197,46 @@ public class DialogGrammarAccess extends AbstractGrammarElementFinder {
 	}
 	public class WhatStatementElements extends AbstractParserRuleElementFinder {
 		private final ParserRule rule = (ParserRule) GrammarUtil.findRuleForName(getGrammar(), "com.ge.research.sadl.darpa.aske.Dialog.WhatStatement");
-		private final Alternatives cAlternatives = (Alternatives)rule.eContents().get(1);
-		private final Group cGroup_0 = (Group)cAlternatives.eContents().get(0);
-		private final Action cWhatStatementAction_0_0 = (Action)cGroup_0.eContents().get(0);
-		private final Alternatives cAlternatives_0_1 = (Alternatives)cGroup_0.eContents().get(1);
-		private final Keyword cWhatKeyword_0_1_0 = (Keyword)cAlternatives_0_1.eContents().get(0);
-		private final Keyword cWhatKeyword_0_1_1 = (Keyword)cAlternatives_0_1.eContents().get(1);
-		private final Assignment cStmtAssignment_0_2 = (Assignment)cGroup_0.eContents().get(2);
-		private final RuleCall cStmtWhatIsStatementParserRuleCall_0_2_0 = (RuleCall)cStmtAssignment_0_2.eContents().get(0);
-		private final RuleCall cWhatValuesStatementParserRuleCall_1 = (RuleCall)cAlternatives.eContents().get(1);
+		private final Group cGroup = (Group)rule.eContents().get(1);
+		private final Action cWhatStatementAction_0 = (Action)cGroup.eContents().get(0);
+		private final Alternatives cAlternatives_1 = (Alternatives)cGroup.eContents().get(1);
+		private final Keyword cWhatKeyword_1_0 = (Keyword)cAlternatives_1.eContents().get(0);
+		private final Keyword cWhatKeyword_1_1 = (Keyword)cAlternatives_1.eContents().get(1);
+		private final Assignment cStmtAssignment_2 = (Assignment)cGroup.eContents().get(2);
+		private final Alternatives cStmtAlternatives_2_0 = (Alternatives)cStmtAssignment_2.eContents().get(0);
+		private final RuleCall cStmtWhatIsStatementParserRuleCall_2_0_0 = (RuleCall)cStmtAlternatives_2_0.eContents().get(0);
+		private final RuleCall cStmtWhatValuesStatementParserRuleCall_2_0_1 = (RuleCall)cStmtAlternatives_2_0.eContents().get(1);
 		
 		//WhatStatement:
-		//	{WhatStatement} ('What' | 'what') stmt=WhatIsStatement
-		//	| WhatValuesStatement;
+		//	{WhatStatement} ('What' | 'what') stmt=(WhatIsStatement | WhatValuesStatement);
 		@Override public ParserRule getRule() { return rule; }
 		
-		//{WhatStatement} ('What' | 'what') stmt=WhatIsStatement | WhatValuesStatement
-		public Alternatives getAlternatives() { return cAlternatives; }
-		
-		//{WhatStatement} ('What' | 'what') stmt=WhatIsStatement
-		public Group getGroup_0() { return cGroup_0; }
+		//{WhatStatement} ('What' | 'what') stmt=(WhatIsStatement | WhatValuesStatement)
+		public Group getGroup() { return cGroup; }
 		
 		//{WhatStatement}
-		public Action getWhatStatementAction_0_0() { return cWhatStatementAction_0_0; }
+		public Action getWhatStatementAction_0() { return cWhatStatementAction_0; }
 		
 		//'What' | 'what'
-		public Alternatives getAlternatives_0_1() { return cAlternatives_0_1; }
+		public Alternatives getAlternatives_1() { return cAlternatives_1; }
 		
 		//'What'
-		public Keyword getWhatKeyword_0_1_0() { return cWhatKeyword_0_1_0; }
+		public Keyword getWhatKeyword_1_0() { return cWhatKeyword_1_0; }
 		
 		//'what'
-		public Keyword getWhatKeyword_0_1_1() { return cWhatKeyword_0_1_1; }
+		public Keyword getWhatKeyword_1_1() { return cWhatKeyword_1_1; }
 		
-		//stmt=WhatIsStatement
-		public Assignment getStmtAssignment_0_2() { return cStmtAssignment_0_2; }
+		//stmt=(WhatIsStatement | WhatValuesStatement)
+		public Assignment getStmtAssignment_2() { return cStmtAssignment_2; }
+		
+		//(WhatIsStatement | WhatValuesStatement)
+		public Alternatives getStmtAlternatives_2_0() { return cStmtAlternatives_2_0; }
 		
 		//WhatIsStatement
-		public RuleCall getStmtWhatIsStatementParserRuleCall_0_2_0() { return cStmtWhatIsStatementParserRuleCall_0_2_0; }
+		public RuleCall getStmtWhatIsStatementParserRuleCall_2_0_0() { return cStmtWhatIsStatementParserRuleCall_2_0_0; }
 		
 		//WhatValuesStatement
-		public RuleCall getWhatValuesStatementParserRuleCall_1() { return cWhatValuesStatementParserRuleCall_1; }
+		public RuleCall getStmtWhatValuesStatementParserRuleCall_2_0_1() { return cStmtWhatValuesStatementParserRuleCall_2_0_1; }
 	}
 	public class WhatIsStatementElements extends AbstractParserRuleElementFinder {
 		private final ParserRule rule = (ParserRule) GrammarUtil.findRuleForName(getGrammar(), "com.ge.research.sadl.darpa.aske.Dialog.WhatIsStatement");
@@ -406,6 +468,7 @@ public class DialogGrammarAccess extends AbstractGrammarElementFinder {
 	
 	private final DialogModelElements pDialogModel;
 	private final SadlModelElementElements pSadlModelElement;
+	private final StringResponseElements pStringResponse;
 	private final ModifiedAskStatementElements pModifiedAskStatement;
 	private final WhatStatementElements pWhatStatement;
 	private final WhatIsStatementElements pWhatIsStatement;
@@ -424,6 +487,7 @@ public class DialogGrammarAccess extends AbstractGrammarElementFinder {
 		this.gaSADL = gaSADL;
 		this.pDialogModel = new DialogModelElements();
 		this.pSadlModelElement = new SadlModelElementElements();
+		this.pStringResponse = new StringResponseElements();
 		this.pModifiedAskStatement = new ModifiedAskStatementElements();
 		this.pWhatStatement = new WhatStatementElements();
 		this.pWhatIsStatement = new WhatIsStatementElements();
@@ -471,13 +535,26 @@ public class DialogGrammarAccess extends AbstractGrammarElementFinder {
 	
 	//@Override
 	//SadlModelElement sadl::SadlModelElement:
-	//	ModifiedAskStatement EOS | WhatStatement EOS | HowManyValuesStatement EOS;
+	//	'CM:' (SadlStatement | EquationStatement | ExternalEquationStatement) EOS |
+	//	'CM:' StringResponse EOS | ModifiedAskStatement EOS | WhatStatement EOS | HowManyValuesStatement EOS //|
+	//	//	=>CMInput EOS
+	//;
 	public SadlModelElementElements getSadlModelElementAccess() {
 		return pSadlModelElement;
 	}
 	
 	public ParserRule getSadlModelElementRule() {
 		return getSadlModelElementAccess().getRule();
+	}
+	
+	//StringResponse:
+	//	str=STRING;
+	public StringResponseElements getStringResponseAccess() {
+		return pStringResponse;
+	}
+	
+	public ParserRule getStringResponseRule() {
+		return getStringResponseAccess().getRule();
 	}
 	
 	//ModifiedAskStatement sadl::ExpressionScope:
@@ -491,8 +568,7 @@ public class DialogGrammarAccess extends AbstractGrammarElementFinder {
 	}
 	
 	//WhatStatement:
-	//	{WhatStatement} ('What' | 'what') stmt=WhatIsStatement
-	//	| WhatValuesStatement;
+	//	{WhatStatement} ('What' | 'what') stmt=(WhatIsStatement | WhatValuesStatement);
 	public WhatStatementElements getWhatStatementAccess() {
 		return pWhatStatement;
 	}

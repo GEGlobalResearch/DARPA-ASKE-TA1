@@ -16,6 +16,7 @@ import org.eclipse.emf.ecore.EClass;
 import org.eclipse.emf.ecore.InternalEObject;
 
 import org.eclipse.emf.ecore.impl.ENotificationImpl;
+import org.eclipse.emf.ecore.impl.MinimalEObjectImpl;
 
 /**
  * <!-- begin-user-doc -->
@@ -33,7 +34,7 @@ import org.eclipse.emf.ecore.impl.ENotificationImpl;
  *
  * @generated
  */
-public class WhatValuesStatementImpl extends WhatStatementImpl implements WhatValuesStatement
+public class WhatValuesStatementImpl extends MinimalEObjectImpl.Container implements WhatValuesStatement
 {
   /**
    * The default value of the '{@link #getTyp() <em>Typ</em>}' attribute.

@@ -11,6 +11,20 @@ ruleDialogModel:
 // Rule SadlModelElement
 ruleSadlModelElement:
 	(
+		'CM:'
+		(
+			ruleSadlStatement
+			    |
+			ruleEquationStatement
+			    |
+			ruleExternalEquationStatement
+		)
+		ruleEOS
+		    |
+		'CM:'
+		ruleStringResponse
+		ruleEOS
+		    |
 		ruleModifiedAskStatement
 		ruleEOS
 		    |
@@ -20,6 +34,11 @@ ruleSadlModelElement:
 		ruleHowManyValuesStatement
 		ruleEOS
 	)
+;
+
+// Rule StringResponse
+ruleStringResponse:
+	RULE_STRING
 ;
 
 // Rule ModifiedAskStatement
@@ -39,14 +58,13 @@ ruleModifiedAskStatement:
 // Rule WhatStatement
 ruleWhatStatement:
 	(
-		(
-			'What'
-			    |
-			'what'
-		)
-		ruleWhatIsStatement
+		'What'
 		    |
-		ruleWhatValuesStatement
+		'what'
+	)
+	(
+		ruleWhatIsStatement
+		    |ruleWhatValuesStatement
 	)
 ;
 
@@ -159,6 +177,38 @@ ruleSadlImport:
 	ruleEOS
 ;
 
+// Rule EquationStatement
+ruleEquationStatement:
+	'Equation'
+	ruleEquationSignature
+	ruleExpression
+	?
+	(
+		'return'
+		ruleExpression
+	)?
+	(
+		'where'
+		ruleExpression
+	)?
+;
+
+// Rule ExternalEquationStatement
+ruleExternalEquationStatement:
+	'External'
+	ruleEquationSignature
+	RULE_STRING
+	(
+		'located'
+		'at'
+		RULE_STRING
+	)?
+	(
+		'where'
+		ruleExpression
+	)?
+;
+
 // Rule EquationSignature
 ruleEquationSignature:
 	ruleSadlResource
@@ -200,6 +250,144 @@ ruleSadlReturnDeclaration:
 		'None'
 		    |
 		'--'
+	)
+;
+
+// Rule SadlStatement
+ruleSadlStatement:
+	(
+		ruleSadlResource
+		(
+			'is'
+			'a'
+			(
+				'top-level'?
+				'class'
+				    |
+				'type'
+				'of'
+				ruleSadlPrimaryTypeReference
+				ruleSadlDataTypeFacet
+				?
+			)
+			(
+				ruleSadlPropertyDeclarationInClass
+				+
+				    |
+				(
+					','?
+					ruleSadlPropertyRestriction
+				)+
+			)?
+			    |
+			'is'
+			'a'
+			'property'
+			(
+				','?
+				ruleSadlPropertyRestriction
+			)*
+			    |
+			(
+				','?
+				ruleSadlPropertyRestriction
+			)+
+			    |
+			'is'
+			'the'
+			'same'
+			'as'
+			'not'
+			?
+			ruleSadlTypeReference
+			    |
+			'is'
+			'not'
+			'the'
+			'same'
+			'as'
+			ruleSadlTypeReference
+			    |
+			(
+				'is'
+				ruleAnArticle
+				ruleSadlTypeReference
+			)?
+			(
+				ruleSadlValueList
+				    |
+				ruleSadlPropertyInitializer
+				+
+			)?
+			    |
+			(
+				'and'
+				ruleSadlResource
+			)+
+			'are'
+			'disjoint'
+		)
+		    |
+		'{'
+		ruleSadlResource
+		(
+			','
+			ruleSadlResource
+		)*
+		'}'
+		'are'
+		(
+			(
+				'top-level'?
+				'classes'
+				    |
+				(
+					'types'
+					    |
+					'instances'
+				)
+				'of'
+				ruleSadlPrimaryTypeReference
+			)
+			ruleSadlPropertyDeclarationInClass
+			*
+			    |
+			'disjoint'
+			    |
+			'not'
+			?
+			'the'
+			'same'
+		)
+		    |
+		ruleAnArticle?
+		'relationship'
+		'of'
+		ruleSadlTypeReference
+		'to'
+		ruleSadlTypeReference
+		'is'
+		ruleSadlResource
+		    |
+		ruleAnArticle
+		ruleSadlTypeReference
+		(
+			ruleSadlResource
+			?
+			ruleSadlPropertyInitializer
+			*
+			    |
+			'is'
+			ruleAnArticle
+			ruleSadlResource
+			'only'
+			'if'
+			ruleSadlPropertyCondition
+			(
+				'and'
+				ruleSadlPropertyCondition
+			)*
+		)
 	)
 ;
 

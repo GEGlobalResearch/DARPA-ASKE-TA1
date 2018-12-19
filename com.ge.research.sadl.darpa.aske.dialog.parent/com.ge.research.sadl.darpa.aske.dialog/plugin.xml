@@ -1,10 +1,17 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <?eclipse version="3.0"?>
 <plugin>
+  <extension-point id="dialog_model_processor" name="Dialog Model Processor" schema="schema/dialog_model_processor.exsd"/>
 	<extension point="org.eclipse.emf.ecore.generated_package">
 		<package 
 			uri = "http://www.ge.com/research/sadl/darpa/aske/Dialog"
 			class = "com.ge.research.sadl.darpa.aske.dialog.DialogPackage"
 			genModel = "model/generated/Dialog.genmodel" />
 	</extension>
+	 <extension
+	       point="com.ge.research.sadl.sadl_implicit_model_fragment_provider">
+	    <provider
+	          class="com.ge.research.sadl.darpa.aske.dialog.DialogImplicitModelFragmentProvider">
+	    </provider>
+ 	</extension>
 </plugin>

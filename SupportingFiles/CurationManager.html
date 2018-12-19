@@ -115,6 +115,193 @@ Forms 5-7 are more specific questions about property restrictions.</p>
   </ul>
   </li>
 </ol>
+<p>Given this model:</p>
+<font SIZE="2">
+<p ALIGN="LEFT"></font><font SIZE="2" COLOR="#800080">uri</font><font SIZE="2"> 
+&quot;http://sadl.org/model.sadl&quot; </font><font SIZE="2" COLOR="#800080">alias</font><font SIZE="2">
+<b>ml</b>.</p>
+<p ALIGN="LEFT"></p>
+<blockquote>
+  <p ALIGN="LEFT"></font><font SIZE="2" COLOR="#000080"><b>Bicycle</b></font><font SIZE="2">
+  </font><font SIZE="2" COLOR="#800080">is</font><font SIZE="2"> </font>
+  <font SIZE="2" COLOR="#800080">a</font><font SIZE="2"> </font>
+  <font SIZE="2" COLOR="#800080">class</font><font SIZE="2">, </font>
+  <font SIZE="2" COLOR="#800080">described</font><font SIZE="2"> </font>
+  <font SIZE="2" COLOR="#800080">by</font><font SIZE="2"> </font>
+  <font SIZE="2" COLOR="#008000"><b>wheel</b></font><font SIZE="2"> </font>
+  <font SIZE="2" COLOR="#800080">with</font><font SIZE="2"> </font>
+  <font SIZE="2" COLOR="#800080">values</font><font SIZE="2"> </font>
+  <font SIZE="2" COLOR="#800080">of</font><font SIZE="2"> </font>
+  <font SIZE="2" COLOR="#800080">type</font><font SIZE="2"> </font>
+  <font SIZE="2" COLOR="#000080"><b>Wheel</b></font><font SIZE="2">.<br>
+  </font><font SIZE="2" COLOR="#000080"><b>Wheel</b></font><font SIZE="2">
+  </font><font SIZE="2" COLOR="#800080">is</font><font SIZE="2"> </font>
+  <font SIZE="2" COLOR="#800080">a</font><font SIZE="2"> </font>
+  <font SIZE="2" COLOR="#800080">class</font><font SIZE="2">.<br>
+  </font><font SIZE="2" COLOR="#008000"><b>wheel</b></font><font SIZE="2">
+  </font><font SIZE="2" COLOR="#800080">of</font><font SIZE="2"> </font>
+  <font SIZE="2" COLOR="#000080"><b>Bicycle</b></font><font SIZE="2"> </font>
+  <font SIZE="2" COLOR="#800080">has</font><font SIZE="2"> </font>
+  <font SIZE="2" COLOR="#800080">exactly</font><font SIZE="2"> 2 </font>
+  <font SIZE="2" COLOR="#800080">values</font><font SIZE="2"> </font>
+  <font SIZE="2" COLOR="#800080">of</font><font SIZE="2"> </font>
+  <font SIZE="2" COLOR="#800080">type</font><font SIZE="2"> </font>
+  <font SIZE="2" COLOR="#000080"><b>Wheel</b></font><font SIZE="2">.</p>
+</blockquote>
+</font>
+<p>One might envision this dialog:</p>
+<font SIZE="2" COLOR="#800080">
+<blockquote>
+  <p ALIGN="LEFT">Ask</font><font SIZE="2"> &quot;select * where {&lt;UnittedQuantity&gt; 
+  ?p ?v}&quot;.</font><font SIZE="2" COLOR="#800080"><br>
+  CM:</font><font SIZE="2"> &quot;'p' = 
+  'http://www.w3.org/1999/02/22-rdf-syntax-ns#type', 'v' = 
+  'http://www.w3.org/2002/07/owl#Class'&quot;.</p>
+  <p ALIGN="LEFT"></p>
+  </font><font SIZE="2" COLOR="#800080">
+  <p ALIGN="LEFT">Ask</font><font SIZE="2"> </font>
+  <font SIZE="2" COLOR="#800080">select</font><font SIZE="2"> * </font>
+  <font SIZE="2" COLOR="#800080">where</font><font SIZE="2"> </font>
+  <font SIZE="2" COLOR="#000080"><b>Bicycle</b></font><font SIZE="2"> </font>
+  <font SIZE="2" COLOR="#800080">has</font><font SIZE="2"> </font>
+  <font SIZE="2" COLOR="#ff00ff"><b>p</b></font><font SIZE="2"> </font>
+  <font SIZE="2" COLOR="#ff00ff"><b>v</b></font><font SIZE="2">.</font><font SIZE="2" COLOR="#800080"><br>
+  CM:</font><font SIZE="2"> </font><font SIZE="2" COLOR="#000080"><b>Bicycle</b></font><font SIZE="2">
+  </font><font SIZE="2" COLOR="#800080">is</font><font SIZE="2"> </font>
+  <font SIZE="2" COLOR="#800080">a</font><font SIZE="2"> </font>
+  <font SIZE="2" COLOR="#800080">class</font><font SIZE="2">, </font>
+  <font SIZE="2" COLOR="#800080">described</font><font SIZE="2"> </font>
+  <font SIZE="2" COLOR="#800080">by</font><font SIZE="2"> </font>
+  <font SIZE="2" COLOR="#008000"><b>wheel</b></font><font SIZE="2"> </font>
+  <font SIZE="2" COLOR="#800080">with</font><font SIZE="2"> </font>
+  <font SIZE="2" COLOR="#800080">values</font><font SIZE="2"> </font>
+  <font SIZE="2" COLOR="#800080">of</font><font SIZE="2"> </font>
+  <font SIZE="2" COLOR="#800080">type</font><font SIZE="2"> </font>
+  <font SIZE="2" COLOR="#000080"><b>Wheel</b></font><font SIZE="2">,<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+  </font><font SIZE="2" COLOR="#800080">described</font><font SIZE="2"> </font>
+  <font SIZE="2" COLOR="#800080">by</font><font SIZE="2"> </font>
+  <font SIZE="2" COLOR="#008000"><b>wheel</b></font><font SIZE="2"> </font>
+  <font SIZE="2" COLOR="#800080">with</font><font SIZE="2"> </font>
+  <font SIZE="2" COLOR="#800080">exactly</font><font SIZE="2"> 2 </font>
+  <font SIZE="2" COLOR="#800080">values</font><font SIZE="2"> </font>
+  <font SIZE="2" COLOR="#800080">of</font><font SIZE="2"> </font>
+  <font SIZE="2" COLOR="#800080">type</font><font SIZE="2"> </font>
+  <font SIZE="2" COLOR="#000080"><b>Wheel</b></font><font SIZE="2">.</p>
+  <p ALIGN="LEFT"></p>
+  </font><font SIZE="2" COLOR="#800080">
+  <p ALIGN="LEFT">What</font><font SIZE="2"> </font>
+  <font SIZE="2" COLOR="#800080">is</font><font SIZE="2"> </font>
+  <font SIZE="2" COLOR="#000080"><b>UnittedQuantity</b></font><font SIZE="2">?</font><font SIZE="2" COLOR="#800080"><br>
+  CM:</font><font SIZE="2"> </font><font SIZE="2" COLOR="#000080"><b>
+  UnittedQuantity</b></font><font SIZE="2"> </font>
+  <font SIZE="2" COLOR="#800080">is</font><font SIZE="2"> </font>
+  <font SIZE="2" COLOR="#800080">a</font><font SIZE="2"> </font>
+  <font SIZE="2" COLOR="#800080">class</font><font SIZE="2">,</font><font SIZE="2" COLOR="#808080"><i><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 
+  // described by ^value with values of type decimal, <br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+  </i></font><font SIZE="2" COLOR="#800080">described</font><font SIZE="2">
+  </font><font SIZE="2" COLOR="#800080">by</font><font SIZE="2"> </font>
+  <font SIZE="2" COLOR="#008000"><b>unit</b></font><font SIZE="2"> </font>
+  <font SIZE="2" COLOR="#800080">with</font><font SIZE="2"> </font>
+  <font SIZE="2" COLOR="#800080">values</font><font SIZE="2"> </font>
+  <font SIZE="2" COLOR="#800080">of</font><font SIZE="2"> </font>
+  <font SIZE="2" COLOR="#800080">type</font><font SIZE="2"> </font>
+  <font SIZE="2" COLOR="#800080">string</font><font SIZE="2">. </p>
+  <p ALIGN="LEFT"></p>
+  </font><font SIZE="2" COLOR="#800080">
+  <p ALIGN="LEFT">what</font><font SIZE="2"> </font>
+  <font SIZE="2" COLOR="#800080">is</font><font SIZE="2"> </font>
+  <font SIZE="2" COLOR="#008000"><b>unit</b></font><font SIZE="2">?</font><font SIZE="2" COLOR="#800080"><br>
+  CM:</font><font SIZE="2"> </font><font SIZE="2" COLOR="#008000"><b>unit</b></font><font SIZE="2">
+  </font><font SIZE="2" COLOR="#800080">describes</font><font SIZE="2"> </font>
+  <font SIZE="2" COLOR="#000080"><b>UnittedQuantity</b></font><font SIZE="2">
+  </font><font SIZE="2" COLOR="#800080">with</font><font SIZE="2"> </font>
+  <font SIZE="2" COLOR="#800080">values</font><font SIZE="2"> </font>
+  <font SIZE="2" COLOR="#800080">of</font><font SIZE="2"> </font>
+  <font SIZE="2" COLOR="#800080">type</font><font SIZE="2"> </font>
+  <font SIZE="2" COLOR="#800080">string</font><font SIZE="2">.</p>
+  <p ALIGN="LEFT"></p>
+  </font><font SIZE="2" COLOR="#800080">
+  <p ALIGN="LEFT">what</font><font SIZE="2"> </font>
+  <font SIZE="2" COLOR="#800080">is</font><font SIZE="2"> </font>
+  <font SIZE="2" COLOR="#008000"><b>wheel</b></font><font SIZE="2">?</font><font SIZE="2" COLOR="#800080"><br>
+  CM:</font><font SIZE="2"> </font><font SIZE="2" COLOR="#008000"><b>wheel</b></font><font SIZE="2">
+  </font><font SIZE="2" COLOR="#800080">describes</font><font SIZE="2"> </font>
+  <font SIZE="2" COLOR="#000080"><b>Bicycle</b></font><font SIZE="2"> </font>
+  <font SIZE="2" COLOR="#800080">with</font><font SIZE="2"> </font>
+  <font SIZE="2" COLOR="#800080">exactly</font><font SIZE="2"> 2 </font>
+  <font SIZE="2" COLOR="#800080">values</font><font SIZE="2"> </font>
+  <font SIZE="2" COLOR="#800080">of</font><font SIZE="2"> </font>
+  <font SIZE="2" COLOR="#800080">type</font><font SIZE="2"> </font>
+  <font SIZE="2" COLOR="#000080"><b>Wheel</b></font><font SIZE="2">.</p>
+  <p ALIGN="LEFT"></p>
+  </font><font SIZE="2" COLOR="#800080">
+  <p ALIGN="LEFT">what</font><font SIZE="2"> </font>
+  <font SIZE="2" COLOR="#800080">is</font><font SIZE="2"> </font>
+  <font SIZE="2" COLOR="#000080"><b>Bicycle</b></font><font SIZE="2">?</font><font SIZE="2" COLOR="#800080"><br>
+  CM:</font><font SIZE="2"> </font><font SIZE="2" COLOR="#000080"><b>Bicycle</b></font><font SIZE="2">
+  </font><font SIZE="2" COLOR="#800080">is</font><font SIZE="2"> </font>
+  <font SIZE="2" COLOR="#800080">a</font><font SIZE="2"> </font>
+  <font SIZE="2" COLOR="#800080">class</font><font SIZE="2">, </font>
+  <font SIZE="2" COLOR="#800080">described</font><font SIZE="2"> </font>
+  <font SIZE="2" COLOR="#800080">by</font><font SIZE="2"> </font>
+  <font SIZE="2" COLOR="#008000"><b>wheel</b></font><font SIZE="2"> </font>
+  <font SIZE="2" COLOR="#800080">with</font><font SIZE="2"> </font>
+  <font SIZE="2" COLOR="#800080">values</font><font SIZE="2"> </font>
+  <font SIZE="2" COLOR="#800080">of</font><font SIZE="2"> </font>
+  <font SIZE="2" COLOR="#800080">type</font><font SIZE="2"> </font>
+  <font SIZE="2" COLOR="#000080"><b>Wheel</b></font><font SIZE="2">,<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+  </font><font SIZE="2" COLOR="#800080">described</font><font SIZE="2"> </font>
+  <font SIZE="2" COLOR="#800080">by</font><font SIZE="2"> </font>
+  <font SIZE="2" COLOR="#008000"><b>wheel</b></font><font SIZE="2"> </font>
+  <font SIZE="2" COLOR="#800080">with</font><font SIZE="2"> </font>
+  <font SIZE="2" COLOR="#800080">exactly</font><font SIZE="2"> 2 </font>
+  <font SIZE="2" COLOR="#800080">values</font><font SIZE="2"> </font>
+  <font SIZE="2" COLOR="#800080">of</font><font SIZE="2"> </font>
+  <font SIZE="2" COLOR="#800080">type</font><font SIZE="2"> </font>
+  <font SIZE="2" COLOR="#000080"><b>Wheel</b></font><font SIZE="2">.</p>
+  <p ALIGN="LEFT"></p>
+  </font><font SIZE="2" COLOR="#800080">
+  <p ALIGN="LEFT">How</font><font SIZE="2"> </font>
+  <font SIZE="2" COLOR="#800080">many</font><font SIZE="2"> </font>
+  <font SIZE="2" COLOR="#800080">values</font><font SIZE="2"> </font>
+  <font SIZE="2" COLOR="#800080">of</font><font SIZE="2"> </font>
+  <font SIZE="2" COLOR="#008000"><b>wheel</b></font><font SIZE="2"> </font>
+  <font SIZE="2" COLOR="#800080">can</font><font SIZE="2"> </font>
+  <font SIZE="2" COLOR="#000080"><b>Bicycle</b></font><font SIZE="2"> </font>
+  <font SIZE="2" COLOR="#800080">have</font><font SIZE="2">?</font><font SIZE="2" COLOR="#800080"><br>
+  CM:</font><font SIZE="2"> </font><font SIZE="2" COLOR="#008000"><b>wheel</b></font><font SIZE="2">
+  </font><font SIZE="2" COLOR="#800080">describes</font><font SIZE="2"> </font>
+  <font SIZE="2" COLOR="#000080"><b>Bicycle</b></font><font SIZE="2"> </font>
+  <font SIZE="2" COLOR="#800080">with</font><font SIZE="2"> </font>
+  <font SIZE="2" COLOR="#800080">exactly</font><font SIZE="2"> 2 </font>
+  <font SIZE="2" COLOR="#800080">values</font><font SIZE="2"> </font>
+  <font SIZE="2" COLOR="#800080">of</font><font SIZE="2"> </font>
+  <font SIZE="2" COLOR="#800080">type</font><font SIZE="2"> </font>
+  <font SIZE="2" COLOR="#000080"><b>Wheel</b></font><font SIZE="2">.</p>
+  <p ALIGN="LEFT"></p>
+  </font><font SIZE="2" COLOR="#800080">
+  <p ALIGN="LEFT">What</font><font SIZE="2"> </font>
+  <font SIZE="2" COLOR="#800080">value</font><font SIZE="2"> </font>
+  <font SIZE="2" COLOR="#800080">can</font><font SIZE="2"> </font>
+  <font SIZE="2" COLOR="#008000"><b>wheel</b></font><font SIZE="2"> </font>
+  <font SIZE="2" COLOR="#800080">of</font><font SIZE="2"> </font>
+  <font SIZE="2" COLOR="#000080"><b>Bicycle</b></font><font SIZE="2"> </font>
+  <font SIZE="2" COLOR="#800080">have</font><font SIZE="2">?</font><font SIZE="2" COLOR="#800080"><br>
+  CM:</font><font SIZE="2"> </font><font SIZE="2" COLOR="#008000"><b>wheel</b></font><font SIZE="2">
+  </font><font SIZE="2" COLOR="#800080">describes</font><font SIZE="2"> </font>
+  <font SIZE="2" COLOR="#000080"><b>Bicycle</b></font><font SIZE="2"> </font>
+  <font SIZE="2" COLOR="#800080">with</font><font SIZE="2"> </font>
+  <font SIZE="2" COLOR="#800080">exactly</font><font SIZE="2"> 2 </font>
+  <font SIZE="2" COLOR="#800080">values</font><font SIZE="2"> </font>
+  <font SIZE="2" COLOR="#800080">of</font><font SIZE="2"> </font>
+  <font SIZE="2" COLOR="#800080">type</font><font SIZE="2"> </font>
+  <font SIZE="2" COLOR="#000080"><b>Wheel</b></font><font SIZE="2">.</p>
+</blockquote>
+</font>
 <h2>Providing Information</h2>
 <ol>
   <li>&lt;expr&gt;, e.g., &quot;Force depends on Mass, depends on Acceleration.&quot;&nbsp;&nbsp;&nbsp; 

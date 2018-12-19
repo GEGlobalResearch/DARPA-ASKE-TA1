@@ -6,6 +6,9 @@
     complianceLevel="6.0" copyrightFields="false" runtimeVersion="2.12" usedGenPackages="platform:/resource/com.ge.research.sadl/model/generated/SADL.genmodel#//sADL">
   <genPackages prefix="Dialog" basePackage="com.ge.research.sadl.darpa.aske" disposableProviderFactory="true"
       fileExtensions="dialog" ecorePackage="Dialog.ecore#/">
+    <genClasses ecoreClass="Dialog.ecore#//StringResponse">
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute Dialog.ecore#//StringResponse/str"/>
+    </genClasses>
     <genClasses ecoreClass="Dialog.ecore#//WhatStatement">
       <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference Dialog.ecore#//WhatStatement/stmt"/>
     </genClasses>

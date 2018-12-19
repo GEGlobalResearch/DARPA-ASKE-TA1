@@ -2,8 +2,11 @@
 <ecore:EPackage xmi:version="2.0" xmlns:xmi="http://www.omg.org/XMI" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
     xmlns:ecore="http://www.eclipse.org/emf/2002/Ecore" name="dialog" nsURI="http://www.ge.com/research/sadl/darpa/aske/Dialog"
     nsPrefix="dialog">
+  <eClassifiers xsi:type="ecore:EClass" name="StringResponse" eSuperTypes="platform:/resource/com.ge.research.sadl/model/generated/SADL.ecore#//SadlModelElement">
+    <eStructuralFeatures xsi:type="ecore:EAttribute" name="str" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EString"/>
+  </eClassifiers>
   <eClassifiers xsi:type="ecore:EClass" name="WhatStatement" eSuperTypes="platform:/resource/com.ge.research.sadl/model/generated/SADL.ecore#//SadlModelElement">
-    <eStructuralFeatures xsi:type="ecore:EReference" name="stmt" eType="#//WhatIsStatement"
+    <eStructuralFeatures xsi:type="ecore:EReference" name="stmt" eType="ecore:EClass http://www.eclipse.org/emf/2002/Ecore#//EObject"
         containment="true"/>
   </eClassifiers>
   <eClassifiers xsi:type="ecore:EClass" name="WhatIsStatement">
@@ -11,7 +14,7 @@
     <eStructuralFeatures xsi:type="ecore:EReference" name="target" eType="ecore:EClass platform:/resource/com.ge.research.sadl/model/generated/SADL.ecore#//SadlResource"
         containment="true"/>
   </eClassifiers>
-  <eClassifiers xsi:type="ecore:EClass" name="WhatValuesStatement" eSuperTypes="#//WhatStatement">
+  <eClassifiers xsi:type="ecore:EClass" name="WhatValuesStatement">
     <eStructuralFeatures xsi:type="ecore:EAttribute" name="typ" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EString"/>
     <eStructuralFeatures xsi:type="ecore:EReference" name="prop" eType="ecore:EClass platform:/resource/com.ge.research.sadl/model/generated/SADL.ecore#//SadlResource"
         containment="true"/>

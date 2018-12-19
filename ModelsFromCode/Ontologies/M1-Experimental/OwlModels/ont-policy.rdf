@@ -2,94 +2,60 @@
     xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
     xmlns:j.0="http://jena.hpl.hp.com/schemas/2003/03/ont-manager#">
   <j.0:OntologySpec>
-    <j.0:publicURI rdf:resource="http://sadl.org/ScientificConcepts1.sadl"/>
-    <j.0:altURL rdf:resource="file:/C:/Users/200005201/DARPA-ASKE-TA1/ModelsFromCode/Ontologies/M1-Experimental/OwlModels/ScientificConcepts1.owl"/>
-    <j.0:language rdf:resource="http://www.w3.org/2002/07/owl"/>
-    <j.0:createdBy>SADL</j.0:createdBy>
-    <j.0:prefix rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
-    >scicncpts1</j.0:prefix>
-  </j.0:OntologySpec>
-  <j.0:OntologySpec>
-    <j.0:publicURI rdf:resource="http://sadl.org/ModelFromCode.sadl.metrics"/>
-    <j.0:altURL rdf:resource="file:/C:/Users/200005201/DARPA-ASKE-TA1/ModelsFromCode/Ontologies/M1-Experimental/OwlModels/ModelFromCode.sadl.metrics.owl"/>
-    <j.0:language rdf:resource="http://www.w3.org/2002/07/owl"/>
     <j.0:createdBy>SRL_Metrics</j.0:createdBy>
+    <j.0:language rdf:resource="http://www.w3.org/2002/07/owl"/>
+    <j.0:altURL rdf:resource="file:/C:/Users/200005201/DARPA-ASKE-TA1/ModelsFromCode/Ontologies/M1-Experimental/OwlModels/TemperatureConversionExample.sadl.metrics.owl"/>
+    <j.0:publicURI rdf:resource="http://com.ge.research.answer.java/TemperatureConversionmanual.metrics"/>
   </j.0:OntologySpec>
   <j.0:OntologySpec>
-    <j.0:altURL rdf:resource="file:/C:/Users/200005201/DARPA-ASKE-TA1/ModelsFromCode/Ontologies/M1-Experimental/OwlModels/MinimalExampleMixed.owl"/>
-    <j.0:language rdf:resource="http://www.w3.org/2002/07/owl"/>
+    <j.0:prefix rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >bnsl</j.0:prefix>
     <j.0:createdBy>SADL</j.0:createdBy>
+    <j.0:language rdf:resource="http://www.w3.org/2002/07/owl"/>
+    <j.0:altURL rdf:resource="file:/C:/Users/200005201/DARPA-ASKE-TA1/ModelsFromCode/Ontologies/M1-Experimental/OwlModels/BN_SecondLaw.owl"/>
+    <j.0:publicURI rdf:resource="http://sadl.org/BN_SecondLaw.sadl"/>
+  </j.0:OntologySpec>
+  <j.0:OntologySpec>
+    <j.0:createdBy>SRL_Metrics</j.0:createdBy>
+    <j.0:language rdf:resource="http://www.w3.org/2002/07/owl"/>
+    <j.0:altURL rdf:resource="file:/C:/Users/200005201/DARPA-ASKE-TA1/ModelsFromCode/Ontologies/M1-Experimental/OwlModels/Temperature.sadl.metrics.owl"/>
+    <j.0:publicURI rdf:resource="http://sadl.org/Temperature.sadl.metrics"/>
+  </j.0:OntologySpec>
+  <j.0:OntologySpec>
+    <j.0:prefix rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >tcex</j.0:prefix>
+    <j.0:createdBy>SADL</j.0:createdBy>
+    <j.0:language rdf:resource="http://www.w3.org/2002/07/owl"/>
+    <j.0:altURL rdf:resource="file:/C:/Users/200005201/DARPA-ASKE-TA1/ModelsFromCode/Ontologies/M1-Experimental/OwlModels/TemperatureConversionExample.owl"/>
+    <j.0:publicURI rdf:resource="http://com.ge.research.answer.java/TemperatureConversionmanual"/>
+  </j.0:OntologySpec>
+  <j.0:OntologySpec>
+    <j.0:prefix rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >temp</j.0:prefix>
+    <j.0:createdBy>SADL</j.0:createdBy>
+    <j.0:language rdf:resource="http://www.w3.org/2002/07/owl"/>
+    <j.0:altURL rdf:resource="file:/C:/Users/200005201/DARPA-ASKE-TA1/ModelsFromCode/Ontologies/M1-Experimental/OwlModels/Temperature.owl"/>
+    <j.0:publicURI rdf:resource="http://sadl.org/Temperature.sadl"/>
+  </j.0:OntologySpec>
+  <j.0:OntologySpec>
     <j.0:prefix rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
     >mexmix</j.0:prefix>
+    <j.0:createdBy>SADL</j.0:createdBy>
+    <j.0:language rdf:resource="http://www.w3.org/2002/07/owl"/>
+    <j.0:altURL rdf:resource="file:/C:/Users/200005201/DARPA-ASKE-TA1/ModelsFromCode/Ontologies/M1-Experimental/OwlModels/MinimalExampleMixed.owl"/>
     <j.0:publicURI rdf:resource="http://sadl.org/MinimalExampleMixed.sadl"/>
   </j.0:OntologySpec>
   <j.0:OntologySpec>
-    <j.0:publicURI rdf:resource="http://com.ge.research.slr/srl2model"/>
-    <j.0:altURL rdf:resource="file:/C:/Users/200005201/DARPA-ASKE-TA1/ModelsFromCode/Ontologies/M1-Experimental/OwlModels/srl2model.metrics.owl"/>
-    <j.0:language rdf:resource="http://www.w3.org/2002/07/owl"/>
     <j.0:createdBy>SRL_Metrics</j.0:createdBy>
-  </j.0:OntologySpec>
-  <j.0:OntologySpec>
-    <j.0:publicURI rdf:resource="http://sadl.org/test.sadl.metrics"/>
-    <j.0:altURL rdf:resource="file:/C:/Users/200005201/DARPA-ASKE-TA1/ModelsFromCode/Ontologies/M1-Experimental/OwlModels/test.sadl.metrics.owl"/>
     <j.0:language rdf:resource="http://www.w3.org/2002/07/owl"/>
-    <j.0:createdBy>SRL_Metrics</j.0:createdBy>
-  </j.0:OntologySpec>
-  <j.0:OntologySpec>
-    <j.0:publicURI rdf:resource="http://sadl.org/BN_SecondLaw.sadl.metrics"/>
-    <j.0:altURL rdf:resource="file:/C:/Users/200005201/DARPA-ASKE-TA1/ModelsFromCode/Ontologies/M1-Experimental/OwlModels/BN_SecondLaw.sadl.metrics.owl"/>
-    <j.0:language rdf:resource="http://www.w3.org/2002/07/owl"/>
-    <j.0:createdBy>SRL_Metrics</j.0:createdBy>
-  </j.0:OntologySpec>
-  <j.0:OntologySpec>
-    <j.0:publicURI rdf:resource="http://com.ge.research.answer.java/TemperatureConversionmanual"/>
-    <j.0:altURL rdf:resource="file:/C:/Users/200005201/DARPA-ASKE-TA1/ModelsFromCode/Ontologies/M1-Experimental/OwlModels/TemperatureConversionExample.owl"/>
-    <j.0:language rdf:resource="http://www.w3.org/2002/07/owl"/>
-    <j.0:createdBy>SADL</j.0:createdBy>
-    <j.0:prefix rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
-    >tcex</j.0:prefix>
-  </j.0:OntologySpec>
-  <j.0:OntologySpec>
-    <j.0:publicURI rdf:resource="http://sadl.org/test.sadl"/>
-    <j.0:altURL rdf:resource="file:/C:/Users/200005201/DARPA-ASKE-TA1/ModelsFromCode/Ontologies/M1-Experimental/OwlModels/test.owl"/>
-    <j.0:language rdf:resource="http://www.w3.org/2002/07/owl"/>
-    <j.0:createdBy>SADL</j.0:createdBy>
-    <j.0:prefix rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
-    >tst</j.0:prefix>
-  </j.0:OntologySpec>
-  <j.0:OntologySpec>
-    <j.0:publicURI rdf:resource="http://sadl.org/Software.sadl"/>
-    <j.0:altURL rdf:resource="file:/C:/Users/200005201/DARPA-ASKE-TA1/ModelsFromCode/Ontologies/M1-Experimental/OwlModels/Software.owl"/>
-    <j.0:language rdf:resource="http://www.w3.org/2002/07/owl"/>
-    <j.0:createdBy>SADL</j.0:createdBy>
-    <j.0:prefix rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
-    >Software</j.0:prefix>
+    <j.0:altURL rdf:resource="file:/C:/Users/200005201/DARPA-ASKE-TA1/ModelsFromCode/Ontologies/M1-Experimental/OwlModels/MinimalExampleEquations.sadl.metrics.owl"/>
+    <j.0:publicURI rdf:resource="http://sadl.org/MinimalExampleEquations.sadl.metrics"/>
   </j.0:OntologySpec>
   <j.0:OntologySpec>
     <j.0:createdBy>SRL_Metrics</j.0:createdBy>
     <j.0:language rdf:resource="http://www.w3.org/2002/07/owl"/>
-    <j.0:altURL rdf:resource="file:/C:/Users/200005201/DARPA-ASKE-TA1/ModelsFromCode/Ontologies/M1-Experimental/OwlModels/SrlSummaryMetrics.metrics.owl"/>
-    <j.0:publicURI rdf:resource="http://com.ge.research.sadl/srl/metricsummary"/>
-  </j.0:OntologySpec>
-  <j.0:OntologySpec>
-    <j.0:publicURI rdf:resource="http://sadl.org/Temperature.sadl"/>
-    <j.0:altURL rdf:resource="file:/C:/Users/200005201/DARPA-ASKE-TA1/ModelsFromCode/Ontologies/M1-Experimental/OwlModels/Temperature.owl"/>
-    <j.0:language rdf:resource="http://www.w3.org/2002/07/owl"/>
-    <j.0:createdBy>SADL</j.0:createdBy>
-    <j.0:prefix rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
-    >temp</j.0:prefix>
-  </j.0:OntologySpec>
-  <j.0:OntologySpec>
-    <j.0:createdBy>SRL_Metrics</j.0:createdBy>
-    <j.0:language rdf:resource="http://www.w3.org/2002/07/owl"/>
-    <j.0:altURL rdf:resource="file:/C:/Users/200005201/DARPA-ASKE-TA1/ModelsFromCode/Ontologies/M1-Experimental/OwlModels/sadlmetricsmodel.metrics.owl"/>
-    <j.0:publicURI rdf:resource="http://com.ge.research.sadl/sadlmetricsmodel"/>
-  </j.0:OntologySpec>
-  <j.0:OntologySpec>
-    <j.0:publicURI rdf:resource="http://com.ge.research.answer.java/TemperatureConversionmanual.metrics"/>
-    <j.0:altURL rdf:resource="file:/C:/Users/200005201/DARPA-ASKE-TA1/ModelsFromCode/Ontologies/M1-Experimental/OwlModels/TemperatureConversionExample.sadl.metrics.owl"/>
-    <j.0:language rdf:resource="http://www.w3.org/2002/07/owl"/>
-    <j.0:createdBy>SRL_Metrics</j.0:createdBy>
+    <j.0:altURL rdf:resource="file:/C:/Users/200005201/DARPA-ASKE-TA1/ModelsFromCode/Ontologies/M1-Experimental/OwlModels/MinimalExampleWithRules.sadl.metrics.owl"/>
+    <j.0:publicURI rdf:resource="http://sadl.org/MinimalExampleWithRules.sadl.metrics"/>
   </j.0:OntologySpec>
   <j.0:OntologySpec>
     <j.0:prefix rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
@@ -100,46 +66,68 @@
     <j.0:publicURI rdf:resource="http://sadl.org/CurationManager.sadl"/>
   </j.0:OntologySpec>
   <j.0:OntologySpec>
-    <j.0:publicURI rdf:resource="http://com.ge.research.darpa.answer.imports/TemperatureConversion"/>
-    <j.0:altURL rdf:resource="file:/C:/Users/200005201/DARPA-ASKE-TA1/ModelsFromCode/Ontologies/M1-Experimental/OwlModels/TemperatureConversion.owl"/>
-    <j.0:language rdf:resource="http://www.w3.org/2002/07/owl"/>
-    <j.0:createdBy>SADL</j.0:createdBy>
-    <j.0:prefix rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
-    ></j.0:prefix>
-  </j.0:OntologySpec>
-  <j.0:OntologySpec/>
-  <j.0:OntologySpec>
-    <j.0:publicURI rdf:resource="http://sadl.org/BN_SecondLaw.sadl"/>
-    <j.0:altURL rdf:resource="file:/C:/Users/200005201/DARPA-ASKE-TA1/ModelsFromCode/Ontologies/M1-Experimental/OwlModels/BN_SecondLaw.owl"/>
-    <j.0:language rdf:resource="http://www.w3.org/2002/07/owl"/>
-    <j.0:createdBy>SADL</j.0:createdBy>
-    <j.0:prefix rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
-    >bnsl</j.0:prefix>
-  </j.0:OntologySpec>
-  <j.0:OntologySpec>
-    <j.0:publicURI rdf:resource="http://sadl.org/MinimalExampleEquations.sadl.metrics"/>
-    <j.0:altURL rdf:resource="file:/C:/Users/200005201/DARPA-ASKE-TA1/ModelsFromCode/Ontologies/M1-Experimental/OwlModels/MinimalExampleEquations.sadl.metrics.owl"/>
-    <j.0:language rdf:resource="http://www.w3.org/2002/07/owl"/>
     <j.0:createdBy>SRL_Metrics</j.0:createdBy>
+    <j.0:language rdf:resource="http://www.w3.org/2002/07/owl"/>
+    <j.0:altURL rdf:resource="file:/C:/Users/200005201/DARPA-ASKE-TA1/ModelsFromCode/Ontologies/M1-Experimental/OwlModels/test.sadl.metrics.owl"/>
+    <j.0:publicURI rdf:resource="http://sadl.org/test.sadl.metrics"/>
   </j.0:OntologySpec>
   <j.0:OntologySpec>
-    <j.0:publicURI rdf:resource="http://sadl.org/builtinfunctions"/>
-    <j.0:altURL rdf:resource="file:/C:/Users/200005201/DARPA-ASKE-TA1/ModelsFromCode/Ontologies/M1-Experimental/OwlModels/SadlBuiltinFunctions.owl"/>
-    <j.0:language rdf:resource="http://www.w3.org/2002/07/owl"/>
-    <j.0:createdBy>SADL</j.0:createdBy>
     <j.0:prefix rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
-    >builtinfunctions</j.0:prefix>
-  </j.0:OntologySpec>
-  <j.0:OntologySpec>
-    <j.0:publicURI rdf:resource="http://sadl.org/MinimalExampleMixed.sadl.metrics"/>
-    <j.0:altURL rdf:resource="file:/C:/Users/200005201/DARPA-ASKE-TA1/ModelsFromCode/Ontologies/M1-Experimental/OwlModels/MinimalExampleMixed.sadl.metrics.owl"/>
+    >scicncpts2</j.0:prefix>
+    <j.0:createdBy>SADL</j.0:createdBy>
     <j.0:language rdf:resource="http://www.w3.org/2002/07/owl"/>
-    <j.0:createdBy>SRL_Metrics</j.0:createdBy>
+    <j.0:altURL rdf:resource="file:/C:/Users/200005201/DARPA-ASKE-TA1/ModelsFromCode/Ontologies/M1-Experimental/OwlModels/ScientificConcepts2.owl"/>
+    <j.0:publicURI rdf:resource="http://sadl.org/ScientificConcepts2.sadl"/>
   </j.0:OntologySpec>
   <j.0:OntologySpec>
-    <j.0:publicURI rdf:resource="http://sadl.org/ScientificConcepts2.sadl.metrics"/>
+    <j.0:createdBy>SRL_Metrics</j.0:createdBy>
+    <j.0:language rdf:resource="http://www.w3.org/2002/07/owl"/>
+    <j.0:altURL rdf:resource="file:/C:/Users/200005201/DARPA-ASKE-TA1/ModelsFromCode/Ontologies/M1-Experimental/OwlModels/BN_SecondLaw.sadl.metrics.owl"/>
+    <j.0:publicURI rdf:resource="http://sadl.org/BN_SecondLaw.sadl.metrics"/>
+  </j.0:OntologySpec>
+  <j.0:OntologySpec>
+    <j.0:prefix rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >tst</j.0:prefix>
+    <j.0:createdBy>SADL</j.0:createdBy>
+    <j.0:language rdf:resource="http://www.w3.org/2002/07/owl"/>
+    <j.0:altURL rdf:resource="file:/C:/Users/200005201/DARPA-ASKE-TA1/ModelsFromCode/Ontologies/M1-Experimental/OwlModels/test.owl"/>
+    <j.0:publicURI rdf:resource="http://sadl.org/test.sadl"/>
+  </j.0:OntologySpec>
+  <j.0:OntologySpec>
+    <j.0:prefix rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >mexwr</j.0:prefix>
+    <j.0:createdBy>SADL</j.0:createdBy>
+    <j.0:language rdf:resource="http://www.w3.org/2002/07/owl"/>
+    <j.0:altURL rdf:resource="file:/C:/Users/200005201/DARPA-ASKE-TA1/ModelsFromCode/Ontologies/M1-Experimental/OwlModels/MinimalExampleWithRules.owl"/>
+    <j.0:publicURI rdf:resource="http://sadl.org/MinimalExampleWithRules.sadl"/>
+  </j.0:OntologySpec>
+  <j.0:OntologySpec>
+    <j.0:createdBy>SRL_Metrics</j.0:createdBy>
+    <j.0:language rdf:resource="http://www.w3.org/2002/07/owl"/>
     <j.0:altURL rdf:resource="file:/C:/Users/200005201/DARPA-ASKE-TA1/ModelsFromCode/Ontologies/M1-Experimental/OwlModels/ScientificConcepts2.sadl.metrics.owl"/>
-    <j.0:language rdf:resource="http://www.w3.org/2002/07/owl"/>
-    <j.0:createdBy>SRL_Metrics</j.0:createdBy>
+    <j.0:publicURI rdf:resource="http://sadl.org/ScientificConcepts2.sadl.metrics"/>
   </j.0:OntologySpec>
-</rdf:RDF>
+  <j.0:OntologySpec>
+    <j.0:createdBy>SRL_Metrics</j.0:createdBy>
+    <j.0:language rdf:resource="http://www.w3.org/2002/07/owl"/>
+    <j.0:altURL rdf:resource="file:/C:/Users/200005201/DARPA-ASKE-TA1/ModelsFromCode/Ontologies/M1-Experimental/OwlModels/PhotovoltaicCell.sadl.metrics.owl"/>
+    <j.0:publicURI rdf:resource="http://sadl.org/PhotovoltaicCell.sadl.metrics"/>
+  </j.0:OntologySpec>
+  <j.0:OntologySpec>
+    <j.0:createdBy>SRL_Metrics</j.0:createdBy>
+    <j.0:language rdf:resource="http://www.w3.org/2002/07/owl"/>
+    <j.0:altURL rdf:resource="file:/C:/Users/200005201/DARPA-ASKE-TA1/ModelsFromCode/Ontologies/M1-Experimental/OwlModels/ModelFromCode.sadl.metrics.owl"/>
+    <j.0:publicURI rdf:resource="http://sadl.org/ModelFromCode.sadl.metrics"/>
+  </j.0:OntologySpec>
+  <j.0:OntologySpec>
+    <j.0:prefix rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >sadlimplicitmodel</j.0:prefix>
+    <j.0:createdBy>SADL</j.0:createdBy>
+    <j.0:language rdf:resource="http://www.w3.org/2002/07/owl"/>
+    <j.0:altURL rdf:resource="file:/C:/Users/200005201/DARPA-ASKE-TA1/ModelsFromCode/Ontologies/M1-Experimental/OwlModels/SadlImplicitModel.owl"/>
+    <j.0:publicURI rdf:resource="http://sadl.org/sadlimplicitmodel"/>
+  </j.0:OntologySpec>
+  <j.0:OntologySpec>
+    <j.0:createdBy>SRL_Metrics</j.0:createdBy>
+    <j.0:language rdf:resource="http://www.w3.org/2002/07/owl"/>
+    <

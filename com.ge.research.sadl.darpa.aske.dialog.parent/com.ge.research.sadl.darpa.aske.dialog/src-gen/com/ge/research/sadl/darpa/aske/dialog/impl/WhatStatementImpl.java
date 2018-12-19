@@ -4,7 +4,6 @@
 package com.ge.research.sadl.darpa.aske.dialog.impl;
 
 import com.ge.research.sadl.darpa.aske.dialog.DialogPackage;
-import com.ge.research.sadl.darpa.aske.dialog.WhatIsStatement;
 import com.ge.research.sadl.darpa.aske.dialog.WhatStatement;
 
 import com.ge.research.sadl.sADL.impl.SadlModelElementImpl;
@@ -13,6 +12,7 @@ import org.eclipse.emf.common.notify.Notification;
 import org.eclipse.emf.common.notify.NotificationChain;
 
 import org.eclipse.emf.ecore.EClass;
+import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.ecore.InternalEObject;
 
 import org.eclipse.emf.ecore.impl.ENotificationImpl;
@@ -40,7 +40,7 @@ public class WhatStatementImpl extends SadlModelElementImpl implements WhatState
    * @generated
    * @ordered
    */
-  protected WhatIsStatement stmt;
+  protected EObject stmt;
 
   /**
    * <!-- begin-user-doc -->
@@ -68,7 +68,7 @@ public class WhatStatementImpl extends SadlModelElementImpl implements WhatState
    * <!-- end-user-doc -->
    * @generated
    */
-  public WhatIsStatement getStmt()
+  public EObject getStmt()
   {
     return stmt;
   }
@@ -78,9 +78,9 @@ public class WhatStatementImpl extends SadlModelElementImpl implements WhatState
    * <!-- end-user-doc -->
    * @generated
    */
-  public NotificationChain basicSetStmt(WhatIsStatement newStmt, NotificationChain msgs)
+  public NotificationChain basicSetStmt(EObject newStmt, NotificationChain msgs)
   {
-    WhatIsStatement oldStmt = stmt;
+    EObject oldStmt = stmt;
     stmt = newStmt;
     if (eNotificationRequired())
     {
@@ -95,7 +95,7 @@ public class WhatStatementImpl extends SadlModelElementImpl implements WhatState
    * <!-- end-user-doc -->
    * @generated
    */
-  public void setStmt(WhatIsStatement newStmt)
+  public void setStmt(EObject newStmt)
   {
     if (newStmt != stmt)
     {
@@ -154,7 +154,7 @@ public class WhatStatementImpl extends SadlModelElementImpl implements WhatState
     switch (featureID)
     {
       case DialogPackage.WHAT_STATEMENT__STMT:
-        setStmt((WhatIsStatement)newValue);
+        setStmt((EObject)newValue);
         return;
     }
     super.eSet(featureID, newValue);
@@ -171,7 +171,7 @@ public class WhatStatementImpl extends SadlModelElementImpl implements WhatState
     switch (featureID)
     {
       case DialogPackage.WHAT_STATEMENT__STMT:
-        setStmt((WhatIsStatement)null);
+        setStmt((EObject)null);
         return;
     }
     super.eUnset(featureID);
