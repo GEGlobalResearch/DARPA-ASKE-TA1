@@ -75,4 +75,9 @@ public class JenaBasedDialogModelProcessor extends JenaBasedSadlModelProcessor {
 		// TODO Auto-generated method stub
 		
 	}
+
+	@Override
+	public boolean isSupported(String fileExtension) {
+		return "dialog".equals(fileExtension);
+	}
 }
