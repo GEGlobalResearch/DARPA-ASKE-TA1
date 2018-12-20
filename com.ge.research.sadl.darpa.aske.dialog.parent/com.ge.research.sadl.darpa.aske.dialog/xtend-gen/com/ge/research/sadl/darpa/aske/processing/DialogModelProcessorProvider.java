@@ -7,7 +7,7 @@ import com.google.inject.Injector;
 
 @SuppressWarnings("all")
 public class DialogModelProcessorProvider extends SadlModelProcessorProvider {
-  private final static String EXTENSION_ID = "com.ge.research.sadl.darpa.aske.dialog_model_processor";
+  private static final String EXTENSION_ID = "com.ge.research.sadl.darpa.aske.dialog.dialog_model_processor";
   
   @Inject
   public DialogModelProcessorProvider(final Injector injector) {

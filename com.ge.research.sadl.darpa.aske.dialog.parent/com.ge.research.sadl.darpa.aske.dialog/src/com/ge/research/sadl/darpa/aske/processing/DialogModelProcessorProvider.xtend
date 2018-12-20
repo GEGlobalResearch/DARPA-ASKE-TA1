@@ -7,7 +7,7 @@ import com.google.inject.Injector
 
 class DialogModelProcessorProvider extends SadlModelProcessorProvider {
 
-	static val EXTENSION_ID = 'com.ge.research.sadl.darpa.aske.dialog_model_processor';
+	static val EXTENSION_ID = 'com.ge.research.sadl.darpa.aske.dialog.dialog_model_processor';
 
 	@Inject
 	new(Injector injector) {
