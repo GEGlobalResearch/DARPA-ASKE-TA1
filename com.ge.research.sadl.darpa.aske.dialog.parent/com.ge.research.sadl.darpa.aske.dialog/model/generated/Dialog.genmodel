@@ -6,6 +6,10 @@
     complianceLevel="6.0" copyrightFields="false" runtimeVersion="2.12" usedGenPackages="platform:/resource/com.ge.research.sadl/model/generated/SADL.genmodel#//sADL">
   <genPackages prefix="Dialog" basePackage="com.ge.research.sadl.darpa.aske" disposableProviderFactory="true"
       fileExtensions="dialog" ecorePackage="Dialog.ecore#/">
+    <genClasses ecoreClass="Dialog.ecore#//ResponseStatement">
+      <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference Dialog.ecore#//ResponseStatement/sstmt"/>
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute Dialog.ecore#//ResponseStatement/str"/>
+    </genClasses>
     <genClasses ecoreClass="Dialog.ecore#//StringResponse">
       <genFeatures createChild="false" ecoreFeature="ecore:EAttribute Dialog.ecore#//StringResponse/str"/>
     </genClasses>
@@ -29,6 +33,7 @@
       <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference Dialog.ecore#//HowManyValuesStatement/cls"/>
     </genClasses>
     <genClasses ecoreClass="Dialog.ecore#//ModifiedAskStatement">
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute Dialog.ecore#//ModifiedAskStatement/start"/>
       <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference Dialog.ecore#//ModifiedAskStatement/expr"/>
     </genClasses>
   </genPackages>

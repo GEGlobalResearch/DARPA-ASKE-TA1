@@ -19,7 +19,12 @@ Require-Bundle: com.ge.research.sadl.darpa.aske.dialog,
  org.eclipse.xtext.xbase.lib;bundle-version="2.14.0",
  org.eclipse.xtend.lib;resolution:=optional,
  com.ge.research.sadl;bundle-version="3.2.0",
- com.ge.research.sadl.ui;bundle-version="3.2.0"
+ com.ge.research.sadl.ui;bundle-version="3.2.0",
+ com.ge.research.jena,
+ com.ge.research.sadl.ide,
+ org.eclipse.core.filesystem;bundle-version="1.4.0",
+ org.eclipse.jdt;bundle-version="3.9.1",
+ org.eclipse.jdt.core;bundle-version="3.9.2"
 Import-Package: org.apache.log4j
 Bundle-RequiredExecutionEnvironment: JavaSE-1.8
 Export-Package: com.ge.research.sadl.darpa.aske.ui.contentassist,

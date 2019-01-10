@@ -15,4 +15,11 @@
 	<natures>
 		<nature>org.eclipse.xtext.ui.shared.xtextNature</nature>
 	</natures>
+	<linkedResources>
+		<link>
+			<name>Mach.java</name>
+			<type>1</type>
+			<location>C:/Users/200005201/Downloads/MachUnzipped/Mach.java</location>
+		</link>
+	</linkedResources>
 </projectDescription>

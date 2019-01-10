@@ -32,8 +32,9 @@ public class DialogParser extends AbstractContentAssistParser {
 		
 		private static void init(ImmutableMap.Builder<AbstractElement, String> builder, DialogGrammarAccess grammarAccess) {
 			builder.put(grammarAccess.getSadlModelElementAccess().getAlternatives(), "rule__SadlModelElement__Alternatives");
-			builder.put(grammarAccess.getSadlModelElementAccess().getAlternatives_0_1(), "rule__SadlModelElement__Alternatives_0_1");
-			builder.put(grammarAccess.getModifiedAskStatementAccess().getAlternatives_1(), "rule__ModifiedAskStatement__Alternatives_1");
+			builder.put(grammarAccess.getResponseStatementAccess().getAlternatives_1(), "rule__ResponseStatement__Alternatives_1");
+			builder.put(grammarAccess.getResponseStatementAccess().getSstmtAlternatives_1_0_0(), "rule__ResponseStatement__SstmtAlternatives_1_0_0");
+			builder.put(grammarAccess.getModifiedAskStatementAccess().getStartAlternatives_1_0(), "rule__ModifiedAskStatement__StartAlternatives_1_0");
 			builder.put(grammarAccess.getModifiedAskStatementAccess().getExprAlternatives_2_0(), "rule__ModifiedAskStatement__ExprAlternatives_2_0");
 			builder.put(grammarAccess.getWhatStatementAccess().getAlternatives_1(), "rule__WhatStatement__Alternatives_1");
 			builder.put(grammarAccess.getWhatStatementAccess().getStmtAlternatives_2_0(), "rule__WhatStatement__StmtAlternatives_2_0");
@@ -130,7 +131,7 @@ public class DialogParser extends AbstractContentAssistParser {
 			builder.put(grammarAccess.getSadlModelElementAccess().getGroup_1(), "rule__SadlModelElement__Group_1__0");
 			builder.put(grammarAccess.getSadlModelElementAccess().getGroup_2(), "rule__SadlModelElement__Group_2__0");
 			builder.put(grammarAccess.getSadlModelElementAccess().getGroup_3(), "rule__SadlModelElement__Group_3__0");
-			builder.put(grammarAccess.getSadlModelElementAccess().getGroup_4(), "rule__SadlModelElement__Group_4__0");
+			builder.put(grammarAccess.getResponseStatementAccess().getGroup(), "rule__ResponseStatement__Group__0");
 			builder.put(grammarAccess.getModifiedAskStatementAccess().getGroup(), "rule__ModifiedAskStatement__Group__0");
 			builder.put(grammarAccess.getWhatStatementAccess().getGroup(), "rule__WhatStatement__Group__0");
 			builder.put(grammarAccess.getWhatIsStatementAccess().getGroup(), "rule__WhatIsStatement__Group__0");
@@ -331,7 +332,10 @@ public class DialogParser extends AbstractContentAssistParser {
 			builder.put(grammarAccess.getValueRowAccess().getGroup_1(), "rule__ValueRow__Group_1__0");
 			builder.put(grammarAccess.getAnyNumberAccess().getGroup(), "rule__AnyNumber__Group__0");
 			builder.put(grammarAccess.getEXPONENTAccess().getGroup(), "rule__EXPONENT__Group__0");
+			builder.put(grammarAccess.getResponseStatementAccess().getSstmtAssignment_1_0(), "rule__ResponseStatement__SstmtAssignment_1_0");
+			builder.put(grammarAccess.getResponseStatementAccess().getStrAssignment_1_1(), "rule__ResponseStatement__StrAssignment_1_1");
 			builder.put(grammarAccess.getStringResponseAccess().getStrAssignment(), "rule__StringResponse__StrAssignment");
+			builder.put(grammarAccess.getModifiedAskStatementAccess().getStartAssignment_1(), "rule__ModifiedAskStatement__StartAssignment_1");
 			builder.put(grammarAccess.getModifiedAskStatementAccess().getExprAssignment_2(), "rule__ModifiedAskStatement__ExprAssignment_2");
 			builder.put(grammarAccess.getWhatStatementAccess().getStmtAssignment_2(), "rule__WhatStatement__StmtAssignment_2");
 			builder.put(grammarAccess.getWhatIsStatementAccess().getArticleAssignment_2(), "rule__WhatIsStatement__ArticleAssignment_2");

@@ -3,7 +3,7 @@
  */
 package com.ge.research.sadl.darpa.aske.dialog;
 
-import com.ge.research.sadl.sADL.SadlModelElement;
+import org.eclipse.emf.ecore.EObject;
 
 /**
  * <!-- begin-user-doc -->
@@ -21,7 +21,7 @@ import com.ge.research.sadl.sADL.SadlModelElement;
  * @model
  * @generated
  */
-public interface StringResponse extends SadlModelElement
+public interface StringResponse extends EObject
 {
   /**
    * Returns the value of the '<em><b>Str</b></em>' attribute.

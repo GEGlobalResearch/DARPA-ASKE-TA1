@@ -15,6 +15,12 @@
  	described by representation with a single value of type ^Equation,
  	described by trainingData with values of type TabularDataSet.
  	
+ KChainModel is a type of ^Model.
+ {PhysicsModel, MLModel} are types of KChainModel.
+ // Composition of models
+ // Variations of a model NSL, NSL-constant-mass
+  	
+ 	
  MFVData1 is a TabularDataSet,
  	has column (a Column ml:Time with name "timestamp", with ^type "xsd:dateTime"),
  	has column (a Column ml:Force with name "Force", with ^type Force),
@@ -51,4 +57,4 @@
  MassForceVelocityModel has representation newtons2ndLaw,
  	 	has trainingData MFVData1. 	
   	
- 	
+ 

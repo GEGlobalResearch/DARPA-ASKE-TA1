@@ -65,6 +65,7 @@ public class DialogFactoryImpl extends EFactoryImpl implements DialogFactory
   {
     switch (eClass.getClassifierID())
     {
+      case DialogPackage.RESPONSE_STATEMENT: return createResponseStatement();
       case DialogPackage.STRING_RESPONSE: return createStringResponse();
       case DialogPackage.WHAT_STATEMENT: return createWhatStatement();
       case DialogPackage.WHAT_IS_STATEMENT: return createWhatIsStatement();
@@ -74,6 +75,17 @@ public class DialogFactoryImpl extends EFactoryImpl implements DialogFactory
       default:
         throw new IllegalArgumentException("The class '" + eClass.getName() + "' is not a valid classifier");
     }
+  }
+
+  /**
+   * <!-- begin-user-doc -->
+   * <!-- end-user-doc -->
+   * @generated
+   */
+  public ResponseStatement createResponseStatement()
+  {
+    ResponseStatementImpl responseStatement = new ResponseStatementImpl();
+    return responseStatement;
   }
 
   /**

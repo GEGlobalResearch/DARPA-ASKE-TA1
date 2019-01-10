@@ -6,13 +6,12 @@ package com.ge.research.sadl.darpa.aske.dialog.impl;
 import com.ge.research.sadl.darpa.aske.dialog.DialogPackage;
 import com.ge.research.sadl.darpa.aske.dialog.StringResponse;
 
-import com.ge.research.sadl.sADL.impl.SadlModelElementImpl;
-
 import org.eclipse.emf.common.notify.Notification;
 
 import org.eclipse.emf.ecore.EClass;
 
 import org.eclipse.emf.ecore.impl.ENotificationImpl;
+import org.eclipse.emf.ecore.impl.MinimalEObjectImpl;
 
 /**
  * <!-- begin-user-doc -->
@@ -27,7 +26,7 @@ import org.eclipse.emf.ecore.impl.ENotificationImpl;
  *
  * @generated
  */
-public class StringResponseImpl extends SadlModelElementImpl implements StringResponse
+public class StringResponseImpl extends MinimalEObjectImpl.Container implements StringResponse
 {
   /**
    * The default value of the '{@link #getStr() <em>Str</em>}' attribute.

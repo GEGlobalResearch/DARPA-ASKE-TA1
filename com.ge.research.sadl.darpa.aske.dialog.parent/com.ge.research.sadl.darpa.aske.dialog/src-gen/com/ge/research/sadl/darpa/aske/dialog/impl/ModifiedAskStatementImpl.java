@@ -26,6 +26,7 @@ import org.eclipse.emf.ecore.impl.ENotificationImpl;
  * The following features are implemented:
  * </p>
  * <ul>
+ *   <li>{@link com.ge.research.sadl.darpa.aske.dialog.impl.ModifiedAskStatementImpl#getStart <em>Start</em>}</li>
  *   <li>{@link com.ge.research.sadl.darpa.aske.dialog.impl.ModifiedAskStatementImpl#getExpr <em>Expr</em>}</li>
  * </ul>
  *
@@ -33,6 +34,26 @@ import org.eclipse.emf.ecore.impl.ENotificationImpl;
  */
 public class ModifiedAskStatementImpl extends ExpressionScopeImpl implements ModifiedAskStatement
 {
+  /**
+   * The default value of the '{@link #getStart() <em>Start</em>}' attribute.
+   * <!-- begin-user-doc -->
+   * <!-- end-user-doc -->
+   * @see #getStart()
+   * @generated
+   * @ordered
+   */
+  protected static final String START_EDEFAULT = null;
+
+  /**
+   * The cached value of the '{@link #getStart() <em>Start</em>}' attribute.
+   * <!-- begin-user-doc -->
+   * <!-- end-user-doc -->
+   * @see #getStart()
+   * @generated
+   * @ordered
+   */
+  protected String start = START_EDEFAULT;
+
   /**
    * The cached value of the '{@link #getExpr() <em>Expr</em>}' containment reference.
    * <!-- begin-user-doc -->
@@ -62,6 +83,29 @@ public class ModifiedAskStatementImpl extends ExpressionScopeImpl implements Mod
   protected EClass eStaticClass()
   {
     return DialogPackage.Literals.MODIFIED_ASK_STATEMENT;
+  }
+
+  /**
+   * <!-- begin-user-doc -->
+   * <!-- end-user-doc -->
+   * @generated
+   */
+  public String getStart()
+  {
+    return start;
+  }
+
+  /**
+   * <!-- begin-user-doc -->
+   * <!-- end-user-doc -->
+   * @generated
+   */
+  public void setStart(String newStart)
+  {
+    String oldStart = start;
+    start = newStart;
+    if (eNotificationRequired())
+      eNotify(new ENotificationImpl(this, Notification.SET, DialogPackage.MODIFIED_ASK_STATEMENT__START, oldStart, start));
   }
 
   /**
@@ -138,6 +182,8 @@ public class ModifiedAskStatementImpl extends ExpressionScopeImpl implements Mod
   {
     switch (featureID)
     {
+      case DialogPackage.MODIFIED_ASK_STATEMENT__START:
+        return getStart();
       case DialogPackage.MODIFIED_ASK_STATEMENT__EXPR:
         return getExpr();
     }
@@ -154,6 +200,9 @@ public class ModifiedAskStatementImpl extends ExpressionScopeImpl implements Mod
   {
     switch (featureID)
     {
+      case DialogPackage.MODIFIED_ASK_STATEMENT__START:
+        setStart((String)newValue);
+        return;
       case DialogPackage.MODIFIED_ASK_STATEMENT__EXPR:
         setExpr((Expression)newValue);
         return;
@@ -171,6 +220,9 @@ public class ModifiedAskStatementImpl extends ExpressionScopeImpl implements Mod
   {
     switch (featureID)
     {
+      case DialogPackage.MODIFIED_ASK_STATEMENT__START:
+        setStart(START_EDEFAULT);
+        return;
       case DialogPackage.MODIFIED_ASK_STATEMENT__EXPR:
         setExpr((Expression)null);
         return;
@@ -188,10 +240,29 @@ public class ModifiedAskStatementImpl extends ExpressionScopeImpl implements Mod
   {
     switch (featureID)
     {
+      case DialogPackage.MODIFIED_ASK_STATEMENT__START:
+        return START_EDEFAULT == null ? start != null : !START_EDEFAULT.equals(start);
       case DialogPackage.MODIFIED_ASK_STATEMENT__EXPR:
         return expr != null;
     }
     return super.eIsSet(featureID);
+  }
+
+  /**
+   * <!-- begin-user-doc -->
+   * <!-- end-user-doc -->
+   * @generated
+   */
+  @Override
+  public String toString()
+  {
+    if (eIsProxy()) return super.toString();
+
+    StringBuffer result = new StringBuffer(super.toString());
+    result.append(" (start: ");
+    result.append(start);
+    result.append(')');
+    return result.toString();
   }
 
 } //ModifiedAskStatementImpl

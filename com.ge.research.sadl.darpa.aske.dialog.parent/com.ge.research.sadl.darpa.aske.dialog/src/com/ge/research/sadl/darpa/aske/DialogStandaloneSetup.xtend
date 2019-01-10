@@ -3,6 +3,7 @@
  */
 package com.ge.research.sadl.darpa.aske
 
+import com.ge.research.sadl.SADLStandaloneSetup
 
 /**
  * Initialization support for running Xtext languages without Equinox extension registry.
@@ -12,4 +13,10 @@ class DialogStandaloneSetup extends DialogStandaloneSetupGenerated {
 	def static void doSetup() {
 		new DialogStandaloneSetup().createInjectorAndDoEMFRegistration()
 	}
+	
+	override createInjectorAndDoEMFRegistration() {
+		new SADLStandaloneSetup().createInjectorAndDoEMFRegistration()
+		super.createInjectorAndDoEMFRegistration()
+	}
+	
 }

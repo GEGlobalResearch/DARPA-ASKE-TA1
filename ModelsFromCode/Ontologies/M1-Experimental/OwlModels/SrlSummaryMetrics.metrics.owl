@@ -5,24 +5,8 @@
     xmlns:xsd="http://www.w3.org/2001/XMLSchema#"
   xml:base="http://com.ge.research.sadl/srl/metricsummary">
   <owl:Ontology rdf:about="">
-    <owl:imports rdf:resource="http://sadl.org/ModelFromCode.sadl.metrics"/>
-    <owl:imports rdf:resource="/sadlmetricsmodel"/>
-    <owl:imports rdf:resource="http://sadl.org/ScientificConcepts1.sadl.metrics"/>
-    <owl:imports rdf:resource="http://sadl.org/MinimalExampleWithRules.sadl.metrics"/>
-    <owl:imports rdf:resource="http://sadl.org/MinimalExampleMixed.sadl.metrics"/>
-    <owl:imports rdf:resource="http://sadl.org/ScientificConcepts2.sadl.metrics"/>
-    <owl:imports rdf:resource="http://sadl.org/MinimalExampleEquations.sadl.metrics"/>
-    <owl:imports rdf:resource="http://com.ge.research.darpa.answer.imports/TemperatureConversion.metrics"/>
-    <owl:imports rdf:resource="http://sadl.org/Software.sadl.metrics"/>
-    <owl:imports rdf:resource="http:///Dn.metrics"/>
-    <owl:imports rdf:resource="http://sadl.org/PhotovoltaicCell.sadl.metrics"/>
-    <owl:imports rdf:resource="http://sadl.org/test.sadl.metrics"/>
-    <owl:imports rdf:resource="http://sadl.org/ScientificConcepts3.sadl.metrics"/>
-    <owl:imports rdf:resource="http://sadl.org/CurationManager.sadl.metrics"/>
-    <owl:imports rdf:resource="http://com.ge.research.answer.java/TemperatureConversionmanual.metrics"/>
-    <owl:imports rdf:resource="http://sadl.org/Temperature.sadl.metrics"/>
-    <owl:imports rdf:resource="http://sadl.org/BN_SecondLaw.sadl.metrics"/>
-    <owl:imports rdf:resource="http://sadl.org/ML.sadl.metrics"/>
+    <owl:imports rdf:resource="http://nopackage/Mach.metrics"/>
     <owl:imports rdf:resource="http://com.ge.research.slr/srl2model"/>
+    <owl:imports rdf:resource="/sadlmetricsmodel"/>
   </owl:Ontology>
 </rdf:RDF>

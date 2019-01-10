@@ -3,7 +3,9 @@
  */
 package com.ge.research.sadl.darpa.aske;
 
+import com.ge.research.sadl.SADLStandaloneSetup;
 import com.ge.research.sadl.darpa.aske.DialogStandaloneSetupGenerated;
+import com.google.inject.Injector;
 
 /**
  * Initialization support for running Xtext languages without Equinox extension registry.
@@ -12,5 +14,15 @@ import com.ge.research.sadl.darpa.aske.DialogStandaloneSetupGenerated;
 public class DialogStandaloneSetup extends DialogStandaloneSetupGenerated {
   public static void doSetup() {
     new DialogStandaloneSetup().createInjectorAndDoEMFRegistration();
+  }
+  
+  @Override
+  public Injector createInjectorAndDoEMFRegistration() {
+    Injector _xblockexpression = null;
+    {
+      new SADLStandaloneSetup().createInjectorAndDoEMFRegistration();
+      _xblockexpression = super.createInjectorAndDoEMFRegistration();
+    }
+    return _xblockexpression;
   }
 }

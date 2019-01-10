@@ -7,10 +7,8 @@ import com.ge.research.sadl.ValueConverterService;
 import com.ge.research.sadl.darpa.aske.AbstractDialogRuntimeModule;
 import com.ge.research.sadl.darpa.aske.processing.DialogModelProcessorProvider;
 import com.ge.research.sadl.generator.SADLOutputConfigurationProvider;
-import com.ge.research.sadl.model.SadlEObjectDocumentationProvider;
 import com.ge.research.sadl.processing.IModelProcessorProvider;
-import com.ge.research.sadl.resource.SadlResourceDescriptionManager;
-import com.ge.research.sadl.resource.SadlResourceDescriptionStrategy;
+import com.ge.research.sadl.scoping.ErrorAddingLinkingService;
 import com.ge.research.sadl.scoping.SadlQualifiedNameConverter;
 import com.ge.research.sadl.scoping.SadlQualifiedNameProvider;
 import com.ge.research.sadl.scoping.SilencedImportedNamesAdapter;
@@ -21,16 +19,14 @@ import com.google.inject.Singleton;
 import java.io.IOException;
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.xtext.conversion.IValueConverterService;
-import org.eclipse.xtext.documentation.IEObjectDocumentationProvider;
 import org.eclipse.xtext.generator.IOutputConfigurationProvider;
+import org.eclipse.xtext.linking.impl.DefaultLinkingService;
 import org.eclipse.xtext.linking.impl.ImportedNamesAdapter;
 import org.eclipse.xtext.linking.impl.LinkingDiagnosticMessageProvider;
 import org.eclipse.xtext.naming.IQualifiedNameConverter;
 import org.eclipse.xtext.naming.IQualifiedNameProvider;
 import org.eclipse.xtext.parsetree.reconstr.IParseTreeConstructor;
 import org.eclipse.xtext.parsetree.reconstr.ITokenStream;
-import org.eclipse.xtext.resource.impl.DefaultResourceDescriptionManager;
-import org.eclipse.xtext.resource.impl.DefaultResourceDescriptionStrategy;
 import org.eclipse.xtext.validation.ResourceValidatorImpl;
 
 /**
@@ -56,14 +52,6 @@ public class DialogRuntimeModule extends AbstractDialogRuntimeModule {
     binder.<IOutputConfigurationProvider>bind(IOutputConfigurationProvider.class).to(SADLOutputConfigurationProvider.class).in(Singleton.class);
   }
   
-  public Class<? extends DefaultResourceDescriptionManager> bindDefaultResourceDescriptionManager() {
-    return SadlResourceDescriptionManager.class;
-  }
-  
-  public Class<? extends IEObjectDocumentationProvider> bindIEObjectDocumentationProvider() {
-    return SadlEObjectDocumentationProvider.class;
-  }
-  
   public Class<? extends IQualifiedNameConverter> bindIQualifiedNameCoverter() {
     return SadlQualifiedNameConverter.class;
   }
@@ -85,12 +73,12 @@ public class DialogRuntimeModule extends AbstractDialogRuntimeModule {
     return DialogModelProcessorProvider.class;
   }
   
-  public Class<? extends IParseTreeConstructor> bindIParseTreeConstructor() {
-    return DialogRuntimeModule.NoImplParseTreeConstructor.class;
+  public Class<? extends DefaultLinkingService> bindDefaultLinkingService() {
+    return ErrorAddingLinkingService.class;
   }
   
-  public Class<? extends DefaultResourceDescriptionStrategy> bindResourceDescritpionStrategy() {
-    return SadlResourceDescriptionStrategy.class;
+  public Class<? extends IParseTreeConstructor> bindIParseTreeConstructor() {
+    return DialogRuntimeModule.NoImplParseTreeConstructor.class;
   }
   
   public Class<? extends ImportedNamesAdapter> bindImportedNamesAdapter() {

@@ -96,62 +96,16 @@ ruleSadlModelElement returns [EObject current=null]
 }:
 	(
 		(
-			otherlv_0=CM
 			{
-				newLeafNode(otherlv_0, grammarAccess.getSadlModelElementAccess().getCMKeyword_0_0());
+				newCompositeNode(grammarAccess.getSadlModelElementAccess().getResponseStatementParserRuleCall_0_0());
 			}
-			(
-				{
-					newCompositeNode(grammarAccess.getSadlModelElementAccess().getSadlStatementParserRuleCall_0_1_0());
-				}
-				this_SadlStatement_1=ruleSadlStatement
-				{
-					$current = $this_SadlStatement_1.current;
-					afterParserOrEnumRuleCall();
-				}
-				    |
-				{
-					newCompositeNode(grammarAccess.getSadlModelElementAccess().getEquationStatementParserRuleCall_0_1_1());
-				}
-				this_EquationStatement_2=ruleEquationStatement
-				{
-					$current = $this_EquationStatement_2.current;
-					afterParserOrEnumRuleCall();
-				}
-				    |
-				{
-					newCompositeNode(grammarAccess.getSadlModelElementAccess().getExternalEquationStatementParserRuleCall_0_1_2());
-				}
-				this_ExternalEquationStatement_3=ruleExternalEquationStatement
-				{
-					$current = $this_ExternalEquationStatement_3.current;
-					afterParserOrEnumRuleCall();
-				}
-			)
+			this_ResponseStatement_0=ruleResponseStatement
 			{
-				newCompositeNode(grammarAccess.getSadlModelElementAccess().getEOSParserRuleCall_0_2());
-			}
-			ruleEOS
-			{
-				afterParserOrEnumRuleCall();
-			}
-		)
-		    |
-		(
-			otherlv_5=CM
-			{
-				newLeafNode(otherlv_5, grammarAccess.getSadlModelElementAccess().getCMKeyword_1_0());
-			}
-			{
-				newCompositeNode(grammarAccess.getSadlModelElementAccess().getStringResponseParserRuleCall_1_1());
-			}
-			this_StringResponse_6=ruleStringResponse
-			{
-				$current = $this_StringResponse_6.current;
+				$current = $this_ResponseStatement_0.current;
 				afterParserOrEnumRuleCall();
 			}
 			{
-				newCompositeNode(grammarAccess.getSadlModelElementAccess().getEOSParserRuleCall_1_2());
+				newCompositeNode(grammarAccess.getSadlModelElementAccess().getEOSParserRuleCall_0_1());
 			}
 			ruleEOS
 			{
@@ -161,11 +115,29 @@ ruleSadlModelElement returns [EObject current=null]
 		    |
 		(
 			{
-				newCompositeNode(grammarAccess.getSadlModelElementAccess().getModifiedAskStatementParserRuleCall_2_0());
+				newCompositeNode(grammarAccess.getSadlModelElementAccess().getModifiedAskStatementParserRuleCall_1_0());
 			}
-			this_ModifiedAskStatement_8=ruleModifiedAskStatement
+			this_ModifiedAskStatement_2=ruleModifiedAskStatement
 			{
-				$current = $this_ModifiedAskStatement_8.current;
+				$current = $this_ModifiedAskStatement_2.current;
+				afterParserOrEnumRuleCall();
+			}
+			{
+				newCompositeNode(grammarAccess.getSadlModelElementAccess().getEOSParserRuleCall_1_1());
+			}
+			ruleEOS
+			{
+				afterParserOrEnumRuleCall();
+			}
+		)
+		    |
+		(
+			{
+				newCompositeNode(grammarAccess.getSadlModelElementAccess().getWhatStatementParserRuleCall_2_0());
+			}
+			this_WhatStatement_4=ruleWhatStatement
+			{
+				$current = $this_WhatStatement_4.current;
 				afterParserOrEnumRuleCall();
 			}
 			{
@@ -179,11 +151,11 @@ ruleSadlModelElement returns [EObject current=null]
 		    |
 		(
 			{
-				newCompositeNode(grammarAccess.getSadlModelElementAccess().getWhatStatementParserRuleCall_3_0());
+				newCompositeNode(grammarAccess.getSadlModelElementAccess().getHowManyValuesStatementParserRuleCall_3_0());
 			}
-			this_WhatStatement_10=ruleWhatStatement
+			this_HowManyValuesStatement_6=ruleHowManyValuesStatement
 			{
-				$current = $this_WhatStatement_10.current;
+				$current = $this_HowManyValuesStatement_6.current;
 				afterParserOrEnumRuleCall();
 			}
 			{
@@ -194,36 +166,18 @@ ruleSadlModelElement returns [EObject current=null]
 				afterParserOrEnumRuleCall();
 			}
 		)
-		    |
-		(
-			{
-				newCompositeNode(grammarAccess.getSadlModelElementAccess().getHowManyValuesStatementParserRuleCall_4_0());
-			}
-			this_HowManyValuesStatement_12=ruleHowManyValuesStatement
-			{
-				$current = $this_HowManyValuesStatement_12.current;
-				afterParserOrEnumRuleCall();
-			}
-			{
-				newCompositeNode(grammarAccess.getSadlModelElementAccess().getEOSParserRuleCall_4_1());
-			}
-			ruleEOS
-			{
-				afterParserOrEnumRuleCall();
-			}
-		)
 	)
 ;
 
-// Entry rule entryRuleStringResponse
-entryRuleStringResponse returns [EObject current=null]:
-	{ newCompositeNode(grammarAccess.getStringResponseRule()); }
-	iv_ruleStringResponse=ruleStringResponse
-	{ $current=$iv_ruleStringResponse.current; }
+// Entry rule entryRuleResponseStatement
+entryRuleResponseStatement returns [EObject current=null]:
+	{ newCompositeNode(grammarAccess.getResponseStatementRule()); }
+	iv_ruleResponseStatement=ruleResponseStatement
+	{ $current=$iv_ruleResponseStatement.current; }
 	EOF;
 
-// Rule StringResponse
-ruleStringResponse returns [EObject current=null]
+// Rule ResponseStatement
+ruleResponseStatement returns [EObject current=null]
 @init {
 	enterRule();
 }
@@ -231,21 +185,83 @@ ruleStringResponse returns [EObject current=null]
 	leaveRule();
 }:
 	(
+		otherlv_0=CM
+		{
+			newLeafNode(otherlv_0, grammarAccess.getResponseStatementAccess().getCMKeyword_0());
+		}
 		(
-			lv_str_0_0=RULE_STRING
-			{
-				newLeafNode(lv_str_0_0, grammarAccess.getStringResponseAccess().getStrSTRINGTerminalRuleCall_0());
-			}
-			{
-				if ($current==null) {
-					$current = createModelElement(grammarAccess.getStringResponseRule());
-				}
-				setWithLastConsumed(
-					$current,
-					"str",
-					lv_str_0_0,
-					"com.ge.research.sadl.SADL.STRING");
-			}
+			(
+				(
+					(
+						{
+							newCompositeNode(grammarAccess.getResponseStatementAccess().getSstmtSadlStatementParserRuleCall_1_0_0_0());
+						}
+						lv_sstmt_1_1=ruleSadlStatement
+						{
+							if ($current==null) {
+								$current = createModelElementForParent(grammarAccess.getResponseStatementRule());
+							}
+							set(
+								$current,
+								"sstmt",
+								lv_sstmt_1_1,
+								"com.ge.research.sadl.SADL.SadlStatement");
+							afterParserOrEnumRuleCall();
+						}
+						    |
+						{
+							newCompositeNode(grammarAccess.getResponseStatementAccess().getSstmtEquationStatementParserRuleCall_1_0_0_1());
+						}
+						lv_sstmt_1_2=ruleEquationStatement
+						{
+							if ($current==null) {
+								$current = createModelElementForParent(grammarAccess.getResponseStatementRule());
+							}
+							set(
+								$current,
+								"sstmt",
+								lv_sstmt_1_2,
+								"com.ge.research.sadl.SADL.EquationStatement");
+							afterParserOrEnumRuleCall();
+						}
+						    |
+						{
+							newCompositeNode(grammarAccess.getResponseStatementAccess().getSstmtExternalEquationStatementParserRuleCall_1_0_0_2());
+						}
+						lv_sstmt_1_3=ruleExternalEquationStatement
+						{
+							if ($current==null) {
+								$current = createModelElementForParent(grammarAccess.getResponseStatementRule());
+							}
+							set(
+								$current,
+								"sstmt",
+								lv_sstmt_1_3,
+								"com.ge.research.sadl.SADL.ExternalEquationStatement");
+							afterParserOrEnumRuleCall();
+						}
+					)
+				)
+			)
+			    |
+			(
+				(
+					lv_str_2_0=RULE_STRING
+					{
+						newLeafNode(lv_str_2_0, grammarAccess.getResponseStatementAccess().getStrSTRINGTerminalRuleCall_1_1_0());
+					}
+					{
+						if ($current==null) {
+							$current = createModelElement(grammarAccess.getResponseStatementRule());
+						}
+						setWithLastConsumed(
+							$current,
+							"str",
+							lv_str_2_0,
+							"com.ge.research.sadl.SADL.STRING");
+					}
+				)
+			)
 		)
 	)
 ;
@@ -274,15 +290,53 @@ ruleModifiedAskStatement returns [EObject current=null]
 			}
 		)
 		(
-			otherlv_1=Ask
-			{
-				newLeafNode(otherlv_1, grammarAccess.getModifiedAskStatementAccess().getAskKeyword_1_0());
-			}
-			    |
-			otherlv_2=Ask_1
-			{
-				newLeafNode(otherlv_2, grammarAccess.getModifiedAskStatementAccess().getAskKeyword_1_1());
-			}
+			(
+				(
+					lv_start_1_1=Ask
+					{
+						newLeafNode(lv_start_1_1, grammarAccess.getModifiedAskStatementAccess().getStartAskKeyword_1_0_0());
+					}
+					{
+						if ($current==null) {
+							$current = createModelElement(grammarAccess.getModifiedAskStatementRule());
+						}
+						setWithLastConsumed($current, "start", lv_start_1_1, null);
+					}
+					    |
+					lv_start_1_2=Ask_1
+					{
+						newLeafNode(lv_start_1_2, grammarAccess.getModifiedAskStatementAccess().getStartAskKeyword_1_0_1());
+					}
+					{
+						if ($current==null) {
+							$current = createModelElement(grammarAccess.getModifiedAskStatementRule());
+						}
+						setWithLastConsumed($current, "start", lv_start_1_2, null);
+					}
+					    |
+					lv_start_1_3=Graph
+					{
+						newLeafNode(lv_start_1_3, grammarAccess.getModifiedAskStatementAccess().getStartGraphKeyword_1_0_2());
+					}
+					{
+						if ($current==null) {
+							$current = createModelElement(grammarAccess.getModifiedAskStatementRule());
+						}
+						setWithLastConsumed($current, "start", lv_start_1_3, null);
+					}
+					    |
+					lv_start_1_4=Graph_1
+					{
+						newLeafNode(lv_start_1_4, grammarAccess.getModifiedAskStatementAccess().getStartGraphKeyword_1_0_3());
+					}
+					{
+						if ($current==null) {
+							$current = createModelElement(grammarAccess.getModifiedAskStatementRule());
+						}
+						setWithLastConsumed($current, "start", lv_start_1_4, null);
+					}
+				)
+			)
 		)
 		(
 			(
@@ -290,7 +344,7 @@ ruleModifiedAskStatement returns [EObject current=null]
 					{
 						newCompositeNode(grammarAccess.getModifiedAskStatementAccess().getExprConstructExpressionParserRuleCall_2_0_0());
 					}
-					lv_expr_3_1=ruleConstructExpression
+					lv_expr_2_1=ruleConstructExpression
 					{
 						if ($current==null) {
 							$current = createModelElementForParent(grammarAccess.getModifiedAskStatementRule());
@@ -298,7 +352,7 @@ ruleModifiedAskStatement returns [EObject current=null]
 						set(
 							$current,
 							"expr",
-							lv_expr_3_1,
+							lv_expr_2_1,
 							"com.ge.research.sadl.SADL.ConstructExpression");
 						afterParserOrEnumRuleCall();
 					}
@@ -306,7 +360,7 @@ ruleModifiedAskStatement returns [EObject current=null]
 					{
 						newCompositeNode(grammarAccess.getModifiedAskStatementAccess().getExprAskExpressionParserRuleCall_2_0_1());
 					}
-					lv_expr_3_2=ruleAskExpression
+					lv_expr_2_2=ruleAskExpression
 					{
 						if ($current==null) {
 							$current = createModelElementForParent(grammarAccess.getModifiedAskStatementRule());
@@ -314,7 +368,7 @@ ruleModifiedAskStatement returns [EObject current=null]
 						set(
 							$current,
 							"expr",
-							lv_expr_3_2,
+							lv_expr_2_2,
 							"com.ge.research.sadl.SADL.AskExpression");
 						afterParserOrEnumRuleCall();
 					}
@@ -322,7 +376,7 @@ ruleModifiedAskStatement returns [EObject current=null]
 					{
 						newCompositeNode(grammarAccess.getModifiedAskStatementAccess().getExprExpressionParserRuleCall_2_0_2());
 					}
-					lv_expr_3_3=ruleExpression
+					lv_expr_2_3=ruleExpression
 					{
 						if ($current==null) {
 							$current = createModelElementForParent(grammarAccess.getModifiedAskStatementRule());
@@ -330,7 +384,7 @@ ruleModifiedAskStatement returns [EObject current=null]
 						set(
 							$current,
 							"expr",
-							lv_expr_3_3,
+							lv_expr_2_3,
 							"com.ge.research.sadl.SADL.Expression");
 						afterParserOrEnumRuleCall();
 					}

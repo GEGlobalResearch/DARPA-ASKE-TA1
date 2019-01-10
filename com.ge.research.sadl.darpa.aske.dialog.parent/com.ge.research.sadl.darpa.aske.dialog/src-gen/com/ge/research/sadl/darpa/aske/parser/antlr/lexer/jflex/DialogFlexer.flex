@@ -179,6 +179,7 @@ ESCAPE_SEQUENCE=\\{ANY_OTHER}
 <YYINITIAL> "float" { return Float; }
 <YYINITIAL> "gYear" { return GYear; }
 <YYINITIAL> "given" { return Given; }
+<YYINITIAL> "graph" { return Graph_1; }
 <YYINITIAL> "index" { return Index; }
 <YYINITIAL> "known" { return Known; }
 <YYINITIAL> "least" { return Least; }

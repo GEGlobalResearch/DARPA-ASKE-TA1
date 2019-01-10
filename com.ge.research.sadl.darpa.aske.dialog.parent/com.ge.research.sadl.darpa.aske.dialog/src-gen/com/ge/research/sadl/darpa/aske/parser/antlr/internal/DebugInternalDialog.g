@@ -11,18 +11,7 @@ ruleDialogModel:
 // Rule SadlModelElement
 ruleSadlModelElement:
 	(
-		'CM:'
-		(
-			ruleSadlStatement
-			    |
-			ruleEquationStatement
-			    |
-			ruleExternalEquationStatement
-		)
-		ruleEOS
-		    |
-		'CM:'
-		ruleStringResponse
+		ruleResponseStatement
 		ruleEOS
 		    |
 		ruleModifiedAskStatement
@@ -36,9 +25,18 @@ ruleSadlModelElement:
 	)
 ;
 
-// Rule StringResponse
-ruleStringResponse:
-	RULE_STRING
+// Rule ResponseStatement
+ruleResponseStatement:
+	'CM:'
+	(
+		(
+			ruleSadlStatement
+			    |ruleEquationStatement
+			    |ruleExternalEquationStatement
+		)
+		    |
+		RULE_STRING
+	)
 ;
 
 // Rule ModifiedAskStatement
@@ -47,6 +45,10 @@ ruleModifiedAskStatement:
 		'Ask'
 		    |
 		'ask'
+		    |
+		'Graph'
+		    |
+		'graph'
 	)
 	(
 		ruleConstructExpression

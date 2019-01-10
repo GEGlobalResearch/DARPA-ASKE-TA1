@@ -22,7 +22,7 @@ import org.eclipse.xtext.xbase.lib.Functions.Function0;
  */
 @SuppressWarnings("all")
 public class DialogImplicitModelFragmentProvider implements ISadlImplicitModelFragmentProvider {
-  public final static String DIALOG_IMPLICIT_MODEL_FRAGMENT = new Function0<String>() {
+  public static final String DIALOG_IMPLICIT_MODEL_FRAGMENT = new Function0<String>() {
     public String apply() {
       StringConcatenation _builder = new StringConcatenation();
       return _builder.toString();

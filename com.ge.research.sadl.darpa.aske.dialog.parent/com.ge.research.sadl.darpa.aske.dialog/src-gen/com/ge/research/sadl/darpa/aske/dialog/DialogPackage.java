@@ -60,14 +60,23 @@ public interface DialogPackage extends EPackage
   DialogPackage eINSTANCE = com.ge.research.sadl.darpa.aske.dialog.impl.DialogPackageImpl.init();
 
   /**
-   * The meta object id for the '{@link com.ge.research.sadl.darpa.aske.dialog.impl.StringResponseImpl <em>String Response</em>}' class.
+   * The meta object id for the '{@link com.ge.research.sadl.darpa.aske.dialog.impl.ResponseStatementImpl <em>Response Statement</em>}' class.
    * <!-- begin-user-doc -->
    * <!-- end-user-doc -->
-   * @see com.ge.research.sadl.darpa.aske.dialog.impl.StringResponseImpl
-   * @see com.ge.research.sadl.darpa.aske.dialog.impl.DialogPackageImpl#getStringResponse()
+   * @see com.ge.research.sadl.darpa.aske.dialog.impl.ResponseStatementImpl
+   * @see com.ge.research.sadl.darpa.aske.dialog.impl.DialogPackageImpl#getResponseStatement()
    * @generated
    */
-  int STRING_RESPONSE = 0;
+  int RESPONSE_STATEMENT = 0;
+
+  /**
+   * The feature id for the '<em><b>Sstmt</b></em>' containment reference.
+   * <!-- begin-user-doc -->
+   * <!-- end-user-doc -->
+   * @generated
+   * @ordered
+   */
+  int RESPONSE_STATEMENT__SSTMT = SADLPackage.SADL_MODEL_ELEMENT_FEATURE_COUNT + 0;
 
   /**
    * The feature id for the '<em><b>Str</b></em>' attribute.
@@ -76,7 +85,35 @@ public interface DialogPackage extends EPackage
    * @generated
    * @ordered
    */
-  int STRING_RESPONSE__STR = SADLPackage.SADL_MODEL_ELEMENT_FEATURE_COUNT + 0;
+  int RESPONSE_STATEMENT__STR = SADLPackage.SADL_MODEL_ELEMENT_FEATURE_COUNT + 1;
+
+  /**
+   * The number of structural features of the '<em>Response Statement</em>' class.
+   * <!-- begin-user-doc -->
+   * <!-- end-user-doc -->
+   * @generated
+   * @ordered
+   */
+  int RESPONSE_STATEMENT_FEATURE_COUNT = SADLPackage.SADL_MODEL_ELEMENT_FEATURE_COUNT + 2;
+
+  /**
+   * The meta object id for the '{@link com.ge.research.sadl.darpa.aske.dialog.impl.StringResponseImpl <em>String Response</em>}' class.
+   * <!-- begin-user-doc -->
+   * <!-- end-user-doc -->
+   * @see com.ge.research.sadl.darpa.aske.dialog.impl.StringResponseImpl
+   * @see com.ge.research.sadl.darpa.aske.dialog.impl.DialogPackageImpl#getStringResponse()
+   * @generated
+   */
+  int STRING_RESPONSE = 1;
+
+  /**
+   * The feature id for the '<em><b>Str</b></em>' attribute.
+   * <!-- begin-user-doc -->
+   * <!-- end-user-doc -->
+   * @generated
+   * @ordered
+   */
+  int STRING_RESPONSE__STR = 0;
 
   /**
    * The number of structural features of the '<em>String Response</em>' class.
@@ -85,7 +122,7 @@ public interface DialogPackage extends EPackage
    * @generated
    * @ordered
    */
-  int STRING_RESPONSE_FEATURE_COUNT = SADLPackage.SADL_MODEL_ELEMENT_FEATURE_COUNT + 1;
+  int STRING_RESPONSE_FEATURE_COUNT = 1;
 
   /**
    * The meta object id for the '{@link com.ge.research.sadl.darpa.aske.dialog.impl.WhatStatementImpl <em>What Statement</em>}' class.
@@ -95,7 +132,7 @@ public interface DialogPackage extends EPackage
    * @see com.ge.research.sadl.darpa.aske.dialog.impl.DialogPackageImpl#getWhatStatement()
    * @generated
    */
-  int WHAT_STATEMENT = 1;
+  int WHAT_STATEMENT = 2;
 
   /**
    * The feature id for the '<em><b>Stmt</b></em>' containment reference.
@@ -123,7 +160,7 @@ public interface DialogPackage extends EPackage
    * @see com.ge.research.sadl.darpa.aske.dialog.impl.DialogPackageImpl#getWhatIsStatement()
    * @generated
    */
-  int WHAT_IS_STATEMENT = 2;
+  int WHAT_IS_STATEMENT = 3;
 
   /**
    * The feature id for the '<em><b>Article</b></em>' attribute.
@@ -160,7 +197,7 @@ public interface DialogPackage extends EPackage
    * @see com.ge.research.sadl.darpa.aske.dialog.impl.DialogPackageImpl#getWhatValuesStatement()
    * @generated
    */
-  int WHAT_VALUES_STATEMENT = 3;
+  int WHAT_VALUES_STATEMENT = 4;
 
   /**
    * The feature id for the '<em><b>Typ</b></em>' attribute.
@@ -215,7 +252,7 @@ public interface DialogPackage extends EPackage
    * @see com.ge.research.sadl.darpa.aske.dialog.impl.DialogPackageImpl#getHowManyValuesStatement()
    * @generated
    */
-  int HOW_MANY_VALUES_STATEMENT = 4;
+  int HOW_MANY_VALUES_STATEMENT = 5;
 
   /**
    * The feature id for the '<em><b>Prop</b></em>' containment reference.
@@ -270,7 +307,16 @@ public interface DialogPackage extends EPackage
    * @see com.ge.research.sadl.darpa.aske.dialog.impl.DialogPackageImpl#getModifiedAskStatement()
    * @generated
    */
-  int MODIFIED_ASK_STATEMENT = 5;
+  int MODIFIED_ASK_STATEMENT = 6;
+
+  /**
+   * The feature id for the '<em><b>Start</b></em>' attribute.
+   * <!-- begin-user-doc -->
+   * <!-- end-user-doc -->
+   * @generated
+   * @ordered
+   */
+  int MODIFIED_ASK_STATEMENT__START = SADLPackage.EXPRESSION_SCOPE_FEATURE_COUNT + 0;
 
   /**
    * The feature id for the '<em><b>Expr</b></em>' containment reference.
@@ -279,7 +325,7 @@ public interface DialogPackage extends EPackage
    * @generated
    * @ordered
    */
-  int MODIFIED_ASK_STATEMENT__EXPR = SADLPackage.EXPRESSION_SCOPE_FEATURE_COUNT + 0;
+  int MODIFIED_ASK_STATEMENT__EXPR = SADLPackage.EXPRESSION_SCOPE_FEATURE_COUNT + 1;
 
   /**
    * The number of structural features of the '<em>Modified Ask Statement</em>' class.
@@ -288,8 +334,40 @@ public interface DialogPackage extends EPackage
    * @generated
    * @ordered
    */
-  int MODIFIED_ASK_STATEMENT_FEATURE_COUNT = SADLPackage.EXPRESSION_SCOPE_FEATURE_COUNT + 1;
+  int MODIFIED_ASK_STATEMENT_FEATURE_COUNT = SADLPackage.EXPRESSION_SCOPE_FEATURE_COUNT + 2;
 
+
+  /**
+   * Returns the meta object for class '{@link com.ge.research.sadl.darpa.aske.dialog.ResponseStatement <em>Response Statement</em>}'.
+   * <!-- begin-user-doc -->
+   * <!-- end-user-doc -->
+   * @return the meta object for class '<em>Response Statement</em>'.
+   * @see com.ge.research.sadl.darpa.aske.dialog.ResponseStatement
+   * @generated
+   */
+  EClass getResponseStatement();
+
+  /**
+   * Returns the meta object for the containment reference '{@link com.ge.research.sadl.darpa.aske.dialog.ResponseStatement#getSstmt <em>Sstmt</em>}'.
+   * <!-- begin-user-doc -->
+   * <!-- end-user-doc -->
+   * @return the meta object for the containment reference '<em>Sstmt</em>'.
+   * @see com.ge.research.sadl.darpa.aske.dialog.ResponseStatement#getSstmt()
+   * @see #getResponseStatement()
+   * @generated
+   */
+  EReference getResponseStatement_Sstmt();
+
+  /**
+   * Returns the meta object for the attribute '{@link com.ge.research.sadl.darpa.aske.dialog.ResponseStatement#getStr <em>Str</em>}'.
+   * <!-- begin-user-doc -->
+   * <!-- end-user-doc -->
+   * @return the meta object for the attribute '<em>Str</em>'.
+   * @see com.ge.research.sadl.darpa.aske.dialog.ResponseStatement#getStr()
+   * @see #getResponseStatement()
+   * @generated
+   */
+  EAttribute getResponseStatement_Str();
 
   /**
    * Returns the meta object for class '{@link com.ge.research.sadl.darpa.aske.dialog.StringResponse <em>String Response</em>}'.
@@ -484,6 +562,17 @@ public interface DialogPackage extends EPackage
   EClass getModifiedAskStatement();
 
   /**
+   * Returns the meta object for the attribute '{@link com.ge.research.sadl.darpa.aske.dialog.ModifiedAskStatement#getStart <em>Start</em>}'.
+   * <!-- begin-user-doc -->
+   * <!-- end-user-doc -->
+   * @return the meta object for the attribute '<em>Start</em>'.
+   * @see com.ge.research.sadl.darpa.aske.dialog.ModifiedAskStatement#getStart()
+   * @see #getModifiedAskStatement()
+   * @generated
+   */
+  EAttribute getModifiedAskStatement_Start();
+
+  /**
    * Returns the meta object for the containment reference '{@link com.ge.research.sadl.darpa.aske.dialog.ModifiedAskStatement#getExpr <em>Expr</em>}'.
    * <!-- begin-user-doc -->
    * <!-- end-user-doc -->
@@ -517,6 +606,32 @@ public interface DialogPackage extends EPackage
    */
   interface Literals
   {
+    /**
+     * The meta object literal for the '{@link com.ge.research.sadl.darpa.aske.dialog.impl.ResponseStatementImpl <em>Response Statement</em>}' class.
+     * <!-- begin-user-doc -->
+     * <!-- end-user-doc -->
+     * @see com.ge.research.sadl.darpa.aske.dialog.impl.ResponseStatementImpl
+     * @see com.ge.research.sadl.darpa.aske.dialog.impl.DialogPackageImpl#getResponseStatement()
+     * @generated
+     */
+    EClass RESPONSE_STATEMENT = eINSTANCE.getResponseStatement();
+
+    /**
+     * The meta object literal for the '<em><b>Sstmt</b></em>' containment reference feature.
+     * <!-- begin-user-doc -->
+     * <!-- end-user-doc -->
+     * @generated
+     */
+    EReference RESPONSE_STATEMENT__SSTMT = eINSTANCE.getResponseStatement_Sstmt();
+
+    /**
+     * The meta object literal for the '<em><b>Str</b></em>' attribute feature.
+     * <!-- begin-user-doc -->
+     * <!-- end-user-doc -->
+     * @generated
+     */
+    EAttribute RESPONSE_STATEMENT__STR = eINSTANCE.getResponseStatement_Str();
+
     /**
      * The meta object literal for the '{@link com.ge.research.sadl.darpa.aske.dialog.impl.StringResponseImpl <em>String Response</em>}' class.
      * <!-- begin-user-doc -->
@@ -672,6 +787,14 @@ public interface DialogPackage extends EPackage
      * @generated
      */
     EClass MODIFIED_ASK_STATEMENT = eINSTANCE.getModifiedAskStatement();
+
+    /**
+     * The meta object literal for the '<em><b>Start</b></em>' attribute feature.
+     * <!-- begin-user-doc -->
+     * <!-- end-user-doc -->
+     * @generated
+     */
+    EAttribute MODIFIED_ASK_STATEMENT__START = eINSTANCE.getModifiedAskStatement_Start();
 
     /**
      * The meta object literal for the '<em><b>Expr</b></em>' containment reference feature.

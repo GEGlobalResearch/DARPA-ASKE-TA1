@@ -10,6 +10,10 @@ import org.eclipse.xtext.ide.editor.syntaxcoloring.ISemanticHighlightingCalculat
 import com.ge.research.sadl.darpa.aske.ui.syntaxcoloring.DialogSemanticHighlightingCalculator
 import org.eclipse.xtext.ide.editor.syntaxcoloring.AbstractAntlrTokenToAttributeIdMapper
 import com.ge.research.sadl.darpa.aske.ui.syntaxcoloring.DialogTokenToAttributeIdMapper
+import org.eclipse.xtext.ui.editor.autoedit.DefaultAutoEditStrategyProvider
+import com.ge.research.sadl.darpa.aske.ui.answer.DialogAnswerProvider
+import com.ge.research.sadl.utils.SadlProjectHelper
+import com.ge.research.sadl.ui.utils.EclipseSadlProjectHelper
 
 /**
  * Use this class to register components to be used within the Eclipse IDE.
@@ -31,5 +35,12 @@ class DialogUiModule extends AbstractDialogUiModule {
 		return DialogTokenToAttributeIdMapper
 	}
 	
+	def Class<? extends DefaultAutoEditStrategyProvider> bindDefaultAutoEditStrategyProvider() {
+		return DialogAnswerProvider
+	}
+
+	def Class<? extends SadlProjectHelper> bindSadlProjectHelper() {
+		return EclipseSadlProjectHelper;
+	}
 	
 }

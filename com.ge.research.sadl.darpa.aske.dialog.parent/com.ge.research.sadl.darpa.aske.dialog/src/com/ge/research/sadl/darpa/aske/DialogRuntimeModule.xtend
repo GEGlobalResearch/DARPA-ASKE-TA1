@@ -29,63 +29,67 @@ import org.eclipse.xtext.parsetree.reconstr.ITokenStream
 import org.eclipse.xtext.resource.impl.DefaultResourceDescriptionManager
 import org.eclipse.xtext.resource.impl.DefaultResourceDescriptionStrategy
 import org.eclipse.xtext.validation.ResourceValidatorImpl
+import com.ge.research.sadl.darpa.aske.processing.JenaBasedDialogModelProcessor
+import com.ge.research.sadl.scoping.ErrorAddingLinkingService
+import org.eclipse.xtext.linking.impl.DefaultLinkingService
 
 /**
  * Use this class to register components to be used at runtime / without the Equinox extension registry.
  */
 class DialogRuntimeModule extends AbstractDialogRuntimeModule {
 		
-	override bindIQualifiedNameProvider() {
+	override bindIQualifiedNameProvider() {	//same
 		SadlQualifiedNameProvider
 	}
 	
-	override configure (Binder binder) {
+	override configure (Binder binder) {	// same
 		super.configure(binder);
 		binder.bind(IOutputConfigurationProvider).to(SADLOutputConfigurationProvider).in(Singleton);
 	}
 	
-	def Class<? extends DefaultResourceDescriptionManager> bindDefaultResourceDescriptionManager() {
-		return SadlResourceDescriptionManager;
-	}
+//	def Class<? extends DefaultResourceDescriptionManager> bindDefaultResourceDescriptionManager() {
+//		return SadlResourceDescriptionManager;
+//	}
 	
-	def Class<? extends IEObjectDocumentationProvider> bindIEObjectDocumentationProvider() {
-		return SadlEObjectDocumentationProvider;
-	}
+//	def Class<? extends IEObjectDocumentationProvider> bindIEObjectDocumentationProvider() {
+//		return SadlEObjectDocumentationProvider;
+//	}
 	
-	def Class<? extends IQualifiedNameConverter> bindIQualifiedNameCoverter() {
+	def Class<? extends IQualifiedNameConverter> bindIQualifiedNameCoverter() {		// same
 		return SadlQualifiedNameConverter;
 	}
 	
-	def Class<? extends LinkingDiagnosticMessageProvider> bindILinkingDiagnosticMessageProvider() {
+	def Class<? extends LinkingDiagnosticMessageProvider> bindILinkingDiagnosticMessageProvider() {	// same
 		SoftLinkingMessageProvider
 	}
 	
-	override bindIValueConverterService() {
+	override bindIValueConverterService() {	// same
 		ValueConverterService
 	}
 	
-	def Class<? extends ResourceValidatorImpl> bindResourceValidatorImpl() {
+	def Class<? extends ResourceValidatorImpl> bindResourceValidatorImpl() {	// same
 		return ResourceValidator
 	}
 	
-	def Class<? extends IModelProcessorProvider> bindIModelProcessorProvider() {
+	def Class<? extends IModelProcessorProvider> bindIModelProcessorProvider() {	// similar
 		return DialogModelProcessorProvider
+//		return JenaBasedDialogModelProcessor
 	}
 	
-// this is what's in SADL	
-//	def Class<? extends DefaultLinkingService> bindDefaultLinkingService() {
-//		return ErrorAddingLinkingService;
-//	}
+// this is what's in SADL and SRL	
+	def Class<? extends DefaultLinkingService> bindDefaultLinkingService() {	// same
+		return ErrorAddingLinkingService;
+	}
 	
-	def Class<? extends IParseTreeConstructor> bindIParseTreeConstructor() {
+	def Class<? extends IParseTreeConstructor> bindIParseTreeConstructor() {	// same
 		NoImplParseTreeConstructor
 	}
 	
-//	def Class<? extends SadlMarkerLocationProvider> bindSadlMarkerLocationProvider() {
+//	def Class<? extends SadlMarkerLocationProvider> bindSadlMarkerLocationProvider() {	// no customization needed?
 //		RequirementsMarkerLocationProvider
 //	}
 	
-	static class NoImplParseTreeConstructor implements IParseTreeConstructor {
+	static class NoImplParseTreeConstructor implements IParseTreeConstructor {	// same
 		
 		override serializeSubtree(EObject object, ITokenStream out) throws IOException {
 			throw new UnsupportedOperationException("TODO: auto-generated method stub")
@@ -93,10 +97,10 @@ class DialogRuntimeModule extends AbstractDialogRuntimeModule {
 		
 	}
 	
-	def Class<? extends DefaultResourceDescriptionStrategy> bindResourceDescritpionStrategy() {
-		return SadlResourceDescriptionStrategy;
-	}
-// This is what it is f
+//	def Class<? extends DefaultResourceDescriptionStrategy> bindResourceDescritpionStrategy() {
+//		return SadlResourceDescriptionStrategy;
+//	}
+// This is what it is for SRL
 //	def Class<? extends DefaultResourceDescriptionStrategy> bindResourceDescritpionStrategy() {
 //		return ResourceDescriptionStrategy
 //	}

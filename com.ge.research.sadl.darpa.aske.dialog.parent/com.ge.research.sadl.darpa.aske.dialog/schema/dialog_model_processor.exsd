@@ -1,9 +1,9 @@
 <?xml version='1.0' encoding='UTF-8'?>
 <!-- Schema file written by PDE -->
-<schema targetNamespace="com.ge.research.sadl.requirements" xmlns="http://www.w3.org/2001/XMLSchema">
+<schema targetNamespace="com.ge.research.sadl.darpa.aske.dialog" xmlns="http://www.w3.org/2001/XMLSchema">
 <annotation>
       <appInfo>
-         <meta.schema plugin="com.ge.research.sadl.requirements" id="requirements_model_processor" name="Requirements Model Processor"/>
+         <meta.schema plugin="com.ge.research.sadl.darpa.aske.dialog" id="dialog_model_processor" name="Dialog Model Processor"/>
       </appInfo>
       <documentation>
          [Enter description of this extension point.]
