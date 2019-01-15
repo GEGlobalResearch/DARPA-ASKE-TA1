@@ -26,6 +26,7 @@ import org.eclipse.emf.ecore.impl.MinimalEObjectImpl;
  * The following features are implemented:
  * </p>
  * <ul>
+ *   <li>{@link com.ge.research.sadl.darpa.aske.dialog.impl.WhatValuesStatementImpl#getTypof <em>Typof</em>}</li>
  *   <li>{@link com.ge.research.sadl.darpa.aske.dialog.impl.WhatValuesStatementImpl#getTyp <em>Typ</em>}</li>
  *   <li>{@link com.ge.research.sadl.darpa.aske.dialog.impl.WhatValuesStatementImpl#getProp <em>Prop</em>}</li>
  *   <li>{@link com.ge.research.sadl.darpa.aske.dialog.impl.WhatValuesStatementImpl#getArticle <em>Article</em>}</li>
@@ -36,6 +37,26 @@ import org.eclipse.emf.ecore.impl.MinimalEObjectImpl;
  */
 public class WhatValuesStatementImpl extends MinimalEObjectImpl.Container implements WhatValuesStatement
 {
+  /**
+   * The default value of the '{@link #getTypof() <em>Typof</em>}' attribute.
+   * <!-- begin-user-doc -->
+   * <!-- end-user-doc -->
+   * @see #getTypof()
+   * @generated
+   * @ordered
+   */
+  protected static final String TYPOF_EDEFAULT = null;
+
+  /**
+   * The cached value of the '{@link #getTypof() <em>Typof</em>}' attribute.
+   * <!-- begin-user-doc -->
+   * <!-- end-user-doc -->
+   * @see #getTypof()
+   * @generated
+   * @ordered
+   */
+  protected String typof = TYPOF_EDEFAULT;
+
   /**
    * The default value of the '{@link #getTyp() <em>Typ</em>}' attribute.
    * <!-- begin-user-doc -->
@@ -115,6 +136,29 @@ public class WhatValuesStatementImpl extends MinimalEObjectImpl.Container implem
   protected EClass eStaticClass()
   {
     return DialogPackage.Literals.WHAT_VALUES_STATEMENT;
+  }
+
+  /**
+   * <!-- begin-user-doc -->
+   * <!-- end-user-doc -->
+   * @generated
+   */
+  public String getTypof()
+  {
+    return typof;
+  }
+
+  /**
+   * <!-- begin-user-doc -->
+   * <!-- end-user-doc -->
+   * @generated
+   */
+  public void setTypof(String newTypof)
+  {
+    String oldTypof = typof;
+    typof = newTypof;
+    if (eNotificationRequired())
+      eNotify(new ENotificationImpl(this, Notification.SET, DialogPackage.WHAT_VALUES_STATEMENT__TYPOF, oldTypof, typof));
   }
 
   /**
@@ -287,6 +331,8 @@ public class WhatValuesStatementImpl extends MinimalEObjectImpl.Container implem
   {
     switch (featureID)
     {
+      case DialogPackage.WHAT_VALUES_STATEMENT__TYPOF:
+        return getTypof();
       case DialogPackage.WHAT_VALUES_STATEMENT__TYP:
         return getTyp();
       case DialogPackage.WHAT_VALUES_STATEMENT__PROP:
@@ -309,6 +355,9 @@ public class WhatValuesStatementImpl extends MinimalEObjectImpl.Container implem
   {
     switch (featureID)
     {
+      case DialogPackage.WHAT_VALUES_STATEMENT__TYPOF:
+        setTypof((String)newValue);
+        return;
       case DialogPackage.WHAT_VALUES_STATEMENT__TYP:
         setTyp((String)newValue);
         return;
@@ -335,6 +384,9 @@ public class WhatValuesStatementImpl extends MinimalEObjectImpl.Container implem
   {
     switch (featureID)
     {
+      case DialogPackage.WHAT_VALUES_STATEMENT__TYPOF:
+        setTypof(TYPOF_EDEFAULT);
+        return;
       case DialogPackage.WHAT_VALUES_STATEMENT__TYP:
         setTyp(TYP_EDEFAULT);
         return;
@@ -361,6 +413,8 @@ public class WhatValuesStatementImpl extends MinimalEObjectImpl.Container implem
   {
     switch (featureID)
     {
+      case DialogPackage.WHAT_VALUES_STATEMENT__TYPOF:
+        return TYPOF_EDEFAULT == null ? typof != null : !TYPOF_EDEFAULT.equals(typof);
       case DialogPackage.WHAT_VALUES_STATEMENT__TYP:
         return TYP_EDEFAULT == null ? typ != null : !TYP_EDEFAULT.equals(typ);
       case DialogPackage.WHAT_VALUES_STATEMENT__PROP:
@@ -384,7 +438,9 @@ public class WhatValuesStatementImpl extends MinimalEObjectImpl.Container implem
     if (eIsProxy()) return super.toString();
 
     StringBuffer result = new StringBuffer(super.toString());
-    result.append(" (typ: ");
+    result.append(" (typof: ");
+    result.append(typof);
+    result.append(", typ: ");
     result.append(typ);
     result.append(", article: ");
     result.append(article);

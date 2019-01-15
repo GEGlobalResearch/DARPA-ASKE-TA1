@@ -8,7 +8,6 @@ import com.ge.research.sadl.darpa.aske.dialog.DialogPackage;
 import com.ge.research.sadl.darpa.aske.dialog.HowManyValuesStatement;
 import com.ge.research.sadl.darpa.aske.dialog.ModifiedAskStatement;
 import com.ge.research.sadl.darpa.aske.dialog.ResponseStatement;
-import com.ge.research.sadl.darpa.aske.dialog.StringResponse;
 import com.ge.research.sadl.darpa.aske.dialog.WhatIsStatement;
 import com.ge.research.sadl.darpa.aske.dialog.WhatStatement;
 import com.ge.research.sadl.darpa.aske.dialog.WhatValuesStatement;
@@ -36,13 +35,6 @@ public class DialogPackageImpl extends EPackageImpl implements DialogPackage
    * @generated
    */
   private EClass responseStatementEClass = null;
-
-  /**
-   * <!-- begin-user-doc -->
-   * <!-- end-user-doc -->
-   * @generated
-   */
-  private EClass stringResponseEClass = null;
 
   /**
    * <!-- begin-user-doc -->
@@ -180,26 +172,6 @@ public class DialogPackageImpl extends EPackageImpl implements DialogPackage
    * <!-- end-user-doc -->
    * @generated
    */
-  public EClass getStringResponse()
-  {
-    return stringResponseEClass;
-  }
-
-  /**
-   * <!-- begin-user-doc -->
-   * <!-- end-user-doc -->
-   * @generated
-   */
-  public EAttribute getStringResponse_Str()
-  {
-    return (EAttribute)stringResponseEClass.getEStructuralFeatures().get(0);
-  }
-
-  /**
-   * <!-- begin-user-doc -->
-   * <!-- end-user-doc -->
-   * @generated
-   */
   public EClass getWhatStatement()
   {
     return whatStatementEClass;
@@ -260,7 +232,7 @@ public class DialogPackageImpl extends EPackageImpl implements DialogPackage
    * <!-- end-user-doc -->
    * @generated
    */
-  public EAttribute getWhatValuesStatement_Typ()
+  public EAttribute getWhatValuesStatement_Typof()
   {
     return (EAttribute)whatValuesStatementEClass.getEStructuralFeatures().get(0);
   }
@@ -270,9 +242,19 @@ public class DialogPackageImpl extends EPackageImpl implements DialogPackage
    * <!-- end-user-doc -->
    * @generated
    */
+  public EAttribute getWhatValuesStatement_Typ()
+  {
+    return (EAttribute)whatValuesStatementEClass.getEStructuralFeatures().get(1);
+  }
+
+  /**
+   * <!-- begin-user-doc -->
+   * <!-- end-user-doc -->
+   * @generated
+   */
   public EReference getWhatValuesStatement_Prop()
   {
-    return (EReference)whatValuesStatementEClass.getEStructuralFeatures().get(1);
+    return (EReference)whatValuesStatementEClass.getEStructuralFeatures().get(2);
   }
 
   /**
@@ -282,7 +264,7 @@ public class DialogPackageImpl extends EPackageImpl implements DialogPackage
    */
   public EAttribute getWhatValuesStatement_Article()
   {
-    return (EAttribute)whatValuesStatementEClass.getEStructuralFeatures().get(2);
+    return (EAttribute)whatValuesStatementEClass.getEStructuralFeatures().get(3);
   }
 
   /**
@@ -292,7 +274,7 @@ public class DialogPackageImpl extends EPackageImpl implements DialogPackage
    */
   public EReference getWhatValuesStatement_Cls()
   {
-    return (EReference)whatValuesStatementEClass.getEStructuralFeatures().get(3);
+    return (EReference)whatValuesStatementEClass.getEStructuralFeatures().get(4);
   }
 
   /**
@@ -409,9 +391,6 @@ public class DialogPackageImpl extends EPackageImpl implements DialogPackage
     createEReference(responseStatementEClass, RESPONSE_STATEMENT__SSTMT);
     createEAttribute(responseStatementEClass, RESPONSE_STATEMENT__STR);
 
-    stringResponseEClass = createEClass(STRING_RESPONSE);
-    createEAttribute(stringResponseEClass, STRING_RESPONSE__STR);
-
     whatStatementEClass = createEClass(WHAT_STATEMENT);
     createEReference(whatStatementEClass, WHAT_STATEMENT__STMT);
 
@@ -420,6 +399,7 @@ public class DialogPackageImpl extends EPackageImpl implements DialogPackage
     createEReference(whatIsStatementEClass, WHAT_IS_STATEMENT__TARGET);
 
     whatValuesStatementEClass = createEClass(WHAT_VALUES_STATEMENT);
+    createEAttribute(whatValuesStatementEClass, WHAT_VALUES_STATEMENT__TYPOF);
     createEAttribute(whatValuesStatementEClass, WHAT_VALUES_STATEMENT__TYP);
     createEReference(whatValuesStatementEClass, WHAT_VALUES_STATEMENT__PROP);
     createEAttribute(whatValuesStatementEClass, WHAT_VALUES_STATEMENT__ARTICLE);
@@ -478,9 +458,6 @@ public class DialogPackageImpl extends EPackageImpl implements DialogPackage
     initEReference(getResponseStatement_Sstmt(), theSADLPackage.getSadlModelElement(), null, "sstmt", null, 0, 1, ResponseStatement.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, IS_COMPOSITE, !IS_RESOLVE_PROXIES, !IS_UNSETTABLE, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
     initEAttribute(getResponseStatement_Str(), ecorePackage.getEString(), "str", null, 0, 1, ResponseStatement.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_UNSETTABLE, !IS_ID, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
 
-    initEClass(stringResponseEClass, StringResponse.class, "StringResponse", !IS_ABSTRACT, !IS_INTERFACE, IS_GENERATED_INSTANCE_CLASS);
-    initEAttribute(getStringResponse_Str(), ecorePackage.getEString(), "str", null, 0, 1, StringResponse.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_UNSETTABLE, !IS_ID, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
-
     initEClass(whatStatementEClass, WhatStatement.class, "WhatStatement", !IS_ABSTRACT, !IS_INTERFACE, IS_GENERATED_INSTANCE_CLASS);
     initEReference(getWhatStatement_Stmt(), ecorePackage.getEObject(), null, "stmt", null, 0, 1, WhatStatement.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, IS_COMPOSITE, !IS_RESOLVE_PROXIES, !IS_UNSETTABLE, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
 
@@ -489,6 +466,7 @@ public class DialogPackageImpl extends EPackageImpl implements DialogPackage
     initEReference(getWhatIsStatement_Target(), theSADLPackage.getSadlResource(), null, "target", null, 0, 1, WhatIsStatement.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, IS_COMPOSITE, !IS_RESOLVE_PROXIES, !IS_UNSETTABLE, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
 
     initEClass(whatValuesStatementEClass, WhatValuesStatement.class, "WhatValuesStatement", !IS_ABSTRACT, !IS_INTERFACE, IS_GENERATED_INSTANCE_CLASS);
+    initEAttribute(getWhatValuesStatement_Typof(), ecorePackage.getEString(), "typof", null, 0, 1, WhatValuesStatement.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_UNSETTABLE, !IS_ID, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
     initEAttribute(getWhatValuesStatement_Typ(), ecorePackage.getEString(), "typ", null, 0, 1, WhatValuesStatement.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_UNSETTABLE, !IS_ID, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
     initEReference(getWhatValuesStatement_Prop(), theSADLPackage.getSadlResource(), null, "prop", null, 0, 1, WhatValuesStatement.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, IS_COMPOSITE, !IS_RESOLVE_PROXIES, !IS_UNSETTABLE, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
     initEAttribute(getWhatValuesStatement_Article(), ecorePackage.getEString(), "article", null, 0, 1, WhatValuesStatement.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_UNSETTABLE, !IS_ID, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);

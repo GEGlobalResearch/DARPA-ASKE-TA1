@@ -560,39 +560,59 @@ ruleWhatValuesStatement returns [EObject current=null]
 			}
 		)
 		(
-			otherlv_1=Value
+			(
+				(
+					lv_typof_1_0=Type
+					{
+						newLeafNode(lv_typof_1_0, grammarAccess.getWhatValuesStatementAccess().getTypofTypeKeyword_1_0_0());
+					}
+					{
+						if ($current==null) {
+							$current = createModelElement(grammarAccess.getWhatValuesStatementRule());
+						}
+						setWithLastConsumed($current, "typof", lv_typof_1_0, "type");
+					}
+				)
+			)
+			otherlv_2=Of
 			{
-				newLeafNode(otherlv_1, grammarAccess.getWhatValuesStatementAccess().getValueKeyword_1_0());
+				newLeafNode(otherlv_2, grammarAccess.getWhatValuesStatementAccess().getOfKeyword_1_1());
+			}
+		)?
+		(
+			otherlv_3=Value
+			{
+				newLeafNode(otherlv_3, grammarAccess.getWhatValuesStatementAccess().getValueKeyword_2_0());
 			}
 			    |
-			otherlv_2=Values
+			otherlv_4=Values
 			{
-				newLeafNode(otherlv_2, grammarAccess.getWhatValuesStatementAccess().getValuesKeyword_1_1());
+				newLeafNode(otherlv_4, grammarAccess.getWhatValuesStatementAccess().getValuesKeyword_2_1());
 			}
 		)
 		(
 			(
 				(
-					lv_typ_3_1=Can
+					lv_typ_5_1=Can
 					{
-						newLeafNode(lv_typ_3_1, grammarAccess.getWhatValuesStatementAccess().getTypCanKeyword_2_0_0());
+						newLeafNode(lv_typ_5_1, grammarAccess.getWhatValuesStatementAccess().getTypCanKeyword_3_0_0());
 					}
 					{
 						if ($current==null) {
 							$current = createModelElement(grammarAccess.getWhatValuesStatementRule());
 						}
-						setWithLastConsumed($current, "typ", lv_typ_3_1, null);
+						setWithLastConsumed($current, "typ", lv_typ_5_1, null);
 					}
 					    |
-					lv_typ_3_2=Must
+					lv_typ_5_2=Must
 					{
-						newLeafNode(lv_typ_3_2, grammarAccess.getWhatValuesStatementAccess().getTypMustKeyword_2_0_1());
+						newLeafNode(lv_typ_5_2, grammarAccess.getWhatValuesStatementAccess().getTypMustKeyword_3_0_1());
 					}
 					{
 						if ($current==null) {
 							$current = createModelElement(grammarAccess.getWhatValuesStatementRule());
 						}
-						setWithLastConsumed($current, "typ", lv_typ_3_2, null);
+						setWithLastConsumed($current, "typ", lv_typ_5_2, null);
 					}
 				)
 			)
@@ -600,9 +620,9 @@ ruleWhatValuesStatement returns [EObject current=null]
 		(
 			(
 				{
-					newCompositeNode(grammarAccess.getWhatValuesStatementAccess().getPropSadlResourceParserRuleCall_3_0());
+					newCompositeNode(grammarAccess.getWhatValuesStatementAccess().getPropSadlResourceParserRuleCall_4_0());
 				}
-				lv_prop_4_0=ruleSadlResource
+				lv_prop_6_0=ruleSadlResource
 				{
 					if ($current==null) {
 						$current = createModelElementForParent(grammarAccess.getWhatValuesStatementRule());
@@ -610,22 +630,22 @@ ruleWhatValuesStatement returns [EObject current=null]
 					set(
 						$current,
 						"prop",
-						lv_prop_4_0,
+						lv_prop_6_0,
 						"com.ge.research.sadl.SADL.SadlResource");
 					afterParserOrEnumRuleCall();
 				}
 			)
 		)
-		otherlv_5=Of
+		otherlv_7=Of
 		{
-			newLeafNode(otherlv_5, grammarAccess.getWhatValuesStatementAccess().getOfKeyword_4());
+			newLeafNode(otherlv_7, grammarAccess.getWhatValuesStatementAccess().getOfKeyword_5());
 		}
 		(
 			(
 				{
-					newCompositeNode(grammarAccess.getWhatValuesStatementAccess().getArticleAnArticleParserRuleCall_5_0());
+					newCompositeNode(grammarAccess.getWhatValuesStatementAccess().getArticleAnArticleParserRuleCall_6_0());
 				}
-				lv_article_6_0=ruleAnArticle
+				lv_article_8_0=ruleAnArticle
 				{
 					if ($current==null) {
 						$current = createModelElementForParent(grammarAccess.getWhatValuesStatementRule());
@@ -633,7 +653,7 @@ ruleWhatValuesStatement returns [EObject current=null]
 					set(
 						$current,
 						"article",
-						lv_article_6_0,
+						lv_article_8_0,
 						"com.ge.research.sadl.SADL.AnArticle");
 					afterParserOrEnumRuleCall();
 				}
@@ -642,9 +662,9 @@ ruleWhatValuesStatement returns [EObject current=null]
 		(
 			(
 				{
-					newCompositeNode(grammarAccess.getWhatValuesStatementAccess().getClsSadlPrimaryTypeReferenceParserRuleCall_6_0());
+					newCompositeNode(grammarAccess.getWhatValuesStatementAccess().getClsSadlPrimaryTypeReferenceParserRuleCall_7_0());
 				}
-				lv_cls_7_0=ruleSadlPrimaryTypeReference
+				lv_cls_9_0=ruleSadlPrimaryTypeReference
 				{
 					if ($current==null) {
 						$current = createModelElementForParent(grammarAccess.getWhatValuesStatementRule());
@@ -652,15 +672,15 @@ ruleWhatValuesStatement returns [EObject current=null]
 					set(
 						$current,
 						"cls",
-						lv_cls_7_0,
+						lv_cls_9_0,
 						"com.ge.research.sadl.SADL.SadlPrimaryTypeReference");
 					afterParserOrEnumRuleCall();
 				}
 			)
 		)
-		otherlv_8=Have
+		otherlv_10=Have
 		{
-			newLeafNode(otherlv_8, grammarAccess.getWhatValuesStatementAccess().getHaveKeyword_7());
+			newLeafNode(otherlv_10, grammarAccess.getWhatValuesStatementAccess().getHaveKeyword_8());
 		}
 	)
 ;

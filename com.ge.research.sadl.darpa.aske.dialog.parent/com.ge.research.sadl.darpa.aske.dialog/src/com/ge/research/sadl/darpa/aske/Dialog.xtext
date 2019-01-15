@@ -1,5 +1,5 @@
 /*
-SADL Extension for DARPA ASKE dialog - © 2014-2018 General Electric Company – All Rights Reserved
+SADL Extension for DARPA ASKE dialog - © 2018-2019 General Electric Company – All Rights Reserved
 
 DARPA Wording for project
 
@@ -17,8 +17,6 @@ DialogModel returns sadl::SadlModel :
 
 @Override
 SadlModelElement returns sadl::SadlModelElement :
-//	'CM:' (SadlStatement|EquationStatement|ExternalEquationStatement) EOS |
-//	'CM:' StringResponse EOS |
 	ResponseStatement EOS 		|
 	ModifiedAskStatement EOS	|
 	WhatStatement EOS			|
@@ -27,10 +25,6 @@ SadlModelElement returns sadl::SadlModelElement :
 
 ResponseStatement:
 	'CM:' (sstmt = ((SadlStatement|EquationStatement|ExternalEquationStatement)) | str = STRING)
-;
-
-StringResponse:
-	str=STRING
 ;
 
 ModifiedAskStatement returns sadl::ExpressionScope:
@@ -49,7 +43,7 @@ WhatIsStatement:
 ;
 
 WhatValuesStatement:
-	{WhatValuesStatement} ('value'|'values') typ=('can'|'must') prop=SadlResource 'of' article=AnArticle? cls=SadlPrimaryTypeReference 'have'
+	{WhatValuesStatement} (typof='type' 'of')? ('value'|'values') typ=('can'|'must') prop=SadlResource 'of' article=AnArticle? cls=SadlPrimaryTypeReference 'have'
 ;
 
 HowManyValuesStatement:

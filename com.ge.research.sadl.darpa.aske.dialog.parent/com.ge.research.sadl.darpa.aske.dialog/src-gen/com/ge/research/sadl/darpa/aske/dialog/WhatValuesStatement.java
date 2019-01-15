@@ -17,6 +17,7 @@ import org.eclipse.emf.ecore.EObject;
  * The following features are supported:
  * </p>
  * <ul>
+ *   <li>{@link com.ge.research.sadl.darpa.aske.dialog.WhatValuesStatement#getTypof <em>Typof</em>}</li>
  *   <li>{@link com.ge.research.sadl.darpa.aske.dialog.WhatValuesStatement#getTyp <em>Typ</em>}</li>
  *   <li>{@link com.ge.research.sadl.darpa.aske.dialog.WhatValuesStatement#getProp <em>Prop</em>}</li>
  *   <li>{@link com.ge.research.sadl.darpa.aske.dialog.WhatValuesStatement#getArticle <em>Article</em>}</li>
@@ -29,6 +30,32 @@ import org.eclipse.emf.ecore.EObject;
  */
 public interface WhatValuesStatement extends EObject
 {
+  /**
+   * Returns the value of the '<em><b>Typof</b></em>' attribute.
+   * <!-- begin-user-doc -->
+   * <p>
+   * If the meaning of the '<em>Typof</em>' attribute isn't clear,
+   * there really should be more of a description here...
+   * </p>
+   * <!-- end-user-doc -->
+   * @return the value of the '<em>Typof</em>' attribute.
+   * @see #setTypof(String)
+   * @see com.ge.research.sadl.darpa.aske.dialog.DialogPackage#getWhatValuesStatement_Typof()
+   * @model
+   * @generated
+   */
+  String getTypof();
+
+  /**
+   * Sets the value of the '{@link com.ge.research.sadl.darpa.aske.dialog.WhatValuesStatement#getTypof <em>Typof</em>}' attribute.
+   * <!-- begin-user-doc -->
+   * <!-- end-user-doc -->
+   * @param value the new value of the '<em>Typof</em>' attribute.
+   * @see #getTypof()
+   * @generated
+   */
+  void setTypof(String value);
+
   /**
    * Returns the value of the '<em><b>Typ</b></em>' attribute.
    * <!-- begin-user-doc -->

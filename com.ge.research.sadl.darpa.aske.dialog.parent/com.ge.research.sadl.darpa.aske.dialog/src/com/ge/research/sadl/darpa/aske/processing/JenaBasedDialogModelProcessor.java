@@ -75,9 +75,6 @@ public class JenaBasedDialogModelProcessor extends JenaBasedSadlModelProcessor {
 		resetProcessor();
 		logger.debug("onValidate called for Resource '" + resource.getURI() + "'"); 
 		CancelIndicator cancelIndicator = context.getCancelIndicator();
-		setIssueAcceptor(issueAcceptor);
-		setCancelIndicator(cancelIndicator);
-		setProcessorContext(context);
 		if (resource.getContents().size() < 1) {
 			return;
 		}
@@ -349,7 +346,7 @@ public class JenaBasedDialogModelProcessor extends JenaBasedSadlModelProcessor {
 
 	public static IFile getFile(Resource resource) {
 		ResourceSet rset = resource.getResourceSet();
-
+// TODO how to get the IFile from the Resource??
 		IFile retFile = null;
 //		return getFile(resource.getURI(), (rset != null) ? rset.getURIConverter() : null, false);
 		return retFile;

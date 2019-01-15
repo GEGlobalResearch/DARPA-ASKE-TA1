@@ -10,9 +10,6 @@
       <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference Dialog.ecore#//ResponseStatement/sstmt"/>
       <genFeatures createChild="false" ecoreFeature="ecore:EAttribute Dialog.ecore#//ResponseStatement/str"/>
     </genClasses>
-    <genClasses ecoreClass="Dialog.ecore#//StringResponse">
-      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute Dialog.ecore#//StringResponse/str"/>
-    </genClasses>
     <genClasses ecoreClass="Dialog.ecore#//WhatStatement">
       <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference Dialog.ecore#//WhatStatement/stmt"/>
     </genClasses>
@@ -21,6 +18,7 @@
       <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference Dialog.ecore#//WhatIsStatement/target"/>
     </genClasses>
     <genClasses ecoreClass="Dialog.ecore#//WhatValuesStatement">
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute Dialog.ecore#//WhatValuesStatement/typof"/>
       <genFeatures createChild="false" ecoreFeature="ecore:EAttribute Dialog.ecore#//WhatValuesStatement/typ"/>
       <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference Dialog.ecore#//WhatValuesStatement/prop"/>
       <genFeatures createChild="false" ecoreFeature="ecore:EAttribute Dialog.ecore#//WhatValuesStatement/article"/>

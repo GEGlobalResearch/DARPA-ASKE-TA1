@@ -2,7 +2,7 @@ Manifest-Version: 1.0
 Automatic-Module-Name: com.ge.research.sadl.darpa.aske.dialog
 Bundle-ManifestVersion: 2
 Bundle-Name: com.ge.research.sadl.darpa.aske.dialog
-Bundle-Vendor: My Company
+Bundle-Vendor: GE Global Research
 Bundle-Version: 1.0.0.qualifier
 Bundle-SymbolicName: com.ge.research.sadl.darpa.aske.dialog; singleton:=true
 Bundle-ActivationPolicy: lazy

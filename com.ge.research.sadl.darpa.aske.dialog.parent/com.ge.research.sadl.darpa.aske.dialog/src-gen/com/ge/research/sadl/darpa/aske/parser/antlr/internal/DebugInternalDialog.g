@@ -81,6 +81,10 @@ ruleWhatIsStatement:
 // Rule WhatValuesStatement
 ruleWhatValuesStatement:
 	(
+		'type'
+		'of'
+	)?
+	(
 		'value'
 		    |
 		'values'

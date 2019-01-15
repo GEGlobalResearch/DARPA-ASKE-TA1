@@ -56,18 +56,12 @@ public class DialogGrammarAccess extends AbstractGrammarElementFinder {
 		//	ResponseStatement EOS | ModifiedAskStatement EOS | WhatStatement EOS | HowManyValuesStatement EOS;
 		@Override public ParserRule getRule() { return rule; }
 		
-		////	'CM:' (SadlStatement|EquationStatement|ExternalEquationStatement) EOS |
-		////	'CM:' StringResponse EOS |
 		//ResponseStatement EOS | ModifiedAskStatement EOS | WhatStatement EOS | HowManyValuesStatement EOS
 		public Alternatives getAlternatives() { return cAlternatives; }
 		
-		////	'CM:' (SadlStatement|EquationStatement|ExternalEquationStatement) EOS |
-		////	'CM:' StringResponse EOS |
 		//ResponseStatement EOS
 		public Group getGroup_0() { return cGroup_0; }
 		
-		////	'CM:' (SadlStatement|EquationStatement|ExternalEquationStatement) EOS |
-		////	'CM:' StringResponse EOS |
 		//ResponseStatement
 		public RuleCall getResponseStatementParserRuleCall_0_0() { return cResponseStatementParserRuleCall_0_0; }
 		
@@ -147,21 +141,6 @@ public class DialogGrammarAccess extends AbstractGrammarElementFinder {
 		
 		//STRING
 		public RuleCall getStrSTRINGTerminalRuleCall_1_1_0() { return cStrSTRINGTerminalRuleCall_1_1_0; }
-	}
-	public class StringResponseElements extends AbstractParserRuleElementFinder {
-		private final ParserRule rule = (ParserRule) GrammarUtil.findRuleForName(getGrammar(), "com.ge.research.sadl.darpa.aske.Dialog.StringResponse");
-		private final Assignment cStrAssignment = (Assignment)rule.eContents().get(1);
-		private final RuleCall cStrSTRINGTerminalRuleCall_0 = (RuleCall)cStrAssignment.eContents().get(0);
-		
-		//StringResponse:
-		//	str=STRING;
-		@Override public ParserRule getRule() { return rule; }
-		
-		//str=STRING
-		public Assignment getStrAssignment() { return cStrAssignment; }
-		
-		//STRING
-		public RuleCall getStrSTRINGTerminalRuleCall_0() { return cStrSTRINGTerminalRuleCall_0; }
 	}
 	public class ModifiedAskStatementElements extends AbstractParserRuleElementFinder {
 		private final ParserRule rule = (ParserRule) GrammarUtil.findRuleForName(getGrammar(), "com.ge.research.sadl.darpa.aske.Dialog.ModifiedAskStatement");
@@ -305,78 +284,94 @@ public class DialogGrammarAccess extends AbstractGrammarElementFinder {
 		private final ParserRule rule = (ParserRule) GrammarUtil.findRuleForName(getGrammar(), "com.ge.research.sadl.darpa.aske.Dialog.WhatValuesStatement");
 		private final Group cGroup = (Group)rule.eContents().get(1);
 		private final Action cWhatValuesStatementAction_0 = (Action)cGroup.eContents().get(0);
-		private final Alternatives cAlternatives_1 = (Alternatives)cGroup.eContents().get(1);
-		private final Keyword cValueKeyword_1_0 = (Keyword)cAlternatives_1.eContents().get(0);
-		private final Keyword cValuesKeyword_1_1 = (Keyword)cAlternatives_1.eContents().get(1);
-		private final Assignment cTypAssignment_2 = (Assignment)cGroup.eContents().get(2);
-		private final Alternatives cTypAlternatives_2_0 = (Alternatives)cTypAssignment_2.eContents().get(0);
-		private final Keyword cTypCanKeyword_2_0_0 = (Keyword)cTypAlternatives_2_0.eContents().get(0);
-		private final Keyword cTypMustKeyword_2_0_1 = (Keyword)cTypAlternatives_2_0.eContents().get(1);
-		private final Assignment cPropAssignment_3 = (Assignment)cGroup.eContents().get(3);
-		private final RuleCall cPropSadlResourceParserRuleCall_3_0 = (RuleCall)cPropAssignment_3.eContents().get(0);
-		private final Keyword cOfKeyword_4 = (Keyword)cGroup.eContents().get(4);
-		private final Assignment cArticleAssignment_5 = (Assignment)cGroup.eContents().get(5);
-		private final RuleCall cArticleAnArticleParserRuleCall_5_0 = (RuleCall)cArticleAssignment_5.eContents().get(0);
-		private final Assignment cClsAssignment_6 = (Assignment)cGroup.eContents().get(6);
-		private final RuleCall cClsSadlPrimaryTypeReferenceParserRuleCall_6_0 = (RuleCall)cClsAssignment_6.eContents().get(0);
-		private final Keyword cHaveKeyword_7 = (Keyword)cGroup.eContents().get(7);
+		private final Group cGroup_1 = (Group)cGroup.eContents().get(1);
+		private final Assignment cTypofAssignment_1_0 = (Assignment)cGroup_1.eContents().get(0);
+		private final Keyword cTypofTypeKeyword_1_0_0 = (Keyword)cTypofAssignment_1_0.eContents().get(0);
+		private final Keyword cOfKeyword_1_1 = (Keyword)cGroup_1.eContents().get(1);
+		private final Alternatives cAlternatives_2 = (Alternatives)cGroup.eContents().get(2);
+		private final Keyword cValueKeyword_2_0 = (Keyword)cAlternatives_2.eContents().get(0);
+		private final Keyword cValuesKeyword_2_1 = (Keyword)cAlternatives_2.eContents().get(1);
+		private final Assignment cTypAssignment_3 = (Assignment)cGroup.eContents().get(3);
+		private final Alternatives cTypAlternatives_3_0 = (Alternatives)cTypAssignment_3.eContents().get(0);
+		private final Keyword cTypCanKeyword_3_0_0 = (Keyword)cTypAlternatives_3_0.eContents().get(0);
+		private final Keyword cTypMustKeyword_3_0_1 = (Keyword)cTypAlternatives_3_0.eContents().get(1);
+		private final Assignment cPropAssignment_4 = (Assignment)cGroup.eContents().get(4);
+		private final RuleCall cPropSadlResourceParserRuleCall_4_0 = (RuleCall)cPropAssignment_4.eContents().get(0);
+		private final Keyword cOfKeyword_5 = (Keyword)cGroup.eContents().get(5);
+		private final Assignment cArticleAssignment_6 = (Assignment)cGroup.eContents().get(6);
+		private final RuleCall cArticleAnArticleParserRuleCall_6_0 = (RuleCall)cArticleAssignment_6.eContents().get(0);
+		private final Assignment cClsAssignment_7 = (Assignment)cGroup.eContents().get(7);
+		private final RuleCall cClsSadlPrimaryTypeReferenceParserRuleCall_7_0 = (RuleCall)cClsAssignment_7.eContents().get(0);
+		private final Keyword cHaveKeyword_8 = (Keyword)cGroup.eContents().get(8);
 		
 		//WhatValuesStatement:
-		//	{WhatValuesStatement} ('value' | 'values') typ=('can' | 'must') prop=SadlResource 'of' article=AnArticle?
-		//	cls=SadlPrimaryTypeReference 'have';
+		//	{WhatValuesStatement} (typof='type' 'of')? ('value' | 'values') typ=('can' | 'must') prop=SadlResource 'of'
+		//	article=AnArticle? cls=SadlPrimaryTypeReference 'have';
 		@Override public ParserRule getRule() { return rule; }
 		
-		//{WhatValuesStatement} ('value' | 'values') typ=('can' | 'must') prop=SadlResource 'of' article=AnArticle?
-		//cls=SadlPrimaryTypeReference 'have'
+		//{WhatValuesStatement} (typof='type' 'of')? ('value' | 'values') typ=('can' | 'must') prop=SadlResource 'of'
+		//article=AnArticle? cls=SadlPrimaryTypeReference 'have'
 		public Group getGroup() { return cGroup; }
 		
 		//{WhatValuesStatement}
 		public Action getWhatValuesStatementAction_0() { return cWhatValuesStatementAction_0; }
 		
-		//'value' | 'values'
-		public Alternatives getAlternatives_1() { return cAlternatives_1; }
+		//(typof='type' 'of')?
+		public Group getGroup_1() { return cGroup_1; }
 		
-		//'value'
-		public Keyword getValueKeyword_1_0() { return cValueKeyword_1_0; }
+		//typof='type'
+		public Assignment getTypofAssignment_1_0() { return cTypofAssignment_1_0; }
 		
-		//'values'
-		public Keyword getValuesKeyword_1_1() { return cValuesKeyword_1_1; }
-		
-		//typ=('can' | 'must')
-		public Assignment getTypAssignment_2() { return cTypAssignment_2; }
-		
-		//('can' | 'must')
-		public Alternatives getTypAlternatives_2_0() { return cTypAlternatives_2_0; }
-		
-		//'can'
-		public Keyword getTypCanKeyword_2_0_0() { return cTypCanKeyword_2_0_0; }
-		
-		//'must'
-		public Keyword getTypMustKeyword_2_0_1() { return cTypMustKeyword_2_0_1; }
-		
-		//prop=SadlResource
-		public Assignment getPropAssignment_3() { return cPropAssignment_3; }
-		
-		//SadlResource
-		public RuleCall getPropSadlResourceParserRuleCall_3_0() { return cPropSadlResourceParserRuleCall_3_0; }
+		//'type'
+		public Keyword getTypofTypeKeyword_1_0_0() { return cTypofTypeKeyword_1_0_0; }
 		
 		//'of'
-		public Keyword getOfKeyword_4() { return cOfKeyword_4; }
+		public Keyword getOfKeyword_1_1() { return cOfKeyword_1_1; }
+		
+		//'value' | 'values'
+		public Alternatives getAlternatives_2() { return cAlternatives_2; }
+		
+		//'value'
+		public Keyword getValueKeyword_2_0() { return cValueKeyword_2_0; }
+		
+		//'values'
+		public Keyword getValuesKeyword_2_1() { return cValuesKeyword_2_1; }
+		
+		//typ=('can' | 'must')
+		public Assignment getTypAssignment_3() { return cTypAssignment_3; }
+		
+		//('can' | 'must')
+		public Alternatives getTypAlternatives_3_0() { return cTypAlternatives_3_0; }
+		
+		//'can'
+		public Keyword getTypCanKeyword_3_0_0() { return cTypCanKeyword_3_0_0; }
+		
+		//'must'
+		public Keyword getTypMustKeyword_3_0_1() { return cTypMustKeyword_3_0_1; }
+		
+		//prop=SadlResource
+		public Assignment getPropAssignment_4() { return cPropAssignment_4; }
+		
+		//SadlResource
+		public RuleCall getPropSadlResourceParserRuleCall_4_0() { return cPropSadlResourceParserRuleCall_4_0; }
+		
+		//'of'
+		public Keyword getOfKeyword_5() { return cOfKeyword_5; }
 		
 		//article=AnArticle?
-		public Assignment getArticleAssignment_5() { return cArticleAssignment_5; }
+		public Assignment getArticleAssignment_6() { return cArticleAssignment_6; }
 		
 		//AnArticle
-		public RuleCall getArticleAnArticleParserRuleCall_5_0() { return cArticleAnArticleParserRuleCall_5_0; }
+		public RuleCall getArticleAnArticleParserRuleCall_6_0() { return cArticleAnArticleParserRuleCall_6_0; }
 		
 		//cls=SadlPrimaryTypeReference
-		public Assignment getClsAssignment_6() { return cClsAssignment_6; }
+		public Assignment getClsAssignment_7() { return cClsAssignment_7; }
 		
 		//SadlPrimaryTypeReference
-		public RuleCall getClsSadlPrimaryTypeReferenceParserRuleCall_6_0() { return cClsSadlPrimaryTypeReferenceParserRuleCall_6_0; }
+		public RuleCall getClsSadlPrimaryTypeReferenceParserRuleCall_7_0() { return cClsSadlPrimaryTypeReferenceParserRuleCall_7_0; }
 		
 		//'have'
-		public Keyword getHaveKeyword_7() { return cHaveKeyword_7; }
+		public Keyword getHaveKeyword_8() { return cHaveKeyword_8; }
 	}
 	public class HowManyValuesStatementElements extends AbstractParserRuleElementFinder {
 		private final ParserRule rule = (ParserRule) GrammarUtil.findRuleForName(getGrammar(), "com.ge.research.sadl.darpa.aske.Dialog.HowManyValuesStatement");
@@ -497,7 +492,6 @@ public class DialogGrammarAccess extends AbstractGrammarElementFinder {
 	private final DialogModelElements pDialogModel;
 	private final SadlModelElementElements pSadlModelElement;
 	private final ResponseStatementElements pResponseStatement;
-	private final StringResponseElements pStringResponse;
 	private final ModifiedAskStatementElements pModifiedAskStatement;
 	private final WhatStatementElements pWhatStatement;
 	private final WhatIsStatementElements pWhatIsStatement;
@@ -517,7 +511,6 @@ public class DialogGrammarAccess extends AbstractGrammarElementFinder {
 		this.pDialogModel = new DialogModelElements();
 		this.pSadlModelElement = new SadlModelElementElements();
 		this.pResponseStatement = new ResponseStatementElements();
-		this.pStringResponse = new StringResponseElements();
 		this.pModifiedAskStatement = new ModifiedAskStatementElements();
 		this.pWhatStatement = new WhatStatementElements();
 		this.pWhatIsStatement = new WhatIsStatementElements();
@@ -584,16 +577,6 @@ public class DialogGrammarAccess extends AbstractGrammarElementFinder {
 		return getResponseStatementAccess().getRule();
 	}
 	
-	//StringResponse:
-	//	str=STRING;
-	public StringResponseElements getStringResponseAccess() {
-		return pStringResponse;
-	}
-	
-	public ParserRule getStringResponseRule() {
-		return getStringResponseAccess().getRule();
-	}
-	
 	//ModifiedAskStatement sadl::ExpressionScope:
 	//	{ModifiedAskStatement} start=('Ask' | 'ask' | 'Graph' | 'graph') expr=(ConstructExpression | AskExpression |
 	//	Expression);
@@ -626,8 +609,8 @@ public class DialogGrammarAccess extends AbstractGrammarElementFinder {
 	}
 	
 	//WhatValuesStatement:
-	//	{WhatValuesStatement} ('value' | 'values') typ=('can' | 'must') prop=SadlResource 'of' article=AnArticle?
-	//	cls=SadlPrimaryTypeReference 'have';
+	//	{WhatValuesStatement} (typof='type' 'of')? ('value' | 'values') typ=('can' | 'must') prop=SadlResource 'of'
+	//	article=AnArticle? cls=SadlPrimaryTypeReference 'have';
 	public WhatValuesStatementElements getWhatValuesStatementAccess() {
 		return pWhatValuesStatement;
 	}
