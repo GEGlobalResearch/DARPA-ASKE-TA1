@@ -1,6 +1,5 @@
 <rdf:RDF
     xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
-    xmlns:Software="http://sadl.org/Software.sadl"
     xmlns:sadlbasemodel="http://sadl.org/sadlbasemodel"
     xmlns:CurMan="http://sadl.org/CurationManager.sadl#"
     xmlns:owl="http://www.w3.org/2002/07/owl#"

@@ -37,8 +37,11 @@ import com.ge.research.sadl.jena.JenaProcessorException;
 import com.ge.research.sadl.jena.MetricsProcessor;
 import com.ge.research.sadl.jena.UtilsForJena;
 import com.ge.research.sadl.model.CircularDefinitionException;
+import com.ge.research.sadl.model.ModelError;
 import com.ge.research.sadl.model.gp.Equation;
+import com.ge.research.sadl.model.gp.NamedNode;
 import com.ge.research.sadl.model.gp.Query;
+import com.ge.research.sadl.model.gp.Rule;
 import com.ge.research.sadl.processing.OntModelProvider;
 import com.ge.research.sadl.processing.SadlConstants;
 import com.ge.research.sadl.processing.ValidationAcceptor;
@@ -231,7 +234,10 @@ public class JenaBasedDialogModelProcessor extends JenaBasedSadlModelProcessor {
 					}
 				}
 				else {
-					// this is a response from CM, don't do anything
+					// this is a response from CM
+					//	clear last command
+					OntModelProvider.clearPrivateKeyValuePair(resource, LAST_DIALOG_COMMAND);
+					lastElement = null;
 				}
 			}
 			if (lastElement != null) {
@@ -240,19 +246,33 @@ public class JenaBasedDialogModelProcessor extends JenaBasedSadlModelProcessor {
 			}
 			
 			File saveFile = getModelFile(resource);
-			if (isModelChanged() || !saveFile.exists()) {
-				try {
-					autoSaveModel(saveFile, context);
-//					refresh resource
-				} catch (IOException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
+			try {
+				if (isModelChanged() || !saveFile.exists() || 
+						getConfigMgr().getAltUrlFromPublicUri(getModelName()) == null ||
+						getConfigMgr().getAltUrlFromPublicUri(getModelName()) == getModelName()) {
+					autoSaveModel(resource, getConfigMgr().getModelFolder(), saveFile, context);
+					// refresh resource ?
 				}
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			} catch (ConfigurationException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			} catch (URISyntaxException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+			if (getSadlCommands() != null && getSadlCommands().size() > 0) {
+				OntModelProvider.attach(model.eResource(), getTheJenaModel(), getModelName(), getModelAlias(),
+						getSadlCommands());
+			} else {
+				OntModelProvider.attach(model.eResource(), getTheJenaModel(), getModelName(), getModelAlias());
 			}
 		}
 	}
 
-	private void autoSaveModel(File saveFile, ProcessorContext context) throws IOException {
+	private void autoSaveModel(Resource resource, String modelFolder, File saveFile, ProcessorContext context) throws IOException, URISyntaxException {
 		String format = getOwlModelFormat(context);
 		RDFWriter w = getTheJenaModel().getWriter(format);
 		w.setProperty("xmlbase", getModelName());
@@ -261,7 +281,36 @@ public class JenaBasedDialogModelProcessor extends JenaBasedSadlModelProcessor {
 		Charset charset = Charset.forName("UTF-8");
 		CharSequence seq = new String(out.toByteArray(), charset);
 		(new SadlUtils()).stringToFile(saveFile, String.valueOf(seq), false);
-	}
+
+	
+		List<String[]> newMappings = new ArrayList<String[]>();
+		String[] mapping = new String[3];
+		SadlUtils su = new SadlUtils();
+		mapping[0] = su.fileNameToFileUrl(saveFile.getCanonicalPath());
+		mapping[1] = getModelName();
+		mapping[2] = getModelAlias();
+
+		newMappings.add(mapping);
+
+		// Output the Rules and any other knowledge structures via the specified
+		// translator
+		List<Object> otherContent = OntModelProvider.getOtherContent(resource);
+		if (otherContent != null) {
+			for (int i = 0; i < otherContent.size(); i++) {
+				Object oc = otherContent.get(i);
+				if (oc instanceof List<?>) {
+					if (((List<?>) oc).get(0) instanceof Rule) {
+						setRules((List<Rule>) oc);
+					}
+				}
+			}
+		}
+		List<ModelError> results = translateAndSaveModel(resource, saveFile.getName(), format, newMappings, "Dialog");
+		if (results != null) {
+			generationInProgress = false; // we need these errors to show up
+			modelErrorsToOutput(resource, results);
+		}
+}
 
 	private File getModelFile(Resource resource) {
 		if (getMetricsProcessor() instanceof MetricsProcessor) {
@@ -374,6 +423,9 @@ public class JenaBasedDialogModelProcessor extends JenaBasedSadlModelProcessor {
 			try {
 				trgtObj = processExpression(whatIsTarget);
 				System.out.println("WhatIsStatement target: " + trgtObj.toString());
+				if (trgtObj instanceof NamedNode) {
+					((NamedNode)trgtObj).setContext(stmt);
+				}
 				OntModelProvider.addPrivateKeyValuePair(stmt.eResource(), LAST_DIALOG_COMMAND, trgtObj);
 			} catch (TranslationException e) {
 				// TODO Auto-generated catch block

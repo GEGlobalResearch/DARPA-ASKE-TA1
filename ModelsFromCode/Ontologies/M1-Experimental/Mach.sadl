@@ -1,0 +1,22 @@
+uri "http://nopackage/Mach".
+
+External init() returns None: "/Mach/init".
+External insets() returns Insets: "/Mach/insets".
+External setDefaults() returns None: "/Mach/setDefaults".
+External CAL_SOS(double T, double G, double R, double Q) returns double: "/Mach/CAL_SOS".
+External TQTT(double M, double G) returns double: "/Mach/TQTT".
+External CAL_GAM(double T, double G, double Q) returns double: "/Mach/CAL_GAM".
+External CAL_TT(double T, double M, double G, double Q) returns double: "/Mach/CAL_TT".
+External CAL_T(double TT, double M, double G, double Q) returns double: "/Mach/CAL_T".
+External CAL_TV(double TT, double V, double G, double Q) returns double: "/Mach/CAL_TV".
+External computeMach() returns None: "/Mach/computeMach".
+External loadInpt() returns None: "/Mach/loadInpt".
+External filter0(double inumbr) returns int: "/Mach/filter0".
+External filter3(double inumbr) returns float: "/Mach/filter3".
+External filter5(double inumbr) returns float: "/Mach/filter5".
+External insets() returns Insets: "/Mach/insets".
+External handleEvent(Event evt) returns boolean: "/Mach/handleEvent".
+External insets() returns Insets: "/Mach/insets".
+External action(Event evt, Object arg) returns boolean: "/Mach/action".
+External handleProb(Object obj) returns None: "/Mach/handleProb".
+External handleBut(Event evt) returns None: "/Mach/handleBut".

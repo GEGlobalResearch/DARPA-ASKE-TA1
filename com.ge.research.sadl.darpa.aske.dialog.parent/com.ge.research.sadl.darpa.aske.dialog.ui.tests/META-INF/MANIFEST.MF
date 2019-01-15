@@ -12,14 +12,18 @@ Require-Bundle: com.ge.research.sadl.darpa.aske.dialog.ui,
  org.eclipse.xtext.xbase.testing,
  org.eclipse.xtext.junit4,
  org.eclipse.xtext.xbase.junit,
+ org.eclipse.jdt;bundle-version="3.9.1",
+ org.eclipse.jdt.core;bundle-version="3.9.2",
  org.eclipse.core.runtime,
- org.eclipse.ui.workbench;resolution:=optional
+ org.eclipse.ui.workbench;resolution:=optional,
+ org.apache.log4j
 Bundle-RequiredExecutionEnvironment: JavaSE-1.8
 Export-Package: com.ge.research.sadl.darpa.aske.ui.tests;x-internal=true
 Import-Package: org.hamcrest.core,
  org.junit;version="4.5.0",
- org.junit.runners.model;version="4.5.0",
  org.junit.runner;version="4.5.0",
- org.junit.runners;version="4.5.0",
  org.junit.runner.manipulation;version="4.5.0",
- org.junit.runner.notification;version="4.5.0"
+ org.junit.runner.notification;version="4.5.0",
+ org.junit.runners;version="4.5.0",
+ org.junit.runners.model;version="4.5.0",
+ org.slf4j

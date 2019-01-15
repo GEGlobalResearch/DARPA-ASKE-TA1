@@ -1,0 +1,111 @@
+<rdf:RDF
+    xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+    xmlns:sadlbasemodel="http://sadl.org/sadlbasemodel"
+    xmlns:j.0="http://sadl.org/data.sadl#"
+    xmlns:owl="http://www.w3.org/2002/07/owl#"
+    xmlns:sadlimplicitmodel="http://sadl.org/sadlimplicitmodel"
+    xmlns:builtinfunctions="http://sadl.org/builtinfunctions"
+    xmlns:rdfs="http://www.w3.org/2000/01/rdf-schema#"
+    xmlns:j.1="http://sadl.org/sadlbasemodel#"
+    xmlns:xsd="http://www.w3.org/2001/XMLSchema#"
+    xmlns:ml="http://sadl.org/ML.sadl#"
+  xml:base="http://sadl.org/ML.sadl">
+  <owl:Ontology rdf:about="">
+    <owl:imports rdf:resource="ScientificConcepts3.sadl"/>
+    <owl:imports rdf:resource="models.sadl"/>
+    <owl:imports rdf:resource="data.sadl"/>
+    <owl:imports rdf:resource="builtinfunctions"/>
+    <owl:imports rdf:resource="sadlimplicitmodel"/>
+    <owl:imports rdf:resource="sadlbasemodel"/>
+    <rdfs:comment xml:lang="en">This ontology was created from a SADL file 'ML.sadl' and should not be directly edited.</rdfs:comment>
+  </owl:Ontology>
+  <owl:Class rdf:ID="MLModel">
+    <rdfs:subClassOf>
+      <owl:Class rdf:ID="KChainModel"/>
+    </rdfs:subClassOf>
+    <rdfs:subClassOf>
+      <owl:Restriction>
+        <owl:cardinality rdf:datatype="http://www.w3.org/2001/XMLSchema#int"
+        >1</owl:cardinality>
+        <owl:onProperty>
+          <owl:ObjectProperty rdf:ID="representation"/>
+        </owl:onProperty>
+      </owl:Restriction>
+    </rdfs:subClassOf>
+    <rdfs:subClassOf rdf:resource="models.sadl#Model"/>
+  </owl:Class>
+  <owl:Class rdf:about="#KChainModel">
+    <rdfs:subClassOf rdf:resource="models.sadl#Model"/>
+  </owl:Class>
+  <owl:Class rdf:ID="Equation"/>
+  <owl:Class rdf:ID="PhysicsModel">
+    <rdfs:subClassOf rdf:resource="#KChainModel"/>
+  </owl:Class>
+  <owl:ObjectProperty rdf:ID="trainingData">
+    <rdfs:domain rdf:resource="#MLModel"/>
+    <rdfs:range rdf:resource="data.sadl#TabularDataSet"/>
+  </owl:ObjectProperty>
+  <owl:ObjectProperty rdf:ID="concept">
+    <rdfs:domain rdf:resource="#MLModel"/>
+    <rdfs:range rdf:resource="sadlimplicitmodel#ScientificConcept"/>
+  </owl:ObjectProperty>
+  <owl:ObjectProperty rdf:about="#representation">
+    <rdfs:domain rdf:resource="#MLModel"/>
+    <rdfs:range rdf:resource="#Equation"/>
+  </owl:ObjectProperty>
+  <j.1:ExternalEquation rdf:ID="unitResolver">
+    <j.1:externalURI rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >http://sadl.org/unitSelector</j.1:externalURI>
+  </j.1:ExternalEquation>
+  <ml:MLModel rdf:ID="MassForceVelocityModel">
+    <ml:trainingData>
+      <j.0:TabularDataSet rdf:ID="MFVData1">
+        <j.0:location rdf:datatype="http://www.w3.org/2001/XMLSchema#anyURI"
+        >http://nsk1websadl01.crd.ge.com/aske/data/mfvdata1.csv</j.0:location>
+        <j.0:column>
+          <j.0:Column rdf:ID="Velocity">
+            <j.0:type rdf:resource="ScientificConcepts3.sadl#Velocity"/>
+            <j.0:name rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+            >Velocity</j.0:name>
+          </j.0:Column>
+        </j.0:column>
+        <j.0:column>
+          <j.0:Column rdf:ID="Mass">
+            <j.0:type rdf:resource="ScientificConcepts3.sadl#Mass"/>
+            <j.0:name rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+            >Mass</j.0:name>
+          </j.0:Column>
+        </j.0:column>
+        <j.0:column>
+          <j.0:Column rdf:ID="Force">
+            <j.0:type rdf:resource="ScientificConcepts3.sadl#Force"/>
+            <j.0:name rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+            >Force</j.0:name>
+          </j.0:Column>
+        </j.0:column>
+        <j.0:column>
+          <j.0:Column rdf:ID="Time">
+            <j.0:type rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+            >xsd:dateTime</j.0:type>
+            <j.0:name rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+            >timestamp</j.0:name>
+          </j.0:Column>
+        </j.0:column>
+      </j.0:TabularDataSet>
+    </ml:trainingData>
+    <ml:representation>
+      <j.1:Equation rdf:ID="newtons2ndLaw">
+        <rdfs:comment xml:lang="en">Force is equal to the derivative of momentum with respect to time.</rdfs:comment>
+        <j.1:expression rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+        >Force newtons2ndLaw(Mass m,Velocity v): </j.1:expression>
+      </j.1:Equation>
+    </ml:representation>
+    <ml:concept rdf:resource="ScientificConcepts3.sadl#Velocity"/>
+    <ml:concept rdf:resource="ScientificConcepts3.sadl#Mass"/>
+    <ml:concept rdf:resource="ScientificConcepts3.sadl#Force"/>
+  </ml:MLModel>
+  <j.1:ExternalEquation rdf:ID="derivative">
+    <j.1:externalURI rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >http://sadl.org/derivative</j.1:externalURI>
+  </j.1:ExternalEquation>
+</rdf:RDF>

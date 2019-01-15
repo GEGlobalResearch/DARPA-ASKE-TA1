@@ -6,9 +6,9 @@ package com.ge.research.sadl.darpa.aske;
 import com.ge.research.sadl.ValueConverterService;
 import com.ge.research.sadl.darpa.aske.AbstractDialogRuntimeModule;
 import com.ge.research.sadl.darpa.aske.processing.DialogModelProcessorProvider;
+import com.ge.research.sadl.darpa.aske.scoping.DialogErrorAddingLinkingService;
 import com.ge.research.sadl.generator.SADLOutputConfigurationProvider;
 import com.ge.research.sadl.processing.IModelProcessorProvider;
-import com.ge.research.sadl.scoping.ErrorAddingLinkingService;
 import com.ge.research.sadl.scoping.SadlQualifiedNameConverter;
 import com.ge.research.sadl.scoping.SadlQualifiedNameProvider;
 import com.ge.research.sadl.scoping.SilencedImportedNamesAdapter;
@@ -74,7 +74,7 @@ public class DialogRuntimeModule extends AbstractDialogRuntimeModule {
   }
   
   public Class<? extends DefaultLinkingService> bindDefaultLinkingService() {
-    return ErrorAddingLinkingService.class;
+    return DialogErrorAddingLinkingService.class;
   }
   
   public Class<? extends IParseTreeConstructor> bindIParseTreeConstructor() {

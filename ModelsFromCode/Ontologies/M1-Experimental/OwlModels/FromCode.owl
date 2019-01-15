@@ -1,0 +1,133 @@
+<rdf:RDF
+    xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+    xmlns:fc="http://sadl.org/FromCode.sadl#"
+    xmlns:sadlbasemodel="http://sadl.org/sadlbasemodel"
+    xmlns:owl="http://www.w3.org/2002/07/owl#"
+    xmlns:sadlimplicitmodel="http://sadl.org/sadlimplicitmodel"
+    xmlns:builtinfunctions="http://sadl.org/builtinfunctions"
+    xmlns:rdfs="http://www.w3.org/2000/01/rdf-schema#"
+    xmlns:xsd="http://www.w3.org/2001/XMLSchema#"
+  xml:base="http://sadl.org/FromCode.sadl">
+  <owl:Ontology rdf:about="">
+    <owl:imports rdf:resource="builtinfunctions"/>
+    <owl:imports rdf:resource="sadlimplicitmodel"/>
+    <owl:imports rdf:resource="sadlbasemodel"/>
+    <rdfs:comment xml:lang="en">This ontology was created from a SADL file 'FromCode.sadl' and should not be directly edited.</rdfs:comment>
+  </owl:Ontology>
+  <owl:Class rdf:ID="Expression">
+    <rdfs:subClassOf>
+      <owl:Class rdf:ID="KeyKS"/>
+    </rdfs:subClassOf>
+    <rdfs:subClassOf>
+      <owl:Class rdf:ID="KnowledgeStructure"/>
+    </rdfs:subClassOf>
+  </owl:Class>
+  <owl:Class rdf:ID="Else">
+    <rdfs:subClassOf>
+      <owl:Class rdf:ID="Block"/>
+    </rdfs:subClassOf>
+  </owl:Class>
+  <owl:Class rdf:ID="Method">
+    <rdfs:subClassOf>
+      <owl:Class rdf:about="#KeyKS"/>
+    </rdfs:subClassOf>
+    <rdfs:subClassOf rdf:resource="#KnowledgeStructure"/>
+  </owl:Class>
+  <owl:Class rdf:ID="Code">
+    <rdfs:subClassOf rdf:resource="#KnowledgeStructure"/>
+  </owl:Class>
+  <owl:Class rdf:ID="While">
+    <rdfs:subClassOf>
+      <owl:Class rdf:about="#Block"/>
+    </rdfs:subClassOf>
+  </owl:Class>
+  <owl:Class rdf:ID="For">
+    <rdfs:subClassOf>
+      <owl:Class rdf:about="#Block"/>
+    </rdfs:subClassOf>
+  </owl:Class>
+  <owl:Class rdf:ID="OOClass">
+    <rdfs:subClassOf>
+      <owl:Class rdf:about="#KeyKS"/>
+    </rdfs:subClassOf>
+    <rdfs:subClassOf>
+      <owl:Restriction>
+        <owl:someValuesFrom rdf:resource="#Method"/>
+        <owl:onProperty>
+          <owl:ObjectProperty rdf:ID="part"/>
+        </owl:onProperty>
+      </owl:Restriction>
+    </rdfs:subClassOf>
+    <rdfs:subClassOf rdf:resource="#KnowledgeStructure"/>
+  </owl:Class>
+  <owl:Class rdf:ID="If">
+    <rdfs:subClassOf>
+      <owl:Class rdf:about="#Block"/>
+    </rdfs:subClassOf>
+  </owl:Class>
+  <owl:Class rdf:ID="ObjectOriented">
+    <rdfs:subClassOf>
+      <owl:Restriction>
+        <owl:someValuesFrom rdf:resource="#OOClass"/>
+        <owl:onProperty>
+          <owl:ObjectProperty rdf:about="#part"/>
+        </owl:onProperty>
+      </owl:Restriction>
+    </rdfs:subClassOf>
+    <rdfs:subClassOf rdf:resource="#Code"/>
+  </owl:Class>
+  <owl:Class rdf:about="#Block">
+    <rdfs:subClassOf rdf:resource="#KnowledgeStructure"/>
+  </owl:Class>
+  <owl:Class rdf:about="#KeyKS">
+    <rdfs:label xml:lang="en">key knowledge structure</rdfs:label>
+    <rdfs:subClassOf rdf:resource="#KnowledgeStructure"/>
+  </owl:Class>
+  <owl:Class rdf:ID="Knowledge"/>
+  <owl:ObjectProperty rdf:ID="field">
+    <rdfs:range rdf:resource="sadlimplicitmodel#ScientificConcept"/>
+    <rdfs:domain rdf:resource="#OOClass"/>
+  </owl:ObjectProperty>
+  <owl:ObjectProperty rdf:ID="returnValue">
+    <rdfs:subPropertyOf>
+      <owl:ObjectProperty rdf:ID="output"/>
+    </rdfs:subPropertyOf>
+  </owl:ObjectProperty>
+  <owl:ObjectProperty rdf:ID="input">
+    <rdfs:domain>
+      <owl:Class>
+        <owl:unionOf rdf:parseType="Collection">
+          <owl:Class rdf:about="#Method"/>
+          <owl:Class rdf:about="#Expression"/>
+        </owl:unionOf>
+      </owl:Class>
+    </rdfs:domain>
+    <rdfs:range rdf:resource="sadlimplicitmodel#ScientificConcept"/>
+  </owl:ObjectProperty>
+  <owl:ObjectProperty rdf:ID="condition">
+    <rdfs:range rdf:resource="#Expression"/>
+    <rdfs:domain rdf:resource="#Block"/>
+  </owl:ObjectProperty>
+  <owl:ObjectProperty rdf:about="#part">
+    <rdfs:range rdf:resource="#KnowledgeStructure"/>
+    <rdfs:domain rdf:resource="#KnowledgeStructure"/>
+  </owl:ObjectProperty>
+  <owl:ObjectProperty rdf:about="#output">
+    <rdfs:domain>
+      <owl:Class>
+        <owl:unionOf rdf:parseType="Collection">
+          <owl:Class rdf:about="#Method"/>
+          <owl:Class rdf:about="#Expression"/>
+        </owl:unionOf>
+      </owl:Class>
+    </rdfs:domain>
+    <rdfs:range rdf:resource="sadlimplicitmodel#ScientificConcept"/>
+  </owl:ObjectProperty>
+  <owl:ObjectProperty rdf:ID="captures">
+    <rdfs:domain rdf:resource="#KnowledgeStructure"/>
+    <rdfs:range rdf:resource="#Knowledge"/>
+  </owl:ObjectProperty>
+  <owl:ObjectProperty rdf:ID="argument">
+    <rdfs:subPropertyOf rdf:resource="#input"/>
+  </owl:ObjectProperty>
+</rdf:RDF>

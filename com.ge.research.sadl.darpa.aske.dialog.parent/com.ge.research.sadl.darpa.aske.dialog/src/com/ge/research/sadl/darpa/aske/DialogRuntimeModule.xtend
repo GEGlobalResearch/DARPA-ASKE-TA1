@@ -5,11 +5,9 @@ package com.ge.research.sadl.darpa.aske
 
 import com.ge.research.sadl.ValueConverterService
 import com.ge.research.sadl.darpa.aske.processing.DialogModelProcessorProvider
+import com.ge.research.sadl.darpa.aske.scoping.DialogErrorAddingLinkingService
 import com.ge.research.sadl.generator.SADLOutputConfigurationProvider
-import com.ge.research.sadl.model.SadlEObjectDocumentationProvider
 import com.ge.research.sadl.processing.IModelProcessorProvider
-import com.ge.research.sadl.resource.SadlResourceDescriptionManager
-import com.ge.research.sadl.resource.SadlResourceDescriptionStrategy
 import com.ge.research.sadl.scoping.SadlQualifiedNameConverter
 import com.ge.research.sadl.scoping.SadlQualifiedNameProvider
 import com.ge.research.sadl.scoping.SilencedImportedNamesAdapter
@@ -19,19 +17,14 @@ import com.google.inject.Binder
 import com.google.inject.Singleton
 import java.io.IOException
 import org.eclipse.emf.ecore.EObject
-import org.eclipse.xtext.documentation.IEObjectDocumentationProvider
 import org.eclipse.xtext.generator.IOutputConfigurationProvider
+import org.eclipse.xtext.linking.impl.DefaultLinkingService
 import org.eclipse.xtext.linking.impl.ImportedNamesAdapter
 import org.eclipse.xtext.linking.impl.LinkingDiagnosticMessageProvider
 import org.eclipse.xtext.naming.IQualifiedNameConverter
 import org.eclipse.xtext.parsetree.reconstr.IParseTreeConstructor
 import org.eclipse.xtext.parsetree.reconstr.ITokenStream
-import org.eclipse.xtext.resource.impl.DefaultResourceDescriptionManager
-import org.eclipse.xtext.resource.impl.DefaultResourceDescriptionStrategy
 import org.eclipse.xtext.validation.ResourceValidatorImpl
-import com.ge.research.sadl.darpa.aske.processing.JenaBasedDialogModelProcessor
-import com.ge.research.sadl.scoping.ErrorAddingLinkingService
-import org.eclipse.xtext.linking.impl.DefaultLinkingService
 
 /**
  * Use this class to register components to be used at runtime / without the Equinox extension registry.
@@ -78,7 +71,7 @@ class DialogRuntimeModule extends AbstractDialogRuntimeModule {
 	
 // this is what's in SADL and SRL	
 	def Class<? extends DefaultLinkingService> bindDefaultLinkingService() {	// same
-		return ErrorAddingLinkingService;
+		return DialogErrorAddingLinkingService;
 	}
 	
 	def Class<? extends IParseTreeConstructor> bindIParseTreeConstructor() {	// same
