@@ -5,6 +5,7 @@
     xmlns:owl="http://www.w3.org/2002/07/owl#"
     xmlns:sadlimplicitmodel="http://sadl.org/sadlimplicitmodel"
     xmlns:builtinfunctions="http://sadl.org/builtinfunctions"
+    xmlns:scicncpts3="http://sadl.org/ScientificConcepts3.sadl"
     xmlns:rdfs="http://www.w3.org/2000/01/rdf-schema#"
     xmlns:j.1="http://sadl.org/sadlbasemodel#"
     xmlns:xsd="http://www.w3.org/2001/XMLSchema#"

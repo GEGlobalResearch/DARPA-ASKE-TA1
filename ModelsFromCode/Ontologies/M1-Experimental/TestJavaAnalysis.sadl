@@ -1,0 +1,3 @@
+uri "http://com.ge.research.answer.java/TestJavaAnalysis".
+
+External convertFtoC(float tf) returns float: "com.ge.research.answer.java/TestJavaAnalysis/convertFtoC".

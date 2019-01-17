@@ -1,0 +1,22 @@
+<rdf:RDF
+    xmlns="http://com.ge.research.answer.java/TestJavaAnalysis#"
+    xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+    xmlns:sadlbasemodel="http://sadl.org/sadlbasemodel"
+    xmlns:owl="http://www.w3.org/2002/07/owl#"
+    xmlns:sadlimplicitmodel="http://sadl.org/sadlimplicitmodel"
+    xmlns:builtinfunctions="http://sadl.org/builtinfunctions"
+    xmlns:rdfs="http://www.w3.org/2000/01/rdf-schema#"
+    xmlns:j.0="http://sadl.org/sadlbasemodel#"
+    xmlns:xsd="http://www.w3.org/2001/XMLSchema#"
+  xml:base="http://com.ge.research.answer.java/TestJavaAnalysis">
+  <owl:Ontology rdf:about="">
+    <owl:imports rdf:resource="http://sadl.org/builtinfunctions"/>
+    <owl:imports rdf:resource="http://sadl.org/sadlimplicitmodel"/>
+    <owl:imports rdf:resource="http://sadl.org/sadlbasemodel"/>
+    <rdfs:comment xml:lang="en">This ontology was created from a SADL file 'TestJavaAnalysis.sadl' and should not be directly edited.</rdfs:comment>
+  </owl:Ontology>
+  <j.0:ExternalEquation rdf:ID="convertFtoC">
+    <j.0:externalURI rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >com.ge.research.answer.java/TestJavaAnalysis/convertFtoC</j.0:externalURI>
+  </j.0:ExternalEquation>
+</rdf:RDF>

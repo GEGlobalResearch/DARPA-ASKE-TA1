@@ -33,12 +33,12 @@
         <j.0:markerType rdf:resource="http://com.ge.research.sadl/sadlmetricsmodel#TypeCheckFailure"/>
       </j.0:Error>
     </j.0:marker>
-    <rdfs:comment xml:lang="en">SADL model metrics</rdfs:comment>
     <j.0:marker>
       <j.0:Error>
         <j.0:markerType rdf:resource="http://com.ge.research.sadl/sadlmetricsmodel#TypeCheckFailure"/>
       </j.0:Error>
     </j.0:marker>
+    <rdfs:comment xml:lang="en">SADL model metrics</rdfs:comment>
     <j.0:marker>
       <j.0:Error>
         <j.0:markerType rdf:resource="http://com.ge.research.sadl/sadlmetricsmodel#TypeCheckFailure"/>

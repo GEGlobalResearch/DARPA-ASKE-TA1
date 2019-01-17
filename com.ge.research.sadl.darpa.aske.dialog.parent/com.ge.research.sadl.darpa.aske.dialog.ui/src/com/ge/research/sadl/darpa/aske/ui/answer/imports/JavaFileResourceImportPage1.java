@@ -14,6 +14,7 @@ package com.ge.research.sadl.darpa.aske.ui.answer.imports;
 
 import java.io.File;
 import java.lang.reflect.InvocationTargetException;
+import java.net.URI;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -29,6 +30,8 @@ import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Path;
+import org.eclipse.core.runtime.Platform;
+import org.eclipse.core.runtime.preferences.IPreferencesService;
 import org.eclipse.jface.dialogs.ErrorDialog;
 import org.eclipse.jface.dialogs.IDialogConstants;
 import org.eclipse.jface.dialogs.IDialogSettings;
@@ -46,7 +49,6 @@ import org.eclipse.swt.events.KeyListener;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.events.SelectionListener;
-import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Button;
@@ -54,23 +56,25 @@ import org.eclipse.swt.widgets.Combo;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.DirectoryDialog;
 import org.eclipse.swt.widgets.Event;
+import org.eclipse.swt.widgets.FileDialog;
 import org.eclipse.swt.widgets.Group;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Listener;
 import org.eclipse.swt.widgets.Shell;
+import org.eclipse.swt.widgets.Text;
 import org.eclipse.ui.IWorkbench;
-import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.dialogs.FileSystemElement;
 import org.eclipse.ui.dialogs.WizardResourceImportPage;
-import org.eclipse.ui.internal.ide.IDEWorkbenchMessages;
 import org.eclipse.ui.internal.ide.dialogs.IElementFilter;
 import org.eclipse.ui.internal.ide.dialogs.RelativePathVariableGroup;
 import org.eclipse.ui.internal.ide.filesystem.FileSystemStructureProvider;
 import org.eclipse.ui.internal.progress.ProgressMonitorJobsDialog;
-import org.eclipse.ui.internal.wizards.datatransfer.IDataTransferHelpContextIds;
 import org.eclipse.ui.internal.wizards.datatransfer.MinimizedFileSystemElement;
 import org.eclipse.ui.model.WorkbenchContentProvider;
 import org.eclipse.ui.wizards.datatransfer.IImportStructureProvider;
+
+import com.ge.research.sadl.ui.imports.GridDataUtil;
+import com.ge.research.sadl.ui.imports.SADLImportMessages;
 
 
 /**
@@ -80,53 +84,35 @@ public class JavaFileResourceImportPage1 extends WizardResourceImportPage
         implements Listener {
     // widgets
     protected Combo sourceNameField;
-
     protected Button overwriteExistingResourcesCheckbox;
-
     protected Button createTopLevelFolderCheckbox;
-    
     protected RelativePathVariableGroup relativePathVariableGroup;
-    
     protected String pathVariable;
-    
     protected Button sourceBrowseButton;
-
     protected Button selectTypesButton;
-
     protected Button selectAllButton;
-
     protected Button deselectAllButton;
+	private Text csvFileText = null;
+//	private Text namespaceText = null;
+	private Text templateFileText = null;
+    protected Button firstRowVarButton;
+    protected Button debugOutputButton;
+    protected Button templateBrowseButton;
 
     //A boolean to indicate if the user has typed anything
     private boolean entryChanged = false;
-    
     private FileSystemStructureProvider fileSystemStructureProvider = new FileSystemStructureProvider();
 
     // dialog store id constants
     private final static String STORE_SOURCE_NAMES_ID = "OwlFileResourceImportPage1.STORE_SOURCE_NAMES_ID";//$NON-NLS-1$
-
     private final static String STORE_OVERWRITE_EXISTING_RESOURCES_ID = "OwlFileResourceImportPage1.STORE_OVERWRITE_EXISTING_RESOURCES_ID";//$NON-NLS-1$
-
     private final static String STORE_CREATE_CONTAINER_STRUCTURE_ID = "OwlFileResourceImportPage1.STORE_CREATE_CONTAINER_STRUCTURE_ID";//$NON-NLS-1$
-
-    private final static String STORE_CREATE_VIRTUAL_FOLDERS_ID = "OwlFileResourceImportPage1.STORE_CREATE_VIRTUAL_FOLDERS_ID";//$NON-NLS-1$
-
-    private final static String STORE_CREATE_LINKS_IN_WORKSPACE_ID = "OwlFileResourceImportPage1.STORE_CREATE_LINKS_IN_WORKSPACE_ID";//$NON-NLS-1$
-
     private final static String STORE_PATH_VARIABLE_SELECTED_ID = "OwlFileResourceImportPage1.STORE_PATH_VARIABLE_SELECTED_ID";//$NON-NLS-1$
-
-    private final static String STORE_PATH_VARIABLE_NAME_ID = "OwlFileResourceImportPage1.STORE_PATH_VARIABLE_NAME_ID";//$NON-NLS-1$
-
     private static final String SELECT_TYPES_TITLE = AnswerImportMessages.DataTransfer_selectTypes;
-
     private static final String SELECT_ALL_TITLE = AnswerImportMessages.DataTransfer_selectAll;
-
     private static final String DESELECT_ALL_TITLE = AnswerImportMessages.DataTransfer_deselectAll;
-
     private static final String SELECT_SOURCE_TITLE = AnswerImportMessages.FileImport_selectSourceTitle;
-
     private static final String SELECT_SOURCE_MESSAGE = AnswerImportMessages.FileImport_selectSource;
-
     protected static final String SOURCE_EMPTY_MESSAGE = AnswerImportMessages.FileImport_sourceEmpty;
 
     /**
@@ -145,10 +131,164 @@ public class JavaFileResourceImportPage1 extends WizardResourceImportPage
      */
     public JavaFileResourceImportPage1(IWorkbench aWorkbench,
             IStructuredSelection selection) {
-        this("owlFileImportPage1", aWorkbench, selection);//$NON-NLS-1$
+        this("javaFileImportPage1", aWorkbench, selection);//$NON-NLS-1$
         setTitle(AnswerImportMessages.DataTransfer_fileSystemTitle);
         setDescription(AnswerImportMessages.FileImport_importFileSystem);
     }
+
+    /**
+     *	Create the group for creating the source CSV file input area
+     */
+    protected void createSourceCSVGroup(Composite parent) {
+        Composite sourceCSVGroup = new Composite(parent, SWT.NONE);
+		GridLayout fileLayout = new GridLayout();
+		fileLayout = new GridLayout();
+		fileLayout.numColumns = 3;
+		fileLayout.marginHeight = 0;
+		fileLayout.marginWidth = 0;
+		fileLayout.makeColumnsEqualWidth = false;
+		sourceCSVGroup.setLayout(fileLayout);
+		GridData gridData = GridDataUtil.createHorizontalFill();
+		sourceCSVGroup.setLayoutData(gridData);
+
+        Label groupLabel = new Label(sourceCSVGroup, SWT.NONE);
+        groupLabel.setText(SADLImportMessages.CSVImport_title);
+        groupLabel.setFont(parent.getFont());
+
+		csvFileText = new Text(sourceCSVGroup, SWT.BORDER); 
+		gridData = GridDataUtil.createHorizontalFill();
+		gridData.widthHint = 300;
+		csvFileText.setLayoutData(gridData);
+		csvFileText.addSelectionListener(new SelectionAdapter() {
+            public void widgetSelected(SelectionEvent e) {
+            }
+        });
+		csvFileText.addFocusListener(new FocusListener() {
+            public void focusGained(FocusEvent e) {
+                //Do nothing when getting focus
+            }
+            public void focusLost(FocusEvent e) {
+            	String f = csvFileText.getText();
+                if (f == null || f.isEmpty()) {
+                	// Set enter csv file message
+                	setMessage(SADLImportMessages.CSVImport_csv_field_message);
+                } else if (validFileName(f)) {
+                	// Clear enter csv file message
+                	setErrorMessage(null);
+                	setMessage(null);
+                	// Populate namespace if necessary
+//                	String ns = namespaceText.getText();
+//                	if (ns == null || ns.isEmpty()) {
+//                    	prepopulateNamespace(f);                		
+//                	}
+                } else {
+                	// Display error message
+                	setErrorMessage(SADLImportMessages.CSVImport_invalid_file_message);
+                }
+            }
+        });
+
+        // source browse button
+        sourceBrowseButton = new Button(sourceCSVGroup, SWT.PUSH);
+        sourceBrowseButton.setText(SADLImportMessages.DataTransfer_browse);
+        sourceBrowseButton.addListener(SWT.Selection, this);
+        sourceBrowseButton.setLayoutData(new GridData(
+                GridData.HORIZONTAL_ALIGN_FILL));
+        sourceBrowseButton.setFont(parent.getFont());
+        setButtonLayoutData(sourceBrowseButton);
+
+        // first row contains headings button
+        Composite optionComposite = new Composite(sourceCSVGroup, SWT.NONE);        
+		GridLayout optionLayout = new GridLayout();
+		optionLayout = new GridLayout();
+		optionLayout.numColumns = 2;
+		optionLayout.marginHeight = 0;
+		optionLayout.marginWidth = 0;
+		optionLayout.makeColumnsEqualWidth = false;
+		optionComposite.setLayout(optionLayout);
+		gridData = GridDataUtil.createHorizontalFill();
+		gridData.horizontalSpan = 3;
+		optionComposite.setLayoutData(gridData);
+		
+		firstRowVarButton = new Button(optionComposite, SWT.CHECK);
+		firstRowVarButton.setSelection(true);
+		Label firstRowLabel = new Label(optionComposite, SWT.NULL);
+		firstRowLabel.setText(SADLImportMessages.CSVImport_Col_Header);
+		debugOutputButton = new Button(optionComposite, SWT.CHECK);
+		debugOutputButton.setSelection(false);
+		Label debugOutputLabel = new Label(optionComposite, SWT.NULL);
+		debugOutputLabel.setText(SADLImportMessages.CSVImport_Debug);
+    }
+
+    /**
+     *	Create the group for creating the source CSV file input area
+     */
+    protected void createTemplateFileGroup(Composite parent) {
+        Composite templateFileGroup = new Composite(parent, SWT.NONE);
+		GridLayout fileLayout = new GridLayout();
+		fileLayout = new GridLayout();
+		fileLayout.numColumns = 3;
+		fileLayout.marginHeight = 0;
+		fileLayout.marginWidth = 0;
+		fileLayout.makeColumnsEqualWidth = false;
+		templateFileGroup.setLayout(fileLayout);
+		GridData gridData = GridDataUtil.createHorizontalFill();
+		templateFileGroup.setLayoutData(gridData);
+
+        Label groupLabel = new Label(templateFileGroup, SWT.NONE);
+        groupLabel.setText(AnswerImportMessages.JavaImport_AssoociatedText_title);
+        groupLabel.setFont(parent.getFont());
+
+		templateFileText = new Text(templateFileGroup, SWT.BORDER); 
+		gridData = GridDataUtil.createHorizontalFill();
+		gridData.widthHint = 300;
+		templateFileText.setLayoutData(gridData);
+		templateFileText.addSelectionListener(new SelectionAdapter() {
+            public void widgetSelected(SelectionEvent e) {
+            }
+        });
+		templateFileText.addFocusListener(new FocusListener() {
+            public void focusGained(FocusEvent e) {
+                //Do nothing when getting focus
+            }
+            public void focusLost(FocusEvent e) {
+            	String f = templateFileText.getText();
+                if (f == null || f.isEmpty()) {
+                	// Set enter template file message
+                	setMessage(SADLImportMessages.CSVImport_template_field_message);
+                } else if (validFileName(f)) {
+                	setErrorMessage(null);
+                	setMessage(null);
+                } else {
+                	// Display error message
+                	setErrorMessage(SADLImportMessages.CSVImport_invalid_file_message);
+                }
+            }
+        });
+
+        // template browse button
+		templateBrowseButton = new Button(templateFileGroup, SWT.PUSH);
+		templateBrowseButton.setText(SADLImportMessages.DataTransfer_browse);
+		templateBrowseButton.addListener(SWT.Selection, this);
+		templateBrowseButton.setLayoutData(new GridData(
+                GridData.HORIZONTAL_ALIGN_FILL));
+		templateBrowseButton.setFont(parent.getFont());
+        setButtonLayoutData(templateBrowseButton);
+
+        // first row contains headings button
+        Composite optionComposite = new Composite(templateFileGroup, SWT.NONE);        
+		GridLayout optionLayout = new GridLayout();
+		optionLayout = new GridLayout();
+		optionLayout.numColumns = 2;
+		optionLayout.marginHeight = 0;
+		optionLayout.marginWidth = 0;
+		optionLayout.makeColumnsEqualWidth = false;
+		optionComposite.setLayout(optionLayout);
+		gridData = GridDataUtil.createHorizontalFill();
+		gridData.horizontalSpan = 3;
+		optionComposite.setLayoutData(gridData);		
+    }
+
 
     /**
      * Creates a new button with the given id.
@@ -555,6 +695,7 @@ public class JavaFileResourceImportPage1 extends WizardResourceImportPage
 
         createRootDirectoryGroup(parent);
         createFileSelectionGroup(parent);
+        createTemplateFileGroup(parent);
         createButtonsGroup(parent);
     }
 
@@ -619,6 +760,20 @@ public class JavaFileResourceImportPage1 extends WizardResourceImportPage
 			return false;
 		}
 
+    	String f = templateFileText.getText();
+    	System.out.println("Text associated with this code is found in '" + f + "'");
+    	if (validURI(f)) {
+    		System.out.println("    valid URI");
+    	}
+    	else if (validFileName(f)) {
+    		if ((new File(f)).isDirectory()) {
+        		System.out.println("    valid folder");
+    		}
+    		else if ((new File(f)).isFile()) {
+    			System.out.println("    valid file name");
+    		}
+    	}
+    	
         saveWidgetValues();
 
         Iterator resourcesEnum = getSelectedResources().iterator();
@@ -769,8 +924,42 @@ public class JavaFileResourceImportPage1 extends WizardResourceImportPage
         if (event.widget == sourceBrowseButton) {
 			handleSourceBrowseButtonPressed();
 		}
-
+        else if (event.widget == templateBrowseButton) {
+        	handleTemplateBrowseButtonPressed();
+        }
         super.handleEvent(event);
+    }
+
+    /**
+     *	Open an appropriate file browser so that the user can specify a template
+     *	file to use
+     */
+    protected void handleTemplateBrowseButtonPressed() {
+
+        String currentTemplate = this.templateFileText.getText();
+        FileDialog dialog = new FileDialog(
+        		templateFileText.getShell(), SWT.SAVE | SWT.SHEET);
+        dialog.setText(SADLImportMessages.CSVImport_template_dialog_title);
+//        dialog.setFilterPath(currentTemplate);
+        if (currentTemplate != null) {
+        	dialog.setFilterPath((new File(currentTemplate)).getParent());
+        }
+        String selectedFile = dialog.open();
+        if (selectedFile != null) {
+            if (validFileName(selectedFile)) {
+            	// Clear enter template file message
+            	setErrorMessage(null);
+            	setMessage(null);
+            } else {
+            	// Display error message
+            	setErrorMessage(SADLImportMessages.CSVImport_invalid_file_message);
+            }
+            setErrorMessage(null);
+            templateFileText.setText(selectedFile);
+            templateFileText.setFocus();
+        } else {
+        	setMessage(SADLImportMessages.CSVImport_template_field_message);
+        }
     }
 
     /**
@@ -1276,4 +1465,31 @@ public class JavaFileResourceImportPage1 extends WizardResourceImportPage
         return false;
     }
 
+    private boolean validFileName(String fileName) {
+    	File f = new File(fileName);
+    	if (f.isFile() && f.exists() && f.canRead()) {
+    		return true;
+    	}
+    	return false;
+    }
+    
+    private boolean validURI(String s) {
+    	try {
+    		URI uri = new URI(s);
+    	} catch (Exception e) {
+    		return false;
+    	}
+    	return true;
+    }
+
+//    private void prepopulateNamespace(String f) {
+//    	IPreferencesService ps = Platform.getPreferencesService();
+//    	String baseUri = ps.getString("com.ge.research.sadl.Sadl", "baseUri", "http://sadl.org/${project_name}/", null);
+//		if (!baseUri.endsWith("/")) {
+//			baseUri += "/";
+//		}
+//		org.eclipse.emf.common.util.URI csvURI = org.eclipse.emf.common.util.URI.createFileURI(f);
+//		String uri = baseUri + csvURI.trimFileExtension().lastSegment();
+//        namespaceText.setText(uri);
+//    }
 }

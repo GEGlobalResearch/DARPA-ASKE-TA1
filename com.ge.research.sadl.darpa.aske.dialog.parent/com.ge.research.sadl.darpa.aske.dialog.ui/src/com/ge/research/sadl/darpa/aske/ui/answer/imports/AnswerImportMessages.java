@@ -100,8 +100,8 @@ public class AnswerImportMessages extends NLS {
 	public static String CSVImport_invalid_imports_message;
 	public static String CSVImport_template_field_message;
 	public static String CSVImport_restore_label;
-
-
+	public static String JavaImport_AssoociatedText_title;
+	
 	static {
 		// load message values from bundle file
 		NLS.initializeMessages(BUNDLE_NAME, AnswerImportMessages.class);

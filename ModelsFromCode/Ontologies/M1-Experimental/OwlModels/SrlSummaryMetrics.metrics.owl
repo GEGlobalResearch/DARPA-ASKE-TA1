@@ -13,6 +13,7 @@
     <owl:imports rdf:resource="http://sadl.org/ScientificConcepts2.sadl.metrics"/>
     <owl:imports rdf:resource="http://sadl.org/FromCode.sadl.metrics"/>
     <owl:imports rdf:resource="http://sadl.org/MinimalExampleEquations.sadl.metrics"/>
+    <owl:imports rdf:resource="http://com.ge.research.answer.java/TestJavaAnalysis.metrics"/>
     <owl:imports rdf:resource="http://com.ge.research.darpa.answer.imports/TemperatureConversion.metrics"/>
     <owl:imports rdf:resource="http://sadl.org/Software.sadl.metrics"/>
     <owl:imports rdf:resource="http:///Dn.metrics"/>
