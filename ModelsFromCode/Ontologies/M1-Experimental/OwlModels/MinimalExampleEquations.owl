@@ -6,7 +6,6 @@
     xmlns:sadlimplicitmodel="http://sadl.org/sadlimplicitmodel"
     xmlns:builtinfunctions="http://sadl.org/builtinfunctions"
     xmlns:rdfs="http://www.w3.org/2000/01/rdf-schema#"
-    xmlns:scicncpts1="http://sadl.org/ScientificConcepts1.sadl"
     xmlns:j.0="http://sadl.org/sadlbasemodel#"
     xmlns:xsd="http://www.w3.org/2001/XMLSchema#"
   xml:base="http://sadl.org/MinimalExampleEquations.sadl">

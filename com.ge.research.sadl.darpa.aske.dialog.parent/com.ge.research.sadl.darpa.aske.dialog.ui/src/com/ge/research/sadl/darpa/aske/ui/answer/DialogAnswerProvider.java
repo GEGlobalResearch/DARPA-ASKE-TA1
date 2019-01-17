@@ -72,24 +72,24 @@ public class DialogAnswerProvider extends DefaultAutoEditStrategyProvider {
 	            try {
 	                if (document instanceof XtextDocument) {
 	                	Resource resource = getResourceFromDocument((XtextDocument)document);
-//	                	if (resource == null) {
-//	            			XtextResourceSet resourceSet = (XtextResourceSet) resourceSetProvider.get(project);
-//
-//	                	}
 	                	String tempInsert = null;
 	                	if (resource != null) {
 			                Object lastcmd = OntModelProvider.getPrivateKeyValuePair(resource, JenaBasedDialogModelProcessor.LAST_DIALOG_COMMAND);
 			                System.out.println("Last cmd: " + (lastcmd != null ? lastcmd.toString() : "null"));
 		                	if (lastcmd instanceof Query) {
-		                		StringBuilder answer = new StringBuilder("CM: ");		                		ResultSet rs = runQuery(resource, (Query)lastcmd);
+		                		StringBuilder answer = new StringBuilder("CM: ");
+		                		ResultSet rs = runQuery(resource, (Query)lastcmd);
 		                		String resultStr = null;
 		                		if (rs != null) {
 		                			rs.setShowNamespaces(true);
 		                			resultStr = rs.toString();
 		                			resultStr = resultStr.replace('"', '\'');
+		                			resultStr = resultStr.trim();
+		                			resultStr = "\"" + resultStr + "\"";
 		                		}
 		                		tempInsert = (resultStr != null ? resultStr : "Failed to find results");
 		                		answer.append(tempInsert);
+		                		answer.append(".");
 		                		Object ctx = ((Query)lastcmd).getContext();
 		                		addResponseToDialog(document, reg, answer, ctx);
 		                	}

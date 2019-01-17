@@ -7,7 +7,6 @@
     xmlns:mexwr="http://sadl.org/MinimalExampleWithRules.sadl#"
     xmlns:j.0="http://sadl.org/sadlimplicitmodel#"
     xmlns:rdfs="http://www.w3.org/2000/01/rdf-schema#"
-    xmlns:scicncpts1="http://sadl.org/ScientificConcepts1.sadl"
     xmlns:xsd="http://www.w3.org/2001/XMLSchema#"
   xml:base="http://sadl.org/MinimalExampleWithRules.sadl">
   <owl:Ontology rdf:about="">
