@@ -39,9 +39,11 @@ import com.ge.research.sadl.jena.UtilsForJena;
 import com.ge.research.sadl.model.CircularDefinitionException;
 import com.ge.research.sadl.model.ModelError;
 import com.ge.research.sadl.model.gp.Equation;
+import com.ge.research.sadl.model.gp.Junction;
 import com.ge.research.sadl.model.gp.NamedNode;
 import com.ge.research.sadl.model.gp.Query;
 import com.ge.research.sadl.model.gp.Rule;
+import com.ge.research.sadl.model.gp.TripleElement;
 import com.ge.research.sadl.processing.OntModelProvider;
 import com.ge.research.sadl.processing.SadlConstants;
 import com.ge.research.sadl.processing.ValidationAcceptor;
@@ -422,6 +424,18 @@ public class JenaBasedDialogModelProcessor extends JenaBasedSadlModelProcessor {
 				System.out.println("WhatIsStatement target: " + trgtObj.toString());
 				if (trgtObj instanceof NamedNode) {
 					((NamedNode)trgtObj).setContext(stmt);
+				}
+				else if (trgtObj instanceof TripleElement) {
+					// TODO
+					addInfo("TripleElement not yet handled by dialog processor", whatIsTarget);
+				}
+				else if (trgtObj instanceof Junction) {
+					// TODO
+					addInfo("Junction not yet handled by dialog processor", whatIsTarget);
+				}
+				else {
+					// TODO
+					addInfo(trgtObj.getClass().getCanonicalName() + " not yet handled by dialog processor", whatIsTarget);
 				}
 				OntModelProvider.addPrivateKeyValuePair(stmt.eResource(), LAST_DIALOG_COMMAND, trgtObj);
 			} catch (TranslationException e) {
