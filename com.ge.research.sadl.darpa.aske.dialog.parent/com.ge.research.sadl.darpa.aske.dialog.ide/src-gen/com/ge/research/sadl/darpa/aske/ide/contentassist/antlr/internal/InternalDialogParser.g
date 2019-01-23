@@ -122,6 +122,7 @@ import com.ge.research.sadl.darpa.aske.services.DialogGrammarAccess;
 		tokenNameToValue.put("True", "'true'");
 		tokenNameToValue.put("Type", "'type'");
 		tokenNameToValue.put("What_1", "'what'");
+		tokenNameToValue.put("When", "'when'");
 		tokenNameToValue.put("With", "'with'");
 		tokenNameToValue.put("Expr", "'Expr:'");
 		tokenNameToValue.put("Graph", "'Graph'");
@@ -388,6 +389,23 @@ ruleWhatIsStatement
 		{ before(grammarAccess.getWhatIsStatementAccess().getGroup()); }
 		(rule__WhatIsStatement__Group__0)
 		{ after(grammarAccess.getWhatIsStatementAccess().getGroup()); }
+	)
+;
+finally {
+	restoreStackSize(stackSize);
+}
+
+
+// Rule WhenPart
+ruleWhenPart 
+	@init {
+		int stackSize = keepStackSize();
+	}
+	:
+	(
+		{ before(grammarAccess.getWhenPartAccess().getGroup()); }
+		(rule__WhenPart__Group__0)
+		{ after(grammarAccess.getWhenPartAccess().getGroup()); }
 	)
 ;
 finally {
@@ -7125,9 +7143,9 @@ rule__WhatIsStatement__Group__2__Impl
 	}
 :
 (
-	{ before(grammarAccess.getWhatIsStatementAccess().getArticleAssignment_2()); }
-	(rule__WhatIsStatement__ArticleAssignment_2)?
-	{ after(grammarAccess.getWhatIsStatementAccess().getArticleAssignment_2()); }
+	{ before(grammarAccess.getWhatIsStatementAccess().getTargetAssignment_2()); }
+	(rule__WhatIsStatement__TargetAssignment_2)
+	{ after(grammarAccess.getWhatIsStatementAccess().getTargetAssignment_2()); }
 )
 ;
 finally {
@@ -7151,9 +7169,63 @@ rule__WhatIsStatement__Group__3__Impl
 	}
 :
 (
-	{ before(grammarAccess.getWhatIsStatementAccess().getTargetAssignment_3()); }
-	(rule__WhatIsStatement__TargetAssignment_3)
-	{ after(grammarAccess.getWhatIsStatementAccess().getTargetAssignment_3()); }
+	{ before(grammarAccess.getWhatIsStatementAccess().getWhenPartParserRuleCall_3()); }
+	(ruleWhenPart)?
+	{ after(grammarAccess.getWhatIsStatementAccess().getWhenPartParserRuleCall_3()); }
+)
+;
+finally {
+	restoreStackSize(stackSize);
+}
+
+
+rule__WhenPart__Group__0
+	@init {
+		int stackSize = keepStackSize();
+	}
+:
+	rule__WhenPart__Group__0__Impl
+	rule__WhenPart__Group__1
+;
+finally {
+	restoreStackSize(stackSize);
+}
+
+rule__WhenPart__Group__0__Impl
+	@init {
+		int stackSize = keepStackSize();
+	}
+:
+(
+	{ before(grammarAccess.getWhenPartAccess().getWhenKeyword_0()); }
+	When
+	{ after(grammarAccess.getWhenPartAccess().getWhenKeyword_0()); }
+)
+;
+finally {
+	restoreStackSize(stackSize);
+}
+
+rule__WhenPart__Group__1
+	@init {
+		int stackSize = keepStackSize();
+	}
+:
+	rule__WhenPart__Group__1__Impl
+;
+finally {
+	restoreStackSize(stackSize);
+}
+
+rule__WhenPart__Group__1__Impl
+	@init {
+		int stackSize = keepStackSize();
+	}
+:
+(
+	{ before(grammarAccess.getWhenPartAccess().getWhenAssignment_1()); }
+	(rule__WhenPart__WhenAssignment_1)
+	{ after(grammarAccess.getWhenPartAccess().getWhenAssignment_1()); }
 )
 ;
 finally {
@@ -32225,30 +32297,30 @@ finally {
 	restoreStackSize(stackSize);
 }
 
-rule__WhatIsStatement__ArticleAssignment_2
+rule__WhatIsStatement__TargetAssignment_2
 	@init {
 		int stackSize = keepStackSize();
 	}
 :
 	(
-		{ before(grammarAccess.getWhatIsStatementAccess().getArticleAnArticleParserRuleCall_2_0()); }
-		ruleAnArticle
-		{ after(grammarAccess.getWhatIsStatementAccess().getArticleAnArticleParserRuleCall_2_0()); }
+		{ before(grammarAccess.getWhatIsStatementAccess().getTargetExpressionParserRuleCall_2_0()); }
+		ruleExpression
+		{ after(grammarAccess.getWhatIsStatementAccess().getTargetExpressionParserRuleCall_2_0()); }
 	)
 ;
 finally {
 	restoreStackSize(stackSize);
 }
 
-rule__WhatIsStatement__TargetAssignment_3
+rule__WhenPart__WhenAssignment_1
 	@init {
 		int stackSize = keepStackSize();
 	}
 :
 	(
-		{ before(grammarAccess.getWhatIsStatementAccess().getTargetSadlResourceParserRuleCall_3_0()); }
-		ruleSadlResource
-		{ after(grammarAccess.getWhatIsStatementAccess().getTargetSadlResourceParserRuleCall_3_0()); }
+		{ before(grammarAccess.getWhenPartAccess().getWhenExpressionParserRuleCall_1_0()); }
+		ruleExpression
+		{ after(grammarAccess.getWhenPartAccess().getWhenExpressionParserRuleCall_1_0()); }
 	)
 ;
 finally {

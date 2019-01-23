@@ -498,28 +498,9 @@ ruleWhatIsStatement returns [EObject current=null]
 		(
 			(
 				{
-					newCompositeNode(grammarAccess.getWhatIsStatementAccess().getArticleAnArticleParserRuleCall_2_0());
+					newCompositeNode(grammarAccess.getWhatIsStatementAccess().getTargetExpressionParserRuleCall_2_0());
 				}
-				lv_article_2_0=ruleAnArticle
-				{
-					if ($current==null) {
-						$current = createModelElementForParent(grammarAccess.getWhatIsStatementRule());
-					}
-					set(
-						$current,
-						"article",
-						lv_article_2_0,
-						"com.ge.research.sadl.SADL.AnArticle");
-					afterParserOrEnumRuleCall();
-				}
-			)
-		)?
-		(
-			(
-				{
-					newCompositeNode(grammarAccess.getWhatIsStatementAccess().getTargetSadlResourceParserRuleCall_3_0());
-				}
-				lv_target_3_0=ruleSadlResource
+				lv_target_2_0=ruleExpression
 				{
 					if ($current==null) {
 						$current = createModelElementForParent(grammarAccess.getWhatIsStatementRule());
@@ -527,8 +508,57 @@ ruleWhatIsStatement returns [EObject current=null]
 					set(
 						$current,
 						"target",
-						lv_target_3_0,
-						"com.ge.research.sadl.SADL.SadlResource");
+						lv_target_2_0,
+						"com.ge.research.sadl.SADL.Expression");
+					afterParserOrEnumRuleCall();
+				}
+			)
+		)
+		(
+			{
+				if ($current==null) {
+					$current = createModelElement(grammarAccess.getWhatIsStatementRule());
+				}
+				newCompositeNode(grammarAccess.getWhatIsStatementAccess().getWhenPartParserRuleCall_3());
+			}
+			this_WhenPart_3=ruleWhenPart[$current]
+			{
+				$current = $this_WhenPart_3.current;
+				afterParserOrEnumRuleCall();
+			}
+		)?
+	)
+;
+
+
+// Rule WhenPart
+ruleWhenPart[EObject in_current]  returns [EObject current=in_current]
+@init {
+	enterRule();
+}
+@after {
+	leaveRule();
+}:
+	(
+		otherlv_0=When
+		{
+			newLeafNode(otherlv_0, grammarAccess.getWhenPartAccess().getWhenKeyword_0());
+		}
+		(
+			(
+				{
+					newCompositeNode(grammarAccess.getWhenPartAccess().getWhenExpressionParserRuleCall_1_0());
+				}
+				lv_when_1_0=ruleExpression
+				{
+					if ($current==null) {
+						$current = createModelElementForParent(grammarAccess.getWhenPartRule());
+					}
+					set(
+						$current,
+						"when",
+						lv_when_1_0,
+						"com.ge.research.sadl.SADL.Expression");
 					afterParserOrEnumRuleCall();
 				}
 			)

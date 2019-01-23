@@ -4,7 +4,7 @@
 package com.ge.research.sadl.darpa.aske.dialog.impl;
 
 import com.ge.research.sadl.darpa.aske.dialog.DialogPackage;
-import com.ge.research.sadl.darpa.aske.dialog.WhatIsStatement;
+import com.ge.research.sadl.darpa.aske.dialog.WithWhenPart;
 
 import com.ge.research.sadl.sADL.Expression;
 
@@ -15,38 +15,39 @@ import org.eclipse.emf.ecore.EClass;
 import org.eclipse.emf.ecore.InternalEObject;
 
 import org.eclipse.emf.ecore.impl.ENotificationImpl;
+import org.eclipse.emf.ecore.impl.MinimalEObjectImpl;
 
 /**
  * <!-- begin-user-doc -->
- * An implementation of the model object '<em><b>What Is Statement</b></em>'.
+ * An implementation of the model object '<em><b>With When Part</b></em>'.
  * <!-- end-user-doc -->
  * <p>
  * The following features are implemented:
  * </p>
  * <ul>
- *   <li>{@link com.ge.research.sadl.darpa.aske.dialog.impl.WhatIsStatementImpl#getTarget <em>Target</em>}</li>
+ *   <li>{@link com.ge.research.sadl.darpa.aske.dialog.impl.WithWhenPartImpl#getWhen <em>When</em>}</li>
  * </ul>
  *
  * @generated
  */
-public class WhatIsStatementImpl extends WithWhenPartImpl implements WhatIsStatement
+public class WithWhenPartImpl extends MinimalEObjectImpl.Container implements WithWhenPart
 {
   /**
-   * The cached value of the '{@link #getTarget() <em>Target</em>}' containment reference.
+   * The cached value of the '{@link #getWhen() <em>When</em>}' containment reference.
    * <!-- begin-user-doc -->
    * <!-- end-user-doc -->
-   * @see #getTarget()
+   * @see #getWhen()
    * @generated
    * @ordered
    */
-  protected Expression target;
+  protected Expression when;
 
   /**
    * <!-- begin-user-doc -->
    * <!-- end-user-doc -->
    * @generated
    */
-  protected WhatIsStatementImpl()
+  protected WithWhenPartImpl()
   {
     super();
   }
@@ -59,7 +60,7 @@ public class WhatIsStatementImpl extends WithWhenPartImpl implements WhatIsState
   @Override
   protected EClass eStaticClass()
   {
-    return DialogPackage.Literals.WHAT_IS_STATEMENT;
+    return DialogPackage.Literals.WITH_WHEN_PART;
   }
 
   /**
@@ -67,9 +68,9 @@ public class WhatIsStatementImpl extends WithWhenPartImpl implements WhatIsState
    * <!-- end-user-doc -->
    * @generated
    */
-  public Expression getTarget()
+  public Expression getWhen()
   {
-    return target;
+    return when;
   }
 
   /**
@@ -77,13 +78,13 @@ public class WhatIsStatementImpl extends WithWhenPartImpl implements WhatIsState
    * <!-- end-user-doc -->
    * @generated
    */
-  public NotificationChain basicSetTarget(Expression newTarget, NotificationChain msgs)
+  public NotificationChain basicSetWhen(Expression newWhen, NotificationChain msgs)
   {
-    Expression oldTarget = target;
-    target = newTarget;
+    Expression oldWhen = when;
+    when = newWhen;
     if (eNotificationRequired())
     {
-      ENotificationImpl notification = new ENotificationImpl(this, Notification.SET, DialogPackage.WHAT_IS_STATEMENT__TARGET, oldTarget, newTarget);
+      ENotificationImpl notification = new ENotificationImpl(this, Notification.SET, DialogPackage.WITH_WHEN_PART__WHEN, oldWhen, newWhen);
       if (msgs == null) msgs = notification; else msgs.add(notification);
     }
     return msgs;
@@ -94,20 +95,20 @@ public class WhatIsStatementImpl extends WithWhenPartImpl implements WhatIsState
    * <!-- end-user-doc -->
    * @generated
    */
-  public void setTarget(Expression newTarget)
+  public void setWhen(Expression newWhen)
   {
-    if (newTarget != target)
+    if (newWhen != when)
     {
       NotificationChain msgs = null;
-      if (target != null)
-        msgs = ((InternalEObject)target).eInverseRemove(this, EOPPOSITE_FEATURE_BASE - DialogPackage.WHAT_IS_STATEMENT__TARGET, null, msgs);
-      if (newTarget != null)
-        msgs = ((InternalEObject)newTarget).eInverseAdd(this, EOPPOSITE_FEATURE_BASE - DialogPackage.WHAT_IS_STATEMENT__TARGET, null, msgs);
-      msgs = basicSetTarget(newTarget, msgs);
+      if (when != null)
+        msgs = ((InternalEObject)when).eInverseRemove(this, EOPPOSITE_FEATURE_BASE - DialogPackage.WITH_WHEN_PART__WHEN, null, msgs);
+      if (newWhen != null)
+        msgs = ((InternalEObject)newWhen).eInverseAdd(this, EOPPOSITE_FEATURE_BASE - DialogPackage.WITH_WHEN_PART__WHEN, null, msgs);
+      msgs = basicSetWhen(newWhen, msgs);
       if (msgs != null) msgs.dispatch();
     }
     else if (eNotificationRequired())
-      eNotify(new ENotificationImpl(this, Notification.SET, DialogPackage.WHAT_IS_STATEMENT__TARGET, newTarget, newTarget));
+      eNotify(new ENotificationImpl(this, Notification.SET, DialogPackage.WITH_WHEN_PART__WHEN, newWhen, newWhen));
   }
 
   /**
@@ -120,8 +121,8 @@ public class WhatIsStatementImpl extends WithWhenPartImpl implements WhatIsState
   {
     switch (featureID)
     {
-      case DialogPackage.WHAT_IS_STATEMENT__TARGET:
-        return basicSetTarget(null, msgs);
+      case DialogPackage.WITH_WHEN_PART__WHEN:
+        return basicSetWhen(null, msgs);
     }
     return super.eInverseRemove(otherEnd, featureID, msgs);
   }
@@ -136,8 +137,8 @@ public class WhatIsStatementImpl extends WithWhenPartImpl implements WhatIsState
   {
     switch (featureID)
     {
-      case DialogPackage.WHAT_IS_STATEMENT__TARGET:
-        return getTarget();
+      case DialogPackage.WITH_WHEN_PART__WHEN:
+        return getWhen();
     }
     return super.eGet(featureID, resolve, coreType);
   }
@@ -152,8 +153,8 @@ public class WhatIsStatementImpl extends WithWhenPartImpl implements WhatIsState
   {
     switch (featureID)
     {
-      case DialogPackage.WHAT_IS_STATEMENT__TARGET:
-        setTarget((Expression)newValue);
+      case DialogPackage.WITH_WHEN_PART__WHEN:
+        setWhen((Expression)newValue);
         return;
     }
     super.eSet(featureID, newValue);
@@ -169,8 +170,8 @@ public class WhatIsStatementImpl extends WithWhenPartImpl implements WhatIsState
   {
     switch (featureID)
     {
-      case DialogPackage.WHAT_IS_STATEMENT__TARGET:
-        setTarget((Expression)null);
+      case DialogPackage.WITH_WHEN_PART__WHEN:
+        setWhen((Expression)null);
         return;
     }
     super.eUnset(featureID);
@@ -186,10 +187,10 @@ public class WhatIsStatementImpl extends WithWhenPartImpl implements WhatIsState
   {
     switch (featureID)
     {
-      case DialogPackage.WHAT_IS_STATEMENT__TARGET:
-        return target != null;
+      case DialogPackage.WITH_WHEN_PART__WHEN:
+        return when != null;
     }
     return super.eIsSet(featureID);
   }
 
-} //WhatIsStatementImpl
+} //WithWhenPartImpl

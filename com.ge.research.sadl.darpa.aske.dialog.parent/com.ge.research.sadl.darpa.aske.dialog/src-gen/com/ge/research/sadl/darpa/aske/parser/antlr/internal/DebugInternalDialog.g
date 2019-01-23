@@ -73,9 +73,14 @@ ruleWhatStatement:
 // Rule WhatIsStatement
 ruleWhatIsStatement:
 	'is'
-	ruleAnArticle
-	?
-	ruleSadlResource
+	ruleExpression
+	ruleWhenPart?
+;
+
+// Rule WhenPart
+ruleWhenPart:
+	'when'
+	ruleExpression
 ;
 
 // Rule WhatValuesStatement

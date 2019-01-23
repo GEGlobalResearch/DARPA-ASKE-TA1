@@ -13,8 +13,12 @@ import java.io.InputStreamReader;
 import java.io.UnsupportedEncodingException;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
+import java.net.ProtocolException;
 import java.net.URL;
 import java.net.URLEncoder;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.Map;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -91,6 +95,112 @@ public class KChainServiceTest {
 		buildCGModel(modelUri, inputVariableNames, outputVariableNames, dataLocation, equationModel);
 	}
 	
+	@Test
+	public void testEval_01() throws IOException {
+		Map<String, Double[]> inputs = new HashMap<String, Double[]>();
+		Double[] avals = {1.0, 1.1};
+		inputs.put("a", avals);
+		Double[] bvals = {1.1, 2.2};
+		inputs.put("b", bvals);
+		String[] outputVariableNames = {"c", "d"};
+//		String modelUri = "http://com.research.ge/darpa/aske/answer/test_02/binaryadd";
+		String modelUri = "binaryadd";
+		// add to KG: 
+		evalCGModel(modelUri, inputs, outputVariableNames);
+	}
+	
+	private Map<String, Double[]> evalCGModel(String modelUri, Map<String, Double[]> inputs, String[] outputVariableNames) throws IOException {
+		String host = "3.39.120.21";
+		int port = 8080;
+		String kchainServiceURL = "http://" + host + ":" + port + "/kchain/";
+		/*
+		 * {
+"modelName" : "URIString",
+"inputs" : 
+  [
+    {
+    "name" : "a",
+    "values" : [1.0, 1.1]
+    },
+    {
+    "name" : "b",
+    "values" : [1.1, 2.2]
+    }
+  ],
+"outputVarNames" : ["c", "d"]
+}
+		 */
+		JsonObject json = new JsonObject();
+		json.addProperty("modelName", modelUri);
+		Iterator<String> keyitr = inputs.keySet().iterator();
+		while (keyitr.hasNext()) {
+			String varName = keyitr.next();
+			Double[] vals = inputs.get(varName);
+			JsonArray jarrin = new JsonArray();
+			JsonObject input = new JsonObject();
+			input.addProperty("name", varName);
+			JsonArray aVals = new JsonArray();
+			for (Double val : vals) {
+				aVals.add(val);
+			}
+			input.add("values", aVals);
+			jarrin.add(input);
+		}
+		
+		JsonArray jarrout = new JsonArray();
+		for (String outvar : outputVariableNames) {
+			jarrout.add(outvar);
+		}
+		json.add("outputVarNames", jarrout);
+		
+		String requestString = json.toString(); 	
+		String buildServiceURL = kchainServiceURL + "eval?requestString=" + URLEncoder.encode(requestString, "UTF-8");
+		
+		URL url = new URL(buildServiceURL);			
+		HttpURLConnection connection = (HttpURLConnection) url.openConnection();
+		connection.setRequestMethod("GET");
+		BufferedReader br = new BufferedReader(new InputStreamReader(connection.getInputStream()));			
+		String response = "", jsonResponse = "";
+				
+		while((response = br.readLine()) != null){
+			jsonResponse = jsonResponse + response;
+		}
+		
+		System.out.println(jsonResponse);
+/*
+{
+  "outputs" : 
+  [
+    {
+    "name" : "c",
+    "values" : [1.0; 2.0]
+    },
+    {
+    "name" : "d",
+    "values" : [1.1; 2.2]
+    }
+  ]
+}
+ */
+		Map<String, Double[]> results = new HashMap<String, Double[]>();
+		JsonElement je = new JsonParser().parse(jsonResponse);
+		JsonObject jobj = je.getAsJsonObject();
+		JsonArray outputs = jobj.get("outputs").getAsJsonArray();
+		for (JsonElement outputel : outputs) {
+			JsonObject output = outputel.getAsJsonObject();
+			String outputName = output.get("name").getAsString();
+			JsonArray outputValues = output.get("values").getAsJsonArray();
+			Double[] vals = new Double[outputValues.size()];
+			int idx = 0;
+			for (JsonElement arrel : outputValues) {
+				vals[idx++] = arrel.getAsDouble();
+			}
+			results.put(outputName, vals);
+		}
+		// return results: 
+		return results;
+	}
+
 	public boolean buildCGModel(String modelUri, String[] inputVariableNames, String[] outputVariableNames, String dataLocation,
 			String pythonModelScript) throws IOException {
 		String host = "3.39.120.21";

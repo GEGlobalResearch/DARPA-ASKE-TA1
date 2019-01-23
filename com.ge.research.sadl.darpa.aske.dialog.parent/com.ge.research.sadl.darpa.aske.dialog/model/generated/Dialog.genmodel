@@ -14,8 +14,10 @@
       <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference Dialog.ecore#//WhatStatement/stmt"/>
     </genClasses>
     <genClasses ecoreClass="Dialog.ecore#//WhatIsStatement">
-      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute Dialog.ecore#//WhatIsStatement/article"/>
       <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference Dialog.ecore#//WhatIsStatement/target"/>
+    </genClasses>
+    <genClasses ecoreClass="Dialog.ecore#//WithWhenPart">
+      <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference Dialog.ecore#//WithWhenPart/when"/>
     </genClasses>
     <genClasses ecoreClass="Dialog.ecore#//WhatValuesStatement">
       <genFeatures createChild="false" ecoreFeature="ecore:EAttribute Dialog.ecore#//WhatValuesStatement/typof"/>

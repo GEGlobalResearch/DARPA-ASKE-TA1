@@ -11,9 +11,12 @@
     <eStructuralFeatures xsi:type="ecore:EReference" name="stmt" eType="ecore:EClass http://www.eclipse.org/emf/2002/Ecore#//EObject"
         containment="true"/>
   </eClassifiers>
-  <eClassifiers xsi:type="ecore:EClass" name="WhatIsStatement">
-    <eStructuralFeatures xsi:type="ecore:EAttribute" name="article" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EString"/>
-    <eStructuralFeatures xsi:type="ecore:EReference" name="target" eType="ecore:EClass platform:/resource/com.ge.research.sadl/model/generated/SADL.ecore#//SadlResource"
+  <eClassifiers xsi:type="ecore:EClass" name="WhatIsStatement" eSuperTypes="#//WithWhenPart">
+    <eStructuralFeatures xsi:type="ecore:EReference" name="target" eType="ecore:EClass platform:/resource/com.ge.research.sadl/model/generated/SADL.ecore#//Expression"
+        containment="true"/>
+  </eClassifiers>
+  <eClassifiers xsi:type="ecore:EClass" name="WithWhenPart">
+    <eStructuralFeatures xsi:type="ecore:EReference" name="when" eType="ecore:EClass platform:/resource/com.ge.research.sadl/model/generated/SADL.ecore#//Expression"
         containment="true"/>
   </eClassifiers>
   <eClassifiers xsi:type="ecore:EClass" name="WhatValuesStatement">

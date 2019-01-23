@@ -51,6 +51,15 @@ public interface DialogFactory extends EFactory
   WhatIsStatement createWhatIsStatement();
 
   /**
+   * Returns a new object of class '<em>With When Part</em>'.
+   * <!-- begin-user-doc -->
+   * <!-- end-user-doc -->
+   * @return a new object of class '<em>With When Part</em>'.
+   * @generated
+   */
+  WithWhenPart createWithWhenPart();
+
+  /**
    * Returns a new object of class '<em>What Values Statement</em>'.
    * <!-- begin-user-doc -->
    * <!-- end-user-doc -->

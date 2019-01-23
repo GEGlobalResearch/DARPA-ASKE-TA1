@@ -265,6 +265,8 @@ Type : 'type';
 
 What_1 : 'what';
 
+When : 'when';
+
 With : 'with';
 
 FullStopFullStopFullStop : '...';

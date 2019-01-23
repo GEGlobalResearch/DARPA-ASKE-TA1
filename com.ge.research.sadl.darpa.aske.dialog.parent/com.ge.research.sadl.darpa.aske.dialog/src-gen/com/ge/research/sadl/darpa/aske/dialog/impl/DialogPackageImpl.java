@@ -11,6 +11,7 @@ import com.ge.research.sadl.darpa.aske.dialog.ResponseStatement;
 import com.ge.research.sadl.darpa.aske.dialog.WhatIsStatement;
 import com.ge.research.sadl.darpa.aske.dialog.WhatStatement;
 import com.ge.research.sadl.darpa.aske.dialog.WhatValuesStatement;
+import com.ge.research.sadl.darpa.aske.dialog.WithWhenPart;
 
 import com.ge.research.sadl.sADL.SADLPackage;
 
@@ -49,6 +50,13 @@ public class DialogPackageImpl extends EPackageImpl implements DialogPackage
    * @generated
    */
   private EClass whatIsStatementEClass = null;
+
+  /**
+   * <!-- begin-user-doc -->
+   * <!-- end-user-doc -->
+   * @generated
+   */
+  private EClass withWhenPartEClass = null;
 
   /**
    * <!-- begin-user-doc -->
@@ -202,9 +210,9 @@ public class DialogPackageImpl extends EPackageImpl implements DialogPackage
    * <!-- end-user-doc -->
    * @generated
    */
-  public EAttribute getWhatIsStatement_Article()
+  public EReference getWhatIsStatement_Target()
   {
-    return (EAttribute)whatIsStatementEClass.getEStructuralFeatures().get(0);
+    return (EReference)whatIsStatementEClass.getEStructuralFeatures().get(0);
   }
 
   /**
@@ -212,9 +220,19 @@ public class DialogPackageImpl extends EPackageImpl implements DialogPackage
    * <!-- end-user-doc -->
    * @generated
    */
-  public EReference getWhatIsStatement_Target()
+  public EClass getWithWhenPart()
   {
-    return (EReference)whatIsStatementEClass.getEStructuralFeatures().get(1);
+    return withWhenPartEClass;
+  }
+
+  /**
+   * <!-- begin-user-doc -->
+   * <!-- end-user-doc -->
+   * @generated
+   */
+  public EReference getWithWhenPart_When()
+  {
+    return (EReference)withWhenPartEClass.getEStructuralFeatures().get(0);
   }
 
   /**
@@ -395,8 +413,10 @@ public class DialogPackageImpl extends EPackageImpl implements DialogPackage
     createEReference(whatStatementEClass, WHAT_STATEMENT__STMT);
 
     whatIsStatementEClass = createEClass(WHAT_IS_STATEMENT);
-    createEAttribute(whatIsStatementEClass, WHAT_IS_STATEMENT__ARTICLE);
     createEReference(whatIsStatementEClass, WHAT_IS_STATEMENT__TARGET);
+
+    withWhenPartEClass = createEClass(WITH_WHEN_PART);
+    createEReference(withWhenPartEClass, WITH_WHEN_PART__WHEN);
 
     whatValuesStatementEClass = createEClass(WHAT_VALUES_STATEMENT);
     createEAttribute(whatValuesStatementEClass, WHAT_VALUES_STATEMENT__TYPOF);
@@ -450,6 +470,7 @@ public class DialogPackageImpl extends EPackageImpl implements DialogPackage
     // Add supertypes to classes
     responseStatementEClass.getESuperTypes().add(theSADLPackage.getSadlModelElement());
     whatStatementEClass.getESuperTypes().add(theSADLPackage.getSadlModelElement());
+    whatIsStatementEClass.getESuperTypes().add(this.getWithWhenPart());
     howManyValuesStatementEClass.getESuperTypes().add(theSADLPackage.getSadlModelElement());
     modifiedAskStatementEClass.getESuperTypes().add(theSADLPackage.getExpressionScope());
 
@@ -462,8 +483,10 @@ public class DialogPackageImpl extends EPackageImpl implements DialogPackage
     initEReference(getWhatStatement_Stmt(), ecorePackage.getEObject(), null, "stmt", null, 0, 1, WhatStatement.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, IS_COMPOSITE, !IS_RESOLVE_PROXIES, !IS_UNSETTABLE, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
 
     initEClass(whatIsStatementEClass, WhatIsStatement.class, "WhatIsStatement", !IS_ABSTRACT, !IS_INTERFACE, IS_GENERATED_INSTANCE_CLASS);
-    initEAttribute(getWhatIsStatement_Article(), ecorePackage.getEString(), "article", null, 0, 1, WhatIsStatement.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_UNSETTABLE, !IS_ID, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
-    initEReference(getWhatIsStatement_Target(), theSADLPackage.getSadlResource(), null, "target", null, 0, 1, WhatIsStatement.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, IS_COMPOSITE, !IS_RESOLVE_PROXIES, !IS_UNSETTABLE, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
+    initEReference(getWhatIsStatement_Target(), theSADLPackage.getExpression(), null, "target", null, 0, 1, WhatIsStatement.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, IS_COMPOSITE, !IS_RESOLVE_PROXIES, !IS_UNSETTABLE, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
+
+    initEClass(withWhenPartEClass, WithWhenPart.class, "WithWhenPart", !IS_ABSTRACT, !IS_INTERFACE, IS_GENERATED_INSTANCE_CLASS);
+    initEReference(getWithWhenPart_When(), theSADLPackage.getExpression(), null, "when", null, 0, 1, WithWhenPart.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, IS_COMPOSITE, !IS_RESOLVE_PROXIES, !IS_UNSETTABLE, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
 
     initEClass(whatValuesStatementEClass, WhatValuesStatement.class, "WhatValuesStatement", !IS_ABSTRACT, !IS_INTERFACE, IS_GENERATED_INSTANCE_CLASS);
     initEAttribute(getWhatValuesStatement_Typof(), ecorePackage.getEString(), "typof", null, 0, 1, WhatValuesStatement.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_UNSETTABLE, !IS_ID, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);

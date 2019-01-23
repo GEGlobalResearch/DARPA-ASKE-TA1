@@ -135,6 +135,7 @@ public class DialogParser extends AbstractContentAssistParser {
 			builder.put(grammarAccess.getModifiedAskStatementAccess().getGroup(), "rule__ModifiedAskStatement__Group__0");
 			builder.put(grammarAccess.getWhatStatementAccess().getGroup(), "rule__WhatStatement__Group__0");
 			builder.put(grammarAccess.getWhatIsStatementAccess().getGroup(), "rule__WhatIsStatement__Group__0");
+			builder.put(grammarAccess.getWhenPartAccess().getGroup(), "rule__WhenPart__Group__0");
 			builder.put(grammarAccess.getWhatValuesStatementAccess().getGroup(), "rule__WhatValuesStatement__Group__0");
 			builder.put(grammarAccess.getWhatValuesStatementAccess().getGroup_1(), "rule__WhatValuesStatement__Group_1__0");
 			builder.put(grammarAccess.getHowManyValuesStatementAccess().getGroup(), "rule__HowManyValuesStatement__Group__0");
@@ -338,8 +339,8 @@ public class DialogParser extends AbstractContentAssistParser {
 			builder.put(grammarAccess.getModifiedAskStatementAccess().getStartAssignment_1(), "rule__ModifiedAskStatement__StartAssignment_1");
 			builder.put(grammarAccess.getModifiedAskStatementAccess().getExprAssignment_2(), "rule__ModifiedAskStatement__ExprAssignment_2");
 			builder.put(grammarAccess.getWhatStatementAccess().getStmtAssignment_2(), "rule__WhatStatement__StmtAssignment_2");
-			builder.put(grammarAccess.getWhatIsStatementAccess().getArticleAssignment_2(), "rule__WhatIsStatement__ArticleAssignment_2");
-			builder.put(grammarAccess.getWhatIsStatementAccess().getTargetAssignment_3(), "rule__WhatIsStatement__TargetAssignment_3");
+			builder.put(grammarAccess.getWhatIsStatementAccess().getTargetAssignment_2(), "rule__WhatIsStatement__TargetAssignment_2");
+			builder.put(grammarAccess.getWhenPartAccess().getWhenAssignment_1(), "rule__WhenPart__WhenAssignment_1");
 			builder.put(grammarAccess.getWhatValuesStatementAccess().getTypofAssignment_1_0(), "rule__WhatValuesStatement__TypofAssignment_1_0");
 			builder.put(grammarAccess.getWhatValuesStatementAccess().getTypAssignment_3(), "rule__WhatValuesStatement__TypAssignment_3");
 			builder.put(grammarAccess.getWhatValuesStatementAccess().getPropAssignment_4(), "rule__WhatValuesStatement__PropAssignment_4");

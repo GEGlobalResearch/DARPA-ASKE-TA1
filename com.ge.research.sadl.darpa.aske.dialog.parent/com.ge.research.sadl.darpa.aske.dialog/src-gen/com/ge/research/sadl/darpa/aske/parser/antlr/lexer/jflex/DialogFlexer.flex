@@ -221,6 +221,7 @@ ESCAPE_SEQUENCE=\\{ANY_OTHER}
 <YYINITIAL> "true" { return True; }
 <YYINITIAL> "type" { return Type; }
 <YYINITIAL> "what" { return What_1; }
+<YYINITIAL> "when" { return When; }
 <YYINITIAL> "with" { return With; }
 <YYINITIAL> "..." { return FullStopFullStopFullStop; }
 <YYINITIAL> "Ask" { return Ask; }

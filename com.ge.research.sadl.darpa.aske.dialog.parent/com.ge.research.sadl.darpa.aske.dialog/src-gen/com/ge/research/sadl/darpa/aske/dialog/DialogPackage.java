@@ -125,6 +125,34 @@ public interface DialogPackage extends EPackage
   int WHAT_STATEMENT_FEATURE_COUNT = SADLPackage.SADL_MODEL_ELEMENT_FEATURE_COUNT + 1;
 
   /**
+   * The meta object id for the '{@link com.ge.research.sadl.darpa.aske.dialog.impl.WithWhenPartImpl <em>With When Part</em>}' class.
+   * <!-- begin-user-doc -->
+   * <!-- end-user-doc -->
+   * @see com.ge.research.sadl.darpa.aske.dialog.impl.WithWhenPartImpl
+   * @see com.ge.research.sadl.darpa.aske.dialog.impl.DialogPackageImpl#getWithWhenPart()
+   * @generated
+   */
+  int WITH_WHEN_PART = 3;
+
+  /**
+   * The feature id for the '<em><b>When</b></em>' containment reference.
+   * <!-- begin-user-doc -->
+   * <!-- end-user-doc -->
+   * @generated
+   * @ordered
+   */
+  int WITH_WHEN_PART__WHEN = 0;
+
+  /**
+   * The number of structural features of the '<em>With When Part</em>' class.
+   * <!-- begin-user-doc -->
+   * <!-- end-user-doc -->
+   * @generated
+   * @ordered
+   */
+  int WITH_WHEN_PART_FEATURE_COUNT = 1;
+
+  /**
    * The meta object id for the '{@link com.ge.research.sadl.darpa.aske.dialog.impl.WhatIsStatementImpl <em>What Is Statement</em>}' class.
    * <!-- begin-user-doc -->
    * <!-- end-user-doc -->
@@ -135,13 +163,13 @@ public interface DialogPackage extends EPackage
   int WHAT_IS_STATEMENT = 2;
 
   /**
-   * The feature id for the '<em><b>Article</b></em>' attribute.
+   * The feature id for the '<em><b>When</b></em>' containment reference.
    * <!-- begin-user-doc -->
    * <!-- end-user-doc -->
    * @generated
    * @ordered
    */
-  int WHAT_IS_STATEMENT__ARTICLE = 0;
+  int WHAT_IS_STATEMENT__WHEN = WITH_WHEN_PART__WHEN;
 
   /**
    * The feature id for the '<em><b>Target</b></em>' containment reference.
@@ -150,7 +178,7 @@ public interface DialogPackage extends EPackage
    * @generated
    * @ordered
    */
-  int WHAT_IS_STATEMENT__TARGET = 1;
+  int WHAT_IS_STATEMENT__TARGET = WITH_WHEN_PART_FEATURE_COUNT + 0;
 
   /**
    * The number of structural features of the '<em>What Is Statement</em>' class.
@@ -159,7 +187,7 @@ public interface DialogPackage extends EPackage
    * @generated
    * @ordered
    */
-  int WHAT_IS_STATEMENT_FEATURE_COUNT = 2;
+  int WHAT_IS_STATEMENT_FEATURE_COUNT = WITH_WHEN_PART_FEATURE_COUNT + 1;
 
   /**
    * The meta object id for the '{@link com.ge.research.sadl.darpa.aske.dialog.impl.WhatValuesStatementImpl <em>What Values Statement</em>}' class.
@@ -169,7 +197,7 @@ public interface DialogPackage extends EPackage
    * @see com.ge.research.sadl.darpa.aske.dialog.impl.DialogPackageImpl#getWhatValuesStatement()
    * @generated
    */
-  int WHAT_VALUES_STATEMENT = 3;
+  int WHAT_VALUES_STATEMENT = 4;
 
   /**
    * The feature id for the '<em><b>Typof</b></em>' attribute.
@@ -233,7 +261,7 @@ public interface DialogPackage extends EPackage
    * @see com.ge.research.sadl.darpa.aske.dialog.impl.DialogPackageImpl#getHowManyValuesStatement()
    * @generated
    */
-  int HOW_MANY_VALUES_STATEMENT = 4;
+  int HOW_MANY_VALUES_STATEMENT = 5;
 
   /**
    * The feature id for the '<em><b>Prop</b></em>' containment reference.
@@ -288,7 +316,7 @@ public interface DialogPackage extends EPackage
    * @see com.ge.research.sadl.darpa.aske.dialog.impl.DialogPackageImpl#getModifiedAskStatement()
    * @generated
    */
-  int MODIFIED_ASK_STATEMENT = 5;
+  int MODIFIED_ASK_STATEMENT = 6;
 
   /**
    * The feature id for the '<em><b>Start</b></em>' attribute.
@@ -382,17 +410,6 @@ public interface DialogPackage extends EPackage
   EClass getWhatIsStatement();
 
   /**
-   * Returns the meta object for the attribute '{@link com.ge.research.sadl.darpa.aske.dialog.WhatIsStatement#getArticle <em>Article</em>}'.
-   * <!-- begin-user-doc -->
-   * <!-- end-user-doc -->
-   * @return the meta object for the attribute '<em>Article</em>'.
-   * @see com.ge.research.sadl.darpa.aske.dialog.WhatIsStatement#getArticle()
-   * @see #getWhatIsStatement()
-   * @generated
-   */
-  EAttribute getWhatIsStatement_Article();
-
-  /**
    * Returns the meta object for the containment reference '{@link com.ge.research.sadl.darpa.aske.dialog.WhatIsStatement#getTarget <em>Target</em>}'.
    * <!-- begin-user-doc -->
    * <!-- end-user-doc -->
@@ -402,6 +419,27 @@ public interface DialogPackage extends EPackage
    * @generated
    */
   EReference getWhatIsStatement_Target();
+
+  /**
+   * Returns the meta object for class '{@link com.ge.research.sadl.darpa.aske.dialog.WithWhenPart <em>With When Part</em>}'.
+   * <!-- begin-user-doc -->
+   * <!-- end-user-doc -->
+   * @return the meta object for class '<em>With When Part</em>'.
+   * @see com.ge.research.sadl.darpa.aske.dialog.WithWhenPart
+   * @generated
+   */
+  EClass getWithWhenPart();
+
+  /**
+   * Returns the meta object for the containment reference '{@link com.ge.research.sadl.darpa.aske.dialog.WithWhenPart#getWhen <em>When</em>}'.
+   * <!-- begin-user-doc -->
+   * <!-- end-user-doc -->
+   * @return the meta object for the containment reference '<em>When</em>'.
+   * @see com.ge.research.sadl.darpa.aske.dialog.WithWhenPart#getWhen()
+   * @see #getWithWhenPart()
+   * @generated
+   */
+  EReference getWithWhenPart_When();
 
   /**
    * Returns the meta object for class '{@link com.ge.research.sadl.darpa.aske.dialog.WhatValuesStatement <em>What Values Statement</em>}'.
@@ -632,20 +670,30 @@ public interface DialogPackage extends EPackage
     EClass WHAT_IS_STATEMENT = eINSTANCE.getWhatIsStatement();
 
     /**
-     * The meta object literal for the '<em><b>Article</b></em>' attribute feature.
-     * <!-- begin-user-doc -->
-     * <!-- end-user-doc -->
-     * @generated
-     */
-    EAttribute WHAT_IS_STATEMENT__ARTICLE = eINSTANCE.getWhatIsStatement_Article();
-
-    /**
      * The meta object literal for the '<em><b>Target</b></em>' containment reference feature.
      * <!-- begin-user-doc -->
      * <!-- end-user-doc -->
      * @generated
      */
     EReference WHAT_IS_STATEMENT__TARGET = eINSTANCE.getWhatIsStatement_Target();
+
+    /**
+     * The meta object literal for the '{@link com.ge.research.sadl.darpa.aske.dialog.impl.WithWhenPartImpl <em>With When Part</em>}' class.
+     * <!-- begin-user-doc -->
+     * <!-- end-user-doc -->
+     * @see com.ge.research.sadl.darpa.aske.dialog.impl.WithWhenPartImpl
+     * @see com.ge.research.sadl.darpa.aske.dialog.impl.DialogPackageImpl#getWithWhenPart()
+     * @generated
+     */
+    EClass WITH_WHEN_PART = eINSTANCE.getWithWhenPart();
+
+    /**
+     * The meta object literal for the '<em><b>When</b></em>' containment reference feature.
+     * <!-- begin-user-doc -->
+     * <!-- end-user-doc -->
+     * @generated
+     */
+    EReference WITH_WHEN_PART__WHEN = eINSTANCE.getWithWhenPart_When();
 
     /**
      * The meta object literal for the '{@link com.ge.research.sadl.darpa.aske.dialog.impl.WhatValuesStatementImpl <em>What Values Statement</em>}' class.

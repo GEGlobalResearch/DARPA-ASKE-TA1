@@ -96,6 +96,14 @@ public class DialogSwitch<T> extends Switch<T>
       {
         WhatIsStatement whatIsStatement = (WhatIsStatement)theEObject;
         T result = caseWhatIsStatement(whatIsStatement);
+        if (result == null) result = caseWithWhenPart(whatIsStatement);
+        if (result == null) result = defaultCase(theEObject);
+        return result;
+      }
+      case DialogPackage.WITH_WHEN_PART:
+      {
+        WithWhenPart withWhenPart = (WithWhenPart)theEObject;
+        T result = caseWithWhenPart(withWhenPart);
         if (result == null) result = defaultCase(theEObject);
         return result;
       }
@@ -171,6 +179,22 @@ public class DialogSwitch<T> extends Switch<T>
    * @generated
    */
   public T caseWhatIsStatement(WhatIsStatement object)
+  {
+    return null;
+  }
+
+  /**
+   * Returns the result of interpreting the object as an instance of '<em>With When Part</em>'.
+   * <!-- begin-user-doc -->
+   * This implementation returns null;
+   * returning a non-null result will terminate the switch.
+   * <!-- end-user-doc -->
+   * @param object the target of the switch.
+   * @return the result of interpreting the object as an instance of '<em>With When Part</em>'.
+   * @see #doSwitch(org.eclipse.emf.ecore.EObject) doSwitch(EObject)
+   * @generated
+   */
+  public T caseWithWhenPart(WithWhenPart object)
   {
     return null;
   }

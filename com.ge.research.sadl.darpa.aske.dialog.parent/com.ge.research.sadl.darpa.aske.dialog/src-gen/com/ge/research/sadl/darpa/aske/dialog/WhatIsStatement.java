@@ -3,9 +3,7 @@
  */
 package com.ge.research.sadl.darpa.aske.dialog;
 
-import com.ge.research.sadl.sADL.SadlResource;
-
-import org.eclipse.emf.ecore.EObject;
+import com.ge.research.sadl.sADL.Expression;
 
 /**
  * <!-- begin-user-doc -->
@@ -16,7 +14,6 @@ import org.eclipse.emf.ecore.EObject;
  * The following features are supported:
  * </p>
  * <ul>
- *   <li>{@link com.ge.research.sadl.darpa.aske.dialog.WhatIsStatement#getArticle <em>Article</em>}</li>
  *   <li>{@link com.ge.research.sadl.darpa.aske.dialog.WhatIsStatement#getTarget <em>Target</em>}</li>
  * </ul>
  *
@@ -24,34 +21,8 @@ import org.eclipse.emf.ecore.EObject;
  * @model
  * @generated
  */
-public interface WhatIsStatement extends EObject
+public interface WhatIsStatement extends WithWhenPart
 {
-  /**
-   * Returns the value of the '<em><b>Article</b></em>' attribute.
-   * <!-- begin-user-doc -->
-   * <p>
-   * If the meaning of the '<em>Article</em>' attribute isn't clear,
-   * there really should be more of a description here...
-   * </p>
-   * <!-- end-user-doc -->
-   * @return the value of the '<em>Article</em>' attribute.
-   * @see #setArticle(String)
-   * @see com.ge.research.sadl.darpa.aske.dialog.DialogPackage#getWhatIsStatement_Article()
-   * @model
-   * @generated
-   */
-  String getArticle();
-
-  /**
-   * Sets the value of the '{@link com.ge.research.sadl.darpa.aske.dialog.WhatIsStatement#getArticle <em>Article</em>}' attribute.
-   * <!-- begin-user-doc -->
-   * <!-- end-user-doc -->
-   * @param value the new value of the '<em>Article</em>' attribute.
-   * @see #getArticle()
-   * @generated
-   */
-  void setArticle(String value);
-
   /**
    * Returns the value of the '<em><b>Target</b></em>' containment reference.
    * <!-- begin-user-doc -->
@@ -61,12 +32,12 @@ public interface WhatIsStatement extends EObject
    * </p>
    * <!-- end-user-doc -->
    * @return the value of the '<em>Target</em>' containment reference.
-   * @see #setTarget(SadlResource)
+   * @see #setTarget(Expression)
    * @see com.ge.research.sadl.darpa.aske.dialog.DialogPackage#getWhatIsStatement_Target()
    * @model containment="true"
    * @generated
    */
-  SadlResource getTarget();
+  Expression getTarget();
 
   /**
    * Sets the value of the '{@link com.ge.research.sadl.darpa.aske.dialog.WhatIsStatement#getTarget <em>Target</em>}' containment reference.
@@ -76,6 +47,6 @@ public interface WhatIsStatement extends EObject
    * @see #getTarget()
    * @generated
    */
-  void setTarget(SadlResource value);
+  void setTarget(Expression value);
 
 } // WhatIsStatement

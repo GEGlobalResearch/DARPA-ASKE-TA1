@@ -415,7 +415,7 @@ public class JenaBasedDialogModelProcessor extends JenaBasedSadlModelProcessor {
 
 	private void processStatement(WhatStatement stmt) {
 		if (stmt.getStmt() instanceof WhatIsStatement) {
-			SadlResource whatIsTarget = ((WhatIsStatement)stmt.getStmt()).getTarget();
+			Expression whatIsTarget = ((WhatIsStatement)stmt.getStmt()).getTarget();
 			Object trgtObj;
 			try {
 				trgtObj = processExpression(whatIsTarget);
@@ -425,6 +425,12 @@ public class JenaBasedDialogModelProcessor extends JenaBasedSadlModelProcessor {
 				}
 				OntModelProvider.addPrivateKeyValuePair(stmt.eResource(), LAST_DIALOG_COMMAND, trgtObj);
 			} catch (TranslationException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			} catch (InvalidNameException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			} catch (InvalidTypeException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}

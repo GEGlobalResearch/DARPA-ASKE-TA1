@@ -94,6 +94,11 @@ public class DialogAdapterFactory extends AdapterFactoryImpl
         return createWhatIsStatementAdapter();
       }
       @Override
+      public Adapter caseWithWhenPart(WithWhenPart object)
+      {
+        return createWithWhenPartAdapter();
+      }
+      @Override
       public Adapter caseWhatValuesStatement(WhatValuesStatement object)
       {
         return createWhatValuesStatementAdapter();
@@ -181,6 +186,21 @@ public class DialogAdapterFactory extends AdapterFactoryImpl
    * @generated
    */
   public Adapter createWhatIsStatementAdapter()
+  {
+    return null;
+  }
+
+  /**
+   * Creates a new adapter for an object of class '{@link com.ge.research.sadl.darpa.aske.dialog.WithWhenPart <em>With When Part</em>}'.
+   * <!-- begin-user-doc -->
+   * This default implementation returns null so that we can easily ignore cases;
+   * it's useful to ignore a case when inheritance will catch all the cases anyway.
+   * <!-- end-user-doc -->
+   * @return the new adapter.
+   * @see com.ge.research.sadl.darpa.aske.dialog.WithWhenPart
+   * @generated
+   */
+  public Adapter createWithWhenPartAdapter()
   {
     return null;
   }

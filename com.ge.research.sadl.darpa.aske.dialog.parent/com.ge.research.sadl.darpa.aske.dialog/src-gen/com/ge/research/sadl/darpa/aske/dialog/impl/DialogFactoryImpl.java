@@ -68,6 +68,7 @@ public class DialogFactoryImpl extends EFactoryImpl implements DialogFactory
       case DialogPackage.RESPONSE_STATEMENT: return createResponseStatement();
       case DialogPackage.WHAT_STATEMENT: return createWhatStatement();
       case DialogPackage.WHAT_IS_STATEMENT: return createWhatIsStatement();
+      case DialogPackage.WITH_WHEN_PART: return createWithWhenPart();
       case DialogPackage.WHAT_VALUES_STATEMENT: return createWhatValuesStatement();
       case DialogPackage.HOW_MANY_VALUES_STATEMENT: return createHowManyValuesStatement();
       case DialogPackage.MODIFIED_ASK_STATEMENT: return createModifiedAskStatement();
@@ -107,6 +108,17 @@ public class DialogFactoryImpl extends EFactoryImpl implements DialogFactory
   {
     WhatIsStatementImpl whatIsStatement = new WhatIsStatementImpl();
     return whatIsStatement;
+  }
+
+  /**
+   * <!-- begin-user-doc -->
+   * <!-- end-user-doc -->
+   * @generated
+   */
+  public WithWhenPart createWithWhenPart()
+  {
+    WithWhenPartImpl withWhenPart = new WithWhenPartImpl();
+    return withWhenPart;
   }
 
   /**

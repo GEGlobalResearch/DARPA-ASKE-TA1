@@ -250,16 +250,15 @@ public class DialogGrammarAccess extends AbstractGrammarElementFinder {
 		private final Group cGroup = (Group)rule.eContents().get(1);
 		private final Action cWhatIsStatementAction_0 = (Action)cGroup.eContents().get(0);
 		private final Keyword cIsKeyword_1 = (Keyword)cGroup.eContents().get(1);
-		private final Assignment cArticleAssignment_2 = (Assignment)cGroup.eContents().get(2);
-		private final RuleCall cArticleAnArticleParserRuleCall_2_0 = (RuleCall)cArticleAssignment_2.eContents().get(0);
-		private final Assignment cTargetAssignment_3 = (Assignment)cGroup.eContents().get(3);
-		private final RuleCall cTargetSadlResourceParserRuleCall_3_0 = (RuleCall)cTargetAssignment_3.eContents().get(0);
+		private final Assignment cTargetAssignment_2 = (Assignment)cGroup.eContents().get(2);
+		private final RuleCall cTargetExpressionParserRuleCall_2_0 = (RuleCall)cTargetAssignment_2.eContents().get(0);
+		private final RuleCall cWhenPartParserRuleCall_3 = (RuleCall)cGroup.eContents().get(3);
 		
 		//WhatIsStatement:
-		//	{WhatIsStatement} 'is' article=AnArticle? target=SadlResource;
+		//	{WhatIsStatement} 'is' target=Expression WhenPart?;
 		@Override public ParserRule getRule() { return rule; }
 		
-		//{WhatIsStatement} 'is' article=AnArticle? target=SadlResource
+		//{WhatIsStatement} 'is' target=Expression WhenPart?
 		public Group getGroup() { return cGroup; }
 		
 		//{WhatIsStatement}
@@ -268,17 +267,37 @@ public class DialogGrammarAccess extends AbstractGrammarElementFinder {
 		//'is'
 		public Keyword getIsKeyword_1() { return cIsKeyword_1; }
 		
-		//article=AnArticle?
-		public Assignment getArticleAssignment_2() { return cArticleAssignment_2; }
+		//target=Expression
+		public Assignment getTargetAssignment_2() { return cTargetAssignment_2; }
 		
-		//AnArticle
-		public RuleCall getArticleAnArticleParserRuleCall_2_0() { return cArticleAnArticleParserRuleCall_2_0; }
+		//Expression
+		public RuleCall getTargetExpressionParserRuleCall_2_0() { return cTargetExpressionParserRuleCall_2_0; }
 		
-		//target=SadlResource
-		public Assignment getTargetAssignment_3() { return cTargetAssignment_3; }
+		//WhenPart?
+		public RuleCall getWhenPartParserRuleCall_3() { return cWhenPartParserRuleCall_3; }
+	}
+	public class WhenPartElements extends AbstractParserRuleElementFinder {
+		private final ParserRule rule = (ParserRule) GrammarUtil.findRuleForName(getGrammar(), "com.ge.research.sadl.darpa.aske.Dialog.WhenPart");
+		private final Group cGroup = (Group)rule.eContents().get(1);
+		private final Keyword cWhenKeyword_0 = (Keyword)cGroup.eContents().get(0);
+		private final Assignment cWhenAssignment_1 = (Assignment)cGroup.eContents().get(1);
+		private final RuleCall cWhenExpressionParserRuleCall_1_0 = (RuleCall)cWhenAssignment_1.eContents().get(0);
 		
-		//SadlResource
-		public RuleCall getTargetSadlResourceParserRuleCall_3_0() { return cTargetSadlResourceParserRuleCall_3_0; }
+		//fragment WhenPart returns WithWhenPart:
+		//	'when' when=Expression;
+		@Override public ParserRule getRule() { return rule; }
+		
+		//'when' when=Expression
+		public Group getGroup() { return cGroup; }
+		
+		//'when'
+		public Keyword getWhenKeyword_0() { return cWhenKeyword_0; }
+		
+		//when=Expression
+		public Assignment getWhenAssignment_1() { return cWhenAssignment_1; }
+		
+		//Expression
+		public RuleCall getWhenExpressionParserRuleCall_1_0() { return cWhenExpressionParserRuleCall_1_0; }
 	}
 	public class WhatValuesStatementElements extends AbstractParserRuleElementFinder {
 		private final ParserRule rule = (ParserRule) GrammarUtil.findRuleForName(getGrammar(), "com.ge.research.sadl.darpa.aske.Dialog.WhatValuesStatement");
@@ -495,6 +514,7 @@ public class DialogGrammarAccess extends AbstractGrammarElementFinder {
 	private final ModifiedAskStatementElements pModifiedAskStatement;
 	private final WhatStatementElements pWhatStatement;
 	private final WhatIsStatementElements pWhatIsStatement;
+	private final WhenPartElements pWhenPart;
 	private final WhatValuesStatementElements pWhatValuesStatement;
 	private final HowManyValuesStatementElements pHowManyValuesStatement;
 	private final EOSElements pEOS;
@@ -514,6 +534,7 @@ public class DialogGrammarAccess extends AbstractGrammarElementFinder {
 		this.pModifiedAskStatement = new ModifiedAskStatementElements();
 		this.pWhatStatement = new WhatStatementElements();
 		this.pWhatIsStatement = new WhatIsStatementElements();
+		this.pWhenPart = new WhenPartElements();
 		this.pWhatValuesStatement = new WhatValuesStatementElements();
 		this.pHowManyValuesStatement = new HowManyValuesStatementElements();
 		this.pEOS = new EOSElements();
@@ -599,13 +620,23 @@ public class DialogGrammarAccess extends AbstractGrammarElementFinder {
 	}
 	
 	//WhatIsStatement:
-	//	{WhatIsStatement} 'is' article=AnArticle? target=SadlResource;
+	//	{WhatIsStatement} 'is' target=Expression WhenPart?;
 	public WhatIsStatementElements getWhatIsStatementAccess() {
 		return pWhatIsStatement;
 	}
 	
 	public ParserRule getWhatIsStatementRule() {
 		return getWhatIsStatementAccess().getRule();
+	}
+	
+	//fragment WhenPart returns WithWhenPart:
+	//	'when' when=Expression;
+	public WhenPartElements getWhenPartAccess() {
+		return pWhenPart;
+	}
+	
+	public ParserRule getWhenPartRule() {
+		return getWhenPartAccess().getRule();
 	}
 	
 	//WhatValuesStatement:

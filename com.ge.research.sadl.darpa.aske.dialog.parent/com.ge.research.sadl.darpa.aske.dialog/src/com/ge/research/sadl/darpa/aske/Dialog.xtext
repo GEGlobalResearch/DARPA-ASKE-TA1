@@ -39,7 +39,11 @@ WhatStatement:
 	{WhatStatement} ('What'|'what') stmt=(WhatIsStatement | WhatValuesStatement)
 ;
 WhatIsStatement:
-	{WhatIsStatement} 'is' article=AnArticle?  target=SadlResource
+	{WhatIsStatement} 'is' target=Expression WhenPart?
+;
+
+fragment WhenPart returns WithWhenPart:
+	'when' when=Expression
 ;
 
 WhatValuesStatement:
