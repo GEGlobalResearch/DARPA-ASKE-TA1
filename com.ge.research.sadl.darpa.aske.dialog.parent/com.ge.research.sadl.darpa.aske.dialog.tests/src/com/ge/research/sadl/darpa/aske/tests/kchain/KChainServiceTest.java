@@ -1,19 +1,9 @@
 package com.ge.research.sadl.darpa.aske.tests.kchain;
 
-import static org.junit.Assert.*;
-
-import com.google.gson.JsonArray;
-import com.google.gson.JsonElement;
-import com.google.gson.JsonObject;
-import com.google.gson.JsonParser;
-
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
-import java.io.UnsupportedEncodingException;
 import java.net.HttpURLConnection;
-import java.net.MalformedURLException;
-import java.net.ProtocolException;
 import java.net.URL;
 import java.net.URLEncoder;
 import java.util.HashMap;
@@ -21,8 +11,15 @@ import java.util.Iterator;
 import java.util.Map;
 
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 
+import com.google.gson.JsonArray;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParser;
+
+@Ignore
 public class KChainServiceTest {
 
 	@Before
@@ -116,17 +113,17 @@ public class KChainServiceTest {
 		/*
 		 * {
 "modelName" : "URIString",
-"inputs" : 
-  [
-    {
-    "name" : "a",
-    "values" : [1.0, 1.1]
-    },
-    {
-    "name" : "b",
-    "values" : [1.1, 2.2]
-    }
-  ],
+"inputs" :ï¿½
+ï¿½ [
+ï¿½ï¿½ï¿½ {
+ï¿½ï¿½ï¿½ "name" : "a",
+ï¿½ï¿½ï¿½ "values" : [1.0, 1.1]
+ï¿½ï¿½ï¿½ },
+ï¿½ï¿½ï¿½ {
+ï¿½ï¿½ï¿½ "name" : "b",
+ï¿½ï¿½ï¿½ "values" : [1.1, 2.2]
+ï¿½ï¿½ï¿½ }
+ï¿½ ],
 "outputVarNames" : ["c", "d"]
 }
 		 */
@@ -169,17 +166,17 @@ public class KChainServiceTest {
 		System.out.println(jsonResponse);
 /*
 {
-  "outputs" : 
-  [
-    {
-    "name" : "c",
-    "values" : [1.0; 2.0]
-    },
-    {
-    "name" : "d",
-    "values" : [1.1; 2.2]
-    }
-  ]
+ï¿½ "outputs" :ï¿½
+ï¿½ [
+ï¿½ï¿½ï¿½ {
+ï¿½ï¿½ï¿½ "name" : "c",
+ï¿½ï¿½ï¿½ "values" : [1.0; 2.0]
+ï¿½ï¿½ï¿½ },
+ï¿½ï¿½ï¿½ {
+ï¿½ï¿½ï¿½ "name" : "d",
+ï¿½ï¿½ï¿½ "values" : [1.1; 2.2]
+ï¿½ï¿½ï¿½ }
+ï¿½ ]
 }
  */
 		Map<String, Double[]> results = new HashMap<String, Double[]>();
