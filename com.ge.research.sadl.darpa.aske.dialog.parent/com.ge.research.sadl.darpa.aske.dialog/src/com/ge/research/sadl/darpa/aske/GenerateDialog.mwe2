@@ -5,7 +5,7 @@ import org.eclipse.xtext.xtext.generator.model.project.*
 
 var rootPath = ".."
 var toBeScanned1 = '..'
-var toBeScanned2 = "../../../sadl3-master6/git/sadlos2/sadl3"
+var toBeScanned2 = "../../../sadlos2/sadl3"
 
 Workflow {
 	
