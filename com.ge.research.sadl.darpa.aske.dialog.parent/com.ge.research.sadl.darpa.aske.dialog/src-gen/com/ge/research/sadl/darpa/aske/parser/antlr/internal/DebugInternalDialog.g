@@ -11,6 +11,9 @@ ruleDialogModel:
 // Rule SadlModelElement
 ruleSadlModelElement:
 	(
+		ruleSadlStatement
+		ruleEOS
+		    |
 		ruleResponseStatement
 		ruleEOS
 		    |

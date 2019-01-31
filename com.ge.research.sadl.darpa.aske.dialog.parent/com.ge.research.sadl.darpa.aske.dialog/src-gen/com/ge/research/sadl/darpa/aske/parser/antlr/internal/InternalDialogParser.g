@@ -97,11 +97,11 @@ ruleSadlModelElement returns [EObject current=null]
 	(
 		(
 			{
-				newCompositeNode(grammarAccess.getSadlModelElementAccess().getResponseStatementParserRuleCall_0_0());
+				newCompositeNode(grammarAccess.getSadlModelElementAccess().getSadlStatementParserRuleCall_0_0());
 			}
-			this_ResponseStatement_0=ruleResponseStatement
+			this_SadlStatement_0=ruleSadlStatement
 			{
-				$current = $this_ResponseStatement_0.current;
+				$current = $this_SadlStatement_0.current;
 				afterParserOrEnumRuleCall();
 			}
 			{
@@ -115,11 +115,11 @@ ruleSadlModelElement returns [EObject current=null]
 		    |
 		(
 			{
-				newCompositeNode(grammarAccess.getSadlModelElementAccess().getModifiedAskStatementParserRuleCall_1_0());
+				newCompositeNode(grammarAccess.getSadlModelElementAccess().getResponseStatementParserRuleCall_1_0());
 			}
-			this_ModifiedAskStatement_2=ruleModifiedAskStatement
+			this_ResponseStatement_2=ruleResponseStatement
 			{
-				$current = $this_ModifiedAskStatement_2.current;
+				$current = $this_ResponseStatement_2.current;
 				afterParserOrEnumRuleCall();
 			}
 			{
@@ -133,11 +133,11 @@ ruleSadlModelElement returns [EObject current=null]
 		    |
 		(
 			{
-				newCompositeNode(grammarAccess.getSadlModelElementAccess().getWhatStatementParserRuleCall_2_0());
+				newCompositeNode(grammarAccess.getSadlModelElementAccess().getModifiedAskStatementParserRuleCall_2_0());
 			}
-			this_WhatStatement_4=ruleWhatStatement
+			this_ModifiedAskStatement_4=ruleModifiedAskStatement
 			{
-				$current = $this_WhatStatement_4.current;
+				$current = $this_ModifiedAskStatement_4.current;
 				afterParserOrEnumRuleCall();
 			}
 			{
@@ -151,15 +151,33 @@ ruleSadlModelElement returns [EObject current=null]
 		    |
 		(
 			{
-				newCompositeNode(grammarAccess.getSadlModelElementAccess().getHowManyValuesStatementParserRuleCall_3_0());
+				newCompositeNode(grammarAccess.getSadlModelElementAccess().getWhatStatementParserRuleCall_3_0());
 			}
-			this_HowManyValuesStatement_6=ruleHowManyValuesStatement
+			this_WhatStatement_6=ruleWhatStatement
 			{
-				$current = $this_HowManyValuesStatement_6.current;
+				$current = $this_WhatStatement_6.current;
 				afterParserOrEnumRuleCall();
 			}
 			{
 				newCompositeNode(grammarAccess.getSadlModelElementAccess().getEOSParserRuleCall_3_1());
+			}
+			ruleEOS
+			{
+				afterParserOrEnumRuleCall();
+			}
+		)
+		    |
+		(
+			{
+				newCompositeNode(grammarAccess.getSadlModelElementAccess().getHowManyValuesStatementParserRuleCall_4_0());
+			}
+			this_HowManyValuesStatement_8=ruleHowManyValuesStatement
+			{
+				$current = $this_HowManyValuesStatement_8.current;
+				afterParserOrEnumRuleCall();
+			}
+			{
+				newCompositeNode(grammarAccess.getSadlModelElementAccess().getEOSParserRuleCall_4_1());
 			}
 			ruleEOS
 			{

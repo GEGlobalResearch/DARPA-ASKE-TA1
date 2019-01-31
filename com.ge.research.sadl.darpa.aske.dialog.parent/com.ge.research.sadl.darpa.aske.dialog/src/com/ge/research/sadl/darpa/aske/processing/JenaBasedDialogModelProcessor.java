@@ -11,10 +11,10 @@ import java.util.Iterator;
 import java.util.List;
 
 import org.eclipse.core.resources.IFile;
-import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.OperationCanceledException;
 import org.eclipse.emf.common.util.EList;
 import org.eclipse.emf.common.util.URI;
+import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.ecore.resource.Resource;
 import org.eclipse.emf.ecore.resource.ResourceSet;
 import org.eclipse.xtext.EcoreUtil2;
@@ -35,7 +35,6 @@ import com.ge.research.sadl.errorgenerator.generator.SadlErrorMessages;
 import com.ge.research.sadl.jena.JenaBasedSadlModelProcessor;
 import com.ge.research.sadl.jena.JenaProcessorException;
 import com.ge.research.sadl.jena.MetricsProcessor;
-import com.ge.research.sadl.jena.UtilsForJena;
 import com.ge.research.sadl.model.CircularDefinitionException;
 import com.ge.research.sadl.model.ModelError;
 import com.ge.research.sadl.model.gp.Equation;
@@ -52,6 +51,7 @@ import com.ge.research.sadl.reasoner.InvalidNameException;
 import com.ge.research.sadl.reasoner.InvalidTypeException;
 import com.ge.research.sadl.reasoner.TranslationException;
 import com.ge.research.sadl.reasoner.utils.SadlUtils;
+import com.ge.research.sadl.sADL.Declaration;
 import com.ge.research.sadl.sADL.Expression;
 import com.ge.research.sadl.sADL.NamedStructureAnnotation;
 import com.ge.research.sadl.sADL.QueryStatement;
@@ -59,6 +59,7 @@ import com.ge.research.sadl.sADL.SadlAnnotation;
 import com.ge.research.sadl.sADL.SadlModel;
 import com.ge.research.sadl.sADL.SadlModelElement;
 import com.ge.research.sadl.sADL.SadlResource;
+import com.ge.research.sadl.sADL.SadlSimpleTypeReference;
 import com.ge.research.sadl.sADL.SadlTypeReference;
 import com.ge.research.sadl.utils.ResourceManager;
 import com.hp.hpl.jena.ontology.Ontology;
@@ -177,7 +178,9 @@ public class JenaBasedDialogModelProcessor extends JenaBasedSadlModelProcessor {
 		if(!processModelImports(modelOntology, resource.getURI(), model)) {
 			return;
 		}
-
+		
+//		setModelChanged(true);  // for now always save; old strategy isn't working
+		
 		boolean enableMetricsCollection = true; // no longer a preference
 		try {
 			if (enableMetricsCollection) {
@@ -417,7 +420,13 @@ public class JenaBasedDialogModelProcessor extends JenaBasedSadlModelProcessor {
 
 	private void processStatement(WhatStatement stmt) {
 		if (stmt.getStmt() instanceof WhatIsStatement) {
-			Expression whatIsTarget = ((WhatIsStatement)stmt.getStmt()).getTarget();
+			EObject whatIsTarget = ((WhatIsStatement)stmt.getStmt()).getTarget();
+			if (whatIsTarget instanceof Declaration) {
+				whatIsTarget = ((Declaration)whatIsTarget).getType();
+				if (whatIsTarget instanceof SadlSimpleTypeReference) {
+					whatIsTarget = ((SadlSimpleTypeReference)whatIsTarget).getType();
+				}
+			}
 			Object trgtObj;
 			try {
 				trgtObj = processExpression(whatIsTarget);

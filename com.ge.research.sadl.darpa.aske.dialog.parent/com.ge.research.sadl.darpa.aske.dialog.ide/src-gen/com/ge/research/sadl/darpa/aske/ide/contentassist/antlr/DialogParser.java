@@ -131,6 +131,7 @@ public class DialogParser extends AbstractContentAssistParser {
 			builder.put(grammarAccess.getSadlModelElementAccess().getGroup_1(), "rule__SadlModelElement__Group_1__0");
 			builder.put(grammarAccess.getSadlModelElementAccess().getGroup_2(), "rule__SadlModelElement__Group_2__0");
 			builder.put(grammarAccess.getSadlModelElementAccess().getGroup_3(), "rule__SadlModelElement__Group_3__0");
+			builder.put(grammarAccess.getSadlModelElementAccess().getGroup_4(), "rule__SadlModelElement__Group_4__0");
 			builder.put(grammarAccess.getResponseStatementAccess().getGroup(), "rule__ResponseStatement__Group__0");
 			builder.put(grammarAccess.getModifiedAskStatementAccess().getGroup(), "rule__ModifiedAskStatement__Group__0");
 			builder.put(grammarAccess.getWhatStatementAccess().getGroup(), "rule__WhatStatement__Group__0");

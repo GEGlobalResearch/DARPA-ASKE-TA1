@@ -39,61 +39,74 @@ public class DialogGrammarAccess extends AbstractGrammarElementFinder {
 		private final ParserRule rule = (ParserRule) GrammarUtil.findRuleForName(getGrammar(), "com.ge.research.sadl.darpa.aske.Dialog.SadlModelElement");
 		private final Alternatives cAlternatives = (Alternatives)rule.eContents().get(1);
 		private final Group cGroup_0 = (Group)cAlternatives.eContents().get(0);
-		private final RuleCall cResponseStatementParserRuleCall_0_0 = (RuleCall)cGroup_0.eContents().get(0);
+		private final RuleCall cSadlStatementParserRuleCall_0_0 = (RuleCall)cGroup_0.eContents().get(0);
 		private final RuleCall cEOSParserRuleCall_0_1 = (RuleCall)cGroup_0.eContents().get(1);
 		private final Group cGroup_1 = (Group)cAlternatives.eContents().get(1);
-		private final RuleCall cModifiedAskStatementParserRuleCall_1_0 = (RuleCall)cGroup_1.eContents().get(0);
+		private final RuleCall cResponseStatementParserRuleCall_1_0 = (RuleCall)cGroup_1.eContents().get(0);
 		private final RuleCall cEOSParserRuleCall_1_1 = (RuleCall)cGroup_1.eContents().get(1);
 		private final Group cGroup_2 = (Group)cAlternatives.eContents().get(2);
-		private final RuleCall cWhatStatementParserRuleCall_2_0 = (RuleCall)cGroup_2.eContents().get(0);
+		private final RuleCall cModifiedAskStatementParserRuleCall_2_0 = (RuleCall)cGroup_2.eContents().get(0);
 		private final RuleCall cEOSParserRuleCall_2_1 = (RuleCall)cGroup_2.eContents().get(1);
 		private final Group cGroup_3 = (Group)cAlternatives.eContents().get(3);
-		private final RuleCall cHowManyValuesStatementParserRuleCall_3_0 = (RuleCall)cGroup_3.eContents().get(0);
+		private final RuleCall cWhatStatementParserRuleCall_3_0 = (RuleCall)cGroup_3.eContents().get(0);
 		private final RuleCall cEOSParserRuleCall_3_1 = (RuleCall)cGroup_3.eContents().get(1);
+		private final Group cGroup_4 = (Group)cAlternatives.eContents().get(4);
+		private final RuleCall cHowManyValuesStatementParserRuleCall_4_0 = (RuleCall)cGroup_4.eContents().get(0);
+		private final RuleCall cEOSParserRuleCall_4_1 = (RuleCall)cGroup_4.eContents().get(1);
 		
 		//@Override
 		//SadlModelElement sadl::SadlModelElement:
-		//	ResponseStatement EOS | ModifiedAskStatement EOS | WhatStatement EOS | HowManyValuesStatement EOS;
+		//	SadlStatement EOS | ResponseStatement EOS | ModifiedAskStatement EOS | WhatStatement EOS | HowManyValuesStatement
+		//	EOS;
 		@Override public ParserRule getRule() { return rule; }
 		
-		//ResponseStatement EOS | ModifiedAskStatement EOS | WhatStatement EOS | HowManyValuesStatement EOS
+		//SadlStatement EOS | ResponseStatement EOS | ModifiedAskStatement EOS | WhatStatement EOS | HowManyValuesStatement EOS
 		public Alternatives getAlternatives() { return cAlternatives; }
 		
-		//ResponseStatement EOS
+		//SadlStatement EOS
 		public Group getGroup_0() { return cGroup_0; }
 		
-		//ResponseStatement
-		public RuleCall getResponseStatementParserRuleCall_0_0() { return cResponseStatementParserRuleCall_0_0; }
+		//SadlStatement
+		public RuleCall getSadlStatementParserRuleCall_0_0() { return cSadlStatementParserRuleCall_0_0; }
 		
 		//EOS
 		public RuleCall getEOSParserRuleCall_0_1() { return cEOSParserRuleCall_0_1; }
 		
-		//ModifiedAskStatement EOS
+		//ResponseStatement EOS
 		public Group getGroup_1() { return cGroup_1; }
 		
-		//ModifiedAskStatement
-		public RuleCall getModifiedAskStatementParserRuleCall_1_0() { return cModifiedAskStatementParserRuleCall_1_0; }
+		//ResponseStatement
+		public RuleCall getResponseStatementParserRuleCall_1_0() { return cResponseStatementParserRuleCall_1_0; }
 		
 		//EOS
 		public RuleCall getEOSParserRuleCall_1_1() { return cEOSParserRuleCall_1_1; }
 		
-		//WhatStatement EOS
+		//ModifiedAskStatement EOS
 		public Group getGroup_2() { return cGroup_2; }
 		
-		//WhatStatement
-		public RuleCall getWhatStatementParserRuleCall_2_0() { return cWhatStatementParserRuleCall_2_0; }
+		//ModifiedAskStatement
+		public RuleCall getModifiedAskStatementParserRuleCall_2_0() { return cModifiedAskStatementParserRuleCall_2_0; }
 		
 		//EOS
 		public RuleCall getEOSParserRuleCall_2_1() { return cEOSParserRuleCall_2_1; }
 		
-		//HowManyValuesStatement EOS
+		//WhatStatement EOS
 		public Group getGroup_3() { return cGroup_3; }
 		
-		//HowManyValuesStatement
-		public RuleCall getHowManyValuesStatementParserRuleCall_3_0() { return cHowManyValuesStatementParserRuleCall_3_0; }
+		//WhatStatement
+		public RuleCall getWhatStatementParserRuleCall_3_0() { return cWhatStatementParserRuleCall_3_0; }
 		
 		//EOS
 		public RuleCall getEOSParserRuleCall_3_1() { return cEOSParserRuleCall_3_1; }
+		
+		//HowManyValuesStatement EOS
+		public Group getGroup_4() { return cGroup_4; }
+		
+		//HowManyValuesStatement
+		public RuleCall getHowManyValuesStatementParserRuleCall_4_0() { return cHowManyValuesStatementParserRuleCall_4_0; }
+		
+		//EOS
+		public RuleCall getEOSParserRuleCall_4_1() { return cEOSParserRuleCall_4_1; }
 	}
 	public class ResponseStatementElements extends AbstractParserRuleElementFinder {
 		private final ParserRule rule = (ParserRule) GrammarUtil.findRuleForName(getGrammar(), "com.ge.research.sadl.darpa.aske.Dialog.ResponseStatement");
@@ -579,7 +592,8 @@ public class DialogGrammarAccess extends AbstractGrammarElementFinder {
 	
 	//@Override
 	//SadlModelElement sadl::SadlModelElement:
-	//	ResponseStatement EOS | ModifiedAskStatement EOS | WhatStatement EOS | HowManyValuesStatement EOS;
+	//	SadlStatement EOS | ResponseStatement EOS | ModifiedAskStatement EOS | WhatStatement EOS | HowManyValuesStatement
+	//	EOS;
 	public SadlModelElementElements getSadlModelElementAccess() {
 		return pSadlModelElement;
 	}
