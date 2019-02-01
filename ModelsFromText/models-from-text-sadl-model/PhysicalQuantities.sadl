@@ -1,0 +1,228 @@
+uri "http://ge.com/research/PhysicalQuantities" alias physicalQuantities
+version "$Revision: $ Last modified on $Date: $" . 
+
+Absorbed_dose(alias 'Absorbed dose')is a top-level class.
+Absorptance(alias 'Absorptance')is a top-level class.
+Acceleration(alias 'Acceleration')is a top-level class.
+Acoustic_impedance(alias 'Acoustic impedance')is a top-level class.
+Admittance(alias 'Admittance')is a top-level class.
+Aggregate_modulus(alias 'Aggregate modulus')is a top-level class.
+Amplitude(alias 'Amplitude')is a top-level class.
+Angular_acceleration(alias 'Angular acceleration')is a top-level class.
+Angular_diameter_distance(alias 'Angular diameter distance')is a top-level class.
+Angular_frequency(alias 'Angular frequency')is a top-level class.
+Angular_momentum(alias 'Angular momentum')is a top-level class.
+Angular_velocity(alias 'Angular velocity')is a top-level class.
+API_gravity(alias 'API gravity')is a top-level class.
+Areal_velocity(alias 'Areal velocity')is a top-level class.
+Attenuation_coefficient(alias 'Attenuation coefficient')is a top-level class.
+Audio_frequency(alias 'Audio frequency')is a top-level class.
+Bollard_pull(alias 'Bollard pull')is a top-level class.
+Bulk_modulus(alias 'Bulk modulus')is a top-level class.
+Capacitance(alias 'Capacitance')is a top-level class.
+Carcel(alias 'Carcel')is a top-level class.
+Characteristic_admittance(alias 'Characteristic admittance')is a top-level class.
+Characteristic_property(alias 'Characteristic property')is a top-level class.
+Charge_physics(alias 'Charge (physics)')is a top-level class.
+Circular_dichroism(alias 'Circular dichroism')is a top-level class.
+Coercivity(alias 'Coercivity')is a top-level class.
+Cohesion_chemistry(alias 'Cohesion (chemistry)')is a top-level class.
+Colorimetry(alias 'Colorimetry')is a top-level class.
+Comoving_and_proper_distances(alias 'Comoving and proper distances')is a top-level class.
+Conductance_quantum(alias 'Conductance quantum')is a top-level class.
+Couple_mechanics(alias 'Couple (mechanics)')is a top-level class.
+Crystallinity(alias 'Crystallinity')is a top-level class.
+Cusec(alias 'Cusec')is a top-level class.
+Defining_equation_physics(alias 'Defining equation (physics)')is a top-level class.
+Delta-v_physics(alias 'Delta-v (physics)')is a top-level class.
+Density(alias 'Density')is a top-level class.
+Displacement_fluid(alias 'Displacement (fluid)')is a top-level class.
+Distance_measures_cosmology(alias 'Distance measures (cosmology)')is a top-level class.
+Distance_modulus(alias 'Distance modulus')is a top-level class.
+Dust_resistant(alias 'Dust resistant')is a top-level class.
+Dynamic_modulus(alias 'Dynamic modulus')is a top-level class.
+Effective_dose_radiation(alias 'Effective dose (radiation)')is a top-level class.
+Effective_radius(alias 'Effective radius')is a top-level class.
+Elastance(alias 'Elastance')is a top-level class.
+Electric_charge(alias 'Electric charge')is a top-level class.
+Electric_field(alias 'Electric field')is a top-level class.
+Electric_flux(alias 'Electric flux')is a top-level class.
+Electric_potential(alias 'Electric potential')is a top-level class.
+Electric_susceptibility(alias 'Electric susceptibility')is a top-level class.
+Electrical_measurements(alias 'Electrical measurements')is a top-level class.
+Electrical_mobility(alias 'Electrical mobility')is a top-level class.
+Electrical_resistance(alias 'Electrical resistance')is a top-level class.
+Electrical_resistance_and_conductance(alias 'Electrical resistance and conductance')is a top-level class.
+Electrical_resistivity_and_conductivity(alias 'Electrical resistivity and conductivity')is a top-level class.
+Electrochemical_gradient(alias 'Electrochemical gradient')is a top-level class.
+Electron_mobility(alias 'Electron mobility')is a top-level class.
+Emissivity(alias 'Emissivity')is a top-level class.
+Energy_flux(alias 'Energy flux')is a top-level class.
+Enthalpy(alias 'Enthalpy')is a top-level class.
+Equivalent_dose(alias 'Equivalent dose')is a top-level class.
+Etheringtons_reciprocity_theorem(alias 'Etherington\'s reciprocity theorem')is a top-level class.
+Excess_molar_quantity(alias 'Excess molar quantity')is a top-level class.
+Extracellular_field_potential(alias 'Extracellular field potential')is a top-level class.
+Fermi_acceleration(alias 'Fermi acceleration')is a top-level class.
+Field_strength(alias 'Field strength')is a top-level class.
+Film_speed(alias 'Film speed')is a top-level class.
+Fluence_response(alias 'Fluence response')is a top-level class.
+Flux(alias 'Flux')is a top-level class.
+Force(alias 'Force')is a top-level class.
+Frequency(alias 'Frequency')is a top-level class.
+Fuel_efficiency(alias 'Fuel efficiency')is a top-level class.
+Ground_pressure(alias 'Ground pressure')is a top-level class.
+Group_velocity(alias 'Group velocity')is a top-level class.
+Heat_capacity(alias 'Heat capacity')is a top-level class.
+Heat_capacity_rate(alias 'Heat capacity rate')is a top-level class.
+Heat_capacity_ratio(alias 'Heat capacity ratio')is a top-level class.
+Hubers_equation(alias 'Huber\'s equation')is a top-level class.
+Humidity(alias 'Humidity')is a top-level class.
+Critical_relative_humidity(alias 'Critical relative humidity')is a top-level class.
+Relative_humidity(alias 'Relative humidity')is a top-level class.
+Hypervelocity(alias 'Hypervelocity')is a top-level class.
+Illuminance(alias 'Illuminance')is a top-level class.
+Immittance(alias 'Immittance')is a top-level class.
+Electrical_impedance(alias 'Electrical impedance')is a top-level class.
+Characteristic_impedance(alias 'Characteristic impedance')is a top-level class.
+Impulse_physics(alias 'Impulse (physics)')is a top-level class.
+Inductance(alias 'Inductance')is a top-level class.
+Infinitesimal_strain_theory(alias 'Infinitesimal strain theory')is a top-level class.
+Intensity_physics(alias 'Intensity (physics)')is a top-level class.
+Intensive_and_extensive_properties(alias 'Intensive and extensive properties')is a top-level class.
+Ion_transport_number(alias 'Ion transport number')is a top-level class.
+Ionic_strength(alias 'Ionic strength')is a top-level class.
+Irradiance(alias 'Irradiance')is a top-level class.
+Jerk_physics(alias 'Jerk (physics)')is a top-level class.
+Jounce(alias 'Jounce')is a top-level class.
+Length(alias 'Length')is a top-level class.
+Luminance(alias 'Luminance')is a top-level class.
+Luminosity(alias 'Luminosity')is a top-level class.
+Luminosity_distance(alias 'Luminosity distance')is a top-level class.
+Luminosity_function(alias 'Luminosity function')is a top-level class.
+Luminous_efficacy(alias 'Luminous efficacy')is a top-level class.
+Luminous_energy(alias 'Luminous energy')is a top-level class.
+Luminous_flux(alias 'Luminous flux')is a top-level class.
+Luminous_intensity(alias 'Luminous intensity')is a top-level class.
+Magnetic_braking(alias 'Magnetic braking')is a top-level class.
+Magnetic_field(alias 'Magnetic field')is a top-level class.
+Magnetic_flux(alias 'Magnetic flux')is a top-level class.
+Magnetic_helicity(alias 'Magnetic helicity')is a top-level class.
+Magnetic_hysteresis(alias 'Magnetic hysteresis')is a top-level class.
+Magnetic_moment(alias 'Magnetic moment')is a top-level class.
+Magnetic_susceptibility(alias 'Magnetic susceptibility')is a top-level class.
+Magnetomotive_force(alias 'Magnetomotive force')is a top-level class.
+Mass(alias 'Mass')is a top-level class.
+Mass_attenuation_coefficient(alias 'Mass attenuation coefficient')is a top-level class.
+Mass_flux(alias 'Mass flux')is a top-level class.
+Maximum_density(alias 'Maximum density')is a top-level class.
+Measured_quantity(alias 'Measured quantity')is a top-level class.
+Mechanical_impedance(alias 'Mechanical impedance')is a top-level class.
+Mechanical_load(alias 'Mechanical load')is a top-level class.
+Memcapacitor(alias 'Memcapacitor')is a top-level class.
+Memductance(alias 'Memductance')is a top-level class.
+Meminductor(alias 'Meminductor')is a top-level class.
+Memristance(alias 'Memristance')is a top-level class.
+Molar_volume(alias 'Molar volume')is a top-level class.
+Molecular_property(alias 'Molecular property')is a top-level class.
+Moment_physics(alias 'Moment (physics)')is a top-level class.
+Moment_of_inertia(alias 'Moment of inertia')is a top-level class.
+Momentum(alias 'Momentum')is a top-level class.
+Negative_resistance(alias 'Negative resistance')is a top-level class.
+Neutron_magnetic_moment(alias 'Neutron magnetic moment')is a top-level class.
+Noise-equivalent_flux_density(alias 'Noise-equivalent flux density')is a top-level class.
+Noise-equivalent_target(alias 'Noise-equivalent target')is a top-level class.
+Notch_tensile_strength(alias 'Notch tensile strength')is a top-level class.
+Number_density(alias 'Number density')is a top-level class.
+Ohm_metre(alias 'Ohm metre')is a top-level class.
+Orders_of_magnitude_speed(alias 'Orders of magnitude (speed)')is a top-level class.
+Particle_displacement(alias 'Particle displacement')is a top-level class.
+Particle_number(alias 'Particle number')is a top-level class.
+Particle_velocity(alias 'Particle velocity')is a top-level class.
+Permeability_electromagnetism(alias 'Permeability (electromagnetism)')is a top-level class.
+Permeation(alias 'Permeation')is a top-level class.
+Permittivity(alias 'Permittivity')is a top-level class.
+Persistence_length(alias 'Persistence length')is a top-level class.
+Phase_waves(alias 'Phase (waves)')is a top-level class.
+Physical_coefficient(alias 'Physical coefficient')is a top-level class.
+Physical_property(alias 'Physical property')is a top-level class.
+Pinning_points(alias 'Pinning points')is a top-level class.
+Plastic_crystal(alias 'Plastic crystal')is a top-level class.
+Poissons_ratio(alias 'Poisson\'s ratio')is a top-level class.
+Pop_physics(alias 'Pop (physics)')is a top-level class.
+Propagation_constant(alias 'Propagation constant')is a top-level class.
+Quality_physics(alias 'Quality (physics)')is a top-level class.
+Quantum_efficiency(alias 'Quantum efficiency')is a top-level class.
+Quartz_crystal_microbalance_with_dissipation_monitoring(alias 'Quartz crystal microbalance with dissipation monitoring')is a top-level class.
+Radiance(alias 'Radiance')is a top-level class.
+Radiant_energy_density(alias 'Radiant energy density')is a top-level class.
+Radiant_exitance(alias 'Radiant exitance')is a top-level class.
+Radiant_exposure(alias 'Radiant exposure')is a top-level class.
+Radiant_flux(alias 'Radiant flux')is a top-level class.
+Radiant_intensity(alias 'Radiant intensity')is a top-level class.
+Radiative_flux(alias 'Radiative flux')is a top-level class.
+Radiosity_radiometry(alias 'Radiosity (radiometry)')is a top-level class.
+Rate_of_penetration(alias 'Rate of penetration')is a top-level class.
+Electrical_reactance(alias 'Electrical reactance')is a top-level class.
+Reciprocal_length(alias 'Reciprocal length')is a top-level class.
+Redshift(alias 'Redshift')is a top-level class.
+Reflectance(alias 'Reflectance')is a top-level class.
+Refractive_index(alias 'Refractive index')is a top-level class.
+Regenerative_capacitor_memory(alias 'Regenerative capacitor memory')is a top-level class.
+Relative_density(alias 'Relative density')is a top-level class.
+Relative_velocity(alias 'Relative velocity')is a top-level class.
+Rotational_speed(alias 'Rotational speed')is a top-level class.
+Scale_of_temperature(alias 'Scale of temperature')is a top-level class.
+Second_moment_of_area(alias 'Second moment of area')is a top-level class.
+Signal-to-noise_ratio_imaging(alias 'Signal-to-noise ratio (imaging)')is a top-level class.
+Single-particle_spectrum(alias 'Single-particle spectrum')is a top-level class.
+Solubility(alias 'Solubility')is a top-level class.
+Sound_energy(alias 'Sound energy')is a top-level class.
+Sound_energy_density(alias 'Sound energy density')is a top-level class.
+Sound_exposure(alias 'Sound exposure')is a top-level class.
+Sound_intensity(alias 'Sound intensity')is a top-level class.
+Sound_power(alias 'Sound power')is a top-level class.
+Sound_pressure(alias 'Sound pressure')is a top-level class.
+Specific_detectivity(alias 'Specific detectivity')is a top-level class.
+Specific_force(alias 'Specific force')is a top-level class.
+Specific_gravity(alias 'Specific gravity')is a top-level class.
+Specific_impulse(alias 'Specific impulse')is a top-level class.
+Specific_weight(alias 'Specific weight')is a top-level class.
+Spectral_power_distribution(alias 'Spectral power distribution')is a top-level class.
+Speed(alias 'Speed')is a top-level class.
+Speed_of_sound(alias 'Speed of sound')is a top-level class.
+Spin_physics(alias 'Spin (physics)')is a top-level class.
+Spin_angular_momentum_of_light(alias 'Spin angular momentum of light')is a top-level class.
+Stiffness(alias 'Stiffness')is a top-level class.
+Suction(alias 'Suction')is a top-level class.
+Surface_power_density(alias 'Surface power density')is a top-level class.
+Susceptance(alias 'Susceptance')is a top-level class.
+System-specific_impulse(alias 'System-specific impulse')is a top-level class.
+Temperature(alias 'Temperature')is a top-level class.
+Thermal_conductance_quantum(alias 'Thermal conductance quantum')is a top-level class.
+Thermal_conduction(alias 'Thermal conduction')is a top-level class.
+List_of_thermal_conductivities(alias 'List of thermal conductivities')is a top-level class.
+Thermal_conductivity(alias 'Thermal conductivity')is a top-level class.
+Thermal_contact_conductance(alias 'Thermal contact conductance')is a top-level class.
+Thermal_diffusivity(alias 'Thermal diffusivity')is a top-level class.
+Thermal_effusivity(alias 'Thermal effusivity')is a top-level class.
+Thermal_emittance(alias 'Thermal emittance')is a top-level class.
+Thermal_equilibrium(alias 'Thermal equilibrium')is a top-level class.
+Thermal_expansion(alias 'Thermal expansion')is a top-level class.
+Thermomass_theory(alias 'Thermomass theory')is a top-level class.
+Time(alias 'Time')is a top-level class.
+Tonti_diagram(alias 'Tonti diagram')is a top-level class.
+Torque(alias 'Torque')is a top-level class.
+Transmission_loss_duct_acoustics(alias 'Transmission loss (duct acoustics)')is a top-level class.
+Transmittance(alias 'Transmittance')is a top-level class.
+Turbidity(alias 'Turbidity')is a top-level class.
+Vapor_quality(alias 'Vapor quality')is a top-level class.
+Voltage(alias 'Voltage')is a top-level class.
+Volume_thermodynamics(alias 'Volume (thermodynamics)')is a top-level class.
+Volumetric_flux(alias 'Volumetric flux')is a top-level class.
+Volumetric_heat_capacity(alias 'Volumetric heat capacity')is a top-level class.
+Waterproofing(alias 'Waterproofing')is a top-level class.
+Work_physics(alias 'Work (physics)')is a top-level class.
+Youngs_modulus(alias 'Young\'s modulus')is a top-level class.
+
+
