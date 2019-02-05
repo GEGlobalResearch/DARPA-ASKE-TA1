@@ -1,5 +1,5 @@
 /*
-SADL Extension for DARPA ASKE dialog - © 2018-2019 General Electric Company – All Rights Reserved
+SADL Extension for DARPA ASKE dialog - ï¿½ 2018-2019 General Electric Company ï¿½ All Rights Reserved
 
 DARPA Wording for project
 
@@ -17,6 +17,7 @@ DialogModel returns sadl::SadlModel :
 
 @Override
 SadlModelElement returns sadl::SadlModelElement :
+	SadlStatement EOS			|
 	ResponseStatement EOS 		|
 	ModifiedAskStatement EOS	|
 	WhatStatement EOS			|
