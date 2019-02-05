@@ -178,9 +178,7 @@ public class JenaBasedDialogModelProcessor extends JenaBasedSadlModelProcessor {
 		if(!processModelImports(modelOntology, resource.getURI(), model)) {
 			return;
 		}
-		
-//		setModelChanged(true);  // for now always save; old strategy isn't working
-		
+
 		boolean enableMetricsCollection = true; // no longer a preference
 		try {
 			if (enableMetricsCollection) {

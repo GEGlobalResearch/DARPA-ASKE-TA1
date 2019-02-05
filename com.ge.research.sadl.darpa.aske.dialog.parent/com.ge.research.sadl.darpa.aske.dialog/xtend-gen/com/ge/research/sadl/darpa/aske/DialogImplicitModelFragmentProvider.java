@@ -2,7 +2,7 @@
  * © 2014-2017 General Electric Company – All Rights Reserved
  * 
  * This software and any accompanying data and documentation are CONFIDENTIAL
- * INFORMATION of the General Electric Company (“GE�?) and may contain trade secrets
+ * INFORMATION of the General Electric Company (“GE�?) and may contain trade secrets
  * and other proprietary information.  It is intended for use solely by GE and authorized
  * personnel.
  */

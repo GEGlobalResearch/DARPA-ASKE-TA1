@@ -9,6 +9,8 @@
 	<artifactId>com.ge.research.sadl.darpa.aske.dialog</artifactId>
 	<packaging>eclipse-plugin</packaging>
 
+	<name>DARPA-ASKE Core</name>
+
 	<build>
 		<plugins>
 			<plugin>
@@ -26,78 +28,57 @@
 				</executions>
 				<configuration>
 					<mainClass>org.eclipse.emf.mwe2.launch.runtime.Mwe2Launcher</mainClass>
+					<classpathScope>
+						compile
+					</classpathScope>
 					<arguments>
 						<argument>/${project.basedir}/src/com/ge/research/sadl/darpa/aske/GenerateDialog.mwe2</argument>
 						<argument>-p</argument>
 						<argument>rootPath=/${project.basedir}/..</argument>
+						<argument>toBeScanned1=.</argument>
+						<argument>toBeScanned2=.</argument>
 					</arguments>
-					<classpathScope>compile</classpathScope>
 					<includePluginDependencies>true</includePluginDependencies>
 					<cleanupDaemonThreads>false</cleanupDaemonThreads><!-- see https://bugs.eclipse.org/bugs/show_bug.cgi?id=475098#c3 -->
 				</configuration>
 				<dependencies>
 					<dependency>
-						<groupId>org.eclipse.emf</groupId>
-						<artifactId>org.eclipse.emf.mwe2.launch</artifactId>
-						<version>2.9.1.201705291010</version>
+						<groupId>com.ge.research.sadl</groupId>
+						<artifactId>com.ge.research.sadl.xtextgenerator</artifactId>
+						<version>${sadlVersion}</version>
 					</dependency>
-					<dependency>
-						<groupId>org.eclipse.xtext</groupId>
-						<artifactId>org.eclipse.xtext.common.types</artifactId>
-						<version>${xtextVersion}</version>
-					</dependency>
-					<dependency>
-						<groupId>org.eclipse.xtext</groupId>
-						<artifactId>org.eclipse.xtext.xtext.generator</artifactId>
-						<version>${xtextVersion}</version>
-					</dependency>
-					<dependency>
-						<groupId>org.eclipse.xtext</groupId>
-						<artifactId>org.eclipse.xtext.xbase</artifactId>
-						<version>${xtextVersion}</version>
-					</dependency>
-					<dependency>
-						<groupId>org.eclipse.xtext</groupId>
-						<artifactId>xtext-antlr-generator</artifactId>
-						<version>[2.1.1, 3)</version>
-					</dependency>
-<!-- 					<dependency> -->
-<!-- 						<groupId>com.ge.research.sadl</groupId> -->
-<!-- 						<artifactId>com.ge.research.sadl.xtextgenerator</artifactId> -->
-<!-- 						<version>${sadlVersion}</version> -->
-<!-- 					</dependency> -->
 				</dependencies>
 			</plugin>
 			<plugin>
 				<groupId>org.eclipse.xtend</groupId>
 				<artifactId>xtend-maven-plugin</artifactId>
-				<version>${xtextVersion}</version>
 				<dependencies>
 					<dependency>
-					    <groupId>org.eclipse.platform</groupId>
-					    <artifactId>org.eclipse.equinox.common</artifactId>
-					    <version>3.10.0</version>
+						<groupId>org.eclipse.platform</groupId>
+						<artifactId>org.eclipse.equinox.common</artifactId>
+						<version>3.10.0</version>
 					</dependency>
- 					<dependency>
- 						<groupId>org.eclipse.jdt</groupId>
- 						<artifactId>org.eclipse.jdt.core</artifactId>
- 						<version>3.13.102</version>
- 					</dependency>
- 					<dependency>
- 						<groupId>org.eclipse.jdt</groupId>
- 						<artifactId>org.eclipse.jdt.compiler.apt</artifactId>
- 						<version>1.3.110</version>
- 					</dependency>
- 					<dependency>
- 						<groupId>org.eclipse.jdt</groupId>
- 						<artifactId>org.eclipse.jdt.compiler.tool</artifactId>
- 						<version>1.2.101</version>
- 					</dependency>
- 					<dependency>
- 						<groupId>org.eclipse.emf</groupId>
- 						<artifactId>org.eclipse.emf.codegen</artifactId>
- 						<version>2.11.0</version>
- 					</dependency>				</dependencies>
+					<dependency>
+						<groupId>org.eclipse.jdt</groupId>
+						<artifactId>org.eclipse.jdt.core</artifactId>
+						<version>3.13.102</version>
+					</dependency>
+					<dependency>
+						<groupId>org.eclipse.jdt</groupId>
+						<artifactId>org.eclipse.jdt.compiler.apt</artifactId>
+						<version>1.3.110</version>
+					</dependency>
+					<dependency>
+						<groupId>org.eclipse.jdt</groupId>
+						<artifactId>org.eclipse.jdt.compiler.tool</artifactId>
+						<version>1.2.101</version>
+					</dependency>
+					<dependency>
+						<groupId>org.eclipse.emf</groupId>
+						<artifactId>org.eclipse.emf.codegen</artifactId>
+						<version>2.11.0</version>
+					</dependency>
+				</dependencies>
 			</plugin>
 	
 			<plugin>
@@ -177,5 +158,5 @@
 			</plugins>
 		</pluginManagement>
 	</build>
-
 </project>
+

@@ -14,6 +14,7 @@ import org.eclipse.xtext.testing.XtextRunner;
 import org.eclipse.xtext.testing.util.ParseHelper;
 import org.eclipse.xtext.xbase.lib.Exceptions;
 import org.junit.Assert;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
@@ -24,6 +25,7 @@ public class DialogParsingTest {
   @Inject
   private ParseHelper<SadlModel> parseHelper;
   
+  @Ignore
   @Test
   public void loadModel() {
     try {
