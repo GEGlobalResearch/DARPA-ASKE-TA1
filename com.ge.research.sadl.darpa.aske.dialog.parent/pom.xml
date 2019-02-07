@@ -6,9 +6,13 @@
 	<artifactId>com.ge.research.sadl.darpa.aske.dialog.parent</artifactId>
 	<packaging>pom</packaging>
 
+	<name>DARPA-ASKE</name>
+
 	<properties>
 		<xtextVersion>2.15.0</xtextVersion>
-		<project.build.sourceEncoding>windows-1252</project.build.sourceEncoding>
+		<sadlOsgiVersion>3.2.0</sadlOsgiVersion>
+		<sadlVersion>${sadlOsgiVersion}-SNAPSHOT</sadlVersion>
+		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<maven.compiler.source>1.8</maven.compiler.source>
 		<maven.compiler.target>1.8</maven.compiler.target>
 		<!-- Tycho settings -->
@@ -23,9 +27,10 @@
 		<module>com.ge.research.sadl.darpa.aske.dialog</module>
 		<module>com.ge.research.sadl.darpa.aske.dialog.ide</module>
 		<module>com.ge.research.sadl.darpa.aske.dialog.ui</module>
-		<module>com.ge.research.sadl.darpa.aske.dialog.target</module>
 		<module>com.ge.research.sadl.darpa.aske.dialog.tests</module>
 		<module>com.ge.research.sadl.darpa.aske.dialog.ui.tests</module>
+		<module>com.ge.research.sadl.darpa.aske.dialog.feature</module>
+		<module>com.ge.research.sadl.darpa.aske.dialog.update</module>
 	</modules>
 	<build>
 		<plugins>
@@ -42,9 +47,9 @@
 				<configuration>
 					<target>
 						<artifact>
-							<groupId>com.ge.research.sadl.darpa.aske.dialog</groupId>
-							<artifactId>com.ge.research.sadl.darpa.aske.dialog.target</artifactId>
-							<version>${project.version}</version>
+							<groupId>com.ge.research.sadl</groupId>
+							<artifactId>com.ge.research.sadl.target</artifactId>
+							<version>${sadlVersion}</version>
 						</artifact>
 					</target>
 					<environments>

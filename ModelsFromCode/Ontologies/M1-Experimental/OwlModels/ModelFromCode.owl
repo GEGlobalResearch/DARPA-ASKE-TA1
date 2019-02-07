@@ -5,6 +5,7 @@
     xmlns:j.0="http://sadl.org/Software.sadl#"
     xmlns:sadlimplicitmodel="http://sadl.org/sadlimplicitmodel"
     xmlns:builtinfunctions="http://sadl.org/builtinfunctions"
+    xmlns:j.1="http://sadl.org/sadlimplicitmodel#"
     xmlns:rdfs="http://www.w3.org/2000/01/rdf-schema#"
     xmlns:mfc="http://sadl.org/ModelFromCode.sadl#"
     xmlns:xsd="http://www.w3.org/2001/XMLSchema#"
@@ -25,9 +26,9 @@
         <j.0:output>
           <j.0:SadlModel/>
         </j.0:output>
-        <j.0:input>
+        <j.1:input>
           <mfc:LanguageNeutralExtract/>
-        </j.0:input>
+        </j.1:input>
       </j.0:JavaClass>
     </j.0:includes>
     <j.0:includes>
@@ -35,9 +36,9 @@
         <j.0:output>
           <mfc:LanguageNeutralExtract/>
         </j.0:output>
-        <j.0:input>
+        <j.1:input>
           <j.0:JavaSourceCode/>
-        </j.0:input>
+        </j.1:input>
         <j.0:uses>
           <j.0:JavaClass rdf:ID="ASTParser"/>
         </j.0:uses>

@@ -1,0 +1,1267 @@
+B-CONCEPT_Density is defined as the B-CONCEPT_mass of an object divided by its volume, and most of our experiences with B-CONCEPT_density involve solids.
+We know that some objects are heavier than other objects, even though they are the same size.
+A brick and a loaf of bread are about the same size, but a brick is heavier--it is more dense.
+Among metals, aluminum is less dense than iron.
+For solids, the B-CONCEPT_density of a single element or compound remains fairly constant because the molecules are bound to one another.
+For example, if you found a pure gold nugget on the earth or you found a pure gold nugget on the moon, the measured B-CONCEPT_density would be nearly the same.
+An interactive simulator allows you to study how air B-CONCEPT_density varies with altitude.
+There are two ways to look at B-CONCEPT_density: (1) the small scale action of individual air molecules or (2) the large scale action of a large number of molecules.
+Starting with the small scale action, from the kinetic theory of gases, a gas is composed of a large number of molecules that are very small relative to the distance between molecules.
+The molecules are in constant, random motion and frequently collide with each other and with the walls of a container.
+Since B-CONCEPT_density is defined to be the B-CONCEPT_mass divided by the volume, B-CONCEPT_density depends directly on the size of the container in which a fixed B-CONCEPT_mass of gas is confined.
+We have 26 molecules of a mythical gas.
+Each molecule has a B-CONCEPT_mass of 20 grams (.02 kilograms), so the B-CONCEPT_mass of this gas is .52 kg. We have confined this gas in a rectangular tube that is 1 meter on each side and 2 meters high.
+We are viewing the tube from the front, so the dimension into the slide is 1 meter for all the cases considered.
+The volume of the tube is 2 cubic meters, so the B-CONCEPT_density is .26 kg/cubic meter.
+Notice that we have the same amount of material; it is just contained in a smaller volume.
+Turning to the larger scale, the B-CONCEPT_density is a state variable of a gas and the change in B-CONCEPT_density during a process is governed by the laws of thermodynamics.
+Actual molecules of a gas are incredibly small.
+(That's 1 followed by 23 zero's !!
+Because there are so many molecules, and the motion of each molecule is random, the value of the B-CONCEPT_density is the same throughout the container.
+B-CONCEPT_Density is a scalar quantity; it has a magnitude but no direction associated with it.
+As an example, consider Case #1, in which the B-CONCEPT_mass is .52 kg, the volume is 2 cu m, and the B-CONCEPT_density is .26 kg/cu m. If we sample a smaller volume of 1 meter on a side as in Case #2, we will obtain the same B-CONCEPT_density.
+Another way to obtain the same B-CONCEPT_density for a smaller volume is to remove molecules from the container.
+In Case #4, the container is the same size as in Case #3, but the number of molecules (the B-CONCEPT_mass) has been decreased to only 13 molecules.
+These rather simple examples help explain a fundamental effect that we see in nature.
+They are equivalent state variables.
+An important property of any gas is its pressure.
+Every day we hear the TV meteorologist give value of the barometric pressure of the atmosphere (29.
+Because understanding what pressure is and how it works is so fundamental to the understanding of aerodynamics, we are including several slides on gas pressure in the Beginner's Guide.
+An interactive atmosphere simulator allows you to study how static air pressure changes with altitude.
+There are two ways to look at pressure: (1) the small scale action of individual air molecules or (2) the large scale action of a large number of molecules.
+The B-CONCEPT_momentum of a single molecule is the product of its B-CONCEPT_mass and velocity, while the kinetic energy is one half the B-CONCEPT_mass times the square of the velocity.
+As the gas molecules collide with the walls of a container, as shown on the left of the figure, the molecules impart B-CONCEPT_momentum to the walls, producing a B-CONCEPT_force perpendicular to the wall.
+The sum of the forces of all the molecules striking the wall divided by the area of the wall is defined to be the pressure.
+The pressure of a gas is then a measure of the average linear B-CONCEPT_momentum of the moving molecules of a gas.
+The pressure acts perpendicular (normal) to the wall; the tangential (shear) component of the B-CONCEPT_force is related to the viscosity of the gas.
+Scalar Quantity
+While the gas as a whole does not appear to move, the individual molecules of the gas, which we cannot see, are in constant random motion.
+We can shrink the size of our "container" down to an infinitely small point, and the pressure has a single value at that point.
+It has a magnitude but no direction associated with it.
+If the gas as a whole is moving, the measured pressure is different in the direction of the motion.
+The ordered motion of the gas produces an ordered component of the B-CONCEPT_momentum in the direction of the motion.
+The pressure measured in the direction of the motion is called the total pressure and is equal to the sum of the static and dynamic pressureas described by Bernoulli's equation.
+Macro Scale Definition of Pressure
+You can explore the effects of pressure on other gas variables at the animated gas lab.
+The pressure B-CONCEPT_force is a vector quantity.
+We usually model air as a uniform (no variation or fluctuation) gas with properties that are averaged from all the individual components.
+Any gas has certain properties that we can detect with our senses.
+On this slide you will find typical values of the properties of air at sea level static conditions for a standard day.
+And while it is hotter in some seasons than others, pressure and B-CONCEPT_temperature change day to day, hour to hour, sometimes even minute to minute during severe weather.
+For a given pressure and B-CONCEPT_temperature, the volume depends directly on the amount of gas.
+When a gas is moving, it is convenient to use the B-CONCEPT_density of a gas, which is the B-CONCEPT_mass divided by the volume the gas occupies.
+The sea level standard value of air B-CONCEPT_density r is
+When working with a static or unmoving gas, it is more convenient to use specific volume, which is the volume divided by the B-CONCEPT_mass.
+v = .814 cubic meters/kilogram = 422 cubic feet/slug
+p = 101.3 kilo Newtons/square meter = 14.7 pounds/square inch
+A gas can exert a tangential (shearing) B-CONCEPT_force on a surface, which acts like friction between solid surfaces.
+mu = 1.73 x 10^-5 Newton-second/square meters = 3.62 x 10^-7 pound-second/square feet
+We've heard the TV meteorologist give the daily value of the B-CONCEPT_temperature of the atmosphere (15 degrees Celsius, for example).
+An entire branch of physics, called thermodynamics, is devoted to studying the B-CONCEPT_temperature of objects and the transfer of heat between objects of different B-CONCEPT_temperatures.
+We are including some fundamentals of thermodynamics in the Beginner's Guide to help you better understand propulsion.
+There are two ways to look at B-CONCEPT_temperature: (1) the small scale action of individual air molecules and (2) the large scale action of the gas as a whole.
+For diatomic gases like oxygen and nitrogen, in which the molecules are composed of pairs of atoms, energy can also be stored in the vibration and rotation of the atoms about each other.
+The B-CONCEPT_temperature of a gas is a measure of the average translational kinetic energy of the molecules.
+Turning to the large scale, the B-CONCEPT_temperature of a gas is something that we can determine qualitatively with our senses.
+But to determine the B-CONCEPT_temperature quantitatively, to assign a number, we must use some principles from thermodynamics:
+You can explore the effects of B-CONCEPT_temperature on the pressure of a gas at the animated gas lab.
+The second principle is the definition of thermodynamic equilibrium between two objects.
+The word "eventually" is important.
+Insulating materials reach equilibrium after a very long B-CONCEPT_time, while conducting materials reach equilibrium very quickly.
+The Celsius scale, designated with a C, uses the freezing point of pure water as the zero point and the boiling point as 100 degrees with a linear scale in between these extremes.
+So Fahrenheit adjusted the scale to make the boiling point of pure water 212 and the freezing point of pure water 32, which gave 180 degrees between the two reference points.
+180 degrees was chosen because it is evenly divisible by 2, 3, 4, 5, and 6. On the new B-CONCEPT_temperature scale, the B-CONCEPT_temperature of a healthy person is 98.6 degrees F. Because there are 100 degrees C and 180 degrees F between the same reference conditions:
+Since the scales start at different zero points, we can convert from the B-CONCEPT_temperature on the Fahrenheit scale (TF) to the B-CONCEPT_temperature on the Celsius scale (TC) by using this equation:
+If we keep the size of a single degree to be the same as the Celsius scale, we get a B-CONCEPT_temperature scale which has been named after Lord Kelvin and designated with a K. Then:
+K = C + 273.16
+It is named after the scientist Rankine and designated with an R.
+B-CONCEPT_Temperature has a magnitude, but no direction associated with it.
+The value can change from location to location, but there is no direction connected to the B-CONCEPT_temperature.
+To determine the lift and drag that a wing generates, you must be able to calculate the area of any of these shapes.
+The area is the two-dimensional amount of space that an object occupies.
+Area is measured along the surface of an object and has dimensions of B-CONCEPT_length squared; for example, square feet of material, or centimeters squared.
+On the slide we have listed the formula to calculate the area of a variety of shapes: The area of a rectangle is equal to the height h times the base b;
+A = .5 * b * h
+A special case of the ellipse is a circle, in which the semi-axis is equal to the radius r. The area of a circle is:
+If you find errors in the program or would like to suggest improvements, please send an e-mail to benson@grc.nasa.gov.
+The mathematical models used in this simulator show an average variation of properties of the atmosphere at various heights, but not at various locations.
+The simulator will not predict the B-CONCEPT_temperature or pressure at any single location at any B-CONCEPT_time.
+But it will help us understand the relations among the values of a given variable at different heights.
+The simulator is divided into three main sections:
+Click on the yellow bar and slide it to your desired velocity.
+You can also input desired values of altitude and velocity using the white input boxes.
+Simply backspace over the current value, enter a new value, then hit Enter to send the value to the program.
+Aerodynamic forces are generated between the fluid and the object.
+The molecules just above the surface are slowed down in their collisions with the molecules sticking to the surface.
+The details of the flow within the boundary layer are very important for many problems in aerodynamics, including wing stall, the skin friction drag on an object, and the heat transfer that occurs in high B-CONCEPT_speed flight.
+Unfortunately, the physical and mathematical details of boundary layer theory are beyond the scope of this beginner's guide and are usually studied in late undergraduate or graduate school in college.
+Boundary layers may be either laminar (layered), or turbulent (disordered) depending on the value of the Reynolds number.
+To make things more confusing, the boundary layer may lift off or "separate" from the body and create an effective shape much different from the physical shape.
+HISTORICAL NOTE: The theory which describes boundary layer effects was first presented by Ludwig Prandtl in the early 1900's.
+He first proposed the interactively coupled, two layer solution which properly models many flow problems.
+In the mid 1600's, Robert Boyle studied the relationship between the pressure p and the volume V of a confined gas held at a constant B-CONCEPT_temperature.
+The initial state of the gas has a volume equal to 4.0 cubic meters and the pressure is 1.0 kilopascal.
+When the pressure is 1.33 kilopascals the volume decreases to 3.0 cubic meters.
+The product of pressure and volume remains a constant (4 x 1.0 = 3 x 1.33333 ).
+Here is a computer animation of this process:
+To move a hypersonic cruising aircraft through the air, we have to use some kind of propulsion system to generate thrust.
+Because of the heat generated at stagnation points in a hypersonic flow, the gas turbine engine is not suited for this regime.
+A better choice for an air-breathing propulsion system would be a ramjet for Mach numbers less than 6, and a scramjet for Mach numbers greater than 6. Ramjets and scramjets rely on the forward B-CONCEPT_speed of the vehicle to compress the air in the inlet instead of using the mechanical compressor of a gas turbine.
+Gases have various properties that we can observe with our senses, including the gas pressure p, B-CONCEPT_temperature T, B-CONCEPT_mass, and volume V that contains the gas.
+Careful, scientific observation has determined that these variables are related to one another, and the values of these properties determine the state of the gas.
+Using the turbine engine station numbering system, we begin with free stream conditions at station 0. In cruising flight, the inlet slows the air stream to compress it to station 2 conditions.
+For an ideal, isentropic compression a vertical line on the T-s diagram describes the process.
+The non-isentropic effects are the result of shock waves in the inlet.
+As B-CONCEPT_speed increases, the losses through this shock eventually decrease the level of pressure that can be achieved in the burner, and this sets a limit on the use of ramjets.
+The combustion process in the burner occurs at constant pressure from station 3 to station 5. The B-CONCEPT_temperature increase depends on the type of fuel used and the fuel-air ratio.
+For scramjets, there may be additional entropy losses associated with the mixing of the fuel and the air.
+Ideally, the nozzle brings the flow isentropically back to free stream pressure from station 5 to station 8.
+The area under the T-s diagram is proportional to the useful work and thrust generated by the engine.
+Most modern passenger and military aircraft are powered by gas turbine engines, which are also called jet engines.
+The pressure in the burner remains nearly constant during burning, decreasing by only 1 to 2 per cent.
+Tt4 / Tt3 = (1 + f * nb * Q / (cp * Tt3) ) / ( 1 + f)
+If the B-CONCEPT_B-CONCEPT_speed I-CONCEPT_of the object is much less than the B-CONCEPT_B-CONCEPT_speed I-CONCEPT_of I-CONCEPT_sound I-CONCEPT_of the gas, the B-CONCEPT_density I-CONCEPT_of the gas remains constant and the flow I-CONCEPT_of gas can be described by conserving B-CONCEPT_momentum and energy.
+The B-CONCEPT_density of the gas varies locally as the gas is compressed by the object.
+When an object moves faster than the B-CONCEPT_speed I-CONCEPT_of I-CONCEPT_sound, and there is an abrupt decrease in the flow area, shock waves are generated.
+Through an expansion fan, the Mach number increases, the static pressure decreases and the total pressure remains constant.
+This function is derived from conservation of B-CONCEPT_mass, B-CONCEPT_momentum, and energy for very small (differential) deflections.
+The physical interpretation of the Prandtl-Meyer function is that it is the angle through which you must expand a sonic (M=1) flow to obtain a given Mach number.
+To compute an expansion from some other Mach number, we denote the upstream conditions as zone "0" and we calculate the Prandtl-Meyer angle for that Mach number.
+nu1 = nu0 + a
+Knowing the Mach number in zone "1" and knowing that the flow is isentropic, we can relate the value of all the flow variables in zone "1" to the variables in zone "0" through the ratio to the total conditions given on the isentropic flow page.
+Input to the program is made using the sliders, or input boxes at the lower left.
+Or click on the input box, select and replace the old value, and hit Enter to send the new value to the program.
+The flow variables are presented as ratios to the previous zone (up) and to the free stream value (0).
+The user can move the display by clicking on the graphic, holding down, and dragging the graphic.
+You can also download your own copy of the program to run off-line by clicking on this button:
+Careful, scientific observation has determined that these variables are related to one another and that the values of these properties determine the state of the gas.
+With the pressure and number of moles held constant, the burner has been turned off and the gas is allowed to cool to 225 degrees Kelvin.
+The resulting high B-CONCEPT_temperature exhaust gas is used to turn the power turbine and produce thrust when passed through a nozzle.
+The design of ramjet and scramjet burners are slightly different than the burners used on gas turbine engines, although the basic thermodynamic principles are the same.
+The central shaft that connects the turbine and compressor passes through the center hole.
+A burner usually has an outer casing, shown in red, and an inner liner, shown in orange.
+There are three main types of combustors, and all three designs are found in modern gas turbines:
+A compromise design is shown at the right.
+The details of mixing and burning the fuel are quite complex and require extensive testing for a new burner.
+For example, the volume that an object occupies in space does not depend on its direction.
+Vector quantities have two characteristics, a magnitude and a direction; scalar quantities have only a magnitude.
+To better understand our world, engineers often compare scalar quantities by using the ratio of the magnitude of the scalars.
+ratio = a / b
+If the value of the ratio is 1.0, then a = b .
+If the value of the ratio is less than 1.0, then a < b .
+If the value of the ratio is nearly zero, then a is very much less than b or a is nearly zero.
+The Mach number is the ratio I-CONCEPT_of the B-CONCEPT_B-CONCEPT_speed I-CONCEPT_of an object to the B-CONCEPT_B-CONCEPT_speed I-CONCEPT_of I-CONCEPT_sound in a gas.
+The specific fuel consumption (sfc) for jet engines is the ratio of the fuel flow rate to the amount of thrust produced.
+The Reynolds number is the ratio of the inertia forces in a fluid to the viscous forces.
+This is only a partial list of the many ratios which engineers use every day.
+Math and science were invented by humans to describe and understand the world around us.
+The vector is labeled with an alphabetical letter with a line over the top to distinguish it from a scalar.
+We will be comparing two vectors, a and b. They could be forces, or velocities, or accelerations; it doesn't really matter.
+Example #1: We have two vectors with the same direction, but the magnitudes (or B-CONCEPT_length of the vectors) are different.
+Vector a does not equal vector b in this example.
+This example seems pretty simple, because the same rule applies for scalars; if the magnitude is different, the quantities are not equal.
+Example #2: This example is a little more complex.
+In this case, we have two vectors with equal magnitude, but the directions are different.
+In one hour, they will both move 45 miles, but the locations will be different.
+If we include compressibility effects for high B-CONCEPT_speed flow through a duct, we find that the B-CONCEPT_mass flow rate depends on the flow area A, total pressure pt and B-CONCEPT_temperature Tt of the flow, the Mach number M, the ratio of specific heats of the gas gam, and the gas constant R:
+We can increase the B-CONCEPT_mass flow through a tube by increasing the area, increasing the total pressure, or decreasing the total B-CONCEPT_temperature.
+Using calculus, we can mathematically determine the same result: there is a maximum airflow limit that occurs when the Mach number is equal to one.
+The limiting of the B-CONCEPT_mass flow rate is called choking of the flow.
+mdot = (A* * pt/sqrt[Tt]) * sqrt(gam/R) * [(gam+1)/2]^-[(gam+1)/(gam-1)/2]
+Mach number equal to one is called a sonic condition because the velocity is equal to the B-CONCEPT_speed I-CONCEPT_of I-CONCEPT_sound and we denote the area for the sonic condition by "A*".
+This location is called the throat of the nozzle.
+The conservation of B-CONCEPT_mass specifies that the B-CONCEPT_mass flow rate through a nozzle is a constant.
+If no heat is added, and there are no pressure losses in the nozzle, the total pressure and B-CONCEPT_temperature are also constant.
+The resulting equation is shown in the box at the bottom of the slide.
+A synopsis of the report is included in NACA Report 1135.
+To a first order approximation, the equation for the B-CONCEPT_speed I-CONCEPT_of I-CONCEPT_sound for a calorically imperfect gas is given by:
+a^2 = R * T * {1 + (gamma - 1) / ( 1 + (gamma-1) * [(theta/T)^2 * e^(theta/T) /(e^(theta/T) -1)^2]) }
+where gamma is the ratio of specific heats for a perfect gas and theta is a thermal constant equal to 5500 degrees Rankine.
+where gam is the ratio of specific heats including a correction for the vibrational modes:
+Having the total B-CONCEPT_temperature ratio,the relations between B-CONCEPT_density and total B-CONCEPT_temperature is:
+where rho/rhot is the ratio of the static B-CONCEPT_density to the total B-CONCEPT_density.
+Since the area ratio depends only on the Mach number and ratio of specific heats, the program can calculate the value of the area ratio and display the results on the right side of the output variables.
+Next to the selection, you then type in a value for A/A*.
+When you hit the red COMPUTE button, the output values change.
+The area ratio is double valued; for the same area ratio, there is a subsonic and a supersonic solution.
+Using the isentropic relations, we can determine the pressure and B-CONCEPT_temperature at the exit of the nozzle.
+And from the Mach number and B-CONCEPT_temperature we can determine the exit velocity.
+If we consider the rocket thrust equation, we have now determined all the values necessary to determine the thrust of the rocket.
+The conservation of B-CONCEPT_mass is a fundamental concept of physics.
+The B-CONCEPT_mass of any object is simply the volume that the object occupies times the B-CONCEPT_density of the object.
+The conservation of B-CONCEPT_mass (continuity) tells us that the B-CONCEPT_mass flow rate mdot through a tube is a constant and equal to the product of the B-CONCEPT_density r, velocity V, and flow area A:
+Eq #2:
+Now substitute Eq #2 into Eq # 1:
+mdot = r * A * M * sqrt (gam * R * T)
+Eq #4:
+Substitute Eq #4 into Eq # 3:
+Eq #6:
+mdot = A * sqrt (gam / R) * M * p / sqrt(T)
+From the isentropic flow equations:
+Eq #7:
+Substitute Eq #7 into Eq # 6:
+mdot = (A * pt) / sqrt(Tt) * sqrt (gam / R) * M * (T / Tt)^((gam + 1) / (2 * (gam -1 )))
+Another isentropic relation gives:
+Substitute Eq #9 into Eq # 8:
+The B-CONCEPT_mass flow equation is quite "messy", so here is a Java calculator that solves the B-CONCEPT_mass flow equation for you:
+To change input values, click on the input box (black on white), backspace over the input value, type in your new value.
+We can increase the B-CONCEPT_mass flow through a tube by increasing the area, increasing the total pressure, or decreasing the total B-CONCEPT_temperature.
+To find the maximum (or minimum) value of a function, determine when the derivative of the function is equal to zero.
+Let us apply this technique to the B-CONCEPT_mass flow rate equation.
+Eq #11:
+C = (gam + 1)/(2 * (gam - 1))
+D = (gam - 1) / 2
+Eq #15:
+d mdot/dM = M * ( d [ 1 / ((1 + D * M^2) ^ C)] /dM) + 1 / ((1 + D * M^2) ^ C) = 0
+The limiting of the B-CONCEPT_mass flow rate is called choking of the flow.
+mdot = (A * pt/sqrt[Tt]) * sqrt(gam/R) * [(gam + 1)/2]^-[(gam + 1)/(gam - 1)/2]
+If we have a tube with changing area, like the nozzle shown on the slide, the maximum B-CONCEPT_mass flow rate through the system occurs when the flow is choked at the smallest area.
+Knowing the exit velocity and the B-CONCEPT_mass flow rate, we can determine the thrust of the nozzle.
+Within some problem domain, the amount of energy remains constant and energy is neither created nor destroyed.
+Energy can be converted from one form to another (potential energy can be converted to kinetic energy) but the total energy within the domain remains fixed.
+In rocketry, we are most interested in thermodynamics in the study of propulsion systems and understanding high B-CONCEPT_speed flows.
+Aerospace engineers usually simplify a thermodynamic analysis by using intensive variables; variables that do not depend on the B-CONCEPT_mass of the gas.
+Our first law equation then becomes:
+K = (m * u^2) / 2
+k = (u^2) / 2
+There are two parts to the specific work for a moving gas.
+For a pressure p and specific volume v, the work is given by:
+For a compressor or power turbine, there is no external heat flow into the gas and the "q" term is set equal to zero.
+In the burner, no work is performed and the "wsh" term is set to zero.
+The conservation of B-CONCEPT_mass is a fundamental concept of physics along with the conservation of energy and the conservation of B-CONCEPT_momentum.
+Within some problem domain, the amount of B-CONCEPT_mass remains constant--B-CONCEPT_mass is neither created nor destroyed.
+When we move a solid object, as shown at the top of the slide, the object retains its shape, B-CONCEPT_density, and volume.
+In the center of the figure, we consider an amount of a static fluid , liquid or gas.
+We can calculate the amount of fluid by multiplying the B-CONCEPT_density times the volume.
+Since the B-CONCEPT_mass remains constant, the product of the B-CONCEPT_density and volume also remains constant.
+(If the B-CONCEPT_density remains constant, the volume also remains constant.)
+Fluid Dynamics
+A units check gives area x B-CONCEPT_length/B-CONCEPT_time x B-CONCEPT_time = area x B-CONCEPT_length = volume.
+ma = (r * A * V * t)a
+mb = (r * A * V * t)b
+From the conservation of B-CONCEPT_mass, these two B-CONCEPT_masses are the same and since the B-CONCEPT_times are the same, we can eliminate the B-CONCEPT_time dependence.
+(r * A * V)a = (r * A * V)b
+The conservation of B-CONCEPT_mass gives us an easy way to determine the velocity of flow in a tube if the B-CONCEPT_density is constant.
+If we can determine (or set) the velocity at some known area, the equation tells us the value of velocity for any other area.
+In our animation, the area of "b" is one half the area of "a."
+The conservation of B-CONCEPT_mass equation also occurs in a differential form as part of the Navier-Stokes equations of fluid flow.
+Here's is a still version of the graphic that you can use in your own presentation of this material:
+The conservation of B-CONCEPT_momentum is a fundamental concept of physics along with the conservation of energy and the conservation of B-CONCEPT_mass.
+B-CONCEPT_Momentum is defined to be the B-CONCEPT_mass of an object multiplied by the velocity of the object.
+Let us consider the flow of a gas through a domain in which flow properties only change in one direction, which we will call "x".
+The location of stations 1 and 2 are separated by a distance called del x. (Delta is the little triangle on the slide and is the Greek letter "d".
+Mathematicians often use this symbol to denote a change or variation of a quantity.
+The web print font does not support the Greek letters, so we will just call it "del".)
+A change with distance is referred to as a gradient to avoid confusion with a change with B-CONCEPT_time which is called a rate.
+u2 = u1 + (del u / del x) * del x
+p2 = p1 + (del p / del x) * del x
+Newton's second law of motion states that B-CONCEPT_force F is equal to the change in B-CONCEPT_momentum with respect to B-CONCEPT_time.
+For an object with constant B-CONCEPT_mass m this reduces to the B-CONCEPT_mass B-CONCEPT_times B-CONCEPT_acceleration a. An B-CONCEPT_acceleration is a change in velocity with a change in B-CONCEPT_time (del u / del t).
+The minus sign at the beginning of this expression is used because gases move from a region of high pressure to a region of low pressure; if the pressure increases with x, the velocity will decrease.
+Simplify:
+- (del p / del x) = r * u * (del u / del x)
+It is interesting to note that the pressure drop of a fluid (the term on the left) is proportional to both the value of the velocity and the gradient of the velocity.
+The conservation of B-CONCEPT_mass equation tells us that the B-CONCEPT_mass flow rate through a tube is a constant and equal to the product of the B-CONCEPT_density, velocity, and flow area.
+The B-CONCEPT_mass flow rate mdot depends on some properties of the gas (total pressure pt, total B-CONCEPT_temperature Tt, gas constant R, ratio of specific heats g), the area A of the tube, and the Mach number M.
+We begin with the compressible B-CONCEPT_mass flow equation and, using algebra, we divide both sides of the equation by the area, multiply both sides by the square root of the total B-CONCEPT_temperature, and divide both sides by the total pressure.
+p0 = 14.7 lb/in^2
+T0 = 518 degrees Rankine
+R = 1716 ft^2/sec^2 degree Rankine
+g = 1.4
+The B-CONCEPT_temperature ratio theta and the pressure ratio delta are just numbers; they have no dimensions.
+If we substitute the numbers given above, we obtain:
+[wdot * sqrt(thetat)]/[A * deltat] = .59352 * M * [1 + M^2 * (g-1)/2]^-[(g+1)/(g-1)/2] lb/sec/in^2
+The corrected weight flow per unit area is just a function of the Mach number.
+What good is all this?
+Using this function we can easily determine the B-CONCEPT_speed at any location.
+If we add (or subtract) B-CONCEPT_mass, we can recompute the corrected weight flow per area and still determine the velocity.
+If heat is added, or work is done, which changes the total B-CONCEPT_temperature, we can again determine the effects on velocity.
+Since the corrected airflow per area depends only on the Mach number, the program can calculate the value of the airflow per area and display the results on the right side of the output variables.
+Using the choice button labeled Input Variable, select "Flow per Area Wcor/A".
+The choice button at the right top selects the solution that is presented.
+You can also download your own copy of the program to run off-line by clicking on this button:
+The shocks may intersect with each other and with the surfaces generating them.
+On the right side of the figure, wedge "b" is located opposite to wedge "a" and the problem is called the opposed wedges problem.
+The general physics of both problems is the same.
+The flow in zone "1" is parallel to wedge "a" and the conditions are specified by the oblique shock relations given on another page.
+Wedge "b" also generates a shock wave with the conditions downstream of this shock noted as zone "2".
+For the double wedge problem the upstream conditions for zone "2" are the conditions in zone "1".
+The flow direction and static pressure in zone "4" must be the same as the conditions in zone "3".
+The flow in zone "3" is now parallel to wedge "a", while the flow in zone "4" is parallel to wedge "b".
+Upstream conditions for zone "3" are the zone "1" conditions; upstream conditions for zone "4" are the zone "2" conditions.
+Once again the flow direction and static pressure in zone "3" and zone "4" must be the same.
+The shock wave for zone "3" then intersects and reflects from wedge "a", while the shock wave from zone "4" intersects and reflects from wedge "b".
+Or click on the input box, select and replace the old value, and hit Enter to send the new value to the program.
+The graphic at the top shows the wedges in red and green and the shock wave generated by the wedge as a line.
+To restore the initial conditions click on "Reset".
+The ShockModeler simulation program, shown above, can also be used to study the generation and reflection of shock waves and the devlopment of expansion fans.
+A User's Manual of the program is available at this web site.
+An important property of any gas is its pressure.
+Because understanding what pressure is and how it works is so fundamental to the understanding of aerodynamics and propulsion, we are including several slides on pressure in the Beginner's Guide.
+During collisions with the walls, there is a change in velocity and therefore a change in B-CONCEPT_momentum of the molecules.
+If a gas is static and not flowing, the measured pressure is the same in all directions.
+This leads to the definition of the dynamic pressure.
+To understand dynamic pressure, we begin with a one dimensional version of the conservation of linear B-CONCEPT_momentum for a fluid.
+Performing a little algebra:
+In particular, the aerodynamic forces acting on an object as it moves through the air are directly proportional to the dynamic pressure.
+As we have seen, dynamic pressure appears in Bernoulli's equation even though that relationship was originally derived using energy conservation.
+Gravity holds the atmosphere to the Earth's surface.
+The sun heats the surface of the Earth, and some of this heat goes into warming the air near the surface.
+Thus the air B-CONCEPT_temperature is highest near the surface and decreases as altitude increases.
+The B-CONCEPT_speed I-CONCEPT_of I-CONCEPT_sound depends on the B-CONCEPT_temperature and also decreases with increasing altitude.
+Therefore, air pressure decreases as we increase altitude.
+The air B-CONCEPT_density depends on both the B-CONCEPT_temperature and the pressure through the equation of state and also decreases with increasing altitude.
+Aerodynamic forces directly depend on the air B-CONCEPT_density.
+To help aircraft designers, it is useful to define a standard atmosphere model of the variation of properties through the atmosphere.
+Curve fits are also available in metric units.
+The model has three zones with separate curve fits for the troposphere, the lower stratosphere, and the upper stratosphere.
+T = 59 - .00356 * h
+where the B-CONCEPT_temperature is given in Fahrenheit degrees, the pressure in pounds/square feet, and h is the altitude in feet.
+The lower stratosphere runs from 36,152 feet to 82,345 feet.
+In the upper stratosphere the B-CONCEPT_temperature increases slightly and the pressure decreases exponentially.
+The Imperial units curve fits for the upper stratosphere are:
+In each zone the B-CONCEPT_density r is derived from the equation of state.
+This is the atmosphere model used in the FoilSim and EngineSim computer simulators.
+The Earth's atmosphere is an extremely thin sheet of air extending from the surface of the Earth to the edge of space.
+If the Earth were the size of a basketball, a tightly held pillowcase would represent the thickness of the atmosphere.
+Within the atmosphere, very complex chemical, thermodynamic, and fluid dynamics effects occur.
+The atmosphere is not uniform; fluid properties are constantly changing with B-CONCEPT_time and place.
+The models are updated every few years to include the latest atmospheric data.
+The model assumes that the pressure and B-CONCEPT_temperature change only with altitude.
+In the troposphere, the B-CONCEPT_temperature decreases linearly and the pressure decreases exponentially.
+For the B-CONCEPT_temperature T and the pressure p, the metric units curve fits for the troposphere are:
+where the B-CONCEPT_temperature is given in Celsius degrees, the pressure in kilo-Pascals,and h is the altitude in meters.
+The lower stratosphere runs from 11,000 meters to 25,000 meters.
+T = -56.46
+In each zone the B-CONCEPT_density r is derived from the equation of state.
+r = p / [.2869 * (T + 273.1)]
+An interactive simulation for the atmosphere model is also available.
+Thermodynamics is a branch of physics which deals with the energy and work of a system.
+We are free to define additional state variables which are combinations of existing state variables.
+H = E + p * V
+How does one use this new variable called B-CONCEPT_enthalpy?
+Let's consider the first law of thermodynamics for a gas.
+W = p * [V2 - V1]
+Substituting into the first equation, we have:
+E2 - E1 = Q - p * [V2 - V1]
+Let's group the conditions at state 2 and the conditions at state 1 together:
+The specific B-CONCEPT_heat I-CONCEPT_capacity cp is called the specific B-CONCEPT_heat at constant pressure and is related to the universal gas constant of the equation of state.
+This final equation is used to determine values of specific B-CONCEPT_enthalpy for a given B-CONCEPT_temperature.
+Thermodynamics is a branch of physics that deals with the energy and work of a system.
+In aerodynamics, we are most interested in thermodynamics in the study of propulsion systems and understanding high B-CONCEPT_speed flows.
+The first law of thermodynamics indicates that the total energy of a system is conserved.
+Total energy includes the potential and kinetic energy, the work done by the system, and the transfer of heat through the system.
+The second law of thermodynamics indicates that, while many physical processes that satisfy the first law are possible, the only processes that occur in nature are those for which the entropy of the system either remains constant or increases.
+During a thermodynamic process, the B-CONCEPT_temperature T of an object changes as heat Q is applied or extracted.
+For gases, there are two possible ways to evaluate the change in entropy.
+We begin by using the first law of thermodynamics:
+where p is the pressure and V is the volume of the gas.
+dQ = dH - V dp
+The B-CONCEPT_heat transfer of a gas is equal to the B-CONCEPT_heat I-CONCEPT_capacity times the change in B-CONCEPT_temperature; in differential form:
+If we have a constant volume process, the formulation of the first law gives:
+dE = dQ = C (constant volume) * dT
+Similarly, for a constant pressure process, the formulation of the first law gives:
+Similarly substituting the value of V from the equation of state, and the definition of dH we obtain the alternate form:
+Substituting these forms for dQ into the differential form of the entropy equation gives::
+dS = C (constant volume) * dT / T + R * dV / V
+S2 - S1 = Cv * ln ( T2 / T1) + R * ln ( V2 / V1)
+s2 - s1 = cv * ln ( T2 / T1) + R * ln ( v2 / v1)
+These equations can be a bit confusing, because we use the specific heat at constant volume when we have a process that changes volume, and the specific heat at constant pressure when the process changes pressure.To clarify matters, let's look at the first equation:
+If we have a constant volume process, the second term in the equation is equal to zero, since v2/v1 = 1. We can then determine the value of the specific heat for the constant volume process.
+A similar type of argument can be made for the equation used for a change in pressure.
+You can explore the relationship between the variables at the animated gas lab.
+If the pressure and B-CONCEPT_temperature are held constant, the volume of the gas depends directly on the B-CONCEPT_mass, or amount of gas.
+The product of pressure and volume is exactly a constant for an ideal gas.
+Finally, if the B-CONCEPT_mass and pressure are held constant, the volume is directly proportional to the B-CONCEPT_temperature for an ideal gas.
+This relationship is called Charles and Gay-Lussac's Law in honor of the two French scientists who discovered the relationship.
+A three dimensional graph of this equation is shown at the lower left.
+The intersection point of any two lines on the graph gives a unique state for the gas.
+We also define a new gas constant R, which is equal to the universal gas constant divided by the B-CONCEPT_mass per mole of the gas.
+The equation of state can be written in terms of the specific volume or in terms of the air B-CONCEPT_density as
+Notice that the equation of state given here applies only to an ideal gas, or a real gas that behaves like an ideal gas.
+The equations are named in honor of Leonard Euler, who was a student with Daniel Bernoulli, and studied various fluid dynamics problems in the mid-1700's.
+For some problems, like the lift of a thin airfoil at low angle of attack, a solution of the Euler equations provides a good model of reality.
+Our world has three spatial dimensions (up-down, left-right, fore-aft) and one B-CONCEPT_time dimension.
+At the top of the figure, we show a simplified, two-dimensional, steady form of the Euler equations.
+You will notice that the differential symbol is different than the usual "d /dt" or "d /dx" that you see for ordinary differential equations.
+The symbol indicates that we are to hold all of the independent variables fixed, except the variable next to symbol, when computing a derivative.
+X - B-CONCEPT_Momentum: partial(r * u^2)/partialx + partial(r * u * v)/partialy = - partialp/partialx
+Although these equations appear very complex, undergraduate engineering students are taught how to derive them in a process very similar to the derivation that we present on the conservation of B-CONCEPT_momentum web page.
+The two B-CONCEPT_momentum equations are two-dimensional generalizations of the conservation of B-CONCEPT_momentum equation.
+There is actually another equation that is required to solve this system, since we only show three equations for four unknowns.
+In the past, engineers made further approximations and simplifications to the equation set until they had a group of equations that they could solve.
+Recently, high B-CONCEPT_speed computers have been used to solve approximations to the equations using a variety of techniques like finite difference, finite volume, finite element, and spectral methods.
+One of the simplification methods used in the past was to assume that the gas was very low B-CONCEPT_speed and to neglect the effects of compressibility.
+Continuity: partialu/partialx + partialv/partialy = 0
+Thermodynamics deals only with the large scale response of a system which we can observe and measure in experiments.
+Small scale gas interactions are described by the kinetic theory of gases.
+Fortunately, many of the classical examples of thermodynamics involve gas dynamics.
+In our observations of the work done on, or by a gas, we have found that the amount of work depends not only on the initial and final states of the gas but also on the process, or path which produces the final state.
+This suggests the existence of an additional variable, called the internal energy of the gas, which depends only on the state of the gas and not on any process.
+We have emphasized the words "into" and "by" in the definition.
+The internal energy is just a form of energy like the potential energy of an object at some height above the earth, or the kinetic energy of an object in motion.
+Like potential energy, the internal energy can be stored in the system.
+The first law of thermodynamics allows for many possible states of a system to exist, but only certain states are found to exist in nature.
+The second law of thermodynamics helps to explain this observation.
+Scientists refer to a process which does not involve heat transfer as an adiabatic process.
+An important mathematical concept is the idea of function.
+Schematically, we can think of a function as a "processor" that takes in one (or more) input variables and produces an output variable.
+We call the output variable the dependent variable and the input variable is called the independent variable.
+Changing the value of an independent variable produces a change in the value of the dependent variable that is always the same.
+Y = f (X)
+At the bottom of the slide we have listed some examples of functions that occur in aerospace engineering.
+The trigonometric functions sine, cosine, and tangent relate the various sides and angles of a triangle.
+So we can write the functions as:
+where the value of X is an angle and the value of Y, W, and Z are numbers.
+Y = X!
+= 4 * 3 * 2 * 1 = 24
+is made by adding powers of X. The function here is:
+Y = X^n
+where n is any number.
+Y = X^2
+Y = sqrt(X)
+Since lift and drag depend on the square of the velocity, we often use square roots to solve velocity problems.
+It returns the angle Y whose tangent is X. There are inverses for the sine and cosine as well.
+The rate is expressed as another function called a differential and the rate is the slope of the graph of the function.
+If we have a function Y = f(X), then the slope of the function is called Z and;
+Y = exp(X) = d[exp(X)]/dX = dY/dX
+The inverse of the exponential function is the logarithmic function with the symbol ln(X).
+The ln function appears in many thermodynamics problems, such as calculating the change in the entropy of a gas during a thermodynamic process.
+The cosh (X) function on the slide is the hyperbolic cosine function.
+Fluid Dynamics involves the interactions between an object and a surrounding fluid, a liquid, or a gas.
+Fluid dynamics play a major role in the devlopment of thrust in a gas turbine engine, and in the generation of aerodynamic drag for flight within the atmosphere.
+Characteristics of Gases
+determining the kind of matter present (oxygen, lead, silver, neon ...)
+.
+Under normal conditions, matter exists as either a solid, a liquid, or a gas.
+Scientists refer to the large scale motion of the gas as the macro scale and the individual molecular motions as the micro scale.
+Macro scale and micro scale investigations are just two views of the same thing.
+The atmosphere is treated as a uniform gas with properties that are averaged from all the individual components (oxygen, nitrogen, water vapor...)
+.
+On the macro scale, we are dealing with large scale effects that we can measure, such as the gas velocity, the pressure exerted on the surroundings, or the B-CONCEPT_temperature of the gas.
+A gas does not have a fixed shape or size but will expand to fill any container.
+Some simplified versions of the equations can be solved to model certain fluids problems.
+The model assumes that the molecules are very small relative to the distance between molecules.
+And these properties are related to the macro properties of B-CONCEPT_density, pressure, and B-CONCEPT_temperature.
+In a solid, the location of the molecules relative to each other remains almost constant.
+But in a fluid, the molecules can move around and interact with each other and with their surroundings in different ways.
+But the entire fluid can be made to move as well in an ordered motion.
+If the properties are transported by the ordered motion, the process is called convection.
+As an object moves through a gas, the viscosity (stickiness) of the gas becomes very important.
+Gas molecules stick to any surface, creating a layer of air near the surface, called a boundary layer that, in effect, changes the shape of the object.
+Compressibility
+As an object moves through a gas, the compressibility of the gas also becomes important.
+But for high speeds, some of the energy of the object goes into compressing the fluid, moving the molecules closer together and changing the gas B-CONCEPT_density, which alters the amount of the resulting B-CONCEPT_force on the object.
+This effect is more important as B-CONCEPT_speed increases.
+Near and beyond the B-CONCEPT_speed I-CONCEPT_of I-CONCEPT_sound (about 700 mph), shock waves are produced that affect both the lift and drag I-CONCEPT_of an object.
+In any propulsion system, a working fluid is accelerated by the system and the reaction to this B-CONCEPT_acceleration produces a B-CONCEPT_force on the system.
+We sometimes call this engine a jet engine.
+But unlike the rocket engine which must carry its oxygen for combustion, the turbine engine gets its oxygen from the surrounding air.
+All gas turbine engines have some parts in common, however.
+On the slide we see pictures of four different aircraft equipped with gas turbine engines.
+At the upper left is a DC-8 airliner.
+It spends most of its life in high B-CONCEPT_speed cruise.
+At the lower right is a C-130 cargo aircraft.
+Like the DC-8, it carries cargo a long distance, but it does not have the high B-CONCEPT_speed requirement of the DC-8.
+At the upper right is a T-38 trainer.
+EngineSim is an interactive Java applet which allows you to study different types of jet engines.
+In aerodynamics, we are most interested in the thermodynamics of propulsion systems and high B-CONCEPT_speed flows.
+The Zeroth Law of Thermodynamics introduces the concept of thermodynamic equilibrium, in which two objects have the same B-CONCEPT_temperature.
+The amount of B-CONCEPT_heat transferred delta Q is proportional to the B-CONCEPT_temperature difference delta T between the objects and the B-CONCEPT_heat I-CONCEPT_capacity c of the object.
+delta Q = c * delta T
+The B-CONCEPT_heat I-CONCEPT_capacity is a constant that tells how much B-CONCEPT_heat is added per unit B-CONCEPT_temperature rise.
+The B-CONCEPT_temperature, pressure, and volume of the gas determine the state of the gas.
+But the state of a gas can be changed in a wide variety of ways.
+On another slide, we show how work done on a gas also changes the state of the gas.
+Exactly how the air re-acts to the aircraft depends upon the ratio I-CONCEPT_of the B-CONCEPT_B-CONCEPT_speed I-CONCEPT_of the aircraft to the B-CONCEPT_B-CONCEPT_speed I-CONCEPT_of I-CONCEPT_sound through the air.
+There are some very special aircraft which fly in the high supersonic regime in which aircraft skin B-CONCEPT_temperature becomes high enough that special materials must be used, by is still low enough that the air molecules remain intact.
+Because lift and drag depend on the square of the velocity, these aircraft did not require large wing area in cruising flight.
+Like any supersonic aircraft, the wings are swept in planform to reduce drag.
+For Mach numbers greater than 2.5, the frictional heating of the airframe by the air becomes high enough that light weight aluminum can not be used for the structure.
+Because of the importance of this B-CONCEPT_speed ratio, aerodynamicists have designated it with a special parameter called the Mach number in honor of Ernst Mach, a late 19th century physicist who studied gas dynamics.
+For aircraft B-CONCEPT_speeds which are much greater than the B-CONCEPT_speed I-CONCEPT_of I-CONCEPT_sound, the aircraft is said to be hypersonic.
+Typical speeds for hypersonic aircraft are greater than 3000 mph and Mach number M greater than five, M > 5. We are going to define a high hypersonic regime at M > 10 to account for re-entry aerodynamics.
+At low hypersonic speeds, the molecular bonds vibrate, which changes the magnitude of the forces generated by the air on the aircraft.
+The X-15 is shown on the figure.
+Recently, an un-manned X-43A used a scramjet, or supersonic combustion ramjet, to make two hypersonic flights; one at Mach 7, the other at Mach 10.
+While a ramjet is well suited for the cruise portion of the flight, a ramjet can not generate static thrust.
+NASA's Mercury, Gemini, and Apollo spacecraft experienced hypersonic flows as they safely returned their crews to the earth's surface during the 1960's.
+Because the mission of a re-entering spacecraft is to slow from 17,500 mph to zero at the surface, the spacecraft is designed to have high drag.
+The bottom of the shuttle is covered with silicon tiles that insulate the aluminum skin from the heat of re-entry.
+Because of the high temperatures, the gas is an electrically charged plasma.
+Air-breathing Cruiser
+Besides the unique propulsion systems, these vehicles would likely include special materials for thermal control, or actively cooled surfaces.
+Cruising hypersonic aircraft would be flown at high dynamic pressure, or high-Q, conditions.
+Hypersonic flow experiences shock waves, thick boundary layers, and complex interactions between the shocks and boundary layers.
+Because of the high B-CONCEPT_temperature generated at Mach 5 - 7, real gas effects must be evaluated during design.
+The flow can be properly modeled by the Navier-Stokes equations, if provision is made for the real gas effects and boundary layer transition models.
+Air-breathing Accelerator
+Besides hypersonic cruise vehicles, there have been several proposed hypersonic accelerator vehicles.
+The distinction from the cruise vehicle is that the accelerator must continually produce excess thrust, thrust greater than drag, in order to accelerate; the accelerator is never flown in a steady cruise condition.
+Depending the exact mission, the accelerator may employ either TBCC or RBCC engines.
+The NASP design used an ejector ramjet for low B-CONCEPT_speed operation.
+All jet engines have an inlet to bring free stream air into the engine.
+The inlet sits upstream of the compressor and, while the inlet does no work on the flow, there are some important design features of the inlet.
+The total pressure pt through the inlet changes, however, because of several flow effects.
+Spec.)
+value of recovery is the inlet efficiency:
+At supersonic flight B-CONCEPT_speeds, there are additional losses created by the shock waves necessary to reduce the flow B-CONCEPT_speed to subsonic conditions for the compressor.
+Mil.
+The amount of air that goes through the inlet is set by the engine and changes with altitude and throttle setting.
+Typical values of K range from .4 to .7. But for a given inlet the value is determined experimentally.
+The flow may be swirling, or some section of the boundary layer may be thicker than another section because of the inlet shape.
+The rotor blades of the compressor move in circles around the central shaft.
+As the blades encounter distorted inlet flow, the flow conditions around the blade change very quickly.
+The changing flow conditions can cause flow separation in the compressor, a compressor stall, and can cause structural problems for the compressor blades.
+A good inlet must produce high pressure recovery, low spillage drag, and low distortion.
+Because an inlet is essentially a hollow tube, the weight considerations of the inlet are small compared to the compressor or turbine.
+The inlet sits upstream of the compressor and, while the inlet does no work on the flow, inlet performance has a strong influence on engine net thrust.
+As shown in the figures above, inlets come in a variety of shapes and sizes with the specifics usually dictated by the B-CONCEPT_speed of the aircraft.
+SUBSONIC INLETS
+An inlet for a supersonic aircraft, on the other hand, has a relatively sharp lip.
+Other inlets, like the one shown at the lower left, use flat hinged plates to generate the compression shocks, with the resulting inlet geometry having a rectangular cross section.
+Inlets for hypersonic aircraft present the ultimate design challenge.
+On the X-43A, the inlet includes the entire lower surface of the aircraft forward of the cowl lip.
+Thick, hot boundary layers are usually present on the compression surfaces of hypersonic inlets.
+The flow exiting a scramjet inlet must remain supersonic.
+INLET EFFICIENCY
+At very low aircraft speeds, or when just sitting on the runway, free stream air is pulled into the engine by the compressor.
+At high speeds, a good inlet will allow the aircraft to maneuver to high angles of attack and sideslip without disrupting flow to the compressor.
+The amount of disruption of the flow is characterized by a numerical inlet distortion index.
+Different airframers use different indices, but all of the indices are based on ratios of the local variation of pressure to the average pressure at the compressor face.
+This is a beta 1.0a version of the TBCC Simulator program, and you are invited to participate in the beta testing.
+If you find errors in the program or would like to suggest improvements, please send an e-mail to benson@grc.nasa.gov.
+This combination is often called a turbine-based combined cycle or TBCC propulsion system.
+A ramjet is particularly well suited for hypersonic cruising flight because the high forward velocity can be used to compress the incoming flow and because there are no components in the high total B-CONCEPT_temperature flow stream.
+There are several different versions of the TBCC Simulator which require different levels of experience with the package, knowledge of compressible flows, and computer technology.
+You can download these versions of the program to your computer by clicking on this yellow button:
+Click on the slider bar, hold down and drag the slider bar to change values, or you can click on the arrows at either end of the slider.
+A black box with yellow numbers is an output box and the value is computed by the program.
+To make a choice, click on the arrow, hold down and drag to make your selection.
+If you experience difficulties when using the sliders to change variables, simply click away from the slider and then back to it.
+If the arrows on the end of the sliders disappear, click in the areas where the left and right arrow images should appear, and they should reappear.
+The program screen is divided into five main parts:
+In the middle left side of the screen is the input panel.
+The contents of the input panel changes depending on your selection.
+The contents of this panel can be changed to display plots or output boxes.
+ENGINE DESIGN:
+Sitting under the turbine engine is the or a ramjet.
+You can invoke the flight input panel at any B-CONCEPT_time by clicking on the word on the blue bar of the graphics window.
+Engine Size can be specified by either the frontal area or the diameter.
+The location of the ramjet relative to the turbine engine is also set on the ramjet input panel.
+CHOICES: Mode, Units, Output Display
+In the Design Mode, you can change design variables including the flight conditions, the engine size, the inlet performance, the turbo machinery compressor and turbine performance, the combustors or burner performance, or the nozzle performance.
+In Off-Design Mode, you are only working with one combined engine design.
+The values of some of the performance parameters like inlet recovery and nozzle area may change according to choices that you made during design.
+MATERIALS INPUT
+The program will calculate an average weight of the engines that you design.
+You can also select to define your own material by choosing My Material from the menu.
+The program will check the B-CONCEPT_temperature throughout the engine design against the material limits.
+(For the afterburner and the ramjet, the graphical B-CONCEPT_temperature limits are based on the flow B-CONCEPT_temperature, not on the material B-CONCEPT_temperature, and are slightly higher than the material limits.
+GRAPHICAL OUTPUT
+The white and red Output menu allows you to change the contents of the output window in the middle right side of the screen.
+You can also display a T-s Plot or a P-v Plot, which are used by engineers to determine engine performance.
+Set the value of the independent variable by using the slider or the type-in box.
+Push the blue "Take Data" button and a data point will appear on the graph.
+Set a new value for the variable and take another data point (up to 25 points in any order).
+When you are finished, push the "End" button and two lines will be drawn through your data points; one for the turbine and the other for the ramjet.
+When you are finished, push the red "Exit" button and you will return to free stream conditions.
+The total engine performance is always displayed at the lower right and includes the engine net thrust, the fuel flow rate, the engine air flow rate, and the specific fuel consumption.
+An additional Engine Performance output panels shows the fuel-to-air ratio, the engine pressure ratio (EPR) and engine B-CONCEPT_temperature ratio (ETR), gross thrust, and ram drag.
+NEW FEATURES
+The Education Programs Office will continue to improve and update TBCC Sim based on user input.
+On 1 Sept 06 version 1.0a was released.
+This is the first version of this program.
+Thermodynamics deals only with the large scale response of a system which we can observe and measure in experiments.
+In aerodynamics, we are most interested in thermodynamics for the role it plays in engine design and high B-CONCEPT_speed flows.
+On this slide we derive two important equations which relate the pressure, B-CONCEPT_temperature, and volume which a gas occupies during reversible compression or expansion.
+Such a process occurs during the compression and power strokes for an internal combustion engine.
+The same equations describe the conditions across the compressor and turbine of a gas turbine engine.
+The motion of the gray piston inside the blue cylinder turns the red section of the crankshaft which turns the propellers to generate thrust.
+This change in volume results in a change in pressure and B-CONCEPT_temperature of the gas which determines how much work the piston can deliver.
+We are further going to neglect any friction between the piston and cylinder and assume that there are no energy losses of any kind.
+(In reality there are small losses and we account for the losses by an "efficiency factor" applied to the result we obtain assuming no losses.)
+We begin our derivation by determining the value of a factor which we will need later.
+From the definitions of the specific heat coefficients, the specific heat at constant pressure cp minus the specific heat at constant volume cv is equal to the gas constant R:
+gamma = cp / cv
+If we divide the first equation by cp, and use the definition of "gamma" we obtain:
+Then the equation becomes:
+cp ln(T2 / T1) = R ln(p2 / p1)
+T2 / T1 = (p2 / p1) ^ (R / cp)
+where the symbol "^" denotes an exponent.
+For air, at standard conditions, it is 1.4. The value of (1 - 1/gamma) is about .286.
+p * v = R * T
+where v is the specific volume occupied by the gas.
+Multiply both sides by (p1 / p2) to get:
+The quantity (v1 / v2) is the ratio of the volume at state 1 and state 2 and is called the compression ratio.
+If the B-CONCEPT_B-CONCEPT_speed I-CONCEPT_of the gas is much less than the B-CONCEPT_B-CONCEPT_speed I-CONCEPT_of I-CONCEPT_sound I-CONCEPT_of the gas, the B-CONCEPT_density I-CONCEPT_of the gas remains constant and the velocity I-CONCEPT_of the flow increases.
+Considering flow through a tube, as shown in the figure, if the flow is very gradually compressed (area decreases) and then gradually expanded (area increases), the flow conditions return to their original values.
+Engineers call this type of flow an isentropic flow; a combination of the Greek word "iso" (same) and entropy.
+Isentropic flows occur when the change in flow variables is small and gradual, such as the ideal flow through the nozzle shown above.
+We call this an isentropic expansion because of the area increase.
+If a supersonic flow is turned abruptly and the flow area decreases, shock waves are generated and the flow is irreversible.
+Derived flow variables, like the B-CONCEPT_speed I-CONCEPT_of I-CONCEPT_sound and the isentropic flow relations are slightly different for a calorically imperfect gas than the conditions predicted for a calorically perfect gas because some I-CONCEPT_of the energy I-CONCEPT_of the flow excites the vibrational modes I-CONCEPT_of the diatomic molecules I-CONCEPT_of nitrogen and oxygen in the air.
+On this page we have collected many of the important equations which describe an isentropic flow.
+We can determine the value of the constant by defining total conditions to be the pressure and B-CONCEPT_density when the flow is brought to rest isentropically.
+(You probably already have some idea of total conditions from experience with Bernoulli's equation).
+Eq #3:
+p / r^gam = constant = pt / rt^gam
+The dynamic pressure q is defined to be:
+Eq #5:
+q = (r * v^2) / 2 = (gam * p * M^2) / 2
+p / pt = [1 + M^2 * (gam-1)/2]^-[gam/(gam-1)]
+Eq #8:
+Notice the important role that the Mach number plays in all the equations on the right side of this slide.
+A synopsis of the report is included in NACA Report 1135.
+a^2 = R * T * {1 + (gamma - 1) / ( 1 + (gamma-1) * [(theta/T)^2 * e^(theta/T) /(e^(theta/T) -1)^2]) }
+where gamma is the ratio of specific heats for a perfect gas and theta is a thermal constant equal to 5500 degrees Rankine.
+Eq #11:
+Eq #14:
+You select an input variable by using the choice button labeled Input Variable.
+Next to the selection, you then type in the value of the selected variable.
+This means that for the same area ratio, there is a subsonic and a supersonic solution.
+The choice button at the right top selects the solution that is presented.
+The variable "Wcor/A" is the corrected airflow per unit area function which can be derived from the compressible B-CONCEPT_mass flow.
+This variable is only a function of the Mach number of the flow.
+If you are an experienced user of this calculator, you can use a sleek version of the program which loads faster on your computer and does not include these instructions.
+We can directly measure, or sense, the large scale action of the gas.
+The model, called the kinetic theory of gases, assumes that the molecules are very small relative to the distance between molecules.
+The individual molecules possess the standard physical properties of B-CONCEPT_mass, B-CONCEPT_momentum, and energy.
+The B-CONCEPT_force divided by the area is defined to be the pressure.
+The higher the B-CONCEPT_temperature, the greater the motion.
+In a solid, the location of the molecules relative to each other remains almost constant.
+The pressure produced by the ordered motion is called dynamic pressure.
+On this slide, we show a schematic of a liquid rocket engine.
+Liquid rocket engines are used on the Space Shuttle to place humans in orbit, on many un-manned missiles to place satellites in orbit, and on several high B-CONCEPT_speed research aircraft following World War II.
+In a liquid rocket, stored fuel and stored oxidizer are pumped into a combustion chamber where they are mixed and burned.
+Thrust is produced according to Newton's third law of motion.
+The smallest cross-sectional area of the nozzle is called the throat of the nozzle.
+You can explore the design and operation of a rocket nozzle with our interactive nozzle simulator program which runs on your browser.
+If the free stream pressure is given by p0, the thrust F equation becomes:
+F = m dot * Ve + (pe - p0) * Ae
+That's why a rocket will work in space, where there is no surrounding air, and a gas turbine or propeller will not work.
+There is also an efficiency parameter called the B-CONCEPT_specific I-CONCEPT_impulse which works for both types of rockets and greatly simplifies the performance analysis for rockets.
+As an object moves through a gas, the gas molecules are deflected around the object.
+As the B-CONCEPT_B-CONCEPT_speed I-CONCEPT_of the object increases towards the B-CONCEPT_B-CONCEPT_speed I-CONCEPT_of I-CONCEPT_sound, we must consider compressibility effects on the gas.
+The B-CONCEPT_density of the gas varies locally as the gas is compressed by the object.
+The edge of the cone is depicted two-dimensionally by the blue lines on the figure at the top of this page.
+M = v / a
+where asin is the trigonometric inverse sine function.
+You select an input variable by using the choice button labeled Input Variable.
+When you hit the red COMPUTE button, the output values change.
+If you are an experienced user of this calculator, you can use a sleek version of the program which loads faster on your computer and does not include these instructions.
+If the aircraft passes at a low B-CONCEPT_speed, typically less than 250 mph, the B-CONCEPT_density of the air remains constant.
+But for higher speeds, some of the energy of the aircraft goes into compressing the air and locally changing the B-CONCEPT_density of the air.
+Because of the importance of this B-CONCEPT_speed ratio, aerodynamicists have designated it with a special parameter called the Mach number in honor of Ernst Mach, a late 19th century physicist who studied gas dynamics.
+The Mach number M allows us to define flight regimes in which compressibility effects vary.
+For the lowest subsonic conditions, compressibility can be ignored.
+Supersonic conditions occur for Mach numbers greater than one, 1 < M < 3. Compressibility effects are important for supersonic aircraft, and shock waves are generated by the surface of the object.
+At these speeds, some of the energy of the object now goes into exciting the chemical bonds which hold together the nitrogen and oxygen molecules of the air.
+At hypersonic speeds, the chemistry of the air must be considered when determining forces on the object.
+The Space Shuttle re-enters the atmosphere at high hypersonic speeds, M ~ 25.
+Here's a Java program to calculate B-CONCEPT_B-CONCEPT_speed I-CONCEPT_of I-CONCEPT_sound and Mach number for different altitudes and B-CONCEPT_B-CONCEPT_speed.
+To change input values, click on the input box (black on white), backspace over the input value, type in your new value.
+Just click on the menu button and click on your selection.
+You can also download your own copy of the program to run off-line by clicking on this button:
+Within some problem domain, the amount of B-CONCEPT_mass remains constant --B-CONCEPT_mass is neither created nor destroyed.
+The B-CONCEPT_mass of any object is simply the volume that the object occupies times the B-CONCEPT_density of the object.
+There is no accumulation or destruction of B-CONCEPT_mass through the tube; the same amount of B-CONCEPT_mass leaves the tube as enters the tube.
+At any plane perpendicular to the center line of the tube, the same amount of B-CONCEPT_mass passes through.
+We call the amount of B-CONCEPT_mass passing through a plane the B-CONCEPT_mass flow rate.
+We can determine the value of the B-CONCEPT_mass flow rate from the flow conditions.
+A units check gives area x B-CONCEPT_length/B-CONCEPT_time x B-CONCEPT_time = area x B-CONCEPT_length = volume.
+The resulting definition of B-CONCEPT_mass flow rate is shown on the slide in red.
+From Newton's Second Law of Motion, the aerodynamic forces on an aircraft (lift and drag) are directly related to the change in B-CONCEPT_momentum of a gas with B-CONCEPT_time.
+If we desire a certain velocity, we know the area we have to provide to obtain that velocity.
+Considering the B-CONCEPT_mass flow rate equation, it would appear that for a given area, we could make the B-CONCEPT_mass flow rate as large as we want by setting the velocity very high.
+However, in real fluids, compressibility effects limit the B-CONCEPT_speed at which a flow can be forced through a given area.
+This is commonly referred to as flow choking and the details of the physics are given on a page considering compressible B-CONCEPT_mass flow rates.
+These equations describe how the velocity, pressure, B-CONCEPT_temperature, and B-CONCEPT_density of a moving fluid are related.
+The equations are a set of coupled differential equations and could, in theory, be solved for a given flow problem by using methods from calculus.
+Recently, high B-CONCEPT_speed computers have been used to solve approximations to the equations using a variety of techniques like finite difference, finite volume, finite element, and spectral methods.
+The set of equations are:
+X - B-CONCEPT_Momentum: partial(r * u)/partialt + partial(r * u^2)/partialx + partial(r * u * v)/partialy + partial(r * u * w)/partialz = - partialp/partialx
++ 1/Re * {partial(u * tauxx + v * tauxy + w * tauxz)/partialx + partial(u * tauxy + v * tauyy + w * tauxz)/partialy + partial(u * tauxz + v * tauyz + w * tauzz)/partialz}
+The q variables are the heat B-CONCEPT_flux components and Pr is the Prandtl number which is a similarity parameter that is the ratio of the viscous stresses to the thermal stresses.
+Convection is a physical process that occurs in a flow of gas in which some property is transported by the ordered motion of the flow.
+The terms on the right hand side of the B-CONCEPT_momentum equations that are multiplied by the inverse Reynolds number are called the diffusion terms.
+To solve a flow problem, you have to solve all five equations simultaneously; that is why we call this a coupled system of equations.
+An equation of state relates the pressure, B-CONCEPT_temperature, and B-CONCEPT_density of the gas.
+The key point here is that if there is no net B-CONCEPT_force resulting from unbalanced B-CONCEPT_forces acting on an object (if all the external B-CONCEPT_forces cancel each other out), then the object maintains a constant velocity.
+And if an additional external B-CONCEPT_force is applied, the velocity changes because of the B-CONCEPT_force.
+An aircraft in flight is a particularly good example of the first law of motion.
+There are four major forces acting on an aircraft; lift, weight, thrust, and drag.
+Now if the pilot changes the thrust of the engine, the thrust and drag are no longer in balance.
+If the thrust is increased, the aircraft accelerates and the velocity increases.
+The drag of the aircraft depends on the square of the velocity.
+So the drag increases with increased velocity.
+Remember, in this simple example, that we are only considering the motion of the aircraft in a horizontal direction; we are neglecting any effects of the thrust on weight or on lift.
+On real aircraft, increasing the throttle setting increases the fuel usage and decreases the weight, and the increase in velocity increases the lift as well as the drag.
+Each of these changes affect the vertical motion of the aircraft, but to simplify our understanding of Newton's laws, we are neglecting these effects in this example.
+It's important to point out the role of engine thrust in this example.
+The motion of an aircraft through the air can be explained and described by physical principals discovered over 300 years ago by Sir Isaac Newton.
+He developed the theories of gravitation in 1666, when he was only 23 years old.
+Some twenty years later, in 1686, he presented his three laws of motion in the "Principia Mathematica Philosophiae Naturalis."
+The laws are shown above, and the application of these laws to aerodynamics are given on separate slides.
+If that velocity is zero, then the object remains at rest.
+The law defines a B-CONCEPT_force to be equal to change in B-CONCEPT_momentum (B-CONCEPT_mass B-CONCEPT_times velocity) per change in B-CONCEPT_time.
+For an object with a constant B-CONCEPT_mass m, the second law states that the B-CONCEPT_force F is the product of an object's B-CONCEPT_mass and its B-CONCEPT_acceleration a:
+For an external applied B-CONCEPT_force, the change in velocity depends on the B-CONCEPT_mass of the object.
+The equation works both ways.
+The third law states that for every action (B-CONCEPT_force) in nature there is an equal and opposite reaction.
+The B-CONCEPT_momentum is defined to be the B-CONCEPT_mass of an object m times its velocity v. So the differential equation for B-CONCEPT_force F is:
+If the B-CONCEPT_mass is a constant and using the definition of B-CONCEPT_acceleration a as the change in velocity with B-CONCEPT_time, the second law reduces to the more familiar product of a B-CONCEPT_mass and an B-CONCEPT_acceleration:
+Since B-CONCEPT_acceleration is a change in velocity with a change in B-CONCEPT_time t, we can also write this equation in the third form shown on the slide:
+The important fact is that a B-CONCEPT_force will cause a change in velocity; and likewise, a change in velocity will generate a B-CONCEPT_force.
+The equations shown here are actually vector equations and can be applied in each of the component directions.
+In other words, if object A exerts a B-CONCEPT_force on object B, then object B also exerts an equal and opposite B-CONCEPT_force on object A. Notice that the B-CONCEPT_forces are exerted on different objects.
+In this problem, the air is deflected downward by the action of the airfoil, and in reaction the wing is pushed upward.
+The engine produces hot exhaust gases which flow out the back of the engine.
+In reaction, a thrusting B-CONCEPT_force is produced in the opposite direction.
+As an object moves through a gas, the gas molecules are deflected around the object.
+As the B-CONCEPT_B-CONCEPT_speed I-CONCEPT_of the object increases towards the B-CONCEPT_B-CONCEPT_speed I-CONCEPT_of I-CONCEPT_sound, we must consider compressibility effects on the gas.
+For compressible flows with little or small flow turning, the flow process is reversible and the entropy is constant.
+The change in flow properties are then given by the isentropic relations (isentropic means "constant entropy").
+The Mach number and B-CONCEPT_speed of the flow decrease across a shock wave.
+But under low hypersonic flow conditions or high total B-CONCEPT_temperature conditions, the specific heat ratio changes and air is then said to be calorically imperfect.
+The ratio of the total pressure is shown on the slide.
+There are two groups of equations and two slides; one for the calorically perfect gas, and the other for the calorically imperfect gas.
+for a compressible gas while ignoring viscous effects.
+The equations can be applied to the two dimensional flow past a wedge for the following combination of free stream Mach number M and wedge angle c :
+where gam is the ratio of specific heats.
+M1^2 = [(gam - 1) * M^2 + 2] / [2 * gam * M^2 - (gam - 1)]
+T1 / T0 = [2 * gam * M^2 - (gam - 1)] * [(gam - 1) * M^2 + 2] / [(gam + 1)^2 * M^2]
+The static pressure p increases to:
+The total pressure pt decreases according to:
+The right hand side of all these equations depend only on the free stream Mach number.
+Now, turning to the calorically imperfect gas, the procedure for determining the conditions across a normal shock are much more complicated than the procedure for the calorically perfect gas.
+The details of the analysis were given by Eggars in NACA Report 959.
+For the calorically imperfect case, additional terms are added to the energy equation to account for the vibration of the molecules at high temperatures.
+There is no known direct solution to this equation, so it must be solved iteratively for the downstream B-CONCEPT_temperature.
+There is more complete shock simulation program that is also available at this web site.
+The amount of thrust produced by the engine depends on the B-CONCEPT_mass flow rate through the engine, the exit velocity of the flow, and the pressure at the exit of the engine.
+This nozzle configuration is called a convergent-divergent, or CD, nozzle.
+Downstream of the throat, the geometry diverges and the flow is isentropically expanded to a supersonic Mach number that depends on the area ratio of the exit to the throat.
+The exit velocity, pressure, and B-CONCEPT_mass flow through the nozzle determines the amount of thrust produced by the nozzle.
+mdot = r * V * A = constant
+If we differentiate this equation, we obtain:
+r * V * dV = - dp
+where R is the gas constant and T is B-CONCEPT_temperature, to get:
+For our CD nozzle, if the flow in the throat is subsonic, the flow downstream of the throat will decelerate and stay subsonic.
+On the other hand, if the converging section is small enough so that the flow chokes in the throat, then a slight increase in area causes the flow to go supersonic.
+Then an increase in the area (dA > 0) produces an increase in the velocity (dV > 0).
+- (M^2) * dV / V = dr / r
+tells us that for M > 1, the change in B-CONCEPT_density is much greater than the change in velocity.
+To conserve both B-CONCEPT_mass and B-CONCEPT_momentum in a supersonic flow, the velocity increases and the B-CONCEPT_density decreases as the area is increased.
+There are several different types of jet engines, but all jet engines have some partsin common.
+All jet engines have a nozzle which produces the thrust as described on the thrust equation slide.
+The static pressure at the exit of the nozzle is equal to free stream static pressure, unless the exiting flow is expanded to supersonic conditions.
+The ratio of the nozzle total to static pressure ratio is called the nozzle pressure ratio NPR.
+ht8 = h8 + V8 ^2 / 2 / nn
+Using this velocity, and the B-CONCEPT_mass flow rate through the engine, we can solve the thrust equation for the amount of thrust produced by the nozzle.
+We can also determine the nozzle total B-CONCEPT_temperature from the engine B-CONCEPT_temperature ratio , ETR.
+ETR depends on the B-CONCEPT_temperature ratio of all the other engine components.
+With this information, we can solve for the thrust developed by a jet engine.
+You can explore the design and operation of turbojet and rocket nozzles with our interactive nozzle simulator program which runs on your browser.
+A nozzle is a relatively simple device, just a specially shaped tube through which hot gases flow.
+As shown above, nozzles come in a variety of shapes and sizes depending on the mission of the aircraft.
+Simple turbojets, and turboprops, often have a fixed geometry convergent nozzle as shown on the left of the figure.
+Mixing of the two flows provides some thrust enhancement and these nozzles also tend to be quieter than convergent nozzles.
+All of the nozzles we have discussed thus far are round tubes.
+The internal nozzle is usually the responsibility of the engine manufacturer.
+If the B-CONCEPT_B-CONCEPT_speed I-CONCEPT_of the object is much less than the B-CONCEPT_B-CONCEPT_speed I-CONCEPT_of I-CONCEPT_sound I-CONCEPT_of the gas, the B-CONCEPT_density I-CONCEPT_of the gas remains constant and the flow I-CONCEPT_of gas can be described by conserving B-CONCEPT_momentum, and energy.
+As the B-CONCEPT_B-CONCEPT_speed I-CONCEPT_of the object approaches the B-CONCEPT_B-CONCEPT_speed I-CONCEPT_of I-CONCEPT_sound, we must consider compressibility effects on the gas.
+For compressible flows with little or small flow turning, the flow process is reversible and the entropy is constant.
+The change in flow properties are then given by the isentropic relations (isentropic means "constant entropy").
+But when an object moves faster than the B-CONCEPT_speed I-CONCEPT_of I-CONCEPT_sound, and there is an abrupt decrease in the flow area, shock waves are generated in the flow.
+Shock waves are very small regions in the gas where the gas properties change by a large amount.
+Across a shock wave, the static pressure, B-CONCEPT_temperature, and gas B-CONCEPT_density increases almost instantaneously.
+But because the flow is non-isentropic, the total pressure downstream of the shock is always less than the total pressure upstream of the shock; there is a loss of total pressure associated with a shock wave.
+The ratio of the total pressure is shown on the slide.
+Because total pressure changes across the shock, we can not use the usual (incompressible) form of Bernoulli's equation across the shock.
+The Mach number and B-CONCEPT_speed of the flow also decrease across a shock wave.
+If the shock wave is inclined to the flow direction it is called an oblique shock.
+The equations presented here were derived by considering the conservation of B-CONCEPT_mass, B-CONCEPT_momentum, and energy for a compressible gas while ignoring viscous effects.
+The equations have been further specialized for a two-dimensional flow (not three dimensional axisymmetric) without heat addition.
+The equations only apply for those combinations of free stream Mach number and wedge angle for which an attached oblique shock occurs.
+If the Mach number is too low, or the wedge angle too high, the normal shock equations should be used.
+where tan is the trigonometric tangent function, cot is the co-tangent function:
+and sin^2 is the square of the sine.
+The total B-CONCEPT_temperature across the shock is constant, but the static B-CONCEPT_temperature T increases in zone 1 to become:
+p1 / p0 = [2 * gam * M^2 * sin^2(s)-(gam -1)] / (gam + 1)
+r1 / r0 = [(gam + 1) * M^2 * sin^2(s)] / [(gam -1) * M^2 * sin^2(s) + 2]
+The equations describing oblique shocks were published in NACA report (NACA-1135) in 1951.
+Or click on the input box, select and replace the old value, and hit Enter to send the new value to the program.
+The black lines show the streamlines of the flow past the wedge.
+Notice that downstream (to the right) of the shock wave, the lines are closer together than upstream.
+This indicates an increase in the B-CONCEPT_density of the flow.
+There is more complete shock simulation program that is also avaliable at this web site.
+.
+Individual atoms can combine with other atoms to form molecules.
+Oxygen and nitrogen, which are the major components of air, occur in nature as diatomic (two atom) molecules.
+We call this property of matter the phase of the matter.
+The three normal phases of matter have unique characteristics which are listed on the slide.
+A liquid will take the shape of its container with a free surface in a gravitational field.
+In microgravity, a liquid forms a ball inside a free surface.
+A gas fills its container, taking both the shape and the volume of the container.
+Fluids (Liquids and Gases)
+But if we lower the B-CONCEPT_temperature below 0 degrees Celsius, or 32 degrees Fahrenheit, water changes its phase into a solid called ice.
+Plasma - the "fourth phase"
+In recent times, we have begun to study matter at the very high temperatures and pressures which typically occur on the Sun, or during re-entry from space.
+Under these conditions, the atoms themselves begin to break down; electrons are stripped from their orbit around the nucleus leaving a positively charged ion behind.
+NASA is currently doing research into the use of plasmas for an ion propulsion system.
+The B-CONCEPT_density of the gas varies locally as the gas is compressed by the object.
+If the flow area increases, however, a different flow phenomenon is observed.
+It is also written as shown on the slide tan^-1. The meaning of atan can be explained by these two equations:
+atan(a) = b
+The amount of the increase depends on the incoming Mach number and the angle of the expansion.
+Here's a Java program which solves for the Prandtl-Meyer angle .
+You select an input variable by using the choice button labeled Input Variable.
+The default input variable is the Mach number, and by varying Mach number you can see the effect on Prandtl-Meyer angle.
+You can also download your own copy of the program to run off-line by clicking on this button:
+Button to Download a Copy of the Program
+To better understand certain problems involving aircraft and propulsion it is necessary to use some mathematical ideas from trigonometry the study of triangles.
+Let us begin with some definitions and terminology which we will use on this slide.
+The word "hypotenuse" comes from two Greek words meaning "to stretch", since this is the longest side.
+A = a * a = a^2
+So the Pythagorean theorem states the area h^2 of the square drawn on the hypotenuse is equal to the area a^2 of the square drawn on side a plus the area b^2 of the square drawn on side b.
+We begin with a right triangle on which we have constructed squares on the two sides, one red and one blue.
+We are going to break up the pieces of these two squares and move them into the grey square area on the hypotenuse.
+We won't loose any material during the operation.
+You work through the construction by clicking on the button labeled "Next".
+You can go "Back" and repeat a section, or go all the way back tothe beginning by clicking on "Reset".
+What is it doing?
+Using the terminology from the figure at the top of this page, the dimensions of the red rectangle are:
+vertical B-CONCEPT_length = b
+The next step is to move the other blue triangle into the hypotenuse square.
+(We are half way there!) The next step is to slide the form of the original triangle to the left into the red region.
+The triangle cuts the red region into three pieces, two triangles and a small yellow square.
+The horizontal B-CONCEPT_length of the red region is:
+horizontal B-CONCEPT_length = a + (b - a) = b
+Again it's a perfect fit.
+Now if we look at the grey square that remains in the hypotenuse square, we see that its dimensions are b - a; the long side of the triangle minus the short side.
+It's a perfect fit and we have used all the material from the original red and blue squares.
+A ramjet uses the forward B-CONCEPT_speed of the aircraft to compress the incoming air and, therefore, has fewer moving parts than a turbine engine.
+In the computer drawing, we have cut out a portion of the engine to have a look inside.
+At the front of the engine, to the left, is the inlet, which brings outside air into the engine.
+At the exit of the inlet, the air is at a much higher pressure than free stream conditions.
+The resulting flame is stabilized in the engine by the red flame holder ring.
+To analyze ramjet operation, engineers have adopted a numbering scheme for the various parts.
+You can vary the performance of any of the engine parts and investigate the effects on thrust and fuel flow.
+On the applet, choose "Ramjet," and any engine part from the image in the upper left of the program.
+Different propulsion systems develop thrust in different ways, but all thrust is generated through some application of Newton's third law of motion.
+To maintain the flow through the nozzle, the combustion must occur at a pressure that is higher than the pressure at the nozzle exit.
+Ramjets produce thrust only when the vehicle is already moving; ramjets cannot produce thrust when the engine is stationary or static.
+The higher the B-CONCEPT_speed of the vehicle, the better a ramjet works until aerodynamic losses become a dominant factor.
+Shock waves present in the inlet cause performance losses for the propulsion system.
+The new supersonic combustion ramjet, or scramjet, solves this problem by performing the combustion supersonically in the burner.
+Ramjets are ideally suited for very high B-CONCEPT_speed flight within the atmosphere.
+EngineSim is an interactive Java applet which allows you to test the design of ramjet engines.
+A ramjet engine provides a simple, light propulsion system for high B-CONCEPT_speed flight.
+Unlike a turbojet engine, ramjets and scramjets have no moving parts, only an inlet, a combustor that consists of a fuel injector and a flame holder, and a nozzle.
+The flow exiting a scramjet inlet is supersonic and has fewer shock losses than a ramjet inlet at the same vehicle velocity.
+Burning occurs subsonically in the ramjet and supersonically in the scramjet.
+Only for a unique design condition is the exit pressure equal the free stream static pressure.
+To better understand certain problems involving aircraft and propulsion it is necessary to use some mathematical ideas from trigonometry, the study of triangles.
+Using the terminology from the sine, cosine, and tangent page, we have made the side opposite the angle c equal to 1.0 for the red triangle.
+What is the ratio of the opposite to the adjacent for the blue triangle?
+tan(c) = (1 * m) / (2 * m) = .5
+Aerodynamic forces are generated between the gas and the object and the magnitude of these forces depend on many factors associated with the object and the gas.
+So, the Mach number of the object and the Mach number of the flow are the same number.
+The static B-CONCEPT_temperature is the B-CONCEPT_temperature of the gas if it had no ordered motion and was not flowing.
+The stagnation B-CONCEPT_temperature is important because it is the B-CONCEPT_temperature that occurs at a stagnation point on the object.
+Because the total B-CONCEPT_temperature does not change through a shock wave, the stagnation B-CONCEPT_temperature and and the total B-CONCEPT_temperature have the same value at a stagnation point.
+But under low hypersonic conditions, air is calorically imperfect.
+Derived flow variables, like the B-CONCEPT_speed I-CONCEPT_of I-CONCEPT_sound and the isentropic flow relations are slightly different for a calorically imperfect gas than the conditions predicted for a calorically perfect gas as described below.
+A gas that follows the ideal equation of state is said to be thermally perfect and a gas that does not follow the ideal equation of state is thermally imperfect.
+With even more B-CONCEPT_speed and B-CONCEPT_temperature, some of the electrons surrounding the nitrogen and oxygen atoms are stripped free to produce a mixture of ionized nitrogen, oxygen, and free electrons.
+The resulting plasma can conduct an electric current and is influenced by electro-magnetic forces.
+On this page we present the physics which govern the reflection of a shock wave from a solid wall and include a Java program that you can use to investigate this flow problem.
+The flow in zone "1" is parallel to wedge "a" and the conditions are specified by the oblique shock relations given on another page.
+Since the flow in zone "1" is parallel to wedge "a", it strikes the solid wall at angle "a" as shown by the white dashed line.
+Across each shock and refection the Mach number of the flow is decreased.
+Here's a Java program which solves the reflected shock problem.
+Input to the program is made using the sliders, or input boxes at the lower left.
+Output from the program is displayed in output boxes at the lower right.
+The user selects the Zone to display by using the choice button.
+You can zoom in or out of the graphic by using the slider at the top.
+If you loose the graphic, click on "Find" to restore the initial display.
+A User's Manual of the program is available at this web site.
+Aerodynamic forces are generated between the gas and the object.
+The magnitude of these forces depend on the shape of the object, the B-CONCEPT_speed of the object, the B-CONCEPT_mass of the gas going by the object and on two other important properties of the gas; the viscosity, or stickiness, of the gas and the compressibility, or springiness, of the gas.
+If two experiments have the same values for the similarity parameters, then the relative importance of the forces are being correctly modeled.
+Representative values for the properties of air are given on another page, but the actual value of the parameter depends on the state of the gas and on the altitude.
+The important similarity parameter for viscosity is the Reynolds number.
+Then:
+The Euler equations can then be used to model the flow.
+nu = mu / r
+Re = V * L / nu
+To change input values, click on the input box (black on white), backspace over the input value, type in your new value, and hit the Enter key on the keyboard (this sends your new value to the program).
+The non-dimensional Mach number and Reynolds number are displayed in white on blue boxes.
+Ref = V / nu
+You can determine the Reynolds number per foot using the calculator by specifycing the B-CONCEPT_length scale to be 1 foot.
+A general derivation of the thrust equation shows that the amount of thrust generated depends on the B-CONCEPT_mass flow through the engine and the exit velocity of the gas.
+The X-1A, used to break the "sound barrier", and the X-15 were rocket-powered airplanes.
+In a rocket engine , fuel and a source of oxygen, called an oxidizer, are mixed and exploded in a combustion chamber.
+The combustion produces hot exhaust which is passed through a nozzle to accelerate the flow and produce thrust.
+Under normal B-CONCEPT_temperature conditions, the propellants do not burn; but they will burn when exposed to a source of heat provided by an igniter.
+Liquid rockets tend to be heavier and more complex because of the pumps and storage tanks.
+The propellants are loaded into the rocket just before launch.
+The X-15 was powered by a liquid rocket engine and carried a single pilot to a height of more than 60 miles above the earth.
+The X-15 flew more than six times the B-CONCEPT_speed I-CONCEPT_of I-CONCEPT_sound nearly 40 years ago.
+The hot exhaust is passed through a nozzle which accelerates the flow.
+All of these variables depend on the design of the nozzle.
+The smallest cross-sectional area of the nozzle is called the throat of the nozzle.
+The exit pressure is only equal to free stream pressure at some design condition.
+Notice that there is no free stream B-CONCEPT_mass times free stream velocity term in the thrust equation because no external air is brought on board.
+Since the oxidizer is carried on board the rocket, rockets can generate thrust in a vacuum where there is no other source of oxygen.
+The thrust equation shown above works for both liquid rocket and solid rocket.
+If the aircraft passes at a low B-CONCEPT_speed, typically less than 250 mph, it is observed that the B-CONCEPT_density of the air remains constant.
+For higher speeds, some of the energy of the aircraft goes into compressing the air and locally changing the B-CONCEPT_density of the air.
+This compressibility effect alters the amount of resulting B-CONCEPT_force on the aircraft since the aerodynamic B-CONCEPT_force depends on the air B-CONCEPT_density.
+Near and beyond the B-CONCEPT_speed I-CONCEPT_of I-CONCEPT_sound, about 330 m/s or 760 mph at sea level, small disturbances in the flow are transmitted to other locations isentropically or with constant entropy.
+The B-CONCEPT_B-CONCEPT_speed I-CONCEPT_of I-CONCEPT_sound is equal to the B-CONCEPT_B-CONCEPT_speed I-CONCEPT_of transmission I-CONCEPT_of small, isentropic disturbances in the flow.
+we begin with the conservation of B-CONCEPT_momentum equation:
+rho * V dV = - dp
+We recognize that:
+So,
+- (V^2 / a^2) dV / V = drho / rho
+For the low subsonic conditions, compressibility can be ignored.
+If the Mach number is near one, the square of the Mach number is also nearly equal to one.
+As the B-CONCEPT_B-CONCEPT_speed increases beyond the B-CONCEPT_B-CONCEPT_speed I-CONCEPT_of I-CONCEPT_sound, the flight Mach number is greater than one M > 1 and the flow is said to be supersonic or hypersonic.
+Compressibility effects become more important with higher Mach numbers.
+To better understand the science of propulsion it is necessary to use some mathematical ideas from vector analysis.
+Most people are introduced to vectors in high school or college, but for the elementary and middle school students, or the mathematically-challenged:
+Vectors allow us to look at complex, multi-dimensional problems as a simpler group of one-dimensional problems.
+We observe that there are some quantities and processes in our world that depend on the direction in which they occur, and there are some quantities that do not depend on direction.
+For example, the volume of an object, the three-dimensional space that an object occupies, does not depend on direction.
+If we have a 5 cubic foot block of iron and we move it up and down and then left and right, we still have a 5 cubic foot block of iron.
+On the other hand, the location, of an object does depend on direction.
+If we move the 5 cubic foot block 5 miles to the north, the resulting location is very different than if we moved it 5 miles to the east.
+Vector quantities have two characteristics, a magnitude and a direction.
+When comparing two vector quantities of the same type, you have to compare both the magnitude and the direction.
+When doing any mathematical operation on a vector quantity (like adding, subtracting, multiplying ..)
+you have to consider both the magnitude and the direction.
+These quantities can be determined by application of Newton's laws for vectors.
+The scalar quantities include most of the thermodynamic state variables involved with the propulsion system, such as the B-CONCEPT_density, pressure, and B-CONCEPT_temperature of the propellants.
+There are some quantities, like B-CONCEPT_speed, which have very special definitions for scientists.
+By definition, B-CONCEPT_speed is the scalar magnitude of a velocity vector.
+While Newton's laws describe the resulting motion of a solid, there are special equations which describe the motion of fluids, gases and liquids, through the propulsion system.
+For any physical system, the B-CONCEPT_mass, B-CONCEPT_momentum, and energy of the system must be conserved.
+This results in a coupled set of equations, called the Navier-Stokes equations, which describe how fluids behave when subjected to external forces.
+Thrust is produced by passing the hot exhaust from the combustion of a fuel through a nozzle.
+The external air that is brought into the propulsion system becomes the working fluid, much like a turbojet engine.
+In the 1960's an improved ramjet was proposed in which the combustion in the burner would occur supersonically.
+Tests were begun to design the supersonic burner and to better integrate the inlet and nozzle with the airframe.
+Shown above is an artist drawing of the X-43A scramjet-powered aircraft.
+The rocket powers the X-43 to near Mach 7 where the X-43 separates from the rocket and flies using the scramjet propulsion system.
+Thermodynamics deals only with the large scale response of a system which we can observe and measure in experiments.
+Entropy has a variety of physical interpretations, including the statistical disorder of the system, but for our purposes, let us consider entropy to be just another property of the system, like B-CONCEPT_enthalpy or B-CONCEPT_temperature.
+The final entropy must be greater than the initial entropy for an irreversible process:
+Eventually, they both achieve the same equilibrium B-CONCEPT_temperature.
+If you find errors in the program or would like to suggest improvements, please send an e-mail to benson@grc.nasa.gov.
+This web page contains the on-line version of the program.
+It includes an on-line user's manual which describes the various options available in the program and includes hyperlinks to pages in the NASA's Guide to Hypersonics and Beginner's Guide to Compressible Flow describing the math and science of shock waves.
+You can download these versions of the program to your computer by clicking on this yellow button:
+A black box with yellow numbers is an output box and the value is computed by the program.
+There are some choices which you must make regarding the display of computed results by using a choice box.
+SCREEN
+On the lower left side of the screen is the input panel.
+You can choose from three different flow problems using the buttons on the blue bar at the top of the graphics window: a single wedge, a double wedge in series, or opposed wedges.
+For the opposed wedges, you generate reflected shock waves.
+(For some highly inclined lines, it may be difficult to read the shock number.)
+Normal shocks are colored magenta, and the beginning and end of an expansion fan are drawn as black lines.
+Slip lines are drawn in black on the graphic.
+You can also move the graphic by clicking in the window, holding down on the left mouse button and dragging the graphic to a desired location.
+If you lose the graphic, you can bring it back to its default position and size by clicking on the "Find" button on the blue bar.
+NUMERICAL INPUT
+You can also specify the angles for the wedges.
+This input is given by the Spacing variable.
+You select which zone to display by using the white and red zone choice button.
+Angle is the wedge angle that is generating the shock in the selected zone, while Turning is the total amount that the flow has been turned relative to free stream.
+NEW FEATURES
+Changes from previous versions of the program include:
+The name and layout of the program was changed and the input manual was developed for ShockModeler.
+On 20 Dec 05 version 1.1b was released.
+As an object moves through the atmosphere, the gas molecules of the atmosphere near the object are disturbed and move around the object.
+Aerodynamic forces are generated between the gas and the object.
+To properly model these effects, aerodynamicists use similarity parameters, which are ratios of these effects to other forces present in the problem.
+Representative values for the properties of air are given on another page, but the actual value of the parameter depends on the state of the gas and on the altitude.
+Aerodynamic forces depend in a complex way on the viscosity of the gas.
+The flow of gas reacts to the edge of the boundary layer as if it was the physical surface of the object.
+To make things more confusing, the boundary layer may separate from the body and create an effective shape much different from the physical shape.
+From a detailed analysis of the B-CONCEPT_momentum conservation equation, the inertial forces are characterized by the product of the B-CONCEPT_density r times the velocity V times the gradient of the velocity dV/dx. The viscous forces are characterized by the viscosity coefficient mu times the second gradient of the velocity d^2V/dx^2.
+The Reynolds number Re then becomes:
+As an object moves through the gas, the gas molecules move around the object.
+Near and beyond the B-CONCEPT_speed I-CONCEPT_of I-CONCEPT_sound (about 330 m/s or 700 mph on earth), shock waves are produced that affect the lift and drag I-CONCEPT_of the object.
+The important similarity parameter for compressibility is the Mach number - M, the ratio I-CONCEPT_of the velocity I-CONCEPT_of the object to the B-CONCEPT_speed I-CONCEPT_of I-CONCEPT_sound a.
+The Mach number appears as a scaling parameter in many of the equations for compressible flows, shock waves, and expansions.
+You will see the output boxes (yellow on black) change value.
+You can use either Imperial or Metric units and you can input either the Mach number or the B-CONCEPT_speed by using the menu buttons.
+If you are an experienced user of this calculator, you can use a sleek version of the program which loads faster on your computer and does not include these instructions.
+A 90 degree angle is called a right angle which gives the right triangle its name.
+If we know the value of c, we then know that the value of d:
+90 + c + d = 180
+We define the side of the triangle opposite from the right angle to be the hypotenuse.
+It is the longest side of the three sides of the right triangle.
+The remaining side we label a for "adjacent".
+Let us start with some definitions.
+tan = o / a
+To demonstrate this fact, let's study the three figures in the middle of the page.
+In this example, we have an 8 foot ladder that we are going to lean against a wall.
+The wall is 8 feet high, and we have drawn white lines on the wall and blue lines along the ground at one foot intervals.
+The B-CONCEPT_length of the ladder is fixed.
+The ladder, ground, and wall form a right triangle.
+The ratio of the distance from the wall (a - adjacent), to the B-CONCEPT_length of the ladder (h - hypotenuse), is 2/8 = .25.
+(On another page we will show that if the ladder was twice as long (16 feet), and inclined at the same angle(75.5 degrees), that it would sit twice as far (4 feet) from the wall.
+You can check this distance by using the Pythagorean Theorem that relates the sides of a right triangle:
+o^2 = 8^2 - 2^2
+The ratio of the opposite to the hypotenuse is .967 and defined to be the sine of the angle c = 75.5 degrees.
+As shown on the figure, the ladder is now inclined at a lower angle than in the first example.
+The angle is 60 degrees, and the ratio of the adjacent to the hypotenuse is now 4/8 = .5 .
+Decreasing the angle c increases the cosine of the angle because the hypotenuse is fixed and the adjacent increases as the angle decreases.
+Mathematicians call this situation a function.
+If we incline the ladder so that the base is 6.938 feet from the wall, the angle c becomes 30 degrees and the ratio of the adjacent to the hypotenuse is .866.
+sin(c = 60 degrees) = cos (c = 30 degrees)
+Since the sine, cosine, and tangent are all functions of the angle c, we can determine (measure) the ratios once and produce tables of the values of the sine, cosine, and tangent for various values of c. Later, if we know the value of an angle in a right triangle, the tables will tell us the ratio of the sides of the triangle.
+Some examples of problems involving triangles and angles include the forces on an aircraft in flight, the application of torques, and the resolution of the components of a vector.
+The smallest cross-sectional area of the nozzle is called the throat of the nozzle.
+The hot exhaust flow is choked at the throat, which means that the Mach number is equal to 1.0 in the throat and the B-CONCEPT_mass flow rate m dot is determined by the throat area.
+The area ratio from the throat to the exit Ae sets the exit velocity Ve and the exit pressure pe.
+If the free stream pressure is given by p0, the thrust F equation becomes:
+F = m dot * Ve + (pe - p0) * Ae
+Notice that there is no free stream B-CONCEPT_mass times free stream velocity term in the thrust equation because no external air is brought on board.
+Since the oxidizer is mixed into the propellant, solid rockets can generate thrust in a vacuum where there is no other source of oxygen.
+The thrust equation given above works for both liquid and solid rocket engines.
+The aircraft is said to be hypersonic.
+The molecules break apart producing an electrically charged plasma around the aircraft.
+Strong shock waves are generated on the lower surface of the spacecraft.
+The only manned aircraft to currently fly in this regime are the American Space Shuttle, the Russian Soyuz spacecraft, and the Chinese Shenzhou spacecraft.
+The figure shows the Shuttle after it has passed through the re-entry regime.
+The Shuttle uses a rocket propulsion system to get into orbit, but during re-entry the aircraft is actually an un-powered glider.
+Small steering rockets are used for maneuvering early in the re-entry because the low B-CONCEPT_density of the air at altitudes above 50 miles makes aerodynamic surfaces ineffective.
+On the leading edge of the wings, carbon-cabon composite material is used to withstand the heat.
+The change of phase from solid to liquid to gas and the convection of the flow away from the spacecraft help to protect the astronauts from the heat of re-entry.
+Thermodynamics is a branch of physics which deals with the energy and work of a system.
+We are going to be using specific values of the state variables.
+This allows us to derive relations between variables without regard for the amount of the substance that we have.
+We can multiply the specific variable by the quantity of the substance at any B-CONCEPT_time to determine the actual value of the flow variable.
+The B-CONCEPT_heat I-CONCEPT_capacity is a constant that tells how much B-CONCEPT_heat is added per unit B-CONCEPT_temperature rise.
+The value of the constant is different for different materials and depends on the process.
+B-CONCEPT_Heat I-CONCEPT_capacity is not a state variable.
+From the definition of B-CONCEPT_enthalpy:
+delta h = delta e + p * delta v
+The B-CONCEPT_enthalpy, internal energy, and volume are all changed, but the pressure remains the same.
+We have added a subscript "p" to the specific B-CONCEPT_heat I-CONCEPT_capacity to remind us that this value only applies to a constant pressure process.
+p * v = R * T
+delta e = delta q - delta w
+Even though the B-CONCEPT_temperature change is the same for this process and the constant pressure process, the value of the specific B-CONCEPT_heat I-CONCEPT_capacity is different.
+Because we have selected the constant volume process to give the same change in B-CONCEPT_temperature as our constant pressure process, we can substitute the expression given above for "delta e" into the B-CONCEPT_enthalpy equation.
+In general, you can't make this substitution because a constant pressure process and a constant volume process produce different changes in B-CONCEPT_temperature If we substitute the expressions for "delta e", "p * delta v", and "delta h" into the B-CONCEPT_enthalpy equation we obtain:
+cp * delta T = cv * delta T + R * delta T
+dividing by "delta T" gives the relation:
+This rather remarkable result has been derived from thermodynamic relations, which are based on observations of physical systems and processes.
+"Gamma" is just a number whose value depends on the state of the gas.
+which deals with the energy and work of a system.
+As the flight Mach number increases above Mach = 3, some of the kinetic energy of the moving object is converted into heat.
+Many fluid dynamics processes, like isentropic flows and shock waves, are altered by real gas effects.
+At subsonic and low supersonic Mach numbers, air is calorically perfect.
+cv = (cv)perf * (1 + (gamp - 1) * [(theta/T)^2 * e^(theta/T) /(e^(theta/T) -1)^2])
+cp = (cp)perf * (1 + ((gamp - 1)/gamp) * [(theta/T)^2 * e^(theta/T) /(e^(theta/T) -1)^2])
+gam = 1 + (gamp - 1) / ( 1 + (gamp-1) * [(theta/T)^2 * e^(theta/T) /(e^(theta/T) -1)^2])
+The variation of the value of the specific heat capacities with B-CONCEPT_temperature causes the values of many derived functions and processes to also become functions of B-CONCEPT_temperature in hypersonic flows.
+We will discuss the details of various propulsion systems on some other pages.
+For right now, let us just think of the propulsion system as some machine which accelerates a gas.
+When dealing with a gas, the basic thrust equation is given as:
+F = mdot * Ve + (pe - p0) * Ae
+Using algebra, let us divide by mdot:
+F = mdot * Veq
+The total impulse (I) of a rocket is defined as the average thrust B-CONCEPT_times the total B-CONCEPT_time of firing.
+On the slide we show the total B-CONCEPT_time as "delta t".
+I = F * delta t
+Since the thrust may change with B-CONCEPT_time, we can also define an integral equation for the total impulse.
+Using the symbol (Sdt) for the integral, we have:
+I = S F dt
+Substituting the equation for thrust given above:
+I = S (mdot * Veq) dt
+where g0 is the gravitational B-CONCEPT_acceleration constant (32.2 ft/sec^2 in English units, 9.8 m/sec^2 in metric units).
+Second, it is an indication of engine efficiency.
+The engine with the higher value of B-CONCEPT_specific I-CONCEPT_impulse is more efficient because it produces more thrust for the same amount of propellant.
+Third, it simplifies our mathematical analysis of rocket thermodynamics.
+Fourth, it gives us an easy way to "size" an engine during preliminary analysis.
+This information determines the physical size of the engine.
+There is a similar efficiency parameter called the specific thrust which is used to characterize turbine engine performance.
+The state of a gas is defined by various properties which we can observe with our senses, including the gas pressure (p), B-CONCEPT_temperature (T), B-CONCEPT_mass (number of moles - m), and volume (V) which contains the gas.
+For example, suppose we have a tank of gas.
+The value of pressure and B-CONCEPT_temperature does not depend on the amount of gas used in the measurement.
+Cutting the volume in two cuts the B-CONCEPT_mass in two.
+The B-CONCEPT_mass depends on the volume and, in turn, the volume depends on the B-CONCEPT_mass.
+When performing a thermodynamic analysis, it is much easier to deal with only intensive properties since we are able to eliminate the B-CONCEPT_mass from the analysis.
+Since the B-CONCEPT_mass and volume are directly related to each other under static conditions, we can define a new property called the specific volume which is equal to the volume divided by the B-CONCEPT_mass.
+Specific volume is an intensive property of the gas, as shown in our example.
+The "specific" of specific volume simply means "divided by B-CONCEPT_mass".
+The B-CONCEPT_speed of the object relative to the gas introduces many significant effects.
+In our discussions, we will use the Mach number of the object and the Mach number of the flow interchangeably.
+If we travel with the object as it moves through the air, the air moves past the object at the B-CONCEPT_speed of the object.
+For a moving flow of gas, there are several different values for the B-CONCEPT_temperature of the gas.
+From kinetic theory, static B-CONCEPT_temperature is related to the average kinetic energy of the random motion of the molecules of the gas.
+The solid line is the computed stagnation B-CONCEPT_temperature for a calorically perfect gas and the dashed line is the computed stagnation B-CONCEPT_temperature for a calorically imperfect gas.
+But beginning around Mach 3, real gas effects become increasingly important with increasing Mach number.
+Tt = T * [1 + M^2 * (gamma-1)/2]
+Mathematical models based on a simple harmonic vibrator have been developed.
+gam = 1 + (gamma - 1) / ( 1 + (gamma-1) * [(theta/T)^2 * e^(theta/T) /(e^(theta/T) -1)^2])
+Here is a Java calculator that solves the calorically imperfect gas equation:
+Then hit the red COMPUTE button to send your new value to the program.
+Notice that the calculated total B-CONCEPT_temperature for the calorically imperfect gas is less than the value for the perfect gas.
+As an aircraft moves through the air, the air molecules near the aircraft are disturbed and move around the aircraft.
+Typical speeds for supersonic aircraft are greater than 750 mph but less than 1500 mph, and the Mach number M is greater than one, 1 < M < 3. In supersonic flight, we encounter compressibility effects and the local air B-CONCEPT_density varies because of shock waves, expansions, and flow choking.
+It and subsequent experimental aircraft proved that humans could fly supersonically.
+The aerodynamics of these early aircraft is used on modern supersonic fighter aircraft.
+On the slide we show an F-14 which is powered by two afterburning turbofan engines.
+On this slide, we have collected all of the equations necessary to calculate the thrust of a rocket engine.
+The hot exhaust flow is choked at the throat, which means that the Mach number is equal to 1.0 in the throat and the B-CONCEPT_mass flow rate m dot is determined by the throat area.
+where A* is the area of the throat, pt is the total pressure in the combustion chamber, Tt is the total B-CONCEPT_temperature in the combustion chamber, gam is the ratio of specific heats of the exhaust, and R is the gas constant.
+By default, the program Input Variable is the Mach number of the flow.
+You can also have the program solve for the Mach number that produces a desired value of area ratio.
+The choice button at the right top selects the solution that is presented.
+You can also download your own copy of the program to run off-line by clicking on this button:
+Knowing Te we can use the equation for the B-CONCEPT_speed I-CONCEPT_of I-CONCEPT_sound and the definition I-CONCEPT_of the Mach number to calculate the exit velocity Ve:
+Ve = Me * sqrt (gam * R * Te)
+We now have all the information necessary to determine the thrust of a rocket.
+The exit pressure is only equal to free stream pressure at some design condition.
+If the free stream pressure is given by p0, the rocket thrust equation is given by:
+F = m dot * Ve + (pe - p0) * Ae
+The thrust equation shown above works for both liquid rocket and solid rocket engines.
+There are many complex parts to trigonometry, but on this page we are concerned chiefly with definitions and terminology.
+A triangle is a closed shape having three sides and three internal angles.
+The sum of the three angles of any triangle is 180 degrees.
+If we label the angles of a triangle c, d, and e, then:
+c + d + e = 180 degrees
+Therefore;
+360 (degrees) = 2 * pi (radians)
+1 radian = 57.2957 degrees
+c + d = 90 degrees = pi/2 radians
+c = 90 - d
+To describe a triangle in general, we need to know the value of two angles; for a right triangle we only need to know (or measure) one angle.
+We call the side of the right triangle opposite from the right angle the hypotenuse.
+We will label the hypotenuse with the symbol h and we will label the other two sides a and b.
+The value of the ratio is a function of the angle and is given the name cosine of the angle.
+On the figure,
+cos(c) = a / h
+The key point here is that if we measure one angle, we know the value of all three angles in a right triangle.
+And if we additionally measure one side, we can use these trigonometric functions to determine the B-CONCEPT_length of all three sides.
+We can determine 5 pieces of information (2 angles and 3 sides) by making only two measurements.
+The first and simplest type of gas turbine is the turbojet.
+On this slide we show a schematic drawing of a turbojet engine.
+Here, we are concerned with what happens to the air that passes through the engine.
+We have shown here a tube-shaped inlet, like one you would see on an airliner.
+A compressor is like an electric fan and we have to supply energy to turn the compressor.
+At the exit of the compressor, the air is at a much higher pressure than free stream.
+In a typical jet engine, 100 pounds of air/sec is combined with only 2 pounds of fuel/sec.
+Most of the hot exhaust has come from the surrounding air.
+Leaving the burner, the hot exhaust is passed through the turbine.
+In a jet engine we use the energy extracted by the turbine to turn the compressor by linking the compressor and the turbine by the central shaft.
+You can explore the design and operation of a turbojet engine by using the interactive EngineSim Java applet.
+We observe that there are some quantities and processes in our world that depend on the direction in which they occur, and there are some quantities that do not depend on direction.
+A quantity which does not depend on direction is called a scalar quantity.
+When comparing two vector quantities of the same type, you have to compare both the magnitude and the direction.
+Vector addition is one aspect of a larger vector algebra which we are not going to present at this web site.
+The B-CONCEPT_length of the arrow indicates the magnitude and the tip of the arrow indicates the direction.
+The direction will be measured by an angle phi relative to a coordinate axis x. The coordinate axis y is perpendicular to x. Note: The coordinate axes x and y are themselves vectors!
+They have a magnitude and a direction.
+You first encounter coordinates axes when you learn to graph.
+So, you have been using vectors for some B-CONCEPT_time without even knowing it!
+The quanities ax and ay are called the components of the vector and both are scalar quantites.
+From the rules which govern the equality of vectors, the blue vector b is equal to the black vector b because it has equal equal B-CONCEPT_length and equal direction.
+Now since the components of vector a and vector b are scalars, we can add the x-components to generate the x-component of new vector c:
+cy = ay + by
+Note: On this slide, for simplicity, we have developed the components in only two dimensions; there are two coordinate axes.
+In reality, there are three spatial dimensions and three components of all forces.
+This is important in our derivation of the general equations of with motion for flight trajectories and for the Navier-Stokes and Euler equations which describe the forces and resulting motion of fluids in the engine.
+We can break very complex, three-dimensional, vector problems into only three scalar equations.
+Vector components are used in vector algebra to add, subtract, and multiply vectors.
+The B-CONCEPT_length of the arrow indicates the magnitude of the vector and the tip of the arrow indicates the direction.
+The vector is labeled with an alphabetical letter with a line over the top to distinguish it from a scalar.
+We will denote the magnitude of the vector by the symbol |a|.
+The direction will be measured by an angle phi relative to a coordinate axis x. The coordinate axis y is perpendicular to x. Note: The coordinate axes x and y are themselves vectors!
+You first encounter coordinates axes when you learn to graph.
+So, you have been using vectors for some B-CONCEPT_time without even knowing it!
+If we construct a dashed line from the tip of the vector a running parallel to the x-axis, it cuts the y-axis at a location we label ay.
+Similarly, a line from the tip of the vector parallel to the y-axis cuts the x-axis at ax.
+ax = |a| * cos(phi)
+We call ax the x-component of a, and ay the y-component of a. The component equations are scalar equations; |a| and the trigonometric functions are just scalars.
+We have in essence replaced the single vector quantity a with two scalar quantities ax and ay.
+Why go to all this trouble?
+As an object moves through a gas, the gas molecules near the object are disturbed and move around the object.
+The magnitude of these forces depend on the shape of the object, the B-CONCEPT_speed of the object, the B-CONCEPT_mass of the gas going by the object and on two other important properties of the gas; the viscosity, or stickiness, of the gas and the compressibility, or springiness, of the gas.
+If two experiments have the same values for the similarity parameters, then the relative importance of the forces are being correctly modeled.
+On this page, we examine the viscosity of a gas.
+Then:
+where A is the area of the moving surface.
+mu = mu0 * ((T / T0)^1.5) * ((T0 + 198.72) / (T + 198.72))
+mu0 = 3.62 x 10^-7 lb-sec/ft^2
+To make things more confusing, the boundary layer may separate from the body and create an effective shape much different from the physical shape.
+The similarity parameter for viscosity is the Reynolds number.
+Re = (r * V * dV/dx) / (mu * d^2V/dx^2)
+Re = (r * V * L) / mu
+If they are very different, we do not correctly model the physics of the real problem and predict incorrect levels of the aerodynamic forces.
+The dynamic viscosity coefficient divided by the B-CONCEPT_density is called the kinematic viscosity and given the Greek symbol nu
+Re = V * L / nu
+Here's a Java program to calculate the coefficient of viscosity and the Reynolds number for different altitude, B-CONCEPT_length, and B-CONCEPT_speed.
+The non-dimensional Mach number and Reynolds number are displayed in white on blue boxes.
+If you are an experienced user of this calculator, you can use a sleek version of the program which loads faster on your computer and does not include these instructions.
+Button to Download a Copy of the Program
+The Similarity Parameter Calculator was modified in May, 2009, by Anthony Vila, a student at Vanderbilt University, during a summer intern session at NASA Glenn.
+Some long chain polymers, like latex paint, behave as "thick" liquids without shear, and very "thin" liquids when subjected to shear.
+One can calculate the weight of any object by multiplying the B-CONCEPT_density of the material by the volume of the object.
+On this slide, we list some equations for computing the volume of objects which often occur in aerospace.
+The magnitude of the aerodynamic B-CONCEPT_forces depends on the surface area of an object, while the gravitational B-CONCEPT_force and certain thermodynamic effects depend on the volume of the object.
+A simple check on any formula for area or volume is a dimensional check.
+Area is measured along the surface of an object and has dimensions of B-CONCEPT_length squared; for example, square feet of material, or square centimeters.
+Volume is the three-dimensional amount of space that an object occupies.
+Since the diameter is twice the radius r of the sphere, this equation can also be written as:
+V = pi * d^2 * h / 12
+A parabolic cone has a smooth curved surface and a sharp pointed nose.
+But on the parabolic cone, the surface comes into the base with a slope equal to zero.
+There is no edge between the parabolic nose cone and the cylindrical rocket body .
+An elliptical cone is similar to the parabolic cone except the nose is blunted and not sharp.
+Frustum shapes occur often on model rockets as fairings between cylindrical sections of the body.
+You can convert from diameter to radius (radius = diameter / 2).
+It was born in the 19th century as scientists were first discovering how to build and operate steam engines.
+The methods compliment each other; some principles are more easily understood in terms of thermodynamics and some principles are more easily explained by kinetic theory.
+The zeroth law of thermodynamics involves some simple definitions of thermodynamic equilibrium.
+This law is sometimes taken as the definition of internal energy, and introduces an additional state variable, B-CONCEPT_enthalpy.
+But experience indicates that only certain states occur.
+This leads to the second law of thermodynamics and the definition of another state variable called entropy.
+The state of a gas is determined by the values of certain measurable properties like the pressure, B-CONCEPT_temperature, and volume which the gas occupies.
+On the figure, we use physical volume.
+For a gas, work is the product of the pressure p and the volume V during a change of volume.
+W = p * V
+We can do a quick units check to see that pressure B-CONCEPT_force / area times volume area * B-CONCEPT_length gives units of B-CONCEPT_force times B-CONCEPT_length which are the units of work
+W = (B-CONCEPT_force / area) * (area * B-CONCEPT_length) = B-CONCEPT_force * B-CONCEPT_length
+In general, during a change of state both the volume and the pressure change.
+So it is more correct to define the work as the integrated, or summed variable pressure times the change of volume from State 1 to State 2. If we use the symbol S [ ] ds for integral, then:
+As mentioned above, there are several options for changing the state of a gas from one state to another.
+So we might expect that the amount of work done on, or by a gas could be different depending on exactly how the state is changed.
+As an example, on the graph on the figure, we show a curved black line from State 1 to State 2 of our confined gas.
+State "a" is at the same pressure as State 1, but at a different volume.
+The work done by a gas not only depends on the initial and final states of the gas but also on the process used to change the state.
+Notice that not only does the work done by the gas depend on the process, but also the heat transferred to the gas.
+Thermodynamics deals only with the large scale response of a system which we can observe and measure in experiments.
+We all have a basic understanding of work in general, but scientists have a more precise definition of work.
+As an example shown on the slide, an aircraft which is acted on by a B-CONCEPT_force F from B-CONCEPT_time equals zero to some later B-CONCEPT_time t moves some distance s. The work W done on the aircraft during this B-CONCEPT_time is:
+In our simple example, the B-CONCEPT_force is a constant value aligned with the displacement of the aircraft.
+W = S [F] d s
+The B-CONCEPT_force is a vector quantity which changes in both magnitude and direction.
+Using a cruising aircraft as another example, the lift is defined to be the B-CONCEPT_force perpendicular to the flight path.
+Each law leads to the definition of thermodynamic properties which help us to understand and predict the operation of a physical system.
+Fortunately, many of the classical examples involve gas dynamics.
+Unfortunately, the numbering system for the three laws of thermodynamics is a bit confusing.
+We begin with the zeroth law.
+But, eventually, the change in property stops and the objects are said to be in thermal, or thermodynamic, equilibrium.
+When two objects are in B-CONCEPT_thermal I-CONCEPT_equilibrium they are said to have the same B-CONCEPT_temperature.
+During the process of reaching B-CONCEPT_thermal I-CONCEPT_equilibrium, heat, which is a form of energy, is transferred between the objects.
+When two objects are separately in thermodynamic equilibrium with a third object, they are in equilibrium with each other.
+Celsius thermometers have the reference points fixed at the freezing and boiling point of pure water.
+If we then bring the thermometer into B-CONCEPT_thermal I-CONCEPT_equilibrium with any other system, such as the bottom of your tongue, we can determine the B-CONCEPT_temperature of the other system by noting the change in the B-CONCEPT_thermal property.
+Objects in thermodynamic equilibrium have the same B-CONCEPT_temperature.

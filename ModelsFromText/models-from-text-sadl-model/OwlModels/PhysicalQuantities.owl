@@ -1,0 +1,685 @@
+<rdf:RDF
+    xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+    xmlns:sadlbasemodel="http://sadl.org/sadlbasemodel"
+    xmlns:owl="http://www.w3.org/2002/07/owl#"
+    xmlns:sadlimplicitmodel="http://sadl.org/sadlimplicitmodel"
+    xmlns:rdfs="http://www.w3.org/2000/01/rdf-schema#"
+    xmlns:physicalQuantities="http://ge.com/research/PhysicalQuantities#"
+    xmlns:xsd="http://www.w3.org/2001/XMLSchema#"
+  xml:base="http://ge.com/research/PhysicalQuantities">
+  <owl:Ontology rdf:about="">
+    <owl:imports rdf:resource="http://sadl.org/sadlimplicitmodel"/>
+    <owl:imports rdf:resource="http://sadl.org/sadlbasemodel"/>
+    <owl:versionInfo>$Revision: $ Last modified on $Date: $</owl:versionInfo>
+    <rdfs:comment xml:lang="en">This ontology was created from a SADL file 'PhysicalQuantities.sadl' and should not be directly edited.</rdfs:comment>
+  </owl:Ontology>
+  <owl:Class rdf:ID="Turbidity">
+    <rdfs:label xml:lang="en">Turbidity</rdfs:label>
+  </owl:Class>
+  <owl:Class rdf:ID="Mass">
+    <rdfs:label xml:lang="en">Mass</rdfs:label>
+  </owl:Class>
+  <owl:Class rdf:ID="Noise-equivalent_target">
+    <rdfs:label xml:lang="en">Noise-equivalent target</rdfs:label>
+  </owl:Class>
+  <owl:Class rdf:ID="Flux">
+    <rdfs:label xml:lang="en">Flux</rdfs:label>
+  </owl:Class>
+  <owl:Class rdf:ID="Thermal_expansion">
+    <rdfs:label xml:lang="en">Thermal expansion</rdfs:label>
+  </owl:Class>
+  <owl:Class rdf:ID="Ground_pressure">
+    <rdfs:label xml:lang="en">Ground pressure</rdfs:label>
+  </owl:Class>
+  <owl:Class rdf:ID="Transmittance">
+    <rdfs:label xml:lang="en">Transmittance</rdfs:label>
+  </owl:Class>
+  <owl:Class rdf:ID="Permittivity">
+    <rdfs:label xml:lang="en">Permittivity</rdfs:label>
+  </owl:Class>
+  <owl:Class rdf:ID="Angular_frequency">
+    <rdfs:label xml:lang="en">Angular frequency</rdfs:label>
+  </owl:Class>
+  <owl:Class rdf:ID="Measured_quantity">
+    <rdfs:label xml:lang="en">Measured quantity</rdfs:label>
+  </owl:Class>
+  <owl:Class rdf:ID="Admittance">
+    <rdfs:label xml:lang="en">Admittance</rdfs:label>
+  </owl:Class>
+  <owl:Class rdf:ID="Torque">
+    <rdfs:label xml:lang="en">Torque</rdfs:label>
+  </owl:Class>
+  <owl:Class rdf:ID="Plastic_crystal">
+    <rdfs:label xml:lang="en">Plastic crystal</rdfs:label>
+  </owl:Class>
+  <owl:Class rdf:ID="Luminous_intensity">
+    <rdfs:label xml:lang="en">Luminous intensity</rdfs:label>
+  </owl:Class>
+  <owl:Class rdf:ID="Reflectance">
+    <rdfs:label xml:lang="en">Reflectance</rdfs:label>
+  </owl:Class>
+  <owl:Class rdf:ID="Aggregate_modulus">
+    <rdfs:label xml:lang="en">Aggregate modulus</rdfs:label>
+  </owl:Class>
+  <owl:Class rdf:ID="Luminosity_distance">
+    <rdfs:label xml:lang="en">Luminosity distance</rdfs:label>
+  </owl:Class>
+  <owl:Class rdf:ID="Relative_density">
+    <rdfs:label xml:lang="en">Relative density</rdfs:label>
+  </owl:Class>
+  <owl:Class rdf:ID="Magnetic_hysteresis">
+    <rdfs:label xml:lang="en">Magnetic hysteresis</rdfs:label>
+  </owl:Class>
+  <owl:Class rdf:ID="Conductance_quantum">
+    <rdfs:label xml:lang="en">Conductance quantum</rdfs:label>
+  </owl:Class>
+  <owl:Class rdf:ID="Distance_modulus">
+    <rdfs:label xml:lang="en">Distance modulus</rdfs:label>
+  </owl:Class>
+  <owl:Class rdf:ID="Bulk_modulus">
+    <rdfs:label xml:lang="en">Bulk modulus</rdfs:label>
+  </owl:Class>
+  <owl:Class rdf:ID="Magnetic_braking">
+    <rdfs:label xml:lang="en">Magnetic braking</rdfs:label>
+  </owl:Class>
+  <owl:Class rdf:ID="Mass_attenuation_coefficient">
+    <rdfs:label xml:lang="en">Mass attenuation coefficient</rdfs:label>
+  </owl:Class>
+  <owl:Class rdf:ID="Electrical_resistance_and_conductance">
+    <rdfs:label xml:lang="en">Electrical resistance and conductance</rdfs:label>
+  </owl:Class>
+  <owl:Class rdf:ID="Distance_measures_cosmology">
+    <rdfs:label xml:lang="en">Distance measures (cosmology)</rdfs:label>
+  </owl:Class>
+  <owl:Class rdf:ID="Memcapacitor">
+    <rdfs:label xml:lang="en">Memcapacitor</rdfs:label>
+  </owl:Class>
+  <owl:Class rdf:ID="Sound_energy">
+    <rdfs:label xml:lang="en">Sound energy</rdfs:label>
+  </owl:Class>
+  <owl:Class rdf:ID="Sound_energy_density">
+    <rdfs:label xml:lang="en">Sound energy density</rdfs:label>
+  </owl:Class>
+  <owl:Class rdf:ID="Etheringtons_reciprocity_theorem">
+    <rdfs:label xml:lang="en">Etherington's reciprocity theorem</rdfs:label>
+  </owl:Class>
+  <owl:Class rdf:ID="Voltage">
+    <rdfs:label xml:lang="en">Voltage</rdfs:label>
+  </owl:Class>
+  <owl:Class rdf:ID="Electrical_resistivity_and_conductivity">
+    <rdfs:label xml:lang="en">Electrical resistivity and conductivity</rdfs:label>
+  </owl:Class>
+  <owl:Class rdf:ID="Characteristic_admittance">
+    <rdfs:label xml:lang="en">Characteristic admittance</rdfs:label>
+  </owl:Class>
+  <owl:Class rdf:ID="Displacement_fluid">
+    <rdfs:label xml:lang="en">Displacement (fluid)</rdfs:label>
+  </owl:Class>
+  <owl:Class rdf:ID="Electrical_impedance">
+    <rdfs:label xml:lang="en">Electrical impedance</rdfs:label>
+  </owl:Class>
+  <owl:Class rdf:ID="Moment_of_inertia">
+    <rdfs:label xml:lang="en">Moment of inertia</rdfs:label>
+  </owl:Class>
+  <owl:Class rdf:ID="Extracellular_field_potential">
+    <rdfs:label xml:lang="en">Extracellular field potential</rdfs:label>
+  </owl:Class>
+  <owl:Class rdf:ID="Solubility">
+    <rdfs:label xml:lang="en">Solubility</rdfs:label>
+  </owl:Class>
+  <owl:Class rdf:ID="Luminous_efficacy">
+    <rdfs:label xml:lang="en">Luminous efficacy</rdfs:label>
+  </owl:Class>
+  <owl:Class rdf:ID="Radiosity_radiometry">
+    <rdfs:label xml:lang="en">Radiosity (radiometry)</rdfs:label>
+  </owl:Class>
+  <owl:Class rdf:ID="Specific_impulse">
+    <rdfs:label xml:lang="en">Specific impulse</rdfs:label>
+  </owl:Class>
+  <owl:Class rdf:ID="Circular_dichroism">
+    <rdfs:label xml:lang="en">Circular dichroism</rdfs:label>
+  </owl:Class>
+  <owl:Class rdf:ID="Heat_capacity_rate">
+    <rdfs:label xml:lang="en">Heat capacity rate</rdfs:label>
+  </owl:Class>
+  <owl:Class rdf:ID="Characteristic_impedance">
+    <rdfs:label xml:lang="en">Characteristic impedance</rdfs:label>
+  </owl:Class>
+  <owl:Class rdf:ID="Physical_property">
+    <rdfs:label xml:lang="en">Physical property</rdfs:label>
+  </owl:Class>
+  <owl:Class rdf:ID="Mechanical_load">
+    <rdfs:label xml:lang="en">Mechanical load</rdfs:label>
+  </owl:Class>
+  <owl:Class rdf:ID="Angular_acceleration">
+    <rdfs:label xml:lang="en">Angular acceleration</rdfs:label>
+  </owl:Class>
+  <owl:Class rdf:ID="Ion_transport_number">
+    <rdfs:label xml:lang="en">Ion transport number</rdfs:label>
+  </owl:Class>
+  <owl:Class rdf:ID="Thermomass_theory">
+    <rdfs:label xml:lang="en">Thermomass theory</rdfs:label>
+  </owl:Class>
+  <owl:Class rdf:ID="Colorimetry">
+    <rdfs:label xml:lang="en">Colorimetry</rdfs:label>
+  </owl:Class>
+  <owl:Class rdf:ID="Rotational_speed">
+    <rdfs:label xml:lang="en">Rotational speed</rdfs:label>
+  </owl:Class>
+  <owl:Class rdf:ID="Charge_physics">
+    <rdfs:label xml:lang="en">Charge (physics)</rdfs:label>
+  </owl:Class>
+  <owl:Class rdf:ID="Excess_molar_quantity">
+    <rdfs:label xml:lang="en">Excess molar quantity</rdfs:label>
+  </owl:Class>
+  <owl:Class rdf:ID="Negative_resistance">
+    <rdfs:label xml:lang="en">Negative resistance</rdfs:label>
+  </owl:Class>
+  <owl:Class rdf:ID="Ionic_strength">
+    <rdfs:label xml:lang="en">Ionic strength</rdfs:label>
+  </owl:Class>
+  <owl:Class rdf:ID="Second_moment_of_area">
+    <rdfs:label xml:lang="en">Second moment of area</rdfs:label>
+  </owl:Class>
+  <owl:Class rdf:ID="Susceptance">
+    <rdfs:label xml:lang="en">Susceptance</rdfs:label>
+  </owl:Class>
+  <owl:Class rdf:ID="Quantum_efficiency">
+    <rdfs:label xml:lang="en">Quantum efficiency</rdfs:label>
+  </owl:Class>
+  <owl:Class rdf:ID="Magnetic_helicity">
+    <rdfs:label xml:lang="en">Magnetic helicity</rdfs:label>
+  </owl:Class>
+  <owl:Class rdf:ID="Luminosity">
+    <rdfs:label xml:lang="en">Luminosity</rdfs:label>
+  </owl:Class>
+  <owl:Class rdf:ID="Group_velocity">
+    <rdfs:label xml:lang="en">Group velocity</rdfs:label>
+  </owl:Class>
+  <owl:Class rdf:ID="Redshift">
+    <rdfs:label xml:lang="en">Redshift</rdfs:label>
+  </owl:Class>
+  <owl:Class rdf:ID="Thermal_conduction">
+    <rdfs:label xml:lang="en">Thermal conduction</rdfs:label>
+  </owl:Class>
+  <owl:Class rdf:ID="Immittance">
+    <rdfs:label xml:lang="en">Immittance</rdfs:label>
+  </owl:Class>
+  <owl:Class rdf:ID="Relative_humidity">
+    <rdfs:label xml:lang="en">Relative humidity</rdfs:label>
+  </owl:Class>
+  <owl:Class rdf:ID="Attenuation_coefficient">
+    <rdfs:label xml:lang="en">Attenuation coefficient</rdfs:label>
+  </owl:Class>
+  <owl:Class rdf:ID="Effective_dose_radiation">
+    <rdfs:label xml:lang="en">Effective dose (radiation)</rdfs:label>
+  </owl:Class>
+  <owl:Class rdf:ID="Enthalpy">
+    <rdfs:label xml:lang="en">Enthalpy</rdfs:label>
+  </owl:Class>
+  <owl:Class rdf:ID="Angular_velocity">
+    <rdfs:label xml:lang="en">Angular velocity</rdfs:label>
+  </owl:Class>
+  <owl:Class rdf:ID="Fermi_acceleration">
+    <rdfs:label xml:lang="en">Fermi acceleration</rdfs:label>
+  </owl:Class>
+  <owl:Class rdf:ID="Radiant_flux">
+    <rdfs:label xml:lang="en">Radiant flux</rdfs:label>
+  </owl:Class>
+  <owl:Class rdf:ID="Magnetic_flux">
+    <rdfs:label xml:lang="en">Magnetic flux</rdfs:label>
+  </owl:Class>
+  <owl:Class rdf:ID="Bollard_pull">
+    <rdfs:label xml:lang="en">Bollard pull</rdfs:label>
+  </owl:Class>
+  <owl:Class rdf:ID="Notch_tensile_strength">
+    <rdfs:label xml:lang="en">Notch tensile strength</rdfs:label>
+  </owl:Class>
+  <owl:Class rdf:ID="Permeability_electromagnetism">
+    <rdfs:label xml:lang="en">Permeability (electromagnetism)</rdfs:label>
+  </owl:Class>
+  <owl:Class rdf:ID="Audio_frequency">
+    <rdfs:label xml:lang="en">Audio frequency</rdfs:label>
+  </owl:Class>
+  <owl:Class rdf:ID="Particle_velocity">
+    <rdfs:label xml:lang="en">Particle velocity</rdfs:label>
+  </owl:Class>
+  <owl:Class rdf:ID="Speed_of_sound">
+    <rdfs:label xml:lang="en">Speed of sound</rdfs:label>
+  </owl:Class>
+  <owl:Class rdf:ID="Thermal_effusivity">
+    <rdfs:label xml:lang="en">Thermal effusivity</rdfs:label>
+  </owl:Class>
+  <owl:Class rdf:ID="Single-particle_spectrum">
+    <rdfs:label xml:lang="en">Single-particle spectrum</rdfs:label>
+  </owl:Class>
+  <owl:Class rdf:ID="Tonti_diagram">
+    <rdfs:label xml:lang="en">Tonti diagram</rdfs:label>
+  </owl:Class>
+  <owl:Class rdf:ID="Specific_force">
+    <rdfs:label xml:lang="en">Specific force</rdfs:label>
+  </owl:Class>
+  <owl:Class rdf:ID="Electrical_mobility">
+    <rdfs:label xml:lang="en">Electrical mobility</rdfs:label>
+  </owl:Class>
+  <owl:Class rdf:ID="Orders_of_magnitude_speed">
+    <rdfs:label xml:lang="en">Orders of magnitude (speed)</rdfs:label>
+  </owl:Class>
+  <owl:Class rdf:ID="Luminosity_function">
+    <rdfs:label xml:lang="en">Luminosity function</rdfs:label>
+  </owl:Class>
+  <owl:Class rdf:ID="Thermal_conductivity">
+    <rdfs:label xml:lang="en">Thermal conductivity</rdfs:label>
+  </owl:Class>
+  <owl:Class rdf:ID="Characteristic_property">
+    <rdfs:label xml:lang="en">Characteristic property</rdfs:label>
+  </owl:Class>
+  <owl:Class rdf:ID="Field_strength">
+    <rdfs:label xml:lang="en">Field strength</rdfs:label>
+  </owl:Class>
+  <owl:Class rdf:ID="Jounce">
+    <rdfs:label xml:lang="en">Jounce</rdfs:label>
+  </owl:Class>
+  <owl:Class rdf:ID="Pinning_points">
+    <rdfs:label xml:lang="en">Pinning points</rdfs:label>
+  </owl:Class>
+  <owl:Class rdf:ID="Sound_intensity">
+    <rdfs:label xml:lang="en">Sound intensity</rdfs:label>
+  </owl:Class>
+  <owl:Class rdf:ID="Luminance">
+    <rdfs:label xml:lang="en">Luminance</rdfs:label>
+  </owl:Class>
+  <owl:Class rdf:ID="Capacitance">
+    <rdfs:label xml:lang="en">Capacitance</rdfs:label>
+  </owl:Class>
+  <owl:Class rdf:ID="Physical_coefficient">
+    <rdfs:label xml:lang="en">Physical coefficient</rdfs:label>
+  </owl:Class>
+  <owl:Class rdf:ID="Relative_velocity">
+    <rdfs:label xml:lang="en">Relative velocity</rdfs:label>
+  </owl:Class>
+  <owl:Class rdf:ID="Quality_physics">
+    <rdfs:label xml:lang="en">Quality (physics)</rdfs:label>
+  </owl:Class>
+  <owl:Class rdf:ID="API_gravity">
+    <rdfs:label xml:lang="en">API gravity</rdfs:label>
+  </owl:Class>
+  <owl:Class rdf:ID="Radiant_energy_density">
+    <rdfs:label xml:lang="en">Radiant energy density</rdfs:label>
+  </owl:Class>
+  <owl:Class rdf:ID="Persistence_length">
+    <rdfs:label xml:lang="en">Persistence length</rdfs:label>
+  </owl:Class>
+  <owl:Class rdf:ID="Vapor_quality">
+    <rdfs:label xml:lang="en">Vapor quality</rdfs:label>
+  </owl:Class>
+  <owl:Class rdf:ID="Absorptance">
+    <rdfs:label xml:lang="en">Absorptance</rdfs:label>
+  </owl:Class>
+  <owl:Class rdf:ID="Equivalent_dose">
+    <rdfs:label xml:lang="en">Equivalent dose</rdfs:label>
+  </owl:Class>
+  <owl:Class rdf:ID="Neutron_magnetic_moment">
+    <rdfs:label xml:lang="en">Neutron magnetic moment</rdfs:label>
+  </owl:Class>
+  <owl:Class rdf:ID="Molecular_property">
+    <rdfs:label xml:lang="en">Molecular property</rdfs:label>
+  </owl:Class>
+  <owl:Class rdf:ID="Regenerative_capacitor_memory">
+    <rdfs:label xml:lang="en">Regenerative capacitor memory</rdfs:label>
+  </owl:Class>
+  <owl:Class rdf:ID="Fluence_response">
+    <rdfs:label xml:lang="en">Fluence response</rdfs:label>
+  </owl:Class>
+  <owl:Class rdf:ID="Sound_exposure">
+    <rdfs:label xml:lang="en">Sound exposure</rdfs:label>
+  </owl:Class>
+  <owl:Class rdf:ID="Absorbed_dose">
+    <rdfs:label xml:lang="en">Absorbed dose</rdfs:label>
+  </owl:Class>
+  <owl:Class rdf:ID="Illuminance">
+    <rdfs:label xml:lang="en">Illuminance</rdfs:label>
+  </owl:Class>
+  <owl:Class rdf:ID="Sound_power">
+    <rdfs:label xml:lang="en">Sound power</rdfs:label>
+  </owl:Class>
+  <owl:Class rdf:ID="Acceleration">
+    <rdfs:label xml:lang="en">Acceleration</rdfs:label>
+  </owl:Class>
+  <owl:Class rdf:ID="Frequency">
+    <rdfs:label xml:lang="en">Frequency</rdfs:label>
+  </owl:Class>
+  <owl:Class rdf:ID="Electrical_measurements">
+    <rdfs:label xml:lang="en">Electrical measurements</rdfs:label>
+  </owl:Class>
+  <owl:Class rdf:ID="Thermal_conductance_quantum">
+    <rdfs:label xml:lang="en">Thermal conductance quantum</rdfs:label>
+  </owl:Class>
+  <owl:Class rdf:ID="Radiance">
+    <rdfs:label xml:lang="en">Radiance</rdfs:label>
+  </owl:Class>
+  <owl:Class rdf:ID="Reciprocal_length">
+    <rdfs:label xml:lang="en">Reciprocal length</rdfs:label>
+  </owl:Class>
+  <owl:Class rdf:ID="Acoustic_impedance">
+    <rdfs:label xml:lang="en">Acoustic impedance</rdfs:label>
+  </owl:Class>
+  <owl:Class rdf:ID="Particle_number">
+    <rdfs:label xml:lang="en">Particle number</rdfs:label>
+  </owl:Class>
+  <owl:Class rdf:ID="Number_density">
+    <rdfs:label xml:lang="en">Number density</rdfs:label>
+  </owl:Class>
+  <owl:Class rdf:ID="Mass_flux">
+    <rdfs:label xml:lang="en">Mass flux</rdfs:label>
+  </owl:Class>
+  <owl:Class rdf:ID="Refractive_index">
+    <rdfs:label xml:lang="en">Refractive index</rdfs:label>
+  </owl:Class>
+  <owl:Class rdf:ID="Meminductor">
+    <rdfs:label xml:lang="en">Meminductor</rdfs:label>
+  </owl:Class>
+  <owl:Class rdf:ID="Heat_capacity_ratio">
+    <rdfs:label xml:lang="en">Heat capacity ratio</rdfs:label>
+  </owl:Class>
+  <owl:Class rdf:ID="Intensive_and_extensive_properties">
+    <rdfs:label xml:lang="en">Intensive and extensive properties</rdfs:label>
+  </owl:Class>
+  <owl:Class rdf:ID="Molar_volume">
+    <rdfs:label xml:lang="en">Molar volume</rdfs:label>
+  </owl:Class>
+  <owl:Class rdf:ID="Hypervelocity">
+    <rdfs:label xml:lang="en">Hypervelocity</rdfs:label>
+  </owl:Class>
+  <owl:Class rdf:ID="Carcel">
+    <rdfs:label xml:lang="en">Carcel</rdfs:label>
+  </owl:Class>
+  <owl:Class rdf:ID="Time">
+    <rdfs:label xml:lang="en">Time</rdfs:label>
+  </owl:Class>
+  <owl:Class rdf:ID="Cusec">
+    <rdfs:label xml:lang="en">Cusec</rdfs:label>
+  </owl:Class>
+  <owl:Class rdf:ID="Magnetic_moment">
+    <rdfs:label xml:lang="en">Magnetic moment</rdfs:label>
+  </owl:Class>
+  <owl:Class rdf:ID="Radiative_flux">
+    <rdfs:label xml:lang="en">Radiative flux</rdfs:label>
+  </owl:Class>
+  <owl:Class rdf:ID="Volumetric_heat_capacity">
+    <rdfs:label xml:lang="en">Volumetric heat capacity</rdfs:label>
+  </owl:Class>
+  <owl:Class rdf:ID="Pop_physics">
+    <rdfs:label xml:lang="en">Pop (physics)</rdfs:label>
+  </owl:Class>
+  <owl:Class rdf:ID="Rate_of_penetration">
+    <rdfs:label xml:lang="en">Rate of penetration</rdfs:label>
+  </owl:Class>
+  <owl:Class rdf:ID="Surface_power_density">
+    <rdfs:label xml:lang="en">Surface power density</rdfs:label>
+  </owl:Class>
+  <owl:Class rdf:ID="Couple_mechanics">
+    <rdfs:label xml:lang="en">Couple (mechanics)</rdfs:label>
+  </owl:Class>
+  <owl:Class rdf:ID="Electric_potential">
+    <rdfs:label xml:lang="en">Electric potential</rdfs:label>
+  </owl:Class>
+  <owl:Class rdf:ID="Magnetic_susceptibility">
+    <rdfs:label xml:lang="en">Magnetic susceptibility</rdfs:label>
+  </owl:Class>
+  <owl:Class rdf:ID="Thermal_contact_conductance">
+    <rdfs:label xml:lang="en">Thermal contact conductance</rdfs:label>
+  </owl:Class>
+  <owl:Class rdf:ID="Specific_weight">
+    <rdfs:label xml:lang="en">Specific weight</rdfs:label>
+  </owl:Class>
+  <owl:Class rdf:ID="Electrical_reactance">
+    <rdfs:label xml:lang="en">Electrical reactance</rdfs:label>
+  </owl:Class>
+  <owl:Class rdf:ID="Maximum_density">
+    <rdfs:label xml:lang="en">Maximum density</rdfs:label>
+  </owl:Class>
+  <owl:Class rdf:ID="Coercivity">
+    <rdfs:label xml:lang="en">Coercivity</rdfs:label>
+  </owl:Class>
+  <owl:Class rdf:ID="Transmission_loss_duct_acoustics">
+    <rdfs:label xml:lang="en">Transmission loss (duct acoustics)</rdfs:label>
+  </owl:Class>
+  <owl:Class rdf:ID="Electrochemical_gradient">
+    <rdfs:label xml:lang="en">Electrochemical gradient</rdfs:label>
+  </owl:Class>
+  <owl:Class rdf:ID="Work_physics">
+    <rdfs:label xml:lang="en">Work (physics)</rdfs:label>
+  </owl:Class>
+  <owl:Class rdf:ID="Volumetric_flux">
+    <rdfs:label xml:lang="en">Volumetric flux</rdfs:label>
+  </owl:Class>
+  <owl:Class rdf:ID="Specific_gravity">
+    <rdfs:label xml:lang="en">Specific gravity</rdfs:label>
+  </owl:Class>
+  <owl:Class rdf:ID="Speed">
+    <rdfs:label xml:lang="en">Speed</rdfs:label>
+  </owl:Class>
+  <owl:Class rdf:ID="Suction">
+    <rdfs:label xml:lang="en">Suction</rdfs:label>
+  </owl:Class>
+  <owl:Class rdf:ID="Radiant_intensity">
+    <rdfs:label xml:lang="en">Radiant intensity</rdfs:label>
+  </owl:Class>
+  <owl:Class rdf:ID="Memductance">
+    <rdfs:label xml:lang="en">Memductance</rdfs:label>
+  </owl:Class>
+  <owl:Class rdf:ID="Defining_equation_physics">
+    <rdfs:label xml:lang="en">Defining equation (physics)</rdfs:label>
+  </owl:Class>
+  <owl:Class rdf:ID="Force">
+    <rdfs:label xml:lang="en">Force</rdfs:label>
+  </owl:Class>
+  <owl:Class rdf:ID="Delta-v_physics">
+    <rdfs:label xml:lang="en">Delta-v (physics)</rdfs:label>
+  </owl:Class>
+  <owl:Class rdf:ID="Luminous_flux">
+    <rdfs:label xml:lang="en">Luminous flux</rdfs:label>
+  </owl:Class>
+  <owl:Class rdf:ID="Volume_thermodynamics">
+    <rdfs:label xml:lang="en">Volume (thermodynamics)</rdfs:label>
+  </owl:Class>
+  <owl:Class rdf:ID="Scale_of_temperature">
+    <rdfs:label xml:lang="en">Scale of temperature</rdfs:label>
+  </owl:Class>
+  <owl:Class rdf:ID="Thermal_emittance">
+    <rdfs:label xml:lang="en">Thermal emittance</rdfs:label>
+  </owl:Class>
+  <owl:Class rdf:ID="Radiant_exposure">
+    <rdfs:label xml:lang="en">Radiant exposure</rdfs:label>
+  </owl:Class>
+  <owl:Class rdf:ID="Dust_resistant">
+    <rdfs:label xml:lang="en">Dust resistant</rdfs:label>
+  </owl:Class>
+  <owl:Class rdf:ID="Electrical_resistance">
+    <rdfs:label xml:lang="en">Electrical resistance</rdfs:label>
+  </owl:Class>
+  <owl:Class rdf:ID="Spectral_power_distribution">
+    <rdfs:label xml:lang="en">Spectral power distribution</rdfs:label>
+  </owl:Class>
+  <owl:Class rdf:ID="Humidity">
+    <rdfs:label xml:lang="en">Humidity</rdfs:label>
+  </owl:Class>
+  <owl:Class rdf:ID="Fuel_efficiency">
+    <rdfs:label xml:lang="en">Fuel efficiency</rdfs:label>
+  </owl:Class>
+  <owl:Class rdf:ID="System-specific_impulse">
+    <rdfs:label xml:lang="en">System-specific impulse</rdfs:label>
+  </owl:Class>
+  <owl:Class rdf:ID="Phase_waves">
+    <rdfs:label xml:lang="en">Phase (waves)</rdfs:label>
+  </owl:Class>
+  <owl:Class rdf:ID="Spin_angular_momentum_of_light">
+    <rdfs:label xml:lang="en">Spin angular momentum of light</rdfs:label>
+  </owl:Class>
+  <owl:Class rdf:ID="Irradiance">
+    <rdfs:label xml:lang="en">Irradiance</rdfs:label>
+  </owl:Class>
+  <owl:Class rdf:ID="Quartz_crystal_microbalance_with_dissipation_monitoring">
+    <rdfs:label xml:lang="en">Quartz crystal microbalance with dissipation monitoring</rdfs:label>
+  </owl:Class>
+  <owl:Class rdf:ID="Mechanical_impedance">
+    <rdfs:label xml:lang="en">Mechanical impedance</rdfs:label>
+  </owl:Class>
+  <owl:Class rdf:ID="Jerk_physics">
+    <rdfs:label xml:lang="en">Jerk (physics)</rdfs:label>
+  </owl:Class>
+  <owl:Class rdf:ID="Critical_relative_humidity">
+    <rdfs:label xml:lang="en">Critical relative humidity</rdfs:label>
+  </owl:Class>
+  <owl:Class rdf:ID="Amplitude">
+    <rdfs:label xml:lang="en">Amplitude</rdfs:label>
+  </owl:Class>
+  <owl:Class rdf:ID="Impulse_physics">
+    <rdfs:label xml:lang="en">Impulse (physics)</rdfs:label>
+  </owl:Class>
+  <owl:Class rdf:ID="Length">
+    <rdfs:label xml:lang="en">Length</rdfs:label>
+  </owl:Class>
+  <owl:Class rdf:ID="Cohesion_chemistry">
+    <rdfs:label xml:lang="en">Cohesion (chemistry)</rdfs:label>
+  </owl:Class>
+  <owl:Class rdf:ID="Ohm_metre">
+    <rdfs:label xml:lang="en">Ohm metre</rdfs:label>
+  </owl:Class>
+  <owl:Class rdf:ID="Thermal_equilibrium">
+    <rdfs:label xml:lang="en">Thermal equilibrium</rdfs:label>
+  </owl:Class>
+  <owl:Class rdf:ID="Inductance">
+    <rdfs:label xml:lang="en">Inductance</rdfs:label>
+  </owl:Class>
+  <owl:Class rdf:ID="Propagation_constant">
+    <rdfs:label xml:lang="en">Propagation constant</rdfs:label>
+  </owl:Class>
+  <owl:Class rdf:ID="Electric_susceptibility">
+    <rdfs:label xml:lang="en">Electric susceptibility</rdfs:label>
+  </owl:Class>
+  <owl:Class rdf:ID="Hubers_equation">
+    <rdfs:label xml:lang="en">Huber's equation</rdfs:label>
+  </owl:Class>
+  <owl:Class rdf:ID="Electric_charge">
+    <rdfs:label xml:lang="en">Electric charge</rdfs:label>
+  </owl:Class>
+  <owl:Class rdf:ID="Temperature">
+    <rdfs:label xml:lang="en">Temperature</rdfs:label>
+  </owl:Class>
+  <owl:Class rdf:ID="Emissivity">
+    <rdfs:label xml:lang="en">Emissivity</rdfs:label>
+  </owl:Class>
+  <owl:Class rdf:ID="Noise-equivalent_flux_density">
+    <rdfs:label xml:lang="en">Noise-equivalent flux density</rdfs:label>
+  </owl:Class>
+  <owl:Class rdf:ID="Waterproofing">
+    <rdfs:label xml:lang="en">Waterproofing</rdfs:label>
+  </owl:Class>
+  <owl:Class rdf:ID="Energy_flux">
+    <rdfs:label xml:lang="en">Energy flux</rdfs:label>
+  </owl:Class>
+  <owl:Class rdf:ID="Thermal_diffusivity">
+    <rdfs:label xml:lang="en">Thermal diffusivity</rdfs:label>
+  </owl:Class>
+  <owl:Class rdf:ID="Comoving_and_proper_distances">
+    <rdfs:label xml:lang="en">Comoving and proper distances</rdfs:label>
+  </owl:Class>
+  <owl:Class rdf:ID="Electric_field">
+    <rdfs:label xml:lang="en">Electric field</rdfs:label>
+  </owl:Class>
+  <owl:Class rdf:ID="Elastance">
+    <rdfs:label xml:lang="en">Elastance</rdfs:label>
+  </owl:Class>
+  <owl:Class rdf:ID="Specific_detectivity">
+    <rdfs:label xml:lang="en">Specific detectivity</rdfs:label>
+  </owl:Class>
+  <owl:Class rdf:ID="Memristance">
+    <rdfs:label xml:lang="en">Memristance</rdfs:label>
+  </owl:Class>
+  <owl:Class rdf:ID="Intensity_physics">
+    <rdfs:label xml:lang="en">Intensity (physics)</rdfs:label>
+  </owl:Class>
+  <owl:Class rdf:ID="Permeation">
+    <rdfs:label xml:lang="en">Permeation</rdfs:label>
+  </owl:Class>
+  <owl:Class rdf:ID="Magnetomotive_force">
+    <rdfs:label xml:lang="en">Magnetomotive force</rdfs:label>
+  </owl:Class>
+  <owl:Class rdf:ID="Spin_physics">
+    <rdfs:label xml:lang="en">Spin (physics)</rdfs:label>
+  </owl:Class>
+  <owl:Class rdf:ID="Stiffness">
+    <rdfs:label xml:lang="en">Stiffness</rdfs:label>
+  </owl:Class>
+  <owl:Class rdf:ID="Electric_flux">
+    <rdfs:label xml:lang="en">Electric flux</rdfs:label>
+  </owl:Class>
+  <owl:Class rdf:ID="Sound_pressure">
+    <rdfs:label xml:lang="en">Sound pressure</rdfs:label>
+  </owl:Class>
+  <owl:Class rdf:ID="Areal_velocity">
+    <rdfs:label xml:lang="en">Areal velocity</rdfs:label>
+  </owl:Class>
+  <owl:Class rdf:ID="Radiant_exitance">
+    <rdfs:label xml:lang="en">Radiant exitance</rdfs:label>
+  </owl:Class>
+  <owl:Class rdf:ID="Heat_capacity">
+    <rdfs:label xml:lang="en">Heat capacity</rdfs:label>
+  </owl:Class>
+  <owl:Class rdf:ID="Film_speed">
+    <rdfs:label xml:lang="en">Film speed</rdfs:label>
+  </owl:Class>
+  <owl:Class rdf:ID="List_of_thermal_conductivities">
+    <rdfs:label xml:lang="en">List of thermal conductivities</rdfs:label>
+  </owl:Class>
+  <owl:Class rdf:ID="Angular_diameter_distance">
+    <rdfs:label xml:lang="en">Angular diameter distance</rdfs:label>
+  </owl:Class>
+  <owl:Class rdf:ID="Momentum">
+    <rdfs:label xml:lang="en">Momentum</rdfs:label>
+  </owl:Class>
+  <owl:Class rdf:ID="Magnetic_field">
+    <rdfs:label xml:lang="en">Magnetic field</rdfs:label>
+  </owl:Class>
+  <owl:Class rdf:ID="Youngs_modulus">
+    <rdfs:label xml:lang="en">Young's modulus</rdfs:label>
+  </owl:Class>
+  <owl:Class rdf:ID="Angular_momentum">
+    <rdfs:label xml:lang="en">Angular momentum</rdfs:label>
+  </owl:Class>
+  <owl:Class rdf:ID="Poissons_ratio">
+    <rdfs:label xml:lang="en">Poisson's ratio</rdfs:label>
+  </owl:Class>
+  <owl:Class rdf:ID="Dynamic_modulus">
+    <rdfs:label xml:lang="en">Dynamic modulus</rdfs:label>
+  </owl:Class>
+  <owl:Class rdf:ID="Infinitesimal_strain_theory">
+    <rdfs:label xml:lang="en">Infinitesimal strain theory</rdfs:label>
+  </owl:Class>
+  <owl:Class rdf:ID="Effective_radius">
+    <rdfs:label xml:lang="en">Effective radius</rdfs:label>
+  </owl:Class>
+  <owl:Class rdf:ID="Signal-to-noise_ratio_imaging">
+    <rdfs:label xml:lang="en">Signal-to-noise ratio (imaging)</rdfs:label>
+  </owl:Class>
+  <owl:Class rdf:ID="Particle_displacement">
+    <rdfs:label xml:lang="en">Particle displacement</rdfs:label>
+  </owl:Class>
+  <owl:Class rdf:ID="Electron_mobility">
+    <rdfs:label xml:lang="en">Electron mobility</rdfs:label>
+  </owl:Class>
+  <owl:Class rdf:ID="Luminous_energy">
+    <rdfs:label xml:lang="en">Luminous energy</rdfs:label>
+  </owl:Class>
+  <owl:Class rdf:ID="Moment_physics">
+    <rdfs:label xml:lang="en">Moment (physics)</rdfs:label>
+  </owl:Class>
+  <owl:Class rdf:ID="Crystallinity">
+    <rdfs:label xml:lang="en">Crystallinity</rdfs:label>
+  </owl:Class>
+  <owl:Class rdf:ID="Density">
+    <rdfs:label xml:lang="en">Density</rdfs:label>
+  </owl:Class>
+</rdf:RDF>

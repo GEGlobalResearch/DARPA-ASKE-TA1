@@ -144,7 +144,7 @@ public class DialogAnswerProvider extends DefaultAutoEditStrategyProvider {
 		                		
 		                	}
 		                	else if (lastcmd != null) {
-		                		System.out.println("Lastcmd: " + lastcmd.getClass().getCanonicalName());
+		                		System.out.println("Lastcmd (not handled type): " + lastcmd.getClass().getCanonicalName());
 		                	}
 	                	}
 //		                String possibleKWD = token.toLowerCase();
