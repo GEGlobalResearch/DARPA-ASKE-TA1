@@ -111,9 +111,9 @@ public class JavaModelExtractor {
 	}
 
 	//use ASTParse to parse string
-	public void parse(IJavaProject jprj, String str) {
+	public void parse(IJavaProject jprj, String modelFolder, String content) {
 		ASTParser parser = ASTParser.newParser(AST.JLS3);
-		parser.setSource(str.toCharArray());
+		parser.setSource(content.toCharArray());
 		parser.setResolveBindings(true);
 		parser.setBindingsRecovery(true);
 		parser.setKind(ASTParser.K_COMPILATION_UNIT);
@@ -134,7 +134,7 @@ public class JavaModelExtractor {
 	    initializeContent();
 		
 		logger.debug("***************** code to process ******************");
-		logger.debug(str);
+		logger.debug(content);
 		logger.debug("****************************************************");
 		
 		final CompilationUnit cu = (CompilationUnit) parser.createAST(null);
@@ -281,7 +281,7 @@ public class JavaModelExtractor {
 					logger.debug("  Line Comment: " + c.toString() + " (from " + sp + " to " + ep + ")");
 				}
 				else if (c.isBlockComment()) {
-					String bcmmt = str.substring(c.getStartPosition(), c.getStartPosition() + c.getLength());
+					String bcmmt = content.substring(c.getStartPosition(), c.getStartPosition() + c.getLength());
 					logger.debug("  Block Comment: " + bcmmt + " (from " + sp + " to " + ep + ")");
 				}
 				else if (c.isDocComment()) {

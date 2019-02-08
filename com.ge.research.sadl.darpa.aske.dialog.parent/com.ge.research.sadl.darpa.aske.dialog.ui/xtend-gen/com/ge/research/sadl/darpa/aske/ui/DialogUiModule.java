@@ -43,7 +43,7 @@ public class DialogUiModule extends AbstractDialogUiModule {
     return EclipseSadlProjectHelper.class;
   }
   
-  public DialogUiModule(final AbstractUIPlugin arg0) {
-    super(arg0);
+  public DialogUiModule(final AbstractUIPlugin plugin) {
+    super(plugin);
   }
 }

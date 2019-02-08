@@ -1,5 +1,7 @@
 package com.ge.research.sadl.darpa.aske.processing.imports;
 
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -10,8 +12,17 @@ import java.util.Set;
 
 import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
+import org.eclipse.emf.common.util.URI;
+import org.eclipse.emf.ecore.resource.Resource;
 
+import com.ge.research.sadl.builder.ConfigurationManagerForIdeFactory;
+import com.ge.research.sadl.builder.IConfigurationManagerForIDE;
+import com.ge.research.sadl.darpa.aske.processing.DialogConstants;
 import com.ge.research.sadl.darpa.aske.processing.imports.SadlModelGenerator.SadlMethod;
+import com.ge.research.sadl.processing.OntModelProvider;
+import com.ge.research.sadl.reasoner.ConfigurationException;
+import com.ge.research.sadl.reasoner.ConfigurationManager;
+import com.ge.research.sadl.utils.ResourceManager;
 import com.github.javaparser.JavaParser;
 import com.github.javaparser.ast.CompilationUnit;
 import com.github.javaparser.ast.Node;
@@ -101,7 +112,14 @@ public class JavaModelExtractorJP {
 	}
 
 	//use ASTParse to parse string
-	public void parse(String str) {
+	public void parse(String modelFolder, String str) {
+		Resource resource = null;
+		try {
+			notifyUser(modelFolder, str);
+		} catch (ConfigurationException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 	    initializeContent();
 		
 		logger.debug("***************** code to process ******************");
@@ -190,6 +208,49 @@ public class JavaModelExtractorJP {
         });
 	}
 
+
+	private void notifyUser(String modelFolder, String str) throws ConfigurationException {
+		final String format = ConfigurationManager.RDF_XML_ABBREV_FORMAT;
+		IConfigurationManagerForIDE configMgr = ConfigurationManagerForIdeFactory.getConfigurationManagerForIDE(modelFolder, format);
+		Object dap = configMgr.getPrivateKeyValuePair(DialogConstants.DIALOG_ANSWER_PROVIDER);
+		if (dap != null) {
+			// talk to the user via the Dialog editor
+			Method acmic = null;
+			try {
+				acmic = dap.getClass().getMethod("addCurationManagerInitiatedContent", String.class);
+			} catch (NoSuchMethodException e1) {
+				// TODO Auto-generated catch block
+				e1.printStackTrace();
+			} catch (SecurityException e1) {
+				// TODO Auto-generated catch block
+				e1.printStackTrace();
+			}
+			Method[] dapMethods = dap.getClass().getDeclaredMethods();
+			if (dapMethods != null) {
+				for (Method m : dapMethods) {
+					if (m.getName().equals("addCurationManagerInitiatedContent")) {
+						acmic = m;
+						break;
+					}
+				}
+			}
+			if (acmic != null) {
+				acmic.setAccessible(true);
+				try {
+					acmic.invoke(dap, str);
+				} catch (IllegalAccessException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				} catch (IllegalArgumentException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				} catch (InvocationTargetException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+			}
+		}
+	}
 
 	private Comment getComment(Node node) {
 		if (node != null) {

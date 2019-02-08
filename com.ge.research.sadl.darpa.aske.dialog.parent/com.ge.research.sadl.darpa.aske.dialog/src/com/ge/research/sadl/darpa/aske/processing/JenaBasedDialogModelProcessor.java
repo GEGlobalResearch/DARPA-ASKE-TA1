@@ -66,7 +66,6 @@ import com.hp.hpl.jena.ontology.Ontology;
 import com.hp.hpl.jena.rdf.model.RDFWriter;
 
 public class JenaBasedDialogModelProcessor extends JenaBasedSadlModelProcessor {
-	public static final String LAST_DIALOG_COMMAND = "LastDialogCommand";
 	private static final Logger logger = LoggerFactory.getLogger(JenaBasedDialogModelProcessor.class);
 	private boolean modelChanged;
 
@@ -236,7 +235,7 @@ public class JenaBasedDialogModelProcessor extends JenaBasedSadlModelProcessor {
 				else {
 					// this is a response from CM
 					//	clear last command
-					OntModelProvider.clearPrivateKeyValuePair(resource, LAST_DIALOG_COMMAND);
+					OntModelProvider.clearPrivateKeyValuePair(resource, DialogConstants.LAST_DIALOG_COMMAND);
 					lastElement = null;
 				}
 			}
@@ -397,7 +396,7 @@ public class JenaBasedDialogModelProcessor extends JenaBasedSadlModelProcessor {
 			boolean isGraph = stmt.getStart().equals("Graph");
 			Query query = processQueryExpression(stmt, stmt.getExpr(), elementName, annotations, isGraph);
 			System.out.println("ModifiedAskStatement: " + query.toDescriptiveString());
-			OntModelProvider.addPrivateKeyValuePair(stmt.eResource(), LAST_DIALOG_COMMAND, query);
+			OntModelProvider.addPrivateKeyValuePair(stmt.eResource(), DialogConstants.LAST_DIALOG_COMMAND, query);
 		} catch (CircularDefinitionException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -444,7 +443,7 @@ public class JenaBasedDialogModelProcessor extends JenaBasedSadlModelProcessor {
 					// TODO
 					addInfo(trgtObj.getClass().getCanonicalName() + " not yet handled by dialog processor", whatIsTarget);
 				}
-				OntModelProvider.addPrivateKeyValuePair(stmt.eResource(), LAST_DIALOG_COMMAND, trgtObj);
+				OntModelProvider.addPrivateKeyValuePair(stmt.eResource(), DialogConstants.LAST_DIALOG_COMMAND, trgtObj);
 			} catch (TranslationException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
@@ -471,7 +470,7 @@ public class JenaBasedDialogModelProcessor extends JenaBasedSadlModelProcessor {
 				temp[0] = article;
 				temp[1] = clsObj;
 				temp[2] = propObj;
-				OntModelProvider.addPrivateKeyValuePair(stmt.eResource(), LAST_DIALOG_COMMAND, temp);
+				OntModelProvider.addPrivateKeyValuePair(stmt.eResource(), DialogConstants.LAST_DIALOG_COMMAND, temp);
 			} catch (TranslationException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
@@ -499,7 +498,7 @@ public class JenaBasedDialogModelProcessor extends JenaBasedSadlModelProcessor {
 			temp[1] = clsObj;
 			temp[2] = propObj;
 			temp[3] = typObj;
-			OntModelProvider.addPrivateKeyValuePair(stmt.eResource(), LAST_DIALOG_COMMAND, temp);
+			OntModelProvider.addPrivateKeyValuePair(stmt.eResource(), DialogConstants.LAST_DIALOG_COMMAND, temp);
 		} catch (TranslationException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();

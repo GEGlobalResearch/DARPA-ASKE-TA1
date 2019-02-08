@@ -28,7 +28,7 @@ import org.eclipse.xtext.resource.XtextResource;
 import org.eclipse.xtext.validation.Issue;
 
 import com.ge.research.sadl.builder.MessageManager.SadlMessage;
-import com.ge.research.sadl.darpa.aske.processing.JenaBasedDialogModelProcessor;
+import com.ge.research.sadl.darpa.aske.processing.DialogConstants;
 import com.ge.research.sadl.ide.handlers.SadlRunInferenceHandler;
 import com.ge.research.sadl.model.gp.Query;
 import com.ge.research.sadl.processing.OntModelProvider;
@@ -57,7 +57,7 @@ public class DialogRunInferenceHandler extends SadlRunInferenceHandler {
 				String modelFolderPath = getOwlModelsFolderPath(path).toString();
 				String owlModelPath = modelFolderPath + "/" + path.getFileName().toString().replaceFirst("[.][^.]+$", ".owl");
 				Resource res = prepareResource(resourceSupplier.get());
-				Object lastCmd = OntModelProvider.getPrivateKeyValuePair(res, JenaBasedDialogModelProcessor.LAST_DIALOG_COMMAND);
+				Object lastCmd = OntModelProvider.getPrivateKeyValuePair(res, DialogConstants.LAST_DIALOG_COMMAND);
 				if (lastCmd instanceof Query) {
 					SadlCommandResult retval = inferenceProcessor.processAdhocQuery(res, (Query)lastCmd);
 					Object[] retvals = new Object[1];

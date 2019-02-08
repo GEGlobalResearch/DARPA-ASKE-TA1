@@ -24,6 +24,9 @@ import org.eclipse.xtext.ui.editor.model.XtextDocument;
 import org.eclipse.xtext.ui.resource.IResourceSetProvider;
 
 import com.ge.research.sadl.SADLStandaloneSetup;
+import com.ge.research.sadl.builder.ConfigurationManagerForIDE;
+import com.ge.research.sadl.builder.ConfigurationManagerForIdeFactory;
+import com.ge.research.sadl.darpa.aske.processing.DialogConstants;
 import com.ge.research.sadl.darpa.aske.processing.JenaBasedDialogModelProcessor;
 import com.ge.research.sadl.darpa.aske.ui.handler.DialogRunInferenceHandler;
 import com.ge.research.sadl.darpa.aske.ui.handler.RunDialogQuery;
@@ -34,6 +37,7 @@ import com.ge.research.sadl.model.gp.Query;
 import com.ge.research.sadl.processing.OntModelProvider;
 import com.ge.research.sadl.reasoner.ResultSet;
 import com.ge.research.sadl.reasoner.SadlCommandResult;
+import com.ge.research.sadl.ui.handlers.SadlActionHandler;
 import com.google.inject.Inject;
 import com.google.inject.Injector;
 import com.google.inject.Provider;
@@ -44,6 +48,7 @@ import com.hp.hpl.jena.vocabulary.ReasonerVocabulary;
 import com.hp.hpl.jena.vocabulary.XSD;
 
 public class DialogAnswerProvider extends DefaultAutoEditStrategyProvider {
+	private XtextDocument theDocument;
 
 	@Inject
 	protected IResourceSetProvider resourceSetProvider;
@@ -74,7 +79,12 @@ public class DialogAnswerProvider extends DefaultAutoEditStrategyProvider {
 	                	Resource resource = getResourceFromDocument((XtextDocument)document);
 	                	String tempInsert = null;
 	                	if (resource != null) {
-			                Object lastcmd = OntModelProvider.getPrivateKeyValuePair(resource, JenaBasedDialogModelProcessor.LAST_DIALOG_COMMAND);
+	                		setTheDocument((XtextDocument) document);
+	                		String modelFolder = SadlActionHandler.getModelFolderFromResource(resource);
+	                		ConfigurationManagerForIDE cfgmgr = ConfigurationManagerForIdeFactory.getConfigurationManagerForIDE(modelFolder, null);
+	                		cfgmgr.addPrivateKeyValuePair(DialogConstants.DIALOG_ANSWER_PROVIDER, this);
+//	                		OntModelProvider.addPrivateKeyValuePair(resource, DialogConstants.DIALOG_ANSWER_PROVIDER, this);
+			                Object lastcmd = OntModelProvider.getPrivateKeyValuePair(resource, DialogConstants.LAST_DIALOG_COMMAND);
 			                System.out.println("Last cmd: " + (lastcmd != null ? lastcmd.toString() : "null"));
 		                	if (lastcmd instanceof Query) {
 		                		StringBuilder answer = new StringBuilder("CM: ");
@@ -165,9 +175,9 @@ public class DialogAnswerProvider extends DefaultAutoEditStrategyProvider {
 				String query = "select ?type where {<" + nn.getURI() + ">  <rdf:type> ?type}";
 				Query q = new Query();
 				q.setSparqlQueryString(query);
-				OntModelProvider.addPrivateKeyValuePair(resource, JenaBasedDialogModelProcessor.LAST_DIALOG_COMMAND, q);
+				OntModelProvider.addPrivateKeyValuePair(resource, DialogConstants.LAST_DIALOG_COMMAND, q);
 				ResultSet rs = runQuery(resource, q);
-				OntModelProvider.clearPrivateKeyValuePair(resource, JenaBasedDialogModelProcessor.LAST_DIALOG_COMMAND);
+				OntModelProvider.clearPrivateKeyValuePair(resource, DialogConstants.LAST_DIALOG_COMMAND);
 				if (rs != null) {
 					rs.setShowNamespaces(false);
 					int rowcnt = rs.getRowCount();
@@ -188,9 +198,9 @@ public class DialogAnswerProvider extends DefaultAutoEditStrategyProvider {
 				query = "select ?p ?v where {<" + nn.getURI() + "> ?p ?v }";
 				q = new Query();
 				q.setSparqlQueryString(query);
-				OntModelProvider.addPrivateKeyValuePair(resource, JenaBasedDialogModelProcessor.LAST_DIALOG_COMMAND, q);
+				OntModelProvider.addPrivateKeyValuePair(resource, DialogConstants.LAST_DIALOG_COMMAND, q);
 				rs = runQuery(resource, q);
-				OntModelProvider.clearPrivateKeyValuePair(resource, JenaBasedDialogModelProcessor.LAST_DIALOG_COMMAND);
+				OntModelProvider.clearPrivateKeyValuePair(resource, DialogConstants.LAST_DIALOG_COMMAND);
 				if (rs != null) {
 					int rowcnt = rs.getRowCount();
 					int outputcnt = 0;
@@ -234,9 +244,9 @@ public class DialogAnswerProvider extends DefaultAutoEditStrategyProvider {
 				String query = "select ?d where {<" + nn.getURI() + "> <rdfs:domain> ?d}";
 				Query q = new Query();
 				q.setSparqlQueryString(query);
-				OntModelProvider.addPrivateKeyValuePair(resource, JenaBasedDialogModelProcessor.LAST_DIALOG_COMMAND, q);
+				OntModelProvider.addPrivateKeyValuePair(resource, DialogConstants.LAST_DIALOG_COMMAND, q);
 				ResultSet rs = runQuery(resource, q);
-				OntModelProvider.clearPrivateKeyValuePair(resource, JenaBasedDialogModelProcessor.LAST_DIALOG_COMMAND);
+				OntModelProvider.clearPrivateKeyValuePair(resource, DialogConstants.LAST_DIALOG_COMMAND);
 				boolean domainGiven = false;
 				if (rs != null) {
 					rs.setShowNamespaces(false);
@@ -259,9 +269,9 @@ public class DialogAnswerProvider extends DefaultAutoEditStrategyProvider {
 				query = "select ?r where {<" + nn.getURI() + "> <rdfs:range> ?r}";
 				q = new Query();
 				q.setSparqlQueryString(query);
-				OntModelProvider.addPrivateKeyValuePair(resource, JenaBasedDialogModelProcessor.LAST_DIALOG_COMMAND, q);
+				OntModelProvider.addPrivateKeyValuePair(resource, DialogConstants.LAST_DIALOG_COMMAND, q);
 				rs = runQuery(resource, q);
-				OntModelProvider.clearPrivateKeyValuePair(resource, JenaBasedDialogModelProcessor.LAST_DIALOG_COMMAND);
+				OntModelProvider.clearPrivateKeyValuePair(resource, DialogConstants.LAST_DIALOG_COMMAND);
 				if (rs != null) {
 					rs.setShowNamespaces(false);
 					int rowcnt = rs.getRowCount();
@@ -302,6 +312,12 @@ public class DialogAnswerProvider extends DefaultAutoEditStrategyProvider {
 					System.out.println(answer.toString());
 				}
 			}
+			
+			private void addCurationManagerInitiatedContent(String content) throws BadLocationException {
+				XtextDocument document = getTheDocument();
+				int len = document.getLength();
+				document.replace(len, 0, "\n\n" + content);
+			}
 
 			private boolean addDomainAndRange(Resource resource, NamedNode nn, boolean isFirstProperty,
 					StringBuilder answer) throws ExecutionException {
@@ -309,7 +325,7 @@ public class DialogAnswerProvider extends DefaultAutoEditStrategyProvider {
 				query += "optional{?p <rdfs:range> ?r}}";
 				Query q = new Query();
 				q.setSparqlQueryString(query);
-				OntModelProvider.addPrivateKeyValuePair(resource, JenaBasedDialogModelProcessor.LAST_DIALOG_COMMAND, q);
+				OntModelProvider.addPrivateKeyValuePair(resource, DialogConstants.LAST_DIALOG_COMMAND, q);
 				ResultSet rs = runQuery(resource, q);
 				if (rs != null) {
 					rs.setShowNamespaces(false);
@@ -358,9 +374,9 @@ public class DialogAnswerProvider extends DefaultAutoEditStrategyProvider {
 				query += "?r <owl:qualifiedCardinality> ?cn . ?r <owl:onClass> ?rc}";
 				q = new Query();
 				q.setSparqlQueryString(query);
-				OntModelProvider.addPrivateKeyValuePair(resource, JenaBasedDialogModelProcessor.LAST_DIALOG_COMMAND, q);
+				OntModelProvider.addPrivateKeyValuePair(resource, DialogConstants.LAST_DIALOG_COMMAND, q);
 				rs = runQuery(resource, q);
-				OntModelProvider.clearPrivateKeyValuePair(resource, JenaBasedDialogModelProcessor.LAST_DIALOG_COMMAND);
+				OntModelProvider.clearPrivateKeyValuePair(resource, DialogConstants.LAST_DIALOG_COMMAND);
 				if (rs != null) {
 					rs.setShowNamespaces(false);
 					int rowcnt = rs.getRowCount();
@@ -500,5 +516,13 @@ public class DialogAnswerProvider extends DefaultAutoEditStrategyProvider {
 
 	    super.configure(acceptor);
 
+	}
+
+	private XtextDocument getTheDocument() {
+		return theDocument;
+	}
+
+	private void setTheDocument(XtextDocument theDocument) {
+		this.theDocument = theDocument;
 	}
 }
