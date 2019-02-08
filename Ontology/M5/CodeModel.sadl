@@ -11,7 +11,7 @@
  	described by varName with a single value of type string,
  	described by varType with a single value of type anyURI,
  	described by definedAt with a single value of type int,
- 	described by usedasInputAt with values of type int,
+ 	described by usedAsInputAt with values of type int,
  	described by reassignedAt with values of type int.
  	
   	
