@@ -1,0 +1,17 @@
+ uri "http://sadl.org/CodeModel.sadl" alias codemdl.
+ 
+ CodeBlock is a class,
+ 	described by beginsAt with a single value of type int,
+ 	described by endsAt with a single value of type int,
+ 	described by serialization with a single value of type string.
+ 
+ {Method, ConditionalBlock, LoopBlock} are types of CodeBlock.
+ 
+ CodeVariable is a class,
+ 	described by varName with a single value of type string,
+ 	described by varType with a single value of type anyURI,
+ 	described by definedAt with a single value of type int,
+ 	described by usedasInputAt with values of type int,
+ 	described by reassignedAt with values of type int.
+ 	
+  	

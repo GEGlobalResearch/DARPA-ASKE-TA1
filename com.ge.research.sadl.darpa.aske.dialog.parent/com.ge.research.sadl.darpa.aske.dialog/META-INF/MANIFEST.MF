@@ -31,7 +31,10 @@ Require-Bundle: org.eclipse.xtext,
  org.apache.log4j,
  com.ge.research.sadl.xtextgenerator,
  com.ge.research.sadl.jena-wrapper-for-sadl,
- com.ge.research.sadl.errorgenerator
+ com.ge.research.sadl.errorgenerator,
+ org.eclipse.jdt;bundle-version="3.9.1",
+ org.eclipse.jdt.core;bundle-version="3.9.2",
+ com.ge.research.sadl.darpa.aske.dialog.dependencies;bundle-version="1.0.0"
 Bundle-RequiredExecutionEnvironment: JavaSE-1.8
 Export-Package: com.ge.research.sadl.darpa.aske,
  com.ge.research.sadl.darpa.aske.dialog,
@@ -43,6 +46,7 @@ Export-Package: com.ge.research.sadl.darpa.aske,
  com.ge.research.sadl.darpa.aske.parser.antlr.lexer,
  com.ge.research.sadl.darpa.aske.parser.antlr.lexer.jflex,
  com.ge.research.sadl.darpa.aske.processing,
+ com.ge.research.sadl.darpa.aske.processing.imports,
  com.ge.research.sadl.darpa.aske.scoping,
  com.ge.research.sadl.darpa.aske.services,
  com.ge.research.sadl.darpa.aske.validation

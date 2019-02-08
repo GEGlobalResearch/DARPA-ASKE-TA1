@@ -1,0 +1,116 @@
+<rdf:RDF
+    xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+    xmlns:sadlbasemodel="http://sadl.org/sadlbasemodel"
+    xmlns:codemdl="http://sadl.org/CodeModel.sadl#"
+    xmlns:owl="http://www.w3.org/2002/07/owl#"
+    xmlns:sadlimplicitmodel="http://sadl.org/sadlimplicitmodel"
+    xmlns:builtinfunctions="http://sadl.org/builtinfunctions"
+    xmlns:rdfs="http://www.w3.org/2000/01/rdf-schema#"
+    xmlns:xsd="http://www.w3.org/2001/XMLSchema#"
+  xml:base="http://sadl.org/CodeModel.sadl">
+  <owl:Ontology rdf:about="">
+    <owl:imports rdf:resource="builtinfunctions"/>
+    <owl:imports rdf:resource="sadlimplicitmodel"/>
+    <owl:imports rdf:resource="sadlbasemodel"/>
+    <rdfs:comment xml:lang="en">This ontology was created from a SADL file 'CodeModel.sadl' and should not be directly edited.</rdfs:comment>
+  </owl:Ontology>
+  <owl:Class rdf:ID="CodeBlock">
+    <rdfs:subClassOf>
+      <owl:Restriction>
+        <owl:cardinality rdf:datatype="http://www.w3.org/2001/XMLSchema#int"
+        >1</owl:cardinality>
+        <owl:onProperty>
+          <owl:DatatypeProperty rdf:ID="serialization"/>
+        </owl:onProperty>
+      </owl:Restriction>
+    </rdfs:subClassOf>
+    <rdfs:subClassOf>
+      <owl:Restriction>
+        <owl:cardinality rdf:datatype="http://www.w3.org/2001/XMLSchema#int"
+        >1</owl:cardinality>
+        <owl:onProperty>
+          <owl:DatatypeProperty rdf:ID="endsAt"/>
+        </owl:onProperty>
+      </owl:Restriction>
+    </rdfs:subClassOf>
+    <rdfs:subClassOf>
+      <owl:Restriction>
+        <owl:cardinality rdf:datatype="http://www.w3.org/2001/XMLSchema#int"
+        >1</owl:cardinality>
+        <owl:onProperty>
+          <owl:DatatypeProperty rdf:ID="beginsAt"/>
+        </owl:onProperty>
+      </owl:Restriction>
+    </rdfs:subClassOf>
+  </owl:Class>
+  <owl:Class rdf:ID="LoopBlock">
+    <rdfs:subClassOf rdf:resource="#CodeBlock"/>
+  </owl:Class>
+  <owl:Class rdf:ID="ConditionalBlock">
+    <rdfs:subClassOf rdf:resource="#CodeBlock"/>
+  </owl:Class>
+  <owl:Class rdf:ID="CodeVariable">
+    <rdfs:subClassOf>
+      <owl:Restriction>
+        <owl:cardinality rdf:datatype="http://www.w3.org/2001/XMLSchema#int"
+        >1</owl:cardinality>
+        <owl:onProperty>
+          <owl:DatatypeProperty rdf:ID="definedAt"/>
+        </owl:onProperty>
+      </owl:Restriction>
+    </rdfs:subClassOf>
+    <rdfs:subClassOf>
+      <owl:Restriction>
+        <owl:cardinality rdf:datatype="http://www.w3.org/2001/XMLSchema#int"
+        >1</owl:cardinality>
+        <owl:onProperty>
+          <owl:DatatypeProperty rdf:ID="varType"/>
+        </owl:onProperty>
+      </owl:Restriction>
+    </rdfs:subClassOf>
+    <rdfs:subClassOf>
+      <owl:Restriction>
+        <owl:cardinality rdf:datatype="http://www.w3.org/2001/XMLSchema#int"
+        >1</owl:cardinality>
+        <owl:onProperty>
+          <owl:DatatypeProperty rdf:ID="varName"/>
+        </owl:onProperty>
+      </owl:Restriction>
+    </rdfs:subClassOf>
+  </owl:Class>
+  <owl:Class rdf:ID="Method">
+    <rdfs:subClassOf rdf:resource="#CodeBlock"/>
+  </owl:Class>
+  <owl:DatatypeProperty rdf:about="#serialization">
+    <rdfs:domain rdf:resource="#CodeBlock"/>
+    <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+  </owl:DatatypeProperty>
+  <owl:DatatypeProperty rdf:about="#definedAt">
+    <rdfs:domain rdf:resource="#CodeVariable"/>
+    <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#int"/>
+  </owl:DatatypeProperty>
+  <owl:DatatypeProperty rdf:ID="usedasInputAt">
+    <rdfs:domain rdf:resource="#CodeVariable"/>
+    <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#int"/>
+  </owl:DatatypeProperty>
+  <owl:DatatypeProperty rdf:about="#endsAt">
+    <rdfs:domain rdf:resource="#CodeBlock"/>
+    <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#int"/>
+  </owl:DatatypeProperty>
+  <owl:DatatypeProperty rdf:ID="reassignedAt">
+    <rdfs:domain rdf:resource="#CodeVariable"/>
+    <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#int"/>
+  </owl:DatatypeProperty>
+  <owl:DatatypeProperty rdf:about="#varName">
+    <rdfs:domain rdf:resource="#CodeVariable"/>
+    <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+  </owl:DatatypeProperty>
+  <owl:DatatypeProperty rdf:about="#varType">
+    <rdfs:domain rdf:resource="#CodeVariable"/>
+    <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#anyURI"/>
+  </owl:DatatypeProperty>
+  <owl:DatatypeProperty rdf:about="#beginsAt">
+    <rdfs:domain rdf:resource="#CodeBlock"/>
+    <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#int"/>
+  </owl:DatatypeProperty>
+</rdf:RDF>
