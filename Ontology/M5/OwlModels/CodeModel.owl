@@ -81,15 +81,15 @@
   <owl:Class rdf:ID="Method">
     <rdfs:subClassOf rdf:resource="#CodeBlock"/>
   </owl:Class>
+  <owl:DatatypeProperty rdf:ID="usedAsInputAt">
+    <rdfs:domain rdf:resource="#CodeVariable"/>
+    <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#int"/>
+  </owl:DatatypeProperty>
   <owl:DatatypeProperty rdf:about="#serialization">
     <rdfs:domain rdf:resource="#CodeBlock"/>
     <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
   </owl:DatatypeProperty>
   <owl:DatatypeProperty rdf:about="#definedAt">
-    <rdfs:domain rdf:resource="#CodeVariable"/>
-    <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#int"/>
-  </owl:DatatypeProperty>
-  <owl:DatatypeProperty rdf:ID="usedasInputAt">
     <rdfs:domain rdf:resource="#CodeVariable"/>
     <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#int"/>
   </owl:DatatypeProperty>

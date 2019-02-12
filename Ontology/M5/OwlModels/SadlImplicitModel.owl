@@ -10,21 +10,6 @@
     <owl:imports rdf:resource="sadllistmodel"/>
     <rdfs:comment xml:lang="en">This ontology was created from a SADL file 'SadlImplicitModel.sadl' and should not be directly edited.</rdfs:comment>
   </owl:Ontology>
-  <owl:Class rdf:nodeID="A0">
-    <rdfs:subClassOf>
-      <owl:Restriction>
-        <owl:allValuesFrom rdf:nodeID="A0"/>
-        <owl:onProperty rdf:resource="sadllistmodel#rest"/>
-      </owl:Restriction>
-    </rdfs:subClassOf>
-    <rdfs:subClassOf>
-      <owl:Restriction>
-        <owl:allValuesFrom rdf:resource="http://www.w3.org/2001/XMLSchema#anyURI"/>
-        <owl:onProperty rdf:resource="sadllistmodel#first"/>
-      </owl:Restriction>
-    </rdfs:subClassOf>
-    <rdfs:subClassOf rdf:resource="sadllistmodel#List"/>
-  </owl:Class>
   <owl:Class rdf:ID="Specification"/>
   <owl:Class rdf:ID="Argument">
     <rdfs:subClassOf>
@@ -116,21 +101,6 @@
       </owl:Restriction>
     </rdfs:subClassOf>
   </owl:Class>
-  <owl:Class rdf:nodeID="A1">
-    <rdfs:subClassOf>
-      <owl:Restriction>
-        <owl:allValuesFrom rdf:nodeID="A1"/>
-        <owl:onProperty rdf:resource="sadllistmodel#rest"/>
-      </owl:Restriction>
-    </rdfs:subClassOf>
-    <rdfs:subClassOf>
-      <owl:Restriction>
-        <owl:allValuesFrom rdf:resource="#Argument"/>
-        <owl:onProperty rdf:resource="sadllistmodel#first"/>
-      </owl:Restriction>
-    </rdfs:subClassOf>
-    <rdfs:subClassOf rdf:resource="sadllistmodel#List"/>
-  </owl:Class>
   <owl:Class rdf:ID="Requirement">
     <rdfs:subClassOf rdf:resource="#Specification"/>
   </owl:Class>
@@ -184,6 +154,21 @@
   <owl:Class rdf:ID="Assumption">
     <rdfs:subClassOf rdf:resource="#Specification"/>
   </owl:Class>
+  <owl:Class rdf:nodeID="A0">
+    <rdfs:subClassOf>
+      <owl:Restriction>
+        <owl:allValuesFrom rdf:nodeID="A0"/>
+        <owl:onProperty rdf:resource="sadllistmodel#rest"/>
+      </owl:Restriction>
+    </rdfs:subClassOf>
+    <rdfs:subClassOf>
+      <owl:Restriction>
+        <owl:allValuesFrom rdf:resource="#Argument"/>
+        <owl:onProperty rdf:resource="sadllistmodel#first"/>
+      </owl:Restriction>
+    </rdfs:subClassOf>
+    <rdfs:subClassOf rdf:resource="sadllistmodel#List"/>
+  </owl:Class>
   <owl:Class rdf:ID="TestState"/>
   <owl:Class rdf:ID="TRANSITION_RESTRICTION"/>
   <owl:Class rdf:ID="PHYSICAL_MAPPING">
@@ -216,6 +201,21 @@
       </owl:Class>
     </owl:equivalentClass>
   </owl:Class>
+  <owl:Class rdf:nodeID="A1">
+    <rdfs:subClassOf>
+      <owl:Restriction>
+        <owl:allValuesFrom rdf:nodeID="A1"/>
+        <owl:onProperty rdf:resource="sadllistmodel#rest"/>
+      </owl:Restriction>
+    </rdfs:subClassOf>
+    <rdfs:subClassOf>
+      <owl:Restriction>
+        <owl:allValuesFrom rdf:resource="http://www.w3.org/2001/XMLSchema#anyURI"/>
+        <owl:onProperty rdf:resource="sadllistmodel#first"/>
+      </owl:Restriction>
+    </rdfs:subClassOf>
+    <rdfs:subClassOf rdf:resource="sadllistmodel#List"/>
+  </owl:Class>
   <owl:Class rdf:ID="Event"/>
   <owl:Class rdf:ID="Rule"/>
   <owl:Class rdf:ID="TEST_INTERFACE">
@@ -240,7 +240,7 @@
     <rdfs:range rdf:resource="#TRANSITION_TYPE"/>
   </owl:ObjectProperty>
   <owl:ObjectProperty rdf:about="#arguments">
-    <rdfs:range rdf:nodeID="A1"/>
+    <rdfs:range rdf:nodeID="A0"/>
     <rdfs:domain rdf:resource="#Equation"/>
   </owl:ObjectProperty>
   <owl:ObjectProperty rdf:about="#physical_mapping">
@@ -252,7 +252,7 @@
     <rdfs:domain rdf:resource="#INTERFACE_DEFINITION"/>
   </owl:ObjectProperty>
   <owl:ObjectProperty rdf:about="#returnTypes">
-    <rdfs:range rdf:nodeID="A0"/>
+    <rdfs:range rdf:nodeID="A1"/>
     <rdfs:domain rdf:resource="#Equation"/>
   </owl:ObjectProperty>
   <owl:ObjectProperty rdf:ID="state">
