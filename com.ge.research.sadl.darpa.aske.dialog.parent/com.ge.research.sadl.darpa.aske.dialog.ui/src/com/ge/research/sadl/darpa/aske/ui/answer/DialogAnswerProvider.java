@@ -22,6 +22,8 @@ import org.eclipse.xtext.resource.XtextResource;
 import org.eclipse.xtext.ui.editor.autoedit.DefaultAutoEditStrategyProvider;
 import org.eclipse.xtext.ui.editor.model.XtextDocument;
 import org.eclipse.xtext.ui.resource.IResourceSetProvider;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.ge.research.sadl.SADLStandaloneSetup;
 import com.ge.research.sadl.builder.ConfigurationManagerForIDE;
@@ -48,6 +50,7 @@ import com.hp.hpl.jena.vocabulary.ReasonerVocabulary;
 import com.hp.hpl.jena.vocabulary.XSD;
 
 public class DialogAnswerProvider extends DefaultAutoEditStrategyProvider {
+	private static final Logger logger = LoggerFactory.getLogger(DialogAnswerProvider.class);
 	private XtextDocument theDocument;
 
 	@Inject
@@ -85,7 +88,7 @@ public class DialogAnswerProvider extends DefaultAutoEditStrategyProvider {
 	                		cfgmgr.addPrivateKeyValuePair(DialogConstants.DIALOG_ANSWER_PROVIDER, this);
 //	                		OntModelProvider.addPrivateKeyValuePair(resource, DialogConstants.DIALOG_ANSWER_PROVIDER, this);
 			                Object lastcmd = OntModelProvider.getPrivateKeyValuePair(resource, DialogConstants.LAST_DIALOG_COMMAND);
-			                System.out.println("Last cmd: " + (lastcmd != null ? lastcmd.toString() : "null"));
+			                logger.debug("DialogAnswerProvider: Last cmd: " + (lastcmd != null ? lastcmd.toString() : "null"));
 		                	if (lastcmd instanceof Query) {
 		                		StringBuilder answer = new StringBuilder("CM: ");
 		                		ResultSet rs = runQuery(resource, (Query)lastcmd);
@@ -134,10 +137,10 @@ public class DialogAnswerProvider extends DefaultAutoEditStrategyProvider {
 		                			addInstanceDeclaration(resource, nn, answer);
 		                			answer.append(".");
 			                		Object ctx = ((NamedNode)lastcmd).getContext();
-			                		addResponseToDialog(document, reg, answer, ctx);
+					                addResponseToDialog(document, reg, answer, ctx);
 		                		}
 		                		else {
-		                			System.out.println("Lastcmd: " + lastcmd.getClass().getCanonicalName());
+		                			logger.debug("    Lastcmd '" + lastcmd.getClass().getCanonicalName() + "' not handled yet!");
 		                		}
 		                	}
 		                	else if (lastcmd instanceof Object[]) {
@@ -154,8 +157,11 @@ public class DialogAnswerProvider extends DefaultAutoEditStrategyProvider {
 		                		
 		                	}
 		                	else if (lastcmd != null) {
-		                		System.out.println("Lastcmd (not handled type): " + lastcmd.getClass().getCanonicalName());
+	                			logger.debug("    Lastcmd '" + lastcmd.getClass().getCanonicalName() + "' not handled yet!");
 		                	}
+	                	}
+	                	else {
+                			logger.debug("DialogAnswerProvider called with null resource!");
 	                	}
 //		                String possibleKWD = token.toLowerCase();
 //		                if ( token.equals(possibleKWD.toUpperCase()) || !KWDS.contains(possibleKWD) ) return;
@@ -164,7 +170,7 @@ public class DialogAnswerProvider extends DefaultAutoEditStrategyProvider {
 	            } 
 	            catch (Exception e) 
 	            {
-	                System.out.println("AutoEdit error.\n" + e.getMessage());   
+	                logger.debug("AutoEdit error (of type " + e.getClass().getCanonicalName() + "): " + e.getMessage());   
 	            }
 	        }
 
@@ -309,7 +315,7 @@ public class DialogAnswerProvider extends DefaultAutoEditStrategyProvider {
 				    document.replace(start + len + 1, 0, answer.toString() + "\n");
 				}
 				else {
-					System.out.println(answer.toString());
+					logger.debug(answer.toString());
 				}
 			}
 			
