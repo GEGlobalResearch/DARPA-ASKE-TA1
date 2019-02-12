@@ -440,13 +440,12 @@ public class JenaBasedDialogModelProcessor extends JenaBasedSadlModelProcessor {
 				if (trgtObj instanceof NamedNode) {
 					((NamedNode)trgtObj).setContext(stmt);
 				}
-				else if (trgtObj instanceof TripleElement) {
-					// TODO
-					addInfo("TripleElement not yet handled by dialog processor", whatIsTarget);
-				}
 				else if (trgtObj instanceof Junction) {
 					// TODO
 					addInfo("Junction not yet handled by dialog processor", whatIsTarget);
+				}
+				else if (trgtObj instanceof TripleElement) {
+					((TripleElement)trgtObj).setContext(stmt.getStmt());
 				}
 				else {
 					// TODO

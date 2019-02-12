@@ -29,13 +29,14 @@ import com.ge.research.sadl.SADLStandaloneSetup;
 import com.ge.research.sadl.builder.ConfigurationManagerForIDE;
 import com.ge.research.sadl.builder.ConfigurationManagerForIdeFactory;
 import com.ge.research.sadl.darpa.aske.processing.DialogConstants;
-import com.ge.research.sadl.darpa.aske.processing.JenaBasedDialogModelProcessor;
 import com.ge.research.sadl.darpa.aske.ui.handler.DialogRunInferenceHandler;
 import com.ge.research.sadl.darpa.aske.ui.handler.RunDialogQuery;
 import com.ge.research.sadl.model.gp.NamedNode;
 import com.ge.research.sadl.model.gp.NamedNode.NodeType;
-import com.ge.research.sadl.parser.antlr.SADLParser;
+import com.ge.research.sadl.model.gp.Node;
 import com.ge.research.sadl.model.gp.Query;
+import com.ge.research.sadl.model.gp.TripleElement;
+import com.ge.research.sadl.parser.antlr.SADLParser;
 import com.ge.research.sadl.processing.OntModelProvider;
 import com.ge.research.sadl.reasoner.ResultSet;
 import com.ge.research.sadl.reasoner.SadlCommandResult;
@@ -46,7 +47,6 @@ import com.google.inject.Provider;
 import com.hp.hpl.jena.vocabulary.OWL;
 import com.hp.hpl.jena.vocabulary.RDF;
 import com.hp.hpl.jena.vocabulary.RDFS;
-import com.hp.hpl.jena.vocabulary.ReasonerVocabulary;
 import com.hp.hpl.jena.vocabulary.XSD;
 
 public class DialogAnswerProvider extends DefaultAutoEditStrategyProvider {
@@ -94,11 +94,7 @@ public class DialogAnswerProvider extends DefaultAutoEditStrategyProvider {
 		                		ResultSet rs = runQuery(resource, (Query)lastcmd);
 		                		String resultStr = null;
 		                		if (rs != null) {
-		                			rs.setShowNamespaces(true);
-		                			resultStr = rs.toString();
-		                			resultStr = resultStr.replace('"', '\'');
-		                			resultStr = resultStr.trim();
-		                			resultStr = "\"" + resultStr + "\"";
+		                			resultStr = resultSetToQuotableString(rs);
 		                		}
 		                		tempInsert = (resultStr != null ? resultStr : "Failed to find results");
 		                		answer.append(tempInsert);
@@ -156,6 +152,13 @@ public class DialogAnswerProvider extends DefaultAutoEditStrategyProvider {
 		                		answer.append(" with exactly ");
 		                		
 		                	}
+		                	else if (lastcmd instanceof TripleElement) {
+		                		StringBuilder answer = new StringBuilder("CM: ");
+		                		addTripleQuestion(resource, (TripleElement)lastcmd, answer);
+		                		answer.append(".");
+		                		Object ctx = ((TripleElement)lastcmd).getContext();
+		                		addResponseToDialog(document, reg, answer, ctx);
+		                	}
 		                	else if (lastcmd != null) {
 	                			logger.debug("    Lastcmd '" + lastcmd.getClass().getCanonicalName() + "' not handled yet!");
 		                	}
@@ -173,6 +176,88 @@ public class DialogAnswerProvider extends DefaultAutoEditStrategyProvider {
 	                logger.debug("AutoEdit error (of type " + e.getClass().getCanonicalName() + "): " + e.getMessage());   
 	            }
 	        }
+
+			private String resultSetToQuotableString(ResultSet rs) {
+				String resultStr;
+				rs.setShowNamespaces(true);
+				resultStr = rs.toString();
+				resultStr = resultStr.replace('"', '\'');
+				resultStr = resultStr.trim();
+				resultStr = "\"" + resultStr + "\"";
+				return resultStr;
+			}
+
+			private void addTripleQuestion(Resource resource, TripleElement tr, StringBuilder answer) throws ExecutionException {
+				List<String> vars = new ArrayList<String>();
+				StringBuilder sbwhere = new StringBuilder("where {");
+				if (tr.getSubject() == null) {
+					vars.add("?s");
+					sbwhere.append("?s ");
+				}
+				else {
+					sbwhere.append("<");
+					sbwhere.append(tr.getSubject().getURI());
+					sbwhere.append("> ");
+				}
+				if (tr.getPredicate() == null) {
+					vars.add("?p");
+					sbwhere.append("?p ");
+				}
+				else {
+					sbwhere.append("<");
+					sbwhere.append(tr.getPredicate().getURI());
+					sbwhere.append("> ");
+				}
+				if (tr.getObject() == null) {
+					vars.add("?o");
+					sbwhere.append("?o");
+				}
+				else {
+					sbwhere.append("<");
+					Node obj = tr.getObject();
+					if (obj instanceof NamedNode) {
+						sbwhere.append(obj.getURI());
+					}
+					else {
+						sbwhere.append(obj.toString());
+					}
+					sbwhere.append("> ");
+				}
+				if (vars.size() > 0) {
+					for (int i = vars.size() - 1; i >= 0; i--) {
+						sbwhere.insert(0, " ");
+						sbwhere.insert(0, vars.get(i));
+					}
+					sbwhere.insert(0,  "select ");
+					sbwhere.append("}");
+				}
+				Query q = new Query();
+				q.setSparqlQueryString(sbwhere.toString());
+				OntModelProvider.addPrivateKeyValuePair(resource, DialogConstants.LAST_DIALOG_COMMAND, q);
+				ResultSet rs = runQuery(resource, q);
+				OntModelProvider.clearPrivateKeyValuePair(resource, DialogConstants.LAST_DIALOG_COMMAND);
+				if (rs != null) {
+					if (rs.getRowCount() == 1) {
+						if (tr.getSubject() != null && tr.getPredicate() != null) {
+							answer.append(tr.getSubject().getName());
+							answer.append(" has ");
+							answer.append(tr.getPredicate().getName());
+							answer.append(" ");
+							answer.append(rs.getResultAt(0, 0));
+						}
+						else {
+							answer.append("\"");
+							answer.append(resultSetToQuotableString(rs));
+							answer.append("\"");
+						}
+					}
+					else {
+						answer.append("\"");
+						answer.append(resultSetToQuotableString(rs));
+						answer.append("\"");
+					}
+				}
+			}
 
 			private void addInstanceDeclaration(Resource resource, NamedNode nn, StringBuilder answer) throws ExecutionException {
 				answer.append(checkForKeyword(nn.getName()));
