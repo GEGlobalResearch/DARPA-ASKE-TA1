@@ -19,6 +19,7 @@ import org.eclipse.emf.ecore.resource.Resource;
 import org.eclipse.emf.ecore.resource.ResourceSet;
 import org.eclipse.xtext.EcoreUtil2;
 import org.eclipse.xtext.generator.IFileSystemAccess2;
+import org.eclipse.xtext.nodemodel.util.NodeModelUtils;
 import org.eclipse.xtext.util.CancelIndicator;
 import org.eclipse.xtext.validation.CheckMode;
 import org.eclipse.xtext.validation.CheckType;
@@ -75,7 +76,7 @@ public class JenaBasedDialogModelProcessor extends JenaBasedSadlModelProcessor {
 			return;
 		}
 		resetProcessor();
-		logger.debug("onValidate called for Resource '" + resource.getURI() + "'"); 
+		logger.debug("JenaBasedDialogModelProcessor.onValidate called for Resource '" + resource.getURI() + "'"); 
 		CancelIndicator cancelIndicator = context.getCancelIndicator();
 		if (resource.getContents().size() < 1) {
 			return;
@@ -212,6 +213,14 @@ public class JenaBasedDialogModelProcessor extends JenaBasedSadlModelProcessor {
 					throw new OperationCanceledException();
 				}
 				SadlModelElement element = elitr.next();
+        		if (element instanceof EObject) {
+        			String txt = NodeModelUtils.findActualNodeFor((EObject) element).getText();
+        			if (!(txt.endsWith(".") || txt.endsWith("?"))) {
+                		System.out.println("It's NOT the real deal!");
+                		continue;
+        			}
+        		}
+				logger.debug("   Model element of type '" + element.getClass().getCanonicalName() + "' being processed.");
 				// reset state for a new model element
 				try {
 					resetProcessorState(element);
