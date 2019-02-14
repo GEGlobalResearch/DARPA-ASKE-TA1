@@ -41,6 +41,7 @@ import com.ge.research.sadl.model.ModelError;
 import com.ge.research.sadl.model.gp.Equation;
 import com.ge.research.sadl.model.gp.Junction;
 import com.ge.research.sadl.model.gp.NamedNode;
+import com.ge.research.sadl.model.gp.ProxyNode;
 import com.ge.research.sadl.model.gp.Query;
 import com.ge.research.sadl.model.gp.Rule;
 import com.ge.research.sadl.model.gp.TripleElement;
@@ -447,11 +448,20 @@ public class JenaBasedDialogModelProcessor extends JenaBasedSadlModelProcessor {
 				else if (trgtObj instanceof TripleElement) {
 					((TripleElement)trgtObj).setContext(stmt.getStmt());
 				}
+				else if (trgtObj instanceof Object[]) {
+					for (int i = 0; i < ((Object[])trgtObj).length; i++) {
+						Object obj = ((Object[])trgtObj)[i];
+						setGraphPatternContext(stmt, whatIsTarget, obj);
+					}
+				}
 				else {
 					// TODO
 					addInfo(trgtObj.getClass().getCanonicalName() + " not yet handled by dialog processor", whatIsTarget);
 				}
-				OntModelProvider.addPrivateKeyValuePair(stmt.eResource(), DialogConstants.LAST_DIALOG_COMMAND, trgtObj);
+				Expression when = ((WhatIsStatement)stmt.getStmt()).getWhen();
+				Object whenObj = when != null ? processExpression(when) : null;
+				WhatIsConstruct wic = new WhatIsConstruct(trgtObj, whenObj);
+				OntModelProvider.addPrivateKeyValuePair(stmt.eResource(), DialogConstants.LAST_DIALOG_COMMAND, wic);
 			} catch (TranslationException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
@@ -483,6 +493,19 @@ public class JenaBasedDialogModelProcessor extends JenaBasedSadlModelProcessor {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
+		}
+	}
+
+	private void setGraphPatternContext(WhatStatement stmt, EObject whatIsTarget, Object obj) {
+		if (obj instanceof TripleElement) {
+			((TripleElement)obj).setContext(stmt.getStmt());
+		}
+		else if (obj instanceof Junction) {
+			setGraphPatternContext(stmt, whatIsTarget, ((ProxyNode)((Junction)obj).getLhs()).getProxyFor());
+			setGraphPatternContext(stmt, whatIsTarget, ((ProxyNode)((Junction)obj).getRhs()).getProxyFor());;
+		}
+		else {
+			addInfo(obj.getClass().getCanonicalName() + " in array not yet handled by dialog processor", whatIsTarget);
 		}
 	}
 

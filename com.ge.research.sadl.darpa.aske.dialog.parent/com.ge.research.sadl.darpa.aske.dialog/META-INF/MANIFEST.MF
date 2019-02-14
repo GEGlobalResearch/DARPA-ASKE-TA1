@@ -47,6 +47,7 @@ Export-Package: com.ge.research.sadl.darpa.aske,
  com.ge.research.sadl.darpa.aske.parser.antlr.lexer.jflex,
  com.ge.research.sadl.darpa.aske.processing,
  com.ge.research.sadl.darpa.aske.processing.imports,
+ com.ge.research.sadl.darpa.aske.inference,
  com.ge.research.sadl.darpa.aske.scoping,
  com.ge.research.sadl.darpa.aske.services,
  com.ge.research.sadl.darpa.aske.validation
