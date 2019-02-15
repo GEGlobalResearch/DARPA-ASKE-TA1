@@ -31,6 +31,7 @@ import com.ge.research.sadl.builder.MessageManager.SadlMessage;
 import com.ge.research.sadl.darpa.aske.processing.DialogConstants;
 import com.ge.research.sadl.ide.handlers.SadlRunInferenceHandler;
 import com.ge.research.sadl.model.gp.Query;
+import com.ge.research.sadl.model.gp.TripleElement;
 import com.ge.research.sadl.processing.OntModelProvider;
 import com.ge.research.sadl.reasoner.SadlCommandResult;
 import com.google.common.base.Supplier;
@@ -65,7 +66,11 @@ public class DialogRunInferenceHandler extends SadlRunInferenceHandler {
 					displayInferenceResults(retvals, path, owlModelPath, modelFolderPath, properties);
 					OntModelProvider.addPrivateKeyValuePair(res, "CMResult", retval);
 				}
-				else {
+				else if (lastCmd instanceof TripleElement[]) {
+					Object[] rss = inferenceProcessor.insertTriplesAndQuery(res, (TripleElement[]) lastCmd);
+					OntModelProvider.addPrivateKeyValuePair(res, "CMResult", rss);
+				}
+				else if (lastCmd != null) {
 					throw new InvalidClassException("Unhandled last command type: " + lastCmd.getClass().getCanonicalName());
 				}
 			}

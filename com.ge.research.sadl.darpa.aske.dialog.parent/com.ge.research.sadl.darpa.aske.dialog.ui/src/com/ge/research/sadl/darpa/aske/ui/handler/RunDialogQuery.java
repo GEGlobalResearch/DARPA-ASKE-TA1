@@ -22,7 +22,7 @@ public class RunDialogQuery extends RunQuery {
 	@Inject
 	protected Provider<DialogRunInferenceHandler> infHandlerProvider;
 	
-	public Object execute(Provider<DialogRunInferenceHandler> backupHandlerProvider, Resource rsrc, Query lastcmd) throws ExecutionException {
+	public Object execute(Provider<DialogRunInferenceHandler> backupHandlerProvider, Resource rsrc, Object lastcmd) throws ExecutionException {
 		URI uri = rsrc.getURI();
 		try {
 			String modelFolderUri = getModelFolderFromResource(rsrc);

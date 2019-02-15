@@ -2,6 +2,7 @@ package com.ge.research.sadl.darpa.aske.ui.answer;
 
 import java.lang.reflect.Field;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
@@ -29,13 +30,21 @@ import com.ge.research.sadl.SADLStandaloneSetup;
 import com.ge.research.sadl.builder.ConfigurationManagerForIDE;
 import com.ge.research.sadl.builder.ConfigurationManagerForIdeFactory;
 import com.ge.research.sadl.darpa.aske.processing.DialogConstants;
-import com.ge.research.sadl.darpa.aske.processing.JenaBasedDialogModelProcessor;
+import com.ge.research.sadl.darpa.aske.processing.HowManyValuesConstruct;
+import com.ge.research.sadl.darpa.aske.processing.WhatIsConstruct;
 import com.ge.research.sadl.darpa.aske.ui.handler.DialogRunInferenceHandler;
 import com.ge.research.sadl.darpa.aske.ui.handler.RunDialogQuery;
+import com.ge.research.sadl.model.gp.GraphPatternElement;
+import com.ge.research.sadl.model.gp.Junction;
+import com.ge.research.sadl.model.gp.Junction.JunctionType;
 import com.ge.research.sadl.model.gp.NamedNode;
 import com.ge.research.sadl.model.gp.NamedNode.NodeType;
-import com.ge.research.sadl.parser.antlr.SADLParser;
+import com.ge.research.sadl.model.gp.Node;
+import com.ge.research.sadl.model.gp.ProxyNode;
 import com.ge.research.sadl.model.gp.Query;
+import com.ge.research.sadl.model.gp.TripleElement;
+import com.ge.research.sadl.model.gp.VariableNode;
+import com.ge.research.sadl.parser.antlr.SADLParser;
 import com.ge.research.sadl.processing.OntModelProvider;
 import com.ge.research.sadl.reasoner.ResultSet;
 import com.ge.research.sadl.reasoner.SadlCommandResult;
@@ -46,7 +55,6 @@ import com.google.inject.Provider;
 import com.hp.hpl.jena.vocabulary.OWL;
 import com.hp.hpl.jena.vocabulary.RDF;
 import com.hp.hpl.jena.vocabulary.RDFS;
-import com.hp.hpl.jena.vocabulary.ReasonerVocabulary;
 import com.hp.hpl.jena.vocabulary.XSD;
 
 public class DialogAnswerProvider extends DefaultAutoEditStrategyProvider {
@@ -94,13 +102,9 @@ public class DialogAnswerProvider extends DefaultAutoEditStrategyProvider {
 		                		ResultSet rs = runQuery(resource, (Query)lastcmd);
 		                		String resultStr = null;
 		                		if (rs != null) {
-		                			rs.setShowNamespaces(true);
-		                			resultStr = rs.toString();
-		                			resultStr = resultStr.replace('"', '\'');
-		                			resultStr = resultStr.trim();
-		                			resultStr = "\"" + resultStr + "\"";
+		                			resultStr = resultSetToQuotableString(rs);
 		                		}
-		                		tempInsert = (resultStr != null ? resultStr : "Failed to find results");
+		                		tempInsert = (resultStr != null ? resultStr : "\"Failed to find results\"");
 		                		answer.append(tempInsert);
 		                		answer.append(".");
 		                		Object ctx = ((Query)lastcmd).getContext();
@@ -143,8 +147,67 @@ public class DialogAnswerProvider extends DefaultAutoEditStrategyProvider {
 		                			logger.debug("    Lastcmd '" + lastcmd.getClass().getCanonicalName() + "' not handled yet!");
 		                		}
 		                	}
-		                	else if (lastcmd instanceof Object[]) {
-		                		// this is a HowManyValues
+		                	else if (lastcmd instanceof WhatIsConstruct) {
+		                		Object trgt = ((WhatIsConstruct)lastcmd).getTarget();
+		                		Object whn = ((WhatIsConstruct)lastcmd).getWhen();
+		                		if (trgt instanceof Object[] && whn == null) {
+			                		if (allTripleElements((Object[])trgt)) {
+				                		Object ctx = null;
+			                			TripleElement[] triples = flattenTriples((Object[])trgt);
+			                			ctx = triples[0].getContext();
+						                OntModelProvider.addPrivateKeyValuePair(resource, DialogConstants.LAST_DIALOG_COMMAND, triples);
+				                		StringBuilder answer = new StringBuilder("CM: ");
+				                		ResultSet[] rss = insertTriplesAndQuery(resource, triples);
+				                		String resultStr = null;
+				                		if (rss != null) {
+				                			StringBuilder sb = new StringBuilder();
+				                			if (triples[0].getSubject() instanceof VariableNode && 
+				                					((VariableNode)triples[0].getSubject()).getType() instanceof NamedNode) {
+				                				sb.append("the ");
+				                				sb.append(((VariableNode)(triples[0].getSubject())).getType().getName());
+				                				sb.append(" has ");
+				                				sb.append(triples[0].getPredicate().getName());
+				                				sb.append(" ");
+				                				sb.append(rss[0].getResultAt(0, 0).toString());
+				                				resultStr = sb.toString();
+				                			}
+				                			else {
+					                			for (ResultSet rs : rss) {
+					                				rs.setShowNamespaces(true);
+					                				sb.append(rs.toString());
+					                			}
+				                				resultStr = resultSetToQuotableString(sb.toString());
+				                			}
+				                		}
+				                		tempInsert = (resultStr != null ? resultStr : "\"Failed to find results\"");
+				                		answer.append(tempInsert);
+				                		answer.append(".");
+				                		addResponseToDialog(document, reg, answer, ctx);
+			                		}
+		                		}
+		                		else {
+		                			// we have a when statement
+		                			if (trgt instanceof TripleElement && whn instanceof TripleElement) {
+		                				TripleElement[] triples = new TripleElement[2];
+		                				triples[0] = (TripleElement)trgt;
+		                				triples[1] = (TripleElement)whn;
+						                OntModelProvider.addPrivateKeyValuePair(resource, DialogConstants.LAST_DIALOG_COMMAND, triples);
+				                		StringBuilder answer = new StringBuilder("CM: ");
+				                		ResultSet[] rss = insertTriplesAndQuery(resource, triples);
+				                		answer.append("\"");
+				                		for (ResultSet rs : rss) {
+				                			answer.append(rs.toString() + "\n");
+				                		}
+				                		answer.append("\"");
+		                			}
+		                			else {
+		                				System.out.println("Target is: " + trgt.toString());
+		                				System.out.println("When is: " + whn.toString());
+		                			}
+		                		}
+		                	}
+		                	else if (lastcmd instanceof HowManyValuesConstruct) {
+		                		// this is a HowManyValues  ??
 		                		Object article = ((Object[])lastcmd)[0];
 		                		Object cls = ((Object[])lastcmd)[1];
 		                		Object prop = ((Object[])lastcmd)[2];
@@ -155,6 +218,16 @@ public class DialogAnswerProvider extends DefaultAutoEditStrategyProvider {
 		                		answer.append(cls.toString());
 		                		answer.append(" with exactly ");
 		                		
+		                	}
+		                	else if (lastcmd instanceof Object[]) {
+		                		System.err.println("Unhandled Object[] lastcmd");
+		                	}
+		                	else if (lastcmd instanceof TripleElement) {
+		                		StringBuilder answer = new StringBuilder("CM: ");
+		                		addTripleQuestion(resource, (TripleElement)lastcmd, answer);
+		                		answer.append(".");
+		                		Object ctx = ((TripleElement)lastcmd).getContext();
+		                		addResponseToDialog(document, reg, answer, ctx);
 		                	}
 		                	else if (lastcmd != null) {
 	                			logger.debug("    Lastcmd '" + lastcmd.getClass().getCanonicalName() + "' not handled yet!");
@@ -173,6 +246,166 @@ public class DialogAnswerProvider extends DefaultAutoEditStrategyProvider {
 	                logger.debug("AutoEdit error (of type " + e.getClass().getCanonicalName() + "): " + e.getMessage());   
 	            }
 	        }
+
+			private TripleElement[] flattenTriples(Object[] lastcmd) {
+				List<TripleElement> triples = new ArrayList<TripleElement>();
+				for (int i = 0; i < lastcmd.length; i++) {
+					Object cmd = lastcmd[i];
+					if (cmd instanceof TripleElement) {
+						triples.add((TripleElement) cmd);
+					}
+					else if (cmd instanceof Junction) {
+						triples.addAll(flattenJunction((Junction)cmd));
+					}
+				}
+				return triples.toArray(new TripleElement[triples.size()]);
+			}
+
+			private Collection<? extends TripleElement> flattenJunction(Junction cmd) {
+				List<TripleElement> triples = new ArrayList<TripleElement>();
+				if (cmd.getJunctionType().equals(JunctionType.Conj)) {
+					GraphPatternElement lhs = ((ProxyNode) cmd.getLhs()).getProxyFor();
+					if (lhs instanceof TripleElement) {
+						triples.add((TripleElement) lhs);
+					}
+					else if (lhs instanceof Junction) {
+						triples.addAll(flattenJunction((Junction) lhs));
+					}
+					else {
+						System.err.println("Encountered unsupported type flattening Junction: " + lhs.getClass().getCanonicalName());
+					}
+					GraphPatternElement rhs = ((ProxyNode) cmd.getRhs()).getProxyFor();
+					if (rhs instanceof TripleElement) {
+						triples.add((TripleElement) rhs);
+					}
+					else if (rhs instanceof Junction) {
+						triples.addAll(flattenJunction((Junction) rhs));
+					}
+					else {
+						System.err.println("Encountered unsupported type flattening Junction: " + rhs.getClass().getCanonicalName());
+					}
+				}
+				else {
+					System.err.println("Encountered disjunctive type flattening Junction");
+				}
+				return triples;
+			}
+
+			/**
+			 * Are all elements of the array of type TripleElement?
+			 * @param lastcmd
+			 * @return
+			 */
+			private boolean allTripleElements(Object[] lastcmd) {
+				for (int i = 0; i < lastcmd.length; i++) {
+					Object el = lastcmd[i];
+					if (el instanceof Junction) {
+						if (!allTripleElements(((ProxyNode)((Junction)el).getLhs()).getProxyFor())) {
+							return false;
+						}
+						if (!allTripleElements(((ProxyNode)((Junction)el).getRhs()).getProxyFor())) {
+							return false;
+						}
+					}
+					else if (!(el instanceof TripleElement)) {
+						return false;
+					}
+				}
+				return true;
+			}
+
+			private boolean allTripleElements(GraphPatternElement gpe) {
+				if (gpe instanceof TripleElement) {
+					return true;
+				}
+				return false;
+			}
+
+			private String resultSetToQuotableString(ResultSet rs) {
+				String resultStr;
+				rs.setShowNamespaces(true);
+				resultStr = rs.toString();
+				return resultSetToQuotableString(resultStr);
+			}
+
+			private String resultSetToQuotableString(String resultStr) {
+				resultStr = resultStr.replace('"', '\'');
+				resultStr = resultStr.trim();
+				resultStr = "\"" + resultStr + "\"";
+				return resultStr;
+			}
+
+			private void addTripleQuestion(Resource resource, TripleElement tr, StringBuilder answer) throws ExecutionException {
+				List<String> vars = new ArrayList<String>();
+				StringBuilder sbwhere = new StringBuilder("where {");
+				if (tr.getSubject() == null) {
+					vars.add("?s");
+					sbwhere.append("?s ");
+				}
+				else {
+					sbwhere.append("<");
+					sbwhere.append(tr.getSubject().getURI());
+					sbwhere.append("> ");
+				}
+				if (tr.getPredicate() == null) {
+					vars.add("?p");
+					sbwhere.append("?p ");
+				}
+				else {
+					sbwhere.append("<");
+					sbwhere.append(tr.getPredicate().getURI());
+					sbwhere.append("> ");
+				}
+				if (tr.getObject() == null) {
+					vars.add("?o");
+					sbwhere.append("?o");
+				}
+				else {
+					sbwhere.append("<");
+					Node obj = tr.getObject();
+					if (obj instanceof NamedNode) {
+						sbwhere.append(obj.getURI());
+					}
+					else {
+						sbwhere.append(obj.toString());
+					}
+					sbwhere.append("> ");
+				}
+				if (vars.size() > 0) {
+					for (int i = vars.size() - 1; i >= 0; i--) {
+						sbwhere.insert(0, " ");
+						sbwhere.insert(0, vars.get(i));
+					}
+					sbwhere.insert(0,  "select ");
+					sbwhere.append("}");
+				}
+				Query q = new Query();
+				q.setSparqlQueryString(sbwhere.toString());
+				OntModelProvider.addPrivateKeyValuePair(resource, DialogConstants.LAST_DIALOG_COMMAND, q);
+				ResultSet rs = runQuery(resource, q);
+				OntModelProvider.clearPrivateKeyValuePair(resource, DialogConstants.LAST_DIALOG_COMMAND);
+				if (rs != null) {
+					if (rs.getRowCount() == 1) {
+						if (tr.getSubject() != null && tr.getPredicate() != null) {
+							answer.append(tr.getSubject().getName());
+							answer.append(" has ");
+							answer.append(tr.getPredicate().getName());
+							answer.append(" ");
+							answer.append(rs.getResultAt(0, 0));
+						}
+						else {
+							answer.append("\"");
+							answer.append(resultSetToQuotableString(rs));
+							answer.append("\"");
+						}
+					}
+					else {
+						answer.append("\"");
+						answer.append(resultSetToQuotableString(rs));
+						answer.append("\"");
+					}
+				}
+			}
 
 			private void addInstanceDeclaration(Resource resource, NamedNode nn, StringBuilder answer) throws ExecutionException {
 				answer.append(checkForKeyword(nn.getName()));
@@ -403,7 +636,6 @@ public class DialogAnswerProvider extends DefaultAutoEditStrategyProvider {
 							rs.setShowNamespaces(false);
 							if (pval.startsWith(XSD.getURI())) {
 								answer.append(val);
-
 							}
 							else {
 								answer.append(checkForKeyword(val));			                						
@@ -452,6 +684,18 @@ public class DialogAnswerProvider extends DefaultAutoEditStrategyProvider {
         		}
         		return null;
 	        }
+
+			private ResultSet[] insertTriplesAndQuery(Resource resource, TripleElement[] triples) throws ExecutionException {
+        		RunDialogQuery rdq = new RunDialogQuery();
+        		Object result = rdq.execute(handlerProvider, resource, triples);
+        		if (result instanceof ResultSet[]) {
+        			return (ResultSet[])result;
+        		}
+        		else {
+        			System.err.println("Unexpected return type in insertTriplesAndQuery");
+        		}
+        		return null;
+			}
 
 	    	public Object[] getSourceText(EObject po) {
 	    		INode node = getParserObjectNode(po);
