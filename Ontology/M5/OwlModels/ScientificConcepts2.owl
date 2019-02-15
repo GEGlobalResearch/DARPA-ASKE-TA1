@@ -226,11 +226,11 @@
     </j.0:returnTypes>
     <j.0:arguments rdf:parseType="Collection">
       <j.0:Argument>
-        <j.0:argTtype>http://www.w3.org/2001/XMLSchema#string</j.0:argTtype>
+        <j.0:argType>http://www.w3.org/2001/XMLSchema#string</j.0:argType>
         <j.0:argName>operation</j.0:argName>
       </j.0:Argument>
       <j.0:Argument>
-        <j.0:argTtype>http://www.w3.org/2001/XMLSchema#string</j.0:argTtype>
+        <j.0:argType>http://www.w3.org/2001/XMLSchema#string</j.0:argType>
         <j.0:argName>u</j.0:argName>
       </j.0:Argument>
     </j.0:arguments>

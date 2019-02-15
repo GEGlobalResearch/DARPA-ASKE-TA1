@@ -9,4 +9,18 @@
 	<artifactId>com.ge.research.sadl.darpa.aske.dialog.dependencies</artifactId>
 	<packaging>eclipse-plugin</packaging>
 
+    <dependencies>
+        <!-- Here are all your dependencies. Currently only one. These are automatically downloaded from https://mvnrepository.com/ -->
+        <dependency>
+            <groupId>com.github.javaparser</groupId>
+            <artifactId>javaparser-symbol-solver-core</artifactId>
+            <version>3.11.0</version>
+        </dependency>
+        <dependency>
+            <groupId>com.github.javaparser</groupId>
+            <artifactId>javaparser-core</artifactId>
+            <version>3.11.0</version>
+        </dependency>
+        <!-- JavaParser itself is not a dependency here. It gets included indirectly through java-symbol-solver-core -->
+    </dependencies>
 </project>
