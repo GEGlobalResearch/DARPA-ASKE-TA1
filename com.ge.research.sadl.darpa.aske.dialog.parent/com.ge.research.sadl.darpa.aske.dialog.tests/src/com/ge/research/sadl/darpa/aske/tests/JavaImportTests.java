@@ -67,7 +67,7 @@ public class JavaImportTests {
 		SadlModelGenerator smg = new SadlModelGenerator();
 		JavaModelExtractor jme = new JavaModelExtractor(smg);
 		IJavaProject jprj = null;
-		jme.parse(jprj, javaContent);
+		jme.parse(jprj, null, javaContent);
 		
 		String content = smg.generateSadlModel(jme, "http://sadl.org/Temperature.sadl");
 		System.out.println("SADL Model Output:\n" + content);
@@ -109,7 +109,7 @@ public class JavaImportTests {
 		SadlModelGenerator smg = new SadlModelGenerator();
 		JavaModelExtractor jme = new JavaModelExtractor(smg);
 		IJavaProject jprj = null;
-		jme.parse(jprj, javaContent);
+		jme.parse(jprj, null, javaContent);
 		String content = smg.generateSadlModel(jme, "http://sadl.org/Temperature.sadl");
 		System.out.println("SADL Model Output:\n" + content);
 	}
@@ -153,7 +153,7 @@ public class JavaImportTests {
 		SadlModelGenerator smg = new SadlModelGenerator();
 		JavaModelExtractor jme = new JavaModelExtractor(smg);
 		IJavaProject jprj = null;
-		jme.parse(jprj, javaContent);
+		jme.parse(jprj, null, javaContent);
 		String content = smg.generateSadlModel(jme, "http://sadl.org/Temperature.sadl");
 		System.out.println("SADL Model Output:\n" + content);
 	}
@@ -168,7 +168,7 @@ public class JavaImportTests {
 		SadlModelGenerator smg = new SadlModelGenerator();
 		JavaModelExtractor jme = new JavaModelExtractor(smg);
 		IJavaProject jprj = null;
-		jme.parse(jprj, javaContent);
+		jme.parse(jprj, null, javaContent);
 		String content = smg.generateSadlModel(jme, "http://sadl.org/Temperature.sadl");
 		System.out.println("SADL Model Output:\n" + content);
 	}
@@ -183,7 +183,7 @@ public class JavaImportTests {
 		SadlModelGenerator smg = new SadlModelGenerator();
 		JavaModelExtractor jme = new JavaModelExtractor(smg);
 		IJavaProject jprj = null;
-		jme.parse(jprj, javaContent);
+		jme.parse(jprj, null, javaContent);
 		String content = smg.generateSadlModel(jme, "http://sadl.org/Temperature.sadl");
 		System.out.println("SADL Model Output:\n" + content);
 	}

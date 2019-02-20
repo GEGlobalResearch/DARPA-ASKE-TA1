@@ -72,7 +72,9 @@ import org.eclipse.ui.internal.wizards.datatransfer.TarLeveledStructureProvider;
 import org.eclipse.ui.wizards.datatransfer.IImportStructureProvider;
 
 import com.ge.research.sadl.darpa.aske.processing.imports.JavaModelExtractor;
+import com.ge.research.sadl.darpa.aske.processing.imports.JavaModelExtractorJP;
 import com.ge.research.sadl.darpa.aske.processing.imports.SadlModelGenerator;
+import com.ge.research.sadl.utils.ResourceManager;
 
 //import com.ge.research.sadl.processing.ISadlImportProcessor;
 //import com.ge.research.sadl.processing.SadlImportProcessorProvider;
@@ -139,6 +141,7 @@ public class JavaImportOperation extends WorkspaceModifyOperation {
 	private static final String ABSOLUTE_PATH = "<Absolute Path>"; //$NON-NLS-1$
 
 	private JavaModelExtractor javaModelExtractor;
+	private JavaModelExtractorJP javaModelExtractorjp;
 
 	/**
      * Creates a new operation that recursively imports the entire contents of the
@@ -684,6 +687,8 @@ public class JavaImportOperation extends WorkspaceModifyOperation {
     	}
     	
     	try {
+			String modelFolderUri = ResourceManager.findModelFolderPath(targetPath.toOSString());
+
     		IJavaProject jprj = null;
     		if (containerResource instanceof IProject) {
     			jprj = JavaCore.create((IProject)containerResource);
@@ -701,7 +706,7 @@ public class JavaImportOperation extends WorkspaceModifyOperation {
     		List<File> files = getJavaFilesInDir(null, (File)fileObject);
     		for (File f : files) {
     			String content = readFileToString(f);
-    			getJavaModelExtractor(smg).parse(jprj, content);
+    			getJavaModelExtractorJP(smg).parse(modelFolderUri, content);
     			
     	    	String ontologyRootUri = "http://sadl.org/Temperature.sadl";	// this comes from the selection in the import Wizard
 				String newContent = smg.generateSadlModel(getJavaModelExtractor(smg), ontologyRootUri );
@@ -759,6 +764,13 @@ public class JavaImportOperation extends WorkspaceModifyOperation {
     		return;
     	}
     }
+
+	private JavaModelExtractorJP getJavaModelExtractorJP(SadlModelGenerator smg) {
+		if (javaModelExtractorjp == null) {
+			javaModelExtractorjp = new JavaModelExtractorJP(smg);
+		}
+		return javaModelExtractorjp;
+	}
 
 	private JavaModelExtractor getJavaModelExtractor(SadlModelGenerator smg) {
 		if (javaModelExtractor == null) {

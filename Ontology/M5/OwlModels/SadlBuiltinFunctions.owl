@@ -22,7 +22,7 @@
     </j.0:returnTypes>
     <j.0:arguments rdf:parseType="Collection">
       <j.0:Argument>
-        <j.0:argTtype>http://www.w3.org/2001/XMLSchema#string</j.0:argTtype>
+        <j.0:argType>http://www.w3.org/2001/XMLSchema#string</j.0:argType>
         <j.0:argName>X</j.0:argName>
       </j.0:Argument>
     </j.0:arguments>
@@ -38,7 +38,7 @@
     </j.0:returnTypes>
     <j.0:arguments rdf:parseType="Collection">
       <j.0:Argument>
-        <j.0:argTtype>http://www.w3.org/2001/XMLSchema#string</j.0:argTtype>
+        <j.0:argType>http://www.w3.org/2001/XMLSchema#string</j.0:argType>
         <j.0:argName>X</j.0:argName>
       </j.0:Argument>
     </j.0:arguments>
@@ -78,7 +78,7 @@
     </j.0:returnTypes>
     <j.0:arguments rdf:parseType="Collection">
       <j.0:Argument>
-        <j.0:argTtype>http://www.w3.org/2001/XMLSchema#decimal</j.0:argTtype>
+        <j.0:argType>http://www.w3.org/2001/XMLSchema#decimal</j.0:argType>
         <j.0:argName>X</j.0:argName>
       </j.0:Argument>
     </j.0:arguments>
@@ -94,7 +94,7 @@
     </j.0:returnTypes>
     <j.0:arguments rdf:parseType="Collection">
       <j.0:Argument>
-        <j.0:argTtype>http://www.w3.org/2001/XMLSchema#string</j.0:argTtype>
+        <j.0:argType>http://www.w3.org/2001/XMLSchema#string</j.0:argType>
         <j.0:argName>X</j.0:argName>
       </j.0:Argument>
     </j.0:arguments>
@@ -116,7 +116,7 @@
     </j.0:returnTypes>
     <j.0:arguments rdf:parseType="Collection">
       <j.0:Argument>
-        <j.0:argTtype>http://www.w3.org/2001/XMLSchema#decimal</j.0:argTtype>
+        <j.0:argType>http://www.w3.org/2001/XMLSchema#decimal</j.0:argType>
         <j.0:argName>X</j.0:argName>
       </j.0:Argument>
     </j.0:arguments>
@@ -132,15 +132,15 @@
     </j.0:returnTypes>
     <j.0:arguments rdf:parseType="Collection">
       <j.0:Argument>
-        <j.0:argTtype>http://www.w3.org/2001/XMLSchema#string</j.0:argTtype>
+        <j.0:argType>http://www.w3.org/2001/XMLSchema#string</j.0:argType>
         <j.0:argName>X</j.0:argName>
       </j.0:Argument>
       <j.0:Argument>
-        <j.0:argTtype>http://www.w3.org/2001/XMLSchema#string</j.0:argTtype>
+        <j.0:argType>http://www.w3.org/2001/XMLSchema#string</j.0:argType>
         <j.0:argName>X</j.0:argName>
       </j.0:Argument>
       <j.0:Argument>
-        <j.0:argTtype>http://www.w3.org/2001/XMLSchema#string</j.0:argTtype>
+        <j.0:argType>http://www.w3.org/2001/XMLSchema#string</j.0:argType>
         <j.0:argName>X</j.0:argName>
       </j.0:Argument>
     </j.0:arguments>
@@ -156,7 +156,7 @@
     </j.0:returnTypes>
     <j.0:arguments rdf:parseType="Collection">
       <j.0:Argument>
-        <j.0:argTtype>http://www.w3.org/2001/XMLSchema#decimal</j.0:argTtype>
+        <j.0:argType>http://www.w3.org/2001/XMLSchema#decimal</j.0:argType>
         <j.0:argName>X</j.0:argName>
       </j.0:Argument>
     </j.0:arguments>
@@ -172,7 +172,7 @@
     </j.0:returnTypes>
     <j.0:arguments rdf:parseType="Collection">
       <j.0:Argument>
-        <j.0:argTtype>http://www.w3.org/2001/XMLSchema#string</j.0:argTtype>
+        <j.0:argType>http://www.w3.org/2001/XMLSchema#string</j.0:argType>
         <j.0:argName>X</j.0:argName>
       </j.0:Argument>
     </j.0:arguments>
@@ -188,7 +188,7 @@
     </j.0:returnTypes>
     <j.0:arguments rdf:parseType="Collection">
       <j.0:Argument>
-        <j.0:argTtype>http://www.w3.org/2001/XMLSchema#string</j.0:argTtype>
+        <j.0:argType>http://www.w3.org/2001/XMLSchema#string</j.0:argType>
         <j.0:argName>X</j.0:argName>
       </j.0:Argument>
     </j.0:arguments>
@@ -216,15 +216,15 @@
     </j.0:returnTypes>
     <j.0:arguments rdf:parseType="Collection">
       <j.0:Argument>
-        <j.0:argTtype>http://www.w3.org/2001/XMLSchema#string</j.0:argTtype>
+        <j.0:argType>http://www.w3.org/2001/XMLSchema#string</j.0:argType>
         <j.0:argName>X</j.0:argName>
       </j.0:Argument>
       <j.0:Argument>
-        <j.0:argTtype>http://www.w3.org/2001/XMLSchema#string</j.0:argTtype>
+        <j.0:argType>http://www.w3.org/2001/XMLSchema#string</j.0:argType>
         <j.0:argName>X</j.0:argName>
       </j.0:Argument>
       <j.0:Argument>
-        <j.0:argTtype>http://www.w3.org/2001/XMLSchema#string</j.0:argTtype>
+        <j.0:argType>http://www.w3.org/2001/XMLSchema#string</j.0:argType>
         <j.0:argName>X</j.0:argName>
       </j.0:Argument>
     </j.0:arguments>
@@ -246,11 +246,11 @@
     </j.0:returnTypes>
     <j.0:arguments rdf:parseType="Collection">
       <j.0:Argument>
-        <j.0:argTtype>http://www.w3.org/2001/XMLSchema#decimal</j.0:argTtype>
+        <j.0:argType>http://www.w3.org/2001/XMLSchema#decimal</j.0:argType>
         <j.0:argName>X</j.0:argName>
       </j.0:Argument>
       <j.0:Argument>
-        <j.0:argTtype>http://www.w3.org/2001/XMLSchema#decimal</j.0:argTtype>
+        <j.0:argType>http://www.w3.org/2001/XMLSchema#decimal</j.0:argType>
         <j.0:argName>X</j.0:argName>
       </j.0:Argument>
     </j.0:arguments>
@@ -300,11 +300,11 @@
     </j.0:returnTypes>
     <j.0:arguments rdf:parseType="Collection">
       <j.0:Argument>
-        <j.0:argTtype>http://www.w3.org/2001/XMLSchema#decimal</j.0:argTtype>
+        <j.0:argType>http://www.w3.org/2001/XMLSchema#decimal</j.0:argType>
         <j.0:argName>X</j.0:argName>
       </j.0:Argument>
       <j.0:Argument>
-        <j.0:argTtype>http://www.w3.org/2001/XMLSchema#decimal</j.0:argTtype>
+        <j.0:argType>http://www.w3.org/2001/XMLSchema#decimal</j.0:argType>
         <j.0:argName>X</j.0:argName>
       </j.0:Argument>
     </j.0:arguments>
@@ -320,11 +320,11 @@
     </j.0:returnTypes>
     <j.0:arguments rdf:parseType="Collection">
       <j.0:Argument>
-        <j.0:argTtype>http://www.w3.org/2001/XMLSchema#string</j.0:argTtype>
+        <j.0:argType>http://www.w3.org/2001/XMLSchema#string</j.0:argType>
         <j.0:argName>X</j.0:argName>
       </j.0:Argument>
       <j.0:Argument>
-        <j.0:argTtype>http://www.w3.org/2001/XMLSchema#int</j.0:argTtype>
+        <j.0:argType>http://www.w3.org/2001/XMLSchema#int</j.0:argType>
         <j.0:argName>X</j.0:argName>
       </j.0:Argument>
     </j.0:arguments>
@@ -340,11 +340,11 @@
     </j.0:returnTypes>
     <j.0:arguments rdf:parseType="Collection">
       <j.0:Argument>
-        <j.0:argTtype>http://www.w3.org/2001/XMLSchema#string</j.0:argTtype>
+        <j.0:argType>http://www.w3.org/2001/XMLSchema#string</j.0:argType>
         <j.0:argName>X</j.0:argName>
       </j.0:Argument>
       <j.0:Argument>
-        <j.0:argTtype>http://www.w3.org/2001/XMLSchema#string</j.0:argTtype>
+        <j.0:argType>http://www.w3.org/2001/XMLSchema#string</j.0:argType>
         <j.0:argName>X</j.0:argName>
       </j.0:Argument>
     </j.0:arguments>
@@ -378,7 +378,7 @@
     </j.0:returnTypes>
     <j.0:arguments rdf:parseType="Collection">
       <j.0:Argument>
-        <j.0:argTtype>http://www.w3.org/2001/XMLSchema#string</j.0:argTtype>
+        <j.0:argType>http://www.w3.org/2001/XMLSchema#string</j.0:argType>
         <j.0:argName>X</j.0:argName>
       </j.0:Argument>
     </j.0:arguments>
@@ -412,7 +412,7 @@
     </j.0:returnTypes>
     <j.0:arguments rdf:parseType="Collection">
       <j.0:Argument>
-        <j.0:argTtype>http://www.w3.org/2001/XMLSchema#string</j.0:argTtype>
+        <j.0:argType>http://www.w3.org/2001/XMLSchema#string</j.0:argType>
         <j.0:argName>X</j.0:argName>
       </j.0:Argument>
     </j.0:arguments>
@@ -428,7 +428,7 @@
     </j.0:returnTypes>
     <j.0:arguments rdf:parseType="Collection">
       <j.0:Argument>
-        <j.0:argTtype>http://www.w3.org/2001/XMLSchema#string</j.0:argTtype>
+        <j.0:argType>http://www.w3.org/2001/XMLSchema#string</j.0:argType>
         <j.0:argName>X</j.0:argName>
       </j.0:Argument>
     </j.0:arguments>
@@ -444,11 +444,11 @@
     </j.0:returnTypes>
     <j.0:arguments rdf:parseType="Collection">
       <j.0:Argument>
-        <j.0:argTtype>http://www.w3.org/2001/XMLSchema#string</j.0:argTtype>
+        <j.0:argType>http://www.w3.org/2001/XMLSchema#string</j.0:argType>
         <j.0:argName>X</j.0:argName>
       </j.0:Argument>
       <j.0:Argument>
-        <j.0:argTtype>http://www.w3.org/2001/XMLSchema#string</j.0:argTtype>
+        <j.0:argType>http://www.w3.org/2001/XMLSchema#string</j.0:argType>
         <j.0:argName>X</j.0:argName>
       </j.0:Argument>
     </j.0:arguments>
@@ -482,11 +482,11 @@
     </j.0:returnTypes>
     <j.0:arguments rdf:parseType="Collection">
       <j.0:Argument>
-        <j.0:argTtype>http://www.w3.org/2001/XMLSchema#string</j.0:argTtype>
+        <j.0:argType>http://www.w3.org/2001/XMLSchema#string</j.0:argType>
         <j.0:argName>X</j.0:argName>
       </j.0:Argument>
       <j.0:Argument>
-        <j.0:argTtype>http://www.w3.org/2001/XMLSchema#string</j.0:argTtype>
+        <j.0:argType>http://www.w3.org/2001/XMLSchema#string</j.0:argType>
         <j.0:argName>X</j.0:argName>
       </j.0:Argument>
     </j.0:arguments>
@@ -514,11 +514,11 @@
     </j.0:returnTypes>
     <j.0:arguments rdf:parseType="Collection">
       <j.0:Argument>
-        <j.0:argTtype>http://www.w3.org/2001/XMLSchema#string</j.0:argTtype>
+        <j.0:argType>http://www.w3.org/2001/XMLSchema#string</j.0:argType>
         <j.0:argName>X</j.0:argName>
       </j.0:Argument>
       <j.0:Argument>
-        <j.0:argTtype>http://www.w3.org/2001/XMLSchema#string</j.0:argTtype>
+        <j.0:argType>http://www.w3.org/2001/XMLSchema#string</j.0:argType>
         <j.0:argName>X</j.0:argName>
       </j.0:Argument>
     </j.0:arguments>
@@ -540,7 +540,7 @@
     </j.0:returnTypes>
     <j.0:arguments rdf:parseType="Collection">
       <j.0:Argument>
-        <j.0:argTtype>http://www.w3.org/2001/XMLSchema#string</j.0:argTtype>
+        <j.0:argType>http://www.w3.org/2001/XMLSchema#string</j.0:argType>
         <j.0:argName>X</j.0:argName>
       </j.0:Argument>
     </j.0:arguments>
@@ -568,11 +568,11 @@
     </j.0:returnTypes>
     <j.0:arguments rdf:parseType="Collection">
       <j.0:Argument>
-        <j.0:argTtype>http://www.w3.org/2001/XMLSchema#string</j.0:argTtype>
+        <j.0:argType>http://www.w3.org/2001/XMLSchema#string</j.0:argType>
         <j.0:argName>X</j.0:argName>
       </j.0:Argument>
       <j.0:Argument>
-        <j.0:argTtype>http://www.w3.org/2001/XMLSchema#string</j.0:argTtype>
+        <j.0:argType>http://www.w3.org/2001/XMLSchema#string</j.0:argType>
         <j.0:argName>X</j.0:argName>
       </j.0:Argument>
     </j.0:arguments>
@@ -588,7 +588,7 @@
     </j.0:returnTypes>
     <j.0:arguments rdf:parseType="Collection">
       <j.0:Argument>
-        <j.0:argTtype>http://www.w3.org/2001/XMLSchema#string</j.0:argTtype>
+        <j.0:argType>http://www.w3.org/2001/XMLSchema#string</j.0:argType>
         <j.0:argName>X</j.0:argName>
       </j.0:Argument>
     </j.0:arguments>
@@ -604,11 +604,11 @@
     </j.0:returnTypes>
     <j.0:arguments rdf:parseType="Collection">
       <j.0:Argument>
-        <j.0:argTtype>http://www.w3.org/2001/XMLSchema#string</j.0:argTtype>
+        <j.0:argType>http://www.w3.org/2001/XMLSchema#string</j.0:argType>
         <j.0:argName>X</j.0:argName>
       </j.0:Argument>
       <j.0:Argument>
-        <j.0:argTtype>http://www.w3.org/2001/XMLSchema#string</j.0:argTtype>
+        <j.0:argType>http://www.w3.org/2001/XMLSchema#string</j.0:argType>
         <j.0:argName>X</j.0:argName>
       </j.0:Argument>
     </j.0:arguments>
@@ -620,7 +620,7 @@
     >com.ge.research.sadl.jena.reasoner.builtin#print</j.0:externalURI>
     <j.0:arguments rdf:parseType="Collection">
       <j.0:Argument>
-        <j.0:argTtype>http://www.w3.org/2001/XMLSchema#string</j.0:argTtype>
+        <j.0:argType>http://www.w3.org/2001/XMLSchema#string</j.0:argType>
         <j.0:argName>X</j.0:argName>
       </j.0:Argument>
     </j.0:arguments>
@@ -636,11 +636,11 @@
     </j.0:returnTypes>
     <j.0:arguments rdf:parseType="Collection">
       <j.0:Argument>
-        <j.0:argTtype>http://www.w3.org/2001/XMLSchema#string</j.0:argTtype>
+        <j.0:argType>http://www.w3.org/2001/XMLSchema#string</j.0:argType>
         <j.0:argName>X</j.0:argName>
       </j.0:Argument>
       <j.0:Argument>
-        <j.0:argTtype>http://www.w3.org/2001/XMLSchema#string</j.0:argTtype>
+        <j.0:argType>http://www.w3.org/2001/XMLSchema#string</j.0:argType>
         <j.0:argName>X</j.0:argName>
       </j.0:Argument>
     </j.0:arguments>
@@ -698,11 +698,11 @@
     </j.0:returnTypes>
     <j.0:arguments rdf:parseType="Collection">
       <j.0:Argument>
-        <j.0:argTtype>http://www.w3.org/2001/XMLSchema#string</j.0:argTtype>
+        <j.0:argType>http://www.w3.org/2001/XMLSchema#string</j.0:argType>
         <j.0:argName>X</j.0:argName>
       </j.0:Argument>
       <j.0:Argument>
-        <j.0:argTtype>http://www.w3.org/2001/XMLSchema#string</j.0:argTtype>
+        <j.0:argType>http://www.w3.org/2001/XMLSchema#string</j.0:argType>
         <j.0:argName>X</j.0:argName>
       </j.0:Argument>
     </j.0:arguments>
