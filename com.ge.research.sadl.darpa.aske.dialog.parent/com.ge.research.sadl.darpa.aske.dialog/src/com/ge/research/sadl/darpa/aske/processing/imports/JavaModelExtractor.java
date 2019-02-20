@@ -1,5 +1,6 @@
 package com.ge.research.sadl.darpa.aske.processing.imports;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -51,10 +52,12 @@ import org.eclipse.jdt.core.dom.Type;
 import org.eclipse.jdt.core.dom.TypeDeclaration;
 import org.eclipse.jdt.core.dom.VariableDeclarationFragment;
 
+import com.ge.research.sadl.darpa.aske.curation.AnswerCurationManager;
+import com.ge.research.sadl.darpa.aske.processing.imports.IModelFromCodeExtractor.Tag;
 import com.ge.research.sadl.darpa.aske.processing.imports.SadlModelGenerator.SadlMethod;
 import com.ge.research.sadl.darpa.aske.processing.imports.SadlModelGenerator.SadlMethodArgument;
 
-public class JavaModelExtractor {
+public class JavaModelExtractor implements IModelFromCodeExtractor {
     private static final Logger logger = Logger.getLogger (JavaModelExtractor.class) ;
 	private SadlModelGenerator smg = null;
 	private String packageName = "";
@@ -64,39 +67,16 @@ public class JavaModelExtractor {
 	private Set<String> names = new HashSet<String>();
 	private Map<String, String> classDeclarations = new HashMap<String, String>();
 	private List<Comment> comments = new ArrayList<Comment>();
-	private Map<String, Tag> tagMap = new HashMap<String, Tag>();;
+	private AnswerCurationManager curationMgr = null;
+	Map<String, Tag> tagMap = null;;
 	
 	public enum CONTEXT {PackageDecl, MainClassDecl, InnerClassDecl, ConstructorDecl, MethodDecl, Expression,
 		Block, MethodBody}
 	private CONTEXT currentContext = null;
-	
-	public class Tag {
-		private String name;
-		private String text;
+	private List<File> codeFiles;
 		
-		public Tag(String n, String t) {
-			setName(n); 
-			setText(t);
-		}
-
-		public String getName() {
-			return name;
-		}
-
-		public void setName(String name) {
-			this.name = name;
-		}
-
-		public String getText() {
-			return text;
-		}
-
-		public void setText(String text) {
-			this.text = text;
-		}
-	}
-	
-	public JavaModelExtractor(SadlModelGenerator gen) {
+	public JavaModelExtractor(AnswerCurationManager acm, SadlModelGenerator gen) {
+		setCurationMgr(acm);
 		smg = gen;
 	    logger.setLevel(Level.ALL);
 	}
@@ -107,7 +87,7 @@ public class JavaModelExtractor {
 		
 		methods.clear();
 		names.clear();
-		getComments().clear();
+		comments.clear();
 	}
 
 	//use ASTParse to parse string
@@ -274,7 +254,7 @@ public class JavaModelExtractor {
 		List<Comment> comments = cu.getCommentList();
 		logger.debug("\nAdditional comments:");
 		for (Comment c : comments) {
-			if (!getComments().contains(c)) {
+			if (!getJdtComments().contains(c)) {
 				int sp = c.getStartPosition();
 				int ep = sp + c.getLength();
 				if (c.isLineComment()) {
@@ -472,6 +452,10 @@ public class JavaModelExtractor {
 		return comment;
 	}
 
+	/* (non-Javadoc)
+	 * @see com.ge.research.sadl.darpa.aske.processing.imports.IModelFromCodeExtractor#getPackageName()
+	 */
+	@Override
 	public String getPackageName() {
 		return packageName;
 	}
@@ -480,6 +464,10 @@ public class JavaModelExtractor {
 		this.packageName = packageName;
 	}
 
+	/* (non-Javadoc)
+	 * @see com.ge.research.sadl.darpa.aske.processing.imports.IModelFromCodeExtractor#getNames()
+	 */
+	@Override
 	public Set<String> getNames() {
 		return names;
 	}
@@ -490,6 +478,10 @@ public class JavaModelExtractor {
 		}
 	}
 	
+	/* (non-Javadoc)
+	 * @see com.ge.research.sadl.darpa.aske.processing.imports.IModelFromCodeExtractor#getClassDeclarations()
+	 */
+	@Override
 	public Map<String, String> getClassDeclarations() {
 		return classDeclarations;
 	}
@@ -513,6 +505,10 @@ public class JavaModelExtractor {
 		}
 	}
 
+	/* (non-Javadoc)
+	 * @see com.ge.research.sadl.darpa.aske.processing.imports.IModelFromCodeExtractor#getMethods()
+	 */
+	@Override
 	public List<SadlMethod> getMethods() {
 		return methods;
 	}
@@ -521,7 +517,16 @@ public class JavaModelExtractor {
 		this.methods.add(mdecl);
 	}
 
-	public List<Comment> getComments() {
+	/* (non-Javadoc)
+	 * @see com.ge.research.sadl.darpa.aske.processing.imports.IModelFromCodeExtractor#getComments()
+	 */
+	@Override
+	public List<com.github.javaparser.ast.comments.Comment> getComments() {
+//		return comments;
+		return null;
+	}
+	
+	private List<Comment> getJdtComments() {
 		return comments;
 	}
 
@@ -546,6 +551,9 @@ public class JavaModelExtractor {
 	}
 
 	public Map<String, Tag> getTagMap() {
+		if (tagMap == null) {
+			tagMap = new HashMap<String, Tag>();
+		}
 		return tagMap;
 	}
 
@@ -564,5 +572,37 @@ public class JavaModelExtractor {
 		CONTEXT prev = this.currentContext;
 		this.currentContext = currentContext;
 		return prev;
+	}
+
+	private AnswerCurationManager getCurationMgr() {
+		return curationMgr;
+	}
+
+	private void setCurationMgr(AnswerCurationManager curationMgr) {
+		this.curationMgr = curationMgr;
+	}
+
+	@Override
+	public void addCodeFiles(List<File> javaFiles) {
+		if (codeFiles != null) {
+			codeFiles.addAll(javaFiles);
+		}
+		else {
+			setCodeFiles(javaFiles);
+		}
+	}
+
+	public List<File> getCodeFiles() {
+		return codeFiles;
+	}
+
+	public void setCodeFiles(List<File> codeFiles) {
+		this.codeFiles = codeFiles;
+	}
+
+	@Override
+	public boolean process(String content) {
+		// TODO Auto-generated method stub
+		return false;
 	}
 }

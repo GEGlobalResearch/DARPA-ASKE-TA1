@@ -1,23 +1,40 @@
 package com.ge.research.sadl.darpa.aske.processing.imports;
 
-import com.hp.hpl.jena.ontology.OntModel;
+import java.util.Map;
 
-enum CodeLanguage {
-	JAVA
-	}
+import com.ge.research.sadl.darpa.aske.curation.AnswerCurationManager;
+import com.hp.hpl.jena.ontology.OntModel;
 
 public class AnswerExtractionProcessor {
 	private String documentContent;
 	private CodeLanguage language;
 	private String serializedCode;
-	private OntModel contextModel;
-	private OntModel textModel;
+	private OntModel contextModel;	// the knowledge graph to use during extraction
+	private OntModel textModel;		// the knowledge graph extension to the contextModel extracted from text
+	private OntModel codeModel;		// the knowledge graph extension to the context model extracted from code
+	private IModelFromCodeExtractor codeExtractor;
+	private TextProcessor textProcessor;
+	private Map<String, String> preferences = null;
+	private AnswerCurationManager curationManager = null;
+	private String sadlContent;
 	
-	public AnswerExtractionProcessor(String documentContent, String serializedCode, CodeLanguage language, OntModel context) {
+	public enum CodeLanguage {
+		JAVA
+		}
+
+
+	public AnswerExtractionProcessor(AnswerCurationManager curationMgr, String documentContent, String serializedCode, CodeLanguage language, OntModel context, Map<String, String> preferences) {
+		setCurationManager(curationMgr);
 		setContextModel(context);
 		setDocumentContent(documentContent);
 		setLanguage(language);
 		setSerializedCode(serializedCode);
+		setPreferences(preferences);
+	}
+	
+	public AnswerExtractionProcessor(AnswerCurationManager curationMgr, Map<String,String> preferences) {
+		setCurationManager(curationMgr);
+		setPreferences(preferences);
 	}
 	
 	public OntModel extractModelFromText() {
@@ -76,4 +93,74 @@ public class AnswerExtractionProcessor {
 	private void setDocumentContent(String documentContent) {
 		this.documentContent = documentContent;
 	}
+
+	public OntModel getCodeModel() {
+		return codeModel;
+	}
+
+	public void setCodeModel(OntModel codeModel) {
+		this.codeModel = codeModel;
+	}
+
+	public IModelFromCodeExtractor getCodeExtractor(CodeLanguage language) {
+		if (codeExtractor == null) {
+			if (language.equals(CodeLanguage.JAVA)) {
+				codeExtractor = new JavaModelExtractorJP(getCurationManager(), new SadlModelGenerator(), getPreferences());
+			}
+		}
+		return codeExtractor;
+	}
+
+	public IModelFromCodeExtractor getCodeExtractor() {
+		return codeExtractor;
+	}
+
+	public void setCodeExtractor(IModelFromCodeExtractor codeExtractor) {
+		this.codeExtractor = codeExtractor;
+	}
+
+	public TextProcessor getTextProcessor() {
+		if (textProcessor == null) {
+			textProcessor = new TextProcessor(getPreferences());
+		}
+		return textProcessor;
+	}
+
+	public void setTextProcessor(TextProcessor textExtractor) {
+		this.textProcessor = textExtractor;
+	}
+
+	public Map<String, String> getPreferences() {
+		return preferences;
+	}
+
+	public void setPreferences(Map<String, String> preferences) {
+		this.preferences = preferences;
+	}
+
+	private AnswerCurationManager getCurationManager() {
+		return this.curationManager ;
+	}
+
+	public void setCurationManager(AnswerCurationManager curationManager) {
+		this.curationManager = curationManager;
+	}
+
+	public void addNewSadlContent(String newContent) {
+		if (getGeneratedSadlContent() != null) {
+			setSadlContent(getGeneratedSadlContent() + newContent);
+		}
+		else {
+			setSadlContent(newContent);
+		}
+	}
+
+	public String getGeneratedSadlContent() {
+		return sadlContent;
+	}
+
+	public void setSadlContent(String sadlContent) {
+		this.sadlContent = sadlContent;
+	}
+
 }

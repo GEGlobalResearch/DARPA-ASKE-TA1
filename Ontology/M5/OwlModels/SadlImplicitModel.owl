@@ -31,6 +31,21 @@
       </owl:Restriction>
     </rdfs:subClassOf>
   </owl:Class>
+  <owl:Class rdf:nodeID="A0">
+    <rdfs:subClassOf>
+      <owl:Restriction>
+        <owl:allValuesFrom rdf:nodeID="A0"/>
+        <owl:onProperty rdf:resource="sadllistmodel#rest"/>
+      </owl:Restriction>
+    </rdfs:subClassOf>
+    <rdfs:subClassOf>
+      <owl:Restriction>
+        <owl:allValuesFrom rdf:resource="http://www.w3.org/2001/XMLSchema#anyURI"/>
+        <owl:onProperty rdf:resource="sadllistmodel#first"/>
+      </owl:Restriction>
+    </rdfs:subClassOf>
+    <rdfs:subClassOf rdf:resource="sadllistmodel#List"/>
+  </owl:Class>
   <owl:Class rdf:ID="UnittedQuantity">
     <rdfs:subClassOf>
       <owl:Class rdf:ID="ScientificConcept"/>
@@ -151,25 +166,6 @@
   <owl:Class rdf:ID="Verify">
     <rdfs:subClassOf rdf:resource="#Specification"/>
   </owl:Class>
-  <owl:Class rdf:ID="Assumption">
-    <rdfs:subClassOf rdf:resource="#Specification"/>
-  </owl:Class>
-  <owl:Class rdf:nodeID="A0">
-    <rdfs:subClassOf>
-      <owl:Restriction>
-        <owl:allValuesFrom rdf:nodeID="A0"/>
-        <owl:onProperty rdf:resource="sadllistmodel#rest"/>
-      </owl:Restriction>
-    </rdfs:subClassOf>
-    <rdfs:subClassOf>
-      <owl:Restriction>
-        <owl:allValuesFrom rdf:resource="http://www.w3.org/2001/XMLSchema#anyURI"/>
-        <owl:onProperty rdf:resource="sadllistmodel#first"/>
-      </owl:Restriction>
-    </rdfs:subClassOf>
-    <rdfs:subClassOf rdf:resource="sadllistmodel#List"/>
-  </owl:Class>
-  <owl:Class rdf:ID="TestState"/>
   <owl:Class rdf:nodeID="A1">
     <rdfs:subClassOf>
       <owl:Restriction>
@@ -185,6 +181,10 @@
     </rdfs:subClassOf>
     <rdfs:subClassOf rdf:resource="sadllistmodel#List"/>
   </owl:Class>
+  <owl:Class rdf:ID="Assumption">
+    <rdfs:subClassOf rdf:resource="#Specification"/>
+  </owl:Class>
+  <owl:Class rdf:ID="TestState"/>
   <owl:Class rdf:ID="TRANSITION_RESTRICTION"/>
   <owl:Class rdf:ID="PHYSICAL_MAPPING">
     <rdfs:subClassOf>

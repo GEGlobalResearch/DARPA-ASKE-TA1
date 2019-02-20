@@ -32,6 +32,7 @@ import com.ge.research.sadl.darpa.aske.dialog.ResponseStatement;
 import com.ge.research.sadl.darpa.aske.dialog.WhatIsStatement;
 import com.ge.research.sadl.darpa.aske.dialog.WhatStatement;
 import com.ge.research.sadl.darpa.aske.dialog.WhatValuesStatement;
+import com.ge.research.sadl.darpa.aske.preferences.DialogPreferences;
 import com.ge.research.sadl.errorgenerator.generator.SadlErrorMessages;
 import com.ge.research.sadl.jena.JenaBasedSadlModelProcessor;
 import com.ge.research.sadl.jena.JenaProcessorException;
@@ -45,9 +46,11 @@ import com.ge.research.sadl.model.gp.ProxyNode;
 import com.ge.research.sadl.model.gp.Query;
 import com.ge.research.sadl.model.gp.Rule;
 import com.ge.research.sadl.model.gp.TripleElement;
+import com.ge.research.sadl.preferences.SadlPreferences;
 import com.ge.research.sadl.processing.OntModelProvider;
 import com.ge.research.sadl.processing.SadlConstants;
 import com.ge.research.sadl.processing.ValidationAcceptor;
+import com.ge.research.sadl.processing.IModelProcessor.ProcessorContext;
 import com.ge.research.sadl.reasoner.ConfigurationException;
 import com.ge.research.sadl.reasoner.InvalidNameException;
 import com.ge.research.sadl.reasoner.InvalidTypeException;
@@ -70,6 +73,9 @@ import com.hp.hpl.jena.rdf.model.RDFWriter;
 public class JenaBasedDialogModelProcessor extends JenaBasedSadlModelProcessor {
 	private static final Logger logger = LoggerFactory.getLogger(JenaBasedDialogModelProcessor.class);
 	private boolean modelChanged;
+	
+	private String textServiceUrl = null;
+	private String cgServiceUrl = null;
 
 	@Override
 	public void onValidate(Resource resource, ValidationAcceptor issueAcceptor, CheckMode mode, ProcessorContext context) {
@@ -83,6 +89,11 @@ public class JenaBasedDialogModelProcessor extends JenaBasedSadlModelProcessor {
 			return;
 		}
 	
+		String textserviceurl = context.getPreferenceValues().getPreference(DialogPreferences.ANSWER_TEXT_SERVICE_BASE_URI);
+		String cgserviceurl = context.getPreferenceValues().getPreference(DialogPreferences.ANSWER_CG_SERVICE_BASE_URI);
+		System.out.println(textserviceurl);
+		System.out.println(cgserviceurl);
+
 		logger.debug("onValidate called for Resource '" + resource.getURI() + "'");
 		if (mode.shouldCheck(CheckType.EXPENSIVE)) {
 			// do expensive validation, i.e. those that should only be done when 'validate'
@@ -559,4 +570,34 @@ public class JenaBasedDialogModelProcessor extends JenaBasedSadlModelProcessor {
 	private void setModelChanged(boolean modelChanged) {
 		this.modelChanged = modelChanged;
 	}
+
+	@Override
+	public void initializePreferences(ProcessorContext context) {
+		setTypeCheckingWarningsOnly(true);
+		String textServiceUrl = context.getPreferenceValues().getPreference(DialogPreferences.ANSWER_TEXT_SERVICE_BASE_URI);
+		if (textServiceUrl != null) {
+			setTextServiceUrl(textServiceUrl);
+		}
+		String cgServiceUrl = context.getPreferenceValues().getPreference(DialogPreferences.ANSWER_CG_SERVICE_BASE_URI);
+		if (cgServiceUrl != null) {
+			setCgServiceUrl(cgServiceUrl);
+		}
+	}
+
+	public String getTextServiceUrl() {
+		return textServiceUrl;
+	}
+
+	private void setTextServiceUrl(String textServiceUrl) {
+		this.textServiceUrl = textServiceUrl;
+	}
+
+	public String getCgServiceUrl() {
+		return cgServiceUrl;
+	}
+
+	private void setCgServiceUrl(String cgServiceUrl) {
+		this.cgServiceUrl = cgServiceUrl;
+	}
+
 }

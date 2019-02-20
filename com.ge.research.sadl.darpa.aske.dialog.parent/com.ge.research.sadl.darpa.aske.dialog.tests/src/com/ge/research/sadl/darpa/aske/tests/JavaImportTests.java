@@ -65,7 +65,7 @@ public class JavaImportTests {
 				"}\r\n";
 		
 		SadlModelGenerator smg = new SadlModelGenerator();
-		JavaModelExtractor jme = new JavaModelExtractor(smg);
+		JavaModelExtractor jme = new JavaModelExtractor(null, smg);
 		IJavaProject jprj = null;
 		jme.parse(jprj, null, javaContent);
 		
@@ -107,7 +107,7 @@ public class JavaImportTests {
 				"}\r\n";
 		
 		SadlModelGenerator smg = new SadlModelGenerator();
-		JavaModelExtractor jme = new JavaModelExtractor(smg);
+		JavaModelExtractor jme = new JavaModelExtractor(null, smg);
 		IJavaProject jprj = null;
 		jme.parse(jprj, null, javaContent);
 		String content = smg.generateSadlModel(jme, "http://sadl.org/Temperature.sadl");
@@ -151,7 +151,7 @@ public class JavaImportTests {
 				"";
 		
 		SadlModelGenerator smg = new SadlModelGenerator();
-		JavaModelExtractor jme = new JavaModelExtractor(smg);
+		JavaModelExtractor jme = new JavaModelExtractor(null, smg);
 		IJavaProject jprj = null;
 		jme.parse(jprj, null, javaContent);
 		String content = smg.generateSadlModel(jme, "http://sadl.org/Temperature.sadl");
@@ -166,7 +166,7 @@ public class JavaImportTests {
 //		File sourceFile = new File(classLoader.getResource("/Isentrop.java").getFile());		
 		String javaContent = readFile(sourceFile);
 		SadlModelGenerator smg = new SadlModelGenerator();
-		JavaModelExtractor jme = new JavaModelExtractor(smg);
+		JavaModelExtractor jme = new JavaModelExtractor(null, smg);
 		IJavaProject jprj = null;
 		jme.parse(jprj, null, javaContent);
 		String content = smg.generateSadlModel(jme, "http://sadl.org/Temperature.sadl");
@@ -181,7 +181,7 @@ public class JavaImportTests {
 //		File sourceFile = new File(classLoader.getResource("/Isentrop.java").getFile());		
 		String javaContent = readFile(sourceFile);
 		SadlModelGenerator smg = new SadlModelGenerator();
-		JavaModelExtractor jme = new JavaModelExtractor(smg);
+		JavaModelExtractor jme = new JavaModelExtractor(null, smg);
 		IJavaProject jprj = null;
 		jme.parse(jprj, null, javaContent);
 		String content = smg.generateSadlModel(jme, "http://sadl.org/Temperature.sadl");
