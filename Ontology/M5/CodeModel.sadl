@@ -3,9 +3,10 @@
  CodeBlock is a class,
  	described by beginsAt with a single value of type int,
  	described by endsAt with a single value of type int,
- 	described by serialization with a single value of type string.
+ 	described by serialization with a single value of type string,
+ 	described by containedIn with values of type CodeBlock.
  
- {Method, ConditionalBlock, LoopBlock} are types of CodeBlock.
+ {Class, Method, ConditionalBlock, LoopBlock} are types of CodeBlock.
 
 // maybe just Set, Used? Change Defined to Assigned
 Usage is a class, must be one of {Defined, Used, Reassigned}.
@@ -20,8 +21,6 @@ Reference is a class
 	described by inlineCommentStart with a single value of type int
 	described by inlineCommentEnd with a single value of type int.
 
-External findFirstLocation (CodeVariable cv) returns int: "http://ToBeImplemented".
-
 // what about Constant also? Note something maybe an input and then gets reassigned
 // Constant could be defined in terms of being set by equations that only involve Constants
 // Constants could also relate variables used in different equations as being same
@@ -32,6 +31,8 @@ External findFirstLocation (CodeVariable cv) returns int: "http://ToBeImplemente
  	described by reference with values of type Reference
  	described by input with a single value of type boolean
  	described by output with a single value of type boolean.   
+
+External findFirstLocation (CodeVariable cv) returns int: "http://ToBeImplemented".
 
 // first reference is of type "Used" or all earlier refs are of type "Used"	
 // this does not cover when no ref2 with l2 < l1 exists

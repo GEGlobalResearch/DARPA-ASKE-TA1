@@ -166,6 +166,11 @@
   <owl:Class rdf:ID="Verify">
     <rdfs:subClassOf rdf:resource="#Specification"/>
   </owl:Class>
+  <owl:Class rdf:ID="Assumption">
+    <rdfs:subClassOf rdf:resource="#Specification"/>
+  </owl:Class>
+  <owl:Class rdf:ID="TestState"/>
+  <owl:Class rdf:ID="TRANSITION_RESTRICTION"/>
   <owl:Class rdf:nodeID="A1">
     <rdfs:subClassOf>
       <owl:Restriction>
@@ -181,11 +186,6 @@
     </rdfs:subClassOf>
     <rdfs:subClassOf rdf:resource="sadllistmodel#List"/>
   </owl:Class>
-  <owl:Class rdf:ID="Assumption">
-    <rdfs:subClassOf rdf:resource="#Specification"/>
-  </owl:Class>
-  <owl:Class rdf:ID="TestState"/>
-  <owl:Class rdf:ID="TRANSITION_RESTRICTION"/>
   <owl:Class rdf:ID="PHYSICAL_MAPPING">
     <rdfs:subClassOf>
       <owl:Restriction>

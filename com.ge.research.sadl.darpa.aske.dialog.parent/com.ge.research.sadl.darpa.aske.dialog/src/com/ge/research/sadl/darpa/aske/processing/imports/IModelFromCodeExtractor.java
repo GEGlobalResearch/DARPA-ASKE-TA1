@@ -1,11 +1,13 @@
 package com.ge.research.sadl.darpa.aske.processing.imports;
 
 import java.io.File;
+import java.io.IOException;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
 import com.ge.research.sadl.darpa.aske.processing.imports.SadlModelGenerator.SadlMethod;
+import com.ge.research.sadl.reasoner.ConfigurationException;
 import com.github.javaparser.ast.comments.Comment;
 
 public interface IModelFromCodeExtractor {
@@ -52,7 +54,7 @@ public interface IModelFromCodeExtractor {
 	
 	void setCodeFiles(List<File> codeFiles);
 
-	boolean process(String content);
+	boolean process(String content) throws ConfigurationException, IOException;
 
 	String getTypeComment();
 

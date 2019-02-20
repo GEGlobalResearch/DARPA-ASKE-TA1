@@ -10,6 +10,7 @@ import java.util.Map;
 import com.ge.research.sadl.builder.IConfigurationManagerForIDE;
 import com.ge.research.sadl.darpa.aske.processing.imports.AnswerExtractionProcessor;
 import com.ge.research.sadl.darpa.aske.processing.imports.SadlModelGenerator;
+import com.ge.research.sadl.reasoner.ConfigurationException;
 
 public class AnswerCurationManager {
 	private String owlModelsFolder;
@@ -31,7 +32,7 @@ public class AnswerCurationManager {
 		this.owlModelsFolder = owlModelsFolder;
 	}
 
-	private IConfigurationManagerForIDE getProjectConfigurationManager() {
+	public IConfigurationManagerForIDE getProjectConfigurationManager() {
 		return projectConfigurationManager;
 	}
 
@@ -66,8 +67,9 @@ public class AnswerCurationManager {
 	/**
 	 * Method to process a set of imports of text and/or code
 	 * @throws IOException
+	 * @throws ConfigurationException 
 	 */
-	public void processImports() throws IOException {
+	public void processImports() throws IOException, ConfigurationException {
 		
 		SadlModelGenerator smg = new SadlModelGenerator();
 		List<File> textFiles = getExtractionProcessor().getTextProcessor().getTextFiles();

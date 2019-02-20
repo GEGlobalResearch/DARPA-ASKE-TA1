@@ -1,10 +1,9 @@
 package com.ge.research.sadl.darpa.aske.processing.imports;
 
 import java.io.File;
-import java.io.UnsupportedEncodingException;
+import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
-import java.net.MalformedURLException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -21,10 +20,11 @@ import com.ge.research.sadl.builder.ConfigurationManagerForIdeFactory;
 import com.ge.research.sadl.builder.IConfigurationManagerForIDE;
 import com.ge.research.sadl.darpa.aske.curation.AnswerCurationManager;
 import com.ge.research.sadl.darpa.aske.processing.DialogConstants;
-import com.ge.research.sadl.darpa.aske.processing.imports.IModelFromCodeExtractor.Tag;
 import com.ge.research.sadl.darpa.aske.processing.imports.SadlModelGenerator.SadlMethod;
+import com.ge.research.sadl.jena.inference.SadlJenaModelGetterPutter;
 import com.ge.research.sadl.reasoner.ConfigurationException;
 import com.ge.research.sadl.reasoner.ConfigurationManager;
+import com.ge.research.sadl.reasoner.IConfigurationManagerForEditing.Scope;
 import com.github.javaparser.JavaParser;
 import com.github.javaparser.ast.CompilationUnit;
 import com.github.javaparser.ast.Node;
@@ -46,6 +46,13 @@ import com.github.javaparser.ast.visitor.VoidVisitorAdapter;
 import com.github.javaparser.symbolsolver.JavaSymbolSolver;
 import com.github.javaparser.symbolsolver.resolution.typesolvers.CombinedTypeSolver;
 import com.github.javaparser.symbolsolver.resolution.typesolvers.ReflectionTypeSolver;
+import com.hp.hpl.jena.ontology.Individual;
+import com.hp.hpl.jena.ontology.OntDocumentManager;
+import com.hp.hpl.jena.ontology.OntModel;
+import com.hp.hpl.jena.ontology.OntModelSpec;
+import com.hp.hpl.jena.ontology.Ontology;
+import com.hp.hpl.jena.rdf.model.Model;
+import com.hp.hpl.jena.rdf.model.ModelFactory;
 
 public class JavaModelExtractorJP implements IModelFromCodeExtractor {
     private static final Logger logger = Logger.getLogger (JavaModelExtractorJP.class) ;
@@ -65,6 +72,11 @@ public class JavaModelExtractorJP implements IModelFromCodeExtractor {
 	private Map<String, String> preferences;
 	Map<String, Tag> tagMap = null;;
 	private List<File> codeFiles;
+	private OntModel codeModel;
+	private String codeModelName;
+	private String codeModelPrefix;
+	private String codeMetaModelUri;
+	private IConfigurationManagerForIDE codeMetaModelConfigMgr;
 	
 	private static class MethodNameCollector extends VoidVisitorAdapter<List<MethodDeclaration>> {	
 		@Override
@@ -90,20 +102,50 @@ public class JavaModelExtractorJP implements IModelFromCodeExtractor {
 		getComments().clear();
 	}
 
-	public boolean process(String content) {
+	public boolean process(String content) throws ConfigurationException, IOException {
+		setCodeModelName("http://com.ge.research/darpa/aske/answer/testcodeextraction");
+		setCodeModelPrefix("testcodeextraction");
 		if (getCurationMgr().getExtractionProcessor().getCodeModel() == null) {
 			// create new code model
-			// TODO
+			String astKbRoot = "C:/Users/200005201/sadl3-master6/git/DARPA-ASKE-TA1/Ontology/M5";
+			
+			String modelFolderPathname = astKbRoot + "/OwlModels";
+			setCodeMetaModelConfigMgr(ConfigurationManagerForIdeFactory.getConfigurationManagerForIDE(modelFolderPathname, null)); //getCurationMgr().getProjectConfigurationManager());
+			OntDocumentManager owlDocMgr = getCodeMetaModelConfigMgr().getJenaDocumentMgr();
+			OntModelSpec spec = new OntModelSpec(OntModelSpec.OWL_MEM);
+			if (modelFolderPathname != null) { // && !modelFolderPathname.startsWith(SYNTHETIC_FROM_TEST)) {
+				File mff = new File(modelFolderPathname);
+				mff.mkdirs();
+				spec.setImportModelGetter(new SadlJenaModelGetterPutter(spec, modelFolderPathname));
+			}
+			if (owlDocMgr != null) {
+				spec.setDocumentManager(owlDocMgr);
+				owlDocMgr.setProcessImports(true);
+			}
+			getCurationMgr().getExtractionProcessor().setCodeModel(ModelFactory.createOntologyModel(spec));	
+			setCodeModel(getCurationMgr().getExtractionProcessor().getCodeModel());
+			getCodeModel().setNsPrefix(getCodeModelPrefix(), getCodeModelNamespace());
+			Ontology modelOntology = getCodeModel().createOntology(getCodeModelName());
+			logger.debug("Ontology '" + getCodeModelName() + "' created");
+			modelOntology.addComment("This ontology was created by extraction from code (JavaModelExtractorJP).", "en");
+			setCodeMetaModelUri("http://sadl.org/CodeModel.sadl");
+			OntModel importedOntModel = getCodeMetaModelConfigMgr().getOntModel(getCodeMetaModelUri(), Scope.INCLUDEIMPORTS);
+			addImportToJenaModel(getCodeModelName(), getCodeMetaModelUri(), "codemdl", importedOntModel);
 		}
+		else {
+			setCodeModel(getCurationMgr().getExtractionProcessor().getCodeModel());
+		}
+		
 		parse(getCurationMgr().getOwlModelsFolder(), content);
 		// Create a Reasoner and reason over the model, getting resulting InfModel
 		// get deductions from InfModel, add to code model.
-		
+		getCodeModel().write(System.out, "RDF/XML-ABBREV");
+//		getCodeMetaModelConfigMgr().s
 		return true;
 	}
 	
 	//use ASTParse to parse string
-	public void parse(String modelFolder, String str) {
+	private void parse(String modelFolder, String str) {
 		Resource resource = null;
 		try {
 			notifyUser(modelFolder, str);
@@ -141,8 +183,10 @@ public class JavaModelExtractorJP implements IModelFromCodeExtractor {
         CompilationUnit cu = JavaParser.parse(str);
         
         cu.findAll(ClassOrInterfaceDeclaration.class).forEach(cls -> {
+        	String nm = cls.getNameAsString();
+        	Individual clsInst = getCodeModel().createIndividual(getCodeModelNamespace() + nm, getCodeBlockClassUri());
       		Comment clscmnt = getComment(cls);
-        	System.out.println("Class or Interface Declaration: " + cls.getNameAsString() + (clscmnt != null ? "(Comment: " + clscmnt.toString().trim() + ")" : ""));
+        	System.out.println("Class or Interface Declaration: " + nm + (clscmnt != null ? "(Comment: " + clscmnt.toString().trim() + ")" : ""));
             cls.findAll(FieldDeclaration.class).forEach(fd -> {
             	if (fd.getParentNode().get().equals(cls)) {
 		           	 NodeList<VariableDeclarator> vars = fd.getVariables();
@@ -159,7 +203,9 @@ public class JavaModelExtractorJP implements IModelFromCodeExtractor {
         methodNameCollector.visit(cu, methods);
         methods.forEach(m -> {
       		Comment cmnt = getComment(m);
-        	System.out.println("Method Collected: " + m.getNameAsString() + (cmnt != null ? "(Comment: " + cmnt.toString().trim() + ")" : ""));
+        	String nm = m.getNameAsString();
+        	Individual methInst = getCodeModel().createIndividual(getCodeModelNamespace() + nm, getCodeBlockMethodUri());
+        	System.out.println("Method Collected: " + nm + (cmnt != null ? "(Comment: " + cmnt.toString().trim() + ")" : ""));
         	NodeList<Parameter> args = m.getParameters();
         	args.forEach(arg -> {
           		Comment argcmnt = getComment(arg);
@@ -172,6 +218,8 @@ public class JavaModelExtractorJP implements IModelFromCodeExtractor {
             m.findAll(AssignExpr.class).forEach(be -> {
            		Expression target = be.getTarget();
             	if (target instanceof NameExpr) {
+            		String nnm = ((NameExpr)target).getNameAsString();
+                	Individual nnmInst = getCodeModel().createIndividual(getCodeModelNamespace() + nnm, getCodeVariableUri());
             		int assgnLine = be.getRange().get().begin.line;
                 	Comment asscmnt = getComment(be.getParentNode().get());
                 	int cmntLine = (asscmnt != null) ? asscmnt.getRange().get().begin.line : -1;
@@ -211,6 +259,18 @@ public class JavaModelExtractorJP implements IModelFromCodeExtractor {
         });
 	}
 
+
+	private com.hp.hpl.jena.rdf.model.Resource getCodeVariableUri() {
+		return getCodeModel().getOntClass(getCodeMetaModelUri() + "#CodeVariable");
+	}
+
+	private com.hp.hpl.jena.rdf.model.Resource getCodeBlockMethodUri() {
+		return getCodeModel().getOntClass(getCodeMetaModelUri() + "#Method");
+	}
+
+	private com.hp.hpl.jena.rdf.model.Resource getCodeBlockClassUri() {
+		return getCodeModel().getOntClass(getCodeMetaModelUri() + "#Class");
+	}
 
 	private void notifyUser(String modelFolder, String str) throws ConfigurationException {
 		final String format = ConfigurationManager.RDF_XML_ABBREV_FORMAT;
@@ -417,6 +477,62 @@ public class JavaModelExtractorJP implements IModelFromCodeExtractor {
 
 	public void setCodeFiles(List<File> codeFiles) {
 		this.codeFiles = codeFiles;
+	}
+
+	private OntModel getCodeModel() {
+		return codeModel;
+	}
+
+	private void setCodeModel(OntModel codeModel) {
+		this.codeModel = codeModel;
+	}
+
+	private String getCodeModelName() {
+		return codeModelName;
+	}
+
+	private void setCodeModelName(String codeModelName) {
+		this.codeModelName = codeModelName;
+	}
+	
+	private String getCodeModelNamespace() {
+		return codeModelName + "#";
+	}
+
+	private String getCodeModelPrefix() {
+		return codeModelPrefix;
+	}
+
+	private void setCodeModelPrefix(String codeModelPrefix) {
+		this.codeModelPrefix = codeModelPrefix;
+	}
+
+	private void addImportToJenaModel(String modelName, String importUri, String importPrefix, Model importedOntModel) {
+		getCodeModel().getDocumentManager().addModel(importUri, importedOntModel, true);
+		Ontology modelOntology = getCodeModel().createOntology(modelName);
+		if (importPrefix != null) {
+			getCodeModel().setNsPrefix(importPrefix, importUri);
+		}
+		com.hp.hpl.jena.rdf.model.Resource importedOntology = getCodeModel().createResource(importUri);
+		modelOntology.addImport(importedOntology);
+		getCodeModel().addSubModel(importedOntModel);
+		getCodeModel().addLoadedImport(importUri);
+	}
+
+	private String getCodeMetaModelUri() {
+		return codeMetaModelUri;
+	}
+
+	private void setCodeMetaModelUri(String codeMetaModelUri) {
+		this.codeMetaModelUri = codeMetaModelUri;
+	}
+
+	private IConfigurationManagerForIDE getCodeMetaModelConfigMgr() {
+		return codeMetaModelConfigMgr;
+	}
+
+	private void setCodeMetaModelConfigMgr(IConfigurationManagerForIDE codeMetaModelConfigMgr) {
+		this.codeMetaModelConfigMgr = codeMetaModelConfigMgr;
 	}
 
 }

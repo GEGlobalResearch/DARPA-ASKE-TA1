@@ -38,7 +38,7 @@ public class JavaImportJPTests {
 	}
 
 	@Test
-	public void test_01() throws ConfigurationException {
+	public void test_01() throws ConfigurationException, IOException {
 		String javaContent = 
 				"/**\r\n" + 
 				" * Copyright 2018 General Electric Company\r\n" + 
@@ -73,14 +73,14 @@ public class JavaImportJPTests {
 		AnswerCurationManager acm = new AnswerCurationManager(testSadlProjectModelFolder, cm, null);
 		SadlModelGenerator smg = new SadlModelGenerator();
 		JavaModelExtractorJP jme = new JavaModelExtractorJP(acm, smg, null);
-		jme.parse(testSadlProjectModelFolder, javaContent);
+		jme.process(javaContent);
 		
 //		String content = smg.generateSadlModel(jme, "http://sadl.org/Temperature.sadl");
 //		System.out.println("SADL Model Output:\n" + content);
 	}
 
 	@Test
-	public void test_02() throws ConfigurationException {
+	public void test_02() throws ConfigurationException, IOException {
 		String javaContent = 
 				"/*\r\n" + 
 				" * Copyright 2018 General Electric Company\r\n" + 
@@ -116,13 +116,13 @@ public class JavaImportJPTests {
 		AnswerCurationManager acm = new AnswerCurationManager(testSadlProjectModelFolder, cm, null);
 		SadlModelGenerator smg = new SadlModelGenerator();
 		JavaModelExtractorJP jme = new JavaModelExtractorJP(acm, smg, null);
-		jme.parse(testSadlProjectModelFolder, javaContent);
+		jme.process(javaContent);
 //		String content = smg.generateSadlModel(jme, "http://sadl.org/Temperature.sadl");
 //		System.out.println("SADL Model Output:\n" + content);
 	}
 
 	@Test
-	public void test_03() throws ConfigurationException {
+	public void test_03() throws ConfigurationException, IOException {
 		String javaContent = 
 				"package com.research.ge.darpa.answer.imports;\r\n" + 
 				"\r\n" + 
@@ -161,7 +161,7 @@ public class JavaImportJPTests {
 		AnswerCurationManager acm = new AnswerCurationManager(testSadlProjectModelFolder, cm, null);
 		SadlModelGenerator smg = new SadlModelGenerator();
 		JavaModelExtractorJP jme = new JavaModelExtractorJP(acm, smg, null);
-		jme.parse(testSadlProjectModelFolder, javaContent);
+		jme.process(javaContent);
 //		String content = smg.generateSadlModel(jme, "http://sadl.org/Temperature.sadl");
 //		System.out.println("SADL Model Output:\n" + content);
 	}
@@ -177,7 +177,7 @@ public class JavaImportJPTests {
 		AnswerCurationManager acm = new AnswerCurationManager(testSadlProjectModelFolder, cm, null);
 		SadlModelGenerator smg = new SadlModelGenerator();
 		JavaModelExtractorJP jme = new JavaModelExtractorJP(acm, smg, null);
-		jme.parse(testSadlProjectModelFolder, javaContent);
+		jme.process(javaContent);
 //		String content = smg.generateSadlModel(jme, "http://sadl.org/Temperature.sadl");
 //		System.out.println("SADL Model Output:\n" + content);
 	}
@@ -193,7 +193,7 @@ public class JavaImportJPTests {
 		AnswerCurationManager acm = new AnswerCurationManager(testSadlProjectModelFolder, cm, null);
 		SadlModelGenerator smg = new SadlModelGenerator();
 		JavaModelExtractorJP jme = new JavaModelExtractorJP(acm, smg, null);
-		jme.parse(testSadlProjectModelFolder, javaContent);
+		jme.process(javaContent);
 //		String content = smg.generateSadlModel(jme, "http://sadl.org/Temperature.sadl");
 //		System.out.println("SADL Model Output:\n" + content);
 	}
