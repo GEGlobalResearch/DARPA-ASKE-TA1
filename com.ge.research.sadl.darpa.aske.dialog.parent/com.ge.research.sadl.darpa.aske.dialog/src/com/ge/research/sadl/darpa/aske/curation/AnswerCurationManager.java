@@ -66,10 +66,11 @@ public class AnswerCurationManager {
 
 	/**
 	 * Method to process a set of imports of text and/or code
+	 * @param outputFilename 
 	 * @throws IOException
 	 * @throws ConfigurationException 
 	 */
-	public void processImports() throws IOException, ConfigurationException {
+	public void processImports(String outputFilename) throws IOException, ConfigurationException {
 		
 		SadlModelGenerator smg = new SadlModelGenerator();
 		List<File> textFiles = getExtractionProcessor().getTextProcessor().getTextFiles();
@@ -86,12 +87,19 @@ public class AnswerCurationManager {
 				String content = readFileToString(f);
 				getExtractionProcessor().getCodeExtractor().process(content);
 				
-		    	String ontologyRootUri = "http://sadl.org/Temperature.sadl";	// this comes from the selection in the import Wizard
-				String newContent = smg.generateSadlModel(getExtractionProcessor().getCodeExtractor(), ontologyRootUri );
-				if(newContent != null) {
-					getExtractionProcessor().addNewSadlContent(newContent);
-				}
+//		    	String ontologyRootUri = "http://sadl.org/Temperature.sadl";	// this comes from the selection in the import Wizard
+//				String newContent = smg.generateSadlModel(getExtractionProcessor().getCodeExtractor(), ontologyRootUri );
+//				if(newContent != null) {
+//					getExtractionProcessor().addNewSadlContent(newContent);
+//				}
 			}
+			if (outputFilename.endsWith(".sadl")) {
+				outputFilename = outputFilename.substring(0, outputFilename.length() - 5) + ".owl";
+			}
+			File of = new File(new File(getOwlModelsFolder()).getParent() + "/GeneratedModels/" + outputFilename);
+			of.mkdirs();
+			getProjectConfigurationManager().saveOwlFile(getExtractionProcessor().getCodeModel(), getExtractionProcessor().getCodeModelName(), of.getCanonicalPath());
+
 		}
 	}
 

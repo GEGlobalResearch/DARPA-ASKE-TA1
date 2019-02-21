@@ -29,6 +29,7 @@ import com.github.javaparser.JavaParser;
 import com.github.javaparser.ast.CompilationUnit;
 import com.github.javaparser.ast.Node;
 import com.github.javaparser.ast.NodeList;
+import com.github.javaparser.ast.body.BodyDeclaration;
 import com.github.javaparser.ast.body.ClassOrInterfaceDeclaration;
 import com.github.javaparser.ast.body.FieldDeclaration;
 import com.github.javaparser.ast.body.MethodDeclaration;
@@ -41,6 +42,7 @@ import com.github.javaparser.ast.expr.Expression;
 import com.github.javaparser.ast.expr.MethodCallExpr;
 import com.github.javaparser.ast.expr.NameExpr;
 import com.github.javaparser.ast.expr.ObjectCreationExpr;
+import com.github.javaparser.ast.nodeTypes.NodeWithSimpleName;
 import com.github.javaparser.ast.visitor.VoidVisitor;
 import com.github.javaparser.ast.visitor.VoidVisitorAdapter;
 import com.github.javaparser.symbolsolver.JavaSymbolSolver;
@@ -53,6 +55,7 @@ import com.hp.hpl.jena.ontology.OntModelSpec;
 import com.hp.hpl.jena.ontology.Ontology;
 import com.hp.hpl.jena.rdf.model.Model;
 import com.hp.hpl.jena.rdf.model.ModelFactory;
+import com.hp.hpl.jena.rdf.model.Property;
 
 public class JavaModelExtractorJP implements IModelFromCodeExtractor {
     private static final Logger logger = Logger.getLogger (JavaModelExtractorJP.class) ;
@@ -68,6 +71,7 @@ public class JavaModelExtractorJP implements IModelFromCodeExtractor {
 	
 	public enum CONTEXT {PackageDecl, MainClassDecl, InnerClassDecl, ConstructorDecl, MethodDecl, Expression,
 		Block, MethodBody}
+	public enum USAGE {Defined, Used, Reassigned}
 	private CONTEXT currentContext = null;
 	private Map<String, String> preferences;
 	Map<String, Tag> tagMap = null;;
@@ -140,7 +144,6 @@ public class JavaModelExtractorJP implements IModelFromCodeExtractor {
 		// Create a Reasoner and reason over the model, getting resulting InfModel
 		// get deductions from InfModel, add to code model.
 		getCodeModel().write(System.out, "RDF/XML-ABBREV");
-//		getCodeMetaModelConfigMgr().s
 		return true;
 	}
 	
@@ -184,7 +187,10 @@ public class JavaModelExtractorJP implements IModelFromCodeExtractor {
         
         cu.findAll(ClassOrInterfaceDeclaration.class).forEach(cls -> {
         	String nm = cls.getNameAsString();
-        	Individual clsInst = getCodeModel().createIndividual(getCodeModelNamespace() + nm, getCodeBlockClassUri());
+        	Individual clsInst = getCodeModel().createIndividual(getCodeModelNamespace() + nm, getCodeBlockClassClass());
+        	
+        	indentifyAndLinkContainingBlock(cls, clsInst);
+
       		Comment clscmnt = getComment(cls);
         	System.out.println("Class or Interface Declaration: " + nm + (clscmnt != null ? "(Comment: " + clscmnt.toString().trim() + ")" : ""));
             cls.findAll(FieldDeclaration.class).forEach(fd -> {
@@ -204,7 +210,8 @@ public class JavaModelExtractorJP implements IModelFromCodeExtractor {
         methods.forEach(m -> {
       		Comment cmnt = getComment(m);
         	String nm = m.getNameAsString();
-        	Individual methInst = getCodeModel().createIndividual(getCodeModelNamespace() + nm, getCodeBlockMethodUri());
+        	Individual methInst = getCodeModel().createIndividual(getCodeModelNamespace() + nm, getCodeBlockMethodClass());
+        	indentifyAndLinkContainingBlock(m, methInst);
         	System.out.println("Method Collected: " + nm + (cmnt != null ? "(Comment: " + cmnt.toString().trim() + ")" : ""));
         	NodeList<Parameter> args = m.getParameters();
         	args.forEach(arg -> {
@@ -219,7 +226,13 @@ public class JavaModelExtractorJP implements IModelFromCodeExtractor {
            		Expression target = be.getTarget();
             	if (target instanceof NameExpr) {
             		String nnm = ((NameExpr)target).getNameAsString();
-                	Individual nnmInst = getCodeModel().createIndividual(getCodeModelNamespace() + nnm, getCodeVariableUri());
+                	Individual nnmInst = getCodeModel().createIndividual(getCodeModelNamespace() + nnm, getCodeVariableClass());
+                	try {
+						createReference((NameExpr)target, nnmInst, USAGE.Defined);
+					} catch (CodeExtractionException e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					}
             		int assgnLine = be.getRange().get().begin.line;
                 	Comment asscmnt = getComment(be.getParentNode().get());
                 	int cmntLine = (asscmnt != null) ? asscmnt.getRange().get().begin.line : -1;
@@ -259,16 +272,118 @@ public class JavaModelExtractorJP implements IModelFromCodeExtractor {
         });
 	}
 
+	private void createReference(NameExpr codeVar, Individual codeVarInst, USAGE usage) throws CodeExtractionException {
+		int line = codeVar.getRange().get().begin.line;
+		NodeWithSimpleName<?> codeBlockNode = getContainingCodeBlockNode(codeVar);
+		Individual blkInst = null;
+		if (codeBlockNode != null) {
+			blkInst = getCodeModel().getIndividual(getCodeModelNamespace() + codeBlockNode.getNameAsString());
+		}
+		Individual ref = createNewReference(blkInst, line, usage);
+		codeVarInst.addProperty(getReferenceProperty(), ref);
+	}
 
-	private com.hp.hpl.jena.rdf.model.Resource getCodeVariableUri() {
+	private Individual createNewReference(Individual blkInst, int line, USAGE usage) throws CodeExtractionException {
+		Individual refInst = getCodeModel().createIndividual(getReferenceClass());
+		if (blkInst != null) {
+			refInst.addProperty(getCodeBlockProperty(), blkInst);
+		}
+		if (line >= 0) {
+			refInst.addProperty(getLocationProperty(), getCodeModel().createTypedLiteral(line));
+		}
+		refInst.addProperty(getUsageProperty(), getUsageInstance(usage));
+		return refInst;
+	}
+
+	private NodeWithSimpleName<?> getContainingCodeBlockNode(Node node) {
+		NodeWithSimpleName<?> containingNode = null;
+		Optional<Node> parent = node.getParentNode();
+		if (parent.isPresent()) {
+			Node n = parent.get();
+			if (n instanceof ClassOrInterfaceDeclaration) {
+				containingNode = (ClassOrInterfaceDeclaration)n;
+			}
+			else if (n instanceof MethodDeclaration) {
+				containingNode = (MethodDeclaration)n;
+			}
+		}
+		return containingNode;
+	}
+
+	private void indentifyAndLinkContainingBlock(BodyDeclaration<?> blkNode, Individual blkInst) {
+		Optional<Node> pn = blkNode.getParentNode();
+		if (pn.isPresent()) {
+			Node n = pn.get();
+			Individual containingInst = getOrCreateBlockInstance(n);
+			if (containingInst != null) {
+				getCodeModel().add(blkInst, getContainedInProperty(), containingInst);
+			}
+		}
+	}
+
+	private Individual getOrCreateBlockInstance(Node n) {
+		Individual containingInst = null;
+		if (n instanceof ClassOrInterfaceDeclaration) {
+			containingInst = getCodeModel().getIndividual(getCodeModelNamespace() + ((ClassOrInterfaceDeclaration)n).getNameAsString());
+			if (containingInst == null) {
+				containingInst = getCodeModel().createIndividual(getCodeModelNamespace() + ((ClassOrInterfaceDeclaration)n).getNameAsString(), getCodeBlockClassClass());	
+			}
+		}
+		else if (n instanceof MethodDeclaration) {
+			containingInst = getCodeModel().getIndividual(getCodeModelNamespace() + ((MethodDeclaration)n).getNameAsString());
+			if (containingInst == null) {
+				containingInst = getCodeModel().createIndividual(getCodeModelNamespace() + ((MethodDeclaration)n).getNameAsString(), getCodeBlockClassClass());	
+			}
+		}
+		return containingInst;
+	}
+
+	private Individual getUsageInstance(USAGE usage) throws CodeExtractionException {
+		if (usage.equals(USAGE.Defined)) {
+			return getCodeModel().getIndividual(getCodeMetaModelUri() + "#Defined");
+		}
+		else if (usage.equals(USAGE.Used)) {
+			return getCodeModel().getIndividual(getCodeMetaModelUri() + "#Used");
+		}
+		else if (usage.equals(USAGE.Reassigned)) {
+			return getCodeModel().getIndividual(getCodeMetaModelUri() + "#Reassigned");
+		}
+		throw new CodeExtractionException("Unexpected USAGE: " + usage.toString());
+	}
+
+	private Property getUsageProperty() {
+		return getCodeModel().getOntProperty(getCodeMetaModelUri() + "#usage");
+	}
+
+	private Property getLocationProperty() {
+		return getCodeModel().getOntProperty(getCodeMetaModelUri() + "#location");
+	}
+
+	private Property getCodeBlockProperty() {
+		return getCodeModel().getOntProperty(getCodeMetaModelUri() + "#codeBlock");
+	}
+
+	private Property getReferenceProperty() {
+		return getCodeModel().getOntProperty(getCodeMetaModelUri() + "#reference");
+	}
+
+	private Property getContainedInProperty() {
+		return getCodeModel().getOntProperty(getCodeMetaModelUri() + "#containedIn");
+	}
+
+	private com.hp.hpl.jena.rdf.model.Resource getReferenceClass() {
+		return getCodeModel().getOntClass(getCodeMetaModelUri() + "#Reference");
+	}
+
+	private com.hp.hpl.jena.rdf.model.Resource getCodeVariableClass() {
 		return getCodeModel().getOntClass(getCodeMetaModelUri() + "#CodeVariable");
 	}
 
-	private com.hp.hpl.jena.rdf.model.Resource getCodeBlockMethodUri() {
+	private com.hp.hpl.jena.rdf.model.Resource getCodeBlockMethodClass() {
 		return getCodeModel().getOntClass(getCodeMetaModelUri() + "#Method");
 	}
 
-	private com.hp.hpl.jena.rdf.model.Resource getCodeBlockClassUri() {
+	private com.hp.hpl.jena.rdf.model.Resource getCodeBlockClassClass() {
 		return getCodeModel().getOntClass(getCodeMetaModelUri() + "#Class");
 	}
 
@@ -493,6 +608,7 @@ public class JavaModelExtractorJP implements IModelFromCodeExtractor {
 
 	private void setCodeModelName(String codeModelName) {
 		this.codeModelName = codeModelName;
+		getCurationMgr().getExtractionProcessor().setCodeModelName(codeModelName);
 	}
 	
 	private String getCodeModelNamespace() {

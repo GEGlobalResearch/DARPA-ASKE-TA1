@@ -806,7 +806,7 @@ public class JavaImportOperation extends WorkspaceModifyOperation {
     void importFiles(AnswerCurationManager acm) throws ConfigurationException, IOException {
 
 		
-		acm.processImports();
+		acm.processImports(getOutputFilename());
 //		
 		String newContent = acm.getExtractionProcessor().getGeneratedSadlContent();
 		

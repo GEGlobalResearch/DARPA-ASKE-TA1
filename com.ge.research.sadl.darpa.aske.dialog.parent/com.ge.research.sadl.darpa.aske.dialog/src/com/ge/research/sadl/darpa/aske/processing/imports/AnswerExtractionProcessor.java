@@ -11,7 +11,9 @@ public class AnswerExtractionProcessor {
 	private String serializedCode;
 	private OntModel contextModel;	// the knowledge graph to use during extraction
 	private OntModel textModel;		// the knowledge graph extension to the contextModel extracted from text
+	private String textModelName;
 	private OntModel codeModel;		// the knowledge graph extension to the context model extracted from code
+	private String codeModelName;
 	private IModelFromCodeExtractor codeExtractor;
 	private TextProcessor textProcessor;
 	private Map<String, String> preferences = null;
@@ -161,6 +163,22 @@ public class AnswerExtractionProcessor {
 
 	public void setSadlContent(String sadlContent) {
 		this.sadlContent = sadlContent;
+	}
+
+	public String getTextModelName() {
+		return textModelName;
+	}
+
+	public void setTextModelName(String textModelName) {
+		this.textModelName = textModelName;
+	}
+
+	public String getCodeModelName() {
+		return codeModelName;
+	}
+
+	public void setCodeModelName(String codeModelName) {
+		this.codeModelName = codeModelName;
 	}
 
 }
