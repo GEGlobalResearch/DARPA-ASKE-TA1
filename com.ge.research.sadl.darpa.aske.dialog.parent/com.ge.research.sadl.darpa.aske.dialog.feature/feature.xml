@@ -17,4 +17,32 @@
       [Enter License Description here.]
    </license>
 
+   <plugin
+         id="com.ge.research.sadl.darpa.aske.dialog"
+         download-size="0"
+         install-size="0"
+         version="0.0.0"
+         unpack="false"/>
+
+   <plugin
+         id="com.ge.research.sadl.darpa.aske.dialog.dependencies"
+         download-size="0"
+         install-size="0"
+         version="0.0.0"
+         unpack="false"/>
+
+   <plugin
+         id="com.ge.research.sadl.darpa.aske.dialog.ide"
+         download-size="0"
+         install-size="0"
+         version="0.0.0"
+         unpack="false"/>
+
+   <plugin
+         id="com.ge.research.sadl.darpa.aske.dialog.ui"
+         download-size="0"
+         install-size="0"
+         version="0.0.0"
+         unpack="false"/>
+
 </feature>
