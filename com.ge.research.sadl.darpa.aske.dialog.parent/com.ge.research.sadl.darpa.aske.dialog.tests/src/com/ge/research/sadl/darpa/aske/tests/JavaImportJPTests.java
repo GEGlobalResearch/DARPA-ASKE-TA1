@@ -16,6 +16,8 @@ import com.ge.research.sadl.builder.IConfigurationManagerForIDE;
 import com.ge.research.sadl.darpa.aske.curation.AnswerCurationManager;
 import com.ge.research.sadl.darpa.aske.processing.imports.JavaModelExtractorJP;
 import com.ge.research.sadl.darpa.aske.processing.imports.SadlModelGenerator;
+import com.ge.research.sadl.owl2sadl.OwlImportException;
+import com.ge.research.sadl.owl2sadl.OwlToSadl;
 import com.ge.research.sadl.reasoner.ConfigurationException;
 
 public class JavaImportJPTests {
@@ -183,7 +185,7 @@ public class JavaImportJPTests {
 	}
 	
 	@Test
-	public void test_05() throws IOException, ConfigurationException {
+	public void test_05() throws IOException, ConfigurationException, OwlImportException {
 		System.out.println(new File(".").getAbsoluteFile().getAbsolutePath());
 		File sourceFile = new File(new File(".").getAbsolutePath() + "/resources/Mach.java");
 //		ClassLoader classLoader = getClass().getClassLoader();
@@ -196,6 +198,18 @@ public class JavaImportJPTests {
 		jme.process(javaContent);
 //		String content = smg.generateSadlModel(jme, "http://sadl.org/Temperature.sadl");
 //		System.out.println("SADL Model Output:\n" + content);
+		String genFolder = testSadlProjectModelFolder + "/GeneratedModels";
+		new File(genFolder).mkdirs();
+		String owlFileName = genFolder + "/Mach.owl";
+		cm.saveOwlFile(acm.getExtractionProcessor().getCodeModel(), 
+				acm.getExtractionProcessor().getCodeModelName(), owlFileName);
+		OwlToSadl ots = new OwlToSadl(acm.getExtractionProcessor().getCodeModel());
+		String sadlFN = owlFileName + ".sadl";
+		File sf = new File(sadlFN);
+		if (sf.exists()) {
+			sf.delete();
+		}
+		ots.saveSadlModel(owlFileName + ".sadl");
 	}
 	
 	private String readFile(File file) throws IOException {
