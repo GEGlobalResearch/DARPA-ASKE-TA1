@@ -303,7 +303,7 @@ public class JenaBasedDialogInferenceProcessor extends JenaBasedSadlInferencePro
 
 		
 		// Comp Graph instance
-		Individual cgIns = createIndividualOfClass(METAMODEL_CCG);
+	Individual cgIns = createIndividualOfClass(METAMODEL_CCG);
 		OntProperty subgraphprop = 	getTheJenaModel().getOntProperty(METAMODEL_SUBG_PROP);
 		OntProperty cgraphprop = 	getTheJenaModel().getOntProperty(METAMODEL_CGRAPH_PROP);
 		OntProperty hasEqnProp = 	getTheJenaModel().getOntProperty(METAMODEL_HASEQN_PROP);
@@ -322,14 +322,17 @@ public class JenaBasedDialogInferenceProcessor extends JenaBasedSadlInferencePro
 			getTheJenaModel().add(cgIns, subgraphprop, sgIns); 
 			dbnIns = createIndividualOfClass(p.toString());
 			getTheJenaModel().add(sgIns, cgraphprop, dbnIns); 
-			eqnIns = createIndividualOfClass(s.toString());
-			getTheJenaModel().add(dbnIns, hasEqnProp, eqnIns);
+			getTheJenaModel().add(dbnIns, hasEqnProp, s); //the equation is already an instance
 			outpIns = createIndividualOfClass(o.toString());
 			getTheJenaModel().add(sgIns, outputprop, outpIns);
 		}
 		
-		getTheJenaModel().write(System.out, "TTL" );
+		getTheJenaModel().write(System.out);
 
+		OntModelProvider.attach(resource, getTheJenaModel(), OntModelProvider.getModelName(resource),OntModelProvider.getModelPrefix(resource));
+		
+		//OntModelProvider.
+		
 		// Retrieve Models & Nodes
 		queryStr = RETRIEVE_MODELS.replaceAll("EQNSLIST", listOfEqns);
 		com.hp.hpl.jena.query.Query qm = QueryFactory.create(queryStr);
