@@ -1,2 +1,8 @@
  uri "http://sadl.org/test.sadl" alias test.
  
+ import "http://sadl.org/SpeedOfSound.sadl".
+ 
+ StdAir is an Air with altitude 20000 ft,
+ 	with temperature 400 R.
+ 
+ 

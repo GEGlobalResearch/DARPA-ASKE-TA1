@@ -65,6 +65,9 @@
   <owl:Class rdf:ID="Length">
     <rdfs:subClassOf rdf:resource="sadlimplicitmodel#UnittedQuantity"/>
   </owl:Class>
+  <owl:Class rdf:ID="Temperature">
+    <rdfs:subClassOf rdf:resource="sadlimplicitmodel#UnittedQuantity"/>
+  </owl:Class>
   <owl:Class rdf:ID="Force">
     <rdfs:subClassOf>
       <owl:Class>
@@ -177,6 +180,21 @@
     <rdfs:domain rdf:resource="#PhysicalObject"/>
     <rdfs:range rdf:resource="#Mass"/>
   </owl:ObjectProperty>
+  <owl:ObjectProperty rdf:ID="acceleration">
+    <rdfs:range rdf:resource="#Acceleration"/>
+    <rdfs:domain rdf:resource="#PhysicalObject"/>
+  </owl:ObjectProperty>
+  <owl:ObjectProperty rdf:ID="temperature">
+    <rdfs:domain rdf:resource="#PhysicalObject"/>
+    <rdfs:range rdf:resource="#Temperature"/>
+  </owl:ObjectProperty>
+  <owl:ObjectProperty rdf:ID="z-coordinate">
+    <rdfs:domain rdf:resource="#Position"/>
+    <rdfs:range rdf:resource="#Length"/>
+  </owl:ObjectProperty>
+  <owl:ObjectProperty rdf:about="#withRespectTo">
+    <rdfs:domain rdf:resource="#Derivative"/>
+  </owl:ObjectProperty>
   <owl:ObjectProperty rdf:ID="force">
     <rdfs:range rdf:resource="#Force"/>
     <rdfs:domain rdf:resource="#PhysicalObject"/>
@@ -193,15 +211,7 @@
     <rdfs:range rdf:resource="#Momentum"/>
     <rdfs:domain rdf:resource="#Mass"/>
   </owl:ObjectProperty>
-  <owl:ObjectProperty rdf:ID="acceleration">
-    <rdfs:range rdf:resource="#Acceleration"/>
-    <rdfs:domain rdf:resource="#PhysicalObject"/>
-  </owl:ObjectProperty>
   <owl:ObjectProperty rdf:ID="x-coordinate">
-    <rdfs:domain rdf:resource="#Position"/>
-    <rdfs:range rdf:resource="#Length"/>
-  </owl:ObjectProperty>
-  <owl:ObjectProperty rdf:ID="z-coordinate">
     <rdfs:domain rdf:resource="#Position"/>
     <rdfs:range rdf:resource="#Length"/>
   </owl:ObjectProperty>
@@ -212,9 +222,6 @@
   <owl:ObjectProperty rdf:ID="velocity">
     <rdfs:range rdf:resource="#Velocity"/>
     <rdfs:domain rdf:resource="#PhysicalObject"/>
-  </owl:ObjectProperty>
-  <owl:ObjectProperty rdf:about="#withRespectTo">
-    <rdfs:domain rdf:resource="#Derivative"/>
   </owl:ObjectProperty>
   <j.0:Rule rdf:ID="momentumOfPhysicalObject"/>
   <j.0:ExternalEquation rdf:ID="unitResolver">
