@@ -339,10 +339,25 @@ public class JenaBasedDialogInferenceProcessor extends JenaBasedSadlInferencePro
 		qexec = QueryExecutionFactory.create(qm, getTheJenaModel()); 
 		com.hp.hpl.jena.query.ResultSetRewindable results = com.hp.hpl.jena.query.ResultSetFactory.makeRewindable(qexec.execSelect()) ;
 
+		while( results.hasNext() ) {
+	      	soln = results.nextSolution() ;
+			RDFNode m = soln.get("?Model") ; 
+			RDFNode i = soln.get("?Input") ;
+			RDFNode o = soln.get("?Output") ;
+			RDFNode f = soln.get("?ModelForm") ;
+		}
 		//TODO: create models csv (models are the DBNs)
 		
 		qexec = QueryExecutionFactory.create(qn, getTheJenaModel());
 		results = com.hp.hpl.jena.query.ResultSetFactory.makeRewindable(qexec.execSelect());
+
+		while( results.hasNext() ) {
+	      	soln = results.nextSolution() ;
+			RDFNode n = soln.get("?Node") ; 
+			RDFNode c = soln.get("?Child") ;
+			RDFNode d = soln.get("?Distribution") ;
+		}
+		
 		//TODO: create nodes csv
 		
 		//TODO: request DBN json build
