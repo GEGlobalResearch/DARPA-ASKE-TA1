@@ -1,8 +1,5 @@
 # Compiled class file
 *.class
-target/
-#/classes/
-
 
 # Log file
 *.log
@@ -25,17 +22,27 @@ target/
 #xtend generated files
 *.xtendbin
 
-src-gen/
-xtend-gen/
-bin/
-
 # virtual machine crash logs, see http://www.java.com/en/download/help/error_hotspot.xml
 hs_err_pid*
 
-.project
+/**/src-gen/ 
+/**/xtend-gen/ 
+/**/target/ 
+
+bin/
+target/
+
+.DS_Store
+*~
+*.genmodel
+
 .classpath
+.project
 .settings
 .gitignore
 \#*\#
-*~
-.DS_Store
+
+
+
+
+

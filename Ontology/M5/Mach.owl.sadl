@@ -1,0 +1,642 @@
+uri "http://com.ge.research/darpa/aske/answer/testcodeextraction" alias testcodeextraction
+    (note "This ontology was created by extraction from code (JavaModelExtractorJP).").
+
+import "http://sadl.org/CodeModel.sadl" as codemdl.
+
+
+// Individuals:
+Dn is a codemdl:Class,
+    has codemdl:containedIn In.
+Dn.l3 is a codemdl:ClassField,
+    has codemdl:varName "l3",
+    has codemdl:reference (a codemdl:Reference
+    with codemdl:usage codemdl:Defined,
+    with codemdl:location 725,
+    with codemdl:codeBlock Dn).
+Dn.l4 is a codemdl:ClassField,
+    has codemdl:varName "l4",
+    has codemdl:reference (a codemdl:Reference
+    with codemdl:usage codemdl:Defined,
+    with codemdl:location 725,
+    with codemdl:codeBlock Dn).
+Dn.l5 is a codemdl:ClassField,
+    has codemdl:varName "l5",
+    has codemdl:reference (a codemdl:Reference
+    with codemdl:usage codemdl:Defined,
+    with codemdl:location 725,
+    with codemdl:codeBlock Dn).
+Dn.l6 is a codemdl:ClassField,
+    has codemdl:varName "l6",
+    has codemdl:reference (a codemdl:Reference
+    with codemdl:usage codemdl:Defined,
+    with codemdl:location 725,
+    with codemdl:codeBlock Dn).
+Dn.l7 is a codemdl:ClassField,
+    has codemdl:varName "l7",
+    has codemdl:reference (a codemdl:Reference
+    with codemdl:usage codemdl:Defined,
+    with codemdl:location 725,
+    with codemdl:codeBlock Dn).
+Dn.l8 is a codemdl:ClassField,
+    has codemdl:varName "l8",
+    has codemdl:reference (a codemdl:Reference
+    with codemdl:usage codemdl:Defined,
+    with codemdl:location 725,
+    with codemdl:codeBlock Dn).
+Dn.lb is a codemdl:ClassField,
+    has codemdl:varName "lb",
+    has codemdl:reference (a codemdl:Reference
+    with codemdl:usage codemdl:Defined,
+    with codemdl:location 726,
+    with codemdl:codeBlock Dn).
+Dn.lc is a codemdl:ClassField,
+    has codemdl:varName "lc",
+    has codemdl:reference (a codemdl:Reference
+    with codemdl:usage codemdl:Defined,
+    with codemdl:location 726,
+    with codemdl:codeBlock Dn).
+Dn.ld is a codemdl:ClassField,
+    has codemdl:varName "ld",
+    has codemdl:reference (a codemdl:Reference
+    with codemdl:usage codemdl:Defined,
+    with codemdl:location 726,
+    with codemdl:codeBlock Dn).
+Dn.o3 is a codemdl:ClassField,
+    has codemdl:varName "o3",
+    has codemdl:reference (a codemdl:Reference
+    with codemdl:usage codemdl:Defined,
+    with codemdl:location 723,
+    with codemdl:codeBlock Dn).
+Dn.o3r is a codemdl:ClassField,
+    has codemdl:varName "o3r",
+    has codemdl:reference (a codemdl:Reference
+    with codemdl:usage codemdl:Defined,
+    with codemdl:location 724,
+    with codemdl:codeBlock Dn).
+Dn.o4 is a codemdl:ClassField,
+    has codemdl:varName "o4",
+    has codemdl:reference (a codemdl:Reference
+    with codemdl:usage codemdl:Defined,
+    with codemdl:location 723,
+    with codemdl:codeBlock Dn).
+Dn.o4r is a codemdl:ClassField,
+    has codemdl:varName "o4r",
+    has codemdl:reference (a codemdl:Reference
+    with codemdl:usage codemdl:Defined,
+    with codemdl:location 724,
+    with codemdl:codeBlock Dn).
+Dn.o5 is a codemdl:ClassField,
+    has codemdl:varName "o5",
+    has codemdl:reference (a codemdl:Reference
+    with codemdl:usage codemdl:Defined,
+    with codemdl:location 723,
+    with codemdl:codeBlock Dn).
+Dn.o5r is a codemdl:ClassField,
+    has codemdl:varName "o5r",
+    has codemdl:reference (a codemdl:Reference
+    with codemdl:usage codemdl:Defined,
+    with codemdl:location 724,
+    with codemdl:codeBlock Dn).
+Dn.o6 is a codemdl:ClassField,
+    has codemdl:varName "o6",
+    has codemdl:reference (a codemdl:Reference
+    with codemdl:usage codemdl:Defined,
+    with codemdl:location 723,
+    with codemdl:codeBlock Dn).
+Dn.o6r is a codemdl:ClassField,
+    has codemdl:varName "o6r",
+    has codemdl:reference (a codemdl:Reference
+    with codemdl:usage codemdl:Defined,
+    with codemdl:location 724,
+    with codemdl:codeBlock Dn).
+Dn.o7 is a codemdl:ClassField,
+    has codemdl:varName "o7",
+    has codemdl:reference (a codemdl:Reference
+    with codemdl:usage codemdl:Defined,
+    with codemdl:location 723,
+    with codemdl:codeBlock Dn).
+Dn.o7r is a codemdl:ClassField,
+    has codemdl:varName "o7r",
+    has codemdl:reference (a codemdl:Reference
+    with codemdl:usage codemdl:Defined,
+    with codemdl:location 724,
+    with codemdl:codeBlock Dn).
+Dn.o8 is a codemdl:ClassField,
+    has codemdl:varName "o8",
+    has codemdl:reference (a codemdl:Reference
+    with codemdl:usage codemdl:Defined,
+    with codemdl:location 723,
+    with codemdl:codeBlock Dn).
+Dn.o8r is a codemdl:ClassField,
+    has codemdl:varName "o8r",
+    has codemdl:reference (a codemdl:Reference
+    with codemdl:usage codemdl:Defined,
+    with codemdl:location 724,
+    with codemdl:codeBlock Dn).
+Dn.outerparent is a codemdl:ClassField,
+    has codemdl:varName "outerparent",
+    has codemdl:reference (a codemdl:Reference
+    with codemdl:usage codemdl:Defined,
+    with codemdl:location 722,
+    with codemdl:codeBlock Dn).
+In is a codemdl:Class,
+    has codemdl:containedIn Mach.
+In.dn is a codemdl:ClassField,
+    has codemdl:varName "dn",
+    has codemdl:reference (a codemdl:Reference
+    with codemdl:usage codemdl:Defined,
+    with codemdl:location 383,
+    with codemdl:codeBlock In).
+In.insets is a codemdl:Method,
+    has codemdl:containedIn In.
+In.outerparent is a codemdl:ClassField,
+    has codemdl:varName "outerparent",
+    has codemdl:reference (a codemdl:Reference
+    with codemdl:usage codemdl:Defined,
+    with codemdl:location 380,
+    with codemdl:codeBlock In).
+In.titl is a codemdl:ClassField,
+    has codemdl:varName "titl",
+    has codemdl:reference (a codemdl:Reference
+    with codemdl:usage codemdl:Defined,
+    with codemdl:location 381,
+    with codemdl:codeBlock In).
+In.up is a codemdl:ClassField,
+    has codemdl:varName "up",
+    has codemdl:reference (a codemdl:Reference
+    with codemdl:usage codemdl:Defined,
+    with codemdl:location 382,
+    with codemdl:codeBlock In).
+In2 is a codemdl:Class,
+    has codemdl:containedIn Titl.
+In2.handleEvent is a codemdl:Method,
+    has codemdl:containedIn In2 .
+In2.lb is a codemdl:ClassField,
+    has codemdl:varName "lb",
+    has codemdl:reference (a codemdl:Reference
+    with codemdl:usage codemdl:Defined,
+    with codemdl:location 420,
+    with codemdl:codeBlock In2).
+In2.lc is a codemdl:ClassField,
+    has codemdl:varName "lc",
+    has codemdl:reference (a codemdl:Reference
+    with codemdl:usage codemdl:Defined,
+    with codemdl:location 420,
+    with codemdl:codeBlock In2).
+In2.plntch is a codemdl:ClassField,
+    has codemdl:varName "plntch",
+    has codemdl:reference (a codemdl:Reference
+    with codemdl:usage codemdl:Defined,
+    with codemdl:location 421,
+    with codemdl:codeBlock In2).
+In2.untch is a codemdl:ClassField,
+    has codemdl:varName "untch",
+    has codemdl:reference (a codemdl:Reference
+    with codemdl:usage codemdl:Defined,
+    with codemdl:location 421,
+    with codemdl:codeBlock In2).
+Mach is a codemdl:Class.
+Mach.A is a codemdl:ClassField,
+    has codemdl:varName "A",
+    has codemdl:reference (a codemdl:Reference
+    with codemdl:usage codemdl:Defined,
+    with codemdl:location 56,
+    with codemdl:codeBlock Mach).
+Mach.CAL_GAM is a codemdl:Method,
+    has codemdl:containedIn Mach.
+Mach.CAL_SOS is a codemdl:Method,
+    has codemdl:containedIn Mach.
+Mach.CAL_T is a codemdl:Method,
+    has codemdl:containedIn Mach.
+Mach.CAL_TT is a codemdl:Method,
+    has codemdl:containedIn Mach.
+Mach.CAL_TV is a codemdl:Method,
+    has codemdl:containedIn Mach.
+Mach.G is a codemdl:ClassField,
+    has codemdl:reference (a codemdl:Reference
+    with codemdl:usage codemdl:Defined,
+    with codemdl:location 184,
+    with codemdl:codeBlock Mach),
+    has codemdl:reference (a codemdl:Reference
+    with codemdl:usage codemdl:Defined,
+    with codemdl:location 148,
+    with codemdl:codeBlock Mach),
+    has codemdl:reference (a codemdl:Reference
+    with codemdl:usage codemdl:Defined,
+    with codemdl:location 113,
+    with codemdl:codeBlock Mach),
+    has codemdl:reference (a codemdl:Reference
+    with codemdl:usage codemdl:Defined,
+    with codemdl:location 108,
+    with codemdl:codeBlock Mach),
+    has codemdl:reference (a codemdl:Reference
+    with codemdl:usage codemdl:Defined,
+    with codemdl:location 104,
+    with codemdl:codeBlock Mach),
+    has codemdl:reference (a codemdl:Reference
+    with codemdl:usage codemdl:Defined,
+    with codemdl:location 98,
+    with codemdl:codeBlock Mach),
+    has codemdl:varName "G",
+    has codemdl:reference (a codemdl:Reference
+    with codemdl:usage codemdl:Defined,
+    with codemdl:location 56,
+    with codemdl:codeBlock Mach).
+Mach.GAM is a codemdl:ClassField,
+    has codemdl:varName "GAM",
+    has codemdl:reference (a codemdl:Reference
+    with codemdl:usage codemdl:Defined,
+    with codemdl:location 56,
+    with codemdl:codeBlock Mach).
+Mach.M is a codemdl:ClassField,
+    has codemdl:reference (a codemdl:Reference
+    with codemdl:usage codemdl:Defined,
+    with codemdl:location 148,
+    with codemdl:codeBlock Mach),
+    has codemdl:reference (a codemdl:Reference
+    with codemdl:usage codemdl:Defined,
+    with codemdl:location 113,
+    with codemdl:codeBlock Mach),
+    has codemdl:reference (a codemdl:Reference
+    with codemdl:usage codemdl:Defined,
+    with codemdl:location 104,
+    with codemdl:codeBlock Mach),
+    has codemdl:varName "M",
+    has codemdl:reference (a codemdl:Reference
+    with codemdl:usage codemdl:Defined,
+    with codemdl:location 56,
+    with codemdl:codeBlock Mach).
+Mach.Q is a codemdl:ClassField,
+    has codemdl:reference (a codemdl:Reference
+    with codemdl:usage codemdl:Defined,
+    with codemdl:location 184,
+    with codemdl:codeBlock Mach),
+    has codemdl:reference (a codemdl:Reference
+    with codemdl:usage codemdl:Defined,
+    with codemdl:location 148,
+    with codemdl:codeBlock Mach),
+    has codemdl:reference (a codemdl:Reference
+    with codemdl:usage codemdl:Defined,
+    with codemdl:location 113,
+    with codemdl:codeBlock Mach),
+    has codemdl:reference (a codemdl:Reference
+    with codemdl:usage codemdl:Defined,
+    with codemdl:location 108,
+    with codemdl:codeBlock Mach),
+    has codemdl:reference (a codemdl:Reference
+    with codemdl:usage codemdl:Defined,
+    with codemdl:location 98,
+    with codemdl:codeBlock Mach),
+    has codemdl:varName "Q",
+    has codemdl:reference (a codemdl:Reference
+    with codemdl:usage codemdl:Defined,
+    with codemdl:location 56,
+    with codemdl:codeBlock Mach).
+Mach.R is a codemdl:ClassField,
+    has codemdl:reference (a codemdl:Reference
+    with codemdl:usage codemdl:Defined,
+    with codemdl:location 98,
+    with codemdl:codeBlock Mach),
+    has codemdl:varName "R",
+    has codemdl:reference (a codemdl:Reference
+    with codemdl:usage codemdl:Defined,
+    with codemdl:location 56,
+    with codemdl:codeBlock Mach).
+Mach.T is a codemdl:ClassField,
+    has codemdl:reference (a codemdl:Reference
+    with codemdl:usage codemdl:Defined,
+    with codemdl:location 113,
+    with codemdl:codeBlock Mach),
+    has codemdl:reference (a codemdl:Reference
+    with codemdl:usage codemdl:Defined,
+    with codemdl:location 108,
+    with codemdl:codeBlock Mach),
+    has codemdl:reference (a codemdl:Reference
+    with codemdl:usage codemdl:Defined,
+    with codemdl:location 98,
+    with codemdl:codeBlock Mach),
+    has codemdl:varName "T",
+    has codemdl:reference (a codemdl:Reference
+    with codemdl:usage codemdl:Defined,
+    with codemdl:location 56,
+    with codemdl:codeBlock Mach).
+Mach.TQTT is a codemdl:Method,
+    has codemdl:containedIn Mach.
+Mach.TT is a codemdl:ClassField,
+    has codemdl:reference (a codemdl:Reference
+    with codemdl:usage codemdl:Defined,
+    with codemdl:location 184,
+    with codemdl:codeBlock Mach),
+    has codemdl:reference (a codemdl:Reference
+    with codemdl:usage codemdl:Defined,
+    with codemdl:location 148,
+    with codemdl:codeBlock Mach),
+    has codemdl:varName "TT",
+    has codemdl:reference (a codemdl:Reference
+    with codemdl:usage codemdl:Defined,
+    with codemdl:location 56,
+    with codemdl:codeBlock Mach).
+Mach.V is a codemdl:ClassField,
+    has codemdl:reference (a codemdl:Reference
+    with codemdl:usage codemdl:Defined,
+    with codemdl:location 184,
+    with codemdl:codeBlock Mach),
+    has codemdl:varName "V",
+    has codemdl:reference (a codemdl:Reference
+    with codemdl:usage codemdl:Defined,
+    with codemdl:location 56,
+    with codemdl:codeBlock Mach).
+Mach.a0 is a codemdl:ClassField,
+    has codemdl:reference (a codemdl:Reference
+    with codemdl:usage codemdl:Used,
+    with codemdl:location 90,
+    with codemdl:codeBlock Mach.setDefaults),
+    has codemdl:reference (a codemdl:Reference
+    with codemdl:usage codemdl:Used,
+    with codemdl:location 89,
+    with codemdl:codeBlock Mach.setDefaults),
+    has codemdl:varName "a0",
+    has codemdl:reference (a codemdl:Reference
+    with codemdl:usage codemdl:Defined,
+    with codemdl:location 55,
+    with codemdl:codeBlock Mach).
+Mach.alt is a codemdl:ClassField,
+    has codemdl:reference (a codemdl:Reference
+    with codemdl:usage codemdl:Used,
+    with codemdl:location 87,
+    with codemdl:codeBlock Mach.setDefaults),
+    has codemdl:varName "alt",
+    has codemdl:reference (a codemdl:Reference
+    with codemdl:usage codemdl:Defined,
+    with codemdl:location 54,
+    with codemdl:codeBlock Mach).
+Mach.computeMach is a codemdl:Method,
+    has codemdl:containedIn Mach.
+Mach.computeMach.GAM is a codemdl:MethodArgument,
+    has codemdl:reference (a codemdl:Reference
+    with codemdl:usage codemdl:Defined,
+    with codemdl:location 313,
+    with codemdl:codeBlock Mach.computeMach),
+    has codemdl:setterArgument true,
+    has codemdl:varName "GAM",
+    has codemdl:reference (a codemdl:Reference
+    with codemdl:usage codemdl:Defined,
+    with codemdl:location 313,
+    with codemdl:codeBlock Mach.computeMach).
+Mach.computeMach.M is a codemdl:MethodArgument,
+    has codemdl:reference (a codemdl:Reference
+    with codemdl:usage codemdl:Defined,
+    with codemdl:location 312,
+    with codemdl:codeBlock Mach.computeMach),
+    has codemdl:setterArgument true,
+    has codemdl:varName "M",
+    has codemdl:reference (a codemdl:Reference
+    with codemdl:usage codemdl:Defined,
+    with codemdl:location 312,
+    with codemdl:codeBlock Mach.computeMach).
+Mach.computeMach.gama is a codemdl:MethodArgument,
+    has codemdl:reference (a codemdl:Reference
+    with codemdl:usage codemdl:Defined,
+    with codemdl:location 311,
+    with codemdl:codeBlock Mach.computeMach),
+    has codemdl:setterArgument true,
+    has codemdl:varName "gama",
+    has codemdl:reference (a codemdl:Reference
+    with codemdl:usage codemdl:Defined,
+    with codemdl:location 311,
+    with codemdl:codeBlock Mach.computeMach).
+Mach.computeMach.mach is a codemdl:MethodArgument,
+    has codemdl:reference (a codemdl:Reference
+    with codemdl:usage codemdl:Defined,
+    with codemdl:location 310,
+    with codemdl:codeBlock Mach.computeMach),
+    has codemdl:setterArgument true,
+    has codemdl:varName "mach",
+    has codemdl:reference (a codemdl:Reference
+    with codemdl:usage codemdl:Defined,
+    with codemdl:location 310,
+    with codemdl:codeBlock Mach.computeMach).
+Mach.filter0 is a codemdl:Method,
+    has codemdl:containedIn Mach.
+Mach.filter3 is a codemdl:Method,
+    has codemdl:containedIn Mach.
+Mach.filter5 is a codemdl:Method,
+    has codemdl:containedIn Mach.
+Mach.gama is a codemdl:ClassField,
+    has codemdl:reference (a codemdl:Reference
+    with codemdl:usage codemdl:Used,
+    with codemdl:location 88,
+    with codemdl:codeBlock Mach.setDefaults),
+    has codemdl:varName "gama",
+    has codemdl:reference (a codemdl:Reference
+    with codemdl:usage codemdl:Defined,
+    with codemdl:location 54,
+    with codemdl:codeBlock Mach).
+Mach.in is a codemdl:ClassField,
+    has codemdl:reference (a codemdl:Reference
+    with codemdl:usage codemdl:Used,
+    with codemdl:location 70,
+    with codemdl:codeBlock Mach.init),
+    has codemdl:varName "in",
+    has codemdl:reference (a codemdl:Reference
+    with codemdl:usage codemdl:Defined,
+    with codemdl:location 60,
+    with codemdl:codeBlock Mach).
+Mach.init is a codemdl:Method,
+    has codemdl:containedIn Mach.
+Mach.insets is a codemdl:Method,
+    has codemdl:containedIn Mach.
+Mach.loadInpt is a codemdl:Method,
+    has codemdl:containedIn Mach.
+Mach.lrat is a codemdl:ClassField,
+    has codemdl:varName "lrat",
+    has codemdl:reference (a codemdl:Reference
+    with codemdl:usage codemdl:Defined,
+    with codemdl:location 55,
+    with codemdl:codeBlock Mach).
+Mach.lunits is a codemdl:ClassField,
+    has codemdl:varName "lunits",
+    has codemdl:reference (a codemdl:Reference
+    with codemdl:usage codemdl:Defined,
+    with codemdl:location 57,
+    with codemdl:codeBlock Mach).
+Mach.mach is a codemdl:ClassField,
+    has codemdl:varName "mach",
+    has codemdl:reference (a codemdl:Reference
+    with codemdl:usage codemdl:Defined,
+    with codemdl:location 55,
+    with codemdl:codeBlock Mach).
+Mach.mode is a codemdl:ClassField,
+    has codemdl:varName "mode",
+    has codemdl:reference (a codemdl:Reference
+    with codemdl:usage codemdl:Defined,
+    with codemdl:location 58,
+    with codemdl:codeBlock Mach).
+Mach.planet is a codemdl:ClassField,
+    has codemdl:varName "planet",
+    has codemdl:reference (a codemdl:Reference
+    with codemdl:usage codemdl:Defined,
+    with codemdl:location 57,
+    with codemdl:codeBlock Mach).
+Mach.press is a codemdl:ClassField,
+    has codemdl:varName "press",
+    has codemdl:reference (a codemdl:Reference
+    with codemdl:usage codemdl:Defined,
+    with codemdl:location 54,
+    with codemdl:codeBlock Mach).
+Mach.prs is a codemdl:ClassField,
+    has codemdl:varName "prs",
+    has codemdl:reference (a codemdl:Reference
+    with codemdl:usage codemdl:Defined,
+    with codemdl:location 57,
+    with codemdl:codeBlock Mach).
+Mach.rgas is a codemdl:ClassField,
+    has codemdl:reference (a codemdl:Reference
+    with codemdl:usage codemdl:Used,
+    with codemdl:location 88,
+    with codemdl:codeBlock Mach.setDefaults),
+    has codemdl:varName "rgas",
+    has codemdl:reference (a codemdl:Reference
+    with codemdl:usage codemdl:Defined,
+    with codemdl:location 55,
+    with codemdl:codeBlock Mach).
+Mach.rho is a codemdl:ClassField,
+    has codemdl:varName "rho",
+    has codemdl:reference (a codemdl:Reference
+    with codemdl:usage codemdl:Defined,
+    with codemdl:location 55,
+    with codemdl:codeBlock Mach).
+Mach.rho0 is a codemdl:ClassField,
+    has codemdl:varName "rho0",
+    has codemdl:reference (a codemdl:Reference
+    with codemdl:usage codemdl:Defined,
+    with codemdl:location 55,
+    with codemdl:codeBlock Mach).
+Mach.setDefaults is a codemdl:Method,
+    has codemdl:containedIn Mach.
+Mach.temp is a codemdl:ClassField,
+    has codemdl:reference (a codemdl:Reference
+    with codemdl:usage codemdl:Used,
+    with codemdl:location 91,
+    with codemdl:codeBlock Mach.setDefaults),
+    has codemdl:reference (a codemdl:Reference
+    with codemdl:usage codemdl:Used,
+    with codemdl:location 88,
+    with codemdl:codeBlock Mach.setDefaults),
+    has codemdl:varName "temp",
+    has codemdl:reference (a codemdl:Reference
+    with codemdl:usage codemdl:Defined,
+    with codemdl:location 54,
+    with codemdl:codeBlock Mach).
+Mach.ther is a codemdl:ClassField,
+    has codemdl:varName "ther",
+    has codemdl:reference (a codemdl:Reference
+    with codemdl:usage codemdl:Defined,
+    with codemdl:location 57,
+    with codemdl:codeBlock Mach).
+Mach.tparam is a codemdl:ClassField,
+    has codemdl:varName "tparam",
+    has codemdl:reference (a codemdl:Reference
+    with codemdl:usage codemdl:Defined,
+    with codemdl:location 57,
+    with codemdl:codeBlock Mach).
+Mach.ttot is a codemdl:ClassField,
+    has codemdl:varName "ttot",
+    has codemdl:reference (a codemdl:Reference
+    with codemdl:usage codemdl:Defined,
+    with codemdl:location 54,
+    with codemdl:codeBlock Mach).
+Mach.vel is a codemdl:ClassField,
+    has codemdl:reference (a codemdl:Reference
+    with codemdl:usage codemdl:Used,
+    with codemdl:location 90,
+    with codemdl:codeBlock Mach.setDefaults),
+    has codemdl:varName "vel",
+    has codemdl:reference (a codemdl:Reference
+    with codemdl:usage codemdl:Defined,
+    with codemdl:location 54,
+    with codemdl:codeBlock Mach).
+Mach.vparam is a codemdl:ClassField,
+    has codemdl:varName "vparam",
+    has codemdl:reference (a codemdl:Reference
+    with codemdl:usage codemdl:Defined,
+    with codemdl:location 57,
+    with codemdl:codeBlock Mach).
+Titl is a codemdl:Class,
+    has codemdl:containedIn In.
+Titl.in2 is a codemdl:ClassField,
+    has codemdl:varName "in2",
+    has codemdl:reference (a codemdl:Reference
+    with codemdl:usage codemdl:Defined,
+    with codemdl:location 404,
+    with codemdl:codeBlock Titl).
+Titl.la is a codemdl:ClassField,
+    has codemdl:varName "la",
+    has codemdl:reference (a codemdl:Reference
+    with codemdl:usage codemdl:Defined,
+    with codemdl:location 403,
+    with codemdl:codeBlock Titl).
+Up is a codemdl:Class,
+    has codemdl:containedIn In.
+Up.action is a codemdl:Method,
+    has codemdl:containedIn Up.
+Up.bt1 is a codemdl:ClassField,
+    has codemdl:varName "bt1",
+    has codemdl:reference (a codemdl:Reference
+    with codemdl:usage codemdl:Defined,
+    with codemdl:location 501,
+    with codemdl:codeBlock Up).
+Up.handleBut is a codemdl:Method,
+    has codemdl:containedIn Up.
+Up.handleProb is a codemdl:Method,
+    has codemdl:containedIn Up.
+Up.insets is a codemdl:Method,
+    has codemdl:containedIn Up.
+Up.l1 is a codemdl:ClassField,
+    has codemdl:varName "l1",
+    has codemdl:reference (a codemdl:Reference
+    with codemdl:usage codemdl:Defined,
+    with codemdl:location 500,
+    with codemdl:codeBlock Up).
+Up.l1u is a codemdl:ClassField,
+    has codemdl:varName "l1u",
+    has codemdl:reference (a codemdl:Reference
+    with codemdl:usage codemdl:Defined,
+    with codemdl:location 500,
+    with codemdl:codeBlock Up).
+Up.l2u is a codemdl:ClassField,
+    has codemdl:varName "l2u",
+    has codemdl:reference (a codemdl:Reference
+    with codemdl:usage codemdl:Defined,
+    with codemdl:location 500,
+    with codemdl:codeBlock Up).
+Up.la is a codemdl:ClassField,
+    has codemdl:varName "la",
+    has codemdl:reference (a codemdl:Reference
+    with codemdl:usage codemdl:Defined,
+    with codemdl:location 500,
+    with codemdl:codeBlock Up).
+Up.o1 is a codemdl:ClassField,
+    has codemdl:varName "o1",
+    has codemdl:reference (a codemdl:Reference
+    with codemdl:usage codemdl:Defined,
+    with codemdl:location 499,
+    with codemdl:codeBlock Up).
+Up.o2 is a codemdl:ClassField,
+    has codemdl:varName "o2",
+    has codemdl:reference (a codemdl:Reference
+    with codemdl:usage codemdl:Defined,
+    with codemdl:location 499,
+    with codemdl:codeBlock Up).
+Up.tch is a codemdl:ClassField,
+    has codemdl:varName "tch",
+    has codemdl:reference (a codemdl:Reference
+    with codemdl:usage codemdl:Defined,
+    with codemdl:location 502,
+    with codemdl:codeBlock Up).
+Up.vch is a codemdl:ClassField,
+    has codemdl:varName "vch",
+    has codemdl:reference (a codemdl:Reference
+    with codemdl:usage codemdl:Defined,
+    with codemdl:location 502,
+    with codemdl:codeBlock Up).

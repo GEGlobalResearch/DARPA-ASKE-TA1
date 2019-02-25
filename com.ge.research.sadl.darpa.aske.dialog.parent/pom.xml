@@ -16,7 +16,7 @@
 		<maven.compiler.source>1.8</maven.compiler.source>
 		<maven.compiler.target>1.8</maven.compiler.target>
 		<!-- Tycho settings -->
-		<tycho-version>1.2.0</tycho-version>
+		<tycho-version>1.3.0</tycho-version>
 		<!-- Define overridable properties for tycho-surefire-plugin -->
 		<platformSystemProperties></platformSystemProperties>
 		<moduleProperties></moduleProperties>
@@ -24,6 +24,7 @@
 		<tycho.testArgLine></tycho.testArgLine>
 	</properties>
 	<modules>
+		<module>com.ge.research.sadl.darpa.aske.dialog.dependencies</module>
 		<module>com.ge.research.sadl.darpa.aske.dialog</module>
 		<module>com.ge.research.sadl.darpa.aske.dialog.ide</module>
 		<module>com.ge.research.sadl.darpa.aske.dialog.ui</module>

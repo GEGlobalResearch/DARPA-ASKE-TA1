@@ -31,19 +31,28 @@ Require-Bundle: org.eclipse.xtext,
  org.apache.log4j,
  com.ge.research.sadl.xtextgenerator,
  com.ge.research.sadl.jena-wrapper-for-sadl,
- com.ge.research.sadl.errorgenerator
+ com.ge.research.sadl.errorgenerator,
+ org.eclipse.jdt;bundle-version="3.9.1",
+ org.eclipse.jdt.core;bundle-version="3.9.2",
+ com.ge.research.sadl.darpa.aske.dialog.dependencies;bundle-version="1.0.0"
 Bundle-RequiredExecutionEnvironment: JavaSE-1.8
 Export-Package: com.ge.research.sadl.darpa.aske,
+ com.ge.research.sadl.darpa.aske.curation,
  com.ge.research.sadl.darpa.aske.dialog,
  com.ge.research.sadl.darpa.aske.dialog.impl,
  com.ge.research.sadl.darpa.aske.dialog.util,
  com.ge.research.sadl.darpa.aske.generator,
+ com.ge.research.sadl.darpa.aske.inference,
  com.ge.research.sadl.darpa.aske.parser.antlr,
  com.ge.research.sadl.darpa.aske.parser.antlr.internal,
  com.ge.research.sadl.darpa.aske.parser.antlr.lexer,
  com.ge.research.sadl.darpa.aske.parser.antlr.lexer.jflex,
+ com.ge.research.sadl.darpa.aske.preferences,
  com.ge.research.sadl.darpa.aske.processing,
+ com.ge.research.sadl.darpa.aske.processing.imports,
  com.ge.research.sadl.darpa.aske.scoping,
  com.ge.research.sadl.darpa.aske.services,
  com.ge.research.sadl.darpa.aske.validation
-Import-Package: org.apache.log4j
+Import-Package: com.ge.research.sadl.jena.inference,
+ com.google.gson;version="2.7.0",
+ org.apache.log4j

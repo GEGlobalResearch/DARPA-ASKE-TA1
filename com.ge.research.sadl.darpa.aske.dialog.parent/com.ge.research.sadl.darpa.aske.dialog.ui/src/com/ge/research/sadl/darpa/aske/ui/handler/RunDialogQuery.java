@@ -4,18 +4,15 @@ import java.io.File;
 import java.nio.file.Path;
 
 import org.eclipse.core.commands.ExecutionException;
-import org.eclipse.core.resources.IFile;
 import org.eclipse.emf.common.util.URI;
 import org.eclipse.emf.ecore.resource.Resource;
 import org.eclipse.xtext.resource.XtextResource;
-import org.eclipse.xtext.ui.util.ResourceUtil;
 
 import com.ge.research.sadl.builder.IConfigurationManagerForIDE;
 import com.ge.research.sadl.model.gp.Query;
 import com.ge.research.sadl.processing.OntModelProvider;
 import com.ge.research.sadl.reasoner.ConfigurationException;
 import com.ge.research.sadl.ui.handlers.RunQuery;
-import com.ge.research.sadl.utils.ResourceManager;
 import com.google.common.base.Supplier;
 import com.google.inject.Inject;
 import com.google.inject.Provider;
@@ -25,19 +22,10 @@ public class RunDialogQuery extends RunQuery {
 	@Inject
 	protected Provider<DialogRunInferenceHandler> infHandlerProvider;
 	
-	public Object execute(Provider<DialogRunInferenceHandler> backupHandlerProvider, Resource rsrc, Query lastcmd) throws ExecutionException {
+	public Object execute(Provider<DialogRunInferenceHandler> backupHandlerProvider, Resource rsrc, Object lastcmd) throws ExecutionException {
 		URI uri = rsrc.getURI();
-		Path trgtpath;
-		if (uri.isFile()) {
-			trgtpath = new File(rsrc.getURI().toFileString()).toPath();
-		}
-		else {
-			IFile trgtfile = ResourceUtil.getFile(rsrc);
-			trgtpath = trgtfile.getLocation().toFile().toPath();
-		}
 		try {
-			URI absuri = URI.createURI(trgtpath.toUri().toString());
-			String modelFolderUri = ResourceManager.findModelFolderPath(absuri);
+			String modelFolderUri = getModelFolderFromResource(rsrc);
 //			final String format = ConfigurationManager.RDF_XML_ABBREV_FORMAT;
 //			IConfigurationManagerForIDE configMgr = ConfigurationManagerForIdeFactory.getConfigurationManagerForIDE(modelFolderUri, format);
 			final XtextResource resource = (XtextResource) rsrc;
@@ -67,7 +55,7 @@ public class RunDialogQuery extends RunQuery {
 
 		return null;
 	}
-
+	
 	@Override
 	public String getQuery(IConfigurationManagerForIDE configMgr) throws ConfigurationException {
 		return super.getQuery(configMgr);

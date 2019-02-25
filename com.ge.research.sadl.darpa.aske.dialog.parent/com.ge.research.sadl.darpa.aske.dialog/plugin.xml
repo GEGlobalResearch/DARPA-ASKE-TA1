@@ -20,4 +20,9 @@
            class="com.ge.research.sadl.darpa.aske.processing.JenaBasedDialogModelProcessor">
      </dialogProcessor>
   </extension>
+	<extension
+	      point="com.ge.research.sadl.sadl_inference_processor">
+	    <sadlInferenceProcessor
+           class="com.ge.research.sadl.darpa.aske.inference.JenaBasedDialogInferenceProcessor"/>
+	</extension>
 </plugin>

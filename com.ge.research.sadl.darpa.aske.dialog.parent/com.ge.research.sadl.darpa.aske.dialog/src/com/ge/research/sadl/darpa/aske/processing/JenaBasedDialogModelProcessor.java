@@ -19,6 +19,7 @@ import org.eclipse.emf.ecore.resource.Resource;
 import org.eclipse.emf.ecore.resource.ResourceSet;
 import org.eclipse.xtext.EcoreUtil2;
 import org.eclipse.xtext.generator.IFileSystemAccess2;
+import org.eclipse.xtext.nodemodel.util.NodeModelUtils;
 import org.eclipse.xtext.util.CancelIndicator;
 import org.eclipse.xtext.validation.CheckMode;
 import org.eclipse.xtext.validation.CheckType;
@@ -31,6 +32,7 @@ import com.ge.research.sadl.darpa.aske.dialog.ResponseStatement;
 import com.ge.research.sadl.darpa.aske.dialog.WhatIsStatement;
 import com.ge.research.sadl.darpa.aske.dialog.WhatStatement;
 import com.ge.research.sadl.darpa.aske.dialog.WhatValuesStatement;
+import com.ge.research.sadl.darpa.aske.preferences.DialogPreferences;
 import com.ge.research.sadl.errorgenerator.generator.SadlErrorMessages;
 import com.ge.research.sadl.jena.JenaBasedSadlModelProcessor;
 import com.ge.research.sadl.jena.JenaProcessorException;
@@ -40,12 +42,15 @@ import com.ge.research.sadl.model.ModelError;
 import com.ge.research.sadl.model.gp.Equation;
 import com.ge.research.sadl.model.gp.Junction;
 import com.ge.research.sadl.model.gp.NamedNode;
+import com.ge.research.sadl.model.gp.ProxyNode;
 import com.ge.research.sadl.model.gp.Query;
 import com.ge.research.sadl.model.gp.Rule;
 import com.ge.research.sadl.model.gp.TripleElement;
+import com.ge.research.sadl.preferences.SadlPreferences;
 import com.ge.research.sadl.processing.OntModelProvider;
 import com.ge.research.sadl.processing.SadlConstants;
 import com.ge.research.sadl.processing.ValidationAcceptor;
+import com.ge.research.sadl.processing.IModelProcessor.ProcessorContext;
 import com.ge.research.sadl.reasoner.ConfigurationException;
 import com.ge.research.sadl.reasoner.InvalidNameException;
 import com.ge.research.sadl.reasoner.InvalidTypeException;
@@ -66,9 +71,11 @@ import com.hp.hpl.jena.ontology.Ontology;
 import com.hp.hpl.jena.rdf.model.RDFWriter;
 
 public class JenaBasedDialogModelProcessor extends JenaBasedSadlModelProcessor {
-	public static final String LAST_DIALOG_COMMAND = "LastDialogCommand";
 	private static final Logger logger = LoggerFactory.getLogger(JenaBasedDialogModelProcessor.class);
 	private boolean modelChanged;
+	
+	private String textServiceUrl = null;
+	private String cgServiceUrl = null;
 
 	@Override
 	public void onValidate(Resource resource, ValidationAcceptor issueAcceptor, CheckMode mode, ProcessorContext context) {
@@ -76,12 +83,17 @@ public class JenaBasedDialogModelProcessor extends JenaBasedSadlModelProcessor {
 			return;
 		}
 		resetProcessor();
-		logger.debug("onValidate called for Resource '" + resource.getURI() + "'"); 
+		logger.debug("JenaBasedDialogModelProcessor.onValidate called for Resource '" + resource.getURI() + "'"); 
 		CancelIndicator cancelIndicator = context.getCancelIndicator();
 		if (resource.getContents().size() < 1) {
 			return;
 		}
 	
+		String textserviceurl = context.getPreferenceValues().getPreference(DialogPreferences.ANSWER_TEXT_SERVICE_BASE_URI);
+		String cgserviceurl = context.getPreferenceValues().getPreference(DialogPreferences.ANSWER_CG_SERVICE_BASE_URI);
+		System.out.println(textserviceurl);
+		System.out.println(cgserviceurl);
+
 		logger.debug("onValidate called for Resource '" + resource.getURI() + "'");
 		if (mode.shouldCheck(CheckType.EXPENSIVE)) {
 			// do expensive validation, i.e. those that should only be done when 'validate'
@@ -213,6 +225,14 @@ public class JenaBasedDialogModelProcessor extends JenaBasedSadlModelProcessor {
 					throw new OperationCanceledException();
 				}
 				SadlModelElement element = elitr.next();
+        		if (element instanceof EObject) {
+        			String txt = NodeModelUtils.findActualNodeFor((EObject) element).getText();
+        			if (!(txt.endsWith(".") || txt.endsWith("?"))) {
+                		System.out.println("It's NOT the real deal!");
+                		continue;
+        			}
+        		}
+				logger.debug("   Model element of type '" + element.getClass().getCanonicalName() + "' being processed.");
 				// reset state for a new model element
 				try {
 					resetProcessorState(element);
@@ -236,7 +256,7 @@ public class JenaBasedDialogModelProcessor extends JenaBasedSadlModelProcessor {
 				else {
 					// this is a response from CM
 					//	clear last command
-					OntModelProvider.clearPrivateKeyValuePair(resource, LAST_DIALOG_COMMAND);
+					OntModelProvider.clearPrivateKeyValuePair(resource, DialogConstants.LAST_DIALOG_COMMAND);
 					lastElement = null;
 				}
 			}
@@ -397,7 +417,7 @@ public class JenaBasedDialogModelProcessor extends JenaBasedSadlModelProcessor {
 			boolean isGraph = stmt.getStart().equals("Graph");
 			Query query = processQueryExpression(stmt, stmt.getExpr(), elementName, annotations, isGraph);
 			System.out.println("ModifiedAskStatement: " + query.toDescriptiveString());
-			OntModelProvider.addPrivateKeyValuePair(stmt.eResource(), LAST_DIALOG_COMMAND, query);
+			OntModelProvider.addPrivateKeyValuePair(stmt.eResource(), DialogConstants.LAST_DIALOG_COMMAND, query);
 		} catch (CircularDefinitionException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -432,19 +452,27 @@ public class JenaBasedDialogModelProcessor extends JenaBasedSadlModelProcessor {
 				if (trgtObj instanceof NamedNode) {
 					((NamedNode)trgtObj).setContext(stmt);
 				}
-				else if (trgtObj instanceof TripleElement) {
-					// TODO
-					addInfo("TripleElement not yet handled by dialog processor", whatIsTarget);
-				}
 				else if (trgtObj instanceof Junction) {
 					// TODO
 					addInfo("Junction not yet handled by dialog processor", whatIsTarget);
+				}
+				else if (trgtObj instanceof TripleElement) {
+					((TripleElement)trgtObj).setContext(stmt.getStmt());
+				}
+				else if (trgtObj instanceof Object[]) {
+					for (int i = 0; i < ((Object[])trgtObj).length; i++) {
+						Object obj = ((Object[])trgtObj)[i];
+						setGraphPatternContext(stmt, whatIsTarget, obj);
+					}
 				}
 				else {
 					// TODO
 					addInfo(trgtObj.getClass().getCanonicalName() + " not yet handled by dialog processor", whatIsTarget);
 				}
-				OntModelProvider.addPrivateKeyValuePair(stmt.eResource(), LAST_DIALOG_COMMAND, trgtObj);
+				Expression when = ((WhatIsStatement)stmt.getStmt()).getWhen();
+				Object whenObj = when != null ? processExpression(when) : null;
+				WhatIsConstruct wic = new WhatIsConstruct(trgtObj, whenObj);
+				OntModelProvider.addPrivateKeyValuePair(stmt.eResource(), DialogConstants.LAST_DIALOG_COMMAND, wic);
 			} catch (TranslationException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
@@ -471,11 +499,24 @@ public class JenaBasedDialogModelProcessor extends JenaBasedSadlModelProcessor {
 				temp[0] = article;
 				temp[1] = clsObj;
 				temp[2] = propObj;
-				OntModelProvider.addPrivateKeyValuePair(stmt.eResource(), LAST_DIALOG_COMMAND, temp);
+				OntModelProvider.addPrivateKeyValuePair(stmt.eResource(), DialogConstants.LAST_DIALOG_COMMAND, temp);
 			} catch (TranslationException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
+		}
+	}
+
+	private void setGraphPatternContext(WhatStatement stmt, EObject whatIsTarget, Object obj) {
+		if (obj instanceof TripleElement) {
+			((TripleElement)obj).setContext(stmt.getStmt());
+		}
+		else if (obj instanceof Junction) {
+			setGraphPatternContext(stmt, whatIsTarget, ((ProxyNode)((Junction)obj).getLhs()).getProxyFor());
+			setGraphPatternContext(stmt, whatIsTarget, ((ProxyNode)((Junction)obj).getRhs()).getProxyFor());;
+		}
+		else {
+			addInfo(obj.getClass().getCanonicalName() + " in array not yet handled by dialog processor", whatIsTarget);
 		}
 	}
 
@@ -499,7 +540,7 @@ public class JenaBasedDialogModelProcessor extends JenaBasedSadlModelProcessor {
 			temp[1] = clsObj;
 			temp[2] = propObj;
 			temp[3] = typObj;
-			OntModelProvider.addPrivateKeyValuePair(stmt.eResource(), LAST_DIALOG_COMMAND, temp);
+			OntModelProvider.addPrivateKeyValuePair(stmt.eResource(), DialogConstants.LAST_DIALOG_COMMAND, temp);
 		} catch (TranslationException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -529,4 +570,34 @@ public class JenaBasedDialogModelProcessor extends JenaBasedSadlModelProcessor {
 	private void setModelChanged(boolean modelChanged) {
 		this.modelChanged = modelChanged;
 	}
+
+	@Override
+	public void initializePreferences(ProcessorContext context) {
+		setTypeCheckingWarningsOnly(true);
+		String textServiceUrl = context.getPreferenceValues().getPreference(DialogPreferences.ANSWER_TEXT_SERVICE_BASE_URI);
+		if (textServiceUrl != null) {
+			setTextServiceUrl(textServiceUrl);
+		}
+		String cgServiceUrl = context.getPreferenceValues().getPreference(DialogPreferences.ANSWER_CG_SERVICE_BASE_URI);
+		if (cgServiceUrl != null) {
+			setCgServiceUrl(cgServiceUrl);
+		}
+	}
+
+	public String getTextServiceUrl() {
+		return textServiceUrl;
+	}
+
+	private void setTextServiceUrl(String textServiceUrl) {
+		this.textServiceUrl = textServiceUrl;
+	}
+
+	public String getCgServiceUrl() {
+		return cgServiceUrl;
+	}
+
+	private void setCgServiceUrl(String cgServiceUrl) {
+		this.cgServiceUrl = cgServiceUrl;
+	}
+
 }

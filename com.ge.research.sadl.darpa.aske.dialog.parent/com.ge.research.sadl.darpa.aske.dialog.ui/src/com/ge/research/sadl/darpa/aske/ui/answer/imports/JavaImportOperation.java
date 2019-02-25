@@ -13,21 +13,18 @@
  *******************************************************************************/
 package com.ge.research.sadl.darpa.aske.ui.answer.imports;
 
-import java.io.BufferedReader;
 import java.io.ByteArrayInputStream;
 import java.io.File;
-import java.io.FileReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
-import java.nio.file.Files;
-import java.nio.file.StandardCopyOption;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.HashSet;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
-import java.util.Set;
+import java.util.Map;
+import java.util.concurrent.atomic.AtomicReference;
 import java.util.zip.ZipEntry;
 
 import org.eclipse.core.filesystem.EFS;
@@ -60,17 +57,8 @@ import org.eclipse.emf.ecore.resource.impl.ResourceSetImpl;
 import org.eclipse.jdt.core.IJavaProject;
 import org.eclipse.jdt.core.JavaCore;
 import org.eclipse.jdt.core.JavaModelException;
-import org.eclipse.jdt.core.dom.AST;
-import org.eclipse.jdt.core.dom.ASTParser;
-import org.eclipse.jdt.core.dom.ASTVisitor;
-import org.eclipse.jdt.core.dom.CompilationUnit;
-import org.eclipse.jdt.core.dom.ExpressionStatement;
-import org.eclipse.jdt.core.dom.MethodDeclaration;
-import org.eclipse.jdt.core.dom.PackageDeclaration;
-import org.eclipse.jdt.core.dom.ReturnStatement;
-import org.eclipse.jdt.core.dom.SimpleName;
-import org.eclipse.jdt.core.dom.VariableDeclarationFragment;
 import org.eclipse.osgi.util.NLS;
+import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.ui.IWorkbenchPage;
 import org.eclipse.ui.IWorkbenchWindow;
@@ -84,6 +72,22 @@ import org.eclipse.ui.internal.wizards.datatransfer.DataTransferMessages;
 import org.eclipse.ui.internal.wizards.datatransfer.TarEntry;
 import org.eclipse.ui.internal.wizards.datatransfer.TarLeveledStructureProvider;
 import org.eclipse.ui.wizards.datatransfer.IImportStructureProvider;
+import org.eclipse.xtext.preferences.IPreferenceValues;
+import org.eclipse.xtext.preferences.IPreferenceValuesProvider;
+import org.eclipse.xtext.resource.XtextResource;
+
+import com.ge.research.sadl.builder.ConfigurationManagerForIDE;
+import com.ge.research.sadl.builder.ConfigurationManagerForIdeFactory;
+import com.ge.research.sadl.darpa.aske.curation.AnswerCurationManager;
+import com.ge.research.sadl.darpa.aske.dialog.ui.internal.DialogActivator;
+import com.ge.research.sadl.darpa.aske.preferences.DialogPreferences;
+import com.ge.research.sadl.darpa.aske.processing.DialogConstants;
+import com.ge.research.sadl.darpa.aske.processing.imports.AnswerExtractionProcessor;
+import com.ge.research.sadl.darpa.aske.processing.imports.IModelFromCodeExtractor;
+import com.ge.research.sadl.darpa.aske.processing.imports.JavaModelExtractor;
+import com.ge.research.sadl.reasoner.ConfigurationException;
+import com.ge.research.sadl.utils.ResourceManager;
+import com.google.inject.Injector;
 
 //import com.ge.research.sadl.processing.ISadlImportProcessor;
 //import com.ge.research.sadl.processing.SadlImportProcessorProvider;
@@ -115,7 +119,13 @@ public class JavaImportOperation extends WorkspaceModifyOperation {
     private IContainer destinationContainer;
 
     private List selectedFiles;
+    
+    private String outputFilename;
 
+    private IFile targetResource;
+    
+    private Object fileObject;
+    
     private List rejectedFiles;
 
     private IImportStructureProvider provider;
@@ -150,6 +160,7 @@ public class JavaImportOperation extends WorkspaceModifyOperation {
 	private static final String ABSOLUTE_PATH = "<Absolute Path>"; //$NON-NLS-1$
 
 	private JavaModelExtractor javaModelExtractor;
+	private IModelFromCodeExtractor javaModelExtractorjp;
 
 	/**
      * Creates a new operation that recursively imports the entire contents of the
@@ -232,9 +243,10 @@ public class JavaImportOperation extends WorkspaceModifyOperation {
      */
     public JavaImportOperation(IPath containerPath, Object source,
             IImportStructureProvider provider,
-            IOverwriteQuery overwriteImplementor, List filesToImport) {
+            IOverwriteQuery overwriteImplementor, List filesToImport, String outputFilename) {
         this(containerPath, source, provider, overwriteImplementor);
         setFilesToImport(filesToImport);
+        setOutputFilename(outputFilename);
     }
 
     /**
@@ -264,9 +276,10 @@ public class JavaImportOperation extends WorkspaceModifyOperation {
      */
     public JavaImportOperation(IPath containerPath,
             IImportStructureProvider provider,
-            IOverwriteQuery overwriteImplementor, List filesToImport) {
+            IOverwriteQuery overwriteImplementor, List filesToImport, String outputFilename) {
         this(containerPath, null, provider, overwriteImplementor);
         setFilesToImport(filesToImport);
+        setOutputFilename(outputFilename);
     }
 
     /**
@@ -462,7 +475,13 @@ public class JavaImportOperation extends WorkspaceModifyOperation {
             }
         } catch (CoreException e) {
             errorTable.add(e.getStatus());
-        } finally {
+        } catch (ConfigurationException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} finally {
             monitor.done();
         }
     }
@@ -574,12 +593,13 @@ public class JavaImportOperation extends WorkspaceModifyOperation {
      *
      * @param fileObject the file system object to be imported
      * @param policy determines how the file object is imported
+     * @throws ConfigurationException 
+     * @throws IOException 
      */
-    void importFile(Object fileObject, int policy) {
+    private AnswerCurationManager importFile(Object fileObject, int policy) throws ConfigurationException, IOException {
     	IContainer containerResource;
     	IProject prj = null;
     	try {
-    		
     		containerResource = getDestinationContainerFor(fileObject);
     		if (containerResource instanceof IProject) {
     			prj = (IProject) containerResource;
@@ -673,15 +693,43 @@ public class JavaImportOperation extends WorkspaceModifyOperation {
     		IStatus status = new Status(coreStatus.getSeverity(), coreStatus
     				.getPlugin(), coreStatus.getCode(), newMessage, null);
     		errorTable.add(status);
-    		return;
+    		return null;
     	}
 
     	String fileObjectPath = provider.getFullPath(fileObject);
     	monitor.subTask(fileObjectPath);
     	String fileObjectS = ((File)fileObject).getName();
-    	File targetFile = new File(fileObjectS.substring(0, fileObjectS.lastIndexOf(".")) + ".sadl");
+    	String outputfn = getOutputFilename();
+    	File outputFile = null;
+    	if (outputfn == null) {
+    		outputfn = fileObjectS.substring(0, fileObjectS.lastIndexOf(".")) + ".sadl";
+    	}
+
+		if (outputfn.lastIndexOf('.') > 0) {
+			int lio = ((String) outputfn).lastIndexOf('.');
+			String end = ((String) outputfn).substring(lio);
+			if (!end.equals("sadl")) {
+				outputfn += ".sadl";
+			}
+		}
+		else {
+			outputfn += ".sadl";
+		}
+		
+		if (prj != null) {
+			IPath path;
+			IResource orsrc = prj.findMember((String)outputfn);
+			if (orsrc != null) {
+				outputfn = orsrc.getRawLocation().makeAbsolute().toPortableString();
+			}
+		}
+		
+   	    setFileObject(new File((String) outputfn));
+
+    	File targetFile = new File(outputfn);
     	IFile targetResource = containerResource.getFile(new Path(provider
     			.getLabel(targetFile)));
+    	setTargetResource(targetResource);
     	monitor.worked(1);
     	
     	// ensure that the source and target are not the same
@@ -691,75 +739,58 @@ public class JavaImportOperation extends WorkspaceModifyOperation {
     			&& (targetPath.toFile().equals(new File(fileObjectPath)))) {
     		errorTable.add(new Status(IStatus.ERROR, PlatformUI.PLUGIN_ID, 0,
     				NLS.bind(DataTransferMessages.ImportOperation_targetSameAsSourceError, fileObjectPath), null));
-    		return;
+    		return null;
     	}
     	
+    	AnswerCurationManager acm = null;
     	try {
-    		IJavaProject jprj = null;
-    		if (containerResource instanceof IProject) {
-    			jprj = JavaCore.create((IProject)containerResource);
-    			if (!jprj.isOpen()) {
-    				try {
-						jprj.open(null);
-					} catch (JavaModelException e) {
-						// TODO Auto-generated catch block
-						e.printStackTrace();
-					}
-    			}
-    		}
-    		SadlModelGenerator smg = new SadlModelGenerator();
+			String modelFolderUri = ResourceManager.findModelFolderPath(targetPath.toOSString());
+			Resource resource = null;
+	    	try {
+	    		// get file path as a string
+	    		File ffop = new File(fileObjectPath);
+	    		String sfop = ffop.toURI().toString();
+	    		// get ont-policy file as a string
+	    		IProject project = targetResource.getProject();
+	    		String projectPath = URI.createFileURI(project.getLocation().toString()).toString();
+	    		String targetFileName = targetPath.toPortableString();
+	    		ResourceSet resSet = new ResourceSetImpl();
+	    		resource = resSet.createResource(URI.createFileURI(ffop.getCanonicalPath()));
+ 	    	} catch (Exception e1) {
+    			errorTable.add(new Status(IStatus.ERROR, PlatformUI.PLUGIN_ID, 0, e1.toString(), null));
+    			return null;
+	    	}
+	    	
+//    		IJavaProject jprj = null;
+//    		if (containerResource instanceof IProject) {
+//    			jprj = JavaCore.create((IProject)containerResource);
+//    			if (!jprj.isOpen()) {
+//    				try {
+//						jprj.open(null);
+//					} catch (JavaModelException e) {
+//						// TODO Auto-generated catch block
+//						e.printStackTrace();
+//					}
+//    			}
+//    		}
     		
-    		List<File> files = getJavaFilesInDir(null, (File)fileObject);
-    		for (File f : files) {
-    			String content = readFileToString(f);
-    			getJavaModelExtractor(smg).parse(jprj, content);
-    			
-    	    	String ontologyRootUri = "http://sadl.org/Temperature.sadl";	// this comes from the selection in the import Wizard
-				String newContent = smg.generateSadlModel(getJavaModelExtractor(smg), ontologyRootUri );
-    	    	try {
-    	    		// get file path as a string
-    	    		File ffop = new File(fileObjectPath);
-    	    		String sfop = ffop.toURI().toString();
-    	    		// get ont-policy file as a string
-    	    		IProject project = targetResource.getProject();
-    	    		String projectPath = URI.createFileURI(project.getLocation().toString()).toString();
-    	    		String targetFileName = targetPath.toPortableString();
-    	    		ResourceSet resSet = new ResourceSetImpl();
-    	    		Resource res = resSet.createResource(URI.createFileURI(ffop.getCanonicalPath()));
-     	    	} catch (Exception e1) {
-    	    		if (newContent == null) {
-    	    			errorTable.add(new Status(IStatus.ERROR, PlatformUI.PLUGIN_ID, 0, e1.toString(), null));
-    	    			return;
-    	    		}
-    	    	}
-
-    	    	if (newContent != null) {
-    	    		try {
-    	    			InputStream is = new ByteArrayInputStream(newContent.getBytes(StandardCharsets.UTF_8));
-    	    			if (targetResource.exists()) {
-    	    				targetResource.setContents(is,
-    	    						IResource.KEEP_HISTORY, null);
-    	    			} else {
-    	    				if (createVirtualFolder || createLinks || createLinkFilesOnly)
-    	    					targetResource.createLink(createRelativePath(
-    	    							new Path(provider
-    	    									.getFullPath(fileObject)), targetResource), 0, null);
-    	    				else
-    	    					targetResource.create(is, false, null);
-    	    			}
-    	    			setResourceAttributes(targetResource, fileObject);
-
-    	    			if (provider instanceof TarLeveledStructureProvider) {
-    	    				try {
-    	    					targetResource.setResourceAttributes(((TarLeveledStructureProvider) provider).getResourceAttributes(fileObject));
-    	    				} catch (CoreException e) {
-    	    					errorTable.add(e.getStatus());
-    	    				}
-    	    			}
-    	    		} catch (CoreException e) {
-    	    			errorTable.add(e.getStatus());
-    	    		}
-    	    	}
+    		Map<String, String> preferences = getPreferences(targetResource);
+    		ConfigurationManagerForIDE configMgr = ConfigurationManagerForIdeFactory.getConfigurationManagerForIDE(modelFolderUri, null);
+    		acm = (AnswerCurationManager) configMgr.getPrivateKeyValuePair(DialogConstants.ANSWER_CURATION_MANAGER);
+    		if (acm == null) {
+    			acm = new AnswerCurationManager(modelFolderUri, configMgr, preferences);
+    			configMgr.addPrivateKeyValuePair(DialogConstants.ANSWER_CURATION_MANAGER, acm);
+    		}
+    		
+    		List<File> txtFiles = getTextFilesInDir(null, (File)fileObject);
+    		
+    		if (txtFiles != null && txtFiles.size() > 0) {
+    			acm.getExtractionProcessor().getTextProcessor().addFiles(txtFiles);
+    		}
+    		
+    		List<File> javaFiles = getJavaFilesInDir(null, (File)fileObject);
+    		if (javaFiles != null && javaFiles.size() > 0) {
+    			acm.getExtractionProcessor().getCodeExtractor(AnswerExtractionProcessor.CodeLanguage.JAVA).addCodeFiles(javaFiles);
     		}
     	} catch (IOException e2) {
     		// TODO Auto-generated catch block
@@ -767,16 +798,47 @@ public class JavaImportOperation extends WorkspaceModifyOperation {
     	}
 
     	if (rejectedFiles.contains(targetResource.getFullPath())) {
-    		return;
+    		return null;
     	}
+		return acm;
     }
+    
+    void importFiles(AnswerCurationManager acm) throws ConfigurationException, IOException {
 
-	private JavaModelExtractor getJavaModelExtractor(SadlModelGenerator smg) {
-		if (javaModelExtractor == null) {
-			javaModelExtractor = new JavaModelExtractor(smg);
-		}
-		return javaModelExtractor;
-	}
+		
+		acm.processImports(getOutputFilename());
+//		
+		String newContent = acm.getExtractionProcessor().getGeneratedSadlContent();
+		
+    	if (newContent != null) {
+    		try {
+    			InputStream is = new ByteArrayInputStream(newContent.getBytes(StandardCharsets.UTF_8));
+    			if (getTargetResource().exists()) {
+    				getTargetResource().setContents(is,
+    						IResource.KEEP_HISTORY, null);
+    			} else {
+    				if (createVirtualFolder || createLinks || createLinkFilesOnly)
+    					getTargetResource().createLink(createRelativePath(
+    							new Path(provider
+    									.getFullPath(getFileObject())), getTargetResource()), 0, null);
+    				else
+    					getTargetResource().create(is, false, null);
+    			}
+    			setResourceAttributes(getTargetResource(), getFileObject());
+
+    			if (provider instanceof TarLeveledStructureProvider) {
+    				try {
+    					getTargetResource().setResourceAttributes(((TarLeveledStructureProvider) provider).getResourceAttributes(getFileObject()));
+    				} catch (CoreException e) {
+    					errorTable.add(e.getStatus());
+    				}
+    			}
+    		} catch (CoreException e) {
+    			errorTable.add(e.getStatus());
+    		}
+    	}
+
+    }
 
 	// get file list
 	public List<File> getJavaFilesInDir(List<File> files, File file) throws IOException{
@@ -804,25 +866,31 @@ public class JavaImportOperation extends WorkspaceModifyOperation {
 		return files;
 	} 
 	
-	//read file content into a string
-	public String readFileToString(File file) throws IOException {
-		StringBuilder fileData = new StringBuilder(1000);
-		BufferedReader reader = new BufferedReader(new FileReader(file));
- 
-		char[] buf = new char[10];
-		int numRead = 0;
-		while ((numRead = reader.read(buf)) != -1) {
-			System.out.println(numRead);
-			String readData = String.valueOf(buf, 0, numRead);
-			fileData.append(readData);
-			buf = new char[1024];
+	private List<File> getTextFilesInDir(List<File> files, File file) {
+		if (files == null) {
+			files = new ArrayList<File>();
+		}
+		if (file.isFile()) {
+			if (!file.getName().endsWith(".java")) {
+				files.add(file);
+			}
+		}
+		else if (file.isDirectory()) {
+			File[] contents = file.listFiles();
+			for (File f : contents) {
+				files = getTextFilesInDir(files, f);
+			}
 		}
  
-		reader.close();
- 
-		return  fileData.toString();	
+//		 for (File f : files ) {
+//			 filePath = f.getAbsolutePath();
+//			 if(f.isFile()){
+//				 parse(readFileToString(filePath));
+//			 }
+//		 }
+		return files;
 	}
-	
+
 	/**
      * Reuse the file attributes set in the import.
      * @param targetResource
@@ -868,9 +936,12 @@ public class JavaImportOperation extends WorkspaceModifyOperation {
      * @param filesToImport the list of file system objects to import
      *   (element type: <code>Object</code>)
 	 * @throws CoreException 
+	 * @throws ConfigurationException 
+	 * @throws IOException 
      * @exception OperationCanceledException if canceled
      */
-    void importFileSystemObjects(List filesToImport) throws CoreException {
+    void importFileSystemObjects(List filesToImport) throws CoreException, ConfigurationException, IOException {
+    	AnswerCurationManager acm = null;
         Iterator filesEnum = filesToImport.iterator();
         while (filesEnum.hasNext()) {
             Object fileSystemObject = filesEnum.next();
@@ -889,8 +960,12 @@ public class JavaImportOperation extends WorkspaceModifyOperation {
                 }
                 source = sourcePath.toFile();
             }
-            importRecursivelyFrom(fileSystemObject, POLICY_DEFAULT);
+            AnswerCurationManager localAcm = importRecursivelyFrom(fileSystemObject, POLICY_DEFAULT);
+            if (acm == null) {
+            	acm = localAcm;
+            }
         }
+        importFiles(acm);
     }
 
     /**
@@ -990,26 +1065,33 @@ public class JavaImportOperation extends WorkspaceModifyOperation {
      * @param fileSystemObject the file system object to be imported
      * @param policy determines how the file system object and children are imported
 	 * @throws CoreException 
+	 * @throws ConfigurationException 
+	 * @throws IOException 
      * @exception OperationCanceledException if canceled
      */
-    void importRecursivelyFrom(Object fileSystemObject, int policy) throws CoreException {
+    private AnswerCurationManager importRecursivelyFrom(Object fileSystemObject, int policy) throws CoreException, ConfigurationException, IOException {
         if (monitor.isCanceled()) {
 			throw new OperationCanceledException();
 		}
 
         if (!provider.isFolder(fileSystemObject)) {
-            importFile(fileSystemObject, policy);
-            return;
+            return importFile(fileSystemObject, policy);
         }
 
         int childPolicy = importFolder(fileSystemObject, policy);
         if (childPolicy != POLICY_SKIP_CHILDREN) {
             Iterator children = provider.getChildren(fileSystemObject)
                     .iterator();
+            AnswerCurationManager acm = null;
             while (children.hasNext()) {
-				importRecursivelyFrom(children.next(), childPolicy);
+				AnswerCurationManager localAcm = importRecursivelyFrom(children.next(), childPolicy);
+				if (acm == null) {
+					acm = localAcm;
+				}
 			}
+            return acm;
         }
+        return null;
     }
 
     /**
@@ -1195,4 +1277,66 @@ public class JavaImportOperation extends WorkspaceModifyOperation {
     public void setRelativeVariable(String variable) {
         relativeVariable = variable;
     }
+
+	protected Map<String, String> getPreferences(IFile file) {
+		final URI uri = URI.createPlatformResourceURI(file.getFullPath().toString(), true);
+		return getPreferences(uri);
+	}
+	
+	protected Map<String, String> getPreferences(URI uri) {
+		Injector reqInjector = safeGetInjector(DialogActivator.COM_GE_RESEARCH_SADL_DARPA_ASKE_DIALOG);
+		IPreferenceValuesProvider pvp = reqInjector.getInstance(IPreferenceValuesProvider.class);
+		IPreferenceValues preferenceValues = pvp.getPreferenceValues(new XtextResource(uri));
+		if (preferenceValues != null) {
+			Map<String, String> map = new HashMap<String, String>();
+			String tsburl = preferenceValues.getPreference(DialogPreferences.ANSWER_TEXT_SERVICE_BASE_URI);
+			if (tsburl != null) {
+				map.put(DialogPreferences.ANSWER_TEXT_SERVICE_BASE_URI.getId(), tsburl);
+			}
+			String cgsburl = preferenceValues.getPreference(DialogPreferences.ANSWER_CG_SERVICE_BASE_URI);
+			if (cgsburl != null) {
+				map.put(DialogPreferences.ANSWER_CG_SERVICE_BASE_URI.getId(), cgsburl);
+			}
+//			preferenceValues.getPreference(DialogPreferences.)
+			return map;
+		}
+		return null;
+	}
+
+	protected final Injector safeGetInjector(String name){
+		final AtomicReference<Injector> i = new AtomicReference<Injector>();
+		Display.getDefault().syncExec(new Runnable(){
+			@Override
+			public void run() {
+				i.set(DialogActivator.getInstance().getInjector(name));
+			}
+		});
+		
+		return i.get();
+	}
+
+	private String getOutputFilename() {
+		return outputFilename;
+	}
+
+	private void setOutputFilename(String fn) {
+		this.outputFilename = fn;
+	}
+
+	private IFile getTargetResource() {
+		return targetResource;
+	}
+
+	private void setTargetResource(IFile targetResource) {
+		this.targetResource = targetResource;
+	}
+
+	private Object getFileObject() {
+		return fileObject;
+	}
+
+	private void setFileObject(Object fileObject) {
+		this.fileObject = fileObject;
+	}
+
 }
