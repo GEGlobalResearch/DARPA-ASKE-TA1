@@ -1,8 +1,11 @@
 package com.ge.research.sadl.darpa.aske.inference.builtin;
 
+import java.util.Properties;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.ge.research.sadl.darpa.aske.processing.DialogConstants;
 import com.hp.hpl.jena.graph.Node;
 import com.hp.hpl.jena.reasoner.rulesys.BuiltinException;
 import com.hp.hpl.jena.reasoner.rulesys.RuleContext;
@@ -35,6 +38,12 @@ public class Cg extends BaseBuiltin  {
     	// subsequent arguments are the inputs to the model
     	
     	// need URL of service
+    	Properties prop = new Properties();
+    	String serviceUrl = prop.getProperty(DialogConstants.CG_SERVICE_BASE_URL);
+    	if (serviceUrl != null) {
+    		serviceUrl += "/eval";
+    	}
+    	
     	System.out.println("cg called with args:");
     	for (Node n : args) {
     		System.out.println("  arg: " + n.toString());
