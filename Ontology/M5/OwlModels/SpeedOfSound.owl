@@ -1,0 +1,100 @@
+<rdf:RDF
+    xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+    xmlns:sadlbasemodel="http://sadl.org/sadlbasemodel"
+    xmlns:sos="http://sadl.org/SpeedOfSound.sadl#"
+    xmlns:owl="http://www.w3.org/2002/07/owl#"
+    xmlns:sadlimplicitmodel="http://sadl.org/sadlimplicitmodel"
+    xmlns:builtinfunctions="http://sadl.org/builtinfunctions"
+    xmlns:j.0="http://sadl.org/sadlimplicitmodel#"
+    xmlns:rdfs="http://www.w3.org/2000/01/rdf-schema#"
+    xmlns:scicncpts2="http://sadl.org/ScientificConcepts2.sadl"
+    xmlns:xsd="http://www.w3.org/2001/XMLSchema#"
+  xml:base="http://sadl.org/SpeedOfSound.sadl">
+  <owl:Ontology rdf:about="">
+    <owl:imports rdf:resource="ScientificConcepts2.sadl"/>
+    <owl:imports rdf:resource="builtinfunctions"/>
+    <owl:imports rdf:resource="sadlimplicitmodel"/>
+    <owl:imports rdf:resource="sadlbasemodel"/>
+    <rdfs:comment xml:lang="en">This ontology was created from a SADL file 'SpeedOfSound.sadl' and should not be directly edited.</rdfs:comment>
+  </owl:Ontology>
+  <rdfs:Datatype rdf:ID="primitiveData">
+    <owl:equivalentClass>
+      <rdfs:Datatype>
+        <owl:unionOf rdf:parseType="Collection">
+          <rdf:Description rdf:about="http://www.w3.org/2001/XMLSchema#decimal"/>
+          <rdf:Description rdf:about="http://www.w3.org/2001/XMLSchema#boolean"/>
+          <rdf:Description rdf:about="http://www.w3.org/2001/XMLSchema#string"/>
+        </owl:unionOf>
+      </rdfs:Datatype>
+    </owl:equivalentClass>
+  </rdfs:Datatype>
+  <owl:Class rdf:ID="Gas">
+    <rdfs:subClassOf rdf:resource="ScientificConcepts2.sadl#PhysicalObject"/>
+  </owl:Class>
+  <owl:Class rdf:ID="Air">
+    <rdfs:subClassOf rdf:resource="#Gas"/>
+  </owl:Class>
+  <owl:ObjectProperty rdf:ID="speedOfSound">
+    <rdfs:range rdf:resource="ScientificConcepts2.sadl#Velocity"/>
+    <rdfs:domain rdf:resource="#Gas"/>
+  </owl:ObjectProperty>
+  <owl:ObjectProperty rdf:ID="altitude">
+    <rdfs:range rdf:resource="ScientificConcepts2.sadl#Length"/>
+    <rdfs:domain rdf:resource="#Air"/>
+  </owl:ObjectProperty>
+  <j.0:Rule rdf:ID="SpeedOfSoundInAirGivenTemperatureK"/>
+  <j.0:ExternalEquation rdf:ID="sosfromalt">
+    <j.0:externalURI rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >http://com.ge.research.darpa.aske.kchain.sosairfromalt</j.0:externalURI>
+    <j.0:returnTypes rdf:parseType="Resource">
+      <rdf:rest rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#nil"/>
+      <rdf:first>http://www.w3.org/2001/XMLSchema#decimal</rdf:first>
+    </j.0:returnTypes>
+    <j.0:arguments rdf:parseType="Collection">
+      <j.0:Argument>
+        <j.0:argType>http://www.w3.org/2001/XMLSchema#decimal</j.0:argType>
+        <j.0:argName>alt</j.0:argName>
+      </j.0:Argument>
+    </j.0:arguments>
+    <j.0:expression rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >decimal sosfromalt(decimal alt): uri("http://com.ge.research.darpa.aske.kchain.sosairfromalt")</j.0:expression>
+  </j.0:ExternalEquation>
+  <j.0:ExternalEquation rdf:ID="cg">
+    <j.0:externalURI rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >http://com.ge.research.darpa.aske.sos</j.0:externalURI>
+    <j.0:returnTypes rdf:parseType="Resource">
+      <rdf:rest rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#nil"/>
+      <rdf:first>http://www.w3.org/2001/XMLSchema#decimal</rdf:first>
+    </j.0:returnTypes>
+    <j.0:arguments rdf:parseType="Collection">
+      <j.0:Argument>
+        <j.0:argType>http://sadl.org/sadlimplicitmodel#ExternalEquation</j.0:argType>
+        <j.0:argName>eq</j.0:argName>
+      </j.0:Argument>
+      <j.0:Argument>
+        <j.0:argType>http://sadl.org/SpeedOfSound.sadl#primitiveData</j.0:argType>
+        <j.0:argName>arg</j.0:argName>
+      </j.0:Argument>
+    </j.0:arguments>
+    <j.0:expression rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >decimal cg(ExternalEquation eq,primitiveData arg): uri("http://com.ge.research.darpa.aske.sos")</j.0:expression>
+  </j.0:ExternalEquation>
+  <j.0:Rule rdf:ID="SpeedOfSoundInAirGivenAltitude"/>
+  <j.0:Rule rdf:ID="SpeedOfSoundInAirGivenTemperatureR"/>
+  <j.0:ExternalEquation rdf:ID="sosfromtemp">
+    <j.0:externalURI rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >http://com.ge.research.darpa.aske.kchain.sosairfromtemp</j.0:externalURI>
+    <j.0:returnTypes rdf:parseType="Resource">
+      <rdf:rest rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#nil"/>
+      <rdf:first>http://www.w3.org/2001/XMLSchema#decimal</rdf:first>
+    </j.0:returnTypes>
+    <j.0:arguments rdf:parseType="Collection">
+      <j.0:Argument>
+        <j.0:argType>http://www.w3.org/2001/XMLSchema#decimal</j.0:argType>
+        <j.0:argName>t</j.0:argName>
+      </j.0:Argument>
+    </j.0:arguments>
+    <j.0:expression rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >decimal sosfromtemp(decimal t): uri("http://com.ge.research.darpa.aske.kchain.sosairfromtemp")</j.0:expression>
+  </j.0:ExternalEquation>
+</rdf:RDF>
