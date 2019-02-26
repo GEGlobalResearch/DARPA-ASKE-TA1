@@ -318,12 +318,15 @@ public class JenaBasedDialogInferenceProcessor extends JenaBasedSadlInferencePro
 			RDFNode s = soln.get("?Eq") ; 
 			RDFNode p = soln.get("?DBN") ;
 			RDFNode o = soln.get("?Out") ;
-			sgIns = createIndividualOfClass(METAMODEL_SUBGRAPH);
+			//sgIns = createIndividualOfClass(METAMODEL_SUBGRAPH);
+			sgIns = getTheJenaModel().createIndividual("http://aske.ge.com/testdiag#sg1",getTheJenaModel().getOntClass(METAMODEL_SUBGRAPH));
 			getTheJenaModel().add(cgIns, subgraphprop, sgIns); 
-			dbnIns = createIndividualOfClass(p.toString());
+			//dbnIns = createIndividualOfClass(p.toString());
+			dbnIns = getTheJenaModel().createIndividual("http://aske.ge.com/testdiag#dbn1",getTheJenaModel().getOntClass(p.toString()));
 			getTheJenaModel().add(sgIns, cgraphprop, dbnIns); 
 			getTheJenaModel().add(dbnIns, hasEqnProp, s); //the equation is already an instance
-			outpIns = createIndividualOfClass(o.toString());
+			//outpIns = createIndividualOfClass(o.toString());
+			outpIns = getTheJenaModel().createIndividual("http://aske.ge.com/testdiag#dbn1",getTheJenaModel().getOntClass(o.toString()));
 			getTheJenaModel().add(sgIns, outputprop, outpIns);
 		}
 		

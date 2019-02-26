@@ -37,7 +37,6 @@ target/
 *.genmodel
 
 .classpath
-.project
 .settings
 .gitignore
 \#*\#
