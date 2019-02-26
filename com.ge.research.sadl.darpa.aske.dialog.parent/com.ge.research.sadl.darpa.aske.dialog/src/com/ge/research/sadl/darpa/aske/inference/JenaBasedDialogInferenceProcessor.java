@@ -1,23 +1,31 @@
 package com.ge.research.sadl.darpa.aske.inference;
 
+import java.io.IOException;
+import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.List;
 
 import org.eclipse.emf.ecore.resource.Resource;
 
 import com.ge.research.sadl.jena.JenaBasedSadlInferenceProcessor;
+import com.ge.research.sadl.jena.UtilsForJena;
 import com.ge.research.sadl.model.gp.Literal;
 import com.ge.research.sadl.model.gp.NamedNode;
 import com.ge.research.sadl.model.gp.Node;
 import com.ge.research.sadl.model.gp.TripleElement;
 import com.ge.research.sadl.processing.OntModelProvider;
 import com.ge.research.sadl.processing.SadlInferenceException;
+import com.ge.research.sadl.reasoner.ConfigurationException;
 import com.ge.research.sadl.reasoner.TranslationException;
 import com.ge.research.sadl.reasoner.utils.SadlUtils;
+import com.ge.research.sadl.utils.ResourceManager;
 import com.hp.hpl.jena.ontology.Individual;
 import com.hp.hpl.jena.ontology.OntClass;
+import com.hp.hpl.jena.ontology.OntModel;
+import com.hp.hpl.jena.ontology.OntModelSpec;
 import com.hp.hpl.jena.ontology.OntProperty;
 import com.hp.hpl.jena.ontology.OntResource;
+import com.hp.hpl.jena.rdf.model.ModelFactory;
 import com.hp.hpl.jena.rdf.model.Property;
 import com.hp.hpl.jena.rdf.model.RDFNode;
 import com.hp.hpl.jena.query.*;
@@ -129,6 +137,17 @@ public class JenaBasedDialogInferenceProcessor extends JenaBasedSadlInferencePro
 	
 	@Override
 	public Object[] insertTriplesAndQuery(Resource resource, TripleElement[] triples) throws SadlInferenceException {
+		String queryHistoryKey = "QueryHistory";
+		Object qhModelObj = OntModelProvider.getPrivateKeyValuePair(resource, queryHistoryKey);
+		OntModel qhmodel;
+		if (qhModelObj == null) {
+			qhmodel = ModelFactory.createOntologyModel(OntModelSpec.OWL_MEM);
+			OntModelProvider.addPrivateKeyValuePair(resource, queryHistoryKey, qhmodel);
+		}
+		else {
+			qhmodel = (OntModel) qhModelObj;
+		}
+		
 		setCurrentResource(resource);
 		setModelFolderPath(getModelFolderPath(resource));
 		setModelName(OntModelProvider.getModelName(resource));
@@ -331,8 +350,25 @@ public class JenaBasedDialogInferenceProcessor extends JenaBasedSadlInferencePro
 		}
 		
 		getTheJenaModel().write(System.out);
+		
+		String qhModelName = null;
+		String qhOwlFileName = null;
+		String qhGlobalPrefix = null;
+		try {
+			getConfigMgr(null).saveOwlFile(qhmodel, qhModelName, qhOwlFileName);
+			getConfigMgr(null).addMapping((new UtilsForJena()).fileNameToFileUrl(qhOwlFileName), qhModelName, qhGlobalPrefix, false, "DialogInference");
+		} catch (ConfigurationException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (URISyntaxException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 
-		OntModelProvider.attach(resource, getTheJenaModel(), OntModelProvider.getModelName(resource),OntModelProvider.getModelPrefix(resource));
+//		OntModelProvider.attach(resource, getTheJenaModel(), OntModelProvider.getModelName(resource),OntModelProvider.getModelPrefix(resource));
 		
 		//OntModelProvider.
 		

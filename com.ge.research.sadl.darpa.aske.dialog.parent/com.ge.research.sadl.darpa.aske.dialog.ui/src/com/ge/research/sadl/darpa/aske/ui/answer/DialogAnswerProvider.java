@@ -195,8 +195,10 @@ public class DialogAnswerProvider extends DefaultAutoEditStrategyProvider {
 				                		StringBuilder answer = new StringBuilder("CM: ");
 				                		ResultSet[] rss = insertTriplesAndQuery(resource, triples);
 				                		answer.append("\"");
-				                		for (ResultSet rs : rss) {
-				                			answer.append(rs.toString() + "\n");
+				                		if (rss != null) {
+					                		for (ResultSet rs : rss) {
+					                			answer.append(rs.toString() + "\n");
+					                		}
 				                		}
 				                		answer.append("\"");
 		                			}
