@@ -30,6 +30,15 @@
       </owl:Restriction>
     </rdfs:subClassOf>
   </owl:Class>
+<<<<<<< HEAD
+=======
+  <owl:Class rdf:ID="UnittedQuantity">
+    <rdfs:subClassOf>
+      <owl:Class rdf:ID="ScientificConcept"/>
+    </rdfs:subClassOf>
+  </owl:Class>
+  <owl:Class rdf:ID="Event"/>
+>>>>>>> 43ab5af0593db4cfba034461a7c3a0abd1609148
   <owl:Class rdf:nodeID="A0">
     <rdfs:subClassOf>
       <owl:Restriction>
@@ -45,12 +54,15 @@
     </rdfs:subClassOf>
     <rdfs:subClassOf rdf:resource="sadllistmodel#List"/>
   </owl:Class>
+<<<<<<< HEAD
   <owl:Class rdf:ID="UnittedQuantity">
     <rdfs:subClassOf>
       <owl:Class rdf:ID="ScientificConcept"/>
     </rdfs:subClassOf>
   </owl:Class>
   <owl:Class rdf:ID="Event"/>
+=======
+>>>>>>> 43ab5af0593db4cfba034461a7c3a0abd1609148
   <owl:Class rdf:ID="Equation">
     <rdfs:subClassOf>
       <owl:Restriction>
@@ -93,6 +105,24 @@
     <rdfs:subClassOf rdf:resource="#Equation"/>
   </owl:Class>
   <owl:Class rdf:ID="Rule"/>
+<<<<<<< HEAD
+=======
+  <owl:Class rdf:nodeID="A1">
+    <rdfs:subClassOf>
+      <owl:Restriction>
+        <owl:allValuesFrom rdf:nodeID="A1"/>
+        <owl:onProperty rdf:resource="sadllistmodel#rest"/>
+      </owl:Restriction>
+    </rdfs:subClassOf>
+    <rdfs:subClassOf>
+      <owl:Restriction>
+        <owl:allValuesFrom rdf:resource="http://www.w3.org/2001/XMLSchema#anyURI"/>
+        <owl:onProperty rdf:resource="sadllistmodel#first"/>
+      </owl:Restriction>
+    </rdfs:subClassOf>
+    <rdfs:subClassOf rdf:resource="sadllistmodel#List"/>
+  </owl:Class>
+>>>>>>> 43ab5af0593db4cfba034461a7c3a0abd1609148
   <owl:Class rdf:ID="NamedQuery"/>
   <owl:Class rdf:nodeID="A1">
     <rdfs:subClassOf>

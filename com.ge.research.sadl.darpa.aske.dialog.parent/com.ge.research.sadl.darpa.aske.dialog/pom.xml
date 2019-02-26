@@ -147,7 +147,7 @@
 					<version>1.0.0</version>
 					<configuration>
 						<lifecycleMappingMetadata>
-								<pluginExecution>
+								<!-- pluginExecution>
 									<pluginExecutionFilter>
 										<groupId>
 											eu.somatik.serviceloader-maven-plugin
@@ -165,7 +165,7 @@
 									<action>
 										<ignore></ignore>
 									</action>
-								</pluginExecution>
+								</pluginExecution-->
 							<pluginExecutions>
 								<pluginExecution>
 									<pluginExecutionFilter>
