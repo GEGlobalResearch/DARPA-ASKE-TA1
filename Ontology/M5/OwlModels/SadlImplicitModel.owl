@@ -30,6 +30,12 @@
       </owl:Restriction>
     </rdfs:subClassOf>
   </owl:Class>
+  <owl:Class rdf:ID="UnittedQuantity">
+    <rdfs:subClassOf>
+      <owl:Class rdf:ID="ScientificConcept"/>
+    </rdfs:subClassOf>
+  </owl:Class>
+  <owl:Class rdf:ID="Event"/>
   <owl:Class rdf:nodeID="A0">
     <rdfs:subClassOf>
       <owl:Restriction>
@@ -39,18 +45,12 @@
     </rdfs:subClassOf>
     <rdfs:subClassOf>
       <owl:Restriction>
-        <owl:allValuesFrom rdf:resource="#Argument"/>
+        <owl:allValuesFrom rdf:resource="http://www.w3.org/2001/XMLSchema#anyURI"/>
         <owl:onProperty rdf:resource="sadllistmodel#first"/>
       </owl:Restriction>
     </rdfs:subClassOf>
     <rdfs:subClassOf rdf:resource="sadllistmodel#List"/>
   </owl:Class>
-  <owl:Class rdf:ID="UnittedQuantity">
-    <rdfs:subClassOf>
-      <owl:Class rdf:ID="ScientificConcept"/>
-    </rdfs:subClassOf>
-  </owl:Class>
-  <owl:Class rdf:ID="Event"/>
   <owl:Class rdf:ID="Equation">
     <rdfs:subClassOf>
       <owl:Restriction>
@@ -92,8 +92,6 @@
     </rdfs:subClassOf>
     <rdfs:subClassOf rdf:resource="#Equation"/>
   </owl:Class>
-  <owl:Class rdf:ID="Rule"/>
-  <owl:Class rdf:ID="NamedQuery"/>
   <owl:Class rdf:nodeID="A1">
     <rdfs:subClassOf>
       <owl:Restriction>
@@ -103,18 +101,20 @@
     </rdfs:subClassOf>
     <rdfs:subClassOf>
       <owl:Restriction>
-        <owl:allValuesFrom rdf:resource="http://www.w3.org/2001/XMLSchema#anyURI"/>
+        <owl:allValuesFrom rdf:resource="#Argument"/>
         <owl:onProperty rdf:resource="sadllistmodel#first"/>
       </owl:Restriction>
     </rdfs:subClassOf>
     <rdfs:subClassOf rdf:resource="sadllistmodel#List"/>
   </owl:Class>
+  <owl:Class rdf:ID="Rule"/>
+  <owl:Class rdf:ID="NamedQuery"/>
   <owl:ObjectProperty rdf:about="#arguments">
-    <rdfs:range rdf:nodeID="A0"/>
+    <rdfs:range rdf:nodeID="A1"/>
     <rdfs:domain rdf:resource="#Equation"/>
   </owl:ObjectProperty>
   <owl:ObjectProperty rdf:about="#returnTypes">
-    <rdfs:range rdf:nodeID="A1"/>
+    <rdfs:range rdf:nodeID="A0"/>
     <rdfs:domain rdf:resource="#Equation"/>
   </owl:ObjectProperty>
   <owl:DatatypeProperty rdf:ID="value">
