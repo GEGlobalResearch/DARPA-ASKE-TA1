@@ -203,7 +203,7 @@ public class JenaBasedDialogInferenceProcessor extends JenaBasedSadlInferencePro
 		// Query instance
 		//OntClass cgquery = getTheJenaModel().getOntClass(METAMODEL_QUERY_CLASS);
 		//Individual cgq = getTheJenaModel().createIndividual(cgquery);
-		Individual cgq = createIndividualOfClass(METAMODEL_QUERY_CLASS);
+		Individual cgq = createIndividualOfClass(qhmodel,METAMODEL_QUERY_CLASS);
 		// This is how to add properties to the individual
 		//i.addProperty(RDFS.comment, "something");
 	    //i.addRDFType(OWL2.NamedIndividual);
@@ -218,7 +218,7 @@ public class JenaBasedDialogInferenceProcessor extends JenaBasedSadlInferencePro
 				//if (itr.getSubject().equals(commonSubject)) {
 				//NamedNode subj = (NamedNode) getTheJenaModel().getOntClass(itr.getSubject().getURI());
 				suri = itr.getSubject().getURI();
-				sinst = createIndividualOfClass(suri);
+				sinst = createIndividualOfClass(qhmodel,suri);
 				//getTheJenaModel().write(System.out);
 				
 				Property pred = getTheJenaModel().getProperty(itr.getPredicate().getURI());
@@ -244,10 +244,10 @@ public class JenaBasedDialogInferenceProcessor extends JenaBasedSadlInferencePro
 				sclass = getTheJenaModel().getOntClass(suri);
 				inputsList.add(sclass);
 
-				getTheJenaModel().add(sinst, pred, val);
+				qhmodel.add(sinst, pred, val);
 				// create triple: cgq, mm:input, sinst
 				OntProperty inputprop = getTheJenaModel().getOntProperty(METAMODEL_INPUT_PROP);
-				getTheJenaModel().add(cgq, inputprop, sinst);
+				qhmodel.add(cgq, inputprop, sinst);
 			
 			}
 		}
@@ -260,7 +260,7 @@ public class JenaBasedDialogInferenceProcessor extends JenaBasedSadlInferencePro
 				TripleElement itr = queryPatterns.get(i);
 
 				suri = itr.getSubject().getURI();
-				sinst = createIndividualOfClass(suri);
+				sinst = createIndividualOfClass(qhmodel,suri);
 
 //				Property pred = getTheJenaModel().getProperty(itr.getPredicate().getURI());
 //				Node objNode = itr.getObject();
@@ -269,7 +269,8 @@ public class JenaBasedDialogInferenceProcessor extends JenaBasedSadlInferencePro
 				outputsList.add(sclass);
 
 				OntProperty outputprop = getTheJenaModel().getOntProperty(METAMODEL_OUTPUT_PROP);
-				getTheJenaModel().add(cgq, outputprop, sinst);
+				//getTheJenaModel().add(cgq, outputprop, sinst);
+				qhmodel.add(cgq, outputprop, sinst);
 			}
 		}
 		
@@ -322,11 +323,11 @@ public class JenaBasedDialogInferenceProcessor extends JenaBasedSadlInferencePro
 
 		
 		// Comp Graph instance
-	Individual cgIns = createIndividualOfClass(METAMODEL_CCG);
+		Individual cgIns = createIndividualOfClass(qhmodel,METAMODEL_CCG);
 		OntProperty subgraphprop = 	getTheJenaModel().getOntProperty(METAMODEL_SUBG_PROP);
 		OntProperty cgraphprop = 	getTheJenaModel().getOntProperty(METAMODEL_CGRAPH_PROP);
 		OntProperty hasEqnProp = 	getTheJenaModel().getOntProperty(METAMODEL_HASEQN_PROP);
-		OntProperty outputprop = getTheJenaModel().getOntProperty(METAMODEL_OUTPUT_PROP);
+		OntProperty outputprop = 	getTheJenaModel().getOntProperty(METAMODEL_OUTPUT_PROP);
 		
 		Individual sgIns, dbnIns, eqnIns, outpIns;
 		
@@ -337,25 +338,29 @@ public class JenaBasedDialogInferenceProcessor extends JenaBasedSadlInferencePro
 			RDFNode s = soln.get("?Eq") ; 
 			RDFNode p = soln.get("?DBN") ;
 			RDFNode o = soln.get("?Out") ;
-			//sgIns = createIndividualOfClass(METAMODEL_SUBGRAPH);
-			sgIns = getTheJenaModel().createIndividual("http://aske.ge.com/testdiag#sg1",getTheJenaModel().getOntClass(METAMODEL_SUBGRAPH));
-			getTheJenaModel().add(cgIns, subgraphprop, sgIns); 
-			//dbnIns = createIndividualOfClass(p.toString());
-			dbnIns = getTheJenaModel().createIndividual("http://aske.ge.com/testdiag#dbn1",getTheJenaModel().getOntClass(p.toString()));
-			getTheJenaModel().add(sgIns, cgraphprop, dbnIns); 
-			getTheJenaModel().add(dbnIns, hasEqnProp, s); //the equation is already an instance
-			//outpIns = createIndividualOfClass(o.toString());
-			outpIns = getTheJenaModel().createIndividual("http://aske.ge.com/testdiag#dbn1",getTheJenaModel().getOntClass(o.toString()));
-			getTheJenaModel().add(sgIns, outputprop, outpIns);
+			sgIns = createIndividualOfClass(qhmodel,METAMODEL_SUBGRAPH);
+			//sgIns = qhmodel.createIndividual(getTheJenaModel().getOntClass(METAMODEL_SUBGRAPH));
+			//getTheJenaModel().add(cgIns, subgraphprop, sgIns); 
+			qhmodel.add(cgIns, subgraphprop, sgIns);
+			dbnIns = createIndividualOfClass(qhmodel,p.toString());
+			//getTheJenaModel().add(sgIns, cgraphprop, dbnIns);
+			qhmodel.add(sgIns, cgraphprop, dbnIns);
+			//getTheJenaModel().add(dbnIns, hasEqnProp, s); //the equation is already an instance
+			qhmodel.add(dbnIns, hasEqnProp, s); //the equation is already an instance
+			outpIns = createIndividualOfClass(qhmodel,o.toString());
+			//outpIns = getTheJenaModel().createIndividual("http://aske.ge.com/testdiag#dbn1",getTheJenaModel().getOntClass(o.toString()));
+			//getTheJenaModel().add(sgIns, outputprop, outpIns);
+			qhmodel.add(sgIns, outputprop, outpIns);
 		}
 		
-		getTheJenaModel().write(System.out);
+		qhmodel.write(System.out);
 		
-		String qhModelName = null;
-		String qhOwlFileName = null;
+		String qhModelName = "http://aske.ge.com/MetaData";
+		String qhOwlFileName = "MetaData.owl";
 		String qhGlobalPrefix = null;
 		try {
 			getConfigMgr(null).saveOwlFile(qhmodel, qhModelName, qhOwlFileName);
+			String fileUrl = (new UtilsForJena()).fileNameToFileUrl(qhOwlFileName);
 			getConfigMgr(null).addMapping((new UtilsForJena()).fileNameToFileUrl(qhOwlFileName), qhModelName, qhGlobalPrefix, false, "DialogInference");
 		} catch (ConfigurationException e) {
 			// TODO Auto-generated catch block
@@ -416,8 +421,8 @@ public class JenaBasedDialogInferenceProcessor extends JenaBasedSadlInferencePro
 	}
 
 
-	private Individual createIndividualOfClass(String classUriStr) {
-		return getTheJenaModel().createIndividual(getTheJenaModel().getOntClass(classUriStr));
+	private Individual createIndividualOfClass(OntModel model, String classUriStr) {
+		return model.createIndividual(getTheJenaModel().getOntClass(classUriStr));
 	}
 
 	private boolean commonSubject(TripleElement[] triples) {
