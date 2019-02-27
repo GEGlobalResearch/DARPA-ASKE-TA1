@@ -1,12 +1,17 @@
 package com.ge.research.sadl.darpa.aske.inference;
 
+import java.io.File;
 import java.io.IOException;
 import java.net.URISyntaxException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
 
 import org.eclipse.emf.ecore.resource.Resource;
 
+import com.ge.research.sadl.builder.ConfigurationManagerForIDE;
 import com.ge.research.sadl.jena.JenaBasedSadlInferenceProcessor;
 import com.ge.research.sadl.jena.UtilsForJena;
 import com.ge.research.sadl.model.gp.Literal;
@@ -16,6 +21,7 @@ import com.ge.research.sadl.model.gp.TripleElement;
 import com.ge.research.sadl.processing.OntModelProvider;
 import com.ge.research.sadl.processing.SadlInferenceException;
 import com.ge.research.sadl.reasoner.ConfigurationException;
+import com.ge.research.sadl.reasoner.ConfigurationManager;
 import com.ge.research.sadl.reasoner.TranslationException;
 import com.ge.research.sadl.reasoner.utils.SadlUtils;
 import com.ge.research.sadl.utils.ResourceManager;
@@ -137,16 +143,41 @@ public class JenaBasedDialogInferenceProcessor extends JenaBasedSadlInferencePro
 	
 	@Override
 	public Object[] insertTriplesAndQuery(Resource resource, TripleElement[] triples) throws SadlInferenceException {
-		String queryHistoryKey = "QueryHistory";
+		String queryHistoryKey = "MetaData";
+		String qhModelName = "http://aske.ge.com/MetaData";
+		String qhOwlFileName = "MetaData.owl";
+		String qhOwlFileWithPath = getModelFolderPath(resource) + 
+				 					File.separator + qhOwlFileName;
+		Boolean newMetaDataFile = false;
+		//Path qhpath = Paths.get(qhOwlFileWithPath);
+		ConfigurationManagerForIDE cmgr = null;
 		Object qhModelObj = OntModelProvider.getPrivateKeyValuePair(resource, queryHistoryKey);
 		OntModel qhmodel;
+		
+
 		if (qhModelObj == null) {
-			qhmodel = ModelFactory.createOntologyModel(OntModelSpec.OWL_MEM);
+			File f = new File(qhOwlFileWithPath);
+			if (f.exists() && !f.isDirectory()) {
+			//if (Files.exists(qhpath)) {
+				try {
+					String p = getModelFolderPath(resource);
+					cmgr = new ConfigurationManagerForIDE(getModelFolderPath(resource), ConfigurationManagerForIDE.getOWLFormat());
+				} catch (ConfigurationException e1) {
+					// TODO Auto-generated catch block
+					e1.printStackTrace();
+				}
+				qhmodel = cmgr.loadOntModel(qhOwlFileWithPath);
+			}
+			else {
+				qhmodel = ModelFactory.createOntologyModel(OntModelSpec.OWL_MEM);
+				newMetaDataFile = true;
+			}
 			OntModelProvider.addPrivateKeyValuePair(resource, queryHistoryKey, qhmodel);
 		}
 		else {
 			qhmodel = (OntModel) qhModelObj;
 		}
+		
 		
 		setCurrentResource(resource);
 		setModelFolderPath(getModelFolderPath(resource));
@@ -353,15 +384,15 @@ public class JenaBasedDialogInferenceProcessor extends JenaBasedSadlInferencePro
 			qhmodel.add(sgIns, outputprop, outpIns);
 		}
 		
-		qhmodel.write(System.out);
+		//qhmodel.write(System.out,"RDF/XML-ABBREV");
+		qhmodel.write(System.out,"TTL");
 		
-		String qhModelName = "http://aske.ge.com/MetaData";
-		String qhOwlFileName = "MetaData.owl";
 		String qhGlobalPrefix = null;
 		try {
-			getConfigMgr(null).saveOwlFile(qhmodel, qhModelName, qhOwlFileName);
-			String fileUrl = (new UtilsForJena()).fileNameToFileUrl(qhOwlFileName);
-			getConfigMgr(null).addMapping((new UtilsForJena()).fileNameToFileUrl(qhOwlFileName), qhModelName, qhGlobalPrefix, false, "DialogInference");
+			getConfigMgr(null).saveOwlFile(qhmodel, qhModelName, qhOwlFileWithPath);
+			String fileUrl = (new UtilsForJena()).fileNameToFileUrl(qhOwlFileWithPath);
+			if (newMetaDataFile)
+				getConfigMgr(null).addMapping(fileUrl, qhModelName, qhGlobalPrefix, false, "DialogInference"); //Only if new file
 		} catch (ConfigurationException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
