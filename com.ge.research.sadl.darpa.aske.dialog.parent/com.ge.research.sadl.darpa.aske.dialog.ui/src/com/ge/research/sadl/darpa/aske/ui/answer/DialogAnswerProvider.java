@@ -53,7 +53,14 @@ import com.ge.research.sadl.ui.handlers.SadlActionHandler;
 import com.google.inject.Inject;
 import com.google.inject.Injector;
 import com.google.inject.Provider;
+import com.hp.hpl.jena.ontology.OntClass;
+import com.hp.hpl.jena.ontology.OntModel;
+import com.hp.hpl.jena.ontology.OntProperty;
+import com.hp.hpl.jena.ontology.OntResource;
+import com.hp.hpl.jena.rdf.model.RDFNode;
+import com.hp.hpl.jena.rdf.model.StmtIterator;
 import com.hp.hpl.jena.reasoner.rulesys.Builtin;
+import com.hp.hpl.jena.util.iterator.ExtendedIterator;
 import com.hp.hpl.jena.vocabulary.OWL;
 import com.hp.hpl.jena.vocabulary.RDF;
 import com.hp.hpl.jena.vocabulary.RDFS;
@@ -596,47 +603,49 @@ public class DialogAnswerProvider extends DefaultAutoEditStrategyProvider {
 
 			private boolean addDomainAndRange(Resource resource, NamedNode nn, boolean isFirstProperty,
 					StringBuilder answer) throws ExecutionException {
-				String query = "select ?p ?r where {optional{?p <rdfs:domain> <" + nn.getURI() + ">} . ";
-				query += "optional{?p <rdfs:range> ?r}}";
-				Query q = new Query();
-				q.setSparqlQueryString(query);
-				OntModelProvider.addPrivateKeyValuePair(resource, DialogConstants.LAST_DIALOG_COMMAND, q);
-				ResultSet rs = runQuery(resource, q);
-				if (rs != null) {
-					rs.setShowNamespaces(false);
-					int rowcnt = rs.getRowCount();
-					if (rowcnt > 0) {
-						answer.append("\n");
-						for (int r = 0; r < rowcnt; r++) {
-							answer.append("      ");
-							answer.append("described by ");
-							Object dobj = rs.getResultAt(r, 0);
-							if (dobj != null) {
-								answer.append(checkForKeyword(dobj.toString()));
-								Object drng = rs.getResultAt(r, 1);
-								if (drng != null) {
-									String val = drng.toString();
-									if (val != null && val.length() > 0) {
-				    					answer.append(" with values of type ");
-				    					rs.setShowNamespaces(true);
-				    					String pval = rs.getResultAt(r, 1).toString();
-				    					rs.setShowNamespaces(false);
-				    					if (pval.startsWith(XSD.getURI())) {
-				        					answer.append(val);
-				    					}
-				    					else {
-				        					answer.append(checkForKeyword(val));			                						
-				    					}
+				OntModel m = OntModelProvider.find(resource);
+				OntClass cls = m.getOntClass(nn.getURI());
+				return getDomainAndRangeOfClass(m, cls, answer);
+			}
+
+			private boolean getDomainAndRangeOfClass(OntModel m, OntClass cls, StringBuilder answer) {
+				boolean isFirstProperty = true;
+				StmtIterator sitr = m.listStatements(null, RDFS.domain, cls);
+				while (sitr.hasNext()) {
+					com.hp.hpl.jena.rdf.model.Resource p = sitr.nextStatement().getSubject();
+					answer.append("\n      ");
+					answer.append("described by ");
+					if (p != null) {
+						answer.append(checkForKeyword(p.isURIResource() ? p.getLocalName() : p.toString()));
+						StmtIterator ritr = m.listStatements(p, RDFS.range, (RDFNode)null);
+						while (ritr.hasNext()) {
+							RDFNode r = ritr.nextStatement().getObject();
+							if (r != null) {
+								answer.append(" with values of type ");
+								if (r.isURIResource()) {
+									if (r.asResource().getNameSpace().equals(XSD.getURI())) {
+										answer.append(r.asResource().getLocalName());										
+									}
+									else {
+										answer.append(checkForKeyword(r.asResource().getLocalName()));
 									}
 								}
-								if (r < rowcnt - 1) {
-									answer.append(",\n");
+								else {
+									answer.append(r.asLiteral().getValue().toString());
 								}
-								isFirstProperty = false;
 							}
 						}
 					}
+					if (sitr.hasNext()) {
+						isFirstProperty = false;
+					}
 				}
+				ExtendedIterator<OntClass> spritr = cls.listSuperClasses(true);
+				while (spritr.hasNext()) {
+					OntClass spcls = spritr.next();
+					getDomainAndRangeOfClass(m, spcls, answer);
+				}
+//				answer.append("\n");
 				return isFirstProperty;
 			}
 
