@@ -7,7 +7,9 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.eclipse.emf.ecore.resource.Resource;
 
@@ -25,6 +27,7 @@ import com.ge.research.sadl.reasoner.ConfigurationManager;
 import com.ge.research.sadl.reasoner.TranslationException;
 import com.ge.research.sadl.reasoner.utils.SadlUtils;
 import com.ge.research.sadl.utils.ResourceManager;
+import com.hp.hpl.jena.datatypes.xsd.XSDDateTime;
 import com.hp.hpl.jena.ontology.Individual;
 import com.hp.hpl.jena.ontology.OntClass;
 import com.hp.hpl.jena.ontology.OntModel;
@@ -36,6 +39,7 @@ import com.hp.hpl.jena.rdf.model.Property;
 import com.hp.hpl.jena.rdf.model.RDFNode;
 import com.hp.hpl.jena.query.*;
 import com.hp.hpl.jena.update.UpdateAction;
+import com.hp.hpl.jena.vocabulary.RDF;
 
 public class JenaBasedDialogInferenceProcessor extends JenaBasedSadlInferenceProcessor {
 
@@ -48,6 +52,12 @@ public class JenaBasedDialogInferenceProcessor extends JenaBasedSadlInferencePro
 	public static final String METAMODEL_SUBG_PROP = METAMODEL_PREFIX + "subgraph";
 	public static final String METAMODEL_CGRAPH_PROP = METAMODEL_PREFIX + "cgraph";
 	public static final String METAMODEL_HASEQN_PROP = "http://aske.ge.com/sciknow#hasEquation";
+	public static final String METAMODEL_QUERYTYPE_PROP = METAMODEL_PREFIX + "queryType";
+	public static final String METAMODEL_PROGNOSTIC = METAMODEL_PREFIX + "prognostic";
+	public static final String METAMODEL_CALIBRATION = METAMODEL_PREFIX + "calibration";
+	public static final String METAMODEL_CGEXEC_CLASS = METAMODEL_PREFIX + "CGExecution";
+	public static final String METAMODEL_STARTTIME_PROP = METAMODEL_PREFIX + "startTime";
+	
 	
 	public static final String DEPENDENCY_GRAPH_INSERT = "prefix dbn:<http://aske.ge.com/dbn#>\n" + 
 			"prefix imp:<http://sadl.org/sadlimplicitmodel#>\n" +
@@ -143,6 +153,16 @@ public class JenaBasedDialogInferenceProcessor extends JenaBasedSadlInferencePro
 	
 	@Override
 	public Object[] insertTriplesAndQuery(Resource resource, TripleElement[] triples) throws SadlInferenceException {
+		setCurrentResource(resource);
+		setModelFolderPath(getModelFolderPath(resource));
+		setModelName(OntModelProvider.getModelName(resource));
+		setTheJenaModel(OntModelProvider.find(resource));
+
+		if (commonSubject(triples)) {
+			return super.insertTriplesAndQuery(resource, triples);
+		}
+
+		
 		String queryHistoryKey = "MetaData";
 		String qhModelName = "http://aske.ge.com/MetaData";
 		String qhOwlFileName = "MetaData.owl";
@@ -154,7 +174,9 @@ public class JenaBasedDialogInferenceProcessor extends JenaBasedSadlInferencePro
 		Object qhModelObj = OntModelProvider.getPrivateKeyValuePair(resource, queryHistoryKey);
 		OntModel qhmodel;
 		
-
+		boolean calibrationQuery = false;
+		
+		
 		if (qhModelObj == null) {
 			File f = new File(qhOwlFileWithPath);
 			if (f.exists() && !f.isDirectory()) {
@@ -178,19 +200,6 @@ public class JenaBasedDialogInferenceProcessor extends JenaBasedSadlInferencePro
 			qhmodel = (OntModel) qhModelObj;
 		}
 		
-		
-		setCurrentResource(resource);
-		setModelFolderPath(getModelFolderPath(resource));
-		setModelName(OntModelProvider.getModelName(resource));
-		setTheJenaModel(OntModelProvider.find(resource));
-		
-		if (commonSubject(triples)) {
-			return super.insertTriplesAndQuery(resource, triples);
-		}
-		//return super.insertTriplesAndQuery(resource, triples);
-		
-		//getTheJenaModel().add(commonSubjectInst, pred, val);
-
 		// TODO Alfredo
 		// ingest query object and store to CGQuery model file
 		// get inputs and outputs
@@ -212,7 +221,9 @@ public class JenaBasedDialogInferenceProcessor extends JenaBasedSadlInferencePro
 		List<TripleElement> queryPatterns = new ArrayList<TripleElement>();
 		List<OntClass> inputsList = new ArrayList<OntClass>();
 		List<OntClass> outputsList = new ArrayList<OntClass>();
-
+		Map<OntClass, Individual> outputInstance = new HashMap<OntClass, Individual>();
+		
+		
 		for (int i = 0; i < triples.length; i++) {
 			TripleElement tr = triples[i];
 			//Node snode = tr.getSubject();
@@ -238,6 +249,15 @@ public class JenaBasedDialogInferenceProcessor extends JenaBasedSadlInferencePro
 		// This is how to add properties to the individual
 		//i.addProperty(RDFS.comment, "something");
 	    //i.addRDFType(OWL2.NamedIndividual);
+		
+		//Create execution instance with time
+//		OntClass cexec = getTheJenaModel().getOntClass(METAMODEL_CGEXEC_CLASS);
+//		Individual ce = getTheJenaModel().createIndividual(cexec);
+//		OntProperty stprop = getTheJenaModel().getOntProperty(METAMODEL_STARTTIME_PROP);
+//		Object tim = getTime();
+//		qhmodel.add(ce,stprop,(XSDDateTime)val).asCalendar().getTime())
+		
+		
 		
 		String suri;
 		OntClass sclass;
@@ -276,13 +296,15 @@ public class JenaBasedDialogInferenceProcessor extends JenaBasedSadlInferencePro
 				inputsList.add(sclass);
 
 				qhmodel.add(sinst, pred, val);
+				getTheJenaModel().add(sinst,RDF.type,getTheJenaModel().getOntClass(suri));
+				getTheJenaModel().add(sinst,pred,val);
 				// create triple: cgq, mm:input, sinst
 				OntProperty inputprop = getTheJenaModel().getOntProperty(METAMODEL_INPUT_PROP);
 				qhmodel.add(cgq, inputprop, sinst);
 			
 			}
 		}
-//		getTheJenaModel().write(System.out, "TTL" );
+		getTheJenaModel().write(System.out, "TTL" );
 
 		if (queryPatterns.size() > 0) {
 			// how many results there will be
@@ -302,6 +324,7 @@ public class JenaBasedDialogInferenceProcessor extends JenaBasedSadlInferencePro
 				OntProperty outputprop = getTheJenaModel().getOntProperty(METAMODEL_OUTPUT_PROP);
 				//getTheJenaModel().add(cgq, outputprop, sinst);
 				qhmodel.add(cgq, outputprop, sinst);
+				outputInstance.put(sclass,sinst);
 			}
 		}
 		
@@ -327,12 +350,31 @@ public class JenaBasedDialogInferenceProcessor extends JenaBasedSadlInferencePro
 		// Retrieve computational graph
 		String queryStr = RETRIEVE_COMP_GRAPH.replaceAll("LISTOFINPUTS", listOfInputs).replaceAll("LISTOFOUTPUTS", listOfOutputs);
 		
-		//String queryStr = "prefix dbn:<http://aske.ge.com/dbn#> select ?eq ?eqP where {?eq dbn:parent ?eqP }";
 		com.hp.hpl.jena.query.Query q = QueryFactory.create(queryStr);
 		QueryExecution qexec = QueryExecutionFactory.create(q, getTheJenaModel()); 
 		//com.hp.hpl.jena.query.ResultSet eqnsResults = qexec.execSelect() ;
 		com.hp.hpl.jena.query.ResultSetRewindable eqnsResults = com.hp.hpl.jena.query.ResultSetFactory.makeRewindable(qexec.execSelect()) ;
 
+		
+		OntProperty qtypeprop = getTheJenaModel().getOntProperty(METAMODEL_QUERYTYPE_PROP);
+		OntResource qtype;
+		
+		if ( eqnsResults.hasNext() ) {
+			qtype = getTheJenaModel().getOntResource(METAMODEL_PREFIX + "prognostic");
+			qhmodel.add(cgq, qtypeprop, qtype);			
+		} else {
+			queryStr = RETRIEVE_COMP_GRAPH.replaceAll("LISTOFOUTPUTS", listOfInputs).replaceAll("LISTOFINPUTS", listOfOutputs);
+			com.hp.hpl.jena.query.Query qinv = QueryFactory.create(queryStr);
+			qexec = QueryExecutionFactory.create(qinv, getTheJenaModel()); 
+			eqnsResults = com.hp.hpl.jena.query.ResultSetFactory.makeRewindable(qexec.execSelect()) ;
+			if (eqnsResults.hasNext()) {
+					calibrationQuery = true;
+					qtype = getTheJenaModel().getOntResource(METAMODEL_PREFIX + "calibration");
+					qhmodel.add(cgq, qtypeprop, qtype);			
+			}
+		}
+		
+		
 		
 		String listOfEqns = "";
 		//List<RDFNode> listOfEqnObjs = new ArrayList<RDFNode>();
@@ -378,14 +420,19 @@ public class JenaBasedDialogInferenceProcessor extends JenaBasedSadlInferencePro
 			qhmodel.add(sgIns, cgraphprop, dbnIns);
 			//getTheJenaModel().add(dbnIns, hasEqnProp, s); //the equation is already an instance
 			qhmodel.add(dbnIns, hasEqnProp, s); //the equation is already an instance
-			outpIns = createIndividualOfClass(qhmodel,o.toString());
-			//outpIns = getTheJenaModel().createIndividual("http://aske.ge.com/testdiag#dbn1",getTheJenaModel().getOntClass(o.toString()));
-			//getTheJenaModel().add(sgIns, outputprop, outpIns);
-			qhmodel.add(sgIns, outputprop, outpIns);
+			if (outputInstance.containsKey(o)) {
+				qhmodel.add(sgIns, outputprop, outputInstance.get(o));
+			}
+			else {
+				outpIns = createIndividualOfClass(qhmodel,o.toString());
+				//outpIns = getTheJenaModel().createIndividual("http://aske.ge.com/testdiag#dbn1",getTheJenaModel().getOntClass(o.toString()));
+				//getTheJenaModel().add(sgIns, outputprop, outpIns);
+				qhmodel.add(sgIns, outputprop, outpIns);
+			}
 		}
 		
 		//qhmodel.write(System.out,"RDF/XML-ABBREV");
-		qhmodel.write(System.out,"TTL");
+		//qhmodel.write(System.out,"TTL");
 		
 		String qhGlobalPrefix = null;
 		try {
@@ -442,6 +489,7 @@ public class JenaBasedDialogInferenceProcessor extends JenaBasedSadlInferencePro
 		
 		//TODO: request DBN Execution
 		
+		//TODO: add triples with result to Meta Model
 		
 
 		
