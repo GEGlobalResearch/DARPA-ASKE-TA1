@@ -24,6 +24,7 @@ import com.ge.research.sadl.processing.OntModelProvider;
 import com.ge.research.sadl.processing.SadlInferenceException;
 import com.ge.research.sadl.reasoner.ConfigurationException;
 import com.ge.research.sadl.reasoner.ConfigurationManager;
+import com.ge.research.sadl.reasoner.ResultSet;
 import com.ge.research.sadl.reasoner.TranslationException;
 import com.ge.research.sadl.reasoner.utils.SadlUtils;
 import com.ge.research.sadl.utils.ResourceManager;
@@ -113,14 +114,15 @@ public class JenaBasedDialogInferenceProcessor extends JenaBasedSadlInferencePro
 			"prefix sci:<http://aske.ge.com/sciknow#>" + 
 			"prefix owl:<http://www.w3.org/2002/07/owl#>\n" + 
 			"prefix rdfs:<http://www.w3.org/2000/01/rdf-schema#>\n" +
-			"select distinct ?Model ?Input ?Output (str(?expr) as ?ModelForm)\n" +
+			"select distinct ?Model ?Input (str(?Label) as ?InputLabel) ?Output (str(?expr) as ?ModelForm)\n" +
 			"where {\n" + 
 			"  ?Model rdfs:subClassOf sci:DBN.\n" + 
 			"  ?Model rdfs:subClassOf ?BN. \n" + 
 			"  ?BN owl:onProperty sci:hasEquation. \n" + 
 			"  ?BN owl:someValuesFrom ?Eq.\n" + 
 			"  filter (?Eq in (EQNSLIST)) .   \n" + 
-			"  ?Eq imp:input/imp:argType ?Input.\n" + 
+			"  ?Eq imp:input/imp:argType ?Input.\n" +
+			"  ?Eq imp:input/imp:argName ?Label." + 
 			"  ?Eq imp:output ?Oinst.\n" + 
 			"  ?Oinst a ?Output.\n" + 
 			"  ?Eq imp:expression ?expr.\n" + 
@@ -462,22 +464,27 @@ public class JenaBasedDialogInferenceProcessor extends JenaBasedSadlInferencePro
 		com.hp.hpl.jena.query.Query qn = QueryFactory.create(queryStr);
 
 		qexec = QueryExecutionFactory.create(qm, getTheJenaModel()); 
-		com.hp.hpl.jena.query.ResultSetRewindable results = com.hp.hpl.jena.query.ResultSetFactory.makeRewindable(qexec.execSelect()) ;
+		com.hp.hpl.jena.query.ResultSetRewindable models = com.hp.hpl.jena.query.ResultSetFactory.makeRewindable(qexec.execSelect()) ;
 
-		while( results.hasNext() ) {
-	      	soln = results.nextSolution() ;
+		while( models.hasNext() ) {
+	      	soln = models.nextSolution() ;
 			RDFNode m = soln.get("?Model") ; 
 			RDFNode i = soln.get("?Input") ;
+			String lbl = soln.get("?InputLabel").toString();
 			RDFNode o = soln.get("?Output") ;
 			RDFNode f = soln.get("?ModelForm") ;
 		}
 		//TODO: create models csv (models are the DBNs)
 		
 		qexec = QueryExecutionFactory.create(qn, getTheJenaModel());
-		results = com.hp.hpl.jena.query.ResultSetFactory.makeRewindable(qexec.execSelect());
+		com.hp.hpl.jena.query.ResultSetRewindable nodes = com.hp.hpl.jena.query.ResultSetFactory.makeRewindable(qexec.execSelect());
 
-		while( results.hasNext() ) {
-	      	soln = results.nextSolution() ;
+		//TODO: need to get node count. 
+		//Integer numNodes = 
+		Integer numNodes = 1;
+		
+		while( nodes.hasNext() ) {
+	      	soln = nodes.nextSolution() ;
 			RDFNode n = soln.get("?Node") ; 
 			RDFNode c = soln.get("?Child") ;
 			RDFNode d = soln.get("?Distribution") ;
@@ -492,11 +499,27 @@ public class JenaBasedDialogInferenceProcessor extends JenaBasedSadlInferencePro
 		//TODO: add triples with result to Meta Model
 		
 
+
 		
+		// TODO: create ResultSet
+//		ResultSet[] results = new ResultSet[numNodes+1];
+//		Object[][] cgres = {{cgIns}};
+//		String[] cgCol = {"CompGraph"};
+//		ResultSet res = new ResultSet(cgCol, cgres);
+//		results[0] = res;
+//
+//		String[] colNames = {"Variable", "Mean", "St Dev"};
+//		Object[][] data = {{"Static_Temperature",1000,0}};
+//		results[1] = new ResultSet(colNames, data);
 		
+//		Object[] results = new Object[outputInstance.keySet().size()];
+//		for(OntClass oclass : outputInstance.keySet()) {
+//			results[0] = outputInstance.get(oclass);
+//	
+//		}
 		
-		
-		return null;
+
+		return null; //results;
 	}
 
 
