@@ -551,7 +551,7 @@ public class JenaBasedDialogInferenceProcessor extends JenaBasedSadlInferencePro
 			System.out.println("FAIL!!!");
 		}
 		catch (IOException e) {
-			System.out.println("FAIL2!!!");
+			System.out.println("FAIL2!!!" + e);
 		}
 		//TODO: request DBN Execution
 		
