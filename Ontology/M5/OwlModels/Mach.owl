@@ -1,0 +1,103 @@
+<rdf:RDF
+    xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+    xmlns:sadlbasemodel="http://sadl.org/sadlbasemodel"
+    xmlns="http://nopackage/Mach#"
+    xmlns:owl="http://www.w3.org/2002/07/owl#"
+    xmlns:sadlimplicitmodel="http://sadl.org/sadlimplicitmodel"
+    xmlns:sos="http://sadl.org/SpeedOfSound.sadl"
+    xmlns:builtinfunctions="http://sadl.org/builtinfunctions"
+    xmlns:j.0="http://sadl.org/sadlimplicitmodel#"
+    xmlns:rdfs="http://www.w3.org/2000/01/rdf-schema#"
+    xmlns:xsd="http://www.w3.org/2001/XMLSchema#"
+  xml:base="http://nopackage/Mach">
+  <owl:Ontology rdf:about="">
+    <owl:imports rdf:resource="http://sadl.org/SpeedOfSound.sadl"/>
+    <owl:imports rdf:resource="http://sadl.org/builtinfunctions"/>
+    <owl:imports rdf:resource="http://sadl.org/sadlimplicitmodel"/>
+    <owl:imports rdf:resource="http://sadl.org/sadlbasemodel"/>
+    <rdfs:comment xml:lang="en">This ontology was created from a SADL file 'Mach.sadl' and should not be directly edited.</rdfs:comment>
+  </owl:Ontology>
+  <j.0:ExternalEquation rdf:ID="temperatureAtAltitude">
+    <j.0:externalURI rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >/Mach/temperatureAtAltitude</j.0:externalURI>
+    <j.0:returnTypes rdf:parseType="Resource">
+      <rdf:rest rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#nil"/>
+      <rdf:first>http://www.w3.org/2001/XMLSchema#decimal</rdf:first>
+    </j.0:returnTypes>
+    <j.0:arguments rdf:parseType="Collection">
+      <j.0:Argument>
+        <j.0:argType>http://www.w3.org/2001/XMLSchema#decimal</j.0:argType>
+        <j.0:argName>alt</j.0:argName>
+      </j.0:Argument>
+    </j.0:arguments>
+    <j.0:expression rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >decimal temperatureAtAltitude(decimal alt): uri("/Mach/temperatureAtAltitude")</j.0:expression>
+  </j.0:ExternalEquation>
+  <j.0:Rule rdf:ID="temperatureAtAltitude_Rule"/>
+  <j.0:ExternalEquation rdf:ID="computeMach">
+    <j.0:externalURI rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >/Mach/computeMach2</j.0:externalURI>
+    <j.0:returnTypes rdf:parseType="Resource">
+      <rdf:rest rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#nil"/>
+      <rdf:first>http://www.w3.org/2001/XMLSchema#decimal</rdf:first>
+    </j.0:returnTypes>
+    <j.0:arguments rdf:parseType="Collection">
+      <j.0:Argument>
+        <j.0:argType>http://www.w3.org/2001/XMLSchema#decimal</j.0:argType>
+        <j.0:argName>v</j.0:argName>
+      </j.0:Argument>
+      <j.0:Argument>
+        <j.0:argType>http://www.w3.org/2001/XMLSchema#decimal</j.0:argType>
+        <j.0:argName>sos</j.0:argName>
+      </j.0:Argument>
+    </j.0:arguments>
+    <j.0:expression rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >decimal computeMach(decimal v,decimal sos): uri("/Mach/computeMach2")</j.0:expression>
+  </j.0:ExternalEquation>
+  <j.0:Rule rdf:ID="CAL_SOS_Rule"/>
+  <j.0:UnittedQuantity rdf:ID="R">
+    <j.0:unit rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >ft-lbf/lb-Rankine</j.0:unit>
+    <j.0:value rdf:datatype="http://www.w3.org/2001/XMLSchema#decimal"
+    >53.3</j.0:value>
+  </j.0:UnittedQuantity>
+  <j.0:UnittedQuantity rdf:ID="Theta">
+    <j.0:unit rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >Rankine</j.0:unit>
+    <j.0:value rdf:datatype="http://www.w3.org/2001/XMLSchema#decimal"
+    >5500</j.0:value>
+  </j.0:UnittedQuantity>
+  <j.0:Rule rdf:ID="computeMach_Rule"/>
+  <j.0:ExternalEquation rdf:ID="CAL_SOS">
+    <j.0:externalURI rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >/Mach/CAL_SOS</j.0:externalURI>
+    <j.0:returnTypes rdf:parseType="Resource">
+      <rdf:rest rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#nil"/>
+      <rdf:first>http://www.w3.org/2001/XMLSchema#double</rdf:first>
+    </j.0:returnTypes>
+    <j.0:arguments rdf:parseType="Collection">
+      <j.0:Argument>
+        <j.0:argType>http://www.w3.org/2001/XMLSchema#double</j.0:argType>
+        <j.0:argName>T</j.0:argName>
+      </j.0:Argument>
+      <j.0:Argument>
+        <j.0:argType>http://www.w3.org/2001/XMLSchema#double</j.0:argType>
+        <j.0:argName>G</j.0:argName>
+      </j.0:Argument>
+      <j.0:Argument>
+        <j.0:argType>http://www.w3.org/2001/XMLSchema#double</j.0:argType>
+        <j.0:argName>R</j.0:argName>
+      </j.0:Argument>
+      <j.0:Argument>
+        <j.0:argType>http://www.w3.org/2001/XMLSchema#double</j.0:argType>
+        <j.0:argName>Q</j.0:argName>
+      </j.0:Argument>
+    </j.0:arguments>
+    <j.0:expression rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >double CAL_SOS(double T,double G,double R,double Q): uri("/Mach/CAL_SOS")</j.0:expression>
+  </j.0:ExternalEquation>
+  <j.0:UnittedQuantity rdf:ID="G">
+    <j.0:value rdf:datatype="http://www.w3.org/2001/XMLSchema#decimal"
+    >1.4</j.0:value>
+  </j.0:UnittedQuantity>
+</rdf:RDF>
