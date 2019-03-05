@@ -1,0 +1,32 @@
+ uri "http://sadl.org/Run.sadl" alias run.
+ 
+ import "http://com.ge.research/darpa/aske/answer/testcodeextraction" as tce.
+ 
+Print: "all the setterArgument".
+Ask: "select distinct ?x ?z where { 
+  ?x <setterArgument> ?z 
+} order by ?x ?z".
+
+//Print: "".
+//Print: "all the ClassField".
+//Ask: "select distinct ?x ?y3 ?z3 where { 
+//  ?x ?y <ClassField> . ?x <reference> ?z2 . ?z2 ?y3 ?z3 . FILTER(regex(str(?y3),'location')) 
+//} order by ?x ?z3 ".
+
+Print: "".
+Print: "All the inputs: var, code block, input, true".
+Ask: "select distinct (?x0 as ?Var) (?z2 as ?CodeBlock) (?z as ?Input) where { 
+  ?x0 ?y0 ?z0 . FILTER(regex(str(?y0),'reference')) . ?z0 ?y ?z . FILTER(regex(str(?y),'input'))
+. FILTER(regex(str(?z),'true')) 
+. ?z0 ?y2 ?z2 . FILTER(regex(str(?y2),'codeBlock'))
+}order by ?x0".
+
+Print: "".
+Print: "All the outputs: var, code block, input, true".
+Ask: "select distinct (?x0 as ?Var) (?z2 as ?CodeBlock) (?z as ?Output) where { 
+  ?x0 ?y0 ?z0 . FILTER(regex(str(?y0),'reference')) . ?z0 ?y ?z . FILTER(regex(str(?y),'output')) 
+. FILTER(regex(str(?z),'true')) 
+. ?z0 ?y2 ?z2 . FILTER(regex(str(?y2),'codeBlock'))
+}order by ?x0".
+
+//Explain: Rule SetAsInput1.
