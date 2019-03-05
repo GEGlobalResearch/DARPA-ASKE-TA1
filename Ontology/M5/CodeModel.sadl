@@ -3,9 +3,10 @@
  CodeBlock is a class,
  	described by beginsAt with a single value of type int,
  	described by endsAt with a single value of type int,
- 	described by serialization with a single value of type string.
+ 	described by serialization with a single value of type string,
+ 	described by containedIn with values of type CodeBlock.
  
- {Method, ConditionalBlock, LoopBlock} are types of CodeBlock.
+ {Class, Method, ConditionalBlock, LoopBlock} are types of CodeBlock.
 
 // maybe just Set, Used? Change Defined to Assigned
 Usage is a class, must be one of {Defined, Used, Reassigned}.
@@ -15,12 +16,13 @@ Usage is a class, must be one of {Defined, Used, Reassigned}.
 // have not yet folded in the usage of code block
 Reference is a class
 	described by location with a single value of type int
+	described by notFirstRef with a single value of type boolean
 	described by codeBlock with a single value of type CodeBlock
 	described by usage with values of type Usage
+ 	described by input with a single value of type boolean
+ 	described by output with a single value of type boolean	
 	described by inlineCommentStart with a single value of type int
 	described by inlineCommentEnd with a single value of type int.
-
-External findFirstLocation (CodeVariable cv) returns int: "http://ToBeImplemented".
 
 // what about Constant also? Note something maybe an input and then gets reassigned
 // Constant could be defined in terms of being set by equations that only involve Constants
@@ -28,33 +30,60 @@ External findFirstLocation (CodeVariable cv) returns int: "http://ToBeImplemente
  CodeVariable is a class, 
  	described by varName with a single value of type string,
  	described by varType with a single value of type anyURI,
- 	described by setterArgument with a single value of type boolean
- 	described by reference with values of type Reference
- 	described by input with a single value of type boolean
- 	described by output with a single value of type boolean.   
+ 	described by quantityKind (note "this should be qudt:QuantityKind") with a single value of type ScientificConcept,
+ 	described by setterArgument (note "is this variable input to a setter?") with a single value of type boolean
+ 	described by reference with values of type Reference.   
+ 	
+ {ClassField, MethodArgument, MethodVariable} are types of CodeVariable. 	
 
+//External findFirstLocation (CodeVariable cv) returns int: "http://ToBeImplemented".
+
+Rule Transitive  
+if inst is a cls and 
+   cls is a type of CodeVariable
+then inst is a CodeVariable. 
+
+Rule SetNotFirstRef
+if c is a CodeVariable and
+   ref is reference of c and
+   ref2 is reference of c and
+   ref != ref2 and
+   cb is codeBlock of ref and   
+   cb2 is codeBlock of ref2 and
+   cb = cb2 and
+   l1 is location of ref and
+   l2 is location of ref2 and
+   l2 > l1   // so ref2 is at an earlier location that ref
+then notFirstRef of ref2 is false.   
+   
 // first reference is of type "Used" or all earlier refs are of type "Used"	
 // this does not cover when no ref2 with l2 < l1 exists
 Rule SetAsInput1
-if c is a CodeVariable and
+if c is CodeVariable and
    ref is reference of c and
+   input of ref is not known and 
    usage of ref is Used and
    ref2 is reference of c and
+   ref != ref2 and
+   cb is codeBlock of ref and   
+   cb2 is codeBlock of ref2 and
+   cb = cb2 and   
    l1 is location of ref and
    l2 is location of ref2 and
    l2 < l1 and  // so ref2 is at an earlier location that ref
    noValue(ref2, usage, Defined) // no earlier definition of c exists
-then input of c is true. 
+then input of ref is true. 
 
 // if there is no l2 as specified in the previous rules, then the following covers that case
+// do I need to consider codeBlock?????
 Rule SetAsInput2
 if c is a CodeVariable and
    ref is reference of c and
+   input of ref is not known and
    usage of ref is Used and
    l is location of ref and
-   fl is findFirstLocation(c) and
-   l = fl
-then input of c is true. 
+   noValue(ref, notFirstRef)
+then input of ref is true. 
 
 // "it is an output if it is computed and is argument to a setter"
 // or I could try to use the notion of a constant
@@ -62,13 +91,15 @@ Rule SetAsOutput
 if c is a CodeVariable and
    setterArgument of c is true and
    ref is a reference of c and
+   output of ref is not known and
    usage of ref is Defined //could also be reassigned; basically if it is computed
 then
-	output of c is true.      	 
+	output of ref is true.      	 
 
 // "Those variables set could be outputs; 
 // those variables set but not used in other computations are more likely outputs"	
 
 // last thing set is likely to be an output
+
 
 
