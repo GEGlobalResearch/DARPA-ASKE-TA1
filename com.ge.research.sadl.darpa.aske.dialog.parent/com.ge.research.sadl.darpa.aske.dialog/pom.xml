@@ -121,7 +121,7 @@
 						</fileset>
 					</filesets>
 				</configuration>
-			</plugin>
+			</plugin>       
 		</plugins>
 		<pluginManagement>
 			<plugins>

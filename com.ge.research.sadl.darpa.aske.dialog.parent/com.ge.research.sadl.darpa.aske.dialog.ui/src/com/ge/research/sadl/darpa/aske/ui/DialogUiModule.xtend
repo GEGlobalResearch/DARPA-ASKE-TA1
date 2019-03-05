@@ -3,17 +3,19 @@
  */
 package com.ge.research.sadl.darpa.aske.ui
 
-import org.eclipse.xtend.lib.annotations.FinalFieldsConstructor
-import org.eclipse.xtext.ui.editor.syntaxcoloring.IHighlightingConfiguration
-import com.ge.research.sadl.darpa.aske.ui.syntaxcoloring.DialogHighlightingConfiguration
-import org.eclipse.xtext.ide.editor.syntaxcoloring.ISemanticHighlightingCalculator
-import com.ge.research.sadl.darpa.aske.ui.syntaxcoloring.DialogSemanticHighlightingCalculator
-import org.eclipse.xtext.ide.editor.syntaxcoloring.AbstractAntlrTokenToAttributeIdMapper
-import com.ge.research.sadl.darpa.aske.ui.syntaxcoloring.DialogTokenToAttributeIdMapper
-import org.eclipse.xtext.ui.editor.autoedit.DefaultAutoEditStrategyProvider
 import com.ge.research.sadl.darpa.aske.ui.answer.DialogAnswerProvider
-import com.ge.research.sadl.utils.SadlProjectHelper
+import com.ge.research.sadl.darpa.aske.ui.preferences.DialogRootPreferencePage
+import com.ge.research.sadl.darpa.aske.ui.syntaxcoloring.DialogHighlightingConfiguration
+import com.ge.research.sadl.darpa.aske.ui.syntaxcoloring.DialogSemanticHighlightingCalculator
+import com.ge.research.sadl.darpa.aske.ui.syntaxcoloring.DialogTokenToAttributeIdMapper
 import com.ge.research.sadl.ui.utils.EclipseSadlProjectHelper
+import com.ge.research.sadl.utils.SadlProjectHelper
+import org.eclipse.xtend.lib.annotations.FinalFieldsConstructor
+import org.eclipse.xtext.ide.editor.syntaxcoloring.AbstractAntlrTokenToAttributeIdMapper
+import org.eclipse.xtext.ide.editor.syntaxcoloring.ISemanticHighlightingCalculator
+import org.eclipse.xtext.ui.editor.autoedit.DefaultAutoEditStrategyProvider
+import org.eclipse.xtext.ui.editor.preferences.LanguageRootPreferencePage
+import org.eclipse.xtext.ui.editor.syntaxcoloring.IHighlightingConfiguration
 
 /**
  * Use this class to register components to be used within the Eclipse IDE.
@@ -43,4 +45,9 @@ class DialogUiModule extends AbstractDialogUiModule {
 		return EclipseSadlProjectHelper;
 	}
 	
+	// registers our own root preference page.
+	def Class<? extends LanguageRootPreferencePage> bindLanguageRootPreferencePage() {
+		return DialogRootPreferencePage
+	}
+
 }

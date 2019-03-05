@@ -32,9 +32,14 @@ Reference is a class
  	described by varType with a single value of type anyURI,
  	described by quantityKind (note "this should be qudt:QuantityKind") with a single value of type ScientificConcept,
  	described by setterArgument (note "is this variable input to a setter?") with a single value of type boolean
- 	described by reference with values of type Reference.   
+ 	described by reference with values of type Reference
+ 	described by input with a single value of type boolean
+ 	described by output with a single value of type boolean.   
  	
  {ClassField, MethodArgument, MethodVariable} are types of CodeVariable. 	
+
+External findFirstLocation (CodeVariable cv) returns int: "http://ToBeImplemented".
+
 
 //External findFirstLocation (CodeVariable cv) returns int: "http://ToBeImplemented".
 

@@ -1,0 +1,16 @@
+uri "http://darpa.aske/testdialog" alias tstdlg.
+
+import "http://sadl.org/test.sadl".
+
+//What is Circle?
+//CM: Circle is a class
+//      described by radius with values of type decimal
+//      described by area with values of type decimal.
+//What is Rectangle?
+//CM: Rectangle is a class
+//      described by width with values of type decimal
+//      described by height with values of type decimal
+//      described by area with values of type decimal.
+//What is Shape?
+//CM: Shape is a class
+//      described by area with values of type decimal.

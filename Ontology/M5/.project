@@ -14,4 +14,11 @@
 	<natures>
 		<nature>org.eclipse.xtext.ui.shared.xtextNature</nature>
 	</natures>
+	<linkedResources>
+		<link>
+			<name>Sound.html</name>
+			<type>1</type>
+			<location>C:/Users/200005201/Downloads/MachUnzipped/Sound.html</location>
+		</link>
+	</linkedResources>
 </projectDescription>

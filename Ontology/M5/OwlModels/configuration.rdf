@@ -6,14 +6,39 @@
       <rdf:Bag>
         <rdf:li>
           <Builtin>
-            <class rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
-            >com.ge.research.sadl.jena.reasoner.builtin.Product</class>
             <name rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
             >product</name>
+            <class rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+            >com.ge.research.sadl.jena.reasoner.builtin.Product</class>
+          </Builtin>
+        </rdf:li>
+        <rdf:li>
+          <Builtin>
+            <class rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+            >com.ge.research.sadl.jena.reasoner.builtin.LessThan</class>
+            <name rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+            >lessThan</name>
+          </Builtin>
+        </rdf:li>
+        <rdf:li>
+          <Builtin>
+            <name rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+            >noValue</name>
+            <class rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+            >com.ge.research.sadl.jena.reasoner.builtin.NoValue</class>
+          </Builtin>
+        </rdf:li>
+        <rdf:li>
+          <Builtin>
+            <class rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+            >com.ge.research.sadl.jena.reasoner.builtin.GetInstance</class>
+            <name rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+            >getInstance</name>
           </Builtin>
         </rdf:li>
       </rdf:Bag>
     </subcategory>
   </Category>
   <Category rdf:about="http://com.ge.research.sadl.configuration#ReasonerSpec"/>
+  <Category rdf:about="http://com.ge.research.sadl.configuration#Builtin"/>
 </rdf:RDF>

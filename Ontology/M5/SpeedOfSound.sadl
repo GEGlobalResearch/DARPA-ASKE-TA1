@@ -1,0 +1,40 @@
+ uri "http://sadl.org/SpeedOfSound.sadl" alias sos.
+ 
+ import "http://sadl.org/ScientificConcepts2.sadl".
+ 
+ Gas is a type of PhysicalObject.
+ Air is a type of Gas.
+ speedOfSound describes Gas with values of type Velocity.
+ altitude describes Air with values of type Length.
+ movesIn describes PhysicalObject with values of type Gas.
+ mach describes PhysicalObject with a single value of type decimal.
+ 
+ primitiveData is a type of {decimal or boolean or string}.
+ 
+ External cg(ExternalEquation eq, primitiveData arg, ...) returns decimal: "http://com.ge.research.darpa.aske.sos".
+ 
+ External sosfromtemp(decimal t) returns decimal: "http://com.ge.research.darpa.aske.kchain.sosairfromtemp".
+ External sosfromalt(decimal alt) returns decimal: "http://com.ge.research.darpa.aske.kchain.sosairfromalt".
+ 
+ Rule SpeedOfSoundInAirGivenTemperatureR:
+   if air is some Air and t is temperature of air and
+   unit of t is "Rankine" and
+   sosair is  cg(sosfromtemp, ^value of t)
+   then there exists (a Velocity with ^value sosair, with unit "ft/sec") and
+   speedOfSound of air is the Velocity.
+ 
+ Rule SpeedOfSoundInAirGivenTemperatureK:
+   if air is some Air and t is temperature of air and
+   unit of t is "Kelvin" and
+   sosair is  cg(sosfromtemp, ^value of t)
+   then there exists (a Velocity with ^value sosair, with unit "m/sec") and
+   speedOfSound of air is the Velocity.
+ 
+ Rule SpeedOfSoundInAirGivenAltitude:
+   if air is some Air and alt is altitude of air and
+   lunit is unit of alt and
+   vunit is strConcat(lunit, "/sec") and 
+   sosair is  cg(sosfromalt, ^value of alt)
+   then there exists (a Velocity with ^value sosair, with unit vunit) and
+   speedOfSound of air is the Velocity.
+ 

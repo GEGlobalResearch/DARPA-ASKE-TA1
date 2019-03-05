@@ -27,6 +27,7 @@ public class KChainServiceTest {
 	}
 
 	@Test
+	@Ignore
 	public void test_01() throws IOException {
 		String nlpServiceURL = "http://vesuvius-test.crd.ge.com:9080/kcud/";
 		String text = "Barack Obama was the 44th president of the United States from 2009 to 2017"; 
@@ -49,6 +50,7 @@ public class KChainServiceTest {
 	}
 
 	@Test
+	@Ignore
 	public void test_02() throws IOException {
 		String serviceIP = "3.39.120.21";
 		String kchainServiceURL = "http://" + serviceIP + ":8080/kchain/";

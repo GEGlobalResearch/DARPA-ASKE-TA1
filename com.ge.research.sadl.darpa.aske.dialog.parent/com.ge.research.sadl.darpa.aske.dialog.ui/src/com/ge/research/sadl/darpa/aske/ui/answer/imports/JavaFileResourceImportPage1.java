@@ -15,6 +15,7 @@ package com.ge.research.sadl.darpa.aske.ui.answer.imports;
 import java.io.File;
 import java.lang.reflect.InvocationTargetException;
 import java.net.URI;
+import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -30,8 +31,6 @@ import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Path;
-import org.eclipse.core.runtime.Platform;
-import org.eclipse.core.runtime.preferences.IPreferencesService;
 import org.eclipse.jface.dialogs.ErrorDialog;
 import org.eclipse.jface.dialogs.IDialogConstants;
 import org.eclipse.jface.dialogs.IDialogSettings;
@@ -74,8 +73,6 @@ import org.eclipse.ui.model.WorkbenchContentProvider;
 import org.eclipse.ui.wizards.datatransfer.IImportStructureProvider;
 
 import com.ge.research.sadl.ui.imports.GridDataUtil;
-import com.ge.research.sadl.ui.imports.SADLImportMessages;
-
 
 /**
  *	Page 1 of the base resource import-owl-from-file Wizard
@@ -94,7 +91,7 @@ public class JavaFileResourceImportPage1 extends WizardResourceImportPage
     protected Button deselectAllButton;
 	private Text csvFileText = null;
 //	private Text namespaceText = null;
-	private Text templateFileText = null;
+	private Text outputFileName = null;
     protected Button firstRowVarButton;
     protected Button debugOutputButton;
     protected Button templateBrowseButton;
@@ -152,7 +149,7 @@ public class JavaFileResourceImportPage1 extends WizardResourceImportPage
 		sourceCSVGroup.setLayoutData(gridData);
 
         Label groupLabel = new Label(sourceCSVGroup, SWT.NONE);
-        groupLabel.setText(SADLImportMessages.CSVImport_title);
+        groupLabel.setText(AnswerImportMessages.AnswerImport_title);
         groupLabel.setFont(parent.getFont());
 
 		csvFileText = new Text(sourceCSVGroup, SWT.BORDER); 
@@ -171,7 +168,7 @@ public class JavaFileResourceImportPage1 extends WizardResourceImportPage
             	String f = csvFileText.getText();
                 if (f == null || f.isEmpty()) {
                 	// Set enter csv file message
-                	setMessage(SADLImportMessages.CSVImport_csv_field_message);
+                	setErrorMessage(AnswerImportMessages.AnswerImport_csv_field_message);
                 } else if (validFileName(f)) {
                 	// Clear enter csv file message
                 	setErrorMessage(null);
@@ -183,14 +180,14 @@ public class JavaFileResourceImportPage1 extends WizardResourceImportPage
 //                	}
                 } else {
                 	// Display error message
-                	setErrorMessage(SADLImportMessages.CSVImport_invalid_file_message);
+                	setErrorMessage(AnswerImportMessages.AnswerImport_invalid_file_message);
                 }
             }
         });
 
         // source browse button
         sourceBrowseButton = new Button(sourceCSVGroup, SWT.PUSH);
-        sourceBrowseButton.setText(SADLImportMessages.DataTransfer_browse);
+        sourceBrowseButton.setText(AnswerImportMessages.DataTransfer_browse);
         sourceBrowseButton.addListener(SWT.Selection, this);
         sourceBrowseButton.setLayoutData(new GridData(
                 GridData.HORIZONTAL_ALIGN_FILL));
@@ -213,11 +210,11 @@ public class JavaFileResourceImportPage1 extends WizardResourceImportPage
 		firstRowVarButton = new Button(optionComposite, SWT.CHECK);
 		firstRowVarButton.setSelection(true);
 		Label firstRowLabel = new Label(optionComposite, SWT.NULL);
-		firstRowLabel.setText(SADLImportMessages.CSVImport_Col_Header);
+		firstRowLabel.setText(AnswerImportMessages.AnswerImport_Col_Header);
 		debugOutputButton = new Button(optionComposite, SWT.CHECK);
 		debugOutputButton.setSelection(false);
 		Label debugOutputLabel = new Label(optionComposite, SWT.NULL);
-		debugOutputLabel.setText(SADLImportMessages.CSVImport_Debug);
+		debugOutputLabel.setText(AnswerImportMessages.AnswerImport_Debug);
     }
 
     /**
@@ -236,44 +233,44 @@ public class JavaFileResourceImportPage1 extends WizardResourceImportPage
 		templateFileGroup.setLayoutData(gridData);
 
         Label groupLabel = new Label(templateFileGroup, SWT.NONE);
-        groupLabel.setText(AnswerImportMessages.JavaImport_AssoociatedText_title);
+        groupLabel.setText(AnswerImportMessages.Answer_Extraction_Output_Filename);
         groupLabel.setFont(parent.getFont());
 
-		templateFileText = new Text(templateFileGroup, SWT.BORDER); 
+		outputFileName = new Text(templateFileGroup, SWT.BORDER); 
 		gridData = GridDataUtil.createHorizontalFill();
 		gridData.widthHint = 300;
-		templateFileText.setLayoutData(gridData);
-		templateFileText.addSelectionListener(new SelectionAdapter() {
+		outputFileName.setLayoutData(gridData);
+		outputFileName.addSelectionListener(new SelectionAdapter() {
             public void widgetSelected(SelectionEvent e) {
             }
         });
-		templateFileText.addFocusListener(new FocusListener() {
+		outputFileName.addFocusListener(new FocusListener() {
             public void focusGained(FocusEvent e) {
                 //Do nothing when getting focus
             }
             public void focusLost(FocusEvent e) {
-            	String f = templateFileText.getText();
+            	String f = outputFileName.getText();
                 if (f == null || f.isEmpty()) {
                 	// Set enter template file message
-                	setMessage(SADLImportMessages.CSVImport_template_field_message);
+                	setErrorMessage(AnswerImportMessages.AnswerImport_template_field_message);
                 } else if (validFileName(f)) {
                 	setErrorMessage(null);
                 	setMessage(null);
                 } else {
                 	// Display error message
-                	setErrorMessage(SADLImportMessages.CSVImport_invalid_file_message);
+                	setErrorMessage(AnswerImportMessages.AnswerImport_invalid_file_message);
                 }
             }
         });
 
         // template browse button
-		templateBrowseButton = new Button(templateFileGroup, SWT.PUSH);
-		templateBrowseButton.setText(SADLImportMessages.DataTransfer_browse);
-		templateBrowseButton.addListener(SWT.Selection, this);
-		templateBrowseButton.setLayoutData(new GridData(
-                GridData.HORIZONTAL_ALIGN_FILL));
-		templateBrowseButton.setFont(parent.getFont());
-        setButtonLayoutData(templateBrowseButton);
+//		templateBrowseButton = new Button(templateFileGroup, SWT.PUSH);
+//		templateBrowseButton.setText(AnswerImportMessages.DataTransfer_browse);
+//		templateBrowseButton.addListener(SWT.Selection, this);
+//		templateBrowseButton.setLayoutData(new GridData(
+//                GridData.HORIZONTAL_ALIGN_FILL));
+//		templateBrowseButton.setFont(parent.getFont());
+//        setButtonLayoutData(templateBrowseButton);
 
         // first row contains headings button
         Composite optionComposite = new Composite(templateFileGroup, SWT.NONE);        
@@ -462,7 +459,7 @@ public class JavaFileResourceImportPage1 extends WizardResourceImportPage
         // create linked resource check
 		createLinksInWorkspaceButton= new Button(linkedResourceComposite, SWT.CHECK);
 		createLinksInWorkspaceButton.setFont(parent.getFont());
-        createLinksInWorkspaceButton.setText(SADLImportMessages.FileImport_createLinksInWorkspace);
+        createLinksInWorkspaceButton.setText(AnswerImportMessages.FileImport_createLinksInWorkspace);
         createLinksInWorkspaceButton.setSelection(false);
         
         createLinksInWorkspaceButton.addSelectionListener(new SelectionAdapter() {
@@ -478,8 +475,8 @@ public class JavaFileResourceImportPage1 extends WizardResourceImportPage
         // create virtual folders check
 		createVirtualFoldersButton= new Button(linkedResourceComposite, SWT.CHECK);
 		createVirtualFoldersButton.setFont(parent.getFont());
-        createVirtualFoldersButton.setText(SADLImportMessages.FileImport_createVirtualFolders);
-        createVirtualFoldersButton.setToolTipText(SADLImportMessages.FileImport_createVirtualFoldersTooltip);
+        createVirtualFoldersButton.setText(AnswerImportMessages.FileImport_createVirtualFolders);
+        createVirtualFoldersButton.setToolTipText(AnswerImportMessages.FileImport_createVirtualFoldersTooltip);
         createVirtualFoldersButton.setSelection(false);
 
         createVirtualFoldersButton.addSelectionListener(new SelectionAdapter() {
@@ -523,7 +520,7 @@ public class JavaFileResourceImportPage1 extends WizardResourceImportPage
 			public String getVariable() {
 				return pathVariable;
 			}
-        }, SADLImportMessages.FileImport_importElementsAs
+        }, AnswerImportMessages.FileImport_importElementsAs
         );
         relativePathVariableGroup.createContents(relativeGroup);
         
@@ -760,18 +757,15 @@ public class JavaFileResourceImportPage1 extends WizardResourceImportPage
 			return false;
 		}
 
-    	String f = templateFileText.getText();
-    	System.out.println("Text associated with this code is found in '" + f + "'");
-    	if (validURI(f)) {
-    		System.out.println("    valid URI");
+    	String f = outputFileName.getText();
+    	System.out.println("Output to go to file '" + f + "'");
+    	String outputFilename = null;
+    	if (!validFileName(f)) {
+    		setErrorMessage(AnswerImportMessages.AnswerImport_template_field_message);
+    		return false;
     	}
-    	else if (validFileName(f)) {
-    		if ((new File(f)).isDirectory()) {
-        		System.out.println("    valid folder");
-    		}
-    		else if ((new File(f)).isFile()) {
-    			System.out.println("    valid file name");
-    		}
+    	else {
+    		outputFilename = f;
     	}
     	
         saveWidgetValues();
@@ -784,7 +778,7 @@ public class JavaFileResourceImportPage1 extends WizardResourceImportPage
         }
 
         if (fileSystemObjects.size() > 0) {
-			return importResources(fileSystemObjects);
+			return importResources(fileSystemObjects, outputFilename);
 		}
 
         MessageDialog.openInformation(getContainer().getShell(),
@@ -924,9 +918,9 @@ public class JavaFileResourceImportPage1 extends WizardResourceImportPage
         if (event.widget == sourceBrowseButton) {
 			handleSourceBrowseButtonPressed();
 		}
-        else if (event.widget == templateBrowseButton) {
-        	handleTemplateBrowseButtonPressed();
-        }
+//        else if (event.widget == templateBrowseButton) {
+//        	handleTemplateBrowseButtonPressed();
+//        }
         super.handleEvent(event);
     }
 
@@ -934,33 +928,33 @@ public class JavaFileResourceImportPage1 extends WizardResourceImportPage
      *	Open an appropriate file browser so that the user can specify a template
      *	file to use
      */
-    protected void handleTemplateBrowseButtonPressed() {
-
-        String currentTemplate = this.templateFileText.getText();
-        FileDialog dialog = new FileDialog(
-        		templateFileText.getShell(), SWT.SAVE | SWT.SHEET);
-        dialog.setText(SADLImportMessages.CSVImport_template_dialog_title);
-//        dialog.setFilterPath(currentTemplate);
-        if (currentTemplate != null) {
-        	dialog.setFilterPath((new File(currentTemplate)).getParent());
-        }
-        String selectedFile = dialog.open();
-        if (selectedFile != null) {
-            if (validFileName(selectedFile)) {
-            	// Clear enter template file message
-            	setErrorMessage(null);
-            	setMessage(null);
-            } else {
-            	// Display error message
-            	setErrorMessage(SADLImportMessages.CSVImport_invalid_file_message);
-            }
-            setErrorMessage(null);
-            templateFileText.setText(selectedFile);
-            templateFileText.setFocus();
-        } else {
-        	setMessage(SADLImportMessages.CSVImport_template_field_message);
-        }
-    }
+//    protected void handleTemplateBrowseButtonPressed() {
+//
+//        String currentTemplate = this.outputFileName.getText();
+//        FileDialog dialog = new FileDialog(
+//        		outputFileName.getShell(), SWT.SAVE | SWT.SHEET);
+//        dialog.setText(AnswerImportMessages.AnswerImport_template_dialog_title);
+////        dialog.setFilterPath(currentTemplate);
+//        if (currentTemplate != null) {
+//        	dialog.setFilterPath((new File(currentTemplate)).getParent());
+//        }
+//        String selectedFile = dialog.open();
+//        if (selectedFile != null) {
+//            if (validFileName(selectedFile)) {
+//            	// Clear enter template file message
+//            	setErrorMessage(null);
+//            	setMessage(null);
+//            } else {
+//            	// Display error message
+//            	setErrorMessage(AnswerImportMessages.AnswerImport_invalid_file_message);
+//            }
+//            setErrorMessage(null);
+//            outputFileName.setText(selectedFile);
+//            outputFileName.setFocus();
+//        } else {
+//        	setMessage(AnswerImportMessages.AnswerImport_template_field_message);
+//        }
+//    }
 
     /**
      *	Open an appropriate source browser so that the user can specify a source
@@ -1001,8 +995,9 @@ public class JavaFileResourceImportPage1 extends WizardResourceImportPage
 
     /**
      *  Import the resources with extensions as specified by the user
+     * @param outputFilename 
      */
-    protected boolean importResources(List fileSystemObjects) {
+    protected boolean importResources(List fileSystemObjects, String outputFilename) {
         JavaImportOperation operation;
         
 //        boolean shouldImportTopLevelFoldersRecursively = selectionGroup.isEveryItemChecked() &&
@@ -1019,11 +1014,11 @@ public class JavaFileResourceImportPage1 extends WizardResourceImportPage
         if (shouldImportTopLevelFoldersRecursively)
             operation = new JavaImportOperation(getContainerFullPath(),
                     sourceDirectory, fileSystemStructureProvider,
-                    this, Arrays.asList(new File[] {getSourceDirectory()}));
+                    this, Arrays.asList(new File[] {getSourceDirectory()}), outputFilename);
         else
         	operation = new JavaImportOperation(getContainerFullPath(),
                 sourceDirectory, fileSystemStructureProvider,
-                this, fileSystemObjects);
+                this, fileSystemObjects, outputFilename);
 
         operation.setContext(getShell());
         return executeOwlImportOperation(operation);
@@ -1429,7 +1424,7 @@ public class JavaFileResourceImportPage1 extends WizardResourceImportPage
         	/*
         	if (createLinksInWorkspaceButton == null || createLinksInWorkspaceButton.getSelection() == false) {
 	        	setMessage(null);
-	        	setErrorMessage(SADLImportMessages.FileImport_haveToCreateLinksUnderAVirtualFolder);
+	        	setErrorMessage(AnswerImportMessages.FileImport_haveToCreateLinksUnderAVirtualFolder);
 				return false;
         		
         	}
@@ -1466,11 +1461,15 @@ public class JavaFileResourceImportPage1 extends WizardResourceImportPage
     }
 
     private boolean validFileName(String fileName) {
-    	File f = new File(fileName);
-    	if (f.isFile() && f.exists() && f.canRead()) {
-    		return true;
+    	if (fileName.length() < 1) {
+    		return false;
     	}
-    	return false;
+    	for (char c : fileName.toCharArray()) {
+    		if (Character.isWhitespace(c) || Character.isISOControl(c)) {
+    			return false;
+    		}
+    	}
+    	return true;
     }
     
     private boolean validURI(String s) {

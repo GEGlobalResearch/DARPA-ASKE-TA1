@@ -5,6 +5,7 @@ Derivative is a type of ScientificConcept,
 	described by withRespectTo with a single value of type class.
 	
 Time is a type of UnittedQuantity.
+Temperature is a type of UnittedQuantity.
 Length is a type of UnittedQuantity.
 Position is a type of UnittedQuantity,
 	described by x-coordinate with values of type Length,
@@ -15,7 +16,8 @@ Mass is a type of UnittedQuantity.
 
 PhysicalObject is a class, 
 	described by mass with values of type Mass,
-	described by position with values of type Position.
+	described by position with values of type Position,
+	described by temperature with values of type Temperature.
 		
 Velocity is a type of {UnittedQuantity and Derivative}.
 derivativeOf of Position only has values of type Velocity.

@@ -137,29 +137,29 @@ public class SadlModelGenerator {
 		}
 	}
 
-	public String generateSadlModel(JavaModelExtractor jme, String ontologyRootUri) {
+	public String generateSadlModel(IModelFromCodeExtractor codeExtractor, String ontologyRootUri) {
 		StringBuilder sb = new StringBuilder();
 		// generate SADL model URI
 		String thisNS = "uri \"http://";
-		thisNS += jme.getPackageName();
-		if (jme.getPackageName().length() < 1) {
+		thisNS += codeExtractor.getPackageName();
+		if (codeExtractor.getPackageName().length() < 1) {
 			// that was insufficient to provide reasonable unique URI
 			// use Java filename
 			thisNS += "nopackage";
 		}
 		thisNS += "/";
-		thisNS += jme.getType();
+		thisNS += codeExtractor.getType();
 		sb.append(thisNS);
 		sb.append("\"");
-		if (jme.getTypeComment() != null) {
+		if (codeExtractor.getTypeComment() != null) {
 			sb.append("\n (note \"");
-			sb.append(jme.getTypeComment());
+			sb.append(codeExtractor.getTypeComment());
 			sb.append("\")");
 		}
 		sb.append(".\n\n");
 		
 		// generate SADL model imports
-		Iterator<String> namesitr = jme.getNames().iterator();
+		Iterator<String> namesitr = codeExtractor.getNames().iterator();
 		while (namesitr.hasNext()) {
 			String name = namesitr.next();
 			NamedNode fqn = getNameFromOntology(name);
@@ -169,10 +169,10 @@ public class SadlModelGenerator {
 				sb.append("\".\n\n");
 			}
 		}
-		Iterator<String> cditr = jme.getClassDeclarations().keySet().iterator();
+		Iterator<String> cditr = codeExtractor.getClassDeclarations().keySet().iterator();
 		while (cditr.hasNext()) {
 			String type = cditr.next();
-			String supertype = jme.getClassDeclarations().get(type);
+			String supertype = codeExtractor.getClassDeclarations().get(type);
 			if (supertype != null) {
 				NamedNode fqn = getNameFromOntology(supertype);
 				if (fqn != null && fqn.getNamespace() != null && !thisNS.equals(fqn.getNamespace().replace("#", ""))) {
@@ -187,7 +187,7 @@ public class SadlModelGenerator {
 		}
 		
 		// generate External equations from methods
-		List<SadlMethod> methods = jme.getMethods();
+		List<SadlMethod> methods = codeExtractor.getMethods();
 		for (SadlMethod smd : methods) {
 			sb.append("External ");
 			sb.append(smd.getName());
@@ -207,9 +207,9 @@ public class SadlModelGenerator {
 					sb.append(arg.getType());
 					sb.append(" ");
 					sb.append(arg.getName());
-					if (jme.getTagMap().containsKey(arg.getName())) {
+					if (codeExtractor.getTagMap().containsKey(arg.getName())) {
 						sb.append(" (note \"");
-						sb.append(jme.getTagMap().get(arg.getName()).getText());
+						sb.append(codeExtractor.getTagMap().get(arg.getName()).getText());
 						sb.append("\")");
 						if (argCntr++ < args.size() - 1) sb.append(",");
 						sb.append("\n  ");
@@ -223,9 +223,9 @@ public class SadlModelGenerator {
 			String rettype = smd.getReturnType();
 			sb.append((rettype == null || rettype.equals("void")) ? "None" : rettype);
 			sb.append(": \"");
-			sb.append(jme.getPackageName());
+			sb.append(codeExtractor.getPackageName());
 			sb.append("/");
-			sb.append(jme.getType());
+			sb.append(codeExtractor.getType());
 			sb.append("/");
 			sb.append(smd.getName());
 			sb.append("\".\n");
