@@ -29,6 +29,8 @@ import org.apache.http.util.EntityUtils;
 import org.eclipse.emf.ecore.resource.Resource;
 
 import com.ge.research.sadl.builder.ConfigurationManagerForIDE;
+import com.ge.research.sadl.builder.ConfigurationManagerForIdeFactory;
+import com.ge.research.sadl.builder.IConfigurationManagerForIDE;
 import com.ge.research.sadl.jena.JenaBasedSadlInferenceProcessor;
 import com.ge.research.sadl.jena.UtilsForJena;
 import com.ge.research.sadl.model.gp.Literal;
@@ -39,6 +41,8 @@ import com.ge.research.sadl.processing.OntModelProvider;
 import com.ge.research.sadl.processing.SadlInferenceException;
 import com.ge.research.sadl.reasoner.ConfigurationException;
 import com.ge.research.sadl.reasoner.ConfigurationManager;
+import com.ge.research.sadl.reasoner.IReasoner;
+import com.ge.research.sadl.reasoner.InvalidNameException;
 import com.ge.research.sadl.reasoner.ResultSet;
 import com.ge.research.sadl.reasoner.TranslationException;
 import com.ge.research.sadl.reasoner.utils.SadlUtils;
@@ -50,6 +54,7 @@ import com.hp.hpl.jena.ontology.OntModel;
 import com.hp.hpl.jena.ontology.OntModelSpec;
 import com.hp.hpl.jena.ontology.OntProperty;
 import com.hp.hpl.jena.ontology.OntResource;
+import com.hp.hpl.jena.rdf.model.Model;
 import com.hp.hpl.jena.rdf.model.ModelFactory;
 import com.hp.hpl.jena.rdf.model.Property;
 import com.hp.hpl.jena.rdf.model.RDFNode;
@@ -167,6 +172,26 @@ public class JenaBasedDialogInferenceProcessor extends JenaBasedSadlInferencePro
 			"  ?DBN rdfs:subClassOf ?EB. ?EB owl:onProperty sci:hasEquation.  ?EB owl:someValuesFrom ?Eq.\n" + 
 			"  ?DBN rdfs:subClassOf ?DB. ?DB owl:onProperty sci:distribution. ?DB owl:hasValue ?Distribution.\n" + 
 			"} order by ?Node";
+
+	public static final String CGQUERY = "construct {\n" + 
+			" ?EQ <http://sadl.org/sadlimplicitmodel#input> ?I.\n" + 
+			" ?I <http://sadl.org/sadlimplicitmodel#argType> ?Input.\n" + 
+			" ?EQ <http://sadl.org/sadlimplicitmodel#output> ?O.\n" + 
+			" ?O a ?Output.\n" + 
+			"}\n" + 
+			"#select distinct ?EQ ?Input ?Output\n" + 
+			"where {\n" + 
+			" ?CCG a <http://aske.ge.com/metamodel#CCG>.\n" + 
+			" ?CCG <http://aske.ge.com/metamodel#subgraph> ?SG.\n" + 
+			" ?SG <http://aske.ge.com/metamodel#cgraph> ?CG.\n" + 
+			" ?CG <http://aske.ge.com/sciknow#hasEquation> ?EQ.\n" + 
+			" ?EQ <http://sadl.org/sadlimplicitmodel#input> ?I.\n" + 
+			" ?I <http://sadl.org/sadlimplicitmodel#argType> ?Input.\n" + 
+			" ?EQ <http://sadl.org/sadlimplicitmodel#output> ?O.\n" + 
+			" ?O a ?Output.\n" + 
+			"} order by ?EQ";
+	
+	
 	
 	@Override
 	public Object[] insertTriplesAndQuery(Resource resource, TripleElement[] triples) throws SadlInferenceException {
@@ -571,17 +596,61 @@ public class JenaBasedDialogInferenceProcessor extends JenaBasedSadlInferencePro
 		
 
 
+		Model combinedModel = getTheJenaModel().union(qhmodel);
 		
-		// TODO: create ResultSet
-//		ResultSet[] results = new ResultSet[numNodes+1];
-//		Object[][] cgres = {{cgIns}};
-//		String[] cgCol = {"CompGraph"};
-//		ResultSet res = new ResultSet(cgCol, cgres);
-//		results[0] = res;
-//
-//		String[] colNames = {"Variable", "Mean", "St Dev"};
-//		Object[][] data = {{"Static_Temperature",1000,0}};
-//		results[1] = new ResultSet(colNames, data);
+		
+		
+		//qexec = QueryExecutionFactory.create(cgquery, combinedModel); 
+		//com.hp.hpl.jena.query.ResultSet qres = qexec.execSelect() ;
+		
+		
+		String modelFolderUri = getModelFolderPath(resource); //getOwlModelsFolderPath(path).toString(); 
+		final String format = ConfigurationManager.RDF_XML_ABBREV_FORMAT;
+		IConfigurationManagerForIDE configMgr;
+		try {
+			configMgr = ConfigurationManagerForIdeFactory.getConfigurationManagerForIDE(modelFolderUri, format);
+			IReasoner reasoner = configMgr.getReasoner();
+		
+			if (!reasoner.isInitialized()) {
+				reasoner.setConfigurationManager(configMgr);
+				//String modelName = configMgr.getPublicUriFromActualUrl(new SadlUtils().fileNameToFileUrl(modelFolderUri + "/" + owlFileName));
+				reasoner.initializeReasoner(modelFolderUri, getModelName(), format);
+				reasoner.loadInstanceData(qhmodel);
+				//System.out.print("reasoner is not initialized");
+				//return null;
+			}
+		
+				//String currentQuery = reasoner.prepareQuery(CGQUERY);
+				String cgquery = reasoner.prepareQuery(CGQUERY);
+				//ResultSet rs = reasoner.ask(currentQuery);
+				ResultSet cgres = reasoner.ask(cgquery);
+				//String desc = "Computational Graph Query";
+				//String baseFileName = qhOwlFileName + System.currentTimeMillis(); 	
+				//resultSetToGraph(getModelFolderPath(resource), cgres, desc, baseFileName, null, preferenceMap);
+
+
+				// TODO: create ResultSet
+				ResultSet[] results = new ResultSet[2];  //[numNodes+1];
+//				Object[][] cgres = {{cgIns}};
+//				String[] cgCol = {"CompGraph"};
+//				ResultSet res = new ResultSet(cgCol, cgres);
+//				results[0] = res;
+
+				results[0] = cgres;
+
+				String[] colNames = {"Variable", "Mean", "St Dev"};
+				Object[][] data = {{"Static_Temperature",1000, 0}};
+				results[1] = new ResultSet(colNames, data);
+				
+				return results;
+				
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+
+		
+		
 		
 //		Object[] results = new Object[outputInstance.keySet().size()];
 //		for(OntClass oclass : outputInstance.keySet()) {
@@ -590,6 +659,9 @@ public class JenaBasedDialogInferenceProcessor extends JenaBasedSadlInferencePro
 //		}
 		
 
+		
+		
+		
 		return null; //results;
 	}
 

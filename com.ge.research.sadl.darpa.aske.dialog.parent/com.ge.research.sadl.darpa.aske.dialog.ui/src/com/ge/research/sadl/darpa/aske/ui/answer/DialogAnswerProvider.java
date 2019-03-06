@@ -52,6 +52,8 @@ import com.ge.research.sadl.ui.handlers.SadlActionHandler;
 import com.google.inject.Inject;
 import com.google.inject.Injector;
 import com.google.inject.Provider;
+import com.hp.hpl.jena.ontology.OntClass;
+import com.hp.hpl.jena.ontology.OntResource;
 import com.hp.hpl.jena.vocabulary.OWL;
 import com.hp.hpl.jena.vocabulary.RDF;
 import com.hp.hpl.jena.vocabulary.RDFS;
@@ -194,6 +196,15 @@ public class DialogAnswerProvider extends DefaultAutoEditStrategyProvider {
 						                OntModelProvider.addPrivateKeyValuePair(resource, DialogConstants.LAST_DIALOG_COMMAND, triples);
 				                		StringBuilder answer = new StringBuilder("CM: ");
 				                		ResultSet[] rss = insertTriplesAndQuery(resource, triples);
+				                		
+				                		//TODO Alfredo: is it here where we should call graphviz?
+				                		//if ( rss[0].getColumnNames()[0].equals("CompGraph") ) {
+//				                		String desc = "Computational Graph";
+//				                		String baseFileName = OntModelProvider.getModelName(resource); //path.getFileName().toString() + System.currentTimeMillis();
+//				                		String path = resource.getURI().toFileString();
+//				                		resultSetToGraph(path, rss[0], desc, baseFileName, null, OntModelProvider.getAllImpliedProperties(resource));
+				                		//}
+				                		
 				                		answer.append("\"");
 				                		if (rss != null) {
 					                		for (ResultSet rs : rss) {
