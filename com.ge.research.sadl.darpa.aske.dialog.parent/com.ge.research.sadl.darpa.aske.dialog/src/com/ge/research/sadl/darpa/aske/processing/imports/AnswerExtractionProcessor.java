@@ -1,8 +1,19 @@
 package com.ge.research.sadl.darpa.aske.processing.imports;
 
+import java.io.BufferedReader;
+import java.io.InputStreamReader;
+import java.io.OutputStream;
+import java.io.UnsupportedEncodingException;
+import java.net.HttpURLConnection;
+import java.net.MalformedURLException;
+import java.net.URL;
 import java.util.Map;
 
 import com.ge.research.sadl.darpa.aske.curation.AnswerCurationManager;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParser;
+import com.google.gson.JsonPrimitive;
 import com.hp.hpl.jena.ontology.OntModel;
 
 public class AnswerExtractionProcessor {
@@ -179,6 +190,64 @@ public class AnswerExtractionProcessor {
 
 	public void setCodeModelName(String codeModelName) {
 		this.codeModelName = codeModelName;
+	}
+
+	public String translateMethodJavaToPython(String className, String methodCode) throws MalformedURLException, UnsupportedEncodingException {
+		StringBuilder sb = new StringBuilder();
+		String baseServiceUrl = "http://vesuvius063.crd.ge.com:19091/darpa/aske/";
+		
+		String translateMethodServiceURL = baseServiceUrl + "translate/method/";
+		translateMethodServiceURL += "?javaClassName=" + className;
+		URL serviceUrl = new URL(translateMethodServiceURL);			
+
+		JsonObject json = new JsonObject();
+		json.addProperty("javaMethod", methodCode);
+	
+		String response = makeConnectionAndGetResponse(serviceUrl, json);
+		System.out.println(response);
+		if (response != null && response.length() > 0) {
+			JsonElement je = new JsonParser().parse(response);
+			if (je instanceof JsonPrimitive) {
+				String status = ((JsonPrimitive)je).getAsString();
+				System.err.println(status);
+			}
+			else {
+				JsonObject jobj = je.getAsJsonObject();
+				jobj.get("status");
+				String pythonCode = jobj.get("code").getAsString();
+				System.out.println(pythonCode);
+			}
+		}
+		else {
+			System.err.println("No response received from service " + translateMethodServiceURL);
+		}
+		return sb.toString();
+	}
+
+	private String makeConnectionAndGetResponse(URL url, JsonObject jsonObject) {
+		String response = "";
+		try {
+			HttpURLConnection connection = (HttpURLConnection) url.openConnection();                     
+			connection.setDoOutput(true);
+			connection.setRequestMethod("POST"); 
+			connection.setRequestProperty("Content-Type", "application/json");
+
+			OutputStream outputStream = connection.getOutputStream();
+			outputStream.write(jsonObject.toString().getBytes());
+			outputStream.flush();
+
+			BufferedReader br = new BufferedReader(
+					new InputStreamReader(connection.getInputStream()));                                     
+			String output = "";
+			while((output = br.readLine()) != null) 
+				response = response + output;                 
+			outputStream.close();
+			br.close();
+			connection.disconnect();
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		return response;
 	}
 
 }
