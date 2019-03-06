@@ -33,6 +33,7 @@ import com.ge.research.sadl.ide.handlers.SadlRunInferenceHandler;
 import com.ge.research.sadl.model.gp.Query;
 import com.ge.research.sadl.model.gp.TripleElement;
 import com.ge.research.sadl.processing.OntModelProvider;
+import com.ge.research.sadl.reasoner.ResultSet;
 import com.ge.research.sadl.reasoner.SadlCommandResult;
 import com.google.common.base.Supplier;
 import com.google.common.base.Throwables;
@@ -68,7 +69,13 @@ public class DialogRunInferenceHandler extends SadlRunInferenceHandler {
 				}
 				else if (lastCmd instanceof TripleElement[]) {
 					Object[] rss = inferenceProcessor.insertTriplesAndQuery(res, (TripleElement[]) lastCmd);
-					OntModelProvider.addPrivateKeyValuePair(res, "CMResult", rss);
+
+            		String desc = "Computational Graph";
+            		String baseFileName = OntModelProvider.getModelName(res); //path.getFileName().toString() + System.currentTimeMillis();
+            		//String path = resource.getURI().toFileString();
+            		resultSetToGraph(path, (ResultSet)rss[0], desc, baseFileName, null, properties);
+            		
+					OntModelProvider.addPrivateKeyValuePair(res, "CMResult", rss[1]);
 				}
 				else if (lastCmd != null) {
 					throw new InvalidClassException("Unhandled last command type: " + lastCmd.getClass().getCanonicalName());
