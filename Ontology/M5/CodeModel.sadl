@@ -10,21 +10,22 @@
  
  {Class, Method, ConditionalBlock, LoopBlock} are types of CodeBlock.
 
-// maybe just Set, Used? Change Defined to Assigned
+// The reference to a CodeVariable can be its definition (Defined),
+//	an assignment or reassignment (Reassigned), or just a reference
+//	in the right-hand side of an assignment or a conditional (Used)
 Usage is a class, must be one of {Defined, Used, Reassigned}.
 
-// associated comments can be in-line or before the reference to it
-// first only handling in-line comments
-// have not yet folded in the usage of code block
 Reference  is a type of CodeElement
 	described by notFirstRef with a single value of type boolean
 	described by codeBlock with a single value of type CodeBlock
 	described by usage with values of type Usage
- 	described by input with a single value of type boolean
- 	described by output with a single value of type boolean
+ 	described by input (note "CodeVariable is an input to codeBlock CodeBlock") 
+ 		with a single value of type boolean
+ 	described by output (note "CodeVariable is an output of codeBlock CodeBlock") 
+ 		with a single value of type boolean
  	described by comment with values of type Comment.
 	
-Comment  is a type of CodeElement
+Comment (note "CodeBlock and Reference can have a Comment") is a type of CodeElement
  	described by commentContent with a single value of type string.	
 
 // what about Constant also? Note something maybe an input and then gets reassigned
