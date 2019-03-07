@@ -61,9 +61,11 @@ import com.hp.hpl.jena.ontology.OntDocumentManager;
 import com.hp.hpl.jena.ontology.OntModel;
 import com.hp.hpl.jena.ontology.OntModelSpec;
 import com.hp.hpl.jena.ontology.Ontology;
+import com.hp.hpl.jena.rdf.model.Literal;
 import com.hp.hpl.jena.rdf.model.Model;
 import com.hp.hpl.jena.rdf.model.ModelFactory;
 import com.hp.hpl.jena.rdf.model.Property;
+import com.hp.hpl.jena.rdf.model.RDFList;
 import com.hp.hpl.jena.rdf.model.RDFNode;
 
 public class JavaModelExtractorJP implements IModelFromCodeExtractor {
@@ -290,18 +292,30 @@ public class JavaModelExtractorJP implements IModelFromCodeExtractor {
 			// Note that this local scope overrides any variable of the same name in a
 			//	more global scope. Therefore do not look for an existing variable
 			NodeList<Parameter> args = m.getParameters();
+			List<Individual> argList = args.size() > 0 ? new ArrayList<Individual>() : null;
 			for (int j = 0; j < args.size(); j++) {
 				Parameter param = args.get(j);
 				String nm = param.getNameAsString();
 				try {
-					getOrCreateCodeVariable(param, methInst, getMethodVariableClass());
+					Individual argCV = getOrCreateCodeVariable(param, methInst, getMethodVariableClass());
+					argList.add(argCV);
 				} catch (CodeExtractionException e) {
 					// TODO Auto-generated catch block
 					e.printStackTrace();
 				}
 			}
+			if (argList != null) {
+				RDFList argInstList = getCodeModel().createList(argList.iterator());
+				methInst.addProperty(getArgumentsProperty(), argInstList);
+			}
 			processBlock(m, methInst);	// order matters--do this after parameters and before return
 			String rt = m.getTypeAsString();
+			if (rt != null) {
+				List<Literal> rtypes = new ArrayList<Literal>();
+				rtypes.add(getCodeModel().createTypedLiteral(rt));
+				RDFList rtList = getCodeModel().createList(rtypes.iterator());
+				methInst.addProperty(getReturnTypeProperty(), rtList);
+			}
 			System.out.println(methInst.getURI() + " returns " + ((rt != null && rt.length() > 0) ? rt : "void"));
 			addSerialization(methInst, ((MethodDeclaration) childNode).toString());
 		}
@@ -824,6 +838,10 @@ public class JavaModelExtractorJP implements IModelFromCodeExtractor {
 	private Property getSerializationProperty() {
 		return getCodeModel().getOntProperty(getCodeMetaModelUri() + "#serialization");
 	}
+	
+	private Property getArgumentsProperty() {
+		return getCodeModel().getOntProperty(getCodeMetaModelUri() + "#arguments");
+	}
 
 	private Property getBeginsAtProperty() {
 		return getCodeModel().getOntProperty(getCodeMetaModelUri() + "#beginsAt");
@@ -851,6 +869,10 @@ public class JavaModelExtractorJP implements IModelFromCodeExtractor {
 
 	private Property getContainedInProperty() {
 		return getCodeModel().getOntProperty(getCodeMetaModelUri() + "#containedIn");
+	}
+
+	private Property getReturnTypeProperty() {
+		return getCodeModel().getOntProperty(getCodeMetaModelUri() + "#returnTypes");
 	}
 
 	private com.hp.hpl.jena.rdf.model.Resource getReferenceClass() {

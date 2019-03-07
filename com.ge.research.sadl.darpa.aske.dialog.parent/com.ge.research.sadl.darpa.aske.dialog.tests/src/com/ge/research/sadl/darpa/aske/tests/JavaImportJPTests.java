@@ -212,9 +212,12 @@ public class JavaImportJPTests {
 		SadlModelGenerator smg = new SadlModelGenerator();
 		JavaModelExtractorJP jme = new JavaModelExtractorJP(acm, smg, null);
 		jme.setCodeMetaModelModelFolder(getExtractionProjectModelFolder());
-		String defaultCodeModelPrefix = "Mach";
+		
+		boolean includeSerialization = true;
+		
+		String defaultCodeModelPrefix = includeSerialization ? "MachSz" : "Mach";
 		String defaultCodeModelName = "http://com.ge.research.darpa.aske.ta1.explore/" + defaultCodeModelPrefix;
-		jme.process(javaContent, defaultCodeModelName, defaultCodeModelPrefix, false);
+		jme.process(javaContent, defaultCodeModelName, defaultCodeModelPrefix, includeSerialization);
 //		String content = smg.generateSadlModel(jme, "http://sadl.org/Temperature.sadl");
 //		System.out.println("SADL Model Output:\n" + content);
 		String genFolder = getOutputProjectModelFolder() + "/GeneratedModels";

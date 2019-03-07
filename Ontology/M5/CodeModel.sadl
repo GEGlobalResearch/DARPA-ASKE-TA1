@@ -9,6 +9,10 @@
  	described by containedIn with values of type CodeBlock.
  
  {Class, Method, ConditionalBlock, LoopBlock} are types of CodeBlock.
+ 
+ codemdl:arguments describes Method with a single value of type CodeVariable List.
+ codemdl:returnTypes describes Method with a single value of type string List.
+ semanticReturnTypes describes Method with a single value of type string List.
 
 // The reference to a CodeVariable can be its definition (Defined),
 //	an assignment or reassignment (Reassigned), or just a reference
@@ -33,7 +37,8 @@ Comment (note "CodeBlock and Reference can have a Comment") is a type of CodeEle
 // Constants could also relate variables used in different equations as being same
  CodeVariable  is a type of CodeElement, 
  	described by varName with a single value of type string,
- 	described by varType with a single value of type anyURI,
+ 	described by varType with a single value of type string,
+ 	described by semanticVarType with a single value of type string,
  	described by quantityKind (note "this should be qudt:QuantityKind") with a single value of type ScientificConcept,
  	described by setterArgument (note "is this variable input to a setter?") with a single value of type boolean
  	described by reference with values of type Reference.   

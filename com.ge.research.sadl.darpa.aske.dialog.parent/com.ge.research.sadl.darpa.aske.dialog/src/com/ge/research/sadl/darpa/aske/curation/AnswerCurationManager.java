@@ -103,6 +103,9 @@ public class AnswerCurationManager {
 			getProjectConfigurationManager().saveOwlFile(getExtractionProcessor().getCodeModel(), getExtractionProcessor().getCodeModelName(), of.getCanonicalPath());
 
 		}
+		
+		// run inference on the model, interact with user to refine results
+		
 	}
 
 	/**

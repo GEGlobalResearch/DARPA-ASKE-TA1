@@ -7,9 +7,11 @@
     xmlns:builtinfunctions="http://sadl.org/builtinfunctions"
     xmlns:j.0="http://sadl.org/sadlimplicitmodel#"
     xmlns:rdfs="http://www.w3.org/2000/01/rdf-schema#"
+    xmlns:sadllistmodel="http://sadl.org/sadllistmodel"
     xmlns:xsd="http://www.w3.org/2001/XMLSchema#"
   xml:base="http://sadl.org/CodeModel.sadl">
   <owl:Ontology rdf:about="">
+    <owl:imports rdf:resource="sadllistmodel"/>
     <owl:imports rdf:resource="builtinfunctions"/>
     <owl:imports rdf:resource="sadlimplicitmodel"/>
     <owl:imports rdf:resource="sadlbasemodel"/>
@@ -47,6 +49,21 @@
         </owl:oneOf>
       </owl:Class>
     </owl:equivalentClass>
+  </owl:Class>
+  <owl:Class rdf:nodeID="A0">
+    <rdfs:subClassOf>
+      <owl:Restriction>
+        <owl:allValuesFrom rdf:nodeID="A0"/>
+        <owl:onProperty rdf:resource="sadllistmodel#rest"/>
+      </owl:Restriction>
+    </rdfs:subClassOf>
+    <rdfs:subClassOf>
+      <owl:Restriction>
+        <owl:allValuesFrom rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+        <owl:onProperty rdf:resource="sadllistmodel#first"/>
+      </owl:Restriction>
+    </rdfs:subClassOf>
+    <rdfs:subClassOf rdf:resource="sadllistmodel#List"/>
   </owl:Class>
   <owl:Class rdf:ID="Reference">
     <rdfs:subClassOf>
@@ -90,6 +107,33 @@
     </rdfs:subClassOf>
   </owl:Class>
   <owl:Class rdf:ID="Method">
+    <rdfs:subClassOf>
+      <owl:Restriction>
+        <owl:cardinality rdf:datatype="http://www.w3.org/2001/XMLSchema#int"
+        >1</owl:cardinality>
+        <owl:onProperty>
+          <owl:ObjectProperty rdf:ID="semanticReturnTypes"/>
+        </owl:onProperty>
+      </owl:Restriction>
+    </rdfs:subClassOf>
+    <rdfs:subClassOf>
+      <owl:Restriction>
+        <owl:cardinality rdf:datatype="http://www.w3.org/2001/XMLSchema#int"
+        >1</owl:cardinality>
+        <owl:onProperty>
+          <owl:ObjectProperty rdf:ID="returnTypes"/>
+        </owl:onProperty>
+      </owl:Restriction>
+    </rdfs:subClassOf>
+    <rdfs:subClassOf>
+      <owl:Restriction>
+        <owl:cardinality rdf:datatype="http://www.w3.org/2001/XMLSchema#int"
+        >1</owl:cardinality>
+        <owl:onProperty>
+          <owl:ObjectProperty rdf:ID="arguments"/>
+        </owl:onProperty>
+      </owl:Restriction>
+    </rdfs:subClassOf>
     <rdfs:subClassOf rdf:resource="#CodeBlock"/>
   </owl:Class>
   <owl:Class rdf:ID="LoopBlock">
@@ -142,6 +186,15 @@
         <owl:cardinality rdf:datatype="http://www.w3.org/2001/XMLSchema#int"
         >1</owl:cardinality>
         <owl:onProperty>
+          <owl:DatatypeProperty rdf:ID="semanticVarType"/>
+        </owl:onProperty>
+      </owl:Restriction>
+    </rdfs:subClassOf>
+    <rdfs:subClassOf>
+      <owl:Restriction>
+        <owl:cardinality rdf:datatype="http://www.w3.org/2001/XMLSchema#int"
+        >1</owl:cardinality>
+        <owl:onProperty>
           <owl:DatatypeProperty rdf:ID="varType"/>
         </owl:onProperty>
       </owl:Restriction>
@@ -158,6 +211,21 @@
     <rdfs:subClassOf>
       <owl:Class rdf:about="#CodeElement"/>
     </rdfs:subClassOf>
+  </owl:Class>
+  <owl:Class rdf:nodeID="A1">
+    <rdfs:subClassOf>
+      <owl:Restriction>
+        <owl:allValuesFrom rdf:nodeID="A1"/>
+        <owl:onProperty rdf:resource="sadllistmodel#rest"/>
+      </owl:Restriction>
+    </rdfs:subClassOf>
+    <rdfs:subClassOf>
+      <owl:Restriction>
+        <owl:allValuesFrom rdf:resource="#CodeVariable"/>
+        <owl:onProperty rdf:resource="sadllistmodel#first"/>
+      </owl:Restriction>
+    </rdfs:subClassOf>
+    <rdfs:subClassOf rdf:resource="sadllistmodel#List"/>
   </owl:Class>
   <owl:Class rdf:ID="MethodVariable">
     <rdfs:subClassOf rdf:resource="#CodeVariable"/>
@@ -199,6 +267,14 @@
     <rdfs:domain rdf:resource="#Reference"/>
     <rdfs:range rdf:resource="#CodeBlock"/>
   </owl:ObjectProperty>
+  <owl:ObjectProperty rdf:about="#arguments">
+    <rdfs:range rdf:nodeID="A1"/>
+    <rdfs:domain rdf:resource="#Method"/>
+  </owl:ObjectProperty>
+  <owl:ObjectProperty rdf:about="#semanticReturnTypes">
+    <rdfs:range rdf:nodeID="A0"/>
+    <rdfs:domain rdf:resource="#Method"/>
+  </owl:ObjectProperty>
   <owl:ObjectProperty rdf:ID="reference">
     <rdfs:domain rdf:resource="#CodeVariable"/>
     <rdfs:range rdf:resource="#Reference"/>
@@ -213,6 +289,10 @@
       </owl:Class>
     </rdfs:domain>
     <rdfs:range rdf:resource="#Comment"/>
+  </owl:ObjectProperty>
+  <owl:ObjectProperty rdf:about="#returnTypes">
+    <rdfs:range rdf:nodeID="A0"/>
+    <rdfs:domain rdf:resource="#Method"/>
   </owl:ObjectProperty>
   <owl:DatatypeProperty rdf:about="#input">
     <rdfs:domain rdf:resource="#Reference"/>
@@ -236,6 +316,10 @@
     <rdfs:comment xml:lang="en">CodeVariable is an output of codeBlock CodeBlock</rdfs:comment>
     <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#boolean"/>
   </owl:DatatypeProperty>
+  <owl:DatatypeProperty rdf:about="#semanticVarType">
+    <rdfs:domain rdf:resource="#CodeVariable"/>
+    <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+  </owl:DatatypeProperty>
   <owl:DatatypeProperty rdf:about="#varName">
     <rdfs:domain rdf:resource="#CodeVariable"/>
     <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
@@ -247,7 +331,7 @@
   </owl:DatatypeProperty>
   <owl:DatatypeProperty rdf:about="#varType">
     <rdfs:domain rdf:resource="#CodeVariable"/>
-    <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#anyURI"/>
+    <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
   </owl:DatatypeProperty>
   <owl:DatatypeProperty rdf:about="#beginsAt">
     <rdfs:domain rdf:resource="#CodeElement"/>
