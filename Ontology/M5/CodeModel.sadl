@@ -1,8 +1,9 @@
  uri "http://sadl.org/CodeModel.sadl" alias codemdl.
  
- CodeBlock is a class,
- 	described by beginsAt with a single value of type int,
- 	described by endsAt with a single value of type int,
+ CodeElement is a class described by beginsAt with a single value of type int,
+ 	described by endsAt with a single value of type int.
+ 	
+ CodeBlock is a type of CodeElement,
  	described by serialization with a single value of type string,
  	described by comment with values of type Comment,
  	described by containedIn with values of type CodeBlock.
@@ -15,8 +16,7 @@ Usage is a class, must be one of {Defined, Used, Reassigned}.
 // associated comments can be in-line or before the reference to it
 // first only handling in-line comments
 // have not yet folded in the usage of code block
-Reference is a class
-	described by location with a single value of type int
+Reference  is a type of CodeElement
 	described by notFirstRef with a single value of type boolean
 	described by codeBlock with a single value of type CodeBlock
 	described by usage with values of type Usage
@@ -24,22 +24,18 @@ Reference is a class
  	described by output with a single value of type boolean
  	described by comment with values of type Comment.
 	
-Comment is a class
- 	described by commentContent with a single value of type string
-	described by commentStart with a single value of type int
-	described by commentEnd with a single value of type int.	
+Comment  is a type of CodeElement
+ 	described by commentContent with a single value of type string.	
 
 // what about Constant also? Note something maybe an input and then gets reassigned
 // Constant could be defined in terms of being set by equations that only involve Constants
 // Constants could also relate variables used in different equations as being same
- CodeVariable is a class, 
+ CodeVariable  is a type of CodeElement, 
  	described by varName with a single value of type string,
  	described by varType with a single value of type anyURI,
  	described by quantityKind (note "this should be qudt:QuantityKind") with a single value of type ScientificConcept,
  	described by setterArgument (note "is this variable input to a setter?") with a single value of type boolean
- 	described by reference with values of type Reference
- 	described by input with a single value of type boolean
- 	described by output with a single value of type boolean.   
+ 	described by reference with values of type Reference.   
  	
  {ClassField, MethodArgument, MethodVariable} are types of CodeVariable. 	
 
@@ -61,8 +57,8 @@ if c is a CodeVariable and
    cb is codeBlock of ref and   
    cb2 is codeBlock of ref2 and
    cb = cb2 and
-   l1 is location of ref and
-   l2 is location of ref2 and
+   l1 is beginsAt of ref and
+   l2 is beginsAt of ref2 and
    l2 > l1   // so ref2 is at an earlier location that ref
 then notFirstRef of ref2 is false.   
    
@@ -78,8 +74,8 @@ if c is CodeVariable and
    cb is codeBlock of ref and   
    cb2 is codeBlock of ref2 and
    cb = cb2 and   
-   l1 is location of ref and
-   l2 is location of ref2 and
+   l1 is beginsAt of ref and
+   l2 is beginsAt of ref2 and
    l2 < l1 and  // so ref2 is at an earlier location that ref
    noValue(ref2, usage, Defined) // no earlier definition of c exists
 then input of ref is true. 
@@ -91,7 +87,7 @@ if c is a CodeVariable and
    ref is reference of c and
    input of ref is not known and
    usage of ref is Used and
-   l is location of ref and
+   l is beginsAt of ref and
    noValue(ref, notFirstRef)
 then input of ref is true. 
 

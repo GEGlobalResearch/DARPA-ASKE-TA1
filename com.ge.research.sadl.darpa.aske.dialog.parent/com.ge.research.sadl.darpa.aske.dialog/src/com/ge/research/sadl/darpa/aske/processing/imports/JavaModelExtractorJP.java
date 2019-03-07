@@ -15,7 +15,6 @@ import java.util.Set;
 
 import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
-import org.eclipse.emf.ecore.resource.Resource;
 
 import com.ge.research.sadl.builder.ConfigurationManagerForIdeFactory;
 import com.ge.research.sadl.builder.IConfigurationManagerForIDE;
@@ -82,16 +81,21 @@ public class JavaModelExtractorJP implements IModelFromCodeExtractor {
 	public enum CONTEXT {PackageDecl, MainClassDecl, InnerClassDecl, ConstructorDecl, MethodDecl, Expression,
 		Block, MethodBody}
 	public enum USAGE {Defined, Used, Reassigned}
+	public enum InputOutput {Input, Output}
 	private CONTEXT currentContext = null;
 	private Map<String, String> preferences;
 	Map<String, Tag> tagMap = null;;
 	private List<File> codeFiles;
 	private OntModel codeModel;
-	private String codeModelName;
-	private String codeModelPrefix;
-	private String codeMetaModelUri;
-	private IConfigurationManagerForIDE codeMetaModelConfigMgr;
+	private String codeModelName;	// the name of the model  being created by extraction
+	private String codeModelPrefix; // the prefix of the model being created by extraction
+	
+	private String codeMetaModelModelFolder = null;
+	private String codeMetaModelUri;	// the name of the code extraction metamodel
+	private String codeMetaModelPrefix;	// the prefix of the code extraction metamodel
+	private IConfigurationManagerForIDE codeMetaModelConfigMgr;	// the ConfigurationManager used to access the code extraction metamodel
 	private Individual rootContainingInstance = null;
+	private boolean includeSerialization = true;
 	
 	private static class MethodNameCollector extends VoidVisitorAdapter<List<MethodDeclaration>> {	
 		@Override
@@ -117,52 +121,27 @@ public class JavaModelExtractorJP implements IModelFromCodeExtractor {
 		getComments().clear();
 	}
 
-	public boolean process(String content) throws ConfigurationException, IOException {
-		setCodeModelName("http://com.ge.research/darpa/aske/answer/testcodeextraction");
-		setCodeModelPrefix("testcodeextraction");
-		if (getCurationMgr().getExtractionProcessor().getCodeModel() == null) {
-			// create new code model
-			String astKbRoot = "C:/Users/200005201/sadl3-master6/git/DARPA-ASKE-TA1/Ontology/M5";
-			
-			String modelFolderPathname = astKbRoot + "/OwlModels";
-			setCodeMetaModelConfigMgr(ConfigurationManagerForIdeFactory.getConfigurationManagerForIDE(modelFolderPathname, null)); //getCurationMgr().getProjectConfigurationManager());
-			OntDocumentManager owlDocMgr = getCodeMetaModelConfigMgr().getJenaDocumentMgr();
-			OntModelSpec spec = new OntModelSpec(OntModelSpec.OWL_MEM);
-			if (modelFolderPathname != null) { // && !modelFolderPathname.startsWith(SYNTHETIC_FROM_TEST)) {
-				File mff = new File(modelFolderPathname);
-				mff.mkdirs();
-				spec.setImportModelGetter(new SadlJenaModelGetterPutter(spec, modelFolderPathname));
-			}
-			if (owlDocMgr != null) {
-				spec.setDocumentManager(owlDocMgr);
-				owlDocMgr.setProcessImports(true);
-			}
-			getCurationMgr().getExtractionProcessor().setCodeModel(ModelFactory.createOntologyModel(spec));	
-			setCodeModel(getCurationMgr().getExtractionProcessor().getCodeModel());
-			getCodeModel().setNsPrefix(getCodeModelPrefix(), getCodeModelNamespace());
-			Ontology modelOntology = getCodeModel().createOntology(getCodeModelName());
-			logger.debug("Ontology '" + getCodeModelName() + "' created");
-			modelOntology.addComment("This ontology was created by extraction from code (JavaModelExtractorJP).", "en");
-			setCodeMetaModelUri("http://sadl.org/CodeModel.sadl");
-			OntModel importedOntModel = getCodeMetaModelConfigMgr().getOntModel(getCodeMetaModelUri(), Scope.INCLUDEIMPORTS);
-			addImportToJenaModel(getCodeModelName(), getCodeMetaModelUri(), "codemdl", importedOntModel);
-		}
-		else {
-			setCodeModel(getCurationMgr().getExtractionProcessor().getCodeModel());
-		}
-		
-		parse(getCurationMgr().getOwlModelsFolder(), content);
+	public boolean process(String content, String defaultCodeModelName, String defaultPrefix, boolean includeSerialization) throws ConfigurationException, IOException {
+		setIncludeSerialization(includeSerialization);
+		parse(getCurationMgr().getOwlModelsFolder(), content, defaultCodeModelName, defaultPrefix);
 		// Create a Reasoner and reason over the model, getting resulting InfModel
 		// get deductions from InfModel, add to code model.
 //		getCodeModel().write(System.out, "RDF/XML-ABBREV");
 		return true;
 	}
 	
+	private void setIncludeSerialization(boolean includeSerialization) {
+		this.includeSerialization = includeSerialization;
+	}
+
+	private boolean isIncludeSerialization() {
+		return includeSerialization;
+	}
+
 	//use ASTParse to parse string
-	private void parse(String modelFolder, String str) {
-		Resource resource = null;
+	private void parse(String modelFolder, String javaCodeContent, String defaultCodeModelName, String defaultPrefix) throws IOException, ConfigurationException {
 		try {
-			notifyUser(modelFolder, str);
+			notifyUser(modelFolder, javaCodeContent);
 		} catch (ConfigurationException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -194,160 +173,82 @@ public class JavaModelExtractorJP implements IModelFromCodeExtractor {
         JavaParser.getStaticConfiguration().setSymbolResolver(symbolSolver);
 
         // Parse some code
-        CompilationUnit cu = JavaParser.parse(str);
+        CompilationUnit cu = JavaParser.parse(javaCodeContent);
         Optional<PackageDeclaration> pkg = cu.getPackageDeclaration();
         if (pkg.isPresent()) {
         	setPackageName(pkg.get().getNameAsString());
+        	String rootClassName = getRootClassName(cu);
+        	setCodeModelName(getPackageName() + "/" + rootClassName);
+        	setCodeModelPrefix(derivePrefixFromPackage(getCodeModelName()));
         }
-        
+        else {
+    		setCodeModelName(defaultCodeModelName);
+    		setCodeModelPrefix(defaultPrefix);
+
+        }
+        initializeCodeModel(getCodeMetaModelModelFolder());
         processBlock(cu, null);
-        
-//         cu.getChildNodes();
-//                
-//        cu.findAll(ClassOrInterfaceDeclaration.class).forEach(cls -> {
-//        	Individual clsInst = getOrCreateClass(cls);
-//        	indentifyAndLinkContainingBlock(cls, clsInst);
-//
-//      		Comment clscmnt = getComment(cls);
-//        	System.out.println("Class or Interface Declaration: " + cls.getNameAsString() + (clscmnt != null ? "(Comment: " + clscmnt.toString().trim() + ")" : ""));
-//            cls.findAll(FieldDeclaration.class).forEach(fd -> {
-//            	if (fd.getParentNode().get().equals(cls)) {
-//		           	 NodeList<VariableDeclarator> vars = fd.getVariables();
-//		           	 vars.forEach(var -> {
-//		           		 Comment cmnt = getComment(var);
-//		           	     System.out.println("   Field Declaration: " + var.getTypeAsString() + " " + var.getNameAsString() + (cmnt != null ? "(Comment: " + cmnt.toString().trim() + ")" : ""));    
-//		           	 });
-//            	}
-//            });
-//         });
- 
-//        cu.findAll(FieldDeclaration.class).forEach(fdecl -> {
-//        	System.out.println("Field Declaration of " + fdecl.toString() + " (at " + fdecl.getRange().get().begin.line + ")");
-//        	NodeList<VariableDeclarator> vars = fdecl.getVariables();
-//        	vars.forEach(var -> {
-//            	try {
-//					Individual fdInst = getOrCreateCodeVariable(var);
-//				} catch (CodeExtractionException e) {
-//					// TODO Auto-generated catch block
-//					e.printStackTrace();
-//				}
-//        	});
-//        });
+	}
 
-//        cu.findAll(VariableDeclarationExpr.class).forEach(vdecl -> {
-//        	System.out.println("Variable Declaration of " + vdecl.toString() + " (at " + vdecl.getRange().get().begin.line + ")");
-//        	try {
-//				Individual vdInst = getOrCreateCodeVariable(vdecl);
-//			} catch (CodeExtractionException e) {
-//				// TODO Auto-generated catch block
-//				e.printStackTrace();
-//			}
-//        });
+	private String getRootClassName(Node nd) {
+		if (nd instanceof ClassOrInterfaceDeclaration) {
+			return ((ClassOrInterfaceDeclaration)nd).getNameAsString();
+		}
+		List<ClassOrInterfaceDeclaration> clses = nd.findAll(ClassOrInterfaceDeclaration.class);
+		if (clses != null && clses.size() > 0) {
+			return clses.get(0).getNameAsString();
+		}
+		return "NoNameFound";
+	}
 
-//        cu.findAll(MethodReferenceExpr.class).forEach(mr -> {
-//        	System.out.println("Method Reference: " + mr.toString() + " (at " + mr.getRange().get().begin.line + ")");
-//        });
-//
-//        cu.findAll(MethodCallExpr.class).forEach(mc -> {
-//        	System.out.println("Method Call: " + mc.toString() + " (at " + mc.getRange().get().begin.line + ")");
-//        	NodeList<Expression> args = mc.getArguments();
-//        	Iterator<Expression> nlitr = args.iterator();
-//        	while (nlitr.hasNext()) {
-//        		Expression expr = nlitr.next();
-//        		System.out.println("Argument Expression: " + expr.toString() + " (type " + expr.getClass().getCanonicalName() + ")");
-//        		if (expr instanceof NameExpr) {
-//        			try {
-//						setSetterArgument(mc, (NameExpr)expr);
-//					} catch (CodeExtractionException e) {
-//						// TODO Auto-generated catch block
-//						e.printStackTrace();
-//					}
-//        		}
-//        	}
-//        	
-//        });
+	private String derivePrefixFromPackage(String pkg) {
+		if (pkg.contains(".")) {
+			StringBuilder sb = new StringBuilder();
+			int lastStart = 0;
+			int dotLoc = pkg.indexOf('.');
+			while (dotLoc > 0) {
+				sb.append(pkg.substring(lastStart, lastStart + 1));
+				lastStart = dotLoc + 1;
+				dotLoc = pkg.indexOf('.', dotLoc + 1);
+			}
+			return sb.toString();
+		}
+		else {
+			return pkg;
+		}
+	}
 
-//        cu.findAll(ConditionalExpr.class).forEach(cond -> {
-//        	System.out.println("Conditional expression: " + cond.toString() + " (at " + cond.getRange().get().begin.line + ")");
-//        });
-//
-//        cu.findAll(Parameter.class).forEach(pm -> {
-//        	System.out.println("Parameter: " + pm.toString() + " (at " + pm.getRange().get().begin.line + ")");
-//        });
-//
-//        cu.findAll(ReceiverParameter.class).forEach(pm -> {
-//        	System.out.println("ReceiverParameter: " + pm.toString() + " (at " + pm.getRange().get().begin.line + ")");
-//        });
-//
-//        cu.findAll(BinaryExpr.class).forEach(bin -> {
-//        	System.out.println("BinaryExpr: " + bin.toString() + " (at " + bin.getRange().get().begin.line + ")");
-//        });
-
-//        List<MethodDeclaration> methods = new ArrayList<>();
-//        VoidVisitor<List<MethodDeclaration>> methodNameCollector = new MethodNameCollector();
-//        methodNameCollector.visit(cu, methods);
-//        methods.forEach(m -> {
-//      		Comment cmnt = getComment(m);
-//      		Individual methInst = getOrCreateMethod(m);
-//        	indentifyAndLinkContainingBlock(m, methInst);
-//        	System.out.println("Method Collected: " + m.getNameAsString() + (cmnt != null ? "(Comment: " + cmnt.toString().trim() + ")" : ""));
-//        	NodeList<Parameter> args = m.getParameters();
-//        	args.forEach(arg -> {
-//          		Comment argcmnt = getComment(arg);
-//        		System.out.println("  Argument: " + arg.getTypeAsString() + " " + arg.getNameAsString() + (argcmnt != null ? "(Comment: " + argcmnt.toString().trim() + ")" : ""));
-//        	});
-//        	String rt = m.getTypeAsString();
-//        	System.out.println("  Returns " + ((rt != null && rt.length() > 0) ? rt : "void"));
-//        	
-//            // Find all the assignments:
-//            m.findAll(AssignExpr.class).forEach(be -> {
-//           		Expression target = be.getTarget();
-//            	if (target instanceof NameExpr) {
-//                  	try {
-//                      	Individual nnmInst = getOrCreateCodeVariable((NameExpr) target);
-//                      	createReference((NameExpr)target, nnmInst, USAGE.Defined);
-//                      	nnmInst.addProperty(getVarNameProperty(), getCodeModel().createTypedLiteral(((NameExpr)target).getNameAsString()));
-//					} catch (CodeExtractionException e) {
-//						// TODO Auto-generated catch block
-//						e.printStackTrace();
-//					}
-//            		int assgnLine = be.getRange().get().begin.line;
-//                	Comment asscmnt = getComment(be.getParentNode().get());
-//                	int cmntLine = (asscmnt != null) ? asscmnt.getRange().get().begin.line : -1;
-//                	boolean asscmntoutput = false;
-//                	if (asscmnt != null && cmntLine > 0 && cmntLine < assgnLine) {
-//                   		System.out.println("          Assignment comment: " + asscmnt.toString().trim() + " (line " + cmntLine + ")");
-//                   		asscmntoutput = true;
-//                	}
-//            		Expression val = be.getValue();
-//	           		Comment valcmnt = getComment(val);
-//            		if (val instanceof BinaryExpr) {
-//            			// target is computed (output). All names in be are inputs to this BinaryExpr.
-//            			List<NameExpr> rhsNames = findNamesIn((BinaryExpr) val, null);
-//            			System.out.println("    Computed " + target.toString() + (rhsNames != null ? " from " + rhsNames.toString() : "") + (valcmnt != null ? "(Comment: " + valcmnt.toString().trim() + ")" : ""));
-//            		}
-//            		else if (val instanceof ObjectCreationExpr) {
-//               			System.out.println("    Set " + target.toString() + " to new instance of " + ((ObjectCreationExpr)val).getTypeAsString() + (valcmnt != null ? "(Comment: " + valcmnt.toString().trim() + ")" : ""));
-//            		}
-//            		else if (val instanceof MethodCallExpr) {
-//            			NodeList<Expression> callArgs = ((MethodCallExpr)val).getArguments();
-//            			List<NameExpr> argNames = findNamesIn(callArgs);
-//            			System.out.println("    Computed " + target.toString() + (argNames != null ? " by calling method " + ((MethodCallExpr)val).getNameAsString() + " with arguments depending on " + argNames.toString().trim() : "")
-//            					+ (valcmnt != null ? "(Comment: " + valcmnt.toString() + ")" : ""));
-//            		}
-//            		else {
-//            			System.out.println("    Set " + target.toString() + " to " + val.toString() + (valcmnt != null ? "(Comment: " + valcmnt.toString().trim() + ")" : ""));
-//            		}
-//                	if (asscmnt != null && !asscmntoutput) {
-//                		System.out.println("          Assignment comment: " + asscmnt.toString().trim() + " (line " + cmntLine + ")");
-//                	}
-//            	}
-////                // Find out what type it has:
-////                ResolvedType resolvedType = be.calculateResolvedType();
-////                System.out.println(be.toString() + " is a: " + resolvedType);
-//            });
-//
-//        });
+	private void initializeCodeModel(String extractionMetaModelModelFolder) throws ConfigurationException, IOException {
+		if (getCurationMgr().getExtractionProcessor().getCodeModel() == null) {
+			// create new code model
+			
+			setCodeMetaModelConfigMgr(ConfigurationManagerForIdeFactory.getConfigurationManagerForIDE(extractionMetaModelModelFolder, null)); //getCurationMgr().getProjectConfigurationManager());
+			OntDocumentManager owlDocMgr = getCodeMetaModelConfigMgr().getJenaDocumentMgr();
+			OntModelSpec spec = new OntModelSpec(OntModelSpec.OWL_MEM);
+			if (extractionMetaModelModelFolder != null) { // && !modelFolderPathname.startsWith(SYNTHETIC_FROM_TEST)) {
+				File mff = new File(extractionMetaModelModelFolder);
+				mff.mkdirs();
+				spec.setImportModelGetter(new SadlJenaModelGetterPutter(spec, extractionMetaModelModelFolder));
+			}
+			if (owlDocMgr != null) {
+				spec.setDocumentManager(owlDocMgr);
+				owlDocMgr.setProcessImports(true);
+			}
+			getCurationMgr().getExtractionProcessor().setCodeModel(ModelFactory.createOntologyModel(spec));	
+			setCodeModel(getCurationMgr().getExtractionProcessor().getCodeModel());
+			getCodeModel().setNsPrefix(getCodeModelPrefix(), getCodeModelNamespace());
+			Ontology modelOntology = getCodeModel().createOntology(getCodeModelName());
+			logger.debug("Ontology '" + getCodeModelName() + "' created");
+			modelOntology.addComment("This ontology was created by extraction from code by the ANSWER JavaModelExtractorJP.", "en");
+			setCodeMetaModelUri("http://sadl.org/CodeModel.sadl");
+			setCodeMetaModelPrefix("codemdl");
+			OntModel importedOntModel = getCodeMetaModelConfigMgr().getOntModel(getCodeMetaModelUri(), Scope.INCLUDEIMPORTS);
+			addImportToJenaModel(getCodeModelName(), getCodeMetaModelUri(), getCodeMetaModelPrefix(), importedOntModel);
+		}
+		else {
+			setCodeModel(getCurationMgr().getExtractionProcessor().getCodeModel());
+		}
+		
 	}
 
 	private void processBlock(Node blkNode, Individual containingInst) {
@@ -370,8 +271,7 @@ public class JavaModelExtractorJP implements IModelFromCodeExtractor {
 				setRootContainingInstance(blkInst);
 			}
 			processBlock(cls, blkInst);
-//			Comment clscmnt = getComment(cls);
-//			System.out.println("Class or Interface Declaration: " + cls.getNameAsString() + (clscmnt != null ? "(Comment: " + clscmnt.toString().trim() + ")" : ""));
+			addSerialization(blkInst, cls.toString());
 		}
 		else if (childNode instanceof FieldDeclaration) {
 			FieldDeclaration fd = (FieldDeclaration) childNode;
@@ -389,7 +289,6 @@ public class JavaModelExtractorJP implements IModelFromCodeExtractor {
 			}
 			// Note that this local scope overrides any variable of the same name in a
 			//	more global scope. Therefore do not look for an existing variable
-//			System.out.println("Method found: " + m.getNameAsString() + (cmnt != null ? "(Comment: " + cmnt.toString().trim() + ")" : ""));
 			NodeList<Parameter> args = m.getParameters();
 			for (int j = 0; j < args.size(); j++) {
 				Parameter param = args.get(j);
@@ -400,11 +299,11 @@ public class JavaModelExtractorJP implements IModelFromCodeExtractor {
 					// TODO Auto-generated catch block
 					e.printStackTrace();
 				}
-//				findCodeVariableAndAddReference(childNode, nm, containingInst, USAGE.Defined);
 			}
 			processBlock(m, methInst);	// order matters--do this after parameters and before return
 			String rt = m.getTypeAsString();
-//			System.out.println(methInst.getURI() + " returns " + ((rt != null && rt.length() > 0) ? rt : "void"));
+			System.out.println(methInst.getURI() + " returns " + ((rt != null && rt.length() > 0) ? rt : "void"));
+			addSerialization(methInst, ((MethodDeclaration) childNode).toString());
 		}
 		else if (childNode instanceof MethodCallExpr) {
 			MethodCallExpr mc = (MethodCallExpr)childNode;
@@ -479,7 +378,7 @@ public class JavaModelExtractorJP implements IModelFromCodeExtractor {
 		}
 		else if (childNode instanceof NameExpr) {
 			String nm = ((NameExpr)childNode).getNameAsString();
-			findCodeVariableAndAddReference(childNode, nm, containingInst, knownUsage, true);
+			findCodeVariableAndAddReference(childNode, nm, containingInst, knownUsage, true, null);
 		}
 		else if (childNode instanceof IfStmt) {
 			Expression cond = ((IfStmt)childNode).getCondition();
@@ -495,7 +394,7 @@ public class JavaModelExtractorJP implements IModelFromCodeExtractor {
 			if (ret0 instanceof NameExpr) {
 				// this is an output of this block. It should already exist.
 				String nm = ((NameExpr)ret0).getNameAsString();
-				findCodeVariableAndAddReference(ret0, nm, containingInst, USAGE.Used, true);
+				findCodeVariableAndAddReference(ret0, nm, containingInst, USAGE.Used, true, InputOutput.Output);
 //				Individual ref = findCodeVariableAndAddReference(ret0, nm, containingInst, USAGE.Used);
 //				ref.addProperty(getOutputProperty(), getCodeModel().createTypedLiteral(true));
 			}
@@ -523,6 +422,12 @@ public class JavaModelExtractorJP implements IModelFromCodeExtractor {
 			System.err.println("Block child unhandled Node '" + childNode.toString().trim() + "' of type " + childNode.getClass().getCanonicalName());
 		}
 		investigateComments(childNode, containingInst);
+	}
+
+	private void addSerialization(Individual blkInst, String code) {
+		if (isIncludeSerialization()) {
+			blkInst.addProperty(getSerializationProperty(), getCodeModel().createTypedLiteral(code));
+		}
 	}
 
 	private boolean setRootContainingInstance(Individual thisInst) {
@@ -568,8 +473,8 @@ public class JavaModelExtractorJP implements IModelFromCodeExtractor {
 				subject.addProperty(getCommentProperty(), cmtInst);
 				cmtInst.addProperty(getCommentContentProperty(), getCodeModel().createTypedLiteral(cmt.getContent()));
 				if (rng.isPresent()) {
-					cmtInst.addProperty(getCommentStartProperty(), getCodeModel().createTypedLiteral(rng.get().begin.line));
-					cmtInst.addProperty(getCommentEndProperty(), getCodeModel().createTypedLiteral(rng.get().end.line));
+					cmtInst.addProperty(getBeginsAtProperty(), getCodeModel().createTypedLiteral(rng.get().begin.line));
+					cmtInst.addProperty(getEndsAtProperty(), getCodeModel().createTypedLiteral(rng.get().end.line));
 				}
 			}
 			else {
@@ -586,14 +491,14 @@ public class JavaModelExtractorJP implements IModelFromCodeExtractor {
 		return getCodeModel().getOntProperty(getCodeMetaModelUri() + "#output");
 	}
 
-	private Individual findCodeVariableAndAddReference(Node childNode, String nm, Individual containingInst, USAGE usage, boolean lookToLargerScope) {
+	private Individual findCodeVariableAndAddReference(Node childNode, String nm, Individual containingInst, USAGE usage, boolean lookToLargerScope, InputOutput inputOutput) {
 //		String nnm = containingInst.getLocalName() + "." + nm;
 		String nnm = constructCodeVariableUri(childNode, nm);
 
 		Individual varInst = lookToLargerScope ? findDefinedVariable(nm, containingInst) : null;
 		if (varInst == null && !lookToLargerScope) {
 			try {
-				varInst = getOrCreateCodeVariable(childNode, nm, nnm, containingInst, getCodeVariableClass(childNode));
+				varInst = getOrCreateCodeVariable(childNode, nm, nnm, containingInst, getCodeVariableClass(childNode), inputOutput);
 			} catch (CodeExtractionException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
@@ -601,7 +506,8 @@ public class JavaModelExtractorJP implements IModelFromCodeExtractor {
 		}
 		else if (varInst != null) {
 			try {
-				return createReference(childNode, varInst, containingInst, usage != null ? usage : USAGE.Used);
+				Individual ref = createReference(childNode, varInst, containingInst, usage != null ? usage : USAGE.Used);
+	          	setInputOutputIfKnown(ref, inputOutput);
 			} catch (CodeExtractionException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
@@ -610,7 +516,7 @@ public class JavaModelExtractorJP implements IModelFromCodeExtractor {
 		else {
 			System.err.println("NameExpr (" + nnm + ") not found; it should already exist!");
 		}
-		return null;
+		return varInst;
 	}
 
 	private OntClass getCodeVariableClass(Node varNode) {
@@ -669,7 +575,7 @@ public class JavaModelExtractorJP implements IModelFromCodeExtractor {
 			}	
 		}
 		if (isArgToSetter) {
-			Individual cvInst = findCodeVariableAndAddReference(mc, arg.getNameAsString(), containingInst, USAGE.Used, true);
+			Individual cvInst = findCodeVariableAndAddReference(mc, arg.getNameAsString(), containingInst, USAGE.Used, true, InputOutput.Output);
 //			OntClass codeVarClass = getMethodVariableClass();
 //			Individual cvInst = getOrCreateCodeVariable(arg, containingInst, codeVarClass);
 			cvInst.setPropertyValue(getSetterArgumentProperty(), getCodeModel().createTypedLiteral(true));
@@ -677,24 +583,28 @@ public class JavaModelExtractorJP implements IModelFromCodeExtractor {
 	}
 
 	private Individual createReference(Node varNode, Individual codeVarInst, Individual containingInst, USAGE usage) throws CodeExtractionException {
-		int line = varNode.getRange().get().begin.line;
+		int beginsAt = varNode.getRange().get().begin.line;
+		int endsAt = varNode.getRange().get().end.line;
 //		NodeWithSimpleName<?> codeBlockNode = getContainingCodeBlockNode(varNode);
 //		Individual blkInst = null;
 //		if (codeBlockNode != null) {
 //			blkInst = getCodeModel().getIndividual(getCodeModelNamespace() + codeBlockNode.getNameAsString());
 //		}
-		Individual ref = createNewReference(containingInst, line, usage);
+		Individual ref = createNewReference(containingInst, beginsAt, endsAt, usage);
 		codeVarInst.addProperty(getReferenceProperty(), ref);
 		return ref;
 	}
 
-	private Individual createNewReference(Individual blkInst, int line, USAGE usage) throws CodeExtractionException {
+	private Individual createNewReference(Individual blkInst, int beginsAt, int endsAt, USAGE usage) throws CodeExtractionException {
 		Individual refInst = getCodeModel().createIndividual(getReferenceClass());
 		if (blkInst != null) {
 			refInst.addProperty(getCodeBlockProperty(), blkInst);
 		}
-		if (line >= 0) {
-			refInst.addProperty(getLocationProperty(), getCodeModel().createTypedLiteral(line));
+		if (beginsAt >= 0) {
+			refInst.addProperty(getBeginsAtProperty(), getCodeModel().createTypedLiteral(beginsAt));
+		}
+		if (endsAt >= 0) {
+			refInst.addProperty(getEndsAtProperty(), getCodeModel().createTypedLiteral(endsAt));
 		}
 		refInst.addProperty(getUsageProperty(), getUsageInstance(usage));
 		return refInst;
@@ -785,7 +695,7 @@ public class JavaModelExtractorJP implements IModelFromCodeExtractor {
 				}
 //				nnm = constructCodeVariableUri(vars.get(i), origName);
 				codeVarClass = getMethodVariableClass();
-				cvInst = getOrCreateCodeVariable(var, origName, nnm, containingInst, codeVarClass);
+				cvInst = getOrCreateCodeVariable(var, origName, nnm, containingInst, codeVarClass, null);
 				if (vars.get(i).getInitializer().isPresent()) {
 		          	createReference(var, cvInst, containingInst, USAGE.Reassigned);
 				}
@@ -795,26 +705,38 @@ public class JavaModelExtractorJP implements IModelFromCodeExtractor {
 			NameExpr nm = ((Parameter)varNode).getNameAsExpression();
 //			codeVarClass = getMethodVariableClass();
 //			return getOrCreateCodeVariable(nm, containingInst, codeVarClass);
-			return findCodeVariableAndAddReference(varNode, nm.getNameAsString(), containingInst, USAGE.Defined, false);
+			return findCodeVariableAndAddReference(varNode, nm.getNameAsString(), containingInst, USAGE.Defined, false, InputOutput.Input);
 		}
 		else {
 			throw new CodeExtractionException("Unexpected CodeVariable varNode type: " + varNode.getClass().getCanonicalName());
 		}
-		cvInst = getOrCreateCodeVariable(varNode, origName, nnm, containingInst, codeVarClass);
+		cvInst = getOrCreateCodeVariable(varNode, origName, nnm, containingInst, codeVarClass, null);
 		return cvInst;
 	}
 
 	private Individual getOrCreateCodeVariable(Node varNode, String origName, String nnm, Individual containingInst,
-			OntClass codeVarClass) throws CodeExtractionException {
+			OntClass codeVarClass, InputOutput inputOutput) throws CodeExtractionException {
 		Individual cvInst;
 		cvInst = getCodeModel().getIndividual(getCodeModelNamespace() + nnm);
 		if (cvInst == null && codeVarClass != null) {
 			cvInst = getCodeModel().createIndividual(getCodeModelNamespace() + nnm, codeVarClass);
-          	createReference(varNode, cvInst, containingInst, USAGE.Defined);
+          	Individual ref = createReference(varNode, cvInst, containingInst, USAGE.Defined);
+          	setInputOutputIfKnown(ref, inputOutput);
           	cvInst.addProperty(getVarNameProperty(), getCodeModel().createTypedLiteral(origName));
           	// TODO add varType
 		}
 		return cvInst;
+	}
+
+	private void setInputOutputIfKnown(Individual ref, InputOutput inputOutput) {
+		if (inputOutput != null) {
+			if (inputOutput.equals(InputOutput.Input)) {
+				ref.addProperty(getInputProperty(), getCodeModel().createTypedLiteral(true));
+			}
+			else if (inputOutput.equals(InputOutput.Output)) {
+				ref.addProperty(getOutputProperty(), getCodeModel().createTypedLiteral(true));
+			}
+		}
 	}
 
 	private String constructCodeVariableUri(Node varNode, String nm) {
@@ -891,10 +813,6 @@ public class JavaModelExtractorJP implements IModelFromCodeExtractor {
 		return getCodeModel().getOntProperty(getCodeMetaModelUri() + "#usage");
 	}
 
-	private Property getLocationProperty() {
-		return getCodeModel().getOntProperty(getCodeMetaModelUri() + "#location");
-	}
-
 	private Property getCommentProperty() {
 		return getCodeModel().getOntProperty(getCodeMetaModelUri() + "#comment");
 	}
@@ -903,12 +821,16 @@ public class JavaModelExtractorJP implements IModelFromCodeExtractor {
 		return getCodeModel().getOntProperty(getCodeMetaModelUri() + "#commentContent");
 	}
 
-	private Property getCommentStartProperty() {
-		return getCodeModel().getOntProperty(getCodeMetaModelUri() + "#commentStart");
+	private Property getSerializationProperty() {
+		return getCodeModel().getOntProperty(getCodeMetaModelUri() + "#serialization");
 	}
 
-	private Property getCommentEndProperty() {
-		return getCodeModel().getOntProperty(getCodeMetaModelUri() + "#commentEnd");
+	private Property getBeginsAtProperty() {
+		return getCodeModel().getOntProperty(getCodeMetaModelUri() + "#beginsAt");
+	}
+
+	private Property getEndsAtProperty() {
+		return getCodeModel().getOntProperty(getCodeMetaModelUri() + "#endsAt");
 	}
 
 	private Property getVarNameProperty() {
@@ -1191,7 +1113,7 @@ public class JavaModelExtractorJP implements IModelFromCodeExtractor {
 		return codeModelName + "#";
 	}
 
-	private String getCodeModelPrefix() {
+	public String getCodeModelPrefix() {
 		return codeModelPrefix;
 	}
 
@@ -1225,6 +1147,22 @@ public class JavaModelExtractorJP implements IModelFromCodeExtractor {
 
 	private void setCodeMetaModelConfigMgr(IConfigurationManagerForIDE codeMetaModelConfigMgr) {
 		this.codeMetaModelConfigMgr = codeMetaModelConfigMgr;
+	}
+
+	private String getCodeMetaModelPrefix() {
+		return codeMetaModelPrefix;
+	}
+
+	private void setCodeMetaModelPrefix(String codeMetaModelPrefix) {
+		this.codeMetaModelPrefix = codeMetaModelPrefix;
+	}
+
+	private String getCodeMetaModelModelFolder() {
+		return codeMetaModelModelFolder;
+	}
+
+	public void setCodeMetaModelModelFolder(String codeMetaModelModelFolder) {
+		this.codeMetaModelModelFolder = codeMetaModelModelFolder;
 	}
 
 }

@@ -54,7 +54,7 @@ public interface IModelFromCodeExtractor {
 	
 	void setCodeFiles(List<File> codeFiles);
 
-	boolean process(String content) throws ConfigurationException, IOException;
+	boolean process(String content, String defaultCodeModelName, String defaultCodeModelPrefix, boolean includeSerialization) throws ConfigurationException, IOException;
 
 	String getTypeComment();
 

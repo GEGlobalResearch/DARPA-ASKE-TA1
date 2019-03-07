@@ -101,6 +101,8 @@ public class DialogRootPreferencePage extends LanguageRootPreferencePage {
 		Composite generalSettings = createSettingsGroup(getFieldEditorParent(), SWT.NONE, "Dialog Settings");
 		addField(new StringFieldEditorExt(DialogPreferences.ANSWER_TEXT_SERVICE_BASE_URI.getId(), "Text Service Base URI:", generalSettings));
 		addField(new StringFieldEditorExt(DialogPreferences.ANSWER_CG_SERVICE_BASE_URI.getId(), "Computational Graph Service Base URI:", generalSettings));
+		addField(new StringFieldEditorExt(DialogPreferences.ANSWER_JAVA_TO_PYTHON_SERVICE_BASE_URI.getId(), "Java to Python Translation Service Base URI:", generalSettings));
+		addField(new StringFieldEditorExt(DialogPreferences.ANSWER_CODE_EXTRACTION_KBASE_ROOT.getId(), "Code Extraction KBase Root:", generalSettings));
 	}
 
 	@Override
@@ -113,8 +115,10 @@ public class DialogRootPreferencePage extends LanguageRootPreferencePage {
 		IPreferenceStore store = this.getPreferenceStore();
 
 		//General Settings
-		store.setDefault(DialogPreferences.ANSWER_TEXT_SERVICE_BASE_URI.getId(), "http://textservice");
-		store.setDefault(DialogPreferences.ANSWER_CG_SERVICE_BASE_URI.getId(), "http://cgservice");
+		store.setDefault(DialogPreferences.ANSWER_TEXT_SERVICE_BASE_URI.getId(), DialogPreferences.ANSWER_TEXT_SERVICE_BASE_URI.getDefaultValue());
+		store.setDefault(DialogPreferences.ANSWER_CG_SERVICE_BASE_URI.getId(), DialogPreferences.ANSWER_CG_SERVICE_BASE_URI.getDefaultValue());
+		store.setDefault(DialogPreferences.ANSWER_JAVA_TO_PYTHON_SERVICE_BASE_URI.getId(), DialogPreferences.ANSWER_JAVA_TO_PYTHON_SERVICE_BASE_URI.getDefaultValue());
+		store.setDefault(DialogPreferences.ANSWER_CODE_EXTRACTION_KBASE_ROOT.getId(), DialogPreferences.ANSWER_CODE_EXTRACTION_KBASE_ROOT.getDefaultValue());
 		setPreferenceStore(store);
 	}
 

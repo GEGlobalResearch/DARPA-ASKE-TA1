@@ -85,7 +85,9 @@ public class AnswerCurationManager {
 		if (codeFiles != null) {
 			for (File f : codeFiles) {
 				String content = readFileToString(f);
-				getExtractionProcessor().getCodeExtractor().process(content);
+				String defPrefix = outputFilename.substring(0, outputFilename.length() - 5);
+				String defName = "http://com.ge.research.sadl.darpa.aske.answer/" + defPrefix;
+				getExtractionProcessor().getCodeExtractor().process(content, defName, defPrefix, true);
 				
 //		    	String ontologyRootUri = "http://sadl.org/Temperature.sadl";	// this comes from the selection in the import Wizard
 //				String newContent = smg.generateSadlModel(getExtractionProcessor().getCodeExtractor(), ontologyRootUri );

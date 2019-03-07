@@ -1,6 +1,7 @@
 package com.ge.research.sadl.darpa.aske.processing.imports;
 
 import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -56,6 +57,7 @@ import com.ge.research.sadl.darpa.aske.curation.AnswerCurationManager;
 import com.ge.research.sadl.darpa.aske.processing.imports.IModelFromCodeExtractor.Tag;
 import com.ge.research.sadl.darpa.aske.processing.imports.SadlModelGenerator.SadlMethod;
 import com.ge.research.sadl.darpa.aske.processing.imports.SadlModelGenerator.SadlMethodArgument;
+import com.ge.research.sadl.reasoner.ConfigurationException;
 
 public class JavaModelExtractor implements IModelFromCodeExtractor {
     private static final Logger logger = Logger.getLogger (JavaModelExtractor.class) ;
@@ -601,7 +603,8 @@ public class JavaModelExtractor implements IModelFromCodeExtractor {
 	}
 
 	@Override
-	public boolean process(String content) {
+	public boolean process(String content, String defaultCodeModelName, String defaultCodeModelPrefix, boolean includeSerialization)
+			throws ConfigurationException, IOException {
 		// TODO Auto-generated method stub
 		return false;
 	}
