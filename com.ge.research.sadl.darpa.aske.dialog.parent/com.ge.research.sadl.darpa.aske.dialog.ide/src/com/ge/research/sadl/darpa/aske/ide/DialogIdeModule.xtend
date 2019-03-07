@@ -3,9 +3,16 @@
  */
 package com.ge.research.sadl.darpa.aske.ide
 
+import com.ge.research.sadl.utils.SadlProjectHelper
+import com.ge.research.sadl.ide.utils.SadlIdeProjectHelper
 
 /**
  * Use this class to register ide components.
  */
 class DialogIdeModule extends AbstractDialogIdeModule {
+
+	def Class<? extends SadlProjectHelper> bindSadlProjectHelper() {
+		return SadlIdeProjectHelper;
+	}
+
 }

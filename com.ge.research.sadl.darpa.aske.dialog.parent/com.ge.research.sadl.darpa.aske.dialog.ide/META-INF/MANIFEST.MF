@@ -7,6 +7,7 @@ Bundle-Version: 1.0.0.qualifier
 Bundle-SymbolicName: com.ge.research.sadl.darpa.aske.dialog.ide; singleton:=true
 Bundle-ActivationPolicy: lazy
 Require-Bundle: com.ge.research.sadl.darpa.aske.dialog,
+ com.ge.research.sadl.ide,
  org.eclipse.xtext.ide,
  org.eclipse.xtext.xbase.ide,
  org.antlr.runtime,
