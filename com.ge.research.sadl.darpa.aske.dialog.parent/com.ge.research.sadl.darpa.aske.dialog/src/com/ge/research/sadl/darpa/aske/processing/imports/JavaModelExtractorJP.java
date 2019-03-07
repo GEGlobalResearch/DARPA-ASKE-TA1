@@ -98,6 +98,8 @@ public class JavaModelExtractorJP implements IModelFromCodeExtractor {
 	private IConfigurationManagerForIDE codeMetaModelConfigMgr;	// the ConfigurationManager used to access the code extraction metamodel
 	private Individual rootContainingInstance = null;
 	private boolean includeSerialization = true;
+	private String defaultCodeModelName = null;
+	private String defaultCodeModelPrefix = null;
 	
 	private static class MethodNameCollector extends VoidVisitorAdapter<List<MethodDeclaration>> {	
 		@Override
@@ -123,9 +125,9 @@ public class JavaModelExtractorJP implements IModelFromCodeExtractor {
 		getComments().clear();
 	}
 
-	public boolean process(String content, String defaultCodeModelName, String defaultPrefix, boolean includeSerialization) throws ConfigurationException, IOException {
+	public boolean process(String content, boolean includeSerialization) throws ConfigurationException, IOException {
 		setIncludeSerialization(includeSerialization);
-		parse(getCurationMgr().getOwlModelsFolder(), content, defaultCodeModelName, defaultPrefix);
+		parse(getCurationMgr().getOwlModelsFolder(), content);
 		// Create a Reasoner and reason over the model, getting resulting InfModel
 		// get deductions from InfModel, add to code model.
 //		getCodeModel().write(System.out, "RDF/XML-ABBREV");
@@ -141,7 +143,7 @@ public class JavaModelExtractorJP implements IModelFromCodeExtractor {
 	}
 
 	//use ASTParse to parse string
-	private void parse(String modelFolder, String javaCodeContent, String defaultCodeModelName, String defaultPrefix) throws IOException, ConfigurationException {
+	private void parse(String modelFolder, String javaCodeContent) throws IOException, ConfigurationException {
 		try {
 			notifyUser(modelFolder, javaCodeContent);
 		} catch (ConfigurationException e) {
@@ -184,8 +186,8 @@ public class JavaModelExtractorJP implements IModelFromCodeExtractor {
         	setCodeModelPrefix(derivePrefixFromPackage(getCodeModelName()));
         }
         else {
-    		setCodeModelName(defaultCodeModelName);
-    		setCodeModelPrefix(defaultPrefix);
+    		setCodeModelName(getDefaultCodeModelName());
+    		setCodeModelPrefix(getDefaultCodeModelPrefix());
 
         }
         initializeCodeModel(getCodeMetaModelModelFolder());
@@ -923,12 +925,14 @@ public class JavaModelExtractorJP implements IModelFromCodeExtractor {
 				// TODO Auto-generated catch block
 				e1.printStackTrace();
 			}
-			Method[] dapMethods = dap.getClass().getDeclaredMethods();
-			if (dapMethods != null) {
-				for (Method m : dapMethods) {
-					if (m.getName().equals("addCurationManagerInitiatedContent")) {
-						acmic = m;
-						break;
+			if (acmic == null) {
+				Method[] dapMethods = dap.getClass().getDeclaredMethods();
+				if (dapMethods != null) {
+					for (Method m : dapMethods) {
+						if (m.getName().equals("addCurationManagerInitiatedContent")) {
+							acmic = m;
+							break;
+						}
 					}
 				}
 			}
@@ -1097,6 +1101,14 @@ public class JavaModelExtractorJP implements IModelFromCodeExtractor {
 	}
 
 	@Override
+	public void addCodeFile(File javaFile) {
+		if (codeFiles == null) {
+			codeFiles = new ArrayList<File>();
+		}
+		codeFiles.add(javaFile);
+	}
+
+	@Override
 	public void addCodeFiles(List<File> javaFiles) {
 		if (codeFiles != null) {
 			codeFiles.addAll(javaFiles);
@@ -1141,6 +1153,29 @@ public class JavaModelExtractorJP implements IModelFromCodeExtractor {
 
 	private void setCodeModelPrefix(String codeModelPrefix) {
 		this.codeModelPrefix = codeModelPrefix;
+	}
+
+	public String getDefaultCodeModelName() {
+		if (defaultCodeModelName == null) {
+			defaultCodeModelName = "http://com.ge.reasearch.sadl.darpa.aske.answer/DefaultModelName";
+		}
+		return defaultCodeModelName;
+	}
+
+	public void setDefaultCodeModelName(String defCodeModelName) {
+		this.defaultCodeModelName = codeModelName;
+		getCurationMgr().getExtractionProcessor().setCodeModelName(codeModelName);
+	}
+
+	public String getDefaultCodeModelPrefix() {
+		if (defaultCodeModelPrefix == null) {
+			defaultCodeModelPrefix = "defmdlnm";
+		}
+		return defaultCodeModelPrefix;
+	}
+
+	public void setDefaultCodeModelPrefix(String codeModelPrefix) {
+		this.defaultCodeModelPrefix = codeModelPrefix;
 	}
 
 	private void addImportToJenaModel(String modelName, String importUri, String importPrefix, Model importedOntModel) {

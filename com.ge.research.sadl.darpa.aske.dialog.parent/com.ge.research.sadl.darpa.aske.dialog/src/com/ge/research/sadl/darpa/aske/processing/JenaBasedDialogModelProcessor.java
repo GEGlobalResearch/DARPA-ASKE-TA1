@@ -453,8 +453,7 @@ public class JenaBasedDialogModelProcessor extends JenaBasedSadlModelProcessor {
 					((NamedNode)trgtObj).setContext(stmt);
 				}
 				else if (trgtObj instanceof Junction) {
-					// TODO
-					addInfo("Junction not yet handled by dialog processor", whatIsTarget);
+					setGraphPatternContext(stmt, whatIsTarget, trgtObj);
 				}
 				else if (trgtObj instanceof TripleElement) {
 					((TripleElement)trgtObj).setContext(stmt.getStmt());

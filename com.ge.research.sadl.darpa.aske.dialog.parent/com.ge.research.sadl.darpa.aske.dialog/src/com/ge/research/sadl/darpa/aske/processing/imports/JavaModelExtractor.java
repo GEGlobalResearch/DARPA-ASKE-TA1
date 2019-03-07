@@ -54,7 +54,6 @@ import org.eclipse.jdt.core.dom.TypeDeclaration;
 import org.eclipse.jdt.core.dom.VariableDeclarationFragment;
 
 import com.ge.research.sadl.darpa.aske.curation.AnswerCurationManager;
-import com.ge.research.sadl.darpa.aske.processing.imports.IModelFromCodeExtractor.Tag;
 import com.ge.research.sadl.darpa.aske.processing.imports.SadlModelGenerator.SadlMethod;
 import com.ge.research.sadl.darpa.aske.processing.imports.SadlModelGenerator.SadlMethodArgument;
 import com.ge.research.sadl.reasoner.ConfigurationException;
@@ -603,9 +602,39 @@ public class JavaModelExtractor implements IModelFromCodeExtractor {
 	}
 
 	@Override
-	public boolean process(String content, String defaultCodeModelName, String defaultCodeModelPrefix, boolean includeSerialization)
+	public boolean process(String content, boolean includeSerialization)
 			throws ConfigurationException, IOException {
 		// TODO Auto-generated method stub
 		return false;
+	}
+
+	@Override
+	public void addCodeFile(File javaFile) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void setDefaultCodeModelName(String defmdlnm) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public String getDefaultCodeModelName() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public void setDefaultCodeModelPrefix(String prefix) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public String getDefaultCodeModelPrefix() {
+		// TODO Auto-generated method stub
+		return null;
 	}
 }

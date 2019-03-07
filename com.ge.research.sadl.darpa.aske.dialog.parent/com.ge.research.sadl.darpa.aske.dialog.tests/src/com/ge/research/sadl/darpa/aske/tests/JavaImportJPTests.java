@@ -5,6 +5,8 @@ import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
 
+import org.eclipse.emf.common.util.URI;
+import org.eclipse.emf.ecore.resource.Resource;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
@@ -14,10 +16,12 @@ import org.slf4j.LoggerFactory;
 import com.ge.research.sadl.builder.ConfigurationManagerForIdeFactory;
 import com.ge.research.sadl.builder.IConfigurationManagerForIDE;
 import com.ge.research.sadl.darpa.aske.curation.AnswerCurationManager;
+import com.ge.research.sadl.darpa.aske.processing.DialogConstants;
 import com.ge.research.sadl.darpa.aske.processing.imports.JavaModelExtractorJP;
 import com.ge.research.sadl.darpa.aske.processing.imports.SadlModelGenerator;
 import com.ge.research.sadl.owl2sadl.OwlImportException;
 import com.ge.research.sadl.owl2sadl.OwlToSadl;
+import com.ge.research.sadl.processing.OntModelProvider;
 import com.ge.research.sadl.reasoner.ConfigurationException;
 
 public class JavaImportJPTests {
@@ -82,7 +86,9 @@ public class JavaImportJPTests {
 		jme.setCodeMetaModelModelFolder(getExtractionProjectModelFolder());
 		String defaultCodeModelPrefix = "Temp";
 		String defaultCodeModelName = "http://com.ge.research.darpa.aske.ta1.explore/" + defaultCodeModelPrefix;
-		jme.process(javaContent, defaultCodeModelName, defaultCodeModelPrefix, false);
+		jme.setDefaultCodeModelPrefix(defaultCodeModelPrefix);
+		jme.setDefaultCodeModelName(defaultCodeModelName);
+		jme.process(javaContent,false);
 		
 //		String content = smg.generateSadlModel(jme, "http://sadl.org/Temperature.sadl");
 //		System.out.println("SADL Model Output:\n" + content);
@@ -128,7 +134,9 @@ public class JavaImportJPTests {
 		jme.setCodeMetaModelModelFolder(getExtractionProjectModelFolder());
 		String defaultCodeModelPrefix = "temp";
 		String defaultCodeModelName = "http://com.ge.research.darpa.aske.ta1.explore/" + defaultCodeModelPrefix;
-		jme.process(javaContent, defaultCodeModelName, defaultCodeModelPrefix, false);
+		jme.setDefaultCodeModelPrefix(defaultCodeModelPrefix);
+		jme.setDefaultCodeModelName(defaultCodeModelName);
+		jme.process(javaContent, false);
 //		String content = smg.generateSadlModel(jme, "http://sadl.org/Temperature.sadl");
 //		System.out.println("SADL Model Output:\n" + content);
 	}
@@ -176,7 +184,9 @@ public class JavaImportJPTests {
 		jme.setCodeMetaModelModelFolder(getExtractionProjectModelFolder());
 		String defaultCodeModelPrefix = "physicalobject";
 		String defaultCodeModelName = "http://com.ge.research.darpa.aske.ta1.explore/" + defaultCodeModelPrefix;
-		jme.process(javaContent, defaultCodeModelName, defaultCodeModelPrefix, false);
+		jme.setDefaultCodeModelPrefix(defaultCodeModelPrefix);
+		jme.setDefaultCodeModelName(defaultCodeModelName);
+		jme.process(javaContent, false);
 //		String content = smg.generateSadlModel(jme, "http://sadl.org/Temperature.sadl");
 //		System.out.println("SADL Model Output:\n" + content);
 	}
@@ -195,7 +205,9 @@ public class JavaImportJPTests {
 		jme.setCodeMetaModelModelFolder(getExtractionProjectModelFolder());
 		String defaultCodeModelPrefix = "Isentrop";
 		String defaultCodeModelName = "http://com.ge.research.darpa.aske.ta1.explore/" + defaultCodeModelPrefix;
-		jme.process(javaContent, defaultCodeModelName, defaultCodeModelPrefix, false);
+		jme.setDefaultCodeModelPrefix(defaultCodeModelPrefix);
+		jme.setDefaultCodeModelName(defaultCodeModelName);
+		jme.process(javaContent, false);
 //		String content = smg.generateSadlModel(jme, "http://sadl.org/Temperature.sadl");
 //		System.out.println("SADL Model Output:\n" + content);
 	}
@@ -211,18 +223,29 @@ public class JavaImportJPTests {
 		AnswerCurationManager acm = new AnswerCurationManager(getOutputProjectModelFolder(), cm, null);
 		SadlModelGenerator smg = new SadlModelGenerator();
 		JavaModelExtractorJP jme = new JavaModelExtractorJP(acm, smg, null);
+		acm.getExtractionProcessor().setCodeExtractor(jme);
 		jme.setCodeMetaModelModelFolder(getExtractionProjectModelFolder());
+		
+		DialogAnswerProviderConsoleForTest dapcft = new DialogAnswerProviderConsoleForTest();
+		cm.addPrivateKeyValuePair(DialogConstants.DIALOG_ANSWER_PROVIDER, dapcft);
 		
 		boolean includeSerialization = true;
 		
 		String defaultCodeModelPrefix = includeSerialization ? "MachSz" : "Mach";
 		String defaultCodeModelName = "http://com.ge.research.darpa.aske.ta1.explore/" + defaultCodeModelPrefix;
-		jme.process(javaContent, defaultCodeModelName, defaultCodeModelPrefix, includeSerialization);
-//		String content = smg.generateSadlModel(jme, "http://sadl.org/Temperature.sadl");
-//		System.out.println("SADL Model Output:\n" + content);
+		jme.setDefaultCodeModelPrefix(defaultCodeModelPrefix);
+		jme.setDefaultCodeModelName(defaultCodeModelName);
+		
 		String genFolder = getOutputProjectModelFolder() + "/GeneratedModels";
 		new File(genFolder).mkdirs();
-		String owlFileName = genFolder + "/" + jme.getCodeModelPrefix() + ".owl";
+		String owlFileName = genFolder + "/" + defaultCodeModelPrefix + ".owl";
+
+		acm.getExtractionProcessor().getCodeExtractor().addCodeFile(sourceFile);
+		acm.processImports(defaultCodeModelPrefix + ".owl");
+		
+		jme.process(javaContent, includeSerialization);
+//		String content = smg.generateSadlModel(jme, "http://sadl.org/Temperature.sadl");
+//		System.out.println("SADL Model Output:\n" + content);
 		cm.saveOwlFile(acm.getExtractionProcessor().getCodeModel(), 
 				acm.getExtractionProcessor().getCodeModelName(), owlFileName);
 		OwlToSadl ots = new OwlToSadl(acm.getExtractionProcessor().getCodeModel());
