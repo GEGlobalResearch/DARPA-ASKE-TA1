@@ -47,6 +47,8 @@ public interface IModelFromCodeExtractor {
 	List<SadlMethod> getMethods();
 
 	List<Comment> getComments();
+	
+	void addCodeFile(File javaFile);
 
 	void addCodeFiles(List<File> javaFiles);
 	
@@ -54,12 +56,20 @@ public interface IModelFromCodeExtractor {
 	
 	void setCodeFiles(List<File> codeFiles);
 
-	boolean process(String content) throws ConfigurationException, IOException;
+	boolean process(String content, boolean includeSerialization) throws ConfigurationException, IOException;
 
 	String getTypeComment();
 
 	Map<String, Tag> getTagMap();
 
 	String getType();
+	
+	void setDefaultCodeModelName(String defmdlnm);
+	
+	String getDefaultCodeModelName();
+	
+	void setDefaultCodeModelPrefix(String prefix);
+	
+	String getDefaultCodeModelPrefix();
 
 }

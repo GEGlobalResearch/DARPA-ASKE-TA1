@@ -73,6 +73,19 @@ public class AnswerCurationManager {
 	public void processImports(String outputFilename) throws IOException, ConfigurationException {
 		
 		SadlModelGenerator smg = new SadlModelGenerator();
+
+		if (outputFilename.endsWith(".sadl")) {
+			outputFilename = outputFilename.substring(0, outputFilename.length() - 5) + ".owl";
+		}
+		String defPrefix = outputFilename.substring(0, outputFilename.length() - 4);
+		String defName = "http://com.ge.research.sadl.darpa.aske.answer/" + defPrefix;
+		if (getExtractionProcessor().getCodeExtractor().getDefaultCodeModelName() == null) {
+			getExtractionProcessor().getCodeExtractor().setDefaultCodeModelName(defName);
+		}
+		if (getExtractionProcessor().getCodeExtractor().getDefaultCodeModelPrefix() == null) {
+			getExtractionProcessor().getCodeExtractor().setDefaultCodeModelPrefix(defPrefix);
+		}
+
 		List<File> textFiles = getExtractionProcessor().getTextProcessor().getTextFiles();
 		if (textFiles != null) {
 			for (File f : textFiles) {
@@ -85,7 +98,7 @@ public class AnswerCurationManager {
 		if (codeFiles != null) {
 			for (File f : codeFiles) {
 				String content = readFileToString(f);
-				getExtractionProcessor().getCodeExtractor().process(content);
+				getExtractionProcessor().getCodeExtractor().process(content, true);
 				
 //		    	String ontologyRootUri = "http://sadl.org/Temperature.sadl";	// this comes from the selection in the import Wizard
 //				String newContent = smg.generateSadlModel(getExtractionProcessor().getCodeExtractor(), ontologyRootUri );
@@ -93,14 +106,14 @@ public class AnswerCurationManager {
 //					getExtractionProcessor().addNewSadlContent(newContent);
 //				}
 			}
-			if (outputFilename.endsWith(".sadl")) {
-				outputFilename = outputFilename.substring(0, outputFilename.length() - 5) + ".owl";
-			}
 			File of = new File(new File(getOwlModelsFolder()).getParent() + "/GeneratedModels/" + outputFilename);
-			of.mkdirs();
+			of.getParentFile().mkdirs();
 			getProjectConfigurationManager().saveOwlFile(getExtractionProcessor().getCodeModel(), getExtractionProcessor().getCodeModelName(), of.getCanonicalPath());
 
 		}
+		
+		// run inference on the model, interact with user to refine results
+		
 	}
 
 	/**
@@ -116,7 +129,7 @@ public class AnswerCurationManager {
 		char[] buf = new char[10];
 		int numRead = 0;
 		while ((numRead = reader.read(buf)) != -1) {
-			System.out.println(numRead);
+//			System.out.println(numRead);
 			String readData = String.valueOf(buf, 0, numRead);
 			fileData.append(readData);
 			buf = new char[1024];

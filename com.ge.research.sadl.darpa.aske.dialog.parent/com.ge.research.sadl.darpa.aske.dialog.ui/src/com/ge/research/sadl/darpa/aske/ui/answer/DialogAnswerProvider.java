@@ -1,14 +1,18 @@
 package com.ge.research.sadl.darpa.aske.ui.answer;
 
+import java.io.File;
 import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 import java.util.ServiceLoader;
 import java.util.Set;
 
 import org.eclipse.core.commands.ExecutionException;
+import org.eclipse.core.filesystem.EFS;
+import org.eclipse.core.filesystem.IFileStore;
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.ecore.resource.Resource;
 import org.eclipse.jface.text.BadLocationException;
@@ -16,6 +20,9 @@ import org.eclipse.jface.text.DocumentCommand;
 import org.eclipse.jface.text.IAutoEditStrategy;
 import org.eclipse.jface.text.IDocument;
 import org.eclipse.jface.text.IRegion;
+import org.eclipse.ui.IWorkbenchPage;
+import org.eclipse.ui.PlatformUI;
+import org.eclipse.ui.ide.IDE;
 import org.eclipse.xtext.GrammarUtil;
 import org.eclipse.xtext.nodemodel.INode;
 import org.eclipse.xtext.nodemodel.impl.CompositeNodeWithSemanticElement;
@@ -30,6 +37,7 @@ import org.slf4j.LoggerFactory;
 import com.ge.research.sadl.SADLStandaloneSetup;
 import com.ge.research.sadl.builder.ConfigurationManagerForIDE;
 import com.ge.research.sadl.builder.ConfigurationManagerForIdeFactory;
+import com.ge.research.sadl.builder.IConfigurationManagerForIDE;
 import com.ge.research.sadl.darpa.aske.processing.DialogConstants;
 import com.ge.research.sadl.darpa.aske.processing.HowManyValuesConstruct;
 import com.ge.research.sadl.darpa.aske.processing.WhatIsConstruct;
@@ -40,13 +48,17 @@ import com.ge.research.sadl.model.gp.Junction;
 import com.ge.research.sadl.model.gp.Junction.JunctionType;
 import com.ge.research.sadl.model.gp.NamedNode;
 import com.ge.research.sadl.model.gp.NamedNode.NodeType;
+import com.ge.research.sadl.model.visualizer.GraphVizVisualizer;
+import com.ge.research.sadl.model.visualizer.IGraphVisualizer;
 import com.ge.research.sadl.model.gp.Node;
 import com.ge.research.sadl.model.gp.ProxyNode;
 import com.ge.research.sadl.model.gp.Query;
 import com.ge.research.sadl.model.gp.TripleElement;
 import com.ge.research.sadl.model.gp.VariableNode;
 import com.ge.research.sadl.parser.antlr.SADLParser;
+import com.ge.research.sadl.preferences.SadlPreferences;
 import com.ge.research.sadl.processing.OntModelProvider;
+import com.ge.research.sadl.reasoner.IConfigurationManagerForEditing;
 import com.ge.research.sadl.reasoner.ResultSet;
 import com.ge.research.sadl.reasoner.SadlCommandResult;
 import com.ge.research.sadl.ui.handlers.SadlActionHandler;
@@ -89,6 +101,7 @@ public class DialogAnswerProvider extends DefaultAutoEditStrategyProvider {
 	    {
 
 	        private List<String> sadlkeywords = null;
+			private IGraphVisualizer visualizer = null;
 
 			@Override
 	        public void customizeDocumentCommand(IDocument document, DocumentCommand command) 
@@ -172,27 +185,69 @@ public class DialogAnswerProvider extends DefaultAutoEditStrategyProvider {
 			                		}
 		                		}
 		                		else {
-		                			int tripleCnt = 0;
-		                			if (trgt instanceof TripleElement) {
-		                				tripleCnt++;
-		                			}
-		                			if (whn instanceof TripleElement) {
-		                				tripleCnt++;
-		                			}
-	                				TripleElement[] triples = new TripleElement[tripleCnt];
+		                			// there is a when clause, and this is in a WhatIsConstruct
+		                			List<TripleElement> tripleLst = new ArrayList<TripleElement>();
 	                				if (trgt instanceof TripleElement) {
-		                				triples[0] = (TripleElement)trgt;
+		                				tripleLst.add((TripleElement)trgt);
+	                				}
+	                				else if (trgt instanceof Junction) {
+	                					tripleLst = addTriplesFromJunction((Junction) trgt, tripleLst);
 	                				}
 		                			if (whn instanceof TripleElement) {
 		                				// we have a when statement
-		                				triples[1] = (TripleElement)whn;
+		                				tripleLst.add((TripleElement)whn);
 		                			}
+	                				TripleElement[] triples = new TripleElement[tripleLst.size()];
+	                				triples = tripleLst.toArray(triples);
+		                			
 					                OntModelProvider.addPrivateKeyValuePair(resource, DialogConstants.LAST_DIALOG_COMMAND, triples);
 			                		StringBuilder answer = new StringBuilder("CM: ");
 			                		ResultSet[] rss = insertTriplesAndQuery(resource, triples);
 			                		if (rss != null) {
 			                			int cntr = 0;
 				                		for (ResultSet rs : rss) {
+				                			if (cntr == 0) {
+				                				// this is the first ResultSet, construct a graph if possible
+				                				if (rs.getColumnCount() != 3) {
+				                					System.err.println("Can't construct graph; not 3 columns. Unexpected result.");
+				                				}
+//				                				this.graphVisualizerHandler.resultSetToGraph(path, resultSet, description, baseFileName, orientation, properties);
+				                				
+				                				IGraphVisualizer visualizer = new GraphVizVisualizer();
+				                				if (visualizer != null) {
+				                					String graphsDirectory = new File(modelFolder).getParent() + "/Graphs";
+				                					new File(graphsDirectory).mkdir();
+				                					String baseFileName = "QueryMetadata";
+				                					visualizer.initialize(
+				                		                    graphsDirectory,
+				                		                    baseFileName,
+				                		                    baseFileName,
+				                		                    null,
+				                		                    IGraphVisualizer.Orientation.TD,
+				                		                    "Metadata from Queries");
+				                		            visualizer.graphResultSetData(rs);				                				}
+				        						String fileToOpen = visualizer.getGraphFileToOpen();
+				        						if (fileToOpen != null) {
+				        							File fto = new File(fileToOpen);
+				        							if (fto.isFile()) {
+				        								IFileStore fileStore = EFS.getLocalFileSystem().getStore(fto.toURI());
+				        								IWorkbenchPage page = PlatformUI.getWorkbench().getActiveWorkbenchWindow().getActivePage();
+				        								try {
+				        									IDE.openEditorOnFileStore(page, fileStore);
+				        								}
+				        								catch (Throwable t) {
+				        									System.err.println("Error trying to display graph file '" + fileToOpen + "': " + t.getMessage());
+				        								}
+				        							}
+				        							else if (fileToOpen != null) {
+				        								System.err.println("Failed to open graph file '" + fileToOpen + "'. Try opening it manually.");
+				        							}
+				        						}
+				                				else {
+				                					System.err.println("Unable to find an instance of IGraphVisualizer to render graph for query.\n");
+				                				}
+
+				                			}
 				                			if (cntr++ > 0) {
 				                				answer.append(",\n");
 				                			}
@@ -250,6 +305,28 @@ public class DialogAnswerProvider extends DefaultAutoEditStrategyProvider {
 	                logger.debug("AutoEdit error (of type " + e.getClass().getCanonicalName() + "): " + e.getMessage());   
 	            }
 	        }
+
+			private List<TripleElement> addTriplesFromJunction(Junction jct, List<TripleElement> tripleLst) {
+				Object lhs = jct.getLhs();
+				if (lhs instanceof ProxyNode) {
+					if (((ProxyNode)lhs).getProxyFor() instanceof TripleElement) {
+						tripleLst.add((TripleElement) ((ProxyNode)lhs).getProxyFor());
+					}
+					else if (((ProxyNode)lhs).getProxyFor() instanceof Junction) {
+						tripleLst = addTriplesFromJunction((Junction) ((ProxyNode)lhs).getProxyFor(), tripleLst);
+					}
+				}
+				Object rhs = jct.getRhs();
+				if (rhs instanceof ProxyNode) {
+					if (((ProxyNode)rhs).getProxyFor() instanceof TripleElement) {
+						tripleLst.add((TripleElement) ((ProxyNode)rhs).getProxyFor());
+					}
+					else if (((ProxyNode)rhs).getProxyFor() instanceof Junction) {
+						tripleLst = addTriplesFromJunction((Junction) ((ProxyNode)rhs).getProxyFor(), tripleLst);
+					}
+				}
+				return tripleLst;
+			}
 
 			private void whatIsNamedNode(IDocument document, IRegion reg, Resource resource, Object lastcmd)
 					throws ExecutionException, BadLocationException {
@@ -819,5 +896,9 @@ public class DialogAnswerProvider extends DefaultAutoEditStrategyProvider {
 
 	private void setTheDocument(XtextDocument theDocument) {
 		this.theDocument = theDocument;
+	}
+	
+	public String addCurationManagerInitiatedContent(String content) {
+		return content;
 	}
 }

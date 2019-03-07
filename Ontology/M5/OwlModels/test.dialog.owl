@@ -1,5 +1,5 @@
 <rdf:RDF
-    xmlns:test="http://sadl.org/test.sadl"
+    xmlns:tst="http://sadl.org/test.sadl"
     xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
     xmlns:sadlbasemodel="http://sadl.org/sadlbasemodel"
     xmlns:owl="http://www.w3.org/2002/07/owl#"
