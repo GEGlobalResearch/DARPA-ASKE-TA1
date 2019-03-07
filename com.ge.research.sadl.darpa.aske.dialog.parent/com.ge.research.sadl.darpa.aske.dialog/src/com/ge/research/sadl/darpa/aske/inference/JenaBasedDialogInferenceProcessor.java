@@ -127,8 +127,9 @@ public class JenaBasedDialogInferenceProcessor extends JenaBasedSadlInferencePro
 			"  ?BN owl:onProperty sci:hasEquation. \n" + 
 			"  ?BN owl:someValuesFrom ?Eq.\n" + 
 			"  filter (?Eq in (EQNSLIST)) .   \n" + 
-			"  ?Eq imp:input/imp:argType ?Input.\n" +
-			"  ?Eq imp:input/imp:argName ?Label." + 
+			"  ?Eq imp:input ?In.\n" + 
+			"  ?In imp:argType ?Input.\n" + 
+			"  ?In imp:argName ?Label.\n" + 
 			"  ?Eq imp:output ?Oinst.\n" + 
 			"  ?Oinst a ?Output.\n" + 
 			"  ?Eq imp:expression ?expr.\n" + 
@@ -551,7 +552,8 @@ public class JenaBasedDialogInferenceProcessor extends JenaBasedSadlInferencePro
 			if (!reasoner.isInitialized()) {
 				reasoner.setConfigurationManager(configMgr);
 				//String modelName = configMgr.getPublicUriFromActualUrl(new SadlUtils().fileNameToFileUrl(modelFolderUri + "/" + owlFileName));
-				reasoner.initializeReasoner(modelFolderUri, getModelName(), format);
+				//model name something like http://aske.ge.com/metamodel
+				reasoner.initializeReasoner(modelFolderUri, getModelName(), format); 
 				reasoner.loadInstanceData(qhmodel);
 				//System.out.print("reasoner is not initialized");
 				//return null;
