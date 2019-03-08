@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
+import java.util.ServiceLoader;
 import java.util.Set;
 
 import org.eclipse.core.commands.ExecutionException;
@@ -53,7 +54,13 @@ import com.google.inject.Inject;
 import com.google.inject.Injector;
 import com.google.inject.Provider;
 import com.hp.hpl.jena.ontology.OntClass;
+import com.hp.hpl.jena.ontology.OntModel;
+import com.hp.hpl.jena.ontology.OntProperty;
 import com.hp.hpl.jena.ontology.OntResource;
+import com.hp.hpl.jena.rdf.model.RDFNode;
+import com.hp.hpl.jena.rdf.model.StmtIterator;
+import com.hp.hpl.jena.reasoner.rulesys.Builtin;
+import com.hp.hpl.jena.util.iterator.ExtendedIterator;
 import com.hp.hpl.jena.vocabulary.OWL;
 import com.hp.hpl.jena.vocabulary.RDF;
 import com.hp.hpl.jena.vocabulary.RDFS;
@@ -70,7 +77,10 @@ public class DialogAnswerProvider extends DefaultAutoEditStrategyProvider {
 //	protected Provider<SadlRunQueryHandler> handlerProvider;
 
 	@Inject
-	protected Provider<DialogRunInferenceHandler> handlerProvider;
+	protected Provider<DialogRunInferenceHandler> handlerProvider;		// Provider will give new instance
+	
+	@Inject
+	protected Provider<RunDialogQuery> rdqProvider;
 
 	@Override
 	protected void configure(IEditStrategyAcceptor acceptor) {
@@ -88,6 +98,11 @@ public class DialogAnswerProvider extends DefaultAutoEditStrategyProvider {
 	            IRegion reg = ((XtextDocument) document).getLastDamage();
 
 	            try {
+	            	ServiceLoader<Builtin> itr = ServiceLoader.load(Builtin.class);
+	            	Iterator<Builtin> itrr = itr.iterator();
+	            	while (itrr.hasNext()) {
+	            		System.out.println(itrr.next().getClass().getCanonicalName());
+	            	}
 	                if (document instanceof XtextDocument) {
 	                	Resource resource = getResourceFromDocument((XtextDocument)document);
 	                	String tempInsert = null;
@@ -113,46 +128,15 @@ public class DialogAnswerProvider extends DefaultAutoEditStrategyProvider {
 		                		addResponseToDialog(document, reg, answer, ctx);
 		                	}
 		                	else if (lastcmd instanceof NamedNode) {
-		                		// what is NamedNode?
-		                		NamedNode nn = (NamedNode) lastcmd;
-		                		NodeType typ = nn.getNodeType();
-		                		boolean isFirstProperty = true;
-		                		StringBuilder answer = new StringBuilder("CM: ");
-		                		if (typ.equals(NodeType.ClassNode)) {
-		                			answer.append(checkForKeyword(nn.getName()));
-		                			answer.append(" is a class");
-		                			isFirstProperty = addDomainAndRange(resource, nn, isFirstProperty, answer);
-		                			addQualifiedCardinalityRestriction(resource, nn, isFirstProperty, answer);		
-		                			answer.append(".");
-			                		Object ctx = ((NamedNode)lastcmd).getContext();
-			                		addResponseToDialog(document, reg, answer, ctx);
-		                		}
-		                		else if (typ.equals(NodeType.ObjectProperty) || typ.equals(NodeType.DataTypeProperty) || typ.equals(NodeType.PropertyNode)) {
-		                			addPropertyWithDomainAndRange(resource, nn, answer);
-		                			answer.append(".");
-			                		Object ctx = ((NamedNode)lastcmd).getContext();
-			                		addResponseToDialog(document, reg, answer, ctx);
-		                		}
-		                		else if (typ.equals(NodeType.AnnotationProperty)) {
-		                			addAnnotationPropertyDeclaration(resource, nn, answer);
-		                			answer.append(".");
-			                		Object ctx = ((NamedNode)lastcmd).getContext();
-			                		addResponseToDialog(document, reg, answer, ctx);
-		                		}
-		                		else if (typ.equals(NodeType.InstanceNode)) {
-		                			addInstanceDeclaration(resource, nn, answer);
-		                			answer.append(".");
-			                		Object ctx = ((NamedNode)lastcmd).getContext();
-					                addResponseToDialog(document, reg, answer, ctx);
-		                		}
-		                		else {
-		                			logger.debug("    Lastcmd '" + lastcmd.getClass().getCanonicalName() + "' not handled yet!");
-		                		}
+		                		whatIsNamedNode(document, reg, resource, lastcmd);
 		                	}
 		                	else if (lastcmd instanceof WhatIsConstruct) {
 		                		Object trgt = ((WhatIsConstruct)lastcmd).getTarget();
 		                		Object whn = ((WhatIsConstruct)lastcmd).getWhen();
-		                		if (trgt instanceof Object[] && whn == null) {
+		                		if (trgt instanceof NamedNode && whn == null) {
+		                			whatIsNamedNode(document, reg, resource, (NamedNode)trgt);
+		                		}
+		                		else if (trgt instanceof Object[] && whn == null) {
 			                		if (allTripleElements((Object[])trgt)) {
 				                		Object ctx = null;
 			                			TripleElement[] triples = flattenTriples((Object[])trgt);
@@ -188,35 +172,42 @@ public class DialogAnswerProvider extends DefaultAutoEditStrategyProvider {
 			                		}
 		                		}
 		                		else {
-		                			// we have a when statement
-		                			if (trgt instanceof TripleElement && whn instanceof TripleElement) {
-		                				TripleElement[] triples = new TripleElement[2];
+		                			int tripleCnt = 0;
+		                			if (trgt instanceof TripleElement) {
+		                				tripleCnt++;
+		                			}
+		                			if (whn instanceof TripleElement) {
+		                				tripleCnt++;
+		                			}
+	                				TripleElement[] triples = new TripleElement[tripleCnt];
+	                				if (trgt instanceof TripleElement) {
 		                				triples[0] = (TripleElement)trgt;
+	                				}
+		                			if (whn instanceof TripleElement) {
+		                				// we have a when statement
 		                				triples[1] = (TripleElement)whn;
-						                OntModelProvider.addPrivateKeyValuePair(resource, DialogConstants.LAST_DIALOG_COMMAND, triples);
-				                		StringBuilder answer = new StringBuilder("CM: ");
-				                		ResultSet[] rss = insertTriplesAndQuery(resource, triples);
-				                		
-				                		//TODO Alfredo: is it here where we should call graphviz?
-				                		//if ( rss[0].getColumnNames()[0].equals("CompGraph") ) {
-//				                		String desc = "Computational Graph";
-//				                		String baseFileName = OntModelProvider.getModelName(resource); //path.getFileName().toString() + System.currentTimeMillis();
-//				                		String path = resource.getURI().toFileString();
-//				                		resultSetToGraph(path, rss[0], desc, baseFileName, null, OntModelProvider.getAllImpliedProperties(resource));
-				                		//}
-				                		
-				                		answer.append("\"");
-				                		if (rss != null) {
-					                		for (ResultSet rs : rss) {
-					                			answer.append(rs.toString() + "\n");
-					                		}
+		                			}
+					                OntModelProvider.addPrivateKeyValuePair(resource, DialogConstants.LAST_DIALOG_COMMAND, triples);
+			                		StringBuilder answer = new StringBuilder("CM: ");
+			                		ResultSet[] rss = insertTriplesAndQuery(resource, triples);
+			                		if (rss != null) {
+			                			int cntr = 0;
+				                		for (ResultSet rs : rss) {
+				                			if (cntr++ > 0) {
+				                				answer.append(",\n");
+				                			}
+				                			answer.append(resultSetToQuotableString(rs));
 				                		}
-				                		answer.append("\"");
-		                			}
-		                			else {
-		                				System.out.println("Target is: " + trgt.toString());
-		                				System.out.println("When is: " + whn.toString());
-		                			}
+				                		answer.append(".\n");
+			                		}
+			                		Object ctx = triples[0].getContext();
+			                		addResponseToDialog(document, reg, answer, ctx);
+//		                			}
+//		                			else {
+////		                				rdqProvider.get().execute(null, null, null);
+//		                				System.out.println("Target is: " + trgt.toString());
+//		                				System.out.println("When is: " + whn.toString());
+//		                			}
 		                		}
 		                	}
 		                	else if (lastcmd instanceof HowManyValuesConstruct) {
@@ -259,6 +250,45 @@ public class DialogAnswerProvider extends DefaultAutoEditStrategyProvider {
 	                logger.debug("AutoEdit error (of type " + e.getClass().getCanonicalName() + "): " + e.getMessage());   
 	            }
 	        }
+
+			private void whatIsNamedNode(IDocument document, IRegion reg, Resource resource, Object lastcmd)
+					throws ExecutionException, BadLocationException {
+				// what is NamedNode?
+				NamedNode nn = (NamedNode) lastcmd;
+				NodeType typ = nn.getNodeType();
+				boolean isFirstProperty = true;
+				StringBuilder answer = new StringBuilder("CM: ");
+				if (typ.equals(NodeType.ClassNode)) {
+					answer.append(checkForKeyword(nn.getName()));
+					answer.append(" is a class");
+					isFirstProperty = addDomainAndRange(resource, nn, isFirstProperty, answer);
+					addQualifiedCardinalityRestriction(resource, nn, isFirstProperty, answer);		
+					answer.append(".");
+					Object ctx = ((NamedNode)lastcmd).getContext();
+					addResponseToDialog(document, reg, answer, ctx);
+				}
+				else if (typ.equals(NodeType.ObjectProperty) || typ.equals(NodeType.DataTypeProperty) || typ.equals(NodeType.PropertyNode)) {
+					addPropertyWithDomainAndRange(resource, nn, answer);
+					answer.append(".");
+					Object ctx = ((NamedNode)lastcmd).getContext();
+					addResponseToDialog(document, reg, answer, ctx);
+				}
+				else if (typ.equals(NodeType.AnnotationProperty)) {
+					addAnnotationPropertyDeclaration(resource, nn, answer);
+					answer.append(".");
+					Object ctx = ((NamedNode)lastcmd).getContext();
+					addResponseToDialog(document, reg, answer, ctx);
+				}
+				else if (typ.equals(NodeType.InstanceNode)) {
+					addInstanceDeclaration(resource, nn, answer);
+					answer.append(".");
+					Object ctx = ((NamedNode)lastcmd).getContext();
+				    addResponseToDialog(document, reg, answer, ctx);
+				}
+				else {
+					logger.debug("    Lastcmd '" + lastcmd.getClass().getCanonicalName() + "' not handled yet!");
+				}
+			}
 
 			private TripleElement[] flattenTriples(Object[] lastcmd) {
 				List<TripleElement> triples = new ArrayList<TripleElement>();
@@ -573,47 +603,49 @@ public class DialogAnswerProvider extends DefaultAutoEditStrategyProvider {
 
 			private boolean addDomainAndRange(Resource resource, NamedNode nn, boolean isFirstProperty,
 					StringBuilder answer) throws ExecutionException {
-				String query = "select ?p ?r where {optional{?p <rdfs:domain> <" + nn.getURI() + ">} . ";
-				query += "optional{?p <rdfs:range> ?r}}";
-				Query q = new Query();
-				q.setSparqlQueryString(query);
-				OntModelProvider.addPrivateKeyValuePair(resource, DialogConstants.LAST_DIALOG_COMMAND, q);
-				ResultSet rs = runQuery(resource, q);
-				if (rs != null) {
-					rs.setShowNamespaces(false);
-					int rowcnt = rs.getRowCount();
-					if (rowcnt > 0) {
-						answer.append("\n");
-						for (int r = 0; r < rowcnt; r++) {
-							answer.append("      ");
-							answer.append("described by ");
-							Object dobj = rs.getResultAt(r, 0);
-							if (dobj != null) {
-								answer.append(checkForKeyword(dobj.toString()));
-								Object drng = rs.getResultAt(r, 1);
-								if (drng != null) {
-									String val = drng.toString();
-									if (val != null && val.length() > 0) {
-				    					answer.append(" with values of type ");
-				    					rs.setShowNamespaces(true);
-				    					String pval = rs.getResultAt(r, 1).toString();
-				    					rs.setShowNamespaces(false);
-				    					if (pval.startsWith(XSD.getURI())) {
-				        					answer.append(val);
-				    					}
-				    					else {
-				        					answer.append(checkForKeyword(val));			                						
-				    					}
+				OntModel m = OntModelProvider.find(resource);
+				OntClass cls = m.getOntClass(nn.getURI());
+				return getDomainAndRangeOfClass(m, cls, answer);
+			}
+
+			private boolean getDomainAndRangeOfClass(OntModel m, OntClass cls, StringBuilder answer) {
+				boolean isFirstProperty = true;
+				StmtIterator sitr = m.listStatements(null, RDFS.domain, cls);
+				while (sitr.hasNext()) {
+					com.hp.hpl.jena.rdf.model.Resource p = sitr.nextStatement().getSubject();
+					answer.append("\n      ");
+					answer.append("described by ");
+					if (p != null) {
+						answer.append(checkForKeyword(p.isURIResource() ? p.getLocalName() : p.toString()));
+						StmtIterator ritr = m.listStatements(p, RDFS.range, (RDFNode)null);
+						while (ritr.hasNext()) {
+							RDFNode r = ritr.nextStatement().getObject();
+							if (r != null) {
+								answer.append(" with values of type ");
+								if (r.isURIResource()) {
+									if (r.asResource().getNameSpace().equals(XSD.getURI())) {
+										answer.append(r.asResource().getLocalName());										
+									}
+									else {
+										answer.append(checkForKeyword(r.asResource().getLocalName()));
 									}
 								}
-								if (r < rowcnt - 1) {
-									answer.append(",\n");
+								else {
+									answer.append(r.asLiteral().getValue().toString());
 								}
-								isFirstProperty = false;
 							}
 						}
 					}
+					if (sitr.hasNext()) {
+						isFirstProperty = false;
+					}
 				}
+				ExtendedIterator<OntClass> spritr = cls.listSuperClasses(true);
+				while (spritr.hasNext()) {
+					OntClass spcls = spritr.next();
+					getDomainAndRangeOfClass(m, spcls, answer);
+				}
+//				answer.append("\n");
 				return isFirstProperty;
 			}
 
@@ -699,7 +731,7 @@ public class DialogAnswerProvider extends DefaultAutoEditStrategyProvider {
 	        }
 
 			private ResultSet[] insertTriplesAndQuery(Resource resource, TripleElement[] triples) throws ExecutionException {
-        		RunDialogQuery rdq = new RunDialogQuery();
+        		RunDialogQuery rdq = rdqProvider.get();  //new RunDialogQuery();
         		Object result = rdq.execute(handlerProvider, resource, triples);
         		if (result instanceof ResultSet[]) {
         			return (ResultSet[])result;

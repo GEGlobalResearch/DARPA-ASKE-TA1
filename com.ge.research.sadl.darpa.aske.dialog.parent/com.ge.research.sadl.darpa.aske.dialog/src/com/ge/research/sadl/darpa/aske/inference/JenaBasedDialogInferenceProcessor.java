@@ -1,6 +1,8 @@
 package com.ge.research.sadl.darpa.aske.inference;
 
 import java.io.ByteArrayOutputStream;
+import java.util.Iterator;
+import java.util.ServiceLoader;
 import java.io.File;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
@@ -27,7 +29,6 @@ import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.message.BasicNameValuePair;
 import org.apache.http.util.EntityUtils;
 import org.eclipse.emf.ecore.resource.Resource;
-
 import com.ge.research.sadl.builder.ConfigurationManagerForIDE;
 import com.ge.research.sadl.builder.ConfigurationManagerForIdeFactory;
 import com.ge.research.sadl.builder.IConfigurationManagerForIDE;
@@ -39,6 +40,7 @@ import com.ge.research.sadl.model.gp.Node;
 import com.ge.research.sadl.model.gp.TripleElement;
 import com.ge.research.sadl.processing.OntModelProvider;
 import com.ge.research.sadl.processing.SadlInferenceException;
+import com.hp.hpl.jena.reasoner.rulesys.Builtin;
 import com.ge.research.sadl.reasoner.ConfigurationException;
 import com.ge.research.sadl.reasoner.ConfigurationManager;
 import com.ge.research.sadl.reasoner.IReasoner;
@@ -141,8 +143,9 @@ public class JenaBasedDialogInferenceProcessor extends JenaBasedSadlInferencePro
 			"  ?BN owl:onProperty sci:hasEquation. \n" + 
 			"  ?BN owl:someValuesFrom ?Eq.\n" + 
 			"  filter (?Eq in (EQNSLIST)) .   \n" + 
-			"  ?Eq imp:input/imp:argType ?Input.\n" +
-			"  ?Eq imp:input/imp:argName ?Label." + 
+			"  ?Eq imp:input ?In.\n" + 
+			"  ?In imp:argType ?Input.\n" + 
+			"  ?In imp:argName ?Label.\n" + 
 			"  ?Eq imp:output ?Oinst.\n" + 
 			"  ?Oinst a ?Output.\n" + 
 			"  ?Eq imp:expression ?expr.\n" + 
@@ -199,6 +202,13 @@ public class JenaBasedDialogInferenceProcessor extends JenaBasedSadlInferencePro
 		setModelFolderPath(getModelFolderPath(resource));
 		setModelName(OntModelProvider.getModelName(resource));
 		setTheJenaModel(OntModelProvider.find(resource));
+		
+		System.out.println(" >> Builtin classes discovered by the service loader:");
+		Iterator<Builtin> iter = ServiceLoader.load(Builtin.class).iterator();
+		while (iter.hasNext()) {
+			Builtin service = iter.next();
+			System.out.println(service.getClass().getCanonicalName());
+		}
 
 		if (commonSubject(triples)) {
 			return super.insertTriplesAndQuery(resource, triples);
@@ -616,7 +626,8 @@ public class JenaBasedDialogInferenceProcessor extends JenaBasedSadlInferencePro
 			if (!reasoner.isInitialized()) {
 				reasoner.setConfigurationManager(configMgr);
 				//String modelName = configMgr.getPublicUriFromActualUrl(new SadlUtils().fileNameToFileUrl(modelFolderUri + "/" + owlFileName));
-				reasoner.initializeReasoner(modelFolderUri, getModelName(), format);
+				//model name something like http://aske.ge.com/metamodel
+				reasoner.initializeReasoner(modelFolderUri, getModelName(), format); 
 				reasoner.loadInstanceData(qhmodel);
 				//System.out.print("reasoner is not initialized");
 				//return null;

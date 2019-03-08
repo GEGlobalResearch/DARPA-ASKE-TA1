@@ -6,6 +6,8 @@
  Air is a type of Gas.
  speedOfSound describes Gas with values of type Velocity.
  altitude describes Air with values of type Length.
+ movesIn describes PhysicalObject with values of type Gas.
+ mach describes PhysicalObject with a single value of type decimal.
  
  primitiveData is a type of {decimal or boolean or string}.
  

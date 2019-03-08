@@ -1,8 +1,8 @@
- uri "http://sadl.org/test.sadl" alias test.
+ uri "http://sadl.org/test.sadl" alias tst.
  
- import "http://sadl.org/SpeedOfSound.sadl".
- 
- StdAir is an Air with altitude 20000 ft,
- 	with temperature 400 R.
+ Shape is a class described by area with values of type decimal.
+ Rectangle is a type of Shape, described by height with values of type decimal,
+ 	described by width with values of type decimal.
+ Circle is a type of Shape, described by radius with values of type decimal.
  
  

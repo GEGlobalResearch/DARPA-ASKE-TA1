@@ -1,0 +1,40 @@
+<rdf:RDF
+    xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+    xmlns:sadlbasemodel="http://sadl.org/sadlbasemodel"
+    xmlns:test2="http://sadl.org/test2.sadl#"
+    xmlns:j.0="http://sadl.org/SpeedOfSound.sadl#"
+    xmlns:owl="http://www.w3.org/2002/07/owl#"
+    xmlns:sadlimplicitmodel="http://sadl.org/sadlimplicitmodel"
+    xmlns:sos="http://sadl.org/SpeedOfSound.sadl"
+    xmlns:builtinfunctions="http://sadl.org/builtinfunctions"
+    xmlns:j.1="http://sadl.org/sadlimplicitmodel#"
+    xmlns:rdfs="http://www.w3.org/2000/01/rdf-schema#"
+    xmlns:j.2="http://sadl.org/ScientificConcepts2.sadl#"
+    xmlns:xsd="http://www.w3.org/2001/XMLSchema#"
+  xml:base="http://sadl.org/test2.sadl">
+  <owl:Ontology rdf:about="">
+    <owl:imports rdf:resource="SpeedOfSound.sadl"/>
+    <owl:imports rdf:resource="builtinfunctions"/>
+    <owl:imports rdf:resource="sadlimplicitmodel"/>
+    <owl:imports rdf:resource="sadlbasemodel"/>
+    <rdfs:comment xml:lang="en">This ontology was created from a SADL file 'test2.sadl' and should not be directly edited.</rdfs:comment>
+  </owl:Ontology>
+  <j.0:Air rdf:ID="StdAir">
+    <j.2:temperature>
+      <j.2:Temperature>
+        <j.1:unit rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+        >R</j.1:unit>
+        <j.1:value rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+        >400</j.1:value>
+      </j.2:Temperature>
+    </j.2:temperature>
+    <j.0:altitude>
+      <j.2:Length>
+        <j.1:unit rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+        >ft</j.1:unit>
+        <j.1:value rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+        >20000</j.1:value>
+      </j.2:Length>
+    </j.0:altitude>
+  </j.0:Air>
+</rdf:RDF>

@@ -1,0 +1,25 @@
+uri "http://nopackage/Mach".
+
+import "http://sadl.org/SpeedOfSound.sadl".
+
+External CAL_SOS(double T, double G, double R, double Q) returns double: "/Mach/CAL_SOS".
+External computeMach(decimal v, decimal sos) returns decimal: "/Mach/computeMach2".
+External temperatureAtAltitude(decimal alt) returns decimal: "/Mach/temperatureAtAltitude".
+
+G is a UnittedQuantity with ^value 1.4.
+R is a UnittedQuantity with ^value 53.3, with unit "ft-lbf/lb-Rankine".
+Theta is a UnittedQuantity with ^value 5500, with unit "Rankine".
+
+Rule temperatureAtAltitude_Rule:
+	if air is some Air and air has altitude alt
+	then ^value of temperature of air is temperatureAtAltitude(^value of alt).
+
+Rule CAL_SOS_Rule:
+	if air is some Air and air has temperature T and T has unit "Rankine"
+	then ^value of speedOfSound of air is CAL_SOS(^value of T, ^value of G, ^value of R, ^value of Theta).
+	
+Rule computeMach_Rule:
+	if o is a PhysicalObject and air is some Air and o movesIn air
+	then mach of o is computeMach(^value of velocity of o, ^value of speedOfSound of air).
+	
+// What is the mach of an Aircraft with velocity 500 mph. with movesIn (some Air with altitude 30000 ft)?

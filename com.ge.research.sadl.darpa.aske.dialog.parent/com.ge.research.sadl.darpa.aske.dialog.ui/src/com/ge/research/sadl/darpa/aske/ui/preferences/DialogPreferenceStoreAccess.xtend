@@ -46,12 +46,12 @@ class DialogPreferenceStoreAccess extends PreferenceStoreAccessImpl {
 	
 	new() {
 		this.initializedLanguages = newHashSet();
-		LOGGER.info('''Creating preference store access: Â«thisÂ».''');
+		LOGGER.info('''Creating preference store access: «this».''');
 	}
 	
 	@Override
 	override toString() {
-		return '''Shared Dialog preference store access [Â«System.identityHashCode(this)Â»]''';
+		return '''Shared Dialog preference store access [«System.identityHashCode(this)»]''';
 	}
 	
 	@Override
