@@ -176,13 +176,14 @@ public class JenaBasedDialogInferenceProcessor extends JenaBasedSadlInferencePro
 			"  ?DBN rdfs:subClassOf ?DB. ?DB owl:onProperty sci:distribution. ?DB owl:hasValue ?Distribution.\n" + 
 			"} order by ?Node";
 
-	public static final String CGQUERY = "construct {\n" + 
-			" ?EQ <http://sadl.org/sadlimplicitmodel#input> ?I.\n" + 
-			" ?I <http://sadl.org/sadlimplicitmodel#argType> ?Input.\n" + 
-			" ?EQ <http://sadl.org/sadlimplicitmodel#output> ?O.\n" + 
-			" ?O a ?Output.\n" + 
-			"}\n" + 
-			"#select distinct ?EQ ?Input ?Output\n" + 
+	public static final String CGQUERY = 
+//			"construct {\n" + 
+//			" ?EQ <http://sadl.org/sadlimplicitmodel#input> ?I.\n" + 
+//			" ?I <http://sadl.org/sadlimplicitmodel#argType> ?Input.\n" + 
+//			" ?EQ <http://sadl.org/sadlimplicitmodel#output> ?O.\n" + 
+//			" ?O a ?Output.\n" + 
+//			"}\n" + 
+			"select distinct ?Input ?EQ ?Output\n" + 
 			"where {\n" + 
 			" ?CCG a <http://aske.ge.com/metamodel#CCG>.\n" + 
 			" ?CCG <http://aske.ge.com/metamodel#subgraph> ?SG.\n" + 
@@ -482,6 +483,8 @@ public class JenaBasedDialogInferenceProcessor extends JenaBasedSadlInferencePro
 				qhmodel.add(sgIns, outputprop, outpIns);
 			}
 		}
+		
+		//Resource ccgObj = qhmodel.get
 		
 		//qhmodel.write(System.out,"RDF/XML-ABBREV");
 		//qhmodel.write(System.out,"TTL");
