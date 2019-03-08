@@ -225,6 +225,7 @@ public class DialogAnswerProvider extends DefaultAutoEditStrategyProvider {
 				                		                    null,
 				                		                    IGraphVisualizer.Orientation.TD,
 				                		                    "Metadata from Queries");
+				                					rs.setShowNamespaces(false);
 				                		            visualizer.graphResultSetData(rs);				                				}
 				        						String fileToOpen = visualizer.getGraphFileToOpen();
 				        						if (fileToOpen != null) {
@@ -248,10 +249,11 @@ public class DialogAnswerProvider extends DefaultAutoEditStrategyProvider {
 				                				}
 
 				                			}
-				                			if (cntr++ > 0) {
+				                			if (cntr > 0) 
+				                				answer.append(resultSetToQuotableString(rs));
+				                			if(cntr++ > 1)
 				                				answer.append(",\n");
-				                			}
-				                			answer.append(resultSetToQuotableString(rs));
+				                			
 				                		}
 				                		answer.append(".\n");
 			                		}

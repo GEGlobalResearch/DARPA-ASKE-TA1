@@ -77,7 +77,7 @@ public class DialogRunInferenceHandler extends SadlRunInferenceHandler {
 //            		baseFileName = baseFileName.replace(".", "_");
 //            		resultSetToGraph(path, (ResultSet)rss[0], desc, baseFileName, null, properties);
 //            		
-					OntModelProvider.addPrivateKeyValuePair(res, "CMResult", rss[1]);
+					OntModelProvider.addPrivateKeyValuePair(res, "CMResult", rss);
 				}
 				else if (lastCmd != null) {
 					throw new InvalidClassException("Unhandled last command type: " + lastCmd.getClass().getCanonicalName());
