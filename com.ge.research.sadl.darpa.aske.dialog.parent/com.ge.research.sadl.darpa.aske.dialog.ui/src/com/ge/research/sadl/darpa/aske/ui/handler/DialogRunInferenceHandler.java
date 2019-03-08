@@ -69,12 +69,14 @@ public class DialogRunInferenceHandler extends SadlRunInferenceHandler {
 				}
 				else if (lastCmd instanceof TripleElement[]) {
 					Object[] rss = inferenceProcessor.insertTriplesAndQuery(res, (TripleElement[]) lastCmd);
-
-            		String desc = "Computational Graph";
-            		String baseFileName = OntModelProvider.getModelName(res); //path.getFileName().toString() + System.currentTimeMillis();
-            		//String path = resource.getURI().toFileString();
-            		resultSetToGraph(path, (ResultSet)rss[0], desc, baseFileName, null, properties);
-            		
+//
+//            		String desc = "Computational Graph";
+//            		String baseFileName = OntModelProvider.getModelName(res); //path.getFileName().toString() + System.currentTimeMillis();
+//            		//String path = resource.getURI().toFileString();
+//            		baseFileName = path.getFileName().toString() + System.currentTimeMillis() ;
+//            		baseFileName = baseFileName.replace(".", "_");
+//            		resultSetToGraph(path, (ResultSet)rss[0], desc, baseFileName, null, properties);
+//            		
 					OntModelProvider.addPrivateKeyValuePair(res, "CMResult", rss[1]);
 				}
 				else if (lastCmd != null) {
