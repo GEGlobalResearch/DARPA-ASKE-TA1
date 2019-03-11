@@ -5,13 +5,16 @@ import java.util.Iterator;
 import java.util.ServiceLoader;
 import java.io.File;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.UnsupportedEncodingException;
 import java.net.URISyntaxException;
 import java.nio.charset.Charset;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -49,6 +52,7 @@ import com.ge.research.sadl.reasoner.ResultSet;
 import com.ge.research.sadl.reasoner.TranslationException;
 import com.ge.research.sadl.reasoner.utils.SadlUtils;
 import com.ge.research.sadl.utils.ResourceManager;
+import com.google.gson.JsonObject;
 import com.hp.hpl.jena.datatypes.xsd.XSDDateTime;
 import com.hp.hpl.jena.ontology.Individual;
 import com.hp.hpl.jena.ontology.OntClass;
@@ -74,6 +78,8 @@ public class JenaBasedDialogInferenceProcessor extends JenaBasedSadlInferencePro
 	public static final String METAMODEL_SUBGRAPH = METAMODEL_PREFIX + "SubGraph";
 	public static final String METAMODEL_SUBG_PROP = METAMODEL_PREFIX + "subgraph";
 	public static final String METAMODEL_CGRAPH_PROP = METAMODEL_PREFIX + "cgraph";
+	public static final String METAMODEL_EXEC_PROP = METAMODEL_PREFIX + "execution";
+	public static final String METAMODEL_COMPGRAPH_PROP = METAMODEL_PREFIX + "compGraph";
 	public static final String METAMODEL_HASEQN_PROP = "http://aske.ge.com/sciknow#hasEquation";
 	public static final String METAMODEL_QUERYTYPE_PROP = METAMODEL_PREFIX + "queryType";
 	public static final String METAMODEL_PROGNOSTIC = METAMODEL_PREFIX + "prognostic";
@@ -150,18 +156,26 @@ public class JenaBasedDialogInferenceProcessor extends JenaBasedSadlInferencePro
 			"  ?Oinst a ?Output.\n" + 
 			"  ?Eq imp:expression ?expr.\n" + 
 			"} order by ?Model";
-	public static final String RETRIEVE_NODES = "prefix hyper:<http://aske.ge.com/hypersonics#>\n" + 
+	public static final String RETRIEVE_NODES = "prefix hyper:<http://aske.ge.com/hypersonics#>\n" +
+			"prefix mm:<http://aske.ge.com/metamodel#>\n" + 
 			"prefix dbn:<http://aske.ge.com/dbn#>\n" + 
 			"prefix imp:<http://sadl.org/sadlimplicitmodel#>\n" + 
 			"prefix sci:<http://aske.ge.com/sciknow#>" + 
 			"prefix owl:<http://www.w3.org/2002/07/owl#>\n" + 
 			"prefix rdfs:<http://www.w3.org/2000/01/rdf-schema#>\n" +
-			"select ?Node ?Child ?Distribution\n" + 
+			"select ?Node ?Child ?Distribution ?Lower ?Upper ?Value\n" + 
 			"where {\n" +
-			" {select distinct ?Eq ?Node ?Child where {\n" + 
+			" {select distinct ?Eq ?Node ?Child  ?Value where {\n"
+			+ " ?CG mm:subgraph/mm:cgraph ?DBN.\n" + 
+			"   ?DBN sci:hasEquation ?Eq. " + 
 			"   ?Eq imp:input/imp:argType ?Node.\n" + 
 			"   ?Eq imp:output ?Oinst. ?Oinst a ?Child.\n" + 
-			"   filter (?Eq in (EQNSLIST))\n" + 
+			"   filter (?Eq in (EQNSLIST))\n"
+			+ " optional{\n" + 
+			"     ?Q mm:execution/mm:compGraph ?CG.\n" + 
+			"     ?Q mm:input ?II.\n" + 
+			"     ?II a ?Node.\n" + 
+			"     ?II imp:value ?Value.}" + 
 			" }}\n" + 
 			" union\n" + 
 			" { select distinct ?Eq ?Node where {\n" + 
@@ -173,7 +187,10 @@ public class JenaBasedDialogInferenceProcessor extends JenaBasedSadlInferencePro
 			"   }\n" + 
 			" }}\n" + 
 			"  ?DBN rdfs:subClassOf ?EB. ?EB owl:onProperty sci:hasEquation.  ?EB owl:someValuesFrom ?Eq.\n" + 
-			"  ?DBN rdfs:subClassOf ?DB. ?DB owl:onProperty sci:distribution. ?DB owl:hasValue ?Distribution.\n" + 
+			"  ?DBN rdfs:subClassOf ?DB. ?DB owl:onProperty sci:distribution. ?DB owl:hasValue ?Distribution.\n" +
+			"  ?DBN rdfs:subClassOf ?RB. ?RB owl:onProperty sci:range.        ?RB owl:hasValue ?Range.\n" + 
+			"  ?Range sci:lower ?Lower.\n" + 
+			"  ?Range sci:upper ?Upper." + 
 			"} order by ?Node";
 
 	public static final String CGQUERY = 
@@ -304,14 +321,20 @@ public class JenaBasedDialogInferenceProcessor extends JenaBasedSadlInferencePro
 	    //i.addRDFType(OWL2.NamedIndividual);
 		
 		//Create execution instance with time
-//		OntClass cexec = getTheJenaModel().getOntClass(METAMODEL_CGEXEC_CLASS);
-//		Individual ce = getTheJenaModel().createIndividual(cexec);
-//		OntProperty stprop = getTheJenaModel().getOntProperty(METAMODEL_STARTTIME_PROP);
-//		Object tim = getTime();
-//		qhmodel.add(ce,stprop,(XSDDateTime)val).asCalendar().getTime())
+		OntClass cexec = getTheJenaModel().getOntClass(METAMODEL_CGEXEC_CLASS);
+		Individual ce = qhmodel.createIndividual(cexec);
+		OntProperty stprop = getTheJenaModel().getOntProperty(METAMODEL_STARTTIME_PROP);
+
+//		String DATE_FORMAT_NOW = "yyyy-MM-dd HH:mm:ss";
+//		Calendar cal = Calendar.getInstance();
+//		SimpleDateFormat sdf = new SimpleDateFormat(DATE_FORMAT_NOW);
+//		XSDDateTime tim = sdf.format(cal.getTime());;
+////		qhmodel.add(ce,stprop,(XSDDateTime)val).asCalendar().getTime())
 		
+		OntProperty execprop = getTheJenaModel().getOntProperty(METAMODEL_EXEC_PROP);
+		qhmodel.add(cgq,execprop,ce);
 		
-		
+
 		String suri;
 		OntClass sclass;
 		Individual sinst;
@@ -457,6 +480,10 @@ public class JenaBasedDialogInferenceProcessor extends JenaBasedSadlInferencePro
 		
 		Individual sgIns, dbnIns, eqnIns, outpIns;
 		
+		qhmodel.add(ce, getTheJenaModel().getOntProperty(METAMODEL_COMPGRAPH_PROP), cgIns);
+
+		
+		
 		eqnsResults.reset();
 		//for (RDFNode eq : listOfEqnObjs) {
 		while( eqnsResults.hasNext() ) {
@@ -489,6 +516,7 @@ public class JenaBasedDialogInferenceProcessor extends JenaBasedSadlInferencePro
 		//qhmodel.write(System.out,"RDF/XML-ABBREV");
 		//qhmodel.write(System.out,"TTL");
 		
+		  // Save metadata owl file 
 		String qhGlobalPrefix = null;
 		try {
 			getConfigMgr(null).saveOwlFile(qhmodel, qhModelName, qhOwlFileWithPath);
@@ -568,6 +596,7 @@ public class JenaBasedDialogInferenceProcessor extends JenaBasedSadlInferencePro
             String responseTxt = EntityUtils.toString(respEntity, "UTF-8");
             httpclient.close();
             
+            
             //System.out.println(responseTxt);
             
             httpclient = new DefaultHttpClient();
@@ -598,34 +627,36 @@ public class JenaBasedDialogInferenceProcessor extends JenaBasedSadlInferencePro
             responseTxt = EntityUtils.toString(respEntity, "UTF-8");
             System.out.println(responseTxt);
             httpclient.close();
-		}
-		catch (UnsupportedEncodingException e) {
-			System.out.println("FAIL!!!");
-		}
-		catch (IOException e) {
-			System.out.println("FAIL2!!!" + e);
-		}
+//    		}
+//    		catch (UnsupportedEncodingException e) {
+//    			System.out.println("FAIL!!!");
+//    		}
+//    		catch (IOException e) {
+//    			System.out.println("FAIL2!!!" + e);
+//    		}
 		//TODO: request DBN Execution
 		
 		//TODO: add triples with result to Meta Model
 		
+            //JSONObject jresp = new JSONObject(responseTxt);
 
+            Model combinedModel = getTheJenaModel().union(qhmodel);
+		
+		
+		
+			//qexec = QueryExecutionFactory.create(cgquery, combinedModel); 
+			//com.hp.hpl.jena.query.ResultSet qres = qexec.execSelect() ;
+			
+			
+			String modelFolderUri = getModelFolderPath(resource); //getOwlModelsFolderPath(path).toString(); 
+			final String format = ConfigurationManager.RDF_XML_ABBREV_FORMAT;
+			IConfigurationManagerForIDE configMgr;
 
-		Model combinedModel = getTheJenaModel().union(qhmodel);
-		
-		
-		
-		//qexec = QueryExecutionFactory.create(cgquery, combinedModel); 
-		//com.hp.hpl.jena.query.ResultSet qres = qexec.execSelect() ;
-		
-		
-		String modelFolderUri = getModelFolderPath(resource); //getOwlModelsFolderPath(path).toString(); 
-		final String format = ConfigurationManager.RDF_XML_ABBREV_FORMAT;
-		IConfigurationManagerForIDE configMgr;
-		try {
+			
 			configMgr = ConfigurationManagerForIdeFactory.getConfigurationManagerForIDE(modelFolderUri, format);
 			IReasoner reasoner = configMgr.getReasoner();
 		
+			
 			if (!reasoner.isInitialized()) {
 				reasoner.setConfigurationManager(configMgr);
 				//String modelName = configMgr.getPublicUriFromActualUrl(new SadlUtils().fileNameToFileUrl(modelFolderUri + "/" + owlFileName));
