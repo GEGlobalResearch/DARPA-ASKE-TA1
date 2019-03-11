@@ -87,7 +87,7 @@
     </rdfs:subClassOf>
     <rdfs:subClassOf>
       <owl:Restriction>
-        <owl:allValuesFrom rdf:resource="http://www.w3.org/2001/XMLSchema#anyURI"/>
+        <owl:allValuesFrom rdf:resource="#Argument"/>
         <owl:onProperty rdf:resource="sadllistmodel#first"/>
       </owl:Restriction>
     </rdfs:subClassOf>
@@ -103,18 +103,18 @@
     </rdfs:subClassOf>
     <rdfs:subClassOf>
       <owl:Restriction>
-        <owl:allValuesFrom rdf:resource="#Argument"/>
+        <owl:allValuesFrom rdf:resource="http://www.w3.org/2001/XMLSchema#anyURI"/>
         <owl:onProperty rdf:resource="sadllistmodel#first"/>
       </owl:Restriction>
     </rdfs:subClassOf>
     <rdfs:subClassOf rdf:resource="sadllistmodel#List"/>
   </owl:Class>
   <owl:ObjectProperty rdf:about="#arguments">
-    <rdfs:range rdf:nodeID="A1"/>
+    <rdfs:range rdf:nodeID="A0"/>
     <rdfs:domain rdf:resource="#Equation"/>
   </owl:ObjectProperty>
   <owl:ObjectProperty rdf:about="#returnTypes">
-    <rdfs:range rdf:nodeID="A0"/>
+    <rdfs:range rdf:nodeID="A1"/>
     <rdfs:domain rdf:resource="#Equation"/>
   </owl:ObjectProperty>
   <owl:DatatypeProperty rdf:ID="value">

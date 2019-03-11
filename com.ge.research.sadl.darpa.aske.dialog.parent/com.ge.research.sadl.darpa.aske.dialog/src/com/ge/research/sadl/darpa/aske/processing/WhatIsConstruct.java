@@ -1,6 +1,6 @@
 package com.ge.research.sadl.darpa.aske.processing;
 
-public class WhatIsConstruct {
+public class WhatIsConstruct extends MixedInitiativeContent {
 	private Object target;
 	private Object when;
 	

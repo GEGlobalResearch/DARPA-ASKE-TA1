@@ -1,6 +1,6 @@
  uri "http://sadl.org/Run.sadl" alias run.
  
- import "http://com.ge.research/darpa/aske/answer/testcodeextraction" as tce.
+ import "http://com.ge.research.darpa.aske.ta1.explore/Mach" as tce.
  
 Print: "all the setterArgument".
 Ask: "select distinct ?x ?z where { 

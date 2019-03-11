@@ -54,9 +54,6 @@ import org.eclipse.emf.common.util.URI;
 import org.eclipse.emf.ecore.resource.Resource;
 import org.eclipse.emf.ecore.resource.ResourceSet;
 import org.eclipse.emf.ecore.resource.impl.ResourceSetImpl;
-import org.eclipse.jdt.core.IJavaProject;
-import org.eclipse.jdt.core.JavaCore;
-import org.eclipse.jdt.core.JavaModelException;
 import org.eclipse.osgi.util.NLS;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Shell;
@@ -79,12 +76,11 @@ import org.eclipse.xtext.resource.XtextResource;
 import com.ge.research.sadl.builder.ConfigurationManagerForIDE;
 import com.ge.research.sadl.builder.ConfigurationManagerForIdeFactory;
 import com.ge.research.sadl.darpa.aske.curation.AnswerCurationManager;
+import com.ge.research.sadl.darpa.aske.curation.AnswerCurationManager.SaveAsSadl;
 import com.ge.research.sadl.darpa.aske.dialog.ui.internal.DialogActivator;
 import com.ge.research.sadl.darpa.aske.preferences.DialogPreferences;
 import com.ge.research.sadl.darpa.aske.processing.DialogConstants;
 import com.ge.research.sadl.darpa.aske.processing.imports.AnswerExtractionProcessor;
-import com.ge.research.sadl.darpa.aske.processing.imports.IModelFromCodeExtractor;
-import com.ge.research.sadl.darpa.aske.processing.imports.JavaModelExtractor;
 import com.ge.research.sadl.reasoner.ConfigurationException;
 import com.ge.research.sadl.utils.ResourceManager;
 import com.google.inject.Injector;
@@ -158,9 +154,6 @@ public class JavaImportOperation extends WorkspaceModifyOperation {
     private int overwriteState = OVERWRITE_NOT_SET;
 
 	private static final String ABSOLUTE_PATH = "<Absolute Path>"; //$NON-NLS-1$
-
-	private JavaModelExtractor javaModelExtractor;
-	private IModelFromCodeExtractor javaModelExtractorjp;
 
 	/**
      * Creates a new operation that recursively imports the entire contents of the
@@ -806,7 +799,7 @@ public class JavaImportOperation extends WorkspaceModifyOperation {
     void importFiles(AnswerCurationManager acm) throws ConfigurationException, IOException {
 
 		
-		acm.processImports(getOutputFilename());
+		acm.processImports(getOutputFilename(), SaveAsSadl.AskUserSaveAsSadl);
 //		
 		String newContent = acm.getExtractionProcessor().getGeneratedSadlContent();
 		

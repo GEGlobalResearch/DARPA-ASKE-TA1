@@ -27,7 +27,7 @@ public class TextProcessor {
 		this.setPreferences(preferences);
 	}
 
-	public String process(String text, String locality) throws MalformedURLException, UnsupportedEncodingException {
+	public String process(String inputIdentifier, String text, String locality) throws MalformedURLException, UnsupportedEncodingException {
 		StringBuilder sb = new StringBuilder();
 		String baseServiceUrl = "http://vesuvius063.crd.ge.com:4200/v1/";
 		

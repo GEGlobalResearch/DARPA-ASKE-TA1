@@ -17,7 +17,7 @@ public class TextProcessorTests {
 	@Test
 	public void test() throws MalformedURLException, UnsupportedEncodingException {
 		TextProcessor tp = new TextProcessor(null);
-		tp.process(null, null);
+		tp.process(null, null, null);
 	}
 
 }
