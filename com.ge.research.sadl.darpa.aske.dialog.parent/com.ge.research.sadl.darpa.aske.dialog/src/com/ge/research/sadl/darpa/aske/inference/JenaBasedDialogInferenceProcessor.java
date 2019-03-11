@@ -156,26 +156,19 @@ public class JenaBasedDialogInferenceProcessor extends JenaBasedSadlInferencePro
 			"  ?Oinst a ?Output.\n" + 
 			"  ?Eq imp:expression ?expr.\n" + 
 			"} order by ?Model";
-	public static final String RETRIEVE_NODES = "prefix hyper:<http://aske.ge.com/hypersonics#>\n" +
-			"prefix mm:<http://aske.ge.com/metamodel#>\n" + 
+	public static final String RETRIEVE_NODES = "prefix hyper:<http://aske.ge.com/hypersonics#>\n" + 
 			"prefix dbn:<http://aske.ge.com/dbn#>\n" + 
 			"prefix imp:<http://sadl.org/sadlimplicitmodel#>\n" + 
-			"prefix sci:<http://aske.ge.com/sciknow#>" + 
+			"prefix sci:<http://aske.ge.com/sciknow#>" +
+			"prefix mm:<http://aske.ge.com/metamodel#>\n" + 
 			"prefix owl:<http://www.w3.org/2002/07/owl#>\n" + 
 			"prefix rdfs:<http://www.w3.org/2000/01/rdf-schema#>\n" +
 			"select ?Node ?Child ?Distribution ?Lower ?Upper ?Value\n" + 
 			"where {\n" +
-			" {select distinct ?Eq ?Node ?Child  ?Value where {\n"
-			+ " ?CG mm:subgraph/mm:cgraph ?DBN.\n" + 
-			"   ?DBN sci:hasEquation ?Eq. " + 
+			" {select distinct ?Eq ?Node ?Child where {\n" + 
 			"   ?Eq imp:input/imp:argType ?Node.\n" + 
 			"   ?Eq imp:output ?Oinst. ?Oinst a ?Child.\n" + 
-			"   filter (?Eq in (EQNSLIST))\n"
-			+ " optional{\n" + 
-			"     ?Q mm:execution/mm:compGraph ?CG.\n" + 
-			"     ?Q mm:input ?II.\n" + 
-			"     ?II a ?Node.\n" + 
-			"     ?II imp:value ?Value.}" + 
+			"   filter (?Eq in (EQNSLIST))\n" + 
 			" }}\n" + 
 			" union\n" + 
 			" { select distinct ?Eq ?Node where {\n" + 
@@ -190,9 +183,43 @@ public class JenaBasedDialogInferenceProcessor extends JenaBasedSadlInferencePro
 			"  ?DBN rdfs:subClassOf ?DB. ?DB owl:onProperty sci:distribution. ?DB owl:hasValue ?Distribution.\n" +
 			"  ?DBN rdfs:subClassOf ?RB. ?RB owl:onProperty sci:range.        ?RB owl:hasValue ?Range.\n" + 
 			"  ?Range sci:lower ?Lower.\n" + 
-			"  ?Range sci:upper ?Upper." + 
+			"  ?Range sci:upper ?Upper.\n" + 
+			"  ?CG mm:subgraph/mm:cgraph ?DBNI.\n" + 
+			"  ?DBNI a ?DBN.\n" + 
+			"     optional{\n" + 
+			"     ?Q mm:execution/mm:compGraph ?CG.\n" + 
+			"     ?Q mm:input ?II.\n" + 
+			"     ?II a ?Node.\n" + 
+			"     ?II imp:value ?Value.}" + 
 			"} order by ?Node";
 
+//	public static final String RETRIEVE_NODES = "prefix hyper:<http://aske.ge.com/hypersonics#>\n" + 
+//			"prefix dbn:<http://aske.ge.com/dbn#>\n" + 
+//			"prefix imp:<http://sadl.org/sadlimplicitmodel#>\n" + 
+//			"prefix sci:<http://aske.ge.com/sciknow#>" + 
+//			"prefix owl:<http://www.w3.org/2002/07/owl#>\n" + 
+//			"prefix rdfs:<http://www.w3.org/2000/01/rdf-schema#>\n" +
+//			"select ?Node ?Child ?Distribution\n" + 
+//			"where {\n" +
+//			" {select distinct ?Eq ?Node ?Child where {\n" + 
+//			"   ?Eq imp:input/imp:argType ?Node.\n" + 
+//			"   ?Eq imp:output ?Oinst. ?Oinst a ?Child.\n" + 
+//			"   filter (?Eq in (EQNSLIST))\n" + 
+//			" }}\n" + 
+//			" union\n" + 
+//			" { select distinct ?Eq ?Node where {\n" + 
+//			"   ?Eq imp:output ?Oi. ?Oi a ?Node.\n" + 
+//			"   filter (?Eq in (EQNSLIST))\n" + 
+//			"   filter not exists {\n" + 
+//			"     ?Eq1 imp:input/imp:argType ?Node.\n" + 
+//			"     filter (?Eq1 in (EQNSLIST))\n" + 
+//			"   }\n" + 
+//			" }}\n" + 
+//			"  ?DBN rdfs:subClassOf ?EB. ?EB owl:onProperty sci:hasEquation.  ?EB owl:someValuesFrom ?Eq.\n" + 
+//			"  ?DBN rdfs:subClassOf ?DB. ?DB owl:onProperty sci:distribution. ?DB owl:hasValue ?Distribution.\n" + 
+//			"} order by ?Node";	
+	
+	
 	public static final String CGQUERY = 
 //			"construct {\n" + 
 //			" ?EQ <http://sadl.org/sadlimplicitmodel#input> ?I.\n" + 
@@ -538,6 +565,9 @@ public class JenaBasedDialogInferenceProcessor extends JenaBasedSadlInferencePro
 		
 		//OntModelProvider.
 		
+		
+		
+		
 		// Retrieve Models & Nodes
 		queryStr = RETRIEVE_MODELS.replaceAll("EQNSLIST", listOfEqns);
 		com.hp.hpl.jena.query.Query qm = QueryFactory.create(queryStr);
@@ -558,7 +588,7 @@ public class JenaBasedDialogInferenceProcessor extends JenaBasedSadlInferencePro
 		}
 		//TODO: create models csv (models are the DBNs)
 		
-		qexec = QueryExecutionFactory.create(qn, getTheJenaModel());
+		qexec = QueryExecutionFactory.create(qn, getTheJenaModel().union(qhmodel)); //getTheJenaModel());
 		com.hp.hpl.jena.query.ResultSetRewindable nodes = com.hp.hpl.jena.query.ResultSetFactory.makeRewindable(qexec.execSelect());
 
 		String nodesCSVString = convertResultSetToString(nodes);
@@ -640,7 +670,7 @@ public class JenaBasedDialogInferenceProcessor extends JenaBasedSadlInferencePro
 		
             //JSONObject jresp = new JSONObject(responseTxt);
 
-            Model combinedModel = getTheJenaModel().union(qhmodel);
+            //Model combinedModel = getTheJenaModel().union(qhmodel);
 		
 		
 		
