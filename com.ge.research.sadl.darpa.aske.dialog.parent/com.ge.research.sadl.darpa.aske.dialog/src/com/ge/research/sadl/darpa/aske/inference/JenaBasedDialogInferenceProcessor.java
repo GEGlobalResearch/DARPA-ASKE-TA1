@@ -163,7 +163,7 @@ public class JenaBasedDialogInferenceProcessor extends JenaBasedSadlInferencePro
 			"prefix mm:<http://aske.ge.com/metamodel#>\n" + 
 			"prefix owl:<http://www.w3.org/2002/07/owl#>\n" + 
 			"prefix rdfs:<http://www.w3.org/2000/01/rdf-schema#>\n" +
-			"select ?Node ?Child ?Distribution ?Lower ?Upper ?Value\n" + 
+			"select distinct ?Node ?Child ?Distribution ?Lower ?Upper ?Value\n" + 
 			"where {\n" +
 			" {select distinct ?Eq ?Node ?Child where {\n" + 
 			"   ?Eq imp:input/imp:argType ?Node.\n" + 
@@ -184,7 +184,8 @@ public class JenaBasedDialogInferenceProcessor extends JenaBasedSadlInferencePro
 			"  ?DBN rdfs:subClassOf ?RB. ?RB owl:onProperty sci:range.        ?RB owl:hasValue ?Range.\n" + 
 			"  ?Range sci:lower ?Lower.\n" + 
 			"  ?Range sci:upper ?Upper.\n" + 
-			"  ?CG mm:subgraph/mm:cgraph ?DBNI.\n" + 
+			"  ?CG mm:subgraph/mm:cgraph ?DBNI.\n" +
+			"  filter (?CG in (COMPGRAPH))." + 
 			"  ?DBNI a ?DBN.\n" + 
 			"     optional{\n" + 
 			"     ?Q mm:execution/mm:compGraph ?CG.\n" + 
@@ -499,7 +500,8 @@ public class JenaBasedDialogInferenceProcessor extends JenaBasedSadlInferencePro
 
 		
 		// Comp Graph instance
-		Individual cgIns = createIndividualOfClass(qhmodel,METAMODEL_CCG);
+		//Individual cgIns = createIndividualOfClass(qhmodel,METAMODEL_CCG);
+		Individual cgIns = qhmodel.createIndividual(METAMODEL_PREFIX + "CG_" + System.currentTimeMillis(), getTheJenaModel().getOntClass(METAMODEL_CCG));
 		OntProperty subgraphprop = 	getTheJenaModel().getOntProperty(METAMODEL_SUBG_PROP);
 		OntProperty cgraphprop = 	getTheJenaModel().getOntProperty(METAMODEL_CGRAPH_PROP);
 		OntProperty hasEqnProp = 	getTheJenaModel().getOntProperty(METAMODEL_HASEQN_PROP);
@@ -509,7 +511,8 @@ public class JenaBasedDialogInferenceProcessor extends JenaBasedSadlInferencePro
 		
 		qhmodel.add(ce, getTheJenaModel().getOntProperty(METAMODEL_COMPGRAPH_PROP), cgIns);
 
-		
+		//String cgInsStr = cgIns.getURI();
+		//System.out.println("***CG instance: " + cgInsStr);
 		
 		eqnsResults.reset();
 		//for (RDFNode eq : listOfEqnObjs) {
@@ -572,21 +575,21 @@ public class JenaBasedDialogInferenceProcessor extends JenaBasedSadlInferencePro
 		queryStr = RETRIEVE_MODELS.replaceAll("EQNSLIST", listOfEqns);
 		com.hp.hpl.jena.query.Query qm = QueryFactory.create(queryStr);
 		queryStr = RETRIEVE_NODES.replaceAll("EQNSLIST", listOfEqns);
+		queryStr = queryStr.replaceAll("COMPGRAPH", "<" + cgIns.getURI() + ">");
 		com.hp.hpl.jena.query.Query qn = QueryFactory.create(queryStr);
 
 		qexec = QueryExecutionFactory.create(qm, getTheJenaModel()); 
 		com.hp.hpl.jena.query.ResultSetRewindable models = com.hp.hpl.jena.query.ResultSetFactory.makeRewindable(qexec.execSelect()) ;
 
 		String modelsCSVString = convertResultSetToString(models);
-		while( models.hasNext() ) {
-	      		soln = models.nextSolution() ;
-			RDFNode m = soln.get("?Model") ; 
-			RDFNode i = soln.get("?Input") ;
-			String lbl = soln.get("?InputLabel").toString();
-			RDFNode o = soln.get("?Output") ;
-			RDFNode f = soln.get("?ModelForm") ;
-		}
-		//TODO: create models csv (models are the DBNs)
+//		while( models.hasNext() ) {
+//	      		soln = models.nextSolution() ;
+//			RDFNode m = soln.get("?Model") ; 
+//			RDFNode i = soln.get("?Input") ;
+//			String lbl = soln.get("?InputLabel").toString();
+//			RDFNode o = soln.get("?Output") ;
+//			RDFNode f = soln.get("?ModelForm") ;
+//		}
 		
 		qexec = QueryExecutionFactory.create(qn, getTheJenaModel().union(qhmodel)); //getTheJenaModel());
 		com.hp.hpl.jena.query.ResultSetRewindable nodes = com.hp.hpl.jena.query.ResultSetFactory.makeRewindable(qexec.execSelect());
@@ -596,19 +599,18 @@ public class JenaBasedDialogInferenceProcessor extends JenaBasedSadlInferencePro
 		//Integer numNodes = 
 		Integer numNodes = 1;
 		
-		while( nodes.hasNext() ) {
-	      		soln = nodes.nextSolution() ;
-			RDFNode n = soln.get("?Node") ; 
-			RDFNode c = soln.get("?Child") ;
-			RDFNode d = soln.get("?Distribution") ;
-		}
+//		while( nodes.hasNext() ) {
+//	      		soln = nodes.nextSolution() ;
+//			RDFNode n = soln.get("?Node") ; 
+//			RDFNode c = soln.get("?Child") ;
+//			RDFNode d = soln.get("?Distribution") ;
+//		}
 		
-		//TODO: create nodes csv
 		System.out.println(modelsCSVString);
 		System.out.println(nodesCSVString);
-		//TODO: request DBN json build
 
 		try {
+			@SuppressWarnings("deprecation")
 			DefaultHttpClient httpclient = new DefaultHttpClient();
 			HttpPost httppost = new HttpPost("http://vesuvius063.crd.ge.com:46000/dbn/SADLResultSetToJson");
 			httppost.setHeader("Accept", "application/json");
