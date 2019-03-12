@@ -224,7 +224,7 @@ public class DialogAnswerProvider extends DefaultAutoEditStrategyProvider {
 				                		                    baseFileName,
 				                		                    null,
 				                		                    IGraphVisualizer.Orientation.TD,
-				                		                    "Metadata from Queries");
+				                		                    "Assembled Model");
 				                					rs.setShowNamespaces(false);
 				                		            visualizer.graphResultSetData(rs);				                				}
 				        						String fileToOpen = visualizer.getGraphFileToOpen();
