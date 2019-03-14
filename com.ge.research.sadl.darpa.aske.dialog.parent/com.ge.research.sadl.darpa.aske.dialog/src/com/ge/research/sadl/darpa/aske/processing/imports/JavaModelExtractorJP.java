@@ -108,7 +108,8 @@ public class JavaModelExtractorJP implements IModelFromCodeExtractor {
 	//use ASTParse to parse string
 	private void parse(String inputIdentifier, String modelFolder, String javaCodeContent) throws IOException, ConfigurationException {
 		try {
-			getCurationMgr().notifyUser(modelFolder, inputIdentifier);
+			String msg = "Importing code file '" + inputIdentifier + "'.";
+			getCurationMgr().notifyUser(modelFolder, msg);
 		} catch (ConfigurationException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();

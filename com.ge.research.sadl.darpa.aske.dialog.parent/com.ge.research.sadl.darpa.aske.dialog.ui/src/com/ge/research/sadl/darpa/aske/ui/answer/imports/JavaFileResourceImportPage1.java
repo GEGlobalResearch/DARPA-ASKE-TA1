@@ -15,7 +15,6 @@ package com.ge.research.sadl.darpa.aske.ui.answer.imports;
 import java.io.File;
 import java.lang.reflect.InvocationTargetException;
 import java.net.URI;
-import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -25,8 +24,13 @@ import java.util.List;
 import java.util.Map;
 
 import org.eclipse.core.resources.IContainer;
+import org.eclipse.core.resources.IFile;
+import org.eclipse.core.resources.IFolder;
+import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IResource;
+import org.eclipse.core.resources.IWorkspace;
 import org.eclipse.core.resources.ResourcesPlugin;
+import org.eclipse.core.runtime.IAdaptable;
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
@@ -37,6 +41,7 @@ import org.eclipse.jface.dialogs.IDialogSettings;
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.dialogs.ProgressMonitorDialog;
 import org.eclipse.jface.operation.IRunnableWithProgress;
+import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.jface.viewers.ITreeContentProvider;
 import org.eclipse.swt.SWT;
@@ -55,15 +60,18 @@ import org.eclipse.swt.widgets.Combo;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.DirectoryDialog;
 import org.eclipse.swt.widgets.Event;
-import org.eclipse.swt.widgets.FileDialog;
 import org.eclipse.swt.widgets.Group;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Listener;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Text;
 import org.eclipse.ui.IWorkbench;
+import org.eclipse.ui.IWorkbenchWindow;
+import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.dialogs.FileSystemElement;
 import org.eclipse.ui.dialogs.WizardResourceImportPage;
+import org.eclipse.ui.internal.ide.IDEWorkbenchMessages;
+import org.eclipse.ui.internal.ide.IDEWorkbenchPlugin;
 import org.eclipse.ui.internal.ide.dialogs.IElementFilter;
 import org.eclipse.ui.internal.ide.dialogs.RelativePathVariableGroup;
 import org.eclipse.ui.internal.ide.filesystem.FileSystemStructureProvider;
@@ -89,7 +97,7 @@ public class JavaFileResourceImportPage1 extends WizardResourceImportPage
     protected Button selectTypesButton;
     protected Button selectAllButton;
     protected Button deselectAllButton;
-	private Text csvFileText = null;
+//	private Text csvFileText = null;
 //	private Text namespaceText = null;
 	private Text outputFileName = null;
     protected Button firstRowVarButton;
@@ -99,6 +107,11 @@ public class JavaFileResourceImportPage1 extends WizardResourceImportPage
     //A boolean to indicate if the user has typed anything
     private boolean entryChanged = false;
     private FileSystemStructureProvider fileSystemStructureProvider = new FileSystemStructureProvider();
+    // initial value stores
+    private String initialDomainDestinationContainerFieldValue;
+	private Text domainDestinationContainerNameField;
+	private Button domainDestinationContainerBrowseButton;
+    private IResource currentDomainDestinationResourceSelection;
 
     // dialog store id constants
     private final static String STORE_SOURCE_NAMES_ID = "OwlFileResourceImportPage1.STORE_SOURCE_NAMES_ID";//$NON-NLS-1$
@@ -133,94 +146,61 @@ public class JavaFileResourceImportPage1 extends WizardResourceImportPage
         setDescription(AnswerImportMessages.FileImport_importFileSystem);
     }
 
+//    /**
+//     *	Create the group for creating the source CSV file input area
+//     */
+//    protected void createSourceCSVGroup(Composite parent) {
+//        Composite sourceCSVGroup = new Composite(parent, SWT.NONE);
+//		GridLayout fileLayout = new GridLayout();
+//		fileLayout = new GridLayout();
+//		fileLayout.numColumns = 3;
+//		fileLayout.marginHeight = 0;
+//		fileLayout.marginWidth = 0;
+//		fileLayout.makeColumnsEqualWidth = false;
+//		sourceCSVGroup.setLayout(fileLayout);
+//		GridData gridData = GridDataUtil.createHorizontalFill();
+//		sourceCSVGroup.setLayoutData(gridData);
+//
+//        Label groupLabel = new Label(sourceCSVGroup, SWT.NONE);
+//        groupLabel.setText(AnswerImportMessages.AnswerImport_title);
+//        groupLabel.setFont(parent.getFont());
+//
+//        // source browse button
+//        sourceBrowseButton = new Button(sourceCSVGroup, SWT.PUSH);
+//        sourceBrowseButton.setText(AnswerImportMessages.DataTransfer_browse);
+//        sourceBrowseButton.addListener(SWT.Selection, this);
+//        sourceBrowseButton.setLayoutData(new GridData(
+//                GridData.HORIZONTAL_ALIGN_FILL));
+//        sourceBrowseButton.setFont(parent.getFont());
+//        setButtonLayoutData(sourceBrowseButton);
+//
+//        // first row contains headings button
+//        Composite optionComposite = new Composite(sourceCSVGroup, SWT.NONE);        
+//		GridLayout optionLayout = new GridLayout();
+//		optionLayout = new GridLayout();
+//		optionLayout.numColumns = 2;
+//		optionLayout.marginHeight = 0;
+//		optionLayout.marginWidth = 0;
+//		optionLayout.makeColumnsEqualWidth = false;
+//		optionComposite.setLayout(optionLayout);
+//		gridData = GridDataUtil.createHorizontalFill();
+//		gridData.horizontalSpan = 3;
+//		optionComposite.setLayoutData(gridData);
+//		
+//		firstRowVarButton = new Button(optionComposite, SWT.CHECK);
+//		firstRowVarButton.setSelection(true);
+//		Label firstRowLabel = new Label(optionComposite, SWT.NULL);
+//		firstRowLabel.setText(AnswerImportMessages.AnswerImport_Col_Header);
+//		debugOutputButton = new Button(optionComposite, SWT.CHECK);
+//		debugOutputButton.setSelection(false);
+//		Label debugOutputLabel = new Label(optionComposite, SWT.NULL);
+//		debugOutputLabel.setText(AnswerImportMessages.AnswerImport_Debug);
+//    }
+//
     /**
-     *	Create the group for creating the source CSV file input area
+     *	Create the group for creating the output filename input area
      */
-    protected void createSourceCSVGroup(Composite parent) {
-        Composite sourceCSVGroup = new Composite(parent, SWT.NONE);
-		GridLayout fileLayout = new GridLayout();
-		fileLayout = new GridLayout();
-		fileLayout.numColumns = 3;
-		fileLayout.marginHeight = 0;
-		fileLayout.marginWidth = 0;
-		fileLayout.makeColumnsEqualWidth = false;
-		sourceCSVGroup.setLayout(fileLayout);
-		GridData gridData = GridDataUtil.createHorizontalFill();
-		sourceCSVGroup.setLayoutData(gridData);
-
-        Label groupLabel = new Label(sourceCSVGroup, SWT.NONE);
-        groupLabel.setText(AnswerImportMessages.AnswerImport_title);
-        groupLabel.setFont(parent.getFont());
-
-		csvFileText = new Text(sourceCSVGroup, SWT.BORDER); 
-		gridData = GridDataUtil.createHorizontalFill();
-		gridData.widthHint = 300;
-		csvFileText.setLayoutData(gridData);
-		csvFileText.addSelectionListener(new SelectionAdapter() {
-            public void widgetSelected(SelectionEvent e) {
-            }
-        });
-		csvFileText.addFocusListener(new FocusListener() {
-            public void focusGained(FocusEvent e) {
-                //Do nothing when getting focus
-            }
-            public void focusLost(FocusEvent e) {
-            	String f = csvFileText.getText();
-                if (f == null || f.isEmpty()) {
-                	// Set enter csv file message
-                	setErrorMessage(AnswerImportMessages.AnswerImport_csv_field_message);
-                } else if (validFileName(f)) {
-                	// Clear enter csv file message
-                	setErrorMessage(null);
-                	setMessage(null);
-                	// Populate namespace if necessary
-//                	String ns = namespaceText.getText();
-//                	if (ns == null || ns.isEmpty()) {
-//                    	prepopulateNamespace(f);                		
-//                	}
-                } else {
-                	// Display error message
-                	setErrorMessage(AnswerImportMessages.AnswerImport_invalid_file_message);
-                }
-            }
-        });
-
-        // source browse button
-        sourceBrowseButton = new Button(sourceCSVGroup, SWT.PUSH);
-        sourceBrowseButton.setText(AnswerImportMessages.DataTransfer_browse);
-        sourceBrowseButton.addListener(SWT.Selection, this);
-        sourceBrowseButton.setLayoutData(new GridData(
-                GridData.HORIZONTAL_ALIGN_FILL));
-        sourceBrowseButton.setFont(parent.getFont());
-        setButtonLayoutData(sourceBrowseButton);
-
-        // first row contains headings button
-        Composite optionComposite = new Composite(sourceCSVGroup, SWT.NONE);        
-		GridLayout optionLayout = new GridLayout();
-		optionLayout = new GridLayout();
-		optionLayout.numColumns = 2;
-		optionLayout.marginHeight = 0;
-		optionLayout.marginWidth = 0;
-		optionLayout.makeColumnsEqualWidth = false;
-		optionComposite.setLayout(optionLayout);
-		gridData = GridDataUtil.createHorizontalFill();
-		gridData.horizontalSpan = 3;
-		optionComposite.setLayoutData(gridData);
-		
-		firstRowVarButton = new Button(optionComposite, SWT.CHECK);
-		firstRowVarButton.setSelection(true);
-		Label firstRowLabel = new Label(optionComposite, SWT.NULL);
-		firstRowLabel.setText(AnswerImportMessages.AnswerImport_Col_Header);
-		debugOutputButton = new Button(optionComposite, SWT.CHECK);
-		debugOutputButton.setSelection(false);
-		Label debugOutputLabel = new Label(optionComposite, SWT.NULL);
-		debugOutputLabel.setText(AnswerImportMessages.AnswerImport_Debug);
-    }
-
-    /**
-     *	Create the group for creating the source CSV file input area
-     */
-    protected void createTemplateFileGroup(Composite parent) {
+    protected void createOutputFilenameGroup(Composite parent) {
         Composite templateFileGroup = new Composite(parent, SWT.NONE);
 		GridLayout fileLayout = new GridLayout();
 		fileLayout = new GridLayout();
@@ -263,7 +243,7 @@ public class JavaFileResourceImportPage1 extends WizardResourceImportPage
             }
         });
 
-        // template browse button
+//        // template browse button
 //		templateBrowseButton = new Button(templateFileGroup, SWT.PUSH);
 //		templateBrowseButton.setText(AnswerImportMessages.DataTransfer_browse);
 //		templateBrowseButton.addListener(SWT.Selection, this);
@@ -271,7 +251,7 @@ public class JavaFileResourceImportPage1 extends WizardResourceImportPage
 //                GridData.HORIZONTAL_ALIGN_FILL));
 //		templateBrowseButton.setFont(parent.getFont());
 //        setButtonLayoutData(templateBrowseButton);
-
+//
         // first row contains headings button
         Composite optionComposite = new Composite(templateFileGroup, SWT.NONE);        
 		GridLayout optionLayout = new GridLayout();
@@ -286,6 +266,98 @@ public class JavaFileResourceImportPage1 extends WizardResourceImportPage
 		optionComposite.setLayoutData(gridData);		
     }
 
+
+    /**
+     * Creates the import domain destination specification controls.
+     *
+     * @param parent the parent control
+     */
+    protected void createDomainDestinationGroup(Composite parent) {
+        // container specification group
+        Composite containerGroup = new Composite(parent, SWT.NONE);
+        GridLayout layout = new GridLayout();
+        layout.numColumns = 3;
+        containerGroup.setLayout(layout);
+        containerGroup.setLayoutData(new GridData(
+                GridData.HORIZONTAL_ALIGN_FILL | GridData.GRAB_HORIZONTAL));
+        containerGroup.setFont(parent.getFont());
+
+        // container label
+        Label resourcesLabel = new Label(containerGroup, SWT.NONE);
+        resourcesLabel.setText("Destination domain folder");
+        resourcesLabel.setFont(parent.getFont());
+
+        // container name entry field
+        domainDestinationContainerNameField = new Text(containerGroup, SWT.SINGLE | SWT.BORDER);
+//        BidiUtils.applyBidiProcessing(destinationContainerNameField, StructuredTextTypeHandlerFactory.FILE);
+
+        domainDestinationContainerNameField.addListener(SWT.Modify, this);
+        GridData data = new GridData(GridData.HORIZONTAL_ALIGN_FILL
+                | GridData.GRAB_HORIZONTAL);
+        data.widthHint = SIZING_TEXT_FIELD_WIDTH;
+        domainDestinationContainerNameField.setLayoutData(data);
+        domainDestinationContainerNameField.setFont(parent.getFont());
+
+        // container browse button
+        domainDestinationContainerBrowseButton = new Button(containerGroup, SWT.PUSH);
+        domainDestinationContainerBrowseButton.setText(IDEWorkbenchMessages.WizardImportPage_browse2);
+        domainDestinationContainerBrowseButton.setLayoutData(new GridData(
+                GridData.HORIZONTAL_ALIGN_FILL));
+        domainDestinationContainerBrowseButton.addListener(SWT.Selection, this);
+        domainDestinationContainerBrowseButton.setFont(parent.getFont());
+        setButtonLayoutData(domainDestinationContainerBrowseButton);
+
+        /**
+         * Sets the initial contents of the destination container name field.
+         */
+        if (initialDomainDestinationContainerFieldValue != null) {
+			domainDestinationContainerNameField.setText(initialDomainDestinationContainerFieldValue);
+		} else if (currentDomainDestinationResourceSelection != null) {
+			domainDestinationContainerNameField.setText(currentDomainDestinationResourceSelection.getFullPath()
+                    .makeRelative().toString());
+		}
+		else {
+			IWorkbenchWindow window = PlatformUI.getWorkbench().getActiveWorkbenchWindow();
+		    if (window != null)
+		    {
+		        ISelection selection = (ISelection) window.getSelectionService().getSelection();
+		        if (selection != null) {
+		        	System.out.println(selection.getClass().getCanonicalName());
+			        if (selection instanceof IStructuredSelection) {
+				        Object firstElement = ((IStructuredSelection)selection).getFirstElement();
+				        if (firstElement instanceof IAdaptable)
+				        {
+				        	IProject project;
+				        	IPath prjFolder = null;
+				        	if (firstElement instanceof org.eclipse.core.resources.IFile) {
+			        			IFile trgtFile = (IFile) firstElement;
+			        			IPath trgtFolder = ((org.eclipse.core.resources.IFile)firstElement).getParent().getFullPath();	
+			        			project = ((org.eclipse.core.resources.IFile)firstElement).getProject();
+			        			prjFolder = project.getFullPath();
+				        	}
+				        	else if (firstElement instanceof IFolder) {
+			        			prjFolder = ((IFolder)firstElement).getProject().getFullPath();
+				        	}
+				        	else if (firstElement instanceof IProject) {
+				        		project = (IProject) firstElement;
+				        		prjFolder = project.getFullPath();
+				        	}
+				        	else {
+				        		// project?
+				        		project = (IProject)((IAdaptable)firstElement).getAdapter(IProject.class);
+					            if (project != null) {
+					            	prjFolder = project.getFullPath();
+					            }
+				        	}
+				        	if (prjFolder != null) {
+			        			domainDestinationContainerNameField.setText(prjFolder.lastSegment());
+				        	}
+				        }
+			        }
+		        }
+		    }
+		}
+    }
 
     /**
      * Creates a new button with the given id.
@@ -425,146 +497,8 @@ public class JavaFileResourceImportPage1 extends WizardResourceImportPage
         	}
         });
 
-        /*
-        linkedResourceParent= optionsGroup;
-
-        if (!ResourcesPlugin.getPlugin().getPluginPreferences().getBoolean(ResourcesPlugin.PREF_DISABLE_LINKING)) {
-			advancedButton= new Button(optionsGroup, SWT.PUSH);
-			advancedButton.setFont(optionsGroup.getFont());
-			advancedButton.setText(IDEWorkbenchMessages.showAdvanced);
-			GridData data= setButtonLayoutData(advancedButton);
-			data.horizontalAlignment= GridData.BEGINNING;
-			advancedButton.setLayoutData(data);
-			advancedButton.addSelectionListener(new SelectionAdapter() {
-				public void widgetSelected(SelectionEvent e) {
-					handleAdvancedButtonSelect();
-				}
-			});
-        }
-        */
 		updateWidgetEnablements();
 	}
-
-    /*
-	private Composite createAdvancedSection(Composite parent) {
-		Composite linkedResourceComposite= new Composite(parent, SWT.NONE);
-		linkedResourceComposite.setFont(parent.getFont());
-		linkedResourceComposite.setLayoutData(new GridData(GridData.FILL_HORIZONTAL));
-		GridLayout layout= new GridLayout();
-		layout.marginHeight= 0;
-		layout.marginWidth= 0;
-		linkedResourceComposite.setLayout(layout);
-
-
-        // create linked resource check
-		createLinksInWorkspaceButton= new Button(linkedResourceComposite, SWT.CHECK);
-		createLinksInWorkspaceButton.setFont(parent.getFont());
-        createLinksInWorkspaceButton.setText(AnswerImportMessages.FileImport_createLinksInWorkspace);
-        createLinksInWorkspaceButton.setSelection(false);
-        
-        createLinksInWorkspaceButton.addSelectionListener(new SelectionAdapter() {
-        	public void widgetSelected(SelectionEvent e) {
-        		updateWidgetEnablements();
-        	}
-        });
-
-		Button tmp= new Button(linkedResourceComposite, SWT.CHECK);
-        int indent = tmp.computeSize(SWT.DEFAULT, SWT.DEFAULT).x;
-        tmp.dispose();
-        
-        // create virtual folders check
-		createVirtualFoldersButton= new Button(linkedResourceComposite, SWT.CHECK);
-		createVirtualFoldersButton.setFont(parent.getFont());
-        createVirtualFoldersButton.setText(AnswerImportMessages.FileImport_createVirtualFolders);
-        createVirtualFoldersButton.setToolTipText(AnswerImportMessages.FileImport_createVirtualFoldersTooltip);
-        createVirtualFoldersButton.setSelection(false);
-
-        createVirtualFoldersButton.addSelectionListener(new SelectionAdapter() {
-        	public void widgetSelected(SelectionEvent e) {
-        		updateWidgetEnablements();
-        	}
-        });
-		GridData gridData= new GridData(SWT.FILL, SWT.FILL, true, true);
-		gridData.horizontalSpan = 2;
-		gridData.horizontalIndent = indent;
-		createVirtualFoldersButton.setLayoutData(gridData);
-
-		Composite relativeGroup= new Composite(linkedResourceComposite, 0);
-		gridData = new GridData(SWT.FILL, SWT.FILL, true, true);
-		gridData.horizontalIndent = indent;
-		relativeGroup.setFont(parent.getFont());
-		relativeGroup.setLayoutData(gridData);
-
-		layout= new GridLayout();
-		layout.numColumns = 2;
-		layout.marginWidth= 0;
-		layout.marginHeight= 0;
-		layout.marginLeft= 0;
-		layout.marginRight= 0;
-		layout.marginTop= 0;
-		layout.marginBottom= 0;
-		layout.verticalSpacing = 0;
-		layout.horizontalSpacing = 0;
-		relativeGroup.setLayout(layout);
-
-        relativePathVariableGroup = new RelativePathVariableGroup(new RelativePathVariableGroup.IModel() {
-			public IResource getResource() {
-				IPath path = getContainerFullPath();
-				if (path != null)
-					return ResourcesPlugin.getWorkspace().getRoot().findMember(path);
-				return null;
-			}
-			public void setVariable(String string) {
-				pathVariable = string;
-			}
-			public String getVariable() {
-				return pathVariable;
-			}
-        }, AnswerImportMessages.FileImport_importElementsAs
-        );
-        relativePathVariableGroup.createContents(relativeGroup);
-        
-        
-        updateWidgetEnablements();
-		relativePathVariableGroup.setSelection(true);
-
-		return linkedResourceComposite;
-
-    }
-	*/
-
-	/**
-	 * Shows/hides the advanced option widgets.
-	 * 
-	 * @since 3.6
-	 */
-    /*
-	private void handleAdvancedButtonSelect() {
-		Shell shell= getShell();
-		Point shellSize= shell.getSize();
-		Composite composite= (Composite)getControl();
-
-		if (linkedResourceComposite != null) {
-			linkedResourceComposite.dispose();
-			linkedResourceComposite= null;
-			createLinksInWorkspaceButton = null;
-			createVirtualFoldersButton = null;
-			relativePathVariableGroup = null;
-			composite.layout();
-			shell.setSize(shellSize.x, shellSize.y - linkedResourceGroupHeight);
-			advancedButton.setText(IDEWorkbenchMessages.showAdvanced);
-		} else {
-			linkedResourceComposite= createAdvancedSection(linkedResourceParent);
-			if (linkedResourceGroupHeight == -1) {
-				Point groupSize= linkedResourceComposite.computeSize(SWT.DEFAULT, SWT.DEFAULT, true);
-				linkedResourceGroupHeight= groupSize.y;
-			}
-			shell.setSize(shellSize.x, shellSize.y + linkedResourceGroupHeight);
-			composite.layout();
-			advancedButton.setText(IDEWorkbenchMessages.hideAdvanced);
-		}
-	}
-	*/
 
     /**
      *	Create the group for creating the root directory
@@ -689,10 +623,10 @@ public class JavaFileResourceImportPage1 extends WizardResourceImportPage
      *	Create the import source specification widgets
      */
     protected void createSourceGroup(Composite parent) {
-
+        createDomainDestinationGroup(parent);
         createRootDirectoryGroup(parent);
         createFileSelectionGroup(parent);
-        createTemplateFileGroup(parent);
+        createOutputFilenameGroup(parent);
         createButtonsGroup(parent);
     }
 
@@ -858,7 +792,10 @@ public class JavaFileResourceImportPage1 extends WizardResourceImportPage
      * it exists as a valid directory, or <code>null</code> otherwise.
      */
     protected File getSourceDirectory() {
-        return getSourceDirectory(this.sourceNameField.getText());
+    	if (this.sourceNameField != null) {
+    		return getSourceDirectory(this.sourceNameField.getText());
+    	}
+    	return null;
     }
 
     /**
@@ -918,43 +855,92 @@ public class JavaFileResourceImportPage1 extends WizardResourceImportPage
         if (event.widget == sourceBrowseButton) {
 			handleSourceBrowseButtonPressed();
 		}
-//        else if (event.widget == templateBrowseButton) {
-//        	handleTemplateBrowseButtonPressed();
-//        }
+        else if (event.widget == domainDestinationContainerBrowseButton) {
+        	handleDomainDestinationBrowseButtonPressed();
+        }
         super.handleEvent(event);
     }
 
+    private void handleDomainDestinationBrowseButtonPressed() {
+    	/**
+    	 * Opens a destination container selection dialog and displays the user's subsequent
+    	 * container resource selection in this page's destination container name field.
+    	 */
+    	// see if the user wishes to modify this container selection
+    	IPath containerPath = queryForContainer(getSpecifiedDomainDestinationContainer(),
+    			"select domain kbase destination",
+    			"Domain KBase Destination");
+
+    	// if a container was selected then put its name in the container name field
+    	if (containerPath != null) { // null means user cancelled
+    		setErrorMessage(null);
+    		domainDestinationContainerNameField.setText(containerPath.makeRelative().toString());
+    	}
+    }
+
     /**
-     *	Open an appropriate file browser so that the user can specify a template
-     *	file to use
+     * Returns the container resource specified in the container name entry field,
+     * or <code>null</code> if such a container does not exist in the workbench.
      */
-//    protected void handleTemplateBrowseButtonPressed() {
-//
-//        String currentTemplate = this.outputFileName.getText();
-//        FileDialog dialog = new FileDialog(
-//        		outputFileName.getShell(), SWT.SAVE | SWT.SHEET);
-//        dialog.setText(AnswerImportMessages.AnswerImport_template_dialog_title);
-////        dialog.setFilterPath(currentTemplate);
-//        if (currentTemplate != null) {
-//        	dialog.setFilterPath((new File(currentTemplate)).getParent());
-//        }
-//        String selectedFile = dialog.open();
-//        if (selectedFile != null) {
-//            if (validFileName(selectedFile)) {
-//            	// Clear enter template file message
-//            	setErrorMessage(null);
-//            	setMessage(null);
-//            } else {
-//            	// Display error message
-//            	setErrorMessage(AnswerImportMessages.AnswerImport_invalid_file_message);
-//            }
-//            setErrorMessage(null);
-//            outputFileName.setText(selectedFile);
-//            outputFileName.setFocus();
-//        } else {
-//        	setMessage(AnswerImportMessages.AnswerImport_template_field_message);
-//        }
-//    }
+    protected IContainer getSpecifiedDomainDestinationContainer() {
+        IWorkspace workspace = IDEWorkbenchPlugin.getPluginWorkspace();
+        IPath path = getDestinationContainerFullPath();
+        if (workspace.getRoot().exists(path)){
+        	IResource resource = workspace.getRoot().findMember(path);
+        	if(resource.getType() == IResource.FILE) {
+				return null;
+			}
+        	return (IContainer) resource;
+
+        }
+        return null;
+    }
+
+    /**
+     * Returns the path of the container resource specified in the container
+     * name entry field, or <code>null</code> if no name has been typed in.
+     * <p>
+     * The container specified by the full path might not exist and would need to
+     * be created.
+     * </p>
+     *
+     * @return the full path of the container resource specified in
+     *   the container name entry field, or <code>null</code>
+     */
+    protected IPath getDestinationContainerFullPath() {
+        IWorkspace workspace = IDEWorkbenchPlugin.getPluginWorkspace();
+
+        //make the path absolute to allow for optional leading slash
+        IPath testPath = getDomainDestinationResourcePath();
+
+        if (testPath.equals(workspace.getRoot().getFullPath())) {
+			return testPath;
+		}
+
+        IStatus result = workspace.validatePath(testPath.toString(),
+                IResource.PROJECT | IResource.FOLDER | IResource.ROOT);
+        if (result.isOK()) {
+            return testPath;
+        }
+
+        return null;
+    }
+
+    /**
+     * Return the path for the resource field.
+     * @return IPath
+     */
+    protected IPath getDomainDestinationResourcePath() {
+        if (this.domainDestinationContainerNameField != null) {
+            return getPathFromText(this.domainDestinationContainerNameField);
+        }
+
+        if (this.initialDomainDestinationContainerFieldValue != null && this.initialDomainDestinationContainerFieldValue.length() > 0) {
+            return new Path(this.initialDomainDestinationContainerFieldValue).makeAbsolute();
+        }
+
+        return Path.EMPTY;
+    }
 
     /**
      *	Open an appropriate source browser so that the user can specify a source
@@ -1015,11 +1001,17 @@ public class JavaFileResourceImportPage1 extends WizardResourceImportPage
             operation = new JavaImportOperation(getContainerFullPath(),
                     sourceDirectory, fileSystemStructureProvider,
                     this, Arrays.asList(new File[] {getSourceDirectory()}), outputFilename);
+        
         else
         	operation = new JavaImportOperation(getContainerFullPath(),
                 sourceDirectory, fileSystemStructureProvider,
                 this, fileSystemObjects, outputFilename);
-
+        IContainer destContainer = getSpecifiedDomainDestinationContainer();
+        if (!(destContainer instanceof IProject)) {
+        	setErrorMessage("Destination domain must be a valid project");
+        	return false;
+        }
+        operation.setDomainDestinationPath(destContainer);
         operation.setContext(getShell());
         return executeOwlImportOperation(operation);
     }
@@ -1128,25 +1120,6 @@ public class JavaFileResourceImportPage1 extends WizardResourceImportPage
                     .getBoolean(STORE_CREATE_CONTAINER_STRUCTURE_ID);
             createTopLevelFolderCheckbox.setSelection(createStructure);
 
-            /*
-            if (createVirtualFoldersButton != null) {
-	            boolean createVirtualFolders = settings
-	            		.getBoolean(STORE_CREATE_VIRTUAL_FOLDERS_ID);
-	            createVirtualFoldersButton.setSelection(createVirtualFolders);
-	
-	            boolean createLinkedResources = settings
-	    				.getBoolean(STORE_CREATE_LINKS_IN_WORKSPACE_ID);
-	            createLinksInWorkspaceButton.setSelection(createLinkedResources);
-	
-	            boolean pathVariableSelected = settings
-						.getBoolean(STORE_PATH_VARIABLE_SELECTED_ID);
-	            relativePathVariableGroup.setSelection(pathVariableSelected);
-	
-	            pathVariable = settings.get(STORE_PATH_VARIABLE_NAME_ID);
-	            if (pathVariable != null)
-	            	relativePathVariableGroup.selectVariable(pathVariable);
-            }
-            */
         	updateWidgetEnablements();
         }
     }
@@ -1177,21 +1150,6 @@ public class JavaFileResourceImportPage1 extends WizardResourceImportPage
             	settings.put(STORE_PATH_VARIABLE_SELECTED_ID, getContainerFullPath().toPortableString());
             }
 
-            /*
-            if (createVirtualFoldersButton != null) {
-	            settings.put(STORE_CREATE_VIRTUAL_FOLDERS_ID,
-	            		createVirtualFoldersButton.getSelection());
-	
-	            settings.put(STORE_CREATE_LINKS_IN_WORKSPACE_ID,
-	            		createLinksInWorkspaceButton.getSelection());
-	
-	            settings.put(STORE_PATH_VARIABLE_SELECTED_ID,
-	            		relativePathVariableGroup.getSelection());
-	
-	            settings.put(STORE_PATH_VARIABLE_NAME_ID,
-	            		pathVariable);
-            }
-            */
         }
     }
 
@@ -1370,23 +1328,6 @@ public class JavaFileResourceImportPage1 extends WizardResourceImportPage
         super.updateWidgetEnablements();
         enableButtonGroup(ensureSourceIsValid());
 
-        /*
-    	if (createLinksInWorkspaceButton != null) {
-			IPath path = getContainerFullPath();
-	    	if (path != null && relativePathVariableGroup != null) {
-				IResource target = ResourcesPlugin.getWorkspace().getRoot().findMember(path);
-				if (target != null && target.isVirtual())
-					createVirtualFoldersButton.setSelection(true);
-	    	}
-			relativePathVariableGroup.setEnabled(createLinksInWorkspaceButton.getSelection());
-			createVirtualFoldersButton.setEnabled(createLinksInWorkspaceButton.getSelection());
-	
-			if (!selectionGroup.isEveryItemChecked() ||
-				(createTopLevelFolderCheckbox.getSelection())) {
-	        	createVirtualFoldersButton.setSelection(true);
-			}
-    	}
-    	*/
     }
 
     /**
@@ -1430,7 +1371,24 @@ public class JavaFileResourceImportPage1 extends WizardResourceImportPage
         	}
         	*/
 		}
-        
+        String ofntxt = outputFileName.getText();
+        if (ofntxt == null || ofntxt.length() == 0) {
+        	for (int i = 0; i < resourcesToExport.size(); i++) {
+        		Object rsrc = resourcesToExport.get(i);
+        		if (rsrc instanceof FileSystemElement) {
+        			if (((FileSystemElement)rsrc).getFileNameExtension().equals("java")) {
+        				Object fso = ((FileSystemElement)rsrc).getFileSystemObject();
+        				if (fso instanceof File) {
+        					String fn = ((File)fso).getName();
+        					fn  = fn.substring(0, fn.length() - 5);
+        					fn += ".owl";
+        					outputFileName.setText(fn);
+        					break;
+        				}
+        			}
+        		}
+        	}
+        }
 		enableButtonGroup(true);
 		setErrorMessage(null);
         return true;
@@ -1481,14 +1439,4 @@ public class JavaFileResourceImportPage1 extends WizardResourceImportPage
     	return true;
     }
 
-//    private void prepopulateNamespace(String f) {
-//    	IPreferencesService ps = Platform.getPreferencesService();
-//    	String baseUri = ps.getString("com.ge.research.sadl.Sadl", "baseUri", "http://sadl.org/${project_name}/", null);
-//		if (!baseUri.endsWith("/")) {
-//			baseUri += "/";
-//		}
-//		org.eclipse.emf.common.util.URI csvURI = org.eclipse.emf.common.util.URI.createFileURI(f);
-//		String uri = baseUri + csvURI.trimFileExtension().lastSegment();
-//        namespaceText.setText(uri);
-//    }
 }

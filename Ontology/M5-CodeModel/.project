@@ -14,4 +14,26 @@
 	<natures>
 		<nature>org.eclipse.xtext.ui.shared.xtextNature</nature>
 	</natures>
+	<linkedResources>
+		<link>
+			<name>Mach.java</name>
+			<type>1</type>
+			<location>C:/Users/200005201/Downloads/MachUnzipped/Mach.java</location>
+		</link>
+		<link>
+			<name>Mach.owl</name>
+			<type>1</type>
+			<location>C:/Users/200005201/sadl3-master6/git/DARPA-ASKE-TA1/Ontology/M5-CodeModel/GeneratedModels/Mach.owl</location>
+		</link>
+		<link>
+			<name>Mach.owl.sadl</name>
+			<type>1</type>
+			<location>C:/Users/200005201/sadl3-master6/git/DARPA-ASKE-TA1/Ontology/M5-CodeModel/GeneratedModels/Mach.owl.sadl</location>
+		</link>
+		<link>
+			<name>Sound.html</name>
+			<type>1</type>
+			<location>C:/Users/200005201/Downloads/MachUnzipped/Sound.html</location>
+		</link>
+	</linkedResources>
 </projectDescription>

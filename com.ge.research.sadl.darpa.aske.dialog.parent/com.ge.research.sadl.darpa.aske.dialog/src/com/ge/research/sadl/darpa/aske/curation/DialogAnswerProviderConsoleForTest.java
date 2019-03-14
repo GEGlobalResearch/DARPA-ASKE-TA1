@@ -1,17 +1,21 @@
-package com.ge.research.sadl.darpa.aske.tests;
+package com.ge.research.sadl.darpa.aske.curation;
 
-import java.io.BufferedReader;
-import java.io.IOException;
 import java.io.InputStream;
-import java.io.InputStreamReader;
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
 import java.util.function.Consumer;
 
+import com.ge.research.sadl.darpa.aske.processing.IDialogAnswerProvider;
 import com.ge.research.sadl.darpa.aske.processing.MixedInitiativeElement;
 import com.ge.research.sadl.darpa.aske.processing.MixedInitiativeTextualResponse;
 
-public class DialogAnswerProviderConsoleForTest {
+public class DialogAnswerProviderConsoleForTest implements IDialogAnswerProvider {
 
+	/* (non-Javadoc)
+	 * @see com.ge.research.sadl.darpa.aske.tests.IDialogAnswerProvider#addCurationManagerInitiatedContent(java.lang.String)
+	 */
+	@Override
 	public String addCurationManagerInitiatedContent(String content) {
         Consumer<MixedInitiativeElement> respond = a -> this.provideResponse(a);
         MixedInitiativeTextualResponse question = new MixedInitiativeTextualResponse(content);
@@ -20,40 +24,22 @@ public class DialogAnswerProviderConsoleForTest {
 		return "success";
 	}
 	
+	/* (non-Javadoc)
+	 * @see com.ge.research.sadl.darpa.aske.tests.IDialogAnswerProvider#initiateMixedInitiativeInteraction(com.ge.research.sadl.darpa.aske.processing.MixedInitiativeElement)
+	 */
+	@Override
 	public String initiateMixedInitiativeInteraction(MixedInitiativeElement element) {
-		System.out.println("CM: " + element.getClass().toString());
-		
-//		long end = System.currentTimeMillis()+60*10;
-//		InputStreamReader fileInputStream = new InputStreamReader(System.in);
-		read(System.in, 10000, element);
-//		BufferedReader bufferedReader = new BufferedReader(fileInputStream);
-//		try {
-//		    while ((System.currentTimeMillis() < end)) {
-//		        if (bufferedReader.ready()) {
-//		            String read = bufferedReader.readLine();
-//		            System.out.println(read);
-//		            
-//		            // construct response
-//		            MixedInitiativeElement response = new MixedInitiativeElement(read, null);
-//		            response.setContent(new MixedInitiativeTextualResponse(read));
-//		            // make call identified in element
-//		            element.getRespondTo().accept(response);
-//		        }
-//		    }
-//		} catch (IOException e) {
-//		    e.printStackTrace();
-//		} finally {
-//		    try {
-//		        if (bufferedReader != null) {
-//		            bufferedReader.close();
-//		        }
-//		    } catch (IOException e) {
-//		        e.printStackTrace();
-//		    }
-//		}		
+		String output = element.getContent().toString();
+		System.out.println("CM: " + output + "(" + element.getClass().toString() + ")");
+		System.out.println("?");
+		read(System.in, 100000, element);
 		return "AtTime-" + System.currentTimeMillis();
 	}
 	
+	/* (non-Javadoc)
+	 * @see com.ge.research.sadl.darpa.aske.tests.IDialogAnswerProvider#provideResponse(com.ge.research.sadl.darpa.aske.processing.MixedInitiativeElement)
+	 */
+	@Override
 	public void provideResponse(MixedInitiativeElement response) {
 		System.out.println("Response: " + response.toString());
 	}
@@ -70,12 +56,12 @@ public class DialogAnswerProviderConsoleForTest {
 	
     // Holder for temporary store of read(InputStream is) value
     private static String threadValue = "";
+	private List<Thread> waitingInteractions = new ArrayList<Thread>();
 
     String read(final InputStream is, int timeout, MixedInitiativeElement element) {
 
         // Start reading bytes from stream in separate thread
         Thread thread = new Thread() {
-
             public void run() {
                 byte[] buffer = new byte[1024]; // read buffer
                 byte[] readBytes = new byte[0]; // holder of actually read bytes
@@ -87,11 +73,12 @@ public class DialogAnswerProviderConsoleForTest {
                         readBytes = Arrays.copyOf(buffer, size);
                     // and save read value in static variable 
                     setValue(new String(readBytes, "UTF-8"));
-		            System.out.println(getValue());
+                    String val = getValue();
+		            System.out.println(val);
 		            
 		            // construct response
-		            MixedInitiativeElement response = new MixedInitiativeElement(getValue(), null);
-		            response.setContent(new MixedInitiativeTextualResponse(getValue()));
+		            MixedInitiativeElement response = new MixedInitiativeElement(val, null);
+		            response.setContent(new MixedInitiativeTextualResponse(val));
 		            // make call identified in element
 		            element.getRespondTo().accept(response);
                 } catch (Exception e) {
@@ -100,16 +87,21 @@ public class DialogAnswerProviderConsoleForTest {
             }
         };
         thread.start(); // Start thread
-        try {
-            thread.join(timeout); // and join it with specified timeout
-        } catch (InterruptedException e) {
-            System.err.println("Data were note read in " + timeout + " ms");
-        }
-        return getValue();
-
+    	addThreadToWaitingInteractions(thread);
+//        try {
+//            thread.join(timeout); // and join it with specified timeout
+//        } catch (InterruptedException e) {
+//            System.err.println("Data was not read in " + timeout + " ms");
+//        }
+//        return getValue();
+        return null;
     }
 
-    private synchronized void setValue(String value) {
+    private void addThreadToWaitingInteractions(Thread thread) {
+		waitingInteractions.add(thread);
+	}
+
+	private synchronized void setValue(String value) {
         threadValue = value;
     }
 
@@ -118,5 +110,18 @@ public class DialogAnswerProviderConsoleForTest {
         setValue("");
         return tmp;
     }
+
+	@Override
+	public MixedInitiativeElement getMixedInitiativeElement(String key) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public String addCurationManagerInitiatedContent(AnswerCurationManager answerCurationManager, String methodToCall,
+			List<Object> args, String content) {
+		// TODO Auto-generated method stub
+		return null;
+	}
 }
 

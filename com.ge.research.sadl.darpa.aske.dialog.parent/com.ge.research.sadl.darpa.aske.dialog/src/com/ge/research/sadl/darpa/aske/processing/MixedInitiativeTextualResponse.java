@@ -14,4 +14,8 @@ public class MixedInitiativeTextualResponse extends MixedInitiativeContent {
 	public void setResponse(String response) {
 		this.response = response;
 	}
+	
+	public String toString() {
+		return response;
+	}
 }

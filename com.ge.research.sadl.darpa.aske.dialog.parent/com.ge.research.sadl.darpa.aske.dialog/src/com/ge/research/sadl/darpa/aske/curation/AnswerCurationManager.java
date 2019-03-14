@@ -7,17 +7,18 @@ import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.net.URISyntaxException;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
 import com.ge.research.sadl.builder.ConfigurationManagerForIdeFactory;
 import com.ge.research.sadl.builder.IConfigurationManagerForIDE;
 import com.ge.research.sadl.darpa.aske.processing.DialogConstants;
+import com.ge.research.sadl.darpa.aske.processing.IDialogAnswerProvider;
 import com.ge.research.sadl.darpa.aske.processing.imports.AnswerExtractionProcessor;
 import com.ge.research.sadl.owl2sadl.OwlImportException;
 import com.ge.research.sadl.owl2sadl.OwlToSadl;
 import com.ge.research.sadl.reasoner.ConfigurationException;
-import com.ge.research.sadl.reasoner.ConfigurationManager;
 import com.ge.research.sadl.reasoner.IReasoner;
 import com.ge.research.sadl.reasoner.InvalidNameException;
 import com.ge.research.sadl.reasoner.QueryCancelledException;
@@ -32,6 +33,8 @@ public class AnswerCurationManager {
 	private IConfigurationManagerForIDE domainModelConfigurationManager;
 	private Map<String, String> preferences = null;
 	private AnswerExtractionProcessor extractionProcessor = null;
+
+	private IDialogAnswerProvider dialogAnswerProvider = null;	// The instance of an implementer of a DialogAnswerProvider
 	public enum SaveAsSadl{SaveAsSadl, DoNotSaveAsSadl, AskUserSaveAsSadl}
 	
 	public AnswerCurationManager (String modelFolder, IConfigurationManagerForIDE configMgr, Map<String,String> prefs) {
@@ -90,7 +93,13 @@ public class AnswerCurationManager {
 		if (outputFilename.endsWith(".sadl")) {
 			outputFilename = outputFilename.substring(0, outputFilename.length() - 5) + ".owl";
 		}
-		String defPrefix = outputFilename.substring(0, outputFilename.length() - 4);
+		String defPrefix;
+		if (outputFilename.endsWith(".owl")) {
+			defPrefix = outputFilename.substring(0, outputFilename.length() - 4);
+		}
+		else {
+			defPrefix = outputFilename;
+		}
 		String defName = "http://com.ge.research.sadl.darpa.aske.answer/" + defPrefix;
 		if (getExtractionProcessor().getCodeExtractor().getDefaultCodeModelName() == null) {
 			getExtractionProcessor().getCodeExtractor().setDefaultCodeModelName(defName);
@@ -112,7 +121,8 @@ public class AnswerCurationManager {
 		if (codeFiles != null) {
 			for (File f : codeFiles) {
 				String content = readFileToString(f);
-				getExtractionProcessor().getCodeExtractor().process(f.getCanonicalPath(), content, true);				
+				String fileIdentifier = ConfigurationManagerForIdeFactory.formatPathRemoveBackslashes(f.getCanonicalPath());
+				getExtractionProcessor().getCodeExtractor().process(fileIdentifier, content, true);				
 			}
 			File of = new File(new File(getExtractionProcessor().getCodeExtractor().getCodeModelFolder()).getParent() + "/GeneratedModels/" + outputFilename);
 			of.getParentFile().mkdirs();
@@ -169,9 +179,15 @@ public class AnswerCurationManager {
 		if (saveAsSadl != null) {
 			if (saveAsSadl.equals(SaveAsSadl.AskUserSaveAsSadl)) {
 				// ask user if they want a SADL file saved
-			
+				IDialogAnswerProvider dap = getDialogAnswerProvider();
+				if (dap == null) {
+					dap = new DialogAnswerProviderConsoleForTest();
+				}
+				List<Object> args = new ArrayList<Object>();
+				args.add(outputOwlFileName);
+				dap.addCurationManagerInitiatedContent(this, "saveAsSadlFile", args, "Would you like to save the extracted model in SADL format?");
 			}
-			if (saveAsSadl != null) {
+			if (saveAsSadl != null && saveAsSadl.equals(SaveAsSadl.SaveAsSadl)) {
 				saveAsSadlFile(outputOwlFileName);
 			}
 		}
@@ -180,9 +196,10 @@ public class AnswerCurationManager {
 	/**
 	 * Method to save the OWL model created from code extraction as a SADL file
 	 * @param outputOwlFileName -- name of the OWL file created
+	 * @return -- the sadl fully qualified file name
 	 * @throws IOException
 	 */
-	private void saveAsSadlFile(String outputOwlFileName) throws IOException {
+	public String saveAsSadlFile(String outputOwlFileName) throws IOException {
 		OwlToSadl ots = new OwlToSadl(getExtractionProcessor().getCodeModel());
 		String sadlFN = outputOwlFileName + ".sadl";
 		File sf = new File(sadlFN);
@@ -190,22 +207,23 @@ public class AnswerCurationManager {
 			sf.delete();
 		}
 		try {
-			ots.saveSadlModel(sadlFN);
+			boolean status = ots.saveSadlModel(sadlFN);
+			if (status) {
+				return sadlFN;
+			}
 		} catch (OwlImportException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
+		return null;
 	}
 
 	public void notifyUser(String modelFolder, String msg) throws ConfigurationException {
-		final String format = ConfigurationManager.RDF_XML_ABBREV_FORMAT;
-		IConfigurationManagerForIDE configMgr = ConfigurationManagerForIdeFactory.getConfigurationManagerForIDE(modelFolder, format);
-		Object dap = configMgr.getPrivateKeyValuePair(DialogConstants.DIALOG_ANSWER_PROVIDER);
-		if (dap != null) {
+		if (getDialogAnswerProvider() != null) {
 			// talk to the user via the Dialog editor
 			Method acmic = null;
 			try {
-				acmic = dap.getClass().getMethod("addCurationManagerInitiatedContent", String.class);
+				acmic = getDialogAnswerProvider().getClass().getMethod("addCurationManagerInitiatedContent", String.class);
 			} catch (NoSuchMethodException e1) {
 				// TODO Auto-generated catch block
 				e1.printStackTrace();
@@ -214,7 +232,7 @@ public class AnswerCurationManager {
 				e1.printStackTrace();
 			}
 			if (acmic == null) {
-				Method[] dapMethods = dap.getClass().getDeclaredMethods();
+				Method[] dapMethods = getDialogAnswerProvider().getClass().getDeclaredMethods();
 				if (dapMethods != null) {
 					for (Method m : dapMethods) {
 						if (m.getName().equals("addCurationManagerInitiatedContent")) {
@@ -227,7 +245,7 @@ public class AnswerCurationManager {
 			if (acmic != null) {
 				acmic.setAccessible(true);
 				try {
-					acmic.invoke(dap, msg);
+					acmic.invoke(getDialogAnswerProvider(), msg);
 				} catch (IllegalAccessException e) {
 					// TODO Auto-generated catch block
 					e.printStackTrace();
@@ -264,6 +282,20 @@ public class AnswerCurationManager {
 		reader.close();
  
 		return  fileData.toString();	
+	}
+
+	protected IDialogAnswerProvider getDialogAnswerProvider() {
+		if (dialogAnswerProvider == null) {
+			setDialogAnswerProvider((IDialogAnswerProvider) getDomainModelConfigurationManager().getPrivateKeyValuePair(DialogConstants.DIALOG_ANSWER_PROVIDER));
+			if (dialogAnswerProvider == null) {
+				dialogAnswerProvider = new DialogAnswerProviderConsoleForTest();
+			}
+		}
+		return dialogAnswerProvider;
+	}
+
+	protected void setDialogAnswerProvider(IDialogAnswerProvider dialogAnswerProvider) {
+		this.dialogAnswerProvider = dialogAnswerProvider;
 	}
 	
 }

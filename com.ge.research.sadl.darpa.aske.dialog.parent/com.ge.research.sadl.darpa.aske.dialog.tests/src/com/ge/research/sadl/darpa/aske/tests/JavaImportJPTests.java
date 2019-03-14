@@ -14,8 +14,10 @@ import org.slf4j.LoggerFactory;
 import com.ge.research.sadl.builder.ConfigurationManagerForIdeFactory;
 import com.ge.research.sadl.builder.IConfigurationManagerForIDE;
 import com.ge.research.sadl.darpa.aske.curation.AnswerCurationManager;
+import com.ge.research.sadl.darpa.aske.curation.DialogAnswerProviderConsoleForTest;
 import com.ge.research.sadl.darpa.aske.curation.AnswerCurationManager.SaveAsSadl;
 import com.ge.research.sadl.darpa.aske.processing.DialogConstants;
+import com.ge.research.sadl.darpa.aske.processing.IDialogAnswerProvider;
 import com.ge.research.sadl.darpa.aske.processing.imports.JavaModelExtractorJP;
 import com.ge.research.sadl.owl2sadl.OwlImportException;
 import com.ge.research.sadl.owl2sadl.OwlToSadl;
@@ -218,7 +220,7 @@ public class JavaImportJPTests {
 		AnswerCurationManager acm = new AnswerCurationManager(getDomainProjectModelFolder(), cm, null);
 		acm.getExtractionProcessor().getCodeExtractor().setCodeModelFolder(getExtractionProjectModelFolder());
 		
-		DialogAnswerProviderConsoleForTest dapcft = new DialogAnswerProviderConsoleForTest();
+		IDialogAnswerProvider dapcft = new DialogAnswerProviderConsoleForTest();
 		cm.addPrivateKeyValuePair(DialogConstants.DIALOG_ANSWER_PROVIDER, dapcft);
 		
 		boolean includeSerialization = true;
