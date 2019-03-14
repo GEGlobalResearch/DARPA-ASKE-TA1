@@ -6,15 +6,11 @@ import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.net.HttpURLConnection;
 import java.net.URL;
-import java.net.URLEncoder;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
-import java.util.Map;
 
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Test;
 
 import com.google.gson.JsonArray;
@@ -22,7 +18,6 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 
-@Ignore
 public class KChainServiceTest {
 
 	@Before
@@ -30,7 +25,6 @@ public class KChainServiceTest {
 	}
 
 	@Test
-	@Ignore
 	public void testBuild_01() throws IOException {
 		/*
 {
@@ -70,7 +64,7 @@ public class KChainServiceTest {
 		outputs.add(output1);
 
 		String dataLocation = "../Datasets/Force_dataset.csv";
-		String equationModel = "";
+		String equationModel =null;
 //		String modelUri = "http://com.research.ge/darpa/aske/answer/test_02/binaryadd";
 		String modelUri = "Newtons2ndLawModel";
 		// add to KG: 
@@ -116,10 +110,10 @@ public class KChainServiceTest {
 		output1[1] = "double";
 		outputs.add(output1);
 
-		String dataLocation = "";
+		String dataLocation = null;
 		String equationModel = "Force = Mass*Acceleration";
 //		String modelUri = "http://com.research.ge/darpa/aske/answer/test_02/binaryadd";
-		String modelUri = "Newtons2ndLawModel";
+		String modelUri = "Newtons2ndLawModelPB";
 		// add to KG: 
 		buildCGModel(modelUri, equationModel, dataLocation, inputs, outputs);
 	}
@@ -167,15 +161,60 @@ public class KChainServiceTest {
 		outputs.add(output1);
 //		String modelUri = "http://com.research.ge/darpa/aske/answer/test_02/binaryadd";
 		String modelUri = "Newtons2ndLawModel";
-		String dataLocation = "../Datasets/Force_dataset.csv";
 		// add to KG: 
-		evalCGModel(modelUri, dataLocation, inputs, outputs);
+		evalCGModel(modelUri, inputs, outputs);
 	}
 	
-	private List<String[]> evalCGModel(String modelUri, String dataLocation, List<String[]> inputVariables, List<String[]> outputVariables) throws IOException {
-		String host = "3.39.120.21";
-		int port = 8080;
-		String kchainServiceURL = "http://" + host + ":" + port + "/kchain/";
+	@Test
+	public void testEval_02() throws IOException {
+		/*
+{
+  "inputVariables": [
+    {
+      "name": "Mass",
+      "type": "double",
+      "value": "[1.0]"
+    },
+    {
+      "name": "Acceleration",
+      "type": "double",
+      "value": "[0.5]"
+    }
+  ],
+  "modelName": "Newtons2ndLawModel",
+  "outputVariables": [
+    {
+      "name": "Force",
+      "type": "double"
+    }
+  ]
+}		 
+		 */
+		List<String[]> inputs = new ArrayList<String[]>();
+		String[] input1 = new String[3];
+		input1[0] = "Mass";
+		input1[1] = "double";
+		input1[2] = "[1.0]";
+		inputs.add(input1);
+		String[] input2 = new String[3];
+		input2[0] = "Acceleration";
+		input2[1] = "double";
+		input2[2] = "[0.5]";
+		inputs.add(input2);
+		List<String[]> outputs = new ArrayList<String[]>();
+		String[] output1 = new String[2];
+		output1[0] = "Force";
+		output1[1] = "double";
+		outputs.add(output1);
+//		String modelUri = "http://com.research.ge/darpa/aske/answer/test_02/binaryadd";
+		String modelUri = "Newtons2ndLawModelPB";
+		// add to KG: 
+		evalCGModel(modelUri, inputs, outputs);
+	}
+	private List<String[]> evalCGModel(String modelUri, List<String[]> inputVariables, List<String[]> outputVariables) throws IOException {
+		String host = "3.39.127.101";
+		int port = 12345;
+		String kchainServiceURL = "http://" + host + ":" + port + "/darpa/aske/kchain/";
 		/*
 		 * 
 {
@@ -211,19 +250,18 @@ public class KChainServiceTest {
 		}
 		
 		JsonArray jarrout = new JsonArray();
-		json.add("outputVarNames", jarrout);
+		json.add("outputVariables", jarrout);
 		Iterator<String[]> ovitr = outputVariables.iterator();
 		while (ovitr.hasNext()) {
 			String[] ovvals = ovitr.next();
 			JsonObject output = new JsonObject();
 			output.addProperty("name", ovvals[0]);
 			output.addProperty("type", ovvals[1]);
-			output.addProperty("value", ovvals[2]);
 			jarrout.add(output);
 		}
 		
-		String buildServiceURL = kchainServiceURL + "build";
-		URL serviceUrl = new URL(buildServiceURL);			
+		String evalServiceURL = kchainServiceURL + "evaluate";
+		URL serviceUrl = new URL(evalServiceURL);			
 
 		String jsonResponse = makeConnectionAndGetResponse(serviceUrl, json);
 		System.out.println(jsonResponse);
@@ -274,14 +312,18 @@ public class KChainServiceTest {
   "modelName": "string"
 }
  */
-		String host = "3.39.120.21";
-		int port = 8080;
-		String kchainServiceURL = "http://" + host + ":" + port + "/kchain/";
+		String host = "3.39.127.101";
+		int port = 12345;
+		String kchainServiceURL = "http://" + host + ":" + port + "/darpa/aske/kchain/";
 		
 		JsonObject json = new JsonObject();
 		json.addProperty("modelName", modelUri);
-		json.addProperty("equationModel", equationModel);
-		json.addProperty("dataLocation", dataLocation);
+		if (equationModel != null) {
+			json.addProperty("equationModel", equationModel);
+		}
+		if (dataLocation != null) {
+			json.addProperty("dataLocation", dataLocation);
+		}
 		JsonArray jarrin = new JsonArray();
 		json.add("inputVariables", jarrin);
 		for (String[] input : inputs) {
@@ -291,6 +333,7 @@ public class KChainServiceTest {
 			jarrin.add(inputj);
 		}
 		JsonArray jarrout = new JsonArray();
+		json.add("outputVariables", jarrout);
 		for (String[] output : outputs) {
 			JsonObject outputj = new JsonObject();
 			outputj.addProperty("name", output[0]);
@@ -364,15 +407,21 @@ public class KChainServiceTest {
 			outputStream.write(jsonObject.toString().getBytes());
 			outputStream.flush();
 
-			BufferedReader br = new BufferedReader(
-					new InputStreamReader(connection.getInputStream()));                                     
-			String output = "";
-			while((output = br.readLine()) != null) 
-				response = response + output;                 
-			outputStream.close();
-			br.close();
+			try {
+				BufferedReader br = new BufferedReader(
+						new InputStreamReader(connection.getInputStream()));                                     
+				String output = "";
+				while((output = br.readLine()) != null) 
+					response = response + output;                 
+				outputStream.close();
+				br.close();
+			}
+			catch (Exception e) {
+				System.out.println("Error reading response: " + e.getMessage());
+			}
 			connection.disconnect();
 		} catch (Exception e) {
+			System.out.println(jsonObject.toString());
 			e.printStackTrace();
 		}
 		return response;
