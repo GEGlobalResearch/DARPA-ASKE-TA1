@@ -6,30 +6,39 @@
       <rdf:Bag>
         <rdf:li>
           <Builtin>
-            <class rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
-            >com.ge.research.sadl.jena.reasoner.builtin.GreaterThan</class>
             <name rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
             >greaterThan</name>
+            <class rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+            >com.ge.research.sadl.jena.reasoner.builtin.GreaterThan</class>
           </Builtin>
         </rdf:li>
         <rdf:li>
           <Builtin>
-            <name rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
-            >lessThan</name>
             <class rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
             >com.ge.research.sadl.jena.reasoner.builtin.LessThan</class>
+            <name rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+            >lessThan</name>
+          </Builtin>
+        </rdf:li>
+        <rdf:li>
+          <Builtin>
+            <name rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+            >noValue</name>
+            <class rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+            >com.ge.research.sadl.jena.reasoner.builtin.NoValue</class>
           </Builtin>
         </rdf:li>
         <rdf:li>
           <Builtin>
             <class rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
-            >com.ge.research.sadl.jena.reasoner.builtin.NoValue</class>
+            >com.ge.research.sadl.jena.reasoner.builtin.OneOf</class>
             <name rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
-            >noValue</name>
+            >oneOf</name>
           </Builtin>
         </rdf:li>
       </rdf:Bag>
     </subcategory>
   </Category>
   <Category rdf:about="http://com.ge.research.sadl.configuration#ReasonerSpec"/>
+  <Category rdf:about="http://com.ge.research.sadl.configuration#Builtin"/>
 </rdf:RDF>
