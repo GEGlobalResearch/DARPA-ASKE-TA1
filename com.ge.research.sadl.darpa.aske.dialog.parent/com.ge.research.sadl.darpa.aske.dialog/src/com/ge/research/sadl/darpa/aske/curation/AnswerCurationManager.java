@@ -141,36 +141,38 @@ public class AnswerCurationManager {
 		
 		// run inference on the model, interact with user to refine results
 		IReasoner reasoner = getExtractionProcessor().getCodeExtractor().getCodeModelConfigMgr().getReasoner();
+		String codeModelFolder = getExtractionProcessor().getCodeExtractor().getCodeModelFolder();
 		if (reasoner == null) {
 			// use domain model folder because that's the project we're working in
-			notifyUser(getDomainModelOwlModelsFolder(), "Unable to instantiate reasoner to analyze extracted code model.");
+			notifyUser(codeModelFolder, "Unable to instantiate reasoner to analyze extracted code model.");
 		}
 		else {
 			if (!reasoner.isInitialized()) {
-				reasoner.setConfigurationManager(getExtractionProcessor().getCodeExtractor().getCodeModelConfigMgr());
+				IConfigurationManagerForIDE codeModelConfigMgr = getExtractionProcessor().getCodeExtractor().getCodeModelConfigMgr();
+				reasoner.setConfigurationManager(codeModelConfigMgr);
 				try {
-					reasoner.initializeReasoner(getExtractionProcessor().getCodeExtractor().getCodeModelFolder(), getExtractionProcessor().getCodeModelName(), null);
+					reasoner.initializeReasoner(codeModelFolder, getExtractionProcessor().getCodeModelName(), null);
 					String queryString = "select ?m where {?m <rdf:type> <Method> . ?m <codemdl:arguments> ?args}";
 					queryString = reasoner.prepareQuery(queryString);
 					ResultSet results =  reasoner.ask(queryString);
 					if (results != null && results.getRowCount() > 0) {
 						results.setShowNamespaces(false);
-						notifyUser(getDomainModelOwlModelsFolder(), "Interesting methods found in extraction:\n" + results.toString());
+						notifyUser(codeModelFolder, "Interesting methods found in extraction:\n" + results.toStringWithIndent(0, false));
 					}
 					else {
-						notifyUser(getDomainModelOwlModelsFolder(), "No interesting models were found in this extraction from code.");
+						notifyUser(codeModelFolder, "No interesting models were found in this extraction from code.");
 					}
 				} catch (ReasonerNotFoundException e) {
-					notifyUser(getDomainModelOwlModelsFolder(), e.getMessage());
+					notifyUser(codeModelFolder, e.getMessage());
 					e.printStackTrace();
 				} catch (InvalidNameException e) {
-					notifyUser(getDomainModelOwlModelsFolder(), e.getMessage());
+					notifyUser(codeModelFolder, e.getMessage());
 					e.printStackTrace();
 				} catch (QueryParseException e) {
-					notifyUser(getDomainModelOwlModelsFolder(), e.getMessage());
+					notifyUser(codeModelFolder, e.getMessage());
 					e.printStackTrace();
 				} catch (QueryCancelledException e) {
-					notifyUser(getDomainModelOwlModelsFolder(), e.getMessage());
+					notifyUser(codeModelFolder, e.getMessage());
 					e.printStackTrace();
 				}
 			}
@@ -185,6 +187,7 @@ public class AnswerCurationManager {
 				}
 				List<Object> args = new ArrayList<Object>();
 				args.add(outputOwlFileName);
+// TODO add argument for model folder so we know which project to use in any followup inquiries.				
 				dap.addCurationManagerInitiatedContent(this, "saveAsSadlFile", args, "Would you like to save the extracted model in SADL format?");
 			}
 			if (saveAsSadl != null && saveAsSadl.equals(SaveAsSadl.SaveAsSadl)) {
