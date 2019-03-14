@@ -9,9 +9,9 @@ import org.eclipse.emf.ecore.EObject;
 import org.eclipse.xtext.EcoreUtil2;
 import org.eclipse.xtext.resource.IEObjectDescription;
 
+import com.ge.research.sadl.darpa.aske.dialog.AnswerCMStatement;
 import com.ge.research.sadl.darpa.aske.dialog.HowManyValuesStatement;
 import com.ge.research.sadl.darpa.aske.dialog.ModifiedAskStatement;
-import com.ge.research.sadl.darpa.aske.dialog.ResponseStatement;
 import com.ge.research.sadl.darpa.aske.dialog.WhatStatement;
 import com.ge.research.sadl.scoping.AmbiguousNameErrorEObjectDescription;
 import com.ge.research.sadl.scoping.ErrorAddingLinkingService;
@@ -35,7 +35,7 @@ public class DialogErrorAddingLinkingService extends ErrorAddingLinkingService {
 					Iterator<IEObjectDescription> alteobjitr = ((AmbiguousNameErrorEObjectDescription)alt).getEObjDescAlternatives().iterator();
 					while (alteobjitr.hasNext()) {
 						EObject alteobj = alteobjitr.next().getEObjectOrProxy();
-						if (EcoreUtil2.getContainerOfType(alteobj, ResponseStatement.class) == null &&
+						if (EcoreUtil2.getContainerOfType(alteobj, AnswerCMStatement.class) == null &&
 								EcoreUtil2.getContainerOfType(alteobj, ModifiedAskStatement.class) == null &&
 								EcoreUtil2.getContainerOfType(alteobj, WhatStatement.class) == null &&
 								EcoreUtil2.getContainerOfType(alteobj, HowManyValuesStatement.class) == null) {

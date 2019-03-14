@@ -50,21 +50,6 @@
       </owl:Class>
     </owl:equivalentClass>
   </owl:Class>
-  <owl:Class rdf:nodeID="A0">
-    <rdfs:subClassOf>
-      <owl:Restriction>
-        <owl:allValuesFrom rdf:nodeID="A0"/>
-        <owl:onProperty rdf:resource="sadllistmodel#rest"/>
-      </owl:Restriction>
-    </rdfs:subClassOf>
-    <rdfs:subClassOf>
-      <owl:Restriction>
-        <owl:allValuesFrom rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
-        <owl:onProperty rdf:resource="sadllistmodel#first"/>
-      </owl:Restriction>
-    </rdfs:subClassOf>
-    <rdfs:subClassOf rdf:resource="sadllistmodel#List"/>
-  </owl:Class>
   <owl:Class rdf:ID="Reference">
     <rdfs:subClassOf>
       <owl:Restriction>
@@ -162,6 +147,23 @@
       <owl:Class rdf:about="#CodeElement"/>
     </rdfs:subClassOf>
   </owl:Class>
+  <owl:Class rdf:nodeID="A0">
+    <rdfs:subClassOf>
+      <owl:Restriction>
+        <owl:allValuesFrom rdf:nodeID="A0"/>
+        <owl:onProperty rdf:resource="sadllistmodel#rest"/>
+      </owl:Restriction>
+    </rdfs:subClassOf>
+    <rdfs:subClassOf>
+      <owl:Restriction>
+        <owl:allValuesFrom>
+          <owl:Class rdf:about="#CodeVariable"/>
+        </owl:allValuesFrom>
+        <owl:onProperty rdf:resource="sadllistmodel#first"/>
+      </owl:Restriction>
+    </rdfs:subClassOf>
+    <rdfs:subClassOf rdf:resource="sadllistmodel#List"/>
+  </owl:Class>
   <owl:Class rdf:about="#CodeVariable">
     <rdfs:subClassOf>
       <owl:Restriction>
@@ -221,7 +223,7 @@
     </rdfs:subClassOf>
     <rdfs:subClassOf>
       <owl:Restriction>
-        <owl:allValuesFrom rdf:resource="#CodeVariable"/>
+        <owl:allValuesFrom rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
         <owl:onProperty rdf:resource="sadllistmodel#first"/>
       </owl:Restriction>
     </rdfs:subClassOf>
@@ -268,11 +270,11 @@
     <rdfs:range rdf:resource="#CodeBlock"/>
   </owl:ObjectProperty>
   <owl:ObjectProperty rdf:about="#arguments">
-    <rdfs:range rdf:nodeID="A1"/>
+    <rdfs:range rdf:nodeID="A0"/>
     <rdfs:domain rdf:resource="#Method"/>
   </owl:ObjectProperty>
   <owl:ObjectProperty rdf:about="#semanticReturnTypes">
-    <rdfs:range rdf:nodeID="A0"/>
+    <rdfs:range rdf:nodeID="A1"/>
     <rdfs:domain rdf:resource="#Method"/>
   </owl:ObjectProperty>
   <owl:ObjectProperty rdf:ID="reference">
@@ -291,7 +293,7 @@
     <rdfs:range rdf:resource="#Comment"/>
   </owl:ObjectProperty>
   <owl:ObjectProperty rdf:about="#returnTypes">
-    <rdfs:range rdf:nodeID="A0"/>
+    <rdfs:range rdf:nodeID="A1"/>
     <rdfs:domain rdf:resource="#Method"/>
   </owl:ObjectProperty>
   <owl:DatatypeProperty rdf:about="#input">

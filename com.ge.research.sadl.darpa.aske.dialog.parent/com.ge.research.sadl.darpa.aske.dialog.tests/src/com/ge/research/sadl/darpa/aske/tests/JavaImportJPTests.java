@@ -5,8 +5,6 @@ import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
 
-import org.eclipse.emf.common.util.URI;
-import org.eclipse.emf.ecore.resource.Resource;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
@@ -16,19 +14,20 @@ import org.slf4j.LoggerFactory;
 import com.ge.research.sadl.builder.ConfigurationManagerForIdeFactory;
 import com.ge.research.sadl.builder.IConfigurationManagerForIDE;
 import com.ge.research.sadl.darpa.aske.curation.AnswerCurationManager;
+import com.ge.research.sadl.darpa.aske.curation.DialogAnswerProviderConsoleForTest;
+import com.ge.research.sadl.darpa.aske.curation.AnswerCurationManager.SaveAsSadl;
 import com.ge.research.sadl.darpa.aske.processing.DialogConstants;
+import com.ge.research.sadl.darpa.aske.processing.IDialogAnswerProvider;
 import com.ge.research.sadl.darpa.aske.processing.imports.JavaModelExtractorJP;
-import com.ge.research.sadl.darpa.aske.processing.imports.SadlModelGenerator;
 import com.ge.research.sadl.owl2sadl.OwlImportException;
 import com.ge.research.sadl.owl2sadl.OwlToSadl;
-import com.ge.research.sadl.processing.OntModelProvider;
 import com.ge.research.sadl.reasoner.ConfigurationException;
 
 public class JavaImportJPTests {
 	private static final Logger LOGGER = LoggerFactory.getLogger(JavaImportJPTests.class);
 
-	private String extractionProjectModelFolder;
-	private String outputProjectModelFolder;
+	private String codeExtractionProjectModelFolder;
+	private String domainProjectModelFolder;
 	@BeforeClass
 	public static void init() throws Exception
 	{
@@ -40,11 +39,13 @@ public class JavaImportJPTests {
 
 	@Before
 	public void setUp() throws Exception {
-		String codeExtractionKbRoot = "C:/Users/200005201/sadl3-master6/git/DARPA-ASKE-TA1/Ontology/M5";
+		String codeExtractionKbRoot = "C:/Users/200005201/sadl3-master6/git/DARPA-ASKE-TA1/Ontology/M5-CodeModel";
 		File codeExtractionPrjFolder = new File(codeExtractionKbRoot);
 		setExtractionProjectModelFolder(codeExtractionPrjFolder.getCanonicalPath() + "/OwlModels");
-		File outputPrjFolder = new File(new File(".").getAbsolutePath() + "/resources/TestSadlProject");
-		setOutputProjectModelFolder(outputPrjFolder.getCanonicalPath() + "/OwlModels");
+		
+		String domainModelKbRoot = "C:/Users/200005201/sadl3-master6/git/DARPA-ASKE-TA1/Ontology/M5";
+		File outputPrjFolder = new File(domainModelKbRoot);
+		setDomainProjectModelFolder(outputPrjFolder.getCanonicalPath() + "/OwlModels");
 	}
 
 	@Test
@@ -79,16 +80,15 @@ public class JavaImportJPTests {
 				"		return tc * 5 / 9 + 32;\r\n" + 
 				"	}\r\n" + 
 				"}\r\n";
-		IConfigurationManagerForIDE cm = ConfigurationManagerForIdeFactory.getConfigurationManagerForIDE(getOutputProjectModelFolder(), null);
-		AnswerCurationManager acm = new AnswerCurationManager(getOutputProjectModelFolder(), cm, null);
-		SadlModelGenerator smg = new SadlModelGenerator();
-		JavaModelExtractorJP jme = new JavaModelExtractorJP(acm, smg, null);
-		jme.setCodeMetaModelModelFolder(getExtractionProjectModelFolder());
+		IConfigurationManagerForIDE cm = ConfigurationManagerForIdeFactory.getConfigurationManagerForIDE(getDomainProjectModelFolder(), null);
+		AnswerCurationManager acm = new AnswerCurationManager(getDomainProjectModelFolder(), cm, null);
+		JavaModelExtractorJP jme = new JavaModelExtractorJP(acm, null);
+		jme.setCodeModelFolder(getExtractionProjectModelFolder());
 		String defaultCodeModelPrefix = "Temp";
 		String defaultCodeModelName = "http://com.ge.research.darpa.aske.ta1.explore/" + defaultCodeModelPrefix;
 		jme.setDefaultCodeModelPrefix(defaultCodeModelPrefix);
 		jme.setDefaultCodeModelName(defaultCodeModelName);
-		jme.process(javaContent,false);
+		jme.process("TemperatureConversion class", javaContent,false);
 		
 //		String content = smg.generateSadlModel(jme, "http://sadl.org/Temperature.sadl");
 //		System.out.println("SADL Model Output:\n" + content);
@@ -127,16 +127,15 @@ public class JavaImportJPTests {
 				"	}\r\n" + 
 				"}\r\n";
 		
-		IConfigurationManagerForIDE cm = ConfigurationManagerForIdeFactory.getConfigurationManagerForIDE(getOutputProjectModelFolder(), null);
-		AnswerCurationManager acm = new AnswerCurationManager(getOutputProjectModelFolder(), cm, null);
-		SadlModelGenerator smg = new SadlModelGenerator();
-		JavaModelExtractorJP jme = new JavaModelExtractorJP(acm, smg, null);
-		jme.setCodeMetaModelModelFolder(getExtractionProjectModelFolder());
+		IConfigurationManagerForIDE cm = ConfigurationManagerForIdeFactory.getConfigurationManagerForIDE(getDomainProjectModelFolder(), null);
+		AnswerCurationManager acm = new AnswerCurationManager(getDomainProjectModelFolder(), cm, null);
+		JavaModelExtractorJP jme = new JavaModelExtractorJP(acm, null);
+		jme.setCodeModelFolder(getExtractionProjectModelFolder());
 		String defaultCodeModelPrefix = "temp";
 		String defaultCodeModelName = "http://com.ge.research.darpa.aske.ta1.explore/" + defaultCodeModelPrefix;
 		jme.setDefaultCodeModelPrefix(defaultCodeModelPrefix);
 		jme.setDefaultCodeModelName(defaultCodeModelName);
-		jme.process(javaContent, false);
+		jme.process("TemperatureConversion class", javaContent, false);
 //		String content = smg.generateSadlModel(jme, "http://sadl.org/Temperature.sadl");
 //		System.out.println("SADL Model Output:\n" + content);
 	}
@@ -177,16 +176,15 @@ public class JavaImportJPTests {
 				"}\r\n" + 
 				"";
 		
-		IConfigurationManagerForIDE cm = ConfigurationManagerForIdeFactory.getConfigurationManagerForIDE(getOutputProjectModelFolder(), null);
-		AnswerCurationManager acm = new AnswerCurationManager(getOutputProjectModelFolder(), cm, null);
-		SadlModelGenerator smg = new SadlModelGenerator();
-		JavaModelExtractorJP jme = new JavaModelExtractorJP(acm, smg, null);
-		jme.setCodeMetaModelModelFolder(getExtractionProjectModelFolder());
+		IConfigurationManagerForIDE cm = ConfigurationManagerForIdeFactory.getConfigurationManagerForIDE(getDomainProjectModelFolder(), null);
+		AnswerCurationManager acm = new AnswerCurationManager(getDomainProjectModelFolder(), cm, null);
+		JavaModelExtractorJP jme = new JavaModelExtractorJP(acm, null);
+		jme.setCodeModelFolder(getExtractionProjectModelFolder());
 		String defaultCodeModelPrefix = "physicalobject";
 		String defaultCodeModelName = "http://com.ge.research.darpa.aske.ta1.explore/" + defaultCodeModelPrefix;
 		jme.setDefaultCodeModelPrefix(defaultCodeModelPrefix);
 		jme.setDefaultCodeModelName(defaultCodeModelName);
-		jme.process(javaContent, false);
+		jme.process("PhysicalObject class", javaContent, false);
 //		String content = smg.generateSadlModel(jme, "http://sadl.org/Temperature.sadl");
 //		System.out.println("SADL Model Output:\n" + content);
 	}
@@ -198,16 +196,15 @@ public class JavaImportJPTests {
 //		ClassLoader classLoader = getClass().getClassLoader();
 //		File sourceFile = new File(classLoader.getResource("/Isentrop.java").getFile());		
 		String javaContent = readFile(sourceFile);
-		IConfigurationManagerForIDE cm = ConfigurationManagerForIdeFactory.getConfigurationManagerForIDE(getOutputProjectModelFolder(), null);
-		AnswerCurationManager acm = new AnswerCurationManager(getOutputProjectModelFolder(), cm, null);
-		SadlModelGenerator smg = new SadlModelGenerator();
-		JavaModelExtractorJP jme = new JavaModelExtractorJP(acm, smg, null);
-		jme.setCodeMetaModelModelFolder(getExtractionProjectModelFolder());
+		IConfigurationManagerForIDE cm = ConfigurationManagerForIdeFactory.getConfigurationManagerForIDE(getDomainProjectModelFolder(), null);
+		AnswerCurationManager acm = new AnswerCurationManager(getDomainProjectModelFolder(), cm, null);
+		JavaModelExtractorJP jme = new JavaModelExtractorJP(acm, null);
+		jme.setCodeModelFolder(getExtractionProjectModelFolder());
 		String defaultCodeModelPrefix = "Isentrop";
 		String defaultCodeModelName = "http://com.ge.research.darpa.aske.ta1.explore/" + defaultCodeModelPrefix;
 		jme.setDefaultCodeModelPrefix(defaultCodeModelPrefix);
 		jme.setDefaultCodeModelName(defaultCodeModelName);
-		jme.process(javaContent, false);
+		jme.process("Isentrop.java", javaContent, false);
 //		String content = smg.generateSadlModel(jme, "http://sadl.org/Temperature.sadl");
 //		System.out.println("SADL Model Output:\n" + content);
 	}
@@ -218,36 +215,33 @@ public class JavaImportJPTests {
 		File sourceFile = new File(new File(".").getAbsolutePath() + "/resources/Mach.java");
 //		ClassLoader classLoader = getClass().getClassLoader();
 //		File sourceFile = new File(classLoader.getResource("/Isentrop.java").getFile());		
-		String javaContent = readFile(sourceFile);
-		IConfigurationManagerForIDE cm = ConfigurationManagerForIdeFactory.getConfigurationManagerForIDE(getOutputProjectModelFolder(), null);
-		AnswerCurationManager acm = new AnswerCurationManager(getOutputProjectModelFolder(), cm, null);
-		SadlModelGenerator smg = new SadlModelGenerator();
-		JavaModelExtractorJP jme = new JavaModelExtractorJP(acm, smg, null);
-		acm.getExtractionProcessor().setCodeExtractor(jme);
-		jme.setCodeMetaModelModelFolder(getExtractionProjectModelFolder());
+//		String javaContent = readFile(sourceFile);
+		IConfigurationManagerForIDE cm = ConfigurationManagerForIdeFactory.getConfigurationManagerForIDE(getDomainProjectModelFolder(), null);
+		AnswerCurationManager acm = new AnswerCurationManager(getDomainProjectModelFolder(), cm, null);
+		acm.getExtractionProcessor().getCodeExtractor().setCodeModelFolder(getExtractionProjectModelFolder());
 		
-		DialogAnswerProviderConsoleForTest dapcft = new DialogAnswerProviderConsoleForTest();
+		IDialogAnswerProvider dapcft = new DialogAnswerProviderConsoleForTest();
 		cm.addPrivateKeyValuePair(DialogConstants.DIALOG_ANSWER_PROVIDER, dapcft);
 		
 		boolean includeSerialization = true;
 		
 		String defaultCodeModelPrefix = includeSerialization ? "MachSz" : "Mach";
 		String defaultCodeModelName = "http://com.ge.research.darpa.aske.ta1.explore/" + defaultCodeModelPrefix;
-		jme.setDefaultCodeModelPrefix(defaultCodeModelPrefix);
-		jme.setDefaultCodeModelName(defaultCodeModelName);
+		acm.getExtractionProcessor().getCodeExtractor().setDefaultCodeModelPrefix(defaultCodeModelPrefix);
+		acm.getExtractionProcessor().getCodeExtractor().setDefaultCodeModelName(defaultCodeModelName);
 		
-		String genFolder = getOutputProjectModelFolder() + "/GeneratedModels";
+		String genFolder = new File(acm.getExtractionProcessor().getCodeExtractor().getCodeModelFolder()).getParent() + "/GeneratedModels";
 		new File(genFolder).mkdirs();
 		String owlFileName = genFolder + "/" + defaultCodeModelPrefix + ".owl";
 
 		acm.getExtractionProcessor().getCodeExtractor().addCodeFile(sourceFile);
-		acm.processImports(defaultCodeModelPrefix + ".owl");
+		acm.processImports(defaultCodeModelPrefix + ".owl", SaveAsSadl.SaveAsSadl.SaveAsSadl);
 		
-		jme.process(javaContent, includeSerialization);
+//		jme.process("Mach.java", javaContent, includeSerialization);
 //		String content = smg.generateSadlModel(jme, "http://sadl.org/Temperature.sadl");
 //		System.out.println("SADL Model Output:\n" + content);
-		cm.saveOwlFile(acm.getExtractionProcessor().getCodeModel(), 
-				acm.getExtractionProcessor().getCodeModelName(), owlFileName);
+//		cm.saveOwlFile(acm.getExtractionProcessor().getCodeModel(), 
+//				acm.getExtractionProcessor().getCodeModelName(), owlFileName);
 		OwlToSadl ots = new OwlToSadl(acm.getExtractionProcessor().getCodeModel());
 		String sadlFN = owlFileName + ".sadl";
 		File sf = new File(sadlFN);
@@ -276,18 +270,18 @@ public class JavaImportJPTests {
 	}
 
 	private String getExtractionProjectModelFolder() {
-		return extractionProjectModelFolder;
+		return codeExtractionProjectModelFolder;
 	}
 
 	private void setExtractionProjectModelFolder(String extractionProjectModelFolder) {
-		this.extractionProjectModelFolder = extractionProjectModelFolder;
+		this.codeExtractionProjectModelFolder = extractionProjectModelFolder;
 	}
 
-	private String getOutputProjectModelFolder() {
-		return outputProjectModelFolder;
+	private String getDomainProjectModelFolder() {
+		return domainProjectModelFolder;
 	}
 
-	private void setOutputProjectModelFolder(String outputProjectModelFolder) {
-		this.outputProjectModelFolder = outputProjectModelFolder;
+	private void setDomainProjectModelFolder(String outputProjectModelFolder) {
+		this.domainProjectModelFolder = outputProjectModelFolder;
 	}
 }
