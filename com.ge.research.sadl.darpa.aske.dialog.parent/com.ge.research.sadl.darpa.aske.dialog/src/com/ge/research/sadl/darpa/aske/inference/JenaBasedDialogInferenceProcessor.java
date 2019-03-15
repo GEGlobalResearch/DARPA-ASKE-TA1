@@ -200,14 +200,8 @@ public class JenaBasedDialogInferenceProcessor extends JenaBasedSadlInferencePro
 			"     ?II a ?Node.\n" + 
 			"     ?II imp:value ?Value.}" + 
 			"} order by ?Node";
-	public static final String CGQUERY = 
-//			"construct {\n" + 
-//			" ?EQ <http://sadl.org/sadlimplicitmodel#input> ?I.\n" + 
-//			" ?I <http://sadl.org/sadlimplicitmodel#argType> ?Input.\n" + 
-//			" ?EQ <http://sadl.org/sadlimplicitmodel#output> ?O.\n" + 
-//			" ?O a ?Output.\n" + 
-//			"}\n" + 
-			"select distinct ?Input ?EQ ?Output\n" + 
+	public static final String CGQUERY = "prefix imp:<http://sadl.org/sadlimplicitmodel#>\n" +
+			"select distinct ?Input ?EQ ?Output ?Input_style ?Input_color ?Output_tooltip\n" + //(?Expr as ?EQ_tooltip)
 			"where {\n" + 
 			" ?CCG a <http://aske.ge.com/metamodel#CCG>.\n" +
 			" filter (?CCG in (COMPGRAPH)).\n" +
@@ -217,19 +211,23 @@ public class JenaBasedDialogInferenceProcessor extends JenaBasedSadlInferencePro
 			" ?EQ <http://sadl.org/sadlimplicitmodel#input> ?I.\n" + 
 			" ?I <http://sadl.org/sadlimplicitmodel#argType> ?Input.\n" + 
 			" ?EQ <http://sadl.org/sadlimplicitmodel#output> ?O.\n" + 
-			" ?O a ?Output.\n" + 
+			" ?EQ imp:expression ?Expr." +
+			" let(?Output_tooltip := str(?Expr))" +
+			" ?O a ?Output.\n" +
+			" let(?Input_style := 'filled')" +
+			" let(?Input_color := 'yellow')\n" +
 			"} order by ?EQ";
 	
 	public static final String CGQUERYWITHVALUES ="prefix imp:<http://sadl.org/sadlimplicitmodel#>\n" + 
 			"prefix sci:<http://aske.ge.com/sciknow#>\n" +
 			"prefix mm:<http://aske.ge.com/metamodel#>\n" + 
 			"\n" + 
-			"select distinct ?X ?Y ?Z\n" + 
-			"from <http://kd.ge.com/md2>\n" + 
-			"from <http://kd.ge.com/aske3>\n" + 
+			"select ?X ?Y ?Z ?X_style ?X_color ?Z_shape ?Z_tooltip\n" + //?X_style \n" + 
+			//"from <http://kd.ge.com/md2>\n" + 
+			//"from <http://kd.ge.com/aske3>\n" + 
 			"where {\n" + 
-			" {select (?Input as ?X) (?EQ as ?Y) (?Output as ?Z)\n" + 
-			"  where {\n" + 
+			"{select (?Input as ?X) (?EQ as ?Y) (?Output as ?Z) ?X_style ?X_color ('box' as ?Z_shape) ?Z_tooltip\n" + 
+			"where {\n" + 
 			"    ?CCG a mm:CCG.\n" + 
 			"    filter (?CCG in (COMPGRAPH)).\n" + 
 			"    ?CCG mm:subgraph ?SG.\n" + 
@@ -239,22 +237,57 @@ public class JenaBasedDialogInferenceProcessor extends JenaBasedSadlInferencePro
 			"    ?I imp:argType ?Input.\n" + 
 			"    ?EQ imp:output ?O.\n" + 
 			"    ?O a ?Output.\n" + 
-			"  }}union\n" + 
-			" {select (?Output as ?X) ?Y (?Value as ?Z) \n" + 
+			"    ?CCG mm:subgraph ?SG1.\n" + 
+			"    ?SG1 mm:cgraph ?CG1.\n" + 
+			"    ?CG1 sci:hasEquation ?EQ1.\n" + 
+			"    ?EQ1 imp:output ?O1.\n" + 
+			"    ?O1 a ?Input.\n" +
+			"    ?EQ imp:expression ?Expr.\n" + 
+			"	 bind(str(?Expr) as ?Z_tooltip)" +
+			"    bind('solid' as ?X_style)\n" + 
+			"    bind('black' as ?X_color)\n" + 
+			"}}union\n" + 
+			"{select (?Input as ?X) (?EQ as ?Y) (?Output as ?Z) ?X_style ?X_color ('box' as ?Z_shape) ?Z_tooltip\n" + 
+			"where {\n" + 
+			"    ?CCG a mm:CCG.\n" + 
+			"    filter (?CCG in (COMPGRAPH)).\n" + 
+			"    ?CCG mm:subgraph ?SG.\n" + 
+			"    ?SG mm:cgraph ?CG.\n" + 
+			"    ?CG sci:hasEquation ?EQ.\n" + 
+			"    ?EQ imp:input ?I.\n" + 
+			"    ?I imp:argType ?Input.\n" + 
+			"    ?EQ imp:output ?O.\n" + 
+			"    ?O a ?Output.\n" + 
+			"    ?EQ imp:expression ?Expr.\n" + 
+			"	 bind(str(?Expr) as ?Z_tooltip)" +
+			"   filter not exists {\n" + 
+			"    ?CCG mm:subgraph ?SG2.\n" + 
+			"    ?SG2 mm:cgraph ?CG2.\n" + 
+			"    ?CG2 sci:hasEquation ?EQ2.\n" + 
+			"    ?EQ2 imp:output ?O2.\n" + 
+			"    ?O2 a ?Input.}\n" + 
+			"    bind('filled' as ?X_style)\n" + 
+			"    bind('yellow' as ?X_color)\n" + 
+			"}}union\n" + 
+			" {select (?Output as ?X) ?Y (?Value as ?Z) ?X_style ?X_color ('oval' as ?Z_shape) ('output value' as ?Z_tooltip)\n" + 
 			"  where {\n" + 
 			"    ?CCG mm:subgraph ?SG.\n" + 
 			"    filter (?CCG in (COMPGRAPH)).\n" + 
 			"    ?SG mm:output ?Oinst.\n" + 
 			"    ?Oinst a ?Output.\n" + 
 			"    ?Oinst imp:value ?Value.\n" + 
-			"   bind(\"value\" as ?Y).\n" + 
+			"    bind(\"value\" as ?Y).\n" +
+			"    bind('solid' as ?X_style)\n" + 
+			"    bind('black' as ?X_color)\n" +
 			"  }}\n" + 
-			"} order by ?X"; 
+			//" bind('filled' as ?X_style)\n" + 
+			//" bind(?color as ?X_color)\n" + 
+			"}";
 
 	public static final String RESULTSQUERY = "prefix imp:<http://sadl.org/sadlimplicitmodel#>\n" + 
 			"prefix mm:<http://aske.ge.com/metamodel#>\n" +
 			"prefix sci:<http://aske.ge.com/sciknow#>\n" + 
-			"select distinct (strafter(str(?Var),'#') as ?Variable) ?Mean ?StdDev (str(?EQ) as ?EqExpression)\n" + 
+			"select distinct (strafter(str(?Var),'#') as ?Variable) ?Mean ?StdDev\n" + 
 			"from <http://kd.ge.com/md2>\n" + 
 			"from <http://kd.ge.com/aske3>\n" + 
 			"where {\n" + 
@@ -264,7 +297,7 @@ public class JenaBasedDialogInferenceProcessor extends JenaBasedSadlInferencePro
 			"    ?Oinst a ?Var.\n" + 
 			"    ?Oinst imp:value ?Mean.\n" + 
 			"  ?Oinst imp:stddev ?StdDev.\n" +
-			"  ?SG mm:cgraph/sci:hasEquation/imp:expression ?EQ.\n" + 
+			//"  ?SG mm:cgraph/sci:hasEquation/imp:expression ?EQ.\n" + 
 			"}";
 	
 	
@@ -889,9 +922,12 @@ public class JenaBasedDialogInferenceProcessor extends JenaBasedSadlInferencePro
 		
 			reasoner.loadInstanceData(qhmodel);	//Need to load new metadata
 			//String cgqtemp = CGQUERY.replaceAll("COMPGRAPH", "<" + cgIns.getURI() + ">");
-			String cgquery = reasoner.prepareQuery(CGQUERY.replaceAll("COMPGRAPH", "<" + cgIns.getURI() + ">"));
+			String cgquery = reasoner.prepareQuery(CGQUERYWITHVALUES.replaceAll("COMPGRAPH", "<" + cgIns.getURI() + ">"));
 			//cgquery = queryStr.replaceAll("COMPGRAPH", "<" + cgIns.getURI() + ">");
 
+			//System.out.println(CGQUERYWITHVALUES.replaceAll("COMPGRAPH", "<" + cgIns.getURI() + ">"));
+			System.out.println(cgquery);
+			
 			//ResultSet rs = reasoner.ask(currentQuery);
 			ResultSet cgres = reasoner.ask(cgquery);
 
