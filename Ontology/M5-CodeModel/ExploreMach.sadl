@@ -1,6 +1,6 @@
  uri "http://sadl.org/ExploreMach.sadl" alias exmach.
  
- import "http://com.ge.research/darpa/aske/answer/testcodeextraction".
+ import "http://com.ge.reasearch.sadl.darpa.aske.answer/DefaultModelName".
  
  Print: "Comments ordered by line".
  Ask: "select ?cc ?sl where {?x <rdf:type> <Comment> . ?x <commentContent> ?cc . ?x <beginsAt> ?sl} order by ?sl".

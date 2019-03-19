@@ -25,6 +25,7 @@ public class AnswerExtractionProcessor {
 	private String textModelName;
 	private OntModel codeModel;		// the knowledge graph extension to the context model extracted from code
 	private String codeModelName;
+	private String codeModelPrefix;
 	private IModelFromCodeExtractor codeExtractor;
 	private TextProcessor textProcessor;
 	private Map<String, String> preferences = null;
@@ -118,13 +119,16 @@ public class AnswerExtractionProcessor {
 	public IModelFromCodeExtractor getCodeExtractor(CodeLanguage language) {
 		if (codeExtractor == null) {
 			if (language.equals(CodeLanguage.JAVA)) {
-				codeExtractor = new JavaModelExtractorJP(getCurationManager(), new SadlModelGenerator(), getPreferences());
+				codeExtractor = new JavaModelExtractorJP(getCurationManager(), getPreferences());
 			}
 		}
 		return codeExtractor;
 	}
 
 	public IModelFromCodeExtractor getCodeExtractor() {
+		if (codeExtractor == null) {
+			codeExtractor = new JavaModelExtractorJP(getCurationManager(), null);
+		}
 		return codeExtractor;
 	}
 
@@ -190,6 +194,14 @@ public class AnswerExtractionProcessor {
 
 	public void setCodeModelName(String codeModelName) {
 		this.codeModelName = codeModelName;
+	}
+
+	public String getCodeModelPrefix() {
+		return codeModelPrefix;
+	}
+
+	public void setCodeModelPrefix(String codeModelPrefix) {
+		this.codeModelPrefix = codeModelPrefix;
 	}
 
 	public String translateMethodJavaToPython(String className, String methodCode) throws MalformedURLException, UnsupportedEncodingException {

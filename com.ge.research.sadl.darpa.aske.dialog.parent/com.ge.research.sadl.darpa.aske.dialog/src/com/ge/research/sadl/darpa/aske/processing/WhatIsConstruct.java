@@ -1,6 +1,6 @@
 package com.ge.research.sadl.darpa.aske.processing;
 
-public class WhatIsConstruct {
+public class WhatIsConstruct extends MixedInitiativeContent {
 	private Object target;
 	private Object when;
 	
@@ -23,5 +23,24 @@ public class WhatIsConstruct {
 	
 	private void setWhen(Object when) {
 		this.when = when;
+	}
+	
+	public String toString() {
+		StringBuilder sb = new StringBuilder("WhatIsConstruct(");
+		if (getTarget() != null) {
+			sb.append(getTarget().toString());
+		}
+		else {
+			sb.append("<none>");
+		}
+		sb.append(",");
+		if (getWhen() != null) {
+			sb.append(getWhen().toString());
+		}
+		else {
+			sb.append("<none>");
+		}
+		sb.append(")");
+		return sb.toString();
 	}
 }

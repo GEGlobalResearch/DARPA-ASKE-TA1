@@ -18,13 +18,13 @@ DialogModel returns sadl::SadlModel :
 @Override
 SadlModelElement returns sadl::SadlModelElement :
 	SadlStatement EOS			|
-	ResponseStatement EOS 		|
+	AnswerCMStatement eos=EOS 	|
 	ModifiedAskStatement EOS	|
 	WhatStatement EOS			|
 	HowManyValuesStatement EOS
 ;
 
-ResponseStatement:
+AnswerCMStatement:
 	'CM:' (sstmt = ((SadlStatement|EquationStatement|ExternalEquationStatement)) | str = STRING)
 ;
 

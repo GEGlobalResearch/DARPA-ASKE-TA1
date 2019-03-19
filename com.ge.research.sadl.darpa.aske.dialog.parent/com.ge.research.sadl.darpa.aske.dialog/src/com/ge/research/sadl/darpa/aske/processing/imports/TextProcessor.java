@@ -27,9 +27,10 @@ public class TextProcessor {
 		this.setPreferences(preferences);
 	}
 
-	public String process(String text, String locality) throws MalformedURLException, UnsupportedEncodingException {
+	public String process(String inputIdentifier, String text, String locality) throws MalformedURLException, UnsupportedEncodingException {
 		StringBuilder sb = new StringBuilder();
-		String baseServiceUrl = "http://vesuvius063.crd.ge.com:4200/v1/";
+//		String baseServiceUrl = "http://vesuvius-dev.crd.ge.com:4200/darpa/aske/";		// dev environment for stable development of other components
+		String baseServiceUrl = "http://vesuvius063.crd.ge.com:4200/darpa/aske/";		// test environment for service development
 		
 		String textToTripleServiceURL = baseServiceUrl + "text2triples";
 		URL serviceUrl = new URL(textToTripleServiceURL);			
@@ -44,30 +45,56 @@ public class TextProcessor {
 		json.addProperty("text", text);
 	
 		String response = makeConnectionAndGetResponse(serviceUrl, json);
-		System.out.println(response);
+//		System.out.println(response);
 		if (response != null && response.length() > 0) {
-			JsonElement je = new JsonParser().parse(response);
-			JsonArray allSentences = je.getAsJsonArray();
-			if (allSentences != null) {
-				for (JsonElement sent : allSentences) {
-					JsonObject jobj = sent.getAsJsonObject();
-					JsonElement dfelement = jobj.get("triples");
-					if (dfelement != null) {
-						JsonArray df = dfelement.getAsJsonArray();
-						double confScore;
-						String subject;
-						String predicate;
-						String object;
-						int idx = 0;
-						for (JsonElement arrel : df) {
-							JsonObject elobj = arrel.getAsJsonObject();
-							confScore = elobj.get("confScore").getAsDouble();
-							subject = elobj.get("subject").getAsString();
-							predicate = elobj.get("predicate").getAsString();
-							object = elobj.get("object").getAsString();
-							String msg = "Returned Triple: " + subject + " " + predicate + " " + object;
-							System.out.println(msg);
-							sb.append(msg);
+//			JsonElement je = new JsonParser().parse(response);
+//			JsonArray allSentences = je.getAsJsonArray();
+//			if (allSentences != null) {
+//				for (JsonElement sent : allSentences) {
+//					JsonObject jobj = sent.getAsJsonObject();
+//					JsonElement dfelement = jobj.get("triples");
+//					if (dfelement != null) {
+//						JsonArray df = dfelement.getAsJsonArray();
+//						double confScore;
+//						String subject;
+//						String predicate;
+//						String object;
+//						int idx = 0;
+//						for (JsonElement arrel : df) {
+//							JsonObject elobj = arrel.getAsJsonObject();
+//							confScore = elobj.get("confScore").getAsDouble();
+//							subject = elobj.get("subject").getAsString();
+//							predicate = elobj.get("predicate").getAsString();
+//							object = elobj.get("object").getAsString();
+//							String msg = "Returned Triple: " + subject + " " + predicate + " " + object;
+//							System.out.println(msg);
+//							sb.append(msg);
+//						}
+//					}
+//				}
+//			}
+			JsonArray sentences = new JsonParser().parse(response).getAsJsonArray();
+			if (sentences != null) {
+				for (JsonElement element : sentences) {
+					if (element != null) {
+						JsonObject sentence = element.getAsJsonObject();
+						String originalText = sentence.get("text").getAsString();
+						System.out.println("Extracted from text:");
+						JsonArray concepts = sentence.get("concepts").getAsJsonArray();
+						for (JsonElement concept : concepts) {
+							String matchingText = concept.getAsJsonObject().get("string").getAsString();
+							int startInOrigText = concept.getAsJsonObject().get("start").getAsInt();
+							int endInOrigText = concept.getAsJsonObject().get("end").getAsInt();
+							double extractionConfidence = concept.getAsJsonObject().get("extractionConfScore").getAsDouble();
+							System.out.println("  Match in substring '" + matchingText + "(" + startInOrigText + "," + endInOrigText + "):");
+							JsonArray triples = concept.getAsJsonObject().get("triples").getAsJsonArray();
+							for (JsonElement triple : triples) {
+								String subject = triple.getAsJsonObject().get("subject").getAsString();
+								String predicate = triple.getAsJsonObject().get("predicate").getAsString();
+								String object = triple.getAsJsonObject().get("object").getAsString();
+								double tripleConfidenceScore = triple.getAsJsonObject().get("tripleConfScore").getAsDouble();
+								System.out.println("     <" + subject + ", " + predicate + ", " + object + "> (" + tripleConfidenceScore + ")");
+							}
 						}
 					}
 				}
@@ -77,26 +104,6 @@ public class TextProcessor {
 			System.err.println("No response received from service " + textToTripleServiceURL);
 		}
 		return sb.toString();
-	}
-	
-	public void testKChain() throws MalformedURLException, UnsupportedEncodingException {
-
-		String serviceIP = "3.39.120.21";
-		String kchainServiceURL = "http://" + serviceIP + ":8080/kchain/";
-
-		String requestString = "{\r\n" + 
-				"\"inputVariableNames\" : [\"a\", \"b\"],\r\n" + 
-				"\"outputVariableNames\" : [\"c\"],\r\n" + 
-				"\"dataLocation\" : \"http://ge.com/data\",\r\n" + 
-				"\"equationModel\" : \"c = a + b\",\r\n" + 
-				"\"modelName\" : \"http://com.research.ge/darpa/aske/answer/test_02/binaryadd\"\r\n" + 
-				"}"; 
-
-		System.out.print(requestString + "\n\n");
-
-		String buildServiceURL = kchainServiceURL + "build?requestString=" + URLEncoder.encode(requestString, "UTF-8");
-
-		URL url = new URL(buildServiceURL);		
 	}
 	
 	private String makeConnectionAndGetResponse(URL url, JsonObject jsonObject) {

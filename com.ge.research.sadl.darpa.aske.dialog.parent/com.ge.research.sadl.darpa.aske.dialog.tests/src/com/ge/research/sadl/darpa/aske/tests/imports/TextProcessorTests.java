@@ -17,7 +17,13 @@ public class TextProcessorTests {
 	@Test
 	public void test() throws MalformedURLException, UnsupportedEncodingException {
 		TextProcessor tp = new TextProcessor(null);
-		tp.process(null, null);
+		tp.process(null, "a^2 = R * T * gamma", null);
+	}
+
+	@Test
+	public void test2() throws MalformedURLException, UnsupportedEncodingException {
+		TextProcessor tp = new TextProcessor(null);
+		tp.process(null, "The speed of sound is a concept known in physics ", null);
 	}
 
 }

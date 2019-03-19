@@ -71,10 +71,10 @@
       <rdf:first>http://www.w3.org/2001/XMLSchema#decimal</rdf:first>
     </j.0:returnTypes>
     <j.0:arguments rdf:parseType="Collection">
-      <j.0:Argument>
-        <j.0:argType>http://www.w3.org/2001/XMLSchema#decimal</j.0:argType>
-        <j.0:argName>alt</j.0:argName>
-      </j.0:Argument>
+      <j.0:DataDescriptor>
+        <j.0:dataType>http://www.w3.org/2001/XMLSchema#decimal</j.0:dataType>
+        <j.0:descriptorName>alt</j.0:descriptorName>
+      </j.0:DataDescriptor>
     </j.0:arguments>
     <j.0:expression rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
     >decimal sosfromalt(decimal alt): uri("http://com.ge.research.darpa.aske.kchain.sosairfromalt")</j.0:expression>
@@ -87,14 +87,14 @@
       <rdf:first>http://www.w3.org/2001/XMLSchema#decimal</rdf:first>
     </j.0:returnTypes>
     <j.0:arguments rdf:parseType="Collection">
-      <j.0:Argument>
-        <j.0:argType>http://sadl.org/sadlimplicitmodel#ExternalEquation</j.0:argType>
-        <j.0:argName>eq</j.0:argName>
-      </j.0:Argument>
-      <j.0:Argument>
-        <j.0:argType>http://sadl.org/SpeedOfSound.sadl#primitiveData</j.0:argType>
-        <j.0:argName>arg</j.0:argName>
-      </j.0:Argument>
+      <j.0:DataDescriptor>
+        <j.0:dataType>http://sadl.org/sadlimplicitmodel#ExternalEquation</j.0:dataType>
+        <j.0:descriptorName>eq</j.0:descriptorName>
+      </j.0:DataDescriptor>
+      <j.0:DataDescriptor>
+        <j.0:dataType>http://sadl.org/SpeedOfSound.sadl#primitiveData</j.0:dataType>
+        <j.0:descriptorName>arg</j.0:descriptorName>
+      </j.0:DataDescriptor>
     </j.0:arguments>
     <j.0:expression rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
     >decimal cg(ExternalEquation eq,primitiveData arg): uri("http://com.ge.research.darpa.aske.sos")</j.0:expression>
@@ -109,10 +109,10 @@
       <rdf:first>http://www.w3.org/2001/XMLSchema#decimal</rdf:first>
     </j.0:returnTypes>
     <j.0:arguments rdf:parseType="Collection">
-      <j.0:Argument>
-        <j.0:argType>http://www.w3.org/2001/XMLSchema#decimal</j.0:argType>
-        <j.0:argName>t</j.0:argName>
-      </j.0:Argument>
+      <j.0:DataDescriptor>
+        <j.0:dataType>http://www.w3.org/2001/XMLSchema#decimal</j.0:dataType>
+        <j.0:descriptorName>t</j.0:descriptorName>
+      </j.0:DataDescriptor>
     </j.0:arguments>
     <j.0:expression rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
     >decimal sosfromtemp(decimal t): uri("http://com.ge.research.darpa.aske.kchain.sosairfromtemp")</j.0:expression>
