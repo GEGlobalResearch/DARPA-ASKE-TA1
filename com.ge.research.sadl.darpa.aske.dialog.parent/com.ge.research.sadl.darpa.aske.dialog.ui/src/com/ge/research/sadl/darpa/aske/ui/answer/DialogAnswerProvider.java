@@ -197,6 +197,9 @@ public class DialogAnswerProvider extends DefaultAutoEditStrategyProvider {
 		                				// we have a when statement
 		                				tripleLst.add((TripleElement)whn);
 		                			}
+		                			else if (whn instanceof Junction) {
+		                				tripleLst = addTriplesFromJunction((Junction) whn, tripleLst);
+		                			}
 	                				TripleElement[] triples = new TripleElement[tripleLst.size()];
 	                				triples = tripleLst.toArray(triples);
 		                			

@@ -926,7 +926,7 @@ public class JenaBasedDialogInferenceProcessor extends JenaBasedSadlInferencePro
 			//cgquery = queryStr.replaceAll("COMPGRAPH", "<" + cgIns.getURI() + ">");
 
 			//System.out.println(CGQUERYWITHVALUES.replaceAll("COMPGRAPH", "<" + cgIns.getURI() + ">"));
-			System.out.println(cgquery);
+			//System.out.println(cgquery);
 			
 			//ResultSet rs = reasoner.ask(currentQuery);
 			ResultSet cgres = reasoner.ask(cgquery);
