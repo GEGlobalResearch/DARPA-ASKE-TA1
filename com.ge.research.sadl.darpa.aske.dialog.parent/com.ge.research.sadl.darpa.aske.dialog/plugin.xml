@@ -11,7 +11,7 @@
 	 <extension
 	       point="com.ge.research.sadl.sadl_implicit_model_fragment_provider">
 	    <provider
-	          class="com.ge.research.sadl.darpa.aske.dialog.DialogImplicitModelFragmentProvider">
+	          class="com.ge.research.sadl.darpa.aske.DialogImplicitModelFragmentProvider">
 	    </provider>
  	</extension>
   <extension
