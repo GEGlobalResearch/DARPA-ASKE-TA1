@@ -29,7 +29,7 @@ AnswerCMStatement:
 ;
 
 ModifiedAskStatement returns sadl::ExpressionScope:
-	{ModifiedAskStatement} start = ('Ask' | 'ask' | 'Graph' | 'graph') 
+	{ModifiedAskStatement} start = ('Ask' | 'ask' | 'Find' | 'find' |'Graph' | 'graph') 
 	(
 //		(name=SadlResource (annotations+=NamedStructureAnnotation)* )? 
 		expr=(ConstructExpression | AskExpression | Expression) // | name=SadlResource
