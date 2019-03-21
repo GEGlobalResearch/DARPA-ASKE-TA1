@@ -11,6 +11,7 @@ import java.util.Iterator;
 import java.util.List;
 
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 
 import com.google.gson.JsonArray;
@@ -24,6 +25,7 @@ public class KChainServiceTest {
 	public void setUp() throws Exception {
 	}
 
+	@Ignore
 	@Test
 	public void testBuild_01() throws IOException {
 		/*
@@ -71,6 +73,7 @@ public class KChainServiceTest {
 		buildCGModel(modelUri, equationModel, dataLocation, inputs, outputs);
 	}
 
+	@Ignore
 	@Test
 	public void testBuild_02() throws IOException {
 /*
@@ -118,6 +121,7 @@ public class KChainServiceTest {
 		buildCGModel(modelUri, equationModel, dataLocation, inputs, outputs);
 	}
 	
+	@Ignore
 	@Test
 	public void testEval_01() throws IOException {
 		/*
@@ -165,6 +169,7 @@ public class KChainServiceTest {
 		evalCGModel(modelUri, inputs, outputs);
 	}
 	
+	@Ignore
 	@Test
 	public void testEval_02() throws IOException {
 		/*
