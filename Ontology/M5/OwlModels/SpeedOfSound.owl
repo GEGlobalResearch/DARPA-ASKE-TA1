@@ -66,9 +66,10 @@
   <j.0:ExternalEquation rdf:ID="sosfromalt">
     <j.0:externalURI rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
     >http://com.ge.research.darpa.aske.kchain.sosairfromalt</j.0:externalURI>
-    <j.0:returnTypes rdf:parseType="Resource">
-      <rdf:rest rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#nil"/>
-      <rdf:first>http://www.w3.org/2001/XMLSchema#decimal</rdf:first>
+    <j.0:returnTypes rdf:parseType="Collection">
+      <j.0:DataDescriptor>
+        <j.0:dataType>http://www.w3.org/2001/XMLSchema#decimal</j.0:dataType>
+      </j.0:DataDescriptor>
     </j.0:returnTypes>
     <j.0:arguments rdf:parseType="Collection">
       <j.0:DataDescriptor>
@@ -76,15 +77,14 @@
         <j.0:descriptorName>alt</j.0:descriptorName>
       </j.0:DataDescriptor>
     </j.0:arguments>
-    <j.0:expression rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
-    >decimal sosfromalt(decimal alt): uri("http://com.ge.research.darpa.aske.kchain.sosairfromalt")</j.0:expression>
   </j.0:ExternalEquation>
   <j.0:ExternalEquation rdf:ID="cg">
     <j.0:externalURI rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
     >http://com.ge.research.darpa.aske.sos</j.0:externalURI>
-    <j.0:returnTypes rdf:parseType="Resource">
-      <rdf:rest rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#nil"/>
-      <rdf:first>http://www.w3.org/2001/XMLSchema#decimal</rdf:first>
+    <j.0:returnTypes rdf:parseType="Collection">
+      <j.0:DataDescriptor>
+        <j.0:dataType>http://www.w3.org/2001/XMLSchema#decimal</j.0:dataType>
+      </j.0:DataDescriptor>
     </j.0:returnTypes>
     <j.0:arguments rdf:parseType="Collection">
       <j.0:DataDescriptor>
@@ -96,17 +96,16 @@
         <j.0:descriptorName>arg</j.0:descriptorName>
       </j.0:DataDescriptor>
     </j.0:arguments>
-    <j.0:expression rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
-    >decimal cg(ExternalEquation eq,primitiveData arg): uri("http://com.ge.research.darpa.aske.sos")</j.0:expression>
   </j.0:ExternalEquation>
   <j.0:Rule rdf:ID="SpeedOfSoundInAirGivenAltitude"/>
   <j.0:Rule rdf:ID="SpeedOfSoundInAirGivenTemperatureR"/>
   <j.0:ExternalEquation rdf:ID="sosfromtemp">
     <j.0:externalURI rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
     >http://com.ge.research.darpa.aske.kchain.sosairfromtemp</j.0:externalURI>
-    <j.0:returnTypes rdf:parseType="Resource">
-      <rdf:rest rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#nil"/>
-      <rdf:first>http://www.w3.org/2001/XMLSchema#decimal</rdf:first>
+    <j.0:returnTypes rdf:parseType="Collection">
+      <j.0:DataDescriptor>
+        <j.0:dataType>http://www.w3.org/2001/XMLSchema#decimal</j.0:dataType>
+      </j.0:DataDescriptor>
     </j.0:returnTypes>
     <j.0:arguments rdf:parseType="Collection">
       <j.0:DataDescriptor>
@@ -114,7 +113,5 @@
         <j.0:descriptorName>t</j.0:descriptorName>
       </j.0:DataDescriptor>
     </j.0:arguments>
-    <j.0:expression rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
-    >decimal sosfromtemp(decimal t): uri("http://com.ge.research.darpa.aske.kchain.sosairfromtemp")</j.0:expression>
   </j.0:ExternalEquation>
 </rdf:RDF>

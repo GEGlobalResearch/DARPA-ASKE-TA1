@@ -92,8 +92,8 @@ public class JenaBasedDialogModelProcessor extends JenaBasedSadlModelProcessor {
 	
 		String textserviceurl = context.getPreferenceValues().getPreference(DialogPreferences.ANSWER_TEXT_SERVICE_BASE_URI);
 		String cgserviceurl = context.getPreferenceValues().getPreference(DialogPreferences.ANSWER_CG_SERVICE_BASE_URI);
-		System.out.println(textserviceurl);
-		System.out.println(cgserviceurl);
+//		System.out.println(textserviceurl);
+//		System.out.println(cgserviceurl);
 
 		logger.debug("onValidate called for Resource '" + resource.getURI() + "'");
 		if (mode.shouldCheck(CheckType.EXPENSIVE)) {
@@ -230,7 +230,7 @@ public class JenaBasedDialogModelProcessor extends JenaBasedSadlModelProcessor {
         		if (element instanceof EObject) {
         			String txt = NodeModelUtils.findActualNodeFor((EObject) element).getText();
         			if (!(txt.endsWith(".") || txt.endsWith("?"))) {
-                		System.out.println("It's NOT the real deal!");
+//                		System.out.println("It's NOT the real deal!");
                 		continue;
         			}
         		}
@@ -464,7 +464,10 @@ public class JenaBasedDialogModelProcessor extends JenaBasedSadlModelProcessor {
 			EList<NamedStructureAnnotation> annotations = null; // element.getAnnotations();
 			boolean isGraph = stmt.getStart().equals("Graph");
 			Query query = processQueryExpression(stmt, stmt.getExpr(), elementName, annotations, isGraph);
-			System.out.println("ModifiedAskStatement: " + query.toDescriptiveString());
+			if (query.getKeyword() == null && (stmt.getStart().equalsIgnoreCase("ask") || stmt.getStart().equalsIgnoreCase("find"))) {
+				query.setKeyword("select");
+			}
+//			System.out.println("ModifiedAskStatement: " + query.toDescriptiveString());
 			OntModelProvider.addPrivateKeyValuePair(stmt.eResource(), DialogConstants.LAST_DIALOG_COMMAND, query);
 		} catch (CircularDefinitionException e) {
 			// TODO Auto-generated catch block
@@ -496,7 +499,7 @@ public class JenaBasedDialogModelProcessor extends JenaBasedSadlModelProcessor {
 			Object trgtObj;
 			try {
 				trgtObj = processExpression(whatIsTarget);
-				System.out.println("WhatIsStatement target: " + trgtObj.toString());
+//				System.out.println("WhatIsStatement target: " + trgtObj.toString());
 				if (trgtObj instanceof NamedNode) {
 					((NamedNode)trgtObj).setContext(stmt);
 				}
@@ -540,8 +543,8 @@ public class JenaBasedDialogModelProcessor extends JenaBasedSadlModelProcessor {
 			try {
 				Object clsObj = processExpression(cls);
 				Object propObj = processExpression(prop);
-				System.out.println("WhatValuesStatement(" + typ + "): cls=" + (article!= null ? article : "") + 
-						" '" + clsObj.toString() + "'; prop='" + propObj.toString() + "'");
+//				System.out.println("WhatValuesStatement(" + typ + "): cls=" + (article!= null ? article : "") + 
+//						" '" + clsObj.toString() + "'; prop='" + propObj.toString() + "'");
 				Object[] temp = new Object[3];
 				temp[0] = article;
 				temp[1] = clsObj;
@@ -579,9 +582,9 @@ public class JenaBasedDialogModelProcessor extends JenaBasedSadlModelProcessor {
 			if (typ != null) {
 				typObj = processExpression(typ);
 			}
-			System.out.println("HowManyValuesStatement: cls=" + (article!= null ? article : "") + " '" + 
-					clsObj.toString() + "'; prop='" + propObj.toString() + 
-					"'" + (typObj != null ? ("; type='" + typObj.toString() + "'") : ""));
+//			System.out.println("HowManyValuesStatement: cls=" + (article!= null ? article : "") + " '" + 
+//					clsObj.toString() + "'; prop='" + propObj.toString() + 
+//					"'" + (typObj != null ? ("; type='" + typObj.toString() + "'") : ""));
 			Object[] temp = new Object[4];
 			temp[0] = article;
 			temp[1] = clsObj;

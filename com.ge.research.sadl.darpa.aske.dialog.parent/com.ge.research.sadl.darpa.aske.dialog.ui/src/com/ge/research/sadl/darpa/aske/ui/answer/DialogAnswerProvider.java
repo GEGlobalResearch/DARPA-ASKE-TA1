@@ -145,14 +145,26 @@ public class DialogAnswerProvider extends DefaultAutoEditStrategyProvider implem
 			                Object lastcmd = OntModelProvider.getPrivateKeyValuePair(resource, DialogConstants.LAST_DIALOG_COMMAND);
 			                logger.debug("DialogAnswerProvider: Last cmd: " + (lastcmd != null ? lastcmd.toString() : "null"));
 		                	if (lastcmd instanceof Query) {
-		                		ResultSet rs = runQuery(resource, (Query)lastcmd);
-		                		String resultStr = null;
-		                		if (rs != null) {
-		                			resultStr = resultSetToQuotableString(rs);
+		                		if (isDocToModelQuery((Query)lastcmd)) {
+		                			insertionText = (String) processDocToModelQuery(resource, (Query)lastcmd);
+			                		insertionText = checkForEOS(insertionText);
+			                		Object ctx = ((Query)lastcmd).getContext();
+			                		addCurationManagerContentToDialog(document, reg, insertionText, ctx);
 		                		}
-		                		insertionText = (resultStr != null ? resultStr : "\"Failed to find results\"");
-		                		Object ctx = ((Query)lastcmd).getContext();
-		                		addCurationManagerContentToDialog(document, reg, insertionText, ctx);
+		                		else if (isModelToDocQuery((Query)lastcmd)) {
+		                			lastcmd = processModelToDocQuery(resource, (Query)lastcmd);
+		                		}
+		                		else {
+			                		ResultSet rs = runQuery(resource, (Query)lastcmd);
+			                		String resultStr = null;
+			                		if (rs != null) {
+			                			resultStr = resultSetToQuotableString(rs);
+			                		}
+			                		insertionText = (resultStr != null ? resultStr : "\"Failed to find results\"");
+			                		insertionText = checkForEOS(insertionText);
+			                		Object ctx = ((Query)lastcmd).getContext();
+			                		addCurationManagerContentToDialog(document, reg, insertionText, ctx);
+		                		}
 		                	}
 		                	else if (lastcmd instanceof NamedNode) {
 		                		whatIsNamedNode(document, reg, resource, lastcmd);
@@ -321,6 +333,130 @@ public class DialogAnswerProvider extends DefaultAutoEditStrategyProvider implem
 	                logger.debug("AutoEdit error (of type " + e.getClass().getCanonicalName() + "): " + e.getMessage());   
 	            }
 	        }
+
+			private String checkForEOS(String insertionText) {
+				if (!insertionText.endsWith(".") && !insertionText.endsWith("?")) {
+					insertionText += ".";
+				}
+				return insertionText;
+			}
+
+			private boolean isDocToModelQuery(Query lastcmd) {
+				List<GraphPatternElement> patterns = lastcmd.getPatterns();
+				if (patterns != null) {
+					for (GraphPatternElement gpe : patterns) {
+						if (gpe instanceof TripleElement) {
+							if (((TripleElement)gpe).getPredicate().getURI().equals(DialogConstants.SADL_IMPLICIT_MODEL_DIALOG_MODEL_PROPERTY_URI)) {
+								return true;
+							}
+						}
+					}
+				}
+				return false;
+			}
+
+			private boolean isModelToDocQuery(Query lastcmd) {
+				List<GraphPatternElement> patterns = lastcmd.getPatterns();
+				if (patterns != null) {
+					for (GraphPatternElement gpe : patterns) {
+						if (gpe instanceof TripleElement) {
+							if (((TripleElement)gpe).getPredicate().getURI().equals(DialogConstants.SADL_IMPLICIT_MODEL_DIALOG_DATA_PROPERTY_URI)) {
+								return true;
+							}
+						}
+					}
+				}
+				return false;
+			}
+
+			private Object processDocToModelQuery(Resource resource, Query lastcmd) throws ExecutionException {
+				List<GraphPatternElement> patterns = lastcmd.getPatterns();
+				for (GraphPatternElement gpe : patterns) {
+					if (gpe instanceof TripleElement) {
+						if (((TripleElement)gpe).getPredicate().getURI().equals(DialogConstants.SADL_IMPLICIT_MODEL_DIALOG_MODEL_PROPERTY_URI)) {
+							Node doc = ((TripleElement)gpe).getSubject();
+							// get the name and semantic type of each column
+							// TODO check for aliases for column names and use alias if exists
+							String tableColSemTypeQuery = "select distinct ?colname ?typ where {<" + doc.getURI() +
+									"> <columnDescriptors> ?cdlist . ?cdlist <http://jena.hpl.hp.com/ARQ/list#member> ?member . " + 
+									"?member <descriptorName> ?colname . ?member <augmentedType> ?augtype . ?augtype <semType> ?typ}";
+	                		((Query)lastcmd).setSparqlQueryString(tableColSemTypeQuery);
+							ResultSet rs = runQuery(resource, (Query)lastcmd);
+							if (rs != null && rs.getRowCount() > 0) {
+								// TODO Alfredo will go from here
+								// convert to triples, one set for each column
+								// <doc, columnname, colname>
+								// <colname, semtypeprop, semtype>
+								// 
+								// TODO 
+								// same as WhatIfConstruct with a when
+//				                OntModelProvider.addPrivateKeyValuePair(resource, DialogConstants.LAST_DIALOG_COMMAND, triples);
+//		                		StringBuilder answer = new StringBuilder();
+//		                		ResultSet[] rss = insertTriplesAndQuery(resource, triples);
+
+								rs.setShowNamespaces(true);
+								Map<String,String> colNamesAndTypes = new HashMap<String,String>();
+								for (int i = 0; i <= rs.getColumnCount(); i++) {
+									String colname = rs.getResultAt(i, 0).toString();
+									String semtyp = rs.getResultAt(i, 1).toString();
+									colNamesAndTypes.put(semtyp, colname);
+								}
+								if (colNamesAndTypes.size() > 0) {
+									StringBuilder qsb = new StringBuilder("select distinct ?eq ?argname ?argsemtype where {" + 
+											"	{select ?eq ?argname ?argsemtype where {?eq <arguments> ?arglist . ?arglist <http://jena.hpl.hp.com/ARQ/list#member> ?member . " + 
+											"	?member <descriptorName> ?argname . ?member <augmentedType> ?augtype . ?augtype <semType> ?argsemtype" + 
+											"	}}" + 
+											"	UNION" + 
+											"	{select ?eq ?argname ?argsemtype where {?eq <returnTypes> ?retlist . ?retlist <http://jena.hpl.hp.com/ARQ/list#member> ?member . " + 
+											"	OPTIONAL{?member <descriptorName> ?argname} . ?member <augmentedType> ?augtype . ?augtype <semType> ?argsemtype}}" + 
+											"	. 	VALUES ?argsemtype {");
+									Set<String> keys = colNamesAndTypes.keySet();
+									for (String key : keys) {
+										qsb.append("<");
+										qsb.append(key);
+										qsb.append("> ");
+									}
+									qsb.append("}}");
+//									System.out.println(qsb.toString());
+									((Query)lastcmd).setSparqlQueryString(qsb.toString());
+									ResultSet rs2 = runQuery(resource, (Query)lastcmd);
+									rs2.setShowNamespaces(true);
+									if (rs2 != null && rs2.getRowCount() > 0) {
+										StringBuilder retsb = new StringBuilder("Models found (table, colname, model, argname, matchingType)\n");
+										for (int i = 0; i < rs2.getRowCount(); i++) {
+											String eq = rs2.getResultAt(i, 0).toString();
+											Object argnameObj = rs2.getResultAt(i, 1);
+											String argname = argnameObj != null ? argnameObj.toString() : "return";
+											String argsemtype = rs2.getResultAt(i, 2).toString();
+											String colname = colNamesAndTypes.get(argsemtype);
+											retsb.append(doc.getName() + ", " + colname + ", " + eq + ", " + argname  + ", " + argsemtype);
+											retsb.append("\n");
+										}
+										return retsb.toString();
+									}
+								}
+							}
+							else {
+								
+							}
+						}
+					}
+				}
+				return lastcmd;
+			}
+
+			private Object processModelToDocQuery(Resource resource, Query lastcmd) {
+				List<GraphPatternElement> patterns = lastcmd.getPatterns();
+				for (GraphPatternElement gpe : patterns) {
+					if (gpe instanceof TripleElement) {
+						if (((TripleElement)gpe).getPredicate().getURI().equals(DialogConstants.SADL_IMPLICIT_MODEL_DIALOG_DATA_PROPERTY_URI)) {
+							Node doc = ((TripleElement)gpe).getSubject();
+							
+						}
+					}
+				}
+				return lastcmd;
+			}
 
 			private List<TripleElement> addTriplesFromJunction(Junction jct, List<TripleElement> tripleLst) {
 				Object lhs = jct.getLhs();
