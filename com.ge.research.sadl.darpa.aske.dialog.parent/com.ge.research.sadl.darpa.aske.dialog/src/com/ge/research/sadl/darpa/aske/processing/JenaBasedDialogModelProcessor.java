@@ -60,7 +60,6 @@ import com.ge.research.sadl.sADL.Expression;
 import com.ge.research.sadl.sADL.NamedStructureAnnotation;
 import com.ge.research.sadl.sADL.QueryStatement;
 import com.ge.research.sadl.sADL.SadlAnnotation;
-import com.ge.research.sadl.sADL.SadlImport;
 import com.ge.research.sadl.sADL.SadlModel;
 import com.ge.research.sadl.sADL.SadlModelElement;
 import com.ge.research.sadl.sADL.SadlResource;
@@ -190,7 +189,10 @@ public class JenaBasedDialogModelProcessor extends JenaBasedSadlModelProcessor {
 		
 		if (model.eContents().size() < 1) {
 			// there are no imports
-			System.out.println("Please add at least one import of a domain namespace");
+			MixedInitiativeTextualResponse mir = new MixedInitiativeTextualResponse("Please add at least one import of a domain namespace");
+			int endOffset = NodeModelUtils.findActualNodeFor(model).getEndOffset();
+			mir.setInsertionPoint(endOffset);
+			OntModelProvider.addPrivateKeyValuePair(resource, DialogConstants.LAST_DIALOG_COMMAND, mir);
 		}
 
 		if(!processModelImports(modelOntology, resource.getURI(), model)) {

@@ -34,6 +34,7 @@ import org.eclipse.jface.text.DocumentCommand;
 import org.eclipse.jface.text.IAutoEditStrategy;
 import org.eclipse.jface.text.IDocument;
 import org.eclipse.jface.text.IRegion;
+import org.eclipse.jface.text.Region;
 import org.eclipse.osgi.util.NLS;
 import org.eclipse.ui.IWorkbenchPage;
 import org.eclipse.ui.IWorkbenchWindow;
@@ -315,6 +316,13 @@ public class DialogAnswerProvider extends DefaultAutoEditStrategyProvider implem
 		                		addTripleQuestion(resource, (TripleElement)lastcmd, answer);
 		                		Object ctx = ((TripleElement)lastcmd).getContext();
 		                		addCurationManagerContentToDialog(document, reg, answer.toString(), ctx);
+		                	}
+		                	else if (lastcmd instanceof MixedInitiativeTextualResponse) {
+		                		int ip = ((MixedInitiativeTextualResponse)lastcmd).getInsertionPoint();
+		                		String content = ((MixedInitiativeTextualResponse)lastcmd).getResponse();
+		                		Region nreg = new Region(ip, content.length());
+		                		Object ctx = null; //((MixedInitiativeTextualResponse)lastcmd).getContext();
+		                		addCurationManagerContentToDialog(document, nreg, content, ctx);
 		                	}
 		                	else if (lastcmd != null) {
 	                			logger.debug("    Lastcmd '" + lastcmd.getClass().getCanonicalName() + "' not handled yet!");
