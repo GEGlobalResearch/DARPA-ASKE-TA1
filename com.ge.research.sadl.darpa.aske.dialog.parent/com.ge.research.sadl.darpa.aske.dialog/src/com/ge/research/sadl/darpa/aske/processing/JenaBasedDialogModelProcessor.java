@@ -26,9 +26,8 @@ import org.eclipse.xtext.validation.CheckType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.ge.research.sadl.builder.ConfigurationManagerForIdeFactory;
-import com.ge.research.sadl.darpa.aske.curation.DialogAnswerProviderConsoleForTest;
 import com.ge.research.sadl.darpa.aske.dialog.AnswerCMStatement;
+import com.ge.research.sadl.darpa.aske.dialog.BuildStatement;
 import com.ge.research.sadl.darpa.aske.dialog.HowManyValuesStatement;
 import com.ge.research.sadl.darpa.aske.dialog.ModifiedAskStatement;
 import com.ge.research.sadl.darpa.aske.dialog.WhatIsStatement;
@@ -61,6 +60,7 @@ import com.ge.research.sadl.sADL.Expression;
 import com.ge.research.sadl.sADL.NamedStructureAnnotation;
 import com.ge.research.sadl.sADL.QueryStatement;
 import com.ge.research.sadl.sADL.SadlAnnotation;
+import com.ge.research.sadl.sADL.SadlImport;
 import com.ge.research.sadl.sADL.SadlModel;
 import com.ge.research.sadl.sADL.SadlModelElement;
 import com.ge.research.sadl.sADL.SadlResource;
@@ -187,6 +187,11 @@ public class JenaBasedDialogModelProcessor extends JenaBasedSadlModelProcessor {
 		} catch (JenaProcessorException e1) {
 			e1.printStackTrace();
 		}
+		
+		if (model.eContents().size() < 1) {
+			// there are no imports
+			System.out.println("Please add at least one import of a domain namespace");
+		}
 
 		if(!processModelImports(modelOntology, resource.getURI(), model)) {
 			return;
@@ -246,7 +251,8 @@ public class JenaBasedDialogModelProcessor extends JenaBasedSadlModelProcessor {
 					// this is user input
 					if (element instanceof ModifiedAskStatement ||
 							element instanceof WhatStatement ||
-							element instanceof HowManyValuesStatement) {
+							element instanceof HowManyValuesStatement ||
+							element instanceof BuildStatement) {
 						lastElement = element;
 					}
 					else {
@@ -447,6 +453,9 @@ public class JenaBasedDialogModelProcessor extends JenaBasedSadlModelProcessor {
 			else if (element instanceof HowManyValuesStatement) {
 				processStatement((HowManyValuesStatement)element);
 			}
+			else if (element instanceof BuildStatement) {
+				processStatement((BuildStatement)element);
+			}
 			else {
 				throw new JenaProcessorException("onValidate for element of type '"
 						+ element.getClass().getCanonicalName() + "' not implemented");
@@ -458,6 +467,15 @@ public class JenaBasedDialogModelProcessor extends JenaBasedSadlModelProcessor {
 		}
 	}	
 	
+	private void processStatement(BuildStatement element) {
+		SadlResource modelSr = ((BuildStatement)element).getTarget();
+		String modelUri = getDeclarationExtensions().getConceptUri(modelSr);
+		System.out.println("Ready to build model '" + modelUri + "'");
+		BuildConstruct bc = new BuildConstruct(modelUri);
+		OntModelProvider.addPrivateKeyValuePair(element.eResource(), DialogConstants.LAST_DIALOG_COMMAND, bc);
+		
+	}
+
 	private void processStatement(ModifiedAskStatement stmt) {
 		try {
 			SadlResource elementName = null; // element.getName();

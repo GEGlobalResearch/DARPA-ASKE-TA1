@@ -3,10 +3,21 @@
  */
 package com.ge.research.sadl.darpa.aske.ui.contentassist
 
+import com.google.inject.Inject
+import org.eclipse.xtext.ui.editor.contentassist.ContentAssistContext
+import org.eclipse.xtext.ui.editor.contentassist.ICompletionProposalAcceptor
+import org.eclipse.xtext.ui.editor.contentassist.UiToIdeContentProposalProvider
 
 /**
  * See https://www.eclipse.org/Xtext/documentation/304_ide_concepts.html#content-assist
  * on how to customize the content assistant.
  */
 class DialogProposalProvider extends AbstractDialogProposalProvider {
+	@Inject
+	UiToIdeContentProposalProvider delegate;
+	
+	override createProposals(ContentAssistContext context, ICompletionProposalAcceptor acceptor) {
+		delegate.createProposals(context, acceptor);
+	}
+	
 }

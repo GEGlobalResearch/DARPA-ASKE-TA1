@@ -21,7 +21,12 @@ SadlModelElement returns sadl::SadlModelElement :
 	AnswerCMStatement eos=EOS 	|
 	ModifiedAskStatement EOS	|
 	WhatStatement EOS			|
-	HowManyValuesStatement EOS
+	HowManyValuesStatement EOS	|
+	BuildStatement EOS
+;
+
+BuildStatement:
+	{BuildStatement} ('Build' | 'build') target=SadlResource
 ;
 
 AnswerCMStatement:

@@ -510,8 +510,15 @@ public class DialogAnswerProvider extends DefaultAutoEditStrategyProvider implem
 					Object ctx = ((NamedNode)lastcmd).getContext();
 				    addCurationManagerContentToDialog(document, reg, answer.toString(), ctx);
 				}
+				else if (typ.equals(NodeType.FunctionNode)) {
+					answer.append(checkForKeyword((nn.getName())));
+					answer.append(" is a function");
+					Object ctx = ((NamedNode)lastcmd).getContext();
+					addCurationManagerContentToDialog(document, reg, answer.toString(), ctx);
+				}
 				else {
 					logger.debug("    Lastcmd '" + lastcmd.getClass().getCanonicalName() + "' not handled yet!");
+					System.err.println("Type " + typ.getClass().getCanonicalName() + " not handled yet.");
 				}
 			}
 
