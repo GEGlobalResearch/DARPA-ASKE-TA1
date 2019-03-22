@@ -2,7 +2,7 @@
  * © 2014-2017 General Electric Company – All Rights Reserved
  * 
  * This software and any accompanying data and documentation are CONFIDENTIAL 
- * INFORMATION of the General Electric Company (“GE�?) and may contain trade secrets 
+ * INFORMATION of the General Electric Company (“GE�?) and may contain trade secrets 
  * and other proprietary information.  It is intended for use solely by GE and authorized 
  * personnel.
  */
@@ -21,6 +21,8 @@ import com.ge.research.sadl.processing.ISadlImplicitModelFragmentProvider
 class DialogImplicitModelFragmentProvider implements ISadlImplicitModelFragmentProvider {
 
 	public static val DIALOG_IMPLICIT_MODEL_FRAGMENT = '''
+		model describes DataTable with values of type ^Equation.
+		^data describes ^Equation with values of type DataTable.
 	''';
 
 	@Override
