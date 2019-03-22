@@ -104,16 +104,19 @@ public class JenaBasedDialogInferenceProcessor extends JenaBasedSadlInferencePro
 	
 	public static final String DEPENDENCY_GRAPH_INSERT = "prefix dbn:<http://aske.ge.com/dbn#>\n" + 
 			"prefix imp:<http://sadl.org/sadlimplicitmodel#>\n" +
-			"prefix sci:<http://aske.ge.com/sciknow#>\n" +
+			"prefix sci:<http://aske.ge.com/sciknow#>" +
+			"prefix rdfs:<http://www.w3.org/2000/01/rdf-schema#>\n" +
 			"insert {?EqCh dbn:parent ?EqPa}\n" + 
 			"where {\n" + 
-			" ?EqCh a imp:Equation.\n" + 
+			" ?EqCh a ?EqClass. \n" + 
+			" ?EqClass rdfs:subClassOf imp:Equation.\n" + 
 			" ?EqCh sci:input ?Arg.\n" + 
 			" ?Arg sci:argType ?In.\n" + 
 			" ?EqCh sci:output ?Oinst.\n" + 
 			" ?Oinst a ?Out.\n" + 
 			"\n" + 
-			" ?EqPa a imp:Equation.\n" + 
+			" ?EqPa a ?EqClass1. \n" + 
+			" ?EqClass1 rdfs:subClassOf imp:Equation.\n" + 
 			" ?EqPa sci:output ?POinst.\n" + 
 			" ?POinst a ?In.\n" + 
 			"}";
@@ -125,7 +128,8 @@ public class JenaBasedDialogInferenceProcessor extends JenaBasedSadlInferencePro
 			"prefix sci:<http://aske.ge.com/sciknow#>\n" +
 			"select distinct ?Eq ?DBN ?Out where {\n" + 
 			" {select ?Eq where {\n" + 
-			"    ?EqOut a imp:Equation.\n" + 
+			"    ?EqOut a ?EqClass. \n" + 
+			"    ?EqClass rdfs:subClassOf imp:Equation.\n" + 
 			"     ?EqOut sci:output ?Oinst.\n" + 
 			"     ?Oinst a ?Out.\n" + 
 			"     filter (?Out in ( LISTOFOUTPUTS )).\n" + 
@@ -135,13 +139,15 @@ public class JenaBasedDialogInferenceProcessor extends JenaBasedSadlInferencePro
 			"  }}\n" + 
 			"   union {\n" + 
 			"   select ?Eq where {\n" + 
-			"     ?EqOut a imp:Equation.\n" + 
+			"     ?EqOut a ?EqClass. \n" + 
+			"    ?EqClass rdfs:subClassOf imp:Equation.\n" + 
 			"     ?EqOut sci:output ?Oinst.\n" + 
 			"     ?Oinst a ?Out.\n" + 
 			"     filter (?Out in ( LISTOFOUTPUTS )).\n" + 
 			"     ?EqOut dbn:parent* ?Eq.\n" + 
 			"     ?Eq sci:input/sci:argType ?In.\n" + 
-			"      ?Eq2 a imp:Equation.\n" + 
+			"      ?Eq2 a ?EqClass2. \n" + 
+			"    ?EqClass2 rdfs:subClassOf imp:Equation.\n" + 
 			"      ?Eq2 sci:output ?Oi.\n" + 
 			"      ?Oi a ?In. \n" + 
 			"   }}\n "	+
@@ -149,7 +155,8 @@ public class JenaBasedDialogInferenceProcessor extends JenaBasedSadlInferencePro
 			" ?Oi a ?Out.\n" + 
 			" ?DBN rdfs:subClassOf ?EQR.\n" + 
 			" ?EQR owl:onProperty sci:hasEquation.\n" + 
-			" ?EQR owl:someValuesFrom ?Eq.\n" +
+			" ?EQR owl:allValuesFrom ?EqClass.\n" +
+			" ?Eq a ?EqClass." +
 			"}";
 	public static final String RETRIEVE_MODELS = "prefix hyper:<http://aske.ge.com/hypersonics#>\n" + 
 			"prefix dbn:<http://aske.ge.com/dbn#>\n" + 
@@ -162,7 +169,8 @@ public class JenaBasedDialogInferenceProcessor extends JenaBasedSadlInferencePro
 			"  ?Model rdfs:subClassOf sci:DBN.\n" + 
 			"  ?Model rdfs:subClassOf ?BN. \n" + 
 			"  ?BN owl:onProperty sci:hasEquation. \n" + 
-			"  ?BN owl:someValuesFrom ?Eq.\n" + 
+			"  ?BN owl:allValuesFrom ?EqClass.\n" + 
+			"  ?Eq a ?EqClass.\n" + 
 			"  filter (?Eq in (EQNSLIST)) .   \n" + 
 			"  ?Eq sci:input ?In.\n" + 
 			"  ?In sci:argType ?Input.\n" + 
@@ -195,7 +203,8 @@ public class JenaBasedDialogInferenceProcessor extends JenaBasedSadlInferencePro
 			"     filter (?Eq1 in (EQNSLIST))\n" + 
 			"   }\n" + 
 			" }}\n" + 
-			"  ?DBN rdfs:subClassOf ?EB. ?EB owl:onProperty sci:hasEquation.  ?EB owl:someValuesFrom ?Eq.\n" + 
+			"  ?DBN rdfs:subClassOf ?EB. ?EB owl:onProperty sci:hasEquation.  ?EB owl:allValuesFrom ?EqClass.\n" +
+			"  ?Eq a ?EqClass." + 
 			"  ?DBN rdfs:subClassOf ?DB. ?DB owl:onProperty sci:distribution. ?DB owl:hasValue ?Distribution.\n" +
 			"  ?DBN rdfs:subClassOf ?RB. ?RB owl:onProperty sci:range.        ?RB owl:hasValue ?Range.\n" + 
 			"  ?Range sci:lower ?Lower.\n" + 
@@ -550,7 +559,7 @@ public class JenaBasedDialogInferenceProcessor extends JenaBasedSadlInferencePro
 				//com.hp.hpl.jena.query.ResultSet eqnsResults = qexec.execSelect() ;
 				eqnsResults = com.hp.hpl.jena.query.ResultSetFactory.makeRewindable(qexec.execSelect()) ;
 	
-				boolean calibrationQuery = false;
+				String queryMode = "prognostic";
 		
 				if ( eqnsResults.hasNext() ) {
 					qtype = getTheJenaModel().getOntResource(METAMODEL_PREFIX + "prognostic");
@@ -561,7 +570,7 @@ public class JenaBasedDialogInferenceProcessor extends JenaBasedSadlInferencePro
 					qexec = QueryExecutionFactory.create(qinv, getTheJenaModel()); 
 					eqnsResults = com.hp.hpl.jena.query.ResultSetFactory.makeRewindable(qexec.execSelect()) ;
 					if (eqnsResults.hasNext()) {
-							calibrationQuery = true;
+							queryMode = "calibration";
 							qtype = getTheJenaModel().getOntResource(METAMODEL_PREFIX + "calibration");
 							qhmodel.add(cgq, qtypeprop, qtype);			
 					}
@@ -593,7 +602,7 @@ public class JenaBasedDialogInferenceProcessor extends JenaBasedSadlInferencePro
 				}
 	
 				
-				cgJson = kgResultsToJson(nodesCSVString, modelsCSVString);
+				cgJson = kgResultsToJson(nodesCSVString, modelsCSVString, queryMode);
 				dbnJson = generateDBNjson(cgJson);
 				class2lbl = getClassLabelMapping(dbnJson);
 				
@@ -661,7 +670,7 @@ public class JenaBasedDialogInferenceProcessor extends JenaBasedSadlInferencePro
 						modelsCSVString = convertResultSetToString(models);
 						nodesCSVString = convertResultSetToString(nodes);
 						
-						cgJson = kgResultsToJson(nodesCSVString, modelsCSVString);
+						cgJson = kgResultsToJson(nodesCSVString, modelsCSVString, "prognostic");
 						dbnJson = generateDBNjson(cgJson);
 						class2lbl = getClassLabelMapping(dbnJson);
 	
@@ -1013,7 +1022,7 @@ public class JenaBasedDialogInferenceProcessor extends JenaBasedSadlInferencePro
 
 
 	@SuppressWarnings("deprecation")
-	private String kgResultsToJson(String nodesCSVString, String modelsCSVString) throws Exception {
+	private String kgResultsToJson(String nodesCSVString, String modelsCSVString, String mode) throws Exception {
 		DefaultHttpClient httpclient = new DefaultHttpClient();
 		HttpPost httppost = new HttpPost("http://vesuvius063.crd.ge.com:46000/dbn/SADLResultSetToJson");
 		httppost.setHeader("Accept", "application/json");
@@ -1022,6 +1031,8 @@ public class JenaBasedDialogInferenceProcessor extends JenaBasedSadlInferencePro
         List<NameValuePair> arguments = new ArrayList<>(2);
         arguments.add(new BasicNameValuePair("nodes", nodesCSVString));
         arguments.add(new BasicNameValuePair("models", modelsCSVString));
+        arguments.add(new BasicNameValuePair("mode", modelsCSVString));
+
         httppost.setEntity(new UrlEncodedFormEntity(arguments, "UTF-8"));
 //         HttpResponse response = httpclient.execute(httppost);
 //         HttpEntity respEntity = response.getEntity();
