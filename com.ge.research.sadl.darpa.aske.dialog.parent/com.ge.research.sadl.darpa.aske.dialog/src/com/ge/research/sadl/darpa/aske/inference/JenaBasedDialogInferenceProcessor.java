@@ -104,19 +104,20 @@ public class JenaBasedDialogInferenceProcessor extends JenaBasedSadlInferencePro
 	
 	public static final String DEPENDENCY_GRAPH_INSERT = "prefix dbn:<http://aske.ge.com/dbn#>\n" + 
 			"prefix imp:<http://sadl.org/sadlimplicitmodel#>\n" +
+			"prefix sci:<http://aske.ge.com/sciknow#>\n" +
 			"insert {?EqCh dbn:parent ?EqPa}\n" + 
 			"where {\n" + 
 			" ?EqCh a imp:Equation.\n" + 
-			" ?EqCh imp:input ?Arg.\n" + 
-			" ?Arg imp:argType ?In.\n" + 
-			" ?EqCh imp:output ?Oinst.\n" + 
+			" ?EqCh sci:input ?Arg.\n" + 
+			" ?Arg sci:argType ?In.\n" + 
+			" ?EqCh sci:output ?Oinst.\n" + 
 			" ?Oinst a ?Out.\n" + 
 			"\n" + 
 			" ?EqPa a imp:Equation.\n" + 
-			" ?EqPa imp:output ?POinst.\n" + 
+			" ?EqPa sci:output ?POinst.\n" + 
 			" ?POinst a ?In.\n" + 
 			"}";
-	public static final String RETRIEVE_COMP_GRAPH = "prefix hyper:<http://aske.ge.com/hypersonics#>\n" + 
+	public static final String BUILD_COMP_GRAPH = "prefix hyper:<http://aske.ge.com/hypersonics#>\n" + 
 			"prefix dbn:<http://aske.ge.com/dbn#>\n" + 
 			"prefix imp:<http://sadl.org/sadlimplicitmodel#>\n" + 
 			"prefix owl:<http://www.w3.org/2002/07/owl#>\n" + 
@@ -125,26 +126,26 @@ public class JenaBasedDialogInferenceProcessor extends JenaBasedSadlInferencePro
 			"select distinct ?Eq ?DBN ?Out where {\n" + 
 			" {select ?Eq where {\n" + 
 			"    ?EqOut a imp:Equation.\n" + 
-			"     ?EqOut imp:output ?Oinst.\n" + 
+			"     ?EqOut sci:output ?Oinst.\n" + 
 			"     ?Oinst a ?Out.\n" + 
 			"     filter (?Out in ( LISTOFOUTPUTS )).\n" + 
 			"     ?EqOut dbn:parent* ?Eq.\n" + 
-			"    ?Eq imp:input/imp:argType ?In.\n" + 
+			"    ?Eq sci:input/sci:argType ?In.\n" + 
 			"    filter (?In in (LISTOFINPUTS)).\n" + 
 			"  }}\n" + 
 			"   union {\n" + 
 			"   select ?Eq where {\n" + 
 			"     ?EqOut a imp:Equation.\n" + 
-			"     ?EqOut imp:output ?Oinst.\n" + 
+			"     ?EqOut sci:output ?Oinst.\n" + 
 			"     ?Oinst a ?Out.\n" + 
 			"     filter (?Out in ( LISTOFOUTPUTS )).\n" + 
 			"     ?EqOut dbn:parent* ?Eq.\n" + 
-			"     ?Eq imp:input/imp:argType ?In.\n" + 
+			"     ?Eq sci:input/sci:argType ?In.\n" + 
 			"      ?Eq2 a imp:Equation.\n" + 
-			"      ?Eq2 imp:output ?Oi.\n" + 
+			"      ?Eq2 sci:output ?Oi.\n" + 
 			"      ?Oi a ?In. \n" + 
 			"   }}\n "	+
-			" ?Eq imp:output ?Oi.\n" + 
+			" ?Eq sci:output ?Oi.\n" + 
 			" ?Oi a ?Out.\n" + 
 			" ?DBN rdfs:subClassOf ?EQR.\n" + 
 			" ?EQR owl:onProperty sci:hasEquation.\n" + 
@@ -163,12 +164,13 @@ public class JenaBasedDialogInferenceProcessor extends JenaBasedSadlInferencePro
 			"  ?BN owl:onProperty sci:hasEquation. \n" + 
 			"  ?BN owl:someValuesFrom ?Eq.\n" + 
 			"  filter (?Eq in (EQNSLIST)) .   \n" + 
-			"  ?Eq imp:input ?In.\n" + 
-			"  ?In imp:argType ?Input.\n" + 
-			"  ?In imp:argName ?Label.\n" + 
-			"  ?Eq imp:output ?Oinst.\n" + 
+			"  ?Eq sci:input ?In.\n" + 
+			"  ?In sci:argType ?Input.\n" + 
+			"  ?In sci:argName ?Label.\n" + 
+			"  ?Eq sci:output ?Oinst.\n" + 
 			"  ?Oinst a ?Output.\n" + 
-			"  ?Eq imp:expression ?expr.\n" + 
+			"  ?Eq imp:expression ?Scr.\n" + 
+			"  ?Scr imp:script ?expr.\n" + 
 			"} order by ?Model";
 	public static final String RETRIEVE_NODES = "prefix hyper:<http://aske.ge.com/hypersonics#>\n" + 
 			"prefix dbn:<http://aske.ge.com/dbn#>\n" + 
@@ -180,16 +182,16 @@ public class JenaBasedDialogInferenceProcessor extends JenaBasedSadlInferencePro
 			"select distinct ?Node ?Child ?Distribution ?Lower ?Upper ?Value\n" + 
 			"where {\n" +
 			" {select distinct ?Eq ?Node ?Child where {\n" + 
-			"   ?Eq imp:input/imp:argType ?Node.\n" + 
-			"   ?Eq imp:output ?Oinst. ?Oinst a ?Child.\n" + 
+			"   ?Eq sci:input/sci:argType ?Node.\n" + 
+			"   ?Eq sci:output ?Oinst. ?Oinst a ?Child.\n" + 
 			"   filter (?Eq in (EQNSLIST))\n" + 
 			" }}\n" + 
 			" union\n" + 
 			" { select distinct ?Eq ?Node where {\n" + 
-			"   ?Eq imp:output ?Oi. ?Oi a ?Node.\n" + 
+			"   ?Eq sci:output ?Oi. ?Oi a ?Node.\n" + 
 			"   filter (?Eq in (EQNSLIST))\n" + 
 			"   filter not exists {\n" + 
-			"     ?Eq1 imp:input/imp:argType ?Node.\n" + 
+			"     ?Eq1 sci:input/sci:argType ?Node.\n" + 
 			"     filter (?Eq1 in (EQNSLIST))\n" + 
 			"   }\n" + 
 			" }}\n" + 
@@ -241,14 +243,14 @@ public class JenaBasedDialogInferenceProcessor extends JenaBasedSadlInferencePro
 			"    ?CCG mm:subgraph ?SG.\n" + 
 			"    ?SG mm:cgraph ?CG.\n" + 
 			"    ?CG sci:hasEquation ?EQ.\n" + 
-			"    ?EQ imp:input ?I.\n" + 
-			"    ?I imp:argType ?Input.\n" + 
-			"    ?EQ imp:output ?O.\n" + 
+			"    ?EQ sci:input ?I.\n" + 
+			"    ?I sci:argType ?Input.\n" + 
+			"    ?EQ sci:output ?O.\n" + 
 			"    ?O a ?Output.\n" + 
 			"    ?CCG mm:subgraph ?SG1.\n" + 
 			"    ?SG1 mm:cgraph ?CG1.\n" + 
 			"    ?CG1 sci:hasEquation ?EQ1.\n" + 
-			"    ?EQ1 imp:output ?O1.\n" + 
+			"    ?EQ1 sci:output ?O1.\n" + 
 			"    ?O1 a ?Input.\n" +
 			"    ?EQ imp:expression ?Expr.\n" + 
 			"	 bind(str(?Expr) as ?Z_tooltip)" +
@@ -262,9 +264,9 @@ public class JenaBasedDialogInferenceProcessor extends JenaBasedSadlInferencePro
 			"    ?CCG mm:subgraph ?SG.\n" + 
 			"    ?SG mm:cgraph ?CG.\n" + 
 			"    ?CG sci:hasEquation ?EQ.\n" + 
-			"    ?EQ imp:input ?I.\n" + 
-			"    ?I imp:argType ?Input.\n" + 
-			"    ?EQ imp:output ?O.\n" + 
+			"    ?EQ sci:input ?I.\n" + 
+			"    ?I sci:argType ?Input.\n" + 
+			"    ?EQ sci:output ?O.\n" + 
 			"    ?O a ?Output.\n" + 
 			"    ?EQ imp:expression ?Expr.\n" + 
 			"	 bind(str(?Expr) as ?Z_tooltip)" +
@@ -272,7 +274,7 @@ public class JenaBasedDialogInferenceProcessor extends JenaBasedSadlInferencePro
 			"    ?CCG mm:subgraph ?SG2.\n" + 
 			"    ?SG2 mm:cgraph ?CG2.\n" + 
 			"    ?CG2 sci:hasEquation ?EQ2.\n" + 
-			"    ?EQ2 imp:output ?O2.\n" + 
+			"    ?EQ2 sci:output ?O2.\n" + 
 			"    ?O2 a ?Input.}\n" + 
 			"    bind('filled' as ?X_style)\n" + 
 			"    bind('yellow' as ?X_color)\n" + 
@@ -541,7 +543,7 @@ public class JenaBasedDialogInferenceProcessor extends JenaBasedSadlInferencePro
 	
 			
 				// Retrieve computational graph
-				queryStr = RETRIEVE_COMP_GRAPH.replaceAll("LISTOFINPUTS", listOfInputs).replaceAll("LISTOFOUTPUTS", listOfOutputs);
+				queryStr = BUILD_COMP_GRAPH.replaceAll("LISTOFINPUTS", listOfInputs).replaceAll("LISTOFOUTPUTS", listOfOutputs);
 				
 				com.hp.hpl.jena.query.Query q = QueryFactory.create(queryStr);
 				qexec = QueryExecutionFactory.create(q, getTheJenaModel()); 
@@ -554,7 +556,7 @@ public class JenaBasedDialogInferenceProcessor extends JenaBasedSadlInferencePro
 					qtype = getTheJenaModel().getOntResource(METAMODEL_PREFIX + "prognostic");
 					qhmodel.add(cgq, qtypeprop, qtype);			
 				} else {
-					queryStr = RETRIEVE_COMP_GRAPH.replaceAll("LISTOFOUTPUTS", listOfInputs).replaceAll("LISTOFINPUTS", listOfOutputs);
+					queryStr = BUILD_COMP_GRAPH.replaceAll("LISTOFOUTPUTS", listOfInputs).replaceAll("LISTOFINPUTS", listOfOutputs);
 					com.hp.hpl.jena.query.Query qinv = QueryFactory.create(queryStr);
 					qexec = QueryExecutionFactory.create(qinv, getTheJenaModel()); 
 					eqnsResults = com.hp.hpl.jena.query.ResultSetFactory.makeRewindable(qexec.execSelect()) ;
@@ -632,7 +634,7 @@ public class JenaBasedDialogInferenceProcessor extends JenaBasedSadlInferencePro
 					System.out.println(listOfInputs);
 					System.out.println(listOfOutputs);
 					
-					queryStr = RETRIEVE_COMP_GRAPH.replaceAll("LISTOFINPUTS", listOfInputs).replaceAll("LISTOFOUTPUTS", listOfOutputs);
+					queryStr = BUILD_COMP_GRAPH.replaceAll("LISTOFINPUTS", listOfInputs).replaceAll("LISTOFOUTPUTS", listOfOutputs);
 					com.hp.hpl.jena.query.Query q = QueryFactory.create(queryStr);
 					qexec = QueryExecutionFactory.create(q, getTheJenaModel()); 
 					//com.hp.hpl.jena.query.ResultSet eqnsResults = qexec.execSelect() ;
@@ -958,8 +960,12 @@ public class JenaBasedDialogInferenceProcessor extends JenaBasedSadlInferencePro
 	      listOfEqns += "<" + s.toString() +">,";
 	      //listOfEqnObjs.add(s);
 	    }
-		listOfEqns = listOfEqns.substring(0,listOfEqns.length()-1);
-		return listOfEqns;
+		if(listOfEqns.length() <= 0)
+			return "";
+		else {
+			listOfEqns = listOfEqns.substring(0,listOfEqns.length()-1);
+			return listOfEqns;
+		}
 	}
 
 
