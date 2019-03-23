@@ -58,6 +58,7 @@ import org.eclipse.osgi.util.NLS;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.ui.IWorkbenchPage;
+import org.eclipse.ui.IWorkbenchPart;
 import org.eclipse.ui.IWorkbenchWindow;
 import org.eclipse.ui.PartInitException;
 import org.eclipse.ui.PlatformUI;
@@ -609,8 +610,10 @@ public class JavaImportOperation extends WorkspaceModifyOperation {
 	    	    	IWorkbenchPage page = window.getActivePage();
 	    	    	if (page != null) {
 	        		    try {
+	        		    	IWorkbenchPart actpart = page.getActivePart();
 	            		    IFileStore fileStore = EFS.getLocalFileSystem().getStore(location);
 	            		    IDE.openEditorOnFileStore( page, fileStore );
+	            		    page.activate(actpart);
 		    		    } catch ( PartInitException e ) {
 		    		        //Put your exception handler here if you wish to
 		    		    	try {
@@ -630,8 +633,10 @@ public class JavaImportOperation extends WorkspaceModifyOperation {
 	    		    	    	IWorkbenchPage page = window.getActivePage();
 	    		    	    	if (page != null) {
 	    		        		    try {
+	    		        		    	IWorkbenchPart actpart = page.getActivePart();
 	    		            		    IFileStore fileStore = EFS.getLocalFileSystem().getStore(location);
 	    		            		    IDE.openEditorOnFileStore( page, fileStore );
+	    		            		    page.activate(actpart);
 	    			    		    } catch ( PartInitException e ) {
 	    			    		        //Put your exception handler here if you wish to
 	    			    		    	try {
@@ -933,10 +938,15 @@ public class JavaImportOperation extends WorkspaceModifyOperation {
             }
         }
         String modelFolder = convertProjectRelativePathToAbsolutePath(destinationContainer.getProject().getFullPath().append("OwlModels").toPortableString());
+        Object dap = acm.getDomainModelConfigurationManager().getPrivateKeyValuePair(DialogConstants.DIALOG_ANSWER_PROVIDER);
+        if (dap == null) {
+        	throw new CoreException(new Status(IStatus.ERROR, PlatformUI.PLUGIN_ID, 0, 
+        			"A Dialog Editor window must be opened and some activity in the window before imports can be processed", null));
+        }
         acm.getExtractionProcessor().getCodeExtractor().setCodeModelFolder(modelFolder);
 		String defaultCodeModelPrefix = getOutputFilename();
 //		String defaultCodeModelName = "http://com.ge.research.darpa.aske.ta1.explore/" + defaultCodeModelPrefix;
-		acm.getExtractionProcessor().getCodeExtractor().setDefaultCodeModelPrefix(defaultCodeModelPrefix);
+//		acm.getExtractionProcessor().getCodeExtractor().setDefaultCodeModelPrefix(defaultCodeModelPrefix);
 //		acm.getExtractionProcessor().getCodeExtractor().setDefaultCodeModelName(defaultCodeModelName);
         importFiles(acm);
     }

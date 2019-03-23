@@ -22,7 +22,12 @@ SadlModelElement returns sadl::SadlModelElement :
 	ModifiedAskStatement EOS	|
 	WhatStatement EOS			|
 	HowManyValuesStatement EOS	|
-	BuildStatement EOS
+	BuildStatement EOS			|
+	YesNoAnswerStatement EOS
+;
+
+YesNoAnswerStatement:
+	{YesNoAnswerStatement} answer = ('Y'|'y'|'Yes'|'yes'|'N'|'n'|'No'|'no')
 ;
 
 BuildStatement:
