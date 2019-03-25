@@ -335,7 +335,7 @@ public class JenaBasedDialogInferenceProcessor extends JenaBasedSadlInferencePro
 //			System.out.println(service.getClass().getCanonicalName());
 //		}
 
-		if (commonSubject(triples)) {
+		if (commonSubject(triples) && allPredicatesAreProperties(triples)) {
 			return super.insertTriplesAndQuery(resource, triples);
 		}
 
@@ -734,6 +734,16 @@ public class JenaBasedDialogInferenceProcessor extends JenaBasedSadlInferencePro
 		
 		
 		return null; //results;
+	}
+
+
+	private boolean allPredicatesAreProperties(TripleElement[] triples) {
+		for (TripleElement tr : triples) {
+			if (tr.getPredicate().getNamespace() == null && tr.getPredicate().getPrefix() == null) {
+				return false;
+			}
+		}
+		return true;
 	}
 
 

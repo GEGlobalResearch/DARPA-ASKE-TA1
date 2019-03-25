@@ -156,7 +156,7 @@ public class DialogAnswerProvider extends DefaultAutoEditStrategyProvider implem
 		                			insertionText = (String) processDocToModelQuery(resource, (Query)lastcmd);
 			                		insertionText = checkForEOS(insertionText);
 			                		Object ctx = ((Query)lastcmd).getContext();
-			                		addCurationManagerContentToDialog(document, reg, insertionText, ctx);
+			                		addCurationManagerContentToDialog(document, reg, insertionText, ctx, true);
 		                		}
 		                		else if (isModelToDocQuery((Query)lastcmd)) {
 		                			lastcmd = processModelToDocQuery(resource, (Query)lastcmd);
@@ -170,7 +170,7 @@ public class DialogAnswerProvider extends DefaultAutoEditStrategyProvider implem
 			                		insertionText = (resultStr != null ? resultStr : "\"Failed to find results\"");
 			                		insertionText = checkForEOS(insertionText);
 			                		Object ctx = ((Query)lastcmd).getContext();
-			                		addCurationManagerContentToDialog(document, reg, insertionText, ctx);
+			                		addCurationManagerContentToDialog(document, reg, insertionText, ctx, true);
 		                		}
 		                	}
 		                	else if (lastcmd instanceof NamedNode) {
@@ -212,7 +212,7 @@ public class DialogAnswerProvider extends DefaultAutoEditStrategyProvider implem
 				                			}
 				                		}
 				                		insertionText = (resultStr != null ? resultStr : "\"Failed to find results\"");
-				                		addCurationManagerContentToDialog(document, reg, insertionText, ctx);
+				                		addCurationManagerContentToDialog(document, reg, insertionText, ctx, true);
 			                		}
 		                		}
 		                		else {
@@ -292,7 +292,7 @@ public class DialogAnswerProvider extends DefaultAutoEditStrategyProvider implem
 				                		answer.append(".\n");
 			                		}
 			                		Object ctx = triples[0].getContext();
-			                		addCurationManagerContentToDialog(document, reg, answer.toString(), ctx);
+			                		addCurationManagerContentToDialog(document, reg, answer.toString(), ctx, true);
 //		                			}
 //		                			else {
 ////		                				rdqProvider.get().execute(null, null, null);
@@ -321,14 +321,14 @@ public class DialogAnswerProvider extends DefaultAutoEditStrategyProvider implem
 		                		StringBuilder answer = new StringBuilder();
 		                		addTripleQuestion(resource, (TripleElement)lastcmd, answer);
 		                		Object ctx = ((TripleElement)lastcmd).getContext();
-		                		addCurationManagerContentToDialog(document, reg, answer.toString(), ctx);
+		                		addCurationManagerContentToDialog(document, reg, answer.toString(), ctx, true);
 		                	}
 		                	else if (lastcmd instanceof MixedInitiativeTextualResponse) {
 		                		int ip = ((MixedInitiativeTextualResponse)lastcmd).getInsertionPoint();
 		                		String content = ((MixedInitiativeTextualResponse)lastcmd).getResponse();
 		                		Region nreg = new Region(ip, content.length());
 		                		Object ctx = null; //((MixedInitiativeTextualResponse)lastcmd).getContext();
-		                		addCurationManagerContentToDialog(document, nreg, content, ctx);
+		                		addCurationManagerContentToDialog(document, nreg, content, ctx, true);
 		                	}
 		                	else if (lastcmd != null) {
 	                			logger.debug("    Lastcmd '" + lastcmd.getClass().getCanonicalName() + "' not handled yet!");
@@ -410,16 +410,15 @@ public class DialogAnswerProvider extends DefaultAutoEditStrategyProvider implem
 								}
 								Iterator<String> keyitr = colNamesAndTypes.keySet().iterator();
 								NamedNode docNN = new NamedNode(doc.getURI());
-								NamedNode descriptorNameNN = new NamedNode(SadlConstants.SADL_IMPLICIT_MODEL_DESCRIPTOR_NAME_PROPERTY_URI);
-								NamedNode augmentedTypeNN = new NamedNode(SadlConstants.SADL_IMPLICIT_MODEL_AUGMENTED_TYPE_PROPERTY_URI);
+//								NamedNode descriptorNameNN = new NamedNode(SadlConstants.SADL_IMPLICIT_MODEL_DESCRIPTOR_NAME_PROPERTY_URI);
+//								NamedNode augmentedTypeNN = new NamedNode(SadlConstants.SADL_IMPLICIT_MODEL_AUGMENTED_TYPE_PROPERTY_URI);
 								List<TripleElement> triplesList = new ArrayList<TripleElement>();
 								while (keyitr.hasNext()) {
 									String colname = keyitr.next();
-									String semtyp = colNamesAndTypes.get(colname);
 									NamedNode colNameNN = new NamedNode(colname);
-									TripleElement tr = new TripleElement(docNN, descriptorNameNN, colNameNN);
-									triplesList.add(tr);
-									tr = new TripleElement(colNameNN, augmentedTypeNN, new NamedNode(semtyp));
+									String semtyp = colNamesAndTypes.get(colname);
+									NamedNode semtypNN = new NamedNode(semtyp);
+									TripleElement tr = new TripleElement(docNN, colNameNN, semtypNN);
 									triplesList.add(tr);
 								}
 								TripleElement[] triples = triplesList.toArray(new TripleElement[triplesList.size()]);
@@ -528,31 +527,35 @@ public class DialogAnswerProvider extends DefaultAutoEditStrategyProvider implem
 				StringBuilder answer = new StringBuilder();
 				if (typ.equals(NodeType.ClassNode)) {
 					answer.append(checkForKeyword(nn.getName()));
-					answer.append(" is a class");
+					int len = answer.length();
+					answer = getClassHierarchy(resource, nn, answer);
+					if (answer.length() == len) {
+						answer.append(" is a class");
+					}
 					isFirstProperty = addDomainAndRange(resource, nn, isFirstProperty, answer);
 					addQualifiedCardinalityRestriction(resource, nn, isFirstProperty, answer);		
 					Object ctx = ((NamedNode)lastcmd).getContext();
-					addCurationManagerContentToDialog(document, reg, answer.toString(), ctx);
+					addCurationManagerContentToDialog(document, reg, answer.toString(), ctx, false);
 				}
 				else if (typ.equals(NodeType.ObjectProperty) || typ.equals(NodeType.DataTypeProperty) || typ.equals(NodeType.PropertyNode)) {
 					addPropertyWithDomainAndRange(resource, nn, answer);
 					Object ctx = ((NamedNode)lastcmd).getContext();
-					addCurationManagerContentToDialog(document, reg, answer.toString(), ctx);
+					addCurationManagerContentToDialog(document, reg, answer.toString(), ctx, true);
 				}
 				else if (typ.equals(NodeType.AnnotationProperty)) {
 					addAnnotationPropertyDeclaration(resource, nn, answer);
 					Object ctx = ((NamedNode)lastcmd).getContext();
-					addCurationManagerContentToDialog(document, reg, answer.toString(), ctx);
+					addCurationManagerContentToDialog(document, reg, answer.toString(), ctx, true);
 				}
 				else if (typ.equals(NodeType.InstanceNode)) {
 					addInstanceDeclaration(resource, nn, answer);
 					Object ctx = ((NamedNode)lastcmd).getContext();
-				    addCurationManagerContentToDialog(document, reg, answer.toString(), ctx);
+				    addCurationManagerContentToDialog(document, reg, answer.toString(), ctx, true);
 				}
 				else if (typ.equals(NodeType.FunctionNode)) {
 					addInstanceDeclaration(resource, nn, answer);
 					Object ctx = ((NamedNode)lastcmd).getContext();
-					addCurationManagerContentToDialog(document, reg, answer.toString(), ctx);
+					addCurationManagerContentToDialog(document, reg, answer.toString(), ctx, true);
 				}
 				else {
 					logger.debug("    Lastcmd '" + lastcmd.getClass().getCanonicalName() + "' not handled yet!");
@@ -926,6 +929,38 @@ public class DialogAnswerProvider extends DefaultAutoEditStrategyProvider implem
 				return isFirstProperty;
 			}
 
+			private StringBuilder getClassHierarchy(Resource resource, NamedNode nn, StringBuilder answer) throws ExecutionException {
+				String query;
+				Query q;
+				ResultSet rs;
+				query = "select ?typ where {<" + nn.getURI() + "> <rdfs:subClassOf> ?typ}";
+				q = new Query();
+				q.setSparqlQueryString(query);
+				OntModelProvider.addPrivateKeyValuePair(resource, DialogConstants.LAST_DIALOG_COMMAND, q);
+				rs = runQuery(resource, q);
+				OntModelProvider.clearPrivateKeyValuePair(resource, DialogConstants.LAST_DIALOG_COMMAND);
+				if (rs != null) {
+					rs.setShowNamespaces(false);
+					answer.append(" is a type of ");
+					if (rs.getRowCount() > 1) {
+						answer.append("{");
+					}
+					for (int r = 0; r < rs.getRowCount(); r++) {
+						Object rat = rs.getResultAt(r, 0);
+						if (rat != null) {
+							if (r > 0) {
+								answer.append(" or ");
+							}
+							answer.append(rat.toString());
+						}
+					}
+					if (rs.getRowCount() > 1) {
+						answer.append("}");
+					}
+				}
+				return answer;
+			}
+
 			private void addQualifiedCardinalityRestriction(Resource resource, NamedNode nn, boolean isFirstProperty,
 					StringBuilder answer) throws ExecutionException {
 				String query;
@@ -1129,9 +1164,18 @@ public class DialogAnswerProvider extends DefaultAutoEditStrategyProvider implem
 		return null;
 	}
 	
-	public synchronized void addCurationManagerContentToDialog(IDocument document, IRegion reg, String content, Object ctx)
+	public synchronized void addCurationManagerContentToDialog(IDocument document, IRegion reg, String content, Object ctx, boolean quote)
 			throws BadLocationException {
-		String modContent = generateDoubleQuotedContentForDialog(content);
+		String modContent;
+		if (quote) {
+			modContent = generateDoubleQuotedContentForDialog(content);
+		}
+		else {
+			modContent = content.startsWith("CM:") ? content : ("CM: " + content);
+			if (!modContent.trim().endsWith(".") && !modContent.trim().endsWith("?")) {
+				modContent += ".";
+			}
+		}
 		if (ctx instanceof EObject) {
 //			String damageStr = document.get(reg.getOffset(), reg.getLength());
 			Object[] srcinfo = getSourceText((EObject)ctx);
@@ -1186,7 +1230,7 @@ public class DialogAnswerProvider extends DefaultAutoEditStrategyProvider implem
 		String content = element.getContent().toString();
 		if (getTheDocument() != null) {
 			try {
-				addCurationManagerContentToDialog(getTheDocument(), null, content, null);
+				addCurationManagerContentToDialog(getTheDocument(), null, content, null, true);
 			} catch (BadLocationException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
