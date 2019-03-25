@@ -383,13 +383,13 @@ public class DialogAnswerProvider extends DefaultAutoEditStrategyProvider implem
 	                		((Query)lastcmd).setSparqlQueryString(tableColSemTypeQuery);
 							ResultSet rs = runQuery(resource, (Query)lastcmd);
 							if (rs != null && rs.getRowCount() > 0) {
-								// TODO Alfredo will go from here
+								// TODO 
 								// convert to triples, one set for each column
 								// <doc, columnname, colname>
 								// <colname, semtypeprop, semtype>
 								// 
 								// TODO 
-								// same as WhatIfConstruct with a when
+								// SIMILAR TO WhatIfConstruct with a when
 //				                OntModelProvider.addPrivateKeyValuePair(resource, DialogConstants.LAST_DIALOG_COMMAND, triples);
 //		                		StringBuilder answer = new StringBuilder();
 //		                		ResultSet[] rss = insertTriplesAndQuery(resource, triples);
