@@ -9,6 +9,7 @@ import com.ge.research.sadl.darpa.aske.ui.preferences.DialogRootPreferencePage
 import com.ge.research.sadl.darpa.aske.ui.syntaxcoloring.DialogHighlightingConfiguration
 import com.ge.research.sadl.darpa.aske.ui.syntaxcoloring.DialogSemanticHighlightingCalculator
 import com.ge.research.sadl.darpa.aske.ui.syntaxcoloring.DialogTokenToAttributeIdMapper
+import com.ge.research.sadl.external.ExternalEmfResourcePredicate
 import com.ge.research.sadl.ide.editor.contentassist.IOntologyContextProvider
 import com.ge.research.sadl.ui.contentassist.SadlReferenceProposalCreator
 import com.ge.research.sadl.ui.utils.EclipseSadlProjectHelper
@@ -20,6 +21,7 @@ import org.eclipse.xtext.ui.editor.autoedit.DefaultAutoEditStrategyProvider
 import org.eclipse.xtext.ui.editor.contentassist.AbstractJavaBasedContentProposalProvider.ReferenceProposalCreator
 import org.eclipse.xtext.ui.editor.preferences.LanguageRootPreferencePage
 import org.eclipse.xtext.ui.editor.syntaxcoloring.IHighlightingConfiguration
+import com.ge.research.sadl.ui.external.EclipseExternalEmfResourcePredicate
 
 /**
  * Use this class to register components to be used within the Eclipse IDE.
@@ -39,6 +41,10 @@ class DialogUiModule extends AbstractDialogUiModule {
 	// Maps our token names to our syntax coloring styles.
 	def Class<? extends AbstractAntlrTokenToAttributeIdMapper> bindTokenToAttributeIdMapper() {
 		return DialogTokenToAttributeIdMapper
+	}
+	
+	def Class<? extends ExternalEmfResourcePredicate> bindExternalEmfResourcePredicate() {
+		return EclipseExternalEmfResourcePredicate;
 	}
 	
 	def Class<? extends DefaultAutoEditStrategyProvider> bindDefaultAutoEditStrategyProvider() {
