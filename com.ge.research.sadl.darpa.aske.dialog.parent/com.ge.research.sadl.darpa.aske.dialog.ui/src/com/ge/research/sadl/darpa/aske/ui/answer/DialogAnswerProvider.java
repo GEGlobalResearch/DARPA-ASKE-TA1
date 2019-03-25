@@ -84,6 +84,7 @@ import com.ge.research.sadl.model.visualizer.GraphVizVisualizer;
 import com.ge.research.sadl.model.visualizer.IGraphVisualizer;
 import com.ge.research.sadl.parser.antlr.SADLParser;
 import com.ge.research.sadl.processing.OntModelProvider;
+import com.ge.research.sadl.processing.SadlConstants;
 import com.ge.research.sadl.reasoner.ConfigurationException;
 import com.ge.research.sadl.reasoner.ResultSet;
 import com.ge.research.sadl.reasoner.SadlCommandResult;
@@ -396,58 +397,83 @@ public class DialogAnswerProvider extends DefaultAutoEditStrategyProvider implem
 	                		((Query)lastcmd).setSparqlQueryString(tableColSemTypeQuery);
 							ResultSet rs = runQuery(resource, (Query)lastcmd);
 							if (rs != null && rs.getRowCount() > 0) {
-								// TODO Alfredo will go from here
+								// TODO 
 								// convert to triples, one set for each column
 								// <doc, columnname, colname>
 								// <colname, semtypeprop, semtype>
-								// 
-								// TODO 
-								// same as WhatIfConstruct with a when
-//				                OntModelProvider.addPrivateKeyValuePair(resource, DialogConstants.LAST_DIALOG_COMMAND, triples);
-//		                		StringBuilder answer = new StringBuilder();
-//		                		ResultSet[] rss = insertTriplesAndQuery(resource, triples);
-
 								rs.setShowNamespaces(true);
 								Map<String,String> colNamesAndTypes = new HashMap<String,String>();
 								for (int i = 0; i <= rs.getColumnCount(); i++) {
 									String colname = rs.getResultAt(i, 0).toString();
 									String semtyp = rs.getResultAt(i, 1).toString();
-									colNamesAndTypes.put(semtyp, colname);
+									colNamesAndTypes.put(colname, semtyp);
 								}
-								if (colNamesAndTypes.size() > 0) {
-									StringBuilder qsb = new StringBuilder("select distinct ?eq ?argname ?argsemtype where {" + 
-											"	{select ?eq ?argname ?argsemtype where {?eq <arguments> ?arglist . ?arglist <http://jena.hpl.hp.com/ARQ/list#member> ?member . " + 
-											"	?member <descriptorName> ?argname . ?member <augmentedType> ?augtype . ?augtype <semType> ?argsemtype" + 
-											"	}}" + 
-											"	UNION" + 
-											"	{select ?eq ?argname ?argsemtype where {?eq <returnTypes> ?retlist . ?retlist <http://jena.hpl.hp.com/ARQ/list#member> ?member . " + 
-											"	OPTIONAL{?member <descriptorName> ?argname} . ?member <augmentedType> ?augtype . ?augtype <semType> ?argsemtype}}" + 
-											"	. 	VALUES ?argsemtype {");
-									Set<String> keys = colNamesAndTypes.keySet();
-									for (String key : keys) {
-										qsb.append("<");
-										qsb.append(key);
-										qsb.append("> ");
-									}
-									qsb.append("}}");
-//									System.out.println(qsb.toString());
-									((Query)lastcmd).setSparqlQueryString(qsb.toString());
-									ResultSet rs2 = runQuery(resource, (Query)lastcmd);
-									rs2.setShowNamespaces(true);
-									if (rs2 != null && rs2.getRowCount() > 0) {
-										StringBuilder retsb = new StringBuilder("Models found (table, colname, model, argname, matchingType)\n");
-										for (int i = 0; i < rs2.getRowCount(); i++) {
-											String eq = rs2.getResultAt(i, 0).toString();
-											Object argnameObj = rs2.getResultAt(i, 1);
-											String argname = argnameObj != null ? argnameObj.toString() : "return";
-											String argsemtype = rs2.getResultAt(i, 2).toString();
-											String colname = colNamesAndTypes.get(argsemtype);
-											retsb.append(doc.getName() + ", " + colname + ", " + eq + ", " + argname  + ", " + argsemtype);
-											retsb.append("\n");
-										}
-										return retsb.toString();
-									}
+								Iterator<String> keyitr = colNamesAndTypes.keySet().iterator();
+								NamedNode docNN = new NamedNode(doc.getURI());
+								NamedNode descriptorNameNN = new NamedNode(SadlConstants.SADL_IMPLICIT_MODEL_DESCRIPTOR_NAME_PROPERTY_URI);
+								NamedNode augmentedTypeNN = new NamedNode(SadlConstants.SADL_IMPLICIT_MODEL_AUGMENTED_TYPE_PROPERTY_URI);
+								List<TripleElement> triplesList = new ArrayList<TripleElement>();
+								while (keyitr.hasNext()) {
+									String colname = keyitr.next();
+									String semtyp = colNamesAndTypes.get(colname);
+									NamedNode colNameNN = new NamedNode(colname);
+									TripleElement tr = new TripleElement(docNN, descriptorNameNN, colNameNN);
+									triplesList.add(tr);
+									tr = new TripleElement(colNameNN, augmentedTypeNN, new NamedNode(semtyp));
+									triplesList.add(tr);
 								}
+								TripleElement[] triples = triplesList.toArray(new TripleElement[triplesList.size()]);
+				                OntModelProvider.addPrivateKeyValuePair(resource, DialogConstants.LAST_DIALOG_COMMAND, triples);
+		                		ResultSet[] rss = insertTriplesAndQuery(resource, triples);
+								int numResultSets = rss.length;
+								
+								// 
+								// TODO 
+								// SIMILAR TO WhatIfConstruct with a when
+//				                OntModelProvider.addPrivateKeyValuePair(resource, DialogConstants.LAST_DIALOG_COMMAND, triples);
+//		                		StringBuilder answer = new StringBuilder();
+//		                		ResultSet[] rss = insertTriplesAndQuery(resource, triples);
+
+//								Map<String,String> colNamesAndTypes = new HashMap<String,String>();
+//								for (int i = 0; i <= rs.getColumnCount(); i++) {
+//									String colname = rs.getResultAt(i, 0).toString();
+//									String semtyp = rs.getResultAt(i, 1).toString();
+//									colNamesAndTypes.put(semtyp, colname);
+//								}
+//								if (colNamesAndTypes.size() > 0) {
+//									StringBuilder qsb = new StringBuilder("select distinct ?eq ?argname ?argsemtype where {" + 
+//											"	{select ?eq ?argname ?argsemtype where {?eq <arguments> ?arglist . ?arglist <http://jena.hpl.hp.com/ARQ/list#member> ?member . " + 
+//											"	?member <descriptorName> ?argname . ?member <augmentedType> ?augtype . ?augtype <semType> ?argsemtype" + 
+//											"	}}" + 
+//											"	UNION" + 
+//											"	{select ?eq ?argname ?argsemtype where {?eq <returnTypes> ?retlist . ?retlist <http://jena.hpl.hp.com/ARQ/list#member> ?member . " + 
+//											"	OPTIONAL{?member <descriptorName> ?argname} . ?member <augmentedType> ?augtype . ?augtype <semType> ?argsemtype}}" + 
+//											"	. 	VALUES ?argsemtype {");
+//									Set<String> keys = colNamesAndTypes.keySet();
+//									for (String key : keys) {
+//										qsb.append("<");
+//										qsb.append(key);
+//										qsb.append("> ");
+//									}
+//									qsb.append("}}");
+////									System.out.println(qsb.toString());
+//									((Query)lastcmd).setSparqlQueryString(qsb.toString());
+//									ResultSet rs2 = runQuery(resource, (Query)lastcmd);
+//									rs2.setShowNamespaces(true);
+//									if (rs2 != null && rs2.getRowCount() > 0) {
+//										StringBuilder retsb = new StringBuilder("Models found (table, colname, model, argname, matchingType)\n");
+//										for (int i = 0; i < rs2.getRowCount(); i++) {
+//											String eq = rs2.getResultAt(i, 0).toString();
+//											Object argnameObj = rs2.getResultAt(i, 1);
+//											String argname = argnameObj != null ? argnameObj.toString() : "return";
+//											String argsemtype = rs2.getResultAt(i, 2).toString();
+//											String colname = colNamesAndTypes.get(argsemtype);
+//											retsb.append(doc.getName() + ", " + colname + ", " + eq + ", " + argname  + ", " + argsemtype);
+//											retsb.append("\n");
+//										}
+//										return retsb.toString();
+//									}
+//								}
 							}
 							else {
 								
@@ -736,27 +762,56 @@ public class DialogAnswerProvider extends DefaultAutoEditStrategyProvider implem
 						if (!pobjURI.toString().startsWith(OWL.getURI()) && !pobjURI.toString().startsWith(RDFS.getURI()) &&
 								!pobjURI.toString().startsWith(RDF.getURI())) {
 							Object vobjURI = rs.getResultAt(r, 1);
-							rs.setShowNamespaces(false);
-							Object pobj = rs.getResultAt(r, 0);
-							Object vobj = rs.getResultAt(r, 1);
-							if (outputcnt++ > 0) {
-								answer.append(", with ");
+							if (isBlankNode(vobjURI.toString())) {
+								answer = addBlankNodeObject(resource, answer, vobjURI.toString());
 							}
 							else {
-								answer.append(" with ");
-							}
-							answer.append(checkForKeyword(pobj.toString()));
-							answer.append(" ");
-							if (vobjURI.toString().startsWith(XSD.getURI())) {
-								answer.append(vobj.toString());
-							}
-							else {
-								answer.append(checkForKeyword(vobj.toString()));			                						
+								rs.setShowNamespaces(false);
+								Object pobj = rs.getResultAt(r, 0);
+								Object vobj = rs.getResultAt(r, 1);
+								if (outputcnt++ > 0) {
+									answer.append(", with ");
+								}
+								else {
+									answer.append(" with ");
+								}
+								answer.append(checkForKeyword(pobj.toString()));
+								answer.append(" ");
+								if (vobjURI.toString().startsWith(XSD.getURI())) {
+									answer.append(vobj.toString());
+								}
+								else {
+									answer.append(checkForKeyword(vobj.toString()));			                						
+								}
 							}
 						}
 						
 					}
 				}
+			}
+
+			private StringBuilder addBlankNodeObject(Resource resource, StringBuilder answer, String bNodeUri) throws ExecutionException {
+				String query = "select ?t ?p ?v where {<" + bNodeUri + "> ?p ?v }";
+				Query q = new Query();
+				q.setSparqlQueryString(query);
+				OntModelProvider.addPrivateKeyValuePair(resource, DialogConstants.LAST_DIALOG_COMMAND, q);
+				ResultSet rs = runQuery(resource, q);
+				OntModelProvider.clearPrivateKeyValuePair(resource, DialogConstants.LAST_DIALOG_COMMAND);
+				if (rs != null) {
+					rs.setShowNamespaces(false);
+					answer.append(rs.toStringWithIndent(5));
+				}
+				else {
+					answer.append(bNodeUri);
+				}
+				return answer;
+			}
+
+			private boolean isBlankNode(String uri) {
+				if (uri.startsWith("-")) {
+					return true;
+				}
+				return false;
 			}
 
 			private void addAnnotationPropertyDeclaration(Resource resource, NamedNode nn, StringBuilder answer) {
@@ -1166,12 +1221,12 @@ public class DialogAnswerProvider extends DefaultAutoEditStrategyProvider implem
 									result = m.invoke(acm, arg0, arg1);
 								}
 								if (methodToCall.equals("saveAsSadlFile")) {
+									String outputOwlFileName = arg0.toString();
+									File owlfile = new File(outputOwlFileName);
 									if (arg0 instanceof String && AnswerCurationManager.isYes(arg1)) {
 										File sf = new File(result.toString());
 										if (sf.exists()) {
 											// delete OWL file so it won't be indexed
-											String outputOwlFileName = arg0.toString();
-											File owlfile = new File(outputOwlFileName);
 											if (owlfile.exists()) {
 												owlfile.delete();
 												try {
@@ -1192,7 +1247,10 @@ public class DialogAnswerProvider extends DefaultAutoEditStrategyProvider implem
 													e.printStackTrace();
 												}
 											}
-								         	ResourceSet resSet = new ResourceSetImpl();
+											String prjname = sf.getParentFile().getParentFile().getName();
+											IProject prj = ResourcesPlugin.getPlugin().getWorkspace().getRoot().getProject(prjname);
+											
+								         	ResourceSet resSet = resourceSetProvider.get(prj);
 								        	try {
 												Resource newRsrc = resSet.createResource(URI.createFileURI(sf.getCanonicalPath()));
 												newRsrc.load(newRsrc.getResourceSet().getLoadOptions());
@@ -1204,24 +1262,30 @@ public class DialogAnswerProvider extends DefaultAutoEditStrategyProvider implem
 											displayFile(acm.getExtractionProcessor().getCodeExtractor().getCodeModelFolder(), sf);
 										}
 									}
-//									else {
-//										// add import of OWL file from policy file since there won't be a SADL file to build an OWL and create mappings.
-//										try {
-//											String importPublicUri = acm.getExtractionProcessor().getCodeModelName();
-//											String prefix = acm.getExtractionProcessor().getCodeModelPrefix();
-//											String importActualUrl = new SadlUtils().fileNameToFileUrl(arg0.toString());
-//											acm.getExtractionProcessor().getCodeExtractor().getCodeModelConfigMgr().addMapping(importActualUrl, importPublicUri, prefix, false, "AnswerCurationManager");
-//										} catch (IOException e) {
-//											// TODO Auto-generated catch block
-//											e.printStackTrace();
-//										} catch (URISyntaxException e) {
-//											// TODO Auto-generated catch block
-//											e.printStackTrace();
-//										} catch (ConfigurationException e) {
-//											// TODO Auto-generated catch block
-//											e.printStackTrace();
-//										}
-//									}
+									else {
+										// add import of OWL file from policy file since there won't be a SADL file to build an OWL and create mappings.
+										try {
+											String importPublicUri = acm.getExtractionProcessor().getCodeModelName();
+											String prefix = acm.getExtractionProcessor().getCodeModelPrefix();
+											String importActualUrl = new SadlUtils().fileNameToFileUrl(arg0.toString());
+											acm.getExtractionProcessor().getCodeExtractor().getCodeModelConfigMgr().addMapping(importActualUrl, importPublicUri, prefix, false, "AnswerCurationManager");
+											String prjname = owlfile.getParentFile().getParentFile().getName();
+											IProject prj = ResourcesPlugin.getPlugin().getWorkspace().getRoot().getProject(prjname);
+											prj.refreshLocal(IResource.DEPTH_INFINITE, null);
+										} catch (IOException e) {
+											// TODO Auto-generated catch block
+											e.printStackTrace();
+										} catch (URISyntaxException e) {
+											// TODO Auto-generated catch block
+											e.printStackTrace();
+										} catch (ConfigurationException e) {
+											// TODO Auto-generated catch block
+											e.printStackTrace();
+										} catch (CoreException e) {
+											// TODO Auto-generated catch block
+											e.printStackTrace();
+										}
+									}
 								}
 							}
 						}
