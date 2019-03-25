@@ -1,10 +1,5 @@
 package com.ge.research.sadl.darpa.aske.processing.imports;
 
-import com.google.gson.JsonArray;
-import com.google.gson.JsonElement;
-import com.google.gson.JsonObject;
-import com.google.gson.JsonParser;
-
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.InputStreamReader;
@@ -13,9 +8,14 @@ import java.io.UnsupportedEncodingException;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
-import java.net.URLEncoder;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+
+import com.google.gson.JsonArray;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParser;
 
 public class TextProcessor {
 
@@ -30,7 +30,7 @@ public class TextProcessor {
 	public String process(String inputIdentifier, String text, String locality) throws MalformedURLException, UnsupportedEncodingException {
 		StringBuilder sb = new StringBuilder();
 //		String baseServiceUrl = "http://vesuvius-dev.crd.ge.com:4200/darpa/aske/";		// dev environment for stable development of other components
-		String baseServiceUrl = "http://vesuvius063.crd.ge.com:4200/darpa/aske/";		// test environment for service development
+		String baseServiceUrl = "http://vesuvius-dev.crd.ge.com:4200/darpa/aske/";		// test environment for service development
 		
 		String textToTripleServiceURL = baseServiceUrl + "text2triples";
 		URL serviceUrl = new URL(textToTripleServiceURL);			
@@ -154,6 +154,13 @@ public class TextProcessor {
 		else {
 			setTextFiles(txtFiles);
 		}
+	}
+
+	public void addFile(File txtFile) {
+		if (textFiles != null) {
+			textFiles = new ArrayList<File>();
+		}
+		textFiles.add(txtFile);
 	}
 
 	public List<File> getTextFiles() {
