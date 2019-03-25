@@ -127,7 +127,7 @@ public class AnswerExtractionProcessor {
 
 	public IModelFromCodeExtractor getCodeExtractor() {
 		if (codeExtractor == null) {
-			codeExtractor = new JavaModelExtractorJP(getCurationManager(), null);
+			codeExtractor = new JavaModelExtractorJP(getCurationManager(), getPreferences());
 		}
 		return codeExtractor;
 	}

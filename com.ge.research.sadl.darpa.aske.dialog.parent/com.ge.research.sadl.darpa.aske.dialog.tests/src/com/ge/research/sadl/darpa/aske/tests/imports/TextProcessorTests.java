@@ -44,7 +44,7 @@ public class TextProcessorTests {
 	@Test
 	public void test3() throws IOException {
 		System.out.println(new File(".").getAbsoluteFile().getAbsolutePath());
-		File sourceFile = new File(new File(".").getAbsolutePath() + "/resources/Sound.text");
+		File sourceFile = new File(new File(".").getAbsolutePath() + "/resources/Sound.txt");
 		String javaContent = readFile(sourceFile);
 		TextProcessor tp = new TextProcessor(null);
 		tp.process(null, javaContent, null);
@@ -53,7 +53,7 @@ public class TextProcessorTests {
 	@Test
 	public void test4() throws ConfigurationException, IOException {
 		System.out.println(new File(".").getAbsoluteFile().getAbsolutePath());
-		File sourceFile = new File(new File(".").getAbsolutePath() + "/resources/Sound.text");
+		File sourceFile = new File(new File(".").getAbsolutePath() + "/resources/Sound.txt");
 		IConfigurationManagerForIDE cm = ConfigurationManagerForIdeFactory.getConfigurationManagerForIDE(getDomainProjectModelFolder(), null);
 		AnswerCurationManager acm = new AnswerCurationManager(getDomainProjectModelFolder(), cm, null);
 		acm.getExtractionProcessor().getCodeExtractor().setCodeModelFolder(getExtractionProjectModelFolder());

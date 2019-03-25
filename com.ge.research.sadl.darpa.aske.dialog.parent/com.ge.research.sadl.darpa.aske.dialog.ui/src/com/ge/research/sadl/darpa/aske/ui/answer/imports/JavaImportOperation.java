@@ -677,7 +677,7 @@ public class JavaImportOperation extends WorkspaceModifyOperation {
 		if (outputfn.lastIndexOf('.') > 0) {
 			int lio = ((String) outputfn).lastIndexOf('.');
 			String end = ((String) outputfn).substring(lio);
-			if (!end.equals("owl")) {
+			if (!end.equals(".owl")) {
 				outputfn += ".owl";
 			}
 		}

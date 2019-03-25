@@ -29,8 +29,13 @@ public class TextProcessor {
 
 	public String process(String inputIdentifier, String text, String locality) throws MalformedURLException, UnsupportedEncodingException {
 		StringBuilder sb = new StringBuilder();
-//		String baseServiceUrl = "http://vesuvius-dev.crd.ge.com:4200/darpa/aske/";		// dev environment for stable development of other components
-		String baseServiceUrl = "http://vesuvius-dev.crd.ge.com:4200/darpa/aske/";		// test environment for service development
+		String baseServiceUrl = "http://vesuvius-dev.crd.ge.com:4200/darpa/aske/";		// dev environment for stable development of other components
+//		String baseServiceUrl = "http://vesuvius-063.crd.ge.com:4200/darpa/aske/";		// test environment for service development
+		
+		String servicePreference = getPreference("TEXT_TO_TRIPLES_SERVICE_BASE_URL");
+		if (servicePreference != null) {
+			baseServiceUrl = servicePreference;
+		}
 		
 		String textToTripleServiceURL = baseServiceUrl + "text2triples";
 		URL serviceUrl = new URL(textToTripleServiceURL);			
@@ -47,32 +52,6 @@ public class TextProcessor {
 		String response = makeConnectionAndGetResponse(serviceUrl, json);
 //		System.out.println(response);
 		if (response != null && response.length() > 0) {
-//			JsonElement je = new JsonParser().parse(response);
-//			JsonArray allSentences = je.getAsJsonArray();
-//			if (allSentences != null) {
-//				for (JsonElement sent : allSentences) {
-//					JsonObject jobj = sent.getAsJsonObject();
-//					JsonElement dfelement = jobj.get("triples");
-//					if (dfelement != null) {
-//						JsonArray df = dfelement.getAsJsonArray();
-//						double confScore;
-//						String subject;
-//						String predicate;
-//						String object;
-//						int idx = 0;
-//						for (JsonElement arrel : df) {
-//							JsonObject elobj = arrel.getAsJsonObject();
-//							confScore = elobj.get("confScore").getAsDouble();
-//							subject = elobj.get("subject").getAsString();
-//							predicate = elobj.get("predicate").getAsString();
-//							object = elobj.get("object").getAsString();
-//							String msg = "Returned Triple: " + subject + " " + predicate + " " + object;
-//							System.out.println(msg);
-//							sb.append(msg);
-//						}
-//					}
-//				}
-//			}
 			JsonArray sentences = new JsonParser().parse(response).getAsJsonArray();
 			if (sentences != null) {
 				for (JsonElement element : sentences) {

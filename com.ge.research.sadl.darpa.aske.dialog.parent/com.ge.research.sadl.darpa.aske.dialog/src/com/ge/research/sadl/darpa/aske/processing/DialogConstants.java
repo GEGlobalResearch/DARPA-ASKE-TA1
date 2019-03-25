@@ -8,6 +8,8 @@ public class DialogConstants {
 	public static final String ANSWER_EXTRACTION_PROCESSOR = "AnswerExtractionProcessor";
 	public static final String ANSWER_CURATION_MANAGER = "AnswerCurationManager";
 	public static final String CG_SERVICE_BASE_URL = "CG_service_base_URL";
+	public static final String TEXT_TO_TRIPLES_SERVICE_BASE_URL = "Text_to_triples_service_base_URL";
+	public static final String JAVA_TO_PYTHON_SERVICE_BASE_URL = "Java2Python_service_base_URL";
 	
 	public static final String EXTRACTED_MODELS_FOLDER_PATH_FRAGMENT = "ExtractedModels";
 	public static final String GENERATED_MODELS_FOLDER_PATH_FRAGMENT = "GeneratedModels";

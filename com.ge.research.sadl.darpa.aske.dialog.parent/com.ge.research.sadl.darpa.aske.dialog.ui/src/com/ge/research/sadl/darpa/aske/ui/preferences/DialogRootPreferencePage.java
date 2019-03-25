@@ -99,9 +99,9 @@ public class DialogRootPreferencePage extends LanguageRootPreferencePage {
 	protected void createFieldEditors() {
 		// General SADL Settings
 		Composite generalSettings = createSettingsGroup(getFieldEditorParent(), SWT.NONE, "Dialog Settings");
-		addField(new StringFieldEditorExt(DialogPreferences.ANSWER_TEXT_SERVICE_BASE_URI.getId(), "Text to Triples Service Base URI:", generalSettings));
-		addField(new StringFieldEditorExt(DialogPreferences.ANSWER_CG_SERVICE_BASE_URI.getId(), "Computational Graph Service Base URI:", generalSettings));
-		addField(new StringFieldEditorExt(DialogPreferences.ANSWER_JAVA_TO_PYTHON_SERVICE_BASE_URI.getId(), "Java to Python Translation Service Base URI:", generalSettings));
+		addField(new StringFieldEditorExt(DialogPreferences.ANSWER_TEXT_SERVICE_BASE_URI.getId(), "Text to Triples Host and Port:", generalSettings));
+		addField(new StringFieldEditorExt(DialogPreferences.ANSWER_CG_SERVICE_BASE_URI.getId(), "Computational Graph Service Host and Port:", generalSettings));
+		addField(new StringFieldEditorExt(DialogPreferences.ANSWER_JAVA_TO_PYTHON_SERVICE_BASE_URI.getId(), "Java to Python Translation Service Host and Port:", generalSettings));
 //		addField(new StringFieldEditorExt(DialogPreferences.ANSWER_CODE_EXTRACTION_KBASE_ROOT.getId(), "Code Extraction KBase Root:", generalSettings));
 	}
 
