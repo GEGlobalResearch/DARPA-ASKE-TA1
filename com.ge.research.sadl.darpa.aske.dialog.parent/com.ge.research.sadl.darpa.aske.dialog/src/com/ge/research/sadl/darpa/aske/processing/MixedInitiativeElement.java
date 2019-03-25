@@ -1,5 +1,6 @@
 package com.ge.research.sadl.darpa.aske.processing;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Consumer;
 
@@ -94,5 +95,12 @@ public class MixedInitiativeElement {
 
 	public void setArguments(List<Object> arguments) {
 		this.arguments = arguments;
+	}
+
+	public void addArgument(String arg) {
+		if (arguments == null) {
+			arguments = new ArrayList<Object>();
+		}
+		arguments.add(arg);
 	}
 }

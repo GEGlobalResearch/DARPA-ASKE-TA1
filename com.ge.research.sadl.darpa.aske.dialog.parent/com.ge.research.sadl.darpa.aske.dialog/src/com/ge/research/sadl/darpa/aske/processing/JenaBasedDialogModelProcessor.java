@@ -26,14 +26,14 @@ import org.eclipse.xtext.validation.CheckType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.ge.research.sadl.builder.ConfigurationManagerForIdeFactory;
-import com.ge.research.sadl.darpa.aske.curation.DialogAnswerProviderConsoleForTest;
 import com.ge.research.sadl.darpa.aske.dialog.AnswerCMStatement;
+import com.ge.research.sadl.darpa.aske.dialog.BuildStatement;
 import com.ge.research.sadl.darpa.aske.dialog.HowManyValuesStatement;
 import com.ge.research.sadl.darpa.aske.dialog.ModifiedAskStatement;
 import com.ge.research.sadl.darpa.aske.dialog.WhatIsStatement;
 import com.ge.research.sadl.darpa.aske.dialog.WhatStatement;
 import com.ge.research.sadl.darpa.aske.dialog.WhatValuesStatement;
+import com.ge.research.sadl.darpa.aske.dialog.YesNoAnswerStatement;
 import com.ge.research.sadl.darpa.aske.preferences.DialogPreferences;
 import com.ge.research.sadl.errorgenerator.generator.SadlErrorMessages;
 import com.ge.research.sadl.jena.JenaBasedSadlModelProcessor;
@@ -61,6 +61,7 @@ import com.ge.research.sadl.sADL.Expression;
 import com.ge.research.sadl.sADL.NamedStructureAnnotation;
 import com.ge.research.sadl.sADL.QueryStatement;
 import com.ge.research.sadl.sADL.SadlAnnotation;
+import com.ge.research.sadl.sADL.SadlInstance;
 import com.ge.research.sadl.sADL.SadlModel;
 import com.ge.research.sadl.sADL.SadlModelElement;
 import com.ge.research.sadl.sADL.SadlResource;
@@ -187,6 +188,14 @@ public class JenaBasedDialogModelProcessor extends JenaBasedSadlModelProcessor {
 		} catch (JenaProcessorException e1) {
 			e1.printStackTrace();
 		}
+		
+		if (model.eContents().size() < 1) {
+			// there are no imports
+			MixedInitiativeTextualResponse mir = new MixedInitiativeTextualResponse("Please add at least one import of a domain namespace");
+			int endOffset = NodeModelUtils.findActualNodeFor(model).getEndOffset();
+			mir.setInsertionPoint(endOffset);
+			OntModelProvider.addPrivateKeyValuePair(resource, DialogConstants.LAST_DIALOG_COMMAND, mir);
+		}
 
 		if(!processModelImports(modelOntology, resource.getURI(), model)) {
 			return;
@@ -246,14 +255,15 @@ public class JenaBasedDialogModelProcessor extends JenaBasedSadlModelProcessor {
 					// this is user input
 					if (element instanceof ModifiedAskStatement ||
 							element instanceof WhatStatement ||
-							element instanceof HowManyValuesStatement) {
+							element instanceof HowManyValuesStatement ||
+							element instanceof BuildStatement) {
 						lastElement = element;
 					}
 					else {
 						boolean treatAsAnswerToBackend = false;
 						if (lastACMQuestion != null) {
 							// this could be the answer to a preceding question
-							if (element instanceof SadlStatement) {
+							if (element instanceof SadlStatement || element instanceof YesNoAnswerStatement) {
 								try {
 									IDialogAnswerProvider dap = getDialogAnswerProvider(resource);
 									String question = lastACMQuestion.getStr();
@@ -262,12 +272,13 @@ public class JenaBasedDialogModelProcessor extends JenaBasedSadlModelProcessor {
 										if (mie != null) {
 								            // construct response
 											String answer = getResponseFromSadlStatement(element);
+											mie.addArgument(answer);
 											dap.provideResponse(mie);
 //								            MixedInitiativeElement response = new MixedInitiativeElement(answer, null);
 //								            response.setContent(new MixedInitiativeTextualResponse(answer));
 //								            // make call identified in element
 //								            mie.getRespondTo().accept(response);
-											
+											treatAsAnswerToBackend = true;
 										}
 									}
 								} catch (ConfigurationException e) {
@@ -329,7 +340,21 @@ public class JenaBasedDialogModelProcessor extends JenaBasedSadlModelProcessor {
 
 	private String getResponseFromSadlStatement(SadlModelElement element) {
 		// TODO Auto-generated method stub
-		return "yes";
+		String ans = "no";
+		if (element instanceof SadlInstance) {
+			SadlResource sr = ((SadlInstance)element).getInstance();
+			ans = NodeModelUtils.getTokenText(NodeModelUtils.getNode(element));
+			int i = 0;
+		}
+		else if (element instanceof YesNoAnswerStatement) {
+			ans = ((YesNoAnswerStatement)element).getAnswer();
+		}
+		if (ans.substring(0, 1).equalsIgnoreCase("y")) {
+			return "yes";
+		}
+		else {
+			return "no";
+		}
 	}
 
 	private IDialogAnswerProvider getDialogAnswerProvider(Resource resource) throws ConfigurationException {
@@ -447,6 +472,9 @@ public class JenaBasedDialogModelProcessor extends JenaBasedSadlModelProcessor {
 			else if (element instanceof HowManyValuesStatement) {
 				processStatement((HowManyValuesStatement)element);
 			}
+			else if (element instanceof BuildStatement) {
+				processStatement((BuildStatement)element);
+			}
 			else {
 				throw new JenaProcessorException("onValidate for element of type '"
 						+ element.getClass().getCanonicalName() + "' not implemented");
@@ -458,6 +486,15 @@ public class JenaBasedDialogModelProcessor extends JenaBasedSadlModelProcessor {
 		}
 	}	
 	
+	private void processStatement(BuildStatement element) {
+		SadlResource modelSr = ((BuildStatement)element).getTarget();
+		String modelUri = getDeclarationExtensions().getConceptUri(modelSr);
+		System.out.println("Ready to build model '" + modelUri + "'");
+		BuildConstruct bc = new BuildConstruct(modelUri);
+		OntModelProvider.addPrivateKeyValuePair(element.eResource(), DialogConstants.LAST_DIALOG_COMMAND, bc);
+		
+	}
+
 	private void processStatement(ModifiedAskStatement stmt) {
 		try {
 			SadlResource elementName = null; // element.getName();

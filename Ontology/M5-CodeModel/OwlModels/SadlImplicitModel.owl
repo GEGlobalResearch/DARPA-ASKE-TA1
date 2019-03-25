@@ -213,6 +213,7 @@
       </owl:Restriction>
     </rdfs:subClassOf>
   </owl:Class>
+  <owl:Class rdf:ID="Event"/>
   <owl:Class rdf:nodeID="A3">
     <rdfs:subClassOf>
       <owl:Restriction>
@@ -228,7 +229,6 @@
     </rdfs:subClassOf>
     <rdfs:subClassOf rdf:resource="sadllistmodel#List"/>
   </owl:Class>
-  <owl:Class rdf:ID="Event"/>
   <owl:Class rdf:ID="TriplePattern">
     <rdfs:subClassOf rdf:resource="#GraphPattern"/>
   </owl:Class>
@@ -245,8 +245,6 @@
     <rdfs:comment xml:lang="en">allows direct specification of the semantic type of an argument</rdfs:comment>
     <rdfs:subClassOf rdf:resource="#AugmentedType"/>
   </owl:Class>
-  <owl:Class rdf:ID="Rule"/>
-  <owl:Class rdf:ID="NamedQuery"/>
   <owl:Class rdf:nodeID="A4">
     <rdfs:subClassOf>
       <owl:Restriction>
@@ -262,6 +260,8 @@
     </rdfs:subClassOf>
     <rdfs:subClassOf rdf:resource="sadllistmodel#List"/>
   </owl:Class>
+  <owl:Class rdf:ID="Rule"/>
+  <owl:Class rdf:ID="NamedQuery"/>
   <owl:ObjectProperty rdf:about="#arguments">
     <rdfs:range rdf:nodeID="A4"/>
     <rdfs:domain rdf:resource="#Equation"/>

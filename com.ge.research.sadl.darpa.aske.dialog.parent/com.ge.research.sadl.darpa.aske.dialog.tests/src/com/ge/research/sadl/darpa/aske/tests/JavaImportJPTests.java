@@ -230,7 +230,8 @@ public class JavaImportJPTests {
 		acm.getExtractionProcessor().getCodeExtractor().setDefaultCodeModelPrefix(defaultCodeModelPrefix);
 		acm.getExtractionProcessor().getCodeExtractor().setDefaultCodeModelName(defaultCodeModelName);
 		
-		String genFolder = new File(acm.getExtractionProcessor().getCodeExtractor().getCodeModelFolder()).getParent() + "/GeneratedModels";
+		String genFolder = new File(acm.getExtractionProcessor().getCodeExtractor().getCodeModelFolder()).getParent() + 
+				"/" + DialogConstants.EXTRACTED_MODELS_FOLDER_PATH_FRAGMENT;
 		new File(genFolder).mkdirs();
 		String owlFileName = genFolder + "/" + defaultCodeModelPrefix + ".owl";
 

@@ -4,16 +4,20 @@
 package com.ge.research.sadl.darpa.aske.ui
 
 import com.ge.research.sadl.darpa.aske.ui.answer.DialogAnswerProvider
+import com.ge.research.sadl.darpa.aske.ui.contentassist.DialogOntologyContextProvider
 import com.ge.research.sadl.darpa.aske.ui.preferences.DialogRootPreferencePage
 import com.ge.research.sadl.darpa.aske.ui.syntaxcoloring.DialogHighlightingConfiguration
 import com.ge.research.sadl.darpa.aske.ui.syntaxcoloring.DialogSemanticHighlightingCalculator
 import com.ge.research.sadl.darpa.aske.ui.syntaxcoloring.DialogTokenToAttributeIdMapper
+import com.ge.research.sadl.ide.editor.contentassist.IOntologyContextProvider
+import com.ge.research.sadl.ui.contentassist.SadlReferenceProposalCreator
 import com.ge.research.sadl.ui.utils.EclipseSadlProjectHelper
 import com.ge.research.sadl.utils.SadlProjectHelper
 import org.eclipse.xtend.lib.annotations.FinalFieldsConstructor
 import org.eclipse.xtext.ide.editor.syntaxcoloring.AbstractAntlrTokenToAttributeIdMapper
 import org.eclipse.xtext.ide.editor.syntaxcoloring.ISemanticHighlightingCalculator
 import org.eclipse.xtext.ui.editor.autoedit.DefaultAutoEditStrategyProvider
+import org.eclipse.xtext.ui.editor.contentassist.AbstractJavaBasedContentProposalProvider.ReferenceProposalCreator
 import org.eclipse.xtext.ui.editor.preferences.LanguageRootPreferencePage
 import org.eclipse.xtext.ui.editor.syntaxcoloring.IHighlightingConfiguration
 
@@ -50,4 +54,12 @@ class DialogUiModule extends AbstractDialogUiModule {
 		return DialogRootPreferencePage
 	}
 
+	def Class<? extends ReferenceProposalCreator> bindReferenceProposalCreator() {
+		return SadlReferenceProposalCreator;
+	}
+
+	def Class<? extends IOntologyContextProvider> bindIOntologyContextProvider() {
+		return DialogOntologyContextProvider;
+	}
+	
 }
