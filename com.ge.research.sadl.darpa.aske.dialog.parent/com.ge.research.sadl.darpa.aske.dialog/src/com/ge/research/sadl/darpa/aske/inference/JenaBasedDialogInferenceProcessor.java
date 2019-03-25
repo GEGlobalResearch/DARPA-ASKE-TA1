@@ -336,7 +336,7 @@ public class JenaBasedDialogInferenceProcessor extends JenaBasedSadlInferencePro
 //			System.out.println(service.getClass().getCanonicalName());
 //		}
 
-		if (commonSubject(triples)) {
+		if (commonSubject(triples) && allPredicatesAreProperties(triples)) {
 			return super.insertTriplesAndQuery(resource, triples);
 		}
 
@@ -522,7 +522,7 @@ public class JenaBasedDialogInferenceProcessor extends JenaBasedSadlInferencePro
 		QueryExecution qexec = null;
 		OntResource qtype;
 		OntProperty qtypeprop = getTheJenaModel().getOntProperty(METAMODEL_QUERYTYPE_PROP);
-		OntProperty outputprop = getTheJenaModel().getOntProperty(METAMODEL_OUTPUT_PROP);
+		//OntProperty outputprop = getTheJenaModel().getOntProperty(METAMODEL_OUTPUT_PROP);
 		String listOfEqns = "";
 		com.hp.hpl.jena.query.ResultSetRewindable models, nodes;
 		String modelsCSVString = "";
@@ -542,7 +542,7 @@ public class JenaBasedDialogInferenceProcessor extends JenaBasedSadlInferencePro
 			if (inputsList.size() > 0 && outputsList.size() > 0) {
 	
 				for(int i=0; i<outputsList.size(); i++) {
-					OntClass oclass = outputsList.get(i);
+					//OntClass oclass = outputsList.get(i);
 					//Individual oinst = createIndividualOfClass(qhmodel, oclass.getURI());
 					//qhmodel.add(cgq, outputprop, oinst);
 					//outputInstance.put(oclass,oinst);
@@ -716,14 +716,7 @@ public class JenaBasedDialogInferenceProcessor extends JenaBasedSadlInferencePro
 			}
 			
 		
-		
-		
-		
-		//TODO: need to get node count. 
-		//Integer numNodes = 
-		//Integer numNodes = 1;
-		
-    		
+		    		
   		//qhmodel.write(System.out,"RDF/XML-ABBREV");
    		//qhmodel.write(System.out,"TTL");
     		
@@ -762,13 +755,6 @@ public class JenaBasedDialogInferenceProcessor extends JenaBasedSadlInferencePro
 		
 		return null; //results;
 	}
-
-
-//	private void createCGsubgraphs(Individual cgIns, Map<String, String[]> dbnEqn, Map<String, String> dbnOutput,
-//			Map<String, String> class2lbl, Map<String, String[]> lbl2value, Map<OntClass, Individual> outputInstance) {
-//		// TODO Auto-generated method stub
-//		
-//	}
 
 
 	private Map<RDFNode, RDFNode> createDbnOutputMap(ResultSetRewindable eqnsResults) {
@@ -833,6 +819,15 @@ public class JenaBasedDialogInferenceProcessor extends JenaBasedSadlInferencePro
 		return map;
 	}
 
+	private boolean allPredicatesAreProperties(TripleElement[] triples) {
+		for (TripleElement tr : triples) {
+			if (tr.getPredicate().getNamespace() == null && tr.getPredicate().getPrefix() == null) {
+				return false;
+			}
+		}
+		return true;
+	}
+
 
 	private ResultSet retrieveValues(Resource resource, Individual cgIns) throws Exception {
 		String query = RESULTSQUERY.replaceAll("COMPGRAPH", "<" + cgIns.getURI() + ">");
@@ -880,7 +875,6 @@ public class JenaBasedDialogInferenceProcessor extends JenaBasedSadlInferencePro
 
 
 	private void saveMetaDataFile(Resource resource) {
-		// TODO Auto-generated method stub
 		String qhOwlFileWithPath = getModelFolderPath(resource) + File.separator + qhOwlFileName;
 		File f = new File(qhOwlFileWithPath);
 
@@ -943,8 +937,6 @@ public class JenaBasedDialogInferenceProcessor extends JenaBasedSadlInferencePro
 		//String cgInsStr = cgIns.getURI();
 		//System.out.println("***CG instance: " + cgInsStr);
 		
-		QuerySolution soln;
-
 		//for (RDFNode eq : listOfEqnObjs) {
 		for( RDFNode dbn : dbnEqns.keySet() ) {
 //			RDFNode s = soln.get("?Eq") ; 
@@ -975,7 +967,7 @@ public class JenaBasedDialogInferenceProcessor extends JenaBasedSadlInferencePro
 			}
 			RDFNode e = qhmodel.getResource(eqn);  //getIndividual(eqn);
 			qhmodel.add(dbnIns, hasEqnProp, e);
-			RDFNode o = dbnOutput.get(dbn);
+			//RDFNode o = dbnOutput.get(dbn);
 			//if (outputInstance.containsKey(o)) {
 			//	outpIns = outputInstance.get(o);
 			//	//qhmodel.add(sgIns, outputprop, outputInstance.get(o));

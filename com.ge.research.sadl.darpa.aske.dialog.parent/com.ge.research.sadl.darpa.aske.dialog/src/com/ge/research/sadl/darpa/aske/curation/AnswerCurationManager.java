@@ -124,10 +124,13 @@ public class AnswerCurationManager {
 				String fileIdentifier = ConfigurationManagerForIdeFactory.formatPathRemoveBackslashes(f.getCanonicalPath());
 				getExtractionProcessor().getCodeExtractor().process(fileIdentifier, content, true);				
 			}
-			File of = new File(new File(getExtractionProcessor().getCodeExtractor().getCodeModelFolder()).getParent() + "/GeneratedModels/" + outputFilename);
+			File of = new File(new File(getExtractionProcessor().getCodeExtractor().getCodeModelFolder()).getParent() + 
+					"/" + DialogConstants.EXTRACTED_MODELS_FOLDER_PATH_FRAGMENT + "/" + outputFilename);
 			of.getParentFile().mkdirs();
 			getExtractionProcessor().getCodeExtractor().getCodeModelConfigMgr().saveOwlFile(getExtractionProcessor().getCodeModel(), getExtractionProcessor().getCodeModelName(), of.getCanonicalPath());
 			outputOwlFileName = of.getCanonicalPath();			
+
+			// Don't do this here; do it if and only if the OWL file isn't saved as SADL file.
 			String altUrl;
 			try {
 				altUrl = (new SadlUtils()).fileNameToFileUrl(outputOwlFileName);
@@ -152,7 +155,7 @@ public class AnswerCurationManager {
 				reasoner.setConfigurationManager(codeModelConfigMgr);
 				try {
 					reasoner.initializeReasoner(codeModelFolder, getExtractionProcessor().getCodeModelName(), null);
-					String queryString = "select ?m where {?m <rdf:type> <Method> . ?m <codemdl:arguments> ?args}";
+					String queryString = "select ?m where {?m <rdf:type> <Method> . ?m <cmArguments> ?args}";
 					queryString = reasoner.prepareQuery(queryString);
 					ResultSet results =  reasoner.ask(queryString);
 					if (results != null && results.getRowCount() > 0) {
@@ -191,7 +194,7 @@ public class AnswerCurationManager {
 				dap.addCurationManagerInitiatedContent(this, "saveAsSadlFile", args, "Would you like to save the extracted model in SADL format?");
 			}
 			if (saveAsSadl != null && saveAsSadl.equals(SaveAsSadl.SaveAsSadl)) {
-				saveAsSadlFile(outputOwlFileName);
+				saveAsSadlFile(outputOwlFileName, "yes");
 			}
 		}
 	}
@@ -202,23 +205,29 @@ public class AnswerCurationManager {
 	 * @return -- the sadl fully qualified file name
 	 * @throws IOException
 	 */
-	public String saveAsSadlFile(String outputOwlFileName) throws IOException {
-		OwlToSadl ots = new OwlToSadl(getExtractionProcessor().getCodeModel());
-		String sadlFN = outputOwlFileName + ".sadl";
-		File sf = new File(sadlFN);
-		if (sf.exists()) {
-			sf.delete();
-		}
-		try {
-			boolean status = ots.saveSadlModel(sadlFN);
-			if (status) {
-				return sadlFN;
+	public String saveAsSadlFile(String outputOwlFileName, String response) throws IOException {
+		if (isYes(response)) {
+			OwlToSadl ots = new OwlToSadl(getExtractionProcessor().getCodeModel());
+			String sadlFN = outputOwlFileName + ".sadl";
+			File sf = new File(sadlFN);
+			if (sf.exists()) {
+				sf.delete();
 			}
-		} catch (OwlImportException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			try {
+				boolean status = ots.saveSadlModel(sadlFN);
+				if (status) {
+					return sadlFN;
+				}
+			} catch (OwlImportException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
 		}
 		return null;
+	}
+
+	public static boolean isYes(Object arg1) {
+		return arg1.toString().equalsIgnoreCase("yes");
 	}
 
 	public void notifyUser(String modelFolder, String msg) throws ConfigurationException {

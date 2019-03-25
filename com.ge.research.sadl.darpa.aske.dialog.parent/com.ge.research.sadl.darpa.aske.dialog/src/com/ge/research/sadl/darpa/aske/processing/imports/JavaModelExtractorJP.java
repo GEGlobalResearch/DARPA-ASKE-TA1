@@ -15,6 +15,7 @@ import com.ge.research.sadl.builder.ConfigurationManagerForIdeFactory;
 import com.ge.research.sadl.builder.IConfigurationManagerForIDE;
 import com.ge.research.sadl.darpa.aske.curation.AnswerCurationManager;
 import com.ge.research.sadl.jena.inference.SadlJenaModelGetterPutter;
+import com.ge.research.sadl.processing.SadlConstants;
 import com.ge.research.sadl.reasoner.ConfigurationException;
 import com.ge.research.sadl.reasoner.IConfigurationManagerForEditing.Scope;
 import com.github.javaparser.JavaParser;
@@ -208,8 +209,8 @@ public class JavaModelExtractorJP implements IModelFromCodeExtractor {
 			Ontology modelOntology = getCodeModel().createOntology(getCodeModelName());
 			logger.debug("Ontology '" + getCodeModelName() + "' created");
 			modelOntology.addComment("This ontology was created by extraction from code by the ANSWER JavaModelExtractorJP.", "en");
-			setCodeMetaModelUri("http://sadl.org/CodeModel.sadl");
-			setCodeMetaModelPrefix("codemdl");
+			setCodeMetaModelUri(SadlConstants.SADL_IMPLICIT_MODEL_URI);
+			setCodeMetaModelPrefix(SadlConstants.SADL_IMPLICIT_MODEL_PREFIX);
 			OntModel importedOntModel = getCodeModelConfigMgr().getOntModel(getCodeMetaModelUri(), Scope.INCLUDEIMPORTS);
 			addImportToJenaModel(getCodeModelName(), getCodeMetaModelUri(), getCodeMetaModelPrefix(), importedOntModel);
 		}
@@ -731,7 +732,7 @@ public class JavaModelExtractorJP implements IModelFromCodeExtractor {
 	}
 	
 	private Property getArgumentsProperty() {
-		return getCodeModel().getOntProperty(getCodeMetaModelUri() + "#arguments");
+		return getCodeModel().getOntProperty(getCodeMetaModelUri() + "#cmArguments");
 	}
 
 	private Property getBeginsAtProperty() {
@@ -763,7 +764,7 @@ public class JavaModelExtractorJP implements IModelFromCodeExtractor {
 	}
 
 	private Property getReturnTypeProperty() {
-		return getCodeModel().getOntProperty(getCodeMetaModelUri() + "#returnTypes");
+		return getCodeModel().getOntProperty(getCodeMetaModelUri() + "#cmReturnTypes");
 	}
 
 	private com.hp.hpl.jena.rdf.model.Resource getReferenceClass() {
@@ -892,21 +893,21 @@ public class JavaModelExtractorJP implements IModelFromCodeExtractor {
 	}
 
 	public String getDefaultCodeModelName() {
-		if (defaultCodeModelName == null) {
-			defaultCodeModelName = "http://com.ge.reasearch.sadl.darpa.aske.answer/DefaultModelName";
-		}
+//		if (defaultCodeModelName == null) {
+//			defaultCodeModelName = "http://com.ge.reasearch.sadl.darpa.aske.answer/DefaultModelName";
+//		}
 		return defaultCodeModelName;
 	}
 
 	public void setDefaultCodeModelName(String defCodeModelName) {
-		this.defaultCodeModelName = codeModelName;
+		this.defaultCodeModelName = defCodeModelName;
 		getCurationMgr().getExtractionProcessor().setCodeModelName(codeModelName);
 	}
 
 	public String getDefaultCodeModelPrefix() {
-		if (defaultCodeModelPrefix == null) {
-			defaultCodeModelPrefix = "defmdlnm";
-		}
+//		if (defaultCodeModelPrefix == null) {
+//			defaultCodeModelPrefix = "defmdlnm";
+//		}
 		return defaultCodeModelPrefix;
 	}
 

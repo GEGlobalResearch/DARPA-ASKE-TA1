@@ -634,9 +634,15 @@ public class JavaFileResourceImportPage1 extends WizardResourceImportPage
      * Enable or disable the button group.
      */
     protected void enableButtonGroup(boolean enable) {
-        selectTypesButton.setEnabled(enable);
-        selectAllButton.setEnabled(enable);
-        deselectAllButton.setEnabled(enable);
+    	if (selectTypesButton != null) {
+    		selectTypesButton.setEnabled(enable);
+    	}
+    	if (selectAllButton != null) {
+    		selectAllButton.setEnabled(enable);
+    	}
+    	if (deselectAllButton != null) {
+    		deselectAllButton.setEnabled(enable);
+    	}
     }
 
     /**
@@ -644,7 +650,7 @@ public class JavaFileResourceImportPage1 extends WizardResourceImportPage
      *	and is valid
      */
     protected boolean ensureSourceIsValid() {
-        if (new File(getSourceDirectoryName()).isDirectory()) {
+        if (this.sourceNameField != null && new File(getSourceDirectoryName()).isDirectory()) {
 			return true;
 		}
 
@@ -1338,7 +1344,7 @@ public class JavaFileResourceImportPage1 extends WizardResourceImportPage
         File sourceDirectory = getSourceDirectory();
         if (sourceDirectory == null) {
             setMessage(SOURCE_EMPTY_MESSAGE);
-            enableButtonGroup(false);
+//            enableButtonGroup(false);
             return false;
         }
 

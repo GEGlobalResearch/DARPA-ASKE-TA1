@@ -1,7 +1,5 @@
 package com.ge.research.sadl.darpa.aske.java2python.tests;
 
-import static org.junit.Assert.*;
-
 import java.io.UnsupportedEncodingException;
 import java.net.MalformedURLException;
 

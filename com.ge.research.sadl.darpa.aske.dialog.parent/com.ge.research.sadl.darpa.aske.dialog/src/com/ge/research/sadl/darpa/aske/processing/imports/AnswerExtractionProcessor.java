@@ -127,7 +127,7 @@ public class AnswerExtractionProcessor {
 
 	public IModelFromCodeExtractor getCodeExtractor() {
 		if (codeExtractor == null) {
-			codeExtractor = new JavaModelExtractorJP(getCurationManager(), null);
+			codeExtractor = new JavaModelExtractorJP(getCurationManager(), getPreferences());
 		}
 		return codeExtractor;
 	}
@@ -206,13 +206,13 @@ public class AnswerExtractionProcessor {
 
 	public String translateMethodJavaToPython(String className, String methodCode) throws MalformedURLException, UnsupportedEncodingException {
 		StringBuilder sb = new StringBuilder();
-		String baseServiceUrl = "http://vesuvius063.crd.ge.com:19091/darpa/aske/";
+		String baseServiceUrl = "http://vesuvius-dev.crd.ge.com:19092/darpa/aske/";
 		
 		String translateMethodServiceURL = baseServiceUrl + "translate/method/";
-		translateMethodServiceURL += "?javaClassName=" + className;
 		URL serviceUrl = new URL(translateMethodServiceURL);			
 
 		JsonObject json = new JsonObject();
+		json.addProperty("className", className);
 		json.addProperty("javaMethod", methodCode);
 	
 		String response = makeConnectionAndGetResponse(serviceUrl, json);
