@@ -47,6 +47,7 @@ import com.ge.research.sadl.model.gp.TripleElement;
 import com.ge.research.sadl.processing.OntModelProvider;
 import com.ge.research.sadl.processing.SadlInferenceException;
 import com.hp.hpl.jena.reasoner.rulesys.Builtin;
+import com.hp.hpl.jena.tdb.store.Hash;
 import com.ge.research.sadl.reasoner.ConfigurationException;
 import com.ge.research.sadl.reasoner.ConfigurationManager;
 import com.ge.research.sadl.reasoner.IReasoner;
@@ -126,7 +127,9 @@ public class JenaBasedDialogInferenceProcessor extends JenaBasedSadlInferencePro
 			"prefix owl:<http://www.w3.org/2002/07/owl#>\n" + 
 			"prefix rdfs:<http://www.w3.org/2000/01/rdf-schema#>\n" +
 			"prefix sci:<http://aske.ge.com/sciknow#>\n" +
-			"select distinct ?Eq ?DBN ?Out where {\n" + 
+			"prefix afn:<http://jena.apache.org/ARQ/function#>\n" +
+			//"select distinct ?Eq ?DBN ?Out where {\n" + 
+			"select ?DBN ?Out (group_concat(distinct ?Eq ; separator=',') as ?Eqns) where {\n" +
 			" {select ?Eq where {\n" + 
 			"    ?EqOut a ?EqClass. \n" + 
 			"    ?EqClass rdfs:subClassOf imp:Equation.\n" + 
@@ -157,7 +160,7 @@ public class JenaBasedDialogInferenceProcessor extends JenaBasedSadlInferencePro
 			" ?EQR owl:onProperty sci:hasEquation.\n" + 
 			" ?EQR owl:allValuesFrom ?EqClass.\n" +
 			" ?Eq a ?EqClass." +
-			"}";
+			"}group by ?DBN ?Out";
 	public static final String RETRIEVE_MODELS = "prefix hyper:<http://aske.ge.com/hypersonics#>\n" + 
 			"prefix dbn:<http://aske.ge.com/dbn#>\n" + 
 			"prefix imp:<http://sadl.org/sadlimplicitmodel#>\n" +
@@ -306,9 +309,7 @@ public class JenaBasedDialogInferenceProcessor extends JenaBasedSadlInferencePro
 	public static final String RESULTSQUERY = "prefix imp:<http://sadl.org/sadlimplicitmodel#>\n" + 
 			"prefix mm:<http://aske.ge.com/metamodel#>\n" +
 			"prefix sci:<http://aske.ge.com/sciknow#>\n" + 
-			"select distinct (strafter(str(?Var),'#') as ?Variable) ?Mean ?StdDev\n" + 
-			"from <http://kd.ge.com/md2>\n" + 
-			"from <http://kd.ge.com/aske3>\n" + 
+			"select distinct (strafter(str(?CCG),'#') as ?Model) (strafter(str(?Var),'#') as ?Variable) ?Mean ?StdDev\n" + 
 			"where {\n" + 
 			"    ?CCG mm:subgraph ?SG.\n" + 
 			"    filter (?CCG in (COMPGRAPH)).\n" + 
@@ -388,7 +389,7 @@ public class JenaBasedDialogInferenceProcessor extends JenaBasedSadlInferencePro
 		List<TripleElement> queryPatterns = new ArrayList<TripleElement>();
 		List<OntClass> inputsList = new ArrayList<OntClass>();
 		List<OntClass> outputsList = new ArrayList<OntClass>();
-		Map<OntClass, Individual> outputInstance = new HashMap<OntClass, Individual>();
+		//Map<OntClass, Individual> outputInstance = new HashMap<OntClass, Individual>();
 		
 		
 		for (int i = 0; i < triples.length; i++) {
@@ -533,8 +534,8 @@ public class JenaBasedDialogInferenceProcessor extends JenaBasedSadlInferencePro
 		
 		String cgJson, dbnJson, dbnResultsJson;
 		
-		ResultSet[] results = new ResultSet[2];  //[numNodes+1];
-
+//		ResultSet[] results = new ResultSet[2]; 
+		ResultSet[] results = null;
 		
 		try {
 		
@@ -542,9 +543,9 @@ public class JenaBasedDialogInferenceProcessor extends JenaBasedSadlInferencePro
 	
 				for(int i=0; i<outputsList.size(); i++) {
 					OntClass oclass = outputsList.get(i);
-					Individual oinst = createIndividualOfClass(qhmodel, oclass.getURI());
-					qhmodel.add(cgq, outputprop, oinst);
-					outputInstance.put(oclass,oinst);
+					//Individual oinst = createIndividualOfClass(qhmodel, oclass.getURI());
+					//qhmodel.add(cgq, outputprop, oinst);
+					//outputInstance.put(oclass,oinst);
 				}			
 				
 				listOfInputs = strUriList(inputsList);
@@ -576,46 +577,72 @@ public class JenaBasedDialogInferenceProcessor extends JenaBasedSadlInferencePro
 					}
 				}
 				
-				listOfEqns = getEqnUrisFromResults(eqnsResults);
-	            eqnsResults.reset();
 
-				// Comp Graph instance
-				//Individual cgIns = createIndividualOfClass(qhmodel,METAMODEL_CCG);
-				cgIns = qhmodel.createIndividual(METAMODEL_PREFIX + "CG_" + System.currentTimeMillis(), getTheJenaModel().getOntClass(METAMODEL_CCG));
-				qhmodel.add(ce, getTheJenaModel().getOntProperty(METAMODEL_COMPGRAPH_PROP), cgIns);
-	
-				// Retrieve Models & Nodes
-				queryStr = RETRIEVE_MODELS.replaceAll("EQNSLIST", listOfEqns);
-				models = queryKnowledgeGraph(queryStr, getTheJenaModel());
-				modelsCSVString = convertResultSetToString(models);
-				System.out.println(modelsCSVString);
-	
-				queryStr = RETRIEVE_NODES.replaceAll("EQNSLIST", listOfEqns);
-				queryStr = queryStr.replaceAll("COMPGRAPH", "<" + cgIns.getURI() + ">");
-				nodes = queryKnowledgeGraph(queryStr, getTheJenaModel().union(qhmodel));
-				nodesCSVString = convertResultSetToString(nodes);
-				System.out.println(nodesCSVString);
-	
-				if (nodes.size() <= 0) {
-					// TODO: Output "no models found" message
-					return null;
+				Map<RDFNode, String[]> dbnEqns = new HashMap<RDFNode,String[]>();
+				Map<RDFNode, RDFNode> dbnOutput = new HashMap<RDFNode,RDFNode>();
+
+				dbnEqns = createDbnEqnMap(eqnsResults);
+				eqnsResults.reset();
+				dbnOutput = createDbnOutputMap(eqnsResults);
+
+				
+				int numOfModels = 1;
+				if (dbnEqns.isEmpty())
+					numOfModels = 0;
+				for (RDFNode dbnk :  dbnEqns.keySet()) {
+					numOfModels *= dbnEqns.get(dbnk).length;
 				}
-	
-				
-				cgJson = kgResultsToJson(nodesCSVString, modelsCSVString, queryMode);
-				dbnJson = generateDBNjson(cgJson);
-				class2lbl = getClassLabelMapping(dbnJson);
-				
-	            dbnResultsJson = executeDBN(dbnJson);
-	            lbl2value = getLabelToMeanStdMapping(dbnResultsJson);
 
-	            createCGsubgraphs(cgIns, eqnsResults, class2lbl, lbl2value, outputInstance);
 				
-				// create ResultSet
-				results[0] = retrieveCompGraph(resource, cgIns);
+				String[] modelEqnList = buildEqnsLists(numOfModels, dbnEqns);
+
 				
-				results[1] = retrieveValues(resource, cgIns);
+				results = new ResultSet[numOfModels*2]; 
 				
+				
+				for(int i=0; i<numOfModels; i++) {
+					
+					//listOfEqns = getEqnUrisFromResults(eqnsResults);
+					listOfEqns = modelEqnList[i];
+		            eqnsResults.reset();
+	
+					// Comp Graph instance
+					cgIns = qhmodel.createIndividual(METAMODEL_PREFIX + "CG_" + System.currentTimeMillis(), getTheJenaModel().getOntClass(METAMODEL_CCG));
+					qhmodel.add(ce, getTheJenaModel().getOntProperty(METAMODEL_COMPGRAPH_PROP), cgIns);
+		
+					// Retrieve Models & Nodes
+					queryStr = RETRIEVE_MODELS.replaceAll("EQNSLIST", listOfEqns);
+					models = queryKnowledgeGraph(queryStr, getTheJenaModel());
+					modelsCSVString = convertResultSetToString(models);
+					System.out.println(modelsCSVString);
+		
+					queryStr = RETRIEVE_NODES.replaceAll("EQNSLIST", listOfEqns);
+					queryStr = queryStr.replaceAll("COMPGRAPH", "<" + cgIns.getURI() + ">");
+					nodes = queryKnowledgeGraph(queryStr, getTheJenaModel().union(qhmodel));
+					nodesCSVString = convertResultSetToString(nodes);
+					System.out.println(nodesCSVString);
+		
+					if (nodes.size() <= 0) {
+						// TODO: Output "no models found" message
+						return null;
+					}
+		
+					
+					cgJson = kgResultsToJson(nodesCSVString, modelsCSVString, queryMode);
+					dbnJson = generateDBNjson(cgJson);
+					class2lbl = getClassLabelMapping(dbnJson);
+					
+		            dbnResultsJson = executeDBN(dbnJson);
+		            lbl2value = getLabelToMeanStdMapping(dbnResultsJson);
+	
+		            //createCGsubgraphs(cgIns, eqnsResults, class2lbl, lbl2value, outputInstance);
+		            createCGsubgraphs(cgIns, dbnEqns, dbnOutput, listOfEqns, class2lbl, lbl2value); //, outputInstance);
+					
+					// create ResultSet
+					results[i] = retrieveCompGraph(resource, cgIns);
+					
+					results[i+numOfModels] = retrieveValues(resource, cgIns);
+				}
 				
 			} else if (inputsList.size() <= 0 && outputsList.size() > 0) {
 				
@@ -634,8 +661,8 @@ public class JenaBasedDialogInferenceProcessor extends JenaBasedSadlInferencePro
 					inpl.addAll(outputsList);
 					inpl.remove(i);
 					
-					Individual oinst = createIndividualOfClass(qhmodel, oclass.getURI());
-					outputInstance.put(oclass,oinst);
+					//Individual oinst = createIndividualOfClass(qhmodel, oclass.getURI());
+					//outputInstance.put(oclass,oinst);
 					
 					
 					listOfInputs = strUriList(inpl);
@@ -679,10 +706,10 @@ public class JenaBasedDialogInferenceProcessor extends JenaBasedSadlInferencePro
 			            lbl2value = getLabelToMeanStdMapping(dbnResultsJson);
 						
 
-			            createCGsubgraphs(cgIns, eqnsResults, class2lbl, lbl2value, outputInstance);
+			            //createCGsubgraphs(cgIns, eqnsResults, class2lbl, lbl2value, outputInstance);
 			            
 			            //TODO: create ResultSet
-			            
+			            results = null;
 					}
 					// else continue looking
 				}
@@ -734,6 +761,76 @@ public class JenaBasedDialogInferenceProcessor extends JenaBasedSadlInferencePro
 		
 		
 		return null; //results;
+	}
+
+
+//	private void createCGsubgraphs(Individual cgIns, Map<String, String[]> dbnEqn, Map<String, String> dbnOutput,
+//			Map<String, String> class2lbl, Map<String, String[]> lbl2value, Map<OntClass, Individual> outputInstance) {
+//		// TODO Auto-generated method stub
+//		
+//	}
+
+
+	private Map<RDFNode, RDFNode> createDbnOutputMap(ResultSetRewindable eqnsResults) {
+		Map<RDFNode, RDFNode> map = new HashMap<RDFNode, RDFNode>();
+//		int dbnNum = eqnsResults.getRowNumber();
+//		List<String> eqArray = new ArrayList<String>();
+		RDFNode dbn;
+		RDFNode op;
+		QuerySolution row;
+		while(eqnsResults.hasNext()) {
+			row = eqnsResults.nextSolution() ;
+			dbn = row.get("?DBN") ;
+			op = row.get("?Out");
+			map.put(dbn, op);
+		}
+		return map;
+	}
+
+
+	private String[] buildEqnsLists(int numOfModels, Map<RDFNode, String[]> dbnEqns) {
+		String[] modelEqnList = new String[numOfModels];
+		RDFNode prevKey;
+		Map<RDFNode, Integer> dbnEqnIdx = new HashMap<RDFNode,Integer>();
+
+		for(RDFNode dbnk : dbnEqns.keySet()) 
+			dbnEqnIdx.put(dbnk, 0);
+		
+		for(int m=0; m<numOfModels; m++) {
+			modelEqnList[m] = "";
+//			modelEqnList[m] = dbnEqn[ dbnEqnIdx[] ]
+			prevKey = null;
+			for(RDFNode dbnk : dbnEqns.keySet()) {
+				modelEqnList[m] += "<" + dbnEqns.get(dbnk)[ dbnEqnIdx.get(dbnk) ] + ">,";
+				
+				if( prevKey == null || dbnEqnIdx.get(prevKey) == 0 ) {
+				    if( dbnEqnIdx.get(dbnk) < dbnEqns.get(dbnk).length -1)
+				    	dbnEqnIdx.put(dbnk, dbnEqnIdx.get(dbnk)+1 );
+				    else
+				    	dbnEqnIdx.put(dbnk, 0);
+				    prevKey = dbnk;
+				}
+			}
+			modelEqnList[m] = modelEqnList[m].substring(0,modelEqnList[m].length()-1);
+		}
+		return modelEqnList;
+	}
+
+
+	private Map<RDFNode, String[]> createDbnEqnMap(ResultSetRewindable eqnsResults) {
+		Map<RDFNode, String[]> map = new HashMap<RDFNode, String[]>();
+//		int dbnNum = eqnsResults.getRowNumber();
+//		List<String> eqArray = new ArrayList<String>();
+		RDFNode dbn;
+		String eqns[];
+		QuerySolution row;
+		while(eqnsResults.hasNext()) {
+			row = eqnsResults.nextSolution() ;
+			dbn = row.get("?DBN");
+			eqns = row.get("?Eqns").toString().split(",") ;
+			map.put(dbn, eqns);
+		}
+		return map;
 	}
 
 
@@ -825,12 +922,14 @@ public class JenaBasedDialogInferenceProcessor extends JenaBasedSadlInferencePro
 
 
 
-	private void createCGsubgraphs(Individual cgIns, ResultSetRewindable eqnsResults, 
-			Map<String, String> class2lbl,
-			Map<String, String[]> lbl2value, 
-			Map<OntClass, Individual> outputInstance) {
-		
-		// TODO Auto-generated method stub
+//	private void createCGsubgraphs(Individual cgIns, ResultSetRewindable eqnsResults, 
+//			Map<String, String> class2lbl,
+//			Map<String, String[]> lbl2value, 
+//			Map<OntClass, Individual> outputInstance) {
+		private void createCGsubgraphs(Individual cgIns, Map<RDFNode, String[]> dbnEqns, Map<RDFNode, RDFNode> dbnOutput,
+				String listOfEqns, Map<String, String> class2lbl, Map<String, String[]> lbl2value) //, Map<OntClass, Individual> outputInstance)
+		{
+
 		OntProperty subgraphprop = 	getTheJenaModel().getOntProperty(METAMODEL_SUBG_PROP);
 		OntProperty cgraphprop = 	getTheJenaModel().getOntProperty(METAMODEL_CGRAPH_PROP);
 		OntProperty hasEqnProp = 	getTheJenaModel().getOntProperty(METAMODEL_HASEQN_PROP);
@@ -846,35 +945,51 @@ public class JenaBasedDialogInferenceProcessor extends JenaBasedSadlInferencePro
 		
 		QuerySolution soln;
 
-		eqnsResults.reset();
 		//for (RDFNode eq : listOfEqnObjs) {
-		while( eqnsResults.hasNext() ) {
-	      	soln = eqnsResults.nextSolution() ;
-			RDFNode s = soln.get("?Eq") ; 
-			RDFNode p = soln.get("?DBN") ;
-			RDFNode o = soln.get("?Out") ;
+		for( RDFNode dbn : dbnEqns.keySet() ) {
+//			RDFNode s = soln.get("?Eq") ; 
+//			RDFNode p = soln.get("?DBN") ;
+//			RDFNode o = soln.get("?Out") ;
 			sgIns = createIndividualOfClass(qhmodel,METAMODEL_SUBGRAPH);
 			//sgIns = qhmodel.createIndividual(getTheJenaModel().getOntClass(METAMODEL_SUBGRAPH));
 			//getTheJenaModel().add(cgIns, subgraphprop, sgIns); 
 			qhmodel.add(cgIns, subgraphprop, sgIns);
-			dbnIns = createIndividualOfClass(qhmodel,p.toString());
+			dbnIns = createIndividualOfClass(qhmodel,dbn.toString());
 			//getTheJenaModel().add(sgIns, cgraphprop, dbnIns);
 			qhmodel.add(sgIns, cgraphprop, dbnIns);
 			//getTheJenaModel().add(dbnIns, hasEqnProp, s); //the equation is already an instance
-			qhmodel.add(dbnIns, hasEqnProp, s); //the equation is already an instance
-			if (outputInstance.containsKey(o)) {
-				outpIns = outputInstance.get(o);
-				//qhmodel.add(sgIns, outputprop, outputInstance.get(o));
+			String[] modelEqns = listOfEqns.split(",");
+			String[] deqs = dbnEqns.get(dbn);
+			String eqn=null;
+			for(int i=0; i<deqs.length; i++) {
+				for(int j=0; j<modelEqns.length; j++) {
+					String me = modelEqns[j];
+					me = me.substring(1, me.length()-1);
+					if( me.equals(deqs[i])) {
+						eqn = me;
+						break;
+					}
+				}
+				if (eqn != null)
+					break;
 			}
-			else {
-				outpIns = createIndividualOfClass(qhmodel,o.toString());
+			RDFNode e = qhmodel.getResource(eqn);  //getIndividual(eqn);
+			qhmodel.add(dbnIns, hasEqnProp, e);
+			RDFNode o = dbnOutput.get(dbn);
+			//if (outputInstance.containsKey(o)) {
+			//	outpIns = outputInstance.get(o);
+			//	//qhmodel.add(sgIns, outputprop, outputInstance.get(o));
+			//}
+			//else {
+			String ostr = dbnOutput.get(dbn).toString();
+			outpIns = createIndividualOfClass(qhmodel,ostr);
 //				getTheJenaModel().add(sgIns, outputprop, outpIns);
 //				qhmodel.add(sgIns, outputprop, outpIns);
-			}
+			//}
 			getTheJenaModel().add(sgIns, outputprop, outpIns);
 			qhmodel.add(sgIns, outputprop, outpIns);
 			
-				String ocls = o.toString();
+			String ocls = dbnOutput.get(dbn).toString();
 			String cls = class2lbl.get(ocls);
 			String[] ms = lbl2value.get(cls);  //class2lbl.get(o.toString()));
 			qhmodel.add(outpIns, getTheJenaModel().getProperty(VALUE_PROP), ms[0] );
@@ -1031,7 +1146,7 @@ public class JenaBasedDialogInferenceProcessor extends JenaBasedSadlInferencePro
         List<NameValuePair> arguments = new ArrayList<>(2);
         arguments.add(new BasicNameValuePair("nodes", nodesCSVString));
         arguments.add(new BasicNameValuePair("models", modelsCSVString));
-        arguments.add(new BasicNameValuePair("mode", modelsCSVString));
+        arguments.add(new BasicNameValuePair("mode", mode));
 
         httppost.setEntity(new UrlEncodedFormEntity(arguments, "UTF-8"));
 //         HttpResponse response = httpclient.execute(httppost);

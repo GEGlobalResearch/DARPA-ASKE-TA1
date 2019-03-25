@@ -6,6 +6,7 @@ import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -232,8 +233,13 @@ public class DialogAnswerProvider extends DefaultAutoEditStrategyProvider implem
 			                		ResultSet[] rss = insertTriplesAndQuery(resource, triples);
 			                		if (rss != null) {
 			                			int cntr = 0;
+			                			int numOfModels = rss.length/2;
 				                		for (ResultSet rs : rss) {
-				                			if (cntr == 0) {
+			                				String[] colnames = rs.getColumnNames();
+			                				String cols = String.join(" ",colnames);
+			                				if ( cols.contains("_style") ) {
+			                					
+				                			//if (cntr == 0) {
 				                				// this is the first ResultSet, construct a graph if possible
 				                				if (rs.getColumnCount() != 3) {
 				                					System.err.println("Can't construct graph; not 3 columns. Unexpected result.");
@@ -244,14 +250,14 @@ public class DialogAnswerProvider extends DefaultAutoEditStrategyProvider implem
 				                				if (visualizer != null) {
 				                					String graphsDirectory = new File(modelFolder).getParent() + "/Graphs";
 				                					new File(graphsDirectory).mkdir();
-				                					String baseFileName = "QueryMetadata";
+				                					String baseFileName = "QueryMetadata"+rss[cntr+numOfModels].getResultAt(1, 0).toString();
 				                					visualizer.initialize(
 				                		                    graphsDirectory,
 				                		                    baseFileName,
 				                		                    baseFileName,
 				                		                    null,
 				                		                    IGraphVisualizer.Orientation.TD,
-				                		                    "Assembled Model");
+				                		                    "Assembled Model " + rss[cntr+numOfModels].getResultAt(1, 0));
 				                					rs.setShowNamespaces(false);
 				                		            visualizer.graphResultSetData(rs);				                				}
 				        						String fileToOpen = visualizer.getGraphFileToOpen();
@@ -276,11 +282,13 @@ public class DialogAnswerProvider extends DefaultAutoEditStrategyProvider implem
 				                				}
 
 				                			}
-				                			if (cntr > 0) 
+			                				else {
+			                				//if (cntr > 0) 
 				                				answer.append(resultSetToQuotableString(rs));
-				                			if(cntr++ > 1)
+				                			//if(cntr++ > 1)
 				                				answer.append(",\n");
-				                			
+			                				}
+			                				cntr++;
 				                		}
 				                		answer.append(".\n");
 			                		}
