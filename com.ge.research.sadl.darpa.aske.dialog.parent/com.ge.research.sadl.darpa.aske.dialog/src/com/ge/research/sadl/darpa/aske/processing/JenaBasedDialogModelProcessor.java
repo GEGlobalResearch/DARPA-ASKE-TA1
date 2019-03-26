@@ -501,6 +501,16 @@ public class JenaBasedDialogModelProcessor extends JenaBasedSadlModelProcessor {
 			EList<NamedStructureAnnotation> annotations = null; // element.getAnnotations();
 			boolean isGraph = stmt.getStart().equals("Graph");
 			Query query = processQueryExpression(stmt, stmt.getExpr(), elementName, annotations, isGraph);
+			if (stmt.getParameterizedValues() != null) {
+				EList<Expression> rowvals = stmt.getParameterizedValues().getExplicitValues();
+				List<Object> rowObjects = new ArrayList<Object>();
+				for (Expression val : rowvals) {
+					Object valObj = processExpression(val);
+					rowObjects.add(valObj);
+				}
+				query.setParameterizedValues(rowObjects);
+				query.setContext(stmt);
+			}
 			if (query.getKeyword() == null && (stmt.getStart().equalsIgnoreCase("ask") || stmt.getStart().equalsIgnoreCase("find"))) {
 				query.setKeyword("select");
 			}

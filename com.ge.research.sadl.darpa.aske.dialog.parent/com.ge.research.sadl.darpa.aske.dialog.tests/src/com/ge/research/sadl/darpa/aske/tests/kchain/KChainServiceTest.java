@@ -25,21 +25,21 @@ public class KChainServiceTest {
 	public void setUp() throws Exception {
 	}
 
-	@Ignore
+//	@Ignore
 	@Test
-	public void testBuild_01() throws IOException {
+	public void testBuildEval_01() throws IOException {
 		/*
 {
   "dataLocation": "../Datasets/Force_dataset.csv",
   "inputVariables": [
     {
       "name": "Mass",
-      "type": "double"
-    },
+      "type": "double",
+     },
     {
       "name": "Acceleration",
-      "type": "double"
-    }
+      "type": "double",
+     }
   ],
   "modelName": "Newtons2ndLawModel",
   "outputVariables": [
@@ -70,12 +70,55 @@ public class KChainServiceTest {
 //		String modelUri = "http://com.research.ge/darpa/aske/answer/test_02/binaryadd";
 		String modelUri = "Newtons2ndLawModel";
 		// add to KG: 
-		buildCGModel(modelUri, equationModel, dataLocation, inputs, outputs);
+		boolean bResults = buildCGModel(modelUri, equationModel, dataLocation, inputs, outputs);
+		
+		/*
+{
+  "inputVariables": [
+    {						// if missing use default if provided
+      "name": "Mass",
+      "type": "double",
+      "value": "[1.0]"		
+    },
+    {
+      "name": "Acceleration",
+      "type": "double",
+      "value": "[0.5]"
+    }
+  ],
+  "modelName": "Newtons2ndLawModel",
+  "outputVariables": [
+    {
+      "name": "Force",
+      "type": "double"
+    }
+  ]
+}		 
+		 */
+		List<String[]> eInputs = new ArrayList<String[]>();
+		String[] eInput1 = new String[3];
+		eInput1[0] = "Mass";
+		eInput1[1] = "double";
+		eInput1[2] = "[1.0]";
+		eInputs.add(eInput1);
+		String[] eInput2 = new String[3];
+		eInput2[0] = "Acceleration";
+		eInput2[1] = "double";
+		eInput2[2] = "[0.5]";
+		eInputs.add(eInput2);
+		List<String[]> eOutputs = new ArrayList<String[]>();
+		String[] eOutput1 = new String[2];
+		eOutput1[0] = "Force";
+		eOutput1[1] = "double";
+		eOutputs.add(eOutput1);
+		// evaluate 
+		List<List<String[]>> eResults = evalCGModel(modelUri, eInputs, eOutputs);
+
 	}
 
-	@Ignore
+//	@Ignore
 	@Test
-	public void testBuild_02() throws IOException {
+	public void testBuildEval_02() throws IOException {
 /*
 {
   "equationModel": "Force = Mass*Acceleration",
@@ -118,12 +161,8 @@ public class KChainServiceTest {
 //		String modelUri = "http://com.research.ge/darpa/aske/answer/test_02/binaryadd";
 		String modelUri = "Newtons2ndLawModelPB";
 		// add to KG: 
-		buildCGModel(modelUri, equationModel, dataLocation, inputs, outputs);
-	}
-	
-	@Ignore
-	@Test
-	public void testEval_01() throws IOException {
+		boolean bResults = buildCGModel(modelUri, equationModel, dataLocation, inputs, outputs);
+		
 		/*
 {
   "inputVariables": [
@@ -147,77 +186,29 @@ public class KChainServiceTest {
   ]
 }		 
 		 */
-		List<String[]> inputs = new ArrayList<String[]>();
-		String[] input1 = new String[3];
-		input1[0] = "Mass";
-		input1[1] = "double";
-		input1[2] = "[1.0]";
-		inputs.add(input1);
-		String[] input2 = new String[3];
-		input2[0] = "Acceleration";
-		input2[1] = "double";
-		input2[2] = "[0.5]";
-		inputs.add(input2);
-		List<String[]> outputs = new ArrayList<String[]>();
-		String[] output1 = new String[2];
-		output1[0] = "Force";
-		output1[1] = "double";
-		outputs.add(output1);
-//		String modelUri = "http://com.research.ge/darpa/aske/answer/test_02/binaryadd";
-		String modelUri = "Newtons2ndLawModel";
-		// add to KG: 
-		evalCGModel(modelUri, inputs, outputs);
+		List<String[]> eInputs = new ArrayList<String[]>();
+		String[] eInput1 = new String[3];
+		eInput1[0] = "Mass";
+		eInput1[1] = "double";
+		eInput1[2] = "[1.0]";
+		eInputs.add(eInput1);
+		String[] eInput2 = new String[3];
+		eInput2[0] = "Acceleration";
+		eInput2[1] = "double";
+		eInput2[2] = "[0.5]";
+		eInputs.add(eInput2);
+		List<String[]> eOutputs = new ArrayList<String[]>();
+		String[] eOutput1 = new String[2];
+		eOutput1[0] = "Force";
+		eOutput1[1] = "double";
+		eOutputs.add(eOutput1);
+		// evaluate 
+		List<List<String[]>> eResults = evalCGModel(modelUri, eInputs, eOutputs);
 	}
 	
-	@Ignore
-	@Test
-	public void testEval_02() throws IOException {
-		/*
-{
-  "inputVariables": [
-    {
-      "name": "Mass",
-      "type": "double",
-      "value": "[1.0]"
-    },
-    {
-      "name": "Acceleration",
-      "type": "double",
-      "value": "[0.5]"
-    }
-  ],
-  "modelName": "Newtons2ndLawModel",
-  "outputVariables": [
-    {
-      "name": "Force",
-      "type": "double"
-    }
-  ]
-}		 
-		 */
-		List<String[]> inputs = new ArrayList<String[]>();
-		String[] input1 = new String[3];
-		input1[0] = "Mass";
-		input1[1] = "double";
-		input1[2] = "[1.0]";
-		inputs.add(input1);
-		String[] input2 = new String[3];
-		input2[0] = "Acceleration";
-		input2[1] = "double";
-		input2[2] = "[0.5]";
-		inputs.add(input2);
-		List<String[]> outputs = new ArrayList<String[]>();
-		String[] output1 = new String[2];
-		output1[0] = "Force";
-		output1[1] = "double";
-		outputs.add(output1);
-//		String modelUri = "http://com.research.ge/darpa/aske/answer/test_02/binaryadd";
-		String modelUri = "Newtons2ndLawModelPB";
-		// add to KG: 
-		evalCGModel(modelUri, inputs, outputs);
-	}
-	private List<String[]> evalCGModel(String modelUri, List<String[]> inputVariables, List<String[]> outputVariables) throws IOException {
-		String host = "3.39.127.101";
+	public List<List<String[]>> evalCGModel(String modelUri, List<String[]> inputVariables, List<String[]> outputVariables) throws IOException {
+//		String host = "3.39.122.224";
+		String host = "3.1.176.139";
 		int port = 12345;
 		String kchainServiceURL = "http://" + host + ":" + port + "/darpa/aske/kchain/";
 		/*
@@ -270,8 +261,13 @@ public class KChainServiceTest {
 
 		String jsonResponse = makeConnectionAndGetResponse(serviceUrl, json);
 		System.out.println(jsonResponse);
-		JsonObject evalResults = new JsonParser().parse(jsonResponse).getAsJsonObject();
-/*
+		JsonElement je = new JsonParser().parse(jsonResponse);
+		if (!je.isJsonObject()) {
+			throw new IOException("Unexpected response: " + je.toString());
+		}
+		
+		JsonObject evalResults = je.getAsJsonObject();
+		/*
 {
   "outputVariables": [
     {
@@ -291,8 +287,71 @@ public class KChainServiceTest {
 			aValue[2] = ovar.getAsJsonObject().get("value").getAsString();	
 			results.add(aValue);
 		}
+		JsonElement du = evalResults.get("defaultsUsed");
+		List<String[]> defaultValues = null;
+		if (du != null) {
+			JsonArray defsUsed = du.getAsJsonArray();
+			if (defsUsed != null) {
+				defaultValues = new ArrayList<String[]>();
+				for (JsonElement defobj : defsUsed) {
+					String[] aDefault = new String[2];
+					aDefault[0] = defobj.getAsJsonObject().get("name").getAsString();
+					aDefault[1] = defobj.getAsJsonObject().get("value").getAsString();
+					defaultValues.add(aDefault);
+				}
+			}
+		}
 		// return results: 
-		return results;
+		List<List<String[]>> retLists = new ArrayList<List<String[]>>();
+		retLists.add(results);
+		retLists.add(defaultValues);
+		return retLists;
+	}
+	
+	@Test
+	public void testBuildEval_03() throws IOException {
+		List<String[]> inputs = new ArrayList<String[]>();
+		String[] input1 = new String[3];
+		input1[0] = "Mass";
+		input1[1] = "double";
+		input1[2] = "1.5";
+		inputs.add(input1);
+		String[] input2 = new String[2];
+		input2[0] = "Acceleration";
+		input2[1] = "double";
+		inputs.add(input2);
+		List<String[]> outputs = new ArrayList<String[]>();
+		String[] output1 = new String[2];
+		output1[0] = "Force";
+		output1[1] = "double";
+		outputs.add(output1);
+
+		String dataLocation = null;
+		String equationModel = "Force = Mass*Acceleration";
+		String modelUri = "Newtons2ndLawModelPB2";
+		// add to KG: 
+		buildCGModel(modelUri, equationModel, dataLocation, inputs, outputs);
+	
+		List<String[]> eInputs = new ArrayList<String[]>();
+//		String[] eInput1 = new String[3];
+//		eInput1[0] = "Mass";
+//		eInput1[1] = "double";
+//		eInput1[2] = "[1.0]";
+//		eInputs.add(eInput1);
+		String[] eInput2 = new String[3];
+		eInput2[0] = "Acceleration";
+		eInput2[1] = "double";
+		eInput2[2] = "[0.5]";
+		eInputs.add(eInput2);
+		List<String[]> eOutputs = new ArrayList<String[]>();
+		String[] eOutput1 = new String[2];
+		eOutput1[0] = "Force";
+		eOutput1[1] = "double";
+		eOutputs.add(eOutput1);
+//		String modelUri = "http://com.research.ge/darpa/aske/answer/test_02/binaryadd";
+//		String modelUri = "Newtons2ndLawModelPB";
+		// add to KG: 
+		evalCGModel(modelUri, eInputs, eOutputs);
 	}
 
 	public boolean buildCGModel(String modelUri, String equationModel, String dataLocation, List<String[]> inputs, List<String[]> outputs) throws IOException {
@@ -317,7 +376,8 @@ public class KChainServiceTest {
   "modelName": "string"
 }
  */
-		String host = "3.39.127.101";
+//		String host = "3.39.122.224";
+		String host = "3.1.176.139";
 		int port = 12345;
 		String kchainServiceURL = "http://" + host + ":" + port + "/darpa/aske/kchain/";
 		
@@ -335,6 +395,9 @@ public class KChainServiceTest {
 			JsonObject inputj = new JsonObject();
 			inputj.addProperty("name", input[0]);
 			inputj.addProperty("type", input[1]);
+			if (input.length > 2) {
+				inputj.addProperty("value", input[2]);
+			}
 			jarrin.add(inputj);
 		}
 		JsonArray jarrout = new JsonArray();
@@ -361,23 +424,28 @@ public class KChainServiceTest {
 }
  */
 		JsonElement je = new JsonParser().parse(jsonResponse);
-		JsonObject jobj = je.getAsJsonObject();
-		String modelType = jobj.get("modelType").getAsString();
-		String metagraphLocation = jobj.get("metagraphLocation").getAsString();
-		boolean trained = jobj.get("trainedState").getAsBoolean();	
-		
-		Double[] dfd = null;
-//		JsonElement dfelement = jobj.get("degreeFitness");
-//		if (dfelement != null) {
-//			JsonArray df = dfelement.getAsJsonArray();
-//			dfd = new Double[df.size()];
-//			int idx = 0;
-//			for (JsonElement arrel : df) {
-//				dfd[idx++] = arrel.getAsDouble();
-//			}
-//		}
-		// add to KG: 
-		return addCGModeltoExistingKGModel(modelUri, modelType, metagraphLocation, dfd);
+		if (je.isJsonObject()) {
+			JsonObject jobj = je.getAsJsonObject();
+			String modelType = jobj.get("modelType").getAsString();
+			String metagraphLocation = jobj.get("metagraphLocation").getAsString();
+			boolean trained = jobj.get("trainedState").getAsBoolean();	
+			
+			Double[] dfd = null;
+	//		JsonElement dfelement = jobj.get("degreeFitness");
+	//		if (dfelement != null) {
+	//			JsonArray df = dfelement.getAsJsonArray();
+	//			dfd = new Double[df.size()];
+	//			int idx = 0;
+	//			for (JsonElement arrel : df) {
+	//				dfd[idx++] = arrel.getAsDouble();
+	//			}
+	//		}
+//		 add to KG: 
+			return addCGModeltoExistingKGModel(modelUri, modelType, metagraphLocation, dfd);
+		}
+		else {
+			throw new IOException("Unexpected response: " + je.toString());
+		}
 	}
 
 	/**

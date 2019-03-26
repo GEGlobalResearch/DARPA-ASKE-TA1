@@ -1298,7 +1298,11 @@ public class DialogAnswerProvider extends DefaultAutoEditStrategyProvider implem
 								        	try {
 												Resource newRsrc = resSet.createResource(URI.createFileURI(sf.getCanonicalPath()));
 												newRsrc.load(newRsrc.getResourceSet().getLoadOptions());
+												prj.refreshLocal(IResource.DEPTH_INFINITE, null);
 											} catch (IOException e) {
+												// TODO Auto-generated catch block
+												e.printStackTrace();
+											} catch (CoreException e) {
 												// TODO Auto-generated catch block
 												e.printStackTrace();
 											}
