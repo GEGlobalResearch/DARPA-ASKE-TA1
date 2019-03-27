@@ -1315,6 +1315,10 @@ public class JavaImportOperation extends WorkspaceModifyOperation {
 			if (cgsburl != null) {
 				map.put(DialogPreferences.ANSWER_CG_SERVICE_BASE_URI.getId(), cgsburl);
 			}
+			String j2psburl = preferenceValues.getPreference(DialogPreferences.ANSWER_JAVA_TO_PYTHON_SERVICE_BASE_URI);
+			if (j2psburl != null) {
+				map.put(DialogPreferences.ANSWER_JAVA_TO_PYTHON_SERVICE_BASE_URI.getId(), j2psburl);
+			}
 //			preferenceValues.getPreference(DialogPreferences.)
 			return map;
 		}

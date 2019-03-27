@@ -75,6 +75,7 @@ import com.ge.research.sadl.sADL.SadlSimpleTypeReference;
 import com.ge.research.sadl.sADL.SadlStatement;
 import com.ge.research.sadl.sADL.SadlTypeReference;
 import com.ge.research.sadl.utils.ResourceManager;
+import com.hp.hpl.jena.ontology.Individual;
 import com.hp.hpl.jena.ontology.OntModel;
 import com.hp.hpl.jena.ontology.Ontology;
 import com.hp.hpl.jena.rdf.model.RDFWriter;
@@ -501,10 +502,14 @@ public class JenaBasedDialogModelProcessor extends JenaBasedSadlModelProcessor {
 	private void processStatement(BuildStatement element) {
 		SadlResource modelSr = ((BuildStatement)element).getTarget();
 		String modelUri = getDeclarationExtensions().getConceptUri(modelSr);
+		Individual extractedModelInstance = getTheJenaModel().getIndividual(modelUri);
+		if (extractedModelInstance == null) {
+			addError("No model with URI '" + modelUri + "' is found in current imports.", element);
+		}
 		System.out.println("Ready to build model '" + modelUri + "'");
 		BuildConstruct bc = new BuildConstruct(modelUri);
+		bc.setContext(element);
 		OntModelProvider.addPrivateKeyValuePair(element.eResource(), DialogConstants.LAST_DIALOG_COMMAND, bc);
-		
 	}
 
 	private void processStatement(ModifiedAskStatement stmt) {

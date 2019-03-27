@@ -14,6 +14,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.ServiceLoader;
 import java.util.Set;
+import java.util.concurrent.atomic.AtomicReference;
 import java.util.function.Consumer;
 
 import org.eclipse.core.commands.ExecutionException;
@@ -25,33 +26,30 @@ import org.eclipse.core.resources.IResource;
 import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IPath;
-import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Path;
-import org.eclipse.core.runtime.Status;
 import org.eclipse.emf.common.util.EList;
 import org.eclipse.emf.common.util.URI;
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.ecore.resource.Resource;
-import org.eclipse.emf.ecore.resource.ResourceSet;
-import org.eclipse.emf.ecore.resource.impl.ResourceSetImpl;
 import org.eclipse.jface.text.BadLocationException;
 import org.eclipse.jface.text.DocumentCommand;
 import org.eclipse.jface.text.IAutoEditStrategy;
 import org.eclipse.jface.text.IDocument;
 import org.eclipse.jface.text.IRegion;
 import org.eclipse.jface.text.Region;
-import org.eclipse.osgi.util.NLS;
+import org.eclipse.swt.widgets.Display;
 import org.eclipse.ui.IWorkbenchPage;
 import org.eclipse.ui.IWorkbenchPart;
 import org.eclipse.ui.IWorkbenchWindow;
 import org.eclipse.ui.PartInitException;
 import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.ide.IDE;
-import org.eclipse.ui.internal.wizards.datatransfer.DataTransferMessages;
 import org.eclipse.xtext.GrammarUtil;
 import org.eclipse.xtext.nodemodel.INode;
 import org.eclipse.xtext.nodemodel.impl.CompositeNodeWithSemanticElement;
 import org.eclipse.xtext.nodemodel.util.NodeModelUtils;
+import org.eclipse.xtext.preferences.IPreferenceValues;
+import org.eclipse.xtext.preferences.IPreferenceValuesProvider;
 import org.eclipse.xtext.resource.XtextResource;
 import org.eclipse.xtext.ui.editor.autoedit.DefaultAutoEditStrategyProvider;
 import org.eclipse.xtext.ui.editor.model.XtextDocument;
@@ -63,7 +61,11 @@ import org.slf4j.LoggerFactory;
 import com.ge.research.sadl.SADLStandaloneSetup;
 import com.ge.research.sadl.builder.ConfigurationManagerForIDE;
 import com.ge.research.sadl.builder.ConfigurationManagerForIdeFactory;
+import com.ge.research.sadl.builder.IConfigurationManagerForIDE;
 import com.ge.research.sadl.darpa.aske.curation.AnswerCurationManager;
+import com.ge.research.sadl.darpa.aske.dialog.ui.internal.DialogActivator;
+import com.ge.research.sadl.darpa.aske.preferences.DialogPreferences;
+import com.ge.research.sadl.darpa.aske.processing.BuildConstruct;
 import com.ge.research.sadl.darpa.aske.processing.DialogConstants;
 import com.ge.research.sadl.darpa.aske.processing.HowManyValuesConstruct;
 import com.ge.research.sadl.darpa.aske.processing.IDialogAnswerProvider;
@@ -86,7 +88,6 @@ import com.ge.research.sadl.model.visualizer.GraphVizVisualizer;
 import com.ge.research.sadl.model.visualizer.IGraphVisualizer;
 import com.ge.research.sadl.parser.antlr.SADLParser;
 import com.ge.research.sadl.processing.OntModelProvider;
-import com.ge.research.sadl.processing.SadlConstants;
 import com.ge.research.sadl.reasoner.ConfigurationException;
 import com.ge.research.sadl.reasoner.ResultSet;
 import com.ge.research.sadl.reasoner.SadlCommandResult;
@@ -113,6 +114,7 @@ public class DialogAnswerProvider extends DefaultAutoEditStrategyProvider implem
 	private static final Logger logger = LoggerFactory.getLogger(DialogAnswerProvider.class);
 	private XtextDocument theDocument;
 	private Resource resource;
+	private IConfigurationManagerForIDE configMgr = null;
 
 	@Inject
 	protected IResourceSetProvider resourceSetProvider;
@@ -337,6 +339,9 @@ public class DialogAnswerProvider extends DefaultAutoEditStrategyProvider implem
 		                		Object ctx = null; //((MixedInitiativeTextualResponse)lastcmd).getContext();
 		                		addCurationManagerContentToDialog(document, nreg, content, ctx, true);
 		                	}
+		                	else if (lastcmd instanceof BuildConstruct) {
+		                		processBuildRequest(resource, (BuildConstruct)lastcmd);
+		                	}
 		                	else if (lastcmd != null) {
 	                			logger.debug("    Lastcmd '" + lastcmd.getClass().getCanonicalName() + "' not handled yet!");
 		                	}
@@ -354,6 +359,39 @@ public class DialogAnswerProvider extends DefaultAutoEditStrategyProvider implem
 	                logger.debug("AutoEdit error (of type " + e.getClass().getCanonicalName() + "): " + e.getMessage());   
 	            }
 	        }
+
+			private void processBuildRequest(Resource resource, BuildConstruct lastcmd) throws BadLocationException {
+				String buildTarget = ((BuildConstruct)lastcmd).getTarget();
+				Object acmObj = getConfigMgr().getPrivateKeyValuePair(DialogConstants.ANSWER_CURATION_MANAGER);
+				String result = null;
+				if (acmObj == null) {
+	    			Map<String, String> preferences = getPreferences(resource.getURI());
+	    			try {
+						acmObj = new AnswerCurationManager(getConfigMgr().getModelFolder(), getConfigMgr(), preferences);
+		    			getConfigMgr().addPrivateKeyValuePair(DialogConstants.ANSWER_CURATION_MANAGER, acmObj);
+		    			((AnswerCurationManager) acmObj).getExtractionProcessor().getCodeExtractor().setCodeModelFolder(getConfigMgr().getModelFolder());
+					} catch (IOException e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+						result = "Failed: " + e.getMessage();
+					}
+	    		}
+
+				if (acmObj != null) {
+					if (acmObj instanceof AnswerCurationManager) {
+						try {
+							result = ((AnswerCurationManager)acmObj).processBuildRequest(buildTarget);
+						} catch (Exception e) {
+							// TODO Auto-generated catch block
+							e.printStackTrace();
+							result = "Failed: " + e.getMessage();
+						}
+					}
+				}
+				if (result != null) {
+					addCurationManagerContentToDialog(getTheDocument(), null, result, lastcmd.getContext(), true);
+				}
+			}
 
 			private String checkForEOS(String insertionText) {
 				if (!insertionText.endsWith(".") && !insertionText.endsWith("?")) {
@@ -1110,6 +1148,7 @@ public class DialogAnswerProvider extends DefaultAutoEditStrategyProvider implem
 	private String setDialogAnswerProvider(Resource resource) throws ConfigurationException {
 		String modelFolder = SadlActionHandler.getModelFolderFromResource(resource);
 		ConfigurationManagerForIDE cfgmgr = ConfigurationManagerForIdeFactory.getConfigurationManagerForIDE(modelFolder, null);
+		setConfigMgr(cfgmgr);
 		cfgmgr.addPrivateKeyValuePair(DialogConstants.DIALOG_ANSWER_PROVIDER, this);
 		return modelFolder;
 	}
@@ -1533,6 +1572,55 @@ public class DialogAnswerProvider extends DefaultAutoEditStrategyProvider implem
 
 	protected void setResource(Resource resource) {
 		this.resource = resource;
+	}
+
+	private IConfigurationManagerForIDE getConfigMgr() {
+		return configMgr;
+	}
+
+	private void setConfigMgr(IConfigurationManagerForIDE configMgr) {
+		this.configMgr = configMgr;
+	}
+
+	protected Map<String, String> getPreferences(IFile file) {
+		final URI uri = URI.createPlatformResourceURI(file.getFullPath().toString(), true);
+		return getPreferences(uri);
+	}
+	
+	protected Map<String, String> getPreferences(URI uri) {
+		Injector reqInjector = safeGetInjector(DialogActivator.COM_GE_RESEARCH_SADL_DARPA_ASKE_DIALOG);
+		IPreferenceValuesProvider pvp = reqInjector.getInstance(IPreferenceValuesProvider.class);
+		IPreferenceValues preferenceValues = pvp.getPreferenceValues(new XtextResource(uri));
+		if (preferenceValues != null) {
+			Map<String, String> map = new HashMap<String, String>();
+			String tsburl = preferenceValues.getPreference(DialogPreferences.ANSWER_TEXT_SERVICE_BASE_URI);
+			if (tsburl != null) {
+				map.put(DialogPreferences.ANSWER_TEXT_SERVICE_BASE_URI.getId(), tsburl);
+			}
+			String cgsburl = preferenceValues.getPreference(DialogPreferences.ANSWER_CG_SERVICE_BASE_URI);
+			if (cgsburl != null) {
+				map.put(DialogPreferences.ANSWER_CG_SERVICE_BASE_URI.getId(), cgsburl);
+			}
+			String j2psburl = preferenceValues.getPreference(DialogPreferences.ANSWER_JAVA_TO_PYTHON_SERVICE_BASE_URI);
+			if (j2psburl != null) {
+				map.put(DialogPreferences.ANSWER_JAVA_TO_PYTHON_SERVICE_BASE_URI.getId(), j2psburl);
+			}
+//			preferenceValues.getPreference(DialogPreferences.)
+			return map;
+		}
+		return null;
+	}
+
+	protected final Injector safeGetInjector(String name){
+		final AtomicReference<Injector> i = new AtomicReference<Injector>();
+		Display.getDefault().syncExec(new Runnable(){
+			@Override
+			public void run() {
+				i.set(DialogActivator.getInstance().getInjector(name));
+			}
+		});
+		
+		return i.get();
 	}
 
 }

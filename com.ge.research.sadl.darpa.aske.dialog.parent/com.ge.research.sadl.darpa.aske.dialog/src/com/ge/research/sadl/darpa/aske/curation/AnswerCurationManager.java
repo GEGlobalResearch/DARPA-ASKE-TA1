@@ -4,21 +4,29 @@ import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
+import java.io.InputStreamReader;
+import java.io.OutputStream;
+import java.io.StringReader;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
+import java.net.HttpURLConnection;
 import java.net.URISyntaxException;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.Scanner;
 
 import com.ge.research.sadl.builder.ConfigurationManagerForIdeFactory;
 import com.ge.research.sadl.builder.IConfigurationManagerForIDE;
+import com.ge.research.sadl.darpa.aske.preferences.DialogPreferences;
 import com.ge.research.sadl.darpa.aske.processing.DialogConstants;
 import com.ge.research.sadl.darpa.aske.processing.IDialogAnswerProvider;
 import com.ge.research.sadl.darpa.aske.processing.imports.AnswerExtractionProcessor;
 import com.ge.research.sadl.owl2sadl.OwlImportException;
 import com.ge.research.sadl.owl2sadl.OwlToSadl;
 import com.ge.research.sadl.reasoner.ConfigurationException;
+import com.ge.research.sadl.reasoner.IConfigurationManagerForEditing.Scope;
 import com.ge.research.sadl.reasoner.IReasoner;
 import com.ge.research.sadl.reasoner.InvalidNameException;
 import com.ge.research.sadl.reasoner.QueryCancelledException;
@@ -26,6 +34,13 @@ import com.ge.research.sadl.reasoner.QueryParseException;
 import com.ge.research.sadl.reasoner.ReasonerNotFoundException;
 import com.ge.research.sadl.reasoner.ResultSet;
 import com.ge.research.sadl.reasoner.utils.SadlUtils;
+import com.google.gson.JsonArray;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParser;
+import com.hp.hpl.jena.ontology.Individual;
+import com.hp.hpl.jena.ontology.OntModel;
+import com.hp.hpl.jena.rdf.model.RDFNode;
 
 public class AnswerCurationManager {
 	private String domainModelowlModelsFolder;
@@ -198,6 +213,77 @@ public class AnswerCurationManager {
 			}
 		}
 	}
+	
+	public String processBuildRequest(String modelToBuildUri) throws ConfigurationException, IOException {
+		OntModel codeModel = getExtractionProcessor().getCodeModel();
+		if (codeModel == null) {
+			codeModel = getDomainModelConfigurationManager().getOntModel(modelToBuildUri.substring(0, modelToBuildUri.indexOf("#")), Scope.INCLUDEIMPORTS);
+			if (codeModel != null) {
+				getExtractionProcessor().setCodeModel(codeModel);
+			}
+			else {
+				return("Failed: Unable to find semantic mmodel");
+			}
+		}
+		Individual extractedModelInstance = codeModel.getIndividual(modelToBuildUri);
+		if (extractedModelInstance == null) {
+			// try getting a text extraction model?
+		}
+		if (extractedModelInstance != null) {
+			OntModel model = getExtractionProcessor().getCodeModel();
+			RDFNode codeNode = extractedModelInstance.getPropertyValue(model.getProperty(DialogConstants.CODE_EXTRACTION_MODEL_SERIALIZATION_PROPERTY_URI));
+			if (codeNode.isLiteral()) {
+				String javaCode = codeNode.asLiteral().getValue().toString();
+				// translate code to Python
+				String baseJ2PServiceUri = getPreferences().get(DialogPreferences.ANSWER_JAVA_TO_PYTHON_SERVICE_BASE_URI.getId());
+				String pythonCode = javaMethodToPython(baseJ2PServiceUri, javaCode);
+				// extract method
+				String pythonMethodCode = removeClassWrapper(pythonCode);
+				// create ExternalEquation in domain model
+				
+				String baseServiceUri = getPreferences().get(DialogPreferences.ANSWER_CG_SERVICE_BASE_URI.getId());
+				String modelUri = extractedModelInstance.getURI();
+				String equationModel = pythonMethodCode;
+				List<String[]> inputs = null;
+				List<String[]> outputs = null;
+				// call kchain build service to instantiate in CG
+//				buildCGModel(baseServiceUri, modelUri, equationModel, null, inputs, outputs);
+				return "Successfully build K-CHAIN physics model with URI '" + modelToBuildUri + "'.";
+			}
+			else if (codeNode == null) {
+				return("Failed: No code found for model '" + modelToBuildUri + "'");
+			}
+			else {
+				return("Failed: Code of unexpected type: " + codeNode.getClass().getCanonicalName());
+			}
+		}
+		else {
+			return("Failed: Unable to find model '" + modelToBuildUri + "' in code model.");
+		}
+	}
+
+	private String removeClassWrapper(String pythonCode) {
+		StringBuilder methodCode = new StringBuilder();
+		boolean saveLine = false;		
+        try (BufferedReader reader = new BufferedReader(new StringReader(pythonCode))) {
+            String line = reader.readLine();
+            while (line != null) {
+    			if (saveLine || line.trim().startsWith("def ")) {
+    				methodCode.append(line);
+    				methodCode.append("\n");
+    				saveLine = true;
+    			}
+                line = reader.readLine();
+            }
+        } catch (IOException exc) {
+            // quit
+        }
+		return methodCode.toString();
+	}
+
+	private String javaMethodToPython(String serviceUri, String javaCode) throws IOException {
+		return getExtractionProcessor().translateMethodJavaToPython("DummyClass", javaCode);
+	}
 
 	/**
 	 * Method to save the OWL model created from code extraction as a SADL file
@@ -310,4 +396,95 @@ public class AnswerCurationManager {
 		this.dialogAnswerProvider = dialogAnswerProvider;
 	}
 	
+	public Object[] buildCGModel(String baseServiceUri, String modelUri, String equationModel, String dataLocation, List<String[]> inputs, List<String[]> outputs) throws IOException {
+//		String host = "3.39.122.224";
+//		String host = "3.1.176.139";
+//		int port = 12345;
+		String kchainServiceURL = baseServiceUri + "/darpa/aske/kchain/";
+		
+		JsonObject json = new JsonObject();
+		json.addProperty("modelName", modelUri);
+		if (equationModel != null) {
+			json.addProperty("equationModel", equationModel);
+		}
+		if (dataLocation != null) {
+			json.addProperty("dataLocation", dataLocation);
+		}
+		JsonArray jarrin = new JsonArray();
+		json.add("inputVariables", jarrin);
+		for (String[] input : inputs) {
+			JsonObject inputj = new JsonObject();
+			inputj.addProperty("name", input[0]);
+			inputj.addProperty("type", input[1]);
+			if (input.length > 2) {
+				inputj.addProperty("value", input[2]);
+			}
+			jarrin.add(inputj);
+		}
+		JsonArray jarrout = new JsonArray();
+		json.add("outputVariables", jarrout);
+		for (String[] output : outputs) {
+			JsonObject outputj = new JsonObject();
+			outputj.addProperty("name", output[0]);
+			outputj.addProperty("type", output[1]);
+			jarrout.add(outputj);
+		}
+		
+		String buildServiceURL = kchainServiceURL + "build";
+		URL serviceUrl = new URL(buildServiceURL);			
+
+		String jsonResponse = makeConnectionAndGetResponse(serviceUrl, json);
+		
+		System.out.println(jsonResponse);
+		
+		JsonElement je = new JsonParser().parse(jsonResponse);
+		Object[] returnValues = new Object[3];
+		if (je.isJsonObject()) {
+			JsonObject jobj = je.getAsJsonObject();
+			String modelType = jobj.get("modelType").getAsString();
+			returnValues[0] = modelType;
+			String metagraphLocation = jobj.get("metagraphLocation").getAsString();
+			returnValues[1] = metagraphLocation;
+			boolean trained = jobj.get("trainedState").getAsBoolean();	
+			returnValues[2] = trained;
+		}
+		else {
+			throw new IOException("Unexpected response: " + je.toString());
+		}
+		return returnValues;
+	}
+
+	private String makeConnectionAndGetResponse(URL url, JsonObject jsonObject) {
+		String response = "";
+		try {
+			HttpURLConnection connection = (HttpURLConnection) url.openConnection();                     
+			connection.setDoOutput(true);
+			connection.setRequestMethod("POST"); 
+			connection.setRequestProperty("Content-Type", "application/json");
+
+			OutputStream outputStream = connection.getOutputStream();
+			outputStream.write(jsonObject.toString().getBytes());
+			outputStream.flush();
+
+			try {
+				BufferedReader br = new BufferedReader(
+						new InputStreamReader(connection.getInputStream()));                                     
+				String output = "";
+				while((output = br.readLine()) != null) 
+					response = response + output;                 
+				outputStream.close();
+				br.close();
+			}
+			catch (Exception e) {
+				System.out.println("Error reading response: " + e.getMessage());
+			}
+			connection.disconnect();
+		} catch (Exception e) {
+			System.out.println(jsonObject.toString());
+			e.printStackTrace();
+		}
+		return response;
+	}
+
+
 }

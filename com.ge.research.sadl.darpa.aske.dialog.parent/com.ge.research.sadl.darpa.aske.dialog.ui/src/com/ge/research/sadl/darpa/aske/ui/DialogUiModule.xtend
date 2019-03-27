@@ -12,16 +12,20 @@ import com.ge.research.sadl.darpa.aske.ui.syntaxcoloring.DialogTokenToAttributeI
 import com.ge.research.sadl.external.ExternalEmfResourcePredicate
 import com.ge.research.sadl.ide.editor.contentassist.IOntologyContextProvider
 import com.ge.research.sadl.ui.contentassist.SadlReferenceProposalCreator
+import com.ge.research.sadl.ui.external.EclipseExternalEmfResourcePredicate
 import com.ge.research.sadl.ui.utils.EclipseSadlProjectHelper
 import com.ge.research.sadl.utils.SadlProjectHelper
+import com.google.inject.Binder
+import com.google.inject.name.Names
 import org.eclipse.xtend.lib.annotations.FinalFieldsConstructor
 import org.eclipse.xtext.ide.editor.syntaxcoloring.AbstractAntlrTokenToAttributeIdMapper
 import org.eclipse.xtext.ide.editor.syntaxcoloring.ISemanticHighlightingCalculator
 import org.eclipse.xtext.ui.editor.autoedit.DefaultAutoEditStrategyProvider
 import org.eclipse.xtext.ui.editor.contentassist.AbstractJavaBasedContentProposalProvider.ReferenceProposalCreator
+import org.eclipse.xtext.ui.editor.preferences.IPreferenceStoreInitializer
 import org.eclipse.xtext.ui.editor.preferences.LanguageRootPreferencePage
 import org.eclipse.xtext.ui.editor.syntaxcoloring.IHighlightingConfiguration
-import com.ge.research.sadl.ui.external.EclipseExternalEmfResourcePredicate
+import com.ge.research.sadl.darpa.aske.ui.preferences.DialogPreferencesInitializer
 
 /**
  * Use this class to register components to be used within the Eclipse IDE.
@@ -55,6 +59,11 @@ class DialogUiModule extends AbstractDialogUiModule {
 		return EclipseSadlProjectHelper;
 	}
 	
+	def void configurePreferenceInitializer(Binder binder) {
+		binder.bind(IPreferenceStoreInitializer).annotatedWith(Names.named("dialogPreferenceInitializer")).to(
+			DialogPreferencesInitializer)
+	}
+
 	// registers our own root preference page.
 	def Class<? extends LanguageRootPreferencePage> bindLanguageRootPreferencePage() {
 		return DialogRootPreferencePage

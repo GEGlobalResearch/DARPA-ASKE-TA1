@@ -18,4 +18,5 @@ public class DialogConstants {
 	public static final String CODE_EXTRACTION_MODEL_FILENAME = "CodeExtractionModel.sadl";
 	public static final String CODE_EXTRACTION_MODEL_URI = "http://sadl.org/CodeExtractionModel.sadl";
 	public static final String CODE_EXTRACTION_MODEL_PREFIX = "cem";
+	public static final String CODE_EXTRACTION_MODEL_SERIALIZATION_PROPERTY_URI = CODE_EXTRACTION_MODEL_URI + "#serialization";
 }
