@@ -1,10 +1,13 @@
 package com.ge.research.sadl.darpa.aske.inference;
 
+import java.io.BufferedReader;
 import java.io.ByteArrayOutputStream;
 import java.util.Iterator;
 import java.util.ServiceLoader;
 import java.util.Set;
 import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.UnsupportedEncodingException;
@@ -648,7 +651,8 @@ public class JenaBasedDialogInferenceProcessor extends JenaBasedSadlInferencePro
 //						return null;
 //					}
 		
-					cgJson = kgResultsToJson(nodesCSVString, modelsCSVString, queryMode);
+					
+					cgJson = kgResultsToJson(nodesCSVString, modelsCSVString, queryMode, "");
 					dbnJson = generateDBNjson(cgJson);
 					class2lbl = getClassLabelMapping(dbnJson);
 					
@@ -765,7 +769,8 @@ public class JenaBasedDialogInferenceProcessor extends JenaBasedSadlInferencePro
 //							return null;
 //						}
 
-						cgJson = kgResultsToJson(nodesCSVString, modelsCSVString, "prognostic");
+						String dataFile = new File(getModelFolderPath(resource)).getParent() + File.separator + "Data" + File.separator + "hypothesis.csv";
+						cgJson = kgResultsToJson(nodesCSVString, modelsCSVString, "prognostic", getDataForHypothesisTesting(dataFile));
 						dbnJson = generateDBNjson(cgJson);
 						class2lbl = getClassLabelMapping(dbnJson);
 	
@@ -1262,7 +1267,7 @@ public class JenaBasedDialogInferenceProcessor extends JenaBasedSadlInferencePro
 
 
 	@SuppressWarnings("deprecation")
-	private String kgResultsToJson(String nodesCSVString, String modelsCSVString, String mode) throws Exception {
+	private String kgResultsToJson(String nodesCSVString, String modelsCSVString, String mode, String obsData) throws Exception {
 		DefaultHttpClient httpclient = new DefaultHttpClient();
 		HttpPost httppost = new HttpPost("http://vesuvius063.crd.ge.com:46000/dbn/SADLResultSetToJson");
 		httppost.setHeader("Accept", "application/json");
@@ -1272,6 +1277,7 @@ public class JenaBasedDialogInferenceProcessor extends JenaBasedSadlInferencePro
         arguments.add(new BasicNameValuePair("nodes", nodesCSVString));
         arguments.add(new BasicNameValuePair("models", modelsCSVString));
         arguments.add(new BasicNameValuePair("mode", mode));
+        arguments.add(new BasicNameValuePair("data", obsData));
 
         httppost.setEntity(new UrlEncodedFormEntity(arguments, "UTF-8"));
 //         HttpResponse response = httpclient.execute(httppost);
@@ -1315,5 +1321,35 @@ public class JenaBasedDialogInferenceProcessor extends JenaBasedSadlInferencePro
 		ByteArrayOutputStream baos = new ByteArrayOutputStream();
 		com.hp.hpl.jena.query.ResultSetFormatter.outputAsCSV(baos, results);
 		return new String(baos.toByteArray(), Charset.defaultCharset()).replace(System.getProperty("line.separator"), "\n");		
+	}
+	
+	private String getDataForHypothesisTesting(String dataFile) {
+		String dataContent = "";
+		BufferedReader br = null;
+		try {
+			br = new BufferedReader(new FileReader(dataFile));
+			String line;
+			try {
+				while ((line = br.readLine()) != null) {
+					dataContent += line + "\n"; 
+				}
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		} catch (FileNotFoundException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+        } finally {
+            if (br != null) {
+                try {
+                    br.close();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
+        }
+		
+		return dataContent;
 	}
 }
