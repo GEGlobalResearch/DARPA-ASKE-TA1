@@ -123,5 +123,11 @@ public class DialogAnswerProviderConsoleForTest implements IDialogAnswerProvider
 		// TODO Auto-generated method stub
 		return null;
 	}
+
+	@Override
+	public boolean removeMixedInitiativeElement(String key) {
+		// TODO Auto-generated method stub
+		return false;
+	}
 }
 
