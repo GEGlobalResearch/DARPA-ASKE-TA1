@@ -333,7 +333,13 @@ public class JenaBasedDialogInferenceProcessor extends JenaBasedSadlInferencePro
 			+ "}\n" +
 			"}";
 	
-	
+	public static final String DOCLOCATIONQUERY = "prefix imp:<http://sadl.org/sadlimplicitmodel#> \n" + 
+			"select distinct (str(?furl) as ?file)\n" + 
+			"where { \n" + 
+			"  ?doc a imp:DataTable.\n" + 
+			"  filter (?doc in (<DOCINSTANCE>))\n" + 
+			"  ?doc imp:location ?furl.\n" + 
+			"}";
 	
 	@Override
 	public Object[] insertTriplesAndQuery(Resource resource, TripleElement[] triples) throws SadlInferenceException {
@@ -416,8 +422,6 @@ public class JenaBasedDialogInferenceProcessor extends JenaBasedSadlInferencePro
 				
 					if (tr.getPredicate() != null && tr.getObject() != null && tr.getPredicate().getURI() != null) {
 						// this is an input
-						//TODO: just for testing model search, add to queryPatterns
-						//queryPatterns.add(tr);
 						insertions.add(tr);
 					}
 					else {
@@ -553,7 +557,6 @@ public class JenaBasedDialogInferenceProcessor extends JenaBasedSadlInferencePro
 		com.hp.hpl.jena.query.ResultSetRewindable eqnsResults = null;
 		String queryStr = "";
 		QueryExecution qexec = null;
-		QueryExecution qexec1 = null;
 		OntResource qtype;
 		OntProperty qtypeprop = getTheJenaModel().getOntProperty(METAMODEL_QUERYTYPE_PROP);
 		//OntProperty outputprop = getTheJenaModel().getOntProperty(METAMODEL_OUTPUT_PROP);
@@ -616,10 +619,6 @@ public class JenaBasedDialogInferenceProcessor extends JenaBasedSadlInferencePro
 				dbnEqns = createDbnEqnMap(eqnsResults);
 				dbnOutput = createDbnOutputMap(eqnsResults);
 
-//				if (queryMode.equals("calibration")) {
-//					dbnOutput = modifyOutputMapForCalibration(dbnOutput,inputsList,outputsList);
-//				}
-
 				
 				int numOfModels = 1;
 				if (dbnEqns.isEmpty())
@@ -679,7 +678,7 @@ public class JenaBasedDialogInferenceProcessor extends JenaBasedSadlInferencePro
 			            //createCGsubgraphs(cgIns, eqnsResults, class2lbl, lbl2value, outputInstance);
 			            createCGsubgraphs(cgIns, dbnEqns, dbnOutput, listOfEqns, class2lbl, lbl2value); //, outputInstance);
 
-			            //TODO: add outputs to CG if calibration
+			            //add outputs to CG if calibration
 						if(queryMode.equals("calibration")) {
 							for(OntClass oc : outputsList) {
 								String ocls = oc.toString();
@@ -708,7 +707,7 @@ public class JenaBasedDialogInferenceProcessor extends JenaBasedSadlInferencePro
 				}
 				if (numOfModels < 1) {
 					results = null;
-					System.out.println("Unable to assemble a model with current knowledge");
+					//System.out.println("Unable to assemble a model with current knowledge");
 				}
 				
 				
@@ -789,7 +788,20 @@ public class JenaBasedDialogInferenceProcessor extends JenaBasedSadlInferencePro
 //							return null;
 //						}
 
-						String dataFile = new File(getModelFolderPath(resource)).getParent() + File.separator + "Data" + File.separator + "hypothesis.csv";
+						String docUri = triples[0].getSubject().getURI();
+						
+						queryStr = DOCLOCATIONQUERY.replaceAll("DOCINSTANCE", docUri);
+						
+						ResultSetRewindable fileRes = queryKnowledgeGraph(queryStr, getTheJenaModel());
+						if (fileRes.size() < 1) {
+							results = null;
+							continue;
+						}
+						QuerySolution fsol = fileRes.nextSolution();
+						String fileName = fsol.get("?file").toString() ;
+						
+						//String dataFile = new File(getModelFolderPath(resource)).getParent() + File.separator + "Data" + File.separator + "hypothesis.csv";
+						String dataFile = new File(getModelFolderPath(resource)).getParent() + File.separator + fileName;
 						cgJson = kgResultsToJson(nodesCSVString, modelsCSVString, "prognostic", getDataForHypothesisTesting(dataFile));
 						dbnJson = generateDBNjson(cgJson);
 						class2lbl = getClassLabelMapping(dbnJson);
