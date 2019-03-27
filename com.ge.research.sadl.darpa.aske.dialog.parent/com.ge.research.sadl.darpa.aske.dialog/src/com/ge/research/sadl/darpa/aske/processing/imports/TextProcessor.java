@@ -36,53 +36,53 @@ public class TextProcessor {
 		if (servicePreference != null) {
 			baseServiceUrl = servicePreference;
 		}
-		
-		String textToTripleServiceURL = baseServiceUrl + "text2triples";
-		URL serviceUrl = new URL(textToTripleServiceURL);			
-		if (text == null) {
-			text = "Hello world";
-		}
-		if (locality == null) {
-			locality = "NYI";
-		}
-		JsonObject json = new JsonObject();
-		json.addProperty("locality", locality);
-		json.addProperty("text", text);
-	
-		String response = makeConnectionAndGetResponse(serviceUrl, json);
-//		System.out.println(response);
-		if (response != null && response.length() > 0) {
-			JsonArray sentences = new JsonParser().parse(response).getAsJsonArray();
-			if (sentences != null) {
-				for (JsonElement element : sentences) {
-					if (element != null) {
-						JsonObject sentence = element.getAsJsonObject();
-						String originalText = sentence.get("text").getAsString();
-						System.out.println("Extracted from text:");
-						JsonArray concepts = sentence.get("concepts").getAsJsonArray();
-						for (JsonElement concept : concepts) {
-							String matchingText = concept.getAsJsonObject().get("string").getAsString();
-							int startInOrigText = concept.getAsJsonObject().get("start").getAsInt();
-							int endInOrigText = concept.getAsJsonObject().get("end").getAsInt();
-							double extractionConfidence = concept.getAsJsonObject().get("extractionConfScore").getAsDouble();
-							System.out.println("  Match in substring '" + matchingText + "(" + startInOrigText + "," + endInOrigText + "):");
-							JsonArray triples = concept.getAsJsonObject().get("triples").getAsJsonArray();
-							for (JsonElement triple : triples) {
-								String subject = triple.getAsJsonObject().get("subject").getAsString();
-								String predicate = triple.getAsJsonObject().get("predicate").getAsString();
-								String object = triple.getAsJsonObject().get("object").getAsString();
-								double tripleConfidenceScore = triple.getAsJsonObject().get("tripleConfScore").getAsDouble();
-								System.out.println("     <" + subject + ", " + predicate + ", " + object + "> (" + tripleConfidenceScore + ")");
-							}
-						}
-					}
-				}
-			}
-		}
-		else {
-			System.err.println("No response received from service " + textToTripleServiceURL);
-		}
-		return sb.toString();
+		return null;
+//		String textToTripleServiceURL = baseServiceUrl + "text2triples";
+//		URL serviceUrl = new URL(textToTripleServiceURL);			
+//		if (text == null) {
+//			text = "Hello world";
+//		}
+//		if (locality == null) {
+//			locality = "NYI";
+//		}
+//		JsonObject json = new JsonObject();
+//		json.addProperty("locality", locality);
+//		json.addProperty("text", text);
+//	
+//		String response = makeConnectionAndGetResponse(serviceUrl, json);
+////		System.out.println(response);
+//		if (response != null && response.length() > 0) {
+//			JsonArray sentences = new JsonParser().parse(response).getAsJsonArray();
+//			if (sentences != null) {
+//				for (JsonElement element : sentences) {
+//					if (element != null) {
+//						JsonObject sentence = element.getAsJsonObject();
+//						String originalText = sentence.get("text").getAsString();
+//						System.out.println("Extracted from text:");
+//						JsonArray concepts = sentence.get("concepts").getAsJsonArray();
+//						for (JsonElement concept : concepts) {
+//							String matchingText = concept.getAsJsonObject().get("string").getAsString();
+//							int startInOrigText = concept.getAsJsonObject().get("start").getAsInt();
+//							int endInOrigText = concept.getAsJsonObject().get("end").getAsInt();
+//							double extractionConfidence = concept.getAsJsonObject().get("extractionConfScore").getAsDouble();
+//							System.out.println("  Match in substring '" + matchingText + "(" + startInOrigText + "," + endInOrigText + "):");
+//							JsonArray triples = concept.getAsJsonObject().get("triples").getAsJsonArray();
+//							for (JsonElement triple : triples) {
+//								String subject = triple.getAsJsonObject().get("subject").getAsString();
+//								String predicate = triple.getAsJsonObject().get("predicate").getAsString();
+//								String object = triple.getAsJsonObject().get("object").getAsString();
+//								double tripleConfidenceScore = triple.getAsJsonObject().get("tripleConfScore").getAsDouble();
+//								System.out.println("     <" + subject + ", " + predicate + ", " + object + "> (" + tripleConfidenceScore + ")");
+//							}
+//						}
+//					}
+//				}
+//			}
+//		}
+//		else {
+//			System.err.println("No response received from service " + textToTripleServiceURL);
+//		}
+//		return sb.toString();
 	}
 	
 	private String makeConnectionAndGetResponse(URL url, JsonObject jsonObject) {
