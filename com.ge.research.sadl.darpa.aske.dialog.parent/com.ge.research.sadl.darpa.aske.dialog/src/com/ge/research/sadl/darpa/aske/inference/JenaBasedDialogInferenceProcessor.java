@@ -604,6 +604,10 @@ public class JenaBasedDialogInferenceProcessor extends JenaBasedSadlInferencePro
 				dbnEqns = createDbnEqnMap(eqnsResults);
 				dbnOutput = createDbnOutputMap(eqnsResults);
 
+//				if (queryMode.equals("calibration")) {
+//					dbnOutput = modifyOutputMapForCalibration(dbnOutput,inputsList,outputsList);
+//				}
+
 				
 				int numOfModels = 1;
 				if (dbnEqns.isEmpty())
@@ -666,6 +670,12 @@ public class JenaBasedDialogInferenceProcessor extends JenaBasedSadlInferencePro
 						results[i] = retrieveCompGraph(resource, cgIns);
 						
 						results[i+numOfModels] = retrieveValues(resource, cgIns);
+			            //TODO
+						if(queryMode.equals("calibration")) {
+							results[i+numOfModels] = addInputVarValues(results[i+numOfModels], inputsList,class2lbl,lbl2value);
+						}
+
+		            
 		            }
 		            else {
 		            	results = null;
@@ -718,7 +728,7 @@ public class JenaBasedDialogInferenceProcessor extends JenaBasedSadlInferencePro
 					
 					dbnEqns = createDbnEqnMap(eqnsResults);
 					dbnOutput = createDbnOutputMap(eqnsResults);
-
+					
 					int numOfModels = 1;
 					if (dbnEqns.isEmpty())
 						numOfModels = 0;
@@ -820,6 +830,30 @@ public class JenaBasedDialogInferenceProcessor extends JenaBasedSadlInferencePro
 		
 		return null;
 	}
+
+
+	//TODO
+	private ResultSet addInputVarValues(ResultSet resultSet, List<OntClass> inputsList, Map<String, String> class2lbl, Map<String, String[]> lbl2value) {
+		for(OntClass ic : inputsList) {
+			String ics = ic.getLocalName();
+			String lbl = class2lbl.get(ics);
+			String v[] = lbl2value.get(lbl);
+			
+			
+		}
+		return resultSet;
+	}
+
+
+//	private Map<RDFNode, RDFNode> modifyOutputMapForCalibration(Map<RDFNode, RDFNode> dbnOutput, List<OntClass> inpl,
+//			List<OntClass> outpl) {
+//		for(OntClass ic : inpl) {
+//			dbnOutput.put((RDFNode)ic, value)
+//		}
+//		
+//		
+//		return null;
+//	}
 
 
 	private String getDBNoutcome(String dbnResultsJson) {

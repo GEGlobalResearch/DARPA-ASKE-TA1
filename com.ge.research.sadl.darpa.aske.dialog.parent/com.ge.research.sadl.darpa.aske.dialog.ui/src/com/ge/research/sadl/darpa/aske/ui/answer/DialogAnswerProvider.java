@@ -300,7 +300,7 @@ public class DialogAnswerProvider extends DefaultAutoEditStrategyProvider implem
 				                		answer.append(".\n");
 			                		}
 			                		else {
-			                			answer.append("Unable to assemble a model with current knowledge");
+			                			answer.append("Unable to assemble a model with current knowledge or services are down");
 			                		}
 			                		Object ctx = triples[0].getContext();
 			                		addCurationManagerContentToDialog(document, reg, answer.toString(), ctx, true);
