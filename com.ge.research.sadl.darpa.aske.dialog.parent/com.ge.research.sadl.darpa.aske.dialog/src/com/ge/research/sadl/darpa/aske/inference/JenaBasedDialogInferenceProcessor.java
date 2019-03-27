@@ -315,13 +315,22 @@ public class JenaBasedDialogInferenceProcessor extends JenaBasedSadlInferencePro
 			"prefix sci:<http://aske.ge.com/sciknow#>\n" + 
 			"select distinct (strafter(str(?CCG),'#') as ?Model) (strafter(str(?Var),'#') as ?Variable) ?Mean ?StdDev\n" + 
 			"where {\n" + 
-			"    ?CCG mm:subgraph ?SG.\n" + 
+			"   {?CCG mm:subgraph ?SG.\n" + 
 			"    filter (?CCG in (COMPGRAPH)).\n" + 
 			"    ?SG mm:output ?Oinst.\n" + 
 			"    ?Oinst a ?Var.\n" + 
 			"    ?Oinst imp:value ?Mean.\n" + 
-			"  ?Oinst imp:stddev ?StdDev.\n" +
-			//"  ?SG mm:cgraph/sci:hasEquation/imp:expression ?EQ.\n" + 
+			"    ?Oinst imp:stddev ?StdDev.\n" +
+			"  } union {\n" +
+			"   ?CCG mm:subgraph ?SG. \n" + 
+			"   filter (?CCG in (COMPGRAPH)).\n" + 
+			"   ?Q mm:execution ?CE.\n" + 
+			"   ?CE mm:compGraph ?CCG.\n" + 
+			"   ?Q mm:output ?Vinst.\n" + 
+			"   ?Vinst a ?Var.\n" + 
+			"   ?Vinst imp:value ?Mean.\n"
+			+ " ?Vinst imp:stddev ?StdDev.\n"
+			+ "}\n" +
 			"}";
 	
 	
@@ -669,15 +678,26 @@ public class JenaBasedDialogInferenceProcessor extends JenaBasedSadlInferencePro
 		
 			            //createCGsubgraphs(cgIns, eqnsResults, class2lbl, lbl2value, outputInstance);
 			            createCGsubgraphs(cgIns, dbnEqns, dbnOutput, listOfEqns, class2lbl, lbl2value); //, outputInstance);
-						
+
+			            //TODO: add outputs to CG if calibration
+						if(queryMode.equals("calibration")) {
+							for(OntClass oc : outputsList) {
+								String ocls = oc.toString();
+								String cls = class2lbl.get(ocls);
+								String[] ms = lbl2value.get(cls);  
+								Individual oinst = createIndividualOfClass(qhmodel,ocls);
+								OntProperty outputprop = getTheJenaModel().getOntProperty(METAMODEL_OUTPUT_PROP);
+								qhmodel.add(cgq, outputprop, oinst);
+								qhmodel.add(oinst, getTheJenaModel().getProperty(VALUE_PROP), ms[0] );
+								qhmodel.add(oinst, getTheJenaModel().getProperty(STDDEV_PROP), ms[1] );
+							}
+						}
+
+			            
 						// create ResultSet
 						results[i] = retrieveCompGraph(resource, cgIns);
 						
 						results[i+numOfModels] = retrieveValues(resource, cgIns);
-			            //TODO
-						if(queryMode.equals("calibration")) {
-							results[i+numOfModels] = addInputVarValues(results[i+numOfModels], inputsList,class2lbl,lbl2value);
-						}
 
 		            
 		            }
