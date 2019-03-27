@@ -757,10 +757,23 @@ public class DialogAnswerProvider extends DefaultAutoEditStrategyProvider implem
 				rs = runQuery(resource, q);
 				OntModelProvider.clearPrivateKeyValuePair(resource, DialogConstants.LAST_DIALOG_COMMAND);
 				if (rs != null) {
+					rs.setShowNamespaces(true);
 					int rowcnt = rs.getRowCount();
+					for (int r = 0; r < rowcnt; r++) {
+						Object pobjURI = rs.getResultAt(r, 0);
+						if (pobjURI.toString().equals(RDFS.comment.getURI()) || pobjURI.toString().equals(RDFS.label.getURI())) {
+							if (pobjURI.toString().equals(RDFS.comment.getURI())) {
+								answer.append(" (note \"");
+							}
+							else {
+								answer.append(" (alias \"");
+							}
+							answer.append(rs.getResultAt(r, 1).toString().replaceAll("\"", "'"));
+							answer.append("\")");
+						}
+					}
 					int outputcnt = 0;
 					for (int r = 0; r < rowcnt; r++) {
-						rs.setShowNamespaces(true);
 						Object pobjURI = rs.getResultAt(r, 0);
 						if (!pobjURI.toString().startsWith(OWL.getURI()) && !pobjURI.toString().startsWith(RDFS.getURI()) &&
 								!pobjURI.toString().startsWith(RDF.getURI())) {
@@ -1176,7 +1189,7 @@ public class DialogAnswerProvider extends DefaultAutoEditStrategyProvider implem
 				modContent += ".";
 			}
 		}
-		if (ctx instanceof EObject) {
+		if (ctx instanceof EObject && getSourceText((EObject)ctx) != null) {
 //			String damageStr = document.get(reg.getOffset(), reg.getLength());
 			Object[] srcinfo = getSourceText((EObject)ctx);
 			String srctext = (String) srcinfo[0];
