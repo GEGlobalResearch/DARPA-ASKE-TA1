@@ -1304,17 +1304,10 @@ public class DialogAnswerProvider extends DefaultAutoEditStrategyProvider implem
 													e.printStackTrace();
 												}
 											}
-											String prjname = sf.getParentFile().getParentFile().getName();
-											IProject prj = ResourcesPlugin.getPlugin().getWorkspace().getRoot().getProject(prjname);
-											
-								         	ResourceSet resSet = resourceSetProvider.get(prj);
-								        	try {
-												Resource newRsrc = resSet.createResource(URI.createFileURI(sf.getCanonicalPath()));
-												newRsrc.load(newRsrc.getResourceSet().getLoadOptions());
-												prj.refreshLocal(IResource.DEPTH_INFINITE, null);
-											} catch (IOException e) {
-												// TODO Auto-generated catch block
-												e.printStackTrace();
+											String projectName = sf.getParentFile().getParentFile().getName();
+											IProject project = ResourcesPlugin.getWorkspace().getRoot().getProject(projectName);
+											try {
+												project.refreshLocal(IResource.DEPTH_INFINITE, null);
 											} catch (CoreException e) {
 												// TODO Auto-generated catch block
 												e.printStackTrace();
