@@ -84,6 +84,7 @@ import com.ge.research.sadl.darpa.aske.processing.DialogConstants;
 import com.ge.research.sadl.darpa.aske.processing.imports.AnswerExtractionProcessor;
 import com.ge.research.sadl.reasoner.ConfigurationException;
 import com.ge.research.sadl.utils.ResourceManager;
+import com.google.common.io.Files;
 import com.google.inject.Injector;
 
 /**
@@ -589,6 +590,7 @@ public class JavaImportOperation extends WorkspaceModifyOperation {
     private AnswerCurationManager importFile(Object fileObject, int policy) throws ConfigurationException, IOException {
     	IContainer codeModelContainerResource;
     	IProject codeModelProject = null;
+    	IPath importFilePath;
     	try {
     		codeModelContainerResource = getDestinationContainerFor(fileObject);
     		if (codeModelContainerResource instanceof IProject) {
@@ -598,64 +600,21 @@ public class JavaImportOperation extends WorkspaceModifyOperation {
     		IProject project = codeModelProject;
     		if (!project.isOpen())
     		    project.open(null);
-    		IPath location;
-			try {
-				location = new Path(((File)fileObject).getCanonicalPath());
-	    		IFile file = project.getFile(location.lastSegment());
-	    		if (!file.exists()) {
-	    			file.createLink(location, IResource.NONE, null);
-	    		}
-	    		IWorkbenchWindow window = PlatformUI.getWorkbench().getActiveWorkbenchWindow();
-	    	    if (window != null) {
-	    	    	IWorkbenchPage page = window.getActivePage();
-	    	    	if (page != null) {
-	        		    try {
-	        		    	IWorkbenchPart actpart = page.getActivePart();
-	            		    IFileStore fileStore = EFS.getLocalFileSystem().getStore(location);
-	            		    IDE.openEditorOnFileStore( page, fileStore );
-	            		    page.activate(actpart);
-		    		    } catch ( PartInitException e ) {
-		    		        //Put your exception handler here if you wish to
-		    		    	try {
-								System.err.println("Unable to open '" + ((File)fileObject).getCanonicalPath() + "' in an editor.");
-							} catch (IOException e1) {
-								// TODO Auto-generated catch block
-								e1.printStackTrace();
-							}
-		    		    }
-	    	    	}
-	    	    }
-	    	    else {
-	    	    	PlatformUI.getWorkbench().getDisplay().asyncExec(new Runnable() {
-	    	    	    public void run() {
-	    	    	        IWorkbenchWindow window = PlatformUI.getWorkbench().getActiveWorkbenchWindow();
-	    		    	    if (window != null) {
-	    		    	    	IWorkbenchPage page = window.getActivePage();
-	    		    	    	if (page != null) {
-	    		        		    try {
-	    		        		    	IWorkbenchPart actpart = page.getActivePart();
-	    		            		    IFileStore fileStore = EFS.getLocalFileSystem().getStore(location);
-	    		            		    IDE.openEditorOnFileStore( page, fileStore );
-	    		            		    page.activate(actpart);
-	    			    		    } catch ( PartInitException e ) {
-	    			    		        //Put your exception handler here if you wish to
-	    			    		    	try {
-	    									System.err.println("Unable to open '" + ((File)fileObject).getCanonicalPath() + "' in an editor.");
-	    								} catch (IOException e1) {
-	    									// TODO Auto-generated catch block
-	    									e1.printStackTrace();
-	    								}
-	    			    		    }
-	    		    	    	}
-	    		    	    }
-	    	    	    }
-	    	    	});
-	    	    }
-			} catch (IOException e2) {
-				// TODO Auto-generated catch block
-				e2.printStackTrace();
-			}
- 
+    		if (fileObject instanceof File) {
+    			importFilePath = copyAndDisplayImportFile(project, (File) fileObject);
+    		}
+    		else {
+        		IStatus status = new Status(IStatus.ERROR, null, 0, "Selected object is not a file", null);
+        		errorTable.add(status);
+        		return null;
+    		}	
+    	} catch (IOException e) {
+    		IStatus coreStatus = getStatus();
+    		String newMessage = NLS.bind(DataTransferMessages.ImportOperation_coreImportError, fileObject, coreStatus.getMessage());
+    		IStatus status = new Status(coreStatus.getSeverity(), coreStatus
+    				.getPlugin(), coreStatus.getCode(), newMessage, null);
+    		errorTable.add(status);
+    		return null;
     	} catch (CoreException e) {
     		IStatus coreStatus = e.getStatus();
     		String newMessage = NLS.bind(DataTransferMessages.ImportOperation_coreImportError, fileObject, coreStatus.getMessage());
@@ -665,9 +624,9 @@ public class JavaImportOperation extends WorkspaceModifyOperation {
     		return null;
     	}
 
-    	String fileObjectPath = provider.getFullPath(fileObject);
+    	String fileObjectPath = provider.getFullPath(importFilePath.toFile());
     	monitor.subTask(fileObjectPath);
-    	String fileObjectS = ((File)fileObject).getName();
+    	String fileObjectS = importFilePath.toFile().getName();  //((File)fileObject).getName();
     	String outputfn = getOutputFilename();
     	File outputFile = null;
     	if (outputfn == null) {
@@ -696,7 +655,7 @@ public class JavaImportOperation extends WorkspaceModifyOperation {
    	    setFileObject(new File((String) outputfn));
 
     	File targetFile = new File(outputfn);
-    	IFile targetResource = codeModelContainerResource.getFile(new Path(provider
+    	IFile targetResource = codeModelContainerResource.getFile(new Path("ExtractedModels/" + provider
     			.getLabel(targetFile)));
     	setTargetResource(targetResource);
     	monitor.worked(1);
@@ -752,13 +711,13 @@ public class JavaImportOperation extends WorkspaceModifyOperation {
         		acm.getExtractionProcessor().getCodeExtractor().setCodeModelFolder(codeModelModelFolderUri);
     		}
     		
-    		List<File> txtFiles = getTextFilesInDir(null, (File)fileObject);
+    		List<File> txtFiles = getTextFilesInDir(null, importFilePath.toFile());
     		
     		if (txtFiles != null && txtFiles.size() > 0) {
     			acm.getExtractionProcessor().getTextProcessor().addFiles(txtFiles);
     		}
     		
-    		List<File> javaFiles = getJavaFilesInDir(null, (File)fileObject);
+    		List<File> javaFiles = getJavaFilesInDir(null, importFilePath.toFile());
     		if (javaFiles != null && javaFiles.size() > 0) {
     			acm.getExtractionProcessor().getCodeExtractor(AnswerExtractionProcessor.CodeLanguage.JAVA).addCodeFiles(javaFiles);
     		}
@@ -773,7 +732,75 @@ public class JavaImportOperation extends WorkspaceModifyOperation {
 		return acm;
     }
     
-    void importFiles(AnswerCurationManager acm) throws ConfigurationException, IOException {
+    private IPath copyAndDisplayImportFile(IProject project, File fileObject) throws CoreException, IOException {
+		IPath location = copyOrLinkFile(project, fileObject);
+		IWorkbenchWindow window = PlatformUI.getWorkbench().getActiveWorkbenchWindow();
+	    if (window != null) {
+	    	IWorkbenchPage page = window.getActivePage();
+	    	if (page != null) {
+    		    try {
+    		    	IWorkbenchPart actpart = page.getActivePart();
+        		    IFileStore fileStore = EFS.getLocalFileSystem().getStore(location);
+        		    IDE.openEditorOnFileStore( page, fileStore );
+        		    page.activate(actpart);
+    		    } catch ( PartInitException e ) {
+    		        //Put your exception handler here if you wish to
+    		    	try {
+						System.err.println("Unable to open '" + ((File)fileObject).getCanonicalPath() + "' in an editor.");
+					} catch (IOException e1) {
+						// TODO Auto-generated catch block
+						e1.printStackTrace();
+					}
+    		    }
+	    	}
+	    }
+	    else {
+	    	PlatformUI.getWorkbench().getDisplay().asyncExec(new Runnable() {
+	    	    public void run() {
+	    	        IWorkbenchWindow window = PlatformUI.getWorkbench().getActiveWorkbenchWindow();
+		    	    if (window != null) {
+		    	    	IWorkbenchPage page = window.getActivePage();
+		    	    	if (page != null) {
+		        		    try {
+		        		    	IWorkbenchPart actpart = page.getActivePart();
+		            		    IFileStore fileStore = EFS.getLocalFileSystem().getStore(location);
+		            		    IDE.openEditorOnFileStore( page, fileStore );
+		            		    page.activate(actpart);
+			    		    } catch ( PartInitException e ) {
+			    		        //Put your exception handler here if you wish to
+			    		    	try {
+									System.err.println("Unable to open '" + ((File)fileObject).getCanonicalPath() + "' in an editor.");
+								} catch (IOException e1) {
+									// TODO Auto-generated catch block
+									e1.printStackTrace();
+								}
+			    		    }
+		    	    	}
+		    	    }
+	    	    }
+	    	});
+	    }
+	    return location;
+	}
+
+	private IPath copyOrLinkFile(IProject project, File fileObject2) throws CoreException, IOException {
+		File src = new File(((File)fileObject2).getCanonicalPath());
+		Path location = new Path(((File)fileObject2).getCanonicalPath());
+		IFile dest = project.getFile("ExtractedModels/Sources/" + location.lastSegment());
+		IPath destPath = dest.getLocation();
+		if (dest.exists()) {
+			dest.delete(true, null);
+		}
+		if (!dest.exists()) {
+			destPath.toFile().getParentFile().mkdirs();
+			Files.copy(src, destPath.toFile());
+//			file.createLink(location, IResource.NONE, null);
+		}
+		project.refreshLocal(IResource.DEPTH_INFINITE, null);
+		return destPath;
+	}
+
+	void importFiles(AnswerCurationManager acm) throws ConfigurationException, IOException {
     	String ofn = getOutputFilename();
 		if (!ofn.endsWith(".owl")) {
 			ofn += ".owl";
