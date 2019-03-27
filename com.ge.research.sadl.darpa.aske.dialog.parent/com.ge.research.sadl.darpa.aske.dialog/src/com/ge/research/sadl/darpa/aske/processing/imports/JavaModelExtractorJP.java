@@ -14,6 +14,7 @@ import org.apache.log4j.Logger;
 import com.ge.research.sadl.builder.ConfigurationManagerForIdeFactory;
 import com.ge.research.sadl.builder.IConfigurationManagerForIDE;
 import com.ge.research.sadl.darpa.aske.curation.AnswerCurationManager;
+import com.ge.research.sadl.darpa.aske.processing.DialogConstants;
 import com.ge.research.sadl.jena.inference.SadlJenaModelGetterPutter;
 import com.ge.research.sadl.processing.SadlConstants;
 import com.ge.research.sadl.reasoner.ConfigurationException;
@@ -209,8 +210,8 @@ public class JavaModelExtractorJP implements IModelFromCodeExtractor {
 			Ontology modelOntology = getCodeModel().createOntology(getCodeModelName());
 			logger.debug("Ontology '" + getCodeModelName() + "' created");
 			modelOntology.addComment("This ontology was created by extraction from code by the ANSWER JavaModelExtractorJP.", "en");
-			setCodeMetaModelUri(SadlConstants.SADL_IMPLICIT_MODEL_URI);
-			setCodeMetaModelPrefix(SadlConstants.SADL_IMPLICIT_MODEL_PREFIX);
+			setCodeMetaModelUri(DialogConstants.CODE_EXTRACTION_MODEL_URI);
+			setCodeMetaModelPrefix(DialogConstants.CODE_EXTRACTION_MODEL_PREFIX);
 			OntModel importedOntModel = getCodeModelConfigMgr().getOntModel(getCodeMetaModelUri(), Scope.INCLUDEIMPORTS);
 			addImportToJenaModel(getCodeModelName(), getCodeMetaModelUri(), getCodeMetaModelPrefix(), importedOntModel);
 		}

@@ -20,12 +20,14 @@ import org.eclipse.emf.ecore.resource.ResourceSet;
 import org.eclipse.xtext.EcoreUtil2;
 import org.eclipse.xtext.generator.IFileSystemAccess2;
 import org.eclipse.xtext.nodemodel.util.NodeModelUtils;
+import org.eclipse.xtext.resource.XtextResource;
 import org.eclipse.xtext.util.CancelIndicator;
 import org.eclipse.xtext.validation.CheckMode;
 import org.eclipse.xtext.validation.CheckType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.ge.research.sadl.builder.IConfigurationManagerForIDE;
 import com.ge.research.sadl.darpa.aske.dialog.AnswerCMStatement;
 import com.ge.research.sadl.darpa.aske.dialog.BuildStatement;
 import com.ge.research.sadl.darpa.aske.dialog.HowManyValuesStatement;
@@ -36,9 +38,11 @@ import com.ge.research.sadl.darpa.aske.dialog.WhatValuesStatement;
 import com.ge.research.sadl.darpa.aske.dialog.YesNoAnswerStatement;
 import com.ge.research.sadl.darpa.aske.preferences.DialogPreferences;
 import com.ge.research.sadl.errorgenerator.generator.SadlErrorMessages;
+import com.ge.research.sadl.external.ExternalEmfResource;
 import com.ge.research.sadl.jena.JenaBasedSadlModelProcessor;
 import com.ge.research.sadl.jena.JenaProcessorException;
 import com.ge.research.sadl.jena.MetricsProcessor;
+import com.ge.research.sadl.jena.UtilsForJena;
 import com.ge.research.sadl.model.CircularDefinitionException;
 import com.ge.research.sadl.model.ModelError;
 import com.ge.research.sadl.model.gp.Equation;
@@ -51,9 +55,11 @@ import com.ge.research.sadl.model.gp.TripleElement;
 import com.ge.research.sadl.processing.OntModelProvider;
 import com.ge.research.sadl.processing.SadlConstants;
 import com.ge.research.sadl.processing.ValidationAcceptor;
+import com.ge.research.sadl.processing.IModelProcessor.ProcessorContext;
 import com.ge.research.sadl.reasoner.ConfigurationException;
 import com.ge.research.sadl.reasoner.InvalidNameException;
 import com.ge.research.sadl.reasoner.InvalidTypeException;
+import com.ge.research.sadl.reasoner.SadlJenaModelGetter;
 import com.ge.research.sadl.reasoner.TranslationException;
 import com.ge.research.sadl.reasoner.utils.SadlUtils;
 import com.ge.research.sadl.sADL.Declaration;
@@ -69,6 +75,7 @@ import com.ge.research.sadl.sADL.SadlSimpleTypeReference;
 import com.ge.research.sadl.sADL.SadlStatement;
 import com.ge.research.sadl.sADL.SadlTypeReference;
 import com.ge.research.sadl.utils.ResourceManager;
+import com.hp.hpl.jena.ontology.OntModel;
 import com.hp.hpl.jena.ontology.Ontology;
 import com.hp.hpl.jena.rdf.model.RDFWriter;
 
@@ -179,6 +186,7 @@ public class JenaBasedDialogModelProcessor extends JenaBasedSadlModelProcessor {
 					e.printStackTrace();
 				}
 			}
+			checkCodeExtractionSadlModelExistence(resource, context);
 		} catch (IOException e1) {
 			e1.printStackTrace();
 		} catch (ConfigurationException e1) {
@@ -269,6 +277,7 @@ public class JenaBasedDialogModelProcessor extends JenaBasedSadlModelProcessor {
 									String question = lastACMQuestion.getStr();
 									if (question != null) {
 										MixedInitiativeElement mie = dap.getMixedInitiativeElement(question);
+//										dap.removeMixedInitiativeElement(question);
 										if (mie != null) {
 								            // construct response
 											String answer = getResponseFromSadlStatement(element);
@@ -279,6 +288,9 @@ public class JenaBasedDialogModelProcessor extends JenaBasedSadlModelProcessor {
 //								            // make call identified in element
 //								            mie.getRespondTo().accept(response);
 											treatAsAnswerToBackend = true;
+										}
+										else {
+//											treatAsAnswerToBackend = true;
 										}
 									}
 								} catch (ConfigurationException e) {
@@ -695,6 +707,150 @@ public class JenaBasedDialogModelProcessor extends JenaBasedSadlModelProcessor {
 
 	private void setCgServiceUrl(String cgServiceUrl) {
 		this.cgServiceUrl = cgServiceUrl;
+	}
+
+	private java.nio.file.Path checkCodeExtractionSadlModelExistence(Resource resource, ProcessorContext context)
+			throws IOException, ConfigurationException, URISyntaxException, JenaProcessorException {
+		UtilsForJena ufj = new UtilsForJena();
+		String policyFileUrl = ufj.getPolicyFilename(resource);
+		String policyFilename = policyFileUrl != null ? ufj.fileUrlToFileName(policyFileUrl) : null;
+		if (policyFilename != null) {
+			File projectFolder = new File(policyFilename).getParentFile().getParentFile();
+			String relPath = DialogConstants.EXTRACTED_MODELS_FOLDER_PATH_FRAGMENT + "/" + DialogConstants.CODE_EXTRACTION_MODEL_FILENAME;
+			String platformPath = projectFolder.getName() + "/" + relPath;
+			String codeExtractionSadlModelFN = projectFolder + "/" + relPath;
+			File codeExtractionSadlModelFile = new File(codeExtractionSadlModelFN);
+			if (!codeExtractionSadlModelFile.exists()) {
+				createCodeExtractionSadlModel(codeExtractionSadlModelFile);
+				try {
+					Resource newRsrc = resource.getResourceSet()
+							.createResource(URI.createPlatformResourceURI(platformPath, false)); 
+					newRsrc.load(resource.getResourceSet().getLoadOptions());
+					refreshResource(newRsrc);
+				} catch (Throwable t) {
+				}
+			}
+			return codeExtractionSadlModelFile.getAbsoluteFile().toPath();
+		}
+		return null;
+	}
+
+	private void createCodeExtractionSadlModel(File cemf) throws IOException {
+		String content = getCodeExtractionModel();
+		if (!cemf.exists()) {
+			new SadlUtils().stringToFile(cemf, content, true);
+		}
+	}
+
+	private String getCodeExtractionModel() {
+		String content = "uri \"http://sadl.org/CodeExtractionModel.sadl\" alias cem.\r\n" + 
+				" \r\n" + 
+				"// This is the code extraction meta-model\r\n" + 
+				"CodeElement is a class described by beginsAt with a single value of type int,\r\n" + 
+				"	described by endsAt with a single value of type int.\r\n" + 
+				"\r\n" + 
+				"CodeBlock is a type of CodeElement,\r\n" + 
+				"	described by serialization with a single value of type string,\r\n" + 
+				"	described by comment with values of type Comment,\r\n" + 
+				"	described by containedIn with values of type CodeBlock.\r\n" + 
+				"\r\n" + 
+				"{Class, Method, ConditionalBlock, LoopBlock} are types of CodeBlock.\r\n" + 
+				"\r\n" + 
+				"cmArguments describes Method with a single value of type CodeVariable List.\r\n" + 
+				"cmReturnTypes describes Method with a single value of type string List.\r\n" + 
+				"cmSemanticReturnTypes describes Method with a single value of type string List.\r\n" + 
+				"\r\n" + 
+				"// The reference to a CodeVariable can be its definition (Defined),\r\n" + 
+				"//	an assignment or reassignment (Reassigned), or just a reference\r\n" + 
+				"//	in the right-hand side of an assignment or a conditional (Used)\r\n" + 
+				"Usage is a class, must be one of {Defined, Used, Reassigned}.\r\n" + 
+				"\r\n" + 
+				"Reference  is a type of CodeElement\r\n" + 
+				"	described by firstRef with a single value of type boolean\r\n" + 
+				"	described by codeBlock with a single value of type CodeBlock\r\n" + 
+				"	described by usage with values of type Usage\r\n" + 
+				" 	described by input (note \"CodeVariable is an input to codeBlock CodeBlock\") \r\n" + 
+				" 		with a single value of type boolean\r\n" + 
+				" 	described by output (note \"CodeVariable is an output of codeBlock CodeBlock\") \r\n" + 
+				" 		with a single value of type boolean\r\n" + 
+				" 	described by setterArgument (note \"is this variable input to a setter?\") with a single value of type boolean\r\n" + 
+				" 	described by comment with values of type Comment.\r\n" + 
+				"	\r\n" + 
+				"Comment (note \"CodeBlock and Reference can have a Comment\") is a type of CodeElement\r\n" + 
+				" 	described by commentContent with a single value of type string.	\r\n" + 
+				"\r\n" + 
+				"// what about Constant also? Note something maybe an input and then gets reassigned\r\n" + 
+				"// Constant could be defined in terms of being set by equations that only involve Constants\r\n" + 
+				"// Constants could also relate variables used in different equations as being same\r\n" + 
+				"CodeVariable  is a type of CodeElement, \r\n" + 
+				"	described by varName with a single value of type string,\r\n" + 
+				"	described by varType with a single value of type string,\r\n" + 
+				"	described by semanticVarType with a single value of type string,\r\n" + 
+				"	described by quantityKind (note \"this should be qudt:QuantityKind\") with a single value of type ScientificConcept,\r\n" + 
+				"	described by reference with values of type Reference.   \r\n" + 
+				"\r\n" + 
+				"{ClassField, MethodArgument, MethodVariable} are types of CodeVariable. 	\r\n" + 
+				"\r\n" + 
+				"//External findFirstLocation (CodeVariable cv) returns int: \"http://ToBeImplemented\".\r\n" + 
+				"\r\n" + 
+				"Rule Transitive  \r\n" + 
+				"if inst is a cls and \r\n" + 
+				"   cls is a type of CodeVariable\r\n" + 
+				"then inst is a CodeVariable. \r\n" + 
+				"\r\n" + 
+				"Rule SetNotFirstRef1\r\n" + 
+				"if c is a CodeVariable and\r\n" + 
+				"   ref is reference of c and\r\n" + 
+				"   oneOf(usage of ref, Used, Reassigned) and  \r\n" + 
+				"   ref2 is reference of c and\r\n" + 
+				"   ref != ref2 and\r\n" + 
+				"   cb is codeBlock of ref and   \r\n" + 
+				"   cb2 is codeBlock of ref2 and\r\n" + 
+				"   cb = cb2 and\r\n" + 
+				"   l1 is beginsAt of ref and\r\n" + 
+				"   l2 is beginsAt of ref2 and\r\n" + 
+				"   l2 > l1   // so ref2 is at an earlier location that ref\r\n" + 
+				"then firstRef of ref2 is false.   \r\n" + 
+				"\r\n" + 
+				"// first reference is of type \"Used\" or all earlier refs are of type \"Used\"	\r\n" + 
+				"// this does not cover when no ref2 with l2 < l1 exists\r\n" + 
+				"Rule SetAsInput1\r\n" + 
+				"if c is CodeVariable and\r\n" + 
+				"   ref is reference of c and\r\n" + 
+				"   input of ref is not known and \r\n" + 
+				"   usage of ref is Used and\r\n" + 
+				"   ref2 is reference of c and\r\n" + 
+				"   ref != ref2 and\r\n" + 
+				"   cb is codeBlock of ref and   \r\n" + 
+				"   cb2 is codeBlock of ref2 and\r\n" + 
+				"   cb = cb2 and   \r\n" + 
+				"   l1 is beginsAt of ref and\r\n" + 
+				"   l2 is beginsAt of ref2 and\r\n" + 
+				"   l2 < l1 and  // so ref2 is at an earlier location that ref\r\n" + 
+				"   noValue(ref2, usage, Reassigned) // no earlier reassignment of c exists\r\n" + 
+				"then input of ref is true. \r\n" + 
+				"\r\n" + 
+				"// if there is no l2 as specified in the previous rules, then the following covers that case\r\n" + 
+				"// do I need to consider codeBlock?????\r\n" + 
+				"Rule SetAsInput2\r\n" + 
+				"if c is a CodeVariable and\r\n" + 
+				"   ref is reference of c and\r\n" + 
+				"   input of ref is not known and\r\n" + 
+				"   usage of ref is Used and \r\n" + 
+				"   noValue(ref, firstRef)\r\n" + 
+				"then input of ref is true. \r\n" + 
+				"\r\n" + 
+				"// \"it is an output if it is computed and is argument to a setter\"\r\n" + 
+				"// or I could try to use the notion of a constant\r\n" + 
+				"Rule SetAsOutput\r\n" + 
+				"if c is a CodeVariable and\r\n" + 
+				"   setterArgument of c is true and\r\n" + 
+				"   ref is a reference of c and\r\n" + 
+				"   output of ref is not known and\r\n" + 
+				"   usage of ref is Defined //check this?\r\n" + 
+				"then\r\n" + 
+				"	output of ref is true.      	 \r\n";
+		return content;
 	}
 
 }

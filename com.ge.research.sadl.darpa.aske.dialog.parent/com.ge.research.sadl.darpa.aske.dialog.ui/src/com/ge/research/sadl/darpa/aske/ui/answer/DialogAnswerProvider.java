@@ -28,6 +28,7 @@ import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Path;
 import org.eclipse.core.runtime.Status;
+import org.eclipse.emf.common.util.EList;
 import org.eclipse.emf.common.util.URI;
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.ecore.resource.Resource;
@@ -55,6 +56,7 @@ import org.eclipse.xtext.resource.XtextResource;
 import org.eclipse.xtext.ui.editor.autoedit.DefaultAutoEditStrategyProvider;
 import org.eclipse.xtext.ui.editor.model.XtextDocument;
 import org.eclipse.xtext.ui.resource.IResourceSetProvider;
+import org.eclipse.xtext.util.ITextRegionWithLineInformation;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -89,6 +91,9 @@ import com.ge.research.sadl.reasoner.ConfigurationException;
 import com.ge.research.sadl.reasoner.ResultSet;
 import com.ge.research.sadl.reasoner.SadlCommandResult;
 import com.ge.research.sadl.reasoner.utils.SadlUtils;
+import com.ge.research.sadl.sADL.SadlImport;
+import com.ge.research.sadl.sADL.SadlModel;
+import com.ge.research.sadl.sADL.SadlModelElement;
 import com.ge.research.sadl.ui.handlers.SadlActionHandler;
 import com.google.inject.Inject;
 import com.google.inject.Injector;
@@ -107,6 +112,7 @@ import com.hp.hpl.jena.vocabulary.XSD;
 public class DialogAnswerProvider extends DefaultAutoEditStrategyProvider implements IDialogAnswerProvider {
 	private static final Logger logger = LoggerFactory.getLogger(DialogAnswerProvider.class);
 	private XtextDocument theDocument;
+	private Resource resource;
 
 	@Inject
 	protected IResourceSetProvider resourceSetProvider;
@@ -145,6 +151,7 @@ public class DialogAnswerProvider extends DefaultAutoEditStrategyProvider implem
 	            	}
 	                if (document instanceof XtextDocument) {
 	                	Resource resource = getResourceFromDocument((XtextDocument)document);
+	                	setResource(resource);
 	                	String insertionText = null;
 	                	if (resource != null) {
 	                		setTheDocument((XtextDocument) document);
@@ -1154,6 +1161,20 @@ public class DialogAnswerProvider extends DefaultAutoEditStrategyProvider implem
 		return null;
 	}
 
+	public int[] getStartAndLength(EObject po) {
+		INode node = getParserObjectNode(po);
+		if (node != null) {
+			ITextRegionWithLineInformation reg = NodeModelUtils.getNode(po).getTextRegionWithLineInformation();
+			int start = NodeModelUtils.getNode(po).getTotalOffset();
+			int len = NodeModelUtils.getNode(po).getTotalLength();
+			int[] ret = new int[2];
+			ret[0] = start;
+			ret[1] = len;
+			return ret;
+		}
+		return null;
+	}
+
 	protected INode getParserObjectNode(EObject po) {
 		Object r = po.eResource();
 		if (r instanceof XtextResource) {
@@ -1234,6 +1255,12 @@ public class DialogAnswerProvider extends DefaultAutoEditStrategyProvider implem
 	}
 	
 	@Override
+	public boolean removeMixedInitiativeElement(String key) {
+		mixedInitiativeElements.remove(key);
+		return true;
+	}
+	
+	@Override
 	public MixedInitiativeElement getMixedInitiativeElement(String key) {
 		return mixedInitiativeElements.get(key);
 	}
@@ -1280,6 +1307,7 @@ public class DialogAnswerProvider extends DefaultAutoEditStrategyProvider implem
 								if (methodToCall.equals("saveAsSadlFile")) {
 									String outputOwlFileName = arg0.toString();
 									File owlfile = new File(outputOwlFileName);
+//									insertExtractedModelImport(getTheDocument(), acm);
 									if (arg0 instanceof String && AnswerCurationManager.isYes(arg1)) {
 										File sf = new File(result.toString());
 										if (sf.exists()) {
@@ -1358,6 +1386,47 @@ public class DialogAnswerProvider extends DefaultAutoEditStrategyProvider implem
 				}
 			}
 		}	
+	}
+
+	private void insertExtractedModelImport(XtextDocument doc, AnswerCurationManager acm) {
+		String cmn = acm.getExtractionProcessor().getCodeModelName();
+		String insert = "import \"" + cmn + "\".\n\r";
+		if (cmn != null) {
+			Resource rsrc = getResource();
+			if (rsrc != null) {
+				EList<EObject> cntnts = rsrc.getContents();
+				if (cntnts.get(0) instanceof SadlModel) {
+					int loc = -1;
+					SadlModel sm = (SadlModel) cntnts.get(0);
+					EList<SadlImport> imprts = sm.getImports();
+					if (imprts != null) {
+						// insert import after last import
+						int[] info = getStartAndLength(imprts.get(imprts.size() - 1));
+						loc = info[0] + info[1];
+					}
+					else {
+						// insert import after uri
+						EList<SadlModelElement> elements = sm.getElements();
+						if (elements != null) {
+							int[] info = getStartAndLength(elements.get(elements.size() - 1));
+							loc = info[0] + info[1];
+						}
+						else {
+							loc = doc.getLength();
+						}
+					}
+					if (loc > 0) {
+						// insert at loc
+					    try {
+							doc.replace(loc + 1, insert.length(), insert);
+						} catch (BadLocationException e) {
+							// TODO Auto-generated catch block
+							e.printStackTrace();
+						}
+					}
+				}
+			}
+		}
 	}
 
 	private void displayFile(String codeModelFolder, File sf) {
@@ -1456,6 +1525,14 @@ public class DialogAnswerProvider extends DefaultAutoEditStrategyProvider implem
 	    		e.printStackTrace();
 	    	}
 		}
+	}
+
+	protected Resource getResource() {
+		return resource;
+	}
+
+	protected void setResource(Resource resource) {
+		this.resource = resource;
 	}
 
 }

@@ -655,7 +655,7 @@ public class JavaImportOperation extends WorkspaceModifyOperation {
    	    setFileObject(new File((String) outputfn));
 
     	File targetFile = new File(outputfn);
-    	IFile targetResource = codeModelContainerResource.getFile(new Path("ExtractedModels/" + provider
+    	IFile targetResource = codeModelContainerResource.getFile(new Path(DialogConstants.EXTRACTED_MODELS_FOLDER_PATH_FRAGMENT + "/" + provider
     			.getLabel(targetFile)));
     	setTargetResource(targetResource);
     	monitor.worked(1);
@@ -786,7 +786,7 @@ public class JavaImportOperation extends WorkspaceModifyOperation {
 	private IPath copyOrLinkFile(IProject project, File fileObject2) throws CoreException, IOException {
 		File src = new File(((File)fileObject2).getCanonicalPath());
 		Path location = new Path(((File)fileObject2).getCanonicalPath());
-		IFile dest = project.getFile("ExtractedModels/Sources/" + location.lastSegment());
+		IFile dest = project.getFile(DialogConstants.EXTRACTED_MODELS_FOLDER_PATH_FRAGMENT + "/Sources/" + location.lastSegment());
 		IPath destPath = dest.getLocation();
 		if (dest.exists()) {
 			dest.delete(true, null);
