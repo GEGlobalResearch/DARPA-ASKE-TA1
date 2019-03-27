@@ -17,6 +17,7 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -128,8 +129,8 @@ public class JenaBasedDialogInferenceProcessor extends JenaBasedSadlInferencePro
 			"prefix rdfs:<http://www.w3.org/2000/01/rdf-schema#>\n" +
 			"prefix sci:<http://aske.ge.com/sciknow#>\n" +
 			"prefix afn:<http://jena.apache.org/ARQ/function#>\n" +
-			//"select distinct ?Eq ?DBN ?Out where {\n" + 
-			"select ?DBN ?Out (group_concat(distinct ?Eq ; separator=',') as ?Eqns) where {\n" +
+			"select distinct ?DBN ?Out ?Eq where {\n" + 
+			//"select ?DBN ?Out (group_concat(?Eq ; separator=',') as ?Eqns) where {\n" +
 			" {select ?Eq where {\n" + 
 			"    ?EqOut a ?EqClass. \n" + 
 			"    ?EqClass rdfs:subClassOf imp:Equation.\n" + 
@@ -159,8 +160,8 @@ public class JenaBasedDialogInferenceProcessor extends JenaBasedSadlInferencePro
 			" ?DBN rdfs:subClassOf ?EQR.\n" + 
 			" ?EQR owl:onProperty sci:hasEquation.\n" + 
 			" ?EQR owl:allValuesFrom ?EqClass.\n" +
-			" ?Eq a ?EqClass." +
-			"}group by ?DBN ?Out";
+			" ?Eq a ?EqClass.\n" +
+			"}group by ?DBN ?Out ?Eq";
 	public static final String RETRIEVE_MODELS = "prefix hyper:<http://aske.ge.com/hypersonics#>\n" + 
 			"prefix dbn:<http://aske.ge.com/dbn#>\n" + 
 			"prefix imp:<http://sadl.org/sadlimplicitmodel#>\n" +
@@ -387,6 +388,8 @@ public class JenaBasedDialogInferenceProcessor extends JenaBasedSadlInferencePro
 
 		List<TripleElement> insertions = new ArrayList<TripleElement>();
 		List<TripleElement> queryPatterns = new ArrayList<TripleElement>();
+		List<TripleElement> docPatterns = new ArrayList<TripleElement>();
+
 		List<OntClass> inputsList = new ArrayList<OntClass>();
 		List<OntClass> outputsList = new ArrayList<OntClass>();
 		//Map<OntClass, Individual> outputInstance = new HashMap<OntClass, Individual>();
@@ -396,18 +399,22 @@ public class JenaBasedDialogInferenceProcessor extends JenaBasedSadlInferencePro
 			TripleElement tr = triples[i];
 			//Node snode = tr.getSubject();
 			if (tr.getSubject() instanceof NamedNode) {
-//				if (tr.getSubject() instanceof VariableNode) {
-//					//subjectType = ((VariableNode)tr.getSubject()).getType();
-//				}
-				if (tr.getPredicate() != null && tr.getObject() != null) {
-					// this is an input
-					//TODO: just for testing model search, add to queryPatterns
-					//queryPatterns.add(tr);
-					insertions.add(tr);
-				}
+				
+				if (tr.getPredicate().getURI() != null) {
+				
+					if (tr.getPredicate() != null && tr.getObject() != null && tr.getPredicate().getURI() != null) {
+						// this is an input
+						//TODO: just for testing model search, add to queryPatterns
+						//queryPatterns.add(tr);
+						insertions.add(tr);
+					}
+					else {
+						// this is an output
+						queryPatterns.add(tr);
+					}
+				} 
 				else {
-					// this is an output
-					queryPatterns.add(tr);
+					docPatterns.add(tr);
 				}
 			}
 		}
@@ -505,6 +512,20 @@ public class JenaBasedDialogInferenceProcessor extends JenaBasedSadlInferencePro
 		}
 		
 		
+		if (docPatterns.size() > 0) {
+			// how many results there will be
+			//ResultSet[] results = new ResultSet[queryPatterns.size()];
+			for (int i = 0; i < docPatterns.size(); i++) {
+				TripleElement itr = docPatterns.get(i);
+
+				suri = itr.getObject().getURI();
+
+				sclass = getTheJenaModel().getOntClass(suri);
+				outputsList.add(sclass);
+			}
+		}
+		
+		
 		// Insert dependency graph
 		UpdateAction.parseExecute(DEPENDENCY_GRAPH_INSERT , getTheJenaModel());
 		
@@ -520,6 +541,7 @@ public class JenaBasedDialogInferenceProcessor extends JenaBasedSadlInferencePro
 		com.hp.hpl.jena.query.ResultSetRewindable eqnsResults = null;
 		String queryStr = "";
 		QueryExecution qexec = null;
+		QueryExecution qexec1 = null;
 		OntResource qtype;
 		OntProperty qtypeprop = getTheJenaModel().getOntProperty(METAMODEL_QUERYTYPE_PROP);
 		//OntProperty outputprop = getTheJenaModel().getOntProperty(METAMODEL_OUTPUT_PROP);
@@ -534,35 +556,37 @@ public class JenaBasedDialogInferenceProcessor extends JenaBasedSadlInferencePro
 		
 		String cgJson, dbnJson, dbnResultsJson;
 		
+		Map<RDFNode, String[]> dbnEqns = new HashMap<RDFNode,String[]>();
+		Map<RDFNode, RDFNode> dbnOutput = new HashMap<RDFNode,RDFNode>();
+
+		
 //		ResultSet[] results = new ResultSet[2]; 
 		ResultSet[] results = null;
 		
 		try {
 		
-			if (inputsList.size() > 0 && outputsList.size() > 0) {
+			//if (inputsList.size() > 0 && outputsList.size() > 0) {
+			if (outputsList.size() > 0 && docPatterns.size() <= 0) {
 	
-				for(int i=0; i<outputsList.size(); i++) {
-					//OntClass oclass = outputsList.get(i);
-					//Individual oinst = createIndividualOfClass(qhmodel, oclass.getURI());
-					//qhmodel.add(cgq, outputprop, oinst);
-					//outputInstance.put(oclass,oinst);
-				}			
 				
 				listOfInputs = strUriList(inputsList);
 				listOfOutputs = strUriList(outputsList);
 	
-			
 				// Retrieve computational graph
 				queryStr = BUILD_COMP_GRAPH.replaceAll("LISTOFINPUTS", listOfInputs).replaceAll("LISTOFOUTPUTS", listOfOutputs);
 				
 				com.hp.hpl.jena.query.Query q = QueryFactory.create(queryStr);
 				qexec = QueryExecutionFactory.create(q, getTheJenaModel()); 
-				//com.hp.hpl.jena.query.ResultSet eqnsResults = qexec.execSelect() ;
 				eqnsResults = com.hp.hpl.jena.query.ResultSetFactory.makeRewindable(qexec.execSelect()) ;
-	
 				String queryMode = "prognostic";
-		
-				if ( eqnsResults.hasNext() ) {
+				
+				//if(eqnsResults.getRowNumber() <=0)
+				//	System.out.println("***No models***");
+				
+				//int sz = eqnsResults.size();
+				//boolean nxt = eqnsResults.hasNext();
+
+				if ( eqnsResults.size() > 0 ) {
 					qtype = getTheJenaModel().getOntResource(METAMODEL_PREFIX + "prognostic");
 					qhmodel.add(cgq, qtypeprop, qtype);			
 				} else {
@@ -570,19 +594,14 @@ public class JenaBasedDialogInferenceProcessor extends JenaBasedSadlInferencePro
 					com.hp.hpl.jena.query.Query qinv = QueryFactory.create(queryStr);
 					qexec = QueryExecutionFactory.create(qinv, getTheJenaModel()); 
 					eqnsResults = com.hp.hpl.jena.query.ResultSetFactory.makeRewindable(qexec.execSelect()) ;
-					if (eqnsResults.hasNext()) {
+					if (eqnsResults.size() > 0) {
 							queryMode = "calibration";
 							qtype = getTheJenaModel().getOntResource(METAMODEL_PREFIX + "calibration");
 							qhmodel.add(cgq, qtypeprop, qtype);			
 					}
 				}
 				
-
-				Map<RDFNode, String[]> dbnEqns = new HashMap<RDFNode,String[]>();
-				Map<RDFNode, RDFNode> dbnOutput = new HashMap<RDFNode,RDFNode>();
-
 				dbnEqns = createDbnEqnMap(eqnsResults);
-				eqnsResults.reset();
 				dbnOutput = createDbnOutputMap(eqnsResults);
 
 				
@@ -601,15 +620,14 @@ public class JenaBasedDialogInferenceProcessor extends JenaBasedSadlInferencePro
 				
 				
 				for(int i=0; i<numOfModels; i++) {
-					
 					//listOfEqns = getEqnUrisFromResults(eqnsResults);
 					listOfEqns = modelEqnList[i];
-		            eqnsResults.reset();
+		            //eqnsResults.reset();
 	
 					// Comp Graph instance
 					cgIns = qhmodel.createIndividual(METAMODEL_PREFIX + "CG_" + System.currentTimeMillis(), getTheJenaModel().getOntClass(METAMODEL_CCG));
 					qhmodel.add(ce, getTheJenaModel().getOntProperty(METAMODEL_COMPGRAPH_PROP), cgIns);
-		
+
 					// Retrieve Models & Nodes
 					queryStr = RETRIEVE_MODELS.replaceAll("EQNSLIST", listOfEqns);
 					models = queryKnowledgeGraph(queryStr, getTheJenaModel());
@@ -622,29 +640,45 @@ public class JenaBasedDialogInferenceProcessor extends JenaBasedSadlInferencePro
 					nodesCSVString = convertResultSetToString(nodes);
 					System.out.println(nodesCSVString);
 		
-					if (nodes.size() <= 0) {
-						// TODO: Output "no models found" message
-						return null;
-					}
+//					if (nodes.size() <= 0) {
+//						return null;
+//					}
 		
-					
 					cgJson = kgResultsToJson(nodesCSVString, modelsCSVString, queryMode);
 					dbnJson = generateDBNjson(cgJson);
 					class2lbl = getClassLabelMapping(dbnJson);
 					
 		            dbnResultsJson = executeDBN(dbnJson);
-		            lbl2value = getLabelToMeanStdMapping(dbnResultsJson);
-	
-		            //createCGsubgraphs(cgIns, eqnsResults, class2lbl, lbl2value, outputInstance);
-		            createCGsubgraphs(cgIns, dbnEqns, dbnOutput, listOfEqns, class2lbl, lbl2value); //, outputInstance);
-					
-					// create ResultSet
-					results[i] = retrieveCompGraph(resource, cgIns);
-					
-					results[i+numOfModels] = retrieveValues(resource, cgIns);
+		            
+		            //check if DBN execution was successful
+		            
+		            String resmsg = getDBNoutcome(dbnResultsJson).trim();
+		            //boolean suc = resmsg.equals("Success");
+		            
+		            if(resmsg.equals("Success")) {
+			            
+			            lbl2value = getLabelToMeanStdMapping(dbnResultsJson);
+		
+			            //createCGsubgraphs(cgIns, eqnsResults, class2lbl, lbl2value, outputInstance);
+			            createCGsubgraphs(cgIns, dbnEqns, dbnOutput, listOfEqns, class2lbl, lbl2value); //, outputInstance);
+						
+						// create ResultSet
+						results[i] = retrieveCompGraph(resource, cgIns);
+						
+						results[i+numOfModels] = retrieveValues(resource, cgIns);
+		            }
+		            else {
+		            	results = null;
+		            	//System.err.println("DBN execution failed. Message: " + dbnResultsJson.toString());
+		            }
+				}
+				if (numOfModels < 1) {
+					results = null;
+					System.out.println("Unable to assemble a model with current knowledge");
 				}
 				
-			} else if (inputsList.size() <= 0 && outputsList.size() > 0) {
+				
+			} else if (outputsList.size() > 0 && docPatterns.size() > 0) {
 				
 				
 				
@@ -652,6 +686,10 @@ public class JenaBasedDialogInferenceProcessor extends JenaBasedSadlInferencePro
 				qhmodel.add(cgq, qtypeprop, qtype);	// do we add it even if we don't know if there's a model yet?
 	
 				inputsList.addAll(outputsList);
+				
+				results = new ResultSet[outputsList.size()*2]; 
+
+				
 				for(int i=0; i < outputsList.size(); i++) {
 					List<OntClass> outpl = new ArrayList<OntClass>();
 					List<OntClass> inpl = new ArrayList<OntClass>();
@@ -669,23 +707,37 @@ public class JenaBasedDialogInferenceProcessor extends JenaBasedSadlInferencePro
 					listOfOutputs = strUriList(outpl);
 					System.out.println(listOfInputs);
 					System.out.println(listOfOutputs);
-					
+
 					queryStr = BUILD_COMP_GRAPH.replaceAll("LISTOFINPUTS", listOfInputs).replaceAll("LISTOFOUTPUTS", listOfOutputs);
 					com.hp.hpl.jena.query.Query q = QueryFactory.create(queryStr);
 					qexec = QueryExecutionFactory.create(q, getTheJenaModel()); 
-					//com.hp.hpl.jena.query.ResultSet eqnsResults = qexec.execSelect() ;
 					eqnsResults = com.hp.hpl.jena.query.ResultSetFactory.makeRewindable(qexec.execSelect()) ;
 					
-					if (eqnsResults.hasNext()) {
+					//int ns = eqnsResults.size();
+					//boolean nn = eqnsResults.hasNext();
 					
-						listOfEqns = getEqnUrisFromResults(eqnsResults);
+					dbnEqns = createDbnEqnMap(eqnsResults);
+					dbnOutput = createDbnOutputMap(eqnsResults);
+
+					int numOfModels = 1;
+					if (dbnEqns.isEmpty())
+						numOfModels = 0;
+					String[] modelEqnList = buildEqnsLists(numOfModels, dbnEqns);
+
+					
+					if (eqnsResults.size() > 0 ) {
+						
+						qtype = getTheJenaModel().getOntResource(METAMODEL_PREFIX + "prognostic");
+						qhmodel.add(cgq, qtypeprop, qtype);			
+						
+						listOfEqns = modelEqnList[0]; //getEqnUrisFromResults(eqnsResults);
 			            eqnsResults.reset();
 
 						cgIns = qhmodel.createIndividual(METAMODEL_PREFIX + "CG_" + System.currentTimeMillis(), getTheJenaModel().getOntClass(METAMODEL_CCG));
 
 						// Each comp graph is attached to the execution instance
 						qhmodel.add(ce, getTheJenaModel().getOntProperty(METAMODEL_COMPGRAPH_PROP), cgIns);
-						
+
 						// Retrieve Models & Nodes
 						queryStr = RETRIEVE_MODELS.replaceAll("EQNSLIST", listOfEqns);
 						models = queryKnowledgeGraph(queryStr, getTheJenaModel());
@@ -696,20 +748,33 @@ public class JenaBasedDialogInferenceProcessor extends JenaBasedSadlInferencePro
 						
 						modelsCSVString = convertResultSetToString(models);
 						nodesCSVString = convertResultSetToString(nodes);
-						
+
+//						if (nodes.size() <= 0) {
+//							//  Output "no models found" message
+//							qexec.close();
+//							return null;
+//						}
+
 						cgJson = kgResultsToJson(nodesCSVString, modelsCSVString, "prognostic");
 						dbnJson = generateDBNjson(cgJson);
 						class2lbl = getClassLabelMapping(dbnJson);
 	
 						// Run the model
 						dbnResultsJson = executeDBN(dbnJson);
-			            lbl2value = getLabelToMeanStdMapping(dbnResultsJson);
-						
-
-			            //createCGsubgraphs(cgIns, eqnsResults, class2lbl, lbl2value, outputInstance);
+			            String resmsg = getDBNoutcome(dbnResultsJson).trim();
+			            //boolean suc = resmsg.equals("Success");
 			            
-			            //TODO: create ResultSet
-			            results = null;
+			            if(resmsg.equals("Success")) {
+			            	
+			            	lbl2value = getLabelToMeanStdMapping(dbnResultsJson);
+						
+				            createCGsubgraphs(cgIns, dbnEqns, dbnOutput, listOfEqns, class2lbl, lbl2value); //, outputInstance);
+							
+							// create ResultSet
+							results[i] = retrieveCompGraph(resource, cgIns);
+							
+							results[i+1] = retrieveValues(resource, cgIns);
+			            }
 					}
 					// else continue looking
 				}
@@ -753,7 +818,22 @@ public class JenaBasedDialogInferenceProcessor extends JenaBasedSadlInferencePro
 		
 		
 		
-		return null; //results;
+		return null;
+	}
+
+
+	private String getDBNoutcome(String dbnResultsJson) {
+        JsonParser parser = new JsonParser();
+        JsonElement jsonTree = parser.parse(dbnResultsJson);
+        JsonObject jsonObject;
+        String jres = null;
+
+        if (jsonTree.isJsonObject()) {
+            jsonObject = jsonTree.getAsJsonObject();
+            if (jsonObject.has("modelStatus")) 
+                jres = jsonObject.get("modelStatus").getAsString();
+        }
+        return jres;
 	}
 
 
@@ -764,6 +844,7 @@ public class JenaBasedDialogInferenceProcessor extends JenaBasedSadlInferencePro
 		RDFNode dbn;
 		RDFNode op;
 		QuerySolution row;
+		eqnsResults.reset();
 		while(eqnsResults.hasNext()) {
 			row = eqnsResults.nextSolution() ;
 			dbn = row.get("?DBN") ;
@@ -807,14 +888,31 @@ public class JenaBasedDialogInferenceProcessor extends JenaBasedSadlInferencePro
 		Map<RDFNode, String[]> map = new HashMap<RDFNode, String[]>();
 //		int dbnNum = eqnsResults.getRowNumber();
 //		List<String> eqArray = new ArrayList<String>();
+		eqnsResults.reset();
 		RDFNode dbn;
-		String eqns[];
+		//String eqns[];
 		QuerySolution row;
+		//Set<String> eq_set = new HashSet<String>(); 
+		Map<RDFNode, Set<String>> mapSet = new HashMap<RDFNode, Set<String>>();
+		String eq;
+
 		while(eqnsResults.hasNext()) {
 			row = eqnsResults.nextSolution() ;
 			dbn = row.get("?DBN");
-			eqns = row.get("?Eqns").toString().split(",") ;
-			map.put(dbn, eqns);
+			Set<String> eq_set = new HashSet<String>(); 
+			mapSet.put(dbn, eq_set);
+		}
+		eqnsResults.reset();
+		while(eqnsResults.hasNext()) {
+			row = eqnsResults.nextSolution() ;
+			dbn = row.get("?DBN");
+			eq = row.get("?Eq").toString();
+			mapSet.get(dbn).add(eq);
+		}
+		for(RDFNode n : mapSet.keySet()) {
+			String[] eqns = new String[mapSet.get(n).size()];
+			eqns = mapSet.get(n).toArray(eqns);
+			map.put(n, eqns );
 		}
 		return map;
 	}
@@ -1065,10 +1163,11 @@ public class JenaBasedDialogInferenceProcessor extends JenaBasedSadlInferencePro
 	private String getEqnUrisFromResults(ResultSetRewindable eqnsResults) {
 		QuerySolution soln;
 		String listOfEqns = "";
+		eqnsResults.reset();
 		for ( ; eqnsResults.hasNext() ; )
 	    {
 	      soln = eqnsResults.nextSolution() ;
-	      RDFNode s = soln.get("?Eq") ; 
+	      RDFNode s = soln.get("?Eqns") ; 
 	      //RDFNode p = soln.get("?DBN") ;
 	      //Resource r = soln.getResource("VarR") ;
 	      //Literal l = soln.getLiteral("VarL") ; 
