@@ -1,0 +1,63 @@
+{
+  "dataLocation": "../Datasets/Force_dataset.csv",
+  "inputVariables": [
+    {
+      "name": "Mass",
+      "type": "double"
+    },
+    {
+      "name": "Acceleration",
+      "type": "double"
+    }
+  ],
+  "modelName": "Newtons2ndLawModel",
+  "outputVariables": [
+    {
+      "name": "Force",
+      "type": "double"
+    }
+  ]
+}
+--
+{
+  "equationModel": "Force = Mass*Acceleration",
+  "inputVariables": [
+    {
+      "name": "Mass",
+      "type": "double"
+    },
+    {
+      "name": "Acceleration",
+      "type": "double"
+    }
+  ],
+  "modelName": "Newtons2ndLawModel",
+  "outputVariables": [
+    {
+      "name": "Force",
+      "type": "double"
+    }
+  ]
+}
+----
+{
+  "inputVariables": [
+    {
+      "name": "Mass",
+      "type": "double",
+      "value": "[1.0]"
+    },
+    {
+      "name": "Acceleration",
+      "type": "double",
+      "value": "[0.5]"
+    }
+  ],
+  "modelName": "Newtons2ndLawModel",
+  "outputVariables": [
+    {
+      "name": "Force",
+      "type": "double"
+    }
+  ]
+}
