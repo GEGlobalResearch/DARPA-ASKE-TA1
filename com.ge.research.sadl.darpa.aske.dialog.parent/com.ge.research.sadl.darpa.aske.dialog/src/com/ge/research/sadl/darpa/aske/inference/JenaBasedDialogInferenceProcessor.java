@@ -316,7 +316,29 @@ public class JenaBasedDialogInferenceProcessor extends JenaBasedSadlInferencePro
 	public static final String RESULTSQUERY = "prefix imp:<http://sadl.org/sadlimplicitmodel#>\n" + 
 			"prefix mm:<http://aske.ge.com/metamodel#>\n" +
 			"prefix sci:<http://aske.ge.com/sciknow#>\n" + 
-			"select distinct (strafter(str(?CCG),'#') as ?Model) (strafter(str(?Var),'#') as ?Variable) ?Mean ?StdDev  ?ModelAccuracy\n" + 
+			"select distinct (strafter(str(?CCG),'#') as ?Model) (strafter(str(?Var),'#') as ?Variable) ?Mean ?StdDev\n" + 
+			"where {\n" + 
+			"   {?CCG mm:subgraph ?SG.\n" + 
+			"    filter (?CCG in (COMPGRAPH)).\n" +
+			"    ?SG mm:output ?Oinst.\n" + 
+			"    ?Oinst a ?Var.\n" + 
+			"    ?Oinst imp:value ?Mean.\n" + 
+			"    ?Oinst imp:stddev ?StdDev.\n" +
+			"  } union {\n" +
+			"   ?CCG mm:subgraph ?SG. \n" + 
+			"   filter (?CCG in (COMPGRAPH)).\n" +
+			"   ?Q mm:execution ?CE.\n" + 
+			"   ?CE mm:compGraph ?CCG.\n" + 
+			"   ?Q mm:output ?Vinst.\n" + 
+			"   ?Vinst a ?Var.\n" + 
+			"   ?Vinst imp:value ?Mean.\n" +
+			"   ?Vinst imp:stddev ?StdDev.\n" +
+			"}\n" +
+			"}";
+	public static final String RESULTSQUERYHYPO = "prefix imp:<http://sadl.org/sadlimplicitmodel#>\n" + 
+			"prefix mm:<http://aske.ge.com/metamodel#>\n" +
+			"prefix sci:<http://aske.ge.com/sciknow#>\n" + 
+			"select distinct (strafter(str(?CCG),'#') as ?Model) (strafter(str(?Var),'#') as ?Variable) ?Mean ?StdDev  ?ModelAccuracy ?VarError\n" + 
 			"where {\n" + 
 			"   {?CCG mm:subgraph ?SG.\n" + 
 			"    filter (?CCG in (COMPGRAPH)).\n" +
@@ -325,7 +347,7 @@ public class JenaBasedDialogInferenceProcessor extends JenaBasedSadlInferencePro
 			"    ?Oinst a ?Var.\n" + 
 			"    ?Oinst imp:value ?Mean.\n" + 
 			"    ?Oinst imp:stddev ?StdDev.\n" +
-			//"    ?Oinst imp:varError ?VarError.\n" + 
+			"    optional{?Oinst imp:varError ?VarError.}\n" + 
 			"  } union {\n" +
 			"   ?CCG mm:subgraph ?SG. \n" + 
 			"   filter (?CCG in (COMPGRAPH)).\n" +
@@ -336,7 +358,7 @@ public class JenaBasedDialogInferenceProcessor extends JenaBasedSadlInferencePro
 			"   ?Vinst a ?Var.\n" + 
 			"   ?Vinst imp:value ?Mean.\n" +
 			"   ?Vinst imp:stddev ?StdDev.\n" +
-			//"   ?Vinst imp:varError ?VarError.\n" +
+			"   optional{?Vinst imp:varError ?VarError.}\n" +
 			"}\n" +
 			"}";
 	
@@ -823,7 +845,6 @@ public class JenaBasedDialogInferenceProcessor extends JenaBasedSadlInferencePro
 			            	//Ingest model error
 			            	String modelError = getModelError(dbnResultsJson);
 			    			qhmodel.add(cgIns, getTheJenaModel().getProperty(MODELERROR_PROP), modelError);
-
 			            	
 			            	lbl2value = getLabelToMeanStdMapping(dbnResultsJson);
 						
@@ -832,10 +853,7 @@ public class JenaBasedDialogInferenceProcessor extends JenaBasedSadlInferencePro
 							// create ResultSet
 							results[i] = retrieveCompGraph(resource, cgIns);
 							
-							results[i+1] = retrieveValues(resource, cgIns);
-							
-							//TODO: add accuracy numbers to results.
-							
+							results[i+1] = retrieveValuesHypothesis(resource, cgIns);
 			            }
 					}
 					// else continue looking
@@ -1012,6 +1030,13 @@ public class JenaBasedDialogInferenceProcessor extends JenaBasedSadlInferencePro
 	}
 
 
+	private ResultSet retrieveValuesHypothesis(Resource resource, Individual cgIns) throws Exception {
+		String query = RESULTSQUERYHYPO.replaceAll("COMPGRAPH", "<" + cgIns.getURI() + ">");
+		ResultSet res = runReasonerQuery(resource, query);
+		return res;
+	}
+
+	
 	private ResultSet retrieveValues(Resource resource, Individual cgIns) throws Exception {
 		String query = RESULTSQUERY.replaceAll("COMPGRAPH", "<" + cgIns.getURI() + ">");
 		ResultSet res = runReasonerQuery(resource, query);
@@ -1170,7 +1195,8 @@ public class JenaBasedDialogInferenceProcessor extends JenaBasedSadlInferencePro
 			String[] ms = lbl2value.get(cls);  //class2lbl.get(o.toString()));
 			qhmodel.add(outpIns, getTheJenaModel().getProperty(VALUE_PROP), ms[0] );
 			qhmodel.add(outpIns, getTheJenaModel().getProperty(STDDEV_PROP), ms[1] );
-			//qhmodel.add(outpIns, getTheJenaModel().getProperty(VARERROR_PROP), ms[2] );
+			if(ms[2] != null)
+				qhmodel.add(outpIns, getTheJenaModel().getProperty(VARERROR_PROP), ms[2] );
 			
 			//Add to JenaModel too?
 		}
