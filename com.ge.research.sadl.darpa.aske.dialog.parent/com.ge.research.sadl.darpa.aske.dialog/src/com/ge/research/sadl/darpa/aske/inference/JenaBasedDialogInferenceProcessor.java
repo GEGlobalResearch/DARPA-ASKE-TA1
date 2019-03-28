@@ -106,6 +106,9 @@ public class JenaBasedDialogInferenceProcessor extends JenaBasedSadlInferencePro
 	public static final String METAMODEL_STARTTIME_PROP = METAMODEL_PREFIX + "startTime";
 	public static final String VALUE_PROP = "http://sadl.org/sadlimplicitmodel#value";
 	public static final String STDDEV_PROP = "http://sadl.org/sadlimplicitmodel#stddev";
+	public static final String VARERROR_PROP = "http://sadl.org/sadlimplicitmodel#varError";
+	public static final String MODELERROR_PROP = METAMODEL_PREFIX + "modelError";
+
 	
 	public static final String DEPENDENCY_GRAPH_INSERT = "prefix dbn:<http://aske.ge.com/dbn#>\n" + 
 			"prefix imp:<http://sadl.org/sadlimplicitmodel#>\n" +
@@ -313,24 +316,28 @@ public class JenaBasedDialogInferenceProcessor extends JenaBasedSadlInferencePro
 	public static final String RESULTSQUERY = "prefix imp:<http://sadl.org/sadlimplicitmodel#>\n" + 
 			"prefix mm:<http://aske.ge.com/metamodel#>\n" +
 			"prefix sci:<http://aske.ge.com/sciknow#>\n" + 
-			"select distinct (strafter(str(?CCG),'#') as ?Model) (strafter(str(?Var),'#') as ?Variable) ?Mean ?StdDev\n" + 
+			"select distinct (strafter(str(?CCG),'#') as ?Model) (strafter(str(?Var),'#') as ?Variable) ?Mean ?StdDev  ?ModelAccuracy\n" + 
 			"where {\n" + 
 			"   {?CCG mm:subgraph ?SG.\n" + 
-			"    filter (?CCG in (COMPGRAPH)).\n" + 
+			"    filter (?CCG in (COMPGRAPH)).\n" +
+			"    ?CCG mm:modelError ?ModelAccuracy." + 
 			"    ?SG mm:output ?Oinst.\n" + 
 			"    ?Oinst a ?Var.\n" + 
 			"    ?Oinst imp:value ?Mean.\n" + 
 			"    ?Oinst imp:stddev ?StdDev.\n" +
+			//"    ?Oinst imp:varError ?VarError.\n" + 
 			"  } union {\n" +
 			"   ?CCG mm:subgraph ?SG. \n" + 
-			"   filter (?CCG in (COMPGRAPH)).\n" + 
+			"   filter (?CCG in (COMPGRAPH)).\n" +
+			"   ?CCG mm:modelError ?ModelAccuracy." + 
 			"   ?Q mm:execution ?CE.\n" + 
 			"   ?CE mm:compGraph ?CCG.\n" + 
 			"   ?Q mm:output ?Vinst.\n" + 
 			"   ?Vinst a ?Var.\n" + 
-			"   ?Vinst imp:value ?Mean.\n"
-			+ " ?Vinst imp:stddev ?StdDev.\n"
-			+ "}\n" +
+			"   ?Vinst imp:value ?Mean.\n" +
+			"   ?Vinst imp:stddev ?StdDev.\n" +
+			//"   ?Vinst imp:varError ?VarError.\n" +
+			"}\n" +
 			"}";
 	
 	public static final String DOCLOCATIONQUERY = "prefix imp:<http://sadl.org/sadlimplicitmodel#> \n" + 
@@ -338,7 +345,7 @@ public class JenaBasedDialogInferenceProcessor extends JenaBasedSadlInferencePro
 			"where { \n" + 
 			"  ?doc a imp:DataTable.\n" + 
 			"  filter (?doc in (<DOCINSTANCE>))\n" + 
-			"  ?doc imp:location ?furl.\n" + 
+			"  ?doc imp:dataLocation ?furl.\n" + 
 			"}";
 	
 	@Override
@@ -798,7 +805,7 @@ public class JenaBasedDialogInferenceProcessor extends JenaBasedSadlInferencePro
 							continue;
 						}
 						QuerySolution fsol = fileRes.nextSolution();
-						String fileName = fsol.get("?file").toString() ;
+						String fileName = fsol.get("?file").toString().split("//")[1] ;
 						
 						//String dataFile = new File(getModelFolderPath(resource)).getParent() + File.separator + "Data" + File.separator + "hypothesis.csv";
 						String dataFile = new File(getModelFolderPath(resource)).getParent() + File.separator + fileName;
@@ -813,6 +820,11 @@ public class JenaBasedDialogInferenceProcessor extends JenaBasedSadlInferencePro
 			            
 			            if(resmsg.equals("Success")) {
 			            	
+			            	//Ingest model error
+			            	String modelError = getModelError(dbnResultsJson);
+			    			qhmodel.add(cgIns, getTheJenaModel().getProperty(MODELERROR_PROP), modelError);
+
+			            	
 			            	lbl2value = getLabelToMeanStdMapping(dbnResultsJson);
 						
 				            createCGsubgraphs(cgIns, dbnEqns, dbnOutput, listOfEqns, class2lbl, lbl2value); //, outputInstance);
@@ -821,6 +833,9 @@ public class JenaBasedDialogInferenceProcessor extends JenaBasedSadlInferencePro
 							results[i] = retrieveCompGraph(resource, cgIns);
 							
 							results[i+1] = retrieveValues(resource, cgIns);
+							
+							//TODO: add accuracy numbers to results.
+							
 			            }
 					}
 					// else continue looking
@@ -869,28 +884,27 @@ public class JenaBasedDialogInferenceProcessor extends JenaBasedSadlInferencePro
 	}
 
 
-	//TODO
-	private ResultSet addInputVarValues(ResultSet resultSet, List<OntClass> inputsList, Map<String, String> class2lbl, Map<String, String[]> lbl2value) {
-		for(OntClass ic : inputsList) {
-			String ics = ic.getLocalName();
-			String lbl = class2lbl.get(ics);
-			String v[] = lbl2value.get(lbl);
-			
-			
-		}
-		return resultSet;
+
+	private String getModelError(String dbnResultsJson) {
+        JsonParser parser = new JsonParser();
+        JsonElement jsonTree = parser.parse(dbnResultsJson);
+        JsonObject jsonObject;
+        String error;
+
+        if (jsonTree.isJsonObject()) {
+            jsonObject = jsonTree.getAsJsonObject();
+            if (jsonObject.has("results")) {
+            	jsonObject = (JsonObject) jsonObject.get("results");
+                if (jsonObject.has("modelAccuracy")) {
+                	jsonObject = (JsonObject) jsonObject.get("modelAccuracy");
+                	error = jsonObject.get("meanError").toString();
+                	return error;
+                }
+            }
+        }
+        return "";
 	}
 
-
-//	private Map<RDFNode, RDFNode> modifyOutputMapForCalibration(Map<RDFNode, RDFNode> dbnOutput, List<OntClass> inpl,
-//			List<OntClass> outpl) {
-//		for(OntClass ic : inpl) {
-//			dbnOutput.put((RDFNode)ic, value)
-//		}
-//		
-//		
-//		return null;
-//	}
 
 
 	private String getDBNoutcome(String dbnResultsJson) {
@@ -1000,7 +1014,8 @@ public class JenaBasedDialogInferenceProcessor extends JenaBasedSadlInferencePro
 
 	private ResultSet retrieveValues(Resource resource, Individual cgIns) throws Exception {
 		String query = RESULTSQUERY.replaceAll("COMPGRAPH", "<" + cgIns.getURI() + ">");
-		return runReasonerQuery(resource, query);
+		ResultSet res = runReasonerQuery(resource, query);
+		return res;
 	}
 
 
@@ -1155,6 +1170,8 @@ public class JenaBasedDialogInferenceProcessor extends JenaBasedSadlInferencePro
 			String[] ms = lbl2value.get(cls);  //class2lbl.get(o.toString()));
 			qhmodel.add(outpIns, getTheJenaModel().getProperty(VALUE_PROP), ms[0] );
 			qhmodel.add(outpIns, getTheJenaModel().getProperty(STDDEV_PROP), ms[1] );
+			//qhmodel.add(outpIns, getTheJenaModel().getProperty(VARERROR_PROP), ms[2] );
+			
 			//Add to JenaModel too?
 		}
 	}
@@ -1183,13 +1200,17 @@ public class JenaBasedDialogInferenceProcessor extends JenaBasedSadlInferencePro
                 for (Map.Entry<String, JsonElement> k: keys) {
                 	System.out.println(k.getKey() + "   " + jres.get(k.getKey()).toString());
                 	JsonObject vpair = jres.getAsJsonObject(k.getKey());
+                	String[] vpr = new String[3];
                 	if (vpair.has("mean")) {
-	                	String[] vpr = new String[2];
 	                	vpr[0] = vpair.get("mean").toString();
-	                	vpr[1] = vpair.get("std").toString();
-	                	
-	                	lbl2value.put(k.getKey(), vpr);
                 	}
+                	if (vpair.has("std")) {
+	                	vpr[1] = vpair.get("std").toString();
+                	}	
+                	if (vpair.has("error")) {
+	                	vpr[2] = vpair.get("error").toString();
+                	}	
+                	lbl2value.put(k.getKey(), vpr);
                 }	
             }
         }
