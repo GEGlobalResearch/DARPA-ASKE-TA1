@@ -129,7 +129,11 @@ public class TextProcessor {
 
 	public void addFiles(List<File> txtFiles) {
 		if (textFiles != null) {
-			textFiles.addAll(txtFiles);
+			for (File f : txtFiles) {
+				if (!textFiles.contains(f)) {
+					textFiles.add(f);
+				}
+			}
 		}
 		else {
 			setTextFiles(txtFiles);
@@ -137,10 +141,12 @@ public class TextProcessor {
 	}
 
 	public void addFile(File txtFile) {
-		if (textFiles != null) {
+		if (textFiles == null) {
 			textFiles = new ArrayList<File>();
 		}
-		textFiles.add(txtFile);
+		if (!textFiles.contains(txtFile)) {
+			textFiles.add(txtFile);
+		}
 	}
 
 	public List<File> getTextFiles() {

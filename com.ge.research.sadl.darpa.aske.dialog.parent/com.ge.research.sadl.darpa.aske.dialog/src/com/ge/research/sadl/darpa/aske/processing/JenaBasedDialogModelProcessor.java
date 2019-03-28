@@ -289,10 +289,11 @@ public class JenaBasedDialogModelProcessor extends JenaBasedSadlModelProcessor {
 //								            response.setContent(new MixedInitiativeTextualResponse(answer));
 //								            // make call identified in element
 //								            mie.getRespondTo().accept(response);
+											dap.removeMixedInitiativeElement(question);	// question has been answered
 											treatAsAnswerToBackend = true;
 										}
 										else {
-//											treatAsAnswerToBackend = true;
+											treatAsAnswerToBackend = true;
 										}
 									}
 								} catch (ConfigurationException e) {

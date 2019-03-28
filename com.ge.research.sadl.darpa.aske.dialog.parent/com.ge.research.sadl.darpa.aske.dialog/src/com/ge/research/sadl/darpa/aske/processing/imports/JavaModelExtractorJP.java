@@ -842,13 +842,19 @@ public class JavaModelExtractorJP implements IModelFromCodeExtractor {
 		if (codeFiles == null) {
 			codeFiles = new ArrayList<File>();
 		}
-		codeFiles.add(javaFile);
+		if (!codeFiles.contains(javaFile)) {
+			codeFiles.add(javaFile);
+		}
 	}
 
 	@Override
 	public void addCodeFiles(List<File> javaFiles) {
 		if (codeFiles != null) {
-			codeFiles.addAll(javaFiles);
+			for (File f : javaFiles) {
+				if (!codeFiles.contains(f)) {
+					codeFiles.add(f);
+				}
+			}
 		}
 		else {
 			setCodeFiles(javaFiles);
