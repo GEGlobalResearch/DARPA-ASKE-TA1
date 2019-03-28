@@ -23,6 +23,7 @@ import org.eclipse.core.filesystem.IFileStore;
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IResource;
+import org.eclipse.core.resources.IncrementalProjectBuilder;
 import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IPath;
@@ -55,6 +56,7 @@ import org.eclipse.xtext.ui.editor.autoedit.DefaultAutoEditStrategyProvider;
 import org.eclipse.xtext.ui.editor.model.XtextDocument;
 import org.eclipse.xtext.ui.resource.IResourceSetProvider;
 import org.eclipse.xtext.util.ITextRegionWithLineInformation;
+import org.eclipse.xtext.util.concurrent.IUnitOfWork;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -126,6 +128,9 @@ public class DialogAnswerProvider extends DefaultAutoEditStrategyProvider implem
 	protected Provider<DialogRunInferenceHandler> handlerProvider;		// Provider will give new instance
 	
 	@Inject
+	protected SADLParser sadlParser;
+	
+	@Inject
 	protected Provider<RunDialogQuery> rdqProvider;
 	private Map<String, MixedInitiativeElement> mixedInitiativeElements = new HashMap<String, MixedInitiativeElement>();
 
@@ -153,201 +158,196 @@ public class DialogAnswerProvider extends DefaultAutoEditStrategyProvider implem
 	            	}
 	                if (document instanceof XtextDocument) {
 	                	Resource resource = getResourceFromDocument((XtextDocument)document);
-	                	setResource(resource);
 	                	String insertionText = null;
-	                	if (resource != null) {
-	                		setTheDocument((XtextDocument) document);
-	                		String modelFolder = setDialogAnswerProvider(resource);
-			                Object lastcmd = OntModelProvider.getPrivateKeyValuePair(resource, DialogConstants.LAST_DIALOG_COMMAND);
-			                logger.debug("DialogAnswerProvider: Last cmd: " + (lastcmd != null ? lastcmd.toString() : "null"));
-		                	if (lastcmd instanceof Query) {
-		                		if (isDocToModelQuery((Query)lastcmd)) {
-		                			insertionText = (String) processDocToModelQuery(resource, (Query)lastcmd);
-			                		insertionText = checkForEOS(insertionText);
-			                		Object ctx = ((Query)lastcmd).getContext();
-			                		addCurationManagerContentToDialog(document, reg, insertionText, ctx, true);
+
+                		setTheDocument((XtextDocument) document);
+                		String modelFolder = setDialogAnswerProvider(resource);
+		                Object lastcmd = OntModelProvider.getPrivateKeyValuePair(resource, DialogConstants.LAST_DIALOG_COMMAND);
+		                logger.debug("DialogAnswerProvider: Last cmd: " + (lastcmd != null ? lastcmd.toString() : "null"));
+	                	if (lastcmd instanceof Query) {
+	                		if (isDocToModelQuery((Query)lastcmd)) {
+	                			insertionText = (String) processDocToModelQuery(resource, (Query)lastcmd);
+		                		insertionText = checkForEOS(insertionText);
+		                		Object ctx = ((Query)lastcmd).getContext();
+		                		addCurationManagerContentToDialog(document, reg, insertionText, ctx, true);
+	                		}
+	                		else if (isModelToDocQuery((Query)lastcmd)) {
+	                			lastcmd = processModelToDocQuery(resource, (Query)lastcmd);
+	                		}
+	                		else {
+		                		ResultSet rs = runQuery(resource, (Query)lastcmd);
+		                		String resultStr = null;
+		                		if (rs != null) {
+		                			resultStr = resultSetToQuotableString(rs);
 		                		}
-		                		else if (isModelToDocQuery((Query)lastcmd)) {
-		                			lastcmd = processModelToDocQuery(resource, (Query)lastcmd);
-		                		}
-		                		else {
-			                		ResultSet rs = runQuery(resource, (Query)lastcmd);
-			                		String resultStr = null;
-			                		if (rs != null) {
-			                			resultStr = resultSetToQuotableString(rs);
-			                		}
-			                		insertionText = (resultStr != null ? resultStr : "\"Failed to find results\"");
-			                		insertionText = checkForEOS(insertionText);
-			                		Object ctx = ((Query)lastcmd).getContext();
-			                		addCurationManagerContentToDialog(document, reg, insertionText, ctx, true);
-		                		}
-		                	}
-		                	else if (lastcmd instanceof NamedNode) {
-		                		whatIsNamedNode(document, reg, resource, lastcmd);
-		                	}
-		                	else if (lastcmd instanceof WhatIsConstruct) {
-		                		Object trgt = ((WhatIsConstruct)lastcmd).getTarget();
-		                		Object whn = ((WhatIsConstruct)lastcmd).getWhen();
-		                		if (trgt instanceof NamedNode && whn == null) {
-		                			whatIsNamedNode(document, reg, resource, (NamedNode)trgt);
-		                		}
-		                		else if (trgt instanceof Object[] && whn == null) {
-			                		if (allTripleElements((Object[])trgt)) {
-				                		Object ctx = null;
-			                			TripleElement[] triples = flattenTriples((Object[])trgt);
-			                			ctx = triples[0].getContext();
-						                OntModelProvider.addPrivateKeyValuePair(resource, DialogConstants.LAST_DIALOG_COMMAND, triples);
-				                		StringBuilder answer = new StringBuilder();
-				                		ResultSet[] rss = insertTriplesAndQuery(resource, triples);
-				                		String resultStr = null;
-				                		if (rss != null) {
-				                			StringBuilder sb = new StringBuilder();
-				                			if (triples[0].getSubject() instanceof VariableNode && 
-				                					((VariableNode)triples[0].getSubject()).getType() instanceof NamedNode) {
-				                				sb.append("the ");
-				                				sb.append(((VariableNode)(triples[0].getSubject())).getType().getName());
-				                				sb.append(" has ");
-				                				sb.append(triples[0].getPredicate().getName());
-				                				sb.append(" ");
-				                				sb.append(rss[0].getResultAt(0, 0).toString());
-				                				resultStr = sb.toString();
-				                			}
-				                			else {
-					                			for (ResultSet rs : rss) {
-					                				rs.setShowNamespaces(true);
-					                				sb.append(rs.toString());
-					                			}
-				                				resultStr = resultSetToQuotableString(sb.toString());
-				                			}
-				                		}
-				                		insertionText = (resultStr != null ? resultStr : "\"Failed to find results\"");
-				                		addCurationManagerContentToDialog(document, reg, insertionText, ctx, true);
-			                		}
-		                		}
-		                		else {
-		                			// there is a when clause, and this is in a WhatIsConstruct
-		                			List<TripleElement> tripleLst = new ArrayList<TripleElement>();
-	                				if (trgt instanceof TripleElement) {
-		                				tripleLst.add((TripleElement)trgt);
-	                				}
-	                				else if (trgt instanceof Junction) {
-	                					tripleLst = addTriplesFromJunction((Junction) trgt, tripleLst);
-	                				}
-		                			if (whn instanceof TripleElement) {
-		                				// we have a when statement
-		                				tripleLst.add((TripleElement)whn);
-		                			}
-		                			else if (whn instanceof Junction) {
-		                				tripleLst = addTriplesFromJunction((Junction) whn, tripleLst);
-		                			}
-	                				TripleElement[] triples = new TripleElement[tripleLst.size()];
-	                				triples = tripleLst.toArray(triples);
-		                			
+		                		insertionText = (resultStr != null ? resultStr : "\"Failed to find results\"");
+		                		insertionText = checkForEOS(insertionText);
+		                		Object ctx = ((Query)lastcmd).getContext();
+		                		addCurationManagerContentToDialog(document, reg, insertionText, ctx, true);
+	                		}
+	                	}
+	                	else if (lastcmd instanceof NamedNode) {
+	                		whatIsNamedNode(document, reg, resource, lastcmd);
+	                	}
+	                	else if (lastcmd instanceof WhatIsConstruct) {
+	                		Object trgt = ((WhatIsConstruct)lastcmd).getTarget();
+	                		Object whn = ((WhatIsConstruct)lastcmd).getWhen();
+	                		if (trgt instanceof NamedNode && whn == null) {
+	                			whatIsNamedNode(document, reg, resource, (NamedNode)trgt);
+	                		}
+	                		else if (trgt instanceof Object[] && whn == null) {
+		                		if (allTripleElements((Object[])trgt)) {
+			                		Object ctx = null;
+		                			TripleElement[] triples = flattenTriples((Object[])trgt);
+		                			ctx = triples[0].getContext();
 					                OntModelProvider.addPrivateKeyValuePair(resource, DialogConstants.LAST_DIALOG_COMMAND, triples);
 			                		StringBuilder answer = new StringBuilder();
 			                		ResultSet[] rss = insertTriplesAndQuery(resource, triples);
+			                		String resultStr = null;
 			                		if (rss != null) {
-			                			int cntr = 0;
-				                		for (ResultSet rs : rss) {
-				                			if (cntr == 0) {
-				                				// this is the first ResultSet, construct a graph if possible
-				                				if (rs.getColumnCount() != 3) {
-				                					System.err.println("Can't construct graph; not 3 columns. Unexpected result.");
-				                				}
-//				                				this.graphVisualizerHandler.resultSetToGraph(path, resultSet, description, baseFileName, orientation, properties);
-				                				
-				                				IGraphVisualizer visualizer = new GraphVizVisualizer();
-				                				if (visualizer != null) {
-				                					String graphsDirectory = new File(modelFolder).getParent() + "/Graphs";
-				                					new File(graphsDirectory).mkdir();
-				                					String baseFileName = "QueryMetadata";
-				                					visualizer.initialize(
-				                		                    graphsDirectory,
-				                		                    baseFileName,
-				                		                    baseFileName,
-				                		                    null,
-				                		                    IGraphVisualizer.Orientation.TD,
-				                		                    "Assembled Model");
-				                					rs.setShowNamespaces(false);
-				                		            visualizer.graphResultSetData(rs);				                				}
-				        						String fileToOpen = visualizer.getGraphFileToOpen();
-				        						if (fileToOpen != null) {
-				        							File fto = new File(fileToOpen);
-				        							if (fto.isFile()) {
-				        								IFileStore fileStore = EFS.getLocalFileSystem().getStore(fto.toURI());
-				        								IWorkbenchPage page = PlatformUI.getWorkbench().getActiveWorkbenchWindow().getActivePage();
-				        								try {
-				        									IDE.openEditorOnFileStore(page, fileStore);
-				        								}
-				        								catch (Throwable t) {
-				        									System.err.println("Error trying to display graph file '" + fileToOpen + "': " + t.getMessage());
-				        								}
-				        							}
-				        							else if (fileToOpen != null) {
-				        								System.err.println("Failed to open graph file '" + fileToOpen + "'. Try opening it manually.");
-				        							}
-				        						}
-				                				else {
-				                					System.err.println("Unable to find an instance of IGraphVisualizer to render graph for query.\n");
-				                				}
-
+			                			StringBuilder sb = new StringBuilder();
+			                			if (triples[0].getSubject() instanceof VariableNode && 
+			                					((VariableNode)triples[0].getSubject()).getType() instanceof NamedNode) {
+			                				sb.append("the ");
+			                				sb.append(((VariableNode)(triples[0].getSubject())).getType().getName());
+			                				sb.append(" has ");
+			                				sb.append(triples[0].getPredicate().getName());
+			                				sb.append(" ");
+			                				sb.append(rss[0].getResultAt(0, 0).toString());
+			                				resultStr = sb.toString();
+			                			}
+			                			else {
+				                			for (ResultSet rs : rss) {
+				                				rs.setShowNamespaces(true);
+				                				sb.append(rs.toString());
 				                			}
-				                			if (cntr > 0) 
-				                				answer.append(resultSetToQuotableString(rs));
-				                			if(cntr++ > 1)
-				                				answer.append(",\n");
-				                			
-				                		}
-				                		answer.append(".\n");
+			                				resultStr = resultSetToQuotableString(sb.toString());
+			                			}
 			                		}
-			                		Object ctx = triples[0].getContext();
-			                		addCurationManagerContentToDialog(document, reg, answer.toString(), ctx, true);
-//		                			}
-//		                			else {
-////		                				rdqProvider.get().execute(null, null, null);
-//		                				System.out.println("Target is: " + trgt.toString());
-//		                				System.out.println("When is: " + whn.toString());
-//		                			}
+			                		insertionText = (resultStr != null ? resultStr : "\"Failed to find results\"");
+			                		addCurationManagerContentToDialog(document, reg, insertionText, ctx, true);
 		                		}
-		                	}
-		                	else if (lastcmd instanceof HowManyValuesConstruct) {
-		                		// this is a HowManyValues  ??
-		                		Object article = ((Object[])lastcmd)[0];
-		                		Object cls = ((Object[])lastcmd)[1];
-		                		Object prop = ((Object[])lastcmd)[2];
-		                		Object typ = ((Object[])lastcmd)[3];
-		                		StringBuilder answer = new StringBuilder("CM: ");
-		                		answer.append(prop.toString());
-		                		answer.append(" describes ");
-		                		answer.append(cls.toString());
-		                		answer.append(" with exactly ");
-		                		
-		                	}
-		                	else if (lastcmd instanceof Object[]) {
-		                		System.err.println("Unhandled Object[] lastcmd");
-		                	}
-		                	else if (lastcmd instanceof TripleElement) {
+	                		}
+	                		else {
+	                			// there is a when clause, and this is in a WhatIsConstruct
+	                			List<TripleElement> tripleLst = new ArrayList<TripleElement>();
+                				if (trgt instanceof TripleElement) {
+	                				tripleLst.add((TripleElement)trgt);
+                				}
+                				else if (trgt instanceof Junction) {
+                					tripleLst = addTriplesFromJunction((Junction) trgt, tripleLst);
+                				}
+	                			if (whn instanceof TripleElement) {
+	                				// we have a when statement
+	                				tripleLst.add((TripleElement)whn);
+	                			}
+	                			else if (whn instanceof Junction) {
+	                				tripleLst = addTriplesFromJunction((Junction) whn, tripleLst);
+	                			}
+                				TripleElement[] triples = new TripleElement[tripleLst.size()];
+                				triples = tripleLst.toArray(triples);
+	                			
+				                OntModelProvider.addPrivateKeyValuePair(resource, DialogConstants.LAST_DIALOG_COMMAND, triples);
 		                		StringBuilder answer = new StringBuilder();
-		                		addTripleQuestion(resource, (TripleElement)lastcmd, answer);
-		                		Object ctx = ((TripleElement)lastcmd).getContext();
+		                		ResultSet[] rss = insertTriplesAndQuery(resource, triples);
+		                		if (rss != null) {
+		                			int cntr = 0;
+			                		for (ResultSet rs : rss) {
+			                			if (cntr == 0) {
+			                				// this is the first ResultSet, construct a graph if possible
+			                				if (rs.getColumnCount() != 3) {
+			                					System.err.println("Can't construct graph; not 3 columns. Unexpected result.");
+			                				}
+//			                				this.graphVisualizerHandler.resultSetToGraph(path, resultSet, description, baseFileName, orientation, properties);
+			                				
+			                				IGraphVisualizer visualizer = new GraphVizVisualizer();
+			                				if (visualizer != null) {
+			                					String graphsDirectory = new File(modelFolder).getParent() + "/Graphs";
+			                					new File(graphsDirectory).mkdir();
+			                					String baseFileName = "QueryMetadata";
+			                					visualizer.initialize(
+			                		                    graphsDirectory,
+			                		                    baseFileName,
+			                		                    baseFileName,
+			                		                    null,
+			                		                    IGraphVisualizer.Orientation.TD,
+			                		                    "Assembled Model");
+			                					rs.setShowNamespaces(false);
+			                		            visualizer.graphResultSetData(rs);				                				}
+			        						String fileToOpen = visualizer.getGraphFileToOpen();
+			        						if (fileToOpen != null) {
+			        							File fto = new File(fileToOpen);
+			        							if (fto.isFile()) {
+			        								IFileStore fileStore = EFS.getLocalFileSystem().getStore(fto.toURI());
+			        								IWorkbenchPage page = PlatformUI.getWorkbench().getActiveWorkbenchWindow().getActivePage();
+			        								try {
+			        									IDE.openEditorOnFileStore(page, fileStore);
+			        								}
+			        								catch (Throwable t) {
+			        									System.err.println("Error trying to display graph file '" + fileToOpen + "': " + t.getMessage());
+			        								}
+			        							}
+			        							else if (fileToOpen != null) {
+			        								System.err.println("Failed to open graph file '" + fileToOpen + "'. Try opening it manually.");
+			        							}
+			        						}
+			                				else {
+			                					System.err.println("Unable to find an instance of IGraphVisualizer to render graph for query.\n");
+			                				}
+
+			                			}
+			                			if (cntr > 0) 
+			                				answer.append(resultSetToQuotableString(rs));
+			                			if(cntr++ > 1)
+			                				answer.append(",\n");
+			                			
+			                		}
+			                		answer.append(".\n");
+		                		}
+		                		Object ctx = triples[0].getContext();
 		                		addCurationManagerContentToDialog(document, reg, answer.toString(), ctx, true);
-		                	}
-		                	else if (lastcmd instanceof MixedInitiativeTextualResponse) {
-		                		int ip = ((MixedInitiativeTextualResponse)lastcmd).getInsertionPoint();
-		                		String content = ((MixedInitiativeTextualResponse)lastcmd).getResponse();
-		                		Region nreg = new Region(ip, content.length());
-		                		Object ctx = null; //((MixedInitiativeTextualResponse)lastcmd).getContext();
-		                		addCurationManagerContentToDialog(document, nreg, content, ctx, true);
-		                	}
-		                	else if (lastcmd instanceof BuildConstruct) {
-		                		processBuildRequest(resource, (BuildConstruct)lastcmd);
-		                	}
-		                	else if (lastcmd != null) {
-	                			logger.debug("    Lastcmd '" + lastcmd.getClass().getCanonicalName() + "' not handled yet!");
-		                	}
+//	                			}
+//	                			else {
+////	                				rdqProvider.get().execute(null, null, null);
+//	                				System.out.println("Target is: " + trgt.toString());
+//	                				System.out.println("When is: " + whn.toString());
+//	                			}
+	                		}
 	                	}
-	                	else {
-                			logger.debug("DialogAnswerProvider called with null resource!");
+	                	else if (lastcmd instanceof HowManyValuesConstruct) {
+	                		// this is a HowManyValues  ??
+	                		Object article = ((Object[])lastcmd)[0];
+	                		Object cls = ((Object[])lastcmd)[1];
+	                		Object prop = ((Object[])lastcmd)[2];
+	                		Object typ = ((Object[])lastcmd)[3];
+	                		StringBuilder answer = new StringBuilder("CM: ");
+	                		answer.append(prop.toString());
+	                		answer.append(" describes ");
+	                		answer.append(cls.toString());
+	                		answer.append(" with exactly ");
+	                		
+	                	}
+	                	else if (lastcmd instanceof Object[]) {
+	                		System.err.println("Unhandled Object[] lastcmd");
+	                	}
+	                	else if (lastcmd instanceof TripleElement) {
+	                		StringBuilder answer = new StringBuilder();
+	                		addTripleQuestion(resource, (TripleElement)lastcmd, answer);
+	                		Object ctx = ((TripleElement)lastcmd).getContext();
+	                		addCurationManagerContentToDialog(document, reg, answer.toString(), ctx, true);
+	                	}
+	                	else if (lastcmd instanceof MixedInitiativeTextualResponse) {
+	                		int ip = ((MixedInitiativeTextualResponse)lastcmd).getInsertionPoint();
+	                		String content = ((MixedInitiativeTextualResponse)lastcmd).getResponse();
+	                		Region nreg = new Region(ip, content.length());
+	                		Object ctx = null; //((MixedInitiativeTextualResponse)lastcmd).getContext();
+	                		addCurationManagerContentToDialog(document, nreg, content, ctx, true);
+	                	}
+	                	else if (lastcmd instanceof BuildConstruct) {
+	                		processBuildRequest(resource, (BuildConstruct)lastcmd);
+	                	}
+	                	else if (lastcmd != null) {
+                			logger.debug("    Lastcmd '" + lastcmd.getClass().getCanonicalName() + "' not handled yet!");
 	                	}
 //		                String possibleKWD = token.toLowerCase();
 //		                if ( token.equals(possibleKWD.toUpperCase()) || !KWDS.contains(possibleKWD) ) return;
@@ -1070,20 +1070,15 @@ public class DialogAnswerProvider extends DefaultAutoEditStrategyProvider implem
 	        
 	    	private List<String> getSadlKeywords() {
 	    		if (sadlkeywords == null) {
-		    		SADLParser sparser = null;
-		    		Injector injector = new SADLStandaloneSetup().createInjectorAndDoEMFRegistration();
-		    	    sparser = injector.getInstance(SADLParser.class);
-		    		if (sparser != null) {
-		    			Set<String> keywords = GrammarUtil.getAllKeywords(sparser.getGrammarAccess().getGrammar());
-		    			if (keywords != null) {
-		    				sadlkeywords = new ArrayList<String>();
-		    				Iterator<String> itr = keywords.iterator();
-		    				while (itr.hasNext()) {
-		    					String token = itr.next();
-		    					sadlkeywords.add(token);
-		    				}
-	    				}
-	    			}
+		    		Set<String> keywords = GrammarUtil.getAllKeywords(sadlParser.getGrammarAccess().getGrammar());
+		    		if (keywords != null) {
+		    			sadlkeywords = new ArrayList<String>();
+		    			Iterator<String> itr = keywords.iterator();
+		    			while (itr.hasNext()) {
+		    				String token = itr.next();
+		    				sadlkeywords.add(token);
+		    			}
+		    		}
 	    		}
 	    		return sadlkeywords;
 	    	}
@@ -1374,7 +1369,7 @@ public class DialogAnswerProvider extends DefaultAutoEditStrategyProvider implem
 											String projectName = sf.getParentFile().getParentFile().getName();
 											IProject project = ResourcesPlugin.getWorkspace().getRoot().getProject(projectName);
 											try {
-												project.refreshLocal(IResource.DEPTH_INFINITE, null);
+												project.build(IncrementalProjectBuilder.AUTO_BUILD, null);
 											} catch (CoreException e) {
 												// TODO Auto-generated catch block
 												e.printStackTrace();
@@ -1431,40 +1426,45 @@ public class DialogAnswerProvider extends DefaultAutoEditStrategyProvider implem
 		String cmn = acm.getExtractionProcessor().getCodeModelName();
 		String insert = "import \"" + cmn + "\".\n\r";
 		if (cmn != null) {
-			Resource rsrc = getResource();
-			if (rsrc != null) {
-				EList<EObject> cntnts = rsrc.getContents();
-				if (cntnts.get(0) instanceof SadlModel) {
-					int loc = -1;
-					SadlModel sm = (SadlModel) cntnts.get(0);
-					EList<SadlImport> imprts = sm.getImports();
-					if (imprts != null) {
-						// insert import after last import
-						int[] info = getStartAndLength(imprts.get(imprts.size() - 1));
-						loc = info[0] + info[1];
-					}
-					else {
-						// insert import after uri
-						EList<SadlModelElement> elements = sm.getElements();
-						if (elements != null) {
-							int[] info = getStartAndLength(elements.get(elements.size() - 1));
+			doc.readOnly(new IUnitOfWork.Void<XtextResource>() {
+
+				@Override
+				public void process(XtextResource rsrc) throws Exception {
+					// TODO Auto-generated method stub
+					EList<EObject> cntnts = rsrc.getContents();
+					if (cntnts.get(0) instanceof SadlModel) {
+						int loc = -1;
+						SadlModel sm = (SadlModel) cntnts.get(0);
+						EList<SadlImport> imprts = sm.getImports();
+						if (imprts != null) {
+							// insert import after last import
+							int[] info = getStartAndLength(imprts.get(imprts.size() - 1));
 							loc = info[0] + info[1];
 						}
 						else {
-							loc = doc.getLength();
+							// insert import after uri
+							EList<SadlModelElement> elements = sm.getElements();
+							if (elements != null) {
+								int[] info = getStartAndLength(elements.get(elements.size() - 1));
+								loc = info[0] + info[1];
+							}
+							else {
+								loc = doc.getLength();
+							}
+						}
+						if (loc > 0) {
+							// insert at loc
+							try {
+								doc.replace(loc + 1, insert.length(), insert);
+							} catch (BadLocationException e) {
+								// TODO Auto-generated catch block
+								e.printStackTrace();
+							}
 						}
 					}
-					if (loc > 0) {
-						// insert at loc
-					    try {
-							doc.replace(loc + 1, insert.length(), insert);
-						} catch (BadLocationException e) {
-							// TODO Auto-generated catch block
-							e.printStackTrace();
-						}
-					}
+					
 				}
-			}
+			});
 		}
 	}
 
@@ -1564,14 +1564,6 @@ public class DialogAnswerProvider extends DefaultAutoEditStrategyProvider implem
 	    		e.printStackTrace();
 	    	}
 		}
-	}
-
-	protected Resource getResource() {
-		return resource;
-	}
-
-	protected void setResource(Resource resource) {
-		this.resource = resource;
 	}
 
 	private IConfigurationManagerForIDE getConfigMgr() {
