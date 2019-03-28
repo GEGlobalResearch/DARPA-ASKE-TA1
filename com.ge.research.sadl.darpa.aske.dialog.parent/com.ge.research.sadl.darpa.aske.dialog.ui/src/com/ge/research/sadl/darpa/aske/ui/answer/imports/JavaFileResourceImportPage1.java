@@ -1379,20 +1379,23 @@ public class JavaFileResourceImportPage1 extends WizardResourceImportPage
 		}
         String ofntxt = outputFileName.getText();
         if (ofntxt == null || ofntxt.length() == 0) {
-        	for (int i = 0; i < resourcesToExport.size(); i++) {
-        		Object rsrc = resourcesToExport.get(i);
-        		if (rsrc instanceof FileSystemElement) {
-        			if (((FileSystemElement)rsrc).getFileNameExtension().equals("java")) {
+        	if (outputFileName.getText().length() < 1) {
+	        	for (int i = 0; i < resourcesToExport.size(); i++) {
+	        		Object rsrc = resourcesToExport.get(i);
+	        		if (rsrc instanceof FileSystemElement) {
         				Object fso = ((FileSystemElement)rsrc).getFileSystemObject();
         				if (fso instanceof File) {
         					String fn = ((File)fso).getName();
-        					fn  = fn.substring(0, fn.length() - 5);
-        					fn += ".owl";
-        					outputFileName.setText(fn);
-        					break;
-        				}
-        			}
-        		}
+        					String fnext = ((FileSystemElement)rsrc).getFileNameExtension();
+        					if (fnext != null) {
+	        					fn  = fn.substring(0, fn.length() - (fnext.length() + 1));
+        					}
+	        				fn += ".owl";
+	        				outputFileName.setText(fn);
+	        				break;
+	        			}
+	        		}
+	        	}
         	}
         }
 		enableButtonGroup(true);

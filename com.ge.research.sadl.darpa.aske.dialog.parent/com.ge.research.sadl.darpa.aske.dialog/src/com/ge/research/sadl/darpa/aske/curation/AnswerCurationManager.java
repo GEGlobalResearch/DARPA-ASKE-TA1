@@ -15,7 +15,6 @@ import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-import java.util.Scanner;
 
 import com.ge.research.sadl.builder.ConfigurationManagerForIdeFactory;
 import com.ge.research.sadl.builder.IConfigurationManagerForIDE;
@@ -23,6 +22,8 @@ import com.ge.research.sadl.darpa.aske.preferences.DialogPreferences;
 import com.ge.research.sadl.darpa.aske.processing.DialogConstants;
 import com.ge.research.sadl.darpa.aske.processing.IDialogAnswerProvider;
 import com.ge.research.sadl.darpa.aske.processing.imports.AnswerExtractionProcessor;
+import com.ge.research.sadl.darpa.aske.processing.imports.IModelFromCodeExtractor;
+import com.ge.research.sadl.darpa.aske.processing.imports.TextProcessor;
 import com.ge.research.sadl.owl2sadl.OwlImportException;
 import com.ge.research.sadl.owl2sadl.OwlToSadl;
 import com.ge.research.sadl.reasoner.ConfigurationException;
@@ -82,9 +83,12 @@ public class AnswerCurationManager {
 		this.preferences = preferences;
 	}
 
-	public Object getTextProcessor() {
-		// TODO Auto-generated method stub
-		return null;
+	public TextProcessor getTextProcessor() {
+		return getExtractionProcessor().getTextProcessor();
+	}
+	
+	public IModelFromCodeExtractor getCodeExtractor() {
+		return getExtractionProcessor().getCodeExtractor();
 	}
 
 	public AnswerExtractionProcessor getExtractionProcessor() {
@@ -127,7 +131,7 @@ public class AnswerCurationManager {
 		if (textFiles != null) {
 			for (File f : textFiles) {
 				String content = readFileToString(f);
-				getExtractionProcessor().getTextProcessor().process(f.getCanonicalPath(), content, null);
+				getTextProcessor().process(f.getCanonicalPath(), content, null);
 			}
 		}
 		
@@ -137,7 +141,7 @@ public class AnswerCurationManager {
 			for (File f : codeFiles) {
 				String content = readFileToString(f);
 				String fileIdentifier = ConfigurationManagerForIdeFactory.formatPathRemoveBackslashes(f.getCanonicalPath());
-				getExtractionProcessor().getCodeExtractor().process(fileIdentifier, content, true);				
+				getCodeExtractor().process(fileIdentifier, content, true);				
 			}
 			File of = new File(new File(getExtractionProcessor().getCodeExtractor().getCodeModelFolder()).getParent() + 
 					"/" + DialogConstants.EXTRACTED_MODELS_FOLDER_PATH_FRAGMENT + "/" + outputFilename);
