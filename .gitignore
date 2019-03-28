@@ -32,6 +32,7 @@ hs_err_pid*
 OwlModels/
 bin/
 target/
+kchain/archive/
 
 .DS_Store
 *~
