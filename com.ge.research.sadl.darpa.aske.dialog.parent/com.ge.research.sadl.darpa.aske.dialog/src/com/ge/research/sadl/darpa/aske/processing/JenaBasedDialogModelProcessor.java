@@ -11,7 +11,14 @@ import java.util.Iterator;
 import java.util.List;
 
 import org.eclipse.core.resources.IFile;
+import org.eclipse.core.resources.IResource;
+import org.eclipse.core.resources.IncrementalProjectBuilder;
+import org.eclipse.core.resources.ResourcesPlugin;
+import org.eclipse.core.runtime.ICoreRunnable;
+import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.OperationCanceledException;
+import org.eclipse.core.runtime.jobs.Job;
+import org.eclipse.emf.common.EMFPlugin;
 import org.eclipse.emf.common.util.EList;
 import org.eclipse.emf.common.util.URI;
 import org.eclipse.emf.ecore.EObject;
@@ -20,14 +27,12 @@ import org.eclipse.emf.ecore.resource.ResourceSet;
 import org.eclipse.xtext.EcoreUtil2;
 import org.eclipse.xtext.generator.IFileSystemAccess2;
 import org.eclipse.xtext.nodemodel.util.NodeModelUtils;
-import org.eclipse.xtext.resource.XtextResource;
 import org.eclipse.xtext.util.CancelIndicator;
 import org.eclipse.xtext.validation.CheckMode;
 import org.eclipse.xtext.validation.CheckType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.ge.research.sadl.builder.IConfigurationManagerForIDE;
 import com.ge.research.sadl.darpa.aske.dialog.AnswerCMStatement;
 import com.ge.research.sadl.darpa.aske.dialog.BuildStatement;
 import com.ge.research.sadl.darpa.aske.dialog.HowManyValuesStatement;
@@ -38,7 +43,6 @@ import com.ge.research.sadl.darpa.aske.dialog.WhatValuesStatement;
 import com.ge.research.sadl.darpa.aske.dialog.YesNoAnswerStatement;
 import com.ge.research.sadl.darpa.aske.preferences.DialogPreferences;
 import com.ge.research.sadl.errorgenerator.generator.SadlErrorMessages;
-import com.ge.research.sadl.external.ExternalEmfResource;
 import com.ge.research.sadl.jena.JenaBasedSadlModelProcessor;
 import com.ge.research.sadl.jena.JenaProcessorException;
 import com.ge.research.sadl.jena.MetricsProcessor;
@@ -55,11 +59,9 @@ import com.ge.research.sadl.model.gp.TripleElement;
 import com.ge.research.sadl.processing.OntModelProvider;
 import com.ge.research.sadl.processing.SadlConstants;
 import com.ge.research.sadl.processing.ValidationAcceptor;
-import com.ge.research.sadl.processing.IModelProcessor.ProcessorContext;
 import com.ge.research.sadl.reasoner.ConfigurationException;
 import com.ge.research.sadl.reasoner.InvalidNameException;
 import com.ge.research.sadl.reasoner.InvalidTypeException;
-import com.ge.research.sadl.reasoner.SadlJenaModelGetter;
 import com.ge.research.sadl.reasoner.TranslationException;
 import com.ge.research.sadl.reasoner.utils.SadlUtils;
 import com.ge.research.sadl.sADL.Declaration;
@@ -76,7 +78,6 @@ import com.ge.research.sadl.sADL.SadlStatement;
 import com.ge.research.sadl.sADL.SadlTypeReference;
 import com.ge.research.sadl.utils.ResourceManager;
 import com.hp.hpl.jena.ontology.Individual;
-import com.hp.hpl.jena.ontology.OntModel;
 import com.hp.hpl.jena.ontology.Ontology;
 import com.hp.hpl.jena.rdf.model.RDFWriter;
 
@@ -729,9 +730,19 @@ public class JenaBasedDialogModelProcessor extends JenaBasedSadlModelProcessor {
 				createCodeExtractionSadlModel(codeExtractionSadlModelFile);
 				try {
 					Resource newRsrc = resource.getResourceSet()
-							.createResource(URI.createPlatformResourceURI(platformPath, false)); 
-					newRsrc.load(resource.getResourceSet().getLoadOptions());
-					refreshResource(newRsrc);
+							.getResource(URI.createPlatformResourceURI(platformPath, false), true);
+					if (EMFPlugin.IS_ECLIPSE_RUNNING) {
+						Job.create("Refreshing " + newRsrc.getURI().lastSegment(), (ICoreRunnable) monitor -> {
+							IPath path = org.eclipse.core.runtime.Path.fromPortableString(newRsrc.getURI().toPlatformString(true));
+							IFile file = ResourcesPlugin.getWorkspace().getRoot().getFile(path);
+							if (file.isAccessible()) {
+								file.getProject().build(IncrementalProjectBuilder.FULL_BUILD, monitor);
+							} else {
+								System.err.println("File " + file + " is not accessible.");
+							}
+							
+						}).schedule();
+					}
 				} catch (Throwable t) {
 				}
 			}
@@ -743,7 +754,7 @@ public class JenaBasedDialogModelProcessor extends JenaBasedSadlModelProcessor {
 	private void createCodeExtractionSadlModel(File cemf) throws IOException {
 		String content = getCodeExtractionModel();
 		if (!cemf.exists()) {
-			new SadlUtils().stringToFile(cemf, content, true);
+			new SadlUtils().stringToFile(cemf, content, false);
 		}
 	}
 
