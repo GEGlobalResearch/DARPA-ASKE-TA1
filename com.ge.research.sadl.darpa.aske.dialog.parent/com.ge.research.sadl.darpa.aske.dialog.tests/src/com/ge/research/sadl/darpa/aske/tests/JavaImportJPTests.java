@@ -39,7 +39,7 @@ public class JavaImportJPTests {
 
 	@Before
 	public void setUp() throws Exception {
-		String codeExtractionKbRoot = "C:/Users/200005201/sadl3-master6/git/DARPA-ASKE-TA1/Ontology/M5-CodeModel";
+		String codeExtractionKbRoot = "C:/Users/200005201/sadl3-master6/git/DARPA-ASKE-TA1/Ontology/M5";
 		File codeExtractionPrjFolder = new File(codeExtractionKbRoot);
 		setExtractionProjectModelFolder(codeExtractionPrjFolder.getCanonicalPath() + "/OwlModels");
 		
