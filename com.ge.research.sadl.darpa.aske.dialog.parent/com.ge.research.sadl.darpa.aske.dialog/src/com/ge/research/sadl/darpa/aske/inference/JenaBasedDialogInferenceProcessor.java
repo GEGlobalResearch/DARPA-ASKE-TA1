@@ -251,7 +251,7 @@ public class JenaBasedDialogInferenceProcessor extends JenaBasedSadlInferencePro
 			"prefix sci:<http://aske.ge.com/sciknow#>\n" +
 			"prefix mm:<http://aske.ge.com/metamodel#>\n" + 
 			"\n" + 
-			"select ?X ?Y ?Z ?X_style ?X_color ?Z_shape ?Z_tooltip\n" + //?X_style \n" + 
+			"select distinct ?X ?Y ?Z ?X_style ?X_color ?Z_shape ?Z_tooltip\n" + //?X_style \n" + 
 			//"from <http://kd.ge.com/md2>\n" + 
 			//"from <http://kd.ge.com/aske3>\n" + 
 			"where {\n" + 
@@ -338,7 +338,7 @@ public class JenaBasedDialogInferenceProcessor extends JenaBasedSadlInferencePro
 	public static final String RESULTSQUERYHYPO = "prefix imp:<http://sadl.org/sadlimplicitmodel#>\n" + 
 			"prefix mm:<http://aske.ge.com/metamodel#>\n" +
 			"prefix sci:<http://aske.ge.com/sciknow#>\n" + 
-			"select distinct (strafter(str(?CCG),'#') as ?Model) (strafter(str(?Var),'#') as ?Variable) ?Mean ?StdDev  ?ModelAccuracy ?VarError\n" + 
+			"select distinct (strafter(str(?CCG),'#') as ?Model) ?ModelAccuracy (strafter(str(?Var),'#') as ?Variable) ?Mean ?StdDev ?VarError\n" + 
 			"where {\n" + 
 			"   {?CCG mm:subgraph ?SG.\n" + 
 			"    filter (?CCG in (COMPGRAPH)).\n" +
@@ -609,7 +609,6 @@ public class JenaBasedDialogInferenceProcessor extends JenaBasedSadlInferencePro
 		
 		try {
 		
-			//if (inputsList.size() > 0 && outputsList.size() > 0) {
 			if (outputsList.size() > 0 && docPatterns.size() <= 0) {
 	
 				
@@ -664,9 +663,7 @@ public class JenaBasedDialogInferenceProcessor extends JenaBasedSadlInferencePro
 				
 				
 				for(int i=0; i<numOfModels; i++) {
-					//listOfEqns = getEqnUrisFromResults(eqnsResults);
 					listOfEqns = modelEqnList[i];
-		            //eqnsResults.reset();
 	
 					// Comp Graph instance
 					cgIns = qhmodel.createIndividual(METAMODEL_PREFIX + "CG_" + System.currentTimeMillis(), getTheJenaModel().getOntClass(METAMODEL_CCG));
@@ -743,15 +740,17 @@ public class JenaBasedDialogInferenceProcessor extends JenaBasedSadlInferencePro
 			} else if (outputsList.size() > 0 && docPatterns.size() > 0) {
 				
 				
+				List<ResultSet> resultsList = new ArrayList<ResultSet>();
 				
 				qtype = getTheJenaModel().getOntResource(METAMODEL_PREFIX + "explanation");
 				qhmodel.add(cgq, qtypeprop, qtype);	// do we add it even if we don't know if there's a model yet?
 	
 				inputsList.addAll(outputsList);
 				
-				results = new ResultSet[outputsList.size()*2]; 
+				//results = new ResultSet[outputsList.size()*2]; 
 
-				
+				int numOfModels = 0;
+
 				for(int i=0; i < outputsList.size(); i++) {
 					List<OntClass> outpl = new ArrayList<OntClass>();
 					List<OntClass> inpl = new ArrayList<OntClass>();
@@ -781,18 +780,29 @@ public class JenaBasedDialogInferenceProcessor extends JenaBasedSadlInferencePro
 					dbnEqns = createDbnEqnMap(eqnsResults);
 					dbnOutput = createDbnOutputMap(eqnsResults);
 					
-					int numOfModels = 1;
-					if (dbnEqns.isEmpty())
-						numOfModels = 0;
-					String[] modelEqnList = buildEqnsLists(numOfModels, dbnEqns);
+//					int numOfModels = 1;
+//					if (dbnEqns.isEmpty())
+//						numOfModels = 0;
+					
+					int newModels = 0;
+					if(!dbnEqns.isEmpty())
+						newModels = 1;
+					for (RDFNode dbnk :  dbnEqns.keySet()) {
+						newModels *= dbnEqns.get(dbnk).length;
+					}
 
 					
-					if (eqnsResults.size() > 0 ) {
+					String[] modelEqnList = buildEqnsLists(newModels, dbnEqns);
+
+					//results = new ResultSet[outputsList.size()*numOfModels*2]; 
+					
+					//qtype = getTheJenaModel().getOntResource(METAMODEL_PREFIX + "prognostic");
+					//qhmodel.add(cgq, qtypeprop, qtype);			
+					
+					//if (eqnsResults.size() > 0 ) {
+					for(int mod=0; mod<newModels; mod++) {
 						
-						qtype = getTheJenaModel().getOntResource(METAMODEL_PREFIX + "prognostic");
-						qhmodel.add(cgq, qtypeprop, qtype);			
-						
-						listOfEqns = modelEqnList[0]; //getEqnUrisFromResults(eqnsResults);
+						listOfEqns = modelEqnList[mod]; //getEqnUrisFromResults(eqnsResults);
 			            eqnsResults.reset();
 
 						cgIns = qhmodel.createIndividual(METAMODEL_PREFIX + "CG_" + System.currentTimeMillis(), getTheJenaModel().getOntClass(METAMODEL_CCG));
@@ -810,12 +820,6 @@ public class JenaBasedDialogInferenceProcessor extends JenaBasedSadlInferencePro
 						
 						modelsCSVString = convertResultSetToString(models);
 						nodesCSVString = convertResultSetToString(nodes);
-
-//						if (nodes.size() <= 0) {
-//							//  Output "no models found" message
-//							qexec.close();
-//							return null;
-//						}
 
 						String docUri = triples[0].getSubject().getURI();
 						
@@ -842,6 +846,8 @@ public class JenaBasedDialogInferenceProcessor extends JenaBasedSadlInferencePro
 			            
 			            if(resmsg.equals("Success")) {
 			            	
+			            	numOfModels ++;
+							
 			            	//Ingest model error
 			            	String modelError = getModelError(dbnResultsJson);
 			    			qhmodel.add(cgIns, getTheJenaModel().getProperty(MODELERROR_PROP), modelError);
@@ -850,14 +856,18 @@ public class JenaBasedDialogInferenceProcessor extends JenaBasedSadlInferencePro
 						
 				            createCGsubgraphs(cgIns, dbnEqns, dbnOutput, listOfEqns, class2lbl, lbl2value); //, outputInstance);
 							
+				            resultsList.add(numOfModels-1, retrieveCompGraph(resource, cgIns));
+				            resultsList.add(numOfModels*2-1, retrieveValuesHypothesis(resource, cgIns));
+				            
 							// create ResultSet
-							results[i] = retrieveCompGraph(resource, cgIns);
-							
-							results[i+1] = retrieveValuesHypothesis(resource, cgIns);
+//							results[i] = retrieveCompGraph(resource, cgIns);
+//							results[i+1] = retrieveValuesHypothesis(resource, cgIns);
 			            }
 					}
 					// else continue looking
 				}
+				results = new ResultSet[numOfModels*2];
+				results = resultsList.toArray(results);
 			}
 			
 		

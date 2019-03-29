@@ -479,7 +479,7 @@ public class DialogAnswerProvider extends DefaultAutoEditStrategyProvider implem
 				                		                    IGraphVisualizer.Orientation.TD,
 				                		                    "Assembled Model " + rss[cntr+numOfModels].getResultAt(0, 0));
 				                					rs.setShowNamespaces(false);
-				                		            visualizer.graphResultSetData(rs);				                				}
+				                		            visualizer.graphResultSetData(rs); }
 				        						String fileToOpen = visualizer.getGraphFileToOpen();
 				        						if (fileToOpen != null) {
 				        							File fto = new File(fileToOpen);
