@@ -1,35 +1,50 @@
 <rdf:RDF
     xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
     xmlns:sadlbasemodel="http://sadl.org/sadlbasemodel"
+    xmlns:defs="http://research.ge.com/Acuity/defaults.owl"
     xmlns:sos="http://sadl.org/SpeedOfSound.sadl#"
+    xmlns:j.0="http://research.ge.com/Acuity/defaults.owl#"
     xmlns:owl="http://www.w3.org/2002/07/owl#"
     xmlns:sadlimplicitmodel="http://sadl.org/sadlimplicitmodel"
     xmlns:builtinfunctions="http://sadl.org/builtinfunctions"
-    xmlns:j.0="http://sadl.org/sadlimplicitmodel#"
+    xmlns:j.1="http://sadl.org/sadlimplicitmodel#"
     xmlns:rdfs="http://www.w3.org/2000/01/rdf-schema#"
     xmlns:scicncpts2="http://sadl.org/ScientificConcepts2.sadl"
     xmlns:xsd="http://www.w3.org/2001/XMLSchema#"
   xml:base="http://sadl.org/SpeedOfSound.sadl">
   <owl:Ontology rdf:about="">
+    <owl:imports rdf:resource="http://research.ge.com/Acuity/defaults.owl"/>
     <owl:imports rdf:resource="ScientificConcepts2.sadl"/>
     <owl:imports rdf:resource="builtinfunctions"/>
     <owl:imports rdf:resource="sadlimplicitmodel"/>
     <owl:imports rdf:resource="sadlbasemodel"/>
     <rdfs:comment xml:lang="en">This ontology was created from a SADL file 'SpeedOfSound.sadl' and should not be directly edited.</rdfs:comment>
   </owl:Ontology>
-  <rdfs:Datatype rdf:ID="primitiveData">
-    <owl:equivalentClass>
-      <rdfs:Datatype>
-        <owl:unionOf rdf:parseType="Collection">
-          <rdf:Description rdf:about="http://www.w3.org/2001/XMLSchema#decimal"/>
-          <rdf:Description rdf:about="http://www.w3.org/2001/XMLSchema#boolean"/>
-          <rdf:Description rdf:about="http://www.w3.org/2001/XMLSchema#string"/>
-        </owl:unionOf>
-      </rdfs:Datatype>
-    </owl:equivalentClass>
-  </rdfs:Datatype>
-  <owl:Class rdf:ID="Gas">
-    <rdfs:subClassOf>
+  <owl:Class rdf:ID="Gamma">
+    <rdfs:subClassOf rdf:resource="sadlimplicitmodel#UnittedQuantity"/>
+  </owl:Class>
+  <owl:Class rdf:ID="Theta">
+    <rdfs:subClassOf rdf:resource="ScientificConcepts2.sadl#Constant"/>
+  </owl:Class>
+  <owl:Class rdf:ID="GasConstant">
+    <rdfs:subClassOf rdf:resource="sadlimplicitmodel#UnittedQuantity"/>
+  </owl:Class>
+  <owl:Class rdf:ID="MolarMass">
+    <rdfs:subClassOf rdf:resource="sadlimplicitmodel#UnittedQuantity"/>
+  </owl:Class>
+  <owl:Class rdf:ID="UniversalGasConstant">
+    <rdfs:subClassOf rdf:resource="ScientificConcepts2.sadl#Constant"/>
+  </owl:Class>
+  <owl:Class rdf:ID="SpecificGasConstant">
+    <rdfs:subClassOf rdf:resource="#GasConstant"/>
+  </owl:Class>
+  <owl:ObjectProperty rdf:ID="molarMass">
+    <rdfs:range rdf:resource="#MolarMass"/>
+    <rdfs:domain rdf:resource="ScientificConcepts2.sadl#Substance"/>
+  </owl:ObjectProperty>
+  <owl:ObjectProperty rdf:ID="movesIn">
+    <rdfs:range rdf:resource="ScientificConcepts2.sadl#Gas"/>
+    <rdfs:domain>
       <rdf:Description rdf:about="ScientificConcepts2.sadl#PhysicalObject">
         <rdfs:subClassOf>
           <owl:Restriction>
@@ -41,77 +56,798 @@
           </owl:Restriction>
         </rdfs:subClassOf>
       </rdf:Description>
-    </rdfs:subClassOf>
-  </owl:Class>
-  <owl:Class rdf:ID="Air">
-    <rdfs:subClassOf rdf:resource="#Gas"/>
-  </owl:Class>
-  <owl:ObjectProperty rdf:ID="movesIn">
-    <rdfs:range rdf:resource="#Gas"/>
-    <rdfs:domain rdf:resource="ScientificConcepts2.sadl#PhysicalObject"/>
+    </rdfs:domain>
+  </owl:ObjectProperty>
+  <owl:ObjectProperty rdf:ID="gasConstant">
+    <rdfs:range rdf:resource="#GasConstant"/>
+    <rdfs:domain rdf:resource="ScientificConcepts2.sadl#Gas"/>
+  </owl:ObjectProperty>
+  <owl:ObjectProperty rdf:ID="gammaCal">
+    <rdfs:comment xml:lang="en">treated as a calorically imperfect gas</rdfs:comment>
+    <rdfs:range rdf:resource="#Gamma"/>
+    <rdfs:domain rdf:resource="ScientificConcepts2.sadl#Gas"/>
   </owl:ObjectProperty>
   <owl:ObjectProperty rdf:ID="speedOfSound">
     <rdfs:range rdf:resource="ScientificConcepts2.sadl#Velocity"/>
-    <rdfs:domain rdf:resource="#Gas"/>
+    <rdfs:domain rdf:resource="ScientificConcepts2.sadl#Gas"/>
   </owl:ObjectProperty>
   <owl:ObjectProperty rdf:ID="altitude">
     <rdfs:range rdf:resource="ScientificConcepts2.sadl#Length"/>
-    <rdfs:domain rdf:resource="#Air"/>
+    <rdfs:domain>
+      <rdf:Description rdf:about="ScientificConcepts2.sadl#Air">
+        <rdfs:seeAlso>
+          <j.0:ObjectDefault rdf:ID="Air_gamma_default">
+            <j.0:hasObjectDefault>
+              <sos:Gamma rdf:ID="AirGammaDefault">
+                <j.1:value rdf:datatype="http://www.w3.org/2001/XMLSchema#decimal"
+                >1.4</j.1:value>
+              </sos:Gamma>
+            </j.0:hasObjectDefault>
+            <j.0:appliesToProperty>
+              <owl:ObjectProperty rdf:ID="gamma"/>
+            </j.0:appliesToProperty>
+          </j.0:ObjectDefault>
+        </rdfs:seeAlso>
+        <rdfs:subClassOf>
+          <owl:Restriction>
+            <owl:hasValue>
+              <sos:MolarMass rdf:ID="MolarMassAirImpoerial">
+                <j.1:unit rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+                >lbm/lbmole</j.1:unit>
+                <j.1:value rdf:datatype="http://www.w3.org/2001/XMLSchema#decimal"
+                >28.96</j.1:value>
+              </sos:MolarMass>
+            </owl:hasValue>
+            <owl:onProperty rdf:resource="#molarMass"/>
+          </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:subClassOf>
+          <owl:Restriction>
+            <owl:hasValue>
+              <sos:MolarMass rdf:ID="MolarMassAirISU">
+                <j.1:unit rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+                >g/mole</j.1:unit>
+                <j.1:value rdf:datatype="http://www.w3.org/2001/XMLSchema#decimal"
+                >28.96</j.1:value>
+              </sos:MolarMass>
+            </owl:hasValue>
+            <owl:onProperty rdf:resource="#molarMass"/>
+          </owl:Restriction>
+        </rdfs:subClassOf>
+      </rdf:Description>
+    </rdfs:domain>
+  </owl:ObjectProperty>
+  <owl:ObjectProperty rdf:about="#gamma">
+    <rdfs:comment xml:lang="en">treated as a calorically perfect gas</rdfs:comment>
+    <rdfs:range rdf:resource="#Gamma"/>
+    <rdfs:domain rdf:resource="ScientificConcepts2.sadl#Gas"/>
   </owl:ObjectProperty>
   <owl:DatatypeProperty rdf:about="#mach">
     <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#decimal"/>
     <rdfs:domain rdf:resource="ScientificConcepts2.sadl#PhysicalObject"/>
   </owl:DatatypeProperty>
-  <j.0:Rule rdf:ID="SpeedOfSoundInAirGivenTemperatureK"/>
-  <j.0:ExternalEquation rdf:ID="sosfromalt">
-    <j.0:externalURI rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
-    >http://com.ge.research.darpa.aske.kchain.sosairfromalt</j.0:externalURI>
-    <j.0:returnTypes rdf:parseType="Collection">
-      <j.0:DataDescriptor>
-        <j.0:dataType>http://www.w3.org/2001/XMLSchema#decimal</j.0:dataType>
-      </j.0:DataDescriptor>
-    </j.0:returnTypes>
-    <j.0:arguments rdf:parseType="Collection">
-      <j.0:DataDescriptor>
-        <j.0:dataType>http://www.w3.org/2001/XMLSchema#decimal</j.0:dataType>
-        <j.0:descriptorName>alt</j.0:descriptorName>
-      </j.0:DataDescriptor>
-    </j.0:arguments>
-  </j.0:ExternalEquation>
-  <j.0:ExternalEquation rdf:ID="cg">
-    <j.0:externalURI rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
-    >http://com.ge.research.darpa.aske.sos</j.0:externalURI>
-    <j.0:returnTypes rdf:parseType="Collection">
-      <j.0:DataDescriptor>
-        <j.0:dataType>http://www.w3.org/2001/XMLSchema#decimal</j.0:dataType>
-      </j.0:DataDescriptor>
-    </j.0:returnTypes>
-    <j.0:arguments rdf:parseType="Collection">
-      <j.0:DataDescriptor>
-        <j.0:dataType>http://sadl.org/sadlimplicitmodel#ExternalEquation</j.0:dataType>
-        <j.0:descriptorName>eq</j.0:descriptorName>
-      </j.0:DataDescriptor>
-      <j.0:DataDescriptor>
-        <j.0:dataType>http://sadl.org/SpeedOfSound.sadl#primitiveData</j.0:dataType>
-        <j.0:descriptorName>arg</j.0:descriptorName>
-      </j.0:DataDescriptor>
-    </j.0:arguments>
-  </j.0:ExternalEquation>
-  <j.0:Rule rdf:ID="SpeedOfSoundInAirGivenAltitude"/>
-  <j.0:Rule rdf:ID="SpeedOfSoundInAirGivenTemperatureR"/>
-  <j.0:ExternalEquation rdf:ID="sosfromtemp">
-    <j.0:externalURI rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
-    >http://com.ge.research.darpa.aske.kchain.sosairfromtemp</j.0:externalURI>
-    <j.0:returnTypes rdf:parseType="Collection">
-      <j.0:DataDescriptor>
-        <j.0:dataType>http://www.w3.org/2001/XMLSchema#decimal</j.0:dataType>
-      </j.0:DataDescriptor>
-    </j.0:returnTypes>
-    <j.0:arguments rdf:parseType="Collection">
-      <j.0:DataDescriptor>
-        <j.0:dataType>http://www.w3.org/2001/XMLSchema#decimal</j.0:dataType>
-        <j.0:descriptorName>t</j.0:descriptorName>
-      </j.0:DataDescriptor>
-    </j.0:arguments>
-  </j.0:ExternalEquation>
+  <j.1:Rule rdf:ID="SpeedOfSoundInAirGivenTemperature"/>
+  <sos:UniversalGasConstant rdf:ID="UniversalGasConstantISU">
+    <j.1:unit rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >J/mole-Kelvin</j.1:unit>
+    <j.1:value rdf:datatype="http://www.w3.org/2001/XMLSchema#decimal"
+    >8.314</j.1:value>
+  </sos:UniversalGasConstant>
+  <j.1:ExternalEquation rdf:ID="sosfromalt2">
+    <j.1:externalURI rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >http://com.ge.research.darpa.aske.kchain.sosairfromalt</j.1:externalURI>
+    <j.1:returnTypes rdf:parseType="Collection">
+      <j.1:DataDescriptor>
+        <j.1:augmentedType>
+          <j.1:Assumption>
+            <j.1:constraints rdf:parseType="Collection">
+              <j.1:TriplePattern>
+                <j.1:gpObject>v14</j.1:gpObject>
+                <j.1:gpPredicate>http://sadl.org/sadlimplicitmodel#value</j.1:gpPredicate>
+                <j.1:gpSubject>rdf(v13, http://sadl.org/SpeedOfSound.sadl#speedOfSound, null)</j.1:gpSubject>
+              </j.1:TriplePattern>
+            </j.1:constraints>
+          </j.1:Assumption>
+        </j.1:augmentedType>
+        <j.1:descriptorName>v14</j.1:descriptorName>
+        <j.1:dataType>http://www.w3.org/2001/XMLSchema#decimal</j.1:dataType>
+      </j.1:DataDescriptor>
+    </j.1:returnTypes>
+    <j.1:arguments rdf:parseType="Collection">
+      <j.1:DataDescriptor>
+        <j.1:augmentedType>
+          <j.1:Assumption>
+            <j.1:constraints rdf:parseType="Collection">
+              <j.1:TriplePattern>
+                <j.1:gpObject>alt</j.1:gpObject>
+                <j.1:gpPredicate>http://sadl.org/sadlimplicitmodel#value</j.1:gpPredicate>
+                <j.1:gpSubject>rdf(v13, http://sadl.org/SpeedOfSound.sadl#altitude, null)</j.1:gpSubject>
+              </j.1:TriplePattern>
+            </j.1:constraints>
+          </j.1:Assumption>
+        </j.1:augmentedType>
+        <j.1:dataType>http://www.w3.org/2001/XMLSchema#decimal</j.1:dataType>
+        <j.1:descriptorName>alt</j.1:descriptorName>
+      </j.1:DataDescriptor>
+    </j.1:arguments>
+    <j.1:expression>
+      <j.1:Script>
+        <j.1:language rdf:resource="sadlimplicitmodel#Text"/>
+        <j.1:script rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+        >xsd:decimal sosfromalt2(decimal alt): uri("http://com.ge.research.darpa.aske.kchain.sosairfromalt")</j.1:script>
+      </j.1:Script>
+    </j.1:expression>
+  </j.1:ExternalEquation>
+  <j.1:ExternalEquation rdf:ID="sosfromtemp2">
+    <j.1:externalURI rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >http://com.ge.research.darpa.aske.kchain.sosairfromtemp</j.1:externalURI>
+    <j.1:returnTypes rdf:parseType="Collection">
+      <j.1:DataDescriptor>
+        <j.1:augmentedType>
+          <j.1:Assumption>
+            <j.1:constraints rdf:parseType="Collection">
+              <j.1:TriplePattern>
+                <j.1:gpObject>http://sadl.org/ScientificConcepts2.sadl#Air</j.1:gpObject>
+                <j.1:gpPredicate rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#type"/>
+                <j.1:gpSubject>v11</j.1:gpSubject>
+              </j.1:TriplePattern>
+              <j.1:TriplePattern>
+                <j.1:gpObject>v12</j.1:gpObject>
+                <j.1:gpPredicate>http://sadl.org/SpeedOfSound.sadl#speedOfSound</j.1:gpPredicate>
+                <j.1:gpSubject>v11</j.1:gpSubject>
+              </j.1:TriplePattern>
+            </j.1:constraints>
+          </j.1:Assumption>
+        </j.1:augmentedType>
+        <j.1:descriptorName>v12</j.1:descriptorName>
+        <j.1:dataType>http://www.w3.org/2001/XMLSchema#decimal</j.1:dataType>
+      </j.1:DataDescriptor>
+    </j.1:returnTypes>
+    <j.1:arguments rdf:parseType="Collection">
+      <j.1:DataDescriptor>
+        <j.1:augmentedType>
+          <j.1:Assumption>
+            <j.1:constraints rdf:parseType="Collection">
+              <j.1:TriplePattern>
+                <j.1:gpObject>http://sadl.org/ScientificConcepts2.sadl#Air</j.1:gpObject>
+                <j.1:gpPredicate rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#type"/>
+                <j.1:gpSubject>v11</j.1:gpSubject>
+              </j.1:TriplePattern>
+              <j.1:TriplePattern>
+                <j.1:gpObject>t</j.1:gpObject>
+                <j.1:gpPredicate>http://sadl.org/ScientificConcepts2.sadl#temperature</j.1:gpPredicate>
+                <j.1:gpSubject>v11</j.1:gpSubject>
+              </j.1:TriplePattern>
+            </j.1:constraints>
+          </j.1:Assumption>
+        </j.1:augmentedType>
+        <j.1:dataType>http://www.w3.org/2001/XMLSchema#decimal</j.1:dataType>
+        <j.1:descriptorName>t</j.1:descriptorName>
+      </j.1:DataDescriptor>
+    </j.1:arguments>
+    <j.1:expression>
+      <j.1:Script>
+        <j.1:language rdf:resource="sadlimplicitmodel#Text"/>
+        <j.1:script rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+        >xsd:decimal sosfromtemp2(decimal t): uri("http://com.ge.research.darpa.aske.kchain.sosairfromtemp")</j.1:script>
+      </j.1:Script>
+    </j.1:expression>
+  </j.1:ExternalEquation>
+  <j.1:ExternalEquation rdf:ID="tempFromAltitude">
+    <j.1:externalURI rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >http://com.ge.research.darpa.aske.kchain.tempFromAltitude</j.1:externalURI>
+    <j.1:returnTypes rdf:parseType="Collection">
+      <j.1:DataDescriptor>
+        <j.1:augmentedType>
+          <j.1:Assumption>
+            <j.1:constraints rdf:parseType="Collection">
+              <j.1:TriplePattern>
+                <j.1:gpObject>http://sadl.org/ScientificConcepts2.sadl#Air</j.1:gpObject>
+                <j.1:gpPredicate rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#type"/>
+                <j.1:gpSubject>v6</j.1:gpSubject>
+              </j.1:TriplePattern>
+              <j.1:TriplePattern>
+                <j.1:gpObject>v7</j.1:gpObject>
+                <j.1:gpPredicate>http://sadl.org/ScientificConcepts2.sadl#temperature</j.1:gpPredicate>
+                <j.1:gpSubject>v6</j.1:gpSubject>
+              </j.1:TriplePattern>
+            </j.1:constraints>
+          </j.1:Assumption>
+        </j.1:augmentedType>
+        <j.1:descriptorName>v7</j.1:descriptorName>
+        <j.1:dataType>http://www.w3.org/2001/XMLSchema#double</j.1:dataType>
+      </j.1:DataDescriptor>
+    </j.1:returnTypes>
+    <j.1:arguments rdf:parseType="Collection">
+      <j.1:DataDescriptor>
+        <j.1:augmentedType>
+          <j.1:Assumption>
+            <j.1:constraints rdf:parseType="Collection">
+              <j.1:TriplePattern>
+                <j.1:gpObject>http://sadl.org/ScientificConcepts2.sadl#Air</j.1:gpObject>
+                <j.1:gpPredicate rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#type"/>
+                <j.1:gpSubject>v6</j.1:gpSubject>
+              </j.1:TriplePattern>
+              <j.1:TriplePattern>
+                <j.1:gpObject>alt</j.1:gpObject>
+                <j.1:gpPredicate>http://sadl.org/SpeedOfSound.sadl#altitude</j.1:gpPredicate>
+                <j.1:gpSubject>v6</j.1:gpSubject>
+              </j.1:TriplePattern>
+            </j.1:constraints>
+          </j.1:Assumption>
+        </j.1:augmentedType>
+        <j.1:dataType>http://www.w3.org/2001/XMLSchema#double</j.1:dataType>
+        <j.1:descriptorName>alt</j.1:descriptorName>
+      </j.1:DataDescriptor>
+    </j.1:arguments>
+    <j.1:expression>
+      <j.1:Script>
+        <j.1:language rdf:resource="sadlimplicitmodel#Text"/>
+        <j.1:script rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+        >xsd:double tempFromAltitude(double alt): uri("http://com.ge.research.darpa.aske.kchain.tempFromAltitude")</j.1:script>
+      </j.1:Script>
+    </j.1:expression>
+  </j.1:ExternalEquation>
+  <sos:Theta rdf:ID="ThetaImperial">
+    <j.1:unit rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >Rankine</j.1:unit>
+    <j.1:value rdf:datatype="http://www.w3.org/2001/XMLSchema#decimal"
+    >5500</j.1:value>
+  </sos:Theta>
+  <sos:UniversalGasConstant rdf:ID="GasConstantAirISU">
+    <j.1:unit rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >kJ/kg/degK</j.1:unit>
+    <j.1:value rdf:datatype="http://www.w3.org/2001/XMLSchema#decimal"
+    >0.286</j.1:value>
+  </sos:UniversalGasConstant>
+  <j.1:Rule rdf:ID="SpeedOfSoundInAirGivenAltitude"/>
+  <j.1:ExternalEquation rdf:ID="CAL_SOS">
+    <j.1:externalURI rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >http://com.ge.research.darpa.aske.kchain.CAL_SOS</j.1:externalURI>
+    <j.1:returnTypes rdf:parseType="Collection">
+      <j.1:DataDescriptor>
+        <j.1:augmentedType>
+          <j.1:Assumption>
+            <j.1:constraints rdf:parseType="Collection">
+              <j.1:TriplePattern>
+                <j.1:gpObject>http://sadl.org/ScientificConcepts2.sadl#Gas</j.1:gpObject>
+                <j.1:gpPredicate rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#type"/>
+                <j.1:gpSubject>v2</j.1:gpSubject>
+              </j.1:TriplePattern>
+              <j.1:TriplePattern>
+                <j.1:gpObject>v3</j.1:gpObject>
+                <j.1:gpPredicate>http://sadl.org/SpeedOfSound.sadl#speedOfSound</j.1:gpPredicate>
+                <j.1:gpSubject>v2</j.1:gpSubject>
+              </j.1:TriplePattern>
+            </j.1:constraints>
+          </j.1:Assumption>
+        </j.1:augmentedType>
+        <j.1:descriptorName>v3</j.1:descriptorName>
+        <j.1:dataType>http://www.w3.org/2001/XMLSchema#double</j.1:dataType>
+      </j.1:DataDescriptor>
+    </j.1:returnTypes>
+    <j.1:arguments rdf:parseType="Collection">
+      <j.1:DataDescriptor>
+        <j.1:augmentedType>
+          <j.1:Assumption>
+            <j.1:constraints rdf:parseType="Collection">
+              <j.1:TriplePattern>
+                <j.1:gpObject>http://sadl.org/ScientificConcepts2.sadl#Gas</j.1:gpObject>
+                <j.1:gpPredicate rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#type"/>
+                <j.1:gpSubject>v2</j.1:gpSubject>
+              </j.1:TriplePattern>
+              <j.1:TriplePattern>
+                <j.1:gpObject>T</j.1:gpObject>
+                <j.1:gpPredicate>http://sadl.org/ScientificConcepts2.sadl#temperature</j.1:gpPredicate>
+                <j.1:gpSubject>v2</j.1:gpSubject>
+              </j.1:TriplePattern>
+            </j.1:constraints>
+          </j.1:Assumption>
+        </j.1:augmentedType>
+        <j.1:dataType>http://www.w3.org/2001/XMLSchema#double</j.1:dataType>
+        <j.1:descriptorName>T</j.1:descriptorName>
+      </j.1:DataDescriptor>
+      <j.1:DataDescriptor>
+        <j.1:augmentedType>
+          <j.1:Assumption>
+            <j.1:constraints rdf:parseType="Collection">
+              <j.1:TriplePattern>
+                <j.1:gpObject>http://sadl.org/ScientificConcepts2.sadl#Gas</j.1:gpObject>
+                <j.1:gpPredicate rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#type"/>
+                <j.1:gpSubject>v2</j.1:gpSubject>
+              </j.1:TriplePattern>
+              <j.1:TriplePattern>
+                <j.1:gpObject>G</j.1:gpObject>
+                <j.1:gpPredicate>http://sadl.org/SpeedOfSound.sadl#gamma</j.1:gpPredicate>
+                <j.1:gpSubject>v2</j.1:gpSubject>
+              </j.1:TriplePattern>
+            </j.1:constraints>
+          </j.1:Assumption>
+        </j.1:augmentedType>
+        <j.1:dataType>http://www.w3.org/2001/XMLSchema#double</j.1:dataType>
+        <j.1:descriptorName>G</j.1:descriptorName>
+      </j.1:DataDescriptor>
+      <j.1:DataDescriptor>
+        <j.1:augmentedType>
+          <j.1:Assumption>
+            <j.1:constraints rdf:parseType="Collection">
+              <j.1:TriplePattern>
+                <j.1:gpObject>http://sadl.org/ScientificConcepts2.sadl#Gas</j.1:gpObject>
+                <j.1:gpPredicate rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#type"/>
+                <j.1:gpSubject>v2</j.1:gpSubject>
+              </j.1:TriplePattern>
+              <j.1:TriplePattern>
+                <j.1:gpObject>R</j.1:gpObject>
+                <j.1:gpPredicate>http://sadl.org/SpeedOfSound.sadl#gasConstant</j.1:gpPredicate>
+                <j.1:gpSubject>v2</j.1:gpSubject>
+              </j.1:TriplePattern>
+            </j.1:constraints>
+          </j.1:Assumption>
+        </j.1:augmentedType>
+        <j.1:dataType>http://www.w3.org/2001/XMLSchema#double</j.1:dataType>
+        <j.1:descriptorName>R</j.1:descriptorName>
+      </j.1:DataDescriptor>
+      <j.1:DataDescriptor>
+        <j.1:augmentedType>
+          <j.1:SemanticType>
+            <j.1:semType rdf:resource="#Theta"/>
+          </j.1:SemanticType>
+        </j.1:augmentedType>
+        <j.1:dataType>http://www.w3.org/2001/XMLSchema#double</j.1:dataType>
+        <j.1:descriptorName>Q</j.1:descriptorName>
+      </j.1:DataDescriptor>
+      <j.1:DataDescriptor>
+        <j.1:augmentedType>
+          <j.1:SemanticType>
+            <j.1:semType rdf:resource="ScientificConcepts2.sadl#UnitSystem"/>
+          </j.1:SemanticType>
+        </j.1:augmentedType>
+        <j.1:dataType>http://www.w3.org/2001/XMLSchema#string</j.1:dataType>
+        <j.1:descriptorName>us</j.1:descriptorName>
+      </j.1:DataDescriptor>
+    </j.1:arguments>
+    <j.1:expression>
+      <j.1:Script>
+        <j.1:language rdf:resource="sadlimplicitmodel#Text"/>
+        <j.1:script rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+        >xsd:double CAL_SOS(double T,double G,double R,double Q,string us): uri("http://com.ge.research.darpa.aske.kchain.CAL_SOS")</j.1:script>
+      </j.1:Script>
+    </j.1:expression>
+  </j.1:ExternalEquation>
+  <sos:Theta rdf:ID="ThetaISU">
+    <j.1:unit rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >Kelvin</j.1:unit>
+    <j.1:value rdf:datatype="http://www.w3.org/2001/XMLSchema#decimal"
+    >3056</j.1:value>
+  </sos:Theta>
+  <j.1:ExternalEquation rdf:ID="specificGasConstantEq">
+    <j.1:externalURI rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >http://com.ge.research.darpa.aske.kchain.specificGasConstantEq</j.1:externalURI>
+    <j.1:returnTypes rdf:parseType="Collection">
+      <j.1:DataDescriptor>
+        <j.1:augmentedType>
+          <j.1:Assumption>
+            <j.1:constraints rdf:parseType="Collection">
+              <j.1:TriplePattern>
+                <j.1:gpObject>http://sadl.org/ScientificConcepts2.sadl#Gas</j.1:gpObject>
+                <j.1:gpPredicate rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#type"/>
+                <j.1:gpSubject>v0</j.1:gpSubject>
+              </j.1:TriplePattern>
+              <j.1:TriplePattern>
+                <j.1:gpObject>v1</j.1:gpObject>
+                <j.1:gpPredicate>http://sadl.org/SpeedOfSound.sadl#gasConstant</j.1:gpPredicate>
+                <j.1:gpSubject>v0</j.1:gpSubject>
+              </j.1:TriplePattern>
+            </j.1:constraints>
+          </j.1:Assumption>
+        </j.1:augmentedType>
+        <j.1:descriptorName>v1</j.1:descriptorName>
+        <j.1:dataType>http://www.w3.org/2001/XMLSchema#decimal</j.1:dataType>
+      </j.1:DataDescriptor>
+    </j.1:returnTypes>
+    <j.1:arguments rdf:parseType="Collection">
+      <j.1:DataDescriptor>
+        <j.1:augmentedType>
+          <j.1:SemanticType>
+            <j.1:semType rdf:resource="#UniversalGasConstant"/>
+          </j.1:SemanticType>
+        </j.1:augmentedType>
+        <j.1:dataType>http://www.w3.org/2001/XMLSchema#decimal</j.1:dataType>
+        <j.1:descriptorName>Ru</j.1:descriptorName>
+      </j.1:DataDescriptor>
+      <j.1:DataDescriptor>
+        <j.1:augmentedType>
+          <j.1:Assumption>
+            <j.1:constraints rdf:parseType="Collection">
+              <j.1:TriplePattern>
+                <j.1:gpObject>http://sadl.org/ScientificConcepts2.sadl#Gas</j.1:gpObject>
+                <j.1:gpPredicate rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#type"/>
+                <j.1:gpSubject>v0</j.1:gpSubject>
+              </j.1:TriplePattern>
+              <j.1:TriplePattern>
+                <j.1:gpObject>M</j.1:gpObject>
+                <j.1:gpPredicate>http://sadl.org/SpeedOfSound.sadl#molarMass</j.1:gpPredicate>
+                <j.1:gpSubject>v0</j.1:gpSubject>
+              </j.1:TriplePattern>
+            </j.1:constraints>
+          </j.1:Assumption>
+        </j.1:augmentedType>
+        <j.1:dataType>http://www.w3.org/2001/XMLSchema#decimal</j.1:dataType>
+        <j.1:descriptorName>M</j.1:descriptorName>
+      </j.1:DataDescriptor>
+    </j.1:arguments>
+    <j.1:expression>
+      <j.1:Script>
+        <j.1:language rdf:resource="sadlimplicitmodel#Text"/>
+        <j.1:script rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+        >xsd:decimal specificGasConstantEq(decimal Ru,decimal M): uri("http://com.ge.research.darpa.aske.kchain.specificGasConstantEq")</j.1:script>
+      </j.1:Script>
+    </j.1:expression>
+  </j.1:ExternalEquation>
+  <j.1:ExternalEquation rdf:ID="computeMach">
+    <j.1:externalURI rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >http://com.ge.research.darpa.aske.kchain.computeMach</j.1:externalURI>
+    <j.1:returnTypes rdf:parseType="Collection">
+      <j.1:DataDescriptor>
+        <j.1:augmentedType>
+          <j.1:Assumption>
+            <j.1:constraints rdf:parseType="Collection">
+              <j.1:TriplePattern>
+                <j.1:gpObject>http://sadl.org/ScientificConcepts2.sadl#PhysicalObject</j.1:gpObject>
+                <j.1:gpPredicate rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#type"/>
+                <j.1:gpSubject>v8</j.1:gpSubject>
+              </j.1:TriplePattern>
+              <j.1:TriplePattern>
+                <j.1:gpObject>v10</j.1:gpObject>
+                <j.1:gpPredicate>http://sadl.org/SpeedOfSound.sadl#mach</j.1:gpPredicate>
+                <j.1:gpSubject>v8</j.1:gpSubject>
+              </j.1:TriplePattern>
+            </j.1:constraints>
+          </j.1:Assumption>
+        </j.1:augmentedType>
+        <j.1:descriptorName>v10</j.1:descriptorName>
+        <j.1:dataType>http://www.w3.org/2001/XMLSchema#double</j.1:dataType>
+      </j.1:DataDescriptor>
+    </j.1:returnTypes>
+    <j.1:arguments rdf:parseType="Collection">
+      <j.1:DataDescriptor>
+        <j.1:augmentedType>
+          <j.1:Assumption>
+            <j.1:constraints rdf:parseType="Collection">
+              <j.1:TriplePattern>
+                <j.1:gpObject>http://sadl.org/ScientificConcepts2.sadl#PhysicalObject</j.1:gpObject>
+                <j.1:gpPredicate rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#type"/>
+                <j.1:gpSubject>v8</j.1:gpSubject>
+              </j.1:TriplePattern>
+              <j.1:TriplePattern>
+                <j.1:gpObject>alt</j.1:gpObject>
+                <j.1:gpPredicate>http://sadl.org/SpeedOfSound.sadl#altitude</j.1:gpPredicate>
+                <j.1:gpSubject>v8</j.1:gpSubject>
+              </j.1:TriplePattern>
+              <j.1:TriplePattern>
+                <j.1:gpObject>http://sadl.org/ScientificConcepts2.sadl#Air</j.1:gpObject>
+                <j.1:gpPredicate rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#type"/>
+                <j.1:gpSubject>v9</j.1:gpSubject>
+              </j.1:TriplePattern>
+              <j.1:TriplePattern>
+                <j.1:gpObject>v9</j.1:gpObject>
+                <j.1:gpPredicate>http://sadl.org/SpeedOfSound.sadl#movesIn</j.1:gpPredicate>
+                <j.1:gpSubject>v8</j.1:gpSubject>
+              </j.1:TriplePattern>
+            </j.1:constraints>
+          </j.1:Assumption>
+        </j.1:augmentedType>
+        <j.1:dataType>http://www.w3.org/2001/XMLSchema#double</j.1:dataType>
+        <j.1:descriptorName>alt</j.1:descriptorName>
+      </j.1:DataDescriptor>
+      <j.1:DataDescriptor>
+        <j.1:augmentedType>
+          <j.1:Assumption>
+            <j.1:constraints rdf:parseType="Collection">
+              <j.1:TriplePattern>
+                <j.1:gpObject>http://sadl.org/ScientificConcepts2.sadl#Air</j.1:gpObject>
+                <j.1:gpPredicate rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#type"/>
+                <j.1:gpSubject>v9</j.1:gpSubject>
+              </j.1:TriplePattern>
+              <j.1:TriplePattern>
+                <j.1:gpObject>R</j.1:gpObject>
+                <j.1:gpPredicate>http://sadl.org/SpeedOfSound.sadl#gasConstant</j.1:gpPredicate>
+                <j.1:gpSubject>v9</j.1:gpSubject>
+              </j.1:TriplePattern>
+            </j.1:constraints>
+          </j.1:Assumption>
+        </j.1:augmentedType>
+        <j.1:dataType>http://www.w3.org/2001/XMLSchema#double</j.1:dataType>
+        <j.1:descriptorName>R</j.1:descriptorName>
+      </j.1:DataDescriptor>
+      <j.1:DataDescriptor>
+        <j.1:augmentedType>
+          <j.1:Assumption>
+            <j.1:constraints rdf:parseType="Collection">
+              <j.1:TriplePattern>
+                <j.1:gpObject>http://sadl.org/ScientificConcepts2.sadl#Air</j.1:gpObject>
+                <j.1:gpPredicate rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#type"/>
+                <j.1:gpSubject>v9</j.1:gpSubject>
+              </j.1:TriplePattern>
+              <j.1:TriplePattern>
+                <j.1:gpObject>G</j.1:gpObject>
+                <j.1:gpPredicate>http://sadl.org/SpeedOfSound.sadl#gamma</j.1:gpPredicate>
+                <j.1:gpSubject>v9</j.1:gpSubject>
+              </j.1:TriplePattern>
+            </j.1:constraints>
+          </j.1:Assumption>
+        </j.1:augmentedType>
+        <j.1:dataType>http://www.w3.org/2001/XMLSchema#double</j.1:dataType>
+        <j.1:descriptorName>G</j.1:descriptorName>
+      </j.1:DataDescriptor>
+      <j.1:DataDescriptor>
+        <j.1:augmentedType>
+          <j.1:SemanticType>
+            <j.1:semType rdf:resource="#Theta"/>
+          </j.1:SemanticType>
+        </j.1:augmentedType>
+        <j.1:dataType>http://www.w3.org/2001/XMLSchema#double</j.1:dataType>
+        <j.1:descriptorName>Q</j.1:descriptorName>
+      </j.1:DataDescriptor>
+      <j.1:DataDescriptor>
+        <j.1:augmentedType>
+          <j.1:Assumption>
+            <j.1:constraints rdf:parseType="Collection">
+              <j.1:TriplePattern>
+                <j.1:gpObject>http://sadl.org/ScientificConcepts2.sadl#PhysicalObject</j.1:gpObject>
+                <j.1:gpPredicate rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#type"/>
+                <j.1:gpSubject>v8</j.1:gpSubject>
+              </j.1:TriplePattern>
+              <j.1:TriplePattern>
+                <j.1:gpObject>vel</j.1:gpObject>
+                <j.1:gpPredicate>http://sadl.org/ScientificConcepts2.sadl#velocity</j.1:gpPredicate>
+                <j.1:gpSubject>v8</j.1:gpSubject>
+              </j.1:TriplePattern>
+            </j.1:constraints>
+          </j.1:Assumption>
+        </j.1:augmentedType>
+        <j.1:dataType>http://www.w3.org/2001/XMLSchema#double</j.1:dataType>
+        <j.1:descriptorName>vel</j.1:descriptorName>
+      </j.1:DataDescriptor>
+      <j.1:DataDescriptor>
+        <j.1:augmentedType>
+          <j.1:SemanticType>
+            <j.1:semType rdf:resource="ScientificConcepts2.sadl#UnitSystem"/>
+          </j.1:SemanticType>
+        </j.1:augmentedType>
+        <j.1:dataType>http://www.w3.org/2001/XMLSchema#string</j.1:dataType>
+        <j.1:descriptorName>us</j.1:descriptorName>
+      </j.1:DataDescriptor>
+    </j.1:arguments>
+    <j.1:expression>
+      <j.1:Script>
+        <j.1:language rdf:resource="sadlimplicitmodel#Text"/>
+        <j.1:script rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+        >xsd:double computeMach(double alt,double R,double G,double Q,double vel,string us): uri("http://com.ge.research.darpa.aske.kchain.computeMach")</j.1:script>
+      </j.1:Script>
+    </j.1:expression>
+  </j.1:ExternalEquation>
+  <j.1:ExternalEquation rdf:ID="machCalc">
+    <j.1:externalURI rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >http://com.ge.research.darpa.aske.kchain.machcalc</j.1:externalURI>
+    <j.1:returnTypes rdf:parseType="Collection">
+      <j.1:DataDescriptor>
+        <j.1:augmentedType>
+          <j.1:Assumption>
+            <j.1:constraints rdf:parseType="Collection">
+              <j.1:TriplePattern>
+                <j.1:gpObject>http://sadl.org/ScientificConcepts2.sadl#PhysicalObject</j.1:gpObject>
+                <j.1:gpPredicate rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#type"/>
+                <j.1:gpSubject>v16</j.1:gpSubject>
+              </j.1:TriplePattern>
+              <j.1:TriplePattern>
+                <j.1:gpObject>v17</j.1:gpObject>
+                <j.1:gpPredicate>http://sadl.org/SpeedOfSound.sadl#mach</j.1:gpPredicate>
+                <j.1:gpSubject>v16</j.1:gpSubject>
+              </j.1:TriplePattern>
+            </j.1:constraints>
+          </j.1:Assumption>
+        </j.1:augmentedType>
+        <j.1:descriptorName>v17</j.1:descriptorName>
+        <j.1:dataType>http://www.w3.org/2001/XMLSchema#decimal</j.1:dataType>
+      </j.1:DataDescriptor>
+    </j.1:returnTypes>
+    <j.1:arguments rdf:parseType="Collection">
+      <j.1:DataDescriptor>
+        <j.1:augmentedType>
+          <j.1:Assumption>
+            <j.1:constraints rdf:parseType="Collection">
+              <j.1:TriplePattern>
+                <j.1:gpObject>http://sadl.org/ScientificConcepts2.sadl#Air</j.1:gpObject>
+                <j.1:gpPredicate rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#type"/>
+                <j.1:gpSubject>v15</j.1:gpSubject>
+              </j.1:TriplePattern>
+              <j.1:TriplePattern>
+                <j.1:gpObject>sos</j.1:gpObject>
+                <j.1:gpPredicate>http://sadl.org/SpeedOfSound.sadl#speedOfSound</j.1:gpPredicate>
+                <j.1:gpSubject>v15</j.1:gpSubject>
+              </j.1:TriplePattern>
+            </j.1:constraints>
+          </j.1:Assumption>
+        </j.1:augmentedType>
+        <j.1:dataType>http://www.w3.org/2001/XMLSchema#decimal</j.1:dataType>
+        <j.1:descriptorName>sos</j.1:descriptorName>
+      </j.1:DataDescriptor>
+      <j.1:DataDescriptor>
+        <j.1:augmentedType>
+          <j.1:Assumption>
+            <j.1:constraints rdf:parseType="Collection">
+              <j.1:TriplePattern>
+                <j.1:gpObject>http://sadl.org/ScientificConcepts2.sadl#PhysicalObject</j.1:gpObject>
+                <j.1:gpPredicate rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#type"/>
+                <j.1:gpSubject>v16</j.1:gpSubject>
+              </j.1:TriplePattern>
+              <j.1:TriplePattern>
+                <j.1:gpObject>sov</j.1:gpObject>
+                <j.1:gpPredicate>http://sadl.org/ScientificConcepts2.sadl#velocity</j.1:gpPredicate>
+                <j.1:gpSubject>v16</j.1:gpSubject>
+              </j.1:TriplePattern>
+              <j.1:TriplePattern>
+                <j.1:gpObject>http://sadl.org/ScientificConcepts2.sadl#Air</j.1:gpObject>
+                <j.1:gpPredicate rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#type"/>
+                <j.1:gpSubject>v15</j.1:gpSubject>
+              </j.1:TriplePattern>
+              <j.1:TriplePattern>
+                <j.1:gpObject>v15</j.1:gpObject>
+                <j.1:gpPredicate>http://sadl.org/SpeedOfSound.sadl#movesIn</j.1:gpPredicate>
+                <j.1:gpSubject>v16</j.1:gpSubject>
+              </j.1:TriplePattern>
+            </j.1:constraints>
+          </j.1:Assumption>
+        </j.1:augmentedType>
+        <j.1:dataType>http://www.w3.org/2001/XMLSchema#decimal</j.1:dataType>
+        <j.1:descriptorName>sov</j.1:descriptorName>
+      </j.1:DataDescriptor>
+    </j.1:arguments>
+    <j.1:expression>
+      <j.1:Script>
+        <j.1:language rdf:resource="sadlimplicitmodel#Text"/>
+        <j.1:script rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+        >xsd:decimal machCalc(decimal sos,decimal sov): uri("http://com.ge.research.darpa.aske.kchain.machcalc")</j.1:script>
+      </j.1:Script>
+    </j.1:expression>
+  </j.1:ExternalEquation>
+  <j.1:ExternalEquation rdf:ID="sosfromtemp">
+    <j.1:externalURI rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >http://com.ge.research.darpa.aske.kchain.sosairfromtemp</j.1:externalURI>
+    <j.1:returnTypes rdf:parseType="Collection">
+      <j.1:DataDescriptor>
+        <j.1:dataType>http://www.w3.org/2001/XMLSchema#decimal</j.1:dataType>
+      </j.1:DataDescriptor>
+    </j.1:returnTypes>
+    <j.1:arguments rdf:parseType="Collection">
+      <j.1:DataDescriptor>
+        <j.1:dataType>http://www.w3.org/2001/XMLSchema#decimal</j.1:dataType>
+        <j.1:descriptorName>t</j.1:descriptorName>
+      </j.1:DataDescriptor>
+    </j.1:arguments>
+    <j.1:expression>
+      <j.1:Script>
+        <j.1:language rdf:resource="sadlimplicitmodel#Text"/>
+        <j.1:script rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+        >decimal sosfromtemp(decimal t): uri("http://com.ge.research.darpa.aske.kchain.sosairfromtemp")</j.1:script>
+      </j.1:Script>
+    </j.1:expression>
+  </j.1:ExternalEquation>
+  <j.1:Rule rdf:ID="SpeedOfSoundInAirGivenTemperatureK"/>
+  <j.1:ExternalEquation rdf:ID="sosfromalt">
+    <j.1:externalURI rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >http://com.ge.research.darpa.aske.kchain.sosairfromalt</j.1:externalURI>
+    <j.1:returnTypes rdf:parseType="Collection">
+      <j.1:DataDescriptor>
+        <j.1:dataType>http://www.w3.org/2001/XMLSchema#decimal</j.1:dataType>
+      </j.1:DataDescriptor>
+    </j.1:returnTypes>
+    <j.1:arguments rdf:parseType="Collection">
+      <j.1:DataDescriptor>
+        <j.1:dataType>http://www.w3.org/2001/XMLSchema#decimal</j.1:dataType>
+        <j.1:descriptorName>alt</j.1:descriptorName>
+      </j.1:DataDescriptor>
+    </j.1:arguments>
+    <j.1:expression>
+      <j.1:Script>
+        <j.1:language rdf:resource="sadlimplicitmodel#Text"/>
+        <j.1:script rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+        >decimal sosfromalt(decimal alt): uri("http://com.ge.research.darpa.aske.kchain.sosairfromalt")</j.1:script>
+      </j.1:Script>
+    </j.1:expression>
+  </j.1:ExternalEquation>
+  <j.1:ExternalEquation rdf:ID="CAL_GAM">
+    <j.1:externalURI rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >http://com.ge.research.darpa.aske.kchain.CAL_GAM</j.1:externalURI>
+    <j.1:returnTypes rdf:parseType="Collection">
+      <j.1:DataDescriptor>
+        <j.1:augmentedType>
+          <j.1:Assumption>
+            <j.1:constraints rdf:parseType="Collection">
+              <j.1:TriplePattern>
+                <j.1:gpObject>http://sadl.org/ScientificConcepts2.sadl#Gas</j.1:gpObject>
+                <j.1:gpPredicate rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#type"/>
+                <j.1:gpSubject>v4</j.1:gpSubject>
+              </j.1:TriplePattern>
+              <j.1:TriplePattern>
+                <j.1:gpObject>v5</j.1:gpObject>
+                <j.1:gpPredicate>http://sadl.org/SpeedOfSound.sadl#gammaCal</j.1:gpPredicate>
+                <j.1:gpSubject>v4</j.1:gpSubject>
+              </j.1:TriplePattern>
+            </j.1:constraints>
+          </j.1:Assumption>
+        </j.1:augmentedType>
+        <j.1:descriptorName>v5</j.1:descriptorName>
+        <j.1:dataType>http://www.w3.org/2001/XMLSchema#double</j.1:dataType>
+      </j.1:DataDescriptor>
+    </j.1:returnTypes>
+    <j.1:arguments rdf:parseType="Collection">
+      <j.1:DataDescriptor>
+        <j.1:augmentedType>
+          <j.1:Assumption>
+            <j.1:constraints rdf:parseType="Collection">
+              <j.1:TriplePattern>
+                <j.1:gpObject>http://sadl.org/ScientificConcepts2.sadl#Gas</j.1:gpObject>
+                <j.1:gpPredicate rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#type"/>
+                <j.1:gpSubject>v4</j.1:gpSubject>
+              </j.1:TriplePattern>
+              <j.1:TriplePattern>
+                <j.1:gpObject>T</j.1:gpObject>
+                <j.1:gpPredicate>http://sadl.org/ScientificConcepts2.sadl#temperature</j.1:gpPredicate>
+                <j.1:gpSubject>v4</j.1:gpSubject>
+              </j.1:TriplePattern>
+            </j.1:constraints>
+          </j.1:Assumption>
+        </j.1:augmentedType>
+        <j.1:dataType>http://www.w3.org/2001/XMLSchema#double</j.1:dataType>
+        <j.1:descriptorName>T</j.1:descriptorName>
+      </j.1:DataDescriptor>
+      <j.1:DataDescriptor>
+        <j.1:augmentedType>
+          <j.1:Assumption>
+            <j.1:constraints rdf:parseType="Collection">
+              <j.1:TriplePattern>
+                <j.1:gpObject>http://sadl.org/ScientificConcepts2.sadl#Gas</j.1:gpObject>
+                <j.1:gpPredicate rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#type"/>
+                <j.1:gpSubject>v4</j.1:gpSubject>
+              </j.1:TriplePattern>
+              <j.1:TriplePattern>
+                <j.1:gpObject>G</j.1:gpObject>
+                <j.1:gpPredicate>http://sadl.org/SpeedOfSound.sadl#gamma</j.1:gpPredicate>
+                <j.1:gpSubject>v4</j.1:gpSubject>
+              </j.1:TriplePattern>
+            </j.1:constraints>
+          </j.1:Assumption>
+        </j.1:augmentedType>
+        <j.1:dataType>http://www.w3.org/2001/XMLSchema#double</j.1:dataType>
+        <j.1:descriptorName>G</j.1:descriptorName>
+      </j.1:DataDescriptor>
+      <j.1:DataDescriptor>
+        <j.1:augmentedType>
+          <j.1:SemanticType>
+            <j.1:semType rdf:resource="#Theta"/>
+          </j.1:SemanticType>
+        </j.1:augmentedType>
+        <j.1:dataType>http://www.w3.org/2001/XMLSchema#double</j.1:dataType>
+        <j.1:descriptorName>Q</j.1:descriptorName>
+      </j.1:DataDescriptor>
+      <j.1:DataDescriptor>
+        <j.1:augmentedType>
+          <j.1:SemanticType>
+            <j.1:semType rdf:resource="ScientificConcepts2.sadl#UnitSystem"/>
+          </j.1:SemanticType>
+        </j.1:augmentedType>
+        <j.1:dataType>http://www.w3.org/2001/XMLSchema#string</j.1:dataType>
+        <j.1:descriptorName>us</j.1:descriptorName>
+      </j.1:DataDescriptor>
+    </j.1:arguments>
+    <j.1:expression>
+      <j.1:Script>
+        <j.1:language rdf:resource="sadlimplicitmodel#Text"/>
+        <j.1:script rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+        >xsd:double CAL_GAM(double T,double G,double Q,string us): uri("http://com.ge.research.darpa.aske.kchain.CAL_GAM")</j.1:script>
+      </j.1:Script>
+    </j.1:expression>
+  </j.1:ExternalEquation>
 </rdf:RDF>

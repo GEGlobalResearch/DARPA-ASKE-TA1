@@ -1,0 +1,11 @@
+ uri "http://sadl.org/AugTabModel.sadl" alias augtabmdl.
+ 
+ {Length, Speed, Temperature} are types of UnittedQuantity.
+ Gas is a class.
+ Air is a type of Gas.
+ 
+ PhysicalObject is a class,
+ 	described by velocity with values of type Speed,
+ 	described by temperature with values of type Temperature,
+ 	described by movesIn with values of type Gas
+ 	described by altitude with values of type Length.

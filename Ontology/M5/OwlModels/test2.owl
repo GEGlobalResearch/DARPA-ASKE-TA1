@@ -19,7 +19,7 @@
     <owl:imports rdf:resource="sadlbasemodel"/>
     <rdfs:comment xml:lang="en">This ontology was created from a SADL file 'test2.sadl' and should not be directly edited.</rdfs:comment>
   </owl:Ontology>
-  <j.0:Air rdf:ID="StdAir">
+  <j.2:Air rdf:ID="StdAir">
     <j.2:temperature>
       <j.2:Temperature>
         <j.1:unit rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
@@ -36,5 +36,5 @@
         >20000</j.1:value>
       </j.2:Length>
     </j.0:altitude>
-  </j.0:Air>
+  </j.2:Air>
 </rdf:RDF>

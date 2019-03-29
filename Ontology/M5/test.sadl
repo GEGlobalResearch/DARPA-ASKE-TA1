@@ -5,14 +5,4 @@
  	described by width with values of type decimal.
  Circle is a type of Shape, described by radius with values of type decimal.
  
- Giberish is a class.
- {Gib1, Gib2, Gib3} are instances of Giberish.
- Bar is a class described by p1 with values of type Giberish,
- 	described by p2 with values of type Giberish,
- 	described by p3 with values of type Giberish,
- 	described by p4 with values of type boolean.
- 	
-MyBar is a Bar with p1 Gib1, with p2 Gib2, with p3 Gib3, with p4 true. 	
- 
- Ask: "construct {?s ?p ?v} where {?s ?p ?v}".
  
