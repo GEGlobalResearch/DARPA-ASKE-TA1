@@ -251,7 +251,7 @@ public class JenaBasedDialogInferenceProcessor extends JenaBasedSadlInferencePro
 			"prefix sci:<http://aske.ge.com/sciknow#>\n" +
 			"prefix mm:<http://aske.ge.com/metamodel#>\n" + 
 			"\n" + 
-			"select ?X ?Y ?Z ?X_style ?X_color ?Z_shape ?Z_tooltip\n" + //?X_style \n" + 
+			"select distinct ?X ?Y ?Z ?X_style ?X_color ?Z_shape ?Z_tooltip\n" + //?X_style \n" + 
 			//"from <http://kd.ge.com/md2>\n" + 
 			//"from <http://kd.ge.com/aske3>\n" + 
 			"where {\n" + 
