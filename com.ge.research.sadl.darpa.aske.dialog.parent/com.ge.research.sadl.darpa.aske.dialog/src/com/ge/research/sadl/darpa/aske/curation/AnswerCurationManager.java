@@ -149,7 +149,6 @@ public class AnswerCurationManager {
 			getExtractionProcessor().getCodeExtractor().getCodeModelConfigMgr().saveOwlFile(getExtractionProcessor().getCodeModel(), getExtractionProcessor().getCodeModelName(), of.getCanonicalPath());
 			outputOwlFileName = of.getCanonicalPath();			
 
-			// Don't do this here; do it if and only if the OWL file isn't saved as SADL file.
 			String altUrl;
 			try {
 				altUrl = (new SadlUtils()).fileNameToFileUrl(outputOwlFileName);
