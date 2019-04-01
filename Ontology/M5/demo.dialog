@@ -1,7 +1,7 @@
 uri "http://answer/demo.dialog" alias demodlg.
 
 import "http://sadl.org/SpeedOfSound.sadl".
-import "http://com.ge.research.sadl.darpa.aske.answer/Mach_java".
+//import "http://com.ge.research.sadl.darpa.aske.answer/Mach_java".
 
 //What is Mach.CAL_SOS?
 
