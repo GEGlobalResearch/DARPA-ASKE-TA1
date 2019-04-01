@@ -10,6 +10,7 @@ import matplotlib.pyplot as plt
 import os
 import json
 import importlib as imp
+import eqnModels
 from tensorflow.contrib import autograph as ag
 
 class kChainModel(object):
@@ -66,8 +67,8 @@ class kChainModel(object):
         else:
             #fit model using dataset 
             df = self.getDataset(dataLoc)
-            meta_graph_loc = self.fitModel(df, inputVar, outputVar, mdlName)
-            self.meta_graph_loc = meta_graph_loc
+            metagraphLoc = self.fitModel(df, inputVar, outputVar, mdlName)
+            self.meta_graph_loc = metagraphLoc
             self.trainedState = 1       
         
         defaultValues = self._getDefaultValues()
@@ -77,6 +78,18 @@ class kChainModel(object):
                 defaultValues[node['name']] = node['value']
         
         self._setDefaultValues(defaultValues)
+        
+        # Intialize the Session
+        sess = tf.Session(graph=mdl)
+        
+        # Initialize writer
+        writer = tf.summary.FileWriter("log/example/model", sess.graph)
+        
+        # Close the writer
+        writer.close()
+        
+        # Close the session
+        sess.close()
         
         
     def getDataset(self, dataLoc = None):
@@ -130,8 +143,9 @@ class kChainModel(object):
         print(stringfun)
         
         self._makePyFile(stringfun)
-        tmp_module = imp.import_module('eqnModels', package='eqnModels')
-        tmp_method = getattr(tmp_module, mdlName)
+#        tmp_module = imp.import_module('eqnModels', package='eqnModels')
+        imp.reload(eqnModels)
+        tmp_method = getattr(eqnModels, mdlName)
         
         if self.debug:
             print(tmp_method)
@@ -161,7 +175,8 @@ class kChainModel(object):
                 tf.add_to_collection("input", node)
                 
             tf.train.export_meta_graph(filename = metagraphLoc+'.meta',graph = mdl)
-            return mdl, metagraphLoc
+        
+        return mdl, metagraphLoc
     
     def _makePyFile(self, stringfun):
         """
@@ -174,7 +189,7 @@ class kChainModel(object):
         tempPath = 'eqnModels/__init__.py'
         with open(tempPath, 'w+') as f:
             f.write(stringfun)
-        #update json array for encoded equation models with inputs, outputs, string
+        #TODO: update a json array for encoded equation models with inputs, outputs, string
     
     def _getVarType(self, typeStr):
         """
@@ -362,7 +377,6 @@ class kChainModel(object):
                 The resulting output of the computation is assigned to the value 
                 field of the JSON object.
         """
-        in_dims = len(inputVar)
         metagraphLoc = "../models/" + mdlName
         
         # Create a clean graph and import the MetaGraphDef nodes.
@@ -389,7 +403,11 @@ class kChainModel(object):
             fd = {}
             #assign values to nodes
             for node in inputVar:
-                fd[new_graph.get_tensor_by_name(node['name']+':0')] = np.fromstring(node['value'][1:-1], 
+                if '[' in node['value'] and ']' in node['value']:
+                    tstr = node['value'][1:-1]
+                else:
+                    tstr = node['value']
+                fd[new_graph.get_tensor_by_name(node['name']+':0')] = np.fromstring(tstr, 
                    sep = ',').reshape(-1,1)
         
             #get output predictions
