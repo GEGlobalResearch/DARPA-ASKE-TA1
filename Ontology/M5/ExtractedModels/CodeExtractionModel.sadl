@@ -3,7 +3,7 @@ uri "http://sadl.org/CodeExtractionModel.sadl" alias cem.
 // This is the code extraction meta-model
 CodeElement is a class described by beginsAt with a single value of type int,
 	described by endsAt with a single value of type int.
- 
+
 CodeBlock is a type of CodeElement,
 	described by serialization with a single value of type string,
 	described by comment with values of type Comment,
@@ -14,7 +14,6 @@ CodeBlock is a type of CodeElement,
 cmArguments describes Method with a single value of type CodeVariable List.
 cmReturnTypes describes Method with a single value of type string List.
 cmSemanticReturnTypes describes Method with a single value of type string List.
-cmHasImplicitInputsOutputs describes Method with a single value of type boolean.
 
 // The reference to a CodeVariable can be its definition (Defined),
 //	an assignment or reassignment (Reassigned), or just a reference
@@ -88,35 +87,18 @@ if c is CodeVariable and
    noValue(ref2, usage, Reassigned) // no earlier reassignment of c exists
 then input of ref is true and isImplicit of ref is true. 
 
-Rule SetAsInput2 (note "like SetAsInput1 except one CodeBlock contained in another CodeBlock; need to make containedIn transitive")
-if c is CodeVariable and
-   ref is reference of c and
-   input of ref is not known and 
-   usage of ref is Used and
-   ref2 is reference of c and
-   ref != ref2 and
-   cb is codeBlock of ref and   
-   cb2 is codeBlock of ref2 and
-   cb containedIn cb2 and   
-   l1 is beginsAt of ref and
-   l2 is beginsAt of ref2 and
-   l2 < l1 and  // so ref2 is at an earlier location that ref
-   noValue(ref2, usage, Reassigned) // no earlier reassignment of c exists
-then input of ref is true and isImplicit of ref is true. 
-
 // if there is no l2 as specified in the previous rules, then the following covers that case
 // do I need to consider codeBlock?????
-Rule SetAsInput3 (note "assuming that rule for setting firstRef fires before this rule but that is not guranteed")
+Rule SetAsInput2
 if c is a CodeVariable and
    ref is reference of c and
-   beginsAt of ref is l1 and
    input of ref is not known and
    usage of ref is Used and 
    noValue(ref, firstRef)
 then input of ref is true and isImplicit of ref is true. 
-//
-//// "it is an output if it is computed and is argument to a setter"
-//// or I could try to use the notion of a constant
+
+// "it is an output if it is computed and is argument to a setter"
+// or I could try to use the notion of a constant
 Rule SetAsOutput
 if c is a CodeVariable and
    setterArgument of c is true and
@@ -125,13 +107,3 @@ if c is a CodeVariable and
    usage of ref is Defined //check this?
 then
 	output of ref is true and isImplicit of ref is true.      	 
-
-//Rule MethodWithImplicitInputs
-//if m is a Method and
-//   m has cmArguments arglist and
-//   cv is a CodeVariable and
-//   listContains(arglist, cv) and
-//   cv has reference ref and
-//   ref has isImplicit true
-// then
-//    m has cmHasImplicitInputsOutputs true.
