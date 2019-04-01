@@ -291,19 +291,22 @@ public class DialogAnswerProvider extends DefaultAutoEditStrategyProvider implem
 				                			}
 			                				else {
 			                				//if (cntr > 0) 
-				                				answer.append(resultSetToQuotableString(rs));
+				                				//answer.append(resultSetToQuotableString(rs));
+			                					answer.append(rs);
 				                			//if(cntr++ > 1)
 				                				answer.append("\n");
 			                				}
 			                				cntr++;
 				                		}
-				                		answer.append(".\n");
+				                		//answer.append(".\n");
+				                		
 			                		}
 			                		else {
 			                			answer.append("Unable to assemble a model with current knowledge or services are down");
 			                		}
 			                		Object ctx = triples[0].getContext();
-			                		addCurationManagerContentToDialog(document, reg, answer.toString(), ctx, true);
+			                		//addCurationManagerContentToDialog(document, reg, answer.toString(), ctx, true);
+			                		addCurationManagerContentToDialog(document, reg, resultSetToQuotableString(answer.toString())+".", ctx, true);
 //		                			}
 //		                			else {
 ////		                				rdqProvider.get().execute(null, null, null);
@@ -479,7 +482,7 @@ public class DialogAnswerProvider extends DefaultAutoEditStrategyProvider implem
 				                		                    IGraphVisualizer.Orientation.TD,
 				                		                    "Assembled Model " + rss[cntr+numOfModels].getResultAt(0, 0));
 				                					rs.setShowNamespaces(false);
-				                		            visualizer.graphResultSetData(rs);				                				}
+				                		            visualizer.graphResultSetData(rs); }
 				        						String fileToOpen = visualizer.getGraphFileToOpen();
 				        						if (fileToOpen != null) {
 				        							File fto = new File(fileToOpen);
@@ -504,12 +507,16 @@ public class DialogAnswerProvider extends DefaultAutoEditStrategyProvider implem
 				                			}
 			                				else {
 			                				//if (cntr > 0) 
-				                				answer.append(resultSetToQuotableString(rs));
+				                				//answer.append(resultSetToQuotableString(rs));
+			                					answer.append(rs);
+					                			//if(cntr < (numOfModels*2-1))
+					                			//	answer.setLength(answer.length()-1);
 				                			//if(cntr++ > 1)
 				                				answer.append("\n");
 			                				}
 			                				cntr++;
 				                		}
+				                		//answer resultSetToQuotableString(answer.toString());
 				                		//answer.append(".\n");
 			                		}
 			                		//Object ctx = triples[0].getContext();
@@ -519,7 +526,7 @@ public class DialogAnswerProvider extends DefaultAutoEditStrategyProvider implem
 							}
 						}
 					}
-					return answer.toString();
+					return resultSetToQuotableString(answer.toString());
         		}
         		catch (Exception e)
         		{
