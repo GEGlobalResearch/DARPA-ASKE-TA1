@@ -9,29 +9,34 @@ import connexion
 import kChain as kc
 
 if __name__ == '__main__':
+    #setting up the REST service
     app = connexion.App(__name__, specification_dir='swagger/')
     app.add_api('my_app.yaml')
     application = app.app
     app.run(port=12345)
-#    
+    
 def build(body):
-    ko = kc.kChainModel(debug=True)
+    #wrapper function to interact with K-CHAIN build function
+    
+    ko = kc.kChainModel(debug=False)
     
     print(body)
     
+    #handle non-required inputs with appropriate  format in JSON
     if not 'dataLocation' in body.keys():
         body['dataLocation'] = None
     
     if not 'equationModel' in body.keys():
         body['equationModel'] = None
         
-    
+    #call K-CHAIN build function with necessary general inputs
     ko.build(inputVar = body['inputVariables'], 
              outputVar = body['outputVariables'], 
              mdlName = body['modelName'], 
              dataLoc = body['dataLocation'],
              eqMdl = body['equationModel'])
     
+    #construct output packet
     outputPacket = {"modelType" : ko.modelType,
                     "trainedState" : ko.trainedState,
                     "metagraphLocation" : ko.meta_graph_loc}
@@ -41,22 +46,28 @@ def build(body):
     return outputPacket
 
 def evaluate(body):
-    ko = kc.kChainModel(debug=True)
+    #wrapper function to interact with K-CHAIN evaluate function
+    
+    ko = kc.kChainModel(debug=False)
     
     print(body)
     
+    #call K-CHAIN evaluate function with necessary general inputs
     outputVar, defaultValuesUsed, missingVar = ko.evaluate(inputVar = body['inputVariables'], 
              outputVar = body['outputVariables'], 
              mdlName = body['modelName'])
     
+    #construct output packet
     outputPacket = {}
     outputPacket["outputVariables"] = outputVar
     
     if len(defaultValuesUsed) > 0:
+        #default values used in computation are sent back to inform user
         print('Default Values Used: ',defaultValuesUsed)
         outputPacket["defaultsUsed"] = defaultValuesUsed
     
     if missingVar != '':
+        #missing variable information is sent back to user
         print('Need Value For: ',missingVar)
         outputPacket["missingVar"] = missingVar
 

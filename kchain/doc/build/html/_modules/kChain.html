@@ -156,7 +156,7 @@
 <span class="kn">import</span> <span class="nn">json</span>
 <span class="kn">import</span> <span class="nn">importlib</span> <span class="k">as</span> <span class="nn">imp</span>
 <span class="kn">import</span> <span class="nn">eqnModels</span>
-<span class="kn">from</span> <span class="nn">tensorflow.contrib</span> <span class="k">import</span> <span class="n">autograph</span> <span class="k">as</span> <span class="n">ag</span>
+<span class="kn">from</span> <span class="nn">tensorflow.python</span> <span class="k">import</span> <span class="n">autograph</span> <span class="k">as</span> <span class="n">ag</span>
 
 <div class="viewcode-block" id="kChainModel"><a class="viewcode-back" href="../index.html#kChain.kChainModel">[docs]</a><span class="k">class</span> <span class="nc">kChainModel</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
     
@@ -285,16 +285,22 @@
             <span class="n">inStr</span> <span class="o">=</span> <span class="n">inStr</span> <span class="o">+</span> <span class="s1">&#39;</span><span class="se">\n</span><span class="s1">    &#39;</span> <span class="o">+</span> <span class="n">inputVar</span><span class="p">[</span><span class="n">ii</span><span class="p">][</span><span class="s1">&#39;name&#39;</span><span class="p">]</span> <span class="o">+</span> <span class="s1">&#39; = inArg[&#39;</span><span class="o">+</span><span class="nb">str</span><span class="p">(</span><span class="n">ii</span><span class="p">)</span><span class="o">+</span><span class="s1">&#39;]&#39;</span>            
         
         <span class="c1">#4 spaces is ideal for indentation</span>
-        <span class="n">stringfun</span> <span class="o">=</span> <span class="s1">&#39;def &#39;</span><span class="o">+</span><span class="n">mdlName</span><span class="o">+</span><span class="s1">&#39;(inArg):&#39;</span>\
+        <span class="c1">#construct the python function around the python snippet</span>
+        <span class="n">stringfun</span> <span class="o">=</span> <span class="s1">&#39;import tensorflow as tf&#39;</span>\
+        <span class="o">+</span><span class="s1">&#39;</span><span class="se">\n</span><span class="s1">def &#39;</span><span class="o">+</span><span class="n">mdlName</span><span class="o">+</span><span class="s1">&#39;(inArg):&#39;</span>\
         <span class="o">+</span><span class="s1">&#39;</span><span class="se">\n</span><span class="s1">    &#39;</span><span class="o">+</span> <span class="n">inStr</span>\
         <span class="o">+</span><span class="s1">&#39;</span><span class="se">\n</span><span class="s1">    &#39;</span><span class="o">+</span> <span class="n">eqMdl</span>\
         <span class="o">+</span><span class="s1">&#39;</span><span class="se">\n</span><span class="s1">    return &#39;</span><span class="o">+</span> <span class="n">outputVar</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="s1">&#39;name&#39;</span><span class="p">]</span> <span class="o">+</span> <span class="s1">&#39;</span><span class="se">\n\n</span><span class="s1">&#39;</span>
         
         <span class="nb">print</span><span class="p">(</span><span class="n">stringfun</span><span class="p">)</span>
         
+        <span class="c1">#write the python code into a file where AutoGraph can read it</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_makePyFile</span><span class="p">(</span><span class="n">stringfun</span><span class="p">)</span>
-<span class="c1">#        tmp_module = imp.import_module(&#39;eqnModels&#39;, package=&#39;eqnModels&#39;)</span>
+        
+        <span class="c1">#reload the eqnModels package as a method was newly added</span>
         <span class="n">imp</span><span class="o">.</span><span class="n">reload</span><span class="p">(</span><span class="n">eqnModels</span><span class="p">)</span>
+        
+        <span class="c1">#get the method created by the code</span>
         <span class="n">tmp_method</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">eqnModels</span><span class="p">,</span> <span class="n">mdlName</span><span class="p">)</span>
         
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">debug</span><span class="p">:</span>
@@ -303,28 +309,30 @@
         <span class="n">metagraphLoc</span> <span class="o">=</span> <span class="s2">&quot;../models/&quot;</span> <span class="o">+</span> <span class="n">mdlName</span>
         
         <span class="n">tf</span><span class="o">.</span><span class="n">reset_default_graph</span><span class="p">()</span>
-        
         <span class="n">mdl</span> <span class="o">=</span> <span class="n">tf</span><span class="o">.</span><span class="n">Graph</span><span class="p">()</span>
         
         <span class="k">with</span> <span class="n">mdl</span><span class="o">.</span><span class="n">as_default</span><span class="p">():</span>  
             <span class="n">invars</span> <span class="o">=</span> <span class="p">[]</span>
             <span class="k">for</span> <span class="n">ii</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">in_dims</span><span class="p">):</span>
+                <span class="c1">#create list on input variables</span>
                 <span class="n">tfType</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_getVarType</span><span class="p">(</span><span class="n">inputVar</span><span class="p">[</span><span class="n">ii</span><span class="p">][</span><span class="s1">&#39;type&#39;</span><span class="p">])</span>
                 <span class="n">invars</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">tf</span><span class="o">.</span><span class="n">placeholder</span><span class="p">(</span><span class="n">tfType</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="n">inputVar</span><span class="p">[</span><span class="n">ii</span><span class="p">][</span><span class="s1">&#39;name&#39;</span><span class="p">]))</span>
             
             <span class="n">tfType</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_getVarType</span><span class="p">(</span><span class="n">outputVar</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="s1">&#39;type&#39;</span><span class="p">])</span>
+            
+            <span class="c1">#create TensorFlow graph from python code</span>
             <span class="n">tf_model</span> <span class="o">=</span> <span class="n">ag</span><span class="o">.</span><span class="n">to_graph</span><span class="p">(</span><span class="n">tmp_method</span><span class="p">)</span>
             
-            <span class="c1">#output = tf.py_func(m[mdlName], invars, tfType, name=outputVar[0][&#39;name&#39;])</span>
-            
+            <span class="c1">#obtain TensorFlow model of input and outputs</span>
             <span class="n">output</span> <span class="o">=</span> <span class="n">tf_model</span><span class="p">(</span><span class="n">invars</span><span class="p">)</span>
             
             <span class="n">tf</span><span class="o">.</span><span class="n">add_to_collection</span><span class="p">(</span><span class="s2">&quot;output&quot;</span><span class="p">,</span> <span class="n">output</span><span class="p">)</span>
             
             <span class="k">for</span> <span class="n">node</span> <span class="ow">in</span> <span class="n">invars</span><span class="p">:</span>
                 <span class="n">tf</span><span class="o">.</span><span class="n">add_to_collection</span><span class="p">(</span><span class="s2">&quot;input&quot;</span><span class="p">,</span> <span class="n">node</span><span class="p">)</span>
-                
-            <span class="n">tf</span><span class="o">.</span><span class="n">train</span><span class="o">.</span><span class="n">export_meta_graph</span><span class="p">(</span><span class="n">filename</span> <span class="o">=</span> <span class="n">metagraphLoc</span><span class="o">+</span><span class="s1">&#39;.meta&#39;</span><span class="p">,</span><span class="n">graph</span> <span class="o">=</span> <span class="n">mdl</span><span class="p">)</span>
+            
+            <span class="c1">#save model locally as a MetaGraph</span>
+            <span class="n">tf</span><span class="o">.</span><span class="n">train</span><span class="o">.</span><span class="n">export_meta_graph</span><span class="p">(</span><span class="n">filename</span> <span class="o">=</span> <span class="n">metagraphLoc</span><span class="o">+</span><span class="s1">&#39;.meta&#39;</span><span class="p">,</span> <span class="n">graph</span> <span class="o">=</span> <span class="n">mdl</span><span class="p">)</span>
         
         <span class="k">return</span> <span class="n">mdl</span><span class="p">,</span> <span class="n">metagraphLoc</span></div>
     
@@ -394,11 +402,14 @@
         <span class="k">with</span> <span class="n">mdl</span><span class="o">.</span><span class="n">as_default</span><span class="p">():</span>  
             <span class="n">invars</span> <span class="o">=</span> <span class="p">[]</span>
             <span class="k">for</span> <span class="n">ii</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">in_dims</span><span class="p">):</span>
+                <span class="c1">#create list on input variables</span>
                 <span class="n">invars</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">tf</span><span class="o">.</span><span class="n">placeholder</span><span class="p">(</span><span class="n">tf</span><span class="o">.</span><span class="n">float32</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="n">inputVar</span><span class="p">[</span><span class="n">ii</span><span class="p">][</span><span class="s1">&#39;name&#39;</span><span class="p">]))</span>
             
+            <span class="c1">#concatenate inputs for NN model input layer</span>
             <span class="n">inputLayer</span> <span class="o">=</span> <span class="n">tf</span><span class="o">.</span><span class="n">concat</span><span class="p">(</span><span class="n">invars</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
             
             <span class="k">with</span> <span class="n">tf</span><span class="o">.</span><span class="n">name_scope</span><span class="p">(</span><span class="s1">&#39;NN&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">scope</span><span class="p">:</span>
+                <span class="c1">#create fixed architecture NN model</span>
                 <span class="n">W_0</span> <span class="o">=</span> <span class="n">tf</span><span class="o">.</span><span class="n">Variable</span><span class="p">(</span><span class="n">tf</span><span class="o">.</span><span class="n">random_uniform</span><span class="p">([</span><span class="n">in_dims</span><span class="p">,</span> <span class="mi">3</span><span class="p">]),</span> <span class="n">name</span><span class="o">=</span><span class="s2">&quot;W_0&quot;</span><span class="p">)</span>
                 <span class="n">b_0</span> <span class="o">=</span> <span class="n">tf</span><span class="o">.</span><span class="n">Variable</span><span class="p">(</span><span class="n">tf</span><span class="o">.</span><span class="n">random_uniform</span><span class="p">([</span><span class="mi">3</span><span class="p">]),</span> <span class="n">name</span><span class="o">=</span><span class="s2">&quot;b_0&quot;</span><span class="p">)</span>
                 <span class="n">h_0</span> <span class="o">=</span> <span class="n">tf</span><span class="o">.</span><span class="n">nn</span><span class="o">.</span><span class="n">relu_layer</span><span class="p">(</span><span class="n">inputLayer</span><span class="p">,</span> <span class="n">W_0</span><span class="p">,</span> <span class="n">b_0</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s2">&quot;h_0&quot;</span><span class="p">)</span>
@@ -408,13 +419,14 @@
                 <span class="n">W_2</span> <span class="o">=</span> <span class="n">tf</span><span class="o">.</span><span class="n">Variable</span><span class="p">(</span><span class="n">tf</span><span class="o">.</span><span class="n">random_uniform</span><span class="p">([</span><span class="mi">2</span><span class="p">,</span> <span class="n">out_dims</span><span class="p">]),</span> <span class="n">name</span><span class="o">=</span><span class="s2">&quot;W_2&quot;</span><span class="p">)</span>
                 <span class="n">b_2</span> <span class="o">=</span> <span class="n">tf</span><span class="o">.</span><span class="n">Variable</span><span class="p">(</span><span class="n">tf</span><span class="o">.</span><span class="n">random_uniform</span><span class="p">([</span><span class="n">out_dims</span><span class="p">]),</span> <span class="n">name</span><span class="o">=</span><span class="s2">&quot;b_2&quot;</span><span class="p">)</span>
                 <span class="n">h_2</span> <span class="o">=</span> <span class="n">tf</span><span class="o">.</span><span class="n">nn</span><span class="o">.</span><span class="n">bias_add</span><span class="p">(</span><span class="n">tf</span><span class="o">.</span><span class="n">matmul</span><span class="p">(</span><span class="n">h_1</span><span class="p">,</span> <span class="n">W_2</span><span class="p">),</span> <span class="n">b_2</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s2">&quot;h_2&quot;</span><span class="p">)</span>
-        
+                
             <span class="n">output</span> <span class="o">=</span> <span class="n">h_2</span>
             <span class="n">tf</span><span class="o">.</span><span class="n">add_to_collection</span><span class="p">(</span><span class="s2">&quot;output&quot;</span><span class="p">,</span> <span class="n">output</span><span class="p">)</span>
             
             <span class="k">for</span> <span class="n">node</span> <span class="ow">in</span> <span class="n">invars</span><span class="p">:</span>
                 <span class="n">tf</span><span class="o">.</span><span class="n">add_to_collection</span><span class="p">(</span><span class="s2">&quot;input&quot;</span><span class="p">,</span> <span class="n">node</span><span class="p">)</span>
-                
+            
+            <span class="c1">#save model locally as a MetaGraph</span>
             <span class="n">tf</span><span class="o">.</span><span class="n">train</span><span class="o">.</span><span class="n">export_meta_graph</span><span class="p">(</span><span class="n">filename</span> <span class="o">=</span> <span class="n">metagraphLoc</span><span class="o">+</span><span class="s1">&#39;.meta&#39;</span><span class="p">,</span><span class="n">graph</span> <span class="o">=</span> <span class="n">mdl</span><span class="p">)</span>
             <span class="k">return</span> <span class="n">mdl</span><span class="p">,</span> <span class="n">metagraphLoc</span></div>
     
@@ -493,10 +505,8 @@
             <span class="n">metagraphLoc</span> <span class="o">=</span> <span class="s2">&quot;../models/&quot;</span> <span class="o">+</span> <span class="n">mdlName</span>
             <span class="n">new_saver</span><span class="o">.</span><span class="n">save</span><span class="p">(</span><span class="n">sess</span><span class="p">,</span> <span class="n">metagraphLoc</span><span class="p">)</span>
             
-            <span class="c1">#meta_graph_def = tf.train.export_meta_graph()</span>
-            <span class="c1">#filename = &#39;../log/example/force/Newtons2ndLaw.meta&#39;)</span>
-            
             <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">debug</span><span class="p">:</span>
+                <span class="c1"># plot training vs predicted values</span>
                 <span class="n">outval</span> <span class="o">=</span> <span class="n">sess</span><span class="o">.</span><span class="n">run</span><span class="p">(</span><span class="n">output</span><span class="p">,</span> <span class="n">feed_dict</span><span class="o">=</span><span class="n">fd</span><span class="p">)</span>
                 <span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">outval</span><span class="p">,</span> <span class="s1">&#39;-r&#39;</span><span class="p">)</span>
                 <span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">dataset</span><span class="p">[</span><span class="n">outputVar</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="s1">&#39;name&#39;</span><span class="p">]],</span> <span class="s1">&#39;-g&#39;</span><span class="p">)</span>
@@ -520,8 +530,11 @@
 <span class="sd">                Name to model to use (E.g.: &#39;Newtons2ndLaw&#39;)</span>
 <span class="sd">        </span>
 <span class="sd">        Returns:</span>
-<span class="sd">            JSON array : array of JSON variable objects with name, type, and value fields. </span>
-<span class="sd">            The resulting output of the computation is assigned to the value field of the JSON object.</span>
+<span class="sd">            (Output JSON array, Default JSON array, string):</span>
+<span class="sd">                * Output JSON array : array of output variable JSON objects with name, type, and value fields. The resulting output of the computation is assigned to the value field of the JSON object.</span>
+<span class="sd">                * Default JSON array : array of default variable JSON objects with name and value fields. </span>
+<span class="sd">                * string : Name of missing variable, which is needed for inference</span>
+<span class="sd">            </span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">metagraphLoc</span> <span class="o">=</span> <span class="s2">&quot;../models/&quot;</span> <span class="o">+</span> <span class="n">mdlName</span>
         
@@ -574,9 +587,36 @@
                 
         <span class="k">return</span> <span class="n">outputVar</span><span class="p">,</span> <span class="n">defaultValuesUsed</span><span class="p">,</span> <span class="n">missingVar</span></div>
     
-    <span class="k">def</span> <span class="nf">_runSessionWithDefaults</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">sess</span><span class="p">,</span> <span class="n">mdl</span><span class="p">,</span> <span class="n">inputVar</span><span class="p">,</span> <span class="n">output</span><span class="p">,</span> <span class="n">fd</span><span class="p">,</span> <span class="n">defaultValues</span><span class="p">,</span> <span class="n">defaultValuesUsed</span><span class="p">):</span>
+<div class="viewcode-block" id="kChainModel._runSessionWithDefaults"><a class="viewcode-back" href="../index.html#kChain.kChainModel._runSessionWithDefaults">[docs]</a>    <span class="k">def</span> <span class="nf">_runSessionWithDefaults</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">sess</span><span class="p">,</span> <span class="n">mdl</span><span class="p">,</span> <span class="n">inputVar</span><span class="p">,</span> <span class="n">output</span><span class="p">,</span> <span class="n">fd</span><span class="p">,</span> <span class="n">defaultValues</span><span class="p">,</span> <span class="n">defaultValuesUsed</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Run a TensorFlow session with given inputs and fill in missing values from defaults or inform user about missing information</span>
+<span class="sd">        </span>
+<span class="sd">        Arguments:</span>
+<span class="sd">            sess (TF Session):</span>
+<span class="sd">                TensorFlow session to run the computation</span>
+<span class="sd">            mdl (TF Graph):</span>
+<span class="sd">                TensorFlow Graph to run the session</span>
+<span class="sd">            inputVar (JSON array):</span>
+<span class="sd">                array of JSON variable objects with name, type, and value fields</span>
+<span class="sd">            output (TF Graph Node):</span>
+<span class="sd">                TensorFlow Graph node for output from computation</span>
+<span class="sd">            feed_dict (Dictionary):</span>
+<span class="sd">                Feed dictionary for TF placeholders and their values</span>
+<span class="sd">            defaultValues (JSON):</span>
+<span class="sd">                Name:Value pairs of default values from model build stage</span>
+<span class="sd">            defaultValuesUsed (JSON Array):</span>
+<span class="sd">                array of default variable JSON objects with name and value fields (empty initially)</span>
+<span class="sd">    </span>
+<span class="sd">        Returns:</span>
+<span class="sd">            (output type, Default JSON array, string):</span>
+<span class="sd">                * output: value(s) of output variable.</span>
+<span class="sd">                * Default JSON array : array of default variable JSON objects with name and value fields. </span>
+<span class="sd">                * string : Name of missing variable, which is needed for inference</span>
+<span class="sd">            </span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">missingVar</span> <span class="o">=</span> <span class="s1">&#39;&#39;</span>
         <span class="k">try</span><span class="p">:</span>
+            <span class="c1">#if all required inputs are available in correct type then no InvalidArgumentError</span>
             <span class="n">aval</span> <span class="o">=</span> <span class="n">sess</span><span class="o">.</span><span class="n">run</span><span class="p">(</span><span class="n">output</span><span class="p">,</span> <span class="n">feed_dict</span><span class="o">=</span><span class="n">fd</span><span class="p">)</span>
         <span class="k">except</span> <span class="n">tf</span><span class="o">.</span><span class="n">errors</span><span class="o">.</span><span class="n">InvalidArgumentError</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
             <span class="c1">#determine if argument error was raised by placeholder or operation </span>
@@ -614,15 +654,17 @@
                       <span class="n">dtype</span> <span class="o">=</span> <span class="nb">float</span><span class="p">,</span> <span class="n">sep</span> <span class="o">=</span> <span class="s1">&#39;,&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span><span class="mi">1</span><span class="p">)</span>
                     
                 <span class="n">defaultValuesUsed</span><span class="o">.</span><span class="n">append</span><span class="p">({</span><span class="s1">&#39;name&#39;</span><span class="p">:</span><span class="n">varName</span><span class="p">,</span><span class="s1">&#39;value&#39;</span><span class="p">:</span><span class="n">defaultValues</span><span class="p">[</span><span class="n">varName</span><span class="p">]})</span>
+                <span class="c1">#run session with updated list of inputs from default values</span>
                 <span class="n">aval</span><span class="p">,</span> <span class="n">defaultValuesUsed</span><span class="p">,</span> <span class="n">missingVar</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_runSessionWithDefaults</span><span class="p">(</span><span class="n">sess</span><span class="p">,</span> <span class="n">mdl</span><span class="p">,</span> <span class="n">inputVar</span><span class="p">,</span> 
                                                                                    <span class="n">output</span><span class="p">,</span> <span class="n">fd</span><span class="p">,</span> <span class="n">defaultValues</span><span class="p">,</span> 
                                                                                    <span class="n">defaultValuesUsed</span><span class="p">)</span>
             <span class="k">else</span><span class="p">:</span>
+                <span class="c1">#if missing variable is not in the list of default variables, then inform user</span>
                 <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;Please provide value for : &#39;</span> <span class="o">+</span> <span class="n">varName</span><span class="p">)</span>
                 <span class="n">aval</span> <span class="o">=</span> <span class="kc">None</span>
                 <span class="n">missingVar</span> <span class="o">=</span> <span class="n">varName</span>
                 
-        <span class="k">return</span> <span class="n">aval</span><span class="p">,</span> <span class="n">defaultValuesUsed</span><span class="p">,</span> <span class="n">missingVar</span>
+        <span class="k">return</span> <span class="n">aval</span><span class="p">,</span> <span class="n">defaultValuesUsed</span><span class="p">,</span> <span class="n">missingVar</span></div>
     
 <div class="viewcode-block" id="kChainModel._getDefaultValues"><a class="viewcode-back" href="../index.html#kChain.kChainModel._getDefaultValues">[docs]</a>    <span class="k">def</span> <span class="nf">_getDefaultValues</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>

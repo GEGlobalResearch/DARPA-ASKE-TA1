@@ -277,6 +277,40 @@ integer, float, and double (default).</td>
 </dd></dl>
 
 <dl class="method">
+<dt id="kChain.kChainModel._runSessionWithDefaults">
+<code class="descname">_runSessionWithDefaults</code><span class="sig-paren">(</span><em>sess</em>, <em>mdl</em>, <em>inputVar</em>, <em>output</em>, <em>fd</em>, <em>defaultValues</em>, <em>defaultValuesUsed</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/kChain.html#kChainModel._runSessionWithDefaults"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#kChain.kChainModel._runSessionWithDefaults" title="Permalink to this definition">¶</a></dt>
+<dd><p>Run a TensorFlow session with given inputs and fill in missing values from defaults or inform user about missing information</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>sess</strong> (<em>TF Session</em>) – TensorFlow session to run the computation</li>
+<li><strong>mdl</strong> (<em>TF Graph</em>) – TensorFlow Graph to run the session</li>
+<li><strong>inputVar</strong> (<em>JSON array</em>) – array of JSON variable objects with name, type, and value fields</li>
+<li><strong>output</strong> (<em>TF Graph Node</em>) – TensorFlow Graph node for output from computation</li>
+<li><strong>feed_dict</strong> (<em>Dictionary</em>) – Feed dictionary for TF placeholders and their values</li>
+<li><strong>defaultValues</strong> (<em>JSON</em>) – Name:Value pairs of default values from model build stage</li>
+<li><strong>defaultValuesUsed</strong> (<em>JSON Array</em>) – array of default variable JSON objects with name and value fields (empty initially)</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first"><ul class="simple">
+<li>output: value(s) of output variable.</li>
+<li>Default JSON array : array of default variable JSON objects with name and value fields.</li>
+<li>string : Name of missing variable, which is needed for inference</li>
+</ul>
+</p>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last">(output type, Default JSON array, string)</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
 <dt id="kChain.kChainModel._setDefaultValues">
 <code class="descname">_setDefaultValues</code><span class="sig-paren">(</span><em>defValues</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/kChain.html#kChainModel._setDefaultValues"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#kChain.kChainModel._setDefaultValues" title="Permalink to this definition">¶</a></dt>
 <dd><p>Writes json with provided values back to file</p>
@@ -319,11 +353,15 @@ Row 2 - Units, Row 3 onwards - data (default = None)</li>
 </ul>
 </td>
 </tr>
-<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first">array of JSON variable objects with name, type, and value fields.
-The resulting output of the computation is assigned to the value field of the JSON object.</p>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first"><ul class="simple">
+<li>Output JSON array : array of output variable JSON objects with name, type, and value fields. The resulting output of the computation is assigned to the value field of the JSON object.</li>
+<li>Default JSON array : array of default variable JSON objects with name and value fields.</li>
+<li>string : Name of missing variable, which is needed for inference</li>
+</ul>
+</p>
 </td>
 </tr>
-<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last">JSON array</p>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last">(Output JSON array, Default JSON array, string)</p>
 </td>
 </tr>
 </tbody>

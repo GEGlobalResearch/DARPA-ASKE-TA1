@@ -11,6 +11,7 @@
   \item \spxentry{\_getDefaultValues()}\spxextra{kChain.kChainModel method}, \hyperpage{4}
   \item \spxentry{\_getVarType()}\spxextra{kChain.kChainModel method}, \hyperpage{4}
   \item \spxentry{\_makePyFile()}\spxextra{kChain.kChainModel method}, \hyperpage{4}
+  \item \spxentry{\_runSessionWithDefaults()}\spxextra{kChain.kChainModel method}, \hyperpage{4}
   \item \spxentry{\_setDefaultValues()}\spxextra{kChain.kChainModel method}, \hyperpage{4}
 
   \indexspace
@@ -19,11 +20,11 @@
 
   \indexspace
   \bigletter E
-  \item \spxentry{evaluate()}\spxextra{kChain.kChainModel method}, \hyperpage{4}
+  \item \spxentry{evaluate()}\spxextra{kChain.kChainModel method}, \hyperpage{5}
 
   \indexspace
   \bigletter F
-  \item \spxentry{fitModel()}\spxextra{kChain.kChainModel method}, \hyperpage{4}
+  \item \spxentry{fitModel()}\spxextra{kChain.kChainModel method}, \hyperpage{5}
 
   \indexspace
   \bigletter G
