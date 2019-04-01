@@ -13,7 +13,7 @@ if __name__ == '__main__':
     app.add_api('my_app.yaml')
     application = app.app
     app.run(port=12345)
-
+#    
 def build(body):
     ko = kc.kChainModel(debug=True)
     
@@ -159,5 +159,5 @@ def tryLocalDemo4():
                  }
     evaluate(inputPacket)
 
-#tryLocalDemo2()
+tryLocalDemo2()
 #tryLocalDemo4()

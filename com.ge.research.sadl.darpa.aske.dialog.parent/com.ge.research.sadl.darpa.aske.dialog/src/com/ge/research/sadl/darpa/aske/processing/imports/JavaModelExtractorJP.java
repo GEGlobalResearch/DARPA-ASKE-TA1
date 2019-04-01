@@ -3,6 +3,7 @@ package com.ge.research.sadl.darpa.aske.processing.imports;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
@@ -16,7 +17,6 @@ import com.ge.research.sadl.builder.IConfigurationManagerForIDE;
 import com.ge.research.sadl.darpa.aske.curation.AnswerCurationManager;
 import com.ge.research.sadl.darpa.aske.processing.DialogConstants;
 import com.ge.research.sadl.jena.inference.SadlJenaModelGetterPutter;
-import com.ge.research.sadl.processing.SadlConstants;
 import com.ge.research.sadl.reasoner.ConfigurationException;
 import com.ge.research.sadl.reasoner.IConfigurationManagerForEditing.Scope;
 import com.github.javaparser.JavaParser;
@@ -75,6 +75,7 @@ public class JavaModelExtractorJP implements IModelFromCodeExtractor {
 	private String codeMetaModelUri;	// the name of the code extraction metamodel
 	private String codeMetaModelPrefix;	// the prefix of the code extraction metamodel
 	private OntModel codeModel;
+	private Map<String,OntModel> codeModels = null;
 	private String codeModelName;	// the name of the model  being created by extraction
 	private String codeModelPrefix; // the prefix of the model being created by extraction
 
@@ -122,7 +123,7 @@ public class JavaModelExtractorJP implements IModelFromCodeExtractor {
 //		logger.debug(str);
 		logger.debug("****************************************************");
 		
-		TextProcessor txtpr = new TextProcessor(getPreferences());
+		TextProcessor txtpr = new TextProcessor(getCurationMgr(), getPreferences());
 //		try {
 //			String result = txtpr.process(null, null);
 //			logger.debug("test of text processor service:\n" + result);
@@ -369,15 +370,17 @@ public class JavaModelExtractorJP implements IModelFromCodeExtractor {
 		}
 		else if (childNode instanceof ReturnStmt) {
 			List<Node> returnChildren = ((ReturnStmt)childNode).getChildNodes();
-			Node ret0 = returnChildren.get(0);
-			if (ret0 instanceof NameExpr) {
-				// this is an output of this block. It should already exist.
-				String nm = ((NameExpr)ret0).getNameAsString();
-				findCodeVariableAndAddReference(ret0, nm, containingInst, USAGE.Used, true, InputOutput.Output);
-			}
-			else {
-				for (int j = 0; j < returnChildren.size(); j++) {
-					processBlockChild(returnChildren.get(j), containingInst, null);
+			if (!returnChildren.isEmpty()) {
+				Node ret0 = returnChildren.get(0);
+				if (ret0 instanceof NameExpr) {
+					// this is an output of this block. It should already exist.
+					String nm = ((NameExpr)ret0).getNameAsString();
+					findCodeVariableAndAddReference(ret0, nm, containingInst, USAGE.Used, true, InputOutput.Output);
+				}
+				else {
+					for (int j = 0; j < returnChildren.size(); j++) {
+						processBlockChild(returnChildren.get(j), containingInst, null);
+					}
 				}
 			}
 		}
@@ -469,7 +472,7 @@ public class JavaModelExtractorJP implements IModelFromCodeExtractor {
 	}
 
 	private Individual findCodeVariableAndAddReference(Node childNode, String nm, Individual containingInst, USAGE usage, boolean lookToLargerScope, InputOutput inputOutput) {
-		String nnm = constructCodeVariableUri(childNode, nm);
+		String nnm = constructNestedElementUri(childNode, nm);
 
 		Individual varInst = lookToLargerScope ? findDefinedVariable(nm, containingInst) : null;
 		if (varInst == null && !lookToLargerScope) {
@@ -582,7 +585,7 @@ public class JavaModelExtractorJP implements IModelFromCodeExtractor {
 	private Individual getOrCreateMethod(MethodDeclaration m, Individual containingInst) {
 		Individual methInst = null;
     	String nm = m.getNameAsString();
-		String nnm = constructCodeVariableUri(m, nm);
+		String nnm = constructNestedElementUri(m, nm);
     	methInst = getCodeModel().getIndividual(getCodeModelNamespace() + nnm);
     	if (methInst == null) {
     		methInst = getCodeModel().createIndividual(getCodeModelNamespace() + nnm, getCodeBlockMethodClass());
@@ -597,7 +600,7 @@ public class JavaModelExtractorJP implements IModelFromCodeExtractor {
 		if (varNode instanceof VariableDeclarator) {
 			origName = ((VariableDeclarator)varNode).getNameAsString();
 			if (containingInst != null) {
-				nnm = constructCodeVariableUri(varNode, origName);
+				nnm = constructNestedElementUri(varNode, origName);
 			}
 			else {
 				nnm = origName;
@@ -607,7 +610,7 @@ public class JavaModelExtractorJP implements IModelFromCodeExtractor {
 		else if (varNode instanceof NameExpr) {
 			origName = ((NameExpr)varNode).getNameAsString();
 			if (containingInst != null) {
-				nnm = constructCodeVariableUri(varNode, origName);
+				nnm = constructNestedElementUri(varNode, origName);
 			}
 			else {
 				nnm = origName;
@@ -622,7 +625,7 @@ public class JavaModelExtractorJP implements IModelFromCodeExtractor {
 				VariableDeclarator var = vars.get(i);
 				origName = var.getNameAsString();
 				if (containingInst != null) {
-					nnm = constructCodeVariableUri(varNode, origName);
+					nnm = constructNestedElementUri(varNode, origName);
 				}
 				else {
 					nnm = origName;
@@ -670,9 +673,9 @@ public class JavaModelExtractorJP implements IModelFromCodeExtractor {
 		}
 	}
 
-	private String constructCodeVariableUri(Node varNode, String nm) {
+	private String constructNestedElementUri(Node node, String nm) {
 		StringBuilder sb = new StringBuilder();
-		Optional<Node> parent = varNode.getParentNode();
+		Optional<Node> parent = node.getParentNode();
 		while (parent.isPresent()) {
 			if (parent.get() instanceof MethodDeclaration) {
 				sb.insert(0,((MethodDeclaration)parent.get()).getNameAsString() + ".");
@@ -681,6 +684,9 @@ public class JavaModelExtractorJP implements IModelFromCodeExtractor {
 				sb.insert(0, ((ClassOrInterfaceDeclaration)parent.get()).getNameAsString() + ".");
 			}
 			parent = parent.get().getParentNode();
+			if (!parent.isPresent()) {
+				break;
+			}
 			if (parent.get() instanceof CompilationUnit) {
 				break;
 			}
@@ -692,9 +698,10 @@ public class JavaModelExtractorJP implements IModelFromCodeExtractor {
 	private Individual getOrCreateClass(ClassOrInterfaceDeclaration cls) {
 		Individual clsInst = null;
     	String nm = cls.getNameAsString();
-    	clsInst = getCodeModel().getIndividual(getCodeModelNamespace() + nm);
+    	String nmm = constructNestedElementUri(cls, nm);
+    	clsInst = getCodeModel().getIndividual(getCodeModelNamespace() + nmm); //getCodeModelNamespace() + nm);
     	if (clsInst == null) {
-    		clsInst = getCodeModel().createIndividual(getCodeModelNamespace() + nm, getCodeBlockClassClass());
+    		clsInst = getCodeModel().createIndividual(getCodeModelNamespace() + nmm, getCodeBlockClassClass()); //getCodeModelNamespace() + nm, getCodeBlockClassClass());
     	}
     	return clsInst;
 	}
@@ -877,24 +884,28 @@ public class JavaModelExtractorJP implements IModelFromCodeExtractor {
 		this.codeModel = codeModel;
 	}
 
-	private String getCodeModelName() {
+	public String getCodeModelName() {
 		return codeModelName;
 	}
 
-	private void setCodeModelName(String codeModelName) {
+	@Override
+	public void setCodeModelName(String codeModelName) {
 		this.codeModelName = codeModelName;
 		getCurationMgr().getExtractionProcessor().setCodeModelName(codeModelName);
 	}
 	
-	private String getCodeModelNamespace() {
+	@Override
+	public String getCodeModelNamespace() {
 		return codeModelName + "#";
 	}
 
+	@Override
 	public String getCodeModelPrefix() {
 		return codeModelPrefix;
 	}
 
-	private void setCodeModelPrefix(String codeModelPrefix) {
+	@Override
+	public void setCodeModelPrefix(String codeModelPrefix) {
 		getCurationMgr().getExtractionProcessor().setCodeModelPrefix(codeModelPrefix);
 		this.codeModelPrefix = codeModelPrefix;
 	}
@@ -966,4 +977,24 @@ public class JavaModelExtractorJP implements IModelFromCodeExtractor {
 		this.codeModelFolder = codeMetaModelModelFolder;
 	}
 
+	@Override
+	public Map<String,OntModel> getCodeModels() {
+		return codeModels;
+	}
+
+	@Override
+	public void addCodeModel(String key ,OntModel codeModel) {
+		if (codeModels == null) {
+			codeModels = new HashMap<String, OntModel>();
+		}
+		codeModels.put(key, codeModel);
+	}
+
+	@Override
+	public OntModel getCodeModel(String key) {
+		if (codeModels != null) {
+			return codeModels.get(key);
+		}
+		return null;
+	}
 }

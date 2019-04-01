@@ -1,6 +1,11 @@
 \indexentry{kChain (module)@\spxentry{kChain}\spxextra{module}|hyperpage}{3}
 \indexentry{kChainModel (class in kChain)@\spxentry{kChainModel}\spxextra{class in kChain}|hyperpage}{3}
 \indexentry{\_\_init\_\_() (kChain.kChainModel method)@\spxentry{\_\_init\_\_()}\spxextra{kChain.kChainModel method}|hyperpage}{3}
-\indexentry{build() (kChain.kChainModel method)@\spxentry{build()}\spxextra{kChain.kChainModel method}|hyperpage}{3}
-\indexentry{fitModel() (kChain.kChainModel method)@\spxentry{fitModel()}\spxextra{kChain.kChainModel method}|hyperpage}{3}
-\indexentry{getDataset() (kChain.kChainModel method)@\spxentry{getDataset()}\spxextra{kChain.kChainModel method}|hyperpage}{3}
+\indexentry{\_createEqnModel() (kChain.kChainModel method)@\spxentry{\_createEqnModel()}\spxextra{kChain.kChainModel method}|hyperpage}{3}
+\indexentry{\_createNNModel() (kChain.kChainModel method)@\spxentry{\_createNNModel()}\spxextra{kChain.kChainModel method}|hyperpage}{3}
+\indexentry{\_getVarType() (kChain.kChainModel method)@\spxentry{\_getVarType()}\spxextra{kChain.kChainModel method}|hyperpage}{3}
+\indexentry{\_makePyFile() (kChain.kChainModel method)@\spxentry{\_makePyFile()}\spxextra{kChain.kChainModel method}|hyperpage}{4}
+\indexentry{build() (kChain.kChainModel method)@\spxentry{build()}\spxextra{kChain.kChainModel method}|hyperpage}{4}
+\indexentry{evaluate() (kChain.kChainModel method)@\spxentry{evaluate()}\spxextra{kChain.kChainModel method}|hyperpage}{4}
+\indexentry{fitModel() (kChain.kChainModel method)@\spxentry{fitModel()}\spxextra{kChain.kChainModel method}|hyperpage}{4}
+\indexentry{getDataset() (kChain.kChainModel method)@\spxentry{getDataset()}\spxextra{kChain.kChainModel method}|hyperpage}{5}

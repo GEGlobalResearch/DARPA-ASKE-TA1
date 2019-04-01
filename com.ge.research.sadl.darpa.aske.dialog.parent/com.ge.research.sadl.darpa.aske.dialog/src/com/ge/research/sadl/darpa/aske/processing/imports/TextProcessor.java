@@ -2,6 +2,7 @@ package com.ge.research.sadl.darpa.aske.processing.imports;
 
 import java.io.BufferedReader;
 import java.io.File;
+import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.io.UnsupportedEncodingException;
@@ -9,27 +10,66 @@ import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.log4j.Logger;
+
+import com.ge.research.sadl.builder.ConfigurationManagerForIdeFactory;
+import com.ge.research.sadl.builder.IConfigurationManagerForIDE;
+import com.ge.research.sadl.darpa.aske.curation.AnswerCurationManager;
 import com.ge.research.sadl.darpa.aske.preferences.DialogPreferences;
 import com.ge.research.sadl.darpa.aske.processing.DialogConstants;
+import com.ge.research.sadl.jena.inference.SadlJenaModelGetterPutter;
+import com.ge.research.sadl.processing.SadlConstants;
+import com.ge.research.sadl.reasoner.ConfigurationException;
+import com.ge.research.sadl.reasoner.IConfigurationManagerForEditing.Scope;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
+import com.hp.hpl.jena.ontology.Individual;
+import com.hp.hpl.jena.ontology.OntDocumentManager;
+import com.hp.hpl.jena.ontology.OntModel;
+import com.hp.hpl.jena.ontology.OntModelSpec;
+import com.hp.hpl.jena.ontology.Ontology;
+import com.hp.hpl.jena.rdf.model.Model;
+import com.hp.hpl.jena.rdf.model.ModelFactory;
 
 public class TextProcessor {
+	private static final Logger logger = Logger.getLogger (TextProcessor.class) ;
 
 	private Map<String, String> preferences;
 	
 	private List<File> textFiles;
+	
+	private AnswerCurationManager answerCurationManager;
 
-	public TextProcessor(Map<String, String> preferences) {
+	private IConfigurationManagerForIDE textModelConfigMgr;
+
+	private OntModel textModel;
+
+	private String textmodelName;
+
+	private String textmodelPrefix;
+
+	private Map<String, OntModel> textModels;
+
+	public TextProcessor(AnswerCurationManager answerCurationManager, Map<String, String> preferences) {
+		setCurationManager(answerCurationManager);
 		this.setPreferences(preferences);
 	}
 
-	public String process(String inputIdentifier, String text, String locality) throws MalformedURLException, UnsupportedEncodingException {
+	public String process(String inputIdentifier, String text, String locality) throws ConfigurationException, IOException {
+		initializeTextModel();
+		try {
+			String msg = "Importing text file '" + inputIdentifier + "'.";
+			getCurationManager().notifyUser(getTextModelConfigMgr().getModelFolder(), msg);
+		} catch (ConfigurationException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 		StringBuilder sb = new StringBuilder();
 		String baseServiceUrl = "http://vesuvius-dev.crd.ge.com:4200/darpa/aske/";		// dev environment for stable development of other components
 //		String baseServiceUrl = "http://vesuvius-063.crd.ge.com:4200/darpa/aske/";		// test environment for service development
@@ -68,12 +108,36 @@ public class TextProcessor {
 							double extractionConfidence = concept.getAsJsonObject().get("extractionConfScore").getAsDouble();
 							System.out.println("  Match in substring '" + matchingText + "(" + startInOrigText + "," + endInOrigText + "):");
 							JsonArray triples = concept.getAsJsonObject().get("triples").getAsJsonArray();
+							String eqName = null;
+							String eqExpr = null;
 							for (JsonElement triple : triples) {
 								String subject = triple.getAsJsonObject().get("subject").getAsString();
 								String predicate = triple.getAsJsonObject().get("predicate").getAsString();
 								String object = triple.getAsJsonObject().get("object").getAsString();
 								double tripleConfidenceScore = triple.getAsJsonObject().get("tripleConfScore").getAsDouble();
 								System.out.println("     <" + subject + ", " + predicate + ", " + object + "> (" + tripleConfidenceScore + ")");
+								if (object.equals("<http://sadl.org/sadlimplicitmodel#Equation>")) {
+									// equation found
+									eqName = subject;
+									// predicate assumed to be rdf:type
+								}
+								if (eqName != null && subject.equals(eqName)) {
+									if (predicate.equals("<http://sadl.org/sadlimplicitmodel#expression>")) {
+										eqExpr = object;
+									}
+								}
+							}
+							if (eqName != null && eqExpr != null) {
+								// add to model
+								if (eqName.startsWith("_:")) {
+									eqName = eqName.substring(2);
+								}
+								OntModel theModel = getCurationManager().getExtractionProcessor().getTextModel();
+								Individual eqInst = theModel.createIndividual(getCurationManager().getExtractionProcessor().getTextModelName() + "#" + eqName,
+										theModel.getOntClass(SadlConstants.SADL_IMPLICIT_MODEL_EXTERNAL_EQUATION_CLASS_URI));
+								Individual script = theModel.createIndividual(theModel.getOntClass(SadlConstants.SADL_IMPLICIT_MODEL_SCRIPT_CLASS_URI));
+								script.addProperty(theModel.getProperty(SadlConstants.SADL_IMPLICIT_MODEL_SCRIPT_PROPERTY_URI), theModel.createTypedLiteral(eqExpr));
+								eqInst.addProperty(theModel.getProperty(SadlConstants.SADL_IMPLICIT_MODEL_EXPRESSTION_PROPERTY_URI), script);
 							}
 						}
 					}
@@ -86,6 +150,76 @@ public class TextProcessor {
 		return sb.toString();
 	}
 	
+	public void addTextModel(String key, OntModel textModel) {
+		if (textModels == null) {
+			textModels = new HashMap<String, OntModel>();
+		}
+		textModels.put(key, textModel);
+	}
+	
+	public OntModel getTextModel(String key) {
+		if (textModels != null) {
+			return textModels.get(key);
+		}
+		return null;
+	}
+
+	private void initializeTextModel() throws ConfigurationException, IOException {
+		if (getCurationManager().getExtractionProcessor().getTextModel() == null) {
+			// create new text model	
+			setTextModelConfigMgr(getCurationManager().getDomainModelConfigurationManager());
+			OntDocumentManager owlDocMgr = getTextModelConfigMgr().getJenaDocumentMgr();
+			OntModelSpec spec = new OntModelSpec(OntModelSpec.OWL_MEM);
+			if (owlDocMgr != null) {
+				spec.setDocumentManager(owlDocMgr);
+				owlDocMgr.setProcessImports(true);
+			}
+			getCurationManager().getExtractionProcessor().setTextModel(ModelFactory.createOntologyModel(spec));	
+			setTextModel(getCurationManager().getExtractionProcessor().getTextModel());
+			getTextModel().setNsPrefix(getTextModelPrefix(), getTextModelNamespace());
+			Ontology modelOntology = getTextModel().createOntology(getTextModelName());
+			logger.debug("Ontology '" + getTextModelName() + "' created");
+			modelOntology.addComment("This ontology was created by extraction from text by the ANSWER TextProcessor.", "en");
+			OntModel importedOntModel = getTextModelConfigMgr().getOntModel(SadlConstants.SADL_IMPLICIT_MODEL_URI, Scope.INCLUDEIMPORTS);
+			addImportToJenaModel(getTextModelName(), SadlConstants.SADL_IMPLICIT_MODEL_URI, SadlConstants.SADL_IMPLICIT_MODEL_PREFIX, importedOntModel);
+		}
+		else {
+			setTextModel(getCurationManager().getExtractionProcessor().getTextModel());
+		}
+	}
+	
+	private void addImportToJenaModel(String modelName, String importUri, String importPrefix, Model importedOntModel) {
+		getTextModel().getDocumentManager().addModel(importUri, importedOntModel, true);
+		Ontology modelOntology = getTextModel().createOntology(modelName);
+		if (importPrefix != null) {
+			getTextModel().setNsPrefix(importPrefix, importUri);
+		}
+		com.hp.hpl.jena.rdf.model.Resource importedOntology = getTextModel().createResource(importUri);
+		modelOntology.addImport(importedOntology);
+		getTextModel().addSubModel(importedOntModel);
+		getTextModel().addLoadedImport(importUri);
+	}
+
+	private String getTextModelName() {
+		return this.getTextmodelName();
+	}
+
+	private String getTextModelNamespace() {
+		return getTextModelName() + "#";
+	}
+
+	private String getTextModelPrefix() {
+		return this.getTextmodelPrefix();
+	}
+
+	private void setTextModel(OntModel textModel) {
+		this.textModel = textModel;	
+	}
+	
+	private OntModel getTextModel() {
+		return textModel;
+	}
+
 	private String makeConnectionAndGetResponse(URL url, JsonObject jsonObject) {
 		String response = "";
 		try {
@@ -155,6 +289,38 @@ public class TextProcessor {
 
 	public void setTextFiles(List<File> textFiles) {
 		this.textFiles = textFiles;
+	}
+
+	public AnswerCurationManager getCurationManager() {
+		return answerCurationManager;
+	}
+
+	public void setCurationManager(AnswerCurationManager answerCurationManager) {
+		this.answerCurationManager = answerCurationManager;
+	}
+
+	public IConfigurationManagerForIDE getTextModelConfigMgr() {
+		return textModelConfigMgr;
+	}
+
+	private void setTextModelConfigMgr(IConfigurationManagerForIDE textMetaModelConfigMgr) {
+		this.textModelConfigMgr = textMetaModelConfigMgr;
+	}
+
+	public String getTextmodelName() {
+		return textmodelName;
+	}
+
+	public void setTextmodelName(String textmodelName) {
+		this.textmodelName = textmodelName;
+	}
+
+	public String getTextmodelPrefix() {
+		return textmodelPrefix;
+	}
+
+	public void setTextmodelPrefix(String textmodelPrefix) {
+		this.textmodelPrefix = textmodelPrefix;
 	}
 
 }

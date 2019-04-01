@@ -32,25 +32,25 @@ public class TextProcessorTests {
 
 	@Ignore
 	@Test
-	public void test() throws MalformedURLException, UnsupportedEncodingException {
-		TextProcessor tp = new TextProcessor(null);
+	public void test() throws ConfigurationException, IOException {
+		TextProcessor tp = new TextProcessor(null, null);
 		tp.process(null, "a^2 = R * T * gamma", null);
 	}
 
 	@Ignore
 	@Test
-	public void test2() throws MalformedURLException, UnsupportedEncodingException {
-		TextProcessor tp = new TextProcessor(null);
+	public void test2() throws ConfigurationException, IOException {
+		TextProcessor tp = new TextProcessor(null, null);
 		tp.process(null, "The speed of sound is a concept known in physics ", null);
 	}
 
 	@Ignore
 	@Test
-	public void test3() throws IOException {
+	public void test3() throws IOException, ConfigurationException {
 		System.out.println(new File(".").getAbsoluteFile().getAbsolutePath());
 		File sourceFile = new File(new File(".").getAbsolutePath() + "/resources/Sound.txt");
 		String javaContent = readFile(sourceFile);
-		TextProcessor tp = new TextProcessor(null);
+		TextProcessor tp = new TextProcessor(null, null);
 		tp.process(null, javaContent, null);
 	}
 
@@ -77,9 +77,9 @@ public class TextProcessorTests {
 		String owlFileName = genFolder + "/" + defaultCodeModelPrefix + ".owl";
 
 		acm.getExtractionProcessor().getTextProcessor().addFile(sourceFile);
-		acm.processImports(defaultCodeModelPrefix + ".owl", SaveAsSadl.SaveAsSadl.SaveAsSadl);
+		acm.processImports(SaveAsSadl.SaveAsSadl.SaveAsSadl);
 		String javaContent = readFile(sourceFile);
-		TextProcessor tp = new TextProcessor(null);
+		TextProcessor tp = new TextProcessor(null, null);
 		tp.process(null, javaContent, null);
 	}
 

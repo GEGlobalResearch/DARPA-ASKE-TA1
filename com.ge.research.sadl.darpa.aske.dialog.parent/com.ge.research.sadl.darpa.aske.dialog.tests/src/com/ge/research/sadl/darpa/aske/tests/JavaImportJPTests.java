@@ -18,6 +18,7 @@ import com.ge.research.sadl.darpa.aske.curation.DialogAnswerProviderConsoleForTe
 import com.ge.research.sadl.darpa.aske.curation.AnswerCurationManager.SaveAsSadl;
 import com.ge.research.sadl.darpa.aske.processing.DialogConstants;
 import com.ge.research.sadl.darpa.aske.processing.IDialogAnswerProvider;
+import com.ge.research.sadl.darpa.aske.processing.imports.IModelFromCodeExtractor;
 import com.ge.research.sadl.darpa.aske.processing.imports.JavaModelExtractorJP;
 import com.ge.research.sadl.owl2sadl.OwlImportException;
 import com.ge.research.sadl.owl2sadl.OwlToSadl;
@@ -82,7 +83,7 @@ public class JavaImportJPTests {
 				"}\r\n";
 		IConfigurationManagerForIDE cm = ConfigurationManagerForIdeFactory.getConfigurationManagerForIDE(getDomainProjectModelFolder(), null);
 		AnswerCurationManager acm = new AnswerCurationManager(getDomainProjectModelFolder(), cm, null);
-		JavaModelExtractorJP jme = new JavaModelExtractorJP(acm, null);
+		IModelFromCodeExtractor jme = new JavaModelExtractorJP(acm, null);
 		jme.setCodeModelFolder(getExtractionProjectModelFolder());
 		String defaultCodeModelPrefix = "Temp";
 		String defaultCodeModelName = "http://com.ge.research.darpa.aske.ta1.explore/" + defaultCodeModelPrefix;
@@ -129,7 +130,7 @@ public class JavaImportJPTests {
 		
 		IConfigurationManagerForIDE cm = ConfigurationManagerForIdeFactory.getConfigurationManagerForIDE(getDomainProjectModelFolder(), null);
 		AnswerCurationManager acm = new AnswerCurationManager(getDomainProjectModelFolder(), cm, null);
-		JavaModelExtractorJP jme = new JavaModelExtractorJP(acm, null);
+		IModelFromCodeExtractor jme = new JavaModelExtractorJP(acm, null);
 		jme.setCodeModelFolder(getExtractionProjectModelFolder());
 		String defaultCodeModelPrefix = "temp";
 		String defaultCodeModelName = "http://com.ge.research.darpa.aske.ta1.explore/" + defaultCodeModelPrefix;
@@ -178,7 +179,7 @@ public class JavaImportJPTests {
 		
 		IConfigurationManagerForIDE cm = ConfigurationManagerForIdeFactory.getConfigurationManagerForIDE(getDomainProjectModelFolder(), null);
 		AnswerCurationManager acm = new AnswerCurationManager(getDomainProjectModelFolder(), cm, null);
-		JavaModelExtractorJP jme = new JavaModelExtractorJP(acm, null);
+		IModelFromCodeExtractor jme = new JavaModelExtractorJP(acm, null);
 		jme.setCodeModelFolder(getExtractionProjectModelFolder());
 		String defaultCodeModelPrefix = "physicalobject";
 		String defaultCodeModelName = "http://com.ge.research.darpa.aske.ta1.explore/" + defaultCodeModelPrefix;
@@ -198,7 +199,7 @@ public class JavaImportJPTests {
 		String javaContent = readFile(sourceFile);
 		IConfigurationManagerForIDE cm = ConfigurationManagerForIdeFactory.getConfigurationManagerForIDE(getDomainProjectModelFolder(), null);
 		AnswerCurationManager acm = new AnswerCurationManager(getDomainProjectModelFolder(), cm, null);
-		JavaModelExtractorJP jme = new JavaModelExtractorJP(acm, null);
+		IModelFromCodeExtractor jme = new JavaModelExtractorJP(acm, null);
 		jme.setCodeModelFolder(getExtractionProjectModelFolder());
 		String defaultCodeModelPrefix = "Isentrop";
 		String defaultCodeModelName = "http://com.ge.research.darpa.aske.ta1.explore/" + defaultCodeModelPrefix;
@@ -236,7 +237,7 @@ public class JavaImportJPTests {
 		String owlFileName = genFolder + "/" + defaultCodeModelPrefix + ".owl";
 
 		acm.getExtractionProcessor().getCodeExtractor().addCodeFile(sourceFile);
-		acm.processImports(defaultCodeModelPrefix + ".owl", SaveAsSadl.SaveAsSadl.SaveAsSadl);
+		acm.processImports(SaveAsSadl.SaveAsSadl.SaveAsSadl);
 		
 //		jme.process("Mach.java", javaContent, includeSerialization);
 //		String content = smg.generateSadlModel(jme, "http://sadl.org/Temperature.sadl");

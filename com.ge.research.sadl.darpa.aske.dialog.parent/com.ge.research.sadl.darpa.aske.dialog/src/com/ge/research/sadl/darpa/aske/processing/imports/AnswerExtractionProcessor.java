@@ -30,6 +30,7 @@ public class AnswerExtractionProcessor {
 	private OntModel contextModel;	// the knowledge graph to use during extraction
 	private OntModel textModel;		// the knowledge graph extension to the contextModel extracted from text
 	private String textModelName;
+	private String textModelPrefix;
 	private OntModel codeModel;		// the knowledge graph extension to the context model extracted from code
 	private String codeModelName;
 	private String codeModelPrefix;
@@ -145,7 +146,7 @@ public class AnswerExtractionProcessor {
 
 	public TextProcessor getTextProcessor() {
 		if (textProcessor == null) {
-			textProcessor = new TextProcessor(getPreferences());
+			textProcessor = new TextProcessor(getCurationManager(), getPreferences());
 		}
 		return textProcessor;
 	}
@@ -192,6 +193,7 @@ public class AnswerExtractionProcessor {
 	}
 
 	public void setTextModelName(String textModelName) {
+		getTextProcessor().setTextmodelName(textModelName);
 		this.textModelName = textModelName;
 	}
 
@@ -272,6 +274,26 @@ public class AnswerExtractionProcessor {
 		br.close();
 		connection.disconnect();
 		return response;
+	}
+
+	public void reset() {
+		setCodeModel(null);
+		getCodeExtractor().setCodeModelName(null);
+		getCodeExtractor().setDefaultCodeModelName(null);
+		setCodeModelPrefix(null);
+		getCodeExtractor().setDefaultCodeModelPrefix(null);
+		setTextModel(null);
+		setTextModelName(null);
+		setTextModelPrefix(null);
+	}
+
+	public String getTextModelPrefix() {
+		return textModelPrefix;
+	}
+
+	public void setTextModelPrefix(String textModelPrefix) {
+		getTextProcessor().setTextmodelPrefix(textModelPrefix);
+		this.textModelPrefix = textModelPrefix;
 	}
 
 }
