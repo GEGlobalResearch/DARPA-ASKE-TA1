@@ -24,13 +24,8 @@ import java.util.List;
 import java.util.Map;
 
 import org.eclipse.core.resources.IContainer;
-import org.eclipse.core.resources.IFile;
-import org.eclipse.core.resources.IFolder;
-import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IResource;
-import org.eclipse.core.resources.IWorkspace;
 import org.eclipse.core.resources.ResourcesPlugin;
-import org.eclipse.core.runtime.IAdaptable;
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
@@ -41,7 +36,6 @@ import org.eclipse.jface.dialogs.IDialogSettings;
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.dialogs.ProgressMonitorDialog;
 import org.eclipse.jface.operation.IRunnableWithProgress;
-import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.jface.viewers.ITreeContentProvider;
 import org.eclipse.swt.SWT;
@@ -66,12 +60,8 @@ import org.eclipse.swt.widgets.Listener;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Text;
 import org.eclipse.ui.IWorkbench;
-import org.eclipse.ui.IWorkbenchWindow;
-import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.dialogs.FileSystemElement;
 import org.eclipse.ui.dialogs.WizardResourceImportPage;
-import org.eclipse.ui.internal.ide.IDEWorkbenchMessages;
-import org.eclipse.ui.internal.ide.IDEWorkbenchPlugin;
 import org.eclipse.ui.internal.ide.dialogs.IElementFilter;
 import org.eclipse.ui.internal.ide.dialogs.RelativePathVariableGroup;
 import org.eclipse.ui.internal.ide.filesystem.FileSystemStructureProvider;
@@ -174,99 +164,6 @@ public class JavaFileResourceImportPage1 extends WizardResourceImportPage
 		gridData = GridDataUtil.createHorizontalFill();
 		gridData.horizontalSpan = 3;
 		optionComposite.setLayoutData(gridData);		
-    }
-
-
-    /**
-     * Creates the import domain destination specification controls.
-     *
-     * @param parent the parent control
-     */
-    protected void createDomainDestinationGroup(Composite parent) {
-        // container specification group
-        Composite containerGroup = new Composite(parent, SWT.NONE);
-        GridLayout layout = new GridLayout();
-        layout.numColumns = 3;
-        containerGroup.setLayout(layout);
-        containerGroup.setLayoutData(new GridData(
-                GridData.HORIZONTAL_ALIGN_FILL | GridData.GRAB_HORIZONTAL));
-        containerGroup.setFont(parent.getFont());
-
-        // container label
-        Label resourcesLabel = new Label(containerGroup, SWT.NONE);
-        resourcesLabel.setText("Destination domain folder");
-        resourcesLabel.setFont(parent.getFont());
-
-        // container name entry field
-        domainDestinationContainerNameField = new Text(containerGroup, SWT.SINGLE | SWT.BORDER);
-//        BidiUtils.applyBidiProcessing(destinationContainerNameField, StructuredTextTypeHandlerFactory.FILE);
-
-        domainDestinationContainerNameField.addListener(SWT.Modify, this);
-        GridData data = new GridData(GridData.HORIZONTAL_ALIGN_FILL
-                | GridData.GRAB_HORIZONTAL);
-        data.widthHint = SIZING_TEXT_FIELD_WIDTH;
-        domainDestinationContainerNameField.setLayoutData(data);
-        domainDestinationContainerNameField.setFont(parent.getFont());
-
-        // container browse button
-        domainDestinationContainerBrowseButton = new Button(containerGroup, SWT.PUSH);
-        domainDestinationContainerBrowseButton.setText(IDEWorkbenchMessages.WizardImportPage_browse2);
-        domainDestinationContainerBrowseButton.setLayoutData(new GridData(
-                GridData.HORIZONTAL_ALIGN_FILL));
-        domainDestinationContainerBrowseButton.addListener(SWT.Selection, this);
-        domainDestinationContainerBrowseButton.setFont(parent.getFont());
-        setButtonLayoutData(domainDestinationContainerBrowseButton);
-
-        /**
-         * Sets the initial contents of the destination container name field.
-         */
-        if (initialDomainDestinationContainerFieldValue != null) {
-			domainDestinationContainerNameField.setText(initialDomainDestinationContainerFieldValue);
-		} else if (currentDomainDestinationResourceSelection != null) {
-			domainDestinationContainerNameField.setText(currentDomainDestinationResourceSelection.getFullPath()
-                    .makeRelative().toString());
-		}
-		else {
-			IWorkbenchWindow window = PlatformUI.getWorkbench().getActiveWorkbenchWindow();
-		    if (window != null)
-		    {
-		        ISelection selection = (ISelection) window.getSelectionService().getSelection();
-		        if (selection != null) {
-		        	System.out.println(selection.getClass().getCanonicalName());
-			        if (selection instanceof IStructuredSelection) {
-				        Object firstElement = ((IStructuredSelection)selection).getFirstElement();
-				        if (firstElement instanceof IAdaptable)
-				        {
-				        	IProject project;
-				        	IPath prjFolder = null;
-				        	if (firstElement instanceof org.eclipse.core.resources.IFile) {
-			        			IFile trgtFile = (IFile) firstElement;
-			        			IPath trgtFolder = ((org.eclipse.core.resources.IFile)firstElement).getParent().getFullPath();	
-			        			project = ((org.eclipse.core.resources.IFile)firstElement).getProject();
-			        			prjFolder = project.getFullPath();
-				        	}
-				        	else if (firstElement instanceof IFolder) {
-			        			prjFolder = ((IFolder)firstElement).getProject().getFullPath();
-				        	}
-				        	else if (firstElement instanceof IProject) {
-				        		project = (IProject) firstElement;
-				        		prjFolder = project.getFullPath();
-				        	}
-				        	else {
-				        		// project?
-				        		project = (IProject)((IAdaptable)firstElement).getAdapter(IProject.class);
-					            if (project != null) {
-					            	prjFolder = project.getFullPath();
-					            }
-				        	}
-				        	if (prjFolder != null) {
-			        			domainDestinationContainerNameField.setText(prjFolder.lastSegment());
-				        	}
-				        }
-			        }
-		        }
-		    }
-		}
     }
 
     /**
@@ -533,10 +430,8 @@ public class JavaFileResourceImportPage1 extends WizardResourceImportPage
      *	Create the import source specification widgets
      */
     protected void createSourceGroup(Composite parent) {
-        createDomainDestinationGroup(parent);
         createRootDirectoryGroup(parent);
         createFileSelectionGroup(parent);
-//        createOutputFilenameGroup(parent);
         createButtonsGroup(parent);
     }
 
@@ -760,75 +655,7 @@ public class JavaFileResourceImportPage1 extends WizardResourceImportPage
         if (event.widget == sourceBrowseButton) {
 			handleSourceBrowseButtonPressed();
 		}
-        else if (event.widget == domainDestinationContainerBrowseButton) {
-        	handleDomainDestinationBrowseButtonPressed();
-        }
         super.handleEvent(event);
-    }
-
-    private void handleDomainDestinationBrowseButtonPressed() {
-    	/**
-    	 * Opens a destination container selection dialog and displays the user's subsequent
-    	 * container resource selection in this page's destination container name field.
-    	 */
-    	// see if the user wishes to modify this container selection
-    	IPath containerPath = queryForContainer(getSpecifiedDomainDestinationContainer(),
-    			"select domain kbase destination",
-    			"Domain KBase Destination");
-
-    	// if a container was selected then put its name in the container name field
-    	if (containerPath != null) { // null means user cancelled
-    		setErrorMessage(null);
-    		domainDestinationContainerNameField.setText(containerPath.makeRelative().toString());
-    	}
-    }
-
-    /**
-     * Returns the container resource specified in the container name entry field,
-     * or <code>null</code> if such a container does not exist in the workbench.
-     */
-    protected IContainer getSpecifiedDomainDestinationContainer() {
-        IWorkspace workspace = IDEWorkbenchPlugin.getPluginWorkspace();
-        IPath path = getDestinationContainerFullPath();
-        if (workspace.getRoot().exists(path)){
-        	IResource resource = workspace.getRoot().findMember(path);
-        	if(resource.getType() == IResource.FILE) {
-				return null;
-			}
-        	return (IContainer) resource;
-
-        }
-        return null;
-    }
-
-    /**
-     * Returns the path of the container resource specified in the container
-     * name entry field, or <code>null</code> if no name has been typed in.
-     * <p>
-     * The container specified by the full path might not exist and would need to
-     * be created.
-     * </p>
-     *
-     * @return the full path of the container resource specified in
-     *   the container name entry field, or <code>null</code>
-     */
-    protected IPath getDestinationContainerFullPath() {
-        IWorkspace workspace = IDEWorkbenchPlugin.getPluginWorkspace();
-
-        //make the path absolute to allow for optional leading slash
-        IPath testPath = getDomainDestinationResourcePath();
-
-        if (testPath.equals(workspace.getRoot().getFullPath())) {
-			return testPath;
-		}
-
-        IStatus result = workspace.validatePath(testPath.toString(),
-                IResource.PROJECT | IResource.FOLDER | IResource.ROOT);
-        if (result.isOK()) {
-            return testPath;
-        }
-
-        return null;
     }
 
     /**
@@ -911,12 +738,6 @@ public class JavaFileResourceImportPage1 extends WizardResourceImportPage
         	operation = new JavaImportOperation(getContainerFullPath(),
                 sourceDirectory, fileSystemStructureProvider,
                 this, fileSystemObjects);
-        IContainer destContainer = getSpecifiedDomainDestinationContainer();
-        if (!(destContainer instanceof IProject)) {
-        	setErrorMessage("Destination domain must be a valid project");
-        	return false;
-        }
-        operation.setDomainDestinationPath(destContainer);
         operation.setContext(getShell());
         return executeOwlImportOperation(operation);
     }
@@ -1303,27 +1124,6 @@ public class JavaFileResourceImportPage1 extends WizardResourceImportPage
         // null destination location is handled in
         // WizardResourceImportPage
         return false;
-    }
-
-    private boolean validFileName(String fileName) {
-    	if (fileName.length() < 1) {
-    		return false;
-    	}
-    	for (char c : fileName.toCharArray()) {
-    		if (Character.isWhitespace(c) || Character.isISOControl(c)) {
-    			return false;
-    		}
-    	}
-    	return true;
-    }
-    
-    private boolean validURI(String s) {
-    	try {
-    		URI uri = new URI(s);
-    	} catch (Exception e) {
-    		return false;
-    	}
-    	return true;
     }
 
 }

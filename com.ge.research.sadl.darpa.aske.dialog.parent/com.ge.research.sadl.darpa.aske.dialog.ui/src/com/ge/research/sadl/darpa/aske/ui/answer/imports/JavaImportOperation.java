@@ -671,12 +671,14 @@ public class JavaImportOperation extends WorkspaceModifyOperation {
     	try {
 			String codeModelModelFolderUri = ResourceManager.findModelFolderPath(targetPath.toOSString());
 			Resource resource = null;
+	    	IProject domainPrj = null;
 	    	try {
 	    		// get file path as a string
 	    		File ffop = new File(fileObjectPath);
 	    		String sfop = ffop.toURI().toString();
 	    		// get ont-policy file as a string
 	    		IProject project = targetResource.getProject();
+	    		domainPrj = project;
 	    		String projectPath = URI.createFileURI(project.getLocation().toString()).toString();
 	    		String targetFileName = targetPath.toPortableString();
 	    		ResourceSet resSet = new ResourceSetImpl();
@@ -686,14 +688,13 @@ public class JavaImportOperation extends WorkspaceModifyOperation {
     			return null;
 	    	}
 	    	
-	    	IProject domainPrj = null;
-	    	IContainer domainDestContainer = getDomainDestinationPath();
-			if (domainDestContainer instanceof IProject) {
-				domainPrj = (IProject) domainDestContainer;
-			}
-	    	if (domainPrj == null) {
-	    		throw new ConfigurationException("Unable to find the domain knowledge project targeted by import");
-	    	}
+//	    	IContainer domainDestContainer = getDomainDestinationPath();
+//			if (domainDestContainer instanceof IProject) {
+//				domainPrj = (IProject) domainDestContainer;
+//			}
+//	    	if (domainPrj == null) {
+//	    		throw new ConfigurationException("Unable to find the domain knowledge project targeted by import");
+//	    	}
 	    	
     		// the AnswerCurationManager is stored in the domain project ConfigurationManager
 	    	String domainModelModelFolder = domainPrj.getFolder("OwlModels").getLocation().toOSString();
@@ -1354,12 +1355,12 @@ public class JavaImportOperation extends WorkspaceModifyOperation {
 		this.fileObject = fileObject;
 	}
 
-	public void setDomainDestinationPath(IContainer destContainer) {
-		this.domainDestinationPath  = destContainer;
-	}
-
-	public IContainer getDomainDestinationPath() {
-		return domainDestinationPath;
-	}
+//	public void setDomainDestinationPath(IContainer destContainer) {
+//		this.domainDestinationPath  = destContainer;
+//	}
+//
+//	public IContainer getDomainDestinationPath() {
+//		return domainDestinationPath;
+//	}
 
 }
