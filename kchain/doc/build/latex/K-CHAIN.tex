@@ -48,12 +48,12 @@
 
 \addto\extrasenglish{\def\pageautorefname{page}}
 
-\setcounter{tocdepth}{1}
+\setcounter{tocdepth}{2}
 
 
 
 \title{K-CHAIN Documentation}
-\date{Jan 31, 2019}
+\date{Mar 31, 2019}
 \release{}
 \author{Nurali Virani}
 \newcommand{\sphinxlogo}{\vbox{}}
@@ -69,7 +69,7 @@
 \phantomsection\label{\detokenize{index::doc}}
 
 
-This is something I want to say that is not in the docstring.
+DARPA ASKE TA1
 
 
 \chapter{Module: kChain}
@@ -93,11 +93,102 @@ execution will be executed to help in debugging.
 
 \end{fulllineitems}
 
-\index{\_\_weakref\_\_ (kChain.kChainModel attribute)@\spxentry{\_\_weakref\_\_}\spxextra{kChain.kChainModel attribute}}
+\index{\_createEqnModel() (kChain.kChainModel method)@\spxentry{\_createEqnModel()}\spxextra{kChain.kChainModel method}}
 
 \begin{fulllineitems}
-\phantomsection\label{\detokenize{index:kChain.kChainModel.__weakref__}}\pysigline{\sphinxbfcode{\sphinxupquote{\_\_weakref\_\_}}}
-list of weak references to the object (if defined)
+\phantomsection\label{\detokenize{index:kChain.kChainModel._createEqnModel}}\pysiglinewithargsret{\sphinxbfcode{\sphinxupquote{\_createEqnModel}}}{\emph{inputVar}, \emph{outputVar}, \emph{mdlName}, \emph{eqMdl}}{}
+Build a K-CHAIN model using input and output variables from the KG and
+the physics equation.
+\begin{quote}\begin{description}
+\item[{Parameters}] \leavevmode\begin{itemize}
+\item {} 
+\sphinxstyleliteralstrong{\sphinxupquote{inputVar}} (\sphinxstyleliteralemphasis{\sphinxupquote{JSON array}}) \textendash{} array of JSON variable objects with name, type, and value fields
+
+\item {} 
+\sphinxstyleliteralstrong{\sphinxupquote{outputVar}} (\sphinxstyleliteralemphasis{\sphinxupquote{JSON array}}) \textendash{} array of JSON variable objects with name, type, and value fields
+
+\item {} 
+\sphinxstyleliteralstrong{\sphinxupquote{mdlName}} (\sphinxstyleliteralemphasis{\sphinxupquote{string}}) \textendash{} Name to assign to the final model (E.g.: ‘Newtons2ndLaw’)
+
+\item {} 
+\sphinxstyleliteralstrong{\sphinxupquote{eqMdl}} (\sphinxstyleliteralemphasis{\sphinxupquote{string}}) \textendash{} Equation relating inputs to output (E.g.: “c = a * b”)
+
+\end{itemize}
+
+\item[{Returns}] \leavevmode
+Computational graph of the physics equation
+metagraphLoc (string): Location on disk where computational model was stored
+
+\item[{Return type}] \leavevmode
+mdl (TensorFlow Graph)
+
+\end{description}\end{quote}
+
+\end{fulllineitems}
+
+\index{\_createNNModel() (kChain.kChainModel method)@\spxentry{\_createNNModel()}\spxextra{kChain.kChainModel method}}
+
+\begin{fulllineitems}
+\phantomsection\label{\detokenize{index:kChain.kChainModel._createNNModel}}\pysiglinewithargsret{\sphinxbfcode{\sphinxupquote{\_createNNModel}}}{\emph{inputVar}, \emph{outputVar}, \emph{mdlName}}{}
+Build a K-CHAIN model as a neural network using input and output
+variables from the KG.
+\begin{quote}\begin{description}
+\item[{Parameters}] \leavevmode\begin{itemize}
+\item {} 
+\sphinxstyleliteralstrong{\sphinxupquote{inputVar}} (\sphinxstyleliteralemphasis{\sphinxupquote{JSON array}}) \textendash{} array of JSON variable objects with name (as in dataset) and type fields
+
+\item {} 
+\sphinxstyleliteralstrong{\sphinxupquote{outputVar}} (\sphinxstyleliteralemphasis{\sphinxupquote{JSON array}}) \textendash{} array of JSON variable objects with name (as in dataset) and type fields
+
+\item {} 
+\sphinxstyleliteralstrong{\sphinxupquote{mdlName}} (\sphinxstyleliteralemphasis{\sphinxupquote{string}}) \textendash{} Name to assign to the final model (E.g.: ‘Newtons2ndLaw’)
+
+\end{itemize}
+
+\item[{Returns}] \leavevmode
+
+computational graph of the neural network
+metagraphLoc (string):
+\begin{quote}
+
+Location on disk where computational model is stored
+\end{quote}
+
+
+\item[{Return type}] \leavevmode
+mdl (TensorFlow Graph)
+
+\end{description}\end{quote}
+
+\end{fulllineitems}
+
+\index{\_getVarType() (kChain.kChainModel method)@\spxentry{\_getVarType()}\spxextra{kChain.kChainModel method}}
+
+\begin{fulllineitems}
+\phantomsection\label{\detokenize{index:kChain.kChainModel._getVarType}}\pysiglinewithargsret{\sphinxbfcode{\sphinxupquote{\_getVarType}}}{\emph{typeStr}}{}
+Obtain tensorflow datatypes for variable type information from KG
+\begin{quote}\begin{description}
+\item[{Parameters}] \leavevmode
+\sphinxstyleliteralstrong{\sphinxupquote{typeStr}} (\sphinxstyleliteralemphasis{\sphinxupquote{string}}) \textendash{} String denoting type of variable with possible values of bool,
+integer, float, and double (default).
+
+\item[{Returns}] \leavevmode
+datatype in TensorFlow   (e.g. tf.bool)
+
+\end{description}\end{quote}
+
+\end{fulllineitems}
+
+\index{\_makePyFile() (kChain.kChainModel method)@\spxentry{\_makePyFile()}\spxextra{kChain.kChainModel method}}
+
+\begin{fulllineitems}
+\phantomsection\label{\detokenize{index:kChain.kChainModel._makePyFile}}\pysiglinewithargsret{\sphinxbfcode{\sphinxupquote{\_makePyFile}}}{\emph{stringfun}}{}
+Write the formatted code into a python module for conversion to tensorflow graph
+\begin{quote}\begin{description}
+\item[{Parameters}] \leavevmode
+\sphinxstyleliteralstrong{\sphinxupquote{stringfun}} (\sphinxstyleliteralemphasis{\sphinxupquote{string}}) \textendash{} formatted python code as string to be written in python file
+
+\end{description}\end{quote}
 
 \end{fulllineitems}
 
@@ -109,10 +200,10 @@ Build a K-CHAIN model using input and output variables from the KG.
 \begin{quote}\begin{description}
 \item[{Parameters}] \leavevmode\begin{itemize}
 \item {} 
-\sphinxstyleliteralstrong{\sphinxupquote{inputVar}} (\sphinxstyleliteralemphasis{\sphinxupquote{Pandas Series}}) \textendash{} list of input variables (as in dataset)
+\sphinxstyleliteralstrong{\sphinxupquote{inputVar}} (\sphinxstyleliteralemphasis{\sphinxupquote{JSON array}}) \textendash{} array of JSON variable objects with name (as in dataset), type, and value fields
 
 \item {} 
-\sphinxstyleliteralstrong{\sphinxupquote{outputVar}} (\sphinxstyleliteralemphasis{\sphinxupquote{Pandas Series}}) \textendash{} list of output variables (as in dataset)
+\sphinxstyleliteralstrong{\sphinxupquote{outputVar}} (\sphinxstyleliteralemphasis{\sphinxupquote{JSON array}}) \textendash{} array of JSON variable objects with name (as in dataset), type, and value fields
 
 \item {} 
 \sphinxstyleliteralstrong{\sphinxupquote{mdlName}} (\sphinxstyleliteralemphasis{\sphinxupquote{string}}) \textendash{} Name to assign to the final model (E.g.: ‘Newtons2ndLaw’)
@@ -126,8 +217,35 @@ Row 2 - Units, Row 3 onwards - data (default = None)
 
 \end{itemize}
 
+\end{description}\end{quote}
+
+\end{fulllineitems}
+
+\index{evaluate() (kChain.kChainModel method)@\spxentry{evaluate()}\spxextra{kChain.kChainModel method}}
+
+\begin{fulllineitems}
+\phantomsection\label{\detokenize{index:kChain.kChainModel.evaluate}}\pysiglinewithargsret{\sphinxbfcode{\sphinxupquote{evaluate}}}{\emph{inputVar}, \emph{outputVar}, \emph{mdlName}}{}
+Evaluates a model with given inputs to compute output values
+\begin{quote}\begin{description}
+\item[{Parameters}] \leavevmode\begin{itemize}
+\item {} 
+\sphinxstyleliteralstrong{\sphinxupquote{inputVar}} (\sphinxstyleliteralemphasis{\sphinxupquote{JSON array}}) \textendash{} array of JSON variable objects with name, type, and value fields
+
+\item {} 
+\sphinxstyleliteralstrong{\sphinxupquote{outputVar}} (\sphinxstyleliteralemphasis{\sphinxupquote{JSON array}}) \textendash{} array of JSON variable objects with name, type, and value fields
+
+\item {} 
+\sphinxstyleliteralstrong{\sphinxupquote{mdlName}} (\sphinxstyleliteralemphasis{\sphinxupquote{string}}) \textendash{} Name to model to use (E.g.: ‘Newtons2ndLaw’)
+
+\end{itemize}
+
 \item[{Returns}] \leavevmode
-Description of return value
+array of JSON variable objects with name, type, and value fields.
+The resulting output of the computation is assigned to the value
+field of the JSON object.
+
+\item[{Return type}] \leavevmode
+outputVar (JSON array)
 
 \end{description}\end{quote}
 
@@ -145,10 +263,10 @@ the corresponding dataset.
 \sphinxstyleliteralstrong{\sphinxupquote{dataset}} (\sphinxstyleliteralemphasis{\sphinxupquote{Pandas Dataframe}}) \textendash{} dataset with inputs and outputs
 
 \item {} 
-\sphinxstyleliteralstrong{\sphinxupquote{inputVar}} (\sphinxstyleliteralemphasis{\sphinxupquote{Pandas Series}}) \textendash{} list of input variables (as in dataset)
+\sphinxstyleliteralstrong{\sphinxupquote{inputVar}} (\sphinxstyleliteralemphasis{\sphinxupquote{JSON array}}) \textendash{} array of JSON variable objects with name (as in dataset) and type fields
 
 \item {} 
-\sphinxstyleliteralstrong{\sphinxupquote{outputVar}} (\sphinxstyleliteralemphasis{\sphinxupquote{Pandas Series}}) \textendash{} list of output variables (as in dataset)
+\sphinxstyleliteralstrong{\sphinxupquote{outputVar}} (\sphinxstyleliteralemphasis{\sphinxupquote{JSON array}}) \textendash{} array of JSON variable objects with name (as in dataset) and type fields
 
 \item {} 
 \sphinxstyleliteralstrong{\sphinxupquote{mdlName}} (\sphinxstyleliteralemphasis{\sphinxupquote{string}}) \textendash{} Name to assign to the final model (E.g.: ‘Newtons2ndLaw’)
@@ -156,7 +274,10 @@ the corresponding dataset.
 \end{itemize}
 
 \item[{Returns}] \leavevmode
-Description of return value
+Location on disk where computational model and trained parameters are stored
+
+\item[{Return type}] \leavevmode
+metagraphLoc (string)
 
 \end{description}\end{quote}
 

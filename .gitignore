@@ -33,6 +33,7 @@ OwlModels/
 bin/
 target/
 kchain/archive/
+kchain/log
 
 .DS_Store
 *~
