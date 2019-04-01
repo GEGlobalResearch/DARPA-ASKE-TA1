@@ -1,0 +1,309 @@
+_:match_text_140562208022640140562140566080 <http://www.w3.org/2002/07/owl#sameAs> <http://www.wikidata.org/entity/Q124003> .
+<http://www.wikidata.org/entity/Q124003> <http://www.w3.org/2000/01/rdf-schema#label> "speed of sound" .
+<http://www.wikidata.org/entity/Q124003> <http://www.wikidata.org/prop/direct/P1687> <http://www.wikidata.org/entity/P2075> .
+<http://www.wikidata.org/entity/P2075> <http://www.w3.org/2000/01/rdf-schema#label> "speed of sound" .
+<http://www.wikidata.org/entity/Q124003> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://www.wikidata.org/entity/Q764285> .
+<http://www.wikidata.org/entity/Q764285> <http://www.w3.org/2000/01/rdf-schema#label> "chemical property" .
+<http://www.wikidata.org/entity/Q124003> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://www.wikidata.org/entity/Q15222637> .
+<http://www.wikidata.org/entity/Q15222637> <http://www.w3.org/2000/01/rdf-schema#label> "unit of speed" .
+<http://www.wikidata.org/entity/Q124003> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://www.wikidata.org/entity/Q4292136> .
+<http://www.wikidata.org/entity/Q4292136> <http://www.w3.org/2000/01/rdf-schema#label> "mechanical properties of fiber" .
+<http://www.wikidata.org/entity/Q124003> <http://www.w3.org/2000/01/rdf-schema#subClassOf> <http://www.wikidata.org/entity/Q3711325> .
+<http://www.wikidata.org/entity/Q3711325> <http://www.w3.org/2000/01/rdf-schema#label> "speed" .
+_:match_text_140561811906928140562144816968 <http://www.w3.org/2002/07/owl#sameAs> <http://www.wikidata.org/entity/Q124003> .
+<http://www.wikidata.org/entity/Q124003> <http://www.w3.org/2000/01/rdf-schema#label> "speed of sound" .
+<http://www.wikidata.org/entity/Q124003> <http://www.wikidata.org/prop/direct/P1687> <http://www.wikidata.org/entity/P2075> .
+<http://www.wikidata.org/entity/P2075> <http://www.w3.org/2000/01/rdf-schema#label> "speed of sound" .
+<http://www.wikidata.org/entity/Q124003> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://www.wikidata.org/entity/Q764285> .
+<http://www.wikidata.org/entity/Q764285> <http://www.w3.org/2000/01/rdf-schema#label> "chemical property" .
+<http://www.wikidata.org/entity/Q124003> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://www.wikidata.org/entity/Q15222637> .
+<http://www.wikidata.org/entity/Q15222637> <http://www.w3.org/2000/01/rdf-schema#label> "unit of speed" .
+<http://www.wikidata.org/entity/Q124003> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://www.wikidata.org/entity/Q4292136> .
+<http://www.wikidata.org/entity/Q4292136> <http://www.w3.org/2000/01/rdf-schema#label> "mechanical properties of fiber" .
+<http://www.wikidata.org/entity/Q124003> <http://www.w3.org/2000/01/rdf-schema#subClassOf> <http://www.wikidata.org/entity/Q3711325> .
+<http://www.wikidata.org/entity/Q3711325> <http://www.w3.org/2000/01/rdf-schema#label> "speed" .
+_:match_text_140562142002968140562140565960 <http://www.w3.org/2002/07/owl#sameAs> <http://www.wikidata.org/entity/Q124003> .
+<http://www.wikidata.org/entity/Q124003> <http://www.w3.org/2000/01/rdf-schema#label> "speed of sound" .
+<http://www.wikidata.org/entity/Q124003> <http://www.wikidata.org/prop/direct/P1687> <http://www.wikidata.org/entity/P2075> .
+<http://www.wikidata.org/entity/P2075> <http://www.w3.org/2000/01/rdf-schema#label> "speed of sound" .
+<http://www.wikidata.org/entity/Q124003> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://www.wikidata.org/entity/Q764285> .
+<http://www.wikidata.org/entity/Q764285> <http://www.w3.org/2000/01/rdf-schema#label> "chemical property" .
+<http://www.wikidata.org/entity/Q124003> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://www.wikidata.org/entity/Q15222637> .
+<http://www.wikidata.org/entity/Q15222637> <http://www.w3.org/2000/01/rdf-schema#label> "unit of speed" .
+<http://www.wikidata.org/entity/Q124003> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://www.wikidata.org/entity/Q4292136> .
+<http://www.wikidata.org/entity/Q4292136> <http://www.w3.org/2000/01/rdf-schema#label> "mechanical properties of fiber" .
+<http://www.wikidata.org/entity/Q124003> <http://www.w3.org/2000/01/rdf-schema#subClassOf> <http://www.wikidata.org/entity/Q3711325> .
+<http://www.wikidata.org/entity/Q3711325> <http://www.w3.org/2000/01/rdf-schema#label> "speed" .
+_:match_text_140562149947888140562140565768 <http://www.w3.org/2002/07/owl#sameAs> <http://www.wikidata.org/entity/Q124003> .
+<http://www.wikidata.org/entity/Q124003> <http://www.w3.org/2000/01/rdf-schema#label> "speed of sound" .
+<http://www.wikidata.org/entity/Q124003> <http://www.wikidata.org/prop/direct/P1687> <http://www.wikidata.org/entity/P2075> .
+<http://www.wikidata.org/entity/P2075> <http://www.w3.org/2000/01/rdf-schema#label> "speed of sound" .
+<http://www.wikidata.org/entity/Q124003> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://www.wikidata.org/entity/Q764285> .
+<http://www.wikidata.org/entity/Q764285> <http://www.w3.org/2000/01/rdf-schema#label> "chemical property" .
+<http://www.wikidata.org/entity/Q124003> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://www.wikidata.org/entity/Q15222637> .
+<http://www.wikidata.org/entity/Q15222637> <http://www.w3.org/2000/01/rdf-schema#label> "unit of speed" .
+<http://www.wikidata.org/entity/Q124003> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://www.wikidata.org/entity/Q4292136> .
+<http://www.wikidata.org/entity/Q4292136> <http://www.w3.org/2000/01/rdf-schema#label> "mechanical properties of fiber" .
+<http://www.wikidata.org/entity/Q124003> <http://www.w3.org/2000/01/rdf-schema#subClassOf> <http://www.wikidata.org/entity/Q3711325> .
+<http://www.wikidata.org/entity/Q3711325> <http://www.w3.org/2000/01/rdf-schema#label> "speed" .
+_:match_text_140562141506352140562140567784 <http://www.w3.org/2002/07/owl#sameAs> <http://www.wikidata.org/entity/Q124003> .
+<http://www.wikidata.org/entity/Q124003> <http://www.w3.org/2000/01/rdf-schema#label> "speed of sound" .
+<http://www.wikidata.org/entity/Q124003> <http://www.wikidata.org/prop/direct/P1687> <http://www.wikidata.org/entity/P2075> .
+<http://www.wikidata.org/entity/P2075> <http://www.w3.org/2000/01/rdf-schema#label> "speed of sound" .
+<http://www.wikidata.org/entity/Q124003> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://www.wikidata.org/entity/Q764285> .
+<http://www.wikidata.org/entity/Q764285> <http://www.w3.org/2000/01/rdf-schema#label> "chemical property" .
+<http://www.wikidata.org/entity/Q124003> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://www.wikidata.org/entity/Q15222637> .
+<http://www.wikidata.org/entity/Q15222637> <http://www.w3.org/2000/01/rdf-schema#label> "unit of speed" .
+<http://www.wikidata.org/entity/Q124003> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://www.wikidata.org/entity/Q4292136> .
+<http://www.wikidata.org/entity/Q4292136> <http://www.w3.org/2000/01/rdf-schema#label> "mechanical properties of fiber" .
+<http://www.wikidata.org/entity/Q124003> <http://www.w3.org/2000/01/rdf-schema#subClassOf> <http://www.wikidata.org/entity/Q3711325> .
+<http://www.wikidata.org/entity/Q3711325> <http://www.w3.org/2000/01/rdf-schema#label> "speed" .
+_:match_text_140562141506608140562140567784 <http://www.w3.org/2002/07/owl#sameAs> <http://www.wikidata.org/entity/Q124003> .
+<http://www.wikidata.org/entity/Q124003> <http://www.w3.org/2000/01/rdf-schema#label> "speed of sound" .
+<http://www.wikidata.org/entity/Q124003> <http://www.wikidata.org/prop/direct/P1687> <http://www.wikidata.org/entity/P2075> .
+<http://www.wikidata.org/entity/P2075> <http://www.w3.org/2000/01/rdf-schema#label> "speed of sound" .
+<http://www.wikidata.org/entity/Q124003> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://www.wikidata.org/entity/Q764285> .
+<http://www.wikidata.org/entity/Q764285> <http://www.w3.org/2000/01/rdf-schema#label> "chemical property" .
+<http://www.wikidata.org/entity/Q124003> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://www.wikidata.org/entity/Q15222637> .
+<http://www.wikidata.org/entity/Q15222637> <http://www.w3.org/2000/01/rdf-schema#label> "unit of speed" .
+<http://www.wikidata.org/entity/Q124003> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://www.wikidata.org/entity/Q4292136> .
+<http://www.wikidata.org/entity/Q4292136> <http://www.w3.org/2000/01/rdf-schema#label> "mechanical properties of fiber" .
+<http://www.wikidata.org/entity/Q124003> <http://www.w3.org/2000/01/rdf-schema#subClassOf> <http://www.wikidata.org/entity/Q3711325> .
+<http://www.wikidata.org/entity/Q3711325> <http://www.w3.org/2000/01/rdf-schema#label> "speed" .
+_:match_text_140562141506672140562140566656 <http://www.w3.org/2002/07/owl#sameAs> <http://www.wikidata.org/entity/Q124003> .
+<http://www.wikidata.org/entity/Q124003> <http://www.w3.org/2000/01/rdf-schema#label> "speed of sound" .
+<http://www.wikidata.org/entity/Q124003> <http://www.wikidata.org/prop/direct/P1687> <http://www.wikidata.org/entity/P2075> .
+<http://www.wikidata.org/entity/P2075> <http://www.w3.org/2000/01/rdf-schema#label> "speed of sound" .
+<http://www.wikidata.org/entity/Q124003> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://www.wikidata.org/entity/Q764285> .
+<http://www.wikidata.org/entity/Q764285> <http://www.w3.org/2000/01/rdf-schema#label> "chemical property" .
+<http://www.wikidata.org/entity/Q124003> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://www.wikidata.org/entity/Q15222637> .
+<http://www.wikidata.org/entity/Q15222637> <http://www.w3.org/2000/01/rdf-schema#label> "unit of speed" .
+<http://www.wikidata.org/entity/Q124003> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://www.wikidata.org/entity/Q4292136> .
+<http://www.wikidata.org/entity/Q4292136> <http://www.w3.org/2000/01/rdf-schema#label> "mechanical properties of fiber" .
+<http://www.wikidata.org/entity/Q124003> <http://www.w3.org/2000/01/rdf-schema#subClassOf> <http://www.wikidata.org/entity/Q3711325> .
+<http://www.wikidata.org/entity/Q3711325> <http://www.w3.org/2000/01/rdf-schema#label> "speed" .
+_:match_text_140562141506736140562140567304 <http://www.w3.org/2002/07/owl#sameAs> <http://www.wikidata.org/entity/Q327408> .
+<http://www.wikidata.org/entity/Q327408> <http://www.w3.org/2000/01/rdf-schema#label> "color temperature" .
+<http://www.wikidata.org/entity/Q327408> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://www.wikidata.org/entity/Q107715> .
+<http://www.wikidata.org/entity/Q107715> <http://www.w3.org/2000/01/rdf-schema#label> "physical quantity" .
+_:match_text_140561811977968140562140566920 <http://www.w3.org/2002/07/owl#sameAs> <http://www.wikidata.org/entity/Q327408> .
+<http://www.wikidata.org/entity/Q327408> <http://www.w3.org/2000/01/rdf-schema#label> "color temperature" .
+<http://www.wikidata.org/entity/Q327408> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://www.wikidata.org/entity/Q107715> .
+<http://www.wikidata.org/entity/Q107715> <http://www.w3.org/2000/01/rdf-schema#label> "physical quantity" .
+_:match_text_140562141194864140562140566920 <http://www.w3.org/2002/07/owl#sameAs> <http://www.wikidata.org/entity/Q124003> .
+<http://www.wikidata.org/entity/Q124003> <http://www.w3.org/2000/01/rdf-schema#label> "speed of sound" .
+<http://www.wikidata.org/entity/Q124003> <http://www.wikidata.org/prop/direct/P1687> <http://www.wikidata.org/entity/P2075> .
+<http://www.wikidata.org/entity/P2075> <http://www.w3.org/2000/01/rdf-schema#label> "speed of sound" .
+<http://www.wikidata.org/entity/Q124003> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://www.wikidata.org/entity/Q764285> .
+<http://www.wikidata.org/entity/Q764285> <http://www.w3.org/2000/01/rdf-schema#label> "chemical property" .
+<http://www.wikidata.org/entity/Q124003> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://www.wikidata.org/entity/Q15222637> .
+<http://www.wikidata.org/entity/Q15222637> <http://www.w3.org/2000/01/rdf-schema#label> "unit of speed" .
+<http://www.wikidata.org/entity/Q124003> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://www.wikidata.org/entity/Q4292136> .
+<http://www.wikidata.org/entity/Q4292136> <http://www.w3.org/2000/01/rdf-schema#label> "mechanical properties of fiber" .
+<http://www.wikidata.org/entity/Q124003> <http://www.w3.org/2000/01/rdf-schema#subClassOf> <http://www.wikidata.org/entity/Q3711325> .
+<http://www.wikidata.org/entity/Q3711325> <http://www.w3.org/2000/01/rdf-schema#label> "speed" .
+_:match_text_140562128877360140562140566512 <http://www.w3.org/2002/07/owl#sameAs> <http://www.wikidata.org/entity/Q11423> .
+<http://www.wikidata.org/entity/Q11423> <http://www.w3.org/2000/01/rdf-schema#label> "mass" .
+<http://www.wikidata.org/entity/Q11423> <http://www.wikidata.org/prop/direct/P1687> <http://www.wikidata.org/entity/P2067> .
+<http://www.wikidata.org/entity/P2067> <http://www.w3.org/2000/01/rdf-schema#label> "mass" .
+<http://www.wikidata.org/entity/Q11423> <http://www.w3.org/2000/01/rdf-schema#subClassOf> <http://www.wikidata.org/entity/Q28893893> .
+<http://www.wikidata.org/entity/Q28893893> <http://www.w3.org/2000/01/rdf-schema#label> "memes" .
+<http://www.wikidata.org/entity/Q11423> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://www.wikidata.org/entity/Q3386703> .
+<http://www.wikidata.org/entity/Q3386703> <http://www.w3.org/2000/01/rdf-schema#label> "extensive physical quantity" .
+<http://www.wikidata.org/entity/Q11423> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://www.wikidata.org/entity/Q28733284> .
+<http://www.wikidata.org/entity/Q28733284> <http://www.w3.org/2000/01/rdf-schema#label> "scalar magnitude" .
+<http://www.wikidata.org/entity/Q11423> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://www.wikidata.org/entity/Q30337748> .
+<http://www.wikidata.org/entity/Q30337748> <http://www.w3.org/2000/01/rdf-schema#label> "ISQ base quantity" .
+_:match_text_140561811994992140562140568768 <http://www.w3.org/2002/07/owl#sameAs> <http://www.wikidata.org/entity/Q2230241> .
+<http://www.wikidata.org/entity/Q2230241> <http://www.w3.org/2000/01/rdf-schema#label> "momentum indicator" .
+<http://www.wikidata.org/entity/Q2230241> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://www.wikidata.org/entity/Q1167393> .
+<http://www.wikidata.org/entity/Q1167393> <http://www.w3.org/2000/01/rdf-schema#label> "economic indicator" .
+_:match_text_140561811994736140562140566704 <http://www.w3.org/2002/07/owl#sameAs> <http://www.wikidata.org/entity/Q124003> .
+<http://www.wikidata.org/entity/Q124003> <http://www.w3.org/2000/01/rdf-schema#label> "speed of sound" .
+<http://www.wikidata.org/entity/Q124003> <http://www.wikidata.org/prop/direct/P1687> <http://www.wikidata.org/entity/P2075> .
+<http://www.wikidata.org/entity/P2075> <http://www.w3.org/2000/01/rdf-schema#label> "speed of sound" .
+<http://www.wikidata.org/entity/Q124003> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://www.wikidata.org/entity/Q764285> .
+<http://www.wikidata.org/entity/Q764285> <http://www.w3.org/2000/01/rdf-schema#label> "chemical property" .
+<http://www.wikidata.org/entity/Q124003> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://www.wikidata.org/entity/Q15222637> .
+<http://www.wikidata.org/entity/Q15222637> <http://www.w3.org/2000/01/rdf-schema#label> "unit of speed" .
+<http://www.wikidata.org/entity/Q124003> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://www.wikidata.org/entity/Q4292136> .
+<http://www.wikidata.org/entity/Q4292136> <http://www.w3.org/2000/01/rdf-schema#label> "mechanical properties of fiber" .
+<http://www.wikidata.org/entity/Q124003> <http://www.w3.org/2000/01/rdf-schema#subClassOf> <http://www.wikidata.org/entity/Q3711325> .
+<http://www.wikidata.org/entity/Q3711325> <http://www.w3.org/2000/01/rdf-schema#label> "speed" .
+_:match_text_140561811996592140562140566704 <http://www.w3.org/2002/07/owl#sameAs> <http://www.wikidata.org/entity/Q327408> .
+<http://www.wikidata.org/entity/Q327408> <http://www.w3.org/2000/01/rdf-schema#label> "color temperature" .
+<http://www.wikidata.org/entity/Q327408> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://www.wikidata.org/entity/Q107715> .
+<http://www.wikidata.org/entity/Q107715> <http://www.w3.org/2000/01/rdf-schema#label> "physical quantity" .
+_:eq_140562140531784 <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://sadl.org/sadlimplicitmodel#ExternalEquation> .
+_:eq_140562140531784 <http://sadl.org/sadlimplicitmodel#expression> _:script_text_140562140531784 .
+_:script_text_140562140531784 <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://sadl.org/sadlimplicitmodel#Script> .
+_:script_text_140562140531784 <http://sadl.org/sadlimplicitmodel#language> <http://sadl.org/sadlimplicitmodel#Text> .
+_:script_text_140562140531784 <http://sadl.org/sadlimplicitmodel#script> ""a^2 = R * T * gamma"" .
+_:eq_140562140531784 <http://sadl.org/sadlimplicitmodel#expression> _:script_python_140562140531784 .
+_:script_python_140562140531784 <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://sadl.org/sadlimplicitmodel#Script> .
+_:script_python_140562140531784 <http://sadl.org/sadlimplicitmodel#language> <http://sadl.org/sadlimplicitmodel#Python> .
+_:script_python_140562140531784 <http://sadl.org/sadlimplicitmodel#script> ""a = tf.math.pow( R * T * gamma, 1/2)"" .
+_:eq_140562140531784 <http://sadl.org/sadlimplicitmodel#arguments> _:list_140563612963816_140562140531784 .
+_:data_140563611947392_140562140531784 <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://sadl.org/sadlimplicitmodel#DataDescriptor> .
+_:data_140563611947392_140562140531784 <http://sadl.org/sadlimplicitmodel#descriptorName> ""R"" .
+_:data_140563611947392_140562140531784 <http://sadl.org/sadlimplicitmodel#dataType> <http://sadl.org/sadlimplicitmodel#anyDataType> .
+_:list_140563612963816_140562140531784 <http://www.w3.org/1999/02/22-rdf-syntax-ns#first> _:data_140563611947392_140562140531784 .
+_:list_140563612963816_140562140531784 <http://www.w3.org/1999/02/22-rdf-syntax-ns#rest> _:list_140563612403728_140562140531784 .
+_:data_140563611892064_140562140531784 <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://sadl.org/sadlimplicitmodel#DataDescriptor> .
+_:data_140563611892064_140562140531784 <http://sadl.org/sadlimplicitmodel#descriptorName> ""T"" .
+_:data_140563611892064_140562140531784 <http://sadl.org/sadlimplicitmodel#dataType> <http://sadl.org/sadlimplicitmodel#anyDataType> .
+_:list_140563612403728_140562140531784 <http://www.w3.org/1999/02/22-rdf-syntax-ns#first> _:data_140563611892064_140562140531784 .
+_:list_140563612403728_140562140531784 <http://www.w3.org/1999/02/22-rdf-syntax-ns#rest> _:list_140563612403728140561812011736 .
+_:data_140561812004176_140562140531784 <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://sadl.org/sadlimplicitmodel#DataDescriptor> .
+_:data_140561812004176_140562140531784 <http://sadl.org/sadlimplicitmodel#descriptorName> ""gamma"" .
+_:data_140561812004176_140562140531784 <http://sadl.org/sadlimplicitmodel#dataType> <http://sadl.org/sadlimplicitmodel#anyDataType> .
+_:list_140563612403728140561812011736 <http://www.w3.org/1999/02/22-rdf-syntax-ns#first> _:data_140561812004176_140562140531784 .
+_:list_140563612403728140561812011736 <http://www.w3.org/1999/02/22-rdf-syntax-ns#rest> _:list_140563612403728140561812011824 .
+_:eq_140562140531784 <http://sadl.org/sadlimplicitmodel#returnTypes> _:list_return_140563612963816_140562140531784 .
+_:return_140561812001488_140562140531784 <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://sadl.org/sadlimplicitmodel#DataDescriptor> .
+_:return_140561812001488_140562140531784 <http://sadl.org/sadlimplicitmodel#descriptorName> ""a^2"" .
+_:return_140561812001488_140562140531784 <http://sadl.org/sadlimplicitmodel#dataType> <http://sadl.org/sadlimplicitmodel#anyDataType> .
+_:list_return_140563612963816_140562140531784 <http://www.w3.org/1999/02/22-rdf-syntax-ns#first> _:return_140561812001488_140562140531784 .
+_:list_return_140563612963816_140562140531784 <http://www.w3.org/1999/02/22-rdf-syntax-ns#rest> _:list_return_140563612403728_140562140531784 .
+_:return_140561812001488_140562140531784 <http://sadl.org/sadlimplicitmodel#augmentedType> _:aug_sem_type_0.9453876945883576_0.34991520185762526 .
+_:aug_sem_type_0.9453876945883576_0.34991520185762526 <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://sadl.org/sadlimplicitmodel#SemanticType> .
+_:aug_sem_type_0.9453876945883576_0.34991520185762526 <http://sadl.org/sadlimplicitmodel#semType> <http://www.wikidata.org/entity/Q124003> .
+_:data_140563611892064_140562140531784 <http://sadl.org/sadlimplicitmodel#augmentedType> _:aug_sem_type_0.0641774339373612_0.11430297617990326 .
+_:aug_sem_type_0.0641774339373612_0.11430297617990326 <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://sadl.org/sadlimplicitmodel#SemanticType> .
+_:aug_sem_type_0.0641774339373612_0.11430297617990326 <http://sadl.org/sadlimplicitmodel#semType> <http://www.wikidata.org/entity/Q327408> .
+_:match_text_140561811993456140562140568624 <http://www.w3.org/2002/07/owl#sameAs> <http://www.wikidata.org/entity/Q327408> .
+<http://www.wikidata.org/entity/Q327408> <http://www.w3.org/2000/01/rdf-schema#label> "color temperature" .
+<http://www.wikidata.org/entity/Q327408> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://www.wikidata.org/entity/Q107715> .
+<http://www.wikidata.org/entity/Q107715> <http://www.w3.org/2000/01/rdf-schema#label> "physical quantity" .
+_:match_text_140562120146352140562140568840 <http://www.w3.org/2002/07/owl#sameAs> <http://www.wikidata.org/entity/Q179388> .
+<http://www.wikidata.org/entity/Q179388> <http://www.w3.org/2000/01/rdf-schema#label> "heat capacity" .
+<http://www.wikidata.org/entity/Q179388> <http://www.wikidata.org/prop/direct/P1687> <http://www.wikidata.org/entity/P2056> .
+<http://www.wikidata.org/entity/P2056> <http://www.w3.org/2000/01/rdf-schema#label> "heat capacity" .
+<http://www.wikidata.org/entity/Q179388> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://www.wikidata.org/entity/Q3387041> .
+<http://www.wikidata.org/entity/Q3387041> <http://www.w3.org/2000/01/rdf-schema#label> "intensive quantity" .
+_:match_text_140562120143792140562140566368 <http://www.w3.org/2002/07/owl#sameAs> <http://www.wikidata.org/entity/Q179388> .
+<http://www.wikidata.org/entity/Q179388> <http://www.w3.org/2000/01/rdf-schema#label> "heat capacity" .
+<http://www.wikidata.org/entity/Q179388> <http://www.wikidata.org/prop/direct/P1687> <http://www.wikidata.org/entity/P2056> .
+<http://www.wikidata.org/entity/P2056> <http://www.w3.org/2000/01/rdf-schema#label> "heat capacity" .
+<http://www.wikidata.org/entity/Q179388> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://www.wikidata.org/entity/Q3387041> .
+<http://www.wikidata.org/entity/Q3387041> <http://www.w3.org/2000/01/rdf-schema#label> "intensive quantity" .
+_:match_text_140561811995056140562120315816 <http://www.w3.org/2002/07/owl#sameAs> <http://www.wikidata.org/entity/Q124003> .
+<http://www.wikidata.org/entity/Q124003> <http://www.w3.org/2000/01/rdf-schema#label> "speed of sound" .
+<http://www.wikidata.org/entity/Q124003> <http://www.wikidata.org/prop/direct/P1687> <http://www.wikidata.org/entity/P2075> .
+<http://www.wikidata.org/entity/P2075> <http://www.w3.org/2000/01/rdf-schema#label> "speed of sound" .
+<http://www.wikidata.org/entity/Q124003> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://www.wikidata.org/entity/Q764285> .
+<http://www.wikidata.org/entity/Q764285> <http://www.w3.org/2000/01/rdf-schema#label> "chemical property" .
+<http://www.wikidata.org/entity/Q124003> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://www.wikidata.org/entity/Q15222637> .
+<http://www.wikidata.org/entity/Q15222637> <http://www.w3.org/2000/01/rdf-schema#label> "unit of speed" .
+<http://www.wikidata.org/entity/Q124003> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://www.wikidata.org/entity/Q4292136> .
+<http://www.wikidata.org/entity/Q4292136> <http://www.w3.org/2000/01/rdf-schema#label> "mechanical properties of fiber" .
+<http://www.wikidata.org/entity/Q124003> <http://www.w3.org/2000/01/rdf-schema#subClassOf> <http://www.wikidata.org/entity/Q3711325> .
+<http://www.wikidata.org/entity/Q3711325> <http://www.w3.org/2000/01/rdf-schema#label> "speed" .
+_:match_text_140562110304304140562140568960 <http://www.w3.org/2002/07/owl#sameAs> <http://www.wikidata.org/entity/Q28912099> .
+<http://www.wikidata.org/entity/Q28912099> <http://www.w3.org/2000/01/rdf-schema#label> "Investigation of the mechanism of action of papain" .
+<http://www.wikidata.org/entity/Q28912099> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://www.wikidata.org/entity/Q187685> .
+<http://www.wikidata.org/entity/Q187685> <http://www.w3.org/2000/01/rdf-schema#label> "doctoral thesis" .
+_:match_text_140562142168432140562120316392 <http://www.w3.org/2002/07/owl#sameAs> <http://www.wikidata.org/entity/Q124003> .
+<http://www.wikidata.org/entity/Q124003> <http://www.w3.org/2000/01/rdf-schema#label> "speed of sound" .
+<http://www.wikidata.org/entity/Q124003> <http://www.wikidata.org/prop/direct/P1687> <http://www.wikidata.org/entity/P2075> .
+<http://www.wikidata.org/entity/P2075> <http://www.w3.org/2000/01/rdf-schema#label> "speed of sound" .
+<http://www.wikidata.org/entity/Q124003> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://www.wikidata.org/entity/Q764285> .
+<http://www.wikidata.org/entity/Q764285> <http://www.w3.org/2000/01/rdf-schema#label> "chemical property" .
+<http://www.wikidata.org/entity/Q124003> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://www.wikidata.org/entity/Q15222637> .
+<http://www.wikidata.org/entity/Q15222637> <http://www.w3.org/2000/01/rdf-schema#label> "unit of speed" .
+<http://www.wikidata.org/entity/Q124003> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://www.wikidata.org/entity/Q4292136> .
+<http://www.wikidata.org/entity/Q4292136> <http://www.w3.org/2000/01/rdf-schema#label> "mechanical properties of fiber" .
+<http://www.wikidata.org/entity/Q124003> <http://www.w3.org/2000/01/rdf-schema#subClassOf> <http://www.wikidata.org/entity/Q3711325> .
+<http://www.wikidata.org/entity/Q3711325> <http://www.w3.org/2000/01/rdf-schema#label> "speed" .
+_:eq_140561811998088 <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://sadl.org/sadlimplicitmodel#ExternalEquation> .
+_:eq_140561811998088 <http://sadl.org/sadlimplicitmodel#expression> _:script_text_140561811998088 .
+_:script_text_140561811998088 <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://sadl.org/sadlimplicitmodel#Script> .
+_:script_text_140561811998088 <http://sadl.org/sadlimplicitmodel#language> <http://sadl.org/sadlimplicitmodel#Text> .
+_:script_text_140561811998088 <http://sadl.org/sadlimplicitmodel#script> ""a^2 = R * T * {1 + (gamma - 1) / ( 1 + (gamma-1) * [(theta/T)^2 * e^(theta/T) /(e^(theta/T) -1)^2]) }"" .
+_:eq_140561811998088 <http://sadl.org/sadlimplicitmodel#expression> _:script_python_140561811998088 .
+_:script_python_140561811998088 <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://sadl.org/sadlimplicitmodel#Script> .
+_:script_python_140561811998088 <http://sadl.org/sadlimplicitmodel#language> <http://sadl.org/sadlimplicitmodel#Python> .
+_:script_python_140561811998088 <http://sadl.org/sadlimplicitmodel#script> ""a = tf.math.pow( R * T *  (  1 + ( gamma-1 ) / ( 1 + ( gamma-1 ) *  (  ( theta/T ) ** 2 *  tf.math.exp( theta/T ) / (  tf.math.exp( theta/T ) - 1 ) ** 2 )  ) ) , 1/2)"" .
+_:eq_140561811998088 <http://sadl.org/sadlimplicitmodel#arguments> _:list_140563612963816_140561811998088 .
+_:data_140563611947392_140561811998088 <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://sadl.org/sadlimplicitmodel#DataDescriptor> .
+_:data_140563611947392_140561811998088 <http://sadl.org/sadlimplicitmodel#descriptorName> ""R"" .
+_:data_140563611947392_140561811998088 <http://sadl.org/sadlimplicitmodel#dataType> <http://sadl.org/sadlimplicitmodel#anyDataType> .
+_:list_140563612963816_140561811998088 <http://www.w3.org/1999/02/22-rdf-syntax-ns#first> _:data_140563611947392_140561811998088 .
+_:list_140563612963816_140561811998088 <http://www.w3.org/1999/02/22-rdf-syntax-ns#rest> _:list_140563612403728_140561811998088 .
+_:data_140563611892064_140561811998088 <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://sadl.org/sadlimplicitmodel#DataDescriptor> .
+_:data_140563611892064_140561811998088 <http://sadl.org/sadlimplicitmodel#descriptorName> ""T"" .
+_:data_140563611892064_140561811998088 <http://sadl.org/sadlimplicitmodel#dataType> <http://sadl.org/sadlimplicitmodel#anyDataType> .
+_:list_140563612403728_140561811998088 <http://www.w3.org/1999/02/22-rdf-syntax-ns#first> _:data_140563611892064_140561811998088 .
+_:list_140563612403728_140561811998088 <http://www.w3.org/1999/02/22-rdf-syntax-ns#rest> _:list_140563612403728140562110341520 .
+_:data_140561811929944_140561811998088 <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://sadl.org/sadlimplicitmodel#DataDescriptor> .
+_:data_140561811929944_140561811998088 <http://sadl.org/sadlimplicitmodel#descriptorName> ""gamma"" .
+_:data_140561811929944_140561811998088 <http://sadl.org/sadlimplicitmodel#dataType> <http://sadl.org/sadlimplicitmodel#anyDataType> .
+_:list_140563612403728140562110341520 <http://www.w3.org/1999/02/22-rdf-syntax-ns#first> _:data_140561811929944_140561811998088 .
+_:list_140563612403728140562110341520 <http://www.w3.org/1999/02/22-rdf-syntax-ns#rest> _:list_140563612403728140562110341168 .
+_:data_140561811929496_140561811998088 <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://sadl.org/sadlimplicitmodel#DataDescriptor> .
+_:data_140561811929496_140561811998088 <http://sadl.org/sadlimplicitmodel#descriptorName> ""theta"" .
+_:data_140561811929496_140561811998088 <http://sadl.org/sadlimplicitmodel#dataType> <http://sadl.org/sadlimplicitmodel#anyDataType> .
+_:list_140563612403728140562110341168 <http://www.w3.org/1999/02/22-rdf-syntax-ns#first> _:data_140561811929496_140561811998088 .
+_:list_140563612403728140562110341168 <http://www.w3.org/1999/02/22-rdf-syntax-ns#rest> _:list_140563612403728140562110341784 .
+_:eq_140561811998088 <http://sadl.org/sadlimplicitmodel#returnTypes> _:list_return_140563612963816_140561811998088 .
+_:return_140561811929888_140561811998088 <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://sadl.org/sadlimplicitmodel#DataDescriptor> .
+_:return_140561811929888_140561811998088 <http://sadl.org/sadlimplicitmodel#descriptorName> ""a^2"" .
+_:return_140561811929888_140561811998088 <http://sadl.org/sadlimplicitmodel#dataType> <http://sadl.org/sadlimplicitmodel#anyDataType> .
+_:list_return_140563612963816_140561811998088 <http://www.w3.org/1999/02/22-rdf-syntax-ns#first> _:return_140561811929888_140561811998088 .
+_:list_return_140563612963816_140561811998088 <http://www.w3.org/1999/02/22-rdf-syntax-ns#rest> _:list_return_140563612403728_140561811998088 .
+_:match_text_140562110241200140562120317616 <http://www.w3.org/2002/07/owl#sameAs> <http://www.wikidata.org/entity/Q327408> .
+<http://www.wikidata.org/entity/Q327408> <http://www.w3.org/2000/01/rdf-schema#label> "color temperature" .
+<http://www.wikidata.org/entity/Q327408> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://www.wikidata.org/entity/Q107715> .
+<http://www.wikidata.org/entity/Q107715> <http://www.w3.org/2000/01/rdf-schema#label> "physical quantity" .
+_:match_text_140561811996080140562120318024 <http://www.w3.org/2002/07/owl#sameAs> <http://www.wikidata.org/entity/Q124003> .
+<http://www.wikidata.org/entity/Q124003> <http://www.w3.org/2000/01/rdf-schema#label> "speed of sound" .
+<http://www.wikidata.org/entity/Q124003> <http://www.wikidata.org/prop/direct/P1687> <http://www.wikidata.org/entity/P2075> .
+<http://www.wikidata.org/entity/P2075> <http://www.w3.org/2000/01/rdf-schema#label> "speed of sound" .
+<http://www.wikidata.org/entity/Q124003> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://www.wikidata.org/entity/Q764285> .
+<http://www.wikidata.org/entity/Q764285> <http://www.w3.org/2000/01/rdf-schema#label> "chemical property" .
+<http://www.wikidata.org/entity/Q124003> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://www.wikidata.org/entity/Q15222637> .
+<http://www.wikidata.org/entity/Q15222637> <http://www.w3.org/2000/01/rdf-schema#label> "unit of speed" .
+<http://www.wikidata.org/entity/Q124003> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://www.wikidata.org/entity/Q4292136> .
+<http://www.wikidata.org/entity/Q4292136> <http://www.w3.org/2000/01/rdf-schema#label> "mechanical properties of fiber" .
+<http://www.wikidata.org/entity/Q124003> <http://www.w3.org/2000/01/rdf-schema#subClassOf> <http://www.wikidata.org/entity/Q3711325> .
+<http://www.wikidata.org/entity/Q3711325> <http://www.w3.org/2000/01/rdf-schema#label> "speed" .
+_:match_text_140562110241456140562120318024 <http://www.w3.org/2002/07/owl#sameAs> <http://www.wikidata.org/entity/Q327408> .
+<http://www.wikidata.org/entity/Q327408> <http://www.w3.org/2000/01/rdf-schema#label> "color temperature" .
+<http://www.wikidata.org/entity/Q327408> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://www.wikidata.org/entity/Q107715> .
+<http://www.wikidata.org/entity/Q107715> <http://www.w3.org/2000/01/rdf-schema#label> "physical quantity" .
+_:match_text_140562110242032140562120315816 <http://www.w3.org/2002/07/owl#sameAs> <http://www.wikidata.org/entity/Q327408> .
+<http://www.wikidata.org/entity/Q327408> <http://www.w3.org/2000/01/rdf-schema#label> "color temperature" .
+<http://www.wikidata.org/entity/Q327408> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://www.wikidata.org/entity/Q107715> .
+<http://www.wikidata.org/entity/Q107715> <http://www.w3.org/2000/01/rdf-schema#label> "physical quantity" .
+_:match_text_140562110241840140562120316920 <http://www.w3.org/2002/07/owl#sameAs> <http://www.wikidata.org/entity/Q327408> .
+<http://www.wikidata.org/entity/Q327408> <http://www.w3.org/2000/01/rdf-schema#label> "color temperature" .
+<http://www.wikidata.org/entity/Q327408> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://www.wikidata.org/entity/Q107715> .
+<http://www.wikidata.org/entity/Q107715> <http://www.w3.org/2000/01/rdf-schema#label> "physical quantity" .
+_:match_text_140562110306152140562120316680 <http://www.w3.org/2002/07/owl#sameAs> <http://www.wikidata.org/entity/Q1256787> .
+<http://www.wikidata.org/entity/Q1256787> <http://www.w3.org/2000/01/rdf-schema#label> "rotational speed" .
+<http://www.wikidata.org/entity/Q1256787> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://www.wikidata.org/entity/Q107715> .
+<http://www.wikidata.org/entity/Q107715> <http://www.w3.org/2000/01/rdf-schema#label> "physical quantity" .
+_:match_text_140562128841072140562120318312 <http://www.w3.org/2002/07/owl#sameAs> <http://www.wikidata.org/entity/Q124003> .
+<http://www.wikidata.org/entity/Q124003> <http://www.w3.org/2000/01/rdf-schema#label> "speed of sound" .
+<http://www.wikidata.org/entity/Q124003> <http://www.wikidata.org/prop/direct/P1687> <http://www.wikidata.org/entity/P2075> .
+<http://www.wikidata.org/entity/P2075> <http://www.w3.org/2000/01/rdf-schema#label> "speed of sound" .
+<http://www.wikidata.org/entity/Q124003> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://www.wikidata.org/entity/Q764285> .
+<http://www.wikidata.org/entity/Q764285> <http://www.w3.org/2000/01/rdf-schema#label> "chemical property" .
+<http://www.wikidata.org/entity/Q124003> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://www.wikidata.org/entity/Q15222637> .
+<http://www.wikidata.org/entity/Q15222637> <http://www.w3.org/2000/01/rdf-schema#label> "unit of speed" .
+<http://www.wikidata.org/entity/Q124003> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://www.wikidata.org/entity/Q4292136> .
+<http://www.wikidata.org/entity/Q4292136> <http://www.w3.org/2000/01/rdf-schema#label> "mechanical properties of fiber" .
+<http://www.wikidata.org/entity/Q124003> <http://www.w3.org/2000/01/rdf-schema#subClassOf> <http://www.wikidata.org/entity/Q3711325> .
+<http://www.wikidata.org/entity/Q3711325> <http://www.w3.org/2000/01/rdf-schema#label> "speed" .
+_:match_text_140562110306208140562120318312 <http://www.w3.org/2002/07/owl#sameAs> <http://www.wikidata.org/entity/Q1256787> .
+<http://www.wikidata.org/entity/Q1256787> <http://www.w3.org/2000/01/rdf-schema#label> "rotational speed" .
+<http://www.wikidata.org/entity/Q1256787> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://www.wikidata.org/entity/Q107715> .
+<http://www.wikidata.org/entity/Q107715> <http://www.w3.org/2000/01/rdf-schema#label> "physical quantity" .
+_:match_text_140562109406768140562120316824 <http://www.w3.org/2002/07/owl#sameAs> <http://www.wikidata.org/entity/Q1256787> .
+<http://www.wikidata.org/entity/Q1256787> <http://www.w3.org/2000/01/rdf-schema#label> "rotational speed" .
+<http://www.wikidata.org/entity/Q1256787> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://www.wikidata.org/entity/Q107715> .
+<http://www.wikidata.org/entity/Q107715> <http://www.w3.org/2000/01/rdf-schema#label> "physical quantity" .
+_:match_text_140561812001208140562120316152 <http://www.w3.org/2002/07/owl#sameAs> <http://www.wikidata.org/entity/Q1256787> .
+<http://www.wikidata.org/entity/Q1256787> <http://www.w3.org/2000/01/rdf-schema#label> "rotational speed" .
+<http://www.wikidata.org/entity/Q1256787> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://www.wikidata.org/entity/Q107715> .
+<http://www.wikidata.org/entity/Q107715> <http://www.w3.org/2000/01/rdf-schema#label> "physical quantity" .
