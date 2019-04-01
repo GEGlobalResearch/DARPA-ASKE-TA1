@@ -138,30 +138,30 @@ _:eq_140562140531784 <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://s
 _:eq_140562140531784 <http://sadl.org/sadlimplicitmodel#expression> _:script_text_140562140531784 .
 _:script_text_140562140531784 <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://sadl.org/sadlimplicitmodel#Script> .
 _:script_text_140562140531784 <http://sadl.org/sadlimplicitmodel#language> <http://sadl.org/sadlimplicitmodel#Text> .
-_:script_text_140562140531784 <http://sadl.org/sadlimplicitmodel#script> ""a^2 = R * T * gamma"" .
+_:script_text_140562140531784 <http://sadl.org/sadlimplicitmodel#script> "a^2 = R * T * gamma" .
 _:eq_140562140531784 <http://sadl.org/sadlimplicitmodel#expression> _:script_python_140562140531784 .
 _:script_python_140562140531784 <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://sadl.org/sadlimplicitmodel#Script> .
 _:script_python_140562140531784 <http://sadl.org/sadlimplicitmodel#language> <http://sadl.org/sadlimplicitmodel#Python> .
-_:script_python_140562140531784 <http://sadl.org/sadlimplicitmodel#script> ""a = tf.math.pow( R * T * gamma, 1/2)"" .
+_:script_python_140562140531784 <http://sadl.org/sadlimplicitmodel#script> "a = tf.math.pow( R * T * gamma, 1/2)" .
 _:eq_140562140531784 <http://sadl.org/sadlimplicitmodel#arguments> _:list_140563612963816_140562140531784 .
 _:data_140563611947392_140562140531784 <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://sadl.org/sadlimplicitmodel#DataDescriptor> .
-_:data_140563611947392_140562140531784 <http://sadl.org/sadlimplicitmodel#descriptorName> ""R"" .
+_:data_140563611947392_140562140531784 <http://sadl.org/sadlimplicitmodel#descriptorName> "R" .
 _:data_140563611947392_140562140531784 <http://sadl.org/sadlimplicitmodel#dataType> <http://sadl.org/sadlimplicitmodel#anyDataType> .
 _:list_140563612963816_140562140531784 <http://www.w3.org/1999/02/22-rdf-syntax-ns#first> _:data_140563611947392_140562140531784 .
 _:list_140563612963816_140562140531784 <http://www.w3.org/1999/02/22-rdf-syntax-ns#rest> _:list_140563612403728_140562140531784 .
 _:data_140563611892064_140562140531784 <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://sadl.org/sadlimplicitmodel#DataDescriptor> .
-_:data_140563611892064_140562140531784 <http://sadl.org/sadlimplicitmodel#descriptorName> ""T"" .
+_:data_140563611892064_140562140531784 <http://sadl.org/sadlimplicitmodel#descriptorName> "T" .
 _:data_140563611892064_140562140531784 <http://sadl.org/sadlimplicitmodel#dataType> <http://sadl.org/sadlimplicitmodel#anyDataType> .
 _:list_140563612403728_140562140531784 <http://www.w3.org/1999/02/22-rdf-syntax-ns#first> _:data_140563611892064_140562140531784 .
 _:list_140563612403728_140562140531784 <http://www.w3.org/1999/02/22-rdf-syntax-ns#rest> _:list_140563612403728140561812011736 .
 _:data_140561812004176_140562140531784 <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://sadl.org/sadlimplicitmodel#DataDescriptor> .
-_:data_140561812004176_140562140531784 <http://sadl.org/sadlimplicitmodel#descriptorName> ""gamma"" .
+_:data_140561812004176_140562140531784 <http://sadl.org/sadlimplicitmodel#descriptorName> "gamma" .
 _:data_140561812004176_140562140531784 <http://sadl.org/sadlimplicitmodel#dataType> <http://sadl.org/sadlimplicitmodel#anyDataType> .
 _:list_140563612403728140561812011736 <http://www.w3.org/1999/02/22-rdf-syntax-ns#first> _:data_140561812004176_140562140531784 .
 _:list_140563612403728140561812011736 <http://www.w3.org/1999/02/22-rdf-syntax-ns#rest> _:list_140563612403728140561812011824 .
 _:eq_140562140531784 <http://sadl.org/sadlimplicitmodel#returnTypes> _:list_return_140563612963816_140562140531784 .
 _:return_140561812001488_140562140531784 <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://sadl.org/sadlimplicitmodel#DataDescriptor> .
-_:return_140561812001488_140562140531784 <http://sadl.org/sadlimplicitmodel#descriptorName> ""a^2"" .
+_:return_140561812001488_140562140531784 <http://sadl.org/sadlimplicitmodel#descriptorName> "a^2" .
 _:return_140561812001488_140562140531784 <http://sadl.org/sadlimplicitmodel#dataType> <http://sadl.org/sadlimplicitmodel#anyDataType> .
 _:list_return_140563612963816_140562140531784 <http://www.w3.org/1999/02/22-rdf-syntax-ns#first> _:return_140561812001488_140562140531784 .
 _:list_return_140563612963816_140562140531784 <http://www.w3.org/1999/02/22-rdf-syntax-ns#rest> _:list_return_140563612403728_140562140531784 .
@@ -219,35 +219,35 @@ _:eq_140561811998088 <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://s
 _:eq_140561811998088 <http://sadl.org/sadlimplicitmodel#expression> _:script_text_140561811998088 .
 _:script_text_140561811998088 <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://sadl.org/sadlimplicitmodel#Script> .
 _:script_text_140561811998088 <http://sadl.org/sadlimplicitmodel#language> <http://sadl.org/sadlimplicitmodel#Text> .
-_:script_text_140561811998088 <http://sadl.org/sadlimplicitmodel#script> ""a^2 = R * T * {1 + (gamma - 1) / ( 1 + (gamma-1) * [(theta/T)^2 * e^(theta/T) /(e^(theta/T) -1)^2]) }"" .
+_:script_text_140561811998088 <http://sadl.org/sadlimplicitmodel#script> "a^2 = R * T * {1 + (gamma - 1) / ( 1 + (gamma-1) * [(theta/T)^2 * e^(theta/T) /(e^(theta/T) -1)^2]) }" .
 _:eq_140561811998088 <http://sadl.org/sadlimplicitmodel#expression> _:script_python_140561811998088 .
 _:script_python_140561811998088 <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://sadl.org/sadlimplicitmodel#Script> .
 _:script_python_140561811998088 <http://sadl.org/sadlimplicitmodel#language> <http://sadl.org/sadlimplicitmodel#Python> .
-_:script_python_140561811998088 <http://sadl.org/sadlimplicitmodel#script> ""a = tf.math.pow( R * T *  (  1 + ( gamma-1 ) / ( 1 + ( gamma-1 ) *  (  ( theta/T ) ** 2 *  tf.math.exp( theta/T ) / (  tf.math.exp( theta/T ) - 1 ) ** 2 )  ) ) , 1/2)"" .
+_:script_python_140561811998088 <http://sadl.org/sadlimplicitmodel#script> "a = tf.math.pow( R * T *  (  1 + ( gamma-1 ) / ( 1 + ( gamma-1 ) *  (  ( theta/T ) ** 2 *  tf.math.exp( theta/T ) / (  tf.math.exp( theta/T ) - 1 ) ** 2 )  ) ) , 1/2)" .
 _:eq_140561811998088 <http://sadl.org/sadlimplicitmodel#arguments> _:list_140563612963816_140561811998088 .
 _:data_140563611947392_140561811998088 <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://sadl.org/sadlimplicitmodel#DataDescriptor> .
-_:data_140563611947392_140561811998088 <http://sadl.org/sadlimplicitmodel#descriptorName> ""R"" .
+_:data_140563611947392_140561811998088 <http://sadl.org/sadlimplicitmodel#descriptorName> "R" .
 _:data_140563611947392_140561811998088 <http://sadl.org/sadlimplicitmodel#dataType> <http://sadl.org/sadlimplicitmodel#anyDataType> .
 _:list_140563612963816_140561811998088 <http://www.w3.org/1999/02/22-rdf-syntax-ns#first> _:data_140563611947392_140561811998088 .
 _:list_140563612963816_140561811998088 <http://www.w3.org/1999/02/22-rdf-syntax-ns#rest> _:list_140563612403728_140561811998088 .
 _:data_140563611892064_140561811998088 <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://sadl.org/sadlimplicitmodel#DataDescriptor> .
-_:data_140563611892064_140561811998088 <http://sadl.org/sadlimplicitmodel#descriptorName> ""T"" .
+_:data_140563611892064_140561811998088 <http://sadl.org/sadlimplicitmodel#descriptorName> "T" .
 _:data_140563611892064_140561811998088 <http://sadl.org/sadlimplicitmodel#dataType> <http://sadl.org/sadlimplicitmodel#anyDataType> .
 _:list_140563612403728_140561811998088 <http://www.w3.org/1999/02/22-rdf-syntax-ns#first> _:data_140563611892064_140561811998088 .
 _:list_140563612403728_140561811998088 <http://www.w3.org/1999/02/22-rdf-syntax-ns#rest> _:list_140563612403728140562110341520 .
 _:data_140561811929944_140561811998088 <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://sadl.org/sadlimplicitmodel#DataDescriptor> .
-_:data_140561811929944_140561811998088 <http://sadl.org/sadlimplicitmodel#descriptorName> ""gamma"" .
+_:data_140561811929944_140561811998088 <http://sadl.org/sadlimplicitmodel#descriptorName> "gamma" .
 _:data_140561811929944_140561811998088 <http://sadl.org/sadlimplicitmodel#dataType> <http://sadl.org/sadlimplicitmodel#anyDataType> .
 _:list_140563612403728140562110341520 <http://www.w3.org/1999/02/22-rdf-syntax-ns#first> _:data_140561811929944_140561811998088 .
 _:list_140563612403728140562110341520 <http://www.w3.org/1999/02/22-rdf-syntax-ns#rest> _:list_140563612403728140562110341168 .
 _:data_140561811929496_140561811998088 <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://sadl.org/sadlimplicitmodel#DataDescriptor> .
-_:data_140561811929496_140561811998088 <http://sadl.org/sadlimplicitmodel#descriptorName> ""theta"" .
+_:data_140561811929496_140561811998088 <http://sadl.org/sadlimplicitmodel#descriptorName> "theta" .
 _:data_140561811929496_140561811998088 <http://sadl.org/sadlimplicitmodel#dataType> <http://sadl.org/sadlimplicitmodel#anyDataType> .
 _:list_140563612403728140562110341168 <http://www.w3.org/1999/02/22-rdf-syntax-ns#first> _:data_140561811929496_140561811998088 .
 _:list_140563612403728140562110341168 <http://www.w3.org/1999/02/22-rdf-syntax-ns#rest> _:list_140563612403728140562110341784 .
 _:eq_140561811998088 <http://sadl.org/sadlimplicitmodel#returnTypes> _:list_return_140563612963816_140561811998088 .
 _:return_140561811929888_140561811998088 <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://sadl.org/sadlimplicitmodel#DataDescriptor> .
-_:return_140561811929888_140561811998088 <http://sadl.org/sadlimplicitmodel#descriptorName> ""a^2"" .
+_:return_140561811929888_140561811998088 <http://sadl.org/sadlimplicitmodel#descriptorName> "a^2" .
 _:return_140561811929888_140561811998088 <http://sadl.org/sadlimplicitmodel#dataType> <http://sadl.org/sadlimplicitmodel#anyDataType> .
 _:list_return_140563612963816_140561811998088 <http://www.w3.org/1999/02/22-rdf-syntax-ns#first> _:return_140561811929888_140561811998088 .
 _:list_return_140563612963816_140561811998088 <http://www.w3.org/1999/02/22-rdf-syntax-ns#rest> _:list_return_140563612403728_140561811998088 .
