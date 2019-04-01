@@ -7,7 +7,7 @@ def get_equation_var_context(body):
 
     query_string = get_query_string(body["variableName"], body["localityURI"])
 
-    URL = "http://vesuvius-test.crd.ge.com:2420/sparql"
+    URL = "http://localhost:2420/sparql"
     PARAMS = {"query": query_string, format: "application/sparql-results/json"} #"format": "application%2Fsparql-results%2Bjson"
 
     r = requests.get(url=URL, params=PARAMS) #verify=False
