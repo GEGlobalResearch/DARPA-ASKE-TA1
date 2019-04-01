@@ -1,4 +1,4 @@
-var serviceBaseURL = "http://vesuvius063.crd.ge.com:4200/darpa/aske/" //vesuvius063
+var serviceBaseURL = "http://localhost:4200/darpa/aske/"
 
 $(document).ready(function(){
     //let's call the service and display the HTML to begin with
