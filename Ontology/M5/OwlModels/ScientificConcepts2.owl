@@ -15,12 +15,38 @@
     <owl:imports rdf:resource="sadlbasemodel"/>
     <rdfs:comment xml:lang="en">This ontology was created from a SADL file 'ScientificConcepts2.sadl' and should not be directly edited.</rdfs:comment>
   </owl:Ontology>
+  <rdfs:Datatype rdf:ID="primitiveData">
+    <owl:equivalentClass>
+      <rdfs:Datatype>
+        <owl:unionOf rdf:parseType="Collection">
+          <rdf:Description rdf:about="http://www.w3.org/2001/XMLSchema#decimal"/>
+          <rdf:Description rdf:about="http://www.w3.org/2001/XMLSchema#boolean"/>
+          <rdf:Description rdf:about="http://www.w3.org/2001/XMLSchema#string"/>
+        </owl:unionOf>
+      </rdfs:Datatype>
+    </owl:equivalentClass>
+  </rdfs:Datatype>
   <owl:Class rdf:ID="Position">
+    <rdfs:subClassOf rdf:resource="sadlimplicitmodel#UnittedQuantity"/>
+  </owl:Class>
+  <owl:Class rdf:ID="Density">
+    <rdfs:subClassOf rdf:resource="sadlimplicitmodel#UnittedQuantity"/>
+  </owl:Class>
+  <owl:Class rdf:ID="Time">
+    <rdfs:subClassOf rdf:resource="sadlimplicitmodel#UnittedQuantity"/>
+  </owl:Class>
+  <owl:Class rdf:ID="Substance">
+    <rdfs:subClassOf>
+      <owl:Class rdf:ID="PhysicalThing"/>
+    </rdfs:subClassOf>
+  </owl:Class>
+  <owl:Class rdf:ID="Temperature">
+    <rdfs:subClassOf rdf:resource="sadlimplicitmodel#UnittedQuantity"/>
+  </owl:Class>
+  <owl:Class rdf:ID="Acceleration">
     <rdfs:subClassOf>
       <owl:Restriction>
-        <owl:hasValue>
-          <owl:ObjectProperty rdf:ID="time"/>
-        </owl:hasValue>
+        <owl:allValuesFrom rdf:resource="#Time"/>
         <owl:onProperty>
           <owl:ObjectProperty rdf:ID="withRespectTo"/>
         </owl:onProperty>
@@ -32,96 +58,27 @@
           <owl:Class rdf:ID="Velocity"/>
         </owl:allValuesFrom>
         <owl:onProperty>
-          <owl:ObjectProperty rdf:ID="derivativeOf"/>
-        </owl:onProperty>
-      </owl:Restriction>
-    </rdfs:subClassOf>
-    <rdfs:subClassOf rdf:resource="sadlimplicitmodel#UnittedQuantity"/>
-  </owl:Class>
-  <owl:Class rdf:ID="Time">
-    <rdfs:subClassOf rdf:resource="sadlimplicitmodel#UnittedQuantity"/>
-  </owl:Class>
-  <owl:Class rdf:ID="Derivative">
-    <rdfs:subClassOf>
-      <owl:Restriction>
-        <owl:cardinality rdf:datatype="http://www.w3.org/2001/XMLSchema#int"
-        >1</owl:cardinality>
-        <owl:onProperty>
-          <owl:ObjectProperty rdf:about="#withRespectTo"/>
+          <owl:ObjectProperty rdf:ID="derivedFrom"/>
         </owl:onProperty>
       </owl:Restriction>
     </rdfs:subClassOf>
     <rdfs:subClassOf>
-      <owl:Restriction>
-        <owl:cardinality rdf:datatype="http://www.w3.org/2001/XMLSchema#int"
-        >1</owl:cardinality>
-        <owl:onProperty>
-          <owl:ObjectProperty rdf:about="#derivativeOf"/>
-        </owl:onProperty>
-      </owl:Restriction>
-    </rdfs:subClassOf>
-    <rdfs:subClassOf rdf:resource="sadlimplicitmodel#ScientificConcept"/>
-  </owl:Class>
-  <owl:Class rdf:ID="Length">
-    <rdfs:subClassOf rdf:resource="sadlimplicitmodel#UnittedQuantity"/>
-  </owl:Class>
-  <owl:Class rdf:ID="Temperature">
-    <rdfs:subClassOf rdf:resource="sadlimplicitmodel#UnittedQuantity"/>
-  </owl:Class>
-  <owl:Class rdf:ID="Force">
-    <rdfs:subClassOf>
       <owl:Class>
         <owl:intersectionOf rdf:parseType="Collection">
           <rdf:Description rdf:about="sadlimplicitmodel#UnittedQuantity"/>
-          <owl:Class rdf:about="#Derivative"/>
-        </owl:intersectionOf>
-      </owl:Class>
-    </rdfs:subClassOf>
-    <rdfs:subClassOf>
-      <owl:Class>
-        <owl:intersectionOf rdf:parseType="Collection">
-          <rdf:Description rdf:about="sadlimplicitmodel#UnittedQuantity"/>
-          <owl:Class rdf:about="#Derivative"/>
-        </owl:intersectionOf>
-      </owl:Class>
-    </rdfs:subClassOf>
-  </owl:Class>
-  <owl:Class rdf:ID="Acceleration">
-    <rdfs:subClassOf>
-      <owl:Class>
-        <owl:intersectionOf rdf:parseType="Collection">
-          <rdf:Description rdf:about="sadlimplicitmodel#UnittedQuantity"/>
-          <owl:Class rdf:about="#Derivative"/>
-        </owl:intersectionOf>
-      </owl:Class>
-    </rdfs:subClassOf>
-    <rdfs:subClassOf>
-      <owl:Class>
-        <owl:intersectionOf rdf:parseType="Collection">
-          <rdf:Description rdf:about="sadlimplicitmodel#UnittedQuantity"/>
-          <owl:Class rdf:about="#Derivative"/>
+          <owl:Class rdf:ID="Derivative"/>
         </owl:intersectionOf>
       </owl:Class>
     </rdfs:subClassOf>
   </owl:Class>
   <owl:Class rdf:ID="Momentum">
     <rdfs:subClassOf>
-      <owl:Restriction>
-        <owl:hasValue>
-          <owl:ObjectProperty rdf:about="#time"/>
-        </owl:hasValue>
-        <owl:onProperty>
-          <owl:ObjectProperty rdf:about="#withRespectTo"/>
-        </owl:onProperty>
-      </owl:Restriction>
-    </rdfs:subClassOf>
-    <rdfs:subClassOf>
-      <owl:Restriction>
-        <owl:allValuesFrom rdf:resource="#Force"/>
-        <owl:onProperty>
-          <owl:ObjectProperty rdf:about="#derivativeOf"/>
-        </owl:onProperty>
-      </owl:Restriction>
+      <owl:Class>
+        <owl:intersectionOf rdf:parseType="Collection">
+          <rdf:Description rdf:about="sadlimplicitmodel#UnittedQuantity"/>
+          <owl:Class rdf:about="#Derivative"/>
+        </owl:intersectionOf>
+      </owl:Class>
     </rdfs:subClassOf>
     <rdfs:subClassOf>
       <owl:Class>
@@ -134,10 +91,16 @@
   </owl:Class>
   <owl:Class rdf:about="#Velocity">
     <rdfs:subClassOf>
+      <owl:Class>
+        <owl:intersectionOf rdf:parseType="Collection">
+          <rdf:Description rdf:about="sadlimplicitmodel#UnittedQuantity"/>
+          <owl:Class rdf:about="#Derivative"/>
+        </owl:intersectionOf>
+      </owl:Class>
+    </rdfs:subClassOf>
+    <rdfs:subClassOf>
       <owl:Restriction>
-        <owl:hasValue>
-          <owl:ObjectProperty rdf:about="#time"/>
-        </owl:hasValue>
+        <owl:allValuesFrom rdf:resource="#Time"/>
         <owl:onProperty>
           <owl:ObjectProperty rdf:about="#withRespectTo"/>
         </owl:onProperty>
@@ -145,9 +108,9 @@
     </rdfs:subClassOf>
     <rdfs:subClassOf>
       <owl:Restriction>
-        <owl:allValuesFrom rdf:resource="#Acceleration"/>
+        <owl:allValuesFrom rdf:resource="#Position"/>
         <owl:onProperty>
-          <owl:ObjectProperty rdf:about="#derivativeOf"/>
+          <owl:ObjectProperty rdf:about="#derivedFrom"/>
         </owl:onProperty>
       </owl:Restriction>
     </rdfs:subClassOf>
@@ -159,6 +122,70 @@
         </owl:intersectionOf>
       </owl:Class>
     </rdfs:subClassOf>
+  </owl:Class>
+  <owl:Class rdf:ID="Gas">
+    <rdfs:subClassOf rdf:resource="#Substance"/>
+  </owl:Class>
+  <owl:Class rdf:ID="PhysicalObject">
+    <rdfs:subClassOf rdf:resource="#PhysicalThing"/>
+  </owl:Class>
+  <owl:Class rdf:ID="Volume">
+    <rdfs:subClassOf rdf:resource="sadlimplicitmodel#UnittedQuantity"/>
+  </owl:Class>
+  <owl:Class rdf:ID="Constant">
+    <rdfs:subClassOf rdf:resource="sadlimplicitmodel#UnittedQuantity"/>
+  </owl:Class>
+  <owl:Class rdf:about="#Derivative">
+    <rdfs:subClassOf>
+      <owl:Restriction>
+        <owl:cardinality rdf:datatype="http://www.w3.org/2001/XMLSchema#int"
+        >1</owl:cardinality>
+        <owl:onProperty>
+          <owl:ObjectProperty rdf:about="#withRespectTo"/>
+        </owl:onProperty>
+      </owl:Restriction>
+    </rdfs:subClassOf>
+    <rdfs:subClassOf>
+      <owl:Restriction>
+        <owl:cardinality rdf:datatype="http://www.w3.org/2001/XMLSchema#int"
+        >1</owl:cardinality>
+        <owl:onProperty>
+          <owl:ObjectProperty rdf:about="#derivedFrom"/>
+        </owl:onProperty>
+      </owl:Restriction>
+    </rdfs:subClassOf>
+    <rdfs:subClassOf rdf:resource="sadlimplicitmodel#ScientificConcept"/>
+  </owl:Class>
+  <owl:Class rdf:ID="Length">
+    <rdfs:subClassOf rdf:resource="sadlimplicitmodel#UnittedQuantity"/>
+  </owl:Class>
+  <owl:Class rdf:ID="UnitSystem">
+    <owl:equivalentClass>
+      <owl:Class>
+        <owl:oneOf rdf:parseType="Collection">
+          <scicncpts2:UnitSystem rdf:ID="Metric"/>
+          <scicncpts2:UnitSystem rdf:ID="Imperial"/>
+        </owl:oneOf>
+      </owl:Class>
+    </owl:equivalentClass>
+  </owl:Class>
+  <owl:Class rdf:ID="Force">
+    <rdfs:subClassOf>
+      <owl:Restriction>
+        <owl:allValuesFrom rdf:resource="#Time"/>
+        <owl:onProperty>
+          <owl:ObjectProperty rdf:about="#withRespectTo"/>
+        </owl:onProperty>
+      </owl:Restriction>
+    </rdfs:subClassOf>
+    <rdfs:subClassOf>
+      <owl:Restriction>
+        <owl:allValuesFrom rdf:resource="#Momentum"/>
+        <owl:onProperty>
+          <owl:ObjectProperty rdf:about="#derivedFrom"/>
+        </owl:onProperty>
+      </owl:Restriction>
+    </rdfs:subClassOf>
     <rdfs:subClassOf>
       <owl:Class>
         <owl:intersectionOf rdf:parseType="Collection">
@@ -168,29 +195,47 @@
       </owl:Class>
     </rdfs:subClassOf>
   </owl:Class>
-  <owl:Class rdf:ID="PhysicalObject"/>
   <owl:Class rdf:ID="Mass">
     <rdfs:subClassOf rdf:resource="sadlimplicitmodel#UnittedQuantity"/>
   </owl:Class>
-  <owl:ObjectProperty rdf:about="#time">
+  <owl:Class rdf:ID="Air">
+    <rdfs:subClassOf rdf:resource="#Gas"/>
+  </owl:Class>
+  <owl:ObjectProperty rdf:ID="time">
     <rdfs:domain rdf:resource="#Position"/>
     <rdfs:range rdf:resource="#Time"/>
   </owl:ObjectProperty>
   <owl:ObjectProperty rdf:ID="mass">
-    <rdfs:domain rdf:resource="#PhysicalObject"/>
+    <rdfs:domain rdf:resource="#PhysicalThing"/>
     <rdfs:range rdf:resource="#Mass"/>
+  </owl:ObjectProperty>
+  <owl:ObjectProperty rdf:ID="volume">
+    <rdfs:domain rdf:resource="#PhysicalThing"/>
+    <rdfs:range rdf:resource="#Volume"/>
+  </owl:ObjectProperty>
+  <owl:ObjectProperty rdf:about="#derivedFrom">
+    <rdfs:domain rdf:resource="#Derivative"/>
+    <rdfs:range rdf:resource="sadlimplicitmodel#ScientificConcept"/>
+  </owl:ObjectProperty>
+  <owl:ObjectProperty rdf:ID="staticTemperature">
+    <rdfs:domain rdf:resource="#PhysicalThing"/>
+    <rdfs:range rdf:resource="#Temperature"/>
   </owl:ObjectProperty>
   <owl:ObjectProperty rdf:ID="acceleration">
     <rdfs:range rdf:resource="#Acceleration"/>
     <rdfs:domain rdf:resource="#PhysicalObject"/>
   </owl:ObjectProperty>
   <owl:ObjectProperty rdf:ID="temperature">
-    <rdfs:domain rdf:resource="#PhysicalObject"/>
+    <rdfs:domain rdf:resource="#PhysicalThing"/>
     <rdfs:range rdf:resource="#Temperature"/>
   </owl:ObjectProperty>
   <owl:ObjectProperty rdf:ID="z-coordinate">
     <rdfs:domain rdf:resource="#Position"/>
     <rdfs:range rdf:resource="#Length"/>
+  </owl:ObjectProperty>
+  <owl:ObjectProperty rdf:ID="density">
+    <rdfs:domain rdf:resource="#PhysicalThing"/>
+    <rdfs:range rdf:resource="#Density"/>
   </owl:ObjectProperty>
   <owl:ObjectProperty rdf:about="#withRespectTo">
     <rdfs:domain rdf:resource="#Derivative"/>
@@ -209,21 +254,42 @@
   </owl:ObjectProperty>
   <owl:ObjectProperty rdf:ID="momentum">
     <rdfs:range rdf:resource="#Momentum"/>
-    <rdfs:domain rdf:resource="#Mass"/>
+    <rdfs:domain rdf:resource="#PhysicalThing"/>
   </owl:ObjectProperty>
   <owl:ObjectProperty rdf:ID="x-coordinate">
     <rdfs:domain rdf:resource="#Position"/>
     <rdfs:range rdf:resource="#Length"/>
   </owl:ObjectProperty>
-  <owl:ObjectProperty rdf:about="#derivativeOf">
-    <rdfs:domain rdf:resource="#Derivative"/>
-    <rdfs:range rdf:resource="sadlimplicitmodel#ScientificConcept"/>
-  </owl:ObjectProperty>
   <owl:ObjectProperty rdf:ID="velocity">
     <rdfs:range rdf:resource="#Velocity"/>
     <rdfs:domain rdf:resource="#PhysicalObject"/>
   </owl:ObjectProperty>
-  <j.0:Rule rdf:ID="momentumOfPhysicalObject"/>
+  <j.0:ExternalEquation rdf:ID="cgSC">
+    <j.0:externalURI rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >http://com.ge.research.darpa.aske.cgsc</j.0:externalURI>
+    <j.0:returnTypes rdf:parseType="Collection">
+      <j.0:DataDescriptor>
+        <j.0:dataType>http://sadl.org/sadlimplicitmodel#ScientificConcept</j.0:dataType>
+      </j.0:DataDescriptor>
+    </j.0:returnTypes>
+    <j.0:arguments rdf:parseType="Collection">
+      <j.0:DataDescriptor>
+        <j.0:dataType>http://sadl.org/sadlimplicitmodel#ExternalEquation</j.0:dataType>
+        <j.0:descriptorName>eq</j.0:descriptorName>
+      </j.0:DataDescriptor>
+      <j.0:DataDescriptor>
+        <j.0:dataType>http://sadl.org/ScientificConcepts2.sadl#primitiveData</j.0:dataType>
+        <j.0:descriptorName>arg</j.0:descriptorName>
+      </j.0:DataDescriptor>
+    </j.0:arguments>
+    <j.0:expression>
+      <j.0:Script>
+        <j.0:language rdf:resource="sadlimplicitmodel#Text"/>
+        <j.0:script rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+        >ScientificConcept cgSC(ExternalEquation eq,primitiveData arg): uri("http://com.ge.research.darpa.aske.cgsc")</j.0:script>
+      </j.0:Script>
+    </j.0:expression>
+  </j.0:ExternalEquation>
   <j.0:ExternalEquation rdf:ID="unitResolver">
     <j.0:externalURI rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
     >http://sadl.org/unitSelector</j.0:externalURI>
@@ -242,5 +308,114 @@
         <j.0:descriptorName>u</j.0:descriptorName>
       </j.0:DataDescriptor>
     </j.0:arguments>
+    <j.0:expression>
+      <j.0:Script>
+        <j.0:language rdf:resource="sadlimplicitmodel#Text"/>
+        <j.0:script rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+        >string unitResolver(string operation,string u): uri("http://sadl.org/unitSelector")</j.0:script>
+      </j.0:Script>
+    </j.0:expression>
+  </j.0:ExternalEquation>
+  <j.0:Rule rdf:ID="momentumOfPhysicalThing"/>
+  <j.0:ExternalEquation rdf:ID="densityEq">
+    <j.0:externalURI rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >http://com.ge.research.darpa.aske.kchain.densityEq</j.0:externalURI>
+    <j.0:returnTypes rdf:parseType="Collection">
+      <j.0:DataDescriptor>
+        <j.0:augmentedType>
+          <j.0:Assumption>
+            <j.0:constraints rdf:parseType="Collection">
+              <j.0:TriplePattern>
+                <j.0:gpObject>http://sadl.org/ScientificConcepts2.sadl#PhysicalThing</j.0:gpObject>
+                <j.0:gpPredicate rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#type"/>
+                <j.0:gpSubject>v0</j.0:gpSubject>
+              </j.0:TriplePattern>
+              <j.0:TriplePattern>
+                <j.0:gpObject>v1</j.0:gpObject>
+                <j.0:gpPredicate>http://sadl.org/ScientificConcepts2.sadl#density</j.0:gpPredicate>
+                <j.0:gpSubject>v0</j.0:gpSubject>
+              </j.0:TriplePattern>
+            </j.0:constraints>
+          </j.0:Assumption>
+        </j.0:augmentedType>
+        <j.0:descriptorName>v1</j.0:descriptorName>
+        <j.0:dataType>http://www.w3.org/2001/XMLSchema#decimal</j.0:dataType>
+      </j.0:DataDescriptor>
+    </j.0:returnTypes>
+    <j.0:arguments rdf:parseType="Collection">
+      <j.0:DataDescriptor>
+        <j.0:augmentedType>
+          <j.0:Assumption>
+            <j.0:constraints rdf:parseType="Collection">
+              <j.0:TriplePattern>
+                <j.0:gpObject>http://sadl.org/ScientificConcepts2.sadl#PhysicalThing</j.0:gpObject>
+                <j.0:gpPredicate rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#type"/>
+                <j.0:gpSubject>v0</j.0:gpSubject>
+              </j.0:TriplePattern>
+              <j.0:TriplePattern>
+                <j.0:gpObject>m</j.0:gpObject>
+                <j.0:gpPredicate>http://sadl.org/ScientificConcepts2.sadl#mass</j.0:gpPredicate>
+                <j.0:gpSubject>v0</j.0:gpSubject>
+              </j.0:TriplePattern>
+            </j.0:constraints>
+          </j.0:Assumption>
+        </j.0:augmentedType>
+        <j.0:dataType>http://www.w3.org/2001/XMLSchema#decimal</j.0:dataType>
+        <j.0:descriptorName>m</j.0:descriptorName>
+      </j.0:DataDescriptor>
+      <j.0:DataDescriptor>
+        <j.0:augmentedType>
+          <j.0:Assumption>
+            <j.0:constraints rdf:parseType="Collection">
+              <j.0:TriplePattern>
+                <j.0:gpObject>http://sadl.org/ScientificConcepts2.sadl#PhysicalThing</j.0:gpObject>
+                <j.0:gpPredicate rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#type"/>
+                <j.0:gpSubject>v0</j.0:gpSubject>
+              </j.0:TriplePattern>
+              <j.0:TriplePattern>
+                <j.0:gpObject>v</j.0:gpObject>
+                <j.0:gpPredicate>http://sadl.org/ScientificConcepts2.sadl#volume</j.0:gpPredicate>
+                <j.0:gpSubject>v0</j.0:gpSubject>
+              </j.0:TriplePattern>
+            </j.0:constraints>
+          </j.0:Assumption>
+        </j.0:augmentedType>
+        <j.0:dataType>http://www.w3.org/2001/XMLSchema#decimal</j.0:dataType>
+        <j.0:descriptorName>v</j.0:descriptorName>
+      </j.0:DataDescriptor>
+    </j.0:arguments>
+    <j.0:expression>
+      <j.0:Script>
+        <j.0:language rdf:resource="sadlimplicitmodel#Text"/>
+        <j.0:script rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+        >xsd:decimal densityEq(decimal m,decimal v): uri("http://com.ge.research.darpa.aske.kchain.densityEq")</j.0:script>
+      </j.0:Script>
+    </j.0:expression>
+  </j.0:ExternalEquation>
+  <j.0:ExternalEquation rdf:ID="cg">
+    <j.0:externalURI rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >http://com.ge.research.darpa.aske.cg</j.0:externalURI>
+    <j.0:returnTypes rdf:parseType="Collection">
+      <j.0:DataDescriptor>
+        <j.0:dataType>http://sadl.org/ScientificConcepts2.sadl#primitiveData</j.0:dataType>
+      </j.0:DataDescriptor>
+    </j.0:returnTypes>
+    <j.0:arguments rdf:parseType="Collection">
+      <j.0:DataDescriptor>
+        <j.0:dataType>http://sadl.org/sadlimplicitmodel#ExternalEquation</j.0:dataType>
+        <j.0:descriptorName>eq</j.0:descriptorName>
+      </j.0:DataDescriptor>
+      <j.0:DataDescriptor>
+        <j.0:dataType>http://sadl.org/ScientificConcepts2.sadl#primitiveData</j.0:dataType>
+        <j.0:descriptorName>arg</j.0:descriptorName>
+      </j.0:DataDescriptor>
+    </j.0:arguments>
+    <j.0:expression>
+      <j.0:Script>
+        <j.0:language rdf:resource="sadlimplicitmodel#Text"/>
+        <j.0:script rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+        >primitiveData cg(ExternalEquation eq,primitiveData arg): uri("http://com.ge.research.darpa.aske.cg")</j.0:script>
+      </j.0:Script>
+    </j.0:expression>
   </j.0:ExternalEquation>
 </rdf:RDF>

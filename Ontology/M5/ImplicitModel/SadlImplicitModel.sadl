@@ -5,6 +5,7 @@ expandedProperty is a type of annotation.
 ScientificConcept is a class.
 UnittedQuantity is a type of ScientificConcept,
 	described by ^value with values of type decimal,
+	described by stddev with values of type decimal,
 	described by unit with values of type string.
 
 DataDescriptor is a class, described by descriptorName with a single value of type string,
@@ -12,8 +13,11 @@ DataDescriptor is a class, described by descriptorName with a single value of ty
 	described by augmentedType (note "ties the DataDescriptor to the semantic domain model") with values of type AugmentedType.
 dataType of DataDescriptor has at most 1 value.
 
+Language is a class, must be one of {Java, Python, Text, OtherLanguage}.
+Script is a class, described by language with a single value of type Language,
+	described by script with a single value of type string.
 ^Equation is a class,
-	described by expression with a single value of type string.
+	described by expression with values of type Script.
 arguments describes ^Equation with a single value of type DataDescriptor List.
 returnTypes describes ^Equation with a single value of type anyURI List.
 
@@ -22,6 +26,7 @@ ExternalEquation is a type of ^Equation,
 	described by externalURL with values of type string.
 	
 AugmentedType is a class.
+augTypeUnits describes AugmentedType with a single value of type string List.
 SemanticType (note "allows direct specification of the semantic type of an argument") is a type of AugmentedType, 
 	described by semType with a single value of type class.
 GraphPattern is a class.
@@ -41,9 +46,13 @@ DataTableRow is a class,
 	described by rowValues with a single value of type anyDataType List.
 DataTable is a class,
 	described by columnDescriptors with a single value of type DataDescriptor List,
-	described by dataContent with a single value of type DataTableRow List.
+	described by dataContent with a single value of type DataTableRow List,
+	described by dataLocation with a single value of type anyURI.
 
 ^Rule is a class.
 NamedQuery is a class.
 
-Event is a class.
+
+// these properties used by TA2
+model describes DataTable with values of type ^Equation.
+^data describes ^Equation with values of type DataTable.

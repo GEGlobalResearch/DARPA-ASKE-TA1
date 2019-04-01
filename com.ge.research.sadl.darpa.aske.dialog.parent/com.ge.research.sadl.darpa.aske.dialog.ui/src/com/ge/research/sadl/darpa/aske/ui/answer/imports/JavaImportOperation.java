@@ -234,11 +234,10 @@ public class JavaImportOperation extends WorkspaceModifyOperation {
      */
     public JavaImportOperation(IPath containerPath, Object source,
             IImportStructureProvider provider,
-            IOverwriteQuery overwriteImplementor, List filesToImport, String outputFilename) {
+            IOverwriteQuery overwriteImplementor, List filesToImport) {
         this(containerPath, source, provider, overwriteImplementor);
         setFilesToImport(filesToImport);
-        setOutputFilename(outputFilename);
-    }
+     }
 
     /**
      * Creates a new operation that imports specific file system objects.
@@ -267,10 +266,9 @@ public class JavaImportOperation extends WorkspaceModifyOperation {
      */
     public JavaImportOperation(IPath containerPath,
             IImportStructureProvider provider,
-            IOverwriteQuery overwriteImplementor, List filesToImport, String outputFilename) {
+            IOverwriteQuery overwriteImplementor, List filesToImport) {
         this(containerPath, null, provider, overwriteImplementor);
         setFilesToImport(filesToImport);
-        setOutputFilename(outputFilename);
     }
 
     /**
@@ -628,7 +626,6 @@ public class JavaImportOperation extends WorkspaceModifyOperation {
     	monitor.subTask(fileObjectPath);
     	String fileObjectS = importFilePath.toFile().getName();  //((File)fileObject).getName();
     	String outputfn = getOutputFilename();
-    	File outputFile = null;
     	if (outputfn == null) {
     		outputfn = fileObjectS.substring(0, fileObjectS.lastIndexOf(".")) + ".owl";
     	}
@@ -689,7 +686,6 @@ public class JavaImportOperation extends WorkspaceModifyOperation {
     			return null;
 	    	}
 	    	
-	    	// there are two projects, one for the code extraction (prj), and one for the domain knowledge (TBD here)
 	    	IProject domainPrj = null;
 	    	IContainer domainDestContainer = getDomainDestinationPath();
 			if (domainDestContainer instanceof IProject) {
@@ -702,13 +698,11 @@ public class JavaImportOperation extends WorkspaceModifyOperation {
     		// the AnswerCurationManager is stored in the domain project ConfigurationManager
 	    	String domainModelModelFolder = domainPrj.getFolder("OwlModels").getLocation().toOSString();
 	    	ConfigurationManagerForIDE domainModelConfigMgr = ConfigurationManagerForIdeFactory.getConfigurationManagerForIDE(domainModelModelFolder, null);
-    		Map<String, String> preferences = getPreferences(targetResource);
     		acm = (AnswerCurationManager) domainModelConfigMgr.getPrivateKeyValuePair(DialogConstants.ANSWER_CURATION_MANAGER);
     		if (acm == null) {
+        		Map<String, String> preferences = getPreferences(targetResource);
     			acm = new AnswerCurationManager(codeModelModelFolderUri, domainModelConfigMgr, preferences);
     			domainModelConfigMgr.addPrivateKeyValuePair(DialogConstants.ANSWER_CURATION_MANAGER, acm);
-//        		ConfigurationManagerForIDE configMgr = ConfigurationManagerForIdeFactory.getConfigurationManagerForIDE(codeModelModelFolderUri, null);
-        		acm.getExtractionProcessor().getCodeExtractor().setCodeModelFolder(codeModelModelFolderUri);
     		}
     		
     		List<File> txtFiles = getTextFilesInDir(null, importFilePath.toFile());
@@ -801,11 +795,7 @@ public class JavaImportOperation extends WorkspaceModifyOperation {
 	}
 
 	void importFiles(AnswerCurationManager acm) throws ConfigurationException, IOException {
-    	String ofn = getOutputFilename();
-		if (!ofn.endsWith(".owl")) {
-			ofn += ".owl";
-		}
-		acm.processImports(ofn, SaveAsSadl.AskUserSaveAsSadl);
+		acm.processImports(SaveAsSadl.AskUserSaveAsSadl);
 //		
 		String newContent = acm.getExtractionProcessor().getGeneratedSadlContent();
 		
@@ -950,7 +940,7 @@ public class JavaImportOperation extends WorkspaceModifyOperation {
                         .getFullPath(fileSystemObject)).removeLastSegments(1);
                 if (provider.isFolder(fileSystemObject) && sourcePath.isEmpty()) {
                     // If we don't have a parent then we have selected the
-                    // file systems root. Roots can't copied (at least not
+                    // file systems root. Roots can't be copied (at least not
                     // under windows).
                     errorTable.add(new Status(IStatus.INFO,
                             PlatformUI.PLUGIN_ID, 0, DataTransferMessages.ImportOperation_cannotCopy,
@@ -963,19 +953,22 @@ public class JavaImportOperation extends WorkspaceModifyOperation {
             if (acm == null) {
             	acm = localAcm;
             }
+            String modelFolder = convertProjectRelativePathToAbsolutePath(destinationContainer.getProject().getFullPath().append("OwlModels").toPortableString());
+            Object dap = acm.getDomainModelConfigurationManager().getPrivateKeyValuePair(DialogConstants.DIALOG_ANSWER_PROVIDER);
+            if (dap == null) {
+            	throw new CoreException(new Status(IStatus.ERROR, PlatformUI.PLUGIN_ID, 0, 
+            			"A Dialog Editor window must be opened and some activity in the window before imports can be processed", null));
+            }
+            acm.getExtractionProcessor().getCodeExtractor().setCodeModelFolder(modelFolder);
         }
-        String modelFolder = convertProjectRelativePathToAbsolutePath(destinationContainer.getProject().getFullPath().append("OwlModels").toPortableString());
-        Object dap = acm.getDomainModelConfigurationManager().getPrivateKeyValuePair(DialogConstants.DIALOG_ANSWER_PROVIDER);
-        if (dap == null) {
-        	throw new CoreException(new Status(IStatus.ERROR, PlatformUI.PLUGIN_ID, 0, 
-        			"A Dialog Editor window must be opened and some activity in the window before imports can be processed", null));
+        try {
+        	importFiles(acm);
         }
-        acm.getExtractionProcessor().getCodeExtractor().setCodeModelFolder(modelFolder);
-		String defaultCodeModelPrefix = getOutputFilename();
-//		String defaultCodeModelName = "http://com.ge.research.darpa.aske.ta1.explore/" + defaultCodeModelPrefix;
-//		acm.getExtractionProcessor().getCodeExtractor().setDefaultCodeModelPrefix(defaultCodeModelPrefix);
-//		acm.getExtractionProcessor().getCodeExtractor().setDefaultCodeModelName(defaultCodeModelName);
-        importFiles(acm);
+        finally {
+        	// must clear prior files so a following import won't do them again
+        	acm.getExtractionProcessor().getCodeExtractor().setCodeFiles(null);
+        	acm.getExtractionProcessor().getTextProcessor().setTextFiles(null);
+        }
     }
 
 	public static String convertProjectRelativePathToAbsolutePath(String relPath) {

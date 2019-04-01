@@ -289,10 +289,11 @@ public class JenaBasedDialogModelProcessor extends JenaBasedSadlModelProcessor {
 //								            response.setContent(new MixedInitiativeTextualResponse(answer));
 //								            // make call identified in element
 //								            mie.getRespondTo().accept(response);
+											dap.removeMixedInitiativeElement(question);	// question has been answered
 											treatAsAnswerToBackend = true;
 										}
 										else {
-//											treatAsAnswerToBackend = true;
+											treatAsAnswerToBackend = true;
 										}
 									}
 								} catch (ConfigurationException e) {
@@ -301,7 +302,7 @@ public class JenaBasedDialogModelProcessor extends JenaBasedSadlModelProcessor {
 								}
 							}
 						}
-						if (!treatAsAnswerToBackend) {
+						if (!treatAsAnswerToBackend && !(element instanceof YesNoAnswerStatement)) {
 							// This is some kind of statement to add to the model
 							processModelElement(element);
 							setModelChanged(true);
@@ -754,6 +755,7 @@ public class JenaBasedDialogModelProcessor extends JenaBasedSadlModelProcessor {
 	private void createCodeExtractionSadlModel(File cemf) throws IOException {
 		String content = getCodeExtractionModel();
 		if (!cemf.exists()) {
+			cemf.getParentFile().mkdirs();
 			new SadlUtils().stringToFile(cemf, content, false);
 		}
 	}
@@ -788,6 +790,8 @@ public class JenaBasedDialogModelProcessor extends JenaBasedSadlModelProcessor {
 				" 	described by input (note \"CodeVariable is an input to codeBlock CodeBlock\") \r\n" + 
 				" 		with a single value of type boolean\r\n" + 
 				" 	described by output (note \"CodeVariable is an output of codeBlock CodeBlock\") \r\n" + 
+				" 		with a single value of type boolean\r\n" + 
+				" 	described by isImplicit (note \"the input or output of this reference is implicit (inferred), not explicit\")\r\n" + 
 				" 		with a single value of type boolean\r\n" + 
 				" 	described by setterArgument (note \"is this variable input to a setter?\") with a single value of type boolean\r\n" + 
 				" 	described by comment with values of type Comment.\r\n" + 
@@ -844,7 +848,7 @@ public class JenaBasedDialogModelProcessor extends JenaBasedSadlModelProcessor {
 				"   l2 is beginsAt of ref2 and\r\n" + 
 				"   l2 < l1 and  // so ref2 is at an earlier location that ref\r\n" + 
 				"   noValue(ref2, usage, Reassigned) // no earlier reassignment of c exists\r\n" + 
-				"then input of ref is true. \r\n" + 
+				"then input of ref is true and isImplicit of ref is true. \r\n" + 
 				"\r\n" + 
 				"// if there is no l2 as specified in the previous rules, then the following covers that case\r\n" + 
 				"// do I need to consider codeBlock?????\r\n" + 
@@ -854,7 +858,7 @@ public class JenaBasedDialogModelProcessor extends JenaBasedSadlModelProcessor {
 				"   input of ref is not known and\r\n" + 
 				"   usage of ref is Used and \r\n" + 
 				"   noValue(ref, firstRef)\r\n" + 
-				"then input of ref is true. \r\n" + 
+				"then input of ref is true and isImplicit of ref is true. \r\n" + 
 				"\r\n" + 
 				"// \"it is an output if it is computed and is argument to a setter\"\r\n" + 
 				"// or I could try to use the notion of a constant\r\n" + 
@@ -865,7 +869,7 @@ public class JenaBasedDialogModelProcessor extends JenaBasedSadlModelProcessor {
 				"   output of ref is not known and\r\n" + 
 				"   usage of ref is Defined //check this?\r\n" + 
 				"then\r\n" + 
-				"	output of ref is true.      	 \r\n";
+				"	output of ref is true and isImplicit of ref is true.      	 \r\n";
 		return content;
 	}
 

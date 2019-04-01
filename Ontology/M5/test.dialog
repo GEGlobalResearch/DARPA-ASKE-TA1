@@ -14,7 +14,3 @@ import "http://sadl.org/test.sadl".
 //What is Shape?
 //CM: Shape is a class
 //      described by area with values of type decimal.
-
-What is p1 of MyBar and p2 of MyBar and p3 of MyBar when p4 of MyBar is true.
-CM: "'value1' = 'http://sadl.org/test.sadl#Gib1', 'value2' = 'http://sadl.org/test.sadl#Gib2', 'value3' = 'http://sadl.org/test.sadl#Gib3'".
-

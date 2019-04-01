@@ -1,0 +1,108 @@
+
+NASA Logo - Web Link to NASA.gov	Vertical Line	
++ Text Only Site
++ Non-Flash Version
++ Contact Glenn
+
+FIND IT @ NASA
+	Go
+ ABOUT NASA	 NEWS AND EVENTS	 MULTIMEDIA	 MISSIONS	 MyNASA	 WORK FOR NASA
+A graphical table of the viscosity and compressibility
+ similarity parameters .. Mach number and Reynolds number.
+As an object moves through the atmosphere, the gas molecules of the atmosphere near the object are disturbed and move around the object. Aerodynamic forces are generated between the gas and the object. The magnitude of these forces depend on the shape of the object, the speed of the object, the mass of the gas going by the object and on two other important properties of the gas; the viscosity, or stickiness, of the gas and the compressibility, or springiness, of the gas. To properly model these effects, aerodynamicists use similarity parameters, which are ratios of these effects to other forces present in the problem. If two experiments have the same values for the similarity parameters, then the relative importance of the forces are being correctly modeled. Representative values for the properties of air are given on another page, but the actual value of the parameter depends on the state of the gas and on the altitude.
+
+Aerodynamic forces depend in a complex way on the viscosity of the gas. As an object moves through a gas, the gas molecules stick to the surface. This creates a layer of air near the surface, called a boundary layer, which, in effect, changes the shape of the object. The flow of gas reacts to the edge of the boundary layer as if it was the physical surface of the object. To make things more confusing, the boundary layer may separate from the body and create an effective shape much different from the physical shape. And to make it even more confusing, the flow conditions in and near the boundary layer are often unsteady (changing in time). The boundary layer is very important in determining the drag of an object. To determine and predict these conditions, aerodynamicists rely on wind tunnel testing and very sophisticated computer analysis.
+
+The important similarity parameter for viscosity is the Reynolds number. The Reynolds number expresses the ratio of inertial (resistant to change or motion) forces to viscous (heavy and gluey) forces. From a detailed analysis of the momentum conservation equation, the inertial forces are characterized by the product of the density r times the velocity V times the gradient of the velocity dV/dx. The viscous forces are characterized by the viscosity coefficient mu times the second gradient of the velocity d^2V/dx^2. The Reynolds number Re then becomes:
+
+Re = (r * V * dV/dx) / (mu * d^2V/dx^2)
+
+Re = (r * V * L) / mu
+
+where L is some characteristic length of the problem. If the Reynolds number of the experiment and flight are close, then we properly model the effects of the viscous forces relative to the inertial forces. If they are very different, we do not correctly model the physics of the real problem and predict incorrect levels of the aerodynamic forces.
+
+Aerodynamic forces also depend in a complex way on the compressibility of the gas. As an object moves through the gas, the gas molecules move around the object. If the object passes at a low speed (typically less than 200 mph) the density of the fluid remains constant. But for high speeds, some of the energy of the object goes into compressing the fluid and changing the density, which alters the amount of resulting force on the object. This effect becomes more important as speed increases. Near and beyond the speed of sound (about 330 m/s or 700 mph on earth), shock waves are produced that affect the lift and drag of the object. Again, aerodynamicists rely on wind tunnel testing and sophisticated computer analysis to predict these conditions.
+
+The important similarity parameter for compressibility is the Mach number - M, the ratio of the velocity of the object to the speed of sound a.
+
+M = V / a
+
+The Mach number appears as a scaling parameter in many of the equations for compressible flows, shock waves, and expansions. When wind tunnel testing, you must closely match the Mach number between the experiment and flight conditions. It is completely incorrect to measure a drag coefficient at some low speed (say 200 mph) and apply that drag coefficient at twice the speed of sound (approximately 1400 mph, Mach = 2.0). The compressibility of the air alters the important physics between these two cases.
+
+Here's a JavaScript program to calculate the Mach number and Reynolds number for different altitudes, speed and length scales.
+
+Due to IT security concerns, many users are currently experiencing problems running NASA Glenn educational applets. The applets are slowly being updated, but it is a lengthy process. If you are familiar with Java Runtime Environments (JRE), you may want to try downloading the applet and running it on an Integrated Development Environment (IDE) such as Netbeans or Eclipse. The following are tutorials for running Java applets on either IDE: 
+Netbeans 
+Eclipse
+
+Similarity Parameter Calculator
+Units:Planet:AltitudeLength Please Input Altitude, Speed, and Length Scale
+Input
+0
+500
+1
+feetmphfeetOutputSpeed/Mach NumberSpeedSpeed of SoundDynamic PressMach #CompressibilityP staticP totalT staticT totalViscosityDensityDynamic Coef.Kinematic Coef.Reynold's #500.000 mph761.105 mph639 psf0.6572116 psf2827 psf518 R563 R0.00238 slug/ft^33.62e-7 lb-s/ft^21.5227e-4 ft^2/s4816198
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+To change input values, click on the input box (black on white), backspace over the input value, type in your new value, and hit the Enter key on the keyboard (this sends your new value to the program). You will see the output boxes (yellow on black) change value. Mach number and Reynolds number are dimensionless and are displayed in white on blue boxes. You can use either Imperial or Metric units and you can input either the Mach number or the speed by using the menu buttons. Just click on the menu button and click on your selection. If you are an experienced user of this calculator, you can use a sleek version of the program which loads faster on your computer and does not include these instructions. You can also download your own copy of the program to run off-line by clicking on this button:
+
+Button to Download a Copy of the Program
+
+The effects of compressibility and viscosity on lift are contained in the lift coefficient and the effects on drag are contained in the drag coefficient. For propulsion systems, compressibility affects the amount of mass that can pass through an engine and the amount of thrust generated by a rocket or turbine engine nozzle.
+
+Activities: 
+Button to Display Grade 9-12 Activity  Button to Display Grade 9-12 Activity  Button to Display Grade 9-12 Activity
+Guided Tours
+Button to Display Previous Page Sources of Drag:  Button to Display Next Page
+Button to Display Previous Page Speed of Sound:  Button to Return to Guided Tour Page
+Button to Display Previous Page Compressible Aerodynamics:  Button to Display Next Page
+
+Navigation ..
+
+Button to Display Wind Tunnel Index Button to Display Propulsion Index Button to Display Aerodynamics Index Button to Display Hi Speed Aero Index Button to Display Hypersonic Aero Index 
+Beginner's Guide Home Page
+ 
+
+      First Gov Image	
+
++ Inspector General Hotline
++ Equal Employment Opportunity Data Posted Pursuant to the No Fear Act
++ Budgets, Strategic Plans and Accountability Reports
++ Freedom of Information Act
++ The President's Management Agenda
++ NASA Privacy Statement, Disclaimer,
+and Accessibility Certification
+
+ 
+
+NASA Logo   	
+Editor: Nancy Hall
+NASA Official: Nancy Hall
+Last Updated: Apr 17 2018
++ Contact Glenn

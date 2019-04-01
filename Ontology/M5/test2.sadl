@@ -6,3 +6,6 @@
  	with temperature 400 R.
  
  
+ Graph: select g, p, v where g is a Gas and g has p v.
+ 
+ Ask: construct g, p, v where g is a Gas and g has p v.

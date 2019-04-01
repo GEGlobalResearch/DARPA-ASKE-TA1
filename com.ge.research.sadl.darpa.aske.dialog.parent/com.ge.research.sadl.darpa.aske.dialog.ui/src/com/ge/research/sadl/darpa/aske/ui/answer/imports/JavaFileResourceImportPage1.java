@@ -97,9 +97,6 @@ public class JavaFileResourceImportPage1 extends WizardResourceImportPage
     protected Button selectTypesButton;
     protected Button selectAllButton;
     protected Button deselectAllButton;
-//	private Text csvFileText = null;
-//	private Text namespaceText = null;
-	private Text outputFileName = null;
     protected Button firstRowVarButton;
     protected Button debugOutputButton;
     protected Button templateBrowseButton;
@@ -146,57 +143,6 @@ public class JavaFileResourceImportPage1 extends WizardResourceImportPage
         setDescription(AnswerImportMessages.FileImport_importFileSystem);
     }
 
-//    /**
-//     *	Create the group for creating the source CSV file input area
-//     */
-//    protected void createSourceCSVGroup(Composite parent) {
-//        Composite sourceCSVGroup = new Composite(parent, SWT.NONE);
-//		GridLayout fileLayout = new GridLayout();
-//		fileLayout = new GridLayout();
-//		fileLayout.numColumns = 3;
-//		fileLayout.marginHeight = 0;
-//		fileLayout.marginWidth = 0;
-//		fileLayout.makeColumnsEqualWidth = false;
-//		sourceCSVGroup.setLayout(fileLayout);
-//		GridData gridData = GridDataUtil.createHorizontalFill();
-//		sourceCSVGroup.setLayoutData(gridData);
-//
-//        Label groupLabel = new Label(sourceCSVGroup, SWT.NONE);
-//        groupLabel.setText(AnswerImportMessages.AnswerImport_title);
-//        groupLabel.setFont(parent.getFont());
-//
-//        // source browse button
-//        sourceBrowseButton = new Button(sourceCSVGroup, SWT.PUSH);
-//        sourceBrowseButton.setText(AnswerImportMessages.DataTransfer_browse);
-//        sourceBrowseButton.addListener(SWT.Selection, this);
-//        sourceBrowseButton.setLayoutData(new GridData(
-//                GridData.HORIZONTAL_ALIGN_FILL));
-//        sourceBrowseButton.setFont(parent.getFont());
-//        setButtonLayoutData(sourceBrowseButton);
-//
-//        // first row contains headings button
-//        Composite optionComposite = new Composite(sourceCSVGroup, SWT.NONE);        
-//		GridLayout optionLayout = new GridLayout();
-//		optionLayout = new GridLayout();
-//		optionLayout.numColumns = 2;
-//		optionLayout.marginHeight = 0;
-//		optionLayout.marginWidth = 0;
-//		optionLayout.makeColumnsEqualWidth = false;
-//		optionComposite.setLayout(optionLayout);
-//		gridData = GridDataUtil.createHorizontalFill();
-//		gridData.horizontalSpan = 3;
-//		optionComposite.setLayoutData(gridData);
-//		
-//		firstRowVarButton = new Button(optionComposite, SWT.CHECK);
-//		firstRowVarButton.setSelection(true);
-//		Label firstRowLabel = new Label(optionComposite, SWT.NULL);
-//		firstRowLabel.setText(AnswerImportMessages.AnswerImport_Col_Header);
-//		debugOutputButton = new Button(optionComposite, SWT.CHECK);
-//		debugOutputButton.setSelection(false);
-//		Label debugOutputLabel = new Label(optionComposite, SWT.NULL);
-//		debugOutputLabel.setText(AnswerImportMessages.AnswerImport_Debug);
-//    }
-//
     /**
      *	Create the group for creating the output filename input area
      */
@@ -216,42 +162,6 @@ public class JavaFileResourceImportPage1 extends WizardResourceImportPage
         groupLabel.setText(AnswerImportMessages.Answer_Extraction_Output_Filename);
         groupLabel.setFont(parent.getFont());
 
-		outputFileName = new Text(templateFileGroup, SWT.BORDER); 
-		gridData = GridDataUtil.createHorizontalFill();
-		gridData.widthHint = 300;
-		outputFileName.setLayoutData(gridData);
-		outputFileName.addSelectionListener(new SelectionAdapter() {
-            public void widgetSelected(SelectionEvent e) {
-            }
-        });
-		outputFileName.addFocusListener(new FocusListener() {
-            public void focusGained(FocusEvent e) {
-                //Do nothing when getting focus
-            }
-            public void focusLost(FocusEvent e) {
-            	String f = outputFileName.getText();
-                if (f == null || f.isEmpty()) {
-                	// Set enter template file message
-                	setErrorMessage(AnswerImportMessages.AnswerImport_template_field_message);
-                } else if (validFileName(f)) {
-                	setErrorMessage(null);
-                	setMessage(null);
-                } else {
-                	// Display error message
-                	setErrorMessage(AnswerImportMessages.AnswerImport_invalid_file_message);
-                }
-            }
-        });
-
-//        // template browse button
-//		templateBrowseButton = new Button(templateFileGroup, SWT.PUSH);
-//		templateBrowseButton.setText(AnswerImportMessages.DataTransfer_browse);
-//		templateBrowseButton.addListener(SWT.Selection, this);
-//		templateBrowseButton.setLayoutData(new GridData(
-//                GridData.HORIZONTAL_ALIGN_FILL));
-//		templateBrowseButton.setFont(parent.getFont());
-//        setButtonLayoutData(templateBrowseButton);
-//
         // first row contains headings button
         Composite optionComposite = new Composite(templateFileGroup, SWT.NONE);        
 		GridLayout optionLayout = new GridLayout();
@@ -626,7 +536,7 @@ public class JavaFileResourceImportPage1 extends WizardResourceImportPage
         createDomainDestinationGroup(parent);
         createRootDirectoryGroup(parent);
         createFileSelectionGroup(parent);
-        createOutputFilenameGroup(parent);
+//        createOutputFilenameGroup(parent);
         createButtonsGroup(parent);
     }
 
@@ -697,17 +607,6 @@ public class JavaFileResourceImportPage1 extends WizardResourceImportPage
 			return false;
 		}
 
-    	String f = outputFileName.getText();
-    	System.out.println("Output to go to file '" + f + "'");
-    	String outputFilename = null;
-    	if (!validFileName(f)) {
-    		setErrorMessage(AnswerImportMessages.AnswerImport_template_field_message);
-    		return false;
-    	}
-    	else {
-    		outputFilename = f;
-    	}
-    	
         saveWidgetValues();
 
         Iterator resourcesEnum = getSelectedResources().iterator();
@@ -718,7 +617,7 @@ public class JavaFileResourceImportPage1 extends WizardResourceImportPage
         }
 
         if (fileSystemObjects.size() > 0) {
-			return importResources(fileSystemObjects, outputFilename);
+			return importResources(fileSystemObjects);
 		}
 
         MessageDialog.openInformation(getContainer().getShell(),
@@ -989,7 +888,7 @@ public class JavaFileResourceImportPage1 extends WizardResourceImportPage
      *  Import the resources with extensions as specified by the user
      * @param outputFilename 
      */
-    protected boolean importResources(List fileSystemObjects, String outputFilename) {
+    protected boolean importResources(List fileSystemObjects) {
         JavaImportOperation operation;
         
 //        boolean shouldImportTopLevelFoldersRecursively = selectionGroup.isEveryItemChecked() &&
@@ -1006,12 +905,12 @@ public class JavaFileResourceImportPage1 extends WizardResourceImportPage
         if (shouldImportTopLevelFoldersRecursively)
             operation = new JavaImportOperation(getContainerFullPath(),
                     sourceDirectory, fileSystemStructureProvider,
-                    this, Arrays.asList(new File[] {getSourceDirectory()}), outputFilename);
+                    this, Arrays.asList(new File[] {getSourceDirectory()}));
         
         else
         	operation = new JavaImportOperation(getContainerFullPath(),
                 sourceDirectory, fileSystemStructureProvider,
-                this, fileSystemObjects, outputFilename);
+                this, fileSystemObjects);
         IContainer destContainer = getSpecifiedDomainDestinationContainer();
         if (!(destContainer instanceof IProject)) {
         	setErrorMessage("Destination domain must be a valid project");
@@ -1377,24 +1276,6 @@ public class JavaFileResourceImportPage1 extends WizardResourceImportPage
         	}
         	*/
 		}
-        String ofntxt = outputFileName.getText();
-        if (ofntxt == null || ofntxt.length() == 0) {
-        	for (int i = 0; i < resourcesToExport.size(); i++) {
-        		Object rsrc = resourcesToExport.get(i);
-        		if (rsrc instanceof FileSystemElement) {
-        			if (((FileSystemElement)rsrc).getFileNameExtension().equals("java")) {
-        				Object fso = ((FileSystemElement)rsrc).getFileSystemObject();
-        				if (fso instanceof File) {
-        					String fn = ((File)fso).getName();
-        					fn  = fn.substring(0, fn.length() - 5);
-        					fn += ".owl";
-        					outputFileName.setText(fn);
-        					break;
-        				}
-        			}
-        		}
-        	}
-        }
 		enableButtonGroup(true);
 		setErrorMessage(null);
         return true;

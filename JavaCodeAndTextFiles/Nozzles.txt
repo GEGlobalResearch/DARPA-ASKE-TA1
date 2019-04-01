@@ -1,0 +1,60 @@
+
+NASA Logo - Web Link to NASA.gov		
++ Text Only Site
++ Non-Flash Version
++ Contact Glenn
+
+FIND IT @ NASA
+	Go
+ ABOUT NASA	 NEWS AND EVENTS	 MULTIMEDIA	 MISSIONS	 MyNASA	 WORK FOR NASA
+ Computer drawing of kids page link
+This page is intended for college, high school, or middle school students. For younger students, a simpler explanation of the information on this page is available on the Kids Page.
+Photographs of co-annular nozzle, a maneuvering nozzle, and the.
+ external geometry. Computer drawing of a convergent and a convergent-divergent
+ nozzle and a turbine engine.
+Most modern passenger and military aircraft are powered by gas turbine engines, which are also called jet engines. There are several different types of gas turbine engines, but all turbine engines have some parts in common. All gas turbine engines have a nozzle to produce thrust, to conduct the exhaust gases back to the free stream, and to set the mass flow rate through the engine. The nozzle sits downstream of the power turbine.
+
+A nozzle is a relatively simple device, just a specially shaped tube through which hot gases flow. However, the mathematics which describe the operation of the nozzle takes some careful thought. As shown above, nozzles come in a variety of shapes and sizes depending on the mission of the aircraft. Simple turbojets, and turboprops, often have a fixed geometry convergent nozzle as shown on the left of the figure. Turbofan engines often employ a co-annular nozzle as shown at the top left. The core flow exits the center nozzle while the fan flow exits the annular nozzle. Mixing of the two flows provides some thrust enhancement and these nozzles also tend to be quieter than convergent nozzles. Afterburning turbojets and turbofans require a variable geometry convergent-divergent - CD nozzle as shown on the left. In this nozzle, the flow first converges down to the minimum area or throat, then is expanded through the divergent section to the exit at the right. The flow is subsonic upstream of the throat, but supersonic downstream of the throat. The variable geometry causes these nozzles to be heavier than a fixed geometry nozzle, but variable geometry provides efficient engine operation over a wider airflow range than a simple fixed nozzle.
+
+Rocket engines also use nozzles to accelerate hot exhaust to produce thrust. Rocket engines usually have a fixed geometry CD nozzle with a much larger divergent section than is required for a gas turbine. You can explore the design and operation of nozzles with our interactive nozzle simulator program which runs on your browser.
+
+All of the nozzles we have discussed thus far are round tubes. Recently, however, engineers have been experimenting with nozzles with rectangular exits. This allows the exhaust flow to be easily deflected, or vectored, as shown in the middle of the figure. Changing the direction of the thrust with the nozzle makes the aircraft much more maneuverable.
+
+Because the nozzle conducts the hot exhaust back to the free stream, there can be serious interactions between the engine exhaust flow and the airflow around the aircraft. On fighter aircraft, in particular, large drag penalties can occur near the nozzle exits. A typical nozzle-afterbody configuration is shown in the upper right for an F-15 with experimental maneuvering nozzles. As with the inlet design, the external nozzle configuration is often designed by the airframer and subjected to wind tunnel testing to determine the performance effects on the airframe. The internal nozzle is usually the responsibility of the engine manufacturer.
+
+Activities: 
+Button to Display Grade 6-8 Activity
+Guided Tours
+Button to Display Previous Page Parts of a Jet Engine:  Button to Display Next Page
+Button to Display Previous Page Nozzle:  Button to Display Next Page
+Button to Display Previous Page Turbojets:  Button to Display Next Page
+Button to Display Previous Page Afterburning Turbojets:  Button to Display Next Page
+Button to Display Previous Page Turbofans:  Button to Display Next Page
+Button to Display Previous Page Ramjets:  Button to Display Next Page
+Button to Display Previous Page Rockets:  Button to Display Next Page
+Button to Display Previous Page Model Rocket Engines:  Button to Return to Guided Tour Page
+Button to Display Previous Page Nozzle Simulator:  Button to Display Next Page
+
+Navigation ..
+
+Button to Display Propulsion Index Button to Display Model Rocket Index Button to Display Hypersonic Aero Index Button to Display Wind Tunnel Index Button to Display Hi Speed Aero Index 
+Beginner's Guide Home Page
+ 
+
+      First Gov Image	
+
++ Inspector General Hotline
++ Equal Employment Opportunity Data Posted Pursuant to the No Fear Act
++ Budgets, Strategic Plans and Accountability Reports
++ Freedom of Information Act
++ The President's Management Agenda
++ NASA Privacy Statement, Disclaimer,
+and Accessibility Certification
+
+ 
+
+NASA Logo   	
+Editor: Nancy Hall
+NASA Official: Nancy Hall
+Last Updated: May 05 2015
++ Contact Glenn
