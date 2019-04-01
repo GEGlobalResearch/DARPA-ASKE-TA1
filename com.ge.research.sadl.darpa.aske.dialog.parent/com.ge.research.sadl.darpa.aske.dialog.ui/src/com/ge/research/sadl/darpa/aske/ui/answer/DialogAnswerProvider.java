@@ -103,6 +103,7 @@ import com.google.inject.Injector;
 import com.google.inject.Provider;
 import com.hp.hpl.jena.ontology.OntClass;
 import com.hp.hpl.jena.ontology.OntModel;
+import com.hp.hpl.jena.rdf.model.Model;
 import com.hp.hpl.jena.rdf.model.RDFNode;
 import com.hp.hpl.jena.rdf.model.StmtIterator;
 import com.hp.hpl.jena.reasoner.rulesys.Builtin;
@@ -770,7 +771,6 @@ public class DialogAnswerProvider extends DefaultAutoEditStrategyProvider implem
 
 			private void addInstanceDeclaration(Resource resource, NamedNode nn, StringBuilder answer) throws ExecutionException {
 				answer.append(checkForKeyword(nn.getName()));
-				answer.append(" is a ");
 //				String query = "select ?type where {<" + nn.getURI() + ">  <" + ReasonerVocabulary.directRDFType + "> ?type}";
 				String query = "select ?type where {<" + nn.getURI() + ">  <rdf:type> ?type}";
 				Query q = new Query();
@@ -779,6 +779,7 @@ public class DialogAnswerProvider extends DefaultAutoEditStrategyProvider implem
 				ResultSet rs = runQuery(resource, q);
 				OntModelProvider.clearPrivateKeyValuePair(resource, DialogConstants.LAST_DIALOG_COMMAND);
 				if (rs != null) {
+					answer.append(" is a ");
 					rs.setShowNamespaces(false);
 					int rowcnt = rs.getRowCount();
 					if (rowcnt > 1) {
@@ -1324,82 +1325,96 @@ public class DialogAnswerProvider extends DefaultAutoEditStrategyProvider implem
 					// call the method
 					List<Object> args = response.getArguments();
 					try {
-						Object result = null;
+						Object results = null;
 						if (args.size() == 0) {
-							result = m.invoke(acm, null);
+							results = m.invoke(acm, null);
 						}
 						else {
 							Object arg0 = args.get(0);
 							if (args.size() == 1) {
-								result = m.invoke(acm, arg0);
+								results = m.invoke(acm, arg0);
 							}
 							else {
 								Object arg1 = args.get(1);
 								if (args.size() == 2) {
-									result = m.invoke(acm, arg0, arg1);
+									results = m.invoke(acm, arg0, arg1);
 								}
 								if (methodToCall.equals("saveAsSadlFile")) {
-									String outputOwlFileName = arg0.toString();
-									File owlfile = new File(outputOwlFileName);
-//									insertExtractedModelImport(getTheDocument(), acm);
-									if (arg0 instanceof String && AnswerCurationManager.isYes(arg1)) {
-										File sf = new File(result.toString());
-										if (sf.exists()) {
-											// delete OWL file so it won't be indexed
-											if (owlfile.exists()) {
-												owlfile.delete();
-												try {
-													String altUrl = new SadlUtils().fileNameToFileUrl(outputOwlFileName);
-													String publicUri = acm.getExtractionProcessor().getCodeExtractor().getCodeModelConfigMgr().getPublicUriFromActualUrl(altUrl);
-													if (publicUri != null) {
-														acm.getExtractionProcessor().getCodeExtractor().getCodeModelConfigMgr().deleteModel(publicUri);
-														acm.getExtractionProcessor().getCodeExtractor().getCodeModelConfigMgr().deleteMapping(altUrl, publicUri);
+									if (arg0 instanceof List<?> && results instanceof List<?>) {
+										String projectName = null;
+										List<File> sadlFiles = new ArrayList<File>();
+										for (int i = 0; i < ((List<?>) results).size(); i++) {
+											Object result = ((List<?>) results).get(i);
+											File owlfile = (File) ((List<?>) arg0).get(i);
+											if (AnswerCurationManager.isYes(arg1)) {
+												File sf = new File(result.toString());
+												if (sf.exists()) {
+													sadlFiles.add(sf);
+													// delete OWL file so it won't be indexed
+													if (owlfile.exists()) {
+														owlfile.delete();
+														try {
+															String outputOwlFileName = owlfile.getCanonicalPath();
+															String altUrl = new SadlUtils().fileNameToFileUrl(outputOwlFileName);
+															
+															String publicUri = acm.getDomainModelConfigurationManager().getPublicUriFromActualUrl(altUrl);
+															if (publicUri != null) {
+																acm.getDomainModelConfigurationManager().deleteModel(publicUri);
+																acm.getDomainModelConfigurationManager().deleteMapping(altUrl, publicUri);
+															}
+														} catch (ConfigurationException e) {
+															// TODO Auto-generated catch block
+															e.printStackTrace();
+														} catch (URISyntaxException e) {
+															// TODO Auto-generated catch block
+															e.printStackTrace();
+														} catch (IOException e) {
+															// TODO Auto-generated catch block
+															e.printStackTrace();
+														}
 													}
-												} catch (ConfigurationException e) {
+													projectName = sf.getParentFile().getParentFile().getName();
+												}
+											}				
+											else {
+												// add import of OWL file from policy file since there won't be a SADL file to build an OWL and create mappings.
+												try {
+													String importActualUrl = new SadlUtils().fileNameToFileUrl(arg0.toString());
+													String altUrl = new SadlUtils().fileNameToFileUrl(importActualUrl);
+													String importPublicUri = acm.getDomainModelConfigurationManager().getPublicUriFromActualUrl(altUrl);
+													String prefix = acm.getDomainModelConfigurationManager().getGlobalPrefix(importPublicUri);
+													acm.getDomainModelConfigurationManager().addMapping(importActualUrl, importPublicUri, prefix, false, "AnswerCurationManager");
+													String prjname = owlfile.getParentFile().getParentFile().getName();
+													IProject prj = ResourcesPlugin.getPlugin().getWorkspace().getRoot().getProject(prjname);
+													prj.refreshLocal(IResource.DEPTH_INFINITE, null);
+												} catch (IOException e) {
 													// TODO Auto-generated catch block
 													e.printStackTrace();
 												} catch (URISyntaxException e) {
 													// TODO Auto-generated catch block
 													e.printStackTrace();
-												} catch (IOException e) {
+												} catch (ConfigurationException e) {
+													// TODO Auto-generated catch block
+													e.printStackTrace();
+												} catch (CoreException e) {
 													// TODO Auto-generated catch block
 													e.printStackTrace();
 												}
 											}
-											String projectName = sf.getParentFile().getParentFile().getName();
+										}
+										if (projectName != null) {	// only not null if doing SADL conversion
 											IProject project = ResourcesPlugin.getWorkspace().getRoot().getProject(projectName);
 											try {
 												project.build(IncrementalProjectBuilder.AUTO_BUILD, null);
+												// display new SADL file
+												displayFiles(getConfigMgr().getModelFolder(), sadlFiles);
 											} catch (CoreException e) {
 												// TODO Auto-generated catch block
 												e.printStackTrace();
+											} catch (IOException e) {
+												// TODO Auto-generated catch block
+												e.printStackTrace();
 											}
-											// display new SADL file
-											displayFile(acm.getExtractionProcessor().getCodeExtractor().getCodeModelFolder(), sf);
-										}
-									}
-									else {
-										// add import of OWL file from policy file since there won't be a SADL file to build an OWL and create mappings.
-										try {
-											String importPublicUri = acm.getExtractionProcessor().getCodeModelName();
-											String prefix = acm.getExtractionProcessor().getCodeModelPrefix();
-											String importActualUrl = new SadlUtils().fileNameToFileUrl(arg0.toString());
-											acm.getExtractionProcessor().getCodeExtractor().getCodeModelConfigMgr().addMapping(importActualUrl, importPublicUri, prefix, false, "AnswerCurationManager");
-											String prjname = owlfile.getParentFile().getParentFile().getName();
-											IProject prj = ResourcesPlugin.getPlugin().getWorkspace().getRoot().getProject(prjname);
-											prj.refreshLocal(IResource.DEPTH_INFINITE, null);
-										} catch (IOException e) {
-											// TODO Auto-generated catch block
-											e.printStackTrace();
-										} catch (URISyntaxException e) {
-											// TODO Auto-generated catch block
-											e.printStackTrace();
-										} catch (ConfigurationException e) {
-											// TODO Auto-generated catch block
-											e.printStackTrace();
-										} catch (CoreException e) {
-											// TODO Auto-generated catch block
-											e.printStackTrace();
 										}
 									}
 								}
@@ -1468,7 +1483,7 @@ public class DialogAnswerProvider extends DefaultAutoEditStrategyProvider implem
 		}
 	}
 
-	private void displayFile(String codeModelFolder, File sf) {
+	private void displayFiles(String codeModelFolder, List<File> sadlFiles) {
 		File cmf = new File(codeModelFolder);
     	IProject codeModelProject = null;
 		if (cmf.exists()) {
@@ -1481,48 +1496,53 @@ public class DialogAnswerProvider extends DefaultAutoEditStrategyProvider implem
 	    		IProject project = codeModelProject;
 	    		if (!project.isOpen())
 	    		    project.open(null);
-	    		IPath location;
 				try {
-					String prjname = project.getFullPath().lastSegment();
-					location = new Path(sf.getCanonicalPath());
-					String[] segarray = location.segments();
-					int segsAdded = 0;
-					boolean prjFound = false;
-					StringBuilder sb = new StringBuilder();
-					for (String seg : segarray) {
-						if (prjFound) {
-							if (segsAdded++ > 0) {
-								sb.append("/");
+					List<IFile> iFiles = new ArrayList<IFile>();
+					List<IPath> locations = new ArrayList<IPath>();
+					for (File sf : sadlFiles) {
+						String prjname = project.getFullPath().lastSegment();
+			    		IPath location = new Path(sf.getCanonicalPath());
+						locations.add(location);
+						String[] segarray = location.segments();
+						int segsAdded = 0;
+						boolean prjFound = false;
+						StringBuilder sb = new StringBuilder();
+						for (String seg : segarray) {
+							if (prjFound) {
+								if (segsAdded++ > 0) {
+									sb.append("/");
+								}
+								sb.append(seg);
 							}
-							sb.append(seg);
+							if (!prjFound && seg.equals(prjname)) {
+								prjFound = true;;
+							}
 						}
-						if (!prjFound && seg.equals(prjname)) {
-							prjFound = true;;
-						}
+						IFile file = project.getFile(sb.toString());
+						iFiles.add(file);
 					}
-					IFile file = project.getFile(sb.toString());
 	    			project.refreshLocal(IResource.DEPTH_INFINITE, null);
-		    		if (!file.exists()) {
-		    			file.createLink(location, IResource.NONE, null);
-		    		}
+	    			for (int i = 0; i < iFiles.size(); i++) {
+	    				IFile file = iFiles.get(i);
+	    				IPath location = locations.get(i);
+			    		if (!file.exists()) {
+			    			file.createLink(location, IResource.NONE, null);
+			    		}
+	    			}
 		    		IWorkbenchWindow window = PlatformUI.getWorkbench().getActiveWorkbenchWindow();
 		    	    if (window != null) {
 		    	    	IWorkbenchPage page = window.getActivePage();
 		    	    	if (page != null) {
-		        		    try {
-		        		    	IWorkbenchPart actpart = page.getActivePart();
-		            		    IFileStore fileStore = EFS.getLocalFileSystem().getStore(location);
-		            		    IDE.openEditorOnFileStore( page, fileStore );
-		            		    page.bringToTop(actpart);
-			    		    } catch ( PartInitException e ) {
-			    		        //Put your exception handler here if you wish to
-			    		    	try {
-									System.err.println("Unable to open '" + sf.getCanonicalPath() + "' in an editor.");
-								} catch (IOException e1) {
-									// TODO Auto-generated catch block
-									e1.printStackTrace();
-								}
-			    		    }
+		    	    		for (IPath location : locations) {
+			        		    try {
+			        		    	IWorkbenchPart actpart = page.getActivePart();
+			            		    IFileStore fileStore = EFS.getLocalFileSystem().getStore(location);
+			            		    IDE.openEditorOnFileStore( page, fileStore );
+			            		    page.bringToTop(actpart);
+				    		    } catch ( PartInitException e ) {
+				    		        System.err.println("Unable to open '" + location.lastSegment() + "' in an editor.");
+				    		    }
+		    	    		}
 		    	    	}
 		    	    }
 		    	    else {
@@ -1532,20 +1552,16 @@ public class DialogAnswerProvider extends DefaultAutoEditStrategyProvider implem
 		    		    	    if (window != null) {
 		    		    	    	IWorkbenchPage page = window.getActivePage();
 		    		    	    	if (page != null) {
-		    		        		    try {
-		    		        		    	IWorkbenchPart actpart = page.getActivePart();
-		    		            		    IFileStore fileStore = EFS.getLocalFileSystem().getStore(location);
-		    		            		    IDE.openEditorOnFileStore( page, fileStore );
-		    		            		    page.bringToTop(actpart);
-		    			    		    } catch ( PartInitException e ) {
-		    			    		        //Put your exception handler here if you wish to
-		    			    		    	try {
-		    									System.err.println("Unable to open '" + sf.getCanonicalPath() + "' in an editor.");
-		    								} catch (IOException e1) {
-		    									// TODO Auto-generated catch block
-		    									e1.printStackTrace();
-		    								}
-		    			    		    }
+		    		    	    		for (IPath location : locations) {
+			    		        		    try {
+			    		        		    	IWorkbenchPart actpart = page.getActivePart();
+			    		            		    IFileStore fileStore = EFS.getLocalFileSystem().getStore(location);
+			    		            		    IDE.openEditorOnFileStore( page, fileStore );
+			    		            		    page.bringToTop(actpart);
+			    			    		    } catch ( PartInitException e ) {
+			    			    		        System.err.println("Unable to open '" + location.lastSegment() + "' in an editor.");
+			    			    		    }
+		    		    	    		}
 		    		    	    	}
 		    		    	    }
 		    	    	    }

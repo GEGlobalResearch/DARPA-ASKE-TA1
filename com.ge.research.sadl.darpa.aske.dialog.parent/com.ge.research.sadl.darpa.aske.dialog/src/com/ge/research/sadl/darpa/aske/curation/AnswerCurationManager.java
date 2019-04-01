@@ -108,59 +108,190 @@ public class AnswerCurationManager {
 	 * @throws IOException
 	 * @throws ConfigurationException 
 	 */
-	public void processImports(String outputFilename, SaveAsSadl saveAsSadl) throws IOException, ConfigurationException {
-		if (outputFilename.endsWith(".sadl")) {
-			outputFilename = outputFilename.substring(0, outputFilename.length() - 5) + ".owl";
-		}
-		String defPrefix;
-		if (outputFilename.endsWith(".owl")) {
-			defPrefix = outputFilename.substring(0, outputFilename.length() - 4);
-		}
-		else {
-			defPrefix = outputFilename;
-		}
-		String defName = "http://com.ge.research.sadl.darpa.aske.answer/" + defPrefix;
-		if (getExtractionProcessor().getCodeExtractor().getDefaultCodeModelName() == null) {
-			getExtractionProcessor().getCodeExtractor().setDefaultCodeModelName(defName);
-		}
-		if (getExtractionProcessor().getCodeExtractor().getDefaultCodeModelPrefix() == null) {
-			getExtractionProcessor().getCodeExtractor().setDefaultCodeModelPrefix(defPrefix);
-		}
-
+	public void processImports(SaveAsSadl saveAsSadl) throws IOException, ConfigurationException {
+		List<File> outputOwlFiles = new ArrayList<File>();
 		List<File> textFiles = getExtractionProcessor().getTextProcessor().getTextFiles();
 		if (textFiles != null) {
 			for (File f : textFiles) {
+				getExtractionProcessor().reset();
+				String outputFilename = f.getName();
+				String outputOwlFileName = outputFilename + ".owl";
+				if (outputFilename.endsWith(".sadl")) {
+					outputFilename = outputFilename.substring(0, outputFilename.length() - 5) + ".owl";
+				}
+				String defPrefix;
+				if (outputFilename.endsWith(".owl")) {
+					defPrefix = outputFilename.substring(0, outputFilename.length() - 4);
+				}
+				else {
+					defPrefix = outputFilename.replaceAll("\\.", "_");
+				}
+				String defName = "http://com.ge.research.sadl.darpa.aske.answer/" + defPrefix;
+				getExtractionProcessor().setTextModelName(defName);
+				getExtractionProcessor().setTextModelPrefix(defPrefix);
 				String content = readFileToString(f);
-				getTextProcessor().process(f.getCanonicalPath(), content, null);
+				String fileIdentifier = ConfigurationManagerForIdeFactory.formatPathRemoveBackslashes(f.getCanonicalPath());
+				getTextProcessor().process(fileIdentifier, content, null);
+				File of = saveTextOwlFile(outputOwlFileName);
+				outputOwlFiles.add(of);
+				outputOwlFileName = of.getCanonicalPath();
+				// run inference on the model, interact with user to refine results
+				runInferenceDisplayInterestingTextModelResults(outputOwlFileName, saveAsSadl);
 			}
 		}
 		
 		List<File> codeFiles = getExtractionProcessor().getCodeExtractor().getCodeFiles();
-		String outputOwlFileName = null;
 		if (codeFiles != null) {
 			for (File f : codeFiles) {
+				// reset code extractor and text processor from any previous file
+				getExtractionProcessor().reset();
+				String outputFilename = f.getName();
+				String outputOwlFileName = outputFilename + ".owl";
+				if (outputFilename.endsWith(".sadl")) {
+					outputFilename = outputFilename.substring(0, outputFilename.length() - 5) + ".owl";
+				}
+				String defPrefix;
+				if (outputFilename.endsWith(".owl")) {
+					defPrefix = outputFilename.substring(0, outputFilename.length() - 4);
+				}
+				else {
+					defPrefix = outputFilename.replaceAll("\\.", "_");
+				}
+				String defName = "http://com.ge.research.sadl.darpa.aske.answer/" + defPrefix;
+				if (getExtractionProcessor().getCodeExtractor().getDefaultCodeModelName() == null) {
+					getExtractionProcessor().getCodeExtractor().setDefaultCodeModelName(defName);
+				}
+				if (getExtractionProcessor().getCodeExtractor().getDefaultCodeModelPrefix() == null) {
+					getExtractionProcessor().getCodeExtractor().setDefaultCodeModelPrefix(defPrefix);
+				}
+
 				String content = readFileToString(f);
 				String fileIdentifier = ConfigurationManagerForIdeFactory.formatPathRemoveBackslashes(f.getCanonicalPath());
 				getCodeExtractor().process(fileIdentifier, content, true);				
+				File of = saveCodeOwlFile(outputOwlFileName);
+				outputOwlFiles.add(of);
+				outputOwlFileName = of.getCanonicalPath();
+				// run inference on the model, interact with user to refine results
+				runInferenceDisplayInterestingCodeModelResults(outputOwlFileName, saveAsSadl);
+			}			
+		}
+		if (saveAsSadl != null) {
+			if (saveAsSadl.equals(SaveAsSadl.AskUserSaveAsSadl)) {
+				// ask user if they want a SADL file saved
+				IDialogAnswerProvider dap = getDialogAnswerProvider();
+				if (dap == null) {
+					dap = new DialogAnswerProviderConsoleForTest();
+				}
+				List<Object> args = new ArrayList<Object>();
+				args.add(outputOwlFiles);
+				// the strings must be unique to the question or they will get used as answers to subsequent questions with the same string
+				if (outputOwlFiles.size() > 1) {
+					StringBuilder sb = new StringBuilder(outputOwlFiles.get(0).getName());
+					for (int i = 1; i < outputOwlFiles.size(); i++) {
+						sb.append(", ");
+						sb.append(outputOwlFiles.get(i).getName());
+					}
+					dap.addCurationManagerInitiatedContent(this, "saveAsSadlFile", args, "Would you like to save the extracted models (" + sb.toString() + ") in SADL format?");
+				}
+				else {
+					dap.addCurationManagerInitiatedContent(this, "saveAsSadlFile", args, "Would you like to save the extracted model (" + outputOwlFiles.get(0).getName() + ") in SADL format?");
+				}
 			}
-			File of = new File(new File(getExtractionProcessor().getCodeExtractor().getCodeModelFolder()).getParent() + 
-					"/" + DialogConstants.EXTRACTED_MODELS_FOLDER_PATH_FRAGMENT + "/" + outputFilename);
-			of.getParentFile().mkdirs();
-			getExtractionProcessor().getCodeExtractor().getCodeModelConfigMgr().saveOwlFile(getExtractionProcessor().getCodeModel(), getExtractionProcessor().getCodeModelName(), of.getCanonicalPath());
-			outputOwlFileName = of.getCanonicalPath();			
-
-			String altUrl;
-			try {
-				altUrl = (new SadlUtils()).fileNameToFileUrl(outputOwlFileName);
-				getExtractionProcessor().getCodeExtractor().getCodeModelConfigMgr().addMapping(altUrl, getExtractionProcessor().getCodeModelName(), getExtractionProcessor().getCodeModelPrefix(), false, "AnswerCurationManager");
-				getExtractionProcessor().getCodeExtractor().getCodeModelConfigMgr().addJenaMapping(getExtractionProcessor().getCodeModelName(), altUrl);
-			} catch (URISyntaxException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
+			if (saveAsSadl != null && saveAsSadl.equals(SaveAsSadl.SaveAsSadl)) {
+				saveAsSadlFile(outputOwlFiles, "yes");
 			}
 		}
-		
-		// run inference on the model, interact with user to refine results
+	}
+	
+	private File saveTextOwlFile(String outputFilename) throws ConfigurationException, IOException {
+		File of = new File(new File(getExtractionProcessor().getCodeExtractor().getCodeModelFolder()).getParent() + 
+				"/" + DialogConstants.EXTRACTED_MODELS_FOLDER_PATH_FRAGMENT + "/" + outputFilename);
+		of.getParentFile().mkdirs();
+		getExtractionProcessor().getTextProcessor().getTextModelConfigMgr().saveOwlFile(getExtractionProcessor().getTextModel(), getExtractionProcessor().getTextModelName(), of.getCanonicalPath());
+		String outputOwlFileName = of.getCanonicalPath();			
+		getExtractionProcessor().getTextProcessor().addTextModel(outputOwlFileName, getExtractionProcessor().getTextModel());
+
+		String altUrl;
+		try {
+			altUrl = (new SadlUtils()).fileNameToFileUrl(outputOwlFileName);
+			getExtractionProcessor().getTextProcessor().getTextModelConfigMgr().addMapping(altUrl, getExtractionProcessor().getTextModelName(), getExtractionProcessor().getTextModelPrefix(), false, "AnswerCurationManager");
+			getExtractionProcessor().getTextProcessor().getTextModelConfigMgr().addJenaMapping(getExtractionProcessor().getTextModelName(), altUrl);
+		} catch (URISyntaxException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		return of;
+	}
+
+	private File saveCodeOwlFile(String outputFilename) throws ConfigurationException, IOException {
+		File of = new File(new File(getExtractionProcessor().getCodeExtractor().getCodeModelFolder()).getParent() + 
+				"/" + DialogConstants.EXTRACTED_MODELS_FOLDER_PATH_FRAGMENT + "/" + outputFilename);
+		of.getParentFile().mkdirs();
+		getExtractionProcessor().getCodeExtractor().getCodeModelConfigMgr().saveOwlFile(getExtractionProcessor().getCodeModel(), getExtractionProcessor().getCodeModelName(), of.getCanonicalPath());
+		String outputOwlFileName = of.getCanonicalPath();			
+		getExtractionProcessor().getCodeExtractor().addCodeModel(outputOwlFileName, getExtractionProcessor().getCodeModel());
+
+		String altUrl;
+		try {
+			altUrl = (new SadlUtils()).fileNameToFileUrl(outputOwlFileName);
+			getExtractionProcessor().getCodeExtractor().getCodeModelConfigMgr().addMapping(altUrl, getExtractionProcessor().getCodeModelName(), getExtractionProcessor().getCodeModelPrefix(), false, "AnswerCurationManager");
+			getExtractionProcessor().getCodeExtractor().getCodeModelConfigMgr().addJenaMapping(getExtractionProcessor().getCodeModelName(), altUrl);
+		} catch (URISyntaxException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		return of;
+	}
+
+	private void runInferenceDisplayInterestingTextModelResults(String outputOwlFileName, SaveAsSadl saveAsSadl) throws ConfigurationException {
+		// clear reasoner from any previous model
+		IConfigurationManagerForIDE textModelConfigMgr = getExtractionProcessor().getTextProcessor().getTextModelConfigMgr();
+		textModelConfigMgr.clearReasoner();
+		IReasoner reasoner = textModelConfigMgr.getReasoner();
+		String textModelFolder = getExtractionProcessor().getCodeExtractor().getCodeModelFolder();		// same as code model folder, at least for now
+		if (reasoner == null) {
+			// use domain model folder because that's the project we're working in
+			notifyUser(textModelFolder, "Unable to instantiate reasoner to analyze extracted code model.");
+		}
+		else {
+			if (!reasoner.isInitialized()) {
+				reasoner.setConfigurationManager(textModelConfigMgr);
+				try {
+					reasoner.initializeReasoner(textModelFolder, getExtractionProcessor().getTextModelName(), null);
+					String queryString = "select ?eq ?expr where {?eq <rdf:type> <ExternalEquation> . ?eq <expression> ?script . ?script <script> ?expr}";
+					queryString = reasoner.prepareQuery(queryString);
+					ResultSet results =  reasoner.ask(queryString);
+					if (results != null && results.getRowCount() > 0) {
+						results.setShowNamespaces(false);
+						notifyUser(textModelFolder, "Equations found in extraction:\n" + results.toStringWithIndent(0, false));
+					}
+					else {
+						notifyUser(textModelFolder, "No equations were found in this extraction from text.");
+					}
+					String importinfo = "To import this model for exploration in this window, add an import at the top of the window (after the 'uri' statement) for URI:\n   " + 
+							getExtractionProcessor().getTextModelName() + "\n.";
+					notifyUser(textModelFolder, importinfo);
+				} catch (ReasonerNotFoundException e) {
+					notifyUser(textModelFolder, e.getMessage());
+					e.printStackTrace();
+				} catch (InvalidNameException e) {
+					notifyUser(textModelFolder, e.getMessage());
+					e.printStackTrace();
+				} catch (QueryParseException e) {
+					notifyUser(textModelFolder, e.getMessage());
+					e.printStackTrace();
+				} catch (QueryCancelledException e) {
+					notifyUser(textModelFolder, e.getMessage());
+					e.printStackTrace();
+				}
+			}
+		}		
+	}
+
+	private void runInferenceDisplayInterestingCodeModelResults(String outputOwlFileName, SaveAsSadl saveAsSadl)
+			throws ConfigurationException, IOException {
+		// clear reasoner from any previous model
+		getExtractionProcessor().getCodeExtractor().getCodeModelConfigMgr().clearReasoner();
 		IReasoner reasoner = getExtractionProcessor().getCodeExtractor().getCodeModelConfigMgr().getReasoner();
 		String codeModelFolder = getExtractionProcessor().getCodeExtractor().getCodeModelFolder();
 		if (reasoner == null) {
@@ -183,6 +314,9 @@ public class AnswerCurationManager {
 					else {
 						notifyUser(codeModelFolder, "No interesting models were found in this extraction from code.");
 					}
+					String importinfo = "To import this model for exploration in this window, add an import at the top of this window (after the 'uri' statement) for URI:\n   " + 
+							getExtractionProcessor().getCodeModelName() + "\n.";
+					notifyUser(codeModelFolder, importinfo);
 				} catch (ReasonerNotFoundException e) {
 					notifyUser(codeModelFolder, e.getMessage());
 					e.printStackTrace();
@@ -197,24 +331,7 @@ public class AnswerCurationManager {
 					e.printStackTrace();
 				}
 			}
-		}
-		
-		if (saveAsSadl != null) {
-			if (saveAsSadl.equals(SaveAsSadl.AskUserSaveAsSadl)) {
-				// ask user if they want a SADL file saved
-				IDialogAnswerProvider dap = getDialogAnswerProvider();
-				if (dap == null) {
-					dap = new DialogAnswerProviderConsoleForTest();
-				}
-				List<Object> args = new ArrayList<Object>();
-				args.add(outputOwlFileName);
-// TODO add argument for model folder so we know which project to use in any followup inquiries.				
-				dap.addCurationManagerInitiatedContent(this, "saveAsSadlFile", args, "Would you like to save the extracted model in SADL format?");
-			}
-			if (saveAsSadl != null && saveAsSadl.equals(SaveAsSadl.SaveAsSadl)) {
-				saveAsSadlFile(outputOwlFileName, "yes");
-			}
-		}
+		}		
 	}
 	
 	public String processBuildRequest(String modelToBuildUri) throws ConfigurationException, IOException {
@@ -290,27 +407,46 @@ public class AnswerCurationManager {
 
 	/**
 	 * Method to save the OWL model created from code extraction as a SADL file
-	 * @param outputOwlFileName -- name of the OWL file created
+	 * @param outputOwlFiles -- List of names of the OWL file created
 	 * @return -- the sadl fully qualified file name
 	 * @throws IOException
 	 */
-	public String saveAsSadlFile(String outputOwlFileName, String response) throws IOException {
+	public List<String> saveAsSadlFile(List<File> outputOwlFiles, String response) throws IOException {
 		if (isYes(response)) {
-			OwlToSadl ots = new OwlToSadl(getExtractionProcessor().getCodeModel());
-			String sadlFN = outputOwlFileName + ".sadl";
-			File sf = new File(sadlFN);
-			if (sf.exists()) {
-				sf.delete();
-			}
-			try {
-				boolean status = ots.saveSadlModel(sadlFN);
-				if (status) {
-					return sadlFN;
+			List<String> sadlFileNames = new ArrayList<String>();
+			for (File outputOwlFile : outputOwlFiles) {
+				String key = outputOwlFile.getCanonicalPath();
+				OntModel mdl = getExtractionProcessor().getCodeExtractor().getCodeModel(key);
+				if (mdl == null) {
+					mdl = getExtractionProcessor().getTextProcessor().getTextModel(key);
 				}
-			} catch (OwlImportException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
+				if (mdl != null) {
+					OwlToSadl ots = new OwlToSadl(mdl);
+					String sadlFN = outputOwlFile.getCanonicalPath() + ".sadl";
+					File sf = new File(sadlFN);
+					if (sf.exists()) {
+						sf.delete();
+					}
+					try {
+						boolean status = ots.saveSadlModel(sadlFN);
+						if (status) {
+							sadlFileNames.add(sadlFN);
+						}
+					} catch (OwlImportException e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					}
+				}
+				else {
+					try {
+						notifyUser(getDomainModelConfigurationManager().getModelFolder(), "Failed to save " + outputOwlFile.getName() + " as SADL file.");
+					} catch (ConfigurationException e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					}
+				}
 			}
+			return sadlFileNames;
 		}
 		return null;
 	}

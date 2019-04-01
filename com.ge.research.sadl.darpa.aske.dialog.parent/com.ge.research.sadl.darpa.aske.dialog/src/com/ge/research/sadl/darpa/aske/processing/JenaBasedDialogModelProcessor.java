@@ -302,7 +302,7 @@ public class JenaBasedDialogModelProcessor extends JenaBasedSadlModelProcessor {
 								}
 							}
 						}
-						if (!treatAsAnswerToBackend) {
+						if (!treatAsAnswerToBackend && !(element instanceof YesNoAnswerStatement)) {
 							// This is some kind of statement to add to the model
 							processModelElement(element);
 							setModelChanged(true);

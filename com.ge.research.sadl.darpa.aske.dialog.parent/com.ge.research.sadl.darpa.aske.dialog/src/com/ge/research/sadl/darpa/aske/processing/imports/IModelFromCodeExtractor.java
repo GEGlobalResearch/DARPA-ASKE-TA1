@@ -8,6 +8,7 @@ import java.util.Set;
 
 import com.ge.research.sadl.builder.IConfigurationManagerForIDE;
 import com.ge.research.sadl.reasoner.ConfigurationException;
+import com.hp.hpl.jena.ontology.OntModel;
 
 public interface IModelFromCodeExtractor {
 
@@ -64,5 +65,19 @@ public interface IModelFromCodeExtractor {
 	void setDefaultCodeModelPrefix(String prefix);
 	
 	String getDefaultCodeModelPrefix();
+
+	void setCodeModelPrefix(String codeModelPrefix);
+
+	String getCodeModelPrefix();
+
+	String getCodeModelNamespace();
+
+	void setCodeModelName(String codeModelName);
+
+	void addCodeModel(String key, OntModel codeModel);
+
+	Map<String,OntModel> getCodeModels();
+
+	OntModel getCodeModel(String key);
 
 }
