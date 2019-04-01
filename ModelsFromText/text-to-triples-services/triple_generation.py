@@ -48,18 +48,32 @@ def generate_equation_triples(equation_string, parameters):
     triples.append(get_triple(uri, "<http://sadl.org/sadlimplicitmodel#arguments>", list_start))
 
     for var in inputs:
-        triples.extend(get_data_desc_triples(id(equation_string), var, list_start, list_rest))
+        triples.extend(get_data_desc_triples(id(equation_string), var, list_start, list_rest, "_:data_"))
         list_start = list_rest
         list_rest = "_:list_" + str(id("rest")) + str(id(list_rest))
 
     #add nil for last list_rest?
 
+    return_var = []
+    if "returnVar" in parameters:
+        return_var = parameters["returnVar"]
+
+    list_start = "_:list_return_" + str(id("start")) + "_" + str(id(equation_string))
+    list_rest = "_:list_return_" + str(id("rest")) + "_" + str(id(equation_string))
+
+    triples.append(get_triple(uri, "<http://sadl.org/sadlimplicitmodel#returnTypes>", list_start))
+
+    for var in return_var:
+        triples.extend(get_data_desc_triples(id(equation_string), var, list_start, list_rest, "_:return_"))
+        list_start = list_rest
+        list_rest = "_:list_return_" + str(id("rest")) + str(id(list_rest))
+
     return triples
 
 
-def get_data_desc_triples(eq_id, var, list_start, list_rest):
+def get_data_desc_triples(eq_id, var, list_start, list_rest, prefix):
     triples = []
-    var_uri = "_:data_" + str(id(var)) + "_" + str(eq_id)
+    var_uri = prefix + str(id(var)) + "_" + str(eq_id)
 
     triples.append(get_triple(var_uri, "<http://www.w3.org/1999/02/22-rdf-syntax-ns#type>",
                               "<http://sadl.org/sadlimplicitmodel#DataDescriptor>"))
@@ -197,11 +211,11 @@ def get_entity_attributes(entity_uri):
     return triples
 
 
-def get_equation_context_triples(data_desc_uri, wikidata_uri):
+def get_equation_context_triples(data_desc_uri, wikidata_uri, rand):
 
     triples = []
 
-    aug_sem_type_uri = "_:aug_sem_type_" + str(id(random.random()))
+    aug_sem_type_uri = "_:aug_sem_type_" + str(rand) + "_" + str(random.random())
 
     triples.append(get_triple(data_desc_uri, "<http://sadl.org/sadlimplicitmodel#augmentedType>", aug_sem_type_uri))
     triples.append(get_triple(aug_sem_type_uri, "<http://www.w3.org/1999/02/22-rdf-syntax-ns#type>",

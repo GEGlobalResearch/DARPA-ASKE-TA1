@@ -7,7 +7,7 @@ def get_equation_var_context(body):
 
     query_string = get_query_string(body["variableName"], body["localityURI"])
 
-    URL = "http://vesuvius-test.crd.ge.com:2420/sparql"
+    URL = "http://localhost:2420/sparql"
     PARAMS = {"query": query_string, format: "application/sparql-results/json"} #"format": "application%2Fsparql-results%2Bjson"
 
     r = requests.get(url=URL, params=PARAMS) #verify=False
@@ -29,12 +29,20 @@ def get_equation_var_context(body):
 
 
 def get_query_string(variable_name, locality_uri):
-    return ("select ?variableName ?entityURI ?entityLabel " 
+    return ("select distinct ?variableName ?entityURI ?entityLabel ?equationString " 
             "from <" + locality_uri + "> "
             "where {"
-                "?x <http://sadl.org/sadlimplicitmodel#argName> ?variableName."
+                "?x <http://sadl.org/sadlimplicitmodel#descriptorName> ?variableName."
                 "FILTER(REGEX(?variableName, '" + variable_name + "', 'i')) ."
-                "OPTIONAL {?x <http://sadl.org/sadlimplicitmodel#augmentedType> ?augType} ."
-                "OPTIONAL {?augType <http://sadl.org/sadlimplicitmodel#semType> ?entityURI} ."
-                "OPTIONAL {?entityURI rdfs:label ?entityLabel} ."
+                "OPTIONAL {?x <http://sadl.org/sadlimplicitmodel#augmentedType> ?augType ."
+                "?augType <http://sadl.org/sadlimplicitmodel#semType> ?entityURI ."
+                "?entityURI rdfs:label ?entityLabel  . }"
+                "?list rdf:rest*/rdf:first ?x ."
+                "?equation a <http://sadl.org/sadlimplicitmodel#ExternalEquation> ."
+                "{?equation <http://sadl.org/sadlimplicitmodel#arguments> ?list .}" 
+                "UNION"
+                "{?equation <http://sadl.org/sadlimplicitmodel#returnTypes> ?list . }"
+                "?equation <http://sadl.org/sadlimplicitmodel#expression> ?script ."
+                "?script <http://sadl.org/sadlimplicitmodel#language> <http://sadl.org/sadlimplicitmodel#Text> ."
+                "?script <http://sadl.org/sadlimplicitmodel#script> ?equationString ."
             "}")
