@@ -72,42 +72,59 @@ then firstRef of ref2 is false.
 
 // first reference is of type "Used" or all earlier refs are of type "Used"	
 // this does not cover when no ref2 with l2 < l1 exists
-//Rule SetAsInput1
-//if c is CodeVariable and
-//   ref is reference of c and
-//   input of ref is not known and 
-//   usage of ref is Used and
-//   ref2 is reference of c and
-//   ref != ref2 and
-//   cb is codeBlock of ref and   
-//   cb2 is codeBlock of ref2 and
-//   cb = cb2 and   
-//   l1 is beginsAt of ref and
-//   l2 is beginsAt of ref2 and
-//   l2 < l1 and  // so ref2 is at an earlier location that ref
-//   noValue(ref2, usage, Reassigned) // no earlier reassignment of c exists
-//then input of ref is true and isImplicit of ref is true. 
+Rule SetAsInput1
+if c is CodeVariable and
+   ref is reference of c and
+   input of ref is not known and 
+   usage of ref is Used and
+   ref2 is reference of c and
+   ref != ref2 and
+   cb is codeBlock of ref and   
+   cb2 is codeBlock of ref2 and
+   cb = cb2 and   
+   l1 is beginsAt of ref and
+   l2 is beginsAt of ref2 and
+   l2 < l1 and  // so ref2 is at an earlier location that ref
+   noValue(ref2, usage, Reassigned) // no earlier reassignment of c exists
+then input of ref is true and isImplicit of ref is true. 
+
+Rule SetAsInput2 (note "like SetAsInput1 except one CodeBlock contained in another CodeBlock; need to make containedIn transitive")
+if c is CodeVariable and
+   ref is reference of c and
+   input of ref is not known and 
+   usage of ref is Used and
+   ref2 is reference of c and
+   ref != ref2 and
+   cb is codeBlock of ref and   
+   cb2 is codeBlock of ref2 and
+   cb containedIn cb2 and   
+   l1 is beginsAt of ref and
+   l2 is beginsAt of ref2 and
+   l2 < l1 and  // so ref2 is at an earlier location that ref
+   noValue(ref2, usage, Reassigned) // no earlier reassignment of c exists
+then input of ref is true and isImplicit of ref is true. 
 
 // if there is no l2 as specified in the previous rules, then the following covers that case
 // do I need to consider codeBlock?????
-//Rule SetAsInput2
-//if c is a CodeVariable and
-//   ref is reference of c and
-//   input of ref is not known and
-//   usage of ref is Used and 
-//   noValue(ref, firstRef)
-//then input of ref is true and isImplicit of ref is true. 
+Rule SetAsInput3 (note "assuming that rule for setting firstRef fires before this rule but that is not guranteed")
+if c is a CodeVariable and
+   ref is reference of c and
+   beginsAt of ref is l1 and
+   input of ref is not known and
+   usage of ref is Used and 
+   noValue(ref, firstRef)
+then input of ref is true and isImplicit of ref is true. 
 //
 //// "it is an output if it is computed and is argument to a setter"
 //// or I could try to use the notion of a constant
-//Rule SetAsOutput
-//if c is a CodeVariable and
-//   setterArgument of c is true and
-//   ref is a reference of c and
-//   output of ref is not known and
-//   usage of ref is Defined //check this?
-//then
-//	output of ref is true and isImplicit of ref is true.      	 
+Rule SetAsOutput
+if c is a CodeVariable and
+   setterArgument of c is true and
+   ref is a reference of c and
+   output of ref is not known and
+   usage of ref is Defined //check this?
+then
+	output of ref is true and isImplicit of ref is true.      	 
 
 //Rule MethodWithImplicitInputs
 //if m is a Method and
