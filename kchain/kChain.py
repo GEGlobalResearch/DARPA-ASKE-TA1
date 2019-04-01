@@ -11,7 +11,7 @@ import os
 import json
 import importlib as imp
 import eqnModels
-from tensorflow.contrib import autograph as ag
+from tensorflow.python import autograph as ag
 
 class kChainModel(object):
     

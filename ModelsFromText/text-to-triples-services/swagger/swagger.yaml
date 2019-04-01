@@ -1,0 +1,108 @@
+swagger: "2.0"
+info:
+  description: "This is a sample server Petstore server.  You can find out more about     Swagger at [http://swagger.io](http://swagger.io) or on [irc.freenode.net, #swagger](http://swagger.io/irc/).      For this sample, you can use the api key `special-key` to test the authorization     filters."
+  version: "1.0.0"
+  title: "Swagger Petstore"
+  termsOfService: "http://swagger.io/terms/"
+  contact:
+    email: "apiteam@swagger.io"
+  license:
+    name: "Apache 2.0"
+    url: "http://www.apache.org/licenses/LICENSE-2.0.html"
+host: "localhost:9080"
+basePath: "/v2"
+tags:
+- name: "text2triples"
+  description: "everything about text to triples"
+schemes:
+- "http"
+paths:
+  /text2triples/helloworld:
+    get:
+      tags:
+      - "text2triples"
+      operationId: "app.hello_world"
+      parameters:
+      - name: "status"
+        in: "query"
+        description: "Status values that need to be considered for filter"
+        required: true
+        type: "string"
+      responses:
+        200:
+          description: "successful operation"
+          schema:
+            type: "string"
+#  /text2triples:
+#    post:
+#      tags:
+#      - "text2triples"
+#      operationId: "testFunc"
+#      consumes:
+#      - application/json
+#      produces: 
+#      - application/json
+#      parameters: 
+#      - in: "body"
+#        name: "body"
+#        required: true
+#        schema:
+#          $ref: "#/definitions/Text"
+#      responses:
+#        200:
+#          description: "successful operation"
+#          schema:
+#            type: "array"
+#            items:
+#              $ref: "#/definitions/Triples"
+#        405:
+#          description: "Invalid input"
+definitions:
+  Text:
+    type: "object"
+    required: 
+    - "text"
+    - "locality"
+    properties:
+      text:
+        type: "string"
+      locality:
+        type: "string"
+    xml:
+      name: "Text"
+  Triple:
+    type: "object"
+    required:
+    - "triple"
+    - "confScore"
+    properties:
+      triple:
+        type: "string"
+      confScore:
+        type: "number"
+        format: "double"
+  Triples:
+    type: "object"
+    required: 
+    - "text"
+    - "triples"
+    properties:
+      text:
+        type: "string"
+      triples:
+        type: "array"
+        items:
+          $ref: "#/definitions/Triple"
+  ApiResponse:
+    type: "object"
+    properties:
+      code:
+        type: "integer"
+        format: "int32"
+      type:
+        type: "string"
+      message:
+        type: "string"
+externalDocs:
+  description: "Find out more about Swagger"
+  url: "http://swagger.io"

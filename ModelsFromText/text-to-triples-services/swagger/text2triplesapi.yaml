@@ -1,0 +1,195 @@
+swagger: "2.0"
+info:
+  description: "The following set of services can be used to extract triples related to scientific concepts and equations from text"
+  version: "1.0.0"
+  title: "DARPA AKSE TA 1 - ANSWER - Services for extracting knowledge from text"
+  #termsOfService: "http://swagger.io/terms/"
+  #contact:
+  #  email: "apiteam@swagger.io"
+  license:
+    name: "Apache 2.0"
+    url: "http://www.apache.org/licenses/LICENSE-2.0.html"
+host: "localhost:4200"
+basePath: "/darpa/aske"
+tags:
+- name: "demo-services"
+  description: "services to support text extraction demo fom web UI"
+- name: "text2triples"
+  description: "everything about text to triples"
+schemes:
+- "https"
+- "http"
+paths:
+  /text2triples:
+    post:
+      tags:
+      - "text2triples"
+      operationId: "app.text_to_triples"
+      consumes:
+      - application/json
+      produces: 
+      - application/json
+      parameters: 
+      - in: "body"
+        name: "body"
+        required: true
+        schema:
+          $ref: "#/definitions/Text"
+      responses:
+        200:
+          description: "successful operation"
+          schema:
+            type: "array"
+            items:
+              $ref: "#/definitions/Triples"
+        405:
+          description: "Invalid input"
+  /equationVariableContext:
+    post:
+      tags:
+      - "text2triples"
+      summary: ""
+      description: ""
+      operationId: "app.get_equation_var_context"
+      consumes:
+      - application/json
+      produces:
+      - application/json
+      parameters:
+      - in: "body"
+        name: "body"
+        required: true
+        schema:
+          $ref: '#/definitions/EquationVarContext'
+      responses:
+        200:
+          description: OK
+          schema:
+            type: "array"
+            items:
+              $ref: '#/definitions/EquationContextInfo'
+  /processExampleDoc:
+    post:
+      tags:
+      - "demo-services"
+      summary: ""
+      description: ""
+      operationId: "app.process_example_doc"
+      consumes: 
+      - application/json
+      produces: 
+      - application/json
+      parameters: 
+      - in: "body"
+        name: "body"
+        required: true
+        schema:
+          $ref: '#/definitions/ProcessExampleDoc'
+      responses:
+        200:
+          description: OK
+          schema:
+            type: "array"
+            items:
+              $ref: "#/definitions/Triples"
+    
+    
+definitions:
+  Text:
+    type: "object"
+    required: 
+    - "text"
+    - "locality"
+    properties:
+      text:
+        type: "string"
+      locality:
+        type: "string"
+    xml:
+      name: "Text"
+  Triple:
+    type: "object"
+    required:
+    - "subject"
+    - "predicate"
+    - "object"
+    - "tripleConfScore"
+    properties:
+      subject:
+        type: "string"
+      predicate:
+        type: "string"
+      object:
+        type: "string"
+      tripleConfScore:
+        type: "number"
+        format: "double"
+  Triples:
+    type: "object"
+    required:
+    - "text"
+    - "concepts"
+    properties:
+      text:
+        type: "string"
+      concepts:
+        type: "array"
+        items:
+          $ref: '#/definitions/Concept'
+  
+  Concept:
+    type: "object"
+    required: 
+    - "string"
+    - "start"
+    - "end"
+    - "extractionConfScore"
+    - "type"
+    - "triples"
+    properties:
+      string:
+        type: "string"
+      start:
+        type: "integer"
+      end:
+        type: "integer"
+      extractionConfScore:
+        type: "number"
+        format: "double"
+      type:
+        type: "string"
+      triples:
+        type: "array"
+        items:
+          $ref: "#/definitions/Triple"
+  EquationVarContext:
+    type: "object"
+    required:
+    - "variableName"
+    - "localityURI"
+    properties:
+      variableName:
+        type: "string"
+      localityURI:
+        type: "string"
+  EquationContextInfo:
+    type: "object"
+    required:
+    - "variableName"
+    properties:
+      variableName:
+        type: "string"
+      entityURI:
+        type: "string"
+      entityLabel:
+        type: "string"
+  ProcessExampleDoc:
+    type: "object"
+    required:
+    - "docId"
+    properties:
+      docId:
+        type: "string"
+externalDocs:
+  description: "Find out more about the ANSWER system"
+  url: "https://github.com/GEGlobalResearch/DARPA-ASKE-TA1/wiki"
