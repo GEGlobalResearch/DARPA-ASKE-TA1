@@ -8,8 +8,10 @@
   \item \spxentry{\_\_init\_\_()}\spxextra{kChain.kChainModel method}, \hyperpage{3}
   \item \spxentry{\_createEqnModel()}\spxextra{kChain.kChainModel method}, \hyperpage{3}
   \item \spxentry{\_createNNModel()}\spxextra{kChain.kChainModel method}, \hyperpage{3}
-  \item \spxentry{\_getVarType()}\spxextra{kChain.kChainModel method}, \hyperpage{3}
+  \item \spxentry{\_getDefaultValues()}\spxextra{kChain.kChainModel method}, \hyperpage{4}
+  \item \spxentry{\_getVarType()}\spxextra{kChain.kChainModel method}, \hyperpage{4}
   \item \spxentry{\_makePyFile()}\spxextra{kChain.kChainModel method}, \hyperpage{4}
+  \item \spxentry{\_setDefaultValues()}\spxextra{kChain.kChainModel method}, \hyperpage{4}
 
   \indexspace
   \bigletter B

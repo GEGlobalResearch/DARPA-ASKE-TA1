@@ -116,11 +116,18 @@ the physics equation.
 \end{itemize}
 
 \item[{Returns}] \leavevmode
-Computational graph of the physics equation
-metagraphLoc (string): Location on disk where computational model was stored
+\begin{itemize}
+\item {} 
+TensorFlow Graph: Computational graph of the physics equation
+
+\item {} 
+metagraphLoc: string of location on disk where computational model was stored
+
+\end{itemize}
+
 
 \item[{Return type}] \leavevmode
-mdl (TensorFlow Graph)
+(TensorFlow Graph, string)
 
 \end{description}\end{quote}
 
@@ -146,19 +153,28 @@ variables from the KG.
 \end{itemize}
 
 \item[{Returns}] \leavevmode
+\begin{itemize}
+\item {} 
+TensorFlow Graph: computational graph of the neural network
 
-computational graph of the neural network
-metagraphLoc (string):
-\begin{quote}
+\item {} 
+metagraphLoc: string of location on disk where computational model is stored
 
-Location on disk where computational model is stored
-\end{quote}
+\end{itemize}
 
 
 \item[{Return type}] \leavevmode
-mdl (TensorFlow Graph)
+(TensorFlow Graph, string)
 
 \end{description}\end{quote}
+
+\end{fulllineitems}
+
+\index{\_getDefaultValues() (kChain.kChainModel method)@\spxentry{\_getDefaultValues()}\spxextra{kChain.kChainModel method}}
+
+\begin{fulllineitems}
+\phantomsection\label{\detokenize{index:kChain.kChainModel._getDefaultValues}}\pysiglinewithargsret{\sphinxbfcode{\sphinxupquote{\_getDefaultValues}}}{}{}
+Reads json from file and return if exists, else create new and return empty
 
 \end{fulllineitems}
 
@@ -192,6 +208,14 @@ Write the formatted code into a python module for conversion to tensorflow graph
 
 \end{fulllineitems}
 
+\index{\_setDefaultValues() (kChain.kChainModel method)@\spxentry{\_setDefaultValues()}\spxextra{kChain.kChainModel method}}
+
+\begin{fulllineitems}
+\phantomsection\label{\detokenize{index:kChain.kChainModel._setDefaultValues}}\pysiglinewithargsret{\sphinxbfcode{\sphinxupquote{\_setDefaultValues}}}{\emph{defValues}}{}
+Writes json with provided values back to file
+
+\end{fulllineitems}
+
 \index{build() (kChain.kChainModel method)@\spxentry{build()}\spxextra{kChain.kChainModel method}}
 
 \begin{fulllineitems}
@@ -213,7 +237,7 @@ Build a K-CHAIN model using input and output variables from the KG.
 Row 2 - Units, Row 3 onwards - data (default = None)
 
 \item {} 
-\sphinxstyleliteralstrong{\sphinxupquote{eqMdl}} (\sphinxstyleliteralemphasis{\sphinxupquote{string}}) \textendash{} 
+\sphinxstyleliteralstrong{\sphinxupquote{eqMdl}} (\sphinxstyleliteralemphasis{\sphinxupquote{string}}) \textendash{} python TF eager-compatible code (e.g: “c = a * b” or “a = tf.math.sqrt(x*y)”)
 
 \end{itemize}
 
@@ -241,11 +265,10 @@ Evaluates a model with given inputs to compute output values
 
 \item[{Returns}] \leavevmode
 array of JSON variable objects with name, type, and value fields.
-The resulting output of the computation is assigned to the value
-field of the JSON object.
+The resulting output of the computation is assigned to the value field of the JSON object.
 
 \item[{Return type}] \leavevmode
-outputVar (JSON array)
+JSON array
 
 \end{description}\end{quote}
 
@@ -277,7 +300,7 @@ the corresponding dataset.
 Location on disk where computational model and trained parameters are stored
 
 \item[{Return type}] \leavevmode
-metagraphLoc (string)
+string
 
 \end{description}\end{quote}
 

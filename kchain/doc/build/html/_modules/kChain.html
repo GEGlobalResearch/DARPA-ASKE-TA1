@@ -153,7 +153,9 @@
 <span class="kn">import</span> <span class="nn">pandas</span> <span class="k">as</span> <span class="nn">pd</span>
 <span class="kn">import</span> <span class="nn">matplotlib.pyplot</span> <span class="k">as</span> <span class="nn">plt</span>
 <span class="kn">import</span> <span class="nn">os</span>
+<span class="kn">import</span> <span class="nn">json</span>
 <span class="kn">import</span> <span class="nn">importlib</span> <span class="k">as</span> <span class="nn">imp</span>
+<span class="kn">import</span> <span class="nn">eqnModels</span>
 <span class="kn">from</span> <span class="nn">tensorflow.contrib</span> <span class="k">import</span> <span class="n">autograph</span> <span class="k">as</span> <span class="n">ag</span>
 
 <div class="viewcode-block" id="kChainModel"><a class="viewcode-back" href="../index.html#kChain.kChainModel">[docs]</a><span class="k">class</span> <span class="nc">kChainModel</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
@@ -186,7 +188,8 @@
 <span class="sd">            dataLoc (string): </span>
 <span class="sd">                Location of dataset as .csv with Row 1 - Variables names, </span>
 <span class="sd">                Row 2 - Units, Row 3 onwards - data (default = None)</span>
-<span class="sd">            eqMdl (string):</span>
+<span class="sd">            eqMdl (string): </span>
+<span class="sd">                python TF eager-compatible code (e.g: &quot;c = a * b&quot; or &quot;a = tf.math.sqrt(x*y)&quot;) </span>
 <span class="sd">                </span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="n">eqMdl</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
@@ -210,9 +213,33 @@
         <span class="k">else</span><span class="p">:</span>
             <span class="c1">#fit model using dataset </span>
             <span class="n">df</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">getDataset</span><span class="p">(</span><span class="n">dataLoc</span><span class="p">)</span>
-            <span class="n">meta_graph_loc</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">fitModel</span><span class="p">(</span><span class="n">df</span><span class="p">,</span> <span class="n">inputVar</span><span class="p">,</span> <span class="n">outputVar</span><span class="p">,</span> <span class="n">mdlName</span><span class="p">)</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">meta_graph_loc</span> <span class="o">=</span> <span class="n">meta_graph_loc</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">trainedState</span> <span class="o">=</span> <span class="mi">1</span>        </div>
+            <span class="n">metagraphLoc</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">fitModel</span><span class="p">(</span><span class="n">df</span><span class="p">,</span> <span class="n">inputVar</span><span class="p">,</span> <span class="n">outputVar</span><span class="p">,</span> <span class="n">mdlName</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">meta_graph_loc</span> <span class="o">=</span> <span class="n">metagraphLoc</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">trainedState</span> <span class="o">=</span> <span class="mi">1</span>       
+        
+        <span class="c1">#get local copy of default values</span>
+        <span class="n">defaultValues</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_getDefaultValues</span><span class="p">()</span>
+        
+        
+        <span class="c1"># add any new default values assigned in build to local copy</span>
+        <span class="k">for</span> <span class="n">node</span> <span class="ow">in</span> <span class="n">inputVar</span><span class="p">:</span>
+            <span class="k">if</span> <span class="s1">&#39;value&#39;</span> <span class="ow">in</span> <span class="n">node</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
+                <span class="n">defaultValues</span><span class="p">[</span><span class="n">node</span><span class="p">[</span><span class="s1">&#39;name&#39;</span><span class="p">]]</span> <span class="o">=</span> <span class="n">node</span><span class="p">[</span><span class="s1">&#39;value&#39;</span><span class="p">]</span>
+        
+        <span class="bp">self</span><span class="o">.</span><span class="n">_setDefaultValues</span><span class="p">(</span><span class="n">defaultValues</span><span class="p">)</span>
+        
+        <span class="c1"># Intialize the Session</span>
+        <span class="n">sess</span> <span class="o">=</span> <span class="n">tf</span><span class="o">.</span><span class="n">Session</span><span class="p">(</span><span class="n">graph</span><span class="o">=</span><span class="n">mdl</span><span class="p">)</span>
+        
+        <span class="c1"># Initialize writer to allow visualization of model in TensorBoard</span>
+        <span class="n">writer</span> <span class="o">=</span> <span class="n">tf</span><span class="o">.</span><span class="n">summary</span><span class="o">.</span><span class="n">FileWriter</span><span class="p">(</span><span class="s2">&quot;log/example/model&quot;</span><span class="p">,</span> <span class="n">sess</span><span class="o">.</span><span class="n">graph</span><span class="p">)</span>
+        
+        <span class="c1"># Close the writer</span>
+        <span class="n">writer</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+        
+        <span class="c1"># Close the session</span>
+        <span class="n">sess</span><span class="o">.</span><span class="n">close</span><span class="p">()</span></div>
+        
         
 <div class="viewcode-block" id="kChainModel.getDataset"><a class="viewcode-back" href="../index.html#kChain.kChainModel.getDataset">[docs]</a>    <span class="k">def</span> <span class="nf">getDataset</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">dataLoc</span> <span class="o">=</span> <span class="kc">None</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
@@ -246,20 +273,12 @@
 <span class="sd">                Equation relating inputs to output (E.g.: &quot;c = a * b&quot;)</span>
 <span class="sd">        </span>
 <span class="sd">        Returns:</span>
-<span class="sd">            mdl (TensorFlow Graph): Computational graph of the physics equation</span>
-<span class="sd">            metagraphLoc (string): Location on disk where computational model was stored</span>
+<span class="sd">            (TensorFlow Graph, string):                </span>
+<span class="sd">                * TensorFlow Graph: Computational graph of the physics equation</span>
+<span class="sd">                * metagraphLoc: string of location on disk where computational model was stored</span>
 <span class="sd">            </span>
 <span class="sd">        &quot;&quot;&quot;</span> 
         <span class="n">in_dims</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">inputVar</span><span class="p">)</span>
-
-<span class="c1">#        inStr = inputVar[0][&#39;name&#39;]</span>
-<span class="c1">#        for ii in range(1,in_dims):</span>
-<span class="c1">#            inStr = inStr + &#39;, &#39;+ inputVar[ii][&#39;name&#39;]            </span>
-<span class="c1">#        </span>
-<span class="c1">#        #4 spaces is ideal for indentation</span>
-<span class="c1">#        stringfun = &#39;def &#39;+mdlName+&#39;(&#39;+inStr+&#39;):&#39;\</span>
-<span class="c1">#        +&#39;\n    &#39;+ eqMdl\</span>
-<span class="c1">#        +&#39;\n    return &#39;+ outputVar[0][&#39;name&#39;]</span>
                 
         <span class="n">inStr</span> <span class="o">=</span> <span class="n">inputVar</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="s1">&#39;name&#39;</span><span class="p">]</span> <span class="o">+</span> <span class="s1">&#39; = inArg[0]&#39;</span>
         <span class="k">for</span> <span class="n">ii</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="n">in_dims</span><span class="p">):</span>
@@ -274,8 +293,9 @@
         <span class="nb">print</span><span class="p">(</span><span class="n">stringfun</span><span class="p">)</span>
         
         <span class="bp">self</span><span class="o">.</span><span class="n">_makePyFile</span><span class="p">(</span><span class="n">stringfun</span><span class="p">)</span>
-        <span class="n">tmp_module</span> <span class="o">=</span> <span class="n">imp</span><span class="o">.</span><span class="n">import_module</span><span class="p">(</span><span class="s1">&#39;eqnModels&#39;</span><span class="p">,</span> <span class="n">package</span><span class="o">=</span><span class="s1">&#39;eqnModels&#39;</span><span class="p">)</span>
-        <span class="n">tmp_method</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">tmp_module</span><span class="p">,</span> <span class="n">mdlName</span><span class="p">)</span>
+<span class="c1">#        tmp_module = imp.import_module(&#39;eqnModels&#39;, package=&#39;eqnModels&#39;)</span>
+        <span class="n">imp</span><span class="o">.</span><span class="n">reload</span><span class="p">(</span><span class="n">eqnModels</span><span class="p">)</span>
+        <span class="n">tmp_method</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">eqnModels</span><span class="p">,</span> <span class="n">mdlName</span><span class="p">)</span>
         
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">debug</span><span class="p">:</span>
             <span class="nb">print</span><span class="p">(</span><span class="n">tmp_method</span><span class="p">)</span>
@@ -305,7 +325,8 @@
                 <span class="n">tf</span><span class="o">.</span><span class="n">add_to_collection</span><span class="p">(</span><span class="s2">&quot;input&quot;</span><span class="p">,</span> <span class="n">node</span><span class="p">)</span>
                 
             <span class="n">tf</span><span class="o">.</span><span class="n">train</span><span class="o">.</span><span class="n">export_meta_graph</span><span class="p">(</span><span class="n">filename</span> <span class="o">=</span> <span class="n">metagraphLoc</span><span class="o">+</span><span class="s1">&#39;.meta&#39;</span><span class="p">,</span><span class="n">graph</span> <span class="o">=</span> <span class="n">mdl</span><span class="p">)</span>
-            <span class="k">return</span> <span class="n">mdl</span><span class="p">,</span> <span class="n">metagraphLoc</span></div>
+        
+        <span class="k">return</span> <span class="n">mdl</span><span class="p">,</span> <span class="n">metagraphLoc</span></div>
     
 <div class="viewcode-block" id="kChainModel._makePyFile"><a class="viewcode-back" href="../index.html#kChain.kChainModel._makePyFile">[docs]</a>    <span class="k">def</span> <span class="nf">_makePyFile</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">stringfun</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
@@ -318,7 +339,7 @@
         <span class="n">tempPath</span> <span class="o">=</span> <span class="s1">&#39;eqnModels/__init__.py&#39;</span>
         <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">tempPath</span><span class="p">,</span> <span class="s1">&#39;w+&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
             <span class="n">f</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">stringfun</span><span class="p">)</span></div>
-        <span class="c1">#update json array for encoded equation models with inputs, outputs, string</span>
+        <span class="c1">#TODO: update a json array for encoded equation models with inputs, outputs, string</span>
     
 <div class="viewcode-block" id="kChainModel._getVarType"><a class="viewcode-back" href="../index.html#kChain.kChainModel._getVarType">[docs]</a>    <span class="k">def</span> <span class="nf">_getVarType</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">typeStr</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
@@ -360,10 +381,9 @@
 <span class="sd">                Name to assign to the final model (E.g.: &#39;Newtons2ndLaw&#39;)</span>
 <span class="sd">        </span>
 <span class="sd">        Returns:</span>
-<span class="sd">            mdl (TensorFlow Graph):</span>
-<span class="sd">                computational graph of the neural network</span>
-<span class="sd">            metagraphLoc (string):</span>
-<span class="sd">                Location on disk where computational model is stored</span>
+<span class="sd">            (TensorFlow Graph, string):</span>
+<span class="sd">                * TensorFlow Graph: computational graph of the neural network</span>
+<span class="sd">                * metagraphLoc: string of location on disk where computational model is stored</span>
 <span class="sd">            </span>
 <span class="sd">        &quot;&quot;&quot;</span> 
         <span class="n">metagraphLoc</span> <span class="o">=</span> <span class="s2">&quot;../models/&quot;</span> <span class="o">+</span> <span class="n">mdlName</span>
@@ -414,8 +434,7 @@
 <span class="sd">                Name to assign to the final model (E.g.: &#39;Newtons2ndLaw&#39;)</span>
 <span class="sd">                </span>
 <span class="sd">        Returns:</span>
-<span class="sd">            metagraphLoc (string):</span>
-<span class="sd">                Location on disk where computational model and trained parameters are stored</span>
+<span class="sd">            string: Location on disk where computational model and trained parameters are stored</span>
 <span class="sd">            </span>
 <span class="sd">        &quot;&quot;&quot;</span> 
         <span class="n">in_dims</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">inputVar</span><span class="p">)</span>
@@ -501,12 +520,9 @@
 <span class="sd">                Name to model to use (E.g.: &#39;Newtons2ndLaw&#39;)</span>
 <span class="sd">        </span>
 <span class="sd">        Returns:</span>
-<span class="sd">            outputVar (JSON array):</span>
-<span class="sd">                array of JSON variable objects with name, type, and value fields.</span>
-<span class="sd">                The resulting output of the computation is assigned to the value </span>
-<span class="sd">                field of the JSON object.</span>
+<span class="sd">            JSON array : array of JSON variable objects with name, type, and value fields. </span>
+<span class="sd">            The resulting output of the computation is assigned to the value field of the JSON object.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="n">in_dims</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">inputVar</span><span class="p">)</span>
         <span class="n">metagraphLoc</span> <span class="o">=</span> <span class="s2">&quot;../models/&quot;</span> <span class="o">+</span> <span class="n">mdlName</span>
         
         <span class="c1"># Create a clean graph and import the MetaGraphDef nodes.</span>
@@ -528,25 +544,104 @@
                 
             <span class="c1">#recollect output and input vars from original graph</span>
             <span class="n">output</span> <span class="o">=</span> <span class="n">tf</span><span class="o">.</span><span class="n">get_collection</span><span class="p">(</span><span class="s2">&quot;output&quot;</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>    
-            <span class="n">invars</span> <span class="o">=</span> <span class="n">tf</span><span class="o">.</span><span class="n">get_collection</span><span class="p">(</span><span class="s2">&quot;input&quot;</span><span class="p">)</span>
             
-            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">debug</span><span class="p">:</span>
-                <span class="nb">print</span><span class="p">(</span><span class="n">tf</span><span class="o">.</span><span class="n">get_collection</span><span class="p">(</span><span class="s2">&quot;input&quot;</span><span class="p">))</span>
             <span class="c1">#setup feed dictionary for task at hand</span>
             <span class="n">fd</span> <span class="o">=</span> <span class="p">{}</span>
-            <span class="k">for</span> <span class="n">ii</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">in_dims</span><span class="p">):</span>
-                <span class="n">fd</span><span class="p">[</span><span class="n">invars</span><span class="p">[</span><span class="n">ii</span><span class="p">]]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">fromstring</span><span class="p">(</span><span class="n">inputVar</span><span class="p">[</span><span class="n">ii</span><span class="p">][</span><span class="s1">&#39;value&#39;</span><span class="p">][</span><span class="mi">1</span><span class="p">:</span><span class="o">-</span><span class="mi">1</span><span class="p">],</span>
-                                              <span class="n">sep</span> <span class="o">=</span> <span class="s1">&#39;,&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span><span class="mi">1</span><span class="p">)</span>
+            <span class="c1">#assign values to nodes</span>
+            <span class="k">for</span> <span class="n">node</span> <span class="ow">in</span> <span class="n">inputVar</span><span class="p">:</span>
+                <span class="k">if</span> <span class="s1">&#39;[&#39;</span> <span class="ow">in</span> <span class="n">node</span><span class="p">[</span><span class="s1">&#39;value&#39;</span><span class="p">]</span> <span class="ow">and</span> <span class="s1">&#39;]&#39;</span> <span class="ow">in</span> <span class="n">node</span><span class="p">[</span><span class="s1">&#39;value&#39;</span><span class="p">]:</span>
+                    <span class="n">tstr</span> <span class="o">=</span> <span class="n">node</span><span class="p">[</span><span class="s1">&#39;value&#39;</span><span class="p">][</span><span class="mi">1</span><span class="p">:</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="n">tstr</span> <span class="o">=</span> <span class="n">node</span><span class="p">[</span><span class="s1">&#39;value&#39;</span><span class="p">]</span>
+                <span class="n">fd</span><span class="p">[</span><span class="n">new_graph</span><span class="o">.</span><span class="n">get_tensor_by_name</span><span class="p">(</span><span class="n">node</span><span class="p">[</span><span class="s1">&#39;name&#39;</span><span class="p">]</span><span class="o">+</span><span class="s1">&#39;:0&#39;</span><span class="p">)]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">fromstring</span><span class="p">(</span><span class="n">tstr</span><span class="p">,</span> 
+                   <span class="n">sep</span> <span class="o">=</span> <span class="s1">&#39;,&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span><span class="mi">1</span><span class="p">)</span>
         
             <span class="c1">#get output predictions</span>
-            <span class="n">outval</span> <span class="o">=</span> <span class="n">sess</span><span class="o">.</span><span class="n">run</span><span class="p">(</span><span class="n">output</span><span class="p">,</span> <span class="n">feed_dict</span><span class="o">=</span><span class="n">fd</span><span class="p">)</span>
-            
+            <span class="c1">#outval = sess.run(output, feed_dict=fd)</span>
+            <span class="n">defaultValues</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_getDefaultValues</span><span class="p">()</span>
+            <span class="n">defaultValuesUsed</span> <span class="o">=</span> <span class="p">[]</span>
+            <span class="n">outval</span><span class="p">,</span> <span class="n">defaultValuesUsed</span><span class="p">,</span> <span class="n">missingVar</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_runSessionWithDefaults</span><span class="p">(</span><span class="n">sess</span><span class="p">,</span> <span class="n">new_graph</span><span class="p">,</span> <span class="n">inputVar</span><span class="p">,</span>
+                                                                     <span class="n">output</span><span class="p">,</span> <span class="n">fd</span><span class="p">,</span> <span class="n">defaultValues</span><span class="p">,</span> 
+                                                                     <span class="n">defaultValuesUsed</span><span class="p">)</span>
             <span class="c1"># Close the session</span>
             <span class="n">sess</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
         
-        <span class="n">outputVar</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="s1">&#39;value&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array2string</span><span class="p">(</span><span class="n">outval</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">,),</span>
-                                                 <span class="n">separator</span> <span class="o">=</span> <span class="s1">&#39;,&#39;</span><span class="p">)</span>
-        <span class="k">return</span> <span class="n">outputVar</span></div></div>
+        <span class="k">if</span> <span class="n">outval</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">outputVar</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="s1">&#39;value&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array2string</span><span class="p">(</span><span class="n">outval</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">,),</span>
+                                                     <span class="n">separator</span> <span class="o">=</span> <span class="s1">&#39;,&#39;</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">outputVar</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="s1">&#39;value&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>
+                
+        <span class="k">return</span> <span class="n">outputVar</span><span class="p">,</span> <span class="n">defaultValuesUsed</span><span class="p">,</span> <span class="n">missingVar</span></div>
+    
+    <span class="k">def</span> <span class="nf">_runSessionWithDefaults</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">sess</span><span class="p">,</span> <span class="n">mdl</span><span class="p">,</span> <span class="n">inputVar</span><span class="p">,</span> <span class="n">output</span><span class="p">,</span> <span class="n">fd</span><span class="p">,</span> <span class="n">defaultValues</span><span class="p">,</span> <span class="n">defaultValuesUsed</span><span class="p">):</span>
+        <span class="n">missingVar</span> <span class="o">=</span> <span class="s1">&#39;&#39;</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">aval</span> <span class="o">=</span> <span class="n">sess</span><span class="o">.</span><span class="n">run</span><span class="p">(</span><span class="n">output</span><span class="p">,</span> <span class="n">feed_dict</span><span class="o">=</span><span class="n">fd</span><span class="p">)</span>
+        <span class="k">except</span> <span class="n">tf</span><span class="o">.</span><span class="n">errors</span><span class="o">.</span><span class="n">InvalidArgumentError</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+            <span class="c1">#determine if argument error was raised by placeholder or operation </span>
+            <span class="k">if</span> <span class="n">e</span><span class="o">.</span><span class="n">node_def</span><span class="o">.</span><span class="n">op</span> <span class="o">!=</span> <span class="s1">&#39;Placeholder&#39;</span><span class="p">:</span>
+                <span class="c1"># This case is usually not required</span>
+                <span class="c1"># identify input of operation that is missing</span>
+                <span class="n">tmp</span> <span class="o">=</span> <span class="mi">0</span>
+                <span class="n">ii</span> <span class="o">=</span> <span class="mi">0</span>
+                <span class="n">varName</span> <span class="o">=</span> <span class="s1">&#39;&#39;</span> 
+                <span class="k">while</span> <span class="n">varName</span> <span class="o">==</span> <span class="s1">&#39;&#39;</span> <span class="ow">and</span> <span class="n">ii</span> <span class="o">&lt;</span> <span class="nb">len</span><span class="p">(</span><span class="n">e</span><span class="o">.</span><span class="n">node_def</span><span class="o">.</span><span class="n">input</span><span class="p">):</span>
+                    <span class="k">for</span> <span class="n">node</span> <span class="ow">in</span> <span class="n">inputVar</span><span class="p">:</span>
+                        <span class="k">if</span> <span class="n">node</span><span class="p">[</span><span class="s1">&#39;name&#39;</span><span class="p">]</span> <span class="o">==</span> <span class="n">e</span><span class="o">.</span><span class="n">node_def</span><span class="o">.</span><span class="n">input</span><span class="p">[</span><span class="n">ii</span><span class="p">]:</span>
+                            <span class="n">tmp</span> <span class="o">=</span> <span class="mi">1</span>
+                    <span class="k">if</span> <span class="n">tmp</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+                        <span class="n">varName</span> <span class="o">=</span> <span class="n">e</span><span class="o">.</span><span class="n">node_def</span><span class="o">.</span><span class="n">input</span><span class="p">[</span><span class="n">ii</span><span class="p">]</span>
+                    <span class="k">else</span><span class="p">:</span>
+                        <span class="n">ii</span> <span class="o">=</span> <span class="n">ii</span> <span class="o">+</span> <span class="mi">1</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="c1">#if placeholder is missing, then  return name of placeholder</span>
+                <span class="n">varName</span> <span class="o">=</span> <span class="n">e</span><span class="o">.</span><span class="n">node_def</span><span class="o">.</span><span class="n">name</span> 
+                
+            <span class="c1">#look for value available in default values</span>
+            <span class="k">if</span> <span class="n">varName</span> <span class="ow">in</span> <span class="n">defaultValues</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
+                <span class="n">tmp</span> <span class="o">=</span> <span class="n">mdl</span><span class="o">.</span><span class="n">get_tensor_by_name</span><span class="p">(</span><span class="n">varName</span><span class="o">+</span><span class="s1">&#39;:0&#39;</span><span class="p">)</span>
+                <span class="c1">#if user wants multiple evaluations together, the default values</span>
+                <span class="c1">#need to be repeated same number of times.</span>
+                <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">fd</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span> 
+                    <span class="c1">#Unpacking with * works with any object that is iterable and, </span>
+                    <span class="c1">#since dictionaries return their keys when iterated through, </span>
+                    <span class="c1">#* creates a list of keys by using it within a list literal</span>
+                    <span class="n">fd</span><span class="p">[</span><span class="n">tmp</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">repeat</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">fromstring</span><span class="p">(</span><span class="n">defaultValues</span><span class="p">[</span><span class="n">varName</span><span class="p">],</span> 
+                      <span class="n">dtype</span> <span class="o">=</span> <span class="nb">float</span><span class="p">,</span> <span class="n">sep</span> <span class="o">=</span> <span class="s1">&#39;,&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span><span class="mi">1</span><span class="p">),</span> <span class="nb">len</span><span class="p">(</span><span class="n">fd</span><span class="p">[[</span><span class="o">*</span><span class="n">fd</span><span class="p">][</span><span class="mi">0</span><span class="p">]]),</span> <span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="n">fd</span><span class="p">[</span><span class="n">tmp</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">fromstring</span><span class="p">(</span><span class="n">defaultValues</span><span class="p">[</span><span class="n">varName</span><span class="p">],</span> 
+                      <span class="n">dtype</span> <span class="o">=</span> <span class="nb">float</span><span class="p">,</span> <span class="n">sep</span> <span class="o">=</span> <span class="s1">&#39;,&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span><span class="mi">1</span><span class="p">)</span>
+                    
+                <span class="n">defaultValuesUsed</span><span class="o">.</span><span class="n">append</span><span class="p">({</span><span class="s1">&#39;name&#39;</span><span class="p">:</span><span class="n">varName</span><span class="p">,</span><span class="s1">&#39;value&#39;</span><span class="p">:</span><span class="n">defaultValues</span><span class="p">[</span><span class="n">varName</span><span class="p">]})</span>
+                <span class="n">aval</span><span class="p">,</span> <span class="n">defaultValuesUsed</span><span class="p">,</span> <span class="n">missingVar</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_runSessionWithDefaults</span><span class="p">(</span><span class="n">sess</span><span class="p">,</span> <span class="n">mdl</span><span class="p">,</span> <span class="n">inputVar</span><span class="p">,</span> 
+                                                                                   <span class="n">output</span><span class="p">,</span> <span class="n">fd</span><span class="p">,</span> <span class="n">defaultValues</span><span class="p">,</span> 
+                                                                                   <span class="n">defaultValuesUsed</span><span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;Please provide value for : &#39;</span> <span class="o">+</span> <span class="n">varName</span><span class="p">)</span>
+                <span class="n">aval</span> <span class="o">=</span> <span class="kc">None</span>
+                <span class="n">missingVar</span> <span class="o">=</span> <span class="n">varName</span>
+                
+        <span class="k">return</span> <span class="n">aval</span><span class="p">,</span> <span class="n">defaultValuesUsed</span><span class="p">,</span> <span class="n">missingVar</span>
+    
+<div class="viewcode-block" id="kChainModel._getDefaultValues"><a class="viewcode-back" href="../index.html#kChain.kChainModel._getDefaultValues">[docs]</a>    <span class="k">def</span> <span class="nf">_getDefaultValues</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Reads json from file and return if exists, else create new and return empty </span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="s1">&#39;defaultValues.txt&#39;</span><span class="p">,</span> <span class="s1">&#39;r&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">json_file</span><span class="p">:</span>  
+                <span class="n">defaultValues</span> <span class="o">=</span> <span class="n">json</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="n">json_file</span><span class="p">)</span>
+        <span class="k">except</span> <span class="ne">IOError</span><span class="p">:</span>
+            <span class="n">defaultValues</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="k">return</span> <span class="n">defaultValues</span></div>
+    
+    
+<div class="viewcode-block" id="kChainModel._setDefaultValues"><a class="viewcode-back" href="../index.html#kChain.kChainModel._setDefaultValues">[docs]</a>    <span class="k">def</span> <span class="nf">_setDefaultValues</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">defValues</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Writes json with provided values back to file</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="s1">&#39;defaultValues.txt&#39;</span><span class="p">,</span> <span class="s1">&#39;w&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">outfile</span><span class="p">:</span>  
+            <span class="n">json</span><span class="o">.</span><span class="n">dump</span><span class="p">(</span><span class="n">defValues</span><span class="p">,</span> <span class="n">outfile</span><span class="p">,</span> <span class="n">indent</span><span class="o">=</span><span class="mi">4</span><span class="p">)</span></div></div>
         
 </pre></div>
 

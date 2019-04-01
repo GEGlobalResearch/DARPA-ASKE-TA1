@@ -43,7 +43,8 @@ class kChainModel(object):
             dataLoc (string): 
                 Location of dataset as .csv with Row 1 - Variables names, 
                 Row 2 - Units, Row 3 onwards - data (default = None)
-            eqMdl (string):
+            eqMdl (string): 
+                python TF eager-compatible code (e.g: "c = a * b" or "a = tf.math.sqrt(x*y)") 
                 
         """
         if eqMdl is None:
@@ -71,8 +72,11 @@ class kChainModel(object):
             self.meta_graph_loc = metagraphLoc
             self.trainedState = 1       
         
+        #get local copy of default values
         defaultValues = self._getDefaultValues()
         
+        
+        # add any new default values assigned in build to local copy
         for node in inputVar:
             if 'value' in node.keys():
                 defaultValues[node['name']] = node['value']
@@ -82,7 +86,7 @@ class kChainModel(object):
         # Intialize the Session
         sess = tf.Session(graph=mdl)
         
-        # Initialize writer
+        # Initialize writer to allow visualization of model in TensorBoard
         writer = tf.summary.FileWriter("log/example/model", sess.graph)
         
         # Close the writer
@@ -124,8 +128,9 @@ class kChainModel(object):
                 Equation relating inputs to output (E.g.: "c = a * b")
         
         Returns:
-            mdl (TensorFlow Graph): Computational graph of the physics equation
-            metagraphLoc (string): Location on disk where computational model was stored
+            (TensorFlow Graph, string):                
+                * TensorFlow Graph: Computational graph of the physics equation
+                * metagraphLoc: string of location on disk where computational model was stored
             
         """ 
         in_dims = len(inputVar)
@@ -135,7 +140,8 @@ class kChainModel(object):
             inStr = inStr + '\n    ' + inputVar[ii]['name'] + ' = inArg['+str(ii)+']'            
         
         #4 spaces is ideal for indentation
-        stringfun = 'def '+mdlName+'(inArg):'\
+        stringfun = 'import tensorflow as tf'\
+        +'\ndef '+mdlName+'(inArg):'\
         +'\n    '+ inStr\
         +'\n    '+ eqMdl\
         +'\n    return '+ outputVar[0]['name'] + '\n\n'
@@ -231,10 +237,9 @@ class kChainModel(object):
                 Name to assign to the final model (E.g.: 'Newtons2ndLaw')
         
         Returns:
-            mdl (TensorFlow Graph):
-                computational graph of the neural network
-            metagraphLoc (string):
-                Location on disk where computational model is stored
+            (TensorFlow Graph, string):
+                * TensorFlow Graph: computational graph of the neural network
+                * metagraphLoc: string of location on disk where computational model is stored
             
         """ 
         metagraphLoc = "../models/" + mdlName
@@ -285,8 +290,7 @@ class kChainModel(object):
                 Name to assign to the final model (E.g.: 'Newtons2ndLaw')
                 
         Returns:
-            metagraphLoc (string):
-                Location on disk where computational model and trained parameters are stored
+            string: Location on disk where computational model and trained parameters are stored
             
         """ 
         in_dims = len(inputVar)
@@ -372,10 +376,8 @@ class kChainModel(object):
                 Name to model to use (E.g.: 'Newtons2ndLaw')
         
         Returns:
-            outputVar (JSON array):
-                array of JSON variable objects with name, type, and value fields.
-                The resulting output of the computation is assigned to the value 
-                field of the JSON object.
+            JSON array : array of JSON variable objects with name, type, and value fields. 
+            The resulting output of the computation is assigned to the value field of the JSON object.
         """
         metagraphLoc = "../models/" + mdlName
         
@@ -479,7 +481,9 @@ class kChainModel(object):
         return aval, defaultValuesUsed, missingVar
     
     def _getDefaultValues(self):
-        #read json from file and return if exists, else create new and return empty 
+        """
+        Reads json from file and return if exists, else create new and return empty 
+        """
         try:
             with open('defaultValues.txt', 'r') as json_file:  
                 defaultValues = json.load(json_file)
@@ -489,7 +493,9 @@ class kChainModel(object):
     
     
     def _setDefaultValues(self, defValues):
-        #write json with values
+        """
+        Writes json with provided values back to file
+        """
         with open('defaultValues.txt', 'w') as outfile:  
             json.dump(defValues, outfile, indent=4)
         
