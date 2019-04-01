@@ -21,8 +21,7 @@ def get_data_descriptor_uri(symbol, triples):
     data_desc_uri = "NA"
     for triple in triples:
         obj_str = (triple["object"]).replace("\"", "")
-        if ("data_" in triple["subject"]) and (symbol == obj_str):
-            print(symbol, obj_str)
+        if ("data_" in triple["subject"] or "return_" in triple["subject"]) and (symbol == obj_str):
             data_desc_uri = triple["subject"]
             break
     return data_desc_uri

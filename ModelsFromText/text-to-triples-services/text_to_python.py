@@ -16,6 +16,10 @@ def text_to_python(string_expression):
         equation_parameters["inputVars"] = results["inputVars"]
     if "returnVar" in results:
         equation_parameters["returnVar"] = results["returnVar"]
+    elif "modifiedLHS" in results:
+        returnVar = []
+        returnVar.append(results["modifiedLHS"])
+        equation_parameters["returnVar"] = returnVar
     if "codeEquation" in results:
         equation_parameters["codeEquation"] = results["codeEquation"]
 
