@@ -33,7 +33,8 @@ public class TextProcessorTests {
 	@Ignore
 	@Test
 	public void test() throws ConfigurationException, IOException {
-		TextProcessor tp = new TextProcessor(null, null);
+		TextProcessor tp = new TextProcessor(new AnswerCurationManager(domainProjectModelFolder, 
+				ConfigurationManagerForIdeFactory.getConfigurationManagerForIDE(domainProjectModelFolder, null), null), null);
 		tp.process(null, "a^2 = R * T * gamma", null);
 	}
 
@@ -59,6 +60,9 @@ public class TextProcessorTests {
 	public void test4() throws ConfigurationException, IOException {
 		System.out.println(new File(".").getAbsoluteFile().getAbsolutePath());
 		File sourceFile = new File(new File(".").getAbsolutePath() + "/resources/Sound.txt");
+		File domainProjectFolder = new File(sourceFile.getParentFile() + "/TestSadlProject");
+		File domainModelFolder = new File(domainProjectFolder.getAbsoluteFile() + "/OwlModels");
+		setDomainProjectModelFolder(domainModelFolder.getCanonicalPath());
 		IConfigurationManagerForIDE cm = ConfigurationManagerForIdeFactory.getConfigurationManagerForIDE(getDomainProjectModelFolder(), null);
 		AnswerCurationManager acm = new AnswerCurationManager(getDomainProjectModelFolder(), cm, null);
 		acm.getExtractionProcessor().getCodeExtractor().setCodeModelFolder(getExtractionProjectModelFolder());
