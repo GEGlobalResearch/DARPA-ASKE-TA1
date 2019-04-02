@@ -21,6 +21,7 @@ import com.ge.research.sadl.builder.IConfigurationManagerForIDE;
 import com.ge.research.sadl.darpa.aske.curation.AnswerCurationManager;
 import com.ge.research.sadl.darpa.aske.preferences.DialogPreferences;
 import com.ge.research.sadl.darpa.aske.processing.DialogConstants;
+import com.ge.research.sadl.jena.UtilsForJena;
 import com.ge.research.sadl.jena.inference.SadlJenaModelGetterPutter;
 import com.ge.research.sadl.processing.SadlConstants;
 import com.ge.research.sadl.reasoner.ConfigurationException;
@@ -89,60 +90,96 @@ public class TextProcessor {
 		JsonObject json = new JsonObject();
 		json.addProperty("locality", locality);
 		json.addProperty("text", text);
-	
+//		System.out.println(text);
 		String response = makeConnectionAndGetResponse(serviceUrl, json);
 //		System.out.println(response);
 		if (response != null && response.length() > 0) {
+			OntModel theModel = getCurationManager().getExtractionProcessor().getTextModel();
 			JsonArray sentences = new JsonParser().parse(response).getAsJsonArray();
 			if (sentences != null) {
 				for (JsonElement element : sentences) {
 					if (element != null) {
 						JsonObject sentence = element.getAsJsonObject();
 						String originalText = sentence.get("text").getAsString();
-						System.out.println("Extracted from text:");
+//						System.out.println("Extracted from text:" + originalText);
 						JsonArray concepts = sentence.get("concepts").getAsJsonArray();
 						for (JsonElement concept : concepts) {
 							String matchingText = concept.getAsJsonObject().get("string").getAsString();
 							int startInOrigText = concept.getAsJsonObject().get("start").getAsInt();
 							int endInOrigText = concept.getAsJsonObject().get("end").getAsInt();
 							double extractionConfidence = concept.getAsJsonObject().get("extractionConfScore").getAsDouble();
-							System.out.println("  Match in substring '" + matchingText + "(" + startInOrigText + "," + endInOrigText + "):");
+//							System.out.println("  Match in substring '" + matchingText + "(" + startInOrigText + "," + endInOrigText + "):");
 							JsonArray triples = concept.getAsJsonObject().get("triples").getAsJsonArray();
 							String eqName = null;
-							String eqExpr = null;
+							String eqExpr1 = null;
+							String eqExpr2 = null;
+							String eqScript1 = null;
+							String eqScript2 = null;
+							String lang1 = null;
+							String lang2 = null;
 							for (JsonElement triple : triples) {
 								String subject = triple.getAsJsonObject().get("subject").getAsString();
 								String predicate = triple.getAsJsonObject().get("predicate").getAsString();
 								String object = triple.getAsJsonObject().get("object").getAsString();
 								double tripleConfidenceScore = triple.getAsJsonObject().get("tripleConfScore").getAsDouble();
-								System.out.println("     <" + subject + ", " + predicate + ", " + object + "> (" + tripleConfidenceScore + ")");
-								if (object.equals("<http://sadl.org/sadlimplicitmodel#Equation>")) {
+//								System.out.println("     <" + subject + ", " + predicate + ", " + object + "> (" + tripleConfidenceScore + ")");
+								if (object.equals("<http://sadl.org/sadlimplicitmodel#ExternalEquation>")) {
 									// equation found
 									eqName = subject;
 									// predicate assumed to be rdf:type
 								}
 								if (eqName != null && subject.equals(eqName)) {
 									if (predicate.equals("<http://sadl.org/sadlimplicitmodel#expression>")) {
-										eqExpr = object;
+										if (eqExpr1 == null) {
+											eqExpr1 = object;
+										}
+										else {
+											eqExpr2 = object;
+										}
+									}
+								}
+								if (eqExpr1 != null && subject.equals(eqExpr1)) {
+									if (predicate.equals("<" + SadlConstants.SADL_IMPLICIT_MODEL_SCRIPT_PROPERTY_URI + ">")) {
+										eqScript1 = UtilsForJena.stripQuotes(object);
+									}
+									else if (predicate.equals("<" + SadlConstants.SADL_IMPLICIT_MODEL_LANGUAGE_PROPERTY_URI + ">")) {
+										lang1 = object;
+									}
+								}
+								if (eqExpr2 != null && subject.equals(eqExpr2)) {
+									if (predicate.equals("<" + SadlConstants.SADL_IMPLICIT_MODEL_SCRIPT_PROPERTY_URI + ">")) {
+										eqScript2 = UtilsForJena.stripQuotes(object);
+									}
+									else if (predicate.equals("<" + SadlConstants.SADL_IMPLICIT_MODEL_LANGUAGE_PROPERTY_URI + ">")) {
+										lang2 = object;
 									}
 								}
 							}
-							if (eqName != null && eqExpr != null) {
+							if (eqName != null) {
 								// add to model
+								Individual eqInst = theModel.createIndividual(getCurationManager().getExtractionProcessor().getTextModelName() + "#" + eqName,
+										theModel.getOntClass(SadlConstants.SADL_IMPLICIT_MODEL_EXTERNAL_EQUATION_CLASS_URI));
 								if (eqName.startsWith("_:")) {
 									eqName = eqName.substring(2);
 								}
-								OntModel theModel = getCurationManager().getExtractionProcessor().getTextModel();
-								Individual eqInst = theModel.createIndividual(getCurationManager().getExtractionProcessor().getTextModelName() + "#" + eqName,
-										theModel.getOntClass(SadlConstants.SADL_IMPLICIT_MODEL_EXTERNAL_EQUATION_CLASS_URI));
-								Individual script = theModel.createIndividual(theModel.getOntClass(SadlConstants.SADL_IMPLICIT_MODEL_SCRIPT_CLASS_URI));
-								script.addProperty(theModel.getProperty(SadlConstants.SADL_IMPLICIT_MODEL_SCRIPT_PROPERTY_URI), theModel.createTypedLiteral(eqExpr));
-								eqInst.addProperty(theModel.getProperty(SadlConstants.SADL_IMPLICIT_MODEL_EXPRESSTION_PROPERTY_URI), script);
+								if (eqScript1 != null) {
+									Individual script1 = theModel.createIndividual(theModel.getOntClass(SadlConstants.SADL_IMPLICIT_MODEL_SCRIPT_CLASS_URI));
+									script1.addProperty(theModel.getProperty(SadlConstants.SADL_IMPLICIT_MODEL_SCRIPT_PROPERTY_URI), theModel.createTypedLiteral(eqScript1));
+									script1.addProperty(theModel.getProperty(SadlConstants.SADL_IMPLICIT_MODEL_LANGUAGE_PROPERTY_URI), theModel.getIndividual(lang1.substring(1, lang1.length() - 1)));
+									eqInst.addProperty(theModel.getProperty(SadlConstants.SADL_IMPLICIT_MODEL_EXPRESSTION_PROPERTY_URI), script1);
+								}
+								if (eqScript2 != null) {
+									Individual script2 = theModel.createIndividual(theModel.getOntClass(SadlConstants.SADL_IMPLICIT_MODEL_SCRIPT_CLASS_URI));
+									script2.addProperty(theModel.getProperty(SadlConstants.SADL_IMPLICIT_MODEL_SCRIPT_PROPERTY_URI), theModel.createTypedLiteral(eqScript2));
+									script2.addProperty(theModel.getProperty(SadlConstants.SADL_IMPLICIT_MODEL_LANGUAGE_PROPERTY_URI), theModel.getIndividual(lang2.substring(1, lang2.length() - 1)));
+									eqInst.addProperty(theModel.getProperty(SadlConstants.SADL_IMPLICIT_MODEL_EXPRESSTION_PROPERTY_URI), script2);									
+								}
 							}
 						}
 					}
 				}
 			}
+//			theModel.write(System.out, "N3");
 		}
 		else {
 			System.err.println("No response received from service " + textToTripleServiceURL);

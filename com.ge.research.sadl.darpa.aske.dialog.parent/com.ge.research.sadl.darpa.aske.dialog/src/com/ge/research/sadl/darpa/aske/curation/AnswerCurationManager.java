@@ -258,7 +258,7 @@ public class AnswerCurationManager {
 				reasoner.setConfigurationManager(textModelConfigMgr);
 				try {
 					reasoner.initializeReasoner(textModelFolder, getExtractionProcessor().getTextModelName(), null);
-					String queryString = "select ?eq ?expr where {?eq <rdf:type> <ExternalEquation> . ?eq <expression> ?script . ?script <script> ?expr}";
+					String queryString = "select ?lang ?expr where {?eq <rdf:type> <ExternalEquation> . ?eq <expression> ?script . ?script <script> ?expr . ?script <language> ?lang}";
 					queryString = reasoner.prepareQuery(queryString);
 					ResultSet results =  reasoner.ask(queryString);
 					if (results != null && results.getRowCount() > 0) {
