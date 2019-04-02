@@ -4,6 +4,7 @@ import triple_generation as tp
 import equation_context as context
 import text_to_python as t2p
 from segtok.segmenter import split_single
+import random
 
 
 def get_replace_chars():
@@ -84,7 +85,7 @@ def text_to_triples(body):
                 score = entity["confidence"]
                 equation_parameters = t2p.text_to_python(equation_string)
                 triples = tp.generate_equation_triples(equation_string, equation_parameters)
-                equations.append({"equation": entity["text"], "line": line,"uri": "foo_bar",
+                equations.append({"equation": entity["text"], "line": line,"uri": "NA",
                                   "parameters": equation_parameters})
 
                 # triples = tp.generate_equation_triples(equation_string)
@@ -133,7 +134,7 @@ def text_to_triples(body):
                                 if data_desc_uri != "NA":
                                     concept["triples"].extend(
                                         tp.get_equation_context_triples(data_desc_uri=data_desc_uri,
-                                                                wikidata_uri=symbol["entity_uri"]))
+                                                                wikidata_uri=symbol["entity_uri"], rand=random.random()))
         text_triples_arr.append(text_triples)
 
 

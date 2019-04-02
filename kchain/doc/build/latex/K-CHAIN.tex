@@ -53,7 +53,7 @@
 
 
 \title{K-CHAIN Documentation}
-\date{Mar 31, 2019}
+\date{Apr 01, 2019}
 \release{}
 \author{Nurali Virani}
 \newcommand{\sphinxlogo}{\vbox{}}
@@ -116,11 +116,18 @@ the physics equation.
 \end{itemize}
 
 \item[{Returns}] \leavevmode
-Computational graph of the physics equation
-metagraphLoc (string): Location on disk where computational model was stored
+\begin{itemize}
+\item {} 
+TensorFlow Graph: Computational graph of the physics equation
+
+\item {} 
+metagraphLoc: string of location on disk where computational model was stored
+
+\end{itemize}
+
 
 \item[{Return type}] \leavevmode
-mdl (TensorFlow Graph)
+(TensorFlow Graph, string)
 
 \end{description}\end{quote}
 
@@ -146,19 +153,28 @@ variables from the KG.
 \end{itemize}
 
 \item[{Returns}] \leavevmode
+\begin{itemize}
+\item {} 
+TensorFlow Graph: computational graph of the neural network
 
-computational graph of the neural network
-metagraphLoc (string):
-\begin{quote}
+\item {} 
+metagraphLoc: string of location on disk where computational model is stored
 
-Location on disk where computational model is stored
-\end{quote}
+\end{itemize}
 
 
 \item[{Return type}] \leavevmode
-mdl (TensorFlow Graph)
+(TensorFlow Graph, string)
 
 \end{description}\end{quote}
+
+\end{fulllineitems}
+
+\index{\_getDefaultValues() (kChain.kChainModel method)@\spxentry{\_getDefaultValues()}\spxextra{kChain.kChainModel method}}
+
+\begin{fulllineitems}
+\phantomsection\label{\detokenize{index:kChain.kChainModel._getDefaultValues}}\pysiglinewithargsret{\sphinxbfcode{\sphinxupquote{\_getDefaultValues}}}{}{}
+Reads json from file and return if exists, else create new and return empty
 
 \end{fulllineitems}
 
@@ -192,6 +208,65 @@ Write the formatted code into a python module for conversion to tensorflow graph
 
 \end{fulllineitems}
 
+\index{\_runSessionWithDefaults() (kChain.kChainModel method)@\spxentry{\_runSessionWithDefaults()}\spxextra{kChain.kChainModel method}}
+
+\begin{fulllineitems}
+\phantomsection\label{\detokenize{index:kChain.kChainModel._runSessionWithDefaults}}\pysiglinewithargsret{\sphinxbfcode{\sphinxupquote{\_runSessionWithDefaults}}}{\emph{sess}, \emph{mdl}, \emph{inputVar}, \emph{output}, \emph{fd}, \emph{defaultValues}, \emph{defaultValuesUsed}}{}
+Run a TensorFlow session with given inputs and fill in missing values from defaults or inform user about missing information
+\begin{quote}\begin{description}
+\item[{Parameters}] \leavevmode\begin{itemize}
+\item {} 
+\sphinxstyleliteralstrong{\sphinxupquote{sess}} (\sphinxstyleliteralemphasis{\sphinxupquote{TF Session}}) \textendash{} TensorFlow session to run the computation
+
+\item {} 
+\sphinxstyleliteralstrong{\sphinxupquote{mdl}} (\sphinxstyleliteralemphasis{\sphinxupquote{TF Graph}}) \textendash{} TensorFlow Graph to run the session
+
+\item {} 
+\sphinxstyleliteralstrong{\sphinxupquote{inputVar}} (\sphinxstyleliteralemphasis{\sphinxupquote{JSON array}}) \textendash{} array of JSON variable objects with name, type, and value fields
+
+\item {} 
+\sphinxstyleliteralstrong{\sphinxupquote{output}} (\sphinxstyleliteralemphasis{\sphinxupquote{TF Graph Node}}) \textendash{} TensorFlow Graph node for output from computation
+
+\item {} 
+\sphinxstyleliteralstrong{\sphinxupquote{feed\_dict}} (\sphinxstyleliteralemphasis{\sphinxupquote{Dictionary}}) \textendash{} Feed dictionary for TF placeholders and their values
+
+\item {} 
+\sphinxstyleliteralstrong{\sphinxupquote{defaultValues}} (\sphinxstyleliteralemphasis{\sphinxupquote{JSON}}) \textendash{} Name:Value pairs of default values from model build stage
+
+\item {} 
+\sphinxstyleliteralstrong{\sphinxupquote{defaultValuesUsed}} (\sphinxstyleliteralemphasis{\sphinxupquote{JSON Array}}) \textendash{} array of default variable JSON objects with name and value fields (empty initially)
+
+\end{itemize}
+
+\item[{Returns}] \leavevmode
+\begin{itemize}
+\item {} 
+output: value(s) of output variable.
+
+\item {} 
+Default JSON array : array of default variable JSON objects with name and value fields.
+
+\item {} 
+string : Name of missing variable, which is needed for inference
+
+\end{itemize}
+
+
+\item[{Return type}] \leavevmode
+(output type, Default JSON array, string)
+
+\end{description}\end{quote}
+
+\end{fulllineitems}
+
+\index{\_setDefaultValues() (kChain.kChainModel method)@\spxentry{\_setDefaultValues()}\spxextra{kChain.kChainModel method}}
+
+\begin{fulllineitems}
+\phantomsection\label{\detokenize{index:kChain.kChainModel._setDefaultValues}}\pysiglinewithargsret{\sphinxbfcode{\sphinxupquote{\_setDefaultValues}}}{\emph{defValues}}{}
+Writes json with provided values back to file
+
+\end{fulllineitems}
+
 \index{build() (kChain.kChainModel method)@\spxentry{build()}\spxextra{kChain.kChainModel method}}
 
 \begin{fulllineitems}
@@ -213,7 +288,7 @@ Build a K-CHAIN model using input and output variables from the KG.
 Row 2 - Units, Row 3 onwards - data (default = None)
 
 \item {} 
-\sphinxstyleliteralstrong{\sphinxupquote{eqMdl}} (\sphinxstyleliteralemphasis{\sphinxupquote{string}}) \textendash{} 
+\sphinxstyleliteralstrong{\sphinxupquote{eqMdl}} (\sphinxstyleliteralemphasis{\sphinxupquote{string}}) \textendash{} python TF eager-compatible code (e.g: “c = a * b” or “a = tf.math.sqrt(x*y)”)
 
 \end{itemize}
 
@@ -240,12 +315,21 @@ Evaluates a model with given inputs to compute output values
 \end{itemize}
 
 \item[{Returns}] \leavevmode
-array of JSON variable objects with name, type, and value fields.
-The resulting output of the computation is assigned to the value
-field of the JSON object.
+\begin{itemize}
+\item {} 
+Output JSON array : array of output variable JSON objects with name, type, and value fields. The resulting output of the computation is assigned to the value field of the JSON object.
+
+\item {} 
+Default JSON array : array of default variable JSON objects with name and value fields.
+
+\item {} 
+string : Name of missing variable, which is needed for inference
+
+\end{itemize}
+
 
 \item[{Return type}] \leavevmode
-outputVar (JSON array)
+(Output JSON array, Default JSON array, string)
 
 \end{description}\end{quote}
 
@@ -277,7 +361,7 @@ the corresponding dataset.
 Location on disk where computational model and trained parameters are stored
 
 \item[{Return type}] \leavevmode
-metagraphLoc (string)
+string
 
 \end{description}\end{quote}
 

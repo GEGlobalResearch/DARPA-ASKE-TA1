@@ -1,4 +1,4 @@
-var serviceBaseURL = "http://vesuvius063.crd.ge.com:4200/darpa/aske/" //vesuvius063
+var serviceBaseURL = "http://localhost:4200/darpa/aske/"
 
 $(document).ready(function(){
     //let's call the service and display the HTML to begin with
@@ -91,6 +91,7 @@ function makeExtractionRequest(docId){
                 if (type == "EQUATION"){
                     var triples = concept.triples;
                     triplesAll.push(triples);
+                    console.log(triples);
                 }
                 else if (type == "CONCEPT"){
                     contextString = getConceptContextString(concept.triples);
@@ -217,7 +218,21 @@ function viz(triplesAll){
 
                 data_args.push({"data" :subj, "arg": obj});
             }
-            else if(subj.includes("data_") && predicate.includes("augmentedType")){
+            else if(subj.includes("return_") && predicate.includes("descriptorName")){
+                nodeSubj = { data: { id: eqSubjNode } };
+                nodeObj = { data: { id: obj } };
+                nodeArr.push(nodeSubj);
+                nodeArr.push(nodeObj);
+
+                edge = { data: { id: subj + obj, source: eqSubjNode , target: obj, label: "hasReturnVar" } };
+                edgeArr.push(edge);
+
+                data_args.push({"data" :subj, "arg": obj});
+            }
+            else if( subj.includes("data_") && predicate.includes("augmentedType") ) {
+                data_aug_uri.push({"data": subj, "aug": obj});
+            }
+            else if (subj.includes("return_") && predicate.includes("augmentedType")) {
                 data_aug_uri.push({"data": subj, "aug": obj});
             }
             else if(subj.includes("aug_sem_type") && predicate.includes("semType")){

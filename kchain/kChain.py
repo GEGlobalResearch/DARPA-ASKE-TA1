@@ -43,7 +43,8 @@ class kChainModel(object):
             dataLoc (string): 
                 Location of dataset as .csv with Row 1 - Variables names, 
                 Row 2 - Units, Row 3 onwards - data (default = None)
-            eqMdl (string):
+            eqMdl (string): 
+                python TF eager-compatible code (e.g: "c = a * b" or "a = tf.math.sqrt(x*y)") 
                 
         """
         if eqMdl is None:
@@ -71,8 +72,11 @@ class kChainModel(object):
             self.meta_graph_loc = metagraphLoc
             self.trainedState = 1       
         
+        #get local copy of default values
         defaultValues = self._getDefaultValues()
         
+        
+        # add any new default values assigned in build to local copy
         for node in inputVar:
             if 'value' in node.keys():
                 defaultValues[node['name']] = node['value']
@@ -82,7 +86,7 @@ class kChainModel(object):
         # Intialize the Session
         sess = tf.Session(graph=mdl)
         
-        # Initialize writer
+        # Initialize writer to allow visualization of model in TensorBoard
         writer = tf.summary.FileWriter("log/example/model", sess.graph)
         
         # Close the writer
@@ -124,8 +128,9 @@ class kChainModel(object):
                 Equation relating inputs to output (E.g.: "c = a * b")
         
         Returns:
-            mdl (TensorFlow Graph): Computational graph of the physics equation
-            metagraphLoc (string): Location on disk where computational model was stored
+            (TensorFlow Graph, string):                
+                * TensorFlow Graph: Computational graph of the physics equation
+                * metagraphLoc: string of location on disk where computational model was stored
             
         """ 
         in_dims = len(inputVar)
@@ -135,16 +140,22 @@ class kChainModel(object):
             inStr = inStr + '\n    ' + inputVar[ii]['name'] + ' = inArg['+str(ii)+']'            
         
         #4 spaces is ideal for indentation
-        stringfun = 'def '+mdlName+'(inArg):'\
+        #construct the python function around the python snippet
+        stringfun = 'import tensorflow as tf'\
+        +'\ndef '+mdlName+'(inArg):'\
         +'\n    '+ inStr\
         +'\n    '+ eqMdl\
         +'\n    return '+ outputVar[0]['name'] + '\n\n'
         
         print(stringfun)
         
+        #write the python code into a file where AutoGraph can read it
         self._makePyFile(stringfun)
-#        tmp_module = imp.import_module('eqnModels', package='eqnModels')
+        
+        #reload the eqnModels package as a method was newly added
         imp.reload(eqnModels)
+        
+        #get the method created by the code
         tmp_method = getattr(eqnModels, mdlName)
         
         if self.debug:
@@ -153,28 +164,30 @@ class kChainModel(object):
         metagraphLoc = "../models/" + mdlName
         
         tf.reset_default_graph()
-        
         mdl = tf.Graph()
         
         with mdl.as_default():  
             invars = []
             for ii in range(in_dims):
+                #create list on input variables
                 tfType = self._getVarType(inputVar[ii]['type'])
                 invars.append(tf.placeholder(tfType, name=inputVar[ii]['name']))
             
             tfType = self._getVarType(outputVar[0]['type'])
+            
+            #create TensorFlow graph from python code
             tf_model = ag.to_graph(tmp_method)
             
-            #output = tf.py_func(m[mdlName], invars, tfType, name=outputVar[0]['name'])
-            
+            #obtain TensorFlow model of input and outputs
             output = tf_model(invars)
             
             tf.add_to_collection("output", output)
             
             for node in invars:
                 tf.add_to_collection("input", node)
-                
-            tf.train.export_meta_graph(filename = metagraphLoc+'.meta',graph = mdl)
+            
+            #save model locally as a MetaGraph
+            tf.train.export_meta_graph(filename = metagraphLoc+'.meta', graph = mdl)
         
         return mdl, metagraphLoc
     
@@ -231,10 +244,9 @@ class kChainModel(object):
                 Name to assign to the final model (E.g.: 'Newtons2ndLaw')
         
         Returns:
-            mdl (TensorFlow Graph):
-                computational graph of the neural network
-            metagraphLoc (string):
-                Location on disk where computational model is stored
+            (TensorFlow Graph, string):
+                * TensorFlow Graph: computational graph of the neural network
+                * metagraphLoc: string of location on disk where computational model is stored
             
         """ 
         metagraphLoc = "../models/" + mdlName
@@ -245,11 +257,14 @@ class kChainModel(object):
         with mdl.as_default():  
             invars = []
             for ii in range(in_dims):
+                #create list on input variables
                 invars.append(tf.placeholder(tf.float32, name=inputVar[ii]['name']))
             
+            #concatenate inputs for NN model input layer
             inputLayer = tf.concat(invars, axis=1)
             
             with tf.name_scope('NN') as scope:
+                #create fixed architecture NN model
                 W_0 = tf.Variable(tf.random_uniform([in_dims, 3]), name="W_0")
                 b_0 = tf.Variable(tf.random_uniform([3]), name="b_0")
                 h_0 = tf.nn.relu_layer(inputLayer, W_0, b_0, name="h_0")
@@ -259,13 +274,14 @@ class kChainModel(object):
                 W_2 = tf.Variable(tf.random_uniform([2, out_dims]), name="W_2")
                 b_2 = tf.Variable(tf.random_uniform([out_dims]), name="b_2")
                 h_2 = tf.nn.bias_add(tf.matmul(h_1, W_2), b_2, name="h_2")
-        
+                
             output = h_2
             tf.add_to_collection("output", output)
             
             for node in invars:
                 tf.add_to_collection("input", node)
-                
+            
+            #save model locally as a MetaGraph
             tf.train.export_meta_graph(filename = metagraphLoc+'.meta',graph = mdl)
             return mdl, metagraphLoc
     
@@ -285,8 +301,7 @@ class kChainModel(object):
                 Name to assign to the final model (E.g.: 'Newtons2ndLaw')
                 
         Returns:
-            metagraphLoc (string):
-                Location on disk where computational model and trained parameters are stored
+            string: Location on disk where computational model and trained parameters are stored
             
         """ 
         in_dims = len(inputVar)
@@ -345,10 +360,8 @@ class kChainModel(object):
             metagraphLoc = "../models/" + mdlName
             new_saver.save(sess, metagraphLoc)
             
-            #meta_graph_def = tf.train.export_meta_graph()
-            #filename = '../log/example/force/Newtons2ndLaw.meta')
-            
             if self.debug:
+                # plot training vs predicted values
                 outval = sess.run(output, feed_dict=fd)
                 plt.plot(outval, '-r')
                 plt.plot(dataset[outputVar[0]['name']], '-g')
@@ -372,10 +385,11 @@ class kChainModel(object):
                 Name to model to use (E.g.: 'Newtons2ndLaw')
         
         Returns:
-            outputVar (JSON array):
-                array of JSON variable objects with name, type, and value fields.
-                The resulting output of the computation is assigned to the value 
-                field of the JSON object.
+            (Output JSON array, Default JSON array, string):
+                * Output JSON array : array of output variable JSON objects with name, type, and value fields. The resulting output of the computation is assigned to the value field of the JSON object.
+                * Default JSON array : array of default variable JSON objects with name and value fields. 
+                * string : Name of missing variable, which is needed for inference
+            
         """
         metagraphLoc = "../models/" + mdlName
         
@@ -429,8 +443,35 @@ class kChainModel(object):
         return outputVar, defaultValuesUsed, missingVar
     
     def _runSessionWithDefaults(self, sess, mdl, inputVar, output, fd, defaultValues, defaultValuesUsed):
+        """
+        Run a TensorFlow session with given inputs and fill in missing values from defaults or inform user about missing information
+        
+        Arguments:
+            sess (TF Session):
+                TensorFlow session to run the computation
+            mdl (TF Graph):
+                TensorFlow Graph to run the session
+            inputVar (JSON array):
+                array of JSON variable objects with name, type, and value fields
+            output (TF Graph Node):
+                TensorFlow Graph node for output from computation
+            feed_dict (Dictionary):
+                Feed dictionary for TF placeholders and their values
+            defaultValues (JSON):
+                Name:Value pairs of default values from model build stage
+            defaultValuesUsed (JSON Array):
+                array of default variable JSON objects with name and value fields (empty initially)
+    
+        Returns:
+            (output type, Default JSON array, string):
+                * output: value(s) of output variable.
+                * Default JSON array : array of default variable JSON objects with name and value fields. 
+                * string : Name of missing variable, which is needed for inference
+            
+        """
         missingVar = ''
         try:
+            #if all required inputs are available in correct type then no InvalidArgumentError
             aval = sess.run(output, feed_dict=fd)
         except tf.errors.InvalidArgumentError as e:
             #determine if argument error was raised by placeholder or operation 
@@ -468,10 +509,12 @@ class kChainModel(object):
                       dtype = float, sep = ',').reshape(-1,1)
                     
                 defaultValuesUsed.append({'name':varName,'value':defaultValues[varName]})
+                #run session with updated list of inputs from default values
                 aval, defaultValuesUsed, missingVar = self._runSessionWithDefaults(sess, mdl, inputVar, 
                                                                                    output, fd, defaultValues, 
                                                                                    defaultValuesUsed)
             else:
+                #if missing variable is not in the list of default variables, then inform user
                 print('Please provide value for : ' + varName)
                 aval = None
                 missingVar = varName
@@ -479,7 +522,9 @@ class kChainModel(object):
         return aval, defaultValuesUsed, missingVar
     
     def _getDefaultValues(self):
-        #read json from file and return if exists, else create new and return empty 
+        """
+        Reads json from file and return if exists, else create new and return empty 
+        """
         try:
             with open('defaultValues.txt', 'r') as json_file:  
                 defaultValues = json.load(json_file)
@@ -489,7 +534,9 @@ class kChainModel(object):
     
     
     def _setDefaultValues(self, defValues):
-        #write json with values
+        """
+        Writes json with provided values back to file
+        """
         with open('defaultValues.txt', 'w') as outfile:  
             json.dump(defValues, outfile, indent=4)
         
