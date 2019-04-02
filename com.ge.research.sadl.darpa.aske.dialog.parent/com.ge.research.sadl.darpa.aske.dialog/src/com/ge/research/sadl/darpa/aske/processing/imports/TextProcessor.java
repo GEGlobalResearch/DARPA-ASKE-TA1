@@ -91,7 +91,7 @@ public class TextProcessor {
 		json.addProperty("locality", locality);
 		json.addProperty("text", text);
 //		System.out.println(text);
-		String response = makeConnectionAndGetResponse(serviceUrl, json);
+		String response = getCurationManager().makeConnectionAndGetResponse(serviceUrl, json);
 //		System.out.println(response);
 		if (response != null && response.length() > 0) {
 			OntModel theModel = getCurationManager().getExtractionProcessor().getTextModel();
@@ -255,32 +255,6 @@ public class TextProcessor {
 	
 	private OntModel getTextModel() {
 		return textModel;
-	}
-
-	private String makeConnectionAndGetResponse(URL url, JsonObject jsonObject) {
-		String response = "";
-		try {
-			HttpURLConnection connection = (HttpURLConnection) url.openConnection();                     
-			connection.setDoOutput(true);
-			connection.setRequestMethod("POST"); 
-			connection.setRequestProperty("Content-Type", "application/json");
-
-			OutputStream outputStream = connection.getOutputStream();
-			outputStream.write(jsonObject.toString().getBytes());
-			outputStream.flush();
-
-			BufferedReader br = new BufferedReader(
-					new InputStreamReader(connection.getInputStream()));                                     
-			String output = "";
-			while((output = br.readLine()) != null) 
-				response = response + output;                 
-			outputStream.close();
-			br.close();
-			connection.disconnect();
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
-		return response;
 	}
 
 	public Map<String, String> getPreferences() {

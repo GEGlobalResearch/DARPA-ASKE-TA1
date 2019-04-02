@@ -227,7 +227,7 @@ public class AnswerExtractionProcessor {
 		
 //		System.out.println(json.toString());
 	
-		String response = makeConnectionAndGetResponse(serviceUrl, json);
+		String response = getCurationManager().makeConnectionAndGetResponse(serviceUrl, json);
 //		System.out.println(response);
 		if (response != null && response.length() > 0) {
 			JsonElement je = new JsonParser().parse(response);
@@ -252,28 +252,6 @@ public class AnswerExtractionProcessor {
 			throw new IOException("No response received from service " + translateMethodServiceURL);
 		}
 		return sb.toString();
-	}
-
-	private String makeConnectionAndGetResponse(URL url, JsonObject jsonObject) throws IOException {
-		String response = "";
-		HttpURLConnection connection = (HttpURLConnection) url.openConnection();                     
-		connection.setDoOutput(true);
-		connection.setRequestMethod("POST"); 
-		connection.setRequestProperty("Content-Type", "application/json");
-
-		OutputStream outputStream = connection.getOutputStream();
-		outputStream.write(jsonObject.toString().getBytes());
-		outputStream.flush();
-
-		BufferedReader br = new BufferedReader(
-				new InputStreamReader(connection.getInputStream()));                                     
-		String output = "";
-		while((output = br.readLine()) != null) 
-			response = response + output;                 
-		outputStream.close();
-		br.close();
-		connection.disconnect();
-		return response;
 	}
 
 	public void reset() {

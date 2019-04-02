@@ -593,10 +593,11 @@ public class AnswerCurationManager {
 		return returnValues;
 	}
 
-	private String makeConnectionAndGetResponse(URL url, JsonObject jsonObject) {
+	public String makeConnectionAndGetResponse(URL url, JsonObject jsonObject) throws IOException {
 		String response = "";
+		HttpURLConnection connection = null;
 		try {
-			HttpURLConnection connection = (HttpURLConnection) url.openConnection();                     
+			connection = (HttpURLConnection) url.openConnection();                     
 			connection.setDoOutput(true);
 			connection.setRequestMethod("POST"); 
 			connection.setRequestProperty("Content-Type", "application/json");
@@ -604,23 +605,35 @@ public class AnswerCurationManager {
 			OutputStream outputStream = connection.getOutputStream();
 			outputStream.write(jsonObject.toString().getBytes());
 			outputStream.flush();
-
+			BufferedReader br = null;
 			try {
-				BufferedReader br = new BufferedReader(
+				br = new BufferedReader(
 						new InputStreamReader(connection.getInputStream()));                                     
 				String output = "";
 				while((output = br.readLine()) != null) 
 					response = response + output;                 
 				outputStream.close();
-				br.close();
 			}
 			catch (Exception e) {
-				System.out.println("Error reading response: " + e.getMessage());
+				System.err.println("Error reading response: " + e.getMessage());
+				e.printStackTrace();
+				throw new IOException(e.getMessage(), e);
 			}
-			connection.disconnect();
+			finally {
+				if (br != null) {
+					br.close();
+				}
+			}
 		} catch (Exception e) {
-			System.out.println(jsonObject.toString());
+			System.err.println(e.getMessage() + "\nJsonObject:");
+			System.err.println(jsonObject.toString());
 			e.printStackTrace();
+			throw new IOException(e.getMessage(), e);
+		}
+		finally {
+			if (connection != null) {
+				connection.disconnect();
+			}
 		}
 		return response;
 	}
