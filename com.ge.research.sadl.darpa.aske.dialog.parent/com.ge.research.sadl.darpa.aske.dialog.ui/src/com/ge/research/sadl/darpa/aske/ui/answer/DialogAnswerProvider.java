@@ -88,6 +88,7 @@ import com.ge.research.sadl.model.gp.TripleElement;
 import com.ge.research.sadl.model.gp.VariableNode;
 import com.ge.research.sadl.model.visualizer.GraphVizVisualizer;
 import com.ge.research.sadl.model.visualizer.IGraphVisualizer;
+import com.ge.research.sadl.owl2sadl.OwlToSadl;
 import com.ge.research.sadl.parser.antlr.SADLParser;
 import com.ge.research.sadl.processing.OntModelProvider;
 import com.ge.research.sadl.reasoner.ConfigurationException;
@@ -143,6 +144,8 @@ public class DialogAnswerProvider extends DefaultAutoEditStrategyProvider implem
 
 	        private List<String> sadlkeywords = null;
 			private IGraphVisualizer visualizer = null;
+			private OntModel theModel;
+			private OwlToSadl owl2sadl;
 
 			@Override
 	        public void customizeDocumentCommand(IDocument document, DocumentCommand command) 
@@ -158,7 +161,8 @@ public class DialogAnswerProvider extends DefaultAutoEditStrategyProvider implem
 	            		System.out.println(itrr.next().getClass().getCanonicalName());
 	            	}
 	                if (document instanceof XtextDocument) {
-	                	Resource resource = getResourceFromDocument((XtextDocument)document);
+	                	setResource(getResourceFromDocument((XtextDocument)document));
+	    				
 	                	String insertionText = null;
 
                 		setTheDocument((XtextDocument) document);
@@ -572,12 +576,13 @@ public class DialogAnswerProvider extends DefaultAutoEditStrategyProvider implem
 				boolean isFirstProperty = true;
 				StringBuilder answer = new StringBuilder();
 				if (typ.equals(NodeType.ClassNode)) {
-					answer.append(checkForKeyword(nn.getName()));
-					int len = answer.length();
-					answer = getClassHierarchy(resource, nn, answer);
-					if (answer.length() == len) {
-						answer.append(" is a class");
-					}
+//					answer.append(checkForKeyword(nn.getName()));
+//					int len = answer.length();
+//					answer = getClassHierarchy(resource, nn, answer);
+//					if (answer.length() == len) {
+//						answer.append(" is a class");
+//					}
+					answer.append(getOwlToSadl(getTheModel()).classToSadl(nn.getURI()));
 					isFirstProperty = addDomainAndRange(resource, nn, isFirstProperty, answer);
 					addQualifiedCardinalityRestriction(resource, nn, isFirstProperty, answer);		
 					Object ctx = ((NamedNode)lastcmd).getContext();
@@ -607,6 +612,13 @@ public class DialogAnswerProvider extends DefaultAutoEditStrategyProvider implem
 					logger.debug("    Lastcmd '" + lastcmd.getClass().getCanonicalName() + "' not handled yet!");
 					System.err.println("Type " + typ.getClass().getCanonicalName() + " not handled yet.");
 				}
+			}
+
+			private OwlToSadl getOwlToSadl(OntModel theModel) {
+				if (owl2sadl == null) {
+					owl2sadl = new OwlToSadl(theModel);
+				}
+				return owl2sadl;
 			}
 
 			private TripleElement[] flattenTriples(Object[] lastcmd) {
@@ -1132,6 +1144,17 @@ public class DialogAnswerProvider extends DefaultAutoEditStrategyProvider implem
 				return null;
 			}
 
+			private OntModel getTheModel() {
+				if (theModel == null) {
+					setTheModel(OntModelProvider.find(getResource()));
+				}
+				return theModel;
+			}
+
+			private void setTheModel(OntModel theModel) {
+				this.theModel = theModel;
+			}
+
 		};
 
 	    
@@ -1629,6 +1652,14 @@ public class DialogAnswerProvider extends DefaultAutoEditStrategyProvider implem
 		});
 		
 		return i.get();
+	}
+
+	private Resource getResource() {
+		return resource;
+	}
+
+	private void setResource(Resource resource) {
+		this.resource = resource;
 	}
 
 }
