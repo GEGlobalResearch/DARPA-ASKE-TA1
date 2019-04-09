@@ -2,7 +2,7 @@
  * Note: This license has also been called the "New BSD License" or 
  * "Modified BSD License". See also the 2-clause BSD License.
  *
- * Copyright © 2018-2019 - General Electric Company, All Rights Reserved
+ * Copyright Â© 2018-2019 - General Electric Company, All Rights Reserved
  * 
  * Project: ANSWER, developed with the support of the Defense Advanced 
  * Research Projects Agency (DARPA) under Agreement  No.  HR00111990006. 
@@ -33,24 +33,34 @@
  * THE POSSIBILITY OF SUCH DAMAGE.
  *
  ***********************************************************************/
-package com.ge.research.sadl.darpa.aske.processing;
-
-public class BuildConstruct extends MixedInitiativeContent {
-	private String target;
-
-	public BuildConstruct(String modelUri) {
-		setTarget(modelUri);
-	}
-
-	public String getTarget() {
-		return target;
-	}
-
-	public void setTarget(String target) {
-		this.target = target;
-	}
-	
-	public String toString() {
-		return "Build " + target.toString();
-	}
-}
+ uri "http://sadl.org/FromCode.sadl" alias fc.
+ 
+ Knowledge is a class.
+ KnowledgeStructure is a class, described by captures with values of type Knowledge.
+ Code is a type of KnowledgeStructure.
+ part describes KnowledgeStructure with values of type KnowledgeStructure.
+ 
+ ObjectOriented is a type of Code.
+ 
+ OOClass is a type of KnowledgeStructure.
+ part of ObjectOriented has at least one value of type OOClass.
+ field describes OOClass with values of type ScientificConcept.
+ 
+ Method is a type of KnowledgeStructure.
+ part of OOClass has at least one value of type Method.
+ input describes Method with values of type ScientificConcept.
+ argument is a type of input.
+ output describes Method with values of type ScientificConcept.
+ returnValue is a type of output.
+ 
+ Block is a type of KnowledgeStructure.
+ condition describes Block with values of type Expression.
+ {For, While, If, Else} are types of Block.
+ 
+ Expression is a type of KnowledgeStructure.
+ input describes Expression.
+ output describes Expression.
+  
+ KeyKS (alias "key knowledge structure") is a type of KnowledgeStructure.
+ {OOClass, Method, Expression} are types of KeyKS.
+ 

@@ -10,6 +10,7 @@
  * Red Hat, Inc - WizardProjectsImportPage[_ArchiveSelectTitle,
  * 										   _SelectArchiveDialogTitle]
  * Barry Hathaway - Changes for SADL Imports
+ * Andy Crapo - Changes for Dialog Imports
  *******************************************************************************/
 package com.ge.research.sadl.darpa.aske.ui.answer.imports;
 

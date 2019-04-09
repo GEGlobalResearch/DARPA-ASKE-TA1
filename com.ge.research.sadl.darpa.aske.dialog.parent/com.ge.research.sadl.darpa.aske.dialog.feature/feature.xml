@@ -5,8 +5,11 @@
       version="1.0.0.qualifier"
       provider-name="GE">
 
-   <description url="http://www.example.com/description">
-      Dialog grammar and IDE is Xtext-based and is an extension of the Semantic Application Design Language (SADL). It was developed in supported of the Defense Advanced Research Projects Agency ( DARPA) ASKE TA1 program under Agreement No. HR00111990006.
+   <description url="https://github.com/GEGlobalResearch/DARPA-ASKE-TA1/wiki">
+      Dialog grammar and IDE is Xtext-based and is an extension of
+the Semantic Application Design Language (SADL). It was developed
+in support of the Defense Advanced Research Projects Agency
+(DARPA) ASKE TA1 program under Agreement No. HR00111990006.
    </description>
 
    <copyright url="http://www.example.com/copyright">
@@ -14,7 +17,20 @@
    </copyright>
 
    <license url="http://www.example.com/license">
-      Dialog is available under the Eclipse Public License.
+      Dialog is available under the BSD 3-Clause License:
+Note: This license has also been called the &quot;New BSD License&quot; or &quot;Modified BSD License&quot;. See also the 2-clause BSD License.
+
+Copyright 2018-2019 General Electric Company
+
+Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
+
+1. Redistributions of source code must retain the above copyright notice, this list of conditions and the following disclaimer.
+
+2. Redistributions in binary form must reproduce the above copyright notice, this list of conditions and the following disclaimer in the documentation and/or other materials provided with the distribution.
+
+3. Neither the name of the copyright holder nor the names of its contributors may be used to endorse or promote products derived from this software without specific prior written permission.
+
+THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS &quot;AS IS&quot; AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 Dialog is built on SADL and Xtext and includes Xtext language elements used under the Eclipse Public License.
 
