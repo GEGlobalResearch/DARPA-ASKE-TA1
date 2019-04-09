@@ -338,9 +338,12 @@ public class JenaBasedDialogInferenceProcessor extends JenaBasedSadlInferencePro
 			"  ?Oinst imp:stddev ?StdDev.\n" +
 			//"  ?SG mm:cgraph/sci:hasEquation/imp:expression ?EQ.\n" + 
 			"}";
-	
-	
-	
+
+	@Override
+	public boolean isSupported(String fileExtension) {
+		return "dialog".equals(fileExtension);
+	}
+
 	@Override
 	public Object[] insertTriplesAndQuery(Resource resource, TripleElement[] triples) throws SadlInferenceException {
 		setCurrentResource(resource);
