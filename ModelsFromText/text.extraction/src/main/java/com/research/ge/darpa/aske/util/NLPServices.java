@@ -50,8 +50,7 @@ import com.google.gson.JsonParser;
 
 public class NLPServices {
 		
-	public static String nlpServiceURL = "http://vesuvius-test.crd.ge.com:9080/kcud/";
-	//public static String nlpServiceURL = "http://localhost:9080/kcud/";
+	public static String nlpServiceURL = "http://localhost:9081/concept-mapper-service/";
 	
 	public List<String> textToSentences(String text) throws Exception {
 		List<String> sentences = new ArrayList<String>();
