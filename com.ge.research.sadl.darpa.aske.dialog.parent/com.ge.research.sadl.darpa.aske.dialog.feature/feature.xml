@@ -9,7 +9,8 @@
       Dialog grammar and IDE is Xtext-based and is an extension of
 the Semantic Application Design Language (SADL). It was developed
 in support of the Defense Advanced Research Projects Agency
-(DARPA) ASKE TA1 program under Agreement No. HR00111990006.
+(DARPA) ASKE Projects ANSWER and KApEESH under Agreement  No.  
+HR00111990006 and Agreement No. HR00111990007, respectively.
    </description>
 
    <copyright url="http://www.example.com/copyright">

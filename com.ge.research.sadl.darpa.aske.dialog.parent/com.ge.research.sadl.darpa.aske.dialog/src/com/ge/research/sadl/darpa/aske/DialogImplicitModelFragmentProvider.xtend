@@ -4,8 +4,9 @@
  *
  * Copyright © 2018-2019 - General Electric Company, All Rights Reserved
  * 
- * Project: ANSWER, developed with the support of the Defense Advanced 
- * Research Projects Agency (DARPA) under Agreement  No.  HR00111990006. 
+ * Projects: ANSWER and KApEESH, developed with the support of the Defense 
+ * Advanced Research Projects Agency (DARPA) under Agreement  No.  
+ * HR00111990006 and Agreement No. HR00111990007, respectively. 
  *
  * Redistribution and use in source and binary forms, with or without 
  * modification, are permitted provided that the following conditions are met:
