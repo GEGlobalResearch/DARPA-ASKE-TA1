@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <projectDescription>
-	<name>M5</name>
+	<name>M5Local</name>
 	<comment></comment>
 	<projects>
 	</projects>
@@ -14,11 +14,4 @@
 	<natures>
 		<nature>org.eclipse.xtext.ui.shared.xtextNature</nature>
 	</natures>
-	<linkedResources>
-		<link>
-			<name>Sound.html</name>
-			<type>1</type>
-			<location>C:/Users/200005201/Downloads/MachUnzipped/Sound.html</location>
-		</link>
-	</linkedResources>
 </projectDescription>

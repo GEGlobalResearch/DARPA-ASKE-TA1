@@ -1,0 +1,479 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>Documentation for Knowledge-Consistent Hybrid AI Network (K-CHAIN) &mdash; K-CHAIN  documentation</title>
+  
+
+  
+  
+  
+  
+
+  
+
+  
+  
+    
+
+  
+
+  <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" /> 
+
+  
+  <script src="_static/js/modernizr.min.js"></script>
+
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search">
+          
+
+          
+            <a href="#" class="icon icon-home"> K-CHAIN
+          
+
+          
+          </a>
+
+          
+            
+            
+              <div class="version">
+                0.1
+              </div>
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <!-- Local TOC -->
+              <div class="local-toc"><ul>
+<li><a class="reference internal" href="#">Documentation for Knowledge-Consistent Hybrid AI Network (K-CHAIN)</a><ul>
+<li><a class="reference internal" href="#module-kChain">Module: kChain</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#indices-and-tables">Indices and tables</a></li>
+</ul>
+</div>
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="#">K-CHAIN</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="#">Docs</a> &raquo;</li>
+        
+      <li>Documentation for Knowledge-Consistent Hybrid AI Network (K-CHAIN)</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+            
+            <a href="_sources/index.rst.txt" rel="nofollow"> View page source</a>
+          
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <div class="section" id="documentation-for-knowledge-consistent-hybrid-ai-network-k-chain">
+<h1>Documentation for Knowledge-Consistent Hybrid AI Network (K-CHAIN)<a class="headerlink" href="#documentation-for-knowledge-consistent-hybrid-ai-network-k-chain" title="Permalink to this headline">¶</a></h1>
+<div class="toctree-wrapper compound">
+</div>
+<p>DARPA ASKE TA1</p>
+<div class="section" id="module-kChain">
+<span id="module-kchain"></span><h2>Module: kChain<a class="headerlink" href="#module-kChain" title="Permalink to this headline">¶</a></h2>
+<p>This module consists of kChainModel class to create, fit, append, and update
+K-CHAIN models in TensorFlow</p>
+<dl class="class">
+<dt id="kChain.kChainModel">
+<em class="property">class </em><code class="descclassname">kChain.</code><code class="descname">kChainModel</code><span class="sig-paren">(</span><em>debug=False</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/kChain.html#kChainModel"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#kChain.kChainModel" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="method">
+<dt id="kChain.kChainModel.__init__">
+<code class="descname">__init__</code><span class="sig-paren">(</span><em>debug=False</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/kChain.html#kChainModel.__init__"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#kChain.kChainModel.__init__" title="Permalink to this definition">¶</a></dt>
+<dd><p>Initialize object of type K-CHAIN model.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>debug</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.7)"><em>bool</em></a>) – various print statements throughout the code
+execution will be executed to help in debugging.</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="kChain.kChainModel._createEqnModel">
+<code class="descname">_createEqnModel</code><span class="sig-paren">(</span><em>inputVar</em>, <em>outputVar</em>, <em>mdlName</em>, <em>eqMdl</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/kChain.html#kChainModel._createEqnModel"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#kChain.kChainModel._createEqnModel" title="Permalink to this definition">¶</a></dt>
+<dd><p>Build a K-CHAIN model using input and output variables from the KG and
+the physics equation.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>inputVar</strong> (<em>JSON array</em>) – array of JSON variable objects with name, type, and value fields</li>
+<li><strong>outputVar</strong> (<em>JSON array</em>) – array of JSON variable objects with name, type, and value fields</li>
+<li><strong>mdlName</strong> (<em>string</em>) – Name to assign to the final model (E.g.: ‘Newtons2ndLaw’)</li>
+<li><strong>eqMdl</strong> (<em>string</em>) – Equation relating inputs to output (E.g.: “c = a * b”)</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first"><ul class="simple">
+<li>TensorFlow Graph: Computational graph of the physics equation</li>
+<li>metagraphLoc: string of location on disk where computational model was stored</li>
+</ul>
+</p>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last">(TensorFlow Graph, string)</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="kChain.kChainModel._createNNModel">
+<code class="descname">_createNNModel</code><span class="sig-paren">(</span><em>inputVar</em>, <em>outputVar</em>, <em>mdlName</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/kChain.html#kChainModel._createNNModel"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#kChain.kChainModel._createNNModel" title="Permalink to this definition">¶</a></dt>
+<dd><p>Build a K-CHAIN model as a neural network using input and output
+variables from the KG.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>inputVar</strong> (<em>JSON array</em>) – array of JSON variable objects with name (as in dataset) and type fields</li>
+<li><strong>outputVar</strong> (<em>JSON array</em>) – array of JSON variable objects with name (as in dataset) and type fields</li>
+<li><strong>mdlName</strong> (<em>string</em>) – Name to assign to the final model (E.g.: ‘Newtons2ndLaw’)</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first"><ul class="simple">
+<li>TensorFlow Graph: computational graph of the neural network</li>
+<li>metagraphLoc: string of location on disk where computational model is stored</li>
+</ul>
+</p>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last">(TensorFlow Graph, string)</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="kChain.kChainModel._getDefaultValues">
+<code class="descname">_getDefaultValues</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/kChain.html#kChainModel._getDefaultValues"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#kChain.kChainModel._getDefaultValues" title="Permalink to this definition">¶</a></dt>
+<dd><p>Reads json from file and return if exists, else create new and return empty</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="kChain.kChainModel._getVarType">
+<code class="descname">_getVarType</code><span class="sig-paren">(</span><em>typeStr</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/kChain.html#kChainModel._getVarType"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#kChain.kChainModel._getVarType" title="Permalink to this definition">¶</a></dt>
+<dd><p>Obtain tensorflow datatypes for variable type information from KG</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>typeStr</strong> (<em>string</em>) – String denoting type of variable with possible values of bool,
+integer, float, and double (default).</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">datatype in TensorFlow   (e.g. tf.bool)</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="kChain.kChainModel._makePyFile">
+<code class="descname">_makePyFile</code><span class="sig-paren">(</span><em>stringfun</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/kChain.html#kChainModel._makePyFile"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#kChain.kChainModel._makePyFile" title="Permalink to this definition">¶</a></dt>
+<dd><p>Write the formatted code into a python module for conversion to tensorflow graph</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>stringfun</strong> (<em>string</em>) – formatted python code as string to be written in python file</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="kChain.kChainModel._runSessionWithDefaults">
+<code class="descname">_runSessionWithDefaults</code><span class="sig-paren">(</span><em>sess</em>, <em>mdl</em>, <em>inputVar</em>, <em>output</em>, <em>fd</em>, <em>defaultValues</em>, <em>defaultValuesUsed</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/kChain.html#kChainModel._runSessionWithDefaults"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#kChain.kChainModel._runSessionWithDefaults" title="Permalink to this definition">¶</a></dt>
+<dd><p>Run a TensorFlow session with given inputs and fill in missing values from defaults or inform user about missing information</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>sess</strong> (<em>TF Session</em>) – TensorFlow session to run the computation</li>
+<li><strong>mdl</strong> (<em>TF Graph</em>) – TensorFlow Graph to run the session</li>
+<li><strong>inputVar</strong> (<em>JSON array</em>) – array of JSON variable objects with name, type, and value fields</li>
+<li><strong>output</strong> (<em>TF Graph Node</em>) – TensorFlow Graph node for output from computation</li>
+<li><strong>feed_dict</strong> (<em>Dictionary</em>) – Feed dictionary for TF placeholders and their values</li>
+<li><strong>defaultValues</strong> (<em>JSON</em>) – Name:Value pairs of default values from model build stage</li>
+<li><strong>defaultValuesUsed</strong> (<em>JSON Array</em>) – array of default variable JSON objects with name and value fields (empty initially)</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first"><ul class="simple">
+<li>output: value(s) of output variable.</li>
+<li>Default JSON array : array of default variable JSON objects with name and value fields.</li>
+<li>string : Name of missing variable, which is needed for inference</li>
+</ul>
+</p>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last">(output type, Default JSON array, string)</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="kChain.kChainModel._setDefaultValues">
+<code class="descname">_setDefaultValues</code><span class="sig-paren">(</span><em>defValues</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/kChain.html#kChainModel._setDefaultValues"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#kChain.kChainModel._setDefaultValues" title="Permalink to this definition">¶</a></dt>
+<dd><p>Writes json with provided values back to file</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="kChain.kChainModel.build">
+<code class="descname">build</code><span class="sig-paren">(</span><em>inputVar</em>, <em>outputVar</em>, <em>mdlName</em>, <em>dataLoc=None</em>, <em>eqMdl=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/kChain.html#kChainModel.build"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#kChain.kChainModel.build" title="Permalink to this definition">¶</a></dt>
+<dd><p>Build a K-CHAIN model using input and output variables from the KG.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>inputVar</strong> (<em>JSON array</em>) – array of JSON variable objects with name (as in dataset), type, and value fields</li>
+<li><strong>outputVar</strong> (<em>JSON array</em>) – array of JSON variable objects with name (as in dataset), type, and value fields</li>
+<li><strong>mdlName</strong> (<em>string</em>) – Name to assign to the final model (E.g.: ‘Newtons2ndLaw’)</li>
+<li><strong>dataLoc</strong> (<em>string</em>) – Location of dataset as .csv with Row 1 - Variables names,
+Row 2 - Units, Row 3 onwards - data (default = None)</li>
+<li><strong>eqMdl</strong> (<em>string</em>) – python TF eager-compatible code (e.g: “c = a * b” or “a = tf.math.sqrt(x*y)”)</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="kChain.kChainModel.evaluate">
+<code class="descname">evaluate</code><span class="sig-paren">(</span><em>inputVar</em>, <em>outputVar</em>, <em>mdlName</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/kChain.html#kChainModel.evaluate"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#kChain.kChainModel.evaluate" title="Permalink to this definition">¶</a></dt>
+<dd><p>Evaluates a model with given inputs to compute output values</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>inputVar</strong> (<em>JSON array</em>) – array of JSON variable objects with name, type, and value fields</li>
+<li><strong>outputVar</strong> (<em>JSON array</em>) – array of JSON variable objects with name, type, and value fields</li>
+<li><strong>mdlName</strong> (<em>string</em>) – Name to model to use (E.g.: ‘Newtons2ndLaw’)</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first"><ul class="simple">
+<li>Output JSON array : array of output variable JSON objects with name, type, and value fields. The resulting output of the computation is assigned to the value field of the JSON object.</li>
+<li>Default JSON array : array of default variable JSON objects with name and value fields.</li>
+<li>string : Name of missing variable, which is needed for inference</li>
+</ul>
+</p>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last">(Output JSON array, Default JSON array, string)</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="kChain.kChainModel.fitModel">
+<code class="descname">fitModel</code><span class="sig-paren">(</span><em>dataset</em>, <em>inputVar</em>, <em>outputVar</em>, <em>mdlName</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/kChain.html#kChainModel.fitModel"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#kChain.kChainModel.fitModel" title="Permalink to this definition">¶</a></dt>
+<dd><p>Fit a K-CHAIN model using input and output variables from the KG and
+the corresponding dataset.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>dataset</strong> (<em>Pandas Dataframe</em>) – dataset with inputs and outputs</li>
+<li><strong>inputVar</strong> (<em>JSON array</em>) – array of JSON variable objects with name (as in dataset) and type fields</li>
+<li><strong>outputVar</strong> (<em>JSON array</em>) – array of JSON variable objects with name (as in dataset) and type fields</li>
+<li><strong>mdlName</strong> (<em>string</em>) – Name to assign to the final model (E.g.: ‘Newtons2ndLaw’)</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first">Location on disk where computational model and trained parameters are stored</p>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last">string</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="kChain.kChainModel.getDataset">
+<code class="descname">getDataset</code><span class="sig-paren">(</span><em>dataLoc=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/kChain.html#kChainModel.getDataset"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#kChain.kChainModel.getDataset" title="Permalink to this definition">¶</a></dt>
+<dd><p>Create Pandas DataFrame from identified csv.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>dataLoc</strong> (<em>string</em>) – Location of dataset as .csv with Row 1 - Variables names,
+Row 2 - Units, Row 3 onwards - data (default = None)</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">DataFrame with values read from csv file</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body">df (Pandas DataFrame)</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+</div>
+<div class="section" id="indices-and-tables">
+<h1>Indices and tables<a class="headerlink" href="#indices-and-tables" title="Permalink to this headline">¶</a></h1>
+<ul class="simple">
+<li><a class="reference internal" href="genindex.html"><span class="std std-ref">Index</span></a></li>
+<li><a class="reference internal" href="py-modindex.html"><span class="std std-ref">Module Index</span></a></li>
+<li><a class="reference internal" href="search.html"><span class="std std-ref">Search Page</span></a></li>
+</ul>
+</div>
+
+
+           </div>
+           
+          </div>
+          <footer>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2018, GE Research
+
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  
+
+    
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+        <script type="text/javascript" src="_static/jquery.js"></script>
+        <script type="text/javascript" src="_static/underscore.js"></script>
+        <script type="text/javascript" src="_static/doctools.js"></script>
+    
+
+  
+
+  <script type="text/javascript" src="_static/js/theme.js"></script>
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

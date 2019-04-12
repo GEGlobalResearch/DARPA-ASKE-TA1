@@ -17,4 +17,6 @@ public interface IDialogAnswerProvider {
 
 	public MixedInitiativeElement getMixedInitiativeElement(String key);
 
+	boolean removeMixedInitiativeElement(String key);
+
 }

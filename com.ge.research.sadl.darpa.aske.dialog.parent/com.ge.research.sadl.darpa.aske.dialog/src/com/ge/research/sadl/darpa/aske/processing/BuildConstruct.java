@@ -1,17 +1,17 @@
 package com.ge.research.sadl.darpa.aske.processing;
 
 public class BuildConstruct extends MixedInitiativeContent {
-	private Object target;
+	private String target;
 
 	public BuildConstruct(String modelUri) {
 		setTarget(modelUri);
 	}
 
-	public Object getTarget() {
+	public String getTarget() {
 		return target;
 	}
 
-	public void setTarget(Object target) {
+	public void setTarget(String target) {
 		this.target = target;
 	}
 	

@@ -1,7 +1,12 @@
 uri "http://sadl.org/ScientificConcepts2.sadl" alias scicncpts2.
- 
-Derivative is a type of ScientificConcept,
-	described by derivativeOf with a single value of type ScientificConcept,
+
+primitiveData is a type of {decimal or boolean or string}.
+
+Constant is a type of UnittedQuantity.
+UnitSystem is a class, must be one of {Metric, Imperial}.
+  
+Derivative is a type of ScientificConcept, 
+	described by derivedFrom with a single value of type ScientificConcept,
 	described by withRespectTo with a single value of type class.
 	
 Time is a type of UnittedQuantity.
@@ -14,33 +19,56 @@ Position is a type of UnittedQuantity,
 	described by ^time with values of type Time.
 Mass is a type of UnittedQuantity.
 
-PhysicalObject is a class, 
+Volume is a type of UnittedQuantity.
+Density is a type of UnittedQuantity.
+
+PhysicalThing is a class,
 	described by mass with values of type Mass,
-	described by position with values of type Position,
-	described by temperature with values of type Temperature.
+	described by volume with values of type Volume,
+	described by density with values of type Density,
+	described by temperature with values of type Temperature,
+	described by staticTemperature with values of type Temperature.
+	
+External densityEq(decimal m (mass of a PhysicalThing), 
+	               decimal v (volume of the PhysicalThing))
+	               returns decimal (density of the PhysicalThing): 
+	               "http://com.ge.research.darpa.aske.kchain.densityEq".	
+
+PhysicalObject is a type of PhysicalThing, 
+	described by position with values of type Position.
 		
+Substance is a type of PhysicalThing.
+			
+Gas is a type of Substance.
+Air is a type of Gas.
+
 Velocity is a type of {UnittedQuantity and Derivative}.
-derivativeOf of Position only has values of type Velocity.
-withRespectTo of Position always has value ^time.
+derivedFrom of Velocity only has values of type Position.
+withRespectTo of Velocity only has values of type Time.
 velocity describes PhysicalObject with values of type Velocity.
 
 Acceleration is a type of {UnittedQuantity and Derivative}.
-derivativeOf of Velocity only has values of type Acceleration.
-withRespectTo of Velocity always has value ^time.
+derivedFrom of Acceleration only has values of type Velocity.
+withRespectTo of Acceleration  only has values of type Time.
 acceleration describes PhysicalObject with values of type Acceleration.
  
 Momentum is a type of {UnittedQuantity and Derivative}. 
-momentum describes Mass with values of type Momentum.
- Rule momentumOfPhysicalObject:
+momentum describes PhysicalThing with values of type Momentum.
+Rule momentumOfPhysicalThing:
  	if o is a PhysicalObject with velocity v and 
  		p is a Momentum with ^value (^value of mass of o * ^value of velocity of o), 
  			with unit unitResolver("*", unit of mass of o, unit of velocity of o)
  	then momentum of o is p.
 
 Force is a type of {UnittedQuantity and Derivative}.
-derivativeOf of Momentum only has values of type Force.
-withRespectTo of Momentum always has value ^time.
+derivedFrom of Force only has values of type Momentum.
+withRespectTo of Force only has values of type Time.
 force describes PhysicalObject with values of type Force.
 
 External unitResolver(string operation, string u, ...) 
 	returns string: "http://sadl.org/unitSelector".
+
+External cg(ExternalEquation eq, primitiveData arg, ...) returns primitiveData: "http://com.ge.research.darpa.aske.cg".
+External cgSC(ExternalEquation eq, primitiveData arg, ...) returns ScientificConcept: "http://com.ge.research.darpa.aske.cgsc".
+ 
+	

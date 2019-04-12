@@ -1,0 +1,23 @@
+ uri "http://sadl.org/TestCEonMach.sadl" alias TestCEonMach.
+ 
+ import "http://sadl.org/CodeExtractionModel.sadl".
+// import "http://com.ge.research.sadl.darpa.aske.answer/Mach_java".
+ 
+// Ask: "select ?m ?arg where {?m <rdf:type> <Method> . ?m <cmArguments> ?args . ?args <http://www.jena.hpl.hp.com/ARQ/list#member> ?arg} order by ?m".
+// Ask: "select distinct ?m ?arg where {?m <rdf:type> <Method> . ?m <cmArguments> ?args . ?args <rdf:rest>*/<rdf:first> ?arg}".
+ 
+// Ask: select m, cmtcnt where m has comment cmt and cmt has commentContent cmtcnt. 
+ 
+// Ask: "select ?m where {?m <cmHasImplicitInputsOutputs> true}".
+ 
+// Explain: Rule MethodWithImplicitInputs.
+ 
+ Ask: "select distinct ?cb ?cv where {?ref <isImplicit> true . ?cv <reference> ?ref . ?ref <codeBlock> ?cb . ?cb <rdf:type> <Method>} order by ?loc".
+ 
+// Ask: "select distinct ?cb ?cv ?intrue ?outtrue where {?cv <reference> ?ref . ?ref <codeBlock> ?cb . ?ref <input> ?intrue . ?ref <output> ?outtrue}".
+ 
+// Ask: "select ?ref ?cb where {?ref <codeBlock> ?cb}".
+// 
+// Ask: select m where m is a Method.
+ 
+// Ask: "select ?cv ?m where {?cv <reference> ?ref . ?ref <isImplicit> true . ?ref <codeBlock> ?m}".

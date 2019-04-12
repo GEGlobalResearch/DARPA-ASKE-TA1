@@ -1,0 +1,168 @@
+swagger: "2.0"
+info:
+  description: "Build and Execute K-CHAIN models"
+  version: "1.0.0"
+  title: "K-CHAIN Model services"
+host: "localhost:12345"
+basePath: "/darpa/aske"
+tags:
+- name: "K-CHAIN Model services"
+  externalDocs:
+    description: "Find out more"
+    url: "http://swagger.io"
+
+paths:
+  /kchain/build:
+    post:
+      tags:
+      - "K-CHAIN"
+      summary: "Builds a K-CHAIN model for given input and output variables "
+      operationId: "app.build"
+      consumes:
+      - application/json
+      produces:
+      - application/json
+      parameters:
+      - in: "body"
+        name: "body"
+        required: true
+        schema:
+          $ref: "#/definitions/build_in"
+      responses:
+        200:
+          description: "success"
+          schema:
+            $ref: "#/definitions/build_out"
+            
+  /kchain/evaluate:
+    post:
+      tags:
+      - "K-CHAIN"
+      summary: "Runs a K-CHAIN model for given input variables and creates output values"
+      operationId: "app.evaluate"
+      consumes:
+      - application/json
+      produces:
+      - application/json
+      parameters:
+      - in: "body"
+        name: "body"
+        required: true
+        schema:
+          $ref: "#/definitions/evaluate_in"
+      responses:
+        200:
+          description: "success"
+          schema:
+            $ref: "#/definitions/evaluate_out"
+            
+definitions:
+  build_in:
+    type: "object"
+    required:
+    - "inputVariables" 
+    - "outputVariables"
+    - "modelName"
+    properties:
+      inputVariables:
+        type: "array"
+        items: 
+          $ref: "#/definitions/variable"
+      outputVariables:
+        type: "array"
+        items: 
+          $ref: "#/definitions/variable"
+      dataLocation:
+        type: "string"
+      equationModel:
+        type: "string"
+      modelName:
+        type: "string"
+  
+  build_out:
+    type: "object"
+    required:
+    - "modelType"
+    - "trainedState"
+    - "metagraphLocation"
+    properties:
+      modelType:
+        type: "string"
+      trainedState:
+        type: "boolean"
+      metagraphLocation:
+        type: "string"
+  
+  evaluate_in:
+    type: "object"
+    required:
+    - "inputVariables" 
+    - "outputVariables"
+    - "modelName"
+    properties:
+      inputVariables:
+        type: "array"
+        items: 
+          $ref: "#/definitions/evariable"
+      outputVariables:
+        type: "array"
+        items: 
+          $ref: "#/definitions/variable"
+      modelName:
+        type: "string"
+  
+  evaluate_out:
+    type: "object"
+    required:
+    - "outputVariables"
+    properties:
+      outputVariables:
+        type: "array"
+        items: 
+          $ref: "#/definitions/variable"
+      defaultsUsed:
+        type: "array"
+        items: 
+          $ref: "#/definitions/dvariable"
+      missingVar:
+        type: "string"
+        
+  variable:
+    type: "object"
+    required:
+    - "name"
+    - "type"
+    properties:
+      name:
+        type: "string"
+      type:
+        type: "string"
+      value:
+        type: "string"
+  
+  evariable:
+    type: "object"
+    required:
+    - "name"
+    - "type"
+    - "value"
+    properties:
+      name:
+        type: "string"
+      type:
+        type: "string"
+      value:
+        type: "string"
+  
+  dvariable:
+    type: "object"
+    required:
+    - "name"
+    - "value"
+    properties:
+      name:
+        type: "string"
+      type:
+        type: "string"
+      value:
+        type: "string"    

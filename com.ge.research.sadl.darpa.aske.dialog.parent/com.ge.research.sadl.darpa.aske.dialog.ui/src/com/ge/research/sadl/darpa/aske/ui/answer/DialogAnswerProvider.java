@@ -15,6 +15,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.ServiceLoader;
 import java.util.Set;
+import java.util.concurrent.atomic.AtomicReference;
 import java.util.function.Consumer;
 
 import org.eclipse.core.commands.ExecutionException;
@@ -23,46 +24,51 @@ import org.eclipse.core.filesystem.IFileStore;
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IResource;
+import org.eclipse.core.resources.IncrementalProjectBuilder;
 import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IPath;
-import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Path;
-import org.eclipse.core.runtime.Status;
+import org.eclipse.emf.common.util.EList;
 import org.eclipse.emf.common.util.URI;
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.ecore.resource.Resource;
-import org.eclipse.emf.ecore.resource.ResourceSet;
-import org.eclipse.emf.ecore.resource.impl.ResourceSetImpl;
 import org.eclipse.jface.text.BadLocationException;
 import org.eclipse.jface.text.DocumentCommand;
 import org.eclipse.jface.text.IAutoEditStrategy;
 import org.eclipse.jface.text.IDocument;
 import org.eclipse.jface.text.IRegion;
 import org.eclipse.jface.text.Region;
-import org.eclipse.osgi.util.NLS;
+import org.eclipse.swt.widgets.Display;
 import org.eclipse.ui.IWorkbenchPage;
 import org.eclipse.ui.IWorkbenchPart;
 import org.eclipse.ui.IWorkbenchWindow;
 import org.eclipse.ui.PartInitException;
 import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.ide.IDE;
-import org.eclipse.ui.internal.wizards.datatransfer.DataTransferMessages;
 import org.eclipse.xtext.GrammarUtil;
 import org.eclipse.xtext.nodemodel.INode;
 import org.eclipse.xtext.nodemodel.impl.CompositeNodeWithSemanticElement;
 import org.eclipse.xtext.nodemodel.util.NodeModelUtils;
+import org.eclipse.xtext.preferences.IPreferenceValues;
+import org.eclipse.xtext.preferences.IPreferenceValuesProvider;
 import org.eclipse.xtext.resource.XtextResource;
 import org.eclipse.xtext.ui.editor.autoedit.DefaultAutoEditStrategyProvider;
 import org.eclipse.xtext.ui.editor.model.XtextDocument;
 import org.eclipse.xtext.ui.resource.IResourceSetProvider;
+import org.eclipse.xtext.util.ITextRegionWithLineInformation;
+import org.eclipse.xtext.util.concurrent.IUnitOfWork;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.ge.research.sadl.SADLStandaloneSetup;
 import com.ge.research.sadl.builder.ConfigurationManagerForIDE;
 import com.ge.research.sadl.builder.ConfigurationManagerForIdeFactory;
+import com.ge.research.sadl.builder.IConfigurationManagerForIDE;
 import com.ge.research.sadl.darpa.aske.curation.AnswerCurationManager;
+import com.ge.research.sadl.darpa.aske.dialog.ui.internal.DialogActivator;
+import com.ge.research.sadl.darpa.aske.preferences.DialogPreferences;
+import com.ge.research.sadl.darpa.aske.processing.BuildConstruct;
 import com.ge.research.sadl.darpa.aske.processing.DialogConstants;
 import com.ge.research.sadl.darpa.aske.processing.HowManyValuesConstruct;
 import com.ge.research.sadl.darpa.aske.processing.IDialogAnswerProvider;
@@ -83,19 +89,23 @@ import com.ge.research.sadl.model.gp.TripleElement;
 import com.ge.research.sadl.model.gp.VariableNode;
 import com.ge.research.sadl.model.visualizer.GraphVizVisualizer;
 import com.ge.research.sadl.model.visualizer.IGraphVisualizer;
+import com.ge.research.sadl.owl2sadl.OwlToSadl;
 import com.ge.research.sadl.parser.antlr.SADLParser;
 import com.ge.research.sadl.processing.OntModelProvider;
-import com.ge.research.sadl.processing.SadlConstants;
 import com.ge.research.sadl.reasoner.ConfigurationException;
 import com.ge.research.sadl.reasoner.ResultSet;
 import com.ge.research.sadl.reasoner.SadlCommandResult;
 import com.ge.research.sadl.reasoner.utils.SadlUtils;
+import com.ge.research.sadl.sADL.SadlImport;
+import com.ge.research.sadl.sADL.SadlModel;
+import com.ge.research.sadl.sADL.SadlModelElement;
 import com.ge.research.sadl.ui.handlers.SadlActionHandler;
 import com.google.inject.Inject;
 import com.google.inject.Injector;
 import com.google.inject.Provider;
 import com.hp.hpl.jena.ontology.OntClass;
 import com.hp.hpl.jena.ontology.OntModel;
+import com.hp.hpl.jena.rdf.model.Model;
 import com.hp.hpl.jena.rdf.model.RDFNode;
 import com.hp.hpl.jena.rdf.model.StmtIterator;
 import com.hp.hpl.jena.reasoner.rulesys.Builtin;
@@ -108,6 +118,8 @@ import com.hp.hpl.jena.vocabulary.XSD;
 public class DialogAnswerProvider extends DefaultAutoEditStrategyProvider implements IDialogAnswerProvider {
 	private static final Logger logger = LoggerFactory.getLogger(DialogAnswerProvider.class);
 	private XtextDocument theDocument;
+	private Resource resource;
+	private IConfigurationManagerForIDE configMgr = null;
 
 	@Inject
 	protected IResourceSetProvider resourceSetProvider;
@@ -117,6 +129,9 @@ public class DialogAnswerProvider extends DefaultAutoEditStrategyProvider implem
 
 	@Inject
 	protected Provider<DialogRunInferenceHandler> handlerProvider;		// Provider will give new instance
+	
+	@Inject
+	protected SADLParser sadlParser;
 	
 	@Inject
 	protected Provider<RunDialogQuery> rdqProvider;
@@ -130,6 +145,8 @@ public class DialogAnswerProvider extends DefaultAutoEditStrategyProvider implem
 
 	        private List<String> sadlkeywords = null;
 			private IGraphVisualizer visualizer = null;
+			private OntModel theModel;
+			private OwlToSadl owl2sadl;
 
 			@Override
 	        public void customizeDocumentCommand(IDocument document, DocumentCommand command) 
@@ -145,211 +162,198 @@ public class DialogAnswerProvider extends DefaultAutoEditStrategyProvider implem
 	            		System.out.println(itrr.next().getClass().getCanonicalName());
 	            	}
 	                if (document instanceof XtextDocument) {
-	                	Resource resource = getResourceFromDocument((XtextDocument)document);
+	                	setResource(getResourceFromDocument((XtextDocument)document));
+	    				
 	                	String insertionText = null;
-	                	if (resource != null) {
-	                		setTheDocument((XtextDocument) document);
-	                		String modelFolder = setDialogAnswerProvider(resource);
-			                Object lastcmd = OntModelProvider.getPrivateKeyValuePair(resource, DialogConstants.LAST_DIALOG_COMMAND);
-			                logger.debug("DialogAnswerProvider: Last cmd: " + (lastcmd != null ? lastcmd.toString() : "null"));
-		                	if (lastcmd instanceof Query) {
-		                		if (isDocToModelQuery((Query)lastcmd)) {
-		                			insertionText = processDocToModelQuery(resource, (Query)lastcmd);
-			                		insertionText = checkForEOS(insertionText);
-			                		Object ctx = ((Query)lastcmd).getContext();
-			                		addCurationManagerContentToDialog(document, reg, insertionText, ctx, true);
+
+                		setTheDocument((XtextDocument) document);
+                		String modelFolder = setDialogAnswerProvider(resource);
+		                Object lastcmd = OntModelProvider.getPrivateKeyValuePair(resource, DialogConstants.LAST_DIALOG_COMMAND);
+		                logger.debug("DialogAnswerProvider: Last cmd: " + (lastcmd != null ? lastcmd.toString() : "null"));
+	                	if (lastcmd instanceof Query) {
+	                		if (isDocToModelQuery((Query)lastcmd)) {
+	                			insertionText = (String) processDocToModelQuery(resource, (Query)lastcmd);
+		                		insertionText = checkForEOS(insertionText);
+		                		Object ctx = ((Query)lastcmd).getContext();
+		                		addCurationManagerContentToDialog(document, reg, insertionText, ctx, true);
+	                		}
+	                		else if (isModelToDocQuery((Query)lastcmd)) {
+	                			lastcmd = processModelToDocQuery(resource, (Query)lastcmd);
+	                		}
+	                		else {
+		                		ResultSet rs = runQuery(resource, (Query)lastcmd);
+		                		String resultStr = null;
+		                		if (rs != null) {
+		                			resultStr = resultSetToQuotableString(rs);
 		                		}
-		                		else if (isModelToDocQuery((Query)lastcmd)) {
-		                			lastcmd = processModelToDocQuery(resource, (Query)lastcmd);
-		                		}
-		                		else {
-			                		ResultSet rs = runQuery(resource, (Query)lastcmd);
-			                		String resultStr = null;
-			                		if (rs != null) {
-			                			resultStr = resultSetToQuotableString(rs);
-			                		}
-			                		insertionText = (resultStr != null ? resultStr : "\"Failed to find results\"");
-			                		insertionText = checkForEOS(insertionText);
-			                		Object ctx = ((Query)lastcmd).getContext();
-			                		addCurationManagerContentToDialog(document, reg, insertionText, ctx, true);
-		                		}
-		                	}
-		                	else if (lastcmd instanceof NamedNode) {
-		                		whatIsNamedNode(document, reg, resource, lastcmd);
-		                	}
-		                	else if (lastcmd instanceof WhatIsConstruct) {
-		                		Object trgt = ((WhatIsConstruct)lastcmd).getTarget();
-		                		Object whn = ((WhatIsConstruct)lastcmd).getWhen();
-		                		if (trgt instanceof NamedNode && whn == null) {
-		                			whatIsNamedNode(document, reg, resource, (NamedNode)trgt);
-		                		}
-		                		else if (trgt instanceof Object[] && whn == null) {
-			                		if (allTripleElements((Object[])trgt)) {
-				                		Object ctx = null;
-			                			TripleElement[] triples = flattenTriples((Object[])trgt);
-			                			ctx = triples[0].getContext();
-						                OntModelProvider.addPrivateKeyValuePair(resource, DialogConstants.LAST_DIALOG_COMMAND, triples);
-				                		StringBuilder answer = new StringBuilder();
-				                		ResultSet[] rss = insertTriplesAndQuery(resource, triples);
-				                		String resultStr = null;
-				                		if (rss != null) {
-				                			StringBuilder sb = new StringBuilder();
-				                			if (triples[0].getSubject() instanceof VariableNode && 
-				                					((VariableNode)triples[0].getSubject()).getType() instanceof NamedNode) {
-				                				sb.append("the ");
-				                				sb.append(((VariableNode)(triples[0].getSubject())).getType().getName());
-				                				sb.append(" has ");
-				                				sb.append(triples[0].getPredicate().getName());
-				                				sb.append(" ");
-				                				sb.append(rss[0].getResultAt(0, 0).toString());
-				                				resultStr = sb.toString();
-				                			}
-				                			else {
-					                			for (ResultSet rs : rss) {
-					                				rs.setShowNamespaces(true);
-					                				sb.append(rs.toString());
-					                			}
-				                				resultStr = resultSetToQuotableString(sb.toString());
-				                			}
-				                		}
-				                		insertionText = (resultStr != null ? resultStr : "\"Failed to find results\"");
-				                		addCurationManagerContentToDialog(document, reg, insertionText, ctx, true);
-			                		}
-		                		}
-		                		else {
-		                			// there is a when clause, and this is in a WhatIsConstruct
-		                			List<TripleElement> tripleLst = new ArrayList<TripleElement>();
-	                				if (trgt instanceof TripleElement) {
-		                				tripleLst.add((TripleElement)trgt);
-	                				}
-	                				else if (trgt instanceof Junction) {
-	                					tripleLst = addTriplesFromJunction((Junction) trgt, tripleLst);
-	                				}
-		                			if (whn instanceof TripleElement) {
-		                				// we have a when statement
-		                				tripleLst.add((TripleElement)whn);
-		                			}
-		                			else if (whn instanceof Junction) {
-		                				tripleLst = addTriplesFromJunction((Junction) whn, tripleLst);
-		                			}
-	                				TripleElement[] triples = new TripleElement[tripleLst.size()];
-	                				triples = tripleLst.toArray(triples);
-		                			
+		                		insertionText = (resultStr != null ? resultStr : "\"Failed to find results\"");
+		                		insertionText = checkForEOS(insertionText);
+		                		Object ctx = ((Query)lastcmd).getContext();
+		                		addCurationManagerContentToDialog(document, reg, insertionText, ctx, true);
+	                		}
+	                	}
+	                	else if (lastcmd instanceof NamedNode) {
+	                		whatIsNamedNode(document, reg, resource, lastcmd);
+	                	}
+	                	else if (lastcmd instanceof WhatIsConstruct) {
+	                		Object trgt = ((WhatIsConstruct)lastcmd).getTarget();
+	                		Object whn = ((WhatIsConstruct)lastcmd).getWhen();
+	                		if (trgt instanceof NamedNode && whn == null) {
+	                			whatIsNamedNode(document, reg, resource, (NamedNode)trgt);
+	                		}
+	                		else if (trgt instanceof Object[] && whn == null) {
+		                		if (allTripleElements((Object[])trgt)) {
+			                		Object ctx = null;
+		                			TripleElement[] triples = flattenTriples((Object[])trgt);
+		                			ctx = triples[0].getContext();
 					                OntModelProvider.addPrivateKeyValuePair(resource, DialogConstants.LAST_DIALOG_COMMAND, triples);
 			                		StringBuilder answer = new StringBuilder();
 			                		ResultSet[] rss = insertTriplesAndQuery(resource, triples);
+			                		String resultStr = null;
 			                		if (rss != null) {
-			                			int cntr = 0;
-			                			int numOfModels = rss.length/2;
-				                		for (ResultSet rs : rss) {
-			                				String[] colnames = rs.getColumnNames();
-			                				String cols = String.join(" ",colnames);
-			                				if ( cols.contains("_style") ) {
-			                					
-				                			//if (cntr == 0) {
-				                				// this is the first ResultSet, construct a graph if possible
-				                				//if (rs.getColumnCount() != 3) {
-				                				//	System.err.println("Can't construct graph; not 3 columns. Unexpected result.");
-				                				//}
-//				                				this.graphVisualizerHandler.resultSetToGraph(path, resultSet, description, baseFileName, orientation, properties);
-				                				
-				                				IGraphVisualizer visualizer = new GraphVizVisualizer();
-				                				if (visualizer != null) {
-				                					String graphsDirectory = new File(modelFolder).getParent() + "/Graphs";
-				                					new File(graphsDirectory).mkdir();
-				                					String baseFileName = "QueryMetadata"+rss[cntr+numOfModels].getResultAt(0, 0).toString();
-				                					visualizer.initialize(
-				                		                    graphsDirectory,
-				                		                    baseFileName,
-				                		                    baseFileName,
-				                		                    null,
-				                		                    IGraphVisualizer.Orientation.TD,
-				                		                    "Assembled Model " + rss[cntr+numOfModels].getResultAt(0, 0));
-				                					rs.setShowNamespaces(false);
-				                		            visualizer.graphResultSetData(rs);				                				}
-				        						String fileToOpen = visualizer.getGraphFileToOpen();
-				        						if (fileToOpen != null) {
-				        							File fto = new File(fileToOpen);
-				        							if (fto.isFile()) {
-				        								IFileStore fileStore = EFS.getLocalFileSystem().getStore(fto.toURI());
-				        								IWorkbenchPage page = PlatformUI.getWorkbench().getActiveWorkbenchWindow().getActivePage();
-				        								try {
-				        									IDE.openEditorOnFileStore(page, fileStore);
-				        								}
-				        								catch (Throwable t) {
-				        									System.err.println("Error trying to display graph file '" + fileToOpen + "': " + t.getMessage());
-				        								}
-				        							}
-				        							else if (fileToOpen != null) {
-				        								System.err.println("Failed to open graph file '" + fileToOpen + "'. Try opening it manually.");
-				        							}
-				        						}
-				                				else {
-				                					System.err.println("Unable to find an instance of IGraphVisualizer to render graph for query.\n");
-				                				}
-
+			                			StringBuilder sb = new StringBuilder();
+			                			if (triples[0].getSubject() instanceof VariableNode && 
+			                					((VariableNode)triples[0].getSubject()).getType() instanceof NamedNode) {
+			                				sb.append("the ");
+			                				sb.append(((VariableNode)(triples[0].getSubject())).getType().getName());
+			                				sb.append(" has ");
+			                				sb.append(triples[0].getPredicate().getName());
+			                				sb.append(" ");
+			                				sb.append(rss[0].getResultAt(0, 0).toString());
+			                				resultStr = sb.toString();
+			                			}
+			                			else {
+				                			for (ResultSet rs : rss) {
+				                				rs.setShowNamespaces(true);
+				                				sb.append(rs.toString());
 				                			}
+			                				resultStr = resultSetToQuotableString(sb.toString());
+			                			}
+			                	}
+			                	insertionText = (resultStr != null ? resultStr : "\"Failed to find results\"");
+			                	addCurationManagerContentToDialog(document, reg, insertionText, ctx, true);
+	                		}
+                		}
+                		else {
+	                		// there is a when clause, and this is in a WhatIsConstruct
+                			List<TripleElement> tripleLst = new ArrayList<TripleElement>();
+            				if (trgt instanceof TripleElement) {
+                				tripleLst.add((TripleElement)trgt);
+            				}
+            				else if (trgt instanceof Junction) {
+            					tripleLst = addTriplesFromJunction((Junction) trgt, tripleLst);
+            				}
+                			if (whn instanceof TripleElement) {
+                				// we have a when statement
+                				tripleLst.add((TripleElement)whn);
+                			}
+                			else if (whn instanceof Junction) {
+                				tripleLst = addTriplesFromJunction((Junction) whn, tripleLst);
+                			}
+                			
+            				TripleElement[] triples = new TripleElement[tripleLst.size()];
+            				triples = tripleLst.toArray(triples);
+                			
+			                OntModelProvider.addPrivateKeyValuePair(resource, DialogConstants.LAST_DIALOG_COMMAND, triples);
+	                		StringBuilder answer = new StringBuilder();
+	                		ResultSet[] rss = insertTriplesAndQuery(resource, triples);
+	                		if (rss != null) {
+		                			int cntr = 0;
+		                			int numOfModels = rss.length/2;
+			                		for (ResultSet rs : rss) {
+		                				String[] colnames = rs.getColumnNames();
+		                				String cols = String.join(" ",colnames);
+		                				if ( cols.contains("_style") ) {
+		                    				IGraphVisualizer visualizer = new GraphVizVisualizer();
+			                				if (visualizer != null) {
+			                					String graphsDirectory = new File(modelFolder).getParent() + "/Graphs";
+			                					new File(graphsDirectory).mkdir();
+			                					String baseFileName = "QueryMetadata"+rss[cntr+numOfModels].getResultAt(0, 0).toString();
+			                					visualizer.initialize(
+			                		                    graphsDirectory,
+			                		                    baseFileName,
+			                		                    baseFileName,
+			                		                    null,
+			                		                    IGraphVisualizer.Orientation.TD,
+			                		                    "Assembled Model " + rss[cntr+numOfModels].getResultAt(0, 0));
+			                					rs.setShowNamespaces(false);
+			                		            visualizer.graphResultSetData(rs);				                				}
+			        						String fileToOpen = visualizer.getGraphFileToOpen();
+			        						if (fileToOpen != null) {
+			        							File fto = new File(fileToOpen);
+			        							if (fto.isFile()) {
+			        								IFileStore fileStore = EFS.getLocalFileSystem().getStore(fto.toURI());
+			        								IWorkbenchPage page = PlatformUI.getWorkbench().getActiveWorkbenchWindow().getActivePage();
+			        								try {
+			        									IDE.openEditorOnFileStore(page, fileStore);
+			        								}
+			        								catch (Throwable t) {
+			        									System.err.println("Error trying to display graph file '" + fileToOpen + "': " + t.getMessage());
+			        								}
+			        							}
+			        							else if (fileToOpen != null) {
+			        								System.err.println("Failed to open graph file '" + fileToOpen + "'. Try opening it manually.");
+			        							}
+			        						}
 			                				else {
-			                				//if (cntr > 0) 
-				                				//answer.append(resultSetToQuotableString(rs));
-			                					answer.append(rs);
-				                			//if(cntr++ > 1)
-				                				answer.append("\n");
+			                					System.err.println("Unable to find an instance of IGraphVisualizer to render graph for query.\n");
 			                				}
-			                				cntr++;
-				                		}
-				                		//answer.append(".\n");
-				                		
+
+			                			}
+		                				else {
+		                				//if (cntr > 0) 
+			                				//answer.append(resultSetToQuotableString(rs));
+		                					answer.append(rs);
+			                			//if(cntr++ > 1)
+			                				answer.append("\n");
+		                				}
+		                				cntr++;
 			                		}
-			                		else {
-			                			answer.append("Unable to assemble a model with current knowledge or services are down");
-			                		}
-			                		Object ctx = triples[0].getContext();
-			                		//addCurationManagerContentToDialog(document, reg, answer.toString(), ctx, true);
-			                		addCurationManagerContentToDialog(document, reg, resultSetToQuotableString(answer.toString())+".", ctx, true);
-//		                			}
-//		                			else {
-////		                				rdqProvider.get().execute(null, null, null);
-//		                				System.out.println("Target is: " + trgt.toString());
-//		                				System.out.println("When is: " + whn.toString());
-//		                			}
+			                		//answer.append(".\n");
+			                		
 		                		}
-		                	}
-		                	else if (lastcmd instanceof HowManyValuesConstruct) {
-		                		// this is a HowManyValues  ??
-		                		Object article = ((Object[])lastcmd)[0];
-		                		Object cls = ((Object[])lastcmd)[1];
-		                		Object prop = ((Object[])lastcmd)[2];
-		                		Object typ = ((Object[])lastcmd)[3];
-		                		StringBuilder answer = new StringBuilder("CM: ");
-		                		answer.append(prop.toString());
-		                		answer.append(" describes ");
-		                		answer.append(cls.toString());
-		                		answer.append(" with exactly ");
-		                		
-		                	}
-		                	else if (lastcmd instanceof Object[]) {
-		                		System.err.println("Unhandled Object[] lastcmd");
-		                	}
-		                	else if (lastcmd instanceof TripleElement) {
-		                		StringBuilder answer = new StringBuilder();
-		                		addTripleQuestion(resource, (TripleElement)lastcmd, answer);
-		                		Object ctx = ((TripleElement)lastcmd).getContext();
-		                		addCurationManagerContentToDialog(document, reg, answer.toString(), ctx, true);
-		                	}
-		                	else if (lastcmd instanceof MixedInitiativeTextualResponse) {
-		                		int ip = ((MixedInitiativeTextualResponse)lastcmd).getInsertionPoint();
-		                		String content = ((MixedInitiativeTextualResponse)lastcmd).getResponse();
-		                		Region nreg = new Region(ip, content.length());
-		                		Object ctx = null; //((MixedInitiativeTextualResponse)lastcmd).getContext();
-		                		addCurationManagerContentToDialog(document, nreg, content, ctx, true);
-		                	}
-		                	else if (lastcmd != null) {
-	                			logger.debug("    Lastcmd '" + lastcmd.getClass().getCanonicalName() + "' not handled yet!");
-		                	}
+		                		else {
+		                			answer.append("Unable to assemble a model with current knowledge or services are down");
+		                		}
+		                		Object ctx = triples[0].getContext();
+		                		//addCurationManagerContentToDialog(document, reg, answer.toString(), ctx, true);
+		                		addCurationManagerContentToDialog(document, reg, resultSetToQuotableString(answer.toString())+".", ctx, true);
+	                		}
+                		}
+	                	else if (lastcmd instanceof HowManyValuesConstruct) {
+	                		// this is a HowManyValues  ??
+	                		Object article = ((Object[])lastcmd)[0];
+	                		Object cls = ((Object[])lastcmd)[1];
+	                		Object prop = ((Object[])lastcmd)[2];
+	                		Object typ = ((Object[])lastcmd)[3];
+	                		StringBuilder answer = new StringBuilder("CM: ");
+	                		answer.append(prop.toString());
+	                		answer.append(" describes ");
+	                		answer.append(cls.toString());
+	                		answer.append(" with exactly ");
+	                		
 	                	}
-	                	else {
-                			logger.debug("DialogAnswerProvider called with null resource!");
+	                	else if (lastcmd instanceof Object[]) {
+	                		System.err.println("Unhandled Object[] lastcmd");
+	                	}
+	                	else if (lastcmd instanceof TripleElement) {
+	                		StringBuilder answer = new StringBuilder();
+	                		addTripleQuestion(resource, (TripleElement)lastcmd, answer);
+	                		Object ctx = ((TripleElement)lastcmd).getContext();
+	                		addCurationManagerContentToDialog(document, reg, answer.toString(), ctx, true);
+	                	}
+	                	else if (lastcmd instanceof MixedInitiativeTextualResponse) {
+	                		int ip = ((MixedInitiativeTextualResponse)lastcmd).getInsertionPoint();
+	                		String content = ((MixedInitiativeTextualResponse)lastcmd).getResponse();
+	                		Region nreg = new Region(ip, content.length());
+	                		Object ctx = null; //((MixedInitiativeTextualResponse)lastcmd).getContext();
+	                		addCurationManagerContentToDialog(document, nreg, content, ctx, true);
+	                	}
+	                	else if (lastcmd instanceof BuildConstruct) {
+	                		processBuildRequest(resource, (BuildConstruct)lastcmd);
+	                	}
+	                	else if (lastcmd != null) {
+                			logger.debug("    Lastcmd '" + lastcmd.getClass().getCanonicalName() + "' not handled yet!");
 	                	}
 //		                String possibleKWD = token.toLowerCase();
 //		                if ( token.equals(possibleKWD.toUpperCase()) || !KWDS.contains(possibleKWD) ) return;
@@ -361,6 +365,39 @@ public class DialogAnswerProvider extends DefaultAutoEditStrategyProvider implem
 	                logger.debug("AutoEdit error (of type " + e.getClass().getCanonicalName() + "): " + e.getMessage());   
 	            }
 	        }
+
+			private void processBuildRequest(Resource resource, BuildConstruct lastcmd) throws BadLocationException {
+				String buildTarget = ((BuildConstruct)lastcmd).getTarget();
+				Object acmObj = getConfigMgr().getPrivateKeyValuePair(DialogConstants.ANSWER_CURATION_MANAGER);
+				String result = null;
+				if (acmObj == null) {
+	    			Map<String, String> preferences = getPreferences(resource.getURI());
+	    			try {
+						acmObj = new AnswerCurationManager(getConfigMgr().getModelFolder(), getConfigMgr(), preferences);
+		    			getConfigMgr().addPrivateKeyValuePair(DialogConstants.ANSWER_CURATION_MANAGER, acmObj);
+		    			((AnswerCurationManager) acmObj).getExtractionProcessor().getCodeExtractor().setCodeModelFolder(getConfigMgr().getModelFolder());
+					} catch (IOException e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+						result = "Failed: " + e.getMessage();
+					}
+	    		}
+
+				if (acmObj != null) {
+					if (acmObj instanceof AnswerCurationManager) {
+						try {
+							result = ((AnswerCurationManager)acmObj).processBuildRequest(buildTarget);
+						} catch (Exception e) {
+							// TODO Auto-generated catch block
+							e.printStackTrace();
+							result = "Failed: " + e.getMessage();
+						}
+					}
+				}
+				if (result != null) {
+					addCurationManagerContentToDialog(getTheDocument(), null, result, lastcmd.getContext(), true);
+				}
+			}
 
 			private String checkForEOS(String insertionText) {
 				if (!insertionText.endsWith(".") && !insertionText.endsWith("?")) {
@@ -632,12 +669,13 @@ public class DialogAnswerProvider extends DefaultAutoEditStrategyProvider implem
 				boolean isFirstProperty = true;
 				StringBuilder answer = new StringBuilder();
 				if (typ.equals(NodeType.ClassNode)) {
-					answer.append(checkForKeyword(nn.getName()));
-					int len = answer.length();
-					answer = getClassHierarchy(resource, nn, answer);
-					if (answer.length() == len) {
-						answer.append(" is a class");
-					}
+//					answer.append(checkForKeyword(nn.getName()));
+//					int len = answer.length();
+//					answer = getClassHierarchy(resource, nn, answer);
+//					if (answer.length() == len) {
+//						answer.append(" is a class");
+//					}
+					answer.append(getOwlToSadl(getTheModel()).classToSadl(nn.getURI()));
 					isFirstProperty = addDomainAndRange(resource, nn, isFirstProperty, answer);
 					addQualifiedCardinalityRestriction(resource, nn, isFirstProperty, answer);		
 					Object ctx = ((NamedNode)lastcmd).getContext();
@@ -667,6 +705,13 @@ public class DialogAnswerProvider extends DefaultAutoEditStrategyProvider implem
 					logger.debug("    Lastcmd '" + lastcmd.getClass().getCanonicalName() + "' not handled yet!");
 					System.err.println("Type " + typ.getClass().getCanonicalName() + " not handled yet.");
 				}
+			}
+
+			private OwlToSadl getOwlToSadl(OntModel theModel) {
+				if (owl2sadl == null) {
+					owl2sadl = new OwlToSadl(theModel);
+				}
+				return owl2sadl;
 			}
 
 			private TripleElement[] flattenTriples(Object[] lastcmd) {
@@ -831,7 +876,6 @@ public class DialogAnswerProvider extends DefaultAutoEditStrategyProvider implem
 
 			private void addInstanceDeclaration(Resource resource, NamedNode nn, StringBuilder answer) throws ExecutionException {
 				answer.append(checkForKeyword(nn.getName()));
-				answer.append(" is a ");
 //				String query = "select ?type where {<" + nn.getURI() + ">  <" + ReasonerVocabulary.directRDFType + "> ?type}";
 				String query = "select ?type where {<" + nn.getURI() + ">  <rdf:type> ?type}";
 				Query q = new Query();
@@ -840,6 +884,7 @@ public class DialogAnswerProvider extends DefaultAutoEditStrategyProvider implem
 				ResultSet rs = runQuery(resource, q);
 				OntModelProvider.clearPrivateKeyValuePair(resource, DialogConstants.LAST_DIALOG_COMMAND);
 				if (rs != null) {
+					answer.append(" is a ");
 					rs.setShowNamespaces(false);
 					int rowcnt = rs.getRowCount();
 					if (rowcnt > 1) {
@@ -863,10 +908,23 @@ public class DialogAnswerProvider extends DefaultAutoEditStrategyProvider implem
 				rs = runQuery(resource, q);
 				OntModelProvider.clearPrivateKeyValuePair(resource, DialogConstants.LAST_DIALOG_COMMAND);
 				if (rs != null) {
+					rs.setShowNamespaces(true);
 					int rowcnt = rs.getRowCount();
+					for (int r = 0; r < rowcnt; r++) {
+						Object pobjURI = rs.getResultAt(r, 0);
+						if (pobjURI.toString().equals(RDFS.comment.getURI()) || pobjURI.toString().equals(RDFS.label.getURI())) {
+							if (pobjURI.toString().equals(RDFS.comment.getURI())) {
+								answer.append(" (note \"");
+							}
+							else {
+								answer.append(" (alias \"");
+							}
+							answer.append(rs.getResultAt(r, 1).toString().replaceAll("\"", "'"));
+							answer.append("\")");
+						}
+					}
 					int outputcnt = 0;
 					for (int r = 0; r < rowcnt; r++) {
-						rs.setShowNamespaces(true);
 						Object pobjURI = rs.getResultAt(r, 0);
 						if (!pobjURI.toString().startsWith(OWL.getURI()) && !pobjURI.toString().startsWith(RDFS.getURI()) &&
 								!pobjURI.toString().startsWith(RDF.getURI())) {
@@ -1118,20 +1176,15 @@ public class DialogAnswerProvider extends DefaultAutoEditStrategyProvider implem
 	        
 	    	private List<String> getSadlKeywords() {
 	    		if (sadlkeywords == null) {
-		    		SADLParser sparser = null;
-		    		Injector injector = new SADLStandaloneSetup().createInjectorAndDoEMFRegistration();
-		    	    sparser = injector.getInstance(SADLParser.class);
-		    		if (sparser != null) {
-		    			Set<String> keywords = GrammarUtil.getAllKeywords(sparser.getGrammarAccess().getGrammar());
-		    			if (keywords != null) {
-		    				sadlkeywords = new ArrayList<String>();
-		    				Iterator<String> itr = keywords.iterator();
-		    				while (itr.hasNext()) {
-		    					String token = itr.next();
-		    					sadlkeywords.add(token);
-		    				}
-	    				}
-	    			}
+		    		Set<String> keywords = GrammarUtil.getAllKeywords(sadlParser.getGrammarAccess().getGrammar());
+		    		if (keywords != null) {
+		    			sadlkeywords = new ArrayList<String>();
+		    			Iterator<String> itr = keywords.iterator();
+		    			while (itr.hasNext()) {
+		    				String token = itr.next();
+		    				sadlkeywords.add(token);
+		    			}
+		    		}
 	    		}
 	    		return sadlkeywords;
 	    	}
@@ -1184,6 +1237,17 @@ public class DialogAnswerProvider extends DefaultAutoEditStrategyProvider implem
 				return null;
 			}
 
+			private OntModel getTheModel() {
+				if (theModel == null) {
+					setTheModel(OntModelProvider.find(getResource()));
+				}
+				return theModel;
+			}
+
+			private void setTheModel(OntModel theModel) {
+				this.theModel = theModel;
+			}
+
 		};
 
 	    
@@ -1196,6 +1260,7 @@ public class DialogAnswerProvider extends DefaultAutoEditStrategyProvider implem
 	private String setDialogAnswerProvider(Resource resource) throws ConfigurationException {
 		String modelFolder = SadlActionHandler.getModelFolderFromResource(resource);
 		ConfigurationManagerForIDE cfgmgr = ConfigurationManagerForIdeFactory.getConfigurationManagerForIDE(modelFolder, null);
+		setConfigMgr(cfgmgr);
 		cfgmgr.addPrivateKeyValuePair(DialogConstants.DIALOG_ANSWER_PROVIDER, this);
 		return modelFolder;
 	}
@@ -1247,6 +1312,20 @@ public class DialogAnswerProvider extends DefaultAutoEditStrategyProvider implem
 		return null;
 	}
 
+	public int[] getStartAndLength(EObject po) {
+		INode node = getParserObjectNode(po);
+		if (node != null) {
+			ITextRegionWithLineInformation reg = NodeModelUtils.getNode(po).getTextRegionWithLineInformation();
+			int start = NodeModelUtils.getNode(po).getTotalOffset();
+			int len = NodeModelUtils.getNode(po).getTotalLength();
+			int[] ret = new int[2];
+			ret[0] = start;
+			ret[1] = len;
+			return ret;
+		}
+		return null;
+	}
+
 	protected INode getParserObjectNode(EObject po) {
 		Object r = po.eResource();
 		if (r instanceof XtextResource) {
@@ -1282,7 +1361,7 @@ public class DialogAnswerProvider extends DefaultAutoEditStrategyProvider implem
 				modContent += ".";
 			}
 		}
-		if (ctx instanceof EObject) {
+		if (ctx instanceof EObject && getSourceText((EObject)ctx) != null) {
 //			String damageStr = document.get(reg.getOffset(), reg.getLength());
 			Object[] srcinfo = getSourceText((EObject)ctx);
 			String srctext = (String) srcinfo[0];
@@ -1327,6 +1406,12 @@ public class DialogAnswerProvider extends DefaultAutoEditStrategyProvider implem
 	}
 	
 	@Override
+	public boolean removeMixedInitiativeElement(String key) {
+		mixedInitiativeElements.remove(key);
+		return true;
+	}
+	
+	@Override
 	public MixedInitiativeElement getMixedInitiativeElement(String key) {
 		return mixedInitiativeElements.get(key);
 	}
@@ -1356,88 +1441,96 @@ public class DialogAnswerProvider extends DefaultAutoEditStrategyProvider implem
 					// call the method
 					List<Object> args = response.getArguments();
 					try {
-						Object result = null;
+						Object results = null;
 						if (args.size() == 0) {
-							result = m.invoke(acm, null);
+							results = m.invoke(acm, null);
 						}
 						else {
 							Object arg0 = args.get(0);
 							if (args.size() == 1) {
-								result = m.invoke(acm, arg0);
+								results = m.invoke(acm, arg0);
 							}
 							else {
 								Object arg1 = args.get(1);
 								if (args.size() == 2) {
-									result = m.invoke(acm, arg0, arg1);
+									results = m.invoke(acm, arg0, arg1);
 								}
 								if (methodToCall.equals("saveAsSadlFile")) {
-									String outputOwlFileName = arg0.toString();
-									File owlfile = new File(outputOwlFileName);
-									if (arg0 instanceof String && AnswerCurationManager.isYes(arg1)) {
-										File sf = new File(result.toString());
-										if (sf.exists()) {
-											// delete OWL file so it won't be indexed
-											if (owlfile.exists()) {
-												owlfile.delete();
-												try {
-													String altUrl = new SadlUtils().fileNameToFileUrl(outputOwlFileName);
-													String publicUri = acm.getExtractionProcessor().getCodeExtractor().getCodeModelConfigMgr().getPublicUriFromActualUrl(altUrl);
-													if (publicUri != null) {
-														acm.getExtractionProcessor().getCodeExtractor().getCodeModelConfigMgr().deleteModel(publicUri);
-														acm.getExtractionProcessor().getCodeExtractor().getCodeModelConfigMgr().deleteMapping(altUrl, publicUri);
+									if (arg0 instanceof List<?> && results instanceof List<?>) {
+										String projectName = null;
+										List<File> sadlFiles = new ArrayList<File>();
+										for (int i = 0; i < ((List<?>) results).size(); i++) {
+											Object result = ((List<?>) results).get(i);
+											File owlfile = (File) ((List<?>) arg0).get(i);
+											if (AnswerCurationManager.isYes(arg1)) {
+												File sf = new File(result.toString());
+												if (sf.exists()) {
+													sadlFiles.add(sf);
+													// delete OWL file so it won't be indexed
+													if (owlfile.exists()) {
+														owlfile.delete();
+														try {
+															String outputOwlFileName = owlfile.getCanonicalPath();
+															String altUrl = new SadlUtils().fileNameToFileUrl(outputOwlFileName);
+															
+															String publicUri = acm.getDomainModelConfigurationManager().getPublicUriFromActualUrl(altUrl);
+															if (publicUri != null) {
+																acm.getDomainModelConfigurationManager().deleteModel(publicUri);
+																acm.getDomainModelConfigurationManager().deleteMapping(altUrl, publicUri);
+															}
+														} catch (ConfigurationException e) {
+															// TODO Auto-generated catch block
+															e.printStackTrace();
+														} catch (URISyntaxException e) {
+															// TODO Auto-generated catch block
+															e.printStackTrace();
+														} catch (IOException e) {
+															// TODO Auto-generated catch block
+															e.printStackTrace();
+														}
 													}
-												} catch (ConfigurationException e) {
+													projectName = sf.getParentFile().getParentFile().getName();
+												}
+											}				
+											else {
+												// add import of OWL file from policy file since there won't be a SADL file to build an OWL and create mappings.
+												try {
+													String importActualUrl = new SadlUtils().fileNameToFileUrl(arg0.toString());
+													String altUrl = new SadlUtils().fileNameToFileUrl(importActualUrl);
+													String importPublicUri = acm.getDomainModelConfigurationManager().getPublicUriFromActualUrl(altUrl);
+													String prefix = acm.getDomainModelConfigurationManager().getGlobalPrefix(importPublicUri);
+													acm.getDomainModelConfigurationManager().addMapping(importActualUrl, importPublicUri, prefix, false, "AnswerCurationManager");
+													String prjname = owlfile.getParentFile().getParentFile().getName();
+													IProject prj = ResourcesPlugin.getPlugin().getWorkspace().getRoot().getProject(prjname);
+													prj.refreshLocal(IResource.DEPTH_INFINITE, null);
+												} catch (IOException e) {
 													// TODO Auto-generated catch block
 													e.printStackTrace();
 												} catch (URISyntaxException e) {
 													// TODO Auto-generated catch block
 													e.printStackTrace();
-												} catch (IOException e) {
+												} catch (ConfigurationException e) {
+													// TODO Auto-generated catch block
+													e.printStackTrace();
+												} catch (CoreException e) {
 													// TODO Auto-generated catch block
 													e.printStackTrace();
 												}
 											}
-											String prjname = sf.getParentFile().getParentFile().getName();
-											IProject prj = ResourcesPlugin.getPlugin().getWorkspace().getRoot().getProject(prjname);
-											
-								         	ResourceSet resSet = resourceSetProvider.get(prj);
-								        	try {
-												Resource newRsrc = resSet.createResource(URI.createFileURI(sf.getCanonicalPath()));
-												newRsrc.load(newRsrc.getResourceSet().getLoadOptions());
-												prj.refreshLocal(IResource.DEPTH_INFINITE, null);
-											} catch (IOException e) {
-												// TODO Auto-generated catch block
-												e.printStackTrace();
+										}
+										if (projectName != null) {	// only not null if doing SADL conversion
+											IProject project = ResourcesPlugin.getWorkspace().getRoot().getProject(projectName);
+											try {
+												project.build(IncrementalProjectBuilder.AUTO_BUILD, null);
+												// display new SADL file
+												displayFiles(getConfigMgr().getModelFolder(), sadlFiles);
 											} catch (CoreException e) {
 												// TODO Auto-generated catch block
 												e.printStackTrace();
+											} catch (IOException e) {
+												// TODO Auto-generated catch block
+												e.printStackTrace();
 											}
-											// display new SADL file
-											displayFile(acm.getExtractionProcessor().getCodeExtractor().getCodeModelFolder(), sf);
-										}
-									}
-									else {
-										// add import of OWL file from policy file since there won't be a SADL file to build an OWL and create mappings.
-										try {
-											String importPublicUri = acm.getExtractionProcessor().getCodeModelName();
-											String prefix = acm.getExtractionProcessor().getCodeModelPrefix();
-											String importActualUrl = new SadlUtils().fileNameToFileUrl(arg0.toString());
-											acm.getExtractionProcessor().getCodeExtractor().getCodeModelConfigMgr().addMapping(importActualUrl, importPublicUri, prefix, false, "AnswerCurationManager");
-											String prjname = owlfile.getParentFile().getParentFile().getName();
-											IProject prj = ResourcesPlugin.getPlugin().getWorkspace().getRoot().getProject(prjname);
-											prj.refreshLocal(IResource.DEPTH_INFINITE, null);
-										} catch (IOException e) {
-											// TODO Auto-generated catch block
-											e.printStackTrace();
-										} catch (URISyntaxException e) {
-											// TODO Auto-generated catch block
-											e.printStackTrace();
-										} catch (ConfigurationException e) {
-											// TODO Auto-generated catch block
-											e.printStackTrace();
-										} catch (CoreException e) {
-											// TODO Auto-generated catch block
-											e.printStackTrace();
 										}
 									}
 								}
@@ -1460,7 +1553,53 @@ public class DialogAnswerProvider extends DefaultAutoEditStrategyProvider implem
 		}	
 	}
 
-	private void displayFile(String codeModelFolder, File sf) {
+	private void insertExtractedModelImport(XtextDocument doc, AnswerCurationManager acm) {
+		String cmn = acm.getExtractionProcessor().getCodeModelName();
+		String insert = "import \"" + cmn + "\".\n\r";
+		if (cmn != null) {
+			doc.readOnly(new IUnitOfWork.Void<XtextResource>() {
+
+				@Override
+				public void process(XtextResource rsrc) throws Exception {
+					// TODO Auto-generated method stub
+					EList<EObject> cntnts = rsrc.getContents();
+					if (cntnts.get(0) instanceof SadlModel) {
+						int loc = -1;
+						SadlModel sm = (SadlModel) cntnts.get(0);
+						EList<SadlImport> imprts = sm.getImports();
+						if (imprts != null) {
+							// insert import after last import
+							int[] info = getStartAndLength(imprts.get(imprts.size() - 1));
+							loc = info[0] + info[1];
+						}
+						else {
+							// insert import after uri
+							EList<SadlModelElement> elements = sm.getElements();
+							if (elements != null) {
+								int[] info = getStartAndLength(elements.get(elements.size() - 1));
+								loc = info[0] + info[1];
+							}
+							else {
+								loc = doc.getLength();
+							}
+						}
+						if (loc > 0) {
+							// insert at loc
+							try {
+								doc.replace(loc + 1, insert.length(), insert);
+							} catch (BadLocationException e) {
+								// TODO Auto-generated catch block
+								e.printStackTrace();
+							}
+						}
+					}
+					
+				}
+			});
+		}
+	}
+
+	private void displayFiles(String codeModelFolder, List<File> sadlFiles) {
 		File cmf = new File(codeModelFolder);
     	IProject codeModelProject = null;
 		if (cmf.exists()) {
@@ -1473,48 +1612,53 @@ public class DialogAnswerProvider extends DefaultAutoEditStrategyProvider implem
 	    		IProject project = codeModelProject;
 	    		if (!project.isOpen())
 	    		    project.open(null);
-	    		IPath location;
 				try {
-					String prjname = project.getFullPath().lastSegment();
-					location = new Path(sf.getCanonicalPath());
-					String[] segarray = location.segments();
-					int segsAdded = 0;
-					boolean prjFound = false;
-					StringBuilder sb = new StringBuilder();
-					for (String seg : segarray) {
-						if (prjFound) {
-							if (segsAdded++ > 0) {
-								sb.append("/");
+					List<IFile> iFiles = new ArrayList<IFile>();
+					List<IPath> locations = new ArrayList<IPath>();
+					for (File sf : sadlFiles) {
+						String prjname = project.getFullPath().lastSegment();
+			    		IPath location = new Path(sf.getCanonicalPath());
+						locations.add(location);
+						String[] segarray = location.segments();
+						int segsAdded = 0;
+						boolean prjFound = false;
+						StringBuilder sb = new StringBuilder();
+						for (String seg : segarray) {
+							if (prjFound) {
+								if (segsAdded++ > 0) {
+									sb.append("/");
+								}
+								sb.append(seg);
 							}
-							sb.append(seg);
+							if (!prjFound && seg.equals(prjname)) {
+								prjFound = true;;
+							}
 						}
-						if (!prjFound && seg.equals(prjname)) {
-							prjFound = true;;
-						}
+						IFile file = project.getFile(sb.toString());
+						iFiles.add(file);
 					}
-					IFile file = project.getFile(sb.toString());
 	    			project.refreshLocal(IResource.DEPTH_INFINITE, null);
-		    		if (!file.exists()) {
-		    			file.createLink(location, IResource.NONE, null);
-		    		}
+	    			for (int i = 0; i < iFiles.size(); i++) {
+	    				IFile file = iFiles.get(i);
+	    				IPath location = locations.get(i);
+			    		if (!file.exists()) {
+			    			file.createLink(location, IResource.NONE, null);
+			    		}
+	    			}
 		    		IWorkbenchWindow window = PlatformUI.getWorkbench().getActiveWorkbenchWindow();
 		    	    if (window != null) {
 		    	    	IWorkbenchPage page = window.getActivePage();
 		    	    	if (page != null) {
-		        		    try {
-		        		    	IWorkbenchPart actpart = page.getActivePart();
-		            		    IFileStore fileStore = EFS.getLocalFileSystem().getStore(location);
-		            		    IDE.openEditorOnFileStore( page, fileStore );
-		            		    page.bringToTop(actpart);
-			    		    } catch ( PartInitException e ) {
-			    		        //Put your exception handler here if you wish to
-			    		    	try {
-									System.err.println("Unable to open '" + sf.getCanonicalPath() + "' in an editor.");
-								} catch (IOException e1) {
-									// TODO Auto-generated catch block
-									e1.printStackTrace();
-								}
-			    		    }
+		    	    		for (IPath location : locations) {
+			        		    try {
+			        		    	IWorkbenchPart actpart = page.getActivePart();
+			            		    IFileStore fileStore = EFS.getLocalFileSystem().getStore(location);
+			            		    IDE.openEditorOnFileStore( page, fileStore );
+			            		    page.bringToTop(actpart);
+				    		    } catch ( PartInitException e ) {
+				    		        System.err.println("Unable to open '" + location.lastSegment() + "' in an editor.");
+				    		    }
+		    	    		}
 		    	    	}
 		    	    }
 		    	    else {
@@ -1524,20 +1668,16 @@ public class DialogAnswerProvider extends DefaultAutoEditStrategyProvider implem
 		    		    	    if (window != null) {
 		    		    	    	IWorkbenchPage page = window.getActivePage();
 		    		    	    	if (page != null) {
-		    		        		    try {
-		    		        		    	IWorkbenchPart actpart = page.getActivePart();
-		    		            		    IFileStore fileStore = EFS.getLocalFileSystem().getStore(location);
-		    		            		    IDE.openEditorOnFileStore( page, fileStore );
-		    		            		    page.bringToTop(actpart);
-		    			    		    } catch ( PartInitException e ) {
-		    			    		        //Put your exception handler here if you wish to
-		    			    		    	try {
-		    									System.err.println("Unable to open '" + sf.getCanonicalPath() + "' in an editor.");
-		    								} catch (IOException e1) {
-		    									// TODO Auto-generated catch block
-		    									e1.printStackTrace();
-		    								}
-		    			    		    }
+		    		    	    		for (IPath location : locations) {
+			    		        		    try {
+			    		        		    	IWorkbenchPart actpart = page.getActivePart();
+			    		            		    IFileStore fileStore = EFS.getLocalFileSystem().getStore(location);
+			    		            		    IDE.openEditorOnFileStore( page, fileStore );
+			    		            		    page.bringToTop(actpart);
+			    			    		    } catch ( PartInitException e ) {
+			    			    		        System.err.println("Unable to open '" + location.lastSegment() + "' in an editor.");
+			    			    		    }
+		    		    	    		}
 		    		    	    	}
 		    		    	    }
 		    	    	    }
@@ -1556,6 +1696,63 @@ public class DialogAnswerProvider extends DefaultAutoEditStrategyProvider implem
 	    		e.printStackTrace();
 	    	}
 		}
+	}
+
+	private IConfigurationManagerForIDE getConfigMgr() {
+		return configMgr;
+	}
+
+	private void setConfigMgr(IConfigurationManagerForIDE configMgr) {
+		this.configMgr = configMgr;
+	}
+
+	protected Map<String, String> getPreferences(IFile file) {
+		final URI uri = URI.createPlatformResourceURI(file.getFullPath().toString(), true);
+		return getPreferences(uri);
+	}
+	
+	protected Map<String, String> getPreferences(URI uri) {
+		Injector reqInjector = safeGetInjector(DialogActivator.COM_GE_RESEARCH_SADL_DARPA_ASKE_DIALOG);
+		IPreferenceValuesProvider pvp = reqInjector.getInstance(IPreferenceValuesProvider.class);
+		IPreferenceValues preferenceValues = pvp.getPreferenceValues(new XtextResource(uri));
+		if (preferenceValues != null) {
+			Map<String, String> map = new HashMap<String, String>();
+			String tsburl = preferenceValues.getPreference(DialogPreferences.ANSWER_TEXT_SERVICE_BASE_URI);
+			if (tsburl != null) {
+				map.put(DialogPreferences.ANSWER_TEXT_SERVICE_BASE_URI.getId(), tsburl);
+			}
+			String cgsburl = preferenceValues.getPreference(DialogPreferences.ANSWER_CG_SERVICE_BASE_URI);
+			if (cgsburl != null) {
+				map.put(DialogPreferences.ANSWER_CG_SERVICE_BASE_URI.getId(), cgsburl);
+			}
+			String j2psburl = preferenceValues.getPreference(DialogPreferences.ANSWER_JAVA_TO_PYTHON_SERVICE_BASE_URI);
+			if (j2psburl != null) {
+				map.put(DialogPreferences.ANSWER_JAVA_TO_PYTHON_SERVICE_BASE_URI.getId(), j2psburl);
+			}
+//			preferenceValues.getPreference(DialogPreferences.)
+			return map;
+		}
+		return null;
+	}
+
+	protected final Injector safeGetInjector(String name){
+		final AtomicReference<Injector> i = new AtomicReference<Injector>();
+		Display.getDefault().syncExec(new Runnable(){
+			@Override
+			public void run() {
+				i.set(DialogActivator.getInstance().getInjector(name));
+			}
+		});
+		
+		return i.get();
+	}
+
+	private Resource getResource() {
+		return resource;
+	}
+
+	private void setResource(Resource resource) {
+		this.resource = resource;
 	}
 
 }

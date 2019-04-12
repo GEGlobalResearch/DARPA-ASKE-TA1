@@ -1,0 +1,59 @@
+
+NASA Logo - Web Link to NASA.gov		
++ Text Only Site
++ Non-Flash Version
++ Contact Glenn
+
+FIND IT @ NASA
+	Go
+ ABOUT NASA	 NEWS AND EVENTS	 MULTIMEDIA	 MISSIONS	 MyNASA	 WORK FOR NASA
+ Computer drawing of flow around an airfoil.
+ Aerodynamic force equals a constant times the velocity squared.
+Lift is created by deflecting a flow of air and drag is generated on a body in a wide variety of ways. From Newton's second law of motion, the aerodynamic forces on the body (lift and drag) are directly related to the change in momentum of the fluid with time. The fluid momentum is equal to the mass times the velocity of the fluid. Since the air moves, defining the mass gets a little tricky and aerodynamicists usually relate the effect of mass on lift and drag to the air density. The mathematical derivation for this conversion is given on another slide dealing with momentum effects on lift. As a result of this derivation, we find that lift and drag depend on the square of the velocity.
+
+The velocity used in the lift and drag equations is the relative velocity between an object and the flow. Since the aerodynamic force depends on the square of the velocity, doubling the velocity will quadruple the lift and drag.
+
+Let's investigate the dependence of lift on velocity using a Java simulator.
+
+Due to IT security concerns, many users are currently experiencing problems running NASA Glenn educational applets. The applets are slowly being updated, but it is a lengthy process. If you are familiar with Java Runtime Environments (JRE), you may want to try downloading the applet and running it on an Integrated Development Environment (IDE) such as Netbeans or Eclipse. The following are tutorials for running Java applets on either IDE: 
+Netbeans 
+Eclipse
+
+
+As an experiment, set the velocity to 50 mph and note the amount of lift. Now double the velocity to 100 mph. What is the value of the lift? How does it compare to the previous measurement?
+
+You can download your own copy of the program to run off-line by clicking on this button:
+
+Button to Download a Copy of the Program
+
+You can further investigate the effect of velocity and the other factors affecting lift by using the FoilSim III Java Applet. You can also download your own copy of FoilSim to play with for free.
+
+Activities: 
+Button to Display Grade 6-8 Activity  Button to Display Grade 6-8 Activity  Button to Display Grade 9-12 Activity  Button to Display Grade 9-12 Activity  Button to Display Grade 9-12 Activity  Button to Display Grade 9-12 Activity Button to Display Grade 9-12 Activity  Button to Display Grade 9-12 Activity  Button to Display Grade 9-12 Activity  Button to Display Grade 9-12 Activity  Button to Display Grade 9-12 Activity  Button to Display Grade 9-12 Activity Button to Display Grade 9-12 Activity  Button to Display Grade 11-12 Activity  Button to Display Grade 11-12 Activity
+Guided Tours
+Button to Display Previous Page Factors that Affect Lift:  Button to Display Next Page
+Button to Display Previous Page Factors that Affect Drag:  Button to Display Next Page
+
+Navigation ..
+
+Button to Display Aerodynamics Index Button to Display Model Rocket Index Button to Display Kite Index Button to Display Wright Brothers Index 
+Beginner's Guide Home Page
+ 
+
+      First Gov Image	
+
++ Inspector General Hotline
++ Equal Employment Opportunity Data Posted Pursuant to the No Fear Act
++ Budgets, Strategic Plans and Accountability Reports
++ Freedom of Information Act
++ The President's Management Agenda
++ NASA Privacy Statement, Disclaimer,
+and Accessibility Certification
+
+ 
+
+NASA Logo   	
+Editor: Nancy Hall
+NASA Official: Nancy Hall
+Last Updated: Apr 05 2018
++ Contact Glenn

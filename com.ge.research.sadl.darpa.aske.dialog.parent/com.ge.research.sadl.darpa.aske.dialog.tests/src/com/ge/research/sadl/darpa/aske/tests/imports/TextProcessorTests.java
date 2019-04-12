@@ -8,13 +8,14 @@ import java.io.UnsupportedEncodingException;
 import java.net.MalformedURLException;
 
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 
 import com.ge.research.sadl.builder.ConfigurationManagerForIdeFactory;
 import com.ge.research.sadl.builder.IConfigurationManagerForIDE;
 import com.ge.research.sadl.darpa.aske.curation.AnswerCurationManager;
-import com.ge.research.sadl.darpa.aske.curation.DialogAnswerProviderConsoleForTest;
 import com.ge.research.sadl.darpa.aske.curation.AnswerCurationManager.SaveAsSadl;
+import com.ge.research.sadl.darpa.aske.curation.DialogAnswerProviderConsoleForTest;
 import com.ge.research.sadl.darpa.aske.processing.DialogConstants;
 import com.ge.research.sadl.darpa.aske.processing.IDialogAnswerProvider;
 import com.ge.research.sadl.darpa.aske.processing.imports.TextProcessor;
@@ -29,31 +30,39 @@ public class TextProcessorTests {
 	public void setUp() throws Exception {
 	}
 
+	@Ignore
 	@Test
-	public void test() throws MalformedURLException, UnsupportedEncodingException {
-		TextProcessor tp = new TextProcessor(null);
+	public void test() throws ConfigurationException, IOException {
+		TextProcessor tp = new TextProcessor(new AnswerCurationManager(domainProjectModelFolder, 
+				ConfigurationManagerForIdeFactory.getConfigurationManagerForIDE(domainProjectModelFolder, null), null), null);
 		tp.process(null, "a^2 = R * T * gamma", null);
 	}
 
+	@Ignore
 	@Test
-	public void test2() throws MalformedURLException, UnsupportedEncodingException {
-		TextProcessor tp = new TextProcessor(null);
+	public void test2() throws ConfigurationException, IOException {
+		TextProcessor tp = new TextProcessor(null, null);
 		tp.process(null, "The speed of sound is a concept known in physics ", null);
 	}
 
+	@Ignore
 	@Test
-	public void test3() throws IOException {
+	public void test3() throws IOException, ConfigurationException {
 		System.out.println(new File(".").getAbsoluteFile().getAbsolutePath());
 		File sourceFile = new File(new File(".").getAbsolutePath() + "/resources/Sound.txt");
 		String javaContent = readFile(sourceFile);
-		TextProcessor tp = new TextProcessor(null);
+		TextProcessor tp = new TextProcessor(null, null);
 		tp.process(null, javaContent, null);
 	}
 
+	@Ignore
 	@Test
 	public void test4() throws ConfigurationException, IOException {
 		System.out.println(new File(".").getAbsoluteFile().getAbsolutePath());
 		File sourceFile = new File(new File(".").getAbsolutePath() + "/resources/Sound.txt");
+		File domainProjectFolder = new File(sourceFile.getParentFile() + "/TestSadlProject");
+		File domainModelFolder = new File(domainProjectFolder.getAbsoluteFile() + "/OwlModels");
+		setDomainProjectModelFolder(domainModelFolder.getCanonicalPath());
 		IConfigurationManagerForIDE cm = ConfigurationManagerForIdeFactory.getConfigurationManagerForIDE(getDomainProjectModelFolder(), null);
 		AnswerCurationManager acm = new AnswerCurationManager(getDomainProjectModelFolder(), cm, null);
 		acm.getExtractionProcessor().getCodeExtractor().setCodeModelFolder(getExtractionProjectModelFolder());
@@ -72,9 +81,9 @@ public class TextProcessorTests {
 		String owlFileName = genFolder + "/" + defaultCodeModelPrefix + ".owl";
 
 		acm.getExtractionProcessor().getTextProcessor().addFile(sourceFile);
-		acm.processImports(defaultCodeModelPrefix + ".owl", SaveAsSadl.SaveAsSadl.SaveAsSadl);
+		acm.processImports(SaveAsSadl.SaveAsSadl.SaveAsSadl);
 		String javaContent = readFile(sourceFile);
-		TextProcessor tp = new TextProcessor(null);
+		TextProcessor tp = new TextProcessor(null, null);
 		tp.process(null, javaContent, null);
 	}
 

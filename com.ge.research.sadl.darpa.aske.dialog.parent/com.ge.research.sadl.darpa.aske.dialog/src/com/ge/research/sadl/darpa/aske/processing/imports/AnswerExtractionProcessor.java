@@ -1,15 +1,22 @@
 package com.ge.research.sadl.darpa.aske.processing.imports;
 
 import java.io.BufferedReader;
+import java.io.File;
+import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
-import java.io.UnsupportedEncodingException;
 import java.net.HttpURLConnection;
-import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.Map;
 
+import org.eclipse.emf.ecore.resource.Resource;
+
 import com.ge.research.sadl.darpa.aske.curation.AnswerCurationManager;
+import com.ge.research.sadl.darpa.aske.processing.DialogConstants;
+import com.ge.research.sadl.jena.JenaProcessorException;
+import com.ge.research.sadl.processing.OntModelProvider;
+import com.ge.research.sadl.processing.SadlConstants;
+import com.ge.research.sadl.reasoner.ConfigurationException;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
@@ -23,6 +30,7 @@ public class AnswerExtractionProcessor {
 	private OntModel contextModel;	// the knowledge graph to use during extraction
 	private OntModel textModel;		// the knowledge graph extension to the contextModel extracted from text
 	private String textModelName;
+	private String textModelPrefix;
 	private OntModel codeModel;		// the knowledge graph extension to the context model extracted from code
 	private String codeModelName;
 	private String codeModelPrefix;
@@ -138,7 +146,7 @@ public class AnswerExtractionProcessor {
 
 	public TextProcessor getTextProcessor() {
 		if (textProcessor == null) {
-			textProcessor = new TextProcessor(getPreferences());
+			textProcessor = new TextProcessor(getCurationManager(), getPreferences());
 		}
 		return textProcessor;
 	}
@@ -185,6 +193,7 @@ public class AnswerExtractionProcessor {
 	}
 
 	public void setTextModelName(String textModelName) {
+		getTextProcessor().setTextmodelName(textModelName);
 		this.textModelName = textModelName;
 	}
 
@@ -204,62 +213,65 @@ public class AnswerExtractionProcessor {
 		this.codeModelPrefix = codeModelPrefix;
 	}
 
-	public String translateMethodJavaToPython(String className, String methodCode) throws MalformedURLException, UnsupportedEncodingException {
+	public String translateMethodJavaToPython(String className, String methodCode) throws IOException {
 		StringBuilder sb = new StringBuilder();
-		String baseServiceUrl = "http://vesuvius-dev.crd.ge.com:19092/darpa/aske/";
+//		String baseServiceUrl = "http://vesuvius-dev.crd.ge.com:19092/darpa/aske/";
+		String baseServiceUrl = "http://vesuvius063.crd.ge.com:19092/darpa/aske/";
 		
 		String translateMethodServiceURL = baseServiceUrl + "translate/method/";
 		URL serviceUrl = new URL(translateMethodServiceURL);			
 
 		JsonObject json = new JsonObject();
 		json.addProperty("className", className);
-		json.addProperty("javaMethod", methodCode);
+		json.addProperty("methodCode", methodCode);
+		
+//		System.out.println(json.toString());
 	
-		String response = makeConnectionAndGetResponse(serviceUrl, json);
-		System.out.println(response);
+		String response = getCurationManager().makeConnectionAndGetResponse(serviceUrl, json);
+//		System.out.println(response);
 		if (response != null && response.length() > 0) {
 			JsonElement je = new JsonParser().parse(response);
-			if (je instanceof JsonPrimitive) {
+			if (je.isJsonObject()) {
+				JsonObject jobj = je.getAsJsonObject();
+				JsonElement status = jobj.get("status");
+				System.out.println("Status: " + status.getAsString());
+				if (!status.getAsString().equalsIgnoreCase("SUCCESS")) {
+					throw new IOException("Method translation failed: " + status.getAsString());
+				}
+				String pythonCode = jobj.get("code").getAsString();
+//				System.out.println(pythonCode);
+				sb.append(pythonCode);
+
+			}
+			else if (je instanceof JsonPrimitive) {
 				String status = ((JsonPrimitive)je).getAsString();
 				System.err.println(status);
 			}
-			else {
-				JsonObject jobj = je.getAsJsonObject();
-				jobj.get("status");
-				String pythonCode = jobj.get("code").getAsString();
-				System.out.println(pythonCode);
-			}
 		}
 		else {
-			System.err.println("No response received from service " + translateMethodServiceURL);
+			throw new IOException("No response received from service " + translateMethodServiceURL);
 		}
 		return sb.toString();
 	}
 
-	private String makeConnectionAndGetResponse(URL url, JsonObject jsonObject) {
-		String response = "";
-		try {
-			HttpURLConnection connection = (HttpURLConnection) url.openConnection();                     
-			connection.setDoOutput(true);
-			connection.setRequestMethod("POST"); 
-			connection.setRequestProperty("Content-Type", "application/json");
+	public void reset() {
+		setCodeModel(null);
+		getCodeExtractor().setCodeModelName(null);
+		getCodeExtractor().setDefaultCodeModelName(null);
+		setCodeModelPrefix(null);
+		getCodeExtractor().setDefaultCodeModelPrefix(null);
+		setTextModel(null);
+		setTextModelName(null);
+		setTextModelPrefix(null);
+	}
 
-			OutputStream outputStream = connection.getOutputStream();
-			outputStream.write(jsonObject.toString().getBytes());
-			outputStream.flush();
+	public String getTextModelPrefix() {
+		return textModelPrefix;
+	}
 
-			BufferedReader br = new BufferedReader(
-					new InputStreamReader(connection.getInputStream()));                                     
-			String output = "";
-			while((output = br.readLine()) != null) 
-				response = response + output;                 
-			outputStream.close();
-			br.close();
-			connection.disconnect();
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
-		return response;
+	public void setTextModelPrefix(String textModelPrefix) {
+		getTextProcessor().setTextmodelPrefix(textModelPrefix);
+		this.textModelPrefix = textModelPrefix;
 	}
 
 }

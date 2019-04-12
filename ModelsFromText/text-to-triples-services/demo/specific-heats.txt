@@ -1,0 +1,29 @@
+Thermodynamics is a branch of physics which deals with the energy and work of a system. Thermodynamics deals only with the large scale response of a system which we can observe and measure in experiments. In aerodynamics, we are most interested in thermodynamics for the role it plays in engine design and high speed flight.
+
+On this slide we derive some equations which relate the heat capacity of a gas to the gas constant used in the equation of state. We are going to be using specific values of the state variables. For a scientist, a "specific" state variable means the value of the variable divided by the mass of the substance. This allows us to derive relations between variables without regard for the amount of the substance that we have. We can multiply the specific variable by the quantity of the substance at any time to determine the actual value of the flow variable. From our studies of heat transfer, we know that the amount of heat transferred between two objects is proportional to the temperature difference between the objects and the heat capacity of the objects. The heat capacity is a constant that tells how much heat is added per unit temperature rise. The value of the constant is different for different materials and depends on the process. Heat capacity is not a state variable.
+
+If we are dealing with a gas, it is most convenient to use forms of the thermodynamics equations based on the enthalpy of the gas. From the definition of enthalpy:
+
+h = e + p * v
+
+where h in the specific enthalpy, p is the pressure, v is the specific volume, and e is the specific internal energy. During a process, the values of these variables change. Let's denote the change by the Greek letter delta which looks like a triangle. So "delta h" means the change of "h" from state 1 to state 2 during a process. Then, for a constant pressure process the enthalpy equation becomes:
+
+delta h = delta e + p * delta v
+
+The enthalpy, internal energy, and volume are all changed, but the pressure remains the same. From our derivation of the enthalpy equation, the change of specific enthalpy is equal to the heat transfer for a constant pressure process:
+
+delta h = cp * delta T
+
+where delta T is the change of temperature of the gas during the process,and c is the specific heat capacity. We have added a subscript "p" to the specific heat capacity to remind us that this value only applies to a constant pressure process.
+
+The equation of state of a gas relates the temperature, pressure, and volume through a gas constant R . The gas constant used by aerodynamicists is derived from the universal gas constant, but has a unique value for every gas.
+
+p * v = R * T
+
+If we have a constant pressure process, then:
+
+p * delta v = R * delta T
+
+Now let us imagine that we have a constant volume process with our gas that produces exactly the same temperature change as the constant pressure process that we have been discussing. Then the first law of thermodynamics tells us:
+
+delta e = delta q - delta w

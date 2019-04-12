@@ -1,0 +1,10 @@
+ uri "http://sadl.org/ExampleDataTable.sadl" alias ExampleDataTable.
+ 
+ import "http://sadl.org/SpeedOfSound.sadl".
+ 
+ Data1 is a table [double alt (alias "Alt") (altitude of a PhysicalObject {"ft"}), 
+ 				   double u0 (velocity of the PhysicalObject and the PhysicalObject movesIn some Air {"mph"}), 
+ 				   double tt (staticTemperature of the Air {"R"})] 
+ 	with data located at "http://datasource/statictemperatureobservations/data1".
+ 
+ 

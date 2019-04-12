@@ -1,0 +1,13 @@
+uri "http://answer/demo.dialog" alias demodlg.
+
+import "http://sadl.org/SpeedOfSound.sadl".
+//import "http://com.ge.research.sadl.darpa.aske.answer/Mach_java".
+
+//What is Mach.CAL_SOS?
+
+//What is Acceleration?
+
+//What is specificGasConstantEq?
+
+//Ask "select distinct ?cb ?cv where {?ref <isImplicit> true . ?cv <reference> ?ref . ?ref <codeBlock> ?cb . ?cb <rdf:type> <Method>} order by ?loc"?
+
