@@ -52,7 +52,7 @@ import com.google.gson.reflect.TypeToken;
 
 public class ConceptTagging {
 	
-	private String nlpServiceURL = "http://vesuvius-test.crd.ge.com:9080/kcud/";
+	private String nlpServiceURL = "http://localhost:9081/concept-mapper-service/";
 	private static Dictionary dictionary;
 	
 	public ConceptTagging(String ontologyFile) throws IOException {
@@ -67,7 +67,7 @@ public class ConceptTagging {
 	}
 	
 	public List<String> runConceptTagging(String text) throws Exception {
-		String nlpConceptTaggingServiceURL = nlpServiceURL + "/conceptTaggingJSON";
+		String nlpConceptTaggingServiceURL = nlpServiceURL + "/conceptTagging";
 		
 		URL connectionURL = new URL(nlpConceptTaggingServiceURL);
 		HttpURLConnection connection = (HttpURLConnection) connectionURL.openConnection();
