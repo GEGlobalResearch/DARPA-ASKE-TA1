@@ -301,6 +301,68 @@
     >0.286</j.1:value>
   </sos:UniversalGasConstant>
   <j.1:Rule rdf:ID="SpeedOfSoundInAirGivenAltitude"/>
+  <j.1:Equation rdf:ID="specificGasConstantEq2">
+    <j.1:returnTypes rdf:parseType="Collection">
+      <j.1:DataDescriptor>
+        <j.1:augmentedType>
+          <j.1:Assumption>
+            <j.1:constraints rdf:parseType="Collection">
+              <j.1:TriplePattern>
+                <j.1:gpObject>http://sadl.org/ScientificConcepts2.sadl#Gas</j.1:gpObject>
+                <j.1:gpPredicate rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#type"/>
+                <j.1:gpSubject>v1</j.1:gpSubject>
+              </j.1:TriplePattern>
+              <j.1:TriplePattern>
+                <j.1:gpObject>v2</j.1:gpObject>
+                <j.1:gpPredicate>http://sadl.org/SpeedOfSound.sadl#gasConstant</j.1:gpPredicate>
+                <j.1:gpSubject>v1</j.1:gpSubject>
+              </j.1:TriplePattern>
+            </j.1:constraints>
+          </j.1:Assumption>
+        </j.1:augmentedType>
+        <j.1:descriptorName>v2</j.1:descriptorName>
+        <j.1:dataType>http://www.w3.org/2001/XMLSchema#decimal</j.1:dataType>
+      </j.1:DataDescriptor>
+    </j.1:returnTypes>
+    <j.1:arguments rdf:parseType="Collection">
+      <j.1:DataDescriptor>
+        <j.1:augmentedType>
+          <j.1:SemanticType>
+            <j.1:semType rdf:resource="#UniversalGasConstant"/>
+          </j.1:SemanticType>
+        </j.1:augmentedType>
+        <j.1:dataType>http://www.w3.org/2001/XMLSchema#decimal</j.1:dataType>
+        <j.1:descriptorName>Ru</j.1:descriptorName>
+      </j.1:DataDescriptor>
+      <j.1:DataDescriptor>
+        <j.1:augmentedType>
+          <j.1:Assumption>
+            <j.1:constraints rdf:parseType="Collection">
+              <j.1:TriplePattern>
+                <j.1:gpObject>http://sadl.org/ScientificConcepts2.sadl#Gas</j.1:gpObject>
+                <j.1:gpPredicate rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#type"/>
+                <j.1:gpSubject>v1</j.1:gpSubject>
+              </j.1:TriplePattern>
+              <j.1:TriplePattern>
+                <j.1:gpObject>M</j.1:gpObject>
+                <j.1:gpPredicate>http://sadl.org/SpeedOfSound.sadl#molarMass</j.1:gpPredicate>
+                <j.1:gpSubject>v1</j.1:gpSubject>
+              </j.1:TriplePattern>
+            </j.1:constraints>
+          </j.1:Assumption>
+        </j.1:augmentedType>
+        <j.1:dataType>http://www.w3.org/2001/XMLSchema#decimal</j.1:dataType>
+        <j.1:descriptorName>M</j.1:descriptorName>
+      </j.1:DataDescriptor>
+    </j.1:arguments>
+    <j.1:expression>
+      <j.1:Script>
+        <j.1:language rdf:resource="sadlimplicitmodel#Text"/>
+        <j.1:script rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+        >xsd:decimal specificGasConstantEq2(decimal Ru,decimal M): /(rdf(Ru, sadlimplicitmodel:value, null),M)</j.1:script>
+      </j.1:Script>
+    </j.1:expression>
+  </j.1:Equation>
   <j.1:ExternalEquation rdf:ID="CAL_SOS">
     <j.1:externalURI rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
     >http://com.ge.research.darpa.aske.kchain.CAL_SOS</j.1:externalURI>

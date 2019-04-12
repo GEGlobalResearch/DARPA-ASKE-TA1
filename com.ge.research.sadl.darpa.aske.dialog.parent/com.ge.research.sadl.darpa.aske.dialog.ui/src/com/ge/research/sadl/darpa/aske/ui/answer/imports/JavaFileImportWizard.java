@@ -8,6 +8,7 @@
  * Contributors:
  *     IBM Corporation - initial API and implementation
  *     Barry Hathaway - modified for OWL file imports
+ *     Andy Crapo - modified for Java and Text imports
  *******************************************************************************/
 package com.ge.research.sadl.darpa.aske.ui.answer.imports;
 

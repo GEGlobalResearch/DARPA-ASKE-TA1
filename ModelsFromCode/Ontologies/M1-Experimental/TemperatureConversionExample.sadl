@@ -1,7 +1,0 @@
- uri "http://com.ge.research.answer.java/TemperatureConversionmanual" alias tcex.
- 
- import "http://sadl.org/Temperature.sadl".
-  
- External convertFtoC(float tf) returns float: "com.ge.research.answer.java/TemperatureConversion/convertFtoC".
-
- 
