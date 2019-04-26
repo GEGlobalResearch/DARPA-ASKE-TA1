@@ -49,6 +49,7 @@ import com.ge.research.sadl.processing.ISadlImplicitModelFragmentProvider
 class DialogImplicitModelFragmentProvider implements ISadlImplicitModelFragmentProvider {
 
 	public static val DIALOG_IMPLICIT_MODEL_FRAGMENT = '''
+		/****** The following content comes from the Dialog implicit model fragment provider ******/
 		// these properties used by TA2
 		model describes DataTable with values of type ^Equation.
 		^data describes ^Equation with values of type DataTable.

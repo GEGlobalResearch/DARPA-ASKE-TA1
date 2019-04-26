@@ -36,9 +36,11 @@
  ***********************************************************************/
 package com.ge.research.sadl.darpa.aske.ide
 
+import com.ge.research.sadl.ide.SADLIdeModule
+
 /**
  * Use this class to register ide components.
  */
-class DialogIdeModule extends AbstractDialogIdeModule {
+class DialogIdeModule extends SADLIdeModule {
 
 }
