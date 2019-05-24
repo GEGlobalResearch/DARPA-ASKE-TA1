@@ -10,19 +10,3 @@ https://github.com/GEGlobalResearch/DARPA-ASKE-TA1/blob/master/LICENSE
 
 The documentation and reports are also available here:
 https://github.com/GEGlobalResearch/DARPA-ASKE-TA1/wiki
-
-# Phase 1 (November 2018 through April 2019)
-## Reports
-  - [Milestone M1, November 30, 2018](https://github.com/GEGlobalResearch/DARPA-ASKE-TA1/wiki/Milestone-M1-Report)
-  - [Milestone M3, February 1, 2019](https://github.com/GEGlobalResearch/DARPA-ASKE-TA1/blob/master/StatusReports/Phase1/DARPA-ASKE-ANSWER-M3-Report.pdf)
-  - [Milestone M5, April 1, 2019 (including demonstrations)](https://github.com/GEGlobalResearch/DARPA-ASKE-TA1/wiki/Milestone-M5,-April-1,-2019)
-## Documentation
-  - [ANSWER System Architecture](https://github.com/GEGlobalResearch/DARPA-ASKE-TA1/wiki/ANSWER-System-Architecture)
-  - [A Guide to the Contents of this Repository](https://github.com/GEGlobalResearch/DARPA-ASKE-TA1/wiki/A-Guide-to-the-Contents-of-this-Repository)
-  - [Semantic Models and Modeling Concepts](https://github.com/GEGlobalResearch/DARPA-ASKE-TA1/wiki/Semantic-Models-and-Modeling-Concepts)
-  - [Creating an Eclipse Dialog IDE Development Environment](https://github.com/GEGlobalResearch/DARPA-ASKE-TA1/wiki/Creating-an-Eclipse-Development-Environment-for-Dialog)
-
-# Phase 2 (May 2019 through April 2020)
-## Reports
-  - Kick-off HW 1: Use cases for ASKE
-  - Kick-off HW 2: Description of TA1 ANSWER in terms of revised ASKE program sketch slide
