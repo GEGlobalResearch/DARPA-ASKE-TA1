@@ -36,7 +36,7 @@
  uri "http://sadl.org/TestCEonMach.sadl" alias TestCEonMach.
  
  import "http://sadl.org/CodeExtractionModel.sadl".
-// import "http://com.ge.research.sadl.darpa.aske.answer/Mach_java".
+ import "http://com.ge.research.sadl.darpa.aske.answer/Mach_java".
  
 // Ask: "select ?m ?arg where {?m <rdf:type> <Method> . ?m <cmArguments> ?args . ?args <http://www.jena.hpl.hp.com/ARQ/list#member> ?arg} order by ?m".
 // Ask: "select distinct ?m ?arg where {?m <rdf:type> <Method> . ?m <cmArguments> ?args . ?args <rdf:rest>*/<rdf:first> ?arg}".
@@ -46,8 +46,43 @@
 // Ask: "select ?m where {?m <cmHasImplicitInputsOutputs> true}".
  
 // Explain: Rule MethodWithImplicitInputs.
- 
- Ask: "select distinct ?cb ?cv where {?ref <isImplicit> true . ?cv <reference> ?ref . ?ref <codeBlock> ?cb . ?cb <rdf:type> <Method>} order by ?loc".
+//Print: "All CodeVariables:".
+//Ask: select cv where cv is a CodeVariable.
+//
+//Print: "First reference by CodeBlock:".
+//Ask: "select ?cb ?cv ?loc ?u where {?cv <rdf:type> <CodeVariable> . ?cv <reference> ?ref . 
+//	?ref <codeBlock> ?cb . ?ref <firstRef> true . ?ref <beginsAt> ?loc .
+//	?ref <usage> ?u} order by ?cb ?loc ?cv".
+
+Print: "Implicit inputs:".	
+Ask: select cb, cv, loc where cb is a CodeBlock and
+	ref has codeBlock cb and ref has isImplicit true and
+	ref has input true and cv has reference ref and
+	ref has beginsAt loc order by cb, loc.
+//Explain: Rule ImplicitInput.	
+
+Print: "Implicit outputs:".	
+Ask: select cb, cv, loc where cb is a CodeBlock and
+	ref has codeBlock cb and ref has isImplicit true and
+	ref has output true and cv has reference ref and
+	ref has beginsAt loc order by cb, loc.
+//Explain: Rule ImplicitOutput.	
+
+Print: "Implicit outputs used as setter argument:".	
+Ask: select cb, cv, loc where cb is a CodeBlock and
+	ref has codeBlock cb and ref has isImplicit true and
+	ref has output true and cv has reference ref and
+	cv has reference ref2 and
+	ref2 has codeBlock cb and
+	ref2 has setterArgument true and
+	ref2 has beginsAt loc order by cb, loc.
+		
+//Ask: "select ?c ?r ?b where {?c <rdf:type> CodeVariable .
+//	?c <reference> ?r . ?r <beginsAt> ?b}".
+// 
+// Ask: "select distinct ?cb ?cv ?loc where {
+//	?ref <isImplicit> true . ?cv <reference> ?ref . ?ref <codeBlock> ?cb . 
+//	?ref <beginsAt> ?loc . ?cb <rdf:type> <Method>} order by ?loc".
  
 // Ask: "select distinct ?cb ?cv ?intrue ?outtrue where {?cv <reference> ?ref . ?ref <codeBlock> ?cb . ?ref <input> ?intrue . ?ref <output> ?outtrue}".
  

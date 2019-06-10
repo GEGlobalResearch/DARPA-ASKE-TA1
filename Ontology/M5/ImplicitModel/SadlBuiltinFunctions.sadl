@@ -150,7 +150,7 @@ External sum(--) returns --:
 External tan(--) returns --:
 "com.ge.research.sadl.jena.reasoner.builtin#tan".
 
-External countMatches(--) returns --:
+External countMatches(...) returns int:
 "com.ge.research.sadl.jena.reasoner.builtin#countMatches".
 
 External countUniqueMatches(--) returns --:

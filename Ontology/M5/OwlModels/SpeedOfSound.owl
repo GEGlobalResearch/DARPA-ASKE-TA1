@@ -139,7 +139,7 @@
     <j.1:returnTypes rdf:parseType="Collection">
       <j.1:DataDescriptor>
         <j.1:augmentedType>
-          <j.1:Assumption>
+          <j.1:SemanticConstraint>
             <j.1:constraints rdf:parseType="Collection">
               <j.1:TriplePattern>
                 <j.1:gpObject>v14</j.1:gpObject>
@@ -147,7 +147,7 @@
                 <j.1:gpSubject>rdf(v13, http://sadl.org/SpeedOfSound.sadl#speedOfSound, null)</j.1:gpSubject>
               </j.1:TriplePattern>
             </j.1:constraints>
-          </j.1:Assumption>
+          </j.1:SemanticConstraint>
         </j.1:augmentedType>
         <j.1:descriptorName>v14</j.1:descriptorName>
         <j.1:dataType>http://www.w3.org/2001/XMLSchema#decimal</j.1:dataType>
@@ -156,7 +156,7 @@
     <j.1:arguments rdf:parseType="Collection">
       <j.1:DataDescriptor>
         <j.1:augmentedType>
-          <j.1:Assumption>
+          <j.1:SemanticConstraint>
             <j.1:constraints rdf:parseType="Collection">
               <j.1:TriplePattern>
                 <j.1:gpObject>alt</j.1:gpObject>
@@ -164,7 +164,7 @@
                 <j.1:gpSubject>rdf(v13, http://sadl.org/SpeedOfSound.sadl#altitude, null)</j.1:gpSubject>
               </j.1:TriplePattern>
             </j.1:constraints>
-          </j.1:Assumption>
+          </j.1:SemanticConstraint>
         </j.1:augmentedType>
         <j.1:dataType>http://www.w3.org/2001/XMLSchema#decimal</j.1:dataType>
         <j.1:descriptorName>alt</j.1:descriptorName>
@@ -184,7 +184,7 @@
     <j.1:returnTypes rdf:parseType="Collection">
       <j.1:DataDescriptor>
         <j.1:augmentedType>
-          <j.1:Assumption>
+          <j.1:SemanticConstraint>
             <j.1:constraints rdf:parseType="Collection">
               <j.1:TriplePattern>
                 <j.1:gpObject>http://sadl.org/ScientificConcepts2.sadl#Air</j.1:gpObject>
@@ -197,7 +197,7 @@
                 <j.1:gpSubject>v11</j.1:gpSubject>
               </j.1:TriplePattern>
             </j.1:constraints>
-          </j.1:Assumption>
+          </j.1:SemanticConstraint>
         </j.1:augmentedType>
         <j.1:descriptorName>v12</j.1:descriptorName>
         <j.1:dataType>http://www.w3.org/2001/XMLSchema#decimal</j.1:dataType>
@@ -206,7 +206,7 @@
     <j.1:arguments rdf:parseType="Collection">
       <j.1:DataDescriptor>
         <j.1:augmentedType>
-          <j.1:Assumption>
+          <j.1:SemanticConstraint>
             <j.1:constraints rdf:parseType="Collection">
               <j.1:TriplePattern>
                 <j.1:gpObject>http://sadl.org/ScientificConcepts2.sadl#Air</j.1:gpObject>
@@ -219,7 +219,7 @@
                 <j.1:gpSubject>v11</j.1:gpSubject>
               </j.1:TriplePattern>
             </j.1:constraints>
-          </j.1:Assumption>
+          </j.1:SemanticConstraint>
         </j.1:augmentedType>
         <j.1:dataType>http://www.w3.org/2001/XMLSchema#decimal</j.1:dataType>
         <j.1:descriptorName>t</j.1:descriptorName>
@@ -239,7 +239,7 @@
     <j.1:returnTypes rdf:parseType="Collection">
       <j.1:DataDescriptor>
         <j.1:augmentedType>
-          <j.1:Assumption>
+          <j.1:SemanticConstraint>
             <j.1:constraints rdf:parseType="Collection">
               <j.1:TriplePattern>
                 <j.1:gpObject>http://sadl.org/ScientificConcepts2.sadl#Air</j.1:gpObject>
@@ -252,7 +252,7 @@
                 <j.1:gpSubject>v6</j.1:gpSubject>
               </j.1:TriplePattern>
             </j.1:constraints>
-          </j.1:Assumption>
+          </j.1:SemanticConstraint>
         </j.1:augmentedType>
         <j.1:descriptorName>v7</j.1:descriptorName>
         <j.1:dataType>http://www.w3.org/2001/XMLSchema#double</j.1:dataType>
@@ -261,7 +261,7 @@
     <j.1:arguments rdf:parseType="Collection">
       <j.1:DataDescriptor>
         <j.1:augmentedType>
-          <j.1:Assumption>
+          <j.1:SemanticConstraint>
             <j.1:constraints rdf:parseType="Collection">
               <j.1:TriplePattern>
                 <j.1:gpObject>http://sadl.org/ScientificConcepts2.sadl#Air</j.1:gpObject>
@@ -274,7 +274,7 @@
                 <j.1:gpSubject>v6</j.1:gpSubject>
               </j.1:TriplePattern>
             </j.1:constraints>
-          </j.1:Assumption>
+          </j.1:SemanticConstraint>
         </j.1:augmentedType>
         <j.1:dataType>http://www.w3.org/2001/XMLSchema#double</j.1:dataType>
         <j.1:descriptorName>alt</j.1:descriptorName>
@@ -305,7 +305,7 @@
     <j.1:returnTypes rdf:parseType="Collection">
       <j.1:DataDescriptor>
         <j.1:augmentedType>
-          <j.1:Assumption>
+          <j.1:SemanticConstraint>
             <j.1:constraints rdf:parseType="Collection">
               <j.1:TriplePattern>
                 <j.1:gpObject>http://sadl.org/ScientificConcepts2.sadl#Gas</j.1:gpObject>
@@ -318,7 +318,7 @@
                 <j.1:gpSubject>v1</j.1:gpSubject>
               </j.1:TriplePattern>
             </j.1:constraints>
-          </j.1:Assumption>
+          </j.1:SemanticConstraint>
         </j.1:augmentedType>
         <j.1:descriptorName>v2</j.1:descriptorName>
         <j.1:dataType>http://www.w3.org/2001/XMLSchema#decimal</j.1:dataType>
@@ -336,7 +336,7 @@
       </j.1:DataDescriptor>
       <j.1:DataDescriptor>
         <j.1:augmentedType>
-          <j.1:Assumption>
+          <j.1:SemanticConstraint>
             <j.1:constraints rdf:parseType="Collection">
               <j.1:TriplePattern>
                 <j.1:gpObject>http://sadl.org/ScientificConcepts2.sadl#Gas</j.1:gpObject>
@@ -349,7 +349,7 @@
                 <j.1:gpSubject>v1</j.1:gpSubject>
               </j.1:TriplePattern>
             </j.1:constraints>
-          </j.1:Assumption>
+          </j.1:SemanticConstraint>
         </j.1:augmentedType>
         <j.1:dataType>http://www.w3.org/2001/XMLSchema#decimal</j.1:dataType>
         <j.1:descriptorName>M</j.1:descriptorName>
@@ -369,7 +369,7 @@
     <j.1:returnTypes rdf:parseType="Collection">
       <j.1:DataDescriptor>
         <j.1:augmentedType>
-          <j.1:Assumption>
+          <j.1:SemanticConstraint>
             <j.1:constraints rdf:parseType="Collection">
               <j.1:TriplePattern>
                 <j.1:gpObject>http://sadl.org/ScientificConcepts2.sadl#Gas</j.1:gpObject>
@@ -382,7 +382,7 @@
                 <j.1:gpSubject>v2</j.1:gpSubject>
               </j.1:TriplePattern>
             </j.1:constraints>
-          </j.1:Assumption>
+          </j.1:SemanticConstraint>
         </j.1:augmentedType>
         <j.1:descriptorName>v3</j.1:descriptorName>
         <j.1:dataType>http://www.w3.org/2001/XMLSchema#double</j.1:dataType>
@@ -391,7 +391,7 @@
     <j.1:arguments rdf:parseType="Collection">
       <j.1:DataDescriptor>
         <j.1:augmentedType>
-          <j.1:Assumption>
+          <j.1:SemanticConstraint>
             <j.1:constraints rdf:parseType="Collection">
               <j.1:TriplePattern>
                 <j.1:gpObject>http://sadl.org/ScientificConcepts2.sadl#Gas</j.1:gpObject>
@@ -404,14 +404,14 @@
                 <j.1:gpSubject>v2</j.1:gpSubject>
               </j.1:TriplePattern>
             </j.1:constraints>
-          </j.1:Assumption>
+          </j.1:SemanticConstraint>
         </j.1:augmentedType>
         <j.1:dataType>http://www.w3.org/2001/XMLSchema#double</j.1:dataType>
         <j.1:descriptorName>T</j.1:descriptorName>
       </j.1:DataDescriptor>
       <j.1:DataDescriptor>
         <j.1:augmentedType>
-          <j.1:Assumption>
+          <j.1:SemanticConstraint>
             <j.1:constraints rdf:parseType="Collection">
               <j.1:TriplePattern>
                 <j.1:gpObject>http://sadl.org/ScientificConcepts2.sadl#Gas</j.1:gpObject>
@@ -424,14 +424,14 @@
                 <j.1:gpSubject>v2</j.1:gpSubject>
               </j.1:TriplePattern>
             </j.1:constraints>
-          </j.1:Assumption>
+          </j.1:SemanticConstraint>
         </j.1:augmentedType>
         <j.1:dataType>http://www.w3.org/2001/XMLSchema#double</j.1:dataType>
         <j.1:descriptorName>G</j.1:descriptorName>
       </j.1:DataDescriptor>
       <j.1:DataDescriptor>
         <j.1:augmentedType>
-          <j.1:Assumption>
+          <j.1:SemanticConstraint>
             <j.1:constraints rdf:parseType="Collection">
               <j.1:TriplePattern>
                 <j.1:gpObject>http://sadl.org/ScientificConcepts2.sadl#Gas</j.1:gpObject>
@@ -444,7 +444,7 @@
                 <j.1:gpSubject>v2</j.1:gpSubject>
               </j.1:TriplePattern>
             </j.1:constraints>
-          </j.1:Assumption>
+          </j.1:SemanticConstraint>
         </j.1:augmentedType>
         <j.1:dataType>http://www.w3.org/2001/XMLSchema#double</j.1:dataType>
         <j.1:descriptorName>R</j.1:descriptorName>
@@ -488,7 +488,7 @@
     <j.1:returnTypes rdf:parseType="Collection">
       <j.1:DataDescriptor>
         <j.1:augmentedType>
-          <j.1:Assumption>
+          <j.1:SemanticConstraint>
             <j.1:constraints rdf:parseType="Collection">
               <j.1:TriplePattern>
                 <j.1:gpObject>http://sadl.org/ScientificConcepts2.sadl#Gas</j.1:gpObject>
@@ -501,7 +501,7 @@
                 <j.1:gpSubject>v0</j.1:gpSubject>
               </j.1:TriplePattern>
             </j.1:constraints>
-          </j.1:Assumption>
+          </j.1:SemanticConstraint>
         </j.1:augmentedType>
         <j.1:descriptorName>v1</j.1:descriptorName>
         <j.1:dataType>http://www.w3.org/2001/XMLSchema#decimal</j.1:dataType>
@@ -519,7 +519,7 @@
       </j.1:DataDescriptor>
       <j.1:DataDescriptor>
         <j.1:augmentedType>
-          <j.1:Assumption>
+          <j.1:SemanticConstraint>
             <j.1:constraints rdf:parseType="Collection">
               <j.1:TriplePattern>
                 <j.1:gpObject>http://sadl.org/ScientificConcepts2.sadl#Gas</j.1:gpObject>
@@ -532,7 +532,7 @@
                 <j.1:gpSubject>v0</j.1:gpSubject>
               </j.1:TriplePattern>
             </j.1:constraints>
-          </j.1:Assumption>
+          </j.1:SemanticConstraint>
         </j.1:augmentedType>
         <j.1:dataType>http://www.w3.org/2001/XMLSchema#decimal</j.1:dataType>
         <j.1:descriptorName>M</j.1:descriptorName>
@@ -552,7 +552,7 @@
     <j.1:returnTypes rdf:parseType="Collection">
       <j.1:DataDescriptor>
         <j.1:augmentedType>
-          <j.1:Assumption>
+          <j.1:SemanticConstraint>
             <j.1:constraints rdf:parseType="Collection">
               <j.1:TriplePattern>
                 <j.1:gpObject>http://sadl.org/ScientificConcepts2.sadl#PhysicalObject</j.1:gpObject>
@@ -565,7 +565,7 @@
                 <j.1:gpSubject>v8</j.1:gpSubject>
               </j.1:TriplePattern>
             </j.1:constraints>
-          </j.1:Assumption>
+          </j.1:SemanticConstraint>
         </j.1:augmentedType>
         <j.1:descriptorName>v10</j.1:descriptorName>
         <j.1:dataType>http://www.w3.org/2001/XMLSchema#double</j.1:dataType>
@@ -574,7 +574,7 @@
     <j.1:arguments rdf:parseType="Collection">
       <j.1:DataDescriptor>
         <j.1:augmentedType>
-          <j.1:Assumption>
+          <j.1:SemanticConstraint>
             <j.1:constraints rdf:parseType="Collection">
               <j.1:TriplePattern>
                 <j.1:gpObject>http://sadl.org/ScientificConcepts2.sadl#PhysicalObject</j.1:gpObject>
@@ -597,14 +597,14 @@
                 <j.1:gpSubject>v8</j.1:gpSubject>
               </j.1:TriplePattern>
             </j.1:constraints>
-          </j.1:Assumption>
+          </j.1:SemanticConstraint>
         </j.1:augmentedType>
         <j.1:dataType>http://www.w3.org/2001/XMLSchema#double</j.1:dataType>
         <j.1:descriptorName>alt</j.1:descriptorName>
       </j.1:DataDescriptor>
       <j.1:DataDescriptor>
         <j.1:augmentedType>
-          <j.1:Assumption>
+          <j.1:SemanticConstraint>
             <j.1:constraints rdf:parseType="Collection">
               <j.1:TriplePattern>
                 <j.1:gpObject>http://sadl.org/ScientificConcepts2.sadl#Air</j.1:gpObject>
@@ -617,14 +617,14 @@
                 <j.1:gpSubject>v9</j.1:gpSubject>
               </j.1:TriplePattern>
             </j.1:constraints>
-          </j.1:Assumption>
+          </j.1:SemanticConstraint>
         </j.1:augmentedType>
         <j.1:dataType>http://www.w3.org/2001/XMLSchema#double</j.1:dataType>
         <j.1:descriptorName>R</j.1:descriptorName>
       </j.1:DataDescriptor>
       <j.1:DataDescriptor>
         <j.1:augmentedType>
-          <j.1:Assumption>
+          <j.1:SemanticConstraint>
             <j.1:constraints rdf:parseType="Collection">
               <j.1:TriplePattern>
                 <j.1:gpObject>http://sadl.org/ScientificConcepts2.sadl#Air</j.1:gpObject>
@@ -637,7 +637,7 @@
                 <j.1:gpSubject>v9</j.1:gpSubject>
               </j.1:TriplePattern>
             </j.1:constraints>
-          </j.1:Assumption>
+          </j.1:SemanticConstraint>
         </j.1:augmentedType>
         <j.1:dataType>http://www.w3.org/2001/XMLSchema#double</j.1:dataType>
         <j.1:descriptorName>G</j.1:descriptorName>
@@ -653,7 +653,7 @@
       </j.1:DataDescriptor>
       <j.1:DataDescriptor>
         <j.1:augmentedType>
-          <j.1:Assumption>
+          <j.1:SemanticConstraint>
             <j.1:constraints rdf:parseType="Collection">
               <j.1:TriplePattern>
                 <j.1:gpObject>http://sadl.org/ScientificConcepts2.sadl#PhysicalObject</j.1:gpObject>
@@ -666,7 +666,7 @@
                 <j.1:gpSubject>v8</j.1:gpSubject>
               </j.1:TriplePattern>
             </j.1:constraints>
-          </j.1:Assumption>
+          </j.1:SemanticConstraint>
         </j.1:augmentedType>
         <j.1:dataType>http://www.w3.org/2001/XMLSchema#double</j.1:dataType>
         <j.1:descriptorName>vel</j.1:descriptorName>
@@ -695,7 +695,7 @@
     <j.1:returnTypes rdf:parseType="Collection">
       <j.1:DataDescriptor>
         <j.1:augmentedType>
-          <j.1:Assumption>
+          <j.1:SemanticConstraint>
             <j.1:constraints rdf:parseType="Collection">
               <j.1:TriplePattern>
                 <j.1:gpObject>http://sadl.org/ScientificConcepts2.sadl#PhysicalObject</j.1:gpObject>
@@ -708,7 +708,7 @@
                 <j.1:gpSubject>v16</j.1:gpSubject>
               </j.1:TriplePattern>
             </j.1:constraints>
-          </j.1:Assumption>
+          </j.1:SemanticConstraint>
         </j.1:augmentedType>
         <j.1:descriptorName>v17</j.1:descriptorName>
         <j.1:dataType>http://www.w3.org/2001/XMLSchema#decimal</j.1:dataType>
@@ -717,7 +717,7 @@
     <j.1:arguments rdf:parseType="Collection">
       <j.1:DataDescriptor>
         <j.1:augmentedType>
-          <j.1:Assumption>
+          <j.1:SemanticConstraint>
             <j.1:constraints rdf:parseType="Collection">
               <j.1:TriplePattern>
                 <j.1:gpObject>http://sadl.org/ScientificConcepts2.sadl#Air</j.1:gpObject>
@@ -730,14 +730,14 @@
                 <j.1:gpSubject>v15</j.1:gpSubject>
               </j.1:TriplePattern>
             </j.1:constraints>
-          </j.1:Assumption>
+          </j.1:SemanticConstraint>
         </j.1:augmentedType>
         <j.1:dataType>http://www.w3.org/2001/XMLSchema#decimal</j.1:dataType>
         <j.1:descriptorName>sos</j.1:descriptorName>
       </j.1:DataDescriptor>
       <j.1:DataDescriptor>
         <j.1:augmentedType>
-          <j.1:Assumption>
+          <j.1:SemanticConstraint>
             <j.1:constraints rdf:parseType="Collection">
               <j.1:TriplePattern>
                 <j.1:gpObject>http://sadl.org/ScientificConcepts2.sadl#PhysicalObject</j.1:gpObject>
@@ -760,7 +760,7 @@
                 <j.1:gpSubject>v16</j.1:gpSubject>
               </j.1:TriplePattern>
             </j.1:constraints>
-          </j.1:Assumption>
+          </j.1:SemanticConstraint>
         </j.1:augmentedType>
         <j.1:dataType>http://www.w3.org/2001/XMLSchema#decimal</j.1:dataType>
         <j.1:descriptorName>sov</j.1:descriptorName>
@@ -825,7 +825,7 @@
     <j.1:returnTypes rdf:parseType="Collection">
       <j.1:DataDescriptor>
         <j.1:augmentedType>
-          <j.1:Assumption>
+          <j.1:SemanticConstraint>
             <j.1:constraints rdf:parseType="Collection">
               <j.1:TriplePattern>
                 <j.1:gpObject>http://sadl.org/ScientificConcepts2.sadl#Gas</j.1:gpObject>
@@ -838,7 +838,7 @@
                 <j.1:gpSubject>v4</j.1:gpSubject>
               </j.1:TriplePattern>
             </j.1:constraints>
-          </j.1:Assumption>
+          </j.1:SemanticConstraint>
         </j.1:augmentedType>
         <j.1:descriptorName>v5</j.1:descriptorName>
         <j.1:dataType>http://www.w3.org/2001/XMLSchema#double</j.1:dataType>
@@ -847,7 +847,7 @@
     <j.1:arguments rdf:parseType="Collection">
       <j.1:DataDescriptor>
         <j.1:augmentedType>
-          <j.1:Assumption>
+          <j.1:SemanticConstraint>
             <j.1:constraints rdf:parseType="Collection">
               <j.1:TriplePattern>
                 <j.1:gpObject>http://sadl.org/ScientificConcepts2.sadl#Gas</j.1:gpObject>
@@ -860,14 +860,14 @@
                 <j.1:gpSubject>v4</j.1:gpSubject>
               </j.1:TriplePattern>
             </j.1:constraints>
-          </j.1:Assumption>
+          </j.1:SemanticConstraint>
         </j.1:augmentedType>
         <j.1:dataType>http://www.w3.org/2001/XMLSchema#double</j.1:dataType>
         <j.1:descriptorName>T</j.1:descriptorName>
       </j.1:DataDescriptor>
       <j.1:DataDescriptor>
         <j.1:augmentedType>
-          <j.1:Assumption>
+          <j.1:SemanticConstraint>
             <j.1:constraints rdf:parseType="Collection">
               <j.1:TriplePattern>
                 <j.1:gpObject>http://sadl.org/ScientificConcepts2.sadl#Gas</j.1:gpObject>
@@ -880,7 +880,7 @@
                 <j.1:gpSubject>v4</j.1:gpSubject>
               </j.1:TriplePattern>
             </j.1:constraints>
-          </j.1:Assumption>
+          </j.1:SemanticConstraint>
         </j.1:augmentedType>
         <j.1:dataType>http://www.w3.org/2001/XMLSchema#double</j.1:dataType>
         <j.1:descriptorName>G</j.1:descriptorName>
