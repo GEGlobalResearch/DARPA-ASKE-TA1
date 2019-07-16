@@ -49,7 +49,6 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
-import java.util.ServiceLoader;
 import java.util.Set;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.function.Consumer;
@@ -142,7 +141,6 @@ import com.hp.hpl.jena.ontology.OntClass;
 import com.hp.hpl.jena.ontology.OntModel;
 import com.hp.hpl.jena.rdf.model.RDFNode;
 import com.hp.hpl.jena.rdf.model.StmtIterator;
-import com.hp.hpl.jena.reasoner.rulesys.Builtin;
 import com.hp.hpl.jena.util.iterator.ExtendedIterator;
 import com.hp.hpl.jena.vocabulary.OWL;
 import com.hp.hpl.jena.vocabulary.RDF;
@@ -185,16 +183,17 @@ public class DialogAnswerProvider extends DefaultAutoEditStrategyProvider implem
 			@Override
 	        public void customizeDocumentCommand(IDocument document, DocumentCommand command) 
 	        {
+				int cursorLocation = findCursorLocation(document, command);
 //	            if ( command.text.length() == 0 || command.text.charAt(0) > ' ') return;
 
 	            IRegion reg = ((XtextDocument) document).getLastDamage();
 
 	            try {
-	            	ServiceLoader<Builtin> itr = ServiceLoader.load(Builtin.class);
-	            	Iterator<Builtin> itrr = itr.iterator();
-	            	while (itrr.hasNext()) {
-	            		System.out.println(itrr.next().getClass().getCanonicalName());
-	            	}
+//	            	ServiceLoader<Builtin> itr = ServiceLoader.load(Builtin.class);
+//	            	Iterator<Builtin> itrr = itr.iterator();
+//	            	while (itrr.hasNext()) {
+//	            		System.out.println(itrr.next().getClass().getCanonicalName());
+//	            	}
 	                if (document instanceof XtextDocument) {
 	                	setResource(getResourceFromDocument((XtextDocument)document));
 	    				
@@ -399,6 +398,28 @@ public class DialogAnswerProvider extends DefaultAutoEditStrategyProvider implem
 	                logger.debug("AutoEdit error (of type " + e.getClass().getCanonicalName() + "): " + e.getMessage());   
 	            }
 	        }
+
+			private int findCursorLocation(IDocument document, DocumentCommand command) {
+				// determine the cursor location
+				int len = command.length;
+				int caroffset = command.caretOffset;
+				int offset = command.offset;
+				String txt = command.text;
+				if (document instanceof XtextDocument) {
+					XtextDocument xdoc = (XtextDocument)document;
+					try {
+						String doctxt = xdoc.get(offset, Math.max(txt.length(),len));
+						if (doctxt.equals(txt)) {
+							return offset;
+						}
+					} catch (BadLocationException e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					}
+				}
+//				XtextEditor xtextEditor = EditorUtils.getActiveXtextEditor(event);
+				return -1;
+			}
 
 			private void processBuildRequest(Resource resource, BuildConstruct lastcmd) throws BadLocationException {
 				String buildTarget = ((BuildConstruct)lastcmd).getTarget();

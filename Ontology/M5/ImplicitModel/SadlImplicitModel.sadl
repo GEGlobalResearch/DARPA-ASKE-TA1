@@ -38,7 +38,7 @@ builtin describes FunctionPattern with a single value of type ^Equation.
 anyDataType (note "union of all relevant data types") is a type of {decimal or boolean or string or date or dateTime or anyURI}.
 argValues (note "values of arguments to the built-in") describes FunctionPattern with a single value of type anyDataType List.
 
-Assumption (note "used to identify necessary patterns in semantic domain terms") is a type of AugmentedType, 
+SemanticConstraint (note "used to identify necessary patterns in semantic domain terms") is a type of AugmentedType, 
 	described by constraints with a single value of type GraphPattern List.
 ThisArgument (note "allows reference to self within an Argument's constraints") is a DataDescriptor.
 
@@ -53,6 +53,70 @@ DataTable is a class,
 NamedQuery is a class.
 
 
+// This content comes from the Dialog implicit model fragment provider
 // these properties used by TA2
 model describes DataTable with values of type ^Equation.
 ^data describes ^Equation with values of type DataTable.
+
+
+// This content comes from the Requirements implicit model fragment provider
+Event is a class.
+
+TestState is a class.
+state describes TestState.
+isDefault is a type of annotation. 
+prerequisiteState is a type of annotation. 
+
+input is a type of annotation.
+description is a type of annotation.
+
+
+reference_class is a type of annotation.
+reference_property is a type of annotation.
+reference_range is a type of annotation.
+reference_instance is a type of annotation.
+reference_test_name is a type of annotation.
+
+TEST_INTERFACE is a class, must be one of {Test_Input, Test_Output, Test_Input_Output, No_Test_Interface}.
+PHYSICAL_MAPPING is a class.
+physical_value describes PHYSICAL_MAPPING with values of type decimal.
+physical_value of PHYSICAL_MAPPING has exactly 1 values.
+
+
+INTERFACE_DEFINITION is a class.
+	functional_max describes INTERFACE_DEFINITION with values of type decimal.
+	functional_max of INTERFACE_DEFINITION has exactly 1 values.
+	functional_min describes INTERFACE_DEFINITION with values of type decimal.
+	functional_min of INTERFACE_DEFINITION has exactly 1 values.
+	physical_max describes INTERFACE_DEFINITION with values of type decimal.
+	physical_max of INTERFACE_DEFINITION has exactly 1 values.
+	physical_min describes INTERFACE_DEFINITION with values of type decimal.
+	physical_min of INTERFACE_DEFINITION has exactly 1 values.
+	tolerance describes INTERFACE_DEFINITION with values of type decimal.
+	tolerance of INTERFACE_DEFINITION has exactly 1 values.
+	resolution describes INTERFACE_DEFINITION with values of type decimal.
+	resolution of INTERFACE_DEFINITION has exactly 1 values.
+	active_threshold describes INTERFACE_DEFINITION with values of type decimal.
+	active_threshold of INTERFACE_DEFINITION has exactly 1 values.
+	inactive_threshold describes INTERFACE_DEFINITION with values of type decimal.
+	inactive_threshold of INTERFACE_DEFINITION has exactly 1 values.
+	true_for_time describes INTERFACE_DEFINITION with values of type decimal.
+	true_for_time of INTERFACE_DEFINITION has exactly 1 values.
+	false_for_time describes INTERFACE_DEFINITION with values of type decimal.
+	false_for_time of INTERFACE_DEFINITION has exactly 1 values.
+
+	test_interface describes INTERFACE_DEFINITION with values of type TEST_INTERFACE.
+	test_interface of INTERFACE_DEFINITION has exactly 1 values.
+
+	physical_mapping describes INTERFACE_DEFINITION with values of type PHYSICAL_MAPPING.
+	physical_mapping of PHYSICAL_MAPPING has exactly 1 values.
+	
+Specification is a class.
+{Requirement, Assertion, Assumption, Verify} are types of Specification.
+augments describes Verify with values of type Specification.	
+
+TRANSITION_RESTRICTION is a class,
+	described by transition_type with values of type TRANSITION_TYPE.
+TRANSITION_TYPE is a class, must be one of {one_time,invalid}.
+first_state is a type of annotation.
+next_state is a type of annotation.

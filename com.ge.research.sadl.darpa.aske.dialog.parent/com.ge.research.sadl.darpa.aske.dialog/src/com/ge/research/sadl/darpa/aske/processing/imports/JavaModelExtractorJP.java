@@ -394,7 +394,7 @@ public class JavaModelExtractorJP implements IModelFromCodeExtractor {
 		}
 		else if (childNode instanceof NameExpr) {
 			String nm = ((NameExpr)childNode).getNameAsString();
-			findCodeVariableAndAddReference(childNode, nm, containingInst, knownUsage, true, null);
+			findCodeVariableAndAddReference(childNode, nm, containingInst, knownUsage, true, null, false);
 		}
 		else if (childNode instanceof IfStmt) {
 			Expression cond = ((IfStmt)childNode).getCondition();
@@ -411,7 +411,7 @@ public class JavaModelExtractorJP implements IModelFromCodeExtractor {
 				if (ret0 instanceof NameExpr) {
 					// this is an output of this block. It should already exist.
 					String nm = ((NameExpr)ret0).getNameAsString();
-					findCodeVariableAndAddReference(ret0, nm, containingInst, USAGE.Used, true, InputOutput.Output);
+					findCodeVariableAndAddReference(ret0, nm, containingInst, USAGE.Used, true, InputOutput.Output, false);
 				}
 				else {
 					for (int j = 0; j < returnChildren.size(); j++) {
@@ -507,7 +507,7 @@ public class JavaModelExtractorJP implements IModelFromCodeExtractor {
 		return getCodeModel().getOntProperty(getCodeMetaModelUri() + "#output");
 	}
 
-	private Individual findCodeVariableAndAddReference(Node childNode, String nm, Individual containingInst, USAGE usage, boolean lookToLargerScope, InputOutput inputOutput) {
+	private Individual findCodeVariableAndAddReference(Node childNode, String nm, Individual containingInst, USAGE usage, boolean lookToLargerScope, InputOutput inputOutput, boolean isSetterArgument) {
 		String nnm = constructNestedElementUri(childNode, nm);
 
 		Individual varInst = lookToLargerScope ? findDefinedVariable(nm, containingInst) : null;
@@ -523,6 +523,9 @@ public class JavaModelExtractorJP implements IModelFromCodeExtractor {
 			try {
 				Individual ref = createReference(childNode, varInst, containingInst, usage != null ? usage : USAGE.Used);
 	          	setInputOutputIfKnown(ref, inputOutput);
+	          	if (isSetterArgument) {
+	          		ref.setPropertyValue(getSetterArgumentProperty(), getCodeModel().createTypedLiteral(true));
+	          	}
 			} catch (CodeExtractionException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
@@ -590,8 +593,7 @@ public class JavaModelExtractorJP implements IModelFromCodeExtractor {
 			}	
 		}
 		if (isArgToSetter) {
-			Individual cvInst = findCodeVariableAndAddReference(mc, arg.getNameAsString(), containingInst, USAGE.Used, true, InputOutput.Output);
-			cvInst.setPropertyValue(getSetterArgumentProperty(), getCodeModel().createTypedLiteral(true));
+			Individual cvInst = findCodeVariableAndAddReference(mc, arg.getNameAsString(), containingInst, USAGE.Used, true, InputOutput.Output, true);
 		}
 	}
 
@@ -675,7 +677,7 @@ public class JavaModelExtractorJP implements IModelFromCodeExtractor {
 		}
 		else if (varNode instanceof Parameter) {
 			NameExpr nm = ((Parameter)varNode).getNameAsExpression();
-			return findCodeVariableAndAddReference(varNode, nm.getNameAsString(), containingInst, USAGE.Defined, false, InputOutput.Input);
+			return findCodeVariableAndAddReference(varNode, nm.getNameAsString(), containingInst, USAGE.Defined, false, InputOutput.Input, false);
 		}
 		else {
 			throw new CodeExtractionException("Unexpected CodeVariable varNode type: " + varNode.getClass().getCanonicalName());
