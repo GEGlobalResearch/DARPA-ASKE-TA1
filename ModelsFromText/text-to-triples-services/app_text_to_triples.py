@@ -75,7 +75,7 @@ def process_example_doc(body):
     for con in content:
         text = text + " " + con
 
-    return t2t.text_to_triples({"text": text, "locality": "string"})
+    return t2t.text_to_triples({"text": text, "locality": "string"}, application.config['config_obj'])
 
 
 if __name__ == '__main__':
