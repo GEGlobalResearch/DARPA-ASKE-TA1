@@ -9,7 +9,7 @@ info:
   license:
     name: "Apache 2.0"
     url: "http://www.apache.org/licenses/LICENSE-2.0.html"
-host: "localhost:4200"
+# host: "localhost:4200"
 basePath: "/darpa/aske"
 tags:
 - name: "demo-services"
@@ -24,7 +24,7 @@ paths:
     post:
       tags:
       - "text2triples"
-      operationId: "app.text_to_triples"
+      operationId: "app_text_to_triples.text_to_triples"
       consumes:
       - application/json
       produces: 
@@ -50,7 +50,7 @@ paths:
       - "text2triples"
       summary: ""
       description: ""
-      operationId: "app.get_equation_var_context"
+      operationId: "app_text_to_triples.get_equation_var_context"
       consumes:
       - application/json
       produces:
@@ -74,7 +74,7 @@ paths:
       - "demo-services"
       summary: ""
       description: ""
-      operationId: "app.process_example_doc"
+      operationId: "app_text_to_triples.process_example_doc"
       consumes: 
       - application/json
       produces: 
