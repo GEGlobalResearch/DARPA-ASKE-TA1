@@ -36,8 +36,9 @@
 ***********************************************************************/
 '''
 
+import config
 import extract_concepts_equations as extract
-import entity_linking as el
+import entity_linking
 import triple_generation as tp
 import equation_context as context
 import text_to_python as t2p
@@ -56,13 +57,17 @@ def pre_process(string):
     return string.strip()
 
 
-def text_to_triples(body):
+def text_to_triples(body, config):
     text_triples_arr = []
 
     # Run the NER and get extracted concepts
     # Load the NER model in memory
-    model_file_path = "../resources/taggers/ner-equations-01-23-2019/final-model.pt"
+    # model_file_path = "../resources/taggers/ner-equations-01-23-2019/final-model.pt"
+    model_file_path = config.NERModelFilePath
     model = extract.load_model(model_file_path)
+
+    # Intiliaze Entity Linking Object
+    el = entity_linking.EntityLinking(config)
 
     line = 1
     symbols = []
