@@ -36,15 +36,13 @@
 ***********************************************************************/
 '''
 
+# This Python file uses the following encoding: utf-8
+
 import connexion
 import text_to_triples_service as t2t
 import locality_search as locality
+import sys
 from flask_cors import CORS
-import extract_concepts_equations as extract
-import entity_linking as el
-import triple_generation as tp
-import equation_context as context
-from segtok.segmenter import split_single
 
 
 def text_to_triples(body):
@@ -70,8 +68,10 @@ def process_example_doc(body):
 
 
 if __name__ == '__main__':
-    app = connexion.App(__name__, specification_dir='swagger/')
-    app.add_api('text2triplesapi.yaml')
-    CORS(app.app)
-    application = app.app
-    app.run(port=4200)
+    app_text_to_triples = connexion.App(__name__, specification_dir='swagger/')
+    app_text_to_triples.add_api('text2triplesapi.yaml')
+    CORS(app_text_to_triples.app)
+    application = app_text_to_triples.app
+    app_text_to_triples.config['config_file'] = sys.argv[1]
+    print(app_text_to_triples.config.get('config_file'))
+    app_text_to_triples.run(port=4200)
