@@ -14,6 +14,9 @@ CodeBlock is a type of CodeElement,
 cmArguments describes Method with a single value of type CodeVariable List.
 cmReturnTypes describes Method with a single value of type string List.
 cmSemanticReturnTypes describes Method with a single value of type string List.
+doesComputation describes Method with a single value of type boolean.
+calls describes Method with values of type MethodCall.
+ExternalMethod is a type of Method.
 
 // The reference to a CodeVariable can be its definition (Defined),
 //	an assignment or reassignment (Reassigned), or just a reference
@@ -21,7 +24,8 @@ cmSemanticReturnTypes describes Method with a single value of type string List.
 Usage is a class, must be one of {Defined, Used, Reassigned}.
 
 Reference  is a type of CodeElement
-	described by firstRef with a single value of type boolean
+	described by firstRef (note "first reference in this CodeBlock") 
+		with a single value of type boolean
 	described by codeBlock with a single value of type CodeBlock
 	described by usage with values of type Usage
  	described by cem:input (note "CodeVariable is an input to codeBlock CodeBlock") 
@@ -32,6 +36,15 @@ Reference  is a type of CodeElement
  		with a single value of type boolean
  	described by setterArgument (note "is this variable input to a setter?") with a single value of type boolean
  	described by comment with values of type Comment.
+ 	
+MethodCall is a type of CodeElement
+	described by codeBlock with a single value of type CodeBlock
+	described by inputMapping with values of type InputMapping,
+	described by returnedMapping with values of type OutputMapping.
+MethodCallMapping is a class,
+	described by callingVariable with a single value of type CodeVariable,
+	described by calledVariable with a single value of type CodeVariable.
+{InputMapping, OutputMapping} are types of MethodCallMapping.		
 	
 Comment (note "CodeBlock and Reference can have a Comment") is a type of CodeElement
  	described by commentContent with a single value of type string.	

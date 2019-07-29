@@ -203,7 +203,7 @@ public class AnswerCurationManager {
 
 				String content = readFileToString(f);
 				String fileIdentifier = ConfigurationManagerForIdeFactory.formatPathRemoveBackslashes(f.getCanonicalPath());
-				getCodeExtractor().process(fileIdentifier, content, true);				
+				getCodeExtractor().process(fileIdentifier, content);				
 				File of = saveCodeOwlFile(outputOwlFileName);
 				outputOwlFiles.add(of);
 				outputOwlFileName = of.getCanonicalPath();

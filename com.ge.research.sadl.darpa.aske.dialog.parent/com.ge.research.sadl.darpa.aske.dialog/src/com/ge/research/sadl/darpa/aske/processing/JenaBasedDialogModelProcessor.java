@@ -812,6 +812,9 @@ public class JenaBasedDialogModelProcessor extends JenaBasedSadlModelProcessor {
 				"cmArguments describes Method with a single value of type CodeVariable List.\r\n" + 
 				"cmReturnTypes describes Method with a single value of type string List.\r\n" + 
 				"cmSemanticReturnTypes describes Method with a single value of type string List.\r\n" + 
+				"doesComputation describes Method with a single value of type boolean.\r\n" +
+				"calls describes Method with values of type MethodCall.\r\n" +
+				"ExternalMethod is a type of Method.\r\n" +
 				"\r\n" + 
 				"// The reference to a CodeVariable can be its definition (Defined),\r\n" + 
 				"//	an assignment or reassignment (Reassigned), or just a reference\r\n" + 
@@ -831,6 +834,15 @@ public class JenaBasedDialogModelProcessor extends JenaBasedSadlModelProcessor {
 				" 	described by setterArgument (note \"is this variable input to a setter?\") with a single value of type boolean\r\n" + 
 				" 	described by comment with values of type Comment.\r\n" + 
 				"	\r\n" + 
+				"MethodCall is a type of CodeElement\r\n" + 
+				"	described by codeBlock with a single value of type CodeBlock\r\n" + 
+				"	described by inputMapping with values of type InputMapping,\r\n" + 
+				"	described by returnedMapping with values of type OutputMapping.\r\n" + 
+				"MethodCallMapping is a class,\r\n" + 
+				"	described by callingVariable with a single value of type CodeVariable,\r\n" + 
+				"	described by calledVariable with a single value of type CodeVariable.\r\n" + 
+				"{InputMapping, OutputMapping} are types of MethodCallMapping.\r\n" + 
+				"\r\n" +
 				"Comment (note \"CodeBlock and Reference can have a Comment\") is a type of CodeElement\r\n" + 
 				" 	described by commentContent with a single value of type string.	\r\n" + 
 				"\r\n" + 

@@ -92,7 +92,7 @@ public class TextProcessor {
 	public String process(String inputIdentifier, String text, String locality) throws ConfigurationException, IOException {
 		initializeTextModel();
 		try {
-			String msg = "Importing text file '" + inputIdentifier + "'.";
+			String msg = "Importing text from '" + inputIdentifier + "'.";
 			getCurationManager().notifyUser(getTextModelConfigMgr().getModelFolder(), msg);
 		} catch (ConfigurationException e) {
 			// TODO Auto-generated catch block

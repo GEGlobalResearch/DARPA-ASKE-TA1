@@ -63,15 +63,21 @@ public class TextProcessorTests {
 	public void setUp() throws Exception {
 	}
 
-	@Ignore
+//	@Ignore
 	@Test
 	public void test() throws ConfigurationException, IOException {
+		File sourceFile = new File(new File(".").getAbsolutePath() + "/resources/");
+		File domainProjectFolder = new File(sourceFile + "/TestSadlProject");
+		File domainModelFolder = new File(domainProjectFolder.getAbsoluteFile() + "/OwlModels");
+		setDomainProjectModelFolder(domainModelFolder.getCanonicalPath());
 		TextProcessor tp = new TextProcessor(new AnswerCurationManager(domainProjectModelFolder, 
 				ConfigurationManagerForIdeFactory.getConfigurationManagerForIDE(domainProjectModelFolder, null), null), null);
+		tp.setTextmodelPrefix("sos");
+		tp.setTextmodelName("http://darpa.aske.ta1.ge/sostest");
 		tp.process(null, "a^2 = R * T * gamma", null);
 	}
 
-	@Ignore
+//	@Ignore
 	@Test
 	public void test2() throws ConfigurationException, IOException {
 		TextProcessor tp = new TextProcessor(null, null);
@@ -88,7 +94,7 @@ public class TextProcessorTests {
 		tp.process(null, javaContent, null);
 	}
 
-	@Ignore
+//	@Ignore
 	@Test
 	public void test4() throws ConfigurationException, IOException {
 		System.out.println(new File(".").getAbsoluteFile().getAbsolutePath());

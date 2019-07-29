@@ -55,6 +55,14 @@ import com.ge.research.sadl.darpa.aske.processing.DialogConstants;
 import com.ge.research.sadl.jena.inference.SadlJenaModelGetterPutter;
 import com.ge.research.sadl.reasoner.ConfigurationException;
 import com.ge.research.sadl.reasoner.IConfigurationManagerForEditing.Scope;
+import com.ge.research.sadl.reasoner.IReasoner;
+import com.ge.research.sadl.reasoner.ITranslator;
+import com.ge.research.sadl.reasoner.InvalidNameException;
+import com.ge.research.sadl.reasoner.QueryCancelledException;
+import com.ge.research.sadl.reasoner.QueryParseException;
+import com.ge.research.sadl.reasoner.ReasonerNotFoundException;
+import com.ge.research.sadl.reasoner.ResultSet;
+import com.ge.research.sadl.reasoner.utils.SadlUtils;
 import com.github.javaparser.JavaParser;
 import com.github.javaparser.Range;
 import com.github.javaparser.ast.CompilationUnit;
@@ -94,6 +102,7 @@ import com.hp.hpl.jena.rdf.model.ModelFactory;
 import com.hp.hpl.jena.rdf.model.Property;
 import com.hp.hpl.jena.rdf.model.RDFList;
 import com.hp.hpl.jena.rdf.model.RDFNode;
+import com.hp.hpl.jena.rdf.model.Resource;
 
 public class JavaModelExtractorJP implements IModelFromCodeExtractor {
     private static final Logger logger = Logger.getLogger (JavaModelExtractorJP.class) ;
@@ -119,6 +128,10 @@ public class JavaModelExtractorJP implements IModelFromCodeExtractor {
 	private boolean includeSerialization = true;
 	private String defaultCodeModelName = null;
 	private String defaultCodeModelPrefix = null;
+	private Map<Node, Individual> postProcessingList = new HashMap<Node, Individual>();
+	private Map<Node,Individual> methodsFound = new HashMap<Node, Individual>();
+	private Individual methodWithBodyInProcess = null;
+	private boolean sendCommentsToTextService = false;	// change to true to send comments to text-to-triples service
 	
 	public JavaModelExtractorJP(AnswerCurationManager acm, Map<String, String> preferences) {
 		setCurationMgr(acm);
@@ -128,49 +141,34 @@ public class JavaModelExtractorJP implements IModelFromCodeExtractor {
 	
 	private void initializeContent() {
 		packageName = "";
+		postProcessingList.clear();
 	}
 
-	public boolean process(String inputIdentifier, String content, boolean includeSerialization) throws ConfigurationException, IOException {
-		setIncludeSerialization(includeSerialization);
+	public boolean process(String inputIdentifier, String content) throws ConfigurationException, IOException {
+	    initializeContent();
+		String defName = getDefaultCodeModelName() + "_comments";
+		getCurationMgr().getTextProcessor().setTextmodelName(defName);
+		String defPrefix = getDefaultCodeModelPrefix() + "_cmnt";
+		getCurationMgr().getTextProcessor().setTextmodelPrefix(defPrefix);
 		parse(inputIdentifier, getCurationMgr().getDomainModelOwlModelsFolder(), content);
 		return true;
 	}
 	
-	private void setIncludeSerialization(boolean includeSerialization) {
-		this.includeSerialization = includeSerialization;
-	}
-
-	private boolean isIncludeSerialization() {
-		return includeSerialization;
-	}
-
 	//use ASTParse to parse string
 	private void parse(String inputIdentifier, String modelFolder, String javaCodeContent) throws IOException, ConfigurationException {
 		try {
-			String msg = "Importing code file '" + inputIdentifier + "'.";
+			String msg = "Parsing code file '" + inputIdentifier + "'.";
 			getCurationMgr().notifyUser(modelFolder, msg);
 		} catch (ConfigurationException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-	    initializeContent();
-		
-		logger.debug("***************** code to process ******************");
-//		logger.debug(str);
-		logger.debug("****************************************************");
-		
-		TextProcessor txtpr = new TextProcessor(getCurationMgr(), getPreferences());
-//		try {
-//			String result = txtpr.process(null, null);
-//			logger.debug("test of text processor service:\n" + result);
-//		} catch (MalformedURLException e) {
-//			// TODO Auto-generated catch block
-//			e.printStackTrace();
-//		} catch (UnsupportedEncodingException e) {
-//			// TODO Auto-generated catch block
-//			e.printStackTrace();
-//		}
-		
+		if (logger.isDebugEnabled()) {
+			logger.debug("***************** code to process ******************");
+			logger.debug(javaCodeContent);
+			logger.debug("****************************************************");
+		}
+				
         // Set up a minimal type solver that only looks at the classes used to run this sample.
         CombinedTypeSolver combinedTypeSolver = new CombinedTypeSolver();
         combinedTypeSolver.add(new ReflectionTypeSolver());
@@ -195,7 +193,97 @@ public class JavaModelExtractorJP implements IModelFromCodeExtractor {
         }
         initializeCodeModel(getCodeModelFolder());
         processBlock(cu, null);
+        postProcess();
 	}
+
+	private void postProcess() {
+		Iterator<Node> nitr = postProcessingList.keySet().iterator();
+		while (nitr.hasNext()) {
+			Node node = nitr.next();
+			Node containerNode = null;
+			if (node instanceof MethodCallExpr) {
+				Optional<Node> optContainer = ((MethodCallExpr)node).getParentNode();
+				if (optContainer.isPresent()) {
+					containerNode = optContainer.get();
+				}
+				NodeList<Expression> args = ((MethodCallExpr)node).getArguments();
+				String methName = ((MethodCallExpr)node).getNameAsString();
+				Individual methodCalled = findMethodCalled((MethodCallExpr)node);
+				// create instance of MethodCall, link to methodCalled
+				Individual methodCall = getCodeModel().createIndividual(getMethodCallClass());
+				methodCalled.addProperty(getCallsProperty(), methodCall);
+				Individual cb = postProcessingList.get(node);
+				methodCall.addProperty(getCodeBlockProperty(), cb);
+				
+				addRange(methodCall, node);
+
+				addInputMapping(methodCalled, (MethodCallExpr)node);
+				addOutputMapping(methodCalled, (MethodCallExpr)node);
+			}
+			else {
+				System.err.println("Unexprected node type in postProcessingList: " + node.getClass().getCanonicalName());
+			}
+		}
+	}
+
+	private boolean addRange(Individual blockInst, Node blockNode) {
+		Optional<Range> rng = blockNode.getRange();
+		if (rng.isPresent()) {
+			blockInst.addProperty(getBeginsAtProperty(), getCodeModel().createTypedLiteral(rng.get().begin.line));
+			blockInst.addProperty(getEndsAtProperty(), getCodeModel().createTypedLiteral(rng.get().end.line));
+			return true;
+		}
+		return false;
+	}
+
+	private void addOutputMapping(Individual methodCalled, MethodCallExpr node) {
+		// TODO Auto-generated method stub
+		int i = 0;
+	}
+
+	private void addInputMapping(Individual methodCalled, MethodCallExpr node) {
+		// TODO Auto-generated method stub
+		int i = 0;
+	}
+
+	private Individual findMethodCalled(MethodCallExpr node) {
+		Iterator<Node> nitr = methodsFound.keySet().iterator();
+		while (nitr.hasNext()) {
+			Node meth = nitr.next();
+			if (meth instanceof MethodDeclaration && ((MethodDeclaration) meth).getNameAsString().equals(node.getNameAsString())) {
+				return methodsFound.get(meth);
+			}
+		}
+		// external reference; create instance.
+		String methName = node.getNameAsString();
+		String extUri = "";
+		Optional<Expression> scope = node.getScope();
+		if (scope.isPresent()) {
+			extUri += scope.get().toString();
+			extUri += ".";
+		}
+		extUri += methName;
+		extUri = getCodeModelNamespace() + extUri;
+		return getCodeModel().createIndividual(extUri, getExternalModelClass());
+	}
+
+	@Override
+	public void setIncludeSerialization(boolean includeSerialization) {
+		this.includeSerialization = includeSerialization;
+	}
+
+	@Override
+	public boolean isIncludeSerialization() {
+		return includeSerialization;
+	}
+
+	private Resource getExternalModelClass() {
+		return getCodeModel().getOntClass(getCodeMetaModelUri() + "#ExternalMethod");
+	}
+	
+	private Resource getMethodCallClass() {
+		return getCodeModel().getOntClass(getCodeMetaModelUri() + "#MethodCall");
+	}	
 
 	private String getRootClassName(Node nd) {
 		if (nd instanceof ClassOrInterfaceDeclaration) {
@@ -291,6 +379,7 @@ public class JavaModelExtractorJP implements IModelFromCodeExtractor {
 			MethodDeclaration m = (MethodDeclaration) childNode;
 			Comment cmnt = getComment(m);
 			Individual methInst = getOrCreateMethod(m, containingInst);
+			methodsFound.put(m, methInst);
 			if (containingInst != null) {
 				getCodeModel().add(methInst, getContainedInProperty(), containingInst);
 			}
@@ -313,7 +402,11 @@ public class JavaModelExtractorJP implements IModelFromCodeExtractor {
 				RDFList argInstList = getCodeModel().createList(argList.iterator());
 				methInst.addProperty(getArgumentsProperty(), argInstList);
 			}
+			addRange(methInst, m);
+			Individual prior = setMethodWithBodyInProcess(methInst);
 			processBlock(m, methInst);	// order matters--do this after parameters and before return
+			setMethodWithBodyInProcess(prior);
+			
 			String rt = m.getTypeAsString();
 			if (rt != null) {
 				List<Literal> rtypes = new ArrayList<Literal>();
@@ -326,6 +419,7 @@ public class JavaModelExtractorJP implements IModelFromCodeExtractor {
 		}
 		else if (childNode instanceof MethodCallExpr) {
 			MethodCallExpr mc = (MethodCallExpr)childNode;
+			addNodeToPostProcessingList(mc, containingInst);
         	NodeList<Expression> args = mc.getArguments();
         	Iterator<Expression> nlitr = args.iterator();
         	while (nlitr.hasNext()) {
@@ -390,6 +484,7 @@ public class JavaModelExtractorJP implements IModelFromCodeExtractor {
 			}
 		}
 		else if (childNode instanceof BinaryExpr) {
+			containingInst.setPropertyValue(getDoesComputationProperty(), getCodeModel().createTypedLiteral(true));
 			processBlock(childNode, containingInst);
 		}
 		else if (childNode instanceof NameExpr) {
@@ -440,6 +535,10 @@ public class JavaModelExtractorJP implements IModelFromCodeExtractor {
 		investigateComments(childNode, containingInst);
 	}
 
+	private void addNodeToPostProcessingList(Node expr, Individual codeBlock) {
+		postProcessingList.put(expr, codeBlock);
+	}
+
 	private void addSerialization(Individual blkInst, String code) {
 		if (isIncludeSerialization()) {
 			blkInst.addProperty(getSerializationProperty(), getCodeModel().createTypedLiteral(code));
@@ -473,28 +572,42 @@ public class JavaModelExtractorJP implements IModelFromCodeExtractor {
 
 	private void investigateComment(Node childNode, Individual subject, Comment cmt) {
 		if (cmt != null) {
+			System.out.println("   " + cmt.getContent());
+			Individual cmtInst = getCodeModel().createIndividual(getCommentClass());
+			if (subject == null) {
+				subject = rootContainingInstance;
+			}
+			if (sendCommentsToTextService ) {
+				String locality = null;
+				String inputIdentifier = "CodeComments";
+				String tpresult = null;
+				try {
+					tpresult = getCurationMgr().getTextProcessor().process(inputIdentifier, cmt.getContent(), locality);
+				} catch (ConfigurationException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				} catch (IOException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+				System.out.println("Text: " + cmt.getContent());
+				System.out.println("   returned: " + tpresult);
+			}
+
+			if (subject != null) {
+				subject.addProperty(getCommentProperty(), cmtInst);
+				cmtInst.addProperty(getCommentContentProperty(), getCodeModel().createTypedLiteral(cmt.getContent()));
+				addRange(cmtInst, childNode);
+			}
+			else {
+				System.err.println("Unable to add comment because there is no known subject");
+			}
 			Optional<Range> rng = childNode.getRange();
 			if (rng.isPresent()) {
 				System.out.println("Found comment at line " + rng.get().getLineCount() + "(" + rng.get().begin.toString() + " to " + rng.get().end.toString() + ")");
 			}
 			else {
 				System.out.println("Found comment but range not known");
-			}
-			System.out.println("   " + cmt.getContent());
-			Individual cmtInst = getCodeModel().createIndividual(getCommentClass());
-			if (subject == null) {
-				subject = rootContainingInstance;
-			}
-			if (subject != null) {
-				subject.addProperty(getCommentProperty(), cmtInst);
-				cmtInst.addProperty(getCommentContentProperty(), getCodeModel().createTypedLiteral(cmt.getContent()));
-				if (rng.isPresent()) {
-					cmtInst.addProperty(getBeginsAtProperty(), getCodeModel().createTypedLiteral(rng.get().begin.line));
-					cmtInst.addProperty(getEndsAtProperty(), getCodeModel().createTypedLiteral(rng.get().end.line));
-				}
-			}
-			else {
-				System.err.println("Unable to add comment because there is no known subject");
 			}
 		}
 	}
@@ -598,25 +711,19 @@ public class JavaModelExtractorJP implements IModelFromCodeExtractor {
 	}
 
 	private Individual createReference(Node varNode, Individual codeVarInst, Individual containingInst, USAGE usage) throws CodeExtractionException {
-		int beginsAt = varNode.getRange().get().begin.line;
-		int endsAt = varNode.getRange().get().end.line;
-		Individual ref = createNewReference(containingInst, beginsAt, endsAt, usage);
+		Individual ref = createNewReference(containingInst, varNode, usage);
 		codeVarInst.addProperty(getReferenceProperty(), ref);
 		return ref;
 	}
 
-	private Individual createNewReference(Individual blkInst, int beginsAt, int endsAt, USAGE usage) throws CodeExtractionException {
+//	private Individual createNewReference(Individual blkInst, int beginsAt, int endsAt, USAGE usage) throws CodeExtractionException {
+	private Individual createNewReference(Individual blkInst, Node varNode, USAGE usage) throws CodeExtractionException {
 		Individual refInst = getCodeModel().createIndividual(getReferenceClass());
 		if (blkInst != null) {
 			refInst.addProperty(getCodeBlockProperty(), blkInst);
 		}
-		if (beginsAt >= 0) {
-			refInst.addProperty(getBeginsAtProperty(), getCodeModel().createTypedLiteral(beginsAt));
-		}
-		if (endsAt >= 0) {
-			refInst.addProperty(getEndsAtProperty(), getCodeModel().createTypedLiteral(endsAt));
-		}
 		refInst.addProperty(getUsageProperty(), getUsageInstance(usage));
+		addRange(refInst, varNode);
 		return refInst;
 	}
 
@@ -780,6 +887,10 @@ public class JavaModelExtractorJP implements IModelFromCodeExtractor {
 	private Property getArgumentsProperty() {
 		return getCodeModel().getOntProperty(getCodeMetaModelUri() + "#cmArguments");
 	}
+	
+	private Property getCallsProperty() {
+		return getCodeModel().getOntProperty(getCodeMetaModelUri() + "#calls");
+	}
 
 	private Property getBeginsAtProperty() {
 		return getCodeModel().getOntProperty(getCodeMetaModelUri() + "#beginsAt");
@@ -801,6 +912,10 @@ public class JavaModelExtractorJP implements IModelFromCodeExtractor {
 		return getCodeModel().getOntProperty(getCodeMetaModelUri() + "#codeBlock");
 	}
 
+	private Property getDoesComputationProperty() {
+		return getCodeModel().getOntProperty(getCodeMetaModelUri() + "#doesComputation");
+	}
+	
 	private Property getReferenceProperty() {
 		return getCodeModel().getOntProperty(getCodeMetaModelUri() + "#reference");
 	}
@@ -1034,5 +1149,29 @@ public class JavaModelExtractorJP implements IModelFromCodeExtractor {
 			return codeModels.get(key);
 		}
 		return null;
+	}
+
+	private Individual getMethodWithBodyInProcess() {
+		return methodWithBodyInProcess;
+	}
+
+	private Individual setMethodWithBodyInProcess(Individual methodWithBodyInProcess) {
+		Individual prior = this.methodWithBodyInProcess;
+		this.methodWithBodyInProcess = methodWithBodyInProcess;
+		return prior;
+	}
+	
+	@Override
+	public ResultSet executeSparqlQuery(String query) throws ConfigurationException, ReasonerNotFoundException, IOException, InvalidNameException, QueryParseException, QueryCancelledException {
+		ITranslator translator = getCodeModelConfigMgr().getTranslator();
+		query = SadlUtils.stripQuotes(query);
+		IReasoner reasoner = getCodeModelConfigMgr().getReasoner();
+		if (!reasoner.isInitialized()) {
+			reasoner.setConfigurationManager(getCodeModelConfigMgr());
+			reasoner.initializeReasoner(getCodeModelConfigMgr().getModelFolder(), getCodeModelName(), null);
+		}
+		query = reasoner.prepareQuery(query);
+		ResultSet results =  reasoner.ask(query);
+		return results;
 	}
 }
