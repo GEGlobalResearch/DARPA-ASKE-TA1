@@ -36,7 +36,7 @@
  uri "http://sadl.org/SpeedOfSound.sadl" alias sos.
  
  import "http://sadl.org/ScientificConcepts2.sadl".
- 
+  
  speedOfSound describes Gas with values of type Velocity.
  altitude describes Air with values of type Length.
  movesIn describes PhysicalObject with values of type Gas.
@@ -61,12 +61,16 @@
  molarMass of Air always has value (a MolarMass MolarMassAirISU with ^value 28.96, with unit "g/mole").
  molarMass of Air always has value (a MolarMass MolarMassAirImpoerial with ^value 28.96, with unit "lbm/lbmole").
  
+  External machCalc(decimal sos (speedOfSound of some Air), // and sos < 10), 
+ 				   decimal sov (velocity of (a PhysicalObject movesIn the Air)))
+ 				   returns decimal (mach of the PhysicalObject): "http://com.ge.research.darpa.aske.kchain.machcalc".
+ 
  External specificGasConstantEq(decimal Ru (UniversalGasConstant {"J/mole-Kelvin"}),
  								decimal M (molarMass of a Gas {"g/mole"}))
  								returns decimal (gasConstant of the Gas {"J/g-Kelvin"}):
  								"http://com.ge.research.darpa.aske.kchain.specificGasConstantEq".
  
- External CAL_SOS(double T (temperature of a Gas {Kelvin, Rankine}), 
+ External CAL_SOS(double T (temperature of a Gas {Kelvin, Rankine}),
  				  double G (gamma of the Gas), 
  				  double R (gasConstant of the Gas {"g/mole", "lbm/lbmole"}), 
  				  double Q (Theta {Kelvin, Rankine}),
@@ -85,6 +89,7 @@
   				  			"http://com.ge.research.darpa.aske.kchain.tempFromAltitude".  
 
 // External computeMach(double alt (altitude of a PhysicalObject and the PhysicalObject movesIn some Air and alt < 35000 {ft, m}), 
+//External computeMach(double alt (altitude of a PhysicalObject and the PhysicalObject movesIn some Air and lessThan(alt, 35000) {ft, m}), 
  External computeMach(double alt (altitude of a PhysicalObject and the PhysicalObject movesIn some Air {ft, m}), 
  					  double R (gasConstant of the Air {"lbm/lbmole", "g/mole"}),
  					  double G (gamma of the Air),
@@ -93,6 +98,12 @@
  				  	  string us (UnitSystem {Metric, Imperial})) 
  					  returns double (mach of the PhysicalObject):
  					  "http://com.ge.research.darpa.aske.kchain.computeMach". 
+ 					  
+ Equation compMach(double sv (velocity of a PhysicalObject and the PhysicalObject movesIn some Air {"ft/sec", mph, "m/sec", "km/hr"}), 
+ 				   double sos (speedOfSound of the Air {"ft/sec", mph, "m/sec", "km/hr"})
+ 				  ) returns double (mach of the PhysicalObject): return sv/sos. 		
+ 				
+ compMach has expression (a Script with script "a+b", with language Java).
 
  AirGammaDefault is a Gamma.
  AirGammaDefault has ^value 1.4. 					  
@@ -149,10 +160,9 @@
 //				    with data {[1,2,3],[4,5,6]}.	// this should be an validation error 
 //MachTable2 is a class.
 ////Doc4 is a MachTable2 with data {[1,2,3],[4,5,6]}.			   
- 				  
-  
+ 				   
  External sosfromtemp(decimal t) returns decimal: "http://com.ge.research.darpa.aske.kchain.sosairfromtemp".
- External sosfromtemp2(decimal t (temperature of some Air {"Kelvin", "Rankine"})) 
+ External sosfromtemp2(decimal t (temperature of some Air {"Kelvin", Rankine})) 
  	returns decimal (speedOfSound of the Air {"m/sec","ft/sec"}): 
  	"http://com.ge.research.darpa.aske.kchain.sosairfromtemp". 
  	
@@ -161,9 +171,9 @@
  External sosfromalt2(decimal alt (^value of altitude of some Air)) 
  	returns decimal (^value of speedOfSound of the Air): "http://com.ge.research.darpa.aske.kchain.sosairfromalt".
  
- External machCalc(decimal sos (speedOfSound of some Air), 
- 				   decimal sov (velocity of (a PhysicalObject movesIn the Air))) 
- 				   returns decimal (mach of the PhysicalObject): "http://com.ge.research.darpa.aske.kchain.machcalc".
+// External machCalc(decimal sos (speedOfSound of some Air and sos < 10 and lessThan(sos, gasConstant of the Air)), 
+// 				   decimal sov (velocity of (a PhysicalObject movesIn the Air))) 
+// 				   returns decimal (mach of the PhysicalObject): "http://com.ge.research.darpa.aske.kchain.machcalc".
   
  Rule SpeedOfSoundInAirGivenTemperature:
    if air is some Air and t is temperature of air and

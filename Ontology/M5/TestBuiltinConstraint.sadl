@@ -1,0 +1,15 @@
+ uri "http://sadl.org/TestBuiltinConstraint.sadl" alias TestBuiltinConstraint.
+ 
+ import "http://sadl.org/SpeedOfSound.sadl".
+ 
+  External computeMach(double alt (altitude of a PhysicalObject and the PhysicalObject movesIn some Air and alt < 35000 {ft, m}), 
+//External computeMach(double alt (altitude of a PhysicalObject and the PhysicalObject movesIn some Air and lessThan(alt, 35000) {ft, m}), 
+// External computeMach(double alt (altitude of a PhysicalObject and the PhysicalObject movesIn some Air {ft, m}), 
+ 					  double R (gasConstant of the Air {"lbm/lbmole", "g/mole"}),
+ 					  double G (gamma of the Air),
+ 					  double Q (Theta {Kelvin, Rankine}),
+ 					  double vel (velocity of the PhysicalObject {"mph", "km/hr"}),
+ 				  	  string us (UnitSystem {Metric, Imperial})) 
+ 					  returns double (mach of the PhysicalObject):
+ 					  "http://com.ge.research.darpa.aske.kchain.computeMach". 
+ 					
