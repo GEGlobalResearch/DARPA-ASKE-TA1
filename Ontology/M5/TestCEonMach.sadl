@@ -54,29 +54,56 @@
 //	?ref <codeBlock> ?cb . ?ref <firstRef> true . ?ref <beginsAt> ?loc .
 //	?ref <usage> ?u} order by ?cb ?loc ?cv".
 
-Print: "Implicit inputs:".	
-Ask: select cb, cv, loc where cb is a CodeBlock and
-	ref has codeBlock cb and ref has isImplicit true and
-	ref has input true and cv has reference ref and
-	ref has beginsAt loc order by cb, loc.
-//Explain: Rule ImplicitInput.	
+//Print: "Implicit inputs:".	
+//Ask: select cb, cv, loc where cb is a CodeBlock and
+//	ref has codeBlock cb and ref has isImplicit true and
+//	ref has input true and cv has reference ref and
+//	ref has beginsAt loc order by cb, loc.
+////Explain: Rule ImplicitInput.	
+//
+//Print: "Implicit outputs:".	
+//Ask: select cb, cv, loc where cb is a CodeBlock and
+//	ref has codeBlock cb and ref has isImplicit true and
+//	ref has output true and cv has reference ref and
+//	ref has beginsAt loc order by cb, loc.
+////Explain: Rule ImplicitOutput.	
+//
+//Print: "Implicit outputs used as setter argument:".	
+//Ask: select cb, cv, loc where cb is a CodeBlock and
+//	ref has codeBlock cb and ref has isImplicit true and
+//	ref has output true and cv has reference ref and
+//	cv has reference ref2 and
+//	ref2 has codeBlock cb and
+//	ref2 has setterArgument true and
+//	ref2 has beginsAt loc order by cb, loc.
+//	
+//Print: "Methods with no implicit inputs or outputs".
+//Ask: "select ?cb where {?cb <rdf:type> <Method> .
+//	FILTER NOT EXISTS {?ref <codeBlock> ?cb .
+//					   ?ref <isImplicit> true}}".
+//
+//Print: "Containment:".
+//Ask: "select ?s ?p ?o where {?s <rdf:type> <Class> . ?s ?p ?o . VALUES ?p {<containedIn>}}".
+//
+//Print: "Method calls:".
+////Graph: "select ?cb ?p ?m where {?m ?p ?mc . ?mc <codeBlock> ?cb . VALUES ?p {<calls>}}".
+//Ask: "select ?cb ?p ?m ?loc where {?m ?p ?mc . ?mc <codeBlock> ?cb . ?mc <beginsAt> ?loc . VALUES ?p {<calls>}} order by ?loc".
+//
+//Print: "External methods:".
+//Ask: "select ?m where {?m <rdf:type> <ExternalMethod>}".
 
-Print: "Implicit outputs:".	
-Ask: select cb, cv, loc where cb is a CodeBlock and
-	ref has codeBlock cb and ref has isImplicit true and
-	ref has output true and cv has reference ref and
-	ref has beginsAt loc order by cb, loc.
-//Explain: Rule ImplicitOutput.	
+Print: "Methods without implicit inputs or outputs:".
+Ask: "select ?m where {?m <rdf:type> <Method> . MINUS {?ref <codeBlock> ?m . ?ref <isImplicit> true} }".
 
-Print: "Implicit outputs used as setter argument:".	
-Ask: select cb, cv, loc where cb is a CodeBlock and
-	ref has codeBlock cb and ref has isImplicit true and
-	ref has output true and cv has reference ref and
-	cv has reference ref2 and
-	ref2 has codeBlock cb and
-	ref2 has setterArgument true and
-	ref2 has beginsAt loc order by cb, loc.
+Print: "Methods doing computation:".
+Ask: "select ?m where {?m <doesComputation> true}".
 		
+Print: "Methods in this code without implicit inputs or outputs and that do computation:".
+Ask InterestingCode: "select ?m ?b ?e where {?m <rdf:type> <Method> . ?m <doesComputation> true . OPTIONAL {?m <beginsAt> ?b . ?m <endsAt> ?e} .
+		MINUS {
+			{?ref <codeBlock> ?m . ?ref <isImplicit> true}
+			UNION {?m <rdf:type> <ExternalMethod>} } }".
+
 //Ask: "select ?c ?r ?b where {?c <rdf:type> CodeVariable .
 //	?c <reference> ?r . ?r <beginsAt> ?b}".
 // 
