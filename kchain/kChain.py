@@ -35,6 +35,7 @@
  *
  ***********************************************************************
 """
+
 """
 This module consists of kChainModel class to create, fit, append, and update 
 K-CHAIN models in TensorFlow    
@@ -156,9 +157,9 @@ class kChainModel(object):
 
         Arguments:
             inputVar (JSON array):
-                array of JSON variable objects with name, type, and value fields
+                array of JSON variable objects with name, type, value, and unit fields
             outputVar (JSON array):
-                array of JSON variable objects with name, type, and value fields
+                array of JSON variable objects with name, type, value, and unit fields
             mdlName (string):
                 Name to assign to the final model (E.g.: 'Newtons2ndLaw')
             eqMdl (string):
@@ -415,9 +416,9 @@ class kChainModel(object):
         
         Arguments:
             inputVar (JSON array):
-                array of JSON variable objects with name, type, and value fields
+                array of JSON variable objects with name, type, value, and unit fields
             outputVar (JSON array):
-                array of JSON variable objects with name, type, and value fields
+                array of JSON variable objects with name, type, value, and unit fields
             mdlName (string):
                 Name to model to use (E.g.: 'Newtons2ndLaw')
         
