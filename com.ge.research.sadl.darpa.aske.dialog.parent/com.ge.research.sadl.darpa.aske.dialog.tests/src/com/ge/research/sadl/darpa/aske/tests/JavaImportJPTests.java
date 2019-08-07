@@ -257,10 +257,7 @@ public class JavaImportJPTests {
 	@Test
 	public void test_05() throws IOException, ConfigurationException, OwlImportException {
 		System.out.println(new File(".").getAbsoluteFile().getAbsolutePath());
-		File sourceFile = new File(new File(".").getAbsolutePath() + "/resources/Mach.java");
-//		ClassLoader classLoader = getClass().getClassLoader();
-//		File sourceFile = new File(classLoader.getResource("/Isentrop.java").getFile());		
-//		String javaContent = readFile(sourceFile);
+		File codeFile = new File(new File(".").getAbsolutePath() + "/resources/Mach.java");
 		IConfigurationManagerForIDE cm = ConfigurationManagerForIdeFactory.getConfigurationManagerForIDE(getDomainProjectModelFolder(), null);
 		AnswerCurationManager acm = new AnswerCurationManager(getDomainProjectModelFolder(), cm, null);
 		acm.getExtractionProcessor().getCodeExtractor().setCodeModelFolder(getExtractionProjectModelFolder());
@@ -280,9 +277,9 @@ public class JavaImportJPTests {
 		new File(genFolder).mkdirs();
 //		String owlFileName = genFolder + "/" + defaultCodeModelPrefix + ".owl";
 
-		acm.getExtractionProcessor().getCodeExtractor().addCodeFile(sourceFile);
+		acm.getExtractionProcessor().getCodeExtractor().addCodeFile(codeFile);
 		acm.getExtractionProcessor().getCodeExtractor().setIncludeSerialization(false);
-		acm.processImports(SaveAsSadl.SaveAsSadl.SaveAsSadl);
+		acm.processImports(SaveAsSadl.SaveAsSadl);
 		
 		String query = "select ?m ?b ?e where {?m <rdf:type> <Method> . ?m <doesComputation> true . OPTIONAL {?m <beginsAt> ?b . ?m <endsAt> ?e} .\r\n" + 
 				"		MINUS {\r\n" + 

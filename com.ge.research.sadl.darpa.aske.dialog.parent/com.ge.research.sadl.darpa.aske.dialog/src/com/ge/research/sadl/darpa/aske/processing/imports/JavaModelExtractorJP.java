@@ -1163,7 +1163,6 @@ public class JavaModelExtractorJP implements IModelFromCodeExtractor {
 	
 	@Override
 	public ResultSet executeSparqlQuery(String query) throws ConfigurationException, ReasonerNotFoundException, IOException, InvalidNameException, QueryParseException, QueryCancelledException {
-		ITranslator translator = getCodeModelConfigMgr().getTranslator();
 		query = SadlUtils.stripQuotes(query);
 		IReasoner reasoner = getCodeModelConfigMgr().getReasoner();
 		if (!reasoner.isInitialized()) {

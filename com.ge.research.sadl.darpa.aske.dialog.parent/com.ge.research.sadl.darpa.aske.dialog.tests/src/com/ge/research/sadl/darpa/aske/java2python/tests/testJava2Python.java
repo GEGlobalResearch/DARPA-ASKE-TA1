@@ -35,19 +35,41 @@
  ***********************************************************************/
 package com.ge.research.sadl.darpa.aske.java2python.tests;
 
+import java.io.File;
 import java.io.IOException;
 
+import org.junit.Before;
 import org.junit.Ignore;
 import org.junit.Test;
 
+import com.ge.research.sadl.builder.ConfigurationManagerForIdeFactory;
+import com.ge.research.sadl.builder.IConfigurationManagerForIDE;
+import com.ge.research.sadl.darpa.aske.curation.AnswerCurationManager;
 import com.ge.research.sadl.darpa.aske.processing.imports.AnswerExtractionProcessor;
+import com.ge.research.sadl.reasoner.ConfigurationException;
 
 public class testJava2Python {
 
-	@Ignore
+	private String domainProjectModelFolder;
+	private String extractionProjectModelFolder;
+
+	@Before
+	public void setUp() throws Exception {
+		String codeExtractionKbRoot = "C:/Users/200005201/sadl3-master6/git/DARPA-ASKE-TA1/Ontology/M5";
+		File codeExtractionPrjFolder = new File(codeExtractionKbRoot);
+		setExtractionProjectModelFolder(codeExtractionPrjFolder.getCanonicalPath() + "/OwlModels");
+		
+		String domainModelKbRoot = "C:/Users/200005201/sadl3-master6/git/DARPA-ASKE-TA1/Ontology/M5";
+		File outputPrjFolder = new File(domainModelKbRoot);
+		setDomainProjectModelFolder(outputPrjFolder.getCanonicalPath() + "/OwlModels");
+	}
+
+//	@Ignore
 	@Test
-	public void test() throws IOException {
-		AnswerExtractionProcessor ep = new AnswerExtractionProcessor(null, null);
+	public void test() throws IOException, ConfigurationException {
+		IConfigurationManagerForIDE cm = ConfigurationManagerForIdeFactory.getConfigurationManagerForIDE(getDomainProjectModelFolder(), null);
+		AnswerCurationManager acm = new AnswerCurationManager(getDomainProjectModelFolder(), cm, null);
+		AnswerExtractionProcessor ep = new AnswerExtractionProcessor(acm, null);
 		String code = "  public double CAL_SOS (double T, double G, double R, double Q) {\n" + 
 				"      double WOW = 1 + (G - 1) / (1 + (G - 1) * Math.pow((Q / T), 2) *\n" + 
 				"         Math.exp(Q / T) / Math.pow((Math.exp(Q / T) - 1), 2));\n" + 
@@ -57,4 +79,19 @@ public class testJava2Python {
 		System.out.println(pythoncode);
 	}
 
+	private String getExtractionProjectModelFolder() {
+		return extractionProjectModelFolder;
+	}
+
+	private void setExtractionProjectModelFolder(String extractionProjectModelFolder) {
+		this.extractionProjectModelFolder = extractionProjectModelFolder;
+	}
+
+	private String getDomainProjectModelFolder() {
+		return domainProjectModelFolder;
+	}
+
+	private void setDomainProjectModelFolder(String outputProjectModelFolder) {
+		this.domainProjectModelFolder = outputProjectModelFolder;
+	}
 }

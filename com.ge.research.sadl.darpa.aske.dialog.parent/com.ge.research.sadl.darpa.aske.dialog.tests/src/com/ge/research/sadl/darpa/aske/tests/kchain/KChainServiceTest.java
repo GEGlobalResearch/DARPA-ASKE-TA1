@@ -243,8 +243,8 @@ public class KChainServiceTest {
 	public List<List<String[]>> evalCGModel(String modelUri, List<String[]> inputVariables, List<String[]> outputVariables) throws IOException {
 //		String host = "3.39.122.224";
 //		String host = "3.1.176.139";
-		String host = "vesuvius-dev.crd.ge.com";
-//		String host = "50.17.172.89";
+//		String host = "vesuvius-dev.crd.ge.com";
+		String host = "3.39.122.58";
 		int port = 12345;
 		String kchainServiceURL = "http://" + host + ":" + port + "/darpa/aske/kchain/";
 		/*
@@ -415,8 +415,8 @@ public class KChainServiceTest {
  */
 //		String host = "3.39.122.224";
 //		String host = "3.1.176.139";
-		String host = "vesuvius-dev.crd.ge.com";
-//		String host = "50.17.172.89";
+//		String host = "vesuvius-dev.crd.ge.com";
+		String host = "3.39.122.58";
 		int port = 12345;
 		String kchainServiceURL = "http://" + host + ":" + port + "/darpa/aske/kchain/";
 		
