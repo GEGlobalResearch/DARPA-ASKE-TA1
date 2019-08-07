@@ -46,6 +46,7 @@ import java.util.Iterator;
 import java.util.List;
 
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 
 import com.google.gson.JsonArray;
@@ -59,7 +60,7 @@ public class KChainServiceTest {
 	public void setUp() throws Exception {
 	}
 
-//	@Ignore
+	@Ignore
 	@Test
 	public void testBuildEval_01() throws IOException {
 		/*
@@ -150,7 +151,7 @@ public class KChainServiceTest {
 
 	}
 
-//	@Ignore
+	@Ignore
 	@Test
 	public void testBuildEval_02() throws IOException {
 /*
@@ -344,7 +345,7 @@ public class KChainServiceTest {
 		return retLists;
 	}
 	
-//	@Ignore
+	@Ignore
 	@Test
 	public void testBuildEval_03() throws IOException {
 		List<String[]> inputs = new ArrayList<String[]>();
