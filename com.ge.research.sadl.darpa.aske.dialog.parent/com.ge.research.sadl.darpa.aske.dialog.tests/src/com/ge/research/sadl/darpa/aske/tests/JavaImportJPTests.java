@@ -265,7 +265,7 @@ public class JavaImportJPTests {
 		IDialogAnswerProvider dapcft = new DialogAnswerProviderConsoleForTest();
 		cm.addPrivateKeyValuePair(DialogConstants.DIALOG_ANSWER_PROVIDER, dapcft);
 		
-		boolean includeSerialization = false; //true;
+		boolean includeSerialization = true; //false; //true;
 		
 		String defaultCodeModelPrefix = includeSerialization ? "MachSz" : "Mach";
 		String defaultCodeModelName = "http://com.ge.research.darpa.aske.ta1.explore/" + defaultCodeModelPrefix;
@@ -278,10 +278,10 @@ public class JavaImportJPTests {
 //		String owlFileName = genFolder + "/" + defaultCodeModelPrefix + ".owl";
 
 		acm.getExtractionProcessor().getCodeExtractor().addCodeFile(codeFile);
-		acm.getExtractionProcessor().getCodeExtractor().setIncludeSerialization(false);
+		acm.getExtractionProcessor().getCodeExtractor().setIncludeSerialization(includeSerialization);
 		acm.processImports(SaveAsSadl.SaveAsSadl);
 		
-		String query = "select ?m ?b ?e where {?m <rdf:type> <Method> . ?m <doesComputation> true . OPTIONAL {?m <beginsAt> ?b . ?m <endsAt> ?e} .\r\n" + 
+		String query = "select ?m ?b ?e ?s where {?m <rdf:type> <Method> . ?m <doesComputation> true . OPTIONAL {?m <beginsAt> ?b . ?m <endsAt> ?e . ?m <serialization> ?s} .\r\n" + 
 				"		MINUS {\r\n" + 
 				"			{?ref <codeBlock> ?m . ?ref <isImplicit> true}\r\n" + 
 				"			UNION {?m <rdf:type> <ExternalMethod>} } }";

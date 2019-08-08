@@ -1,20 +1,20 @@
-uri "http://com.ge.research.sadl.darpa.aske.answer/Sound_txt" alias Sound_txt
+uri "http://com.ge.research.sadl.darpa.aske.answer/Sound" alias Sound_txt
     (note "This ontology was created by extraction from text by the ANSWER TextProcessor.").
 
 
 
 // Individuals:
-eq_140464476183408 is a sadlimplicitmodel:ExternalEquation,
-    has sadlimplicitmodel:expression (a sadlimplicitmodel:Script
-    with sadlimplicitmodel:language sadlimplicitmodel:Python,
-    with sadlimplicitmodel:script "a = tf.math.pow( R * T * gamma, 1/2)"),
-    has sadlimplicitmodel:expression (a sadlimplicitmodel:Script
-    with sadlimplicitmodel:language sadlimplicitmodel:Text,
-    with sadlimplicitmodel:script "a^2 = R * T * gamma").
-eq_140464476348616 is a sadlimplicitmodel:ExternalEquation,
+eq_139890718919088 is a sadlimplicitmodel:ExternalEquation,
     has sadlimplicitmodel:expression (a sadlimplicitmodel:Script
     with sadlimplicitmodel:language sadlimplicitmodel:Python,
     with sadlimplicitmodel:script "a = tf.math.pow( R * T *  (  1 + ( gamma-1 ) / ( 1 + ( gamma-1 ) *  (  ( theta/T ) ** 2 *  tf.math.exp( theta/T ) / (  tf.math.exp( theta/T ) - 1 ) ** 2 )  ) ) , 1/2)"),
     has sadlimplicitmodel:expression (a sadlimplicitmodel:Script
     with sadlimplicitmodel:language sadlimplicitmodel:Text,
     with sadlimplicitmodel:script "a^2 = R * T * {1 + (gamma - 1) / ( 1 + (gamma-1) * [(theta/T)^2 * e^(theta/T) /(e^(theta/T) -1)^2]) }").
+eq_139890719057216 is a sadlimplicitmodel:ExternalEquation,
+    has sadlimplicitmodel:expression (a sadlimplicitmodel:Script
+    with sadlimplicitmodel:language sadlimplicitmodel:Python,
+    with sadlimplicitmodel:script "a = tf.math.pow( R * T * gamma, 1/2)"),
+    has sadlimplicitmodel:expression (a sadlimplicitmodel:Script
+    with sadlimplicitmodel:language sadlimplicitmodel:Text,
+    with sadlimplicitmodel:script "a^2 = R * T * gamma").

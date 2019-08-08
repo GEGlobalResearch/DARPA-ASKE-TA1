@@ -77,6 +77,12 @@
  				  string us (UnitSystem {Metric, Imperial})) 
  				  returns double (speedOfSound of the Gas {"m/sec", "ft/sec"}): "http://com.ge.research.darpa.aske.kchain.CAL_SOS".
  				  
+ External CAL_SOS_Imperial(double T (temperature of a Gas {Rankine}),
+ 				  double G (gamma of the Gas), 
+ 				  double R (gasConstant of the Gas {"lbm/lbmole"}), 
+ 				  double Q (Theta {Rankine})) 
+ 				  returns double (speedOfSound of the Gas {"ft/sec"}): "http://com.ge.research.darpa.aske.kchain.CAL_SOS".
+ 				  
  External CAL_GAM(double T (temperature of a Gas {Kelvin, Rankine}), 
  				  double G (gamma of the Gas), 
  				  double Q (Theta {Kelvin, Rankine}),
@@ -101,14 +107,14 @@
  					  
  Equation compMach(double sv (velocity of a PhysicalObject and the PhysicalObject movesIn some Air {"ft/sec", mph, "m/sec", "km/hr"}), 
  				   double sos (speedOfSound of the Air {"ft/sec", mph, "m/sec", "km/hr"})
- 				  ) returns double (mach of the PhysicalObject): return sv/sos. 		
+ 				  ) returns double (mach of the PhysicalObject): return sv/sos. 
  				
  compMach has expression (a Script with script "a+b", with language Java).
 
  AirGammaDefault is a Gamma.
  AirGammaDefault has ^value 1.4. 					  
  gamma of Air has default AirGammaDefault.
- 
+  
 // gamma of Air has default 1.4.
 /*
       <j.0:Argument>

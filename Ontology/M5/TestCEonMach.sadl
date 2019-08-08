@@ -96,7 +96,8 @@ Print: "Methods without implicit inputs or outputs:".
 Ask: "select ?m where {?m <rdf:type> <Method> . MINUS {?ref <codeBlock> ?m . ?ref <isImplicit> true} }".
 
 Print: "Methods doing computation:".
-Ask: "select ?m where {?m <doesComputation> true}".
+//Ask: "select ?m where {?m <doesComputation> true}".
+Ask: select m where m doesComputation true.
 		
 Print: "Methods in this code without implicit inputs or outputs and that do computation:".
 Ask InterestingCode: "select ?m ?b ?e where {?m <rdf:type> <Method> . ?m <doesComputation> true . OPTIONAL {?m <beginsAt> ?b . ?m <endsAt> ?e} .
