@@ -93,11 +93,6 @@ import com.hp.hpl.jena.ontology.OntModel;
 import com.hp.hpl.jena.ontology.OntModelSpec;
 import com.hp.hpl.jena.ontology.OntProperty;
 import com.hp.hpl.jena.ontology.OntResource;
-import com.hp.hpl.jena.query.QueryExecution;
-import com.hp.hpl.jena.query.QueryExecutionFactory;
-import com.hp.hpl.jena.query.QueryFactory;
-import com.hp.hpl.jena.query.QuerySolution;
-import com.hp.hpl.jena.query.ResultSetRewindable;
 import com.hp.hpl.jena.rdf.model.Model;
 import com.hp.hpl.jena.rdf.model.ModelFactory;
 import com.hp.hpl.jena.rdf.model.Property;
@@ -106,6 +101,7 @@ import com.hp.hpl.jena.rdf.model.RDFVisitor;
 import com.hp.hpl.jena.query.*;
 import com.hp.hpl.jena.update.UpdateAction;
 import com.hp.hpl.jena.vocabulary.RDF;
+import com.hp.hpl.jena.sparql.util.ResultSetUtils;
 
 public class JenaBasedDialogInferenceProcessor extends JenaBasedSadlInferenceProcessor {
 
@@ -206,6 +202,22 @@ public class JenaBasedDialogInferenceProcessor extends JenaBasedSadlInferencePro
 			" ?EQR owl:allValuesFrom ?EqClass.\n" + 
 			" ?Eq a ?EqClass.\n" + 
 			"}";
+	
+	public static final String LOOKUP_EQNS = "prefix hyper:<http://aske.ge.com/hypersonics#>\n" + 
+			"prefix dbn:<http://aske.ge.com/dbn#>\n" + 
+			"prefix imp:<http://sadl.org/sadlimplicitmodel#>\n" + 
+			"prefix owl:<http://www.w3.org/2002/07/owl#>\n" + 
+			"prefix rdfs:<http://www.w3.org/2000/01/rdf-schema#>\n" +
+			"prefix sci:<http://aske.ge.com/sciknow#>\n" +
+			"prefix afn:<http://jena.apache.org/ARQ/function#>\n" +
+			"select distinct ?EqOut where {\n" + 
+			"    ?EqOut a ?EqClass. \n" + 
+			"    ?EqClass rdfs:subClassOf imp:Equation.\n" + 
+			"     ?EqOut sci:output ?Oinst.\n" + 
+			"     ?Oinst a ?Out.\n" + 
+			"     filter (?Out in ( LISTOFOUTPUTS )).\n" + 
+			"}";
+	
 	public static final String RETRIEVE_MODELS = "prefix hyper:<http://aske.ge.com/hypersonics#>\n" + 
 			"prefix dbn:<http://aske.ge.com/dbn#>\n" + 
 			"prefix imp:<http://sadl.org/sadlimplicitmodel#>\n" +
@@ -385,11 +397,12 @@ public class JenaBasedDialogInferenceProcessor extends JenaBasedSadlInferencePro
 			"    ?Oinst imp:value ?Mean.\n" + 
 			"    ?Oinst imp:stddev ?StdDev.\n" +
 			"  } union {\n" +
-			"   ?CCG mm:subgraph ?SG. \n" + 
+//			"   ?CCG mm:subgraph ?SG. \n" + 
 			"   filter (?CCG in (COMPGRAPH)).\n" +
-			"   ?Q mm:execution ?CE.\n" + 
+//			"   ?Q mm:execution ?CE.\n" + 
 			"   ?CE mm:compGraph ?CCG.\n" + 
-			"   ?Q mm:output ?Vinst.\n" + 
+//			"   ?Q mm:output ?Vinst.\n" + 
+			"   ?CE mm:output ?Vinst.\n" + 
 			"   ?Vinst a ?Var.\n" + 
 			"   ?Vinst imp:value ?Mean.\n" +
 			"   ?Vinst imp:stddev ?StdDev.\n" +
@@ -535,21 +548,19 @@ public class JenaBasedDialogInferenceProcessor extends JenaBasedSadlInferencePro
 		//i.addProperty(RDFS.comment, "something");
 	    //i.addRDFType(OWL2.NamedIndividual);
 		
-		//Create execution instance with time
-		OntClass cexec = getTheJenaModel().getOntClass(METAMODEL_CGEXEC_CLASS);
-		Individual ce = qhmodel.createIndividual(cexec);
-		//OntProperty stprop = getTheJenaModel().getOntProperty(METAMODEL_STARTTIME_PROP);
-
-//		String DATE_FORMAT_NOW = "yyyy-MM-dd HH:mm:ss";
-//		Calendar cal = Calendar.getInstance();
-//		SimpleDateFormat sdf = new SimpleDateFormat(DATE_FORMAT_NOW);
-//		XSDDateTime tim = sdf.format(cal.getTime());;
-////		qhmodel.add(ce,stprop,(XSDDateTime)val).asCalendar().getTime())
-		
-		OntProperty execprop = getTheJenaModel().getOntProperty(METAMODEL_EXEC_PROP);
-		ingestKGTriple(cgq,execprop,ce);
-		//getTheJenaModel().add(cgq,execprop,ce);
-		//qhmodel.add(cgq,execprop,ce);
+//		//Create execution instance with time
+//		OntClass cexec = getTheJenaModel().getOntClass(METAMODEL_CGEXEC_CLASS);
+//		Individual ce = qhmodel.createIndividual(cexec);
+//		//OntProperty stprop = getTheJenaModel().getOntProperty(METAMODEL_STARTTIME_PROP);
+//
+////		String DATE_FORMAT_NOW = "yyyy-MM-dd HH:mm:ss";
+////		Calendar cal = Calendar.getInstance();
+////		SimpleDateFormat sdf = new SimpleDateFormat(DATE_FORMAT_NOW);
+////		XSDDateTime tim = sdf.format(cal.getTime());;
+//////		qhmodel.add(ce,stprop,(XSDDateTime)val).asCalendar().getTime())
+//		
+//		OntProperty execprop = getTheJenaModel().getOntProperty(METAMODEL_EXEC_PROP);
+//		ingestKGTriple(cgq,execprop,ce);
 		
 
 		String suri;
@@ -683,12 +694,14 @@ public class JenaBasedDialogInferenceProcessor extends JenaBasedSadlInferencePro
 				listOfOutputs = strUriList(outputsList);
 	
 				// Retrieve computational graph
-				queryStr = BUILD_COMP_GRAPH.replaceAll("LISTOFINPUTS", listOfInputs).replaceAll("LISTOFOUTPUTS", listOfOutputs);
+//				queryStr = BUILD_COMP_GRAPH.replaceAll("LISTOFINPUTS", listOfInputs).replaceAll("LISTOFOUTPUTS", listOfOutputs);
+//				com.hp.hpl.jena.query.Query q = QueryFactory.create(queryStr);
+//				qexec = QueryExecutionFactory.create(q, getTheJenaModel()); 
+//				eqnsResults = com.hp.hpl.jena.query.ResultSetFactory.makeRewindable(qexec.execSelect()) ;
 				
-				com.hp.hpl.jena.query.Query q = QueryFactory.create(queryStr);
-				qexec = QueryExecutionFactory.create(q, getTheJenaModel()); 
-				eqnsResults = com.hp.hpl.jena.query.ResultSetFactory.makeRewindable(qexec.execSelect()) ;
+				eqnsResults = retrieveCG(inputsList, outputsList);
 				String queryMode = "prognostic";
+				
 				
 				//if(eqnsResults.getRowNumber() <=0)
 				//	System.out.println("***No models***");
@@ -700,17 +713,42 @@ public class JenaBasedDialogInferenceProcessor extends JenaBasedSadlInferencePro
 					qtype = getTheJenaModel().getOntResource(METAMODEL_PREFIX + "prognostic");
 					//qhmodel.add(cgq, qtypeprop, qtype);
 					ingestKGTriple(cgq, qtypeprop, qtype);
-				} else {
-					queryStr = BUILD_COMP_GRAPH.replaceAll("LISTOFOUTPUTS", listOfInputs).replaceAll("LISTOFINPUTS", listOfOutputs);
-					com.hp.hpl.jena.query.Query qinv = QueryFactory.create(queryStr);
-					qexec = QueryExecutionFactory.create(qinv, getTheJenaModel()); 
-					eqnsResults = com.hp.hpl.jena.query.ResultSetFactory.makeRewindable(qexec.execSelect()) ;
-					if (eqnsResults.size() > 0) {
-							queryMode = "calibration";
-							qtype = getTheJenaModel().getOntResource(METAMODEL_PREFIX + "calibration");
-							//qhmodel.add(cgq, qtypeprop, qtype);	
-							ingestKGTriple(cgq, qtypeprop, qtype);
-					}
+				} else { //Check if inverse query + calibration works.
+					
+					//TODO: need to check if "outputs" (given as inputs) have equations that compute them. If not, move them to inputs list
+
+					
+				//	eqnsResults = retrieveCG(inputsList, outputsList);
+//					
+//					List<OntClass> tempInputsList = new ArrayList<OntClass>(inputsList);
+//					List<OntClass> tempOutputsList = new ArrayList<OntClass>(outputsList);
+//
+//					for(OntClass ic : inputsList) {
+//						String inp = "<" + ic.toString() + ">";
+//						queryStr = LOOKUP_EQNS.replaceAll("LISTOFOUTPUTS", inp);
+//						com.hp.hpl.jena.query.Query qinv = QueryFactory.create(queryStr);
+//						qexec = QueryExecutionFactory.create(qinv, getTheJenaModel()); 
+//						eqnsResults = com.hp.hpl.jena.query.ResultSetFactory.makeRewindable(qexec.execSelect()) ;
+//						if (eqnsResults.size() <= 0) {
+//							tempInputsList.remove(ic);
+//							tempOutputsList.add(ic);
+//						}
+//					}					
+//					
+//					listOfInputs = strUriList(tempInputsList);
+//					listOfOutputs = strUriList(tempOutputsList);
+//					
+//					
+//					queryStr = BUILD_COMP_GRAPH.replaceAll("LISTOFOUTPUTS", listOfInputs).replaceAll("LISTOFINPUTS", listOfOutputs);
+//					com.hp.hpl.jena.query.Query qinv = QueryFactory.create(queryStr);
+//					qexec = QueryExecutionFactory.create(qinv, getTheJenaModel()); 
+//					eqnsResults = com.hp.hpl.jena.query.ResultSetFactory.makeRewindable(qexec.execSelect()) ;
+//					if (eqnsResults.size() > 0) {
+//							queryMode = "calibration";
+//							qtype = getTheJenaModel().getOntResource(METAMODEL_PREFIX + "calibration");
+//							//qhmodel.add(cgq, qtypeprop, qtype);	
+//							ingestKGTriple(cgq, qtypeprop, qtype);
+//					}
 				}
 				
 				dbnEqns = createDbnEqnMap(eqnsResults);
@@ -734,6 +772,22 @@ public class JenaBasedDialogInferenceProcessor extends JenaBasedSadlInferencePro
 				for(int i=0; i<numOfModels; i++) {
 					listOfEqns = modelEqnList[i];
 	
+					//Create execution instance with time
+					OntClass cexec = getTheJenaModel().getOntClass(METAMODEL_CGEXEC_CLASS);
+					Individual ce = qhmodel.createIndividual(cexec);
+					//OntProperty stprop = getTheJenaModel().getOntProperty(METAMODEL_STARTTIME_PROP);
+			
+//					String DATE_FORMAT_NOW = "yyyy-MM-dd HH:mm:ss";
+//					Calendar cal = Calendar.getInstance();
+//					SimpleDateFormat sdf = new SimpleDateFormat(DATE_FORMAT_NOW);
+//					XSDDateTime tim = sdf.format(cal.getTime());;
+////					qhmodel.add(ce,stprop,(XSDDateTime)val).asCalendar().getTime())
+					
+					OntProperty execprop = getTheJenaModel().getOntProperty(METAMODEL_EXEC_PROP);
+					ingestKGTriple(cgq,execprop,ce);
+
+					
+					
 					// Comp Graph instance
 					cgIns = qhmodel.createIndividual(METAMODEL_PREFIX + "CG_" + System.currentTimeMillis(), getTheJenaModel().getOntClass(METAMODEL_CCG));
 					//qhmodel.add(ce, getTheJenaModel().getOntProperty(METAMODEL_COMPGRAPH_PROP), cgIns);
@@ -777,8 +831,9 @@ public class JenaBasedDialogInferenceProcessor extends JenaBasedSadlInferencePro
 			            createCGsubgraphs(cgIns, dbnEqns, dbnOutput, listOfEqns, class2lbl, lbl2value); //, outputInstance);
 
 			            //add outputs to CG if calibration
-						if(queryMode.equals("calibration")) {
-							for(OntClass oc : outputsList) {
+						//if(queryMode.equals("prognostic")) {
+						for(OntClass oc : outputsList) {
+							if (!dbnOutput.values().contains(oc)) {//if no DBN has this output, ie it's an model input 
 								String ocls = oc.toString();
 								String cls = class2lbl.get(ocls);
 								String[] ms = lbl2value.get(cls);  
@@ -786,11 +841,14 @@ public class JenaBasedDialogInferenceProcessor extends JenaBasedSadlInferencePro
 								//getTheJenaModel().add(oinst,RDF.type, ocls);
 								OntProperty outputprop = getTheJenaModel().getOntProperty(METAMODEL_OUTPUT_PROP);
 								//qhmodel.add(cgq, outputprop, oinst);
-								ingestKGTriple(cgq, outputprop, oinst);
+								//TODO link oinst to ce not cgq
+								//ingestKGTriple(cgq, outputprop, oinst);
+								ingestKGTriple(ce, outputprop, oinst);
 								qhmodel.add(oinst, getTheJenaModel().getProperty(VALUE_PROP), ms[0] );
 								qhmodel.add(oinst, getTheJenaModel().getProperty(STDDEV_PROP), ms[1] );
 							}
 						}
+						//}
 
 			            
 						// create ResultSet
@@ -879,6 +937,20 @@ public class JenaBasedDialogInferenceProcessor extends JenaBasedSadlInferencePro
 						listOfEqns = modelEqnList[mod]; //getEqnUrisFromResults(eqnsResults);
 			            eqnsResults.reset();
 
+			            
+			            OntClass cexec = getTheJenaModel().getOntClass(METAMODEL_CGEXEC_CLASS);
+						Individual ce = qhmodel.createIndividual(cexec);
+						//OntProperty stprop = getTheJenaModel().getOntProperty(METAMODEL_STARTTIME_PROP);
+				
+//						String DATE_FORMAT_NOW = "yyyy-MM-dd HH:mm:ss";
+//						Calendar cal = Calendar.getInstance();
+//						SimpleDateFormat sdf = new SimpleDateFormat(DATE_FORMAT_NOW);
+//						XSDDateTime tim = sdf.format(cal.getTime());;
+////						qhmodel.add(ce,stprop,(XSDDateTime)val).asCalendar().getTime())
+						
+						OntProperty execprop = getTheJenaModel().getOntProperty(METAMODEL_EXEC_PROP);
+						ingestKGTriple(cgq,execprop,ce);
+			            
 						cgIns = qhmodel.createIndividual(METAMODEL_PREFIX + "CG_" + System.currentTimeMillis(), getTheJenaModel().getOntClass(METAMODEL_CCG));
 						//getTheJenaModel().add(cgIns, RDF.type, getTheJenaModel().getOntClass(METAMODEL_CCG));
 						// Each comp graph is attached to the execution instance
@@ -988,6 +1060,44 @@ public class JenaBasedDialogInferenceProcessor extends JenaBasedSadlInferencePro
 
 
 
+//TODO
+	private com.hp.hpl.jena.query.ResultSetRewindable retrieveCG(List<OntClass> inputsList, List<OntClass> outputsList) {
+		com.hp.hpl.jena.query.ResultSet eqns;
+		com.hp.hpl.jena.query.ResultSet eqnsRes;
+		
+		String queryStr, inpStr, outpStr;
+		com.hp.hpl.jena.query.Query qinv;
+		QueryExecution qexec;
+		
+		queryStr = BUILD_COMP_GRAPH.replaceAll("LISTOFOUTPUTS", "").replaceAll("LISTOFINPUTS", "");
+		qinv = QueryFactory.create(queryStr);
+		qexec = QueryExecutionFactory.create(qinv, getTheJenaModel());
+		eqnsRes = qexec.execSelect() ;
+		
+		for(OntClass ic : inputsList) 
+			for(OntClass oc : outputsList) {
+				inpStr = "<" + ic.toString() + ">";
+				outpStr = "<" + oc.toString() + ">";
+				queryStr = BUILD_COMP_GRAPH.replaceAll("LISTOFOUTPUTS", outpStr).replaceAll("LISTOFINPUTS", inpStr);
+				qinv = QueryFactory.create(queryStr);
+				qexec = QueryExecutionFactory.create(qinv, getTheJenaModel()); 
+				eqns = qexec.execSelect() ;
+				boolean r = eqns.hasNext();
+				System.out.println(r);
+				if (!eqns.hasNext()) {
+					queryStr = BUILD_COMP_GRAPH.replaceAll("LISTOFOUTPUTS", inpStr).replaceAll("LISTOFINPUTS", outpStr);
+					qinv = QueryFactory.create(queryStr);
+					qexec = QueryExecutionFactory.create(qinv, getTheJenaModel()); 
+					eqns = qexec.execSelect() ;
+				}
+				if (eqns.hasNext() ) {
+					eqnsRes = com.hp.hpl.jena.sparql.util.ResultSetUtils.union(eqnsRes, eqns);
+				}		
+		}			
+		
+		
+		return com.hp.hpl.jena.query.ResultSetFactory.makeRewindable(eqnsRes);
+	}
 
 	private void ingestKGTriple(Individual s, Property pred, RDFNode o) {
 		qhmodel.add(s,pred,o);
