@@ -52,7 +52,15 @@ import com.ge.research.sadl.darpa.aske.preferences.DialogPreferences;
 import com.ge.research.sadl.jena.UtilsForJena;
 import com.ge.research.sadl.processing.SadlConstants;
 import com.ge.research.sadl.reasoner.ConfigurationException;
+import com.ge.research.sadl.reasoner.IReasoner;
+import com.ge.research.sadl.reasoner.ITranslator;
+import com.ge.research.sadl.reasoner.InvalidNameException;
+import com.ge.research.sadl.reasoner.QueryCancelledException;
+import com.ge.research.sadl.reasoner.QueryParseException;
+import com.ge.research.sadl.reasoner.ReasonerNotFoundException;
+import com.ge.research.sadl.reasoner.ResultSet;
 import com.ge.research.sadl.reasoner.IConfigurationManagerForEditing.Scope;
+import com.ge.research.sadl.reasoner.utils.SadlUtils;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
@@ -74,15 +82,16 @@ public class TextProcessor {
 	
 	private AnswerCurationManager answerCurationManager;
 
+	private String textModelFolder;
 	private IConfigurationManagerForIDE textModelConfigMgr;
 
 	private OntModel textModel;
-
-	private String textmodelName;
-
-	private String textmodelPrefix;
-
 	private Map<String, OntModel> textModels;
+	private String textmodelName;	// the name of the model being created by extraction
+	private String textmodelPrefix;	// the prefix of the model being created by extraction
+
+	private String defaultTextModelName = null;
+	private String defaultTextModelPrefix = null;
 
 	public TextProcessor(AnswerCurationManager answerCurationManager, Map<String, String> preferences) {
 		setCurationManager(answerCurationManager);
@@ -92,7 +101,7 @@ public class TextProcessor {
 	public String process(String inputIdentifier, String text, String locality) throws ConfigurationException, IOException {
 		initializeTextModel();
 		try {
-			String msg = "Importing text file '" + inputIdentifier + "'.";
+			String msg = "Importing text from '" + inputIdentifier + "'.";
 			getCurationManager().notifyUser(getTextModelConfigMgr().getModelFolder(), msg);
 		} catch (ConfigurationException e) {
 			// TODO Auto-generated catch block
@@ -149,7 +158,7 @@ public class TextProcessor {
 								String predicate = triple.getAsJsonObject().get("predicate").getAsString();
 								String object = triple.getAsJsonObject().get("object").getAsString();
 								double tripleConfidenceScore = triple.getAsJsonObject().get("tripleConfScore").getAsDouble();
-//								System.out.println("     <" + subject + ", " + predicate + ", " + object + "> (" + tripleConfidenceScore + ")");
+								System.out.println("     <" + subject + ", " + predicate + ", " + object + "> (" + tripleConfidenceScore + ")");
 								if (object.equals("<http://sadl.org/sadlimplicitmodel#ExternalEquation>")) {
 									// equation found
 									eqName = subject;
@@ -206,7 +215,9 @@ public class TextProcessor {
 					}
 				}
 			}
-//			theModel.write(System.out, "N3");
+			System.out.println("The extracted model is:");
+			theModel.write(System.out, "N3");
+			addTextModel(inputIdentifier, theModel);
 		}
 		else {
 			System.err.println("No response received from service " + textToTripleServiceURL);
@@ -361,4 +372,40 @@ public class TextProcessor {
 		this.textmodelPrefix = textmodelPrefix;
 	}
 
+	public String getTextModelFolder() {
+		return textModelFolder;
+	}
+
+	public void setTextModelFolder(String textModelFolder) {
+		this.textModelFolder = textModelFolder;
+	}
+
+	public String getDefaultTextModelName() {
+		return defaultTextModelName;
+	}
+
+	public void setDefaultTextModelName(String defaultTextModelName) {
+		this.defaultTextModelName = defaultTextModelName;
+	}
+
+	public String getDefaultTextModelPrefix() {
+		return defaultTextModelPrefix;
+	}
+
+	public void setDefaultTextModelPrefix(String defaultTextModelPrefix) {
+		this.defaultTextModelPrefix = defaultTextModelPrefix;
+	}
+
+	public ResultSet executeSparqlQuery(String query) throws ConfigurationException, ReasonerNotFoundException, IOException, InvalidNameException, QueryParseException, QueryCancelledException {
+//		ITranslator translator = getTextModelConfigMgr().getTranslator();
+		query = SadlUtils.stripQuotes(query);
+		IReasoner reasoner = getTextModelConfigMgr().getReasoner();
+		if (!reasoner.isInitialized()) {
+			reasoner.setConfigurationManager(getTextModelConfigMgr());
+			reasoner.initializeReasoner(getTextModelConfigMgr().getModelFolder(), getTextModelName(), null);
+		}
+		query = reasoner.prepareQuery(query);
+		ResultSet results =  reasoner.ask(query);
+		return results;
+	}
 }

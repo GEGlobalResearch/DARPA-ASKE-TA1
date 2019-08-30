@@ -54,29 +54,57 @@
 //	?ref <codeBlock> ?cb . ?ref <firstRef> true . ?ref <beginsAt> ?loc .
 //	?ref <usage> ?u} order by ?cb ?loc ?cv".
 
-Print: "Implicit inputs:".	
-Ask: select cb, cv, loc where cb is a CodeBlock and
-	ref has codeBlock cb and ref has isImplicit true and
-	ref has input true and cv has reference ref and
-	ref has beginsAt loc order by cb, loc.
-//Explain: Rule ImplicitInput.	
+//Print: "Implicit inputs:".	
+//Ask: select cb, cv, loc where cb is a CodeBlock and
+//	ref has codeBlock cb and ref has isImplicit true and
+//	ref has input true and cv has reference ref and
+//	ref has beginsAt loc order by cb, loc.
+////Explain: Rule ImplicitInput.	
+//
+//Print: "Implicit outputs:".	
+//Ask: select cb, cv, loc where cb is a CodeBlock and
+//	ref has codeBlock cb and ref has isImplicit true and
+//	ref has output true and cv has reference ref and
+//	ref has beginsAt loc order by cb, loc.
+////Explain: Rule ImplicitOutput.	
+//
+//Print: "Implicit outputs used as setter argument:".	
+//Ask: select cb, cv, loc where cb is a CodeBlock and
+//	ref has codeBlock cb and ref has isImplicit true and
+//	ref has output true and cv has reference ref and
+//	cv has reference ref2 and
+//	ref2 has codeBlock cb and
+//	ref2 has setterArgument true and
+//	ref2 has beginsAt loc order by cb, loc.
+//	
+//Print: "Methods with no implicit inputs or outputs".
+//Ask: "select ?cb where {?cb <rdf:type> <Method> .
+//	FILTER NOT EXISTS {?ref <codeBlock> ?cb .
+//					   ?ref <isImplicit> true}}".
+//
+//Print: "Containment:".
+//Ask: "select ?s ?p ?o where {?s <rdf:type> <Class> . ?s ?p ?o . VALUES ?p {<containedIn>}}".
+//
+//Print: "Method calls:".
+////Graph: "select ?cb ?p ?m where {?m ?p ?mc . ?mc <codeBlock> ?cb . VALUES ?p {<calls>}}".
+//Ask: "select ?cb ?p ?m ?loc where {?m ?p ?mc . ?mc <codeBlock> ?cb . ?mc <beginsAt> ?loc . VALUES ?p {<calls>}} order by ?loc".
+//
+//Print: "External methods:".
+//Ask: "select ?m where {?m <rdf:type> <ExternalMethod>}".
 
-Print: "Implicit outputs:".	
-Ask: select cb, cv, loc where cb is a CodeBlock and
-	ref has codeBlock cb and ref has isImplicit true and
-	ref has output true and cv has reference ref and
-	ref has beginsAt loc order by cb, loc.
-//Explain: Rule ImplicitOutput.	
+Print: "Methods without implicit inputs or outputs:".
+Ask: "select ?m where {?m <rdf:type> <Method> . MINUS {?ref <codeBlock> ?m . ?ref <isImplicit> true} }".
 
-Print: "Implicit outputs used as setter argument:".	
-Ask: select cb, cv, loc where cb is a CodeBlock and
-	ref has codeBlock cb and ref has isImplicit true and
-	ref has output true and cv has reference ref and
-	cv has reference ref2 and
-	ref2 has codeBlock cb and
-	ref2 has setterArgument true and
-	ref2 has beginsAt loc order by cb, loc.
+Print: "Methods doing computation:".
+//Ask: "select ?m where {?m <doesComputation> true}".
+Ask: select m where m doesComputation true.
 		
+Print: "Methods in this code without implicit inputs or outputs and that do computation:".
+Ask InterestingCode: "select ?m ?b ?e where {?m <rdf:type> <Method> . ?m <doesComputation> true . OPTIONAL {?m <beginsAt> ?b . ?m <endsAt> ?e} .
+		MINUS {
+			{?ref <codeBlock> ?m . ?ref <isImplicit> true}
+			UNION {?m <rdf:type> <ExternalMethod>} } }".
+
 //Ask: "select ?c ?r ?b where {?c <rdf:type> CodeVariable .
 //	?c <reference> ?r . ?r <beginsAt> ?b}".
 // 
@@ -91,3 +119,29 @@ Ask: select cb, cv, loc where cb is a CodeBlock and
 // Ask: select m where m is a Method.
  
 // Ask: "select ?cv ?m where {?cv <reference> ?ref . ?ref <isImplicit> true . ?ref <codeBlock> ?m}".
+
+Print: "Arguments and type for CAL_SOS:".
+Ask: "select ?arg ?argName ?argtyp where {<Mach.CAL_SOS> <cmArguments>/<sadllistmodel:rest>*/<sadllistmodel:first> ?arg . ?arg <varName> ?argName . OPTIONAL{?arg <varType> ?argtyp}}".
+
+Print: "Rreturned type for CAL_SOS:".
+Ask: "select ?rettyp where {<Mach.CAL_SOS> <cmReturnTypes>/<sadllistmodel:rest>*/<sadllistmodel:first> ?rettyp}".
+
+//External Mach.CAL_SOS(double T, double G, double R, double Q) returns double: "http://com.ge.research.sadl.darpa.aske.answer/Mach_java#Mach.CAL_SOS".
+//Mach.CAL_SOS has expression (a Script with language Java, with script ""), has expression (a Script with language Python, with script "").
+
+External Mach.CAL_SOS(double T, double G, double R, double Q) returns double: "http://com.ge.research.sadl.darpa.aske.answer/Mach_java#Mach.CAL_SOS".
+Mach.CAL_SOS has expression (a Script with language Java, with script 
+"public double CAL_SOS(double T, double G, double R, double Q) {
+    double WOW = 1 + (G - 1) / (1 + (G - 1) * Math.pow((Q / T), 2) * Math.exp(Q / T) / Math.pow((Math.exp(Q / T) - 1), 2));
+    return (Math.sqrt(32.174 * T * R * WOW));
+}"
+), has expression (a Script with language Python, with script "#!/usr/bin/env python
+\"\"\" generated source for module inputfile \"\"\"
+class Mach(object):
+    \"\"\" generated source for class Mach \"\"\"
+    def CAL_SOS(self, T, G, R, Q):
+        \"\"\" generated source for method CAL_SOS \"\"\"
+        WOW = 1 + (G - 1) / (1 + (G - 1) * Math.pow((Q / T), 2) * Math.exp(Q / T) / Math.pow((Math.exp(Q / T) - 1), 2))
+        return (Math.sqrt(32.174 * T * R * WOW))
+
+").

@@ -35,10 +35,15 @@
  ***********************************************************************/
 package com.ge.research.sadl.darpa.aske.tests;
 
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
+
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 
 import org.junit.Before;
 import org.junit.BeforeClass;
@@ -49,15 +54,19 @@ import org.slf4j.LoggerFactory;
 import com.ge.research.sadl.builder.ConfigurationManagerForIdeFactory;
 import com.ge.research.sadl.builder.IConfigurationManagerForIDE;
 import com.ge.research.sadl.darpa.aske.curation.AnswerCurationManager;
-import com.ge.research.sadl.darpa.aske.curation.DialogAnswerProviderConsoleForTest;
 import com.ge.research.sadl.darpa.aske.curation.AnswerCurationManager.SaveAsSadl;
+import com.ge.research.sadl.darpa.aske.curation.DialogAnswerProviderConsoleForTest;
 import com.ge.research.sadl.darpa.aske.processing.DialogConstants;
 import com.ge.research.sadl.darpa.aske.processing.IDialogAnswerProvider;
 import com.ge.research.sadl.darpa.aske.processing.imports.IModelFromCodeExtractor;
 import com.ge.research.sadl.darpa.aske.processing.imports.JavaModelExtractorJP;
 import com.ge.research.sadl.owl2sadl.OwlImportException;
-import com.ge.research.sadl.owl2sadl.OwlToSadl;
 import com.ge.research.sadl.reasoner.ConfigurationException;
+import com.ge.research.sadl.reasoner.InvalidNameException;
+import com.ge.research.sadl.reasoner.QueryCancelledException;
+import com.ge.research.sadl.reasoner.QueryParseException;
+import com.ge.research.sadl.reasoner.ReasonerNotFoundException;
+import com.ge.research.sadl.reasoner.ResultSet;
 
 public class JavaImportJPTests {
 	private static final Logger LOGGER = LoggerFactory.getLogger(JavaImportJPTests.class);
@@ -124,7 +133,8 @@ public class JavaImportJPTests {
 		String defaultCodeModelName = "http://com.ge.research.darpa.aske.ta1.explore/" + defaultCodeModelPrefix;
 		jme.setDefaultCodeModelPrefix(defaultCodeModelPrefix);
 		jme.setDefaultCodeModelName(defaultCodeModelName);
-		jme.process("TemperatureConversion class", javaContent,false);
+		jme.setIncludeSerialization(false);
+		jme.process("TemperatureConversion class", javaContent);
 		
 //		String content = smg.generateSadlModel(jme, "http://sadl.org/Temperature.sadl");
 //		System.out.println("SADL Model Output:\n" + content);
@@ -171,7 +181,8 @@ public class JavaImportJPTests {
 		String defaultCodeModelName = "http://com.ge.research.darpa.aske.ta1.explore/" + defaultCodeModelPrefix;
 		jme.setDefaultCodeModelPrefix(defaultCodeModelPrefix);
 		jme.setDefaultCodeModelName(defaultCodeModelName);
-		jme.process("TemperatureConversion class", javaContent, false);
+		jme.setIncludeSerialization(false);
+		jme.process("TemperatureConversion class", javaContent);
 //		String content = smg.generateSadlModel(jme, "http://sadl.org/Temperature.sadl");
 //		System.out.println("SADL Model Output:\n" + content);
 	}
@@ -220,7 +231,7 @@ public class JavaImportJPTests {
 		String defaultCodeModelName = "http://com.ge.research.darpa.aske.ta1.explore/" + defaultCodeModelPrefix;
 		jme.setDefaultCodeModelPrefix(defaultCodeModelPrefix);
 		jme.setDefaultCodeModelName(defaultCodeModelName);
-		jme.process("PhysicalObject class", javaContent, false);
+		jme.process("PhysicalObject class", javaContent);
 //		String content = smg.generateSadlModel(jme, "http://sadl.org/Temperature.sadl");
 //		System.out.println("SADL Model Output:\n" + content);
 	}
@@ -240,7 +251,8 @@ public class JavaImportJPTests {
 		String defaultCodeModelName = "http://com.ge.research.darpa.aske.ta1.explore/" + defaultCodeModelPrefix;
 		jme.setDefaultCodeModelPrefix(defaultCodeModelPrefix);
 		jme.setDefaultCodeModelName(defaultCodeModelName);
-		jme.process("Isentrop.java", javaContent, false);
+		jme.setIncludeSerialization(false);
+		jme.process("Isentrop.java", javaContent);
 //		String content = smg.generateSadlModel(jme, "http://sadl.org/Temperature.sadl");
 //		System.out.println("SADL Model Output:\n" + content);
 	}
@@ -248,10 +260,7 @@ public class JavaImportJPTests {
 	@Test
 	public void test_05() throws IOException, ConfigurationException, OwlImportException {
 		System.out.println(new File(".").getAbsoluteFile().getAbsolutePath());
-		File sourceFile = new File(new File(".").getAbsolutePath() + "/resources/Mach.java");
-//		ClassLoader classLoader = getClass().getClassLoader();
-//		File sourceFile = new File(classLoader.getResource("/Isentrop.java").getFile());		
-//		String javaContent = readFile(sourceFile);
+		File codeFile = new File(new File(".").getAbsolutePath() + "/resources/Mach.java");
 		IConfigurationManagerForIDE cm = ConfigurationManagerForIdeFactory.getConfigurationManagerForIDE(getDomainProjectModelFolder(), null);
 		AnswerCurationManager acm = new AnswerCurationManager(getDomainProjectModelFolder(), cm, null);
 		acm.getExtractionProcessor().getCodeExtractor().setCodeModelFolder(getExtractionProjectModelFolder());
@@ -259,7 +268,7 @@ public class JavaImportJPTests {
 		IDialogAnswerProvider dapcft = new DialogAnswerProviderConsoleForTest();
 		cm.addPrivateKeyValuePair(DialogConstants.DIALOG_ANSWER_PROVIDER, dapcft);
 		
-		boolean includeSerialization = true;
+		boolean includeSerialization = true; //false; //true;
 		
 		String defaultCodeModelPrefix = includeSerialization ? "MachSz" : "Mach";
 		String defaultCodeModelName = "http://com.ge.research.darpa.aske.ta1.explore/" + defaultCodeModelPrefix;
@@ -269,25 +278,129 @@ public class JavaImportJPTests {
 		String genFolder = new File(acm.getExtractionProcessor().getCodeExtractor().getCodeModelFolder()).getParent() + 
 				"/" + DialogConstants.EXTRACTED_MODELS_FOLDER_PATH_FRAGMENT;
 		new File(genFolder).mkdirs();
-		String owlFileName = genFolder + "/" + defaultCodeModelPrefix + ".owl";
+//		String owlFileName = genFolder + "/" + defaultCodeModelPrefix + ".owl";
 
-		acm.getExtractionProcessor().getCodeExtractor().addCodeFile(sourceFile);
-		acm.processImports(SaveAsSadl.SaveAsSadl.SaveAsSadl);
+		acm.getExtractionProcessor().getCodeExtractor().addCodeFile(codeFile);
+		acm.getExtractionProcessor().getCodeExtractor().setIncludeSerialization(includeSerialization);
+		acm.processImports(SaveAsSadl.SaveAsSadl);
+		
+		String query = "select ?m ?b ?e ?s where {?m <rdf:type> <Method> . ?m <doesComputation> true . OPTIONAL {?m <beginsAt> ?b . ?m <endsAt> ?e . ?m <serialization> ?s} .\r\n" + 
+				"		MINUS {\r\n" + 
+				"			{?ref <codeBlock> ?m . ?ref <isImplicit> true}\r\n" + 
+				"			UNION {?m <rdf:type> <ExternalMethod>} } }";
+		try {
+			ResultSet rs =acm.getCodeExtractor().executeSparqlQuery(query);
+			System.out.println(rs.toStringWithIndent(5));
+		} catch (ReasonerNotFoundException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (InvalidNameException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (QueryParseException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (QueryCancelledException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
 		
 //		jme.process("Mach.java", javaContent, includeSerialization);
 //		String content = smg.generateSadlModel(jme, "http://sadl.org/Temperature.sadl");
 //		System.out.println("SADL Model Output:\n" + content);
 //		cm.saveOwlFile(acm.getExtractionProcessor().getCodeModel(), 
 //				acm.getExtractionProcessor().getCodeModelName(), owlFileName);
-		OwlToSadl ots = new OwlToSadl(acm.getExtractionProcessor().getCodeModel());
-		String sadlFN = owlFileName + ".sadl";
-		File sf = new File(sadlFN);
-		if (sf.exists()) {
-			sf.delete();
-		}
-		ots.saveSadlModel(owlFileName + ".sadl");
+//		OwlToSadl ots = new OwlToSadl(acm.getExtractionProcessor().getCodeModel());
+//		String sadlFN = owlFileName + ".sadl";
+//		File sf = new File(sadlFN);
+//		if (sf.exists()) {
+//			sf.delete();
+//		}
+//		ots.saveSadlModel(owlFileName + ".sadl");
 	}
 	
+	@Test
+	public void test_06() throws IOException, ConfigurationException, OwlImportException {
+		// remove OWL and SADL files
+		File owlF = new File("C:\\Users\\200005201\\sadl3-master6\\git\\DARPA-ASKE-TA1\\Ontology\\M5\\ExtractedModels\\Mach.java.owl");
+		
+		if (owlF.exists()) {
+			owlF.delete();
+			assertFalse(owlF.exists());
+		}
+		File sadlF = new File("C:\\Users\\200005201\\sadl3-master6\\git\\DARPA-ASKE-TA1\\Ontology\\M5\\ExtractedModels\\Mach.java.owl.sadl");
+		if (sadlF.exists()) {
+			sadlF.delete();
+			assertFalse(sadlF.exists());
+		}
+		
+		System.out.println(new File(".").getAbsoluteFile().getAbsolutePath());
+		File codeFile = new File(new File(".").getAbsolutePath() + "/resources/Mach.java");
+		IConfigurationManagerForIDE cm = ConfigurationManagerForIdeFactory.getConfigurationManagerForIDE(getDomainProjectModelFolder(), null);
+		AnswerCurationManager acm = new AnswerCurationManager(getDomainProjectModelFolder(), cm, null);
+		acm.getExtractionProcessor().getCodeExtractor().setCodeModelFolder(getExtractionProjectModelFolder());
+		
+		IDialogAnswerProvider dapcft = new DialogAnswerProviderConsoleForTest();
+		cm.addPrivateKeyValuePair(DialogConstants.DIALOG_ANSWER_PROVIDER, dapcft);
+		
+		boolean includeSerialization = true; //false; //true;
+		
+		String defaultCodeModelPrefix = includeSerialization ? "MachSz" : "Mach";
+		String defaultCodeModelName = "http://com.ge.research.darpa.aske.ta1.explore/" + defaultCodeModelPrefix;
+		acm.getExtractionProcessor().getCodeExtractor().setDefaultCodeModelPrefix(defaultCodeModelPrefix);
+		acm.getExtractionProcessor().getCodeExtractor().setDefaultCodeModelName(defaultCodeModelName);
+		
+		String genFolder = new File(acm.getExtractionProcessor().getCodeExtractor().getCodeModelFolder()).getParent() + 
+				"/" + DialogConstants.EXTRACTED_MODELS_FOLDER_PATH_FRAGMENT;
+		new File(genFolder).mkdirs();
+//		String owlFileName = genFolder + "/" + defaultCodeModelPrefix + ".owl";
+
+		acm.getExtractionProcessor().getCodeExtractor().addCodeFile(codeFile);
+		acm.getExtractionProcessor().getCodeExtractor().setIncludeSerialization(includeSerialization);
+		acm.processImports(SaveAsSadl.AskUserSaveAsSadl);
+		assertTrue(owlF.exists() || sadlF.exists());
+		
+//		String query = "select ?m ?b ?e ?s where {?m <rdf:type> <Method> . ?m <doesComputation> true . OPTIONAL {?m <beginsAt> ?b . ?m <endsAt> ?e . ?m <serialization> ?s} .\r\n" + 
+//				"		MINUS {\r\n" + 
+//				"			{?ref <codeBlock> ?m . ?ref <isImplicit> true}\r\n" + 
+//				"			UNION {?m <rdf:type> <ExternalMethod>} } }";
+//		try {
+//			ResultSet rs =acm.getCodeExtractor().executeSparqlQuery(query);
+//
+//			List<Object> args = new ArrayList<Object>();
+//			args.add(rs);
+			
+//		dapcft.addCurationManagerInitiatedContent(acm, "importCodeSnippetToComputationalGraph", null, "Would you like to import any of these models into the computational graph?");
+		
+//		} catch (ReasonerNotFoundException e) {
+//			// TODO Auto-generated catch block
+//			e.printStackTrace();
+//		} catch (InvalidNameException e) {
+//			// TODO Auto-generated catch block
+//			e.printStackTrace();
+//		} catch (QueryParseException e) {
+//			// TODO Auto-generated catch block
+//			e.printStackTrace();
+//		} catch (QueryCancelledException e) {
+//			// TODO Auto-generated catch block
+//			e.printStackTrace();
+//		}
+		
+		
+//		jme.process("Mach.java", javaContent, includeSerialization);
+//		String content = smg.generateSadlModel(jme, "http://sadl.org/Temperature.sadl");
+//		System.out.println("SADL Model Output:\n" + content);
+//		cm.saveOwlFile(acm.getExtractionProcessor().getCodeModel(), 
+//				acm.getExtractionProcessor().getCodeModelName(), owlFileName);
+//		OwlToSadl ots = new OwlToSadl(acm.getExtractionProcessor().getCodeModel());
+//		String sadlFN = owlFileName + ".sadl";
+//		File sf = new File(sadlFN);
+//		if (sf.exists()) {
+//			sf.delete();
+//		}
+//		ots.saveSadlModel(owlFileName + ".sadl");
+	}
 	private String readFile(File file) throws IOException {
 	    BufferedReader reader = new BufferedReader(new FileReader (file));
 	    String         line = null;

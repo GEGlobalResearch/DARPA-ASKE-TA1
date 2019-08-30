@@ -59,19 +59,30 @@ import org.eclipse.emf.common.util.URI;
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.ecore.resource.Resource;
 import org.eclipse.emf.ecore.resource.ResourceSet;
+import org.eclipse.xtext.AbstractRule;
 import org.eclipse.xtext.EcoreUtil2;
+import org.eclipse.xtext.ParserRule;
+import org.eclipse.xtext.RuleCall;
 import org.eclipse.xtext.generator.IFileSystemAccess2;
+import org.eclipse.xtext.nodemodel.ICompositeNode;
+import org.eclipse.xtext.nodemodel.INode;
+import org.eclipse.xtext.nodemodel.SyntaxErrorMessage;
 import org.eclipse.xtext.nodemodel.util.NodeModelUtils;
+import org.eclipse.xtext.resource.XtextSyntaxDiagnostic;
 import org.eclipse.xtext.util.CancelIndicator;
 import org.eclipse.xtext.validation.CheckMode;
 import org.eclipse.xtext.validation.CheckType;
+import org.eclipse.xtext.xbase.lib.InputOutput;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.ge.research.sadl.darpa.aske.curation.AnswerCurationManager;
+import com.ge.research.sadl.darpa.aske.curation.AnswerCurationManager.Agent;
 import com.ge.research.sadl.darpa.aske.dialog.AnswerCMStatement;
 import com.ge.research.sadl.darpa.aske.dialog.BuildStatement;
 import com.ge.research.sadl.darpa.aske.dialog.HowManyValuesStatement;
 import com.ge.research.sadl.darpa.aske.dialog.ModifiedAskStatement;
+import com.ge.research.sadl.darpa.aske.dialog.MyNameIsStatement;
 import com.ge.research.sadl.darpa.aske.dialog.WhatIsStatement;
 import com.ge.research.sadl.darpa.aske.dialog.WhatStatement;
 import com.ge.research.sadl.darpa.aske.dialog.WhatValuesStatement;
@@ -111,7 +122,10 @@ import com.ge.research.sadl.sADL.SadlResource;
 import com.ge.research.sadl.sADL.SadlSimpleTypeReference;
 import com.ge.research.sadl.sADL.SadlStatement;
 import com.ge.research.sadl.sADL.SadlTypeReference;
+import com.ge.research.sadl.services.SADLGrammarAccess;
 import com.ge.research.sadl.utils.ResourceManager;
+import com.google.common.collect.Iterables;
+import com.google.inject.Inject;
 import com.hp.hpl.jena.ontology.Individual;
 import com.hp.hpl.jena.ontology.Ontology;
 import com.hp.hpl.jena.rdf.model.RDFWriter;
@@ -122,6 +136,8 @@ public class JenaBasedDialogModelProcessor extends JenaBasedSadlModelProcessor {
 	
 	private String textServiceUrl = null;
 	private String cgServiceUrl = null;
+	private DialogContent dialogContent;
+	private AnswerCurationManager answerCurationManager = null;
 
 	@Override
 	public void onValidate(Resource resource, ValidationAcceptor issueAcceptor, CheckMode mode, ProcessorContext context) {
@@ -236,7 +252,7 @@ public class JenaBasedDialogModelProcessor extends JenaBasedSadlModelProcessor {
 		
 		if (model.eContents().size() < 1) {
 			// there are no imports
-			MixedInitiativeTextualResponse mir = new MixedInitiativeTextualResponse("Please add at least one import of a domain namespace");
+			MixedInitiativeTextualResponse mir = new MixedInitiativeTextualResponse("Please replace this reminder with at least one import of a domain namespace");
 			int endOffset = NodeModelUtils.findActualNodeFor(model).getEndOffset();
 			mir.setInsertionPoint(endOffset);
 			OntModelProvider.addPrivateKeyValuePair(resource, DialogConstants.LAST_DIALOG_COMMAND, mir);
@@ -264,10 +280,31 @@ public class JenaBasedDialogModelProcessor extends JenaBasedSadlModelProcessor {
 
 		initializePreferences(context);
 
+		// Check for a syntactically valid AST; if it isn't then don't process so that conversations will only be valid ones
+	    boolean validAST = isAstSyntaxValid(model);	
+	    if (!validAST) {
+	    	return;
+	    }
+	    try {
+			getAnswerCurationManager().resetConversation();	// need to reset for new pass through model elements (last is saved)
+		} catch (IOException e2) {
+			// TODO Auto-generated catch block
+			e2.printStackTrace();
+		}
+
 		// create validator for expressions
 		initializeModelValidator();
 		initializeAllImpliedPropertyClasses();
 		initializeAllExpandedPropertyClasses();
+		try {
+			initializeDialogContent();
+		} catch (ConversationException e1) {
+			// TODO Auto-generated catch block
+			e1.printStackTrace();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 
 		// process rest of parse tree
 		List<SadlModelElement> elements = model.getElements();
@@ -275,12 +312,21 @@ public class JenaBasedDialogModelProcessor extends JenaBasedSadlModelProcessor {
 			Iterator<SadlModelElement> elitr = elements.iterator();
 			SadlModelElement lastElement = null;
 			AnswerCMStatement lastACMQuestion = null;
+//			if (!elitr.hasNext() && !model.getImports().isEmpty()) {
+//				// 
+//				MixedInitiativeTextualResponse mir = new MixedInitiativeTextualResponse("What is your name?", false);
+//				int endOffset = NodeModelUtils.findActualNodeFor(model).getEndOffset();
+//				mir.setInsertionPoint(endOffset);
+//				OntModelProvider.addPrivateKeyValuePair(resource, DialogConstants.LAST_DIALOG_COMMAND, mir);
+//				
+//			}
 			while (elitr.hasNext()) {
 				// check for cancelation from time to time
 				if (cancelIndicator.isCanceled()) {
 					throw new OperationCanceledException();
 				}
 				SadlModelElement element = elitr.next();
+				boolean stmtComplete = statementIsComplete(element);
         		if (element instanceof EObject) {
         			String txt = NodeModelUtils.findActualNodeFor((EObject) element).getText();
         			if (!(txt.endsWith(".") || txt.endsWith("?"))) {
@@ -298,11 +344,15 @@ public class JenaBasedDialogModelProcessor extends JenaBasedSadlModelProcessor {
 				}
 				if (!(element instanceof AnswerCMStatement)) {
 					// this is user input
+					if (element instanceof MyNameIsStatement) {
+						System.out.println("User name is " + ((MyNameIsStatement)element).getAnswer());
+					}
 					if (element instanceof ModifiedAskStatement ||
 							element instanceof WhatStatement ||
 							element instanceof HowManyValuesStatement ||
 							element instanceof BuildStatement) {
 						lastElement = element;
+						processUserInputElement(lastElement);
 					}
 					else {
 						boolean treatAsAnswerToBackend = false;
@@ -326,12 +376,18 @@ public class JenaBasedDialogModelProcessor extends JenaBasedSadlModelProcessor {
 //								            mie.getRespondTo().accept(response);
 											dap.removeMixedInitiativeElement(question);	// question has been answered
 											treatAsAnswerToBackend = true;
+											getAnswerCurationManager().addToConversation(new ConversationElement(getAnswerCurationManager().getConversation(), mie, Agent.USER));
 										}
 										else {
 											treatAsAnswerToBackend = true;
+											String answer = getResponseFromSadlStatement(element);
+											getAnswerCurationManager().addToConversation(new ConversationElement(getAnswerCurationManager().getConversation(), answer, Agent.USER));
 										}
 									}
 								} catch (ConfigurationException e) {
+									// TODO Auto-generated catch block
+									e.printStackTrace();
+								} catch (IOException e) {
 									// TODO Auto-generated catch block
 									e.printStackTrace();
 								}
@@ -354,11 +410,20 @@ public class JenaBasedDialogModelProcessor extends JenaBasedSadlModelProcessor {
 					//	clear last command
 					OntModelProvider.clearPrivateKeyValuePair(resource, DialogConstants.LAST_DIALOG_COMMAND);
 					lastElement = null;
+					processAnswerCMStatement((AnswerCMStatement)element);
 				}
 			}
 			if (lastElement != null) {
 				// this is the one to which the CM should respond; keep it for the DialogAnswerProvider
-				processUserInputElement(lastElement);
+//				processUserInputElement(lastElement);
+			}
+			
+			logger.debug("At end of model processing, conversation is:");
+			try {
+				logger.debug(getAnswerCurationManager().getConversation().toString());
+			} catch (IOException e1) {
+				// TODO Auto-generated catch block
+				e1.printStackTrace();
 			}
 			
 			File saveFile = getModelFile(resource);
@@ -386,6 +451,76 @@ public class JenaBasedDialogModelProcessor extends JenaBasedSadlModelProcessor {
 				OntModelProvider.attach(model.eResource(), getTheJenaModel(), getModelName(), getModelAlias());
 			}
 		}
+	}
+
+//	@Inject
+//	private SADLGrammarAccess grammarAccess;
+//
+	private boolean statementIsComplete(SadlModelElement element) {
+	    Iterable<XtextSyntaxDiagnostic> syntaxErrors = Iterables.<XtextSyntaxDiagnostic>filter(element.eResource().getErrors(), XtextSyntaxDiagnostic.class);
+		if (syntaxErrors.iterator().hasNext()) {
+			ICompositeNode node = NodeModelUtils.findActualNodeFor(element);
+			if (node.getSyntaxErrorMessage() == null) {
+				return true;
+			}
+			return false;
+		}
+//	    final ICompositeNode node = NodeModelUtils.findActualNodeFor(element);
+//        if ((node != null)) {
+//          final INode lastChild = node.getLastChild();
+//          if ((lastChild != null)) {
+//            final EObject grammarElement = lastChild.getGrammarElement();
+//            if ((grammarElement instanceof RuleCall)) {
+//              AbstractRule _rule = ((RuleCall)grammarElement).getRule();
+//              final ParserRule EOS = this.grammarAccess.getEOSRule();
+//              boolean _tripleEquals = (_rule == EOS);  //_rule.getName().equals(EOS.getName());
+//              String _text = node.getText();
+//              if (_tripleEquals) {
+//                String _plus = ("SADL statement is complete: " + _text.trim());
+//                InputOutput.<String>println(_plus);
+//                return true;
+//              }
+//              else {
+//                  String _plus = ("SADL statement is NOT complete: " + _text.trim());
+//                  InputOutput.<String>println(_plus);
+//              }
+//            }
+//          }
+//        }
+		return true;
+	}
+
+	private void initializeDialogContent() throws ConversationException, IOException {
+		Resource resource = getCurrentResource();
+		AnswerCurationManager cm = getAnswerCurationManager();
+		DialogContent dc = new DialogContent(resource, cm);
+		setDialogContent(dc);
+	}
+
+	private AnswerCurationManager getAnswerCurationManager() throws IOException {
+		if (answerCurationManager == null) {
+			Object cm = getConfigMgr().getPrivateKeyValuePair(DialogConstants.ANSWER_CURATION_MANAGER);
+			if (cm != null) {
+				if (cm instanceof AnswerCurationManager) {
+					answerCurationManager  = (AnswerCurationManager) cm;
+				}
+			}
+			else {
+				// need to get a new one
+// TODO get preferences				
+				answerCurationManager = new AnswerCurationManager(getConfigMgr().getModelFolder(), getConfigMgr(), null);
+				getConfigMgr().addPrivateKeyValuePair(DialogConstants.ANSWER_CURATION_MANAGER, answerCurationManager);
+			}
+		}
+		return answerCurationManager;
+	}
+	
+	private void setDialogContent(DialogContent dc) {
+		dialogContent = dc;
+	}
+
+	public DialogContent getDialogContent() {
+		return dialogContent;
 	}
 
 	private String getResponseFromSadlStatement(SadlModelElement element) {
@@ -529,6 +664,7 @@ public class JenaBasedDialogModelProcessor extends JenaBasedSadlModelProcessor {
 				throw new JenaProcessorException("onValidate for element of type '"
 						+ element.getClass().getCanonicalName() + "' not implemented");
 			}
+			getAnswerCurationManager().addToConversation(new ConversationElement(getAnswerCurationManager().getConversation(), OntModelProvider.getPrivateKeyValuePair(element.eResource(), DialogConstants.LAST_DIALOG_COMMAND), Agent.USER));
 		} catch (JenaProcessorException e) {
 			addError(e.getMessage(), element);
 		} catch (Exception e) {
@@ -536,6 +672,11 @@ public class JenaBasedDialogModelProcessor extends JenaBasedSadlModelProcessor {
 		}
 	}	
 	
+	private void processAnswerCMStatement(AnswerCMStatement element) {
+//		element.
+		
+	}
+
 	private void processStatement(BuildStatement element) {
 		SadlResource modelSr = ((BuildStatement)element).getTarget();
 		String modelUri = getDeclarationExtensions().getConceptUri(modelSr);
@@ -570,6 +711,8 @@ public class JenaBasedDialogModelProcessor extends JenaBasedSadlModelProcessor {
 			}
 //			System.out.println("ModifiedAskStatement: " + query.toDescriptiveString());
 			OntModelProvider.addPrivateKeyValuePair(stmt.eResource(), DialogConstants.LAST_DIALOG_COMMAND, query);
+			getAnswerCurationManager().addToConversation(new ConversationElement(getAnswerCurationManager().getConversation(), query, Agent.USER));
+
 		} catch (CircularDefinitionException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -585,12 +728,19 @@ public class JenaBasedDialogModelProcessor extends JenaBasedSadlModelProcessor {
 		} catch (JenaProcessorException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
 		}
 	}
 
 	private void processStatement(WhatStatement stmt) {
 		if (stmt.getStmt() instanceof WhatIsStatement) {
 			EObject whatIsTarget = ((WhatIsStatement)stmt.getStmt()).getTarget();
+			if (whatIsTarget == null) {
+				// this is a request for user name
+				
+			}
 			if (whatIsTarget instanceof Declaration) {
 				whatIsTarget = ((Declaration)whatIsTarget).getType();
 				if (whatIsTarget instanceof SadlSimpleTypeReference) {
@@ -812,6 +962,9 @@ public class JenaBasedDialogModelProcessor extends JenaBasedSadlModelProcessor {
 				"cmArguments describes Method with a single value of type CodeVariable List.\r\n" + 
 				"cmReturnTypes describes Method with a single value of type string List.\r\n" + 
 				"cmSemanticReturnTypes describes Method with a single value of type string List.\r\n" + 
+				"doesComputation describes Method with a single value of type boolean.\r\n" +
+				"calls describes Method with values of type MethodCall.\r\n" +
+				"ExternalMethod is a type of Method.\r\n" +
 				"\r\n" + 
 				"// The reference to a CodeVariable can be its definition (Defined),\r\n" + 
 				"//	an assignment or reassignment (Reassigned), or just a reference\r\n" + 
@@ -831,6 +984,15 @@ public class JenaBasedDialogModelProcessor extends JenaBasedSadlModelProcessor {
 				" 	described by setterArgument (note \"is this variable input to a setter?\") with a single value of type boolean\r\n" + 
 				" 	described by comment with values of type Comment.\r\n" + 
 				"	\r\n" + 
+				"MethodCall is a type of CodeElement\r\n" + 
+				"	described by codeBlock with a single value of type CodeBlock\r\n" + 
+				"	described by inputMapping with values of type InputMapping,\r\n" + 
+				"	described by returnedMapping with values of type OutputMapping.\r\n" + 
+				"MethodCallMapping is a class,\r\n" + 
+				"	described by callingVariable with a single value of type CodeVariable,\r\n" + 
+				"	described by calledVariable with a single value of type CodeVariable.\r\n" + 
+				"{InputMapping, OutputMapping} are types of MethodCallMapping.\r\n" + 
+				"\r\n" +
 				"Comment (note \"CodeBlock and Reference can have a Comment\") is a type of CodeElement\r\n" + 
 				" 	described by commentContent with a single value of type string.	\r\n" + 
 				"\r\n" + 

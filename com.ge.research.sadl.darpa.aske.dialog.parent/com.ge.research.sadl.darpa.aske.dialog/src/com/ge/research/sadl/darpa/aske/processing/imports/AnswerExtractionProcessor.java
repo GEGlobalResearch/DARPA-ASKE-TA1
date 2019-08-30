@@ -239,8 +239,8 @@ public class AnswerExtractionProcessor {
 
 	public String translateMethodJavaToPython(String className, String methodCode) throws IOException {
 		StringBuilder sb = new StringBuilder();
-//		String baseServiceUrl = "http://vesuvius-dev.crd.ge.com:19092/darpa/aske/";
-		String baseServiceUrl = "http://vesuvius063.crd.ge.com:19092/darpa/aske/";
+		String baseServiceUrl = "http://vesuvius-dev.crd.ge.com:19092/darpa/aske/";
+//		String baseServiceUrl = "http://vesuvius063.crd.ge.com:19092/darpa/aske/";
 		
 		String translateMethodServiceURL = baseServiceUrl + "translate/method/";
 		URL serviceUrl = new URL(translateMethodServiceURL);			

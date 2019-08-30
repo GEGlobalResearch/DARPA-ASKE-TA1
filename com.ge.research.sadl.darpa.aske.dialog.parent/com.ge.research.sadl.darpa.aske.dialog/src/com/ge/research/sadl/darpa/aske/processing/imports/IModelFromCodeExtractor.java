@@ -43,6 +43,11 @@ import java.util.Map;
 
 import com.ge.research.sadl.builder.IConfigurationManagerForIDE;
 import com.ge.research.sadl.reasoner.ConfigurationException;
+import com.ge.research.sadl.reasoner.InvalidNameException;
+import com.ge.research.sadl.reasoner.QueryCancelledException;
+import com.ge.research.sadl.reasoner.QueryParseException;
+import com.ge.research.sadl.reasoner.ReasonerNotFoundException;
+import com.ge.research.sadl.reasoner.ResultSet;
 import com.hp.hpl.jena.ontology.OntModel;
 
 public interface IModelFromCodeExtractor {
@@ -89,7 +94,7 @@ public interface IModelFromCodeExtractor {
 	
 	IConfigurationManagerForIDE getCodeModelConfigMgr();
 
-	boolean process(String inputIdentifier, String content, boolean includeSerialization) throws ConfigurationException, IOException;
+	boolean process(String inputIdentifier, String content) throws ConfigurationException, IOException;
 
 //	Map<String, Tag> getTagMap();
 //
@@ -114,5 +119,12 @@ public interface IModelFromCodeExtractor {
 	Map<String,OntModel> getCodeModels();
 
 	OntModel getCodeModel(String key);
+
+	boolean isIncludeSerialization();
+
+	void setIncludeSerialization(boolean includeSerialization);
+
+	ResultSet executeSparqlQuery(String query) throws ConfigurationException, ReasonerNotFoundException, IOException,
+			InvalidNameException, QueryParseException, QueryCancelledException;
 
 }

@@ -37,7 +37,7 @@ uri "http://answer/build.dialog" alias bldlg.
 
 import "http://sadl.org/SpeedOfSound.sadl".
 //Build specificGasConstantEq.
-//import "http://com.ge.research.sadl.darpa.aske.answer/Mach".
+//import "http://com.ge.research.sadl.darpa.aske.answer/Mach_java".
 //Build Mach.CAL_SOS.
 
 

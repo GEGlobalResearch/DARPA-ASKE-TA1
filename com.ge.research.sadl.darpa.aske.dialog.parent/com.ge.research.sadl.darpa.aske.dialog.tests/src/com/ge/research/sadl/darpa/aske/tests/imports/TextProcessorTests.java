@@ -41,7 +41,6 @@ import java.io.FileReader;
 import java.io.IOException;
 
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Test;
 
 import com.ge.research.sadl.builder.ConfigurationManagerForIdeFactory;
@@ -53,71 +52,120 @@ import com.ge.research.sadl.darpa.aske.processing.DialogConstants;
 import com.ge.research.sadl.darpa.aske.processing.IDialogAnswerProvider;
 import com.ge.research.sadl.darpa.aske.processing.imports.TextProcessor;
 import com.ge.research.sadl.reasoner.ConfigurationException;
+import com.ge.research.sadl.reasoner.InvalidNameException;
+import com.ge.research.sadl.reasoner.QueryCancelledException;
+import com.ge.research.sadl.reasoner.QueryParseException;
+import com.ge.research.sadl.reasoner.ReasonerNotFoundException;
+import com.ge.research.sadl.reasoner.ResultSet;
 
 public class TextProcessorTests {
 
-	private String codeExtractionProjectModelFolder;
+	private String textExtractionProjectModelFolder;
 	private String domainProjectModelFolder;
 
 	@Before
 	public void setUp() throws Exception {
+		String codeExtractionKbRoot = "C:/Users/200005201/sadl3-master6/git/DARPA-ASKE-TA1/Ontology/M5";
+		File codeExtractionPrjFolder = new File(codeExtractionKbRoot);
+		setExtractionProjectModelFolder(codeExtractionPrjFolder.getCanonicalPath() + "/OwlModels");
+		
+		String domainModelKbRoot = "C:/Users/200005201/sadl3-master6/git/DARPA-ASKE-TA1/Ontology/M5";
+		File outputPrjFolder = new File(domainModelKbRoot);
+		setDomainProjectModelFolder(outputPrjFolder.getCanonicalPath() + "/OwlModels");
 	}
 
-	@Ignore
+//	@Ignore
 	@Test
 	public void test() throws ConfigurationException, IOException {
+		File sourceFile = new File(new File(".").getAbsolutePath() + "/resources/");
+		File domainProjectFolder = new File(sourceFile + "/TestSadlProject");
+		File domainModelFolder = new File(domainProjectFolder.getAbsoluteFile() + "/OwlModels");
+		setDomainProjectModelFolder(domainModelFolder.getCanonicalPath());
 		TextProcessor tp = new TextProcessor(new AnswerCurationManager(domainProjectModelFolder, 
 				ConfigurationManagerForIdeFactory.getConfigurationManagerForIDE(domainProjectModelFolder, null), null), null);
+		tp.setTextmodelPrefix("sos");
+		tp.setTextmodelName("http://darpa.aske.ta1.ge/sostest");
 		tp.process(null, "a^2 = R * T * gamma", null);
 	}
 
-	@Ignore
+//	@Ignore
 	@Test
 	public void test2() throws ConfigurationException, IOException {
-		TextProcessor tp = new TextProcessor(null, null);
+		File sourceFile = new File(new File(".").getAbsolutePath() + "/resources/");
+		File domainProjectFolder = new File(sourceFile + "/TestSadlProject");
+		File domainModelFolder = new File(domainProjectFolder.getAbsoluteFile() + "/OwlModels");
+		setDomainProjectModelFolder(domainModelFolder.getCanonicalPath());
+		TextProcessor tp = new TextProcessor(new AnswerCurationManager(domainProjectModelFolder, 
+				ConfigurationManagerForIdeFactory.getConfigurationManagerForIDE(domainProjectModelFolder, null), null), null);
+		tp.setTextmodelPrefix("sos");
+		tp.setTextmodelName("http://darpa.aske.ta1.ge/sostest");
 		tp.process(null, "The speed of sound is a concept known in physics ", null);
 	}
 
-	@Ignore
+//	@Ignore
 	@Test
 	public void test3() throws IOException, ConfigurationException {
 		System.out.println(new File(".").getAbsoluteFile().getAbsolutePath());
-		File sourceFile = new File(new File(".").getAbsolutePath() + "/resources/Sound.txt");
-		String javaContent = readFile(sourceFile);
-		TextProcessor tp = new TextProcessor(null, null);
+		File sourceFolder = new File(new File(".").getAbsolutePath() + "/resources/");
+		File textFile = new File(new File(".").getAbsolutePath() + "/resources/Sound.txt");
+		String javaContent = readFile(textFile);
+		File domainProjectFolder = new File(sourceFolder + "/TestSadlProject");
+		File domainModelFolder = new File(domainProjectFolder.getAbsoluteFile() + "/OwlModels");
+		setDomainProjectModelFolder(domainModelFolder.getCanonicalPath());
+		TextProcessor tp = new TextProcessor(new AnswerCurationManager(domainProjectModelFolder, 
+				ConfigurationManagerForIdeFactory.getConfigurationManagerForIDE(domainProjectModelFolder, null), null), null);
+		tp.setTextmodelPrefix("sos");
+		tp.setTextmodelName("http://darpa.aske.ta1.ge/sostest");
 		tp.process(null, javaContent, null);
 	}
 
-	@Ignore
+//	@Ignore
 	@Test
 	public void test4() throws ConfigurationException, IOException {
 		System.out.println(new File(".").getAbsoluteFile().getAbsolutePath());
-		File sourceFile = new File(new File(".").getAbsolutePath() + "/resources/Sound.txt");
-		File domainProjectFolder = new File(sourceFile.getParentFile() + "/TestSadlProject");
-		File domainModelFolder = new File(domainProjectFolder.getAbsoluteFile() + "/OwlModels");
-		setDomainProjectModelFolder(domainModelFolder.getCanonicalPath());
+		File textFile = new File(new File(".").getAbsolutePath() + "/resources/Sound.txt");
 		IConfigurationManagerForIDE cm = ConfigurationManagerForIdeFactory.getConfigurationManagerForIDE(getDomainProjectModelFolder(), null);
 		AnswerCurationManager acm = new AnswerCurationManager(getDomainProjectModelFolder(), cm, null);
-		acm.getExtractionProcessor().getCodeExtractor().setCodeModelFolder(getExtractionProjectModelFolder());
+		acm.getExtractionProcessor().getTextProcessor().setTextModelFolder(getExtractionProjectModelFolder());
 		
 		IDialogAnswerProvider dapcft = new DialogAnswerProviderConsoleForTest();
 		cm.addPrivateKeyValuePair(DialogConstants.DIALOG_ANSWER_PROVIDER, dapcft);
 		
-		String defaultCodeModelPrefix = "Sound";
-		String defaultCodeModelName = "http://com.ge.research.darpa.aske.ta1.explore/" + defaultCodeModelPrefix;
-		acm.getExtractionProcessor().getCodeExtractor().setDefaultCodeModelPrefix(defaultCodeModelPrefix);
-		acm.getExtractionProcessor().getCodeExtractor().setDefaultCodeModelName(defaultCodeModelName);
+		String defaultTextModelPrefix = "Sound";
+		String defaultTextModelName = "http://com.ge.research.darpa.aske.ta1.explore/" + defaultTextModelPrefix;
+		acm.getExtractionProcessor().getTextProcessor().setDefaultTextModelPrefix(defaultTextModelPrefix);
+		acm.getExtractionProcessor().getTextProcessor().setDefaultTextModelName(defaultTextModelName);
 		
-		String genFolder = new File(cm.getModelFolder()).getParent() + 
-				"/" + DialogConstants.EXTRACTED_MODELS_FOLDER_PATH_FRAGMENT;
+		String genFolder = new File(acm.getExtractionProcessor().getTextProcessor().getTextModelFolder()).getParent() + 
+		"/" + DialogConstants.EXTRACTED_MODELS_FOLDER_PATH_FRAGMENT;
 		new File(genFolder).mkdirs();
-		String owlFileName = genFolder + "/" + defaultCodeModelPrefix + ".owl";
 
-		acm.getExtractionProcessor().getTextProcessor().addFile(sourceFile);
-		acm.processImports(SaveAsSadl.SaveAsSadl.SaveAsSadl);
-		String javaContent = readFile(sourceFile);
-		TextProcessor tp = new TextProcessor(null, null);
-		tp.process(null, javaContent, null);
+		acm.getExtractionProcessor().getTextProcessor().addFile(textFile);
+		acm.processImports(SaveAsSadl.SaveAsSadl);
+
+		String owlFileName = genFolder + "/" + textFile.getName() + ".owl";
+		String sadlFileName = owlFileName + ".sadl";
+		String sadlFileContent = readFile(new File(sadlFileName));
+		System.out.println(sadlFileContent);
+
+		String query = "select ?eq ?lg ?sc where {?eq <rdf:type> <ExternalEquation> . ?eq <expression> ?scrbn . \r\n" + 
+				"		?scrbn <language> ?lg . ?scrbn <script> ?sc }";
+		try {
+			ResultSet rs =acm.getExtractionProcessor().getTextProcessor().executeSparqlQuery(query);
+			System.out.println(rs.toStringWithIndent(5));
+		} catch (ReasonerNotFoundException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (InvalidNameException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (QueryParseException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (QueryCancelledException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 	}
 
 	private String readFile(File file) throws IOException {
@@ -139,11 +187,11 @@ public class TextProcessorTests {
 	}
 
 	private String getExtractionProjectModelFolder() {
-		return codeExtractionProjectModelFolder;
+		return textExtractionProjectModelFolder;
 	}
 
 	private void setExtractionProjectModelFolder(String extractionProjectModelFolder) {
-		this.codeExtractionProjectModelFolder = extractionProjectModelFolder;
+		this.textExtractionProjectModelFolder = extractionProjectModelFolder;
 	}
 
 	private String getDomainProjectModelFolder() {

@@ -377,10 +377,11 @@ public class DialogAnswerProvider extends DefaultAutoEditStrategyProvider implem
 	                	}
 	                	else if (lastcmd instanceof MixedInitiativeTextualResponse) {
 	                		int ip = ((MixedInitiativeTextualResponse)lastcmd).getInsertionPoint();
+	                		boolean quote = ((MixedInitiativeTextualResponse)lastcmd).isQuoteResponse();
 	                		String content = ((MixedInitiativeTextualResponse)lastcmd).getResponse();
 	                		Region nreg = new Region(ip, content.length());
 	                		Object ctx = null; //((MixedInitiativeTextualResponse)lastcmd).getContext();
-	                		addCurationManagerContentToDialog(document, nreg, content, ctx, true);
+	                		addCurationManagerContentToDialog(document, nreg, content, ctx, quote);
 	                	}
 	                	else if (lastcmd instanceof BuildConstruct) {
 	                		processBuildRequest(resource, (BuildConstruct)lastcmd);
@@ -408,9 +409,11 @@ public class DialogAnswerProvider extends DefaultAutoEditStrategyProvider implem
 				if (document instanceof XtextDocument) {
 					XtextDocument xdoc = (XtextDocument)document;
 					try {
-						String doctxt = xdoc.get(offset, Math.max(txt.length(),len));
-						if (doctxt.equals(txt)) {
-							return offset;
+						if (len > 0) {
+							String doctxt = xdoc.get(offset, Math.max(txt.length(),len));
+							if (doctxt.equals(txt)) {
+								return offset;
+							}
 						}
 					} catch (BadLocationException e) {
 						// TODO Auto-generated catch block
@@ -739,7 +742,7 @@ public class DialogAnswerProvider extends DefaultAutoEditStrategyProvider implem
 				else if (typ.equals(NodeType.ObjectProperty) || typ.equals(NodeType.DataTypeProperty) || typ.equals(NodeType.PropertyNode)) {
 					addPropertyWithDomainAndRange(resource, nn, answer);
 					Object ctx = ((NamedNode)lastcmd).getContext();
-					addCurationManagerContentToDialog(document, reg, answer.toString(), ctx, true);
+					addCurationManagerContentToDialog(document, reg, answer.toString(), ctx, false);
 				}
 				else if (typ.equals(NodeType.AnnotationProperty)) {
 					addAnnotationPropertyDeclaration(resource, nn, answer);
@@ -1802,7 +1805,7 @@ public class DialogAnswerProvider extends DefaultAutoEditStrategyProvider implem
 		return i.get();
 	}
 
-	private Resource getResource() {
+	public Resource getResource() {
 		return resource;
 	}
 

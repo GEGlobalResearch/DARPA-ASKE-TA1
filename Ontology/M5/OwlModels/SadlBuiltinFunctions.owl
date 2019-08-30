@@ -13,6 +13,7 @@
     <owl:imports rdf:resource="sadlbasemodel"/>
     <rdfs:comment xml:lang="en">This ontology was created from a SADL file 'SadlBuiltinFunctions.sadl' and should not be directly edited.</rdfs:comment>
   </owl:Ontology>
+  <j.0:GPVariable rdf:ID="notBNode_v0"/>
   <j.0:ExternalEquation rdf:ID="isDType">
     <j.0:externalURI rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
     >com.hp.hpl.jena.reasoner.rulesys.builtins#isDType</j.0:externalURI>
@@ -24,7 +25,7 @@
     <j.0:arguments rdf:parseType="Collection">
       <j.0:DataDescriptor>
         <j.0:dataType>http://www.w3.org/2001/XMLSchema#string</j.0:dataType>
-        <j.0:descriptorName>X</j.0:descriptorName>
+        <j.0:localDescriptorName>X</j.0:localDescriptorName>
       </j.0:DataDescriptor>
     </j.0:arguments>
     <j.0:expression>
@@ -35,6 +36,10 @@
       </j.0:Script>
     </j.0:expression>
   </j.0:ExternalEquation>
+  <j.0:GPVariable rdf:ID="notDType_v0"/>
+  <j.0:GPVariable rdf:ID="listEqual_v0"/>
+  <j.0:GPVariable rdf:ID="listMapAsSubject_v0"/>
+  <j.0:GPVariable rdf:ID="regex_v0"/>
   <j.0:ExternalEquation rdf:ID="countUniqueMatches">
     <j.0:externalURI rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
     >com.ge.research.sadl.jena.reasoner.builtin#countUniqueMatches</j.0:externalURI>
@@ -79,7 +84,7 @@
     <j.0:arguments rdf:parseType="Collection">
       <j.0:DataDescriptor>
         <j.0:dataType>http://www.w3.org/2001/XMLSchema#decimal</j.0:dataType>
-        <j.0:descriptorName>X</j.0:descriptorName>
+        <j.0:localDescriptorName>X</j.0:localDescriptorName>
       </j.0:DataDescriptor>
     </j.0:arguments>
     <j.0:expression>
@@ -101,7 +106,7 @@
     <j.0:arguments rdf:parseType="Collection">
       <j.0:DataDescriptor>
         <j.0:dataType>http://www.w3.org/2001/XMLSchema#decimal</j.0:dataType>
-        <j.0:descriptorName>X</j.0:descriptorName>
+        <j.0:localDescriptorName>X</j.0:localDescriptorName>
       </j.0:DataDescriptor>
     </j.0:arguments>
     <j.0:expression>
@@ -123,15 +128,15 @@
     <j.0:arguments rdf:parseType="Collection">
       <j.0:DataDescriptor>
         <j.0:dataType>http://www.w3.org/2001/XMLSchema#string</j.0:dataType>
-        <j.0:descriptorName>X</j.0:descriptorName>
+        <j.0:localDescriptorName>X</j.0:localDescriptorName>
       </j.0:DataDescriptor>
       <j.0:DataDescriptor>
         <j.0:dataType>http://www.w3.org/2001/XMLSchema#string</j.0:dataType>
-        <j.0:descriptorName>X</j.0:descriptorName>
+        <j.0:localDescriptorName>X</j.0:localDescriptorName>
       </j.0:DataDescriptor>
       <j.0:DataDescriptor>
         <j.0:dataType>http://www.w3.org/2001/XMLSchema#string</j.0:dataType>
-        <j.0:descriptorName>X</j.0:descriptorName>
+        <j.0:localDescriptorName>X</j.0:localDescriptorName>
       </j.0:DataDescriptor>
     </j.0:arguments>
     <j.0:expression>
@@ -142,6 +147,7 @@
       </j.0:Script>
     </j.0:expression>
   </j.0:ExternalEquation>
+  <j.0:GPVariable rdf:ID="listNotContains_v0"/>
   <j.0:ExternalEquation rdf:ID="min">
     <j.0:externalURI rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
     >com.ge.research.sadl.jena.reasoner.builtin#min</j.0:externalURI>
@@ -153,11 +159,11 @@
     <j.0:arguments rdf:parseType="Collection">
       <j.0:DataDescriptor>
         <j.0:dataType>http://www.w3.org/2001/XMLSchema#decimal</j.0:dataType>
-        <j.0:descriptorName>X</j.0:descriptorName>
+        <j.0:localDescriptorName>X</j.0:localDescriptorName>
       </j.0:DataDescriptor>
       <j.0:DataDescriptor>
         <j.0:dataType>http://www.w3.org/2001/XMLSchema#decimal</j.0:dataType>
-        <j.0:descriptorName>X</j.0:descriptorName>
+        <j.0:localDescriptorName>X</j.0:localDescriptorName>
       </j.0:DataDescriptor>
     </j.0:arguments>
     <j.0:expression>
@@ -217,6 +223,44 @@
       </j.0:Script>
     </j.0:expression>
   </j.0:ExternalEquation>
+  <j.0:ExternalEquation rdf:ID="le">
+    <j.0:externalURI rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >com.hp.hpl.jena.reasoner.rulesys.builtins#le</j.0:externalURI>
+    <j.0:returnTypes rdf:parseType="Collection">
+      <j.0:DataDescriptor>
+        <j.0:dataType>http://www.w3.org/2001/XMLSchema#boolean</j.0:dataType>
+      </j.0:DataDescriptor>
+    </j.0:returnTypes>
+    <j.0:arguments rdf:parseType="Collection">
+      <j.0:DataDescriptor>
+        <j.0:dataType>http://www.w3.org/2001/XMLSchema#decimal</j.0:dataType>
+        <j.0:localDescriptorName>X</j.0:localDescriptorName>
+      </j.0:DataDescriptor>
+      <j.0:DataDescriptor>
+        <j.0:dataType>http://www.w3.org/2001/XMLSchema#decimal</j.0:dataType>
+        <j.0:localDescriptorName>X</j.0:localDescriptorName>
+      </j.0:DataDescriptor>
+    </j.0:arguments>
+    <j.0:expression>
+      <j.0:Script>
+        <j.0:language rdf:resource="sadlimplicitmodel#Text"/>
+        <j.0:script rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+        >boolean le(decimal X,decimal X): uri("com.hp.hpl.jena.reasoner.rulesys.builtins#le")</j.0:script>
+      </j.0:Script>
+    </j.0:expression>
+  </j.0:ExternalEquation>
+  <j.0:GPVariable rdf:ID="bound_v0"/>
+  <j.0:ExternalEquation rdf:ID="greaterThan">
+    <j.0:externalURI rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >com.ge.research.sadl.jena.reasoner.builtin#greaterThan</j.0:externalURI>
+    <j.0:expression>
+      <j.0:Script>
+        <j.0:language rdf:resource="sadlimplicitmodel#Text"/>
+        <j.0:script rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+        >-- greaterThan(): uri("com.ge.research.sadl.jena.reasoner.builtin#greaterThan")</j.0:script>
+      </j.0:Script>
+    </j.0:expression>
+  </j.0:ExternalEquation>
   <j.0:ExternalEquation rdf:ID="uriConcat">
     <j.0:externalURI rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
     >com.hp.hpl.jena.reasoner.rulesys.builtins#uriConcat</j.0:externalURI>
@@ -228,11 +272,11 @@
     <j.0:arguments rdf:parseType="Collection">
       <j.0:DataDescriptor>
         <j.0:dataType>http://www.w3.org/2001/XMLSchema#string</j.0:dataType>
-        <j.0:descriptorName>X</j.0:descriptorName>
+        <j.0:localDescriptorName>X</j.0:localDescriptorName>
       </j.0:DataDescriptor>
       <j.0:DataDescriptor>
         <j.0:dataType>http://www.w3.org/2001/XMLSchema#string</j.0:dataType>
-        <j.0:descriptorName>X</j.0:descriptorName>
+        <j.0:localDescriptorName>X</j.0:localDescriptorName>
       </j.0:DataDescriptor>
     </j.0:arguments>
     <j.0:expression>
@@ -240,17 +284,6 @@
         <j.0:language rdf:resource="sadlimplicitmodel#Text"/>
         <j.0:script rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
         >string uriConcat(string X,string X): uri("com.hp.hpl.jena.reasoner.rulesys.builtins#uriConcat")</j.0:script>
-      </j.0:Script>
-    </j.0:expression>
-  </j.0:ExternalEquation>
-  <j.0:ExternalEquation rdf:ID="greaterThan">
-    <j.0:externalURI rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
-    >com.ge.research.sadl.jena.reasoner.builtin#greaterThan</j.0:externalURI>
-    <j.0:expression>
-      <j.0:Script>
-        <j.0:language rdf:resource="sadlimplicitmodel#Text"/>
-        <j.0:script rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
-        >-- greaterThan(): uri("com.ge.research.sadl.jena.reasoner.builtin#greaterThan")</j.0:script>
       </j.0:Script>
     </j.0:expression>
   </j.0:ExternalEquation>
@@ -276,7 +309,7 @@
     <j.0:arguments rdf:parseType="Collection">
       <j.0:DataDescriptor>
         <j.0:dataType>http://www.w3.org/2001/XMLSchema#string</j.0:dataType>
-        <j.0:descriptorName>X</j.0:descriptorName>
+        <j.0:localDescriptorName>X</j.0:localDescriptorName>
       </j.0:DataDescriptor>
     </j.0:arguments>
     <j.0:expression>
@@ -284,17 +317,6 @@
         <j.0:language rdf:resource="sadlimplicitmodel#Text"/>
         <j.0:script rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
         >boolean notBNode(string X): uri("com.hp.hpl.jena.reasoner.rulesys.builtins#notBNode")</j.0:script>
-      </j.0:Script>
-    </j.0:expression>
-  </j.0:ExternalEquation>
-  <j.0:ExternalEquation rdf:ID="ceiling">
-    <j.0:externalURI rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
-    >com.ge.research.sadl.jena.reasoner.builtin#ceiling</j.0:externalURI>
-    <j.0:expression>
-      <j.0:Script>
-        <j.0:language rdf:resource="sadlimplicitmodel#Text"/>
-        <j.0:script rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
-        >-- ceiling(): uri("com.ge.research.sadl.jena.reasoner.builtin#ceiling")</j.0:script>
       </j.0:Script>
     </j.0:expression>
   </j.0:ExternalEquation>
@@ -309,6 +331,17 @@
       </j.0:Script>
     </j.0:expression>
   </j.0:ExternalEquation>
+  <j.0:ExternalEquation rdf:ID="ceiling">
+    <j.0:externalURI rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >com.ge.research.sadl.jena.reasoner.builtin#ceiling</j.0:externalURI>
+    <j.0:expression>
+      <j.0:Script>
+        <j.0:language rdf:resource="sadlimplicitmodel#Text"/>
+        <j.0:script rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+        >-- ceiling(): uri("com.ge.research.sadl.jena.reasoner.builtin#ceiling")</j.0:script>
+      </j.0:Script>
+    </j.0:expression>
+  </j.0:ExternalEquation>
   <j.0:ExternalEquation rdf:ID="lessThan">
     <j.0:externalURI rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
     >com.ge.research.sadl.jena.reasoner.builtin#lessThan</j.0:externalURI>
@@ -320,6 +353,8 @@
       </j.0:Script>
     </j.0:expression>
   </j.0:ExternalEquation>
+  <j.0:GPVariable rdf:ID="listContains_v0"/>
+  <j.0:GPVariable rdf:ID="isDType_v0"/>
   <j.0:ExternalEquation rdf:ID="localname">
     <j.0:externalURI rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
     >com.ge.research.sadl.jena.reasoner.builtin#localname</j.0:externalURI>
@@ -331,6 +366,7 @@
       </j.0:Script>
     </j.0:expression>
   </j.0:ExternalEquation>
+  <j.0:GPVariable rdf:ID="listLength_v0"/>
   <j.0:ExternalEquation rdf:ID="cos">
     <j.0:externalURI rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
     >com.ge.research.sadl.jena.reasoner.builtin#cos</j.0:externalURI>
@@ -364,6 +400,17 @@
       </j.0:Script>
     </j.0:expression>
   </j.0:ExternalEquation>
+  <j.0:ExternalEquation rdf:ID="getClassFromConstraint">
+    <j.0:externalURI rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >com.ge.research.sadl.jena.reasoner.builtin#getClassFromConstraint</j.0:externalURI>
+    <j.0:expression>
+      <j.0:Script>
+        <j.0:language rdf:resource="sadlimplicitmodel#Text"/>
+        <j.0:script rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+        >-- getClassFromConstraint(): uri("com.ge.research.sadl.jena.reasoner.builtin#getClassFromConstraint")</j.0:script>
+      </j.0:Script>
+    </j.0:expression>
+  </j.0:ExternalEquation>
   <j.0:ExternalEquation rdf:ID="regex">
     <j.0:externalURI rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
     >com.hp.hpl.jena.reasoner.rulesys.builtins#regex</j.0:externalURI>
@@ -375,11 +422,11 @@
     <j.0:arguments rdf:parseType="Collection">
       <j.0:DataDescriptor>
         <j.0:dataType>http://www.w3.org/2001/XMLSchema#string</j.0:dataType>
-        <j.0:descriptorName>X</j.0:descriptorName>
+        <j.0:localDescriptorName>X</j.0:localDescriptorName>
       </j.0:DataDescriptor>
       <j.0:DataDescriptor>
         <j.0:dataType>http://www.w3.org/2001/XMLSchema#string</j.0:dataType>
-        <j.0:descriptorName>X</j.0:descriptorName>
+        <j.0:localDescriptorName>X</j.0:localDescriptorName>
       </j.0:DataDescriptor>
     </j.0:arguments>
     <j.0:expression>
@@ -387,17 +434,6 @@
         <j.0:language rdf:resource="sadlimplicitmodel#Text"/>
         <j.0:script rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
         >string regex(string X,string X): uri("com.hp.hpl.jena.reasoner.rulesys.builtins#regex")</j.0:script>
-      </j.0:Script>
-    </j.0:expression>
-  </j.0:ExternalEquation>
-  <j.0:ExternalEquation rdf:ID="getClassFromConstraint">
-    <j.0:externalURI rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
-    >com.ge.research.sadl.jena.reasoner.builtin#getClassFromConstraint</j.0:externalURI>
-    <j.0:expression>
-      <j.0:Script>
-        <j.0:language rdf:resource="sadlimplicitmodel#Text"/>
-        <j.0:script rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
-        >-- getClassFromConstraint(): uri("com.ge.research.sadl.jena.reasoner.builtin#getClassFromConstraint")</j.0:script>
       </j.0:Script>
     </j.0:expression>
   </j.0:ExternalEquation>
@@ -412,7 +448,7 @@
     <j.0:arguments rdf:parseType="Collection">
       <j.0:DataDescriptor>
         <j.0:dataType>http://www.w3.org/2001/XMLSchema#string</j.0:dataType>
-        <j.0:descriptorName>X</j.0:descriptorName>
+        <j.0:localDescriptorName>X</j.0:localDescriptorName>
       </j.0:DataDescriptor>
     </j.0:arguments>
     <j.0:expression>
@@ -456,7 +492,7 @@
     <j.0:arguments rdf:parseType="Collection">
       <j.0:DataDescriptor>
         <j.0:dataType>http://www.w3.org/2001/XMLSchema#string</j.0:dataType>
-        <j.0:descriptorName>X</j.0:descriptorName>
+        <j.0:localDescriptorName>X</j.0:localDescriptorName>
       </j.0:DataDescriptor>
     </j.0:arguments>
     <j.0:expression>
@@ -478,11 +514,11 @@
     <j.0:arguments rdf:parseType="Collection">
       <j.0:DataDescriptor>
         <j.0:dataType>http://www.w3.org/2001/XMLSchema#string</j.0:dataType>
-        <j.0:descriptorName>X</j.0:descriptorName>
+        <j.0:localDescriptorName>X</j.0:localDescriptorName>
       </j.0:DataDescriptor>
       <j.0:DataDescriptor>
         <j.0:dataType>http://www.w3.org/2001/XMLSchema#string</j.0:dataType>
-        <j.0:descriptorName>X</j.0:descriptorName>
+        <j.0:localDescriptorName>X</j.0:localDescriptorName>
       </j.0:DataDescriptor>
     </j.0:arguments>
     <j.0:expression>
@@ -499,7 +535,7 @@
     <j.0:arguments rdf:parseType="Collection">
       <j.0:DataDescriptor>
         <j.0:dataType>http://www.w3.org/2001/XMLSchema#string</j.0:dataType>
-        <j.0:descriptorName>X</j.0:descriptorName>
+        <j.0:localDescriptorName>X</j.0:localDescriptorName>
       </j.0:DataDescriptor>
     </j.0:arguments>
     <j.0:expression>
@@ -510,6 +546,8 @@
       </j.0:Script>
     </j.0:expression>
   </j.0:ExternalEquation>
+  <j.0:GPVariable rdf:ID="max_v0"/>
+  <j.0:GPVariable rdf:ID="unbound_v0"/>
   <j.0:ExternalEquation rdf:ID="listContains">
     <j.0:externalURI rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
     >com.hp.hpl.jena.reasoner.rulesys.builtins#listContains</j.0:externalURI>
@@ -521,11 +559,11 @@
     <j.0:arguments rdf:parseType="Collection">
       <j.0:DataDescriptor>
         <j.0:dataType>http://www.w3.org/2001/XMLSchema#string</j.0:dataType>
-        <j.0:descriptorName>X</j.0:descriptorName>
+        <j.0:localDescriptorName>X</j.0:localDescriptorName>
       </j.0:DataDescriptor>
       <j.0:DataDescriptor>
         <j.0:dataType>http://www.w3.org/2001/XMLSchema#string</j.0:dataType>
-        <j.0:descriptorName>X</j.0:descriptorName>
+        <j.0:localDescriptorName>X</j.0:localDescriptorName>
       </j.0:DataDescriptor>
     </j.0:arguments>
     <j.0:expression>
@@ -596,6 +634,8 @@
       </j.0:Script>
     </j.0:expression>
   </j.0:ExternalEquation>
+  <j.0:GPVariable rdf:ID="countLiteralValues_v0"/>
+  <j.0:GPVariable rdf:ID="listEntry_v0"/>
   <j.0:ExternalEquation rdf:ID="bound">
     <j.0:externalURI rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
     >com.hp.hpl.jena.reasoner.rulesys.builtins#bound</j.0:externalURI>
@@ -607,7 +647,7 @@
     <j.0:arguments rdf:parseType="Collection">
       <j.0:DataDescriptor>
         <j.0:dataType>http://www.w3.org/2001/XMLSchema#string</j.0:dataType>
-        <j.0:descriptorName>X</j.0:descriptorName>
+        <j.0:localDescriptorName>X</j.0:localDescriptorName>
       </j.0:DataDescriptor>
     </j.0:arguments>
     <j.0:expression>
@@ -618,6 +658,7 @@
       </j.0:Script>
     </j.0:expression>
   </j.0:ExternalEquation>
+  <j.0:GPVariable rdf:ID="acos_v0"/>
   <j.0:ExternalEquation rdf:ID="pow">
     <j.0:externalURI rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
     >com.ge.research.sadl.jena.reasoner.builtin#pow</j.0:externalURI>
@@ -629,9 +670,9 @@
       </j.0:Script>
     </j.0:expression>
   </j.0:ExternalEquation>
-  <j.0:ExternalEquation rdf:ID="notBType">
+  <j.0:ExternalEquation rdf:ID="ge">
     <j.0:externalURI rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
-    >com.hp.hpl.jena.reasoner.rulesys.builtins#notBType</j.0:externalURI>
+    >com.hp.hpl.jena.reasoner.rulesys.builtins#ge</j.0:externalURI>
     <j.0:returnTypes rdf:parseType="Collection">
       <j.0:DataDescriptor>
         <j.0:dataType>http://www.w3.org/2001/XMLSchema#boolean</j.0:dataType>
@@ -639,15 +680,19 @@
     </j.0:returnTypes>
     <j.0:arguments rdf:parseType="Collection">
       <j.0:DataDescriptor>
-        <j.0:dataType>http://www.w3.org/2001/XMLSchema#string</j.0:dataType>
-        <j.0:descriptorName>X</j.0:descriptorName>
+        <j.0:dataType>http://www.w3.org/2001/XMLSchema#decimal</j.0:dataType>
+        <j.0:localDescriptorName>X</j.0:localDescriptorName>
+      </j.0:DataDescriptor>
+      <j.0:DataDescriptor>
+        <j.0:dataType>http://www.w3.org/2001/XMLSchema#decimal</j.0:dataType>
+        <j.0:localDescriptorName>X</j.0:localDescriptorName>
       </j.0:DataDescriptor>
     </j.0:arguments>
     <j.0:expression>
       <j.0:Script>
         <j.0:language rdf:resource="sadlimplicitmodel#Text"/>
         <j.0:script rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
-        >boolean notBType(string X): uri("com.hp.hpl.jena.reasoner.rulesys.builtins#notBType")</j.0:script>
+        >boolean ge(decimal X,decimal X): uri("com.hp.hpl.jena.reasoner.rulesys.builtins#ge")</j.0:script>
       </j.0:Script>
     </j.0:expression>
   </j.0:ExternalEquation>
@@ -662,6 +707,28 @@
       </j.0:Script>
     </j.0:expression>
   </j.0:ExternalEquation>
+  <j.0:ExternalEquation rdf:ID="notBType">
+    <j.0:externalURI rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >com.hp.hpl.jena.reasoner.rulesys.builtins#notBType</j.0:externalURI>
+    <j.0:returnTypes rdf:parseType="Collection">
+      <j.0:DataDescriptor>
+        <j.0:dataType>http://www.w3.org/2001/XMLSchema#boolean</j.0:dataType>
+      </j.0:DataDescriptor>
+    </j.0:returnTypes>
+    <j.0:arguments rdf:parseType="Collection">
+      <j.0:DataDescriptor>
+        <j.0:dataType>http://www.w3.org/2001/XMLSchema#string</j.0:dataType>
+        <j.0:localDescriptorName>X</j.0:localDescriptorName>
+      </j.0:DataDescriptor>
+    </j.0:arguments>
+    <j.0:expression>
+      <j.0:Script>
+        <j.0:language rdf:resource="sadlimplicitmodel#Text"/>
+        <j.0:script rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+        >boolean notBType(string X): uri("com.hp.hpl.jena.reasoner.rulesys.builtins#notBType")</j.0:script>
+      </j.0:Script>
+    </j.0:expression>
+  </j.0:ExternalEquation>
   <j.0:ExternalEquation rdf:ID="acos">
     <j.0:externalURI rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
     >com.ge.research.sadl.jena.reasoner.builtin#acos</j.0:externalURI>
@@ -673,7 +740,7 @@
     <j.0:arguments rdf:parseType="Collection">
       <j.0:DataDescriptor>
         <j.0:dataType>http://www.w3.org/2001/XMLSchema#decimal</j.0:dataType>
-        <j.0:descriptorName>X</j.0:descriptorName>
+        <j.0:localDescriptorName>X</j.0:localDescriptorName>
       </j.0:DataDescriptor>
     </j.0:arguments>
     <j.0:expression>
@@ -684,6 +751,7 @@
       </j.0:Script>
     </j.0:expression>
   </j.0:ExternalEquation>
+  <j.0:GPVariable rdf:ID="strConcat_v0"/>
   <j.0:ExternalEquation rdf:ID="isBNode">
     <j.0:externalURI rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
     >com.hp.hpl.jena.reasoner.rulesys.builtins#isBNode</j.0:externalURI>
@@ -695,7 +763,7 @@
     <j.0:arguments rdf:parseType="Collection">
       <j.0:DataDescriptor>
         <j.0:dataType>http://www.w3.org/2001/XMLSchema#string</j.0:dataType>
-        <j.0:descriptorName>X</j.0:descriptorName>
+        <j.0:localDescriptorName>X</j.0:localDescriptorName>
       </j.0:DataDescriptor>
     </j.0:arguments>
     <j.0:expression>
@@ -717,7 +785,7 @@
     <j.0:arguments rdf:parseType="Collection">
       <j.0:DataDescriptor>
         <j.0:dataType>http://www.w3.org/2001/XMLSchema#string</j.0:dataType>
-        <j.0:descriptorName>X</j.0:descriptorName>
+        <j.0:localDescriptorName>X</j.0:localDescriptorName>
       </j.0:DataDescriptor>
     </j.0:arguments>
     <j.0:expression>
@@ -761,15 +829,15 @@
     <j.0:arguments rdf:parseType="Collection">
       <j.0:DataDescriptor>
         <j.0:dataType>http://www.w3.org/2001/XMLSchema#string</j.0:dataType>
-        <j.0:descriptorName>X</j.0:descriptorName>
+        <j.0:localDescriptorName>X</j.0:localDescriptorName>
       </j.0:DataDescriptor>
       <j.0:DataDescriptor>
         <j.0:dataType>http://www.w3.org/2001/XMLSchema#string</j.0:dataType>
-        <j.0:descriptorName>X</j.0:descriptorName>
+        <j.0:localDescriptorName>X</j.0:localDescriptorName>
       </j.0:DataDescriptor>
       <j.0:DataDescriptor>
         <j.0:dataType>http://www.w3.org/2001/XMLSchema#string</j.0:dataType>
-        <j.0:descriptorName>X</j.0:descriptorName>
+        <j.0:localDescriptorName>X</j.0:localDescriptorName>
       </j.0:DataDescriptor>
     </j.0:arguments>
     <j.0:expression>
@@ -780,6 +848,7 @@
       </j.0:Script>
     </j.0:expression>
   </j.0:ExternalEquation>
+  <j.0:GPVariable rdf:ID="le_v0"/>
   <j.0:ExternalEquation rdf:ID="tableAll">
     <j.0:externalURI rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
     >com.hp.hpl.jena.reasoner.rulesys.builtins#tableAll</j.0:externalURI>
@@ -802,6 +871,9 @@
       </j.0:Script>
     </j.0:expression>
   </j.0:ExternalEquation>
+  <j.0:GPVariable rdf:ID="uriConcat_v0"/>
+  <j.0:GPVariable rdf:ID="print_v0"/>
+  <j.0:GPVariable rdf:ID="addOne_v0"/>
   <j.0:ExternalEquation rdf:ID="max">
     <j.0:externalURI rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
     >com.ge.research.sadl.jena.reasoner.builtin#max</j.0:externalURI>
@@ -813,11 +885,11 @@
     <j.0:arguments rdf:parseType="Collection">
       <j.0:DataDescriptor>
         <j.0:dataType>http://www.w3.org/2001/XMLSchema#decimal</j.0:dataType>
-        <j.0:descriptorName>X</j.0:descriptorName>
+        <j.0:localDescriptorName>X</j.0:localDescriptorName>
       </j.0:DataDescriptor>
       <j.0:DataDescriptor>
         <j.0:dataType>http://www.w3.org/2001/XMLSchema#decimal</j.0:dataType>
-        <j.0:descriptorName>X</j.0:descriptorName>
+        <j.0:localDescriptorName>X</j.0:localDescriptorName>
       </j.0:DataDescriptor>
     </j.0:arguments>
     <j.0:expression>
@@ -839,11 +911,11 @@
     <j.0:arguments rdf:parseType="Collection">
       <j.0:DataDescriptor>
         <j.0:dataType>http://www.w3.org/2001/XMLSchema#string</j.0:dataType>
-        <j.0:descriptorName>X</j.0:descriptorName>
+        <j.0:localDescriptorName>X</j.0:localDescriptorName>
       </j.0:DataDescriptor>
       <j.0:DataDescriptor>
         <j.0:dataType>http://www.w3.org/2001/XMLSchema#int</j.0:dataType>
-        <j.0:descriptorName>X</j.0:descriptorName>
+        <j.0:localDescriptorName>X</j.0:localDescriptorName>
       </j.0:DataDescriptor>
     </j.0:arguments>
     <j.0:expression>
@@ -851,6 +923,33 @@
         <j.0:language rdf:resource="sadlimplicitmodel#Text"/>
         <j.0:script rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
         >string listEntry(string X,int X): uri("com.hp.hpl.jena.reasoner.rulesys.builtins#listEntry")</j.0:script>
+      </j.0:Script>
+    </j.0:expression>
+  </j.0:ExternalEquation>
+  <j.0:GPVariable rdf:ID="abs_v0"/>
+  <j.0:ExternalEquation rdf:ID="difference">
+    <j.0:externalURI rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >com.hp.hpl.jena.reasoner.rulesys.builtins#difference</j.0:externalURI>
+    <j.0:returnTypes rdf:parseType="Collection">
+      <j.0:DataDescriptor>
+        <j.0:dataType>http://www.w3.org/2001/XMLSchema#decimal</j.0:dataType>
+      </j.0:DataDescriptor>
+    </j.0:returnTypes>
+    <j.0:arguments rdf:parseType="Collection">
+      <j.0:DataDescriptor>
+        <j.0:dataType>http://www.w3.org/2001/XMLSchema#decimal</j.0:dataType>
+        <j.0:localDescriptorName>X</j.0:localDescriptorName>
+      </j.0:DataDescriptor>
+      <j.0:DataDescriptor>
+        <j.0:dataType>http://www.w3.org/2001/XMLSchema#decimal</j.0:dataType>
+        <j.0:localDescriptorName>X</j.0:localDescriptorName>
+      </j.0:DataDescriptor>
+    </j.0:arguments>
+    <j.0:expression>
+      <j.0:Script>
+        <j.0:language rdf:resource="sadlimplicitmodel#Text"/>
+        <j.0:script rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+        >decimal difference(decimal X,decimal X): uri("com.hp.hpl.jena.reasoner.rulesys.builtins#difference")</j.0:script>
       </j.0:Script>
     </j.0:expression>
   </j.0:ExternalEquation>
@@ -865,6 +964,7 @@
       </j.0:Script>
     </j.0:expression>
   </j.0:ExternalEquation>
+  <j.0:GPVariable rdf:ID="isLiteral_v0"/>
   <j.0:ExternalEquation rdf:ID="isLiteral">
     <j.0:externalURI rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
     >com.hp.hpl.jena.reasoner.rulesys.builtins#isLiteral</j.0:externalURI>
@@ -876,7 +976,7 @@
     <j.0:arguments rdf:parseType="Collection">
       <j.0:DataDescriptor>
         <j.0:dataType>http://www.w3.org/2001/XMLSchema#string</j.0:dataType>
-        <j.0:descriptorName>X</j.0:descriptorName>
+        <j.0:localDescriptorName>X</j.0:localDescriptorName>
       </j.0:DataDescriptor>
     </j.0:arguments>
     <j.0:expression>
@@ -887,6 +987,9 @@
       </j.0:Script>
     </j.0:expression>
   </j.0:ExternalEquation>
+  <j.0:GPVariable rdf:ID="listNotEqual_v0"/>
+  <j.0:GPVariable rdf:ID="difference_v0"/>
+  <j.0:GPVariable rdf:ID="isBNode_v0"/>
   <j.0:ExternalEquation rdf:ID="unbound">
     <j.0:externalURI rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
     >com.hp.hpl.jena.reasoner.rulesys.builtins#unbound</j.0:externalURI>
@@ -898,7 +1001,7 @@
     <j.0:arguments rdf:parseType="Collection">
       <j.0:DataDescriptor>
         <j.0:dataType>http://www.w3.org/2001/XMLSchema#string</j.0:dataType>
-        <j.0:descriptorName>X</j.0:descriptorName>
+        <j.0:localDescriptorName>X</j.0:localDescriptorName>
       </j.0:DataDescriptor>
     </j.0:arguments>
     <j.0:expression>
@@ -920,11 +1023,11 @@
     <j.0:arguments rdf:parseType="Collection">
       <j.0:DataDescriptor>
         <j.0:dataType>http://www.w3.org/2001/XMLSchema#string</j.0:dataType>
-        <j.0:descriptorName>X</j.0:descriptorName>
+        <j.0:localDescriptorName>X</j.0:localDescriptorName>
       </j.0:DataDescriptor>
       <j.0:DataDescriptor>
         <j.0:dataType>http://www.w3.org/2001/XMLSchema#string</j.0:dataType>
-        <j.0:descriptorName>X</j.0:descriptorName>
+        <j.0:localDescriptorName>X</j.0:localDescriptorName>
       </j.0:DataDescriptor>
     </j.0:arguments>
     <j.0:expression>
@@ -935,6 +1038,8 @@
       </j.0:Script>
     </j.0:expression>
   </j.0:ExternalEquation>
+  <j.0:GPVariable rdf:ID="min_v0"/>
+  <j.0:GPVariable rdf:ID="notBType_v0"/>
   <j.0:ExternalEquation rdf:ID="sin">
     <j.0:externalURI rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
     >com.ge.research.sadl.jena.reasoner.builtin#sin</j.0:externalURI>
@@ -946,6 +1051,7 @@
       </j.0:Script>
     </j.0:expression>
   </j.0:ExternalEquation>
+  <j.0:GPVariable rdf:ID="listMapAsObject_v0"/>
   <j.0:ExternalEquation rdf:ID="countLiteralValues">
     <j.0:externalURI rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
     >com.hp.hpl.jena.reasoner.rulesys.builtins#countLiteralValues</j.0:externalURI>
@@ -957,11 +1063,11 @@
     <j.0:arguments rdf:parseType="Collection">
       <j.0:DataDescriptor>
         <j.0:dataType>http://www.w3.org/2001/XMLSchema#string</j.0:dataType>
-        <j.0:descriptorName>X</j.0:descriptorName>
+        <j.0:localDescriptorName>X</j.0:localDescriptorName>
       </j.0:DataDescriptor>
       <j.0:DataDescriptor>
         <j.0:dataType>http://www.w3.org/2001/XMLSchema#string</j.0:dataType>
-        <j.0:descriptorName>X</j.0:descriptorName>
+        <j.0:localDescriptorName>X</j.0:localDescriptorName>
       </j.0:DataDescriptor>
     </j.0:arguments>
     <j.0:expression>
@@ -972,6 +1078,8 @@
       </j.0:Script>
     </j.0:expression>
   </j.0:ExternalEquation>
+  <j.0:GPVariable rdf:ID="notLiteral_v0"/>
+  <j.0:GPVariable rdf:ID="ge_v0"/>
   <j.0:ExternalEquation rdf:ID="listNotContains">
     <j.0:externalURI rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
     >com.hp.hpl.jena.reasoner.rulesys.builtins#listNotContains</j.0:externalURI>
@@ -983,11 +1091,11 @@
     <j.0:arguments rdf:parseType="Collection">
       <j.0:DataDescriptor>
         <j.0:dataType>http://www.w3.org/2001/XMLSchema#string</j.0:dataType>
-        <j.0:descriptorName>X</j.0:descriptorName>
+        <j.0:localDescriptorName>X</j.0:localDescriptorName>
       </j.0:DataDescriptor>
       <j.0:DataDescriptor>
         <j.0:dataType>http://www.w3.org/2001/XMLSchema#string</j.0:dataType>
-        <j.0:descriptorName>X</j.0:descriptorName>
+        <j.0:localDescriptorName>X</j.0:localDescriptorName>
       </j.0:DataDescriptor>
     </j.0:arguments>
     <j.0:expression>
@@ -1031,11 +1139,11 @@
     <j.0:arguments rdf:parseType="Collection">
       <j.0:DataDescriptor>
         <j.0:dataType>http://www.w3.org/2001/XMLSchema#string</j.0:dataType>
-        <j.0:descriptorName>X</j.0:descriptorName>
+        <j.0:localDescriptorName>X</j.0:localDescriptorName>
       </j.0:DataDescriptor>
       <j.0:DataDescriptor>
         <j.0:dataType>http://www.w3.org/2001/XMLSchema#string</j.0:dataType>
-        <j.0:descriptorName>X</j.0:descriptorName>
+        <j.0:localDescriptorName>X</j.0:localDescriptorName>
       </j.0:DataDescriptor>
     </j.0:arguments>
     <j.0:expression>
@@ -1043,17 +1151,6 @@
         <j.0:language rdf:resource="sadlimplicitmodel#Text"/>
         <j.0:script rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
         >string strConcat(string X,string X): uri("com.hp.hpl.jena.reasoner.rulesys.builtins#strConcat")</j.0:script>
-      </j.0:Script>
-    </j.0:expression>
-  </j.0:ExternalEquation>
-  <j.0:ExternalEquation rdf:ID="tan">
-    <j.0:externalURI rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
-    >com.ge.research.sadl.jena.reasoner.builtin#tan</j.0:externalURI>
-    <j.0:expression>
-      <j.0:Script>
-        <j.0:language rdf:resource="sadlimplicitmodel#Text"/>
-        <j.0:script rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
-        >-- tan(): uri("com.ge.research.sadl.jena.reasoner.builtin#tan")</j.0:script>
       </j.0:Script>
     </j.0:expression>
   </j.0:ExternalEquation>
@@ -1065,6 +1162,17 @@
         <j.0:language rdf:resource="sadlimplicitmodel#Text"/>
         <j.0:script rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
         >-- floor(): uri("com.ge.research.sadl.jena.reasoner.builtin#floor")</j.0:script>
+      </j.0:Script>
+    </j.0:expression>
+  </j.0:ExternalEquation>
+  <j.0:ExternalEquation rdf:ID="tan">
+    <j.0:externalURI rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >com.ge.research.sadl.jena.reasoner.builtin#tan</j.0:externalURI>
+    <j.0:expression>
+      <j.0:Script>
+        <j.0:language rdf:resource="sadlimplicitmodel#Text"/>
+        <j.0:script rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+        >-- tan(): uri("com.ge.research.sadl.jena.reasoner.builtin#tan")</j.0:script>
       </j.0:Script>
     </j.0:expression>
   </j.0:ExternalEquation>
