@@ -60,7 +60,7 @@ public class KChainServiceTest {
 	public void setUp() throws Exception {
 	}
 
-	@Ignore
+//	@Ignore
 	@Test
 	public void testBuildEval_01() throws IOException {
 		/*
@@ -151,7 +151,7 @@ public class KChainServiceTest {
 
 	}
 
-	@Ignore
+//	@Ignore
 	@Test
 	public void testBuildEval_02() throws IOException {
 /*
@@ -244,8 +244,8 @@ public class KChainServiceTest {
 	public List<List<String[]>> evalCGModel(String modelUri, List<String[]> inputVariables, List<String[]> outputVariables) throws IOException {
 //		String host = "3.39.122.224";
 //		String host = "3.1.176.139";
-//		String host = "vesuvius-dev.crd.ge.com";
-		String host = "3.39.122.58";
+		String host = "vesuvius-dev.crd.ge.com";
+//		String host = "3.39.122.58";
 		int port = 12345;
 		String kchainServiceURL = "http://" + host + ":" + port + "/darpa/aske/kchain/";
 		/*
@@ -345,7 +345,7 @@ public class KChainServiceTest {
 		return retLists;
 	}
 	
-	@Ignore
+//	@Ignore
 	@Test
 	public void testBuildEval_03() throws IOException {
 		List<String[]> inputs = new ArrayList<String[]>();
@@ -392,6 +392,61 @@ public class KChainServiceTest {
 		evalCGModel(modelUri, eInputs, eOutputs);
 	}
 
+	@Ignore
+	@Test
+	public void testBuildEval_04() throws IOException {
+		List<String[]> inputs = new ArrayList<String[]>();
+		String[] input1 = new String[2];
+		input1[0] = "T";
+		input1[1] = "double";
+		inputs.add(input1);
+		String[] input2 = new String[2];
+		input2[0] = "G";
+		input2[1] = "double";
+		inputs.add(input2);
+		String[] input3 = new String[2];
+		input3[0] = "R";
+		input3[1] = "double";
+		inputs.add(input3);
+		String[] input4 = new String[2];
+		input4[0] = "Q";
+		input4[1] = "double";
+		inputs.add(input4);
+		List<String[]> outputs = new ArrayList<String[]>();
+		String[] output1 = new String[2];
+		output1[0] = "SOS";
+		output1[1] = "double";
+		outputs.add(output1);
+
+		String dataLocation = null;
+		String equationModel = "WOW = 1 + (G - 1) / (1 + (G - 1) * tf.math.pow((Q / T), 2) * tf.math.exp(Q / T) / tf.math.pow((tf.math.exp(Q / T) - 1), 2))\n" + 
+				"CAL_SOS = (tf.math.sqrt(32.174 * T * R * WOW))\n";
+		String modelUri = "CAL_SOS";
+		// add to KG: 
+		buildCGModel(modelUri, equationModel, dataLocation, inputs, outputs);
+	
+//		List<String[]> eInputs = new ArrayList<String[]>();
+//		String[] eInput1 = new String[3];
+//		eInput1[0] = "Mass";
+//		eInput1[1] = "double";
+//		eInput1[2] = "[1.0]";
+//		eInputs.add(eInput1);
+//		String[] eInput2 = new String[3];
+//		eInput2[0] = "Acceleration";
+//		eInput2[1] = "double";
+//		eInput2[2] = "[0.5]";
+//		eInputs.add(eInput2);
+//		List<String[]> eOutputs = new ArrayList<String[]>();
+//		String[] eOutput1 = new String[2];
+//		eOutput1[0] = "Force";
+//		eOutput1[1] = "double";
+//		eOutputs.add(eOutput1);
+////		String modelUri = "http://com.research.ge/darpa/aske/answer/test_02/binaryadd";
+////		String modelUri = "Newtons2ndLawModelPB";
+//		// add to KG: 
+//		evalCGModel(modelUri, eInputs, eOutputs);
+	}
+
 	public boolean buildCGModel(String modelUri, String equationModel, String dataLocation, List<String[]> inputs, List<String[]> outputs) throws IOException {
 /*
 {
@@ -416,8 +471,8 @@ public class KChainServiceTest {
  */
 //		String host = "3.39.122.224";
 //		String host = "3.1.176.139";
-//		String host = "vesuvius-dev.crd.ge.com";
-		String host = "3.39.122.58";
+		String host = "vesuvius-dev.crd.ge.com";
+//		String host = "3.39.122.58";
 		int port = 12345;
 		String kchainServiceURL = "http://" + host + ":" + port + "/darpa/aske/kchain/";
 		

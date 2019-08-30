@@ -52,7 +52,10 @@ import com.ge.research.sadl.builder.ConfigurationManagerForIdeFactory;
 import com.ge.research.sadl.builder.IConfigurationManagerForIDE;
 import com.ge.research.sadl.darpa.aske.curation.AnswerCurationManager;
 import com.ge.research.sadl.darpa.aske.processing.DialogConstants;
+import com.ge.research.sadl.jena.JenaProcessorException;
 import com.ge.research.sadl.jena.inference.SadlJenaModelGetterPutter;
+import com.ge.research.sadl.processing.SadlConstants;
+import com.ge.research.sadl.reasoner.CircularDependencyException;
 import com.ge.research.sadl.reasoner.ConfigurationException;
 import com.ge.research.sadl.reasoner.IConfigurationManagerForEditing.Scope;
 import com.ge.research.sadl.reasoner.IReasoner;
@@ -62,7 +65,9 @@ import com.ge.research.sadl.reasoner.QueryCancelledException;
 import com.ge.research.sadl.reasoner.QueryParseException;
 import com.ge.research.sadl.reasoner.ReasonerNotFoundException;
 import com.ge.research.sadl.reasoner.ResultSet;
+import com.ge.research.sadl.reasoner.TranslationException;
 import com.ge.research.sadl.reasoner.utils.SadlUtils;
+import com.ge.research.sadl.sADL.SadlResource;
 import com.github.javaparser.JavaParser;
 import com.github.javaparser.Range;
 import com.github.javaparser.ast.CompilationUnit;
@@ -103,6 +108,10 @@ import com.hp.hpl.jena.rdf.model.Property;
 import com.hp.hpl.jena.rdf.model.RDFList;
 import com.hp.hpl.jena.rdf.model.RDFNode;
 import com.hp.hpl.jena.rdf.model.Resource;
+import com.hp.hpl.jena.rdf.model.StmtIterator;
+import com.hp.hpl.jena.util.iterator.ExtendedIterator;
+import com.hp.hpl.jena.vocabulary.RDFS;
+import com.hp.hpl.jena.vocabulary.XSD;
 
 public class JavaModelExtractorJP implements IModelFromCodeExtractor {
     private static final Logger logger = Logger.getLogger (JavaModelExtractorJP.class) ;
@@ -399,8 +408,16 @@ public class JavaModelExtractorJP implements IModelFromCodeExtractor {
 				}
 			}
 			if (argList != null) {
-				RDFList argInstList = getCodeModel().createList(argList.iterator());
-				methInst.addProperty(getArgumentsProperty(), argInstList);
+				try {
+					Individual typedList = addMembersToList(getCodeModel(), null, getCodeVariableListClass(), getCodeVariableClass(), argList.iterator());
+					methInst.addProperty(getArgumentsProperty(), typedList);
+				} catch (JenaProcessorException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				} catch (TranslationException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
 			}
 			addRange(methInst, m);
 			Individual prior = setMethodWithBodyInProcess(methInst);
@@ -411,8 +428,17 @@ public class JavaModelExtractorJP implements IModelFromCodeExtractor {
 			if (rt != null) {
 				List<Literal> rtypes = new ArrayList<Literal>();
 				rtypes.add(getCodeModel().createTypedLiteral(rt));
-				RDFList rtList = getCodeModel().createList(rtypes.iterator());
-				methInst.addProperty(getReturnTypeProperty(), rtList);
+				Individual returnTypes;
+				try {
+					returnTypes = addMembersToList(getCodeModel(), null, getStringListClass(), XSD.xstring, rtypes.iterator());
+					methInst.addProperty(getReturnTypeProperty(), returnTypes);
+				} catch (JenaProcessorException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				} catch (TranslationException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
 			}
 			System.out.println(methInst.getURI() + " returns " + ((rt != null && rt.length() > 0) ? rt : "void"));
 			addSerialization(methInst, ((MethodDeclaration) childNode).toString());
@@ -803,6 +829,19 @@ public class JavaModelExtractorJP implements IModelFromCodeExtractor {
           	setInputOutputIfKnown(ref, inputOutput);
           	cvInst.addProperty(getVarNameProperty(), getCodeModel().createTypedLiteral(origName));
           	// TODO add varType
+          	String typeStr = null;
+          	if (varNode instanceof VariableDeclarator) {
+          		typeStr = ((VariableDeclarator)varNode).getTypeAsString();
+          	}
+          	else if (varNode instanceof Parameter) {
+          		typeStr = ((Parameter)varNode).getTypeAsString();
+          	}
+          	else {
+          		int i = 0;
+          	}
+          	if (typeStr != null) {
+          		cvInst.addProperty(getCodeModel().getProperty(getCodeMetaModelUri() + "#varType"), getCodeModel().createTypedLiteral(typeStr));
+          	}
 		}
 		return cvInst;
 	}
@@ -888,6 +927,18 @@ public class JavaModelExtractorJP implements IModelFromCodeExtractor {
 		return getCodeModel().getOntProperty(getCodeMetaModelUri() + "#cmArguments");
 	}
 	
+	private OntClass getCodeVariableListClass() {
+		Property argProp = getArgumentsProperty();
+		StmtIterator stmtItr = getCodeModel().listStatements(argProp, RDFS.range, (RDFNode)null);
+		if (stmtItr.hasNext()) {
+			RDFNode rng = stmtItr.nextStatement().getObject();
+			if (rng.asResource().canAs(OntClass.class)) {
+				return rng.asResource().as(OntClass.class);
+			}
+		}
+		return null;
+	}
+	
 	private Property getCallsProperty() {
 		return getCodeModel().getOntProperty(getCodeMetaModelUri() + "#calls");
 	}
@@ -928,6 +979,18 @@ public class JavaModelExtractorJP implements IModelFromCodeExtractor {
 		return getCodeModel().getOntProperty(getCodeMetaModelUri() + "#cmReturnTypes");
 	}
 
+	private OntClass getStringListClass() {
+		Property argProp = getReturnTypeProperty();
+		StmtIterator stmtItr = getCodeModel().listStatements(argProp, RDFS.range, (RDFNode)null);
+		if (stmtItr.hasNext()) {
+			RDFNode rng = stmtItr.nextStatement().getObject();
+			if (rng.asResource().canAs(OntClass.class)) {
+				return rng.asResource().as(OntClass.class);
+			}
+		}
+		return null;
+	}
+	
 	private com.hp.hpl.jena.rdf.model.Resource getReferenceClass() {
 		return getCodeModel().getOntClass(getCodeMetaModelUri() + "#Reference");
 	}
@@ -950,6 +1013,10 @@ public class JavaModelExtractorJP implements IModelFromCodeExtractor {
 
 	private OntClass getClassFieldClass() {
 		return getCodeModel().getOntClass(getCodeMetaModelUri() + "#ClassField");
+	}
+
+	private OntClass getCodeVariableClass() {
+		return getCodeModel().getOntClass(getCodeMetaModelUri() + "#CodeVariable");
 	}
 
 	private OntClass getMethodVariableClass() {
@@ -1090,12 +1157,19 @@ public class JavaModelExtractorJP implements IModelFromCodeExtractor {
 		getCodeModel().getDocumentManager().addModel(importUri, importedOntModel, true);
 		Ontology modelOntology = getCodeModel().createOntology(modelName);
 		if (importPrefix != null) {
-			getCodeModel().setNsPrefix(importPrefix, importUri);
+			getCodeModel().setNsPrefix(importPrefix, ensureHashOnUri(importUri));
 		}
 		com.hp.hpl.jena.rdf.model.Resource importedOntology = getCodeModel().createResource(importUri);
 		modelOntology.addImport(importedOntology);
 		getCodeModel().addSubModel(importedOntModel);
 		getCodeModel().addLoadedImport(importUri);
+	}
+	
+	private String ensureHashOnUri(String uri) {
+		if (!uri.endsWith("#")) {
+			uri+= "#";
+		}
+		return uri;
 	}
 
 	private String getCodeMetaModelUri() {
@@ -1173,4 +1247,70 @@ public class JavaModelExtractorJP implements IModelFromCodeExtractor {
 		ResultSet results =  reasoner.ask(query);
 		return results;
 	}
+	
+
+	/**
+	 * Method to convert an Iterator over a List of values to a SADL Typed List in the provided model
+	 * @param lastInst -- the list to which to add members
+	 * @param cls -- the class of the SADL list
+	 * @param type --  the type of the members of the list
+	 * @param memberIterator -- Iterator over the values to add
+	 * @return -- the list instance
+	 * @throws JenaProcessorException
+	 * @throws TranslationException
+	 */
+	protected Individual addMembersToList(OntModel model, Individual lastInst, OntClass cls,
+			com.hp.hpl.jena.rdf.model.Resource type, Iterator<?> memberIterator) throws JenaProcessorException, TranslationException {
+		if (lastInst == null) {
+			lastInst = model.createIndividual(cls);
+		}
+		Object val = memberIterator.next();
+		if (val instanceof Individual) {
+			Individual listInst = (Individual) val;
+			if (type.canAs(OntClass.class)) {
+				ExtendedIterator<com.hp.hpl.jena.rdf.model.Resource> itr = listInst.listRDFTypes(false);
+				boolean match = false;
+				while (itr.hasNext()) {
+					com.hp.hpl.jena.rdf.model.Resource typ = itr.next();
+					if (typ.equals(type)) {
+						match = true;
+					} else {
+						try {
+							if (typ.canAs(OntClass.class) && SadlUtils.classIsSubclassOf(typ.as(OntClass.class), type.as(OntClass.class), true, null)) {
+								match = true;
+							}
+						} catch (CircularDependencyException e) {
+							// TODO Auto-generated catch block
+							e.printStackTrace();
+						}
+					}
+					if (match) {
+						break;
+					}
+				}
+				if (!match) {
+					throw new JenaProcessorException("The Instance '" + listInst.toString() + "' doesn't match the List type.");
+				}
+				model.add(lastInst, model.getProperty(SadlConstants.SADL_LIST_MODEL_FIRST_URI),
+						listInst);
+			} else {
+				throw new JenaProcessorException("The type of the list could not be converted to a class.");
+			}
+		} else {
+			Literal lval;
+			if (val instanceof Literal) {
+				lval = (Literal) val;
+			}
+			else {
+				lval = SadlUtils.getLiteralMatchingDataPropertyRange(model,type.getURI(), val);
+			}
+			model.add(lastInst, model.getProperty(SadlConstants.SADL_LIST_MODEL_FIRST_URI), lval);
+		}
+		if (memberIterator.hasNext()) {
+			Individual rest = addMembersToList(model, null, cls, type, memberIterator);
+			model.add(lastInst, model.getProperty(SadlConstants.SADL_LIST_MODEL_REST_URI), rest);
+		}
+		return lastInst;
+	}
+
 }

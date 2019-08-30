@@ -39,6 +39,7 @@ package com.ge.research.sadl.darpa.aske.processing;
 import com.ge.research.sadl.processing.SadlConstants;
 
 public class DialogConstants {
+	public static final String DIALOG_CONTENTS = "DialogContent";
 	public static final String LAST_DIALOG_COMMAND = "LastDialogCommand";
 	public static final String DIALOG_ANSWER_PROVIDER = "DialogAnswerProvider";
 	public static final String ANSWER_EXTRACTION_PROCESSOR = "AnswerExtractionProcessor";

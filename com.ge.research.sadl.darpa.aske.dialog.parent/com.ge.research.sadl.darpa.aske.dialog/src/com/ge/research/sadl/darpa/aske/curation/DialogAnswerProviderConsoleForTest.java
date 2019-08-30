@@ -36,17 +36,39 @@
  ***********************************************************************/
 package com.ge.research.sadl.darpa.aske.curation;
 
+import java.io.File;
+import java.io.IOException;
 import java.io.InputStream;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
+import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.Scanner;
 import java.util.function.Consumer;
 
+import org.eclipse.core.resources.IProject;
+import org.eclipse.core.resources.IResource;
+import org.eclipse.core.resources.IncrementalProjectBuilder;
+import org.eclipse.core.resources.ResourcesPlugin;
+import org.eclipse.core.runtime.CoreException;
+import org.eclipse.emf.ecore.resource.Resource;
+
+import com.ge.research.sadl.darpa.aske.curation.AnswerCurationManager.Agent;
+import com.ge.research.sadl.darpa.aske.processing.ConversationElement;
 import com.ge.research.sadl.darpa.aske.processing.IDialogAnswerProvider;
 import com.ge.research.sadl.darpa.aske.processing.MixedInitiativeElement;
 import com.ge.research.sadl.darpa.aske.processing.MixedInitiativeTextualResponse;
+import com.ge.research.sadl.reasoner.ConfigurationException;
+import com.ge.research.sadl.reasoner.IConfigurationManager;
+import com.ge.research.sadl.reasoner.utils.SadlUtils;
 
 public class DialogAnswerProviderConsoleForTest implements IDialogAnswerProvider {
+
+	private Map<String, MixedInitiativeElement> mixedInitiativeElements = new HashMap<String, MixedInitiativeElement>();
 
 	/* (non-Javadoc)
 	 * @see com.ge.research.sadl.darpa.aske.tests.IDialogAnswerProvider#addCurationManagerInitiatedContent(java.lang.String)
@@ -66,10 +88,39 @@ public class DialogAnswerProviderConsoleForTest implements IDialogAnswerProvider
 	@Override
 	public String initiateMixedInitiativeInteraction(MixedInitiativeElement element) {
 		String output = element.getContent().toString();
-		System.out.println("CM: " + output + "(" + element.getClass().toString() + ")");
-		System.out.println("?");
-		read(System.in, 100000, element);
-		return "AtTime-" + System.currentTimeMillis();
+		System.out.println("CM: " + output);
+		String answer = null;
+		if (output.trim().endsWith("?")) {
+//			System.out.println("?");
+//			read(System.in, 100000, element);
+			answer = getUserInput();
+			element.addArgument(answer);
+			provideResponse(element);
+		}
+		return answer;
+	}
+	
+	private String getUserInput() {
+		String answer = null;
+		if (userInputScanner == null) {
+			userInputScanner = new Scanner(System.in);
+		}
+		else {
+			userInputScanner.reset();
+		}
+		while (answer == null) {
+			try {
+				answer = userInputScanner.next();
+			}
+			catch (Exception e) {
+				System.err.println(e.getMessage());
+			}
+		}
+//		System.out.println("The answer you entered is : " + answer);
+//		return "AtTime-" + System.currentTimeMillis();
+//		userInputScanner.close();
+		getCurationManager().addToConversation(new ConversationElement(getCurationManager().getConversation(), answer, Agent.USER));
+		return answer;
 	}
 	
 	/* (non-Javadoc)
@@ -77,10 +128,154 @@ public class DialogAnswerProviderConsoleForTest implements IDialogAnswerProvider
 	 */
 	@Override
 	public void provideResponse(MixedInitiativeElement response) {
-		System.out.println("Response: " + response.toString());
+//		System.out.println("Response: " + response.toString());
+		if (response.getCurationManager() != null) {
+			setCurationManager(response.getCurationManager());
+			String methodToCall = response.getMethodToCall();
+			Method[] methods = getCurationManager().getClass().getMethods();
+			for (Method m : methods) {
+				if (m.getName().equals(methodToCall)) {
+					// call the method
+					List<Object> args = response.getArguments();
+					try {
+						Object results = null;
+						if (args.size() == 0) {
+							results = m.invoke(getCurationManager(), null);
+						}
+						else {
+							Object arg0 = args.get(0);
+							if (args.size() == 1) {
+								results = m.invoke(getCurationManager(), arg0);
+							}
+							else {
+								Object arg1 = args.get(1);
+								if (args.size() == 2) {
+									results = m.invoke(getCurationManager(), arg0, arg1);
+								}
+								if (methodToCall.equals("saveAsSadlFile")) {
+									if (arg0 instanceof Map<?,?> && results instanceof List<?>) {
+										String projectName = null;
+										List<File> sadlFiles = new ArrayList<File>();
+										for (int i = 0; i < ((List<?>) results).size(); i++) {
+											Object result = ((List<?>) results).get(i);
+											File owlfile = (File) ((Map<?,?>) arg0).keySet().iterator().next();
+											if (AnswerCurationManager.isYes(arg1)) {
+												File sf = new File(result.toString());
+												if (sf.exists()) {
+													sadlFiles.add(sf);
+													// delete OWL file so it won't be indexed
+													if (owlfile.exists()) {
+														owlfile.delete();
+														try {
+															String outputOwlFileName = owlfile.getCanonicalPath();
+															String altUrl = new SadlUtils().fileNameToFileUrl(outputOwlFileName);
+															
+															String publicUri = getCurationManager().getDomainModelConfigurationManager().getPublicUriFromActualUrl(altUrl);
+															if (publicUri != null) {
+																getCurationManager().getDomainModelConfigurationManager().deleteModel(publicUri);
+																getCurationManager().getDomainModelConfigurationManager().deleteMapping(altUrl, publicUri);
+															}
+														} catch (ConfigurationException e) {
+															// TODO Auto-generated catch block
+															e.printStackTrace();
+														} catch (URISyntaxException e) {
+															// TODO Auto-generated catch block
+															e.printStackTrace();
+														} catch (IOException e) {
+															// TODO Auto-generated catch block
+															e.printStackTrace();
+														}
+													}
+													projectName = sf.getParentFile().getParentFile().getName();
+												}
+											}				
+											else {
+												// add import of OWL file from policy file since there won't be a SADL file to build an OWL and create mappings.
+												try {
+													String importActualUrl = new SadlUtils().fileNameToFileUrl(arg0.toString());
+													String altUrl = new SadlUtils().fileNameToFileUrl(importActualUrl);
+													String importPublicUri = getCurationManager().getDomainModelConfigurationManager().getPublicUriFromActualUrl(altUrl);
+													String prefix = getCurationManager().getDomainModelConfigurationManager().getGlobalPrefix(importPublicUri);
+													getCurationManager().getDomainModelConfigurationManager().addMapping(importActualUrl, importPublicUri, prefix, false, "AnswerCurationManager");
+													String prjname = owlfile.getParentFile().getParentFile().getName();
+													IProject prj = ResourcesPlugin.getPlugin().getWorkspace().getRoot().getProject(prjname);
+													prj.refreshLocal(IResource.DEPTH_INFINITE, null);
+												} catch (IOException e) {
+													// TODO Auto-generated catch block
+													e.printStackTrace();
+												} catch (URISyntaxException e) {
+													// TODO Auto-generated catch block
+													e.printStackTrace();
+												} catch (ConfigurationException e) {
+													// TODO Auto-generated catch block
+													e.printStackTrace();
+												} catch (CoreException e) {
+													// TODO Auto-generated catch block
+													e.printStackTrace();
+												}
+											}
+										}
+										response.setResult(sadlFiles);
+										if (projectName != null) {	// only not null if doing SADL conversion
+											try {
+												IProject project = ResourcesPlugin.getWorkspace().getRoot().getProject(projectName);
+												project.build(IncrementalProjectBuilder.AUTO_BUILD, null);
+												// display new SADL file
+											} catch (IllegalStateException e) {
+												// OK, not really in Eclipse
+											} catch (CoreException e) {
+												// TODO Auto-generated catch block
+												e.printStackTrace();
+											}
+											try {
+												displayFiles(getConfigMgr().getModelFolder(), sadlFiles);
+											} catch (IOException e) {
+												// TODO Auto-generated catch block
+												e.printStackTrace();
+											}
+										}
+									}
+								}
+							}
+						}
+//						System.out.println(result.toString());
+					} catch (IllegalAccessException e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					} catch (IllegalArgumentException e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					} catch (InvocationTargetException e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					}
+					break;
+				}
+			}
+		}	
 	}
 	
-    /**
+    private void displayFiles(String modelFolder, List<File> sadlFiles) {
+		System.out.println("Displaying files:");
+		for (File f: sadlFiles) {
+			try {
+				System.out.println("   " + f.getCanonicalPath());
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		}
+		
+	}
+
+	private IConfigurationManager getConfigMgr() {
+		if (getCurationManager() != null) {
+			return getCurationManager().getDomainModelConfigurationManager();
+		}
+		return null;
+	}
+
+	/**
      * Non blocking read from input stream using controlled thread
      * 
      * @param is
@@ -93,6 +288,8 @@ public class DialogAnswerProviderConsoleForTest implements IDialogAnswerProvider
     // Holder for temporary store of read(InputStream is) value
     private static String threadValue = "";
 	private List<Thread> waitingInteractions = new ArrayList<Thread>();
+	private AnswerCurationManager curationManager;
+	private Scanner userInputScanner = null;
 
     String read(final InputStream is, int timeout, MixedInitiativeElement element) {
 
@@ -156,14 +353,42 @@ public class DialogAnswerProviderConsoleForTest implements IDialogAnswerProvider
 	@Override
 	public String addCurationManagerInitiatedContent(AnswerCurationManager answerCurationManager, String methodToCall,
 			List<Object> args, String content) {
-		// TODO Auto-generated method stub
-		return null;
+		setCurationManager(answerCurationManager);
+        Consumer<MixedInitiativeElement> respond = a -> this.provideResponse(a);
+        MixedInitiativeTextualResponse question = new MixedInitiativeTextualResponse(content);
+        MixedInitiativeElement questionElement = new MixedInitiativeElement(question, respond, answerCurationManager, methodToCall, args);
+		addMixedInitiativeElement(content, questionElement);
+		getCurationManager().addToConversation(new ConversationElement(getCurationManager().getConversation(), questionElement, Agent.CM));
+        initiateMixedInitiativeInteraction(questionElement);
+		return "success";
+	}
+
+	private void addMixedInitiativeElement(String key, MixedInitiativeElement element) {
+		if (key.endsWith(".") || key.endsWith("?")) {
+			// drop EOS
+			key = key.substring(0, key.length() - 1);
+		}
+		mixedInitiativeElements.put(key, element);
 	}
 
 	@Override
 	public boolean removeMixedInitiativeElement(String key) {
 		// TODO Auto-generated method stub
 		return false;
+	}
+
+	private AnswerCurationManager getCurationManager() {
+		return curationManager;
+	}
+
+	private void setCurationManager(AnswerCurationManager curationManager) {
+		this.curationManager = curationManager;
+	}
+
+	@Override
+	public Resource getResource() {
+		// TODO Auto-generated method stub
+		return null;
 	}
 }
 

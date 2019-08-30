@@ -51,6 +51,7 @@ public class MixedInitiativeElement {
 	private AnswerCurationManager curationManager = null;
 	private String methodToCall = null;
 	private List<Object> arguments = null;
+	private Object result = null;
 	
 	public MixedInitiativeElement(Object content, Consumer<MixedInitiativeElement> respondTo) {
 		setRespondTo(respondTo);
@@ -138,5 +139,13 @@ public class MixedInitiativeElement {
 			arguments = new ArrayList<Object>();
 		}
 		arguments.add(arg);
+	}
+
+	public Object getResult() {
+		return result;
+	}
+
+	public void setResult(Object result) {
+		this.result = result;
 	}
 }

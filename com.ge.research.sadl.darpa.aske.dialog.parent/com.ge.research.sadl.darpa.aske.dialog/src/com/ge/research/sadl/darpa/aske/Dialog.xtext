@@ -56,7 +56,12 @@ SadlModelElement returns sadl::SadlModelElement :
 	WhatStatement EOS			|
 	HowManyValuesStatement EOS	|
 	BuildStatement EOS			|
-	YesNoAnswerStatement EOS
+	YesNoAnswerStatement EOS	|
+	MyNameIsStatement EOS
+;
+
+MyNameIsStatement:
+	('My'|'my') 'name' 'is' answer=ID
 ;
 
 YesNoAnswerStatement:
@@ -68,7 +73,7 @@ BuildStatement:
 ;
 
 AnswerCMStatement:
-	'CM:' (sstmt = ((SadlStatement|EquationStatement|ExternalEquationStatement)) | str = STRING)
+	'CM:' (sstmt = ((SadlStatement|EquationStatement|ExternalEquationStatement|WhatIsStatement)) | str = STRING)
 ;
 
 ModifiedAskStatement returns sadl::ExpressionScope:
@@ -82,7 +87,7 @@ WhatStatement:
 	{WhatStatement} ('What'|'what') stmt=(WhatIsStatement | WhatValuesStatement)
 ;
 WhatIsStatement:
-	{WhatIsStatement} 'is' target=Expression WhenPart?
+	{WhatIsStatement} 'is' (('your' 'name') | target=Expression WhenPart?)
 ;
 
 fragment WhenPart returns WithWhenPart:

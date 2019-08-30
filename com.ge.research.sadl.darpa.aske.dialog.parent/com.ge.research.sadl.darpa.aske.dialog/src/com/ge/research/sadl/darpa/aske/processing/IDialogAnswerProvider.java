@@ -38,6 +38,8 @@ package com.ge.research.sadl.darpa.aske.processing;
 
 import java.util.List;
 
+import org.eclipse.emf.ecore.resource.Resource;
+
 import com.ge.research.sadl.darpa.aske.curation.AnswerCurationManager;
 
 public interface IDialogAnswerProvider {
@@ -54,5 +56,7 @@ public interface IDialogAnswerProvider {
 	public MixedInitiativeElement getMixedInitiativeElement(String key);
 
 	boolean removeMixedInitiativeElement(String key);
+
+	Resource getResource();
 
 }
