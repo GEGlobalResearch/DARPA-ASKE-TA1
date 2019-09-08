@@ -42,6 +42,7 @@ import config
 import connexion
 import text_to_triples_service as t2t
 import locality_search as locality
+import units_extraction as units
 import sys
 from flask_cors import CORS
 
@@ -56,12 +57,18 @@ application.config['config_file'] = sys.argv[1]
 config = config.Config(sys.argv[1])
 application.config['config_obj'] = config
 
+
 def text_to_triples(body):
     return t2t.text_to_triples(body, application.config['config_obj'])
 
 
 def get_equation_var_context(body):
     return locality.get_equation_var_context(body)
+
+
+def get_units_info(body):
+    units_extract = units.UnitsExtraction(application.config['config_obj'])
+    return units_extract.extract_units(body["text"])
 
 
 def process_example_doc(body):
@@ -83,9 +90,9 @@ if __name__ == '__main__':
     app_text_to_triples.add_api('text2triplesapi.yaml')
     CORS(app_text_to_triples.app)
 
-    #print(application.config.get('config_file'))
-    #app_text_to_triples.app.config['config_file'] = sys.argv[1]
-    #print(app_text_to_triples.config.get('config_file'))
+    # print(application.config.get('config_file'))
+    # app_text_to_triples.app.config['config_file'] = sys.argv[1]
+    # print(app_text_to_triples.config.get('config_file'))
 
-    app_text_to_triples.run(host ='0.0.0.0', port=4200)
+    app_text_to_triples.run(host='0.0.0.0', port=4200)
     app_text_to_triples.run(port=4200)

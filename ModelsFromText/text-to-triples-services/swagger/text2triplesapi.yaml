@@ -27,9 +27,9 @@ paths:
       operationId: "app_text_to_triples.text_to_triples"
       consumes:
       - application/json
-      produces: 
+      produces:
       - application/json
-      parameters: 
+      parameters:
       - in: "body"
         name: "body"
         required: true
@@ -75,11 +75,11 @@ paths:
       summary: ""
       description: ""
       operationId: "app_text_to_triples.process_example_doc"
-      consumes: 
+      consumes:
       - application/json
-      produces: 
+      produces:
       - application/json
-      parameters: 
+      parameters:
       - in: "body"
         name: "body"
         required: true
@@ -92,12 +92,36 @@ paths:
             type: "array"
             items:
               $ref: "#/definitions/Triples"
-    
-    
+  /unitextraction:
+    post:
+      tags:
+      - "text2triples"
+      summary: ""
+      description: ""
+      operationId: "app_text_to_triples.get_units_info"
+      consumes:
+      - application/json
+      produces:
+      - application/json
+      parameters:
+      - in: "body"
+        name: "body"
+        required: true
+        schema:
+          $ref: '#/definitions/Text'
+      responses:
+        200:
+          description: OK
+          schema:
+            type: "array"
+            items:
+              $ref: "#/definitions/Units"
+
+
 definitions:
   Text:
     type: "object"
-    required: 
+    required:
     - "text"
     - "locality"
     properties:
@@ -136,10 +160,10 @@ definitions:
         type: "array"
         items:
           $ref: '#/definitions/Concept'
-  
+
   Concept:
     type: "object"
-    required: 
+    required:
     - "string"
     - "start"
     - "end"
@@ -190,6 +214,24 @@ definitions:
     properties:
       docId:
         type: "string"
+  Units:
+    type: "object"
+    properties:
+      unitText:
+        type: "string"
+      unitName:
+        type: "string"
+      unitURI:
+        type: "string"
+      relatedConceptName:
+        type: "string"
+      relatedConceptURI:
+        type: "string"
+      start:
+        type: "integer"
+      end:
+        type: "integer"
+
 externalDocs:
   description: "Find out more about the ANSWER system"
   url: "https://github.com/GEGlobalResearch/DARPA-ASKE-TA1/wiki"
