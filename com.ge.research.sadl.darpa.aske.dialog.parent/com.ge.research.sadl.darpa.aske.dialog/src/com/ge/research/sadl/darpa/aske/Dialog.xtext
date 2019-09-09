@@ -69,7 +69,7 @@ EvalStatement returns SadlEquationInvocation:
 ;
 
 TargetModelName:
-	'target' 'model' 'uri' uri=STRING ('alias' prefix=ID)?
+	'target' 'model' uri=STRING ('alias' prefix=ID)?
 ;
 
 MyNameIsStatement:

@@ -63,6 +63,7 @@ import org.eclipse.xtext.EcoreUtil2;
 import org.eclipse.xtext.generator.IFileSystemAccess2;
 import org.eclipse.xtext.nodemodel.ICompositeNode;
 import org.eclipse.xtext.nodemodel.util.NodeModelUtils;
+import org.eclipse.xtext.preferences.IPreferenceValuesProvider;
 import org.eclipse.xtext.resource.XtextSyntaxDiagnostic;
 import org.eclipse.xtext.util.CancelIndicator;
 import org.eclipse.xtext.validation.CheckMode;
@@ -76,7 +77,9 @@ import com.ge.research.sadl.darpa.aske.dialog.AnswerCMStatement;
 import com.ge.research.sadl.darpa.aske.dialog.HowManyValuesStatement;
 import com.ge.research.sadl.darpa.aske.dialog.ModifiedAskStatement;
 import com.ge.research.sadl.darpa.aske.dialog.MyNameIsStatement;
+import com.ge.research.sadl.darpa.aske.dialog.SadlEquationInvocation;
 import com.ge.research.sadl.darpa.aske.dialog.SaveStatement;
+import com.ge.research.sadl.darpa.aske.dialog.TargetModelName;
 import com.ge.research.sadl.darpa.aske.dialog.WhatIsStatement;
 import com.ge.research.sadl.darpa.aske.dialog.WhatStatement;
 import com.ge.research.sadl.darpa.aske.dialog.WhatValuesStatement;
@@ -92,6 +95,7 @@ import com.ge.research.sadl.model.ModelError;
 import com.ge.research.sadl.model.gp.Equation;
 import com.ge.research.sadl.model.gp.Junction;
 import com.ge.research.sadl.model.gp.NamedNode;
+import com.ge.research.sadl.model.gp.Node;
 import com.ge.research.sadl.model.gp.ProxyNode;
 import com.ge.research.sadl.model.gp.Query;
 import com.ge.research.sadl.model.gp.Rule;
@@ -121,6 +125,7 @@ import com.ge.research.sadl.sADL.SadlStatement;
 import com.ge.research.sadl.sADL.SadlTypeReference;
 import com.ge.research.sadl.utils.ResourceManager;
 import com.google.common.collect.Iterables;
+import com.google.inject.Inject;
 import com.hp.hpl.jena.ontology.Individual;
 import com.hp.hpl.jena.ontology.Ontology;
 import com.hp.hpl.jena.rdf.model.RDFWriter;
@@ -132,6 +137,8 @@ public class JenaBasedDialogModelProcessor extends JenaBasedSadlModelProcessor {
 	private String textServiceUrl = null;
 	private String cgServiceUrl = null;
 	private AnswerCurationManager answerCurationManager = null;
+
+	@Inject IPreferenceValuesProvider preferenceProvider;
 
 	@Override
 	public void onValidate(Resource resource, ValidationAcceptor issueAcceptor, CheckMode mode, ProcessorContext context) {
@@ -344,7 +351,7 @@ public class JenaBasedDialogModelProcessor extends JenaBasedSadlModelProcessor {
 						lastElement = null;
 						processAnswerCMStatement(resource, (AnswerCMStatement)element);
 					}
-				} catch (IOException e) {
+				} catch (IOException | TranslationException | InvalidNameException | InvalidTypeException | ConfigurationException e) {
 					// TODO Auto-generated catch block
 					e.printStackTrace();
 				}
@@ -402,7 +409,7 @@ public class JenaBasedDialogModelProcessor extends JenaBasedSadlModelProcessor {
 		return null;
 	}
 
-	private Object processDialogModelElement(Resource resource, EObject stmt) throws IOException {
+	private Object processDialogModelElement(Resource resource, EObject stmt) throws IOException, TranslationException, InvalidNameException, InvalidTypeException, ConfigurationException {
 		ConversationElement ce = null;
 		Object toBeReturned = null;
 		if (stmt instanceof MyNameIsStatement) {
@@ -457,8 +464,14 @@ public class JenaBasedDialogModelProcessor extends JenaBasedSadlModelProcessor {
 				}
 			}
 			if (!treatAsAnswerToBackend && !(stmt instanceof YesNoAnswerStatement)) {
+				if (stmt instanceof TargetModelName) {
+					processModelElement((TargetModelName)stmt);
+				}
+				else if (stmt instanceof SadlEquationInvocation) {
+					processModelElement((SadlEquationInvocation)stmt);
+				}
 				// This is some kind of SADL statement to add to the model
-				if (stmt instanceof SadlModelElement) {
+				else if (stmt instanceof SadlModelElement) {
 					processModelElement((SadlModelElement) stmt);
 					ce = new ConversationElement(getAnswerCurationManager().getConversation(), stmt, Agent.USER);
 					toBeReturned = stmt;
@@ -488,6 +501,46 @@ public class JenaBasedDialogModelProcessor extends JenaBasedSadlModelProcessor {
 
 //	@Inject
 //	private SADLGrammarAccess grammarAccess;
+	
+	private boolean processModelElement(TargetModelName element) throws ConfigurationException, IOException {
+		boolean returnVal = true;
+		String uri = element.getUri();
+		String prefix = element.getPrefix();
+		String altUrl = getConfigMgr().getAltUrlFromPublicUri(uri);
+		if (altUrl == null || altUrl.equals(uri)) {
+			addError("Model not found", element);
+			returnVal = false;
+		}
+		else if (prefix == null) {
+			String gprefix = getConfigMgr().getGlobalPrefix(uri);
+			if (gprefix == null) {
+				addError("No global prefix found for model so a local alias is required", element);
+				returnVal = false;
+			}
+		}
+		if (returnVal) {
+			String[] uris = new String[2];
+			uris[0] = uri;
+			uris[1] = altUrl;
+			getAnswerCurationManager().addTargetModelToMap(prefix, uris);
+		}
+		return returnVal;
+	}
+	
+	private boolean processModelElement(SadlEquationInvocation element) throws TranslationException, InvalidNameException, InvalidTypeException {
+		SadlResource name = element.getName();
+		Node srobj = processExpression(name);
+		EList<Expression> params = element.getParameter();
+		for (Expression param : params) {
+			Object paramObj = processExpression(param);
+			System.out.println(paramObj.toString());
+		}
+		EList<String> units = element.getUnits();
+		for (String unit : units) {
+			System.out.println(unit);
+		}
+		return false;
+	}
 //
 	private boolean statementIsComplete(SadlModelElement element) {
 	    Iterable<XtextSyntaxDiagnostic> syntaxErrors = Iterables.<XtextSyntaxDiagnostic>filter(element.eResource().getErrors(), XtextSyntaxDiagnostic.class);
@@ -698,7 +751,7 @@ public class JenaBasedDialogModelProcessor extends JenaBasedSadlModelProcessor {
 		return ce;
 	}	
 	
-	private void  processAnswerCMStatement(Resource resource, AnswerCMStatement element) throws IOException {
+	private void  processAnswerCMStatement(Resource resource, AnswerCMStatement element) throws IOException, TranslationException, InvalidNameException, InvalidTypeException, ConfigurationException {
 		EObject stmt = element.getSstmt();
 		Object retval = processDialogModelElement(resource, stmt);
 		SadlModelConstruct smc = new SadlModelConstruct(retval);
@@ -922,6 +975,7 @@ public class JenaBasedDialogModelProcessor extends JenaBasedSadlModelProcessor {
 
 	@Override
 	public void initializePreferences(ProcessorContext context) {
+		super.initializePreferences(context);
 		setTypeCheckingWarningsOnly(true);
 		String textServiceUrl = context.getPreferenceValues().getPreference(DialogPreferences.ANSWER_TEXT_SERVICE_BASE_URI);
 		if (textServiceUrl != null) {

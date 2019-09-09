@@ -386,12 +386,25 @@ public class AnswerExtractionProcessor {
 			outputs.add(output);
 		}
 		
-		
+		return saveToComputationalGraph(modelUri, modifiedPythonScript, dataLocation, inputs, outputs);
+	}
+
+	/**
+	 * Method to save a Python script as an equation in the target computational graph
+	 * @param modelUri--the URI of the equation to be saved
+	 * @param modifiedPythonScript
+	 * @param dataLocation
+	 * @param inputs
+	 * @param outputs
+	 * @return
+	 * @throws IOException
+	 */
+	public String saveToComputationalGraph(String modelUri, String modifiedPythonScript, String dataLocation,
+			List<String[]> inputs, List<String[]> outputs) throws IOException {
 		KChainServiceInterface kcService = new KChainServiceInterface();
 		if (kcService.buildCGModel(modelUri, modifiedPythonScript, dataLocation, inputs, outputs)) {
 			return modelUri;
 		}
-		
 		return null;
 	}
 }

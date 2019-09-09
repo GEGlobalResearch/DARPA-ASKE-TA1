@@ -114,6 +114,7 @@ public class AnswerCurationManager {
 	private DialogContent conversation = null; 
 	private DialogContent lastConversation = null;
 
+	private Map<String, String[]> targetModelMap = null;
 
 	public AnswerCurationManager (String modelFolder, IConfigurationManagerForIDE configMgr, Map<String,String> prefs) {
 		setDomainModelOwlModelsFolder(modelFolder);
@@ -1091,5 +1092,24 @@ public class AnswerCurationManager {
 	public AnswerCMStatement getLastACMQuestion() {
 		// TODO Auto-generated method stub
 		return null;
+	}
+
+	public void addTargetModel(String uri, String altUrl, String prefix) {
+		String[] targetUris = new String[2];
+		targetUris[0] = uri;
+		targetUris[1] = altUrl;
+		getTargetModelMap().put(prefix, targetUris);
+		
+	}
+
+	public Map<String, String[]> getTargetModelMap() {
+		return targetModelMap;
+	}
+
+	public void addTargetModelToMap(String alias, String[] targetUris) {
+		if (targetModelMap == null) {
+			targetModelMap = new HashMap<String, String[]>();
+		}
+		targetModelMap.put(alias, targetUris);
 	}
 }
