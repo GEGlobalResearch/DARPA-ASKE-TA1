@@ -4,9 +4,8 @@
  *
  * Copyright © 2018-2019 - General Electric Company, All Rights Reserved
  * 
- * Projects: ANSWER and KApEESH, developed with the support of the Defense 
- * Advanced Research Projects Agency (DARPA) under Agreement  No.  
- * HR00111990006 and Agreement No. HR00111990007, respectively. 
+ * Project: ANSWER, developed with the support of the Defense Advanced 
+ * Research Projects Agency (DARPA) under Agreement  No.  HR00111990006. 
  *
  * Redistribution and use in source and binary forms, with or without 
  * modification, are permitted provided that the following conditions are met:
@@ -34,49 +33,13 @@
  * THE POSSIBILITY OF SUCH DAMAGE.
  *
  ***********************************************************************/
-package com.ge.research.sadl.darpa.aske.processing;
-
-public class MixedInitiativeTextualResponse extends MixedInitiativeContent {
-	private String response = null;
-	private boolean quoteResponse = true;
-	private int insertionPoint = -1;
-	
-	public MixedInitiativeTextualResponse(String content) {
-		super();
-		setResponse(content);
-	}
-
-	public MixedInitiativeTextualResponse(String content, boolean bQuote) {
-		super();
-		setResponse(content);
-		setQuoteResponse(bQuote);
-	}
-
-	public String getResponse() {
-		return response;
-	}
-
-	public void setResponse(String response) {
-		this.response = response;
-	}
-	
-	public String toString() {
-		return response;
-	}
-
-	public int getInsertionPoint() {
-		return insertionPoint;
-	}
-
-	public void setInsertionPoint(int insertionPoint) {
-		this.insertionPoint = insertionPoint;
-	}
-
-	public boolean isQuoteResponse() {
-		return quoteResponse;
-	}
-
-	public void setQuoteResponse(boolean quoteResponse) {
-		this.quoteResponse = quoteResponse;
-	}
-}
+ uri "http://sadl.org/ExampleDataTable.sadl" alias ExampleDataTable.
+ 
+ import "http://sadl.org/SpeedOfSound.sadl".
+ 
+ Data1 is a table [double alt (alias "Alt") (altitude of a PhysicalObject {"ft"}), 
+ 				   double u0 (velocity of the PhysicalObject and the PhysicalObject movesIn some Air {"mph"}), 
+ 				   double tt (staticTemperature of the Air {"R"})] 
+ 	with data located at "http://datasource/statictemperatureobservations/data1".
+ 
+ 

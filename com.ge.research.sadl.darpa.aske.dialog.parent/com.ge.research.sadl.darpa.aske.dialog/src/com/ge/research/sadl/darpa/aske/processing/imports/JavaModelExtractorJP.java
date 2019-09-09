@@ -44,6 +44,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.Scanner;
 
 import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
@@ -167,7 +168,7 @@ public class JavaModelExtractorJP implements IModelFromCodeExtractor {
 	private void parse(String inputIdentifier, String modelFolder, String javaCodeContent) throws IOException, ConfigurationException {
 		try {
 			String msg = "Parsing code file '" + inputIdentifier + "'.";
-			getCurationMgr().notifyUser(modelFolder, msg);
+			getCurationMgr().notifyUser(modelFolder, msg, true);
 		} catch (ConfigurationException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -1311,6 +1312,93 @@ public class JavaModelExtractorJP implements IModelFromCodeExtractor {
 			model.add(lastInst, model.getProperty(SadlConstants.SADL_LIST_MODEL_REST_URI), rest);
 		}
 		return lastInst;
+	}
+
+	@Override
+	public String[] extractPythonEquationFromCodeExtractionModel(String pythonScript) {
+		/*
+		 * A typical script coming from the Java to Python service looks like this (indentation preserved):
+
+#!/usr/bin/env python
+"""""" generated source for module inputfile """"""
+class Mach(object):
+    """""" generated source for class Mach """"""
+    def CAL_SOS(self, T, G, R, Q):
+        """""" generated source for method CAL_SOS """"""
+        WOW = 1 + (G - 1) / (1 + (G - 1) * Math.pow((Q / T), 2) * Math.exp(Q / T) / Math.pow((Math.exp(Q / T) - 1), 2))
+        return (Math.sqrt(32.174 * T * R * WOW))
+
+		 * We need to find the line containing "generated source for method <methodName>" and extract the name of the method.
+		 * Then we ned to replace the "return " with "<methodName> =".
+		 * If there are multiple rows (newlines) we need to place the number of spaces that the row ending in the newline is indented from the "def <methName>..." line.
+		 * This becomes the name of the output variable in K-CHAIN.
+		 */
+		String methName = null;
+		StringBuilder sb = new StringBuilder();
+		int indent = -1;
+		Scanner scanner = new Scanner(pythonScript);
+		String lastLine = "";
+		int lineCnt = 0;
+		int firstLine = 0;
+		while (scanner.hasNextLine()) {
+			String line = scanner.nextLine();
+			String trimmedLine = line.trim();
+			if (methName != null) {
+				if (lineCnt > firstLine) {
+					for (int i = 0; i < indent; i++) {	// provide correct indent
+						sb.append(" ");
+					}
+				}
+				int returnIdx = trimmedLine.indexOf("return");
+				if (returnIdx >= 0) {
+					sb.append(methName);
+					sb.append(" = ");
+					sb.append(trimmedLine.substring(returnIdx + 7));
+				}
+				else {
+					sb.append(trimmedLine);
+				}
+			}
+			int idx = trimmedLine.indexOf("generated source for method");
+			if (idx > 0) {
+				methName = trimmedLine.substring(idx + 28);
+				for (int i = 0; i < methName.length(); i++) {
+					if (methName.charAt(i) == '\"' || Character.isWhitespace(methName.charAt(i))) {
+						methName  = methName.substring(0, i);
+						break;
+					}
+				}
+				int lastLineIndent = getLineIndent(lastLine);
+				int thisLineIndent = getLineIndent(line);
+				indent = thisLineIndent - lastLineIndent;
+				firstLine = lineCnt + 1;
+			}
+			lastLine = line;
+			if (scanner.hasNextLine() && methName != null && sb.length() > 0) {
+				sb.append("\n");
+			}
+			lineCnt++;
+		}
+		scanner.close();
+	    String modifiedScript = sb.toString();
+	    modifiedScript = modifiedScript.replaceAll("Math.", "tf.math.");
+		String[] returns = new String[2];
+		returns[0] = methName;
+		returns[1] = modifiedScript;
+		return returns;
+	}
+	
+	private int getLineIndent(String line) {
+		int indent = 0;
+		for (int lidx = 0; lidx < line.length(); lidx++) {
+			if (Character.isWhitespace(line.charAt(lidx))) {
+				indent++;
+			}
+			else {
+				break;
+			}
+		}
+		return indent;
 	}
 
 }

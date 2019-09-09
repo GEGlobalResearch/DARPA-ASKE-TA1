@@ -127,4 +127,6 @@ public interface IModelFromCodeExtractor {
 	ResultSet executeSparqlQuery(String query) throws ConfigurationException, ReasonerNotFoundException, IOException,
 			InvalidNameException, QueryParseException, QueryCancelledException;
 
+	String[] extractPythonEquationFromCodeExtractionModel(String pythonScript);
+
 }

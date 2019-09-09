@@ -1,6 +1,7 @@
-uri "http://baseUri".
+uri "http://baseUri2".
 import "http://sadl.org/SpeedOfSound.sadl".
 
+target model "http://sadl.org/TestCEonMach.sadl".
 
 CM: "Parsing code file 'C:/Users/200005201/sadl3-master6/git/DARPA-ASKE-TA1/Ontology/M5/ExtractedModels/Sources/Mach.java'".
 CM: "The following methods doing computation were found in the extraction:".
@@ -182,7 +183,5 @@ class Mach(object):
         return Math.pow((1 + (G - 1) / 2 * Math.pow(M, 2)), -1)
 
 ").
-CM: "Would you like to save the extracted model (Mach.java.owl) in SADL format"?
 
-Build CAL_SOS.
-CM: "Failed: Unable to find model 'http://sadl.org/SpeedOfSound.sadl#CAL_SOS' in code model".
+evaluate CAL_SOS(508.788, 1.4, 53.3, 5500).

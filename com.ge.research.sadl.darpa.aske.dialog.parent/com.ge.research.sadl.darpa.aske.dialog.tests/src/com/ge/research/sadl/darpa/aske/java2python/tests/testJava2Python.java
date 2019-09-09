@@ -35,6 +35,8 @@
  ***********************************************************************/
 package com.ge.research.sadl.darpa.aske.java2python.tests;
 
+import static org.junit.Assert.assertTrue;
+
 import java.io.File;
 import java.io.IOException;
 
@@ -55,13 +57,12 @@ public class testJava2Python {
 
 	@Before
 	public void setUp() throws Exception {
-		String codeExtractionKbRoot = "C:/Users/200005201/sadl3-master6/git/DARPA-ASKE-TA1/Ontology/M5";
+		String codeExtractionKbRoot = "resources/M5Snapshot";
 		File codeExtractionPrjFolder = new File(codeExtractionKbRoot);
+		assertTrue(codeExtractionPrjFolder.exists());
 		setExtractionProjectModelFolder(codeExtractionPrjFolder.getCanonicalPath() + "/OwlModels");
 		
-		String domainModelKbRoot = "C:/Users/200005201/sadl3-master6/git/DARPA-ASKE-TA1/Ontology/M5";
-		File outputPrjFolder = new File(domainModelKbRoot);
-		setDomainProjectModelFolder(outputPrjFolder.getCanonicalPath() + "/OwlModels");
+		setDomainProjectModelFolder(codeExtractionPrjFolder.getCanonicalPath() + "/OwlModels");
 	}
 
 //	@Ignore

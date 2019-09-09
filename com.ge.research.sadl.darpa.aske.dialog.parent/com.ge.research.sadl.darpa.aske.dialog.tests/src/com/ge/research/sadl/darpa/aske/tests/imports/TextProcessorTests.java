@@ -62,16 +62,16 @@ public class TextProcessorTests {
 
 	private String textExtractionProjectModelFolder;
 	private String domainProjectModelFolder;
+	private File textExtractionPrjFolder;
 
 	@Before
 	public void setUp() throws Exception {
-		String codeExtractionKbRoot = "C:/Users/200005201/sadl3-master6/git/DARPA-ASKE-TA1/Ontology/M5";
-		File codeExtractionPrjFolder = new File(codeExtractionKbRoot);
-		setExtractionProjectModelFolder(codeExtractionPrjFolder.getCanonicalPath() + "/OwlModels");
+		File projectRoot = new File("resources/M5Snapshot");
+		String codeExtractionKbRoot = projectRoot.getCanonicalPath();
+		setTextExtractionPrjFolder(new File(codeExtractionKbRoot));
+		setExtractionProjectModelFolder(getTextExtractionPrjFolder().getCanonicalPath() + "/OwlModels");
 		
-		String domainModelKbRoot = "C:/Users/200005201/sadl3-master6/git/DARPA-ASKE-TA1/Ontology/M5";
-		File outputPrjFolder = new File(domainModelKbRoot);
-		setDomainProjectModelFolder(outputPrjFolder.getCanonicalPath() + "/OwlModels");
+		setDomainProjectModelFolder(getExtractionProjectModelFolder());
 	}
 
 //	@Ignore
@@ -105,15 +105,10 @@ public class TextProcessorTests {
 //	@Ignore
 	@Test
 	public void test3() throws IOException, ConfigurationException {
-		System.out.println(new File(".").getAbsoluteFile().getAbsolutePath());
-		File sourceFolder = new File(new File(".").getAbsolutePath() + "/resources/");
-		File textFile = new File(new File(".").getAbsolutePath() + "/resources/Sound.txt");
+		File textFile = new File(getTextExtractionPrjFolder() + "/ExtractedModels/Sources/Sound.txt");
 		String javaContent = readFile(textFile);
-		File domainProjectFolder = new File(sourceFolder + "/TestSadlProject");
-		File domainModelFolder = new File(domainProjectFolder.getAbsoluteFile() + "/OwlModels");
-		setDomainProjectModelFolder(domainModelFolder.getCanonicalPath());
-		TextProcessor tp = new TextProcessor(new AnswerCurationManager(domainProjectModelFolder, 
-				ConfigurationManagerForIdeFactory.getConfigurationManagerForIDE(domainProjectModelFolder, null), null), null);
+		TextProcessor tp = new TextProcessor(new AnswerCurationManager(getDomainProjectModelFolder(), 
+				ConfigurationManagerForIdeFactory.getConfigurationManagerForIDE(getDomainProjectModelFolder(), null), null), null);
 		tp.setTextmodelPrefix("sos");
 		tp.setTextmodelName("http://darpa.aske.ta1.ge/sostest");
 		tp.process(null, javaContent, null);
@@ -122,8 +117,7 @@ public class TextProcessorTests {
 //	@Ignore
 	@Test
 	public void test4() throws ConfigurationException, IOException {
-		System.out.println(new File(".").getAbsoluteFile().getAbsolutePath());
-		File textFile = new File(new File(".").getAbsolutePath() + "/resources/Sound.txt");
+		File textFile = new File(getTextExtractionPrjFolder() + "/ExtractedModels/Sources/Sound.txt");
 		IConfigurationManagerForIDE cm = ConfigurationManagerForIdeFactory.getConfigurationManagerForIDE(getDomainProjectModelFolder(), null);
 		AnswerCurationManager acm = new AnswerCurationManager(getDomainProjectModelFolder(), cm, null);
 		acm.getExtractionProcessor().getTextProcessor().setTextModelFolder(getExtractionProjectModelFolder());
@@ -200,5 +194,13 @@ public class TextProcessorTests {
 
 	private void setDomainProjectModelFolder(String outputProjectModelFolder) {
 		this.domainProjectModelFolder = outputProjectModelFolder;
+	}
+
+	private File getTextExtractionPrjFolder() {
+		return textExtractionPrjFolder;
+	}
+
+	private void setTextExtractionPrjFolder(File textExtractionPrjFolder) {
+		this.textExtractionPrjFolder = textExtractionPrjFolder;
 	}
 }

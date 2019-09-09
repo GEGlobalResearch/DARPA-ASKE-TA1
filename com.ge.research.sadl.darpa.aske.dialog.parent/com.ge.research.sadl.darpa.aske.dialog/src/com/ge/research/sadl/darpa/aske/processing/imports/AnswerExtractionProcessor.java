@@ -38,9 +38,12 @@ package com.ge.research.sadl.darpa.aske.processing.imports;
 
 import java.io.IOException;
 import java.net.URL;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 
 import com.ge.research.sadl.darpa.aske.curation.AnswerCurationManager;
+import com.ge.research.sadl.reasoner.ResultSet;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
@@ -298,4 +301,110 @@ public class AnswerExtractionProcessor {
 		this.textModelPrefix = textModelPrefix;
 	}
 
+	/**
+	 * Method to save a Python script as an equation in the target computational graph
+	 * @param modelUri--the URI of the equation to be saved
+	 * @param outputName--the name of the output of the calculation
+	 * @param rs--a ResultSet containing input names and types
+	 * @param rs2--a ResultSet containing output names (may be null) and types
+	 * @param modifiedPythonScript--the Python script of the equation for physics-based models
+	 * @param dataLocation--the location of the data for data-driven models
+	 * @return--the URI of the successfully created model in the computational graph or null if not successful
+	 * @throws IOException
+	 */
+	public String saveToComputationalGraph(String modelUri, String outputName, ResultSet rsInputs, ResultSet rsOutputs, String modifiedPythonScript, String dataLocation) throws IOException {
+		// construct String inputs to the service
+		/*
+		 * Construct after this manner:
+		 * 	String[] input1 = new String[3];
+			input1[0] = "T";
+			input1[1] = "double";
+			input1[2] = "508.788";
+			inputs.add(input1);
+			String[] input2 = new String[3];
+			input2[0] = "G";
+			input2[1] = "double";
+			input2[2] = "1.4";
+			inputs.add(input2);
+			String[] input3 = new String[3];
+			input3[0] = "R";
+			input3[1] = "double";
+			input3[2] = "53.3";
+			inputs.add(input3);
+			String[] input4 = new String[3];
+			input4[0] = "Q";
+			input4[1] = "double";
+			input4[2] = "5500";
+			inputs.add(input4);
+
+			String[] output1 = new String[2];
+			output1[0] = "CAL_SOS";
+			output1[1] = "double";
+			outputs.add(output1);
+
+		 */
+		rsInputs.setShowNamespaces(false);
+		rsOutputs.setShowNamespaces(false);
+		
+		List<String[]> inputs = new ArrayList<String[]>();
+		List<String[]> outputs = new ArrayList<String[]>();
+		String[] colNames = rsInputs.getColumnNames();    		// check to make sure columns are as expected for robustness
+		if (!colNames[0].equals("argName")) {
+			throw new IOException("The ResultSet for inputs to the equation does not have 'argName' in the first column");
+		}
+		if (!colNames[1].equals("argType")) {
+			throw new IOException("The ResultSet for inputs to the equation does not have 'argType' in the second column");
+		}
+		String[] colNamesRet = rsOutputs.getColumnNames();
+		if (!colNamesRet[0].equals("retName")) {
+			throw new IOException("The ResultSet for returns from the equation does not have 'retName' in the first column");
+		}
+		if (!colNamesRet[1].equals("retType")) {
+			throw new IOException("The ResultSet for returns from the equation does not have 'retType' in the second column");
+		}
+		int rsColCount = rsInputs.getColumnCount();
+		int rsRowCount = rsInputs.getRowCount();
+		for (int r = 0; r < rsRowCount; r++) {
+			String[] input = new String[rsColCount];
+			for (int c = 0; c < rsColCount; c++) {
+				input[c] = rsInputs.getResultAt(r, c).toString();
+			}
+			inputs.add(input);
+		}
+		
+		int rs2ColCount = rsOutputs.getColumnCount();
+		int rs2RowCount = rsOutputs.getRowCount();
+		if (rs2RowCount != 1) {
+			throw new IOException("Only one output is currently handled by  saveToComputationalGraph");
+		}
+		for (int r = 0; r < rs2RowCount; r++) {
+			String[] output = new String[rs2ColCount];
+			for (int c = 0; c < rs2ColCount; c++) {
+				output[0] = outputName;
+				output[1] = rsOutputs.getResultAt(r, 1).toString();
+			}
+			outputs.add(output);
+		}
+		
+		return saveToComputationalGraph(modelUri, modifiedPythonScript, dataLocation, inputs, outputs);
+	}
+
+	/**
+	 * Method to save a Python script as an equation in the target computational graph
+	 * @param modelUri--the URI of the equation to be saved
+	 * @param modifiedPythonScript
+	 * @param dataLocation
+	 * @param inputs
+	 * @param outputs
+	 * @return
+	 * @throws IOException
+	 */
+	public String saveToComputationalGraph(String modelUri, String modifiedPythonScript, String dataLocation,
+			List<String[]> inputs, List<String[]> outputs) throws IOException {
+		KChainServiceInterface kcService = new KChainServiceInterface();
+		if (kcService.buildCGModel(modelUri, modifiedPythonScript, dataLocation, inputs, outputs)) {
+			return modelUri;
+		}
+		return null;
+	}
 }

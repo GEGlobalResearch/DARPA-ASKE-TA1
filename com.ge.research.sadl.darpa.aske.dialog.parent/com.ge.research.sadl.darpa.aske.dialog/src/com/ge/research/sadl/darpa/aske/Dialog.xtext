@@ -51,13 +51,25 @@ DialogModel returns sadl::SadlModel :
 @Override
 SadlModelElement returns sadl::SadlModelElement :
 	SadlStatement EOS			|
-	AnswerCMStatement eos=EOS 	|
+	AnswerCMStatement EOS 		|
 	ModifiedAskStatement EOS	|
 	WhatStatement EOS			|
 	HowManyValuesStatement EOS	|
-	BuildStatement EOS			|
+	SaveStatement EOS			|
+	EvalStatement EOS			|
 	YesNoAnswerStatement EOS	|
-	MyNameIsStatement EOS
+	MyNameIsStatement EOS		|
+	TargetModelName EOS			|
+	ExternalEquationStatement EOS	|
+	EquationStatement EOS
+;
+
+EvalStatement returns SadlEquationInvocation:
+	{SadlEquationInvocation} 'Evaluate'|'evaluate' name=SadlResource '(' (parameter+=Expression ('{'units+=UNIT'}')? (',' parameter+=Expression ('{'units+=UNIT'}')?)* )?')'
+;
+
+TargetModelName:
+	'target' 'model' uri=STRING ('alias' prefix=ID)?
 ;
 
 MyNameIsStatement:
@@ -68,12 +80,12 @@ YesNoAnswerStatement:
 	{YesNoAnswerStatement} answer = ('Y'|'y'|'Yes'|'yes'|'N'|'n'|'No'|'no')
 ;
 
-BuildStatement:
-	{BuildStatement} ('Build' | 'build') target=SadlResource
+SaveStatement:
+	{SaveStatement} ('Save' | 'save') target=SadlResource ('to' saveTarget=ID)?
 ;
 
 AnswerCMStatement:
-	'CM:' (sstmt = ((SadlStatement|EquationStatement|ExternalEquationStatement|WhatIsStatement)) | str = STRING)
+	'CM:' (sstmt = ((SadlStatement|ModifiedAskStatement|WhatStatement|YesNoAnswerStatement|ExternalEquationStatement|EquationStatement)) | str = STRING)
 ;
 
 ModifiedAskStatement returns sadl::ExpressionScope:

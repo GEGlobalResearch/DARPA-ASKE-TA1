@@ -100,6 +100,7 @@ import com.ge.research.sadl.builder.ConfigurationManagerForIDE;
 import com.ge.research.sadl.builder.ConfigurationManagerForIdeFactory;
 import com.ge.research.sadl.builder.IConfigurationManagerForIDE;
 import com.ge.research.sadl.darpa.aske.curation.AnswerCurationManager;
+import com.ge.research.sadl.darpa.aske.dialog.SaveStatement;
 import com.ge.research.sadl.darpa.aske.dialog.ui.internal.DialogActivator;
 import com.ge.research.sadl.darpa.aske.preferences.DialogPreferences;
 import com.ge.research.sadl.darpa.aske.processing.BuildConstruct;
@@ -126,6 +127,7 @@ import com.ge.research.sadl.model.visualizer.IGraphVisualizer;
 import com.ge.research.sadl.owl2sadl.OwlToSadl;
 import com.ge.research.sadl.parser.antlr.SADLParser;
 import com.ge.research.sadl.processing.OntModelProvider;
+import com.ge.research.sadl.processing.SadlConstants;
 import com.ge.research.sadl.reasoner.ConfigurationException;
 import com.ge.research.sadl.reasoner.ResultSet;
 import com.ge.research.sadl.reasoner.SadlCommandResult;
@@ -137,9 +139,11 @@ import com.ge.research.sadl.ui.handlers.SadlActionHandler;
 import com.google.inject.Inject;
 import com.google.inject.Injector;
 import com.google.inject.Provider;
+import com.hp.hpl.jena.ontology.Individual;
 import com.hp.hpl.jena.ontology.OntClass;
 import com.hp.hpl.jena.ontology.OntModel;
 import com.hp.hpl.jena.rdf.model.RDFNode;
+import com.hp.hpl.jena.rdf.model.Statement;
 import com.hp.hpl.jena.rdf.model.StmtIterator;
 import com.hp.hpl.jena.util.iterator.ExtendedIterator;
 import com.hp.hpl.jena.vocabulary.OWL;
@@ -152,6 +156,7 @@ public class DialogAnswerProvider extends DefaultAutoEditStrategyProvider implem
 	private XtextDocument theDocument;
 	private Resource resource;
 	private IConfigurationManagerForIDE configMgr = null;
+	private AnswerCurationManager answerConfigurationManager = null;
 
 	@Inject
 	protected IResourceSetProvider resourceSetProvider;
@@ -425,7 +430,7 @@ public class DialogAnswerProvider extends DefaultAutoEditStrategyProvider implem
 			}
 
 			private void processBuildRequest(Resource resource, BuildConstruct lastcmd) throws BadLocationException {
-				String buildTarget = ((BuildConstruct)lastcmd).getTarget();
+				String buildTarget = ((BuildConstruct)lastcmd).getSourceEquationUri();
 				Object acmObj = getConfigMgr().getPrivateKeyValuePair(DialogConstants.ANSWER_CURATION_MANAGER);
 				String result = null;
 				if (acmObj == null) {
@@ -444,7 +449,7 @@ public class DialogAnswerProvider extends DefaultAutoEditStrategyProvider implem
 				if (acmObj != null) {
 					if (acmObj instanceof AnswerCurationManager) {
 						try {
-							result = ((AnswerCurationManager)acmObj).processBuildRequest(buildTarget);
+							result = ((AnswerCurationManager)acmObj).processSaveRequest(buildTarget, getTheModel());
 						} catch (Exception e) {
 							// TODO Auto-generated catch block
 							e.printStackTrace();
@@ -734,8 +739,8 @@ public class DialogAnswerProvider extends DefaultAutoEditStrategyProvider implem
 //						answer.append(" is a class");
 //					}
 					answer.append(getOwlToSadl(getTheModel()).classToSadl(nn.getURI()));
-					isFirstProperty = addDomainAndRange(resource, nn, isFirstProperty, answer);
-					addQualifiedCardinalityRestriction(resource, nn, isFirstProperty, answer);		
+//					isFirstProperty = addDomainAndRange(resource, nn, isFirstProperty, answer);
+//					addQualifiedCardinalityRestriction(resource, nn, isFirstProperty, answer);		
 					Object ctx = ((NamedNode)lastcmd).getContext();
 					addCurationManagerContentToDialog(document, reg, answer.toString(), ctx, false);
 				}
@@ -1436,7 +1441,8 @@ public class DialogAnswerProvider extends DefaultAutoEditStrategyProvider implem
 		logger.debug("Adding to Dialog editor: " + modContent);
 	}
 	
-	public String addCurationManagerInitiatedContent(String content) {
+	public String addCurationManagerInitiatedContent(AnswerCurationManager acm, String content) {
+		setAnswerConfigurationManager(acm);
         Consumer<MixedInitiativeElement> respond = a -> this.provideResponse(a);
         MixedInitiativeTextualResponse question = new MixedInitiativeTextualResponse(content);
         MixedInitiativeElement questionElement = new MixedInitiativeElement(question, respond);
@@ -1448,6 +1454,7 @@ public class DialogAnswerProvider extends DefaultAutoEditStrategyProvider implem
 	@Override
 	public String addCurationManagerInitiatedContent(AnswerCurationManager acm, String methodToCall,
 			List<Object> args, String content) {
+		setAnswerConfigurationManager(acm);
         Consumer<MixedInitiativeElement> respond = a -> this.provideResponse(a);
         MixedInitiativeTextualResponse question = new MixedInitiativeTextualResponse(content);
         MixedInitiativeElement questionElement = new MixedInitiativeElement(question, respond, acm, methodToCall, args);
@@ -1479,13 +1486,22 @@ public class DialogAnswerProvider extends DefaultAutoEditStrategyProvider implem
 		String content = element.getContent().toString();
 		if (getTheDocument() != null) {
 			try {
-				addCurationManagerContentToDialog(getTheDocument(), null, content, null, true);
+				boolean quote = isContentQuoted(content);
+				addCurationManagerContentToDialog(getTheDocument(), null, content, null, quote);
 			} catch (BadLocationException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
 		}
 		return null;
+	}
+
+	private boolean isContentQuoted(String content) {
+		content = content.trim();
+		if (content.startsWith("\"") && content.endsWith("\"")) {
+			return true;
+		}
+		return false;
 	}
 
 	@Override
@@ -1811,6 +1827,14 @@ public class DialogAnswerProvider extends DefaultAutoEditStrategyProvider implem
 
 	private void setResource(Resource resource) {
 		this.resource = resource;
+	}
+
+	public AnswerCurationManager getAnswerConfigurationManager() {
+		return answerConfigurationManager;
+	}
+
+	public void setAnswerConfigurationManager(AnswerCurationManager answerConfigurationManager) {
+		this.answerConfigurationManager = answerConfigurationManager;
 	}
 
 }

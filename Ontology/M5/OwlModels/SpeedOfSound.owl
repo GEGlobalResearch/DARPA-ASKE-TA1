@@ -127,14 +127,12 @@
     <rdfs:domain rdf:resource="ScientificConcepts2.sadl#PhysicalObject"/>
   </owl:DatatypeProperty>
   <j.1:Rule rdf:ID="SpeedOfSoundInAirGivenTemperature"/>
-  <j.1:GPVariable rdf:ID="CAL_SOS_v3"/>
   <sos:UniversalGasConstant rdf:ID="UniversalGasConstantISU">
     <j.1:unit rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
     >J/mole-Kelvin</j.1:unit>
     <j.1:value rdf:datatype="http://www.w3.org/2001/XMLSchema#decimal"
     >8.314</j.1:value>
   </sos:UniversalGasConstant>
-  <j.1:GPVariable rdf:ID="CAL_GAM_v1"/>
   <j.1:ExternalEquation rdf:ID="sosfromalt2">
     <j.1:externalURI rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
     >http://com.ge.research.darpa.aske.kchain.sosairfromalt</j.1:externalURI>
@@ -145,22 +143,33 @@
             <j.1:constraints rdf:parseType="Collection">
               <j.1:TriplePattern>
                 <j.1:gpObject rdf:resource="ScientificConcepts2.sadl#Velocity"/>
-                <j.1:gpPredicate>http://www.w3.org/1999/02/22-rdf-syntax-ns#type</j.1:gpPredicate>
+                <j.1:gpPredicate rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#type"/>
                 <j.1:gpSubject>
-                  <j.1:GPVariable rdf:ID="sosfromalt2_v5"/>
+                  <j.1:GPVariable rdf:ID="sosfromalt2_v3"/>
+                </j.1:gpSubject>
+              </j.1:TriplePattern>
+              <j.1:TriplePattern>
+                <j.1:gpObject rdf:resource="#sosfromalt2_v3"/>
+                <j.1:gpPredicate rdf:resource="#speedOfSound"/>
+                <j.1:gpSubject>
+                  <j.1:GPVariable rdf:ID="sosfromalt2_v0"/>
                 </j.1:gpSubject>
               </j.1:TriplePattern>
               <j.1:TriplePattern>
                 <j.1:gpObject rdf:resource="http://www.w3.org/2001/XMLSchema#decimal"/>
-                <j.1:gpPredicate>http://www.w3.org/1999/02/22-rdf-syntax-ns#type</j.1:gpPredicate>
+                <j.1:gpPredicate rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#type"/>
                 <j.1:gpSubject>
-                  <j.1:GPVariable rdf:ID="sosfromalt2_v6"/>
+                  <j.1:GPVariable rdf:ID="sosfromalt2_v4"/>
                 </j.1:gpSubject>
+              </j.1:TriplePattern>
+              <j.1:TriplePattern>
+                <j.1:gpObject rdf:resource="#sosfromalt2_v4"/>
+                <j.1:gpPredicate rdf:resource="sadlimplicitmodel#value"/>
+                <j.1:gpSubject rdf:resource="#sosfromalt2_v3"/>
               </j.1:TriplePattern>
             </j.1:constraints>
           </j.1:SemanticConstraint>
         </j.1:augmentedType>
-        <j.1:localDescriptorName>v4</j.1:localDescriptorName>
         <j.1:dataType>http://www.w3.org/2001/XMLSchema#decimal</j.1:dataType>
       </j.1:DataDescriptor>
     </j.1:returnTypes>
@@ -171,22 +180,34 @@
             <j.1:constraints rdf:parseType="Collection">
               <j.1:TriplePattern>
                 <j.1:gpObject rdf:resource="ScientificConcepts2.sadl#Air"/>
-                <j.1:gpPredicate>http://www.w3.org/1999/02/22-rdf-syntax-ns#type</j.1:gpPredicate>
-                <j.1:gpSubject>
-                  <j.1:GPVariable rdf:ID="sosfromalt2_v2"/>
-                </j.1:gpSubject>
+                <j.1:gpPredicate rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#type"/>
+                <j.1:gpSubject rdf:resource="#sosfromalt2_v0"/>
               </j.1:TriplePattern>
               <j.1:TriplePattern>
                 <j.1:gpObject rdf:resource="ScientificConcepts2.sadl#Length"/>
-                <j.1:gpPredicate>http://www.w3.org/1999/02/22-rdf-syntax-ns#type</j.1:gpPredicate>
+                <j.1:gpPredicate rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#type"/>
                 <j.1:gpSubject>
-                  <j.1:GPVariable rdf:ID="sosfromalt2_v3"/>
+                  <j.1:GPVariable rdf:ID="sosfromalt2_v1"/>
                 </j.1:gpSubject>
+              </j.1:TriplePattern>
+              <j.1:TriplePattern>
+                <j.1:gpObject rdf:resource="#sosfromalt2_v1"/>
+                <j.1:gpPredicate rdf:resource="#altitude"/>
+                <j.1:gpSubject rdf:resource="#sosfromalt2_v0"/>
+              </j.1:TriplePattern>
+              <j.1:TriplePattern>
+                <j.1:gpObject>
+                  <j.1:GPVariable rdf:ID="sosfromalt2_alt"/>
+                </j.1:gpObject>
+                <j.1:gpPredicate rdf:resource="sadlimplicitmodel#value"/>
+                <j.1:gpSubject rdf:resource="#sosfromalt2_v1"/>
               </j.1:TriplePattern>
             </j.1:constraints>
           </j.1:SemanticConstraint>
         </j.1:augmentedType>
+        <j.1:specifiedUnits rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#nil"/>
         <j.1:dataType>http://www.w3.org/2001/XMLSchema#decimal</j.1:dataType>
+        <j.1:descriptorVariable rdf:resource="#sosfromalt2_alt"/>
         <j.1:localDescriptorName>alt</j.1:localDescriptorName>
       </j.1:DataDescriptor>
     </j.1:arguments>
@@ -198,139 +219,6 @@
       </j.1:Script>
     </j.1:expression>
   </j.1:ExternalEquation>
-  <j.1:GPVariable rdf:ID="CAL_SOS_v5"/>
-  <j.1:Equation rdf:ID="compMach">
-    <j.1:expression>
-      <j.1:Script>
-        <j.1:language rdf:resource="sadlimplicitmodel#Java"/>
-        <j.1:script rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
-        >a+b</j.1:script>
-      </j.1:Script>
-    </j.1:expression>
-    <j.1:returnTypes rdf:parseType="Collection">
-      <j.1:DataDescriptor>
-        <j.1:augmentedType>
-          <j.1:SemanticConstraint>
-            <j.1:constraints rdf:parseType="Collection">
-              <j.1:TriplePattern>
-                <j.1:gpObject rdf:resource="http://www.w3.org/2001/XMLSchema#double"/>
-                <j.1:gpPredicate>http://www.w3.org/1999/02/22-rdf-syntax-ns#type</j.1:gpPredicate>
-                <j.1:gpSubject>
-                  <j.1:GPVariable rdf:ID="compMach_v6"/>
-                </j.1:gpSubject>
-              </j.1:TriplePattern>
-              <j.1:FunctionPattern>
-                <j.1:argValues rdf:parseType="Collection">
-                  <j.1:GPVariable rdf:ID="compMach_v2"/>
-                  <j.1:GPVariable rdf:ID="compMach_v5"/>
-                  <j.1:GPVariable rdf:about="#compMach_v6"/>
-                </j.1:argValues>
-                <j.1:builtin>
-                  <j.1:ExternalEquation rdf:about="http://jena.hpl.hp.com/2003/RuleBuiltin/quotient"/>
-                </j.1:builtin>
-              </j.1:FunctionPattern>
-            </j.1:constraints>
-          </j.1:SemanticConstraint>
-        </j.1:augmentedType>
-        <j.1:dataType>http://www.w3.org/2001/XMLSchema#double</j.1:dataType>
-      </j.1:DataDescriptor>
-    </j.1:returnTypes>
-    <j.1:arguments rdf:parseType="Collection">
-      <j.1:DataDescriptor>
-        <j.1:augmentedType>
-          <j.1:SemanticConstraint>
-            <j.1:constraints rdf:parseType="Collection">
-              <j.1:TriplePattern>
-                <j.1:gpObject rdf:resource="ScientificConcepts2.sadl#PhysicalObject"/>
-                <j.1:gpPredicate>http://www.w3.org/1999/02/22-rdf-syntax-ns#type</j.1:gpPredicate>
-                <j.1:gpSubject>
-                  <j.1:GPVariable rdf:ID="compMach_v3"/>
-                </j.1:gpSubject>
-              </j.1:TriplePattern>
-              <j.1:TriplePattern>
-                <j.1:gpObject rdf:resource="ScientificConcepts2.sadl#Air"/>
-                <j.1:gpPredicate>http://www.w3.org/1999/02/22-rdf-syntax-ns#type</j.1:gpPredicate>
-                <j.1:gpSubject>
-                  <j.1:GPVariable rdf:ID="compMach_v4"/>
-                </j.1:gpSubject>
-              </j.1:TriplePattern>
-            </j.1:constraints>
-          </j.1:SemanticConstraint>
-        </j.1:augmentedType>
-        <j.1:dataType>http://www.w3.org/2001/XMLSchema#double</j.1:dataType>
-        <j.1:localDescriptorName>sv</j.1:localDescriptorName>
-      </j.1:DataDescriptor>
-      <j.1:DataDescriptor>
-        <j.1:augmentedType>
-          <j.1:SemanticConstraint>
-            <j.1:constraints rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#nil"/>
-          </j.1:SemanticConstraint>
-        </j.1:augmentedType>
-        <j.1:dataType>http://www.w3.org/2001/XMLSchema#double</j.1:dataType>
-        <j.1:localDescriptorName>sos</j.1:localDescriptorName>
-      </j.1:DataDescriptor>
-    </j.1:arguments>
-    <j.1:expression>
-      <j.1:Script>
-        <j.1:language rdf:resource="sadlimplicitmodel#Text"/>
-        <j.1:script rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
-        >double compMach(double sv,double sos): </j.1:script>
-      </j.1:Script>
-    </j.1:expression>
-  </j.1:Equation>
-  <j.1:GPVariable rdf:ID="CAL_GAM_v3"/>
-  <j.1:GPVariable rdf:ID="CAL_SOS_v4"/>
-  <j.1:ExternalEquation rdf:ID="sosfromtemp2">
-    <j.1:externalURI rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
-    >http://com.ge.research.darpa.aske.kchain.sosairfromtemp</j.1:externalURI>
-    <j.1:returnTypes rdf:parseType="Collection">
-      <j.1:DataDescriptor>
-        <j.1:augmentedType>
-          <j.1:SemanticConstraint>
-            <j.1:constraints rdf:parseType="Collection">
-              <j.1:TriplePattern>
-                <j.1:gpObject rdf:resource="ScientificConcepts2.sadl#Velocity"/>
-                <j.1:gpPredicate>http://www.w3.org/1999/02/22-rdf-syntax-ns#type</j.1:gpPredicate>
-                <j.1:gpSubject>
-                  <j.1:GPVariable rdf:ID="sosfromtemp2_v4"/>
-                </j.1:gpSubject>
-              </j.1:TriplePattern>
-            </j.1:constraints>
-          </j.1:SemanticConstraint>
-        </j.1:augmentedType>
-        <j.1:localDescriptorName>v3</j.1:localDescriptorName>
-        <j.1:dataType>http://www.w3.org/2001/XMLSchema#decimal</j.1:dataType>
-      </j.1:DataDescriptor>
-    </j.1:returnTypes>
-    <j.1:arguments rdf:parseType="Collection">
-      <j.1:DataDescriptor>
-        <j.1:augmentedType>
-          <j.1:SemanticConstraint>
-            <j.1:constraints rdf:parseType="Collection">
-              <j.1:TriplePattern>
-                <j.1:gpObject rdf:resource="ScientificConcepts2.sadl#Air"/>
-                <j.1:gpPredicate>http://www.w3.org/1999/02/22-rdf-syntax-ns#type</j.1:gpPredicate>
-                <j.1:gpSubject>
-                  <j.1:GPVariable rdf:ID="sosfromtemp2_v2"/>
-                </j.1:gpSubject>
-              </j.1:TriplePattern>
-            </j.1:constraints>
-          </j.1:SemanticConstraint>
-        </j.1:augmentedType>
-        <j.1:dataType>http://www.w3.org/2001/XMLSchema#decimal</j.1:dataType>
-        <j.1:localDescriptorName>t</j.1:localDescriptorName>
-      </j.1:DataDescriptor>
-    </j.1:arguments>
-    <j.1:expression>
-      <j.1:Script>
-        <j.1:language rdf:resource="sadlimplicitmodel#Text"/>
-        <j.1:script rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
-        >xsd:decimal sosfromtemp2(decimal t): uri("http://com.ge.research.darpa.aske.kchain.sosairfromtemp")</j.1:script>
-      </j.1:Script>
-    </j.1:expression>
-  </j.1:ExternalEquation>
-  <j.1:GPVariable rdf:ID="CAL_GAM_v5"/>
-  <j.1:GPVariable rdf:ID="computeMach_v2"/>
   <j.1:ExternalEquation rdf:ID="tempFromAltitude">
     <j.1:externalURI rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
     >http://com.ge.research.darpa.aske.kchain.tempFromAltitude</j.1:externalURI>
@@ -341,15 +229,21 @@
             <j.1:constraints rdf:parseType="Collection">
               <j.1:TriplePattern>
                 <j.1:gpObject rdf:resource="ScientificConcepts2.sadl#Temperature"/>
-                <j.1:gpPredicate>http://www.w3.org/1999/02/22-rdf-syntax-ns#type</j.1:gpPredicate>
+                <j.1:gpPredicate rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#type"/>
                 <j.1:gpSubject>
-                  <j.1:GPVariable rdf:ID="tempFromAltitude_v4"/>
+                  <j.1:GPVariable rdf:ID="tempFromAltitude_v2"/>
+                </j.1:gpSubject>
+              </j.1:TriplePattern>
+              <j.1:TriplePattern>
+                <j.1:gpObject rdf:resource="#tempFromAltitude_v2"/>
+                <j.1:gpPredicate rdf:resource="ScientificConcepts2.sadl#temperature"/>
+                <j.1:gpSubject>
+                  <j.1:GPVariable rdf:ID="tempFromAltitude_v0"/>
                 </j.1:gpSubject>
               </j.1:TriplePattern>
             </j.1:constraints>
           </j.1:SemanticConstraint>
         </j.1:augmentedType>
-        <j.1:localDescriptorName>v3</j.1:localDescriptorName>
         <j.1:dataType>http://www.w3.org/2001/XMLSchema#double</j.1:dataType>
       </j.1:DataDescriptor>
     </j.1:returnTypes>
@@ -360,15 +254,26 @@
             <j.1:constraints rdf:parseType="Collection">
               <j.1:TriplePattern>
                 <j.1:gpObject rdf:resource="ScientificConcepts2.sadl#Air"/>
-                <j.1:gpPredicate>http://www.w3.org/1999/02/22-rdf-syntax-ns#type</j.1:gpPredicate>
-                <j.1:gpSubject>
-                  <j.1:GPVariable rdf:ID="tempFromAltitude_v2"/>
-                </j.1:gpSubject>
+                <j.1:gpPredicate rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#type"/>
+                <j.1:gpSubject rdf:resource="#tempFromAltitude_v0"/>
+              </j.1:TriplePattern>
+              <j.1:TriplePattern>
+                <j.1:gpObject>
+                  <j.1:GPVariable rdf:ID="tempFromAltitude_alt"/>
+                </j.1:gpObject>
+                <j.1:gpPredicate rdf:resource="#altitude"/>
+                <j.1:gpSubject rdf:resource="#tempFromAltitude_v0"/>
               </j.1:TriplePattern>
             </j.1:constraints>
           </j.1:SemanticConstraint>
         </j.1:augmentedType>
+        <j.1:specifiedUnits rdf:parseType="Resource">
+          <rdf:rest rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#nil"/>
+          <rdf:first rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+          >ft</rdf:first>
+        </j.1:specifiedUnits>
         <j.1:dataType>http://www.w3.org/2001/XMLSchema#double</j.1:dataType>
+        <j.1:descriptorVariable rdf:resource="#tempFromAltitude_alt"/>
         <j.1:localDescriptorName>alt</j.1:localDescriptorName>
       </j.1:DataDescriptor>
     </j.1:arguments>
@@ -380,7 +285,582 @@
       </j.1:Script>
     </j.1:expression>
   </j.1:ExternalEquation>
-  <j.1:GPVariable rdf:ID="CAL_SOS_v6"/>
+  <j.1:Equation rdf:ID="specificGasConstantEq2">
+    <j.1:returnTypes rdf:parseType="Collection">
+      <j.1:DataDescriptor>
+        <j.1:augmentedType>
+          <j.1:SemanticConstraint>
+            <j.1:constraints rdf:parseType="Collection">
+              <j.1:TriplePattern>
+                <j.1:gpObject rdf:resource="#GasConstant"/>
+                <j.1:gpPredicate rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#type"/>
+                <j.1:gpSubject>
+                  <j.1:GPVariable rdf:ID="specificGasConstantEq2_v2"/>
+                </j.1:gpSubject>
+              </j.1:TriplePattern>
+              <j.1:TriplePattern>
+                <j.1:gpObject rdf:resource="#specificGasConstantEq2_v2"/>
+                <j.1:gpPredicate rdf:resource="#gasConstant"/>
+                <j.1:gpSubject>
+                  <j.1:GPVariable rdf:ID="specificGasConstantEq2_v0"/>
+                </j.1:gpSubject>
+              </j.1:TriplePattern>
+            </j.1:constraints>
+          </j.1:SemanticConstraint>
+        </j.1:augmentedType>
+        <j.1:specifiedUnits rdf:parseType="Resource">
+          <rdf:rest rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#nil"/>
+          <rdf:first rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+          >"J/g-Kelvin"</rdf:first>
+        </j.1:specifiedUnits>
+        <j.1:dataType>http://www.w3.org/2001/XMLSchema#decimal</j.1:dataType>
+      </j.1:DataDescriptor>
+    </j.1:returnTypes>
+    <j.1:arguments rdf:parseType="Collection">
+      <j.1:DataDescriptor>
+        <j.1:augmentedType>
+          <j.1:SemanticType>
+            <j.1:semType rdf:resource="#UniversalGasConstant"/>
+          </j.1:SemanticType>
+        </j.1:augmentedType>
+        <j.1:specifiedUnits rdf:parseType="Resource">
+          <rdf:rest rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#nil"/>
+          <rdf:first rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+          >"J/mole-Kelvin"</rdf:first>
+        </j.1:specifiedUnits>
+        <j.1:dataType>http://www.w3.org/2001/XMLSchema#decimal</j.1:dataType>
+        <j.1:descriptorVariable>
+          <j.1:GPVariable rdf:ID="specificGasConstantEq2_Ru"/>
+        </j.1:descriptorVariable>
+        <j.1:localDescriptorName>Ru</j.1:localDescriptorName>
+      </j.1:DataDescriptor>
+      <j.1:DataDescriptor>
+        <j.1:augmentedType>
+          <j.1:SemanticConstraint>
+            <j.1:constraints rdf:parseType="Collection">
+              <j.1:TriplePattern>
+                <j.1:gpObject rdf:resource="ScientificConcepts2.sadl#Gas"/>
+                <j.1:gpPredicate rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#type"/>
+                <j.1:gpSubject rdf:resource="#specificGasConstantEq2_v0"/>
+              </j.1:TriplePattern>
+              <j.1:TriplePattern>
+                <j.1:gpObject>
+                  <j.1:GPVariable rdf:ID="specificGasConstantEq2_M"/>
+                </j.1:gpObject>
+                <j.1:gpPredicate rdf:resource="#molarMass"/>
+                <j.1:gpSubject rdf:resource="#specificGasConstantEq2_v0"/>
+              </j.1:TriplePattern>
+            </j.1:constraints>
+          </j.1:SemanticConstraint>
+        </j.1:augmentedType>
+        <j.1:specifiedUnits rdf:parseType="Resource">
+          <rdf:rest rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#nil"/>
+          <rdf:first rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+          >"g/mole"</rdf:first>
+        </j.1:specifiedUnits>
+        <j.1:dataType>http://www.w3.org/2001/XMLSchema#decimal</j.1:dataType>
+        <j.1:descriptorVariable rdf:resource="#specificGasConstantEq2_M"/>
+        <j.1:localDescriptorName>M</j.1:localDescriptorName>
+      </j.1:DataDescriptor>
+    </j.1:arguments>
+    <j.1:expression>
+      <j.1:Script>
+        <j.1:language rdf:resource="sadlimplicitmodel#Text"/>
+        <j.1:script rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+        >xsd:decimal specificGasConstantEq2(decimal Ru,decimal M): /(rdf(Ru, sadlimplicitmodel:value, null),M)</j.1:script>
+      </j.1:Script>
+    </j.1:expression>
+  </j.1:Equation>
+  <sos:Theta rdf:ID="ThetaISU">
+    <j.1:unit rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >Kelvin</j.1:unit>
+    <j.1:value rdf:datatype="http://www.w3.org/2001/XMLSchema#decimal"
+    >3056</j.1:value>
+  </sos:Theta>
+  <j.1:ExternalEquation rdf:ID="CAL_SOS_Imperial">
+    <j.1:externalURI rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >http://com.ge.research.darpa.aske.kchain.CAL_SOS</j.1:externalURI>
+    <j.1:returnTypes rdf:parseType="Collection">
+      <j.1:DataDescriptor>
+        <j.1:augmentedType>
+          <j.1:SemanticConstraint>
+            <j.1:constraints rdf:parseType="Collection">
+              <j.1:TriplePattern>
+                <j.1:gpObject rdf:resource="ScientificConcepts2.sadl#Velocity"/>
+                <j.1:gpPredicate rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#type"/>
+                <j.1:gpSubject>
+                  <j.1:GPVariable rdf:ID="CAL_SOS_Imperial_v2"/>
+                </j.1:gpSubject>
+              </j.1:TriplePattern>
+              <j.1:TriplePattern>
+                <j.1:gpObject rdf:resource="#CAL_SOS_Imperial_v2"/>
+                <j.1:gpPredicate rdf:resource="#speedOfSound"/>
+                <j.1:gpSubject>
+                  <j.1:GPVariable rdf:ID="CAL_SOS_Imperial_v0"/>
+                </j.1:gpSubject>
+              </j.1:TriplePattern>
+            </j.1:constraints>
+          </j.1:SemanticConstraint>
+        </j.1:augmentedType>
+        <j.1:dataType>http://www.w3.org/2001/XMLSchema#double</j.1:dataType>
+      </j.1:DataDescriptor>
+    </j.1:returnTypes>
+    <j.1:arguments rdf:parseType="Collection">
+      <j.1:DataDescriptor>
+        <j.1:augmentedType>
+          <j.1:SemanticConstraint>
+            <j.1:constraints rdf:parseType="Collection">
+              <j.1:TriplePattern>
+                <j.1:gpObject rdf:resource="ScientificConcepts2.sadl#Gas"/>
+                <j.1:gpPredicate rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#type"/>
+                <j.1:gpSubject rdf:resource="#CAL_SOS_Imperial_v0"/>
+              </j.1:TriplePattern>
+              <j.1:TriplePattern>
+                <j.1:gpObject>
+                  <j.1:GPVariable rdf:ID="CAL_SOS_Imperial_T"/>
+                </j.1:gpObject>
+                <j.1:gpPredicate rdf:resource="ScientificConcepts2.sadl#temperature"/>
+                <j.1:gpSubject rdf:resource="#CAL_SOS_Imperial_v0"/>
+              </j.1:TriplePattern>
+            </j.1:constraints>
+          </j.1:SemanticConstraint>
+        </j.1:augmentedType>
+        <j.1:specifiedUnits rdf:parseType="Resource">
+          <rdf:rest rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#nil"/>
+          <rdf:first rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+          >Rankine</rdf:first>
+        </j.1:specifiedUnits>
+        <j.1:dataType>http://www.w3.org/2001/XMLSchema#double</j.1:dataType>
+        <j.1:descriptorVariable rdf:resource="#CAL_SOS_Imperial_T"/>
+        <j.1:localDescriptorName>T</j.1:localDescriptorName>
+      </j.1:DataDescriptor>
+      <j.1:DataDescriptor>
+        <j.1:augmentedType>
+          <j.1:SemanticConstraint>
+            <j.1:constraints rdf:parseType="Collection">
+              <j.1:TriplePattern>
+                <j.1:gpObject>
+                  <j.1:GPVariable rdf:ID="CAL_SOS_Imperial_G"/>
+                </j.1:gpObject>
+                <j.1:gpPredicate rdf:resource="#gamma"/>
+                <j.1:gpSubject rdf:resource="#CAL_SOS_Imperial_v0"/>
+              </j.1:TriplePattern>
+            </j.1:constraints>
+          </j.1:SemanticConstraint>
+        </j.1:augmentedType>
+        <j.1:specifiedUnits rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#nil"/>
+        <j.1:dataType>http://www.w3.org/2001/XMLSchema#double</j.1:dataType>
+        <j.1:descriptorVariable rdf:resource="#CAL_SOS_Imperial_G"/>
+        <j.1:localDescriptorName>G</j.1:localDescriptorName>
+      </j.1:DataDescriptor>
+      <j.1:DataDescriptor>
+        <j.1:augmentedType>
+          <j.1:SemanticConstraint>
+            <j.1:constraints rdf:parseType="Collection">
+              <j.1:TriplePattern>
+                <j.1:gpObject>
+                  <j.1:GPVariable rdf:ID="CAL_SOS_Imperial_R"/>
+                </j.1:gpObject>
+                <j.1:gpPredicate rdf:resource="#gasConstant"/>
+                <j.1:gpSubject rdf:resource="#CAL_SOS_Imperial_v0"/>
+              </j.1:TriplePattern>
+            </j.1:constraints>
+          </j.1:SemanticConstraint>
+        </j.1:augmentedType>
+        <j.1:specifiedUnits rdf:parseType="Resource">
+          <rdf:rest rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#nil"/>
+          <rdf:first rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+          >"lbm/lbmole"</rdf:first>
+        </j.1:specifiedUnits>
+        <j.1:dataType>http://www.w3.org/2001/XMLSchema#double</j.1:dataType>
+        <j.1:descriptorVariable rdf:resource="#CAL_SOS_Imperial_R"/>
+        <j.1:localDescriptorName>R</j.1:localDescriptorName>
+      </j.1:DataDescriptor>
+      <j.1:DataDescriptor>
+        <j.1:augmentedType>
+          <j.1:SemanticType>
+            <j.1:semType rdf:resource="#Theta"/>
+          </j.1:SemanticType>
+        </j.1:augmentedType>
+        <j.1:specifiedUnits rdf:parseType="Resource">
+          <rdf:rest rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#nil"/>
+          <rdf:first rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+          >Rankine</rdf:first>
+        </j.1:specifiedUnits>
+        <j.1:dataType>http://www.w3.org/2001/XMLSchema#double</j.1:dataType>
+        <j.1:descriptorVariable>
+          <j.1:GPVariable rdf:ID="CAL_SOS_Imperial_Q"/>
+        </j.1:descriptorVariable>
+        <j.1:localDescriptorName>Q</j.1:localDescriptorName>
+      </j.1:DataDescriptor>
+    </j.1:arguments>
+    <j.1:expression>
+      <j.1:Script>
+        <j.1:language rdf:resource="sadlimplicitmodel#Text"/>
+        <j.1:script rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+        >xsd:double CAL_SOS_Imperial(double T,double G,double R,double Q): uri("http://com.ge.research.darpa.aske.kchain.CAL_SOS")</j.1:script>
+      </j.1:Script>
+    </j.1:expression>
+  </j.1:ExternalEquation>
+  <j.1:ExternalEquation rdf:ID="sosfromalt">
+    <j.1:externalURI rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >http://com.ge.research.darpa.aske.kchain.sosairfromalt</j.1:externalURI>
+    <j.1:returnTypes rdf:parseType="Collection">
+      <j.1:DataDescriptor>
+        <j.1:dataType>http://www.w3.org/2001/XMLSchema#decimal</j.1:dataType>
+      </j.1:DataDescriptor>
+    </j.1:returnTypes>
+    <j.1:arguments rdf:parseType="Collection">
+      <j.1:DataDescriptor>
+        <j.1:specifiedUnits rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#nil"/>
+        <j.1:dataType>http://www.w3.org/2001/XMLSchema#decimal</j.1:dataType>
+        <j.1:descriptorVariable>
+          <j.1:GPVariable rdf:ID="sosfromalt_alt"/>
+        </j.1:descriptorVariable>
+        <j.1:localDescriptorName>alt</j.1:localDescriptorName>
+      </j.1:DataDescriptor>
+    </j.1:arguments>
+    <j.1:expression>
+      <j.1:Script>
+        <j.1:language rdf:resource="sadlimplicitmodel#Text"/>
+        <j.1:script rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+        >decimal sosfromalt(decimal alt): uri("http://com.ge.research.darpa.aske.kchain.sosairfromalt")</j.1:script>
+      </j.1:Script>
+    </j.1:expression>
+  </j.1:ExternalEquation>
+  <j.1:ExternalEquation rdf:ID="CAL_GAM">
+    <j.1:externalURI rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >http://com.ge.research.darpa.aske.kchain.CAL_GAM</j.1:externalURI>
+    <j.1:returnTypes rdf:parseType="Collection">
+      <j.1:DataDescriptor>
+        <j.1:augmentedType>
+          <j.1:SemanticConstraint>
+            <j.1:constraints rdf:parseType="Collection">
+              <j.1:TriplePattern>
+                <j.1:gpObject rdf:resource="#Gamma"/>
+                <j.1:gpPredicate rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#type"/>
+                <j.1:gpSubject>
+                  <j.1:GPVariable rdf:ID="CAL_GAM_v2"/>
+                </j.1:gpSubject>
+              </j.1:TriplePattern>
+              <j.1:TriplePattern>
+                <j.1:gpObject rdf:resource="#CAL_GAM_v2"/>
+                <j.1:gpPredicate rdf:resource="#gammaCal"/>
+                <j.1:gpSubject>
+                  <j.1:GPVariable rdf:ID="CAL_GAM_v0"/>
+                </j.1:gpSubject>
+              </j.1:TriplePattern>
+            </j.1:constraints>
+          </j.1:SemanticConstraint>
+        </j.1:augmentedType>
+        <j.1:dataType>http://www.w3.org/2001/XMLSchema#double</j.1:dataType>
+      </j.1:DataDescriptor>
+    </j.1:returnTypes>
+    <j.1:arguments rdf:parseType="Collection">
+      <j.1:DataDescriptor>
+        <j.1:augmentedType>
+          <j.1:SemanticConstraint>
+            <j.1:constraints rdf:parseType="Collection">
+              <j.1:TriplePattern>
+                <j.1:gpObject rdf:resource="ScientificConcepts2.sadl#Gas"/>
+                <j.1:gpPredicate rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#type"/>
+                <j.1:gpSubject rdf:resource="#CAL_GAM_v0"/>
+              </j.1:TriplePattern>
+              <j.1:TriplePattern>
+                <j.1:gpObject>
+                  <j.1:GPVariable rdf:ID="CAL_GAM_T"/>
+                </j.1:gpObject>
+                <j.1:gpPredicate rdf:resource="ScientificConcepts2.sadl#temperature"/>
+                <j.1:gpSubject rdf:resource="#CAL_GAM_v0"/>
+              </j.1:TriplePattern>
+            </j.1:constraints>
+          </j.1:SemanticConstraint>
+        </j.1:augmentedType>
+        <j.1:specifiedUnits rdf:parseType="Resource">
+          <rdf:rest rdf:parseType="Resource">
+            <rdf:rest rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#nil"/>
+            <rdf:first rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+            >Rankine</rdf:first>
+          </rdf:rest>
+          <rdf:first rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+          >Kelvin</rdf:first>
+        </j.1:specifiedUnits>
+        <j.1:dataType>http://www.w3.org/2001/XMLSchema#double</j.1:dataType>
+        <j.1:descriptorVariable rdf:resource="#CAL_GAM_T"/>
+        <j.1:localDescriptorName>T</j.1:localDescriptorName>
+      </j.1:DataDescriptor>
+      <j.1:DataDescriptor>
+        <j.1:augmentedType>
+          <j.1:SemanticConstraint>
+            <j.1:constraints rdf:parseType="Collection">
+              <j.1:TriplePattern>
+                <j.1:gpObject>
+                  <j.1:GPVariable rdf:ID="CAL_GAM_G"/>
+                </j.1:gpObject>
+                <j.1:gpPredicate rdf:resource="#gamma"/>
+                <j.1:gpSubject rdf:resource="#CAL_GAM_v0"/>
+              </j.1:TriplePattern>
+            </j.1:constraints>
+          </j.1:SemanticConstraint>
+        </j.1:augmentedType>
+        <j.1:specifiedUnits rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#nil"/>
+        <j.1:dataType>http://www.w3.org/2001/XMLSchema#double</j.1:dataType>
+        <j.1:descriptorVariable rdf:resource="#CAL_GAM_G"/>
+        <j.1:localDescriptorName>G</j.1:localDescriptorName>
+      </j.1:DataDescriptor>
+      <j.1:DataDescriptor>
+        <j.1:augmentedType>
+          <j.1:SemanticType>
+            <j.1:semType rdf:resource="#Theta"/>
+          </j.1:SemanticType>
+        </j.1:augmentedType>
+        <j.1:specifiedUnits rdf:parseType="Resource">
+          <rdf:rest rdf:parseType="Resource">
+            <rdf:rest rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#nil"/>
+            <rdf:first rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+            >Rankine</rdf:first>
+          </rdf:rest>
+          <rdf:first rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+          >Kelvin</rdf:first>
+        </j.1:specifiedUnits>
+        <j.1:dataType>http://www.w3.org/2001/XMLSchema#double</j.1:dataType>
+        <j.1:descriptorVariable>
+          <j.1:GPVariable rdf:ID="CAL_GAM_Q"/>
+        </j.1:descriptorVariable>
+        <j.1:localDescriptorName>Q</j.1:localDescriptorName>
+      </j.1:DataDescriptor>
+      <j.1:DataDescriptor>
+        <j.1:augmentedType>
+          <j.1:SemanticType>
+            <j.1:semType rdf:resource="ScientificConcepts2.sadl#UnitSystem"/>
+          </j.1:SemanticType>
+        </j.1:augmentedType>
+        <j.1:specifiedUnits rdf:parseType="Resource">
+          <rdf:rest rdf:parseType="Resource">
+            <rdf:rest rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#nil"/>
+            <rdf:first rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+            >Imperial</rdf:first>
+          </rdf:rest>
+          <rdf:first rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+          >Metric</rdf:first>
+        </j.1:specifiedUnits>
+        <j.1:dataType>http://www.w3.org/2001/XMLSchema#string</j.1:dataType>
+        <j.1:descriptorVariable>
+          <j.1:GPVariable rdf:ID="CAL_GAM_us"/>
+        </j.1:descriptorVariable>
+        <j.1:localDescriptorName>us</j.1:localDescriptorName>
+      </j.1:DataDescriptor>
+    </j.1:arguments>
+    <j.1:expression>
+      <j.1:Script>
+        <j.1:language rdf:resource="sadlimplicitmodel#Text"/>
+        <j.1:script rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+        >xsd:double CAL_GAM(double T,double G,double Q,string us): uri("http://com.ge.research.darpa.aske.kchain.CAL_GAM")</j.1:script>
+      </j.1:Script>
+    </j.1:expression>
+  </j.1:ExternalEquation>
+  <j.1:Equation rdf:ID="compMach">
+    <j.1:expression>
+      <j.1:Script>
+        <j.1:language rdf:resource="sadlimplicitmodel#Java"/>
+        <j.1:script rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+        >a+b</j.1:script>
+      </j.1:Script>
+    </j.1:expression>
+    <j.1:returnTypes rdf:parseType="Collection">
+      <j.1:DataDescriptor>
+        <j.1:descriptorVariable>
+          <j.1:GPVariable rdf:ID="compMach_v2"/>
+        </j.1:descriptorVariable>
+        <j.1:augmentedType>
+          <j.1:SemanticConstraint>
+            <j.1:constraints rdf:parseType="Collection">
+              <j.1:TriplePattern>
+                <j.1:gpObject rdf:resource="http://www.w3.org/2001/XMLSchema#decimal"/>
+                <j.1:gpPredicate rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#type"/>
+                <j.1:gpSubject rdf:resource="#compMach_v2"/>
+              </j.1:TriplePattern>
+              <j.1:TriplePattern>
+                <j.1:gpObject rdf:resource="#compMach_v2"/>
+                <j.1:gpPredicate rdf:resource="#mach"/>
+                <j.1:gpSubject>
+                  <j.1:GPVariable rdf:ID="compMach_v0"/>
+                </j.1:gpSubject>
+              </j.1:TriplePattern>
+            </j.1:constraints>
+          </j.1:SemanticConstraint>
+        </j.1:augmentedType>
+        <j.1:specifiedUnits rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#nil"/>
+        <j.1:dataType>http://www.w3.org/2001/XMLSchema#double</j.1:dataType>
+      </j.1:DataDescriptor>
+    </j.1:returnTypes>
+    <j.1:arguments rdf:parseType="Collection">
+      <j.1:DataDescriptor>
+        <j.1:augmentedType>
+          <j.1:SemanticConstraint>
+            <j.1:constraints rdf:parseType="Collection">
+              <j.1:TriplePattern>
+                <j.1:gpObject rdf:resource="ScientificConcepts2.sadl#PhysicalObject"/>
+                <j.1:gpPredicate rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#type"/>
+                <j.1:gpSubject rdf:resource="#compMach_v0"/>
+              </j.1:TriplePattern>
+              <j.1:TriplePattern>
+                <j.1:gpObject>
+                  <j.1:GPVariable rdf:ID="compMach_sv"/>
+                </j.1:gpObject>
+                <j.1:gpPredicate rdf:resource="ScientificConcepts2.sadl#velocity"/>
+                <j.1:gpSubject rdf:resource="#compMach_v0"/>
+              </j.1:TriplePattern>
+              <j.1:TriplePattern>
+                <j.1:gpObject rdf:resource="ScientificConcepts2.sadl#Air"/>
+                <j.1:gpPredicate rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#type"/>
+                <j.1:gpSubject>
+                  <j.1:GPVariable rdf:ID="compMach_v1"/>
+                </j.1:gpSubject>
+              </j.1:TriplePattern>
+              <j.1:TriplePattern>
+                <j.1:gpObject rdf:resource="#compMach_v1"/>
+                <j.1:gpPredicate rdf:resource="#movesIn"/>
+                <j.1:gpSubject rdf:resource="#compMach_v0"/>
+              </j.1:TriplePattern>
+            </j.1:constraints>
+          </j.1:SemanticConstraint>
+        </j.1:augmentedType>
+        <j.1:specifiedUnits rdf:parseType="Resource">
+          <rdf:rest rdf:parseType="Resource">
+            <rdf:rest rdf:parseType="Resource">
+              <rdf:rest rdf:parseType="Resource">
+                <rdf:rest rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#nil"/>
+                <rdf:first rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+                >"km/hr"</rdf:first>
+              </rdf:rest>
+              <rdf:first rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+              >"m/sec"</rdf:first>
+            </rdf:rest>
+            <rdf:first rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+            >mph</rdf:first>
+          </rdf:rest>
+          <rdf:first rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+          >"ft/sec"</rdf:first>
+        </j.1:specifiedUnits>
+        <j.1:dataType>http://www.w3.org/2001/XMLSchema#double</j.1:dataType>
+        <j.1:descriptorVariable rdf:resource="#compMach_sv"/>
+        <j.1:localDescriptorName>sv</j.1:localDescriptorName>
+      </j.1:DataDescriptor>
+      <j.1:DataDescriptor>
+        <j.1:augmentedType>
+          <j.1:SemanticConstraint>
+            <j.1:constraints rdf:parseType="Collection">
+              <j.1:TriplePattern>
+                <j.1:gpObject>
+                  <j.1:GPVariable rdf:ID="compMach_sos"/>
+                </j.1:gpObject>
+                <j.1:gpPredicate rdf:resource="#speedOfSound"/>
+                <j.1:gpSubject rdf:resource="#compMach_v1"/>
+              </j.1:TriplePattern>
+            </j.1:constraints>
+          </j.1:SemanticConstraint>
+        </j.1:augmentedType>
+        <j.1:specifiedUnits rdf:parseType="Resource">
+          <rdf:rest rdf:parseType="Resource">
+            <rdf:rest rdf:parseType="Resource">
+              <rdf:rest rdf:parseType="Resource">
+                <rdf:rest rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#nil"/>
+                <rdf:first rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+                >"km/hr"</rdf:first>
+              </rdf:rest>
+              <rdf:first rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+              >"m/sec"</rdf:first>
+            </rdf:rest>
+            <rdf:first rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+            >mph</rdf:first>
+          </rdf:rest>
+          <rdf:first rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+          >"ft/sec"</rdf:first>
+        </j.1:specifiedUnits>
+        <j.1:dataType>http://www.w3.org/2001/XMLSchema#double</j.1:dataType>
+        <j.1:descriptorVariable rdf:resource="#compMach_sos"/>
+        <j.1:localDescriptorName>sos</j.1:localDescriptorName>
+      </j.1:DataDescriptor>
+    </j.1:arguments>
+    <j.1:expression>
+      <j.1:Script>
+        <j.1:language rdf:resource="sadlimplicitmodel#Text"/>
+        <j.1:script rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+        >double compMach(double sv,double sos): </j.1:script>
+      </j.1:Script>
+    </j.1:expression>
+  </j.1:Equation>
+  <j.1:ExternalEquation rdf:ID="sosfromtemp2">
+    <j.1:externalURI rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >http://com.ge.research.darpa.aske.kchain.sosairfromtemp</j.1:externalURI>
+    <j.1:returnTypes rdf:parseType="Collection">
+      <j.1:DataDescriptor>
+        <j.1:augmentedType>
+          <j.1:SemanticConstraint>
+            <j.1:constraints rdf:parseType="Collection">
+              <j.1:TriplePattern>
+                <j.1:gpObject rdf:resource="ScientificConcepts2.sadl#Velocity"/>
+                <j.1:gpPredicate rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#type"/>
+                <j.1:gpSubject>
+                  <j.1:GPVariable rdf:ID="sosfromtemp2_v2"/>
+                </j.1:gpSubject>
+              </j.1:TriplePattern>
+              <j.1:TriplePattern>
+                <j.1:gpObject rdf:resource="#sosfromtemp2_v2"/>
+                <j.1:gpPredicate rdf:resource="#speedOfSound"/>
+                <j.1:gpSubject>
+                  <j.1:GPVariable rdf:ID="sosfromtemp2_v0"/>
+                </j.1:gpSubject>
+              </j.1:TriplePattern>
+            </j.1:constraints>
+          </j.1:SemanticConstraint>
+        </j.1:augmentedType>
+        <j.1:dataType>http://www.w3.org/2001/XMLSchema#decimal</j.1:dataType>
+      </j.1:DataDescriptor>
+    </j.1:returnTypes>
+    <j.1:arguments rdf:parseType="Collection">
+      <j.1:DataDescriptor>
+        <j.1:augmentedType>
+          <j.1:SemanticConstraint>
+            <j.1:constraints rdf:parseType="Collection">
+              <j.1:TriplePattern>
+                <j.1:gpObject rdf:resource="ScientificConcepts2.sadl#Air"/>
+                <j.1:gpPredicate rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#type"/>
+                <j.1:gpSubject rdf:resource="#sosfromtemp2_v0"/>
+              </j.1:TriplePattern>
+              <j.1:TriplePattern>
+                <j.1:gpObject>
+                  <j.1:GPVariable rdf:ID="sosfromtemp2_t"/>
+                </j.1:gpObject>
+                <j.1:gpPredicate rdf:resource="ScientificConcepts2.sadl#temperature"/>
+                <j.1:gpSubject rdf:resource="#sosfromtemp2_v0"/>
+              </j.1:TriplePattern>
+            </j.1:constraints>
+          </j.1:SemanticConstraint>
+        </j.1:augmentedType>
+        <j.1:specifiedUnits rdf:parseType="Resource">
+          <rdf:rest rdf:parseType="Resource">
+            <rdf:rest rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#nil"/>
+            <rdf:first rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+            >Rankine</rdf:first>
+          </rdf:rest>
+          <rdf:first rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+          >"Kelvin"</rdf:first>
+        </j.1:specifiedUnits>
+        <j.1:dataType>http://www.w3.org/2001/XMLSchema#decimal</j.1:dataType>
+        <j.1:descriptorVariable rdf:resource="#sosfromtemp2_t"/>
+        <j.1:localDescriptorName>t</j.1:localDescriptorName>
+      </j.1:DataDescriptor>
+    </j.1:arguments>
+    <j.1:expression>
+      <j.1:Script>
+        <j.1:language rdf:resource="sadlimplicitmodel#Text"/>
+        <j.1:script rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+        >xsd:decimal sosfromtemp2(decimal t): uri("http://com.ge.research.darpa.aske.kchain.sosairfromtemp")</j.1:script>
+      </j.1:Script>
+    </j.1:expression>
+  </j.1:ExternalEquation>
   <sos:Theta rdf:ID="ThetaImperial">
     <j.1:unit rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
     >Rankine</j.1:unit>
@@ -393,70 +873,7 @@
     <j.1:value rdf:datatype="http://www.w3.org/2001/XMLSchema#decimal"
     >0.286</j.1:value>
   </sos:UniversalGasConstant>
-  <j.1:GPVariable rdf:ID="CAL_GAM_v4"/>
-  <j.1:GPVariable rdf:ID="CAL_SOS_Imperial_v4"/>
   <j.1:Rule rdf:ID="SpeedOfSoundInAirGivenAltitude"/>
-  <j.1:GPVariable rdf:ID="CAL_SOS_Imperial_v5"/>
-  <j.1:GPVariable rdf:ID="tempFromAltitude_v1"/>
-  <j.1:GPVariable rdf:ID="sosfromalt_v0"/>
-  <j.1:GPVariable rdf:ID="specificGasConstantEq2_v2"/>
-  <j.1:Equation rdf:ID="specificGasConstantEq2">
-    <j.1:returnTypes rdf:parseType="Collection">
-      <j.1:DataDescriptor>
-        <j.1:augmentedType>
-          <j.1:SemanticConstraint>
-            <j.1:constraints rdf:parseType="Collection">
-              <j.1:TriplePattern>
-                <j.1:gpObject rdf:resource="#GasConstant"/>
-                <j.1:gpPredicate>http://www.w3.org/1999/02/22-rdf-syntax-ns#type</j.1:gpPredicate>
-                <j.1:gpSubject>
-                  <j.1:GPVariable rdf:ID="specificGasConstantEq2_v5"/>
-                </j.1:gpSubject>
-              </j.1:TriplePattern>
-            </j.1:constraints>
-          </j.1:SemanticConstraint>
-        </j.1:augmentedType>
-        <j.1:localDescriptorName>v4</j.1:localDescriptorName>
-        <j.1:dataType>http://www.w3.org/2001/XMLSchema#decimal</j.1:dataType>
-      </j.1:DataDescriptor>
-    </j.1:returnTypes>
-    <j.1:arguments rdf:parseType="Collection">
-      <j.1:DataDescriptor>
-        <j.1:augmentedType>
-          <j.1:SemanticType>
-            <j.1:semType rdf:resource="#UniversalGasConstant"/>
-          </j.1:SemanticType>
-        </j.1:augmentedType>
-        <j.1:dataType>http://www.w3.org/2001/XMLSchema#decimal</j.1:dataType>
-        <j.1:localDescriptorName>Ru</j.1:localDescriptorName>
-      </j.1:DataDescriptor>
-      <j.1:DataDescriptor>
-        <j.1:augmentedType>
-          <j.1:SemanticConstraint>
-            <j.1:constraints rdf:parseType="Collection">
-              <j.1:TriplePattern>
-                <j.1:gpObject rdf:resource="ScientificConcepts2.sadl#Gas"/>
-                <j.1:gpPredicate>http://www.w3.org/1999/02/22-rdf-syntax-ns#type</j.1:gpPredicate>
-                <j.1:gpSubject>
-                  <j.1:GPVariable rdf:ID="specificGasConstantEq2_v3"/>
-                </j.1:gpSubject>
-              </j.1:TriplePattern>
-            </j.1:constraints>
-          </j.1:SemanticConstraint>
-        </j.1:augmentedType>
-        <j.1:dataType>http://www.w3.org/2001/XMLSchema#decimal</j.1:dataType>
-        <j.1:localDescriptorName>M</j.1:localDescriptorName>
-      </j.1:DataDescriptor>
-    </j.1:arguments>
-    <j.1:expression>
-      <j.1:Script>
-        <j.1:language rdf:resource="sadlimplicitmodel#Text"/>
-        <j.1:script rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
-        >xsd:decimal specificGasConstantEq2(decimal Ru,decimal M): /(rdf(Ru, sadlimplicitmodel:value, null),M)</j.1:script>
-      </j.1:Script>
-    </j.1:expression>
-  </j.1:Equation>
-  <j.1:GPVariable rdf:ID="computeMach_v6"/>
   <j.1:ExternalEquation rdf:ID="CAL_SOS">
     <j.1:externalURI rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
     >http://com.ge.research.darpa.aske.kchain.CAL_SOS</j.1:externalURI>
@@ -467,15 +884,21 @@
             <j.1:constraints rdf:parseType="Collection">
               <j.1:TriplePattern>
                 <j.1:gpObject rdf:resource="ScientificConcepts2.sadl#Velocity"/>
-                <j.1:gpPredicate>http://www.w3.org/1999/02/22-rdf-syntax-ns#type</j.1:gpPredicate>
+                <j.1:gpPredicate rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#type"/>
                 <j.1:gpSubject>
-                  <j.1:GPVariable rdf:ID="CAL_SOS_v8"/>
+                  <j.1:GPVariable rdf:ID="CAL_SOS_v2"/>
+                </j.1:gpSubject>
+              </j.1:TriplePattern>
+              <j.1:TriplePattern>
+                <j.1:gpObject rdf:resource="#CAL_SOS_v2"/>
+                <j.1:gpPredicate rdf:resource="#speedOfSound"/>
+                <j.1:gpSubject>
+                  <j.1:GPVariable rdf:ID="CAL_SOS_v0"/>
                 </j.1:gpSubject>
               </j.1:TriplePattern>
             </j.1:constraints>
           </j.1:SemanticConstraint>
         </j.1:augmentedType>
-        <j.1:localDescriptorName>v7</j.1:localDescriptorName>
         <j.1:dataType>http://www.w3.org/2001/XMLSchema#double</j.1:dataType>
       </j.1:DataDescriptor>
     </j.1:returnTypes>
@@ -486,33 +909,76 @@
             <j.1:constraints rdf:parseType="Collection">
               <j.1:TriplePattern>
                 <j.1:gpObject rdf:resource="ScientificConcepts2.sadl#Gas"/>
-                <j.1:gpPredicate>http://www.w3.org/1999/02/22-rdf-syntax-ns#type</j.1:gpPredicate>
-                <j.1:gpSubject>
-                  <j.1:GPVariable rdf:ID="CAL_SOS_v2"/>
-                </j.1:gpSubject>
+                <j.1:gpPredicate rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#type"/>
+                <j.1:gpSubject rdf:resource="#CAL_SOS_v0"/>
+              </j.1:TriplePattern>
+              <j.1:TriplePattern>
+                <j.1:gpObject>
+                  <j.1:GPVariable rdf:ID="CAL_SOS_T"/>
+                </j.1:gpObject>
+                <j.1:gpPredicate rdf:resource="ScientificConcepts2.sadl#temperature"/>
+                <j.1:gpSubject rdf:resource="#CAL_SOS_v0"/>
               </j.1:TriplePattern>
             </j.1:constraints>
           </j.1:SemanticConstraint>
         </j.1:augmentedType>
+        <j.1:specifiedUnits rdf:parseType="Resource">
+          <rdf:rest rdf:parseType="Resource">
+            <rdf:rest rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#nil"/>
+            <rdf:first rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+            >Rankine</rdf:first>
+          </rdf:rest>
+          <rdf:first rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+          >Kelvin</rdf:first>
+        </j.1:specifiedUnits>
         <j.1:dataType>http://www.w3.org/2001/XMLSchema#double</j.1:dataType>
+        <j.1:descriptorVariable rdf:resource="#CAL_SOS_T"/>
         <j.1:localDescriptorName>T</j.1:localDescriptorName>
       </j.1:DataDescriptor>
       <j.1:DataDescriptor>
         <j.1:augmentedType>
           <j.1:SemanticConstraint>
-            <j.1:constraints rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#nil"/>
+            <j.1:constraints rdf:parseType="Collection">
+              <j.1:TriplePattern>
+                <j.1:gpObject>
+                  <j.1:GPVariable rdf:ID="CAL_SOS_G"/>
+                </j.1:gpObject>
+                <j.1:gpPredicate rdf:resource="#gamma"/>
+                <j.1:gpSubject rdf:resource="#CAL_SOS_v0"/>
+              </j.1:TriplePattern>
+            </j.1:constraints>
           </j.1:SemanticConstraint>
         </j.1:augmentedType>
+        <j.1:specifiedUnits rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#nil"/>
         <j.1:dataType>http://www.w3.org/2001/XMLSchema#double</j.1:dataType>
+        <j.1:descriptorVariable rdf:resource="#CAL_SOS_G"/>
         <j.1:localDescriptorName>G</j.1:localDescriptorName>
       </j.1:DataDescriptor>
       <j.1:DataDescriptor>
         <j.1:augmentedType>
           <j.1:SemanticConstraint>
-            <j.1:constraints rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#nil"/>
+            <j.1:constraints rdf:parseType="Collection">
+              <j.1:TriplePattern>
+                <j.1:gpObject>
+                  <j.1:GPVariable rdf:ID="CAL_SOS_R"/>
+                </j.1:gpObject>
+                <j.1:gpPredicate rdf:resource="#gasConstant"/>
+                <j.1:gpSubject rdf:resource="#CAL_SOS_v0"/>
+              </j.1:TriplePattern>
+            </j.1:constraints>
           </j.1:SemanticConstraint>
         </j.1:augmentedType>
+        <j.1:specifiedUnits rdf:parseType="Resource">
+          <rdf:rest rdf:parseType="Resource">
+            <rdf:rest rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#nil"/>
+            <rdf:first rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+            >"lbm/lbmole"</rdf:first>
+          </rdf:rest>
+          <rdf:first rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+          >"g/mole"</rdf:first>
+        </j.1:specifiedUnits>
         <j.1:dataType>http://www.w3.org/2001/XMLSchema#double</j.1:dataType>
+        <j.1:descriptorVariable rdf:resource="#CAL_SOS_R"/>
         <j.1:localDescriptorName>R</j.1:localDescriptorName>
       </j.1:DataDescriptor>
       <j.1:DataDescriptor>
@@ -521,7 +987,19 @@
             <j.1:semType rdf:resource="#Theta"/>
           </j.1:SemanticType>
         </j.1:augmentedType>
+        <j.1:specifiedUnits rdf:parseType="Resource">
+          <rdf:rest rdf:parseType="Resource">
+            <rdf:rest rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#nil"/>
+            <rdf:first rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+            >Rankine</rdf:first>
+          </rdf:rest>
+          <rdf:first rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+          >Kelvin</rdf:first>
+        </j.1:specifiedUnits>
         <j.1:dataType>http://www.w3.org/2001/XMLSchema#double</j.1:dataType>
+        <j.1:descriptorVariable>
+          <j.1:GPVariable rdf:ID="CAL_SOS_Q"/>
+        </j.1:descriptorVariable>
         <j.1:localDescriptorName>Q</j.1:localDescriptorName>
       </j.1:DataDescriptor>
       <j.1:DataDescriptor>
@@ -530,7 +1008,19 @@
             <j.1:semType rdf:resource="ScientificConcepts2.sadl#UnitSystem"/>
           </j.1:SemanticType>
         </j.1:augmentedType>
+        <j.1:specifiedUnits rdf:parseType="Resource">
+          <rdf:rest rdf:parseType="Resource">
+            <rdf:rest rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#nil"/>
+            <rdf:first rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+            >Imperial</rdf:first>
+          </rdf:rest>
+          <rdf:first rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+          >Metric</rdf:first>
+        </j.1:specifiedUnits>
         <j.1:dataType>http://www.w3.org/2001/XMLSchema#string</j.1:dataType>
+        <j.1:descriptorVariable>
+          <j.1:GPVariable rdf:ID="CAL_SOS_us"/>
+        </j.1:descriptorVariable>
         <j.1:localDescriptorName>us</j.1:localDescriptorName>
       </j.1:DataDescriptor>
     </j.1:arguments>
@@ -542,16 +1032,6 @@
       </j.1:Script>
     </j.1:expression>
   </j.1:ExternalEquation>
-  <sos:Theta rdf:ID="ThetaISU">
-    <j.1:unit rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
-    >Kelvin</j.1:unit>
-    <j.1:value rdf:datatype="http://www.w3.org/2001/XMLSchema#decimal"
-    >3056</j.1:value>
-  </sos:Theta>
-  <j.1:GPVariable rdf:ID="CAL_SOS_Imperial_v3"/>
-  <j.1:GPVariable rdf:ID="sosfromtemp2_v1"/>
-  <j.1:GPVariable rdf:ID="sosfromalt2_v1"/>
-  <j.1:GPVariable rdf:ID="computeMach_v5"/>
   <j.1:ExternalEquation rdf:ID="specificGasConstantEq">
     <j.1:externalURI rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
     >http://com.ge.research.darpa.aske.kchain.specificGasConstantEq</j.1:externalURI>
@@ -562,15 +1042,21 @@
             <j.1:constraints rdf:parseType="Collection">
               <j.1:TriplePattern>
                 <j.1:gpObject rdf:resource="#GasConstant"/>
-                <j.1:gpPredicate>http://www.w3.org/1999/02/22-rdf-syntax-ns#type</j.1:gpPredicate>
+                <j.1:gpPredicate rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#type"/>
                 <j.1:gpSubject>
-                  <j.1:GPVariable rdf:ID="specificGasConstantEq_v5"/>
+                  <j.1:GPVariable rdf:ID="specificGasConstantEq_v2"/>
+                </j.1:gpSubject>
+              </j.1:TriplePattern>
+              <j.1:TriplePattern>
+                <j.1:gpObject rdf:resource="#specificGasConstantEq_v2"/>
+                <j.1:gpPredicate rdf:resource="#gasConstant"/>
+                <j.1:gpSubject>
+                  <j.1:GPVariable rdf:ID="specificGasConstantEq_v0"/>
                 </j.1:gpSubject>
               </j.1:TriplePattern>
             </j.1:constraints>
           </j.1:SemanticConstraint>
         </j.1:augmentedType>
-        <j.1:localDescriptorName>v4</j.1:localDescriptorName>
         <j.1:dataType>http://www.w3.org/2001/XMLSchema#decimal</j.1:dataType>
       </j.1:DataDescriptor>
     </j.1:returnTypes>
@@ -581,7 +1067,15 @@
             <j.1:semType rdf:resource="#UniversalGasConstant"/>
           </j.1:SemanticType>
         </j.1:augmentedType>
+        <j.1:specifiedUnits rdf:parseType="Resource">
+          <rdf:rest rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#nil"/>
+          <rdf:first rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+          >"J/mole-Kelvin"</rdf:first>
+        </j.1:specifiedUnits>
         <j.1:dataType>http://www.w3.org/2001/XMLSchema#decimal</j.1:dataType>
+        <j.1:descriptorVariable>
+          <j.1:GPVariable rdf:ID="specificGasConstantEq_Ru"/>
+        </j.1:descriptorVariable>
         <j.1:localDescriptorName>Ru</j.1:localDescriptorName>
       </j.1:DataDescriptor>
       <j.1:DataDescriptor>
@@ -590,15 +1084,26 @@
             <j.1:constraints rdf:parseType="Collection">
               <j.1:TriplePattern>
                 <j.1:gpObject rdf:resource="ScientificConcepts2.sadl#Gas"/>
-                <j.1:gpPredicate>http://www.w3.org/1999/02/22-rdf-syntax-ns#type</j.1:gpPredicate>
-                <j.1:gpSubject>
-                  <j.1:GPVariable rdf:ID="specificGasConstantEq_v3"/>
-                </j.1:gpSubject>
+                <j.1:gpPredicate rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#type"/>
+                <j.1:gpSubject rdf:resource="#specificGasConstantEq_v0"/>
+              </j.1:TriplePattern>
+              <j.1:TriplePattern>
+                <j.1:gpObject>
+                  <j.1:GPVariable rdf:ID="specificGasConstantEq_M"/>
+                </j.1:gpObject>
+                <j.1:gpPredicate rdf:resource="#molarMass"/>
+                <j.1:gpSubject rdf:resource="#specificGasConstantEq_v0"/>
               </j.1:TriplePattern>
             </j.1:constraints>
           </j.1:SemanticConstraint>
         </j.1:augmentedType>
+        <j.1:specifiedUnits rdf:parseType="Resource">
+          <rdf:rest rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#nil"/>
+          <rdf:first rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+          >"g/mole"</rdf:first>
+        </j.1:specifiedUnits>
         <j.1:dataType>http://www.w3.org/2001/XMLSchema#decimal</j.1:dataType>
+        <j.1:descriptorVariable rdf:resource="#specificGasConstantEq_M"/>
         <j.1:localDescriptorName>M</j.1:localDescriptorName>
       </j.1:DataDescriptor>
     </j.1:arguments>
@@ -610,7 +1115,6 @@
       </j.1:Script>
     </j.1:expression>
   </j.1:ExternalEquation>
-  <j.1:GPVariable rdf:ID="specificGasConstantEq_v1"/>
   <j.1:ExternalEquation rdf:ID="computeMach">
     <j.1:externalURI rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
     >http://com.ge.research.darpa.aske.kchain.computeMach</j.1:externalURI>
@@ -621,15 +1125,21 @@
             <j.1:constraints rdf:parseType="Collection">
               <j.1:TriplePattern>
                 <j.1:gpObject rdf:resource="http://www.w3.org/2001/XMLSchema#decimal"/>
-                <j.1:gpPredicate>http://www.w3.org/1999/02/22-rdf-syntax-ns#type</j.1:gpPredicate>
+                <j.1:gpPredicate rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#type"/>
                 <j.1:gpSubject>
-                  <j.1:GPVariable rdf:ID="computeMach_v11"/>
+                  <j.1:GPVariable rdf:ID="computeMach_v3"/>
+                </j.1:gpSubject>
+              </j.1:TriplePattern>
+              <j.1:TriplePattern>
+                <j.1:gpObject rdf:resource="#computeMach_v3"/>
+                <j.1:gpPredicate rdf:resource="#mach"/>
+                <j.1:gpSubject>
+                  <j.1:GPVariable rdf:ID="computeMach_v0"/>
                 </j.1:gpSubject>
               </j.1:TriplePattern>
             </j.1:constraints>
           </j.1:SemanticConstraint>
         </j.1:augmentedType>
-        <j.1:localDescriptorName>v10</j.1:localDescriptorName>
         <j.1:dataType>http://www.w3.org/2001/XMLSchema#double</j.1:dataType>
       </j.1:DataDescriptor>
     </j.1:returnTypes>
@@ -640,40 +1150,88 @@
             <j.1:constraints rdf:parseType="Collection">
               <j.1:TriplePattern>
                 <j.1:gpObject rdf:resource="ScientificConcepts2.sadl#PhysicalObject"/>
-                <j.1:gpPredicate>http://www.w3.org/1999/02/22-rdf-syntax-ns#type</j.1:gpPredicate>
-                <j.1:gpSubject>
-                  <j.1:GPVariable rdf:ID="computeMach_v3"/>
-                </j.1:gpSubject>
+                <j.1:gpPredicate rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#type"/>
+                <j.1:gpSubject rdf:resource="#computeMach_v0"/>
+              </j.1:TriplePattern>
+              <j.1:TriplePattern>
+                <j.1:gpObject>
+                  <j.1:GPVariable rdf:ID="computeMach_alt"/>
+                </j.1:gpObject>
+                <j.1:gpPredicate rdf:resource="#altitude"/>
+                <j.1:gpSubject rdf:resource="#computeMach_v0"/>
               </j.1:TriplePattern>
               <j.1:TriplePattern>
                 <j.1:gpObject rdf:resource="ScientificConcepts2.sadl#Air"/>
-                <j.1:gpPredicate>http://www.w3.org/1999/02/22-rdf-syntax-ns#type</j.1:gpPredicate>
+                <j.1:gpPredicate rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#type"/>
                 <j.1:gpSubject>
-                  <j.1:GPVariable rdf:ID="computeMach_v4"/>
+                  <j.1:GPVariable rdf:ID="computeMach_v1"/>
                 </j.1:gpSubject>
+              </j.1:TriplePattern>
+              <j.1:TriplePattern>
+                <j.1:gpObject rdf:resource="#computeMach_v1"/>
+                <j.1:gpPredicate rdf:resource="#movesIn"/>
+                <j.1:gpSubject rdf:resource="#computeMach_v0"/>
               </j.1:TriplePattern>
             </j.1:constraints>
           </j.1:SemanticConstraint>
         </j.1:augmentedType>
+        <j.1:specifiedUnits rdf:parseType="Resource">
+          <rdf:rest rdf:parseType="Resource">
+            <rdf:rest rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#nil"/>
+            <rdf:first rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+            >m</rdf:first>
+          </rdf:rest>
+          <rdf:first rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+          >ft</rdf:first>
+        </j.1:specifiedUnits>
         <j.1:dataType>http://www.w3.org/2001/XMLSchema#double</j.1:dataType>
+        <j.1:descriptorVariable rdf:resource="#computeMach_alt"/>
         <j.1:localDescriptorName>alt</j.1:localDescriptorName>
       </j.1:DataDescriptor>
       <j.1:DataDescriptor>
         <j.1:augmentedType>
           <j.1:SemanticConstraint>
-            <j.1:constraints rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#nil"/>
+            <j.1:constraints rdf:parseType="Collection">
+              <j.1:TriplePattern>
+                <j.1:gpObject>
+                  <j.1:GPVariable rdf:ID="computeMach_R"/>
+                </j.1:gpObject>
+                <j.1:gpPredicate rdf:resource="#gasConstant"/>
+                <j.1:gpSubject rdf:resource="#computeMach_v1"/>
+              </j.1:TriplePattern>
+            </j.1:constraints>
           </j.1:SemanticConstraint>
         </j.1:augmentedType>
+        <j.1:specifiedUnits rdf:parseType="Resource">
+          <rdf:rest rdf:parseType="Resource">
+            <rdf:rest rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#nil"/>
+            <rdf:first rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+            >"g/mole"</rdf:first>
+          </rdf:rest>
+          <rdf:first rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+          >"lbm/lbmole"</rdf:first>
+        </j.1:specifiedUnits>
         <j.1:dataType>http://www.w3.org/2001/XMLSchema#double</j.1:dataType>
+        <j.1:descriptorVariable rdf:resource="#computeMach_R"/>
         <j.1:localDescriptorName>R</j.1:localDescriptorName>
       </j.1:DataDescriptor>
       <j.1:DataDescriptor>
         <j.1:augmentedType>
           <j.1:SemanticConstraint>
-            <j.1:constraints rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#nil"/>
+            <j.1:constraints rdf:parseType="Collection">
+              <j.1:TriplePattern>
+                <j.1:gpObject>
+                  <j.1:GPVariable rdf:ID="computeMach_G"/>
+                </j.1:gpObject>
+                <j.1:gpPredicate rdf:resource="#gamma"/>
+                <j.1:gpSubject rdf:resource="#computeMach_v1"/>
+              </j.1:TriplePattern>
+            </j.1:constraints>
           </j.1:SemanticConstraint>
         </j.1:augmentedType>
+        <j.1:specifiedUnits rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#nil"/>
         <j.1:dataType>http://www.w3.org/2001/XMLSchema#double</j.1:dataType>
+        <j.1:descriptorVariable rdf:resource="#computeMach_G"/>
         <j.1:localDescriptorName>G</j.1:localDescriptorName>
       </j.1:DataDescriptor>
       <j.1:DataDescriptor>
@@ -682,16 +1240,46 @@
             <j.1:semType rdf:resource="#Theta"/>
           </j.1:SemanticType>
         </j.1:augmentedType>
+        <j.1:specifiedUnits rdf:parseType="Resource">
+          <rdf:rest rdf:parseType="Resource">
+            <rdf:rest rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#nil"/>
+            <rdf:first rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+            >Rankine</rdf:first>
+          </rdf:rest>
+          <rdf:first rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+          >Kelvin</rdf:first>
+        </j.1:specifiedUnits>
         <j.1:dataType>http://www.w3.org/2001/XMLSchema#double</j.1:dataType>
+        <j.1:descriptorVariable>
+          <j.1:GPVariable rdf:ID="computeMach_Q"/>
+        </j.1:descriptorVariable>
         <j.1:localDescriptorName>Q</j.1:localDescriptorName>
       </j.1:DataDescriptor>
       <j.1:DataDescriptor>
         <j.1:augmentedType>
           <j.1:SemanticConstraint>
-            <j.1:constraints rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#nil"/>
+            <j.1:constraints rdf:parseType="Collection">
+              <j.1:TriplePattern>
+                <j.1:gpObject>
+                  <j.1:GPVariable rdf:ID="computeMach_vel"/>
+                </j.1:gpObject>
+                <j.1:gpPredicate rdf:resource="ScientificConcepts2.sadl#velocity"/>
+                <j.1:gpSubject rdf:resource="#computeMach_v0"/>
+              </j.1:TriplePattern>
+            </j.1:constraints>
           </j.1:SemanticConstraint>
         </j.1:augmentedType>
+        <j.1:specifiedUnits rdf:parseType="Resource">
+          <rdf:rest rdf:parseType="Resource">
+            <rdf:rest rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#nil"/>
+            <rdf:first rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+            >"km/hr"</rdf:first>
+          </rdf:rest>
+          <rdf:first rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+          >"mph"</rdf:first>
+        </j.1:specifiedUnits>
         <j.1:dataType>http://www.w3.org/2001/XMLSchema#double</j.1:dataType>
+        <j.1:descriptorVariable rdf:resource="#computeMach_vel"/>
         <j.1:localDescriptorName>vel</j.1:localDescriptorName>
       </j.1:DataDescriptor>
       <j.1:DataDescriptor>
@@ -700,7 +1288,19 @@
             <j.1:semType rdf:resource="ScientificConcepts2.sadl#UnitSystem"/>
           </j.1:SemanticType>
         </j.1:augmentedType>
+        <j.1:specifiedUnits rdf:parseType="Resource">
+          <rdf:rest rdf:parseType="Resource">
+            <rdf:rest rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#nil"/>
+            <rdf:first rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+            >Imperial</rdf:first>
+          </rdf:rest>
+          <rdf:first rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+          >Metric</rdf:first>
+        </j.1:specifiedUnits>
         <j.1:dataType>http://www.w3.org/2001/XMLSchema#string</j.1:dataType>
+        <j.1:descriptorVariable>
+          <j.1:GPVariable rdf:ID="computeMach_us"/>
+        </j.1:descriptorVariable>
         <j.1:localDescriptorName>us</j.1:localDescriptorName>
       </j.1:DataDescriptor>
     </j.1:arguments>
@@ -712,86 +1312,6 @@
       </j.1:Script>
     </j.1:expression>
   </j.1:ExternalEquation>
-  <j.1:ExternalEquation rdf:ID="CAL_SOS_Imperial">
-    <j.1:externalURI rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
-    >http://com.ge.research.darpa.aske.kchain.CAL_SOS</j.1:externalURI>
-    <j.1:returnTypes rdf:parseType="Collection">
-      <j.1:DataDescriptor>
-        <j.1:augmentedType>
-          <j.1:SemanticConstraint>
-            <j.1:constraints rdf:parseType="Collection">
-              <j.1:TriplePattern>
-                <j.1:gpObject rdf:resource="ScientificConcepts2.sadl#Velocity"/>
-                <j.1:gpPredicate>http://www.w3.org/1999/02/22-rdf-syntax-ns#type</j.1:gpPredicate>
-                <j.1:gpSubject>
-                  <j.1:GPVariable rdf:ID="CAL_SOS_Imperial_v7"/>
-                </j.1:gpSubject>
-              </j.1:TriplePattern>
-            </j.1:constraints>
-          </j.1:SemanticConstraint>
-        </j.1:augmentedType>
-        <j.1:localDescriptorName>v6</j.1:localDescriptorName>
-        <j.1:dataType>http://www.w3.org/2001/XMLSchema#double</j.1:dataType>
-      </j.1:DataDescriptor>
-    </j.1:returnTypes>
-    <j.1:arguments rdf:parseType="Collection">
-      <j.1:DataDescriptor>
-        <j.1:augmentedType>
-          <j.1:SemanticConstraint>
-            <j.1:constraints rdf:parseType="Collection">
-              <j.1:TriplePattern>
-                <j.1:gpObject rdf:resource="ScientificConcepts2.sadl#Gas"/>
-                <j.1:gpPredicate>http://www.w3.org/1999/02/22-rdf-syntax-ns#type</j.1:gpPredicate>
-                <j.1:gpSubject>
-                  <j.1:GPVariable rdf:ID="CAL_SOS_Imperial_v2"/>
-                </j.1:gpSubject>
-              </j.1:TriplePattern>
-            </j.1:constraints>
-          </j.1:SemanticConstraint>
-        </j.1:augmentedType>
-        <j.1:dataType>http://www.w3.org/2001/XMLSchema#double</j.1:dataType>
-        <j.1:localDescriptorName>T</j.1:localDescriptorName>
-      </j.1:DataDescriptor>
-      <j.1:DataDescriptor>
-        <j.1:augmentedType>
-          <j.1:SemanticConstraint>
-            <j.1:constraints rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#nil"/>
-          </j.1:SemanticConstraint>
-        </j.1:augmentedType>
-        <j.1:dataType>http://www.w3.org/2001/XMLSchema#double</j.1:dataType>
-        <j.1:localDescriptorName>G</j.1:localDescriptorName>
-      </j.1:DataDescriptor>
-      <j.1:DataDescriptor>
-        <j.1:augmentedType>
-          <j.1:SemanticConstraint>
-            <j.1:constraints rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#nil"/>
-          </j.1:SemanticConstraint>
-        </j.1:augmentedType>
-        <j.1:dataType>http://www.w3.org/2001/XMLSchema#double</j.1:dataType>
-        <j.1:localDescriptorName>R</j.1:localDescriptorName>
-      </j.1:DataDescriptor>
-      <j.1:DataDescriptor>
-        <j.1:augmentedType>
-          <j.1:SemanticType>
-            <j.1:semType rdf:resource="#Theta"/>
-          </j.1:SemanticType>
-        </j.1:augmentedType>
-        <j.1:dataType>http://www.w3.org/2001/XMLSchema#double</j.1:dataType>
-        <j.1:localDescriptorName>Q</j.1:localDescriptorName>
-      </j.1:DataDescriptor>
-    </j.1:arguments>
-    <j.1:expression>
-      <j.1:Script>
-        <j.1:language rdf:resource="sadlimplicitmodel#Text"/>
-        <j.1:script rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
-        >xsd:double CAL_SOS_Imperial(double T,double G,double R,double Q): uri("http://com.ge.research.darpa.aske.kchain.CAL_SOS")</j.1:script>
-      </j.1:Script>
-    </j.1:expression>
-  </j.1:ExternalEquation>
-  <j.1:GPVariable rdf:ID="CAL_SOS_Imperial_v1"/>
-  <j.1:GPVariable rdf:ID="specificGasConstantEq_v2"/>
-  <j.1:GPVariable rdf:ID="computeMach_v9"/>
-  <j.1:GPVariable rdf:ID="machCalc_v4"/>
   <j.1:ExternalEquation rdf:ID="machCalc">
     <j.1:externalURI rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
     >http://com.ge.research.darpa.aske.kchain.machcalc</j.1:externalURI>
@@ -802,15 +1322,21 @@
             <j.1:constraints rdf:parseType="Collection">
               <j.1:TriplePattern>
                 <j.1:gpObject rdf:resource="http://www.w3.org/2001/XMLSchema#decimal"/>
-                <j.1:gpPredicate>http://www.w3.org/1999/02/22-rdf-syntax-ns#type</j.1:gpPredicate>
+                <j.1:gpPredicate rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#type"/>
                 <j.1:gpSubject>
-                  <j.1:GPVariable rdf:ID="machCalc_v7"/>
+                  <j.1:GPVariable rdf:ID="machCalc_v3"/>
+                </j.1:gpSubject>
+              </j.1:TriplePattern>
+              <j.1:TriplePattern>
+                <j.1:gpObject rdf:resource="#machCalc_v3"/>
+                <j.1:gpPredicate rdf:resource="#mach"/>
+                <j.1:gpSubject>
+                  <j.1:GPVariable rdf:ID="machCalc_v1"/>
                 </j.1:gpSubject>
               </j.1:TriplePattern>
             </j.1:constraints>
           </j.1:SemanticConstraint>
         </j.1:augmentedType>
-        <j.1:localDescriptorName>v6</j.1:localDescriptorName>
         <j.1:dataType>http://www.w3.org/2001/XMLSchema#decimal</j.1:dataType>
       </j.1:DataDescriptor>
     </j.1:returnTypes>
@@ -821,15 +1347,24 @@
             <j.1:constraints rdf:parseType="Collection">
               <j.1:TriplePattern>
                 <j.1:gpObject rdf:resource="ScientificConcepts2.sadl#Air"/>
-                <j.1:gpPredicate>http://www.w3.org/1999/02/22-rdf-syntax-ns#type</j.1:gpPredicate>
+                <j.1:gpPredicate rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#type"/>
                 <j.1:gpSubject>
-                  <j.1:GPVariable rdf:ID="machCalc_v3"/>
+                  <j.1:GPVariable rdf:ID="machCalc_v0"/>
                 </j.1:gpSubject>
+              </j.1:TriplePattern>
+              <j.1:TriplePattern>
+                <j.1:gpObject>
+                  <j.1:GPVariable rdf:ID="machCalc_sos"/>
+                </j.1:gpObject>
+                <j.1:gpPredicate rdf:resource="#speedOfSound"/>
+                <j.1:gpSubject rdf:resource="#machCalc_v0"/>
               </j.1:TriplePattern>
             </j.1:constraints>
           </j.1:SemanticConstraint>
         </j.1:augmentedType>
+        <j.1:specifiedUnits rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#nil"/>
         <j.1:dataType>http://www.w3.org/2001/XMLSchema#decimal</j.1:dataType>
+        <j.1:descriptorVariable rdf:resource="#machCalc_sos"/>
         <j.1:localDescriptorName>sos</j.1:localDescriptorName>
       </j.1:DataDescriptor>
       <j.1:DataDescriptor>
@@ -838,15 +1373,27 @@
             <j.1:constraints rdf:parseType="Collection">
               <j.1:TriplePattern>
                 <j.1:gpObject rdf:resource="ScientificConcepts2.sadl#PhysicalObject"/>
-                <j.1:gpPredicate>http://www.w3.org/1999/02/22-rdf-syntax-ns#type</j.1:gpPredicate>
-                <j.1:gpSubject>
-                  <j.1:GPVariable rdf:ID="machCalc_v5"/>
-                </j.1:gpSubject>
+                <j.1:gpPredicate rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#type"/>
+                <j.1:gpSubject rdf:resource="#machCalc_v1"/>
+              </j.1:TriplePattern>
+              <j.1:TriplePattern>
+                <j.1:gpObject>
+                  <j.1:GPVariable rdf:ID="machCalc_sov"/>
+                </j.1:gpObject>
+                <j.1:gpPredicate rdf:resource="ScientificConcepts2.sadl#velocity"/>
+                <j.1:gpSubject rdf:resource="#machCalc_v1"/>
+              </j.1:TriplePattern>
+              <j.1:TriplePattern>
+                <j.1:gpObject rdf:resource="#machCalc_v0"/>
+                <j.1:gpPredicate rdf:resource="#movesIn"/>
+                <j.1:gpSubject rdf:resource="#machCalc_v1"/>
               </j.1:TriplePattern>
             </j.1:constraints>
           </j.1:SemanticConstraint>
         </j.1:augmentedType>
+        <j.1:specifiedUnits rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#nil"/>
         <j.1:dataType>http://www.w3.org/2001/XMLSchema#decimal</j.1:dataType>
+        <j.1:descriptorVariable rdf:resource="#machCalc_sov"/>
         <j.1:localDescriptorName>sov</j.1:localDescriptorName>
       </j.1:DataDescriptor>
     </j.1:arguments>
@@ -868,7 +1415,11 @@
     </j.1:returnTypes>
     <j.1:arguments rdf:parseType="Collection">
       <j.1:DataDescriptor>
+        <j.1:specifiedUnits rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#nil"/>
         <j.1:dataType>http://www.w3.org/2001/XMLSchema#decimal</j.1:dataType>
+        <j.1:descriptorVariable>
+          <j.1:GPVariable rdf:ID="sosfromtemp_t"/>
+        </j.1:descriptorVariable>
         <j.1:localDescriptorName>t</j.1:localDescriptorName>
       </j.1:DataDescriptor>
     </j.1:arguments>
@@ -880,109 +1431,5 @@
       </j.1:Script>
     </j.1:expression>
   </j.1:ExternalEquation>
-  <j.1:GPVariable rdf:ID="computeMach_v8"/>
   <j.1:Rule rdf:ID="SpeedOfSoundInAirGivenTemperatureK"/>
-  <j.1:ExternalEquation rdf:ID="sosfromalt">
-    <j.1:externalURI rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
-    >http://com.ge.research.darpa.aske.kchain.sosairfromalt</j.1:externalURI>
-    <j.1:returnTypes rdf:parseType="Collection">
-      <j.1:DataDescriptor>
-        <j.1:dataType>http://www.w3.org/2001/XMLSchema#decimal</j.1:dataType>
-      </j.1:DataDescriptor>
-    </j.1:returnTypes>
-    <j.1:arguments rdf:parseType="Collection">
-      <j.1:DataDescriptor>
-        <j.1:dataType>http://www.w3.org/2001/XMLSchema#decimal</j.1:dataType>
-        <j.1:localDescriptorName>alt</j.1:localDescriptorName>
-      </j.1:DataDescriptor>
-    </j.1:arguments>
-    <j.1:expression>
-      <j.1:Script>
-        <j.1:language rdf:resource="sadlimplicitmodel#Text"/>
-        <j.1:script rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
-        >decimal sosfromalt(decimal alt): uri("http://com.ge.research.darpa.aske.kchain.sosairfromalt")</j.1:script>
-      </j.1:Script>
-    </j.1:expression>
-  </j.1:ExternalEquation>
-  <j.1:GPVariable rdf:ID="sosfromtemp_v0"/>
-  <j.1:GPVariable rdf:ID="CAL_SOS_v1"/>
-  <j.1:GPVariable rdf:ID="computeMach_v7"/>
-  <j.1:GPVariable rdf:ID="machCalc_v2"/>
-  <j.1:GPVariable rdf:ID="specificGasConstantEq2_v1"/>
-  <j.1:ExternalEquation rdf:ID="CAL_GAM">
-    <j.1:externalURI rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
-    >http://com.ge.research.darpa.aske.kchain.CAL_GAM</j.1:externalURI>
-    <j.1:returnTypes rdf:parseType="Collection">
-      <j.1:DataDescriptor>
-        <j.1:augmentedType>
-          <j.1:SemanticConstraint>
-            <j.1:constraints rdf:parseType="Collection">
-              <j.1:TriplePattern>
-                <j.1:gpObject rdf:resource="#Gamma"/>
-                <j.1:gpPredicate>http://www.w3.org/1999/02/22-rdf-syntax-ns#type</j.1:gpPredicate>
-                <j.1:gpSubject>
-                  <j.1:GPVariable rdf:ID="CAL_GAM_v7"/>
-                </j.1:gpSubject>
-              </j.1:TriplePattern>
-            </j.1:constraints>
-          </j.1:SemanticConstraint>
-        </j.1:augmentedType>
-        <j.1:localDescriptorName>v6</j.1:localDescriptorName>
-        <j.1:dataType>http://www.w3.org/2001/XMLSchema#double</j.1:dataType>
-      </j.1:DataDescriptor>
-    </j.1:returnTypes>
-    <j.1:arguments rdf:parseType="Collection">
-      <j.1:DataDescriptor>
-        <j.1:augmentedType>
-          <j.1:SemanticConstraint>
-            <j.1:constraints rdf:parseType="Collection">
-              <j.1:TriplePattern>
-                <j.1:gpObject rdf:resource="ScientificConcepts2.sadl#Gas"/>
-                <j.1:gpPredicate>http://www.w3.org/1999/02/22-rdf-syntax-ns#type</j.1:gpPredicate>
-                <j.1:gpSubject>
-                  <j.1:GPVariable rdf:ID="CAL_GAM_v2"/>
-                </j.1:gpSubject>
-              </j.1:TriplePattern>
-            </j.1:constraints>
-          </j.1:SemanticConstraint>
-        </j.1:augmentedType>
-        <j.1:dataType>http://www.w3.org/2001/XMLSchema#double</j.1:dataType>
-        <j.1:localDescriptorName>T</j.1:localDescriptorName>
-      </j.1:DataDescriptor>
-      <j.1:DataDescriptor>
-        <j.1:augmentedType>
-          <j.1:SemanticConstraint>
-            <j.1:constraints rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#nil"/>
-          </j.1:SemanticConstraint>
-        </j.1:augmentedType>
-        <j.1:dataType>http://www.w3.org/2001/XMLSchema#double</j.1:dataType>
-        <j.1:localDescriptorName>G</j.1:localDescriptorName>
-      </j.1:DataDescriptor>
-      <j.1:DataDescriptor>
-        <j.1:augmentedType>
-          <j.1:SemanticType>
-            <j.1:semType rdf:resource="#Theta"/>
-          </j.1:SemanticType>
-        </j.1:augmentedType>
-        <j.1:dataType>http://www.w3.org/2001/XMLSchema#double</j.1:dataType>
-        <j.1:localDescriptorName>Q</j.1:localDescriptorName>
-      </j.1:DataDescriptor>
-      <j.1:DataDescriptor>
-        <j.1:augmentedType>
-          <j.1:SemanticType>
-            <j.1:semType rdf:resource="ScientificConcepts2.sadl#UnitSystem"/>
-          </j.1:SemanticType>
-        </j.1:augmentedType>
-        <j.1:dataType>http://www.w3.org/2001/XMLSchema#string</j.1:dataType>
-        <j.1:localDescriptorName>us</j.1:localDescriptorName>
-      </j.1:DataDescriptor>
-    </j.1:arguments>
-    <j.1:expression>
-      <j.1:Script>
-        <j.1:language rdf:resource="sadlimplicitmodel#Text"/>
-        <j.1:script rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
-        >xsd:double CAL_GAM(double T,double G,double Q,string us): uri("http://com.ge.research.darpa.aske.kchain.CAL_GAM")</j.1:script>
-      </j.1:Script>
-    </j.1:expression>
-  </j.1:ExternalEquation>
 </rdf:RDF>

@@ -37,5 +37,18 @@
 package com.ge.research.sadl.darpa.aske.processing;
 
 public class HowManyValuesConstruct {
+	private Object[] temp = null;
+	
+	public HowManyValuesConstruct(Object[] temp) {
+		this.setTemp(temp);
+	}
+
+	public Object[] getTemp() {
+		return temp;
+	}
+
+	private void setTemp(Object[] temp) {
+		this.temp = temp;
+	}
 
 }

@@ -341,7 +341,9 @@ public class KChainServiceTest {
 		// return results: 
 		List<List<String[]>> retLists = new ArrayList<List<String[]>>();
 		retLists.add(results);
-		retLists.add(defaultValues);
+		if (defaultValues != null) {
+			retLists.add(defaultValues);
+		}
 		return retLists;
 	}
 	
@@ -392,39 +394,40 @@ public class KChainServiceTest {
 		evalCGModel(modelUri, eInputs, eOutputs);
 	}
 
-	@Ignore
+//	@Ignore
 	@Test
 	public void testBuildEval_04() throws IOException {
-		List<String[]> inputs = new ArrayList<String[]>();
-		String[] input1 = new String[2];
-		input1[0] = "T";
-		input1[1] = "double";
-		inputs.add(input1);
-		String[] input2 = new String[2];
-		input2[0] = "G";
-		input2[1] = "double";
-		inputs.add(input2);
-		String[] input3 = new String[2];
-		input3[0] = "R";
-		input3[1] = "double";
-		inputs.add(input3);
-		String[] input4 = new String[2];
-		input4[0] = "Q";
-		input4[1] = "double";
-		inputs.add(input4);
-		List<String[]> outputs = new ArrayList<String[]>();
-		String[] output1 = new String[2];
-		output1[0] = "SOS";
-		output1[1] = "double";
-		outputs.add(output1);
-
-		String dataLocation = null;
-		String equationModel = "WOW = 1 + (G - 1) / (1 + (G - 1) * tf.math.pow((Q / T), 2) * tf.math.exp(Q / T) / tf.math.pow((tf.math.exp(Q / T) - 1), 2))\n" + 
-				"CAL_SOS = (tf.math.sqrt(32.174 * T * R * WOW))\n";
 		String modelUri = "CAL_SOS";
-		// add to KG: 
-		buildCGModel(modelUri, equationModel, dataLocation, inputs, outputs);
+		{
+			List<String[]> inputs = new ArrayList<String[]>();
+			String[] input1 = new String[2];
+			input1[0] = "T";
+			input1[1] = "double";
+			inputs.add(input1);
+			String[] input2 = new String[2];
+			input2[0] = "G";
+			input2[1] = "double";
+			inputs.add(input2);
+			String[] input3 = new String[2];
+			input3[0] = "R";
+			input3[1] = "double";
+			inputs.add(input3);
+			String[] input4 = new String[2];
+			input4[0] = "Q";
+			input4[1] = "double";
+			inputs.add(input4);
+			List<String[]> outputs = new ArrayList<String[]>();
+			String[] output1 = new String[2];
+			output1[0] = "CAL_SOS";
+			output1[1] = "double";
+			outputs.add(output1);
 	
+			String dataLocation = null;
+			String equationModel = "WOW = 1 + (G - 1) / (1 + (G - 1) * tf.math.pow((Q / T), 2) * tf.math.exp(Q / T) / tf.math.pow((tf.math.exp(Q / T) - 1), 2))\n    " + 
+					"CAL_SOS = (tf.math.sqrt(32.174 * T * R * WOW))\n";
+			// add to KG: 
+			buildCGModel(modelUri, equationModel, dataLocation, inputs, outputs);
+		}
 //		List<String[]> eInputs = new ArrayList<String[]>();
 //		String[] eInput1 = new String[3];
 //		eInput1[0] = "Mass";
@@ -444,7 +447,46 @@ public class KChainServiceTest {
 ////		String modelUri = "http://com.research.ge/darpa/aske/answer/test_02/binaryadd";
 ////		String modelUri = "Newtons2ndLawModelPB";
 //		// add to KG: 
-//		evalCGModel(modelUri, eInputs, eOutputs);
+		{
+			List<String[]> inputs = new ArrayList<String[]>();
+			String[] input1 = new String[3];
+			input1[0] = "T";
+			input1[1] = "double";
+			input1[2] = "508.788";
+			inputs.add(input1);
+			String[] input2 = new String[3];
+			input2[0] = "G";
+			input2[1] = "double";
+			input2[2] = "1.4";
+			inputs.add(input2);
+			String[] input3 = new String[3];
+			input3[0] = "R";
+			input3[1] = "double";
+			input3[2] = "53.3";
+			inputs.add(input3);
+			String[] input4 = new String[3];
+			input4[0] = "Q";
+			input4[1] = "double";
+			input4[2] = "5500";
+			inputs.add(input4);
+			List<String[]> outputs = new ArrayList<String[]>();
+			String[] output1 = new String[2];
+			output1[0] = "CAL_SOS";
+			output1[1] = "double";
+			outputs.add(output1);
+	
+			List<List<String[]>> results = evalCGModel(modelUri, inputs, outputs);
+			Iterator<List<String[]>> resultsItr = results.iterator();
+			while (resultsItr.hasNext()) {
+				List<String[]> result = resultsItr.next();
+				Iterator<String[]> resultItr = result.iterator();
+				
+				while (resultItr.hasNext()) {
+					String[] resultArr = resultItr.next();
+					System.out.println(resultArr[1] + " " + resultArr[0] + " " + resultArr[2]);
+				}
+			}
+		}
 	}
 
 	public boolean buildCGModel(String modelUri, String equationModel, String dataLocation, List<String[]> inputs, List<String[]> outputs) throws IOException {
@@ -503,6 +545,8 @@ public class KChainServiceTest {
 			outputj.addProperty("type", output[1]);
 			jarrout.add(outputj);
 		}
+		
+		System.out.println(json.toString());
 		
 		String buildServiceURL = kchainServiceURL + "build";
 		URL serviceUrl = new URL(buildServiceURL);			
