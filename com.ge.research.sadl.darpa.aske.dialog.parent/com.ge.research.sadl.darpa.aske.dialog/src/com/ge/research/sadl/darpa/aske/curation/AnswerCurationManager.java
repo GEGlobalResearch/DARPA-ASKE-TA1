@@ -54,27 +54,35 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import com.ge.research.sadl.builder.ConfigurationManagerForIdeFactory;
 import com.ge.research.sadl.builder.IConfigurationManagerForIDE;
+import com.ge.research.sadl.darpa.aske.dialog.AnswerCMStatement;
 import com.ge.research.sadl.darpa.aske.preferences.DialogPreferences;
 import com.ge.research.sadl.darpa.aske.processing.ConversationElement;
 import com.ge.research.sadl.darpa.aske.processing.DialogConstants;
 import com.ge.research.sadl.darpa.aske.processing.DialogContent;
 import com.ge.research.sadl.darpa.aske.processing.IDialogAnswerProvider;
 import com.ge.research.sadl.darpa.aske.processing.imports.AnswerExtractionProcessor;
+import com.ge.research.sadl.darpa.aske.processing.imports.AnswerExtractionProcessor.CodeLanguage;
 import com.ge.research.sadl.darpa.aske.processing.imports.CodeExtractionException;
 import com.ge.research.sadl.darpa.aske.processing.imports.IModelFromCodeExtractor;
 import com.ge.research.sadl.darpa.aske.processing.imports.TextProcessor;
 import com.ge.research.sadl.owl2sadl.OwlImportException;
 import com.ge.research.sadl.owl2sadl.OwlToSadl;
+import com.ge.research.sadl.processing.SadlConstants;
 import com.ge.research.sadl.reasoner.ConfigurationException;
-import com.ge.research.sadl.reasoner.IConfigurationManagerForEditing.Scope;
+import com.ge.research.sadl.reasoner.ConfigurationManager;
+import com.ge.research.sadl.reasoner.IConfigurationManager;
 import com.ge.research.sadl.reasoner.IReasoner;
 import com.ge.research.sadl.reasoner.InvalidNameException;
 import com.ge.research.sadl.reasoner.QueryCancelledException;
 import com.ge.research.sadl.reasoner.QueryParseException;
 import com.ge.research.sadl.reasoner.ReasonerNotFoundException;
 import com.ge.research.sadl.reasoner.ResultSet;
+import com.ge.research.sadl.reasoner.SadlJenaModelGetter;
 import com.ge.research.sadl.reasoner.utils.SadlUtils;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
@@ -83,8 +91,14 @@ import com.google.gson.JsonParser;
 import com.hp.hpl.jena.ontology.Individual;
 import com.hp.hpl.jena.ontology.OntModel;
 import com.hp.hpl.jena.rdf.model.RDFNode;
+import com.hp.hpl.jena.rdf.model.Resource;
+import com.hp.hpl.jena.rdf.model.Statement;
+import com.hp.hpl.jena.rdf.model.StmtIterator;
+import com.hp.hpl.jena.shared.NotFoundException;
+import com.hp.hpl.jena.vocabulary.RDF;
 
 public class AnswerCurationManager {
+	protected static final Logger logger = LoggerFactory.getLogger(AnswerCurationManager.class);
 	private String domainModelowlModelsFolder;
 	
 	private IConfigurationManagerForIDE domainModelConfigurationManager;
@@ -99,6 +113,7 @@ public class AnswerCurationManager {
 	public enum Agent {USER, CM}
 	private DialogContent conversation = null; 
 	private DialogContent lastConversation = null;
+
 
 	public AnswerCurationManager (String modelFolder, IConfigurationManagerForIDE configMgr, Map<String,String> prefs) {
 		setDomainModelOwlModelsFolder(modelFolder);
@@ -251,10 +266,10 @@ public class AnswerCurationManager {
 						sb.append(of.getName());
 					}
 					if (cntr == 1) {
-						dap.addCurationManagerInitiatedContent(this, "saveAsSadlFile", args, "Would you like to save the extracted model (" + sb.toString() + ") in SADL format?");						
+						dap.addCurationManagerInitiatedContent(this, "saveAsSadlFile", args, doubleQuoteContent("Would you like to save the extracted model (" + sb.toString() + ") in SADL format?"));						
 					}
 					else {
-						dap.addCurationManagerInitiatedContent(this, "saveAsSadlFile", args, "Would you like to save the extracted models (" + sb.toString() + ") in SADL format?");
+						dap.addCurationManagerInitiatedContent(this, "saveAsSadlFile", args, doubleQuoteContent("Would you like to save the extracted models (" + sb.toString() + ") in SADL format?"));
 					}
 				}
 			}
@@ -312,7 +327,7 @@ public class AnswerCurationManager {
 		String textModelFolder = getExtractionProcessor().getCodeExtractor().getCodeModelFolder();		// same as code model folder, at least for now
 		if (reasoner == null) {
 			// use domain model folder because that's the project we're working in
-			notifyUser(textModelFolder, "Unable to instantiate reasoner to analyze extracted code model.");
+			notifyUser(textModelFolder, "Unable to instantiate reasoner to analyze extracted code model.", true);
 		}
 		else {
 			if (!reasoner.isInitialized()) {
@@ -324,25 +339,25 @@ public class AnswerCurationManager {
 					ResultSet results =  reasoner.ask(queryString);
 					if (results != null && results.getRowCount() > 0) {
 						results.setShowNamespaces(false);
-						notifyUser(textModelFolder, "Equations found in extraction:\n" + results.toStringWithIndent(0, false));
+						notifyUser(textModelFolder, "Equations found in extraction:\n" + results.toStringWithIndent(0, false), true);
 					}
 					else {
-						notifyUser(textModelFolder, "No equations were found in this extraction from text.");
+						notifyUser(textModelFolder, "No equations were found in this extraction from text.", true);
 					}
 					String importinfo = "To import this model for exploration in this window, add an import at the top of the window (after the 'uri' statement) for URI:\n   " + 
 							getExtractionProcessor().getTextModelName() + "\n.";
-					notifyUser(textModelFolder, importinfo);
+					notifyUser(textModelFolder, importinfo, true);
 				} catch (ReasonerNotFoundException e) {
-					notifyUser(textModelFolder, e.getMessage());
+					notifyUser(textModelFolder, e.getMessage(), true);
 					e.printStackTrace();
 				} catch (InvalidNameException e) {
-					notifyUser(textModelFolder, e.getMessage());
+					notifyUser(textModelFolder, e.getMessage(), true);
 					e.printStackTrace();
 				} catch (QueryParseException e) {
-					notifyUser(textModelFolder, e.getMessage());
+					notifyUser(textModelFolder, e.getMessage(), true);
 					e.printStackTrace();
 				} catch (QueryCancelledException e) {
-					notifyUser(textModelFolder, e.getMessage());
+					notifyUser(textModelFolder, e.getMessage(), true);
 					e.printStackTrace();
 				}
 			}
@@ -357,7 +372,7 @@ public class AnswerCurationManager {
 		try {
 			if (getInitializedCodeModelReasoner() == null) {
 				// use domain model folder because that's the project we're working in
-				notifyUser(codeModelFolder, "Unable to instantiate reasoner to analyze extracted code model.");
+				notifyUser(codeModelFolder, "Unable to instantiate reasoner to analyze extracted code model.", true);
 			}
 			else {
 				String queryString = SparqlQueries.INTERESTING_METHODS_DOING_COMPUTATION;	//?m ?b ?e ?s
@@ -367,7 +382,7 @@ public class AnswerCurationManager {
 					results.setShowNamespaces(false);
 					String[] cns = ((ResultSet) results).getColumnNames();
 					if (cns[0].equals("m") && cns[1].equals("b") && cns[2].equals("e") && cns[3].equals("s")) {
-						notifyUser(codeModelFolder, "The following methods doing computation were found in the extraction:");
+						notifyUser(codeModelFolder, "The following methods doing computation were found in the extraction:", true);
 						for (int r = 0; r < results.getRowCount(); r++) {
 							String methodName = results.getResultAt(r, 0).toString();
 							String javaCode = results.getResultAt(r, 3).toString();
@@ -414,7 +429,7 @@ public class AnswerCurationManager {
 	//									System.out.println(sadlDeclaration);
 	//									System.out.println("SADL equation:");
 	//									System.out.println(sadlDeclaration);
-										notifyUser(codeModelFolder, sd);
+										notifyUser(codeModelFolder, sd, false);
 									}
 								} catch (IOException e) {
 									// TODO Auto-generated catch block
@@ -427,11 +442,11 @@ public class AnswerCurationManager {
 						}
 					}
 					else {
-						notifyUser(codeModelFolder, "An internal error has occurred querying the model. Please report.");
+						notifyUser(codeModelFolder, "An internal error has occurred querying the model. Please report.", true);
 					}
 				}
 				else {
-					notifyUser(codeModelFolder, "No interesting models were found in this extraction from code.");
+					notifyUser(codeModelFolder, "No interesting models were found in this extraction from code.", true);
 				}
 //				String importinfo = "To import this model for exploration in this window, add an import at the top of this window (after the 'uri' statement) for URI:\n   " + 
 //						getExtractionProcessor().getCodeModelName() + "\n.";
@@ -457,52 +472,76 @@ public class AnswerCurationManager {
 		setCodeModelReasoner(null);
 	}
 	
-	public String processBuildRequest(String modelToBuildUri) throws ConfigurationException, IOException {
-		OntModel codeModel = getExtractionProcessor().getCodeModel();
-		if (codeModel == null) {
-			codeModel = getDomainModelConfigurationManager().getOntModel(modelToBuildUri.substring(0, modelToBuildUri.indexOf("#")), Scope.INCLUDEIMPORTS);
-			if (codeModel != null) {
-				getExtractionProcessor().setCodeModel(codeModel);
-			}
-			else {
-				return("Failed: Unable to find semantic mmodel");
-			}
-		}
-		Individual extractedModelInstance = codeModel.getIndividual(modelToBuildUri);
+	public String processSaveRequest(String equationToBuildUri, OntModel ontModel) throws ConfigurationException, IOException, QueryParseException, QueryCancelledException, ReasonerNotFoundException {
+		String returnValue = null;
+		Individual extractedModelInstance = ontModel.getIndividual(equationToBuildUri);
 		if (extractedModelInstance == null) {
 			// try getting a text extraction model?
-		}
-		if (extractedModelInstance != null) {
-			OntModel model = getExtractionProcessor().getCodeModel();
-			RDFNode codeNode = extractedModelInstance.getPropertyValue(model.getProperty(DialogConstants.CODE_EXTRACTION_MODEL_SERIALIZATION_PROPERTY_URI));
-			if (codeNode == null) {
-				return("Failed: No code found for model '" + modelToBuildUri + "'");
+			ontModel.write(System.out, "N3");
+			StmtIterator stmtItr = ontModel.listStatements(null, RDF.type, ontModel.getOntClass("http://sadl.org/sadlimplicitmodel#ExternalEquation"));
+			while (stmtItr.hasNext()) {
+				System.out.println(stmtItr.nextStatement().getSubject().toString());
 			}
-			else if (codeNode.isLiteral()) {
-				String javaCode = codeNode.asLiteral().getValue().toString();
-				// translate code to Python
-				String baseJ2PServiceUri = getPreferences().get(DialogPreferences.ANSWER_JAVA_TO_PYTHON_SERVICE_BASE_URI.getId());
-				String pythonCode = javaMethodToPython(baseJ2PServiceUri, javaCode);
-				// extract method
-				String pythonMethodCode = removeClassWrapper(pythonCode);
-				// create ExternalEquation in domain model
-				
-				String baseServiceUri = getPreferences().get(DialogPreferences.ANSWER_CG_SERVICE_BASE_URI.getId());
-				String modelUri = extractedModelInstance.getURI();
-				String equationModel = pythonMethodCode;
-				List<String[]> inputs = null;
-				List<String[]> outputs = null;
-				// call kchain build service to instantiate in CG
-//				buildCGModel(baseServiceUri, modelUri, equationModel, null, inputs, outputs);
-				return "Successfully build K-CHAIN physics model with URI '" + modelToBuildUri + "'.";
-			}
-			else {
-				return("Failed: Code of unexpected type: " + codeNode.getClass().getCanonicalName());
+			throw new NotFoundException("Equation with URI " + equationToBuildUri + " not found.");
+		}
+		Statement argStmt = extractedModelInstance.getProperty(ontModel.getProperty(SadlConstants.SADL_IMPLICIT_MODEL_ARGUMENTS_PROPERTY_URI));
+		if (argStmt != null) {
+			com.hp.hpl.jena.rdf.model.Resource ddList = argStmt.getObject().asResource();
+			if (ddList instanceof Resource) {
+				String modelName = stripNamespaceDelimiter(ontModel.getNsPrefixURI(""));									// get the model name
+				IReasoner reasoner = getInitializedReasonerForConfiguration(domainModelConfigurationManager, modelName);	// get a reasoner to be able to query--easiest way to get members o arguments and return types collections
+				String argQuery = "select ?argName ?argType where {<" + extractedModelInstance.getURI() + "> <" + 
+						SadlConstants.SADL_IMPLICIT_MODEL_ARGUMENTS_PROPERTY_URI + 
+						"> ?ddList . ?ddList <http://jena.hpl.hp.com/ARQ/list#member> ?member . ?member <" +
+						SadlConstants.SADL_IMPLICIT_MODEL_DESCRIPTOR_NAME_PROPERTY_URI + "> ?argName . ?member <" +
+						SadlConstants.SADL_IMPLICIT_MODEL_DATATYPE_PROPERTY_URI + "> ?argType}";							// query to get the argument names and types
+				ResultSet rs = reasoner.ask(argQuery);
+				System.out.println(rs.toString());
+				String retQuery = "select ?retName ?retType where {<" + extractedModelInstance.getURI() + "> <" + 
+						SadlConstants.SADL_IMPLICIT_MODEL_RETURN_TYPES_PROPERTY_URI + 
+						"> ?ddList . ?ddList <http://jena.hpl.hp.com/ARQ/list#member> ?member . OPTIONAL{?member <" +
+						SadlConstants.SADL_IMPLICIT_MODEL_DESCRIPTOR_NAME_PROPERTY_URI + "> ?retName} . ?member <" +
+						SadlConstants.SADL_IMPLICIT_MODEL_DATATYPE_PROPERTY_URI + "> ?retType}";							// query to get the return types
+				ResultSet rs2 = reasoner.ask(retQuery);
+				System.out.println(rs2.toString());
+				String pythonScriptQuery = "select ?pyScript where {<" + extractedModelInstance.getURI() + "> <" + 
+						SadlConstants.SADL_IMPLICIT_MODEL_EXPRESSTION_PROPERTY_URI +
+						"> ?sc . ?sc <" + SadlConstants.SADL_IMPLICIT_MODEL_LANGUAGE_PROPERTY_URI + "> <" + 
+						SadlConstants.SADL_IMPLICIT_MODEL_PYTHON_LANGUAGE_INST_URI +
+						"> . ?sc <" + SadlConstants.SADL_IMPLICIT_MODEL_SCRIPT_PROPERTY_URI + "> ?pyScript}";				// query to get the Python script for the equation
+				ResultSet rs3 = reasoner.ask(pythonScriptQuery);
+				System.out.println(rs3.toString());
+				if (rs3.getRowCount() != 1) {
+					return "There appears to be more than one Python script associated with the equation. Unable to save.";
+				}
+				String pythonScript = rs3.getResultAt(0, 0).toString();
+				CodeLanguage language = CodeLanguage.JAVA;																	// only code we extract from currently (what about from text?)
+				if (language.equals(CodeLanguage.JAVA)) {
+					String[] returns = getExtractionProcessor().getCodeExtractor(CodeLanguage.JAVA).extractPythonEquationFromCodeExtractionModel(pythonScript);
+					if (returns.length != 2) {
+						throw new IOException("Invalid return from extractPythonEquationFromCodeExtractionModel; expected String[] of size 2");
+					}
+					String methName = returns[0];
+					String modifiedPythonScript = returns[1];
+					System.out.println(modifiedPythonScript);		
+					// this seems klugey also
+//					returnValue = getExtractionProcessor().saveToComputationalGraph(equationToBuildUri, methName, rs, rs2, modifiedPythonScript, null);
+					returnValue = getExtractionProcessor().saveToComputationalGraph(methName, methName, rs, rs2, modifiedPythonScript, null);
+					System.out.println("saveToComputationalGraph returned '" + returnValue + "'");
+				}
 			}
 		}
-		else {
-			return("Failed: Unable to find model '" + modelToBuildUri + "' in code model.");
+		if (returnValue == null) {
+			return returnValue = "Failed: Unable to find model '" + equationToBuildUri + "' in code model.";
 		}
+		return returnValue;
+	}
+
+	private String stripNamespaceDelimiter(String ns) {
+		if (ns.endsWith("#")) {
+			ns = ns.substring(0, ns.length() - 1);
+		}
+		return ns;
 	}
 
 	private String removeClassWrapper(String pythonCode) {
@@ -749,7 +788,7 @@ public class AnswerCurationManager {
 				}
 				else {
 					try {
-						notifyUser(getDomainModelConfigurationManager().getModelFolder(), "Failed to save " + outputOwlFile.getName() + " as SADL file.");
+						notifyUser(getDomainModelConfigurationManager().getModelFolder(), "Failed to save " + outputOwlFile.getName() + " as SADL file.", true);
 					} catch (ConfigurationException e) {
 						// TODO Auto-generated catch block
 						e.printStackTrace();
@@ -765,12 +804,15 @@ public class AnswerCurationManager {
 		return arg1.toString().equalsIgnoreCase("yes");
 	}
 	
-	public void notifyUser(String modelFolder, String msg) throws ConfigurationException {
+	public void notifyUser(String modelFolder, String msg, boolean quote) throws ConfigurationException {
+		if (quote) {
+			msg = doubleQuoteContent(msg);
+		}
 		if (getDialogAnswerProvider() != null) {
 			// talk to the user via the Dialog editor
 			Method acmic = null;
 			try {
-				acmic = getDialogAnswerProvider().getClass().getMethod("addCurationManagerInitiatedContent", String.class);
+				acmic = getDialogAnswerProvider().getClass().getMethod("addCurationManagerInitiatedContent", AnswerCurationManager.class, String.class);
 			} catch (NoSuchMethodException e1) {
 				// TODO Auto-generated catch block
 				e1.printStackTrace();
@@ -792,7 +834,7 @@ public class AnswerCurationManager {
 			if (acmic != null) {
 				acmic.setAccessible(true);
 				try {
-					acmic.invoke(getDialogAnswerProvider(), msg);
+					acmic.invoke(getDialogAnswerProvider(), this, msg);
 				} catch (IllegalAccessException e) {
 					// TODO Auto-generated catch block
 					e.printStackTrace();
@@ -805,6 +847,21 @@ public class AnswerCurationManager {
 				}
 			}
 		}
+	}
+
+	private String doubleQuoteContent(String msg) {
+		String modContent = null;
+		if (!msg.startsWith("\"") && !msg.endsWith("\"")) {
+			if (msg.endsWith(".") || msg.endsWith("?")) {
+				String lastChar = msg.substring(msg.length() - 1);
+				modContent = "\"" + msg.substring(0, msg.length() - 1).replaceAll("\"", "'") + "\"" + lastChar;
+			}
+			else {
+				modContent = "\"" + msg.replaceAll("\"", "'") + "\"" + ".";
+			}
+			msg = modContent;
+		}
+		return msg;
 	}
 
 	/**
@@ -960,6 +1017,14 @@ public class AnswerCurationManager {
 		}
 		return codeModelReasoner;
 	}
+	
+	private IReasoner getInitializedReasonerForConfiguration(IConfigurationManager cm, String modelName) throws ConfigurationException, ReasonerNotFoundException, IOException {
+		IReasoner reasoner = cm.getReasoner();
+		if (!reasoner.isInitialized()) {
+			reasoner.initializeReasoner(cm.getModelFolder(), modelName, null);
+		}
+		return reasoner;
+	}
 
 	private void setCodeModelReasoner(IReasoner codeModelReasoner) {
 		this.codeModelReasoner = codeModelReasoner;
@@ -987,6 +1052,21 @@ public class AnswerCurationManager {
 		}
 		return conversation;
 	}
+	
+	/**
+	 * Method to set the DialogContent, saving any existing conversation as the last conversation
+	 * @param dc -- the new DialogContent
+	 * @return -- return true if an existing conversation is saved as the last conversation
+	 */
+	public boolean setConversation(DialogContent dc) {
+		boolean retval = false;
+		if (conversation != null) {
+			lastConversation = conversation;
+			retval = true;
+		}
+		conversation = dc;
+		return retval;
+	}
 
 	public List<ConversationElement> getConversationElements() {
 		return getConversation().getStatements();
@@ -1004,13 +1084,12 @@ public class AnswerCurationManager {
 		return true;
 	}
 	
-	public boolean resetConversation() {
-		lastConversation = conversation;
-		conversation = null;
-		return true;
-	}
-	
 	public DialogContent getLastConversation() {
 		return lastConversation;
+	}
+
+	public AnswerCMStatement getLastACMQuestion() {
+		// TODO Auto-generated method stub
+		return null;
 	}
 }

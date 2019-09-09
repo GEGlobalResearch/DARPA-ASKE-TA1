@@ -74,14 +74,30 @@ public class DialogAnswerProviderConsoleForTest implements IDialogAnswerProvider
 	 * @see com.ge.research.sadl.darpa.aske.tests.IDialogAnswerProvider#addCurationManagerInitiatedContent(java.lang.String)
 	 */
 	@Override
-	public String addCurationManagerInitiatedContent(String content) {
+	public String addCurationManagerInitiatedContent(AnswerCurationManager answerCurationManager, String content) {
+		setCurationManager(answerCurationManager);
         Consumer<MixedInitiativeElement> respond = a -> this.provideResponse(a);
         MixedInitiativeTextualResponse question = new MixedInitiativeTextualResponse(content);
         MixedInitiativeElement questionElement = new MixedInitiativeElement(question, respond);
+		addMixedInitiativeElement(content, questionElement);
+		getCurationManager().addToConversation(new ConversationElement(getCurationManager().getConversation(), questionElement, Agent.CM));
         initiateMixedInitiativeInteraction(questionElement);
 		return "success";
 	}
 	
+	@Override
+	public String addCurationManagerInitiatedContent(AnswerCurationManager answerCurationManager, String methodToCall,
+			List<Object> args, String content) {
+		setCurationManager(answerCurationManager);
+        Consumer<MixedInitiativeElement> respond = a -> this.provideResponse(a);
+        MixedInitiativeTextualResponse question = new MixedInitiativeTextualResponse(content);
+        MixedInitiativeElement questionElement = new MixedInitiativeElement(question, respond, answerCurationManager, methodToCall, args);
+		addMixedInitiativeElement(content, questionElement);
+		getCurationManager().addToConversation(new ConversationElement(getCurationManager().getConversation(), questionElement, Agent.CM));
+        initiateMixedInitiativeInteraction(questionElement);
+		return "success";
+	}
+
 	/* (non-Javadoc)
 	 * @see com.ge.research.sadl.darpa.aske.tests.IDialogAnswerProvider#initiateMixedInitiativeInteraction(com.ge.research.sadl.darpa.aske.processing.MixedInitiativeElement)
 	 */
@@ -111,6 +127,12 @@ public class DialogAnswerProviderConsoleForTest implements IDialogAnswerProvider
 		while (answer == null) {
 			try {
 				answer = userInputScanner.next();
+				if (answer.startsWith("Save ") || answer.startsWith("save ")) {
+					// this is not a yes/no answer so don't put it into the conversation but 
+					//	simulate the model processor process it
+					
+					return null;
+				}
 			}
 			catch (Exception e) {
 				System.err.println(e.getMessage());
@@ -348,19 +370,6 @@ public class DialogAnswerProviderConsoleForTest implements IDialogAnswerProvider
 	public MixedInitiativeElement getMixedInitiativeElement(String key) {
 		// TODO Auto-generated method stub
 		return null;
-	}
-
-	@Override
-	public String addCurationManagerInitiatedContent(AnswerCurationManager answerCurationManager, String methodToCall,
-			List<Object> args, String content) {
-		setCurationManager(answerCurationManager);
-        Consumer<MixedInitiativeElement> respond = a -> this.provideResponse(a);
-        MixedInitiativeTextualResponse question = new MixedInitiativeTextualResponse(content);
-        MixedInitiativeElement questionElement = new MixedInitiativeElement(question, respond, answerCurationManager, methodToCall, args);
-		addMixedInitiativeElement(content, questionElement);
-		getCurationManager().addToConversation(new ConversationElement(getCurationManager().getConversation(), questionElement, Agent.CM));
-        initiateMixedInitiativeInteraction(questionElement);
-		return "success";
 	}
 
 	private void addMixedInitiativeElement(String key, MixedInitiativeElement element) {

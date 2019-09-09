@@ -41,6 +41,7 @@ public class WhatIsConstruct extends MixedInitiativeContent {
 	private Object when;
 	
 	public WhatIsConstruct(Object trgt, Object whn) {
+		super();
 		setTarget(trgt);
 		setWhen(whn);
 	}

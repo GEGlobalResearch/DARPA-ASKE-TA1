@@ -37,9 +37,17 @@
 package com.ge.research.sadl.darpa.aske.processing;
 
 import org.eclipse.emf.ecore.EObject;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class MixedInitiativeContent {
+	private static final Logger logger = LoggerFactory.getLogger(MixedInitiativeContent.class);
+	
 	private EObject context;
+	
+	public MixedInitiativeContent() {
+		logger.debug(this.getClass().getCanonicalName() + " constructor called.");
+	}
 
 	public EObject getContext() {
 		return context;

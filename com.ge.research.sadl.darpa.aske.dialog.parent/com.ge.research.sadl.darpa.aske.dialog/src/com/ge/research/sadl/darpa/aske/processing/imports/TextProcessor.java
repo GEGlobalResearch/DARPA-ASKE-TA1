@@ -102,7 +102,7 @@ public class TextProcessor {
 		initializeTextModel();
 		try {
 			String msg = "Importing text from '" + inputIdentifier + "'.";
-			getCurationManager().notifyUser(getTextModelConfigMgr().getModelFolder(), msg);
+			getCurationManager().notifyUser(getTextModelConfigMgr().getModelFolder(), msg, true);
 		} catch (ConfigurationException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();

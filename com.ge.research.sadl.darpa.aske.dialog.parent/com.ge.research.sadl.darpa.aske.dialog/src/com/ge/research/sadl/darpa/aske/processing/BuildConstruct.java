@@ -36,22 +36,37 @@
  ***********************************************************************/
 package com.ge.research.sadl.darpa.aske.processing;
 
+import com.hp.hpl.jena.ontology.Individual;
+import com.hp.hpl.jena.ontology.OntModel;
+
 public class BuildConstruct extends MixedInitiativeContent {
-	private String target;
+	private String targetModelUri;
+	private String sourceEquationUri; 
 
-	public BuildConstruct(String modelUri) {
-		setTarget(modelUri);
+	public BuildConstruct(OntModel ontModel, String modelUri, Individual extractedModelInstance) {
+		super();
+		setTargetModelUri(modelUri);
+		setSourceEquationUri(extractedModelInstance.getURI());
+		
 	}
 
-	public String getTarget() {
-		return target;
+	public String getTargetModelUri() {
+		return targetModelUri;
 	}
 
-	public void setTarget(String target) {
-		this.target = target;
+	public void setTargetModelUri(String target) {
+		this.targetModelUri = target;
 	}
 	
 	public String toString() {
-		return "Build " + target.toString();
+		return "Build " + targetModelUri.toString();
+	}
+
+	public String getSourceEquationUri() {
+		return sourceEquationUri;
+	}
+
+	private void setSourceEquationUri(String sourceEquationUri) {
+		this.sourceEquationUri = sourceEquationUri;
 	}
 }

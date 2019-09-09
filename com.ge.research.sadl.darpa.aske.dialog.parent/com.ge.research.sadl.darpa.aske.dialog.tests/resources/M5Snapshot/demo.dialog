@@ -4,9 +4,8 @@
  *
  * Copyright © 2018-2019 - General Electric Company, All Rights Reserved
  * 
- * Projects: ANSWER and KApEESH, developed with the support of the Defense 
- * Advanced Research Projects Agency (DARPA) under Agreement  No.  
- * HR00111990006 and Agreement No. HR00111990007, respectively. 
+ * Project: ANSWER, developed with the support of the Defense Advanced 
+ * Research Projects Agency (DARPA) under Agreement  No.  HR00111990006. 
  *
  * Redistribution and use in source and binary forms, with or without 
  * modification, are permitted provided that the following conditions are met:
@@ -34,49 +33,16 @@
  * THE POSSIBILITY OF SUCH DAMAGE.
  *
  ***********************************************************************/
-package com.ge.research.sadl.darpa.aske.processing;
+uri "http://answer/demo.dialog" alias demodlg.
 
-public class MixedInitiativeTextualResponse extends MixedInitiativeContent {
-	private String response = null;
-	private boolean quoteResponse = true;
-	private int insertionPoint = -1;
-	
-	public MixedInitiativeTextualResponse(String content) {
-		super();
-		setResponse(content);
-	}
+import "http://sadl.org/SpeedOfSound.sadl".
+//import "http://com.ge.research.sadl.darpa.aske.answer/Mach_java".
 
-	public MixedInitiativeTextualResponse(String content, boolean bQuote) {
-		super();
-		setResponse(content);
-		setQuoteResponse(bQuote);
-	}
+//What is Mach.CAL_SOS?
 
-	public String getResponse() {
-		return response;
-	}
+//What is Acceleration?
 
-	public void setResponse(String response) {
-		this.response = response;
-	}
-	
-	public String toString() {
-		return response;
-	}
+//What is specificGasConstantEq?
 
-	public int getInsertionPoint() {
-		return insertionPoint;
-	}
+//Ask "select distinct ?cb ?cv where {?ref <isImplicit> true . ?cv <reference> ?ref . ?ref <codeBlock> ?cb . ?cb <rdf:type> <Method>} order by ?loc"?
 
-	public void setInsertionPoint(int insertionPoint) {
-		this.insertionPoint = insertionPoint;
-	}
-
-	public boolean isQuoteResponse() {
-		return quoteResponse;
-	}
-
-	public void setQuoteResponse(boolean quoteResponse) {
-		this.quoteResponse = quoteResponse;
-	}
-}

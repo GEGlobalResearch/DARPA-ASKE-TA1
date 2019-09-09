@@ -44,7 +44,7 @@ import com.ge.research.sadl.darpa.aske.curation.AnswerCurationManager;
 
 public interface IDialogAnswerProvider {
 
-	String addCurationManagerInitiatedContent(String content);
+	String addCurationManagerInitiatedContent(AnswerCurationManager answerCurationManager, String content);
 
 	String addCurationManagerInitiatedContent(AnswerCurationManager answerCurationManager, String methodToCall,
 			List<Object> args, String content);

@@ -42,8 +42,6 @@ import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
 
 import org.junit.Before;
 import org.junit.BeforeClass;
@@ -67,12 +65,15 @@ import com.ge.research.sadl.reasoner.QueryCancelledException;
 import com.ge.research.sadl.reasoner.QueryParseException;
 import com.ge.research.sadl.reasoner.ReasonerNotFoundException;
 import com.ge.research.sadl.reasoner.ResultSet;
+import com.hp.hpl.jena.ontology.OntModel;
 
 public class JavaImportJPTests {
 	private static final Logger LOGGER = LoggerFactory.getLogger(JavaImportJPTests.class);
 
 	private String codeExtractionProjectModelFolder;
 	private String domainProjectModelFolder;
+	private String codeExtractionKbRoot;
+	
 	@BeforeClass
 	public static void init() throws Exception
 	{
@@ -84,13 +85,13 @@ public class JavaImportJPTests {
 
 	@Before
 	public void setUp() throws Exception {
-		String codeExtractionKbRoot = "C:/Users/200005201/sadl3-master6/git/DARPA-ASKE-TA1/Ontology/M5";
-		File codeExtractionPrjFolder = new File(codeExtractionKbRoot);
-		setExtractionProjectModelFolder(codeExtractionPrjFolder.getCanonicalPath() + "/OwlModels");
+		File projectRoot = new File("resources/M5Snapshot");
+		setCodeExtractionKbRoot(projectRoot.getCanonicalPath());
+		File codeExtractionPrjFolder = new File(getCodeExtractionKbRoot());
+		assertTrue(codeExtractionPrjFolder.exists());
+		setExtractionProjectModelFolder(getCodeExtractionKbRoot() + "/OwlModels");
 		
-		String domainModelKbRoot = "C:/Users/200005201/sadl3-master6/git/DARPA-ASKE-TA1/Ontology/M5";
-		File outputPrjFolder = new File(domainModelKbRoot);
-		setDomainProjectModelFolder(outputPrjFolder.getCanonicalPath() + "/OwlModels");
+		setDomainProjectModelFolder(getExtractionProjectModelFolder());
 	}
 
 	@Test
@@ -238,8 +239,8 @@ public class JavaImportJPTests {
 	
 	@Test
 	public void test_04() throws IOException, ConfigurationException {
-		System.out.println(new File(".").getAbsoluteFile().getAbsolutePath());
-		File sourceFile = new File(new File(".").getAbsolutePath() + "/resources/Isentrop.java");
+		File sourceFile = new File(getCodeExtractionKbRoot() + "/ExtractedModels/Sources/Isentrop.java");
+		assertTrue(sourceFile.exists());
 //		ClassLoader classLoader = getClass().getClassLoader();
 //		File sourceFile = new File(classLoader.getResource("/Isentrop.java").getFile());		
 		String javaContent = readFile(sourceFile);
@@ -259,8 +260,8 @@ public class JavaImportJPTests {
 	
 	@Test
 	public void test_05() throws IOException, ConfigurationException, OwlImportException {
-		System.out.println(new File(".").getAbsoluteFile().getAbsolutePath());
-		File codeFile = new File(new File(".").getAbsolutePath() + "/resources/Mach.java");
+		File codeFile = new File(getCodeExtractionKbRoot() + "/ExtractedModels/Sources/Mach.java");
+		assertTrue(codeFile.exists());
 		IConfigurationManagerForIDE cm = ConfigurationManagerForIdeFactory.getConfigurationManagerForIDE(getDomainProjectModelFolder(), null);
 		AnswerCurationManager acm = new AnswerCurationManager(getDomainProjectModelFolder(), cm, null);
 		acm.getExtractionProcessor().getCodeExtractor().setCodeModelFolder(getExtractionProjectModelFolder());
@@ -323,20 +324,19 @@ public class JavaImportJPTests {
 	@Test
 	public void test_06() throws IOException, ConfigurationException, OwlImportException {
 		// remove OWL and SADL files
-		File owlF = new File("C:\\Users\\200005201\\sadl3-master6\\git\\DARPA-ASKE-TA1\\Ontology\\M5\\ExtractedModels\\Mach.java.owl");
+		File owlF = new File(getCodeExtractionKbRoot() + "/ExtractedModels\\Mach.java.owl");
 		
 		if (owlF.exists()) {
 			owlF.delete();
 			assertFalse(owlF.exists());
 		}
-		File sadlF = new File("C:\\Users\\200005201\\sadl3-master6\\git\\DARPA-ASKE-TA1\\Ontology\\M5\\ExtractedModels\\Mach.java.owl.sadl");
+		File sadlF = new File(getCodeExtractionKbRoot() + "\\ExtractedModels\\Mach.java.owl.sadl");
 		if (sadlF.exists()) {
 			sadlF.delete();
 			assertFalse(sadlF.exists());
 		}
 		
-		System.out.println(new File(".").getAbsoluteFile().getAbsolutePath());
-		File codeFile = new File(new File(".").getAbsolutePath() + "/resources/Mach.java");
+		File codeFile = new File(getCodeExtractionKbRoot() + "/ExtractedModels/Sources/Mach.java");
 		IConfigurationManagerForIDE cm = ConfigurationManagerForIdeFactory.getConfigurationManagerForIDE(getDomainProjectModelFolder(), null);
 		AnswerCurationManager acm = new AnswerCurationManager(getDomainProjectModelFolder(), cm, null);
 		acm.getExtractionProcessor().getCodeExtractor().setCodeModelFolder(getExtractionProjectModelFolder());
@@ -401,6 +401,7 @@ public class JavaImportJPTests {
 //		}
 //		ots.saveSadlModel(owlFileName + ".sadl");
 	}
+	
 	private String readFile(File file) throws IOException {
 	    BufferedReader reader = new BufferedReader(new FileReader (file));
 	    String         line = null;
@@ -433,5 +434,26 @@ public class JavaImportJPTests {
 
 	private void setDomainProjectModelFolder(String outputProjectModelFolder) {
 		this.domainProjectModelFolder = outputProjectModelFolder;
+	}
+
+	@Test
+		public void test_07() throws IOException, ConfigurationException, OwlImportException, QueryParseException, QueryCancelledException, ReasonerNotFoundException {
+			// test save command given an OWL file generated from a .dialog file is available as input.
+			File owlF = new File(getCodeExtractionKbRoot() + "\\OwlModels\\test2.dialog.owl");
+			assertTrue(owlF.exists());
+			
+			IConfigurationManagerForIDE cm = ConfigurationManagerForIdeFactory.getConfigurationManagerForIDE(getDomainProjectModelFolder(), null);
+			AnswerCurationManager acm = new AnswerCurationManager(getDomainProjectModelFolder(), cm, null);
+			OntModel om = cm.loadOntModel(owlF.getCanonicalPath());
+			String equationToBuildUri = cm.getBaseUriFromOwlFile(owlF.getCanonicalPath()) + "#Mach.CAL_SOS";
+			String result = acm.processSaveRequest(equationToBuildUri , om);
+		}
+
+	String getCodeExtractionKbRoot() {
+		return codeExtractionKbRoot;
+	}
+
+	void setCodeExtractionKbRoot(String codeExtractionKbRoot) {
+		this.codeExtractionKbRoot = codeExtractionKbRoot;
 	}
 }
