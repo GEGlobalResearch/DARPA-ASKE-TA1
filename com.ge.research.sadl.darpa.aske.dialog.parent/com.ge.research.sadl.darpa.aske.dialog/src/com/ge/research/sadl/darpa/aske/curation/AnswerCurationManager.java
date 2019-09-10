@@ -2,7 +2,7 @@
  * Note: This license has also been called the "New BSD License" or 
  * "Modified BSD License". See also the 2-clause BSD License.
  *
- * Copyright © 2018-2019 - General Electric Company, All Rights Reserved
+ * Copyright ï¿½ 2018-2019 - General Electric Company, All Rights Reserved
  * 
  * Projects: ANSWER and KApEESH, developed with the support of the Defense 
  * Advanced Research Projects Agency (DARPA) under Agreement  No.  
@@ -74,7 +74,6 @@ import com.ge.research.sadl.darpa.aske.processing.MixedInitiativeContent;
 import com.ge.research.sadl.darpa.aske.processing.WhatIsConstruct;
 import com.ge.research.sadl.darpa.aske.processing.imports.AnswerExtractionProcessor;
 import com.ge.research.sadl.darpa.aske.processing.imports.AnswerExtractionProcessor.CodeLanguage;
-import com.ge.research.sadl.darpa.aske.ui.answer.Node;
 import com.ge.research.sadl.darpa.aske.processing.imports.CodeExtractionException;
 import com.ge.research.sadl.darpa.aske.processing.imports.IModelFromCodeExtractor;
 import com.ge.research.sadl.darpa.aske.processing.imports.TextProcessor;
@@ -83,6 +82,7 @@ import com.ge.research.sadl.model.gp.Junction;
 import com.ge.research.sadl.model.gp.Junction.JunctionType;
 import com.ge.research.sadl.model.gp.NamedNode;
 import com.ge.research.sadl.model.gp.NamedNode.NodeType;
+import com.ge.research.sadl.model.gp.Node;
 import com.ge.research.sadl.model.gp.ProxyNode;
 import com.ge.research.sadl.model.gp.Query;
 import com.ge.research.sadl.model.gp.TripleElement;
@@ -1852,7 +1852,7 @@ public class AnswerCurationManager {
 		return tripleLst;
 	}
 
-	private void addTripleQuestion(Resource resource, TripleElement tr, StringBuilder answer) throws ExecutionException {
+	private void addTripleQuestion(org.eclipse.emf.ecore.resource.Resource resource, TripleElement tr, StringBuilder answer) throws ExecutionException, ConfigurationException, TranslationException, InvalidNameException, ReasonerNotFoundException, QueryParseException, QueryCancelledException {
 		List<String> vars = new ArrayList<String>();
 		StringBuilder sbwhere = new StringBuilder("where {");
 		if (tr.getSubject() == null) {
