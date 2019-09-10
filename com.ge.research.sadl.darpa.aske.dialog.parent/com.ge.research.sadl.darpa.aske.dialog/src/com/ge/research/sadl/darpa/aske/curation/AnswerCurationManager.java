@@ -2,7 +2,7 @@
  * Note: This license has also been called the "New BSD License" or 
  * "Modified BSD License". See also the 2-clause BSD License.
  *
- * Copyright © 2018-2019 - General Electric Company, All Rights Reserved
+ * Copyright ï¿½ 2018-2019 - General Electric Company, All Rights Reserved
  * 
  * Projects: ANSWER and KApEESH, developed with the support of the Defense 
  * Advanced Research Projects Agency (DARPA) under Agreement  No.  
@@ -82,6 +82,7 @@ import com.ge.research.sadl.model.gp.Junction;
 import com.ge.research.sadl.model.gp.Junction.JunctionType;
 import com.ge.research.sadl.model.gp.NamedNode;
 import com.ge.research.sadl.model.gp.NamedNode.NodeType;
+import com.ge.research.sadl.model.gp.Node;
 import com.ge.research.sadl.model.gp.ProxyNode;
 import com.ge.research.sadl.model.gp.Query;
 import com.ge.research.sadl.model.gp.TripleElement;
@@ -1849,6 +1850,76 @@ public class AnswerCurationManager {
 			}
 		}
 		return tripleLst;
+	}
+
+	private void addTripleQuestion(org.eclipse.emf.ecore.resource.Resource resource, TripleElement tr, StringBuilder answer) throws ExecutionException, ConfigurationException, TranslationException, InvalidNameException, ReasonerNotFoundException, QueryParseException, QueryCancelledException {
+		List<String> vars = new ArrayList<String>();
+		StringBuilder sbwhere = new StringBuilder("where {");
+		if (tr.getSubject() == null) {
+			vars.add("?s");
+			sbwhere.append("?s ");
+		}
+		else {
+			sbwhere.append("<");
+			sbwhere.append(tr.getSubject().getURI());
+			sbwhere.append("> ");
+		}
+		if (tr.getPredicate() == null) {
+			vars.add("?p");
+			sbwhere.append("?p ");
+		}
+		else {
+			sbwhere.append("<");
+			sbwhere.append(tr.getPredicate().getURI());
+			sbwhere.append("> ");
+		}
+		if (tr.getObject() == null) {
+			vars.add("?o");
+			sbwhere.append("?o");
+		}
+		else {
+			sbwhere.append("<");
+			Node obj = tr.getObject();
+			if (obj instanceof NamedNode) {
+				sbwhere.append(obj.getURI());
+			}
+			else {
+				sbwhere.append(obj.toString());
+			}
+			sbwhere.append("> ");
+		}
+		if (vars.size() > 0) {
+			for (int i = vars.size() - 1; i >= 0; i--) {
+				sbwhere.insert(0, " ");
+				sbwhere.insert(0, vars.get(i));
+			}
+			sbwhere.insert(0,  "select ");
+			sbwhere.append("}");
+		}
+		Query q = new Query();
+		q.setSparqlQueryString(sbwhere.toString());
+		ResultSet rs = runQuery(resource, q);
+		if (rs != null) {
+			if (rs.getRowCount() == 1) {
+				if (tr.getSubject() != null && tr.getPredicate() != null) {
+					answer.append(tr.getSubject().getName());
+					answer.append(" has ");
+					answer.append(tr.getPredicate().getName());
+					answer.append(" ");
+					answer.append(rs.getResultAt(0, 0));
+				}
+				else {
+					answer.append("\"");
+					answer.append(resultSetToQuotableString(rs));
+					answer.append("\"");
+				}
+			}
+			else {
+				answer.append("\"");
+				answer.append(resultSetToQuotableString(rs));
+				answer.append("\"");
+			}
+		}
 	}
 
 
