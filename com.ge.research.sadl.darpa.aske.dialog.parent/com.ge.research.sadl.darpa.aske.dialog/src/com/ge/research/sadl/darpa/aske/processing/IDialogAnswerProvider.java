@@ -59,4 +59,6 @@ public interface IDialogAnswerProvider {
 
 	Resource getResource();
 
+	boolean addCurationManagerAnswerContent(AnswerCurationManager acm, String content, Object ctx);
+
 }

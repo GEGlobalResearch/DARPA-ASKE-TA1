@@ -40,10 +40,11 @@ import org.eclipse.emf.ecore.EObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class MixedInitiativeContent {
+public abstract class MixedInitiativeContent {
 	private static final Logger logger = LoggerFactory.getLogger(MixedInitiativeContent.class);
 	
 	private EObject context;
+	private boolean answered = false;
 	
 	public MixedInitiativeContent() {
 		logger.debug(this.getClass().getCanonicalName() + " constructor called.");
@@ -56,4 +57,14 @@ public class MixedInitiativeContent {
 	public void setContext(EObject context) {
 		this.context = context;
 	}
+
+	public void setAnswered(boolean b) {
+		answered = b;
+	}
+
+	public boolean isAnswered() {
+		return answered;
+	}
+	
+	abstract public String toString();
 }

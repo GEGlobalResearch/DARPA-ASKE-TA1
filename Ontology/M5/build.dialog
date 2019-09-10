@@ -48,6 +48,7 @@ import "http://sadl.org/SpeedOfSound.sadl".
 //What is specificGasConstantEq?
 
 //What is the ^value of Temperature when the Length is 30000 ft?
-What is the staticTemperature of some Air when the altitude of the Air is 30000 ft?
+//What is the staticTemperature of some Air when the altitude of the Air is 30000 ft? 
+//What is the staticTemperature of some Air when the altitude of the Air is 30000? 
 
 

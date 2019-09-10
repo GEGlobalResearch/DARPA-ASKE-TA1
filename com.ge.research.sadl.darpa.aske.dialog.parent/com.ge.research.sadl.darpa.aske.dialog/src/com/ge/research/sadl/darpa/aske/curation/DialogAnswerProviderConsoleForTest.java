@@ -98,6 +98,12 @@ public class DialogAnswerProviderConsoleForTest implements IDialogAnswerProvider
 		return "success";
 	}
 
+	@Override
+	public boolean addCurationManagerAnswerContent(AnswerCurationManager acm, String content, Object ctx) {
+		System.out.println(content);
+		return true;
+	}
+	
 	/* (non-Javadoc)
 	 * @see com.ge.research.sadl.darpa.aske.tests.IDialogAnswerProvider#initiateMixedInitiativeInteraction(com.ge.research.sadl.darpa.aske.processing.MixedInitiativeElement)
 	 */
@@ -399,5 +405,6 @@ public class DialogAnswerProviderConsoleForTest implements IDialogAnswerProvider
 		// TODO Auto-generated method stub
 		return null;
 	}
+
 }
 
