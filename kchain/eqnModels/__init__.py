@@ -1,3 +1,4 @@
+import tensorflow as tf
 def SpeedOfSound(inArg):
     gamma = inArg[0]
     R = inArg[1]
