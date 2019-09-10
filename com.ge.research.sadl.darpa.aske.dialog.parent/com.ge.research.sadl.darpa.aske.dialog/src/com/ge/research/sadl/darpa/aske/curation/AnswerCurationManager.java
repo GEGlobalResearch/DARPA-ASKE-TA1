@@ -74,6 +74,7 @@ import com.ge.research.sadl.darpa.aske.processing.MixedInitiativeContent;
 import com.ge.research.sadl.darpa.aske.processing.WhatIsConstruct;
 import com.ge.research.sadl.darpa.aske.processing.imports.AnswerExtractionProcessor;
 import com.ge.research.sadl.darpa.aske.processing.imports.AnswerExtractionProcessor.CodeLanguage;
+import com.ge.research.sadl.darpa.aske.ui.answer.Node;
 import com.ge.research.sadl.darpa.aske.processing.imports.CodeExtractionException;
 import com.ge.research.sadl.darpa.aske.processing.imports.IModelFromCodeExtractor;
 import com.ge.research.sadl.darpa.aske.processing.imports.TextProcessor;
@@ -1849,6 +1850,76 @@ public class AnswerCurationManager {
 			}
 		}
 		return tripleLst;
+	}
+
+	private void addTripleQuestion(Resource resource, TripleElement tr, StringBuilder answer) throws ExecutionException {
+		List<String> vars = new ArrayList<String>();
+		StringBuilder sbwhere = new StringBuilder("where {");
+		if (tr.getSubject() == null) {
+			vars.add("?s");
+			sbwhere.append("?s ");
+		}
+		else {
+			sbwhere.append("<");
+			sbwhere.append(tr.getSubject().getURI());
+			sbwhere.append("> ");
+		}
+		if (tr.getPredicate() == null) {
+			vars.add("?p");
+			sbwhere.append("?p ");
+		}
+		else {
+			sbwhere.append("<");
+			sbwhere.append(tr.getPredicate().getURI());
+			sbwhere.append("> ");
+		}
+		if (tr.getObject() == null) {
+			vars.add("?o");
+			sbwhere.append("?o");
+		}
+		else {
+			sbwhere.append("<");
+			Node obj = tr.getObject();
+			if (obj instanceof NamedNode) {
+				sbwhere.append(obj.getURI());
+			}
+			else {
+				sbwhere.append(obj.toString());
+			}
+			sbwhere.append("> ");
+		}
+		if (vars.size() > 0) {
+			for (int i = vars.size() - 1; i >= 0; i--) {
+				sbwhere.insert(0, " ");
+				sbwhere.insert(0, vars.get(i));
+			}
+			sbwhere.insert(0,  "select ");
+			sbwhere.append("}");
+		}
+		Query q = new Query();
+		q.setSparqlQueryString(sbwhere.toString());
+		ResultSet rs = runQuery(resource, q);
+		if (rs != null) {
+			if (rs.getRowCount() == 1) {
+				if (tr.getSubject() != null && tr.getPredicate() != null) {
+					answer.append(tr.getSubject().getName());
+					answer.append(" has ");
+					answer.append(tr.getPredicate().getName());
+					answer.append(" ");
+					answer.append(rs.getResultAt(0, 0));
+				}
+				else {
+					answer.append("\"");
+					answer.append(resultSetToQuotableString(rs));
+					answer.append("\"");
+				}
+			}
+			else {
+				answer.append("\"");
+				answer.append(resultSetToQuotableString(rs));
+				answer.append("\"");
+			}
+		}
 	}
 
 
