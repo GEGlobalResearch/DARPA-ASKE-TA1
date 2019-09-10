@@ -8,6 +8,7 @@ UnittedQuantity is a type of ScientificConcept,
 	described by ^value with values of type decimal,
 	described by stddev with values of type decimal,
 	described by unit with values of type string.
+UnittedQuantity has impliedProperty ^value.
 
 DataDescriptor is a class, described by localDescriptorName with a single value of type string,
 	described by dataType (note "the simple data type, e.g., float") with a single value of type anyURI,

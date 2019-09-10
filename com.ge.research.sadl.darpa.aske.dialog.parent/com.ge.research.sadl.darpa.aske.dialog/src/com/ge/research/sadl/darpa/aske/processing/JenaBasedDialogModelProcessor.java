@@ -45,6 +45,8 @@ import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
+import java.util.concurrent.ExecutionException;
 
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IncrementalProjectBuilder;
@@ -93,6 +95,7 @@ import com.ge.research.sadl.jena.UtilsForJena;
 import com.ge.research.sadl.model.CircularDefinitionException;
 import com.ge.research.sadl.model.ModelError;
 import com.ge.research.sadl.model.gp.Equation;
+import com.ge.research.sadl.model.gp.GraphPatternElement;
 import com.ge.research.sadl.model.gp.Junction;
 import com.ge.research.sadl.model.gp.NamedNode;
 import com.ge.research.sadl.model.gp.Node;
@@ -102,6 +105,7 @@ import com.ge.research.sadl.model.gp.Rule;
 import com.ge.research.sadl.model.gp.TripleElement;
 import com.ge.research.sadl.processing.OntModelProvider;
 import com.ge.research.sadl.processing.SadlConstants;
+import com.ge.research.sadl.processing.SadlInferenceException;
 import com.ge.research.sadl.processing.ValidationAcceptor;
 import com.ge.research.sadl.reasoner.ConfigurationException;
 import com.ge.research.sadl.reasoner.InvalidNameException;
@@ -300,10 +304,20 @@ public class JenaBasedDialogModelProcessor extends JenaBasedSadlModelProcessor {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-
+		
 		// process rest of parse tree
 		List<SadlModelElement> elements = model.getElements();
 		if (elements != null) {
+			try {
+				if (!getAnswerCurationManager().dialogAnserProviderInitialized()) {
+					System.out.println("DialogAnswerProvider not yet initialized.");
+					return;
+				}
+			} catch (IOException e2) {
+				// TODO Auto-generated catch block
+				e2.printStackTrace();
+			}
+
 			Iterator<SadlModelElement> elitr = elements.iterator();
 			Object lastElement = null;
 			AnswerCMStatement lastACMQuestion = null;
@@ -761,22 +775,49 @@ public class JenaBasedDialogModelProcessor extends JenaBasedSadlModelProcessor {
 	private ConversationElement processStatement(SaveStatement element) throws IOException, ConfigurationException, QueryParseException, QueryCancelledException, ReasonerNotFoundException {
 		ConversationElement ce = null;
 		SadlResource equationSR = ((SaveStatement)element).getTarget();
-		String targetModelUri = ((SaveStatement)element).getSaveTarget();
-		
-		String equationUri = getDeclarationExtensions().getConceptUri(equationSR);
-		Individual extractedModelInstance = getTheJenaModel().getIndividual(equationUri);
-		if (extractedModelInstance == null) {
-			getAnswerCurationManager().notifyUser(getConfigMgr().getModelFolder(), "No equation with URI '" + equationUri + "' is found in current model.", true);
+		String targetModelUri = null;
+		String targetModelUrl = null;
+		String targetModelAlias = ((SaveStatement)element).getSaveTarget();
+		Map<String, String[]> targetModelMap = getAnswerCurationManager().getTargetModelMap();
+		if (targetModelAlias != null) {
+			String[] uris = targetModelMap.get(targetModelAlias);
+			if (uris == null) {
+				addError("Model with alias '" + targetModelAlias + "' not found in target models.", element);
+			}
+			else {
+				targetModelUri = uris[0];
+				targetModelUrl = uris[1];
+			}
 		}
-		else if (extractedModelInstance.getNameSpace().equals(targetModelUri)) {
-			getAnswerCurationManager().notifyUser(getConfigMgr().getModelFolder(), "The equation with URI '" + equationUri + "' is already in the target model '" + targetModelUri + "'", true);
+		else {
+			if (targetModelMap.size() > 1){
+				addError("There are multiple target models identified; please specify which one to save to.", element);
+			}
+			else if (targetModelMap.size() < 1) {
+				addError("No target models have been identified. Cannot identify a model into which to save.", element);
+			}
+			else {
+				String[] uris = targetModelMap.get(targetModelMap.keySet().iterator().next());
+				targetModelUri = uris[0];
+				targetModelUrl = uris[1];
+			}
 		}
-		System.out.println("Ready to build model '" + equationUri + "'");
-		String result = getAnswerCurationManager().processSaveRequest(equationUri, getTheJenaModel());
-		BuildConstruct bc = new BuildConstruct(getTheJenaModel(), targetModelUri, extractedModelInstance);
-		bc.setContext(element);
-		ce = new ConversationElement(getAnswerCurationManager().getConversation(), bc, Agent.USER);
-		OntModelProvider.addPrivateKeyValuePair(element.eResource(), DialogConstants.LAST_DIALOG_COMMAND, bc);
+		if (targetModelUri != null) {
+			String equationUri = getDeclarationExtensions().getConceptUri(equationSR);
+			Individual extractedModelInstance = getTheJenaModel().getIndividual(equationUri);
+			if (extractedModelInstance == null) {
+				getAnswerCurationManager().notifyUser(getConfigMgr().getModelFolder(), "No equation with URI '" + equationUri + "' is found in current model.", true);
+			}
+			else if (extractedModelInstance.getNameSpace().equals(targetModelAlias)) {
+				getAnswerCurationManager().notifyUser(getConfigMgr().getModelFolder(), "The equation with URI '" + equationUri + "' is already in the target model '" + targetModelAlias + "'", true);
+			}
+			System.out.println("Ready to build model '" + equationUri + "'");
+			String result = getAnswerCurationManager().processSaveRequest(equationUri, getTheJenaModel());
+			BuildConstruct bc = new BuildConstruct(getTheJenaModel(), targetModelUri, targetModelUrl, extractedModelInstance);
+			bc.setContext(element);
+			ce = new ConversationElement(getAnswerCurationManager().getConversation(), bc, Agent.USER);
+			OntModelProvider.addPrivateKeyValuePair(element.eResource(), DialogConstants.LAST_DIALOG_COMMAND, bc);
+		}
 		return ce;
 	}
 
@@ -864,9 +905,38 @@ public class JenaBasedDialogModelProcessor extends JenaBasedSadlModelProcessor {
 				}
 				Expression when = ((WhatIsStatement)stmt.getStmt()).getWhen();
 				Object whenObj = when != null ? processExpression(when) : null;
+				
+				// apply implied/expanded properties
+				DialogIntermediateFormTranslator dift = new DialogIntermediateFormTranslator(this, getTheJenaModel());
+				if (trgtObj instanceof GraphPatternElement) {
+					trgtObj = dift.addImpliedAndExpandedProperties((GraphPatternElement)trgtObj);
+				}
+				else if (trgtObj instanceof List<?>) {
+					dift.addImpliedAndExpandedProperties((List<GraphPatternElement>) trgtObj);
+				}
+				if (whenObj instanceof GraphPatternElement) {
+					whenObj = dift.addImpliedAndExpandedProperties((GraphPatternElement)whenObj);
+					List<GraphPatternElement> gpes = new ArrayList<GraphPatternElement>();
+					gpes.add((GraphPatternElement) whenObj);
+					Object temp = dift.cook(gpes, false);
+					if (temp instanceof List<?>) {
+						if (((List<?>)temp).size() == 1) {
+							whenObj = ((List<?>)temp).get(0);
+						}
+						else {
+							// ?
+						}
+					}
+				}
+				else if (whenObj instanceof List<?>) {
+					dift.addImpliedAndExpandedProperties((List<GraphPatternElement>) whenObj);
+					// does this ever happen? More to do...
+				}
+				
 				WhatIsConstruct wic = new WhatIsConstruct(trgtObj, whenObj);
 				ce = new ConversationElement(getAnswerCurationManager().getConversation(), wic, Agent.USER);
-				OntModelProvider.addPrivateKeyValuePair(stmt.eResource(), DialogConstants.LAST_DIALOG_COMMAND, wic);
+//				OntModelProvider.addPrivateKeyValuePair(stmt.eResource(), DialogConstants.LAST_DIALOG_COMMAND, wic);
+				getAnswerCurationManager().processUserRequest(getCurrentResource(), getTheJenaModel(), wic);
 			} catch (TranslationException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
@@ -877,6 +947,24 @@ public class JenaBasedDialogModelProcessor extends JenaBasedSadlModelProcessor {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
 			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			} catch (ConfigurationException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			} catch (ExecutionException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			} catch (ReasonerNotFoundException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			} catch (QueryParseException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			} catch (QueryCancelledException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			} catch (SadlInferenceException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
@@ -977,6 +1065,8 @@ public class JenaBasedDialogModelProcessor extends JenaBasedSadlModelProcessor {
 	public void initializePreferences(ProcessorContext context) {
 		super.initializePreferences(context);
 		setTypeCheckingWarningsOnly(true);
+		setUseArticlesInValidation(true);
+		setIncludeImpliedPropertiesInTranslation(true);
 		String textServiceUrl = context.getPreferenceValues().getPreference(DialogPreferences.ANSWER_TEXT_SERVICE_BASE_URI);
 		if (textServiceUrl != null) {
 			setTextServiceUrl(textServiceUrl);

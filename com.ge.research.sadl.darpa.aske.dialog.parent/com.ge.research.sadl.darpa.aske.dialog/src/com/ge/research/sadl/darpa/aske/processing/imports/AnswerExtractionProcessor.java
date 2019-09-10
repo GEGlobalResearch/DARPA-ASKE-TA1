@@ -403,6 +403,7 @@ public class AnswerExtractionProcessor {
 			List<String[]> inputs, List<String[]> outputs) throws IOException {
 		KChainServiceInterface kcService = new KChainServiceInterface();
 		if (kcService.buildCGModel(modelUri, modifiedPythonScript, dataLocation, inputs, outputs)) {
+			
 			return modelUri;
 		}
 		return null;

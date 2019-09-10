@@ -1378,7 +1378,6 @@ public class DialogAnswerProvider extends DefaultAutoEditStrategyProvider implem
 	public int[] getStartAndLength(EObject po) {
 		INode node = getParserObjectNode(po);
 		if (node != null) {
-			ITextRegionWithLineInformation reg = NodeModelUtils.getNode(po).getTextRegionWithLineInformation();
 			int start = NodeModelUtils.getNode(po).getTotalOffset();
 			int len = NodeModelUtils.getNode(po).getTotalLength();
 			int[] ret = new int[2];
@@ -1412,9 +1411,10 @@ public class DialogAnswerProvider extends DefaultAutoEditStrategyProvider implem
 		return null;
 	}
 	
-	public synchronized void addCurationManagerContentToDialog(IDocument document, IRegion reg, String content, Object ctx, boolean quote)
+	public synchronized boolean addCurationManagerContentToDialog(IDocument document, IRegion reg, String content, Object ctx, boolean quote)
 			throws BadLocationException {
 		String modContent;
+		int loc;
 		if (quote) {
 			modContent = generateDoubleQuotedContentForDialog(content);
 		}
@@ -1424,6 +1424,9 @@ public class DialogAnswerProvider extends DefaultAutoEditStrategyProvider implem
 				modContent += ".";
 			}
 		}
+		if (!modContent.startsWith(" ")) {
+			modContent = " " + modContent;
+		}
 		if (ctx instanceof EObject && getSourceText((EObject)ctx) != null) {
 //			String damageStr = document.get(reg.getOffset(), reg.getLength());
 			Object[] srcinfo = getSourceText((EObject)ctx);
@@ -1432,15 +1435,45 @@ public class DialogAnswerProvider extends DefaultAutoEditStrategyProvider implem
 			int len = (int) srcinfo[2];
 			//find location of this in document
 		    document.replace(start + len + 1, 0, modContent + "\n");
+		    loc = start + len + 1;
+		    if (document instanceof XtextDocument && ctx instanceof EObject) {
+		    	// is there a way to move the cursor?
+//				ITextRegionWithLineInformation rwli = NodeModelUtils.getNode((EObject) ctx).getTextRegionWithLineInformation();
+		    }
 		}
 		else {
-			int loc = document.getLength();
+			loc = document.getLength();
 //			document.replace(loc, 0, modContent + "\n");
 			document.set(document.get() + modContent + "\n");
 		}
 		logger.debug("Adding to Dialog editor: " + modContent);
+		return textAtLocation(document, modContent, loc);
 	}
 	
+	/**
+	 * Method to check to see if the content was added successfully
+	 * @param document
+	 * @param content
+	 * @param loc
+	 * @return
+	 */
+	private boolean textAtLocation(IDocument document, String content, int loc) {
+		int doclen = document.getLength();
+		if (content != null && loc < doclen) {
+			String test;
+			try {
+				test = document.get(loc, content.length());
+				if (test.trim().equals(content.trim())) {
+					return true;
+				}
+			} catch (BadLocationException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		}
+		return false;
+	}
+
 	public String addCurationManagerInitiatedContent(AnswerCurationManager acm, String content) {
 		setAnswerConfigurationManager(acm);
         Consumer<MixedInitiativeElement> respond = a -> this.provideResponse(a);
@@ -1462,6 +1495,19 @@ public class DialogAnswerProvider extends DefaultAutoEditStrategyProvider implem
         initiateMixedInitiativeInteraction(questionElement);
 		return "success";
 	}
+	
+	@Override
+	public boolean addCurationManagerAnswerContent(AnswerCurationManager acm, String content, Object ctx) {
+		setAnswerConfigurationManager(acm);
+		try {
+			return addCurationManagerContentToDialog(getTheDocument(), null, content, ctx, false);
+		} catch (BadLocationException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		return false;
+	}
+	
 	private void addMixedInitiativeElement(String key, MixedInitiativeElement element) {
 		if (key.endsWith(".") || key.endsWith("?")) {
 			// drop EOS

@@ -49,32 +49,53 @@ import java.net.HttpURLConnection;
 import java.net.URISyntaxException;
 import java.net.URL;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
+import java.util.concurrent.ExecutionException;
 
+import org.eclipse.emf.ecore.EObject;
+import org.eclipse.xtext.GrammarUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.ge.research.sadl.builder.ConfigurationManagerForIdeFactory;
 import com.ge.research.sadl.builder.IConfigurationManagerForIDE;
 import com.ge.research.sadl.darpa.aske.dialog.AnswerCMStatement;
-import com.ge.research.sadl.darpa.aske.preferences.DialogPreferences;
+import com.ge.research.sadl.darpa.aske.inference.JenaBasedDialogInferenceProcessor;
 import com.ge.research.sadl.darpa.aske.processing.ConversationElement;
 import com.ge.research.sadl.darpa.aske.processing.DialogConstants;
 import com.ge.research.sadl.darpa.aske.processing.DialogContent;
 import com.ge.research.sadl.darpa.aske.processing.IDialogAnswerProvider;
+import com.ge.research.sadl.darpa.aske.processing.MixedInitiativeContent;
+import com.ge.research.sadl.darpa.aske.processing.WhatIsConstruct;
 import com.ge.research.sadl.darpa.aske.processing.imports.AnswerExtractionProcessor;
 import com.ge.research.sadl.darpa.aske.processing.imports.AnswerExtractionProcessor.CodeLanguage;
 import com.ge.research.sadl.darpa.aske.processing.imports.CodeExtractionException;
 import com.ge.research.sadl.darpa.aske.processing.imports.IModelFromCodeExtractor;
 import com.ge.research.sadl.darpa.aske.processing.imports.TextProcessor;
+import com.ge.research.sadl.model.gp.GraphPatternElement;
+import com.ge.research.sadl.model.gp.Junction;
+import com.ge.research.sadl.model.gp.Junction.JunctionType;
+import com.ge.research.sadl.model.gp.NamedNode;
+import com.ge.research.sadl.model.gp.NamedNode.NodeType;
+import com.ge.research.sadl.model.gp.ProxyNode;
+import com.ge.research.sadl.model.gp.Query;
+import com.ge.research.sadl.model.gp.TripleElement;
+import com.ge.research.sadl.model.gp.VariableNode;
+import com.ge.research.sadl.model.visualizer.GraphVizVisualizer;
+import com.ge.research.sadl.model.visualizer.IGraphVisualizer;
 import com.ge.research.sadl.owl2sadl.OwlImportException;
 import com.ge.research.sadl.owl2sadl.OwlToSadl;
+import com.ge.research.sadl.parser.antlr.SADLParser;
+import com.ge.research.sadl.processing.ISadlInferenceProcessor;
+import com.ge.research.sadl.processing.OntModelProvider;
 import com.ge.research.sadl.processing.SadlConstants;
+import com.ge.research.sadl.processing.SadlInferenceException;
 import com.ge.research.sadl.reasoner.ConfigurationException;
-import com.ge.research.sadl.reasoner.ConfigurationManager;
 import com.ge.research.sadl.reasoner.IConfigurationManager;
 import com.ge.research.sadl.reasoner.IReasoner;
 import com.ge.research.sadl.reasoner.InvalidNameException;
@@ -82,22 +103,32 @@ import com.ge.research.sadl.reasoner.QueryCancelledException;
 import com.ge.research.sadl.reasoner.QueryParseException;
 import com.ge.research.sadl.reasoner.ReasonerNotFoundException;
 import com.ge.research.sadl.reasoner.ResultSet;
-import com.ge.research.sadl.reasoner.SadlJenaModelGetter;
+import com.ge.research.sadl.reasoner.SadlCommandResult;
+import com.ge.research.sadl.reasoner.TranslationException;
 import com.ge.research.sadl.reasoner.utils.SadlUtils;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
+import com.google.inject.Inject;
 import com.hp.hpl.jena.ontology.Individual;
+import com.hp.hpl.jena.ontology.OntClass;
 import com.hp.hpl.jena.ontology.OntModel;
 import com.hp.hpl.jena.rdf.model.RDFNode;
 import com.hp.hpl.jena.rdf.model.Resource;
 import com.hp.hpl.jena.rdf.model.Statement;
 import com.hp.hpl.jena.rdf.model.StmtIterator;
 import com.hp.hpl.jena.shared.NotFoundException;
+import com.hp.hpl.jena.util.iterator.ExtendedIterator;
+import com.hp.hpl.jena.vocabulary.OWL;
 import com.hp.hpl.jena.vocabulary.RDF;
+import com.hp.hpl.jena.vocabulary.RDFS;
+import com.hp.hpl.jena.vocabulary.XSD;
 
 public class AnswerCurationManager {
+	@Inject
+	protected SADLParser sadlParser;
+	
 	protected static final Logger logger = LoggerFactory.getLogger(AnswerCurationManager.class);
 	private String domainModelowlModelsFolder;
 	
@@ -115,6 +146,7 @@ public class AnswerCurationManager {
 	private DialogContent lastConversation = null;
 
 	private Map<String, String[]> targetModelMap = null;
+	private OwlToSadl owl2sadl = null;
 
 	public AnswerCurationManager (String modelFolder, IConfigurationManagerForIDE configMgr, Map<String,String> prefs) {
 		setDomainModelOwlModelsFolder(modelFolder);
@@ -849,6 +881,56 @@ public class AnswerCurationManager {
 			}
 		}
 	}
+	
+	public String answerUser(String modelFolder, String msg, boolean quote, EObject ctx) throws ConfigurationException {
+		if (quote) {
+			msg = doubleQuoteContent(msg);
+		}
+		if (getDialogAnswerProvider() != null) {
+			// talk to the user via the Dialog editor
+			Method acmic = null;
+			try {
+				acmic = getDialogAnswerProvider().getClass().getMethod("addCurationManagerAnswerContent", AnswerCurationManager.class, String.class, Object.class);
+			} catch (NoSuchMethodException e1) {
+				// TODO Auto-generated catch block
+				e1.printStackTrace();
+			} catch (SecurityException e1) {
+				// TODO Auto-generated catch block
+				e1.printStackTrace();
+			}
+			if (acmic == null) {
+				Method[] dapMethods = getDialogAnswerProvider().getClass().getDeclaredMethods();
+				if (dapMethods != null) {
+					for (Method m : dapMethods) {
+						if (m.getName().equals("addCurationManagerAnswerContent")) {
+							acmic = m;
+							break;
+						}
+					}
+				}
+			}
+			if (acmic != null) {
+				acmic.setAccessible(true);
+				try {
+					Object retval = acmic.invoke(getDialogAnswerProvider(), this, msg, ctx);
+					if (retval != null) {
+						return retval.toString();
+					}
+				} catch (IllegalAccessException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				} catch (IllegalArgumentException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				} catch (InvocationTargetException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+			}
+		}
+		return null;
+	}
+
 
 	private String doubleQuoteContent(String msg) {
 		String modContent = null;
@@ -887,6 +969,17 @@ public class AnswerCurationManager {
 		reader.close();
  
 		return  fileData.toString();	
+	}
+
+	/**
+	 * Method to answer whether the DialogAnswerProvider has been initialized
+	 * @return
+	 */
+	public boolean dialogAnserProviderInitialized() {
+		if (dialogAnswerProvider == null) {
+			setDialogAnswerProvider((IDialogAnswerProvider) getDomainModelConfigurationManager().getPrivateKeyValuePair(DialogConstants.DIALOG_ANSWER_PROVIDER));
+		}
+		return (dialogAnswerProvider != null);
 	}
 
 	protected IDialogAnswerProvider getDialogAnswerProvider() {
@@ -1112,4 +1205,651 @@ public class AnswerCurationManager {
 		}
 		targetModelMap.put(alias, targetUris);
 	}
+	
+	public boolean processUserRequest(org.eclipse.emf.ecore.resource.Resource resource, OntModel theModel, MixedInitiativeContent lastcmd) throws ConfigurationException, ExecutionException, IOException, TranslationException, InvalidNameException, ReasonerNotFoundException, QueryParseException, QueryCancelledException, SadlInferenceException {
+		if (answers.containsKey(lastcmd.toString())) {
+			return false;
+		}
+		if (lastcmd instanceof WhatIsConstruct) {
+    		Object trgt = ((WhatIsConstruct)lastcmd).getTarget();
+    		Object whn = ((WhatIsConstruct)lastcmd).getWhen();
+    		if (trgt instanceof NamedNode && whn == null) {
+    			String answer = whatIsNamedNode(resource, theModel, getDomainModelOwlModelsFolder(), (NamedNode)trgt);
+    			if (answer != null) {
+    				lastcmd.setAnswered(true);
+    				addAnsweredStatement(lastcmd, answer);
+    			}
+    		}
+    		else if (trgt instanceof Object[] && whn == null) {
+        		if (allTripleElements((Object[])trgt)) {
+            		Object ctx = null;
+        			TripleElement[] triples = flattenTriples((Object[])trgt);
+        			ctx = triples[0].getContext();
+            		StringBuilder answer = new StringBuilder();
+            		Object[] rss = insertTriplesAndQuery(resource, triples);
+            		String resultStr = null;
+            		if (rss != null) {
+            			StringBuilder sb = new StringBuilder();
+            			if (triples[0].getSubject() instanceof VariableNode && 
+            					((VariableNode)triples[0].getSubject()).getType() instanceof NamedNode) {
+            				sb.append("the ");
+            				sb.append(((VariableNode)(triples[0].getSubject())).getType().getName());
+            				sb.append(" has ");
+            				sb.append(triples[0].getPredicate().getName());
+            				sb.append(" ");
+            				sb.append(((ResultSet) rss[0]).getResultAt(0, 0).toString());
+            				resultStr = sb.toString();
+            			}
+            			else {
+                			for (Object rs : rss) {
+                				if (rs instanceof ResultSet) {
+                					((ResultSet) rs).setShowNamespaces(true);
+                					sb.append(rs.toString());
+                				}
+                				else {
+                					throw new TranslationException("Expected ResultSet, got " + rs.getClass().getCanonicalName());
+                				}
+                			}
+            				resultStr = resultSetToQuotableString(sb.toString());
+            			}
+            		}
+            		String insertionText = (resultStr != null ? resultStr : "\"Failed to find results\"");
+             		notifyUser(getDomainModelOwlModelsFolder(), insertionText, false);
+        		}
+    		}
+    		else {
+    			// there is a when clause, and this is in a WhatIsConstruct
+    			List<TripleElement> tripleLst = new ArrayList<TripleElement>();
+				if (trgt instanceof TripleElement) {
+    				tripleLst.add((TripleElement)trgt);
+				}
+				else if (trgt instanceof Junction) {
+					tripleLst = addTriplesFromJunction((Junction) trgt, tripleLst);
+				}
+    			if (whn instanceof TripleElement) {
+    				// we have a when statement
+    				tripleLst.add((TripleElement)whn);
+    			}
+    			else if (whn instanceof Junction) {
+    				tripleLst = addTriplesFromJunction((Junction) whn, tripleLst);
+    			}
+				TripleElement[] triples = new TripleElement[tripleLst.size()];
+				triples = tripleLst.toArray(triples);
+    			
+        		StringBuilder answer = new StringBuilder();
+        		Object[] rss = insertTriplesAndQuery(resource, triples);
+        		if (rss != null) {
+        			int cntr = 0;
+            		for (Object rs : rss) {
+            			if (rs instanceof ResultSet) {
+	            			if (cntr == 0) {
+	            				// this is the first ResultSet, construct a graph if possible
+	            				if (((ResultSet) rs).getColumnCount() != 3) {
+	            					System.err.println("Can't construct graph; not 3 columns. Unexpected result.");
+	            				}
+	//            				this.graphVisualizerHandler.resultSetToGraph(path, resultSet, description, baseFileName, orientation, properties);
+	            				
+	            				IGraphVisualizer visualizer = new GraphVizVisualizer();
+	            				if (visualizer != null) {
+	            					String graphsDirectory = new File(getDomainModelOwlModelsFolder()).getParent() + "/Graphs";
+	            					new File(graphsDirectory).mkdir();
+	            					String baseFileName = "QueryMetadata";
+	            					visualizer.initialize(
+	            		                    graphsDirectory,
+	            		                    baseFileName,
+	            		                    baseFileName,
+	            		                    null,
+	            		                    IGraphVisualizer.Orientation.TD,
+	            		                    "Assembled Model");
+	            					((ResultSet) rs).setShowNamespaces(false);
+	            		            visualizer.graphResultSetData((ResultSet) rs);	
+	            		        }
+	    						String fileToOpen = visualizer.getGraphFileToOpen();
+	    						if (fileToOpen != null) {
+	    							File fto = new File(fileToOpen);
+	    							if (fto.isFile()) {
+	// TODO graphing refactoring
+	//    								IFileStore fileStore = EFS.getLocalFileSystem().getStore(fto.toURI());
+	//    								IWorkbenchPage page = PlatformUI.getWorkbench().getActiveWorkbenchWindow().getActivePage();
+	//    								try {
+	//    									IDE.openEditorOnFileStore(page, fileStore);
+	//    								}
+	//    								catch (Throwable t) {
+	//    									System.err.println("Error trying to display graph file '" + fileToOpen + "': " + t.getMessage());
+	//    								}
+	    							}
+	    							else if (fileToOpen != null) {
+	    								System.err.println("Failed to open graph file '" + fileToOpen + "'. Try opening it manually.");
+	    							}
+	    						}
+	            				else {
+	            					System.err.println("Unable to find an instance of IGraphVisualizer to render graph for query.\n");
+	            				}
+	
+	            			}
+	            			if (cntr > 0) 
+	            				answer.append(resultSetToQuotableString((ResultSet) rs));
+	            			if(cntr++ > 1)
+	            				answer.append(",\n");
+            			}
+            			else {
+            				throw new TranslationException("Expected ResultSet but got " + rs.getClass().getCanonicalName());
+            			}
+            			
+            		}
+            		answer.append(".\n");
+        		}
+        		Object ctx = triples[0].getContext();
+         		notifyUser(getDomainModelOwlModelsFolder(), answer.toString(), true);
+//    			}
+//    			else {
+////    				rdqProvider.get().execute(null, null, null);
+//    				System.out.println("Target is: " + trgt.toString());
+//    				System.out.println("When is: " + whn.toString());
+//    			}
+    		}
+    	}
+		return false;
+	}
+
+	private void addAnsweredStatement(MixedInitiativeContent lastcmd, String answer) {
+		answers.put(lastcmd.toString(), answer);
+	}
+
+	private String whatIsNamedNode(org.eclipse.emf.ecore.resource.Resource resource, OntModel theModel, String modelFolder, NamedNode lastcmd) throws ConfigurationException, ExecutionException, TranslationException, InvalidNameException, ReasonerNotFoundException, QueryParseException, QueryCancelledException {
+		// what is NamedNode?
+		NamedNode nn = (NamedNode) lastcmd;
+		NodeType typ = nn.getNodeType();
+		boolean isFirstProperty = true;
+		StringBuilder answer = new StringBuilder();
+		if (typ.equals(NodeType.ClassNode)) {
+//			answer.append(checkForKeyword(nn.getName()));
+//			int len = answer.length();
+//			answer = getClassHierarchy(resource, nn, answer);
+//			if (answer.length() == len) {
+//				answer.append(" is a class");
+//			}
+			answer.append(getOwlToSadl(theModel).classToSadl(nn.getURI()));
+//			isFirstProperty = addDomainAndRange(resource, nn, isFirstProperty, answer);
+//			addQualifiedCardinalityRestriction(resource, nn, isFirstProperty, answer);		
+			Object ctx = ((NamedNode)lastcmd).getContext();
+			return answerUser(modelFolder, answer.toString(), false, (EObject) ctx);
+		}
+		else if (typ.equals(NodeType.ObjectProperty) || typ.equals(NodeType.DataTypeProperty) || typ.equals(NodeType.PropertyNode)) {
+			addPropertyWithDomainAndRange(resource, nn, answer);
+			Object ctx = ((NamedNode)lastcmd).getContext();
+			return answerUser(modelFolder, answer.toString(), false, (EObject) ctx);
+		}
+		else if (typ.equals(NodeType.AnnotationProperty)) {
+			addAnnotationPropertyDeclaration(resource, nn, answer);
+			Object ctx = ((NamedNode)lastcmd).getContext();
+			return answerUser(modelFolder, answer.toString(), false, (EObject) ctx);
+		}
+		else if (typ.equals(NodeType.InstanceNode)) {
+			addInstanceDeclaration(resource, nn, answer);
+			Object ctx = ((NamedNode)lastcmd).getContext();
+			return answerUser(modelFolder, answer.toString(), false, (EObject) ctx);
+		}
+		else if (typ.equals(NodeType.FunctionNode)) {
+			addInstanceDeclaration(resource, nn, answer);
+			Object ctx = ((NamedNode)lastcmd).getContext();
+			return answerUser(modelFolder, answer.toString(), false, (EObject) ctx);
+		}
+		else {
+			logger.debug("    Lastcmd '" + lastcmd.getClass().getCanonicalName() + "' not handled yet!");
+			System.err.println("Type " + typ.getClass().getCanonicalName() + " not handled yet.");
+		}
+		return null;
+	}
+
+	private OwlToSadl getOwlToSadl(OntModel model) {
+		if (owl2sadl  == null) {
+			owl2sadl = new OwlToSadl(model);
+		}
+		return owl2sadl;
+	}
+
+	private void addInstanceDeclaration(org.eclipse.emf.ecore.resource.Resource resource, NamedNode nn, StringBuilder answer) throws ExecutionException, ConfigurationException, TranslationException, InvalidNameException, ReasonerNotFoundException, QueryParseException, QueryCancelledException {
+		answer.append(checkForKeyword(nn.getName()));
+//		String query = "select ?type where {<" + nn.getURI() + ">  <" + ReasonerVocabulary.directRDFType + "> ?type}";
+		String query = "select ?type where {<" + nn.getURI() + ">  <rdf:type> ?type}";
+		Query q = new Query();
+		q.setSparqlQueryString(query);
+		ResultSet rs = runQuery(resource, q);
+		if (rs != null) {
+			answer.append(" is a ");
+			rs.setShowNamespaces(false);
+			int rowcnt = rs.getRowCount();
+			if (rowcnt > 1) {
+				answer.append("{");
+			}
+				for (int r = 0; r < rowcnt; r++) {
+					Object typ = rs.getResultAt(r, 0);
+					if (r > 1) {
+						answer.append(" and ");
+					}
+					answer.append(checkForKeyword(typ.toString()));
+				}
+			if (rowcnt > 1) {
+				answer.append("}");
+			}
+		}
+		query = "select ?p ?v where {<" + nn.getURI() + "> ?p ?v }";
+		q = new Query();
+		q.setSparqlQueryString(query);
+		rs = runQuery(resource, q);
+		if (rs != null) {
+			rs.setShowNamespaces(true);
+			int rowcnt = rs.getRowCount();
+			for (int r = 0; r < rowcnt; r++) {
+				Object pobjURI = rs.getResultAt(r, 0);
+				if (pobjURI.toString().equals(RDFS.comment.getURI()) || pobjURI.toString().equals(RDFS.label.getURI())) {
+					if (pobjURI.toString().equals(RDFS.comment.getURI())) {
+						answer.append(" (note \"");
+					}
+					else {
+						answer.append(" (alias \"");
+					}
+					answer.append(rs.getResultAt(r, 1).toString().replaceAll("\"", "'"));
+					answer.append("\")");
+				}
+			}
+			int outputcnt = 0;
+			for (int r = 0; r < rowcnt; r++) {
+				Object pobjURI = rs.getResultAt(r, 0);
+				if (!pobjURI.toString().startsWith(OWL.getURI()) && !pobjURI.toString().startsWith(RDFS.getURI()) &&
+						!pobjURI.toString().startsWith(RDF.getURI())) {
+					Object vobjURI = rs.getResultAt(r, 1);
+					if (isBlankNode(vobjURI.toString())) {
+						answer = addBlankNodeObject(resource, answer, vobjURI.toString());
+					}
+					else {
+						rs.setShowNamespaces(false);
+						Object pobj = rs.getResultAt(r, 0);
+						Object vobj = rs.getResultAt(r, 1);
+						if (outputcnt++ > 0) {
+							answer.append(", with ");
+						}
+						else {
+							answer.append(" with ");
+						}
+						answer.append(checkForKeyword(pobj.toString()));
+						answer.append(" ");
+						if (vobjURI.toString().startsWith(XSD.getURI())) {
+							answer.append(vobj.toString());
+						}
+						else {
+							answer.append(checkForKeyword(vobj.toString()));			                						
+						}
+					}
+				}
+				
+			}
+		}
+	}
+
+	private ResultSet runQuery(org.eclipse.emf.ecore.resource.Resource resource, Query q) throws ConfigurationException, TranslationException, InvalidNameException, ReasonerNotFoundException, QueryParseException, QueryCancelledException {
+		SadlCommandResult scr = getInferenceProcessor().processAdhocQuery(resource, q);
+		if (scr != null) {
+			Object rs = scr.getResults();
+			if (rs instanceof ResultSet) {
+				return (ResultSet)rs;
+			}
+			else {
+				throw new TranslationException("Unexpected query result type: " + rs.getClass().getCanonicalName());
+			}
+		}
+		return null;
+	}
+
+	private ISadlInferenceProcessor getInferenceProcessor() {
+		if (inferenceProcessor == null) {
+			inferenceProcessor = new JenaBasedDialogInferenceProcessor();
+		}
+		return inferenceProcessor;
+	}
+
+	private StringBuilder addBlankNodeObject(org.eclipse.emf.ecore.resource.Resource resource, StringBuilder answer, String bNodeUri) throws ExecutionException, ConfigurationException, TranslationException, InvalidNameException, ReasonerNotFoundException, QueryParseException, QueryCancelledException {
+		String query = "select ?t ?p ?v where {<" + bNodeUri + "> ?p ?v }";
+		Query q = new Query();
+		q.setSparqlQueryString(query);
+		ResultSet rs = runQuery(resource, q);
+		if (rs != null) {
+			rs.setShowNamespaces(false);
+			answer.append(rs.toStringWithIndent(5));
+		}
+		else {
+			answer.append(bNodeUri);
+		}
+		return answer;
+	}
+
+	private boolean isBlankNode(String uri) {
+		if (uri.startsWith("-")) {
+			return true;
+		}
+		return false;
+	}
+
+	private void addAnnotationPropertyDeclaration(org.eclipse.emf.ecore.resource.Resource resource, NamedNode nn, StringBuilder answer) {
+		answer.append(checkForKeyword(nn.getName()));
+		answer.append(" is a type of annotation");
+	}
+
+	private void addPropertyWithDomainAndRange(org.eclipse.emf.ecore.resource.Resource resource, NamedNode nn, StringBuilder answer)
+			throws ExecutionException, ConfigurationException, TranslationException, InvalidNameException, ReasonerNotFoundException, QueryParseException, QueryCancelledException {
+		answer.append(checkForKeyword(nn.getName()));
+		String query = "select ?d where {<" + nn.getURI() + "> <rdfs:domain> ?d}";
+		Query q = new Query();
+		q.setSparqlQueryString(query);
+		ResultSet rs = runQuery(resource, q);
+		boolean domainGiven = false;
+		if (rs != null) {
+			rs.setShowNamespaces(false);
+			int rowcnt = rs.getRowCount();
+			if (rowcnt > 0) {
+				answer.append(" describes ");
+				if (rowcnt > 1) answer.append("{");
+				for (int r = 0; r < rowcnt; r++) {
+					answer.append(checkForKeyword(rs.getResultAt(r, 0).toString()));
+					domainGiven = true;
+					if (rowcnt > 1 && r < rowcnt) answer.append(" and ");
+				}
+				if (rowcnt > 1) answer.append("}");
+			}
+		}
+
+		if (!domainGiven) {
+			answer.append(" is a property");
+		}
+		query = "select ?r where {<" + nn.getURI() + "> <rdfs:range> ?r}";
+		q = new Query();
+		q.setSparqlQueryString(query);
+		rs = runQuery(resource, q);
+		if (rs != null) {
+			rs.setShowNamespaces(false);
+			int rowcnt = rs.getRowCount();
+			if (rowcnt > 0) {
+				answer.append(" with values of type ");
+				if (rowcnt > 1) answer.append("{");
+				for (int r = 0; r < rowcnt; r++) {
+					String val = rs.getResultAt(r, 0).toString();
+					rs.setShowNamespaces(true);
+					String pval = rs.getResultAt(r, 0).toString();
+					rs.setShowNamespaces(false);
+					if (pval.startsWith(XSD.getURI())) {
+						answer.append(val);
+
+					}
+					else {
+						answer.append(checkForKeyword(val));			                						
+					}
+					if (rowcnt > 1 && r < rowcnt) answer.append(" and ");
+				}
+				if (rowcnt > 1) answer.append("}");
+			}
+		}
+	}
+
+	private boolean addDomainAndRange(org.eclipse.emf.ecore.resource.Resource resource, NamedNode nn, boolean isFirstProperty,
+			StringBuilder answer) throws ExecutionException {
+		OntModel m = OntModelProvider.find(resource);
+		OntClass cls = m.getOntClass(nn.getURI());
+		return getDomainAndRangeOfClass(m, cls, answer);
+	}
+
+	private boolean getDomainAndRangeOfClass(OntModel m, OntClass cls, StringBuilder answer) {
+		boolean isFirstProperty = true;
+		StmtIterator sitr = m.listStatements(null, RDFS.domain, cls);
+		while (sitr.hasNext()) {
+			com.hp.hpl.jena.rdf.model.Resource p = sitr.nextStatement().getSubject();
+			answer.append("\n      ");
+			answer.append("described by ");
+			if (p != null) {
+				answer.append(checkForKeyword(p.isURIResource() ? p.getLocalName() : p.toString()));
+				StmtIterator ritr = m.listStatements(p, RDFS.range, (RDFNode)null);
+				while (ritr.hasNext()) {
+					RDFNode r = ritr.nextStatement().getObject();
+					if (r != null) {
+						answer.append(" with values of type ");
+						if (r.isURIResource()) {
+							if (r.asResource().getNameSpace().equals(XSD.getURI())) {
+								answer.append(r.asResource().getLocalName());										
+							}
+							else {
+								answer.append(checkForKeyword(r.asResource().getLocalName()));
+							}
+						}
+						else {
+							answer.append(r.asLiteral().getValue().toString());
+						}
+					}
+				}
+			}
+			if (sitr.hasNext()) {
+				isFirstProperty = false;
+			}
+		}
+		ExtendedIterator<OntClass> spritr = cls.listSuperClasses(true);
+		while (spritr.hasNext()) {
+			OntClass spcls = spritr.next();
+			getDomainAndRangeOfClass(m, spcls, answer);
+		}
+//		answer.append("\n");
+		return isFirstProperty;
+	}
+
+	private StringBuilder getClassHierarchy(org.eclipse.emf.ecore.resource.Resource resource, NamedNode nn, StringBuilder answer) throws ExecutionException, ConfigurationException, TranslationException, InvalidNameException, ReasonerNotFoundException, QueryParseException, QueryCancelledException {
+		String query;
+		Query q;
+		ResultSet rs;
+		query = "select ?typ where {<" + nn.getURI() + "> <rdfs:subClassOf> ?typ}";
+		q = new Query();
+		q.setSparqlQueryString(query);
+		rs = runQuery(resource, q);
+		if (rs != null) {
+			rs.setShowNamespaces(false);
+			answer.append(" is a type of ");
+			if (rs.getRowCount() > 1) {
+				answer.append("{");
+			}
+			for (int r = 0; r < rs.getRowCount(); r++) {
+				Object rat = rs.getResultAt(r, 0);
+				if (rat != null) {
+					if (r > 0) {
+						answer.append(" or ");
+					}
+					answer.append(rat.toString());
+				}
+			}
+			if (rs.getRowCount() > 1) {
+				answer.append("}");
+			}
+		}
+		return answer;
+	}
+
+	private void addQualifiedCardinalityRestriction(org.eclipse.emf.ecore.resource.Resource resource, NamedNode nn, boolean isFirstProperty,
+			StringBuilder answer) throws ExecutionException, ConfigurationException, TranslationException, InvalidNameException, ReasonerNotFoundException, QueryParseException, QueryCancelledException {
+		String query;
+		Query q;
+		ResultSet rs;
+		query = "select ?p ?cn ?rc where {<" + nn.getURI() + "> <rdfs:subClassOf> ?r . ?r <rdf:type> <owl:Restriction> . ?r <owl:onProperty> ?p . ";
+		query += "?r <owl:qualifiedCardinality> ?cn . ?r <owl:onClass> ?rc}";
+		q = new Query();
+		q.setSparqlQueryString(query);
+		rs = runQuery(resource, q);
+		if (rs != null) {
+			rs.setShowNamespaces(false);
+			int rowcnt = rs.getRowCount();
+			if (rowcnt > 0) {
+				if (!isFirstProperty) {
+					answer.append(",\n");
+				}
+				for (int r = 0; r < rowcnt; r++) {
+					answer.append("      ");
+					answer.append("described by ");
+					answer.append(checkForKeyword(rs.getResultAt(r, 0).toString()));
+					answer.append(" with exactly ");
+					answer.append(rs.getResultAt(r, 1).toString());
+					answer.append(" values of type ");
+					String val = rs.getResultAt(r, 2).toString();
+					rs.setShowNamespaces(true);
+					String pval = rs.getResultAt(r, 1).toString();
+					rs.setShowNamespaces(false);
+					if (pval.startsWith(XSD.getURI())) {
+						answer.append(val);
+					}
+					else {
+						answer.append(checkForKeyword(val));			                						
+					}
+				}
+			}
+		}
+	}
+    
+    private String checkForKeyword(String word) {
+    	List<String> kwrds = getSadlKeywords();
+    	if (kwrds != null && kwrds.contains(word)) {
+    		return "^" + word;
+    	}
+    	return word;
+    }
+    
+    private List<String> sadlkeywords = null;
+
+	private Map<String, String> answers = new HashMap<String, String>();
+
+	private ISadlInferenceProcessor inferenceProcessor = null;
+    
+	private List<String> getSadlKeywords() {
+		if (sadlkeywords == null) {
+    		Set<String> keywords = GrammarUtil.getAllKeywords(sadlParser.getGrammarAccess().getGrammar());
+    		if (keywords != null) {
+    			sadlkeywords = new ArrayList<String>();
+    			Iterator<String> itr = keywords.iterator();
+    			while (itr.hasNext()) {
+    				String token = itr.next();
+    				sadlkeywords.add(token);
+    			}
+    		}
+		}
+		return sadlkeywords;
+	}
+	
+	/**
+	 * Are all elements of the array of type TripleElement?
+	 * @param lastcmd
+	 * @return
+	 */
+	private boolean allTripleElements(Object[] lastcmd) {
+		for (int i = 0; i < lastcmd.length; i++) {
+			Object el = lastcmd[i];
+			if (el instanceof Junction) {
+				if (!allTripleElements(((ProxyNode)((Junction)el).getLhs()).getProxyFor())) {
+					return false;
+				}
+				if (!allTripleElements(((ProxyNode)((Junction)el).getRhs()).getProxyFor())) {
+					return false;
+				}
+			}
+			else if (!(el instanceof TripleElement)) {
+				return false;
+			}
+		}
+		return true;
+	}
+
+	private boolean allTripleElements(GraphPatternElement gpe) {
+		if (gpe instanceof TripleElement) {
+			return true;
+		}
+		return false;
+	}
+
+	private TripleElement[] flattenTriples(Object[] lastcmd) {
+		List<TripleElement> triples = new ArrayList<TripleElement>();
+		for (int i = 0; i < lastcmd.length; i++) {
+			Object cmd = lastcmd[i];
+			if (cmd instanceof TripleElement) {
+				triples.add((TripleElement) cmd);
+			}
+			else if (cmd instanceof Junction) {
+				triples.addAll(flattenJunction((Junction)cmd));
+			}
+		}
+		return triples.toArray(new TripleElement[triples.size()]);
+	}
+
+	private Collection<? extends TripleElement> flattenJunction(Junction cmd) {
+		List<TripleElement> triples = new ArrayList<TripleElement>();
+		if (cmd.getJunctionType().equals(JunctionType.Conj)) {
+			GraphPatternElement lhs = ((ProxyNode) cmd.getLhs()).getProxyFor();
+			if (lhs instanceof TripleElement) {
+				triples.add((TripleElement) lhs);
+			}
+			else if (lhs instanceof Junction) {
+				triples.addAll(flattenJunction((Junction) lhs));
+			}
+			else {
+				System.err.println("Encountered unsupported type flattening Junction: " + lhs.getClass().getCanonicalName());
+			}
+			GraphPatternElement rhs = ((ProxyNode) cmd.getRhs()).getProxyFor();
+			if (rhs instanceof TripleElement) {
+				triples.add((TripleElement) rhs);
+			}
+			else if (rhs instanceof Junction) {
+				triples.addAll(flattenJunction((Junction) rhs));
+			}
+			else {
+				System.err.println("Encountered unsupported type flattening Junction: " + rhs.getClass().getCanonicalName());
+			}
+		}
+		else {
+			System.err.println("Encountered disjunctive type flattening Junction");
+		}
+		return triples;
+	}
+
+	private String resultSetToQuotableString(ResultSet rs) {
+		String resultStr;
+		rs.setShowNamespaces(true);
+		resultStr = rs.toString();
+		return resultSetToQuotableString(resultStr);
+	}
+
+	private String resultSetToQuotableString(String resultStr) {
+		resultStr = resultStr.replace('"', '\'');
+		resultStr = resultStr.trim();
+		resultStr = "\"" + resultStr + "\"";
+		return resultStr;
+	}
+
+	private Object[] insertTriplesAndQuery(org.eclipse.emf.ecore.resource.Resource resource, TripleElement[] triples) throws ExecutionException, SadlInferenceException {
+		return getInferenceProcessor().insertTriplesAndQuery(resource, triples);
+	}
+
+	private List<TripleElement> addTriplesFromJunction(Junction jct, List<TripleElement> tripleLst) {
+		Object lhs = jct.getLhs();
+		if (lhs instanceof ProxyNode) {
+			if (((ProxyNode)lhs).getProxyFor() instanceof TripleElement) {
+				tripleLst.add((TripleElement) ((ProxyNode)lhs).getProxyFor());
+			}
+			else if (((ProxyNode)lhs).getProxyFor() instanceof Junction) {
+				tripleLst = addTriplesFromJunction((Junction) ((ProxyNode)lhs).getProxyFor(), tripleLst);
+			}
+		}
+		Object rhs = jct.getRhs();
+		if (rhs instanceof ProxyNode) {
+			if (((ProxyNode)rhs).getProxyFor() instanceof TripleElement) {
+				tripleLst.add((TripleElement) ((ProxyNode)rhs).getProxyFor());
+			}
+			else if (((ProxyNode)rhs).getProxyFor() instanceof Junction) {
+				tripleLst = addTriplesFromJunction((Junction) ((ProxyNode)rhs).getProxyFor(), tripleLst);
+			}
+		}
+		return tripleLst;
+	}
+
+
 }

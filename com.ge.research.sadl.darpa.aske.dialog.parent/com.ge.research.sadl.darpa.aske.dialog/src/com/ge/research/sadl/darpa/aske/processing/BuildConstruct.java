@@ -41,11 +41,20 @@ import com.hp.hpl.jena.ontology.OntModel;
 
 public class BuildConstruct extends MixedInitiativeContent {
 	private String targetModelUri;
+	private String targetModelActualUrl;
 	private String sourceEquationUri; 
 
 	public BuildConstruct(OntModel ontModel, String modelUri, Individual extractedModelInstance) {
 		super();
 		setTargetModelUri(modelUri);
+		setSourceEquationUri(extractedModelInstance.getURI());
+		
+	}
+
+	public BuildConstruct(OntModel ontModel, String modelUri, String actualModelUrl, Individual extractedModelInstance) {
+		super();
+		setTargetModelUri(modelUri);
+		setTargetModelActualUrl(actualModelUrl);
 		setSourceEquationUri(extractedModelInstance.getURI());
 		
 	}
@@ -68,5 +77,13 @@ public class BuildConstruct extends MixedInitiativeContent {
 
 	private void setSourceEquationUri(String sourceEquationUri) {
 		this.sourceEquationUri = sourceEquationUri;
+	}
+
+	public String getTargetModelActualUrl() {
+		return targetModelActualUrl;
+	}
+
+	public void setTargetModelActualUrl(String targetModelActualUrl) {
+		this.targetModelActualUrl = targetModelActualUrl;
 	}
 }
