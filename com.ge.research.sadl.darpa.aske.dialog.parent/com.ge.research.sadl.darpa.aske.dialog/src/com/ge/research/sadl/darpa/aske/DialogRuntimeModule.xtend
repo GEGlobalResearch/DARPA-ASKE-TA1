@@ -2,7 +2,7 @@
  * Note: This license has also been called the "New BSD License" or 
  * "Modified BSD License". See also the 2-clause BSD License.
  *
- * Copyright © 2018-2019 - General Electric Company, All Rights Reserved
+ * Copyright Â© 2018-2019 - General Electric Company, All Rights Reserved
  * 
  * Projects: ANSWER and KApEESH, developed with the support of the Defense 
  * Advanced Research Projects Agency (DARPA) under Agreement  No.  
@@ -38,8 +38,10 @@ package com.ge.research.sadl.darpa.aske
 
 import com.ge.research.sadl.ValueConverterService
 import com.ge.research.sadl.darpa.aske.processing.DialogModelProcessorProvider
+import com.ge.research.sadl.darpa.aske.processing.DialogProcessorContextPreferenceValuesProvider
 import com.ge.research.sadl.darpa.aske.scoping.DialogErrorAddingLinkingService
 import com.ge.research.sadl.generator.SADLOutputConfigurationProvider
+import com.ge.research.sadl.processing.IModelProcessor.ProcessorContextPreferenceValuesProvider
 import com.ge.research.sadl.processing.IModelProcessorProvider
 import com.ge.research.sadl.scoping.SadlQualifiedNameConverter
 import com.ge.research.sadl.scoping.SadlQualifiedNameProvider
@@ -137,6 +139,10 @@ class DialogRuntimeModule extends AbstractDialogRuntimeModule {
 	
 	def Class<? extends ImportedNamesAdapter> bindImportedNamesAdapter() {
 		return SilencedImportedNamesAdapter; 
+	}
+	
+	def Class<? extends ProcessorContextPreferenceValuesProvider> bindProcessorContextPreferenceValuesProvider() {
+		return DialogProcessorContextPreferenceValuesProvider;
 	}
 	
 }
