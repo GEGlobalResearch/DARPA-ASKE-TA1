@@ -1,0 +1,31 @@
+uri "http://com.ge.research/darpa/aske/usd" alias usd.
+
+import "http://sadl.org/SpeedOfSound.sadl".
+
+target model "http://sadl.org/SpeedOfSound.sadl" alias sos.
+
+MyHulk is a Mass with ^value 280, with unit "lbs".
+
+Ask unit of MyHulk?
+
+What is acceleration?
+
+What is the staticTemperature of some Air when the altitude of the Air is 30000?
+
+What type of values can acceleration of Mass have?
+
+How many values of acceleration of type Acceleration can some Mass have?
+
+Save CAL_SOS to sos.
+
+evaluate CAL_SOS(508.788, 1.4, 53.3, 5500).
+
+yes.
+
+My name is Andy.
+
+External Mach.CAL_GAM(double T, double G, double Q) returns double: "http://com.ge.research.sadl.darpa.aske.answer/Mach_java#Mach.CAL_GAM".
+
+Equation plusOne(int i) returns int: i+1.
+
+Evaluate plusOne(10).

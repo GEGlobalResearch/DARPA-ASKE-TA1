@@ -2,7 +2,7 @@
  * Note: This license has also been called the "New BSD License" or 
  * "Modified BSD License". See also the 2-clause BSD License.
  *
- * Copyright © 2018-2019 - General Electric Company, All Rights Reserved
+ * Copyright ï¿½ 2018-2019 - General Electric Company, All Rights Reserved
  * 
  * Projects: ANSWER and KApEESH, developed with the support of the Defense 
  * Advanced Research Projects Agency (DARPA) under Agreement  No.  
@@ -80,7 +80,7 @@ public class DialogAnswerProviderConsoleForTest implements IDialogAnswerProvider
         MixedInitiativeTextualResponse question = new MixedInitiativeTextualResponse(content);
         MixedInitiativeElement questionElement = new MixedInitiativeElement(question, respond);
 		addMixedInitiativeElement(content, questionElement);
-		getCurationManager().addToConversation(new ConversationElement(getCurationManager().getConversation(), questionElement, Agent.CM));
+//		getCurationManager().addToConversation(new ConversationElement(getCurationManager().getConversation(), questionElement, Agent.CM));
         initiateMixedInitiativeInteraction(questionElement);
 		return "success";
 	}
@@ -93,7 +93,7 @@ public class DialogAnswerProviderConsoleForTest implements IDialogAnswerProvider
         MixedInitiativeTextualResponse question = new MixedInitiativeTextualResponse(content);
         MixedInitiativeElement questionElement = new MixedInitiativeElement(question, respond, answerCurationManager, methodToCall, args);
 		addMixedInitiativeElement(content, questionElement);
-		getCurationManager().addToConversation(new ConversationElement(getCurationManager().getConversation(), questionElement, Agent.CM));
+//		getCurationManager().addToConversation(new ConversationElement(getCurationManager().getConversation(), questionElement, Agent.CM));
         initiateMixedInitiativeInteraction(questionElement);
 		return "success";
 	}
@@ -147,7 +147,7 @@ public class DialogAnswerProviderConsoleForTest implements IDialogAnswerProvider
 //		System.out.println("The answer you entered is : " + answer);
 //		return "AtTime-" + System.currentTimeMillis();
 //		userInputScanner.close();
-		getCurationManager().addToConversation(new ConversationElement(getCurationManager().getConversation(), answer, Agent.USER));
+//		getCurationManager().addToConversation(new ConversationElement(getCurationManager().getConversation(), answer, Agent.USER));
 		return answer;
 	}
 	

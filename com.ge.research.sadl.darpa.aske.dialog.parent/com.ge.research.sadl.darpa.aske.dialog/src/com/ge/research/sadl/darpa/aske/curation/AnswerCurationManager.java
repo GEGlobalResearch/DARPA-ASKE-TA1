@@ -71,7 +71,7 @@ import com.ge.research.sadl.darpa.aske.processing.DialogConstants;
 import com.ge.research.sadl.darpa.aske.processing.DialogContent;
 import com.ge.research.sadl.darpa.aske.processing.IDialogAnswerProvider;
 import com.ge.research.sadl.darpa.aske.processing.MixedInitiativeContent;
-import com.ge.research.sadl.darpa.aske.processing.WhatIsConstruct;
+import com.ge.research.sadl.darpa.aske.processing.WhatIsContent;
 import com.ge.research.sadl.darpa.aske.processing.imports.AnswerExtractionProcessor;
 import com.ge.research.sadl.darpa.aske.processing.imports.AnswerExtractionProcessor.CodeLanguage;
 import com.ge.research.sadl.darpa.aske.processing.imports.CodeExtractionException;
@@ -143,6 +143,7 @@ public class AnswerCurationManager {
 	public enum SaveAsSadl{SaveAsSadl, DoNotSaveAsSadl, AskUserSaveAsSadl}
 
 	public enum Agent {USER, CM}
+	private String userName;
 	private DialogContent conversation = null; 
 	private DialogContent lastConversation = null;
 
@@ -1211,145 +1212,145 @@ public class AnswerCurationManager {
 		if (answers.containsKey(lastcmd.toString())) {
 			return false;
 		}
-		if (lastcmd instanceof WhatIsConstruct) {
-    		Object trgt = ((WhatIsConstruct)lastcmd).getTarget();
-    		Object whn = ((WhatIsConstruct)lastcmd).getWhen();
-    		if (trgt instanceof NamedNode && whn == null) {
-    			String answer = whatIsNamedNode(resource, theModel, getDomainModelOwlModelsFolder(), (NamedNode)trgt);
-    			if (answer != null) {
-    				lastcmd.setAnswered(true);
-    				addAnsweredStatement(lastcmd, answer);
-    			}
-    		}
-    		else if (trgt instanceof Object[] && whn == null) {
-        		if (allTripleElements((Object[])trgt)) {
-            		Object ctx = null;
-        			TripleElement[] triples = flattenTriples((Object[])trgt);
-        			ctx = triples[0].getContext();
-            		StringBuilder answer = new StringBuilder();
-            		Object[] rss = insertTriplesAndQuery(resource, triples);
-            		String resultStr = null;
-            		if (rss != null) {
-            			StringBuilder sb = new StringBuilder();
-            			if (triples[0].getSubject() instanceof VariableNode && 
-            					((VariableNode)triples[0].getSubject()).getType() instanceof NamedNode) {
-            				sb.append("the ");
-            				sb.append(((VariableNode)(triples[0].getSubject())).getType().getName());
-            				sb.append(" has ");
-            				sb.append(triples[0].getPredicate().getName());
-            				sb.append(" ");
-            				sb.append(((ResultSet) rss[0]).getResultAt(0, 0).toString());
-            				resultStr = sb.toString();
-            			}
-            			else {
-                			for (Object rs : rss) {
-                				if (rs instanceof ResultSet) {
-                					((ResultSet) rs).setShowNamespaces(true);
-                					sb.append(rs.toString());
-                				}
-                				else {
-                					throw new TranslationException("Expected ResultSet, got " + rs.getClass().getCanonicalName());
-                				}
-                			}
-            				resultStr = resultSetToQuotableString(sb.toString());
-            			}
-            		}
-            		String insertionText = (resultStr != null ? resultStr : "\"Failed to find results\"");
-             		notifyUser(getDomainModelOwlModelsFolder(), insertionText, false);
-        		}
-    		}
-    		else {
-    			// there is a when clause, and this is in a WhatIsConstruct
-    			List<TripleElement> tripleLst = new ArrayList<TripleElement>();
-				if (trgt instanceof TripleElement) {
-    				tripleLst.add((TripleElement)trgt);
-				}
-				else if (trgt instanceof Junction) {
-					tripleLst = addTriplesFromJunction((Junction) trgt, tripleLst);
-				}
-    			if (whn instanceof TripleElement) {
-    				// we have a when statement
-    				tripleLst.add((TripleElement)whn);
-    			}
-    			else if (whn instanceof Junction) {
-    				tripleLst = addTriplesFromJunction((Junction) whn, tripleLst);
-    			}
-				TripleElement[] triples = new TripleElement[tripleLst.size()];
-				triples = tripleLst.toArray(triples);
-    			
-        		StringBuilder answer = new StringBuilder();
-        		Object[] rss = insertTriplesAndQuery(resource, triples);
-        		if (rss != null) {
-        			int cntr = 0;
-            		for (Object rs : rss) {
-            			if (rs instanceof ResultSet) {
-	            			if (cntr == 0) {
-	            				// this is the first ResultSet, construct a graph if possible
-	            				if (((ResultSet) rs).getColumnCount() != 3) {
-	            					System.err.println("Can't construct graph; not 3 columns. Unexpected result.");
-	            				}
-	//            				this.graphVisualizerHandler.resultSetToGraph(path, resultSet, description, baseFileName, orientation, properties);
-	            				
-	            				IGraphVisualizer visualizer = new GraphVizVisualizer();
-	            				if (visualizer != null) {
-	            					String graphsDirectory = new File(getDomainModelOwlModelsFolder()).getParent() + "/Graphs";
-	            					new File(graphsDirectory).mkdir();
-	            					String baseFileName = "QueryMetadata";
-	            					visualizer.initialize(
-	            		                    graphsDirectory,
-	            		                    baseFileName,
-	            		                    baseFileName,
-	            		                    null,
-	            		                    IGraphVisualizer.Orientation.TD,
-	            		                    "Assembled Model");
-	            					((ResultSet) rs).setShowNamespaces(false);
-	            		            visualizer.graphResultSetData((ResultSet) rs);	
-	            		        }
-	    						String fileToOpen = visualizer.getGraphFileToOpen();
-	    						if (fileToOpen != null) {
-	    							File fto = new File(fileToOpen);
-	    							if (fto.isFile()) {
-	// TODO graphing refactoring
-	//    								IFileStore fileStore = EFS.getLocalFileSystem().getStore(fto.toURI());
-	//    								IWorkbenchPage page = PlatformUI.getWorkbench().getActiveWorkbenchWindow().getActivePage();
-	//    								try {
-	//    									IDE.openEditorOnFileStore(page, fileStore);
-	//    								}
-	//    								catch (Throwable t) {
-	//    									System.err.println("Error trying to display graph file '" + fileToOpen + "': " + t.getMessage());
-	//    								}
-	    							}
-	    							else if (fileToOpen != null) {
-	    								System.err.println("Failed to open graph file '" + fileToOpen + "'. Try opening it manually.");
-	    							}
-	    						}
-	            				else {
-	            					System.err.println("Unable to find an instance of IGraphVisualizer to render graph for query.\n");
-	            				}
-	
-	            			}
-	            			if (cntr > 0) 
-	            				answer.append(resultSetToQuotableString((ResultSet) rs));
-	            			if(cntr++ > 1)
-	            				answer.append(",\n");
-            			}
-            			else {
-            				throw new TranslationException("Expected ResultSet but got " + rs.getClass().getCanonicalName());
-            			}
-            			
-            		}
-            		answer.append(".\n");
-        		}
-        		Object ctx = triples[0].getContext();
-         		notifyUser(getDomainModelOwlModelsFolder(), answer.toString(), true);
+//		if (lastcmd instanceof WhatIsContent) {
+//    		Object trgt = ((WhatIsContent)lastcmd).getTarget();
+//    		Object whn = ((WhatIsContent)lastcmd).getWhen();
+//    		if (trgt instanceof NamedNode && whn == null) {
+//    			String answer = whatIsNamedNode(resource, theModel, getDomainModelOwlModelsFolder(), (NamedNode)trgt);
+//    			if (answer != null) {
+//    				lastcmd.setAnswered(true);
+//    				addAnsweredStatement(lastcmd, answer);
 //    			}
-//    			else {
-////    				rdqProvider.get().execute(null, null, null);
-//    				System.out.println("Target is: " + trgt.toString());
-//    				System.out.println("When is: " + whn.toString());
+//    		}
+//    		else if (trgt instanceof Object[] && whn == null) {
+//        		if (allTripleElements((Object[])trgt)) {
+//            		Object ctx = null;
+//        			TripleElement[] triples = flattenTriples((Object[])trgt);
+//        			ctx = triples[0].getContext();
+//            		StringBuilder answer = new StringBuilder();
+//            		Object[] rss = insertTriplesAndQuery(resource, triples);
+//            		String resultStr = null;
+//            		if (rss != null) {
+//            			StringBuilder sb = new StringBuilder();
+//            			if (triples[0].getSubject() instanceof VariableNode && 
+//            					((VariableNode)triples[0].getSubject()).getType() instanceof NamedNode) {
+//            				sb.append("the ");
+//            				sb.append(((VariableNode)(triples[0].getSubject())).getType().getName());
+//            				sb.append(" has ");
+//            				sb.append(triples[0].getPredicate().getName());
+//            				sb.append(" ");
+//            				sb.append(((ResultSet) rss[0]).getResultAt(0, 0).toString());
+//            				resultStr = sb.toString();
+//            			}
+//            			else {
+//                			for (Object rs : rss) {
+//                				if (rs instanceof ResultSet) {
+//                					((ResultSet) rs).setShowNamespaces(true);
+//                					sb.append(rs.toString());
+//                				}
+//                				else {
+//                					throw new TranslationException("Expected ResultSet, got " + rs.getClass().getCanonicalName());
+//                				}
+//                			}
+//            				resultStr = resultSetToQuotableString(sb.toString());
+//            			}
+//            		}
+//            		String insertionText = (resultStr != null ? resultStr : "\"Failed to find results\"");
+//             		notifyUser(getDomainModelOwlModelsFolder(), insertionText, false);
+//        		}
+//    		}
+//    		else {
+//    			// there is a when clause, and this is in a WhatIsConstruct
+//    			List<TripleElement> tripleLst = new ArrayList<TripleElement>();
+//				if (trgt instanceof TripleElement) {
+//    				tripleLst.add((TripleElement)trgt);
+//				}
+//				else if (trgt instanceof Junction) {
+//					tripleLst = addTriplesFromJunction((Junction) trgt, tripleLst);
+//				}
+//    			if (whn instanceof TripleElement) {
+//    				// we have a when statement
+//    				tripleLst.add((TripleElement)whn);
 //    			}
-    		}
-    	}
+//    			else if (whn instanceof Junction) {
+//    				tripleLst = addTriplesFromJunction((Junction) whn, tripleLst);
+//    			}
+//				TripleElement[] triples = new TripleElement[tripleLst.size()];
+//				triples = tripleLst.toArray(triples);
+//    			
+//        		StringBuilder answer = new StringBuilder();
+//        		Object[] rss = insertTriplesAndQuery(resource, triples);
+//        		if (rss != null) {
+//        			int cntr = 0;
+//            		for (Object rs : rss) {
+//            			if (rs instanceof ResultSet) {
+//	            			if (cntr == 0) {
+//	            				// this is the first ResultSet, construct a graph if possible
+//	            				if (((ResultSet) rs).getColumnCount() != 3) {
+//	            					System.err.println("Can't construct graph; not 3 columns. Unexpected result.");
+//	            				}
+//	//            				this.graphVisualizerHandler.resultSetToGraph(path, resultSet, description, baseFileName, orientation, properties);
+//	            				
+//	            				IGraphVisualizer visualizer = new GraphVizVisualizer();
+//	            				if (visualizer != null) {
+//	            					String graphsDirectory = new File(getDomainModelOwlModelsFolder()).getParent() + "/Graphs";
+//	            					new File(graphsDirectory).mkdir();
+//	            					String baseFileName = "QueryMetadata";
+//	            					visualizer.initialize(
+//	            		                    graphsDirectory,
+//	            		                    baseFileName,
+//	            		                    baseFileName,
+//	            		                    null,
+//	            		                    IGraphVisualizer.Orientation.TD,
+//	            		                    "Assembled Model");
+//	            					((ResultSet) rs).setShowNamespaces(false);
+//	            		            visualizer.graphResultSetData((ResultSet) rs);	
+//	            		        }
+//	    						String fileToOpen = visualizer.getGraphFileToOpen();
+//	    						if (fileToOpen != null) {
+//	    							File fto = new File(fileToOpen);
+//	    							if (fto.isFile()) {
+//	// TODO graphing refactoring
+//	//    								IFileStore fileStore = EFS.getLocalFileSystem().getStore(fto.toURI());
+//	//    								IWorkbenchPage page = PlatformUI.getWorkbench().getActiveWorkbenchWindow().getActivePage();
+//	//    								try {
+//	//    									IDE.openEditorOnFileStore(page, fileStore);
+//	//    								}
+//	//    								catch (Throwable t) {
+//	//    									System.err.println("Error trying to display graph file '" + fileToOpen + "': " + t.getMessage());
+//	//    								}
+//	    							}
+//	    							else if (fileToOpen != null) {
+//	    								System.err.println("Failed to open graph file '" + fileToOpen + "'. Try opening it manually.");
+//	    							}
+//	    						}
+//	            				else {
+//	            					System.err.println("Unable to find an instance of IGraphVisualizer to render graph for query.\n");
+//	            				}
+//	
+//	            			}
+//	            			if (cntr > 0) 
+//	            				answer.append(resultSetToQuotableString((ResultSet) rs));
+//	            			if(cntr++ > 1)
+//	            				answer.append(",\n");
+//            			}
+//            			else {
+//            				throw new TranslationException("Expected ResultSet but got " + rs.getClass().getCanonicalName());
+//            			}
+//            			
+//            		}
+//            		answer.append(".\n");
+//        		}
+//        		Object ctx = triples[0].getContext();
+//         		notifyUser(getDomainModelOwlModelsFolder(), answer.toString(), true);
+////    			}
+////    			else {
+//////    				rdqProvider.get().execute(null, null, null);
+////    				System.out.println("Target is: " + trgt.toString());
+////    				System.out.println("When is: " + whn.toString());
+////    			}
+//    		}
+//    	}
 		return false;
 	}
 
@@ -1920,6 +1921,15 @@ public class AnswerCurationManager {
 				answer.append("\"");
 			}
 		}
+	}
+
+	public void setUserName(String answer) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	public String getUserName() {
+		return userName;
 	}
 
 
