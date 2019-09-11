@@ -4,7 +4,7 @@ import org.eclipse.emf.ecore.EObject;
 
 import com.ge.research.sadl.darpa.aske.curation.AnswerCurationManager.Agent;
 
-public class SaveContent extends StatementContent {
+public class SaveContent extends ExpectsAnswerContent {
 	private String targetModelUri;
 	private String targetModelActualUrl;
 	private String sourceEquationUri; 

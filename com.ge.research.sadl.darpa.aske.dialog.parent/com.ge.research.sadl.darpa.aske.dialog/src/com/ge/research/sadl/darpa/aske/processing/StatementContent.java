@@ -10,7 +10,7 @@ import com.ge.research.sadl.darpa.aske.curation.AnswerCurationManager.Agent;
  * @author 200005201
  *
  */
-public class StatementContent {
+public abstract class StatementContent {
 	private EObject hostEObject;
 	private Agent agent;
 	

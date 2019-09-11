@@ -7,7 +7,7 @@ import org.eclipse.emf.ecore.EObject;
 import com.ge.research.sadl.darpa.aske.curation.AnswerCurationManager.Agent;
 import com.ge.research.sadl.model.gp.Node;
 
-public class EvalContent extends StatementContent {
+public class EvalContent extends ExpectsAnswerContent {
 	private Node equationName;
 	private List<Node> parameters;
 	private List<String> units;

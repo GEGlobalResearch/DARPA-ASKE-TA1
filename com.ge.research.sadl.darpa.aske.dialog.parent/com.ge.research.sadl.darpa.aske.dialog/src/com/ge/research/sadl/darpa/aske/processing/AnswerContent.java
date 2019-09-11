@@ -6,7 +6,7 @@ import com.ge.research.sadl.darpa.aske.curation.AnswerCurationManager.Agent;
 
 public class AnswerContent extends StatementContent {
 	private Object answer;
-	private QuestionContent answerTo;
+	private ExpectsAnswerContent answerTo;
 
 	public AnswerContent(EObject host) {
 		super(host);
@@ -18,11 +18,11 @@ public class AnswerContent extends StatementContent {
 		// TODO Auto-generated constructor stub
 	}
 
-	public QuestionContent getAnswerTo() {
+	public ExpectsAnswerContent getAnswerTo() {
 		return answerTo;
 	}
 
-	public void setAnswerTo(QuestionContent answerTo) {
+	public void setAnswerTo(ExpectsAnswerContent answerTo) {
 		this.answerTo = answerTo;
 	}
 

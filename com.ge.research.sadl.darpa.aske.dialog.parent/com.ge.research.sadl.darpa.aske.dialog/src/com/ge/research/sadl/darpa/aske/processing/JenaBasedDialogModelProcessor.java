@@ -409,6 +409,13 @@ public class JenaBasedDialogModelProcessor extends JenaBasedSadlModelProcessor {
 //				processUserInputElement(lastElement);
 			}
 			
+			try {
+				getAnswerCurationManager().processConversation(getCurrentResource(), getTheJenaModel());
+			} catch (IOException e2) {
+				// TODO Auto-generated catch block
+				e2.printStackTrace();
+			}
+			
 			logger.debug("At end of model processing, conversation is:");
 			try {
 				logger.debug(getAnswerCurationManager().getConversation().toString());
