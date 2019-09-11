@@ -66,12 +66,16 @@ import com.ge.research.sadl.builder.ConfigurationManagerForIdeFactory;
 import com.ge.research.sadl.builder.IConfigurationManagerForIDE;
 import com.ge.research.sadl.darpa.aske.dialog.AnswerCMStatement;
 import com.ge.research.sadl.darpa.aske.inference.JenaBasedDialogInferenceProcessor;
+import com.ge.research.sadl.darpa.aske.processing.AnswerPendingContent;
 import com.ge.research.sadl.darpa.aske.processing.ConversationElement;
 import com.ge.research.sadl.darpa.aske.processing.DialogConstants;
 import com.ge.research.sadl.darpa.aske.processing.DialogContent;
+import com.ge.research.sadl.darpa.aske.processing.ExpectsAnswerContent;
 import com.ge.research.sadl.darpa.aske.processing.IDialogAnswerProvider;
 import com.ge.research.sadl.darpa.aske.processing.MixedInitiativeContent;
-import com.ge.research.sadl.darpa.aske.processing.WhatIsConstruct;
+import com.ge.research.sadl.darpa.aske.processing.QuestionContent;
+import com.ge.research.sadl.darpa.aske.processing.StatementContent;
+import com.ge.research.sadl.darpa.aske.processing.WhatIsContent;
 import com.ge.research.sadl.darpa.aske.processing.imports.AnswerExtractionProcessor;
 import com.ge.research.sadl.darpa.aske.processing.imports.AnswerExtractionProcessor.CodeLanguage;
 import com.ge.research.sadl.darpa.aske.processing.imports.CodeExtractionException;
@@ -143,6 +147,7 @@ public class AnswerCurationManager {
 	public enum SaveAsSadl{SaveAsSadl, DoNotSaveAsSadl, AskUserSaveAsSadl}
 
 	public enum Agent {USER, CM}
+	private String userName;
 	private DialogContent conversation = null; 
 	private DialogContent lastConversation = null;
 
@@ -1207,18 +1212,14 @@ public class AnswerCurationManager {
 		targetModelMap.put(alias, targetUris);
 	}
 	
-	public boolean processUserRequest(org.eclipse.emf.ecore.resource.Resource resource, OntModel theModel, MixedInitiativeContent lastcmd) throws ConfigurationException, ExecutionException, IOException, TranslationException, InvalidNameException, ReasonerNotFoundException, QueryParseException, QueryCancelledException, SadlInferenceException {
-		if (answers.containsKey(lastcmd.toString())) {
-			return false;
-		}
-		if (lastcmd instanceof WhatIsConstruct) {
-    		Object trgt = ((WhatIsConstruct)lastcmd).getTarget();
-    		Object whn = ((WhatIsConstruct)lastcmd).getWhen();
+	public boolean processUserRequest(org.eclipse.emf.ecore.resource.Resource resource, OntModel theModel, ExpectsAnswerContent sc) throws ConfigurationException, ExecutionException, IOException, TranslationException, InvalidNameException, ReasonerNotFoundException, QueryParseException, QueryCancelledException, SadlInferenceException {
+		if (sc instanceof WhatIsContent) {
+    		Object trgt = ((WhatIsContent)sc).getTarget();
+    		Object whn = ((WhatIsContent)sc).getWhen();
     		if (trgt instanceof NamedNode && whn == null) {
     			String answer = whatIsNamedNode(resource, theModel, getDomainModelOwlModelsFolder(), (NamedNode)trgt);
     			if (answer != null) {
-    				lastcmd.setAnswered(true);
-    				addAnsweredStatement(lastcmd, answer);
+    				return true;
     			}
     		}
     		else if (trgt instanceof Object[] && whn == null) {
@@ -1351,10 +1352,6 @@ public class AnswerCurationManager {
     		}
     	}
 		return false;
-	}
-
-	private void addAnsweredStatement(MixedInitiativeContent lastcmd, String answer) {
-		answers.put(lastcmd.toString(), answer);
 	}
 
 	private String whatIsNamedNode(org.eclipse.emf.ecore.resource.Resource resource, OntModel theModel, String modelFolder, NamedNode lastcmd) throws ConfigurationException, ExecutionException, TranslationException, InvalidNameException, ReasonerNotFoundException, QueryParseException, QueryCancelledException {
@@ -1719,8 +1716,6 @@ public class AnswerCurationManager {
     
     private List<String> sadlkeywords = null;
 
-	private Map<String, String> answers = new HashMap<String, String>();
-
 	private ISadlInferenceProcessor inferenceProcessor = null;
     
 	private List<String> getSadlKeywords() {
@@ -1922,5 +1917,73 @@ public class AnswerCurationManager {
 		}
 	}
 
+	public void setUserName(String answer) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	public String getUserName() {
+		return userName;
+	}
+
+	/**
+	 * Method to process a conversation contained in a DialogContent and answer any unanswered question, etc.
+	 * @param resource 
+	 * @param ontModel 
+	 */
+	public void processConversation(org.eclipse.emf.ecore.resource.Resource resource, OntModel ontModel) {
+		DialogContent dc = getConversation();
+		List<ConversationElement> dialogStmts = dc.getStatements();
+		for (int i = dialogStmts.size() - 1; i >= 0; i--) {
+			StatementContent statementAfter = null;
+			ConversationElement ce = dialogStmts.get(i);
+			StatementContent sc = ce.getStatement();
+			if (sc instanceof ExpectsAnswerContent) {
+				if (statementAfter != null && ((ExpectsAnswerContent)sc).getAnswer().equals(statementAfter)) {
+					// this statement has already been answered
+				}
+				else {
+					// this statement needs an answer
+					if (sc instanceof ExpectsAnswerContent) {
+						try {
+							if (processUserRequest(resource, ontModel, (ExpectsAnswerContent)sc)) {
+								AnswerPendingContent pending = new AnswerPendingContent(null, Agent.CM, (ExpectsAnswerContent) sc);
+								ConversationElement cep = new ConversationElement(dc, pending, Agent.CM);
+								dc.getStatements().add(i+1, cep);
+							}
+						} catch (ConfigurationException e) {
+							// TODO Auto-generated catch block
+							e.printStackTrace();
+						} catch (ExecutionException e) {
+							// TODO Auto-generated catch block
+							e.printStackTrace();
+						} catch (IOException e) {
+							// TODO Auto-generated catch block
+							e.printStackTrace();
+						} catch (TranslationException e) {
+							// TODO Auto-generated catch block
+							e.printStackTrace();
+						} catch (InvalidNameException e) {
+							// TODO Auto-generated catch block
+							e.printStackTrace();
+						} catch (ReasonerNotFoundException e) {
+							// TODO Auto-generated catch block
+							e.printStackTrace();
+						} catch (QueryParseException e) {
+							// TODO Auto-generated catch block
+							e.printStackTrace();
+						} catch (QueryCancelledException e) {
+							// TODO Auto-generated catch block
+							e.printStackTrace();
+						} catch (SadlInferenceException e) {
+							// TODO Auto-generated catch block
+							e.printStackTrace();
+						}
+					}
+				}
+			}
+			statementAfter = sc;
+		}
+	}
 
 }

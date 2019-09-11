@@ -43,17 +43,12 @@ import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.net.URISyntaxException;
 import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.function.Consumer;
 
-import org.eclipse.core.commands.ExecutionException;
 import org.eclipse.core.filesystem.EFS;
 import org.eclipse.core.filesystem.IFileStore;
 import org.eclipse.core.resources.IFile;
@@ -73,7 +68,6 @@ import org.eclipse.jface.text.DocumentCommand;
 import org.eclipse.jface.text.IAutoEditStrategy;
 import org.eclipse.jface.text.IDocument;
 import org.eclipse.jface.text.IRegion;
-import org.eclipse.jface.text.Region;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.ui.IWorkbenchPage;
 import org.eclipse.ui.IWorkbenchPart;
@@ -81,7 +75,6 @@ import org.eclipse.ui.IWorkbenchWindow;
 import org.eclipse.ui.PartInitException;
 import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.ide.IDE;
-import org.eclipse.xtext.GrammarUtil;
 import org.eclipse.xtext.nodemodel.INode;
 import org.eclipse.xtext.nodemodel.impl.CompositeNodeWithSemanticElement;
 import org.eclipse.xtext.nodemodel.util.NodeModelUtils;
@@ -91,7 +84,6 @@ import org.eclipse.xtext.resource.XtextResource;
 import org.eclipse.xtext.ui.editor.autoedit.DefaultAutoEditStrategyProvider;
 import org.eclipse.xtext.ui.editor.model.XtextDocument;
 import org.eclipse.xtext.ui.resource.IResourceSetProvider;
-import org.eclipse.xtext.util.ITextRegionWithLineInformation;
 import org.eclipse.xtext.util.concurrent.IUnitOfWork;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -100,37 +92,23 @@ import com.ge.research.sadl.builder.ConfigurationManagerForIDE;
 import com.ge.research.sadl.builder.ConfigurationManagerForIdeFactory;
 import com.ge.research.sadl.builder.IConfigurationManagerForIDE;
 import com.ge.research.sadl.darpa.aske.curation.AnswerCurationManager;
-import com.ge.research.sadl.darpa.aske.dialog.SaveStatement;
 import com.ge.research.sadl.darpa.aske.dialog.ui.internal.DialogActivator;
 import com.ge.research.sadl.darpa.aske.preferences.DialogPreferences;
-import com.ge.research.sadl.darpa.aske.processing.BuildConstruct;
 import com.ge.research.sadl.darpa.aske.processing.DialogConstants;
-import com.ge.research.sadl.darpa.aske.processing.HowManyValuesConstruct;
 import com.ge.research.sadl.darpa.aske.processing.IDialogAnswerProvider;
 import com.ge.research.sadl.darpa.aske.processing.MixedInitiativeElement;
 import com.ge.research.sadl.darpa.aske.processing.MixedInitiativeTextualResponse;
-import com.ge.research.sadl.darpa.aske.processing.WhatIsConstruct;
 import com.ge.research.sadl.darpa.aske.ui.handler.DialogRunInferenceHandler;
 import com.ge.research.sadl.darpa.aske.ui.handler.RunDialogQuery;
 import com.ge.research.sadl.model.gp.GraphPatternElement;
-import com.ge.research.sadl.model.gp.Junction;
-import com.ge.research.sadl.model.gp.Junction.JunctionType;
-import com.ge.research.sadl.model.gp.NamedNode;
-import com.ge.research.sadl.model.gp.NamedNode.NodeType;
 import com.ge.research.sadl.model.gp.Node;
-import com.ge.research.sadl.model.gp.ProxyNode;
 import com.ge.research.sadl.model.gp.Query;
 import com.ge.research.sadl.model.gp.TripleElement;
-import com.ge.research.sadl.model.gp.VariableNode;
-import com.ge.research.sadl.model.visualizer.GraphVizVisualizer;
 import com.ge.research.sadl.model.visualizer.IGraphVisualizer;
 import com.ge.research.sadl.owl2sadl.OwlToSadl;
 import com.ge.research.sadl.parser.antlr.SADLParser;
 import com.ge.research.sadl.processing.OntModelProvider;
-import com.ge.research.sadl.processing.SadlConstants;
 import com.ge.research.sadl.reasoner.ConfigurationException;
-import com.ge.research.sadl.reasoner.ResultSet;
-import com.ge.research.sadl.reasoner.SadlCommandResult;
 import com.ge.research.sadl.reasoner.utils.SadlUtils;
 import com.ge.research.sadl.sADL.SadlImport;
 import com.ge.research.sadl.sADL.SadlModel;
@@ -139,17 +117,7 @@ import com.ge.research.sadl.ui.handlers.SadlActionHandler;
 import com.google.inject.Inject;
 import com.google.inject.Injector;
 import com.google.inject.Provider;
-import com.hp.hpl.jena.ontology.Individual;
-import com.hp.hpl.jena.ontology.OntClass;
 import com.hp.hpl.jena.ontology.OntModel;
-import com.hp.hpl.jena.rdf.model.RDFNode;
-import com.hp.hpl.jena.rdf.model.Statement;
-import com.hp.hpl.jena.rdf.model.StmtIterator;
-import com.hp.hpl.jena.util.iterator.ExtendedIterator;
-import com.hp.hpl.jena.vocabulary.OWL;
-import com.hp.hpl.jena.vocabulary.RDF;
-import com.hp.hpl.jena.vocabulary.RDFS;
-import com.hp.hpl.jena.vocabulary.XSD;
 
 public class DialogAnswerProvider extends DefaultAutoEditStrategyProvider implements IDialogAnswerProvider {
 	private static final Logger logger = LoggerFactory.getLogger(DialogAnswerProvider.class);
@@ -727,9 +695,9 @@ public class DialogAnswerProvider extends DefaultAutoEditStrategyProvider implem
 				modContent += ".";
 			}
 		}
-		if (!modContent.startsWith(" ")) {
-			modContent = " " + modContent;
-		}
+//		if (!modContent.startsWith(" ")) {
+//			modContent = " " + modContent;
+//		}
 		if (ctx instanceof EObject && getSourceText((EObject)ctx) != null) {
 //			String damageStr = document.get(reg.getOffset(), reg.getLength());
 			Object[] srcinfo = getSourceText((EObject)ctx);
@@ -737,6 +705,9 @@ public class DialogAnswerProvider extends DefaultAutoEditStrategyProvider implem
 			int start = (int) srcinfo[1];
 			int len = (int) srcinfo[2];
 			//find location of this in document
+			loc = start + len + 1;
+			String test = document.get(loc, 5);
+
 		    document.replace(start + len + 1, 0, modContent + "\n");
 		    loc = start + len + 1;
 		    if (document instanceof XtextDocument && ctx instanceof EObject) {
