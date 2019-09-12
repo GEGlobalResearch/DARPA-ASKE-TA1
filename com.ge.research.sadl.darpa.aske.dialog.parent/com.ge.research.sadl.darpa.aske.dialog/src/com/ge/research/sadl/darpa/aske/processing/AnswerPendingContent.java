@@ -20,4 +20,8 @@ public class AnswerPendingContent extends AnswerContent {
 		super(host, agnt);
 		setAnswerTo(inAnswerTo);
 	}
+	
+	public String toString() {
+		return "Answer pending...";
+	}
 }

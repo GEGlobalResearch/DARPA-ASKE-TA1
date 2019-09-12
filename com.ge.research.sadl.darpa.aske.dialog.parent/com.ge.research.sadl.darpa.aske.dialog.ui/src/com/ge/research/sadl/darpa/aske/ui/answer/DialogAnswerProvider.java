@@ -704,9 +704,15 @@ public class DialogAnswerProvider extends DefaultAutoEditStrategyProvider implem
 			int len = (int) srcinfo[2];
 			//find location of this in document
 			loc = start + len + 1;
+			
 			String test = document.get(loc, 5);
-
-		    document.replace(start + len + 1, 0, modContent + "\n");
+			if (!test.startsWith(" ")) {
+				modContent = " " + modContent;
+			}
+			if (!test.startsWith("\r\n")) {
+				modContent += "\r\n";
+			}
+		    document.replace(start + len + 1, 0, modContent);
 		    loc = start + len + 1;
 		    if (document instanceof XtextDocument && ctx instanceof EObject) {
 		    	// is there a way to move the cursor?

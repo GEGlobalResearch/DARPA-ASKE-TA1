@@ -2,7 +2,7 @@
  * Note: This license has also been called the "New BSD License" or 
  * "Modified BSD License". See also the 2-clause BSD License.
  *
- * Copyright © 2018-2019 - General Electric Company, All Rights Reserved
+ * Copyright ï¿½ 2018-2019 - General Electric Company, All Rights Reserved
  * 
  * Projects: ANSWER and KApEESH, developed with the support of the Defense 
  * Advanced Research Projects Agency (DARPA) under Agreement  No.  
@@ -340,6 +340,14 @@ public class JenaBasedDialogInferenceProcessor extends JenaBasedSadlInferencePro
 			//"  ?SG mm:cgraph/sci:hasEquation/imp:expression ?EQ.\n" + 
 			"}";
 
+	public JenaBasedDialogInferenceProcessor(OntModel theModel) {
+		setTheJenaModel(theModel);
+	}
+
+	public JenaBasedDialogInferenceProcessor() {
+		// TODO Auto-generated constructor stub
+	}
+
 	@Override
 	public boolean isSupported(String fileExtension) {
 		return "dialog".equals(fileExtension);
@@ -455,7 +463,13 @@ public class JenaBasedDialogInferenceProcessor extends JenaBasedSadlInferencePro
 ////		qhmodel.add(ce,stprop,(XSDDateTime)val).asCalendar().getTime())
 		
 		OntProperty execprop = getTheJenaModel().getOntProperty(METAMODEL_EXEC_PROP);
-		qhmodel.add(cgq,execprop,ce);
+		if (execprop == null) {
+			System.err.println("Can't find property '" + METAMODEL_EXEC_PROP + "'. Something is wrong.");
+			return null;
+		}
+		else {
+			qhmodel.add(cgq,execprop,ce);
+		}
 		
 
 		String suri;

@@ -295,6 +295,16 @@ public class JenaBasedDialogModelProcessor extends JenaBasedSadlModelProcessor {
 	    	return;
 	    }
 
+		try {
+			if (!getAnswerCurationManager().dialogAnserProviderInitialized()) {
+				System.out.println("DialogAnswerProvider not yet initialized. Touch window.");
+				return;
+			}
+		} catch (IOException e2) {
+			// TODO Auto-generated catch block
+			e2.printStackTrace();
+		}
+
 		// create validator for expressions
 		initializeModelValidator();
 		initializeAllImpliedPropertyClasses();
@@ -312,16 +322,6 @@ public class JenaBasedDialogModelProcessor extends JenaBasedSadlModelProcessor {
 		// process rest of parse tree
 		List<SadlModelElement> elements = model.getElements();
 		if (elements != null) {
-			try {
-				if (!getAnswerCurationManager().dialogAnserProviderInitialized()) {
-					System.out.println("DialogAnswerProvider not yet initialized.");
-					return;
-				}
-			} catch (IOException e2) {
-				// TODO Auto-generated catch block
-				e2.printStackTrace();
-			}
-
 			Iterator<SadlModelElement> elitr = elements.iterator();
 			Object lastElement = null;
 			AnswerCMStatement lastACMQuestion = null;
@@ -409,21 +409,6 @@ public class JenaBasedDialogModelProcessor extends JenaBasedSadlModelProcessor {
 //				processUserInputElement(lastElement);
 			}
 			
-			try {
-				getAnswerCurationManager().processConversation(getCurrentResource(), getTheJenaModel());
-			} catch (IOException e2) {
-				// TODO Auto-generated catch block
-				e2.printStackTrace();
-			}
-			
-			logger.debug("At end of model processing, conversation is:");
-			try {
-				logger.debug(getAnswerCurationManager().getConversation().toString());
-			} catch (IOException e1) {
-				// TODO Auto-generated catch block
-				e1.printStackTrace();
-			}
-			
 			File saveFile = getModelFile(resource);
 			try {
 				if (isModelChanged() || !saveFile.exists() || 
@@ -448,6 +433,24 @@ public class JenaBasedDialogModelProcessor extends JenaBasedSadlModelProcessor {
 			} else {
 				OntModelProvider.attach(model.eResource(), getTheJenaModel(), getModelName(), getModelAlias());
 			}
+			
+			// Do this **after** setting the resource information in the OntModelProvider
+			try {
+				getAnswerCurationManager().processConversation(getCurrentResource(), getTheJenaModel());
+			} catch (IOException e2) {
+				// TODO Auto-generated catch block
+				e2.printStackTrace();
+			}
+			
+			logger.debug("At end of model processing, conversation is:");
+			try {
+				logger.debug(getAnswerCurationManager().getConversation().toString());
+			} catch (IOException e1) {
+				// TODO Auto-generated catch block
+				e1.printStackTrace();
+			}
+			
+
 		}
 	}
 
@@ -846,6 +849,12 @@ public class JenaBasedDialogModelProcessor extends JenaBasedSadlModelProcessor {
 			return;
 		}
 		super.onGenerate(resource, fsa, context);
+	}
+
+	protected String getOwlFilename(URI lastSeg, String format) {
+		String owlFN = lastSeg.appendFileExtension(ResourceManager.getOwlFileExtension(format))
+				.lastSegment().toString();
+		return owlFN;
 	}
 
 	private void resetProcessor() {
