@@ -54,6 +54,8 @@ import org.eclipse.core.filesystem.IFileStore;
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IResource;
+import org.eclipse.core.resources.IResourceChangeEvent;
+import org.eclipse.core.resources.IResourceChangeListener;
 import org.eclipse.core.resources.IncrementalProjectBuilder;
 import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.CoreException;
@@ -119,7 +121,7 @@ import com.google.inject.Injector;
 import com.google.inject.Provider;
 import com.hp.hpl.jena.ontology.OntModel;
 
-public class DialogAnswerProvider extends DefaultAutoEditStrategyProvider implements IDialogAnswerProvider {
+public class DialogAnswerProvider extends DefaultAutoEditStrategyProvider implements IDialogAnswerProvider, IResourceChangeListener {
 	private static final Logger logger = LoggerFactory.getLogger(DialogAnswerProvider.class);
 	private XtextDocument theDocument;
 	private Resource resource;
@@ -1159,6 +1161,13 @@ public class DialogAnswerProvider extends DefaultAutoEditStrategyProvider implem
 
 	public void setAnswerConfigurationManager(AnswerCurationManager answerConfigurationManager) {
 		this.answerConfigurationManager = answerConfigurationManager;
+	}
+
+	@Override
+	public void resourceChanged(IResourceChangeEvent event) {
+		if (event.getType() == IResourceChangeEvent.PRE_CLOSE) {
+			getAnswerConfigurationManager().clearQuestionsAndAnsers();
+		}
 	}
 
 }

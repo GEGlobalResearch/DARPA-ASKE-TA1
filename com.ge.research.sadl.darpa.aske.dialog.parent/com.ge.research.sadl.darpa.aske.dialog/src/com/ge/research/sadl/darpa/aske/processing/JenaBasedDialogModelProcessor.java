@@ -353,7 +353,11 @@ public class JenaBasedDialogModelProcessor extends JenaBasedSadlModelProcessor {
 					logger.error("Error:", e);
 				}
 				try {
-					processDialogModelElement(element);
+					StatementContent sc = processDialogModelElement(element);
+					if (sc != null) {
+						ConversationElement ce = new ConversationElement(getAnswerCurationManager().getConversation(), sc, Agent.USER);
+						getAnswerCurationManager().addToConversation(ce);
+					}
 				} catch (JenaProcessorException e1) {
 					// TODO Auto-generated catch block
 					e1.printStackTrace();
@@ -454,63 +458,64 @@ public class JenaBasedDialogModelProcessor extends JenaBasedSadlModelProcessor {
 		}
 	}
 
-	private void processDialogModelElement(SadlModelElement element) throws JenaProcessorException, InvalidNameException, InvalidTypeException, TranslationException, IOException, ConfigurationException, QueryParseException, QueryCancelledException, ReasonerNotFoundException {
+	private StatementContent processDialogModelElement(SadlModelElement element) throws JenaProcessorException, InvalidNameException, InvalidTypeException, TranslationException, IOException, ConfigurationException, QueryParseException, QueryCancelledException, ReasonerNotFoundException {
+		StatementContent sc = null;
 		if (element instanceof AnswerCMStatement) {
-			processAnswerCMStatement((AnswerCMStatement)element);
+			return processAnswerCMStatement((AnswerCMStatement)element);
 		}
 		else if (element instanceof ModifiedAskStatement) {
-			processStatement((ModifiedAskStatement)element);
+			return processStatement((ModifiedAskStatement)element);
 		}
 		else if (element instanceof WhatStatement) {
-			processStatement((WhatStatement)element);
+			return processStatement((WhatStatement)element);
 		}
 		else if (element instanceof HowManyValuesStatement) {
-			processStatement((HowManyValuesStatement)element);
+			return processStatement((HowManyValuesStatement)element);
 		}
 		else if (element instanceof SaveStatement) {
-			processStatement((SaveStatement)element);
+			return processStatement((SaveStatement)element);
 		}
 		else if (element instanceof SadlEquationInvocation) {
-			processStatement((SadlEquationInvocation)element);
+			return processStatement((SadlEquationInvocation)element);
 		}
 		else if (element instanceof YesNoAnswerStatement) {
-			processStatement((YesNoAnswerStatement)element);
+			return processStatement((YesNoAnswerStatement)element);
 		}
 		else if (element instanceof MyNameIsStatement) {
-			processStatement((MyNameIsStatement)element);
+			return processStatement((MyNameIsStatement)element);
 		}
 		else if (element instanceof TargetModelName) {
-			processStatement((TargetModelName)element);
+			return processStatement((TargetModelName)element);
 		}
 		else if (element instanceof ExternalEquationStatement) {
 			super.processStatement((ExternalEquationStatement)element);
+			return null;
 		}
 		else if (element instanceof EquationStatement) {
 			super.processStatement((EquationStatement)element);
+			return null;
 		}
 		else if (element instanceof SadlStatement) {
 			SadlStatementContent ssc = new SadlStatementContent(element, Agent.USER);
 			super.processModelElement((SadlStatement)element);
-			getAnswerCurationManager().addToConversation(new ConversationElement(getAnswerCurationManager().getConversation(), ssc, Agent.USER));
+			return ssc;
 		}
 		else {
 			throw new TranslationException("Model element of type '" + element.getClass().getCanonicalName() + "' not handled.");
 		}	
 	}
 	
-	private void processStatement(MyNameIsStatement element) throws IOException {
+	private StatementContent processStatement(MyNameIsStatement element) throws IOException {
 		getAnswerCurationManager().setUserName(element.getAnswer());
 		AnswerContent ac = new AnswerContent(element, Agent.USER);
 		ac.setAnswer(element.getAnswer());
-		ConversationElement ce = new ConversationElement(getAnswerCurationManager().getConversation(), ac, Agent.USER);
-		getAnswerCurationManager().addToConversation(ce);
+		return ac;
 	}
 
-	private void processStatement(YesNoAnswerStatement element) throws IOException {
+	private StatementContent processStatement(YesNoAnswerStatement element) throws IOException {
 		AnswerContent ac = new AnswerContent(element, Agent.USER);
 		ac.setAnswer(element.getAnswer());
-		ConversationElement ce = new ConversationElement(getAnswerCurationManager().getConversation(), ac, Agent.USER);
-		getAnswerCurationManager().addToConversation(ce);
+		return ac;
 	}
 
 	private String getEos(SadlModelElement element) {
@@ -623,7 +628,7 @@ public class JenaBasedDialogModelProcessor extends JenaBasedSadlModelProcessor {
 //	@Inject
 //	private SADLGrammarAccess grammarAccess;
 	
-	private void processStatement(TargetModelName element) throws ConfigurationException, IOException {
+	private StatementContent processStatement(TargetModelName element) throws ConfigurationException, IOException {
 		boolean returnVal = true;
 		String uri = element.getUri();
 		String prefix = element.getPrefix();
@@ -645,9 +650,10 @@ public class JenaBasedDialogModelProcessor extends JenaBasedSadlModelProcessor {
 			uris[1] = altUrl;
 			getAnswerCurationManager().addTargetModelToMap(prefix, uris);
 		}
+		return null;
 	}
 	
-	private void processStatement(SadlEquationInvocation element) throws TranslationException, InvalidNameException, InvalidTypeException, IOException {
+	private StatementContent processStatement(SadlEquationInvocation element) throws TranslationException, InvalidNameException, InvalidTypeException, IOException {
 		SadlResource name = element.getName();
 		Node srobj = processExpression(name);
 		EvalContent ec = new EvalContent(element, Agent.USER);
@@ -670,8 +676,7 @@ public class JenaBasedDialogModelProcessor extends JenaBasedSadlModelProcessor {
 			}
 			ec.setUnits(untlst);
 		}
-		ConversationElement ce = new ConversationElement(getAnswerCurationManager().getConversation(), ec, Agent.USER);
-		getAnswerCurationManager().addToConversation(ce);
+		return ec;
 	}
 //
 	private boolean statementIsComplete(SadlModelElement element) {
@@ -889,16 +894,26 @@ public class JenaBasedDialogModelProcessor extends JenaBasedSadlModelProcessor {
 //		return ce;
 //	}	
 	
-	private void  processAnswerCMStatement( AnswerCMStatement element) throws IOException, TranslationException, InvalidNameException, InvalidTypeException, ConfigurationException {
+	private AnswerContent  processAnswerCMStatement( AnswerCMStatement element) throws IOException, TranslationException, InvalidNameException, InvalidTypeException, ConfigurationException, JenaProcessorException, QueryParseException, QueryCancelledException, ReasonerNotFoundException {
 		EObject stmt = element.getSstmt();
-//		Object retval = processDialogModelElement(getCurrentResource(), stmt);
-		
-//		SadlModelConstruct smc = new SadlModelConstruct(retval);
-//		getAnswerCurationManager().addToConversation(new ConversationElement(getAnswerCurationManager().getConversation(), smc, Agent.CM));
+		if (stmt != null) {
+			StatementContent sc = processDialogModelElement((SadlModelElement) stmt);
+			AnswerContent ac = new AnswerContent(element, Agent.CM);
+			ac.setAnswer(sc);
+			return ac;
+		}
+		else {
+			String str = element.getStr();
+			if (str != null) {
+				AnswerContent ac = new AnswerContent(element, Agent.CM);
+				ac.setAnswer(str);
+				return ac;
+			}
+		}
+		return null;
 	}
 
-	private void processStatement(SaveStatement element) throws IOException, ConfigurationException, QueryParseException, QueryCancelledException, ReasonerNotFoundException {
-		ConversationElement ce = null;
+	private StatementContent processStatement(SaveStatement element) throws IOException, ConfigurationException, QueryParseException, QueryCancelledException, ReasonerNotFoundException {
 		SadlResource equationSR = ((SaveStatement)element).getTarget();
 		String targetModelUri = null;
 		String targetModelUrl = null;
@@ -941,12 +956,12 @@ public class JenaBasedDialogModelProcessor extends JenaBasedSadlModelProcessor {
 			sc.setTargetModelUri(targetModelUrl);
 			sc.setTargetModelActualUrl(targetModelUrl);
 			sc.setSourceEquationUri(extractedModelInstance.getURI());
-			ce = new ConversationElement(getAnswerCurationManager().getConversation(), sc, Agent.USER);
-			getAnswerCurationManager().addToConversation(ce);
+			return sc;
 		}
+		return null;
 	}
 
-	private void processStatement(ModifiedAskStatement stmt) {
+	private ModifiedAskContent processStatement(ModifiedAskStatement stmt) {
 		ConversationElement ce = null;
 		try {
 			SadlResource elementName = null; // element.getName();
@@ -969,8 +984,7 @@ public class JenaBasedDialogModelProcessor extends JenaBasedSadlModelProcessor {
 //			System.out.println("ModifiedAskStatement: " + query.toDescriptiveString());
 			ModifiedAskContent mac = new ModifiedAskContent(stmt, Agent.USER);
 			mac.setQuery(query);
-			ce = new ConversationElement(getAnswerCurationManager().getConversation(), mac, Agent.USER);
-			getAnswerCurationManager().addToConversation(ce);
+			return mac;
 		} catch (CircularDefinitionException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -989,24 +1003,22 @@ public class JenaBasedDialogModelProcessor extends JenaBasedSadlModelProcessor {
 //		} catch (IOException e) {
 //			// TODO Auto-generated catch block
 //			e.printStackTrace();
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
 		}
+		return null;
 	}
 
-	private void processStatement(WhatStatement stmt) {
+	private StatementContent processStatement(WhatStatement stmt) {
 		EObject substmt = stmt.getStmt();
 		if (substmt instanceof WhatIsStatement) {
-			processStatement((WhatIsStatement)substmt);
+			return processStatement((WhatIsStatement)substmt);
 		}
 		else if (substmt instanceof WhatValuesStatement) {
-			processStatement((WhatValuesStatement)substmt);
+			return processStatement((WhatValuesStatement)substmt);
 		}
+		return null;
 	}
 	
-	private void processStatement(WhatIsStatement stmt) {
-		ConversationElement ce = null;
+	private StatementContent processStatement(WhatIsStatement stmt) {
 		EObject whatIsTarget = stmt.getTarget();
 		if (whatIsTarget == null) {
 			// this is a request for user name
@@ -1071,9 +1083,8 @@ public class JenaBasedDialogModelProcessor extends JenaBasedSadlModelProcessor {
 				// does this ever happen? More to do...
 			}
 			
-			WhatIsContent wic = new WhatIsContent(stmt, Agent.USER, trgtObj, whenObj);
-			ce = new ConversationElement(getAnswerCurationManager().getConversation(), wic, Agent.USER);
-			getAnswerCurationManager().addToConversation(ce);
+			WhatIsContent wic = new WhatIsContent(stmt.eContainer(), Agent.USER, trgtObj, whenObj);
+			return wic;
 		} catch (TranslationException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -1083,13 +1094,11 @@ public class JenaBasedDialogModelProcessor extends JenaBasedSadlModelProcessor {
 		} catch (InvalidTypeException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
 		}
+		return null;
 	}
 	
-	private void processStatement(WhatValuesStatement stmt) {
+	private StatementContent processStatement(WhatValuesStatement stmt) {
 		String article = stmt.getArticle();
 		SadlTypeReference cls = stmt.getCls();
 		SadlResource prop = stmt.getProp();
@@ -1099,12 +1108,12 @@ public class JenaBasedDialogModelProcessor extends JenaBasedSadlModelProcessor {
 			Object propObj = processExpression(prop);
 //				System.out.println("WhatValuesStatement(" + typ + "): cls=" + (article!= null ? article : "") + 
 //						" '" + clsObj.toString() + "'; prop='" + propObj.toString() + "'");
-			WhatValuesContent wvc = new WhatValuesContent(stmt, Agent.USER);
+			WhatValuesContent wvc = new WhatValuesContent(stmt.eContainer(), Agent.USER);
 			wvc.setArticle(article);
 			wvc.setCls(nodeCheck(clsObj));
 			wvc.setProp(nodeCheck(propObj));
 			wvc.setTypeof(typ);
-			getAnswerCurationManager().addToConversation(new ConversationElement(getAnswerCurationManager().getConversation(), wvc, Agent.USER));
+			return wvc;
 		} catch (TranslationException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -1114,10 +1123,8 @@ public class JenaBasedDialogModelProcessor extends JenaBasedSadlModelProcessor {
 		} catch (InvalidTypeException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
 		}
+		return null;
 	}
 
 	private void setGraphPatternContext(WhatStatement stmt, EObject whatIsTarget, Object obj) {
@@ -1133,8 +1140,7 @@ public class JenaBasedDialogModelProcessor extends JenaBasedSadlModelProcessor {
 		}
 	}
 
-	private void processStatement(HowManyValuesStatement stmt) throws IOException {
-		ConversationElement ce = null;
+	private StatementContent processStatement(HowManyValuesStatement stmt) throws IOException {
 		String article = stmt.getArticle();
 		SadlTypeReference cls = stmt.getCls();
 		SadlResource prop = stmt.getProp();
@@ -1154,8 +1160,7 @@ public class JenaBasedDialogModelProcessor extends JenaBasedSadlModelProcessor {
 			hmvc.setTyp(nodeCheck(typObj));
 			hmvc.setArticle(article);
 			hmvc.setCls(nodeCheck(clsObj));
-			ce = new ConversationElement(getAnswerCurationManager().getConversation(), hmvc, Agent.USER);
-			getAnswerCurationManager().addToConversation(ce);
+			return hmvc;
 		} catch (TranslationException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -1166,6 +1171,7 @@ public class JenaBasedDialogModelProcessor extends JenaBasedSadlModelProcessor {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
+		return null;
 	}
 
 	@Override

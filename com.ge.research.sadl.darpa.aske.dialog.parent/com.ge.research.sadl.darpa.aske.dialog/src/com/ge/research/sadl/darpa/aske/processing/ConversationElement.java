@@ -60,6 +60,9 @@ public class ConversationElement {
 
 	public void setStatement(StatementContent statement) {
 		this.statement = statement;
+		setText(statement.getText());
+		setStartingLocation(statement.getOffset());
+		setLength(statement.getLength());
 	}
 	
 	public String toString() {
