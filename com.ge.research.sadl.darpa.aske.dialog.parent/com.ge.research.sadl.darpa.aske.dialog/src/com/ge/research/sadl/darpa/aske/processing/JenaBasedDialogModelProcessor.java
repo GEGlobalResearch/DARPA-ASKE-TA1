@@ -298,7 +298,7 @@ public class JenaBasedDialogModelProcessor extends JenaBasedSadlModelProcessor {
 		try {
 			if (!getAnswerCurationManager().dialogAnserProviderInitialized()) {
 				System.out.println("DialogAnswerProvider not yet initialized. Touch window.");
-				return;
+//				return;
 			}
 		} catch (IOException e2) {
 			// TODO Auto-generated catch block
