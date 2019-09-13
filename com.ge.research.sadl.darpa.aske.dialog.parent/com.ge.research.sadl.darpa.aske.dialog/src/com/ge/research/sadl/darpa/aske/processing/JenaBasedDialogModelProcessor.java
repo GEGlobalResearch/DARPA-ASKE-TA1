@@ -632,7 +632,7 @@ public class JenaBasedDialogModelProcessor extends JenaBasedSadlModelProcessor {
 		boolean returnVal = true;
 		String uri = element.getUri();
 		String prefix = element.getPrefix();
-		String altUrl = getConfigMgr().getAltUrlFromPublicUri(uri);
+		String altUrl = getConfigMgr().getJenaDocumentMgr() != null ? getConfigMgr().getAltUrlFromPublicUri(uri) : null;
 		if (altUrl == null || altUrl.equals(uri)) {
 			addError("Model not found", element);
 			returnVal = false;
