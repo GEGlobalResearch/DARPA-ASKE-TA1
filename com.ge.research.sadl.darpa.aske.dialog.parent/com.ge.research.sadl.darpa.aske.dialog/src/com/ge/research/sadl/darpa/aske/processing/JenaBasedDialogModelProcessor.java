@@ -67,6 +67,7 @@ import org.eclipse.xtext.nodemodel.ICompositeNode;
 import org.eclipse.xtext.nodemodel.INode;
 import org.eclipse.xtext.nodemodel.util.NodeModelUtils;
 import org.eclipse.xtext.preferences.IPreferenceValuesProvider;
+import org.eclipse.xtext.resource.XtextResource;
 import org.eclipse.xtext.resource.XtextSyntaxDiagnostic;
 import org.eclipse.xtext.util.CancelIndicator;
 import org.eclipse.xtext.validation.CheckMode;
@@ -135,6 +136,7 @@ import com.ge.research.sadl.utils.ResourceManager;
 import com.google.common.collect.Iterables;
 import com.google.inject.Inject;
 import com.hp.hpl.jena.ontology.Individual;
+import com.hp.hpl.jena.ontology.OntModel;
 import com.hp.hpl.jena.ontology.Ontology;
 import com.hp.hpl.jena.rdf.model.RDFWriter;
 
@@ -415,9 +417,9 @@ public class JenaBasedDialogModelProcessor extends JenaBasedSadlModelProcessor {
 			
 			File saveFile = getModelFile(resource);
 			try {
-				if (isModelChanged() || !saveFile.exists() || 
+				if (saveFile != null && (isModelChanged() || !saveFile.exists() || 
 						getConfigMgr().getAltUrlFromPublicUri(getModelName()) == null ||
-						getConfigMgr().getAltUrlFromPublicUri(getModelName()) == getModelName()) {
+						getConfigMgr().getAltUrlFromPublicUri(getModelName()) == getModelName())) {
 					autoSaveModel(resource, getConfigMgr().getModelFolder(), saveFile, context);
 					// refresh resource ?
 				}
@@ -630,25 +632,34 @@ public class JenaBasedDialogModelProcessor extends JenaBasedSadlModelProcessor {
 	
 	private StatementContent processStatement(TargetModelName element) throws ConfigurationException, IOException {
 		boolean returnVal = true;
-		String uri = element.getUri();
-		String prefix = element.getPrefix();
-		String altUrl = getConfigMgr().getJenaDocumentMgr() != null ? getConfigMgr().getAltUrlFromPublicUri(uri) : null;
-		if (altUrl == null || altUrl.equals(uri)) {
-			addError("Model not found", element);
-			returnVal = false;
-		}
-		else if (prefix == null) {
-			String gprefix = getConfigMgr().getGlobalPrefix(uri);
-			if (gprefix == null) {
-				addError("No global prefix found for model so a local alias is required", element);
-				returnVal = false;
+		SadlModel targetResource = element.getTargetResource();
+		if (targetResource != null) {
+			// URI importingResourceUri = resource.getURI();
+			String targetUri = targetResource.getBaseUri();
+			String targetPrefix = targetResource.getAlias();
+			Resource eResource = targetResource.eResource();
+			if (eResource instanceof XtextResource) {
+				XtextResource xtrsrc = (XtextResource) eResource;
+				URI targetResourceUri = xtrsrc.getURI();
+				OntModel targetOntModel = OntModelProvider.find(xtrsrc);
+				if (targetOntModel == null) {
+					addError("Model not found", element);
+					returnVal = false;
+				}
+				else if (targetPrefix == null) {
+					String gprefix = getConfigMgr().getGlobalPrefix(targetUri);
+					if (gprefix == null) {
+						addError("No global prefix found for model so a local alias is required", element);
+						returnVal = false;
+					}
+				}
+				if (returnVal) {
+					String[] uris = new String[2];
+					uris[0] = targetUri;
+					uris[1] = null;
+					getAnswerCurationManager().addTargetModelToMap(targetPrefix, uris);
+				}
 			}
-		}
-		if (returnVal) {
-			String[] uris = new String[2];
-			uris[0] = uri;
-			uris[1] = altUrl;
-			getAnswerCurationManager().addTargetModelToMap(prefix, uris);
 		}
 		return null;
 	}
