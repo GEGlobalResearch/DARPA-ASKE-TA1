@@ -7,8 +7,10 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.eclipse.emf.ecore.resource.Resource;
 import org.junit.Before;
 import org.junit.BeforeClass;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -17,9 +19,11 @@ import com.ge.research.sadl.builder.ConfigurationManagerForIdeFactory;
 import com.ge.research.sadl.builder.IConfigurationManagerForIDE;
 import com.ge.research.sadl.darpa.aske.curation.AnswerCurationManager;
 import com.ge.research.sadl.darpa.aske.curation.DialogAnswerProviderConsoleForTest;
+import com.ge.research.sadl.darpa.aske.curation.AnswerCurationManager.Agent;
 import com.ge.research.sadl.darpa.aske.curation.AnswerCurationManager.SaveAsSadl;
 import com.ge.research.sadl.darpa.aske.processing.DialogConstants;
 import com.ge.research.sadl.darpa.aske.processing.IDialogAnswerProvider;
+import com.ge.research.sadl.darpa.aske.processing.SaveContent;
 import com.ge.research.sadl.darpa.aske.processing.imports.KChainServiceInterface;
 import com.ge.research.sadl.reasoner.ConfigurationException;
 import com.ge.research.sadl.reasoner.QueryCancelledException;
@@ -54,7 +58,7 @@ public class AskeIntegrationTests {
 		setDomainProjectModelFolder(getExtractionProjectModelFolder());
 	}
 
-
+	@Ignore
 	@Test
 	public void test_01() throws ConfigurationException, IOException, QueryParseException, QueryCancelledException, ReasonerNotFoundException {
 		// remove OWL file
@@ -86,12 +90,17 @@ public class AskeIntegrationTests {
 		assertTrue(owlF.exists());
 		
 		// Identify interesting computation methods and generate OWL file containing these methods using SadlImplicitModel metamodel--this is the interestingMethodOntModel
+// TODO must get a valid OWL model containing method translated to OWL		
 		OntModel interestingMethodOntModel = null;
 		// now build CAL_SOS model in K-CHAIN
 		String modelUri = "CAL_SOS";
 		// add to KG: 
-		String saveResult = acm.processSaveRequest(modelUri, interestingMethodOntModel);
-		
+		Resource resource = null;
+		String modelName = interestingMethodOntModel.getNsPrefixMap().get("");
+		SaveContent sc = new SaveContent(null, Agent.USER);
+		String equationToBuildUri = defaultCodeModelName + "#Mach.CAL_SOS";
+		sc.setSourceEquationUri(equationToBuildUri);
+		String result = acm.processSaveRequest(resource, interestingMethodOntModel, modelName, sc );
 	}
 
 	private String getExtractionProjectModelFolder() {

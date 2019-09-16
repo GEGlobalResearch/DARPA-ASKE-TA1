@@ -43,6 +43,7 @@ import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
 
+import org.eclipse.emf.ecore.resource.Resource;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
@@ -52,10 +53,12 @@ import org.slf4j.LoggerFactory;
 import com.ge.research.sadl.builder.ConfigurationManagerForIdeFactory;
 import com.ge.research.sadl.builder.IConfigurationManagerForIDE;
 import com.ge.research.sadl.darpa.aske.curation.AnswerCurationManager;
+import com.ge.research.sadl.darpa.aske.curation.AnswerCurationManager.Agent;
 import com.ge.research.sadl.darpa.aske.curation.AnswerCurationManager.SaveAsSadl;
 import com.ge.research.sadl.darpa.aske.curation.DialogAnswerProviderConsoleForTest;
 import com.ge.research.sadl.darpa.aske.processing.DialogConstants;
 import com.ge.research.sadl.darpa.aske.processing.IDialogAnswerProvider;
+import com.ge.research.sadl.darpa.aske.processing.SaveContent;
 import com.ge.research.sadl.darpa.aske.processing.imports.IModelFromCodeExtractor;
 import com.ge.research.sadl.darpa.aske.processing.imports.JavaModelExtractorJP;
 import com.ge.research.sadl.owl2sadl.OwlImportException;
@@ -446,7 +449,11 @@ public class JavaImportJPTests {
 			AnswerCurationManager acm = new AnswerCurationManager(getDomainProjectModelFolder(), cm, null);
 			OntModel om = cm.loadOntModel(owlF.getCanonicalPath());
 			String equationToBuildUri = cm.getBaseUriFromOwlFile(owlF.getCanonicalPath()) + "#Mach.CAL_SOS";
-			String result = acm.processSaveRequest(equationToBuildUri , om);
+			Resource resource = null;
+			String modelName = om.getNsPrefixMap().get("");
+			SaveContent sc = new SaveContent(null, Agent.USER);
+			sc.setSourceEquationUri(equationToBuildUri);
+			String result = acm.processSaveRequest(resource, om, modelName, sc );
 		}
 
 	String getCodeExtractionKbRoot() {

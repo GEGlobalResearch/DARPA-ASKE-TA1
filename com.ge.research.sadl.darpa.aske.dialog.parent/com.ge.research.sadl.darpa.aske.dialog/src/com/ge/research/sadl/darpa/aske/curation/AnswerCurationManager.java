@@ -56,6 +56,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ExecutionException;
 
+import org.eclipse.emf.common.util.URI;
 import org.eclipse.emf.ecore.EObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -69,10 +70,12 @@ import com.ge.research.sadl.darpa.aske.processing.AnswerPendingContent;
 import com.ge.research.sadl.darpa.aske.processing.ConversationElement;
 import com.ge.research.sadl.darpa.aske.processing.DialogConstants;
 import com.ge.research.sadl.darpa.aske.processing.DialogContent;
+import com.ge.research.sadl.darpa.aske.processing.EvalContent;
 import com.ge.research.sadl.darpa.aske.processing.ExpectsAnswerContent;
 import com.ge.research.sadl.darpa.aske.processing.HowManyValuesContent;
 import com.ge.research.sadl.darpa.aske.processing.IDialogAnswerProvider;
 import com.ge.research.sadl.darpa.aske.processing.ModifiedAskContent;
+import com.ge.research.sadl.darpa.aske.processing.SaveContent;
 import com.ge.research.sadl.darpa.aske.processing.StatementContent;
 import com.ge.research.sadl.darpa.aske.processing.WhatIsContent;
 import com.ge.research.sadl.darpa.aske.processing.WhatValuesContent;
@@ -81,6 +84,7 @@ import com.ge.research.sadl.darpa.aske.processing.imports.AnswerExtractionProces
 import com.ge.research.sadl.darpa.aske.processing.imports.CodeExtractionException;
 import com.ge.research.sadl.darpa.aske.processing.imports.IModelFromCodeExtractor;
 import com.ge.research.sadl.darpa.aske.processing.imports.TextProcessor;
+import com.ge.research.sadl.jena.reasoner.JenaReasonerPlugin;
 import com.ge.research.sadl.model.gp.GraphPatternElement;
 import com.ge.research.sadl.model.gp.Junction;
 import com.ge.research.sadl.model.gp.Junction.JunctionType;
@@ -110,6 +114,7 @@ import com.ge.research.sadl.reasoner.ResultSet;
 import com.ge.research.sadl.reasoner.SadlCommandResult;
 import com.ge.research.sadl.reasoner.TranslationException;
 import com.ge.research.sadl.reasoner.utils.SadlUtils;
+import com.ge.research.sadl.utils.ResourceManager;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
@@ -511,8 +516,30 @@ public class AnswerCurationManager {
 		setCodeModelReasoner(null);
 	}
 	
-	public String processSaveRequest(String equationToBuildUri, OntModel ontModel) throws ConfigurationException, IOException, QueryParseException, QueryCancelledException, ReasonerNotFoundException {
+	/**
+	 * Method to save a specified Equation to a given semantic model.
+	 * @param resource -- Xtext resource of Dialog window hosting save command
+	 * @param ontModel -- the ontModel of the Dialog window content hosting save command
+	 * @param modelName -- the model name of the Dialog window model nosting save command
+	 * @param sc -- a SaveContent instance containing the URI of the equation to be saved
+	 * @return
+	 * @throws ConfigurationException
+	 * @throws IOException
+	 * @throws QueryParseException
+	 * @throws QueryCancelledException
+	 * @throws ReasonerNotFoundException
+	 */
+	public String processSaveRequest(org.eclipse.emf.ecore.resource.Resource resource, OntModel ontModel, String modelName, SaveContent sc) throws ConfigurationException, IOException, QueryParseException, QueryCancelledException, ReasonerNotFoundException {
 		String returnValue = null;
+		URI resourceURI = resource.getURI();
+		IReasoner reasoner = null;
+		if (ResourceManager.isSyntheticUri(null, resourceURI)) {
+			reasoner = getInitializedReasonerForConfiguration(getDomainModelConfigurationManager(), ontModel, modelName);
+		}
+		else {
+			reasoner = getInitializedReasonerForConfiguration(domainModelConfigurationManager, modelName);
+		}
+		String equationToBuildUri = sc.getSourceEquationUri();
 		Individual extractedModelInstance = ontModel.getIndividual(equationToBuildUri);
 		if (extractedModelInstance == null) {
 			// try getting a text extraction model?
@@ -527,46 +554,49 @@ public class AnswerCurationManager {
 		if (argStmt != null) {
 			com.hp.hpl.jena.rdf.model.Resource ddList = argStmt.getObject().asResource();
 			if (ddList instanceof Resource) {
-				String modelName = stripNamespaceDelimiter(ontModel.getNsPrefixURI(""));									// get the model name
-				IReasoner reasoner = getInitializedReasonerForConfiguration(domainModelConfigurationManager, modelName);	// get a reasoner to be able to query--easiest way to get members o arguments and return types collections
 				String argQuery = "select ?argName ?argType where {<" + extractedModelInstance.getURI() + "> <" + 
 						SadlConstants.SADL_IMPLICIT_MODEL_ARGUMENTS_PROPERTY_URI + 
 						"> ?ddList . ?ddList <http://jena.hpl.hp.com/ARQ/list#member> ?member . ?member <" +
 						SadlConstants.SADL_IMPLICIT_MODEL_DESCRIPTOR_NAME_PROPERTY_URI + "> ?argName . ?member <" +
 						SadlConstants.SADL_IMPLICIT_MODEL_DATATYPE_PROPERTY_URI + "> ?argType}";							// query to get the argument names and types
 				ResultSet rs = reasoner.ask(argQuery);
-				System.out.println(rs.toString());
+				System.out.println(rs != null ? rs.toString() : "no argument results");
 				String retQuery = "select ?retName ?retType where {<" + extractedModelInstance.getURI() + "> <" + 
 						SadlConstants.SADL_IMPLICIT_MODEL_RETURN_TYPES_PROPERTY_URI + 
 						"> ?ddList . ?ddList <http://jena.hpl.hp.com/ARQ/list#member> ?member . OPTIONAL{?member <" +
 						SadlConstants.SADL_IMPLICIT_MODEL_DESCRIPTOR_NAME_PROPERTY_URI + "> ?retName} . ?member <" +
 						SadlConstants.SADL_IMPLICIT_MODEL_DATATYPE_PROPERTY_URI + "> ?retType}";							// query to get the return types
 				ResultSet rs2 = reasoner.ask(retQuery);
-				System.out.println(rs2.toString());
+				System.out.println(rs2 != null ? rs2.toString() : "no return type results");
 				String pythonScriptQuery = "select ?pyScript where {<" + extractedModelInstance.getURI() + "> <" + 
 						SadlConstants.SADL_IMPLICIT_MODEL_EXPRESSTION_PROPERTY_URI +
 						"> ?sc . ?sc <" + SadlConstants.SADL_IMPLICIT_MODEL_LANGUAGE_PROPERTY_URI + "> <" + 
 						SadlConstants.SADL_IMPLICIT_MODEL_PYTHON_LANGUAGE_INST_URI +
 						"> . ?sc <" + SadlConstants.SADL_IMPLICIT_MODEL_SCRIPT_PROPERTY_URI + "> ?pyScript}";				// query to get the Python script for the equation
 				ResultSet rs3 = reasoner.ask(pythonScriptQuery);
-				System.out.println(rs3.toString());
-				if (rs3.getRowCount() != 1) {
+				System.out.println(rs3 != null ? rs3.toString() : "no Python script results");
+				if (rs3 != null && rs3.getRowCount() != 1) {
 					return "There appears to be more than one Python script associated with the equation. Unable to save.";
 				}
-				String pythonScript = rs3.getResultAt(0, 0).toString();
-				CodeLanguage language = CodeLanguage.JAVA;																	// only code we extract from currently (what about from text?)
-				if (language.equals(CodeLanguage.JAVA)) {
-					String[] returns = getExtractionProcessor().getCodeExtractor(CodeLanguage.JAVA).extractPythonEquationFromCodeExtractionModel(pythonScript);
-					if (returns.length != 2) {
-						throw new IOException("Invalid return from extractPythonEquationFromCodeExtractionModel; expected String[] of size 2");
+				if (rs3 != null) {
+					String pythonScript = rs3.getResultAt(0, 0).toString();
+					CodeLanguage language = CodeLanguage.JAVA;																	// only code we extract from currently (what about from text?)
+					if (language.equals(CodeLanguage.JAVA)) {
+						String[] returns = getExtractionProcessor().getCodeExtractor(CodeLanguage.JAVA).extractPythonEquationFromCodeExtractionModel(pythonScript);
+						if (returns.length != 2) {
+							throw new IOException("Invalid return from extractPythonEquationFromCodeExtractionModel; expected String[] of size 2");
+						}
+						String methName = returns[0];
+						String modifiedPythonScript = returns[1];
+						System.out.println(modifiedPythonScript);		
+						// this seems klugey also
+	//					returnValue = getExtractionProcessor().saveToComputationalGraph(equationToBuildUri, methName, rs, rs2, modifiedPythonScript, null);
+						returnValue = getExtractionProcessor().saveToComputationalGraph(methName, methName, rs, rs2, modifiedPythonScript, null);
+						System.out.println("saveToComputationalGraph returned '" + returnValue + "'");
 					}
-					String methName = returns[0];
-					String modifiedPythonScript = returns[1];
-					System.out.println(modifiedPythonScript);		
-					// this seems klugey also
-//					returnValue = getExtractionProcessor().saveToComputationalGraph(equationToBuildUri, methName, rs, rs2, modifiedPythonScript, null);
-					returnValue = getExtractionProcessor().saveToComputationalGraph(methName, methName, rs, rs2, modifiedPythonScript, null);
-					System.out.println("saveToComputationalGraph returned '" + returnValue + "'");
+				}
+				else {
+					returnValue = "Failed to find a Python script for equation '" + equationToBuildUri + "'.";
 				}
 			}
 		}
@@ -1126,6 +1156,15 @@ public class AnswerCurationManager {
 		return reasoner;
 	}
 
+	private IReasoner getInitializedReasonerForConfiguration(
+			IConfigurationManagerForIDE cm, OntModel ontModel, String modelName) throws ConfigurationException, ReasonerNotFoundException {
+		IReasoner reasoner = cm.getReasoner();
+		if (!reasoner.isInitialized()) {
+			reasoner.initializeReasoner(ontModel, modelName, null, null);
+		}
+		return reasoner;
+	}
+
 	private void setCodeModelReasoner(IReasoner codeModelReasoner) {
 		this.codeModelReasoner = codeModelReasoner;
 	}
@@ -1212,19 +1251,26 @@ public class AnswerCurationManager {
 		targetModelMap.put(alias, targetUris);
 	}
 	
-	public String processUserRequest(org.eclipse.emf.ecore.resource.Resource resource, OntModel theModel, ExpectsAnswerContent sc) throws ConfigurationException, ExecutionException, IOException, TranslationException, InvalidNameException, ReasonerNotFoundException, QueryParseException, QueryCancelledException, SadlInferenceException {
+	public String processUserRequest(org.eclipse.emf.ecore.resource.Resource resource, OntModel theModel, String modelName, ExpectsAnswerContent sc) throws ConfigurationException, ExecutionException, IOException, TranslationException, InvalidNameException, ReasonerNotFoundException, QueryParseException, QueryCancelledException, SadlInferenceException {
 		String retVal;
 		if (sc instanceof WhatIsContent) {
-    		retVal = processWhatIsContent(resource, theModel, (WhatIsContent) sc);
+    		retVal = processWhatIsContent(resource, theModel, modelName, (WhatIsContent) sc);
     	}
 		else if (sc instanceof ModifiedAskContent) {
-			retVal = processModifiedAsk(resource, theModel, (ModifiedAskContent) sc);
+			retVal = processModifiedAsk(resource, theModel, modelName, (ModifiedAskContent) sc);
 		}
 		else if (sc instanceof WhatValuesContent) {
-			retVal = processWhatValuesContent(resource, theModel, (WhatValuesContent)sc);
+			retVal = processWhatValuesContent(resource, theModel, modelName, (WhatValuesContent)sc);
 		}
 		else if (sc instanceof HowManyValuesContent) {
-			retVal = processHowManyValue(resource, theModel, (HowManyValuesContent)sc);
+			retVal = processHowManyValue(resource, theModel, modelName, (HowManyValuesContent)sc);
+		}
+		else if (sc instanceof SaveContent) {
+			retVal = processSaveRequest(resource, theModel, modelName, (SaveContent)sc);
+		}
+		else if (sc instanceof EvalContent) {
+			retVal = processEvalRequest(resource, theModel, modelName, (EvalContent)sc);
+			retVal = "Eval not yet implemented";
 		}
 		else {
 			System.out.println("Need to add '" + sc.getClass().getCanonicalName() + "' to processUserRequest");
@@ -1233,7 +1279,13 @@ public class AnswerCurationManager {
 		return retVal;
 	}
 	
-	private String processModifiedAsk(org.eclipse.emf.ecore.resource.Resource resource, OntModel theModel, ModifiedAskContent sc) throws ConfigurationException, TranslationException, InvalidNameException, ReasonerNotFoundException, QueryParseException, QueryCancelledException {
+	private String processEvalRequest(org.eclipse.emf.ecore.resource.Resource resource, OntModel theModel,
+			String modelName, EvalContent sc) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	private String processModifiedAsk(org.eclipse.emf.ecore.resource.Resource resource, OntModel theModel, String modelName, ModifiedAskContent sc) throws ConfigurationException, TranslationException, InvalidNameException, ReasonerNotFoundException, QueryParseException, QueryCancelledException {
 		Query q = ((ModifiedAskContent)sc).getQuery();
 		String answer = null;
 		boolean quote = true;
@@ -1276,7 +1328,7 @@ public class AnswerCurationManager {
 	}
 
 	private String processWhatValuesContent(org.eclipse.emf.ecore.resource.Resource resource, OntModel theModel,
-			WhatValuesContent sc) throws ConfigurationException {
+			String modelName, WhatValuesContent sc) throws ConfigurationException {
 		StringBuilder sb = new StringBuilder();
 		Node cls = sc.getCls();
 		String article = sc.getArticle();
@@ -1314,7 +1366,7 @@ public class AnswerCurationManager {
 	}
 
 	private String processHowManyValue(org.eclipse.emf.ecore.resource.Resource resource, OntModel theModel,
-			HowManyValuesContent sc) throws ConfigurationException {
+			String modelName, HowManyValuesContent sc) throws ConfigurationException {
 		StringBuilder sb = new StringBuilder();
 		Node cls = sc.getCls();
 		String article = sc.getArticle();
@@ -1353,7 +1405,7 @@ public class AnswerCurationManager {
 	}
 
 	private String processWhatIsContent(org.eclipse.emf.ecore.resource.Resource resource, OntModel theModel,
-			WhatIsContent sc) throws ExecutionException, SadlInferenceException,
+			String modelName, WhatIsContent sc) throws ExecutionException, SadlInferenceException,
 			TranslationException, ConfigurationException, IOException {
 		String retVal = null;
 		Object trgt = ((WhatIsContent)sc).getTarget();
@@ -2079,13 +2131,19 @@ public class AnswerCurationManager {
 	 * Method to process a conversation contained in a DialogContent and answer any unanswered question, etc.
 	 * @param resource 
 	 * @param ontModel 
+	 * @param modelName 
 	 */
-	public void processConversation(org.eclipse.emf.ecore.resource.Resource resource, OntModel ontModel) {
+	public void processConversation(org.eclipse.emf.ecore.resource.Resource resource, OntModel ontModel, String modelName) {
+		// ConversationElements are processed in order (must process a save before an evaluate, for example),
+		//	but the actual insertion of new responses into the Dialog occurs in reverse order so that the locations
+		//	are less complicated to determine
 		DialogContent dc = getConversation();
 		List<ConversationElement> dialogStmts = dc.getStatements();
-		StatementContent statementAfter = null;
-		for (int i = dialogStmts.size() - 1; i >= 0; i--) {
-			ConversationElement ce = dialogStmts.get(i);
+		Map<ConversationElement, ConversationElement> additionMap = new HashMap<ConversationElement, ConversationElement>();  // new CE, CE before
+		List<ConversationElement> additions = new ArrayList<ConversationElement>();
+		for (ConversationElement ce : dialogStmts) {
+			int idx = dialogStmts.indexOf(ce);
+			StatementContent statementAfter = idx < dialogStmts.size() ? dialogStmts.get(idx + 1).getStatement() : null;
 			StatementContent sc = ce.getStatement();
 			if (sc instanceof ExpectsAnswerContent) {
 				String question = removeLeadingComments(sc.getText().trim());
@@ -2103,12 +2161,13 @@ public class AnswerCurationManager {
 				// this statement needs an answer
 				if (sc instanceof ExpectsAnswerContent) {
 					try {
-						String answer = processUserRequest(resource, ontModel, (ExpectsAnswerContent)sc);
+						String answer = processUserRequest(resource, ontModel, modelName, (ExpectsAnswerContent)sc);
 						if (answer != null) {
 							addQuestionAndAnswer(sc.getText().trim(), answer.trim());
 							AnswerPendingContent pending = new AnswerPendingContent(null, Agent.CM, (ExpectsAnswerContent) sc);
 							ConversationElement cep = new ConversationElement(dc, pending, Agent.CM);
-							dc.getStatements().add(i+1, cep);
+							additions.add(cep);
+							additionMap.put(cep, ce);
 							((ExpectsAnswerContent)sc).setAnswer(pending);
 						}
 					} catch (ConfigurationException e) {
@@ -2141,7 +2200,13 @@ public class AnswerCurationManager {
 					}
 				}
 			}
-			statementAfter = sc;
+		}
+		if (!additions.isEmpty()) {
+			for (int i = additions.size() - 1; i >= 0; i--) {
+				ConversationElement newCE = additions.get(i);
+				ConversationElement preceeding = additionMap.get(newCE);
+				
+			}
 		}
 	}
 
@@ -2180,4 +2245,5 @@ public class AnswerCurationManager {
 	public void clearQuestionsAndAnsers() {
 		questionsAndAnswers.clear();
 	}
+
 }

@@ -442,7 +442,7 @@ public class JenaBasedDialogModelProcessor extends JenaBasedSadlModelProcessor {
 			
 			// Do this **after** setting the resource information in the OntModelProvider
 			try {
-				getAnswerCurationManager().processConversation(getCurrentResource(), getTheJenaModel());
+				getAnswerCurationManager().processConversation(getCurrentResource(), getTheJenaModel(), getModelName());
 			} catch (IOException e2) {
 				// TODO Auto-generated catch block
 				e2.printStackTrace();
@@ -633,6 +633,7 @@ public class JenaBasedDialogModelProcessor extends JenaBasedSadlModelProcessor {
 	private StatementContent processStatement(TargetModelName element) throws ConfigurationException, IOException {
 		boolean returnVal = true;
 		SadlModel targetResource = element.getTargetResource();
+		String aliasToUse = element.getAlias();
 		if (targetResource != null) {
 			// URI importingResourceUri = resource.getURI();
 			String targetUri = targetResource.getBaseUri();
@@ -646,18 +647,26 @@ public class JenaBasedDialogModelProcessor extends JenaBasedSadlModelProcessor {
 					addError("Model not found", element);
 					returnVal = false;
 				}
-				else if (targetPrefix == null) {
-					String gprefix = getConfigMgr().getGlobalPrefix(targetUri);
-					if (gprefix == null) {
-						addError("No global prefix found for model so a local alias is required", element);
-						returnVal = false;
+				else if (aliasToUse == null) {
+					if (targetPrefix != null) {
+						aliasToUse = targetPrefix;
+					}
+					else {
+						String gprefix = getConfigMgr().getGlobalPrefix(targetUri);
+						if (gprefix == null) {
+							addError("No global prefix found for model so a local alias is required", element);
+							returnVal = false;
+						}
+						else {
+							aliasToUse = gprefix;
+						}
 					}
 				}
 				if (returnVal) {
 					String[] uris = new String[2];
 					uris[0] = targetUri;
 					uris[1] = null;
-					getAnswerCurationManager().addTargetModelToMap(targetPrefix, uris);
+					getAnswerCurationManager().addTargetModelToMap(aliasToUse, uris);
 				}
 			}
 		}
