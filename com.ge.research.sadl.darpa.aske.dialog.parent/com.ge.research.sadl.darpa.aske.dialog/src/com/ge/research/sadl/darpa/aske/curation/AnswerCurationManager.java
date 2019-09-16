@@ -66,14 +66,13 @@ import com.ge.research.sadl.builder.ConfigurationManagerForIdeFactory;
 import com.ge.research.sadl.builder.IConfigurationManagerForIDE;
 import com.ge.research.sadl.darpa.aske.dialog.AnswerCMStatement;
 import com.ge.research.sadl.darpa.aske.inference.JenaBasedDialogInferenceProcessor;
+import com.ge.research.sadl.darpa.aske.processing.AnswerContent;
 import com.ge.research.sadl.darpa.aske.processing.AnswerPendingContent;
 import com.ge.research.sadl.darpa.aske.processing.ConversationElement;
 import com.ge.research.sadl.darpa.aske.processing.DialogConstants;
 import com.ge.research.sadl.darpa.aske.processing.DialogContent;
 import com.ge.research.sadl.darpa.aske.processing.ExpectsAnswerContent;
 import com.ge.research.sadl.darpa.aske.processing.IDialogAnswerProvider;
-import com.ge.research.sadl.darpa.aske.processing.MixedInitiativeContent;
-import com.ge.research.sadl.darpa.aske.processing.QuestionContent;
 import com.ge.research.sadl.darpa.aske.processing.StatementContent;
 import com.ge.research.sadl.darpa.aske.processing.WhatIsContent;
 import com.ge.research.sadl.darpa.aske.processing.imports.AnswerExtractionProcessor;
@@ -95,7 +94,6 @@ import com.ge.research.sadl.model.visualizer.GraphVizVisualizer;
 import com.ge.research.sadl.model.visualizer.IGraphVisualizer;
 import com.ge.research.sadl.owl2sadl.OwlImportException;
 import com.ge.research.sadl.owl2sadl.OwlToSadl;
-import com.ge.research.sadl.parser.antlr.SADLParser;
 import com.ge.research.sadl.processing.ISadlInferenceProcessor;
 import com.ge.research.sadl.processing.OntModelProvider;
 import com.ge.research.sadl.processing.SadlConstants;
@@ -115,7 +113,6 @@ import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
-import com.google.inject.Inject;
 import com.hp.hpl.jena.ontology.Individual;
 import com.hp.hpl.jena.ontology.OntClass;
 import com.hp.hpl.jena.ontology.OntModel;
@@ -131,8 +128,6 @@ import com.hp.hpl.jena.vocabulary.RDFS;
 import com.hp.hpl.jena.vocabulary.XSD;
 
 public class AnswerCurationManager {
-	@Inject
-	protected SADLParser sadlParser;
 	
 	protected static final Logger logger = LoggerFactory.getLogger(AnswerCurationManager.class);
 	private String domainModelowlModelsFolder;
@@ -1213,13 +1208,20 @@ public class AnswerCurationManager {
 	}
 	
 	public boolean processUserRequest(org.eclipse.emf.ecore.resource.Resource resource, OntModel theModel, ExpectsAnswerContent sc) throws ConfigurationException, ExecutionException, IOException, TranslationException, InvalidNameException, ReasonerNotFoundException, QueryParseException, QueryCancelledException, SadlInferenceException {
+		boolean retVal = false;
 		if (sc instanceof WhatIsContent) {
     		Object trgt = ((WhatIsContent)sc).getTarget();
     		Object whn = ((WhatIsContent)sc).getWhen();
     		if (trgt instanceof NamedNode && whn == null) {
-    			String answer = whatIsNamedNode(resource, theModel, getDomainModelOwlModelsFolder(), (NamedNode)trgt);
+    			String answer;
+     			try {
+	    			answer = whatIsNamedNode(resource, theModel, getDomainModelOwlModelsFolder(), (NamedNode)trgt);
+     			}
+     			catch (Exception e) {
+     				answer = e.getMessage();
+     			}
     			if (answer != null) {
-    				return true;
+    				retVal = true;
     			}
     		}
     		else if (trgt instanceof Object[] && whn == null) {
@@ -1256,7 +1258,8 @@ public class AnswerCurationManager {
             			}
             		}
             		String insertionText = (resultStr != null ? resultStr : "\"Failed to find results\"");
-             		notifyUser(getDomainModelOwlModelsFolder(), insertionText, false);
+            		answerUser(getDomainModelOwlModelsFolder(), insertionText, false, sc.getHostEObject());
+            		retVal = true;
         		}
     		}
     		else {
@@ -1342,7 +1345,8 @@ public class AnswerCurationManager {
             		answer.append(".\n");
         		}
         		Object ctx = triples[0].getContext();
-         		notifyUser(getDomainModelOwlModelsFolder(), answer.toString(), true);
+        		answerUser(getDomainModelOwlModelsFolder(), rss != null ? answer.toString() : "Failed to evaluate answer.", true, sc.getHostEObject());
+        		retVal = true;
 //    			}
 //    			else {
 ////    				rdqProvider.get().execute(null, null, null);
@@ -1351,7 +1355,7 @@ public class AnswerCurationManager {
 //    			}
     		}
     	}
-		return false;
+		return retVal;
 	}
 
 	private String whatIsNamedNode(org.eclipse.emf.ecore.resource.Resource resource, OntModel theModel, String modelFolder, NamedNode lastcmd) throws ConfigurationException, ExecutionException, TranslationException, InvalidNameException, ReasonerNotFoundException, QueryParseException, QueryCancelledException {
@@ -1493,6 +1497,9 @@ public class AnswerCurationManager {
 			if (rs instanceof ResultSet) {
 				return (ResultSet)rs;
 			}
+			else if (rs == null) {
+				throw new TranslationException("Query returned no results.");
+			}
 			else {
 				throw new TranslationException("Unexpected query result type: " + rs.getClass().getCanonicalName());
 			}
@@ -1503,6 +1510,13 @@ public class AnswerCurationManager {
 	private ISadlInferenceProcessor getInferenceProcessor() {
 		if (inferenceProcessor == null) {
 			inferenceProcessor = new JenaBasedDialogInferenceProcessor();
+		}
+		return inferenceProcessor;
+	}
+
+	private ISadlInferenceProcessor getInferenceProcessor(OntModel theModel) {
+		if (inferenceProcessor == null) {
+			inferenceProcessor = new JenaBasedDialogInferenceProcessor(theModel);
 		}
 		return inferenceProcessor;
 	}
@@ -1714,23 +1728,10 @@ public class AnswerCurationManager {
     	return word;
     }
     
-    private List<String> sadlkeywords = null;
-
 	private ISadlInferenceProcessor inferenceProcessor = null;
     
-	private List<String> getSadlKeywords() {
-		if (sadlkeywords == null) {
-    		Set<String> keywords = GrammarUtil.getAllKeywords(sadlParser.getGrammarAccess().getGrammar());
-    		if (keywords != null) {
-    			sadlkeywords = new ArrayList<String>();
-    			Iterator<String> itr = keywords.iterator();
-    			while (itr.hasNext()) {
-    				String token = itr.next();
-    				sadlkeywords.add(token);
-    			}
-    		}
-		}
-		return sadlkeywords;
+	public static List<String> getSadlKeywords() {
+		return OwlToSadl.getSadlKeywords();
 	}
 	
 	/**
@@ -1945,45 +1946,63 @@ public class AnswerCurationManager {
 				else {
 					// this statement needs an answer
 					if (sc instanceof ExpectsAnswerContent) {
-						try {
-							if (processUserRequest(resource, ontModel, (ExpectsAnswerContent)sc)) {
-								AnswerPendingContent pending = new AnswerPendingContent(null, Agent.CM, (ExpectsAnswerContent) sc);
-								ConversationElement cep = new ConversationElement(dc, pending, Agent.CM);
-								dc.getStatements().add(i+1, cep);
+						if (!expectedAnswerIsAnswered(sc)) {
+							try {
+								if (processUserRequest(resource, ontModel, (ExpectsAnswerContent)sc)) {
+									AnswerPendingContent pending = new AnswerPendingContent(null, Agent.CM, (ExpectsAnswerContent) sc);
+									ConversationElement cep = new ConversationElement(dc, pending, Agent.CM);
+									dc.getStatements().add(i+1, cep);
+									((ExpectsAnswerContent)sc).setAnswer(pending);
+								}
+							} catch (ConfigurationException e) {
+								// TODO Auto-generated catch block
+								e.printStackTrace();
+							} catch (ExecutionException e) {
+								// TODO Auto-generated catch block
+								e.printStackTrace();
+							} catch (IOException e) {
+								// TODO Auto-generated catch block
+								e.printStackTrace();
+							} catch (TranslationException e) {
+								// TODO Auto-generated catch block
+								e.printStackTrace();
+							} catch (InvalidNameException e) {
+								// TODO Auto-generated catch block
+								e.printStackTrace();
+							} catch (ReasonerNotFoundException e) {
+								// TODO Auto-generated catch block
+								e.printStackTrace();
+							} catch (QueryParseException e) {
+								// TODO Auto-generated catch block
+								e.printStackTrace();
+							} catch (QueryCancelledException e) {
+								// TODO Auto-generated catch block
+								e.printStackTrace();
+							} catch (SadlInferenceException e) {
+								// TODO Auto-generated catch block
+								e.printStackTrace();
 							}
-						} catch (ConfigurationException e) {
-							// TODO Auto-generated catch block
-							e.printStackTrace();
-						} catch (ExecutionException e) {
-							// TODO Auto-generated catch block
-							e.printStackTrace();
-						} catch (IOException e) {
-							// TODO Auto-generated catch block
-							e.printStackTrace();
-						} catch (TranslationException e) {
-							// TODO Auto-generated catch block
-							e.printStackTrace();
-						} catch (InvalidNameException e) {
-							// TODO Auto-generated catch block
-							e.printStackTrace();
-						} catch (ReasonerNotFoundException e) {
-							// TODO Auto-generated catch block
-							e.printStackTrace();
-						} catch (QueryParseException e) {
-							// TODO Auto-generated catch block
-							e.printStackTrace();
-						} catch (QueryCancelledException e) {
-							// TODO Auto-generated catch block
-							e.printStackTrace();
-						} catch (SadlInferenceException e) {
-							// TODO Auto-generated catch block
-							e.printStackTrace();
 						}
 					}
 				}
 			}
 			statementAfter = sc;
 		}
+	}
+
+	private boolean expectedAnswerIsAnswered(StatementContent sc) {
+		if (lastConversation == null) {
+			return false;
+		}
+		for (ConversationElement ce : lastConversation.getStatements()) {
+			if (ce.getText().equals(sc.getText())) {
+				StatementContent lastStmt = ce.getStatement();
+				if (lastStmt instanceof ExpectsAnswerContent && ((ExpectsAnswerContent)lastStmt).getAnswer() instanceof AnswerContent) {
+					return true;
+				}
+			}
+		}
+		return false;
 	}
 
 }
