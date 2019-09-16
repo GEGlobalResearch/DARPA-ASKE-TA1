@@ -5,6 +5,8 @@ import org.junit.Test
 
 import static org.junit.Assert.assertNotNull
 import static org.junit.Assert.assertTrue
+import org.junit.Ignore
+import com.ge.research.sadl.reasoner.ConfigurationManager
 
 class DialogTest extends AbstractDialogTest {
 
@@ -166,7 +168,7 @@ class DialogTest extends AbstractDialogTest {
 			
 			What is acceleration?
 			
-			What is the force of some Mass when the acceleration of the Mass is 25?
+«««			What is the force of some Mass when the acceleration of the Mass is 25?
 			
 			What type of values can acceleration of Mass have?
 			
@@ -191,4 +193,12 @@ class DialogTest extends AbstractDialogTest {
 		]
 	}
 
+	@Ignore
+	@Test
+	def void testGetTranslatorInstance() {
+		val cm = new ConfigurationManager
+		val tr = cm.translator
+		print(tr)
+	}
+	
 }
