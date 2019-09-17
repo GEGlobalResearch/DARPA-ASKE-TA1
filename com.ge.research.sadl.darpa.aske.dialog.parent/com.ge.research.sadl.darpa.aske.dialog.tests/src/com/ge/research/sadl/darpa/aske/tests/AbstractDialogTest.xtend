@@ -13,10 +13,18 @@ import org.eclipse.xtext.testing.InjectWith
 import org.eclipse.xtext.testing.XtextRunner
 import org.eclipse.xtext.validation.Issue
 import org.junit.runner.RunWith
+import org.junit.Before
+import com.ge.research.sadl.SADLStandaloneSetup
 
 @RunWith(XtextRunner)
 @InjectWith(DialogInjectorProvider)
 abstract class AbstractDialogTest extends AbstractSadlTest {
+	
+	@Before
+	override initialize() {
+		SADLStandaloneSetup.doSetup
+		super.initialize()
+	}
 
 	protected def XtextResource dialog(CharSequence seq) {
 		return resource(seq, 'dialog') as XtextResource;

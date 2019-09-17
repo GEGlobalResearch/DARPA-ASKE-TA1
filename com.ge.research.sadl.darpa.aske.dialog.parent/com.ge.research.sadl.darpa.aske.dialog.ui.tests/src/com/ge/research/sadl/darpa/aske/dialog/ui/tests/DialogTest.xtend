@@ -1,15 +1,14 @@
-package com.ge.research.sadl.darpa.aske.tests
+package com.ge.research.sadl.darpa.aske.dialog.ui.tests
 
-import com.ge.research.sadl.reasoner.ConfigurationManager
 import org.eclipse.xtext.diagnostics.Severity
-import org.junit.Ignore
 import org.junit.Test
 
 import static org.junit.Assert.assertNotNull
 import static org.junit.Assert.assertTrue
-import static org.junit.Assert.assertEquals
+import org.junit.Ignore
+import com.ge.research.sadl.reasoner.ConfigurationManager
 
-class DialogTest extends AbstractDialogTest {
+class DialogTest extends com.ge.research.sadl.darpa.aske.tests.AbstractDialogTest {
 
 	@Test
 	def void dummy_test() {
@@ -169,8 +168,7 @@ class DialogTest extends AbstractDialogTest {
 			
 			What is acceleration?
 			
-«««			What is the force of some Mass when the acceleration of the Mass is 25?
-			
+			«»			
 			What type of values can acceleration of Mass have?
 			
 			How many values of acceleration of type Acceleration can a Mass have?
@@ -190,13 +188,10 @@ class DialogTest extends AbstractDialogTest {
 			Evaluate plusOne(10).
 		'''.assertValidatesTo [ ontModel, issues, processor |
 			assertNotNull(ontModel)
-			val errors = issues.filter[severity === Severity.ERROR]
-			assertEquals(1, errors.size)
-			assertEquals("Model with alias 'sos' not found in target models.", errors.head.message)
+			assertTrue(issues.filter[severity === Severity.ERROR].empty)
 		]
 	}
 
-	@Ignore
 	@Test
 	def void saveThroughEval_test() {
 		'''
@@ -212,16 +207,6 @@ class DialogTest extends AbstractDialogTest {
 			Acceleration is a type of UnittedQuantity.
 			
 			External secondLaw(double m, double acc) returns double: "http://sadl.org/secondlaw".
-			secondLaw has expression (a Script with language Python, with script 
-			"#!/usr/bin/env python
-			\"\"\" generated source for module inputfile \"\"\"
-			class SecondLaw(object):
-			    \"\"\" generated source for class Mach \"\"\"
-			    def secondLaw(self, m, a):
-			        \"\"\" generated source for method secondLaw \"\"\"
-			        F = m * a
-			        return F
-			").
 		'''.sadl
 
 		'''
@@ -369,11 +354,12 @@ class DialogTest extends AbstractDialogTest {
 		]
 	}
 
+//	@Ignore
 	@Test
 	def void testGetTranslatorInstance() {
 		val cm = new ConfigurationManager
 		val tr = cm.translator
-		assertNotNull(tr)
+		print(tr)
 	}
 	
 }
