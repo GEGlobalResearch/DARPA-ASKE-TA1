@@ -7,10 +7,10 @@ import org.junit.Test
 
 import static org.junit.Assert.assertNotNull
 import static org.junit.Assert.assertTrue
+import static org.junit.Assert.assertEquals
 
 class DialogTest extends AbstractDialogTest {
 
-	@Ignore
 	@Test
 	def void dummy_test() {
 		'''
@@ -190,7 +190,9 @@ class DialogTest extends AbstractDialogTest {
 			Evaluate plusOne(10).
 		'''.assertValidatesTo [ ontModel, issues, processor |
 			assertNotNull(ontModel)
-			assertTrue(issues.filter[severity === Severity.ERROR].empty)
+			val errors = issues.filter[severity === Severity.ERROR]
+			assertEquals(1, errors.size)
+			assertEquals("Model with alias 'sos' not found in target models.", errors.head.message)
 		]
 	}
 
@@ -367,12 +369,11 @@ class DialogTest extends AbstractDialogTest {
 		]
 	}
 
-//	@Ignore
 	@Test
 	def void testGetTranslatorInstance() {
 		val cm = new ConfigurationManager
 		val tr = cm.translator
-		print(tr)
+		assertNotNull(tr)
 	}
 	
 }
