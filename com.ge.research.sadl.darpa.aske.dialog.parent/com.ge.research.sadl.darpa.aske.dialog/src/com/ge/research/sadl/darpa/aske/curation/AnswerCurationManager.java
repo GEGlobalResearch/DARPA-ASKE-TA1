@@ -2143,7 +2143,7 @@ public class AnswerCurationManager {
 		List<ConversationElement> additions = new ArrayList<ConversationElement>();
 		for (ConversationElement ce : dialogStmts) {
 			int idx = dialogStmts.indexOf(ce);
-			StatementContent statementAfter = idx < dialogStmts.size() ? dialogStmts.get(idx + 1).getStatement() : null;
+			StatementContent statementAfter = idx < dialogStmts.size() - 1 ? dialogStmts.get(idx + 1).getStatement() : null;
 			StatementContent sc = ce.getStatement();
 			if (sc instanceof ExpectsAnswerContent) {
 				String question = removeLeadingComments(sc.getText().trim());
