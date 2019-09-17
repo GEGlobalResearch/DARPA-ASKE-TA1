@@ -142,36 +142,49 @@ public class KChainServiceInterface {
 	 * get a response
 	 * @param url--the URL of the service
 	 * @param jsonObject--the inputs to the service
+	 * @throws IOException 
 	 * @return--the response as a serialized JSON object
 	 */
-	private String makeConnectionAndGetResponse(URL url, JsonObject jsonObject) {
+	private String makeConnectionAndGetResponse(URL url, JsonObject jsonObject) throws IOException {
 		String response = "";
+		HttpURLConnection connection = null;
+		OutputStream outputStream = null;
 		try {
-			HttpURLConnection connection = (HttpURLConnection) url.openConnection();                     
+			connection = (HttpURLConnection) url.openConnection();
 			connection.setDoOutput(true);
 			connection.setRequestMethod("POST"); 
 			connection.setRequestProperty("Content-Type", "application/json");
 
-			OutputStream outputStream = connection.getOutputStream();
+			outputStream = connection.getOutputStream();
 			outputStream.write(jsonObject.toString().getBytes());
 			outputStream.flush();
-
+		} catch (IOException e1) {
+			System.err.println("Error opening connection: " + e1.getMessage());
+			throw new IOException("Error opening connection", e1);
+		}  
+		finally {
+			if (outputStream != null) {
+				outputStream.close();
+			}
+		}
+		
+		if (connection != null) {
 			try {
 				BufferedReader br = new BufferedReader(
 						new InputStreamReader(connection.getInputStream()));                                     
 				String output = "";
 				while((output = br.readLine()) != null) 
 					response = response + output;                 
-				outputStream.close();
+//				outputStream.close();
 				br.close();
 			}
 			catch (Exception e) {
-				System.out.println("Error reading response: " + e.getMessage());
+				System.err.println("Error reading response: " + e.getMessage());
+				throw new IOException("Service call failed", e);
 			}
-			connection.disconnect();
-		} catch (Exception e) {
-			System.out.println(jsonObject.toString());
-			e.printStackTrace();
+			finally {
+				connection.disconnect();
+			}
 		}
 		return response;
 	}

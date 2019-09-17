@@ -474,6 +474,7 @@ public class AnswerCurationManager {
 	//									System.out.println("SADL equation:");
 	//									System.out.println(sadlDeclaration);
 										notifyUser(codeModelFolder, sd, false);
+										getExtractionProcessor().addNewSadlContent(sd);
 									}
 								} catch (IOException e) {
 									// TODO Auto-generated catch block
@@ -870,7 +871,7 @@ public class AnswerCurationManager {
 	}
 
 	public static boolean isYes(Object arg1) {
-		return arg1.toString().equalsIgnoreCase("yes");
+		return arg1.toString().equalsIgnoreCase("yes") || arg1.toString().equalsIgnoreCase("yes.");
 	}
 	
 	public void notifyUser(String modelFolder, String msg, boolean quote) throws ConfigurationException {
