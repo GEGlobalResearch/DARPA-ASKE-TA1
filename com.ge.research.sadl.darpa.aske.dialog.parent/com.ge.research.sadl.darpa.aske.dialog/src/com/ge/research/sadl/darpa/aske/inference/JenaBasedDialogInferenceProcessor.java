@@ -402,12 +402,12 @@ public class JenaBasedDialogInferenceProcessor extends JenaBasedSadlInferencePro
 			"} order by ?EQ";
 	
 	public static final String CGQUERYWITHVALUES ="prefix imp:<http://sadl.org/sadlimplicitmodel#>\n" + 
-			"prefix sci:<http://aske.ge.com/sciknow#>\n" +
+			"prefix sci:<http://aske.ge.com/sciknow#>\n" + 
 			"prefix mm:<http://aske.ge.com/metamodel#>\n" + 
+			"prefix cg:<http://aske.ge.com/compgraphmodel#>\n" + 
+			"prefix rdf:<http://www.w3.org/1999/02/22-rdf-syntax-ns#>\n" + 
 			"\n" + 
-			"select distinct ?X ?Y ?Z ?X_style ?X_color ?Z_shape ?Z_tooltip\n" + //?X_style \n" + 
-			//"from <http://kd.ge.com/md2>\n" + 
-			//"from <http://kd.ge.com/aske3>\n" + 
+			"select ?X ?Y ?Z ?X_style ?X_color ?Z_shape ?Z_tooltip\n" + 
 			"where {\n" + 
 			"{select (?Input as ?X) (?EQ as ?Y) (?Output as ?Z) ?X_style ?X_color ('box' as ?Z_shape) ?Z_tooltip\n" + 
 			"where {\n" + 
@@ -415,19 +415,40 @@ public class JenaBasedDialogInferenceProcessor extends JenaBasedSadlInferencePro
 			"    filter (?CCG in (COMPGRAPH)).\n" + 
 			"    ?CCG mm:subgraph ?SG.\n" + 
 			"    ?SG mm:cgraph ?CG.\n" + 
-			"    ?CG sci:hasEquation ?EQ.\n" + 
-			"    ?EQ sci:input ?I.\n" + 
-			"    ?I sci:argType ?Input.\n" + 
-			"    ?EQ sci:output ?O.\n" + 
-			"    ?O a ?Output.\n" + 
+			"    ?CG cg:hasEquation ?EQ.\n" + 
+			"\n" + 
+			"     ?EQ imp:arguments ?EI1.\n" + 
+			"     ?EI1 rdf:rest*/rdf:first ?EI2.\n" + 
+			"     ?EI2 imp:augmentedType ?EI3. \n" + 
+			"     ?EI3 imp:constraints ?EI4.\n" + 
+			"     ?EI4 rdf:rest*/rdf:first ?EI5.\n" + 
+			"     ?EI5 imp:gpPredicate ?Input.\n" + 
+			"       filter (?Input != <http://www.w3.org/1999/02/22-rdf-syntax-ns#type>)\n" + 
+			"\n" + 
+			"     ?EQ imp:returnTypes ?EO1.\n" + 
+			"     ?EO1 rdf:rest*/rdf:first ?EO2.\n" + 
+			"     ?EO2 imp:augmentedType ?EO3. \n" + 
+			"     ?EO3 imp:constraints ?EO4.\n" + 
+			"     ?EO4 rdf:rest*/rdf:first ?EO5.\n" + 
+			"     ?EO5 imp:gpPredicate ?Output.\n" + 
+			"       filter (?Output != <http://www.w3.org/1999/02/22-rdf-syntax-ns#type>) \n" + 
+			"\n" + 
+			"    # There's an eqn that outputs EQ's input (a parent Eqn)\n" + 
 			"    ?CCG mm:subgraph ?SG1.\n" + 
 			"    ?SG1 mm:cgraph ?CG1.\n" + 
-			"    ?CG1 sci:hasEquation ?EQ1.\n" + 
-			"    ?EQ1 sci:output ?O1.\n" + 
-			"    ?O1 a ?Input.\n" +
-			"    ?EQ imp:expression ?Script. \n" +
-			"    ?Script imp:script ?Expr.\n" + 
-			"	 bind(str(?Expr) as ?Z_tooltip)" +
+			"    ?CG1 cg:hasEquation ?EQ1.\n" + 
+			"    ?EQ1 imp:returnTypes ?E11.\n" + 
+			"    ?E11 rdf:rest*/rdf:first ?E12.\n" + 
+			"    ?E12 imp:augmentedType ?E13. \n" + 
+			"    ?E13 imp:constraints ?E14.\n" + 
+			"    ?E14 rdf:rest*/rdf:first ?E15.\n" + 
+			"    ?E15 imp:gpPredicate ?Input.\n" + 
+			"\n" + 
+			"    ?EQ imp:expression ?Scr.\n" + 
+			"    ?Scr imp:script ?Expr.\n" + 
+			"    ?Scr imp:language ?lang.\n" + 
+			"       filter ( ?lang = <http://sadl.org/sadlimplicitmodel#Python> )\n" + 
+			"    bind(str(?Expr) as ?Z_tooltip)\n" + 
 			"    bind('solid' as ?X_style)\n" + 
 			"    bind('black' as ?X_color)\n" + 
 			"}}union\n" + 
@@ -437,36 +458,57 @@ public class JenaBasedDialogInferenceProcessor extends JenaBasedSadlInferencePro
 			"    filter (?CCG in (COMPGRAPH)).\n" + 
 			"    ?CCG mm:subgraph ?SG.\n" + 
 			"    ?SG mm:cgraph ?CG.\n" + 
-			"    ?CG sci:hasEquation ?EQ.\n" + 
-			"    ?EQ sci:input ?I.\n" + 
-			"    ?I sci:argType ?Input.\n" + 
-			"    ?EQ sci:output ?O.\n" + 
-			"    ?O a ?Output.\n" + 
-			"    ?EQ imp:expression ?Script. \n" + 
-			"    ?Script imp:script ?Expr.\n" + 
-			"	 bind(str(?Expr) as ?Z_tooltip)\n" +
-			"   filter not exists {\n" + 
-			"    ?CCG mm:subgraph ?SG2.\n" + 
-			"    ?SG2 mm:cgraph ?CG2.\n" + 
-			"    ?CG2 sci:hasEquation ?EQ2.\n" + 
-			"    ?EQ2 sci:output ?O2.\n" + 
-			"    ?O2 a ?Input.}\n" + 
+			"    ?CG cg:hasEquation ?EQ.\n" + 
+			"\n" + 
+			"     ?EQ imp:arguments ?EI1.\n" + 
+			"     ?EI1 rdf:rest*/rdf:first ?EI2.\n" + 
+			"     ?EI2 imp:augmentedType ?EI3. \n" + 
+			"     ?EI3 imp:constraints ?EI4.\n" + 
+			"     ?EI4 rdf:rest*/rdf:first ?EI5.\n" + 
+			"     ?EI5 imp:gpPredicate ?Input.\n" + 
+			"       filter (?Input != <http://www.w3.org/1999/02/22-rdf-syntax-ns#type>)\n" + 
+			"\n" + 
+			"     ?EQ imp:returnTypes ?EO1.\n" + 
+			"     ?EO1 rdf:rest*/rdf:first ?EO2.\n" + 
+			"     ?EO2 imp:augmentedType ?EO3. \n" + 
+			"     ?EO3 imp:constraints ?EO4.\n" + 
+			"     ?EO4 rdf:rest*/rdf:first ?EO5.\n" + 
+			"     ?EO5 imp:gpPredicate ?Output.\n" + 
+			"       filter (?Output != <http://www.w3.org/1999/02/22-rdf-syntax-ns#type>) \n" + 
+			"\n" + 
+			"    ?EQ imp:expression ?Scr.\n" + 
+			"    ?Scr imp:script ?Expr.\n" + 
+			"    ?Scr imp:language ?lang.\n" + 
+			"       filter ( ?lang = <http://sadl.org/sadlimplicitmodel#Python> )\n" + 
+			"     bind(str(?Expr) as ?Z_tooltip)\n" + 
+			"\n" + 
+			"    # EQ does not have a parent EQn\n" + 
+			"    filter not exists {\n" + 
+			"      ?CCG mm:subgraph ?SG2.\n" + 
+			"      ?SG2 mm:cgraph ?CG2.\n" + 
+			"      ?CG2 cg:hasEquation ?EQ2.\n" + 
+			"      ?EQ2 imp:returnTypes ?E21.\n" + 
+			"      ?E21 rdf:rest*/rdf:first ?E22.\n" + 
+			"      ?E22 imp:augmentedType ?E23. \n" + 
+			"      ?E23 imp:constraints ?E24.\n" + 
+			"      ?E24 rdf:rest*/rdf:first ?E25.\n" + 
+			"      ?E25 imp:gpPredicate ?Input.\n" + 
+			"    }\n" + 
+			"      \n" + 
 			"    bind('filled' as ?X_style)\n" + 
 			"    bind('yellow' as ?X_color)\n" + 
 			"}}union\n" + 
-			" {select (?Output as ?X) ?Y (concat(concat(strbefore(?Value,'.'),'.'),substr(strafter(?Value,'.'),1,4)) as ?Z) ?X_style ?X_color ('oval' as ?Z_shape) ('output value' as ?Z_tooltip)\n" + 
+			" {select (?Output as ?X) ?Y (?Value as ?Z) ?X_style ?X_color ('oval' as ?Z_shape) ('output value' as ?Z_tooltip)\n" + 
 			"  where {\n" + 
 			"    ?CCG mm:subgraph ?SG.\n" + 
 			"    filter (?CCG in (COMPGRAPH)).\n" + 
 			"    ?SG mm:output ?Oinst.\n" + 
 			"    ?Oinst a ?Output.\n" + 
 			"    ?Oinst imp:value ?Value.\n" + 
-			"    bind(\"value\" as ?Y).\n" +
+			"    bind(\"value\" as ?Y).\n" + 
 			"    bind('solid' as ?X_style)\n" + 
-			"    bind('black' as ?X_color)\n" +
+			"    bind('black' as ?X_color)\n" + 
 			"  }}\n" + 
-			//" bind('filled' as ?X_style)\n" + 
-			//" bind(?color as ?X_color)\n" + 
 			"}";
 
 	public static final String RESULTSQUERY = "prefix imp:<http://sadl.org/sadlimplicitmodel#>\n" + 
@@ -761,6 +803,10 @@ public class JenaBasedDialogInferenceProcessor extends JenaBasedSadlInferencePro
 		}
 		//getTheJenaModel().write(System.out, "TTL" );
 
+		// Will need object to create (obj prop uq) triple, where uq is a unitted quantity obj
+		HashMap<String, String> mapPropertiesToOutputObj = new HashMap<String,String>(); 
+		
+		
 		// Create list of outputs
 //		if (queryPatterns.size() > 0) {
 //			// how many results there will be
@@ -770,6 +816,8 @@ public class JenaBasedDialogInferenceProcessor extends JenaBasedSadlInferencePro
 			sp = itr.getPredicate().getURI(); // e.g. #altitude
 			ssp = getTheJenaModel().getProperty(sp);
 			outputsList.add(ssp);
+			
+			mapPropertiesToOutputObj.put(itr.getSubject().toString(), sp.toString());
 		}
 //		}
 		
@@ -912,8 +960,6 @@ public class JenaBasedDialogInferenceProcessor extends JenaBasedSadlInferencePro
 					modelsCSVString = convertResultSetToString(models);
 					System.out.println(modelsCSVString);
 		
-					saveMetaDataFile(resource);
-					
 					queryStr = RETRIEVE_NODES.replaceAll("EQNSLIST", listOfEqns);
 					queryStr = queryStr.replaceAll("COMPGRAPH", "<" + cgIns.getURI() + ">");
 					nodes = queryKnowledgeGraph(queryStr, getTheJenaModel().union(qhmodel));
@@ -939,10 +985,13 @@ public class JenaBasedDialogInferenceProcessor extends JenaBasedSadlInferencePro
 		            if(resmsg.equals("Success")) {
 			            
 			            lbl2value = getLabelToMeanStdMapping(dbnResultsJson);
-		
-			            //createCGsubgraphs(cgIns, eqnsResults, class2lbl, lbl2value, outputInstance);
-			            createCGsubgraphs(cgIns, dbnEqns, dbnOutput, listOfEqns, class2lbl, lbl2value); //, outputInstance);
+		//TODO
+			            createCGsubgraphs(cgIns, dbnEqns, dbnOutput, listOfEqns, class2lbl, lbl2value);
 
+			            
+						saveMetaDataFile(resource);
+
+			            
 			            //add outputs to CG if calibration
 						//if(queryMode.equals("prognostic")) {
 
@@ -1552,6 +1601,10 @@ private TripleElement getInputTypeTriple(Node varNode, TripleElement[] triples) 
 				qhmodel.add(outpIns, getTheJenaModel().getProperty(VARERROR_PROP), ms[2] );
 			
 			//Add to JenaModel too?
+			
+			//TODO: add (obj prop uq) triple using mapPropertiesToOutputObj
+			//oobj = mapPropertiesToOutputObj.get(otypeProp.toString());
+			// ingestKGTriple( qhmodel.getResource(oobj),  otypeProp, outpIns);
 		}
 	}
 

@@ -433,105 +433,143 @@ public class DialogAnswerProvider extends DefaultAutoEditStrategyProvider implem
 				return false;
 			}
 
-
-//			private Object processDocToModelQuery(Resource resource, Query lastcmd) throws ExecutionException {
+    // AG: This is where the output for TA2 is processed and inserted into the dialog.
+//			private String processDocToModelQuery(Resource resource, Query lastcmd) throws ExecutionException {
 //				List<GraphPatternElement> patterns = lastcmd.getPatterns();
-//				for (GraphPatternElement gpe : patterns) {
-//					if (gpe instanceof TripleElement) {
-//						if (((TripleElement)gpe).getPredicate().getURI().equals(DialogConstants.SADL_IMPLICIT_MODEL_DIALOG_MODEL_PROPERTY_URI)) {
-//							Node doc = ((TripleElement)gpe).getSubject();
-//							// get the name and semantic type of each column
-//							// TODO check for aliases for column names and use alias if exists
-//							String tableColSemTypeQuery = "select distinct ?colname ?typ where {<" + doc.getURI() +
-//									"> <columnDescriptors> ?cdlist . ?cdlist <http://jena.hpl.hp.com/ARQ/list#member> ?member . " + 
-//									"?member <descriptorName> ?colname . ?member <augmentedType> ?augtype . ?augtype <semType> ?typ}";
-//	                		((Query)lastcmd).setSparqlQueryString(tableColSemTypeQuery);
-//							ResultSet rs = runQuery(resource, (Query)lastcmd);
-//							if (rs != null && rs.getRowCount() > 0) {
-//								// TODO 
-//								// convert to triples, one set for each column
-//								// <doc, columnname, colname>
-//								// <colname, semtypeprop, semtype>
-//								rs.setShowNamespaces(true);
-//								Map<String,String> colNamesAndTypes = new HashMap<String,String>();
-//								for (int i = 0; i <= rs.getColumnCount(); i++) {
-//									String colname = rs.getResultAt(i, 0).toString();
-//									String semtyp = rs.getResultAt(i, 1).toString();
-//									colNamesAndTypes.put(colname, semtyp);
+//        		StringBuilder answer = new StringBuilder();
+//        		
+//        		try {
+//					for (GraphPatternElement gpe : patterns) {
+//						if (gpe instanceof TripleElement) {
+//							if (((TripleElement)gpe).getPredicate().getURI().equals(DialogConstants.SADL_IMPLICIT_MODEL_DIALOG_MODEL_PROPERTY_URI)) {
+//								Node doc = ((TripleElement)gpe).getSubject();
+//								// get the name and semantic type of each column
+//								// TODO check for aliases for column names and use alias if exists
+//								String tableColSemTypeQuery = "select distinct ?colname ?typ where {<" + doc.getURI() +
+//										"> <columnDescriptors> ?cdlist . ?cdlist <http://jena.hpl.hp.com/ARQ/list#member> ?member . " + 
+//										"?member <descriptorName> ?colname . ?member <augmentedType> ?augtype . ?augtype <semType> ?typ}";
+//		                		((Query)lastcmd).setSparqlQueryString(tableColSemTypeQuery);
+//								ResultSet rrs = runQuery(resource, (Query)lastcmd);
+//								if (rrs != null && rrs.getRowCount() > 0) {
+//									// TODO 
+//									// convert to triples, one set for each column
+//									// <doc, columnname, colname>
+//									// <colname, semtypeprop, semtype>
+//									rrs.setShowNamespaces(true);
+//									Map<String,String> colNamesAndTypes = new HashMap<String,String>();
+//									for (int i = 0; i <= rrs.getColumnCount(); i++) {
+//										String colname = rrs.getResultAt(i, 0).toString();
+//										String semtyp = rrs.getResultAt(i, 1).toString();
+//										colNamesAndTypes.put(colname, semtyp);
+//									}
+//									Iterator<String> keyitr = colNamesAndTypes.keySet().iterator();
+//									NamedNode docNN = new NamedNode(doc.getURI());
+//	//								NamedNode descriptorNameNN = new NamedNode(SadlConstants.SADL_IMPLICIT_MODEL_DESCRIPTOR_NAME_PROPERTY_URI);
+//	//								NamedNode augmentedTypeNN = new NamedNode(SadlConstants.SADL_IMPLICIT_MODEL_AUGMENTED_TYPE_PROPERTY_URI);
+//									List<TripleElement> triplesList = new ArrayList<TripleElement>();
+//									while (keyitr.hasNext()) {
+//										String colname = keyitr.next();
+//										NamedNode colNameNN = new NamedNode(colname);
+//										String semtyp = colNamesAndTypes.get(colname);
+//										NamedNode semtypNN = new NamedNode(semtyp);
+//										TripleElement tr = new TripleElement(docNN, colNameNN, semtypNN);
+//										triplesList.add(tr);
+//									}
+//									TripleElement[] triples = triplesList.toArray(new TripleElement[triplesList.size()]);
+//					                OntModelProvider.addPrivateKeyValuePair(resource, DialogConstants.LAST_DIALOG_COMMAND, triples);
+//			                		ResultSet[] rss = insertTriplesAndQuery(resource, triples);
+//									int numResultSets = rss.length;
+//									
+//									// 
+//									// TODO 
+//									// SIMILAR TO WhatIfConstruct with a when
+//			                		String modelFolder = setDialogAnswerProvider(resource);
+//	
+//			                		if (rss != null) {
+//			                			int cntr = 0;
+//			                			int numOfModels = 0; //rss.length/2;
+//			                			for(int i=0; i<rss.length; i++)
+//			                				if (rss[i] != null)
+//			                					numOfModels ++;
+//			                			numOfModels /= 2;
+//				                		for (ResultSet rs : rss) {
+//				                			if(rs == null)
+//				                				continue;
+//			                				String[] colnames = rs.getColumnNames();
+//			                				String cols = String.join(" ",colnames);
+//			                				if ( cols.contains("_style") ) {
+//			                					
+//				                			//if (cntr == 0) {
+//				                				// this is the first ResultSet, construct a graph if possible
+//				                				//if (rs.getColumnCount() != 3) {
+//				                				//	System.err.println("Can't construct graph; not 3 columns. Unexpected result.");
+//				                				//}
+//	//			                				this.graphVisualizerHandler.resultSetToGraph(path, resultSet, description, baseFileName, orientation, properties);
+//				                				
+//				                				IGraphVisualizer visualizer = new GraphVizVisualizer();
+//				                				if (visualizer != null) {
+//				                					String graphsDirectory = new File(modelFolder).getParent() + "/Graphs";
+//				                					new File(graphsDirectory).mkdir();
+//				                					String baseFileName = "QueryMetadata"+rss[cntr+numOfModels].getResultAt(0, 0).toString();
+//				                					visualizer.initialize(
+//				                		                    graphsDirectory,
+//				                		                    baseFileName,
+//				                		                    baseFileName,
+//				                		                    null,
+//				                		                    IGraphVisualizer.Orientation.TD,
+//				                		                    "Assembled Model " + rss[cntr+numOfModels].getResultAt(0, 0));
+//				                					rs.setShowNamespaces(false);
+//				                		            visualizer.graphResultSetData(rs); }
+//				        						String fileToOpen = visualizer.getGraphFileToOpen();
+//				        						if (fileToOpen != null) {
+//				        							File fto = new File(fileToOpen);
+//				        							if (fto.isFile()) {
+//				        								IFileStore fileStore = EFS.getLocalFileSystem().getStore(fto.toURI());
+//				        								IWorkbenchPage page = PlatformUI.getWorkbench().getActiveWorkbenchWindow().getActivePage();
+//				        								try {
+//				        									IDE.openEditorOnFileStore(page, fileStore);
+//				        								}
+//				        								catch (Throwable t) {
+//				        									System.err.println("Error trying to display graph file '" + fileToOpen + "': " + t.getMessage());
+//				        								}
+//				        							}
+//				        							else if (fileToOpen != null) {
+//				        								System.err.println("Failed to open graph file '" + fileToOpen + "'. Try opening it manually.");
+//				        							}
+//				        						}
+//				                				else {
+//				                					System.err.println("Unable to find an instance of IGraphVisualizer to render graph for query.\n");
+//				                				}
+//	
+//				                			}
+//			                				else {
+//			                				//if (cntr > 0) 
+//				                				//answer.append(resultSetToQuotableString(rs));
+//			                					answer.append(rs);
+//					                			//if(cntr < (numOfModels*2-1))
+//					                			//	answer.setLength(answer.length()-1);
+//				                			//if(cntr++ > 1)
+//				                				answer.append("\n");
+//			                				}
+//			                				cntr++;
+//				                		}
+//				                		//answer resultSetToQuotableString(answer.toString());
+//				                		//answer.append(".\n");
+//			                		}
+//			                		//Object ctx = triples[0].getContext();
+//			                		//addCurationManagerContentToDialog(document, reg, answer.toString(), ctx, true);
+//			                		
 //								}
-//								Iterator<String> keyitr = colNamesAndTypes.keySet().iterator();
-//								NamedNode docNN = new NamedNode(doc.getURI());
-////								NamedNode descriptorNameNN = new NamedNode(SadlConstants.SADL_IMPLICIT_MODEL_DESCRIPTOR_NAME_PROPERTY_URI);
-////								NamedNode augmentedTypeNN = new NamedNode(SadlConstants.SADL_IMPLICIT_MODEL_AUGMENTED_TYPE_PROPERTY_URI);
-//								List<TripleElement> triplesList = new ArrayList<TripleElement>();
-//								while (keyitr.hasNext()) {
-//									String colname = keyitr.next();
-//									NamedNode colNameNN = new NamedNode(colname);
-//									String semtyp = colNamesAndTypes.get(colname);
-//									NamedNode semtypNN = new NamedNode(semtyp);
-//									TripleElement tr = new TripleElement(docNN, colNameNN, semtypNN);
-//									triplesList.add(tr);
-//								}
-//								TripleElement[] triples = triplesList.toArray(new TripleElement[triplesList.size()]);
-//				                OntModelProvider.addPrivateKeyValuePair(resource, DialogConstants.LAST_DIALOG_COMMAND, triples);
-//		                		ResultSet[] rss = insertTriplesAndQuery(resource, triples);
-//								int numResultSets = rss.length;
-//								
-//								// 
-//								// TODO 
-//								// SIMILAR TO WhatIfConstruct with a when
-////				                OntModelProvider.addPrivateKeyValuePair(resource, DialogConstants.LAST_DIALOG_COMMAND, triples);
-////		                		StringBuilder answer = new StringBuilder();
-////		                		ResultSet[] rss = insertTriplesAndQuery(resource, triples);
-//
-////								Map<String,String> colNamesAndTypes = new HashMap<String,String>();
-////								for (int i = 0; i <= rs.getColumnCount(); i++) {
-////									String colname = rs.getResultAt(i, 0).toString();
-////									String semtyp = rs.getResultAt(i, 1).toString();
-////									colNamesAndTypes.put(semtyp, colname);
-////								}
-////								if (colNamesAndTypes.size() > 0) {
-////									StringBuilder qsb = new StringBuilder("select distinct ?eq ?argname ?argsemtype where {" + 
-////											"	{select ?eq ?argname ?argsemtype where {?eq <arguments> ?arglist . ?arglist <http://jena.hpl.hp.com/ARQ/list#member> ?member . " + 
-////											"	?member <descriptorName> ?argname . ?member <augmentedType> ?augtype . ?augtype <semType> ?argsemtype" + 
-////											"	}}" + 
-////											"	UNION" + 
-////											"	{select ?eq ?argname ?argsemtype where {?eq <returnTypes> ?retlist . ?retlist <http://jena.hpl.hp.com/ARQ/list#member> ?member . " + 
-////											"	OPTIONAL{?member <descriptorName> ?argname} . ?member <augmentedType> ?augtype . ?augtype <semType> ?argsemtype}}" + 
-////											"	. 	VALUES ?argsemtype {");
-////									Set<String> keys = colNamesAndTypes.keySet();
-////									for (String key : keys) {
-////										qsb.append("<");
-////										qsb.append(key);
-////										qsb.append("> ");
-////									}
-////									qsb.append("}}");
-//////									System.out.println(qsb.toString());
-////									((Query)lastcmd).setSparqlQueryString(qsb.toString());
-////									ResultSet rs2 = runQuery(resource, (Query)lastcmd);
-////									rs2.setShowNamespaces(true);
-////									if (rs2 != null && rs2.getRowCount() > 0) {
-////										StringBuilder retsb = new StringBuilder("Models found (table, colname, model, argname, matchingType)\n");
-////										for (int i = 0; i < rs2.getRowCount(); i++) {
-////											String eq = rs2.getResultAt(i, 0).toString();
-////											Object argnameObj = rs2.getResultAt(i, 1);
-////											String argname = argnameObj != null ? argnameObj.toString() : "return";
-////											String argsemtype = rs2.getResultAt(i, 2).toString();
-////											String colname = colNamesAndTypes.get(argsemtype);
-////											retsb.append(doc.getName() + ", " + colname + ", " + eq + ", " + argname  + ", " + argsemtype);
-////											retsb.append("\n");
-////										}
-////										return retsb.toString();
-////									}
-////								}
-//							}
-//							else {
-//								
 //							}
 //						}
 //					}
-//				}
-//				return lastcmd;
+//					return resultSetToQuotableString(answer.toString());
+//        		}
+//        		catch (Exception e)
+//        		{
+//	                logger.debug("AutoEdit error (of type " + e.getClass().getCanonicalName() + "): " + e.getMessage());   
+//	                return null;
+//	            }
 //			}
 
 			private Object processModelToDocQuery(Resource resource, Query lastcmd) {
