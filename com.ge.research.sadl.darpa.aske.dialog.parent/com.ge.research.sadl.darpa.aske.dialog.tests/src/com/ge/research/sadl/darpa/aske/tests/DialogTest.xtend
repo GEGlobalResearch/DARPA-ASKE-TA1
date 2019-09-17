@@ -209,8 +209,6 @@ class DialogTest extends AbstractDialogTest {
 			Force is a type of UnittedQuantity.
 			Speed is a type of UnittedQuantity.
 			Acceleration is a type of UnittedQuantity.
-			
-			External secondLaw(double m, double acc) returns double: "http://sadl.org/secondlaw".
 		'''.sadl
 
 		'''
@@ -531,9 +529,9 @@ class DialogTest extends AbstractDialogTest {
 			\"\"\" generated source for module inputfile \"\"\"
 			class SL(object):
 			    \"\"\" generated source for class Mach \"\"\"
-			    def secondLaw(self, m, a):
+			    def secondLaw(self, m, acc):
 			        \"\"\" generated source for method secondLaw \"\"\"
-			        return (m * a)
+			        return (m * acc)
 			
 			").
 			Save secondLaw to tgt.
