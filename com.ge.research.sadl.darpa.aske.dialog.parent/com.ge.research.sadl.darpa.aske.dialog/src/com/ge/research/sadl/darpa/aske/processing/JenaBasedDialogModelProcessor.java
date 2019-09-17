@@ -740,7 +740,7 @@ public class JenaBasedDialogModelProcessor extends JenaBasedSadlModelProcessor {
 		cm.setConversation(dc);
 	}
 
-	private AnswerCurationManager getAnswerCurationManager() throws IOException {
+	public AnswerCurationManager getAnswerCurationManager() throws IOException {
 		if (answerCurationManager == null) {
 			Object cm = getConfigMgr().getPrivateKeyValuePair(DialogConstants.ANSWER_CURATION_MANAGER);
 			if (cm != null) {

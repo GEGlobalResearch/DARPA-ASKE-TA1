@@ -8,6 +8,7 @@ import org.junit.Test
 import static org.junit.Assert.assertNotNull
 import static org.junit.Assert.assertTrue
 import static org.junit.Assert.assertEquals
+import com.ge.research.sadl.darpa.aske.processing.JenaBasedDialogModelProcessor
 
 class DialogTest extends AbstractDialogTest {
 
@@ -541,6 +542,8 @@ class DialogTest extends AbstractDialogTest {
 		'''.assertValidatesTo [ ontModel, issues, processor |
 			assertNotNull(ontModel)
 			assertTrue(issues.filter[severity === Severity.ERROR].empty)
+			val secondLaw250 = (processor as JenaBasedDialogModelProcessor).answerCurationManager.getAnswerToQuestion("evaluate secondLaw(10, 25).")
+			assertTrue(secondLaw250 !== null && secondLaw250.equals("[250.]"))
 		]
 	}
 

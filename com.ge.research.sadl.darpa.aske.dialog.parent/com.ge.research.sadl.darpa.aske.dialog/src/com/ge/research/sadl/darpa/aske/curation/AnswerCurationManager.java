@@ -83,6 +83,7 @@ import com.ge.research.sadl.darpa.aske.processing.imports.AnswerExtractionProces
 import com.ge.research.sadl.darpa.aske.processing.imports.AnswerExtractionProcessor.CodeLanguage;
 import com.ge.research.sadl.darpa.aske.processing.imports.CodeExtractionException;
 import com.ge.research.sadl.darpa.aske.processing.imports.IModelFromCodeExtractor;
+import com.ge.research.sadl.darpa.aske.processing.imports.KChainServiceInterface;
 import com.ge.research.sadl.darpa.aske.processing.imports.TextProcessor;
 import com.ge.research.sadl.jena.reasoner.JenaReasonerPlugin;
 import com.ge.research.sadl.model.gp.GraphPatternElement;
@@ -605,6 +606,161 @@ public class AnswerCurationManager {
 			return returnValue = "Failed: Unable to find model '" + equationToBuildUri + "' in code model.";
 		}
 		return returnValue;
+	}
+
+	private String processEvalRequest(org.eclipse.emf.ecore.resource.Resource resource, OntModel ontModel,
+			String modelName, EvalContent sc) throws ConfigurationException, ReasonerNotFoundException, IOException, EquationNotFoundException, QueryParseException, QueryCancelledException {
+		String returnValue = "Evaluation failed";
+		URI resourceURI = resource.getURI();
+		IReasoner reasoner = null;
+		if (ResourceManager.isSyntheticUri(null, resourceURI)) {
+			reasoner = getInitializedReasonerForConfiguration(getDomainModelConfigurationManager(), ontModel, modelName);
+		}
+		else {
+			reasoner = getInitializedReasonerForConfiguration(domainModelConfigurationManager, modelName);
+		}
+		Node equationToEvaluate = sc.getEquationName();
+		List<Node> params = sc.getParameters();
+		Individual modelInstance = ontModel.getIndividual(equationToEvaluate.getURI());
+		if (modelInstance == null) {
+			throw new EquationNotFoundException("Equation '" + equationToEvaluate.getURI() + "' not found.");
+		}
+		Statement argStmt = modelInstance.getProperty(ontModel.getProperty(SadlConstants.SADL_IMPLICIT_MODEL_ARGUMENTS_PROPERTY_URI));
+		if (argStmt != null) {
+			com.hp.hpl.jena.rdf.model.Resource ddList = argStmt.getObject().asResource();
+			if (ddList instanceof Resource) {
+				String argQuery = "select ?argName ?argType where {<" + modelInstance.getURI() + "> <" + 
+						SadlConstants.SADL_IMPLICIT_MODEL_ARGUMENTS_PROPERTY_URI + 
+						"> ?ddList . ?ddList <http://jena.hpl.hp.com/ARQ/list#member> ?member . ?member <" +
+						SadlConstants.SADL_IMPLICIT_MODEL_DESCRIPTOR_NAME_PROPERTY_URI + "> ?argName . ?member <" +
+						SadlConstants.SADL_IMPLICIT_MODEL_DATATYPE_PROPERTY_URI + "> ?argType}";							// query to get the argument names and types
+				ResultSet rs = reasoner.ask(argQuery);
+				System.out.println(rs != null ? rs.toString() : "no argument results");
+				String retQuery = "select ?retName ?retType where {<" + modelInstance.getURI() + "> <" + 
+						SadlConstants.SADL_IMPLICIT_MODEL_RETURN_TYPES_PROPERTY_URI + 
+						"> ?ddList . ?ddList <http://jena.hpl.hp.com/ARQ/list#member> ?member . OPTIONAL{?member <" +
+						SadlConstants.SADL_IMPLICIT_MODEL_DESCRIPTOR_NAME_PROPERTY_URI + "> ?retName} . ?member <" +
+						SadlConstants.SADL_IMPLICIT_MODEL_DATATYPE_PROPERTY_URI + "> ?retType}";							// query to get the return types
+				ResultSet rs2 = reasoner.ask(retQuery);
+				System.out.println(rs2 != null ? rs2.toString() : "no return type results");
+				
+				returnValue = evaluateInComputationalGraph(modelInstance, rs, rs2, params);
+			}
+		}
+		return returnValue;
+	}
+
+	/**
+	 * Method to evaluate an equation in the target computational graph
+	 * @param modelUri--the URI of the equation to be evaluated
+	 * @param outputName--the name of the output of the calculation
+	 * @param rs--a ResultSet containing input names and types
+	 * @param rs2--a ResultSet containing output names (may be null) and types
+	 * @param modifiedPythonScript--the Python script of the equation for physics-based models
+	 * @param dataLocation--the location of the data for data-driven models
+	 * @return--the URI of the successfully created model in the computational graph or null if not successful
+	 * @throws IOException
+	 */
+//	public String evaluateInComputationalGraph(String modelUri, String outputName, ResultSet rsInputs, ResultSet rsOutputs, String modifiedPythonScript, String dataLocation) throws IOException {
+	public String evaluateInComputationalGraph(Individual modelToEvaluate, ResultSet rsInputs, ResultSet rsOutputs, List<Node>params) throws IOException {
+		// construct String inputs to the service
+		/*
+		 * Construct after this manner:
+		 * 	String[] input1 = new String[3];
+			input1[0] = "T";
+			input1[1] = "double";
+			input1[2] = "508.788";
+			inputs.add(input1);
+			String[] input2 = new String[3];
+			input2[0] = "G";
+			input2[1] = "double";
+			input2[2] = "1.4";
+			inputs.add(input2);
+			String[] input3 = new String[3];
+			input3[0] = "R";
+			input3[1] = "double";
+			input3[2] = "53.3";
+			inputs.add(input3);
+			String[] input4 = new String[3];
+			input4[0] = "Q";
+			input4[1] = "double";
+			input4[2] = "5500";
+			inputs.add(input4);
+
+			String[] output1 = new String[2];
+			output1[0] = "CAL_SOS";
+			output1[1] = "double";
+			outputs.add(output1);
+
+		 */
+		rsInputs.setShowNamespaces(false);
+		rsOutputs.setShowNamespaces(false);
+		
+		List<String[]> inputs = new ArrayList<String[]>();
+		List<String[]> outputs = new ArrayList<String[]>();
+		String[] colNames = rsInputs.getColumnNames();    		// check to make sure columns are as expected for robustness
+		if (!colNames[0].equals("argName")) {
+			throw new IOException("The ResultSet for inputs to the equation does not have 'argName' in the first column");
+		}
+		if (!colNames[1].equals("argType")) {
+			throw new IOException("The ResultSet for inputs to the equation does not have 'argType' in the second column");
+		}
+		String[] colNamesRet = rsOutputs.getColumnNames();
+		if (!colNamesRet[0].equals("retName")) {
+			throw new IOException("The ResultSet for returns from the equation does not have 'retName' in the first column");
+		}
+		if (!colNamesRet[1].equals("retType")) {
+			throw new IOException("The ResultSet for returns from the equation does not have 'retType' in the second column");
+		}
+		int rsColCount = rsInputs.getColumnCount();
+		int rsRowCount = rsInputs.getRowCount();
+		int numParams = params.size();
+		if (numParams != rsRowCount) {
+			throw new IOException("Number of parameters does not equal the number of equation arguments.");
+		}
+		for (int r = 0; r < rsRowCount; r++) {
+			String[] input = new String[rsColCount + 1];
+			for (int c = 0; c < rsColCount; c++) {
+				input[c] = rsInputs.getResultAt(r, c).toString();
+			}
+			input[rsColCount] = params.get(r).toString();
+			inputs.add(input);
+		}
+		
+		int rs2ColCount = rsOutputs.getColumnCount();
+		int rs2RowCount = rsOutputs.getRowCount();
+		if (rs2RowCount != 1) {
+			throw new IOException("Only one output is currently handled by  saveToComputationalGraph");
+		}
+		for (int r = 0; r < rs2RowCount; r++) {
+			String[] output = new String[rs2ColCount];
+			for (int c = 0; c < rs2ColCount; c++) {
+				output[0] = modelToEvaluate.getLocalName();
+				output[1] = rsOutputs.getResultAt(r, 1).toString();
+			}
+			outputs.add(output);
+		}
+		
+		List<List<String[]>> results = evaluateInComputationalGraph(modelToEvaluate.getLocalName(), inputs, outputs);
+		String retVal = results.get(0).get(0)[2];
+		return retVal;
+	}
+
+	/**
+	 * Method to save a Python script as an equation in the target computational graph
+	 * @param modelUri--the URI of the equation to be saved
+	 * @param modifiedPythonScript
+	 * @param dataLocation
+	 * @param inputs
+	 * @param outputs
+	 * @return -- a List of Lists of String array. Each String array contains the [0] name, [1] type, adn [2] the value of the output.
+	 * @throws IOException
+	 */
+	public List<List<String[]>> evaluateInComputationalGraph(String modelUri, List<String[]> inputs, List<String[]> outputs) throws IOException {
+		KChainServiceInterface kcService = new KChainServiceInterface();
+		List<List<String[]>> results = kcService.evalCGModel(modelUri, inputs, outputs);
+						
+		return results;
 	}
 
 	private String stripNamespaceDelimiter(String ns) {
@@ -1252,7 +1408,9 @@ public class AnswerCurationManager {
 		targetModelMap.put(alias, targetUris);
 	}
 	
-	public String processUserRequest(org.eclipse.emf.ecore.resource.Resource resource, OntModel theModel, String modelName, ExpectsAnswerContent sc) throws ConfigurationException, ExecutionException, IOException, TranslationException, InvalidNameException, ReasonerNotFoundException, QueryParseException, QueryCancelledException, SadlInferenceException {
+	public String processUserRequest(org.eclipse.emf.ecore.resource.Resource resource, OntModel theModel, String modelName, ExpectsAnswerContent sc) 
+			throws ConfigurationException, ExecutionException, IOException, TranslationException, InvalidNameException, 
+				ReasonerNotFoundException, QueryParseException, QueryCancelledException, SadlInferenceException, EquationNotFoundException {
 		String retVal;
 		if (sc instanceof WhatIsContent) {
     		retVal = processWhatIsContent(resource, theModel, modelName, (WhatIsContent) sc);
@@ -1271,7 +1429,6 @@ public class AnswerCurationManager {
 		}
 		else if (sc instanceof EvalContent) {
 			retVal = processEvalRequest(resource, theModel, modelName, (EvalContent)sc);
-			retVal = "Eval not yet implemented";
 		}
 		else {
 			System.out.println("Need to add '" + sc.getClass().getCanonicalName() + "' to processUserRequest");
@@ -1280,12 +1437,6 @@ public class AnswerCurationManager {
 		return retVal;
 	}
 	
-	private String processEvalRequest(org.eclipse.emf.ecore.resource.Resource resource, OntModel theModel,
-			String modelName, EvalContent sc) {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
 	private String processModifiedAsk(org.eclipse.emf.ecore.resource.Resource resource, OntModel theModel, String modelName, ModifiedAskContent sc) throws ConfigurationException, TranslationException, InvalidNameException, ReasonerNotFoundException, QueryParseException, QueryCancelledException {
 		Query q = ((ModifiedAskContent)sc).getQuery();
 		String answer = null;
@@ -2198,6 +2349,9 @@ public class AnswerCurationManager {
 					} catch (SadlInferenceException e) {
 						// TODO Auto-generated catch block
 						e.printStackTrace();
+					} catch (EquationNotFoundException e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
 					}
 				}
 			}
@@ -2206,13 +2360,29 @@ public class AnswerCurationManager {
 			for (int i = additions.size() - 1; i >= 0; i--) {
 				ConversationElement newCE = additions.get(i);
 				ConversationElement preceeding = additionMap.get(newCE);
-				
+				System.out.println("Conversation element '" + preceeding.toString() + "' has new addition following it:");
+				System.out.println("   " + newCE.toString());
+				System.out.println("   Answer is: " + getQuestionsAndAnswers().get(preceeding.getText().trim()));
 			}
 		}
 	}
 
 	private Map<String, String> getQuestionsAndAnswers() {
 		return questionsAndAnswers;
+	}
+	
+	/**
+	 * Method to find an answer using the question text as key.
+	 * @param question
+	 * @return
+	 */
+	public String getAnswerToQuestion(String question) {
+		if (questionsAndAnswers != null) {
+			if (questionsAndAnswers.containsKey(question)) {
+				return questionsAndAnswers.get(question);
+			}
+		}
+		return null;
 	}
 
 	private boolean addQuestionAndAnswer(String question, String answer) {

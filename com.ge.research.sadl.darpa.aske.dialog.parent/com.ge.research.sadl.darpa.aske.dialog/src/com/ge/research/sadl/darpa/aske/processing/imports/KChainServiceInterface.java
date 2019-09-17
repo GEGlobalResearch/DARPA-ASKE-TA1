@@ -6,6 +6,8 @@ import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.net.HttpURLConnection;
 import java.net.URL;
+import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 
 import com.google.gson.JsonArray;
@@ -63,37 +65,7 @@ public class KChainServiceInterface {
 		String buildServiceURL = kchainServiceURL + "build";
 		URL serviceUrl = new URL(buildServiceURL);			
 
-		JsonObject json = new JsonObject();
-		json.addProperty("modelName", modelUri);
-		if (equationModel != null) {
-			json.addProperty("equationModel", equationModel);
-		}
-		if (dataLocation != null) {
-			json.addProperty("dataLocation", dataLocation);
-		}
-		JsonArray jarrin = new JsonArray();
-		json.add("inputVariables", jarrin);
-		
-		for (int i = 0; i < inputs.size(); i++) {
-			String[] input = inputs.get(i);
-			JsonObject inputj = new JsonObject();
-			inputj.addProperty("name", input[0]);
-			inputj.addProperty("type", input[1]);
-			if (input.length > 2) {
-				inputj.addProperty("value", input[2]);
-			}
-			jarrin.add(inputj);
-		}
-		JsonArray jarrout = new JsonArray();
-		json.add("outputVariables", jarrout);
-		for (String[] output : outputs) {
-			JsonObject outputj = new JsonObject();
-			outputj.addProperty("name", output[0]);
-			outputj.addProperty("type", output[1]);
-			jarrout.add(outputj);
-		}
-		
-		System.out.println(json.toString());
+		JsonObject json = generateRequestJson(modelUri, equationModel, dataLocation, inputs, outputs);
 		
 		String jsonResponse = makeConnectionAndGetResponse(serviceUrl, json);
 
@@ -130,11 +102,133 @@ public class KChainServiceInterface {
 			throw new IOException("Unexpected response: " + je.toString());
 		}
 	}
+
+	private JsonObject generateRequestJson(String modelUri, String equationModel, String dataLocation,
+			List<String[]> inputs, List<String[]> outputs) {
+		JsonObject json = new JsonObject();
+		json.addProperty("modelName", modelUri);
+		if (equationModel != null) {
+			json.addProperty("equationModel", equationModel);
+		}
+		if (dataLocation != null) {
+			json.addProperty("dataLocation", dataLocation);
+		}
+		JsonArray jarrin = new JsonArray();
+		json.add("inputVariables", jarrin);
+		
+		for (int i = 0; i < inputs.size(); i++) {
+			String[] input = inputs.get(i);
+			JsonObject inputj = new JsonObject();
+			inputj.addProperty("name", input[0]);
+			inputj.addProperty("type", input[1]);
+			if (input.length > 2) {
+				inputj.addProperty("value", input[2]);
+			}
+			jarrin.add(inputj);
+		}
+		JsonArray jarrout = new JsonArray();
+		json.add("outputVariables", jarrout);
+		for (String[] output : outputs) {
+			JsonObject outputj = new JsonObject();
+			outputj.addProperty("name", output[0]);
+			outputj.addProperty("type", output[1]);
+			jarrout.add(outputj);
+		}
+		
+		System.out.println(json.toString());
+		return json;
+	}
 	
 	public boolean addCGModeltoExistingKGModel(String modelUri, String modelType, String metagraphLocation, Double[] dfd) {
 		// TODO Auto-generated method stub
 		
 		return true;
+	}
+	
+	public List<List<String[]>> evalCGModel(String modelUri, List<String[]> inputs, List<String[]> outputs) throws IOException {
+		/*
+		{
+		  "inputVariables": [
+		    {
+		      "name": "string",
+		      "type": "string",
+		      "value": "string"
+		    }
+		  ],
+		  "outputVariables": [
+		    {
+		      "name": "string",
+		      "type": "string",
+		      "value": "string"
+		    }
+		  ],
+		  "modelName": "string"
+		}
+		 */
+
+//		String host = "3.39.122.224";
+//		String host = "3.1.176.139";
+		String host = "vesuvius-dev.crd.ge.com";
+//		String host = "3.39.122.58";
+		int port = 12345;
+		String kchainServiceURL = "http://" + host + ":" + port + "/darpa/aske/kchain/";
+		String evalServiceURL = kchainServiceURL + "evaluate";
+		URL serviceUrl = new URL(evalServiceURL);			
+
+		JsonObject json = generateRequestJson(modelUri, null, null, inputs, outputs);
+		
+		String jsonResponse = makeConnectionAndGetResponse(serviceUrl, json);
+		
+		System.out.println(jsonResponse);
+		
+		/*
+		{
+		  "outputVariables": [
+		    {
+		      "name": "string",
+		      "type": "string",
+		      "value": "string"
+		    }
+		  ]
+		}
+ */
+		JsonElement je = new JsonParser().parse(jsonResponse);
+		
+		if (!je.isJsonObject()) {
+			throw new IOException("Unexpected response: " + je.toString());
+		}
+		
+		JsonObject evalResults = je.getAsJsonObject();
+		JsonArray ovars = evalResults.get("outputVariables").getAsJsonArray();
+		List<String[]> results = new ArrayList<String[]>();
+		for (JsonElement ovar : ovars) {
+			String[] aValue = new String[3];
+			aValue[0] = ovar.getAsJsonObject().get("name").getAsString();
+			aValue[1] = ovar.getAsJsonObject().get("type").getAsString();
+			aValue[2] = ovar.getAsJsonObject().get("value").getAsString();	
+			results.add(aValue);
+		}
+		JsonElement du = evalResults.get("defaultsUsed");
+		List<String[]> defaultValues = null;
+		if (du != null) {
+			JsonArray defsUsed = du.getAsJsonArray();
+			if (defsUsed != null) {
+				defaultValues = new ArrayList<String[]>();
+				for (JsonElement defobj : defsUsed) {
+					String[] aDefault = new String[2];
+					aDefault[0] = defobj.getAsJsonObject().get("name").getAsString();
+					aDefault[1] = defobj.getAsJsonObject().get("value").getAsString();
+					defaultValues.add(aDefault);
+				}
+			}
+		}
+		// return results: 
+		List<List<String[]>> retLists = new ArrayList<List<String[]>>();
+		retLists.add(results);
+		if (defaultValues != null) {
+			retLists.add(defaultValues);
+		}
+		return retLists;
 	}
 	
 	/**
