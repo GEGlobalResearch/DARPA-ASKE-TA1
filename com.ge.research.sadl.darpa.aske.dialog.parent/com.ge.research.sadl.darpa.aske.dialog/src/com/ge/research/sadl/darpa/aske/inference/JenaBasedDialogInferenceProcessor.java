@@ -266,16 +266,17 @@ public class JenaBasedDialogInferenceProcessor extends JenaBasedSadlInferencePro
 			"prefix rdfs:<http://www.w3.org/2000/01/rdf-schema#>\n" + 
 			"prefix rdf:<http://www.w3.org/1999/02/22-rdf-syntax-ns#>\n" + 
 			"\n" + 
-			"select distinct ?Node ?Child ?Distribution ?Lower ?Upper ?Eq ?Value \n" +
+			"select distinct ?Node (str(?NUnits) as ?NodeOutputUnits) ?Child (str(?CUnits) as ?ChildInputUnits) ?Distribution ?Lower ?Upper ?Eq ?Value \n" +
 			" where {\n" + 
-			"  {select distinct ?Node ?Child ?Distribution ?Lower ?Upper ?Eq where { \n" + 
+			"  {select distinct ?Node ?Child ?CUnits ?Distribution ?Lower ?Upper ?Eq where { \n" + 
 			"     ?Eq imp:arguments ?EI1.\n" + 
 			"     ?EI1 rdf:rest*/rdf:first ?EI2.\n" + 
 			"     ?EI2 imp:augmentedType ?EI3. \n" + 
 			"     ?EI3 imp:constraints ?EI4.\n" + 
 			"     ?EI4 rdf:rest*/rdf:first ?EI5.\n" + 
 			"     ?EI5 imp:gpPredicate ?Node.\n" + 
-			"       filter (?Node != <http://www.w3.org/1999/02/22-rdf-syntax-ns#type>)\n" + 
+			"       filter (?Node != <http://www.w3.org/1999/02/22-rdf-syntax-ns#type>)\n" +
+			"     ?EI2 imp:specifiedUnits/rdf:first ?CUnits." + 
 			"\n" + 
 			"     ?Eq imp:returnTypes ?EO1.\n" + 
 			"     ?EO1 rdf:rest*/rdf:first ?EO2.\n" + 
@@ -303,7 +304,7 @@ public class JenaBasedDialogInferenceProcessor extends JenaBasedSadlInferencePro
 			"     ?Range cg:upper ?Upper.\n" + 
 			"  }} \n" + 
 			"  union {\n" + 
-			"  select distinct ?Node ?Child ?Distribution ?Lower ?Upper ?Eq where {\n" + 
+			"  select distinct ?Node ?NUnits ?Child ?CUnits ?Distribution ?Lower ?Upper ?Eq where {\n" + 
 			"     ?Eq imp:arguments ?EI1.\n" + 
 			"     ?EI1 rdf:rest*/rdf:first ?EI2.\n" + 
 			"     ?EI2 imp:augmentedType ?EI3. \n" + 
@@ -311,6 +312,7 @@ public class JenaBasedDialogInferenceProcessor extends JenaBasedSadlInferencePro
 			"     ?EI4 rdf:rest*/rdf:first ?EI5.\n" + 
 			"     ?EI5 imp:gpPredicate ?Node.\n" + 
 			"       filter (?Node != <http://www.w3.org/1999/02/22-rdf-syntax-ns#type>)\n" + 
+			"     ?EI2 imp:specifiedUnits/rdf:first ?CUnits." + 
 			"\n" + 
 			"     ?Eq imp:returnTypes ?EO1.\n" + 
 			"     ?EO1 rdf:rest*/rdf:first ?EO2.\n" + 
@@ -332,6 +334,7 @@ public class JenaBasedDialogInferenceProcessor extends JenaBasedSadlInferencePro
 			"     ?EqO3 imp:constraints ?EqO4.\n" + 
 			"     ?EqO4 rdf:rest*/rdf:first ?EqO5.\n" + 
 			"     ?EqO5 imp:gpPredicate ?Node.\n" + 
+			"     ?EqO2 imp:specifiedUnits/rdf:first ?CUnits." +
 			"\n" + 
 			"     ?DBN rdfs:subClassOf ?DB. \n" + 
 			"     ?DB owl:onProperty cg:distribution. \n" + 
@@ -340,19 +343,19 @@ public class JenaBasedDialogInferenceProcessor extends JenaBasedSadlInferencePro
 			"     ?DBN rdfs:subClassOf ?RB. \n" + 
 			"     ?RB owl:onProperty cg:range. \n" + 
 			"     ?RB owl:hasValue ?Range. \n" + 
-			"     ?Range sci:lower ?Lower. \n" + 
-			"     ?Range sci:upper ?Upper. \n" + 
+			"     ?Range cg:lower ?Lower. \n" + 
+			"     ?Range cg:upper ?Upper. \n" + 
 			"  }}\n" + 
 			"  union {\n" + 
-			"  select distinct ?Eq ?Node ?Distribution ?Lower ?Upper where { \n" + 
+			"  select distinct ?Eq ?Node ?NUnits ?Distribution ?Lower ?Upper where { \n" + 
 			"     ?Eq imp:returnTypes ?EO1.\n" + 
 			"     ?EO1 rdf:rest*/rdf:first ?EO2.\n" + 
 			"     ?EO2 imp:augmentedType ?EO3. \n" + 
 			"     ?EO3 imp:constraints ?EO4.\n" + 
 			"     ?EO4 rdf:rest*/rdf:first ?EO5.\n" + 
-			"     ?EO5 imp:gpPredicate ?Oi. \n" + 
-			"     ?Oi a ?Node. \n" + 
+			"     ?EO5 imp:gpPredicate ?Node. \n" + 
 			"       filter (?Eq in ( EQNSLIST ))\n" + 
+			"     ?EO2 imp:specifiedUnits/rdf:first ?NUnits.\n" + 
 			"     filter not exists { \n" + 
 			"	?Eq1 imp:arguments ?EI1.\n" + 
 			"        ?EI1 rdf:rest*/rdf:first ?EI2.\n" + 
@@ -373,8 +376,8 @@ public class JenaBasedDialogInferenceProcessor extends JenaBasedSadlInferencePro
 			"     ?DBN rdfs:subClassOf ?RB. \n" + 
 			"     ?RB owl:onProperty cg:range.        \n" + 
 			"     ?RB owl:hasValue ?Range.\n" + 
-			"     ?Range sci:lower ?Lower.\n" + 
-			"     ?Range sci:upper ?Upper.\n" + 
+			"     ?Range cg:lower ?Lower.\n" + 
+			"     ?Range cg:upper ?Upper.\n" + 
 			" }}\n" +
 			"  ?Q mm:execution/mm:compGraph ?CG. \n" +
 			"   filter (?CG in (COMPGRAPH)).\n" + 
@@ -987,9 +990,6 @@ public class JenaBasedDialogInferenceProcessor extends JenaBasedSadlInferencePro
 			            lbl2value = getLabelToMeanStdMapping(dbnResultsJson);
 		//TODO
 			            createCGsubgraphs(cgIns, dbnEqns, dbnOutput, listOfEqns, class2lbl, lbl2value);
-
-			            
-						saveMetaDataFile(resource);
 
 			            
 			            //add outputs to CG if calibration
