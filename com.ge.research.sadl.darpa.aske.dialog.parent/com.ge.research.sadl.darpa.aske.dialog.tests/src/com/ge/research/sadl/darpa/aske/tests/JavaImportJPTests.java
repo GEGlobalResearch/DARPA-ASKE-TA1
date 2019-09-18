@@ -35,6 +35,7 @@
  ***********************************************************************/
 package com.ge.research.sadl.darpa.aske.tests;
 
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
@@ -43,6 +44,7 @@ import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
 
+import org.eclipse.emf.ecore.resource.Resource;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
@@ -52,10 +54,12 @@ import org.slf4j.LoggerFactory;
 import com.ge.research.sadl.builder.ConfigurationManagerForIdeFactory;
 import com.ge.research.sadl.builder.IConfigurationManagerForIDE;
 import com.ge.research.sadl.darpa.aske.curation.AnswerCurationManager;
+import com.ge.research.sadl.darpa.aske.curation.AnswerCurationManager.Agent;
 import com.ge.research.sadl.darpa.aske.curation.AnswerCurationManager.SaveAsSadl;
 import com.ge.research.sadl.darpa.aske.curation.DialogAnswerProviderConsoleForTest;
 import com.ge.research.sadl.darpa.aske.processing.DialogConstants;
 import com.ge.research.sadl.darpa.aske.processing.IDialogAnswerProvider;
+import com.ge.research.sadl.darpa.aske.processing.SaveContent;
 import com.ge.research.sadl.darpa.aske.processing.imports.IModelFromCodeExtractor;
 import com.ge.research.sadl.darpa.aske.processing.imports.JavaModelExtractorJP;
 import com.ge.research.sadl.owl2sadl.OwlImportException;
@@ -135,10 +139,7 @@ public class JavaImportJPTests {
 		jme.setDefaultCodeModelPrefix(defaultCodeModelPrefix);
 		jme.setDefaultCodeModelName(defaultCodeModelName);
 		jme.setIncludeSerialization(false);
-		jme.process("TemperatureConversion class", javaContent);
-		
-//		String content = smg.generateSadlModel(jme, "http://sadl.org/Temperature.sadl");
-//		System.out.println("SADL Model Output:\n" + content);
+		assertTrue(jme.process("TemperatureConversion class", javaContent));
 	}
 
 	@Test
@@ -183,9 +184,7 @@ public class JavaImportJPTests {
 		jme.setDefaultCodeModelPrefix(defaultCodeModelPrefix);
 		jme.setDefaultCodeModelName(defaultCodeModelName);
 		jme.setIncludeSerialization(false);
-		jme.process("TemperatureConversion class", javaContent);
-//		String content = smg.generateSadlModel(jme, "http://sadl.org/Temperature.sadl");
-//		System.out.println("SADL Model Output:\n" + content);
+		assertTrue(jme.process("TemperatureConversion class", javaContent));
 	}
 
 	@Test
@@ -232,17 +231,13 @@ public class JavaImportJPTests {
 		String defaultCodeModelName = "http://com.ge.research.darpa.aske.ta1.explore/" + defaultCodeModelPrefix;
 		jme.setDefaultCodeModelPrefix(defaultCodeModelPrefix);
 		jme.setDefaultCodeModelName(defaultCodeModelName);
-		jme.process("PhysicalObject class", javaContent);
-//		String content = smg.generateSadlModel(jme, "http://sadl.org/Temperature.sadl");
-//		System.out.println("SADL Model Output:\n" + content);
+		assertTrue(jme.process("PhysicalObject class", javaContent));
 	}
 	
 	@Test
 	public void test_04() throws IOException, ConfigurationException {
 		File sourceFile = new File(getCodeExtractionKbRoot() + "/ExtractedModels/Sources/Isentrop.java");
 		assertTrue(sourceFile.exists());
-//		ClassLoader classLoader = getClass().getClassLoader();
-//		File sourceFile = new File(classLoader.getResource("/Isentrop.java").getFile());		
 		String javaContent = readFile(sourceFile);
 		IConfigurationManagerForIDE cm = ConfigurationManagerForIdeFactory.getConfigurationManagerForIDE(getDomainProjectModelFolder(), null);
 		AnswerCurationManager acm = new AnswerCurationManager(getDomainProjectModelFolder(), cm, null);
@@ -253,9 +248,7 @@ public class JavaImportJPTests {
 		jme.setDefaultCodeModelPrefix(defaultCodeModelPrefix);
 		jme.setDefaultCodeModelName(defaultCodeModelName);
 		jme.setIncludeSerialization(false);
-		jme.process("Isentrop.java", javaContent);
-//		String content = smg.generateSadlModel(jme, "http://sadl.org/Temperature.sadl");
-//		System.out.println("SADL Model Output:\n" + content);
+		assertTrue(jme.process("Isentrop.java", javaContent));
 	}
 	
 	@Test
@@ -288,10 +281,18 @@ public class JavaImportJPTests {
 		String query = "select ?m ?b ?e ?s where {?m <rdf:type> <Method> . ?m <doesComputation> true . OPTIONAL {?m <beginsAt> ?b . ?m <endsAt> ?e . ?m <serialization> ?s} .\r\n" + 
 				"		MINUS {\r\n" + 
 				"			{?ref <codeBlock> ?m . ?ref <isImplicit> true}\r\n" + 
-				"			UNION {?m <rdf:type> <ExternalMethod>} } }";
+				"			UNION {?m <rdf:type> <ExternalMethod>} } } order by ?m";
 		try {
-			ResultSet rs =acm.getCodeExtractor().executeSparqlQuery(query);
+			ResultSet rs =acm.getCodeExtractor().executeSparqlQuery(query);			
 			System.out.println(rs.toStringWithIndent(5));
+			int rows = rs.getRowCount();
+			assertEquals(5, rows);
+			String firstMethod = rs.getResultAt(0, 0).toString();
+			assertTrue(firstMethod != null && firstMethod.equals("http://com.ge.research.sadl.darpa.aske.answer/Mach_java#Mach.CAL_GAM"));
+			String firstMethodScript = rs.getResultAt(0, 3).toString();
+			assertTrue(firstMethodScript.equals("public double CAL_GAM(double T, double G, double Q) {\r\n" + 
+					"    return (1 + (G - 1) / (1 + (G - 1) * (Math.pow((Q / T), 2) * Math.exp(Q / T) / Math.pow((Math.exp(Q / T) - 1), 2))));\r\n" + 
+					"}"));
 		} catch (ReasonerNotFoundException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -304,21 +305,7 @@ public class JavaImportJPTests {
 		} catch (QueryCancelledException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
-		}
-		
-		
-//		jme.process("Mach.java", javaContent, includeSerialization);
-//		String content = smg.generateSadlModel(jme, "http://sadl.org/Temperature.sadl");
-//		System.out.println("SADL Model Output:\n" + content);
-//		cm.saveOwlFile(acm.getExtractionProcessor().getCodeModel(), 
-//				acm.getExtractionProcessor().getCodeModelName(), owlFileName);
-//		OwlToSadl ots = new OwlToSadl(acm.getExtractionProcessor().getCodeModel());
-//		String sadlFN = owlFileName + ".sadl";
-//		File sf = new File(sadlFN);
-//		if (sf.exists()) {
-//			sf.delete();
-//		}
-//		ots.saveSadlModel(owlFileName + ".sadl");
+		}	
 	}
 	
 	@Test
@@ -360,46 +347,11 @@ public class JavaImportJPTests {
 		acm.getExtractionProcessor().getCodeExtractor().setIncludeSerialization(includeSerialization);
 		acm.processImports(SaveAsSadl.AskUserSaveAsSadl);
 		assertTrue(owlF.exists() || sadlF.exists());
+		if (sadlF.exists()) {
+			String sadlContent = acm.getExtractionProcessor().getGeneratedSadlContent();
+			System.out.println(sadlContent);
+		}
 		
-//		String query = "select ?m ?b ?e ?s where {?m <rdf:type> <Method> . ?m <doesComputation> true . OPTIONAL {?m <beginsAt> ?b . ?m <endsAt> ?e . ?m <serialization> ?s} .\r\n" + 
-//				"		MINUS {\r\n" + 
-//				"			{?ref <codeBlock> ?m . ?ref <isImplicit> true}\r\n" + 
-//				"			UNION {?m <rdf:type> <ExternalMethod>} } }";
-//		try {
-//			ResultSet rs =acm.getCodeExtractor().executeSparqlQuery(query);
-//
-//			List<Object> args = new ArrayList<Object>();
-//			args.add(rs);
-			
-//		dapcft.addCurationManagerInitiatedContent(acm, "importCodeSnippetToComputationalGraph", null, "Would you like to import any of these models into the computational graph?");
-		
-//		} catch (ReasonerNotFoundException e) {
-//			// TODO Auto-generated catch block
-//			e.printStackTrace();
-//		} catch (InvalidNameException e) {
-//			// TODO Auto-generated catch block
-//			e.printStackTrace();
-//		} catch (QueryParseException e) {
-//			// TODO Auto-generated catch block
-//			e.printStackTrace();
-//		} catch (QueryCancelledException e) {
-//			// TODO Auto-generated catch block
-//			e.printStackTrace();
-//		}
-		
-		
-//		jme.process("Mach.java", javaContent, includeSerialization);
-//		String content = smg.generateSadlModel(jme, "http://sadl.org/Temperature.sadl");
-//		System.out.println("SADL Model Output:\n" + content);
-//		cm.saveOwlFile(acm.getExtractionProcessor().getCodeModel(), 
-//				acm.getExtractionProcessor().getCodeModelName(), owlFileName);
-//		OwlToSadl ots = new OwlToSadl(acm.getExtractionProcessor().getCodeModel());
-//		String sadlFN = owlFileName + ".sadl";
-//		File sf = new File(sadlFN);
-//		if (sf.exists()) {
-//			sf.delete();
-//		}
-//		ots.saveSadlModel(owlFileName + ".sadl");
 	}
 	
 	private String readFile(File file) throws IOException {
@@ -446,7 +398,11 @@ public class JavaImportJPTests {
 			AnswerCurationManager acm = new AnswerCurationManager(getDomainProjectModelFolder(), cm, null);
 			OntModel om = cm.loadOntModel(owlF.getCanonicalPath());
 			String equationToBuildUri = cm.getBaseUriFromOwlFile(owlF.getCanonicalPath()) + "#Mach.CAL_SOS";
-			String result = acm.processSaveRequest(equationToBuildUri , om);
+			Resource resource = null;
+			String modelName = om.getNsPrefixMap().get("");
+			SaveContent sc = new SaveContent(null, Agent.USER);
+			sc.setSourceEquationUri(equationToBuildUri);
+			String result = acm.processSaveRequest(resource, om, modelName, sc );
 		}
 
 	String getCodeExtractionKbRoot() {

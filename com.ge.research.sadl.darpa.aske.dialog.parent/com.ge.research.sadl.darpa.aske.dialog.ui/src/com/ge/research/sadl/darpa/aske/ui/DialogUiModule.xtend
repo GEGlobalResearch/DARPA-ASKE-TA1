@@ -36,6 +36,8 @@
  ***********************************************************************/
 package com.ge.research.sadl.darpa.aske.ui
 
+import com.ge.research.sadl.darpa.aske.ide.editor.contentassist.DialogIdeContentProposalProvider
+import com.ge.research.sadl.darpa.aske.ide.editor.contentassist.DialogIdeCrossrefProposalProvider
 import com.ge.research.sadl.darpa.aske.ui.answer.DialogAnswerProvider
 import com.ge.research.sadl.darpa.aske.ui.contentassist.DialogOntologyContextProvider
 import com.ge.research.sadl.darpa.aske.ui.preferences.DialogPreferencesInitializer
@@ -48,6 +50,8 @@ import com.ge.research.sadl.ui.contentassist.SadlReferenceProposalCreator
 import com.google.inject.Binder
 import com.google.inject.name.Names
 import org.eclipse.xtend.lib.annotations.FinalFieldsConstructor
+import org.eclipse.xtext.ide.editor.contentassist.IdeContentProposalProvider
+import org.eclipse.xtext.ide.editor.contentassist.IdeCrossrefProposalProvider
 import org.eclipse.xtext.ide.editor.syntaxcoloring.AbstractAntlrTokenToAttributeIdMapper
 import org.eclipse.xtext.ide.editor.syntaxcoloring.ISemanticHighlightingCalculator
 import org.eclipse.xtext.ui.editor.autoedit.DefaultAutoEditStrategyProvider
@@ -97,5 +101,13 @@ class DialogUiModule extends AbstractDialogUiModule {
 	def Class<? extends IOntologyContextProvider> bindIOntologyContextProvider() {
 		return DialogOntologyContextProvider;
 	}
-	
+
+	def Class<? extends IdeContentProposalProvider> bindIdeContentProposalProvider() {
+		return DialogIdeContentProposalProvider;
+	}
+
+	def Class<? extends IdeCrossrefProposalProvider> bindIdeCrossrefProposalProvider() {
+		return DialogIdeCrossrefProposalProvider;
+	}
+
 }
