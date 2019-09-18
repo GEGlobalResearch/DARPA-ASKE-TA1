@@ -276,7 +276,7 @@ public class JenaBasedDialogInferenceProcessor extends JenaBasedSadlInferencePro
 			"     ?EI4 rdf:rest*/rdf:first ?EI5.\n" + 
 			"     ?EI5 imp:gpPredicate ?Node.\n" + 
 			"       filter (?Node != <http://www.w3.org/1999/02/22-rdf-syntax-ns#type>)\n" +
-			"     ?EI2 imp:specifiedUnits/rdf:first ?CUnits." + 
+			"     optional{?EI2 imp:specifiedUnits/rdf:first ?CUnits.}" + 
 			"\n" + 
 			"     ?Eq imp:returnTypes ?EO1.\n" + 
 			"     ?EO1 rdf:rest*/rdf:first ?EO2.\n" + 
@@ -312,7 +312,7 @@ public class JenaBasedDialogInferenceProcessor extends JenaBasedSadlInferencePro
 			"     ?EI4 rdf:rest*/rdf:first ?EI5.\n" + 
 			"     ?EI5 imp:gpPredicate ?Node.\n" + 
 			"       filter (?Node != <http://www.w3.org/1999/02/22-rdf-syntax-ns#type>)\n" + 
-			"     ?EI2 imp:specifiedUnits/rdf:first ?CUnits." + 
+			"     optional{?EI2 imp:specifiedUnits/rdf:first ?CUnits.}" + 
 			"\n" + 
 			"     ?Eq imp:returnTypes ?EO1.\n" + 
 			"     ?EO1 rdf:rest*/rdf:first ?EO2.\n" + 
@@ -334,7 +334,7 @@ public class JenaBasedDialogInferenceProcessor extends JenaBasedSadlInferencePro
 			"     ?EqO3 imp:constraints ?EqO4.\n" + 
 			"     ?EqO4 rdf:rest*/rdf:first ?EqO5.\n" + 
 			"     ?EqO5 imp:gpPredicate ?Node.\n" + 
-			"     ?EqO2 imp:specifiedUnits/rdf:first ?CUnits." +
+			"     optional{?EqO2 imp:specifiedUnits/rdf:first ?CUnits.}" +
 			"\n" + 
 			"     ?DBN rdfs:subClassOf ?DB. \n" + 
 			"     ?DB owl:onProperty cg:distribution. \n" + 
@@ -355,7 +355,7 @@ public class JenaBasedDialogInferenceProcessor extends JenaBasedSadlInferencePro
 			"     ?EO4 rdf:rest*/rdf:first ?EO5.\n" + 
 			"     ?EO5 imp:gpPredicate ?Node. \n" + 
 			"       filter (?Eq in ( EQNSLIST ))\n" + 
-			"     ?EO2 imp:specifiedUnits/rdf:first ?NUnits.\n" + 
+			"     optional{?EO2 imp:specifiedUnits/rdf:first ?NUnits.}\n" + 
 			"     filter not exists { \n" + 
 			"	?Eq1 imp:arguments ?EI1.\n" + 
 			"        ?EI1 rdf:rest*/rdf:first ?EI2.\n" + 
