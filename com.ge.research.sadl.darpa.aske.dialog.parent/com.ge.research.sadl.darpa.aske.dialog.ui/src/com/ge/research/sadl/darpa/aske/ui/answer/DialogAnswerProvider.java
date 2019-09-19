@@ -83,6 +83,7 @@ import com.ge.research.sadl.darpa.aske.processing.DialogConstants;
 import com.ge.research.sadl.darpa.aske.processing.IDialogAnswerProvider;
 import com.ge.research.sadl.darpa.aske.processing.MixedInitiativeElement;
 import com.ge.research.sadl.darpa.aske.processing.MixedInitiativeTextualResponse;
+import com.ge.research.sadl.model.visualizer.IGraphVisualizer;
 import com.ge.research.sadl.processing.OntModelProvider;
 import com.ge.research.sadl.reasoner.ConfigurationException;
 import com.ge.research.sadl.reasoner.utils.SadlUtils;
@@ -114,25 +115,29 @@ public class DialogAnswerProvider implements IDialogAnswerProvider {
 			answerConfigurationManager.clearQuestionsAndAnsers();
 		}
 	}
-	
+
 	/**
 	 * Method to display graph
+	 * 
 	 * @param visualizer -- IGraphVisualizer instance that contains graphing info
 	 * @return -- null if successful else an error message
 	 */
 	public String displayGraph(IGraphVisualizer visualizer) {
-		String[] errorMsg = {null};
+		String[] errorMsg = { null };
 		String fileToOpen = visualizer.getGraphFileToOpen();
 		if (fileToOpen != null) {
 			File fto = new File(fileToOpen);
 			if (fto.isFile()) {
 				IFileStore fileStore = EFS.getLocalFileSystem().getStore(fto.toURI());
 				new Thread(new Runnable() {
-				      public void run() {
-				            try { Thread.sleep(1000); } catch (Exception e) { }
-				            Display.getDefault().asyncExec(new Runnable() {
-				               public void run() {
-				   				try {
+					public void run() {
+						try {
+							Thread.sleep(1000);
+						} catch (Exception e) {
+						}
+						Display.getDefault().asyncExec(new Runnable() {
+							public void run() {
+								try {
 									IWorkbench wb = PlatformUI.getWorkbench();
 									IWorkbenchWindow awbw = wb.getActiveWorkbenchWindow();
 									IWorkbenchPage page = null;
@@ -140,33 +145,29 @@ public class DialogAnswerProvider implements IDialogAnswerProvider {
 										if (wb.getWorkbenchWindowCount() == 1) {
 											page = wb.getWorkbenchWindows()[0].getActivePage();
 										}
-								    }
-									else {
+									} else {
 										page = PlatformUI.getWorkbench().getActiveWorkbenchWindow().getActivePage();
 									}
 									if (page != null) {
 										IDE.openEditorOnFileStore(page, fileStore);
-									}
-									else {
+									} else {
 										errorMsg[0] = "Error trying to get active window";
 										System.err.println(errorMsg);
 									}
-								}
-								catch (Throwable t) {
-									errorMsg[0] = "Error trying to display graph file '" + fileToOpen + "': " + t.getMessage();
+								} catch (Throwable t) {
+									errorMsg[0] = "Error trying to display graph file '" + fileToOpen + "': "
+											+ t.getMessage();
 									System.err.println(errorMsg);
 								}
-				               }
-				            });
-				      }
-				   }).start();
-			}
-			else if (fileToOpen != null) {
+							}
+						});
+					}
+				}).start();
+			} else if (fileToOpen != null) {
 				errorMsg[0] = "Failed to open graph file '" + fileToOpen + "'. Try opening it manually.";
 				System.err.println(errorMsg);
 			}
-		}
-		else {
+		} else {
 			errorMsg[0] = "Unable to find an instance of IGraphVisualizer to render graph for query.";
 			System.err.println(errorMsg + "\n");
 		}
