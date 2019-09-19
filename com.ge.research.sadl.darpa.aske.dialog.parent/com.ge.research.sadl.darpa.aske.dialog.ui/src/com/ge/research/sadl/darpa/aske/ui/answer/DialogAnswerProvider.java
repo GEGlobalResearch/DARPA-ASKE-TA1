@@ -71,6 +71,7 @@ import org.eclipse.jface.text.IAutoEditStrategy;
 import org.eclipse.jface.text.IDocument;
 import org.eclipse.jface.text.IRegion;
 import org.eclipse.swt.widgets.Display;
+import org.eclipse.ui.IWorkbench;
 import org.eclipse.ui.IWorkbenchPage;
 import org.eclipse.ui.IWorkbenchPart;
 import org.eclipse.ui.IWorkbenchWindow;
@@ -630,6 +631,64 @@ public class DialogAnswerProvider extends DefaultAutoEditStrategyProvider implem
 	    super.configure(acceptor);
 
 	}
+	
+	/**
+	 * Method to display graph
+	 * @param visualizer -- IGraphVisualizer instance that contains graphing info
+	 * @return -- null if successful else an error message
+	 */
+	public String displayGraph(IGraphVisualizer visualizer) {
+		String[] errorMsg = {null};
+		String fileToOpen = visualizer.getGraphFileToOpen();
+		if (fileToOpen != null) {
+			File fto = new File(fileToOpen);
+			if (fto.isFile()) {
+				IFileStore fileStore = EFS.getLocalFileSystem().getStore(fto.toURI());
+				new Thread(new Runnable() {
+				      public void run() {
+				            try { Thread.sleep(1000); } catch (Exception e) { }
+				            Display.getDefault().asyncExec(new Runnable() {
+				               public void run() {
+				   				try {
+									IWorkbench wb = PlatformUI.getWorkbench();
+									IWorkbenchWindow awbw = wb.getActiveWorkbenchWindow();
+									IWorkbenchPage page = null;
+									if (awbw == null) {
+										if (wb.getWorkbenchWindowCount() == 1) {
+											page = wb.getWorkbenchWindows()[0].getActivePage();
+										}
+								    }
+									else {
+										page = PlatformUI.getWorkbench().getActiveWorkbenchWindow().getActivePage();
+									}
+									if (page != null) {
+										IDE.openEditorOnFileStore(page, fileStore);
+									}
+									else {
+										errorMsg[0] = "Error trying to get active window";
+										System.err.println(errorMsg);
+									}
+								}
+								catch (Throwable t) {
+									errorMsg[0] = "Error trying to display graph file '" + fileToOpen + "': " + t.getMessage();
+									System.err.println(errorMsg);
+								}
+				               }
+				            });
+				      }
+				   }).start();
+			}
+			else if (fileToOpen != null) {
+				errorMsg[0] = "Failed to open graph file '" + fileToOpen + "'. Try opening it manually.";
+				System.err.println(errorMsg);
+			}
+		}
+		else {
+			errorMsg[0] = "Unable to find an instance of IGraphVisualizer to render graph for query.";
+			System.err.println(errorMsg + "\n");
+		}
+		return errorMsg[0];
+	}
 
 	private String setDialogAnswerProvider(Resource resource) throws ConfigurationException {
 		String modelFolder = SadlActionHandler.getModelFolderFromResource(resource);
@@ -746,8 +805,9 @@ public class DialogAnswerProvider extends DefaultAutoEditStrategyProvider implem
 			int len = (int) srcinfo[2];
 			//find location of this in document
 			loc = start + len + 1;
-			
-			String test = document.get(loc, 5);
+			int docLen = document.getLength();
+			int testLen = Math.min(5, docLen - loc);
+			String test = document.get(loc, testLen);
 			if (!test.startsWith(" ")) {
 				modContent = " " + modContent;
 			}

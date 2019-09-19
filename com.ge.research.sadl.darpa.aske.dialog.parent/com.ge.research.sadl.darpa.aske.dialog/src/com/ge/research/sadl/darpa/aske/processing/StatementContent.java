@@ -32,7 +32,7 @@ public abstract class StatementContent {
 	}
 	
 	public String getText() {
-		return NodeModelUtils.findActualNodeFor(getHostEObject()).getText();
+		return removeLeadingComments(NodeModelUtils.findActualNodeFor(getHostEObject()).getText());
 	}
 	
 	public int getOffset() {
@@ -54,4 +54,22 @@ public abstract class StatementContent {
 	public String toString() {
 		return getText().trim();
 	}
+	
+	public String removeLeadingComments(String text) {
+		String lines[] = text.split("\\r?\\n");
+		String lastLine = null;
+		for (String line : lines) {
+			if (!line.trim().startsWith("//") && line.trim().length() > 0) {
+				lastLine = line;
+				break;
+			}
+		}
+		if (lastLine != null) {
+			int loc = text.indexOf(lastLine);
+			text = text.substring(loc).trim();
+		}
+		return text;
+	}
+
+
 }

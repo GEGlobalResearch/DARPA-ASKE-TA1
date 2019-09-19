@@ -1604,7 +1604,7 @@ public class AnswerCurationManager {
 		    					throw new TranslationException("Expected ResultSet, got " + rs.getClass().getCanonicalName());
 		    				}
 		    			}
-						resultStr = resultSetToQuotableString(sb.toString());
+						resultStr = stringToQuotedeString(sb.toString());
 					}
 				}
 				String insertionText = (resultStr != null ? resultStr : "\"Failed to find results\"");
@@ -1634,21 +1634,29 @@ public class AnswerCurationManager {
 			StringBuilder answer = new StringBuilder();
 			Object[] rss = insertTriplesAndQuery(resource, triples);
 			if (rss != null) {
+       			int numOfModels = 0; //rss.length/2;
+    			for(int i=0; i<rss.length; i++) {
+    				if (rss[i] != null)
+    					numOfModels ++;
+    			}
+    			numOfModels /= 2;
 				int cntr = 0;
 				for (Object rs : rss) {
 					if (rs instanceof ResultSet) {
-		    			if (cntr == 0) {
+             			String[] colnames = ((ResultSet) rs).getColumnNames();
+            			String cols = String.join(" ",colnames);
+            			if ( cols.contains("_style") ) {
 		    				// this is the first ResultSet, construct a graph if possible
-		    				if (((ResultSet) rs).getColumnCount() != 3) {
-		    					System.err.println("Can't construct graph; not 3 columns. Unexpected result.");
-		    				}
+//		    				if (((ResultSet) rs).getColumnCount() != 3) {
+//		    					System.err.println("Can't construct graph; not 3 columns. Unexpected result.");
+//		    				}
 //            				this.graphVisualizerHandler.resultSetToGraph(path, resultSet, description, baseFileName, orientation, properties);
 		    				
 		    				IGraphVisualizer visualizer = new GraphVizVisualizer();
 		    				if (visualizer != null) {
 		    					String graphsDirectory = new File(getDomainModelOwlModelsFolder()).getParent() + "/Graphs";
 		    					new File(graphsDirectory).mkdir();
-		    					String baseFileName = "QueryMetadata";
+            					String baseFileName = "QueryMetadata"+((ResultSet) rss[cntr+numOfModels]).getResultAt(0, 0).toString();
 		    					visualizer.initialize(
 		    		                    graphsDirectory,
 		    		                    baseFileName,
@@ -1659,33 +1667,18 @@ public class AnswerCurationManager {
 		    					((ResultSet) rs).setShowNamespaces(false);
 		    		            visualizer.graphResultSetData((ResultSet) rs);	
 		    		        }
-							String fileToOpen = visualizer.getGraphFileToOpen();
-							if (fileToOpen != null) {
-								File fto = new File(fileToOpen);
-								if (fto.isFile()) {
-// TODO graphing refactoring
-//    								IFileStore fileStore = EFS.getLocalFileSystem().getStore(fto.toURI());
-//    								IWorkbenchPage page = PlatformUI.getWorkbench().getActiveWorkbenchWindow().getActivePage();
-//    								try {
-//    									IDE.openEditorOnFileStore(page, fileStore);
-//    								}
-//    								catch (Throwable t) {
-//    									System.err.println("Error trying to display graph file '" + fileToOpen + "': " + t.getMessage());
-//    								}
-								}
-								else if (fileToOpen != null) {
-									System.err.println("Failed to open graph file '" + fileToOpen + "'. Try opening it manually.");
-								}
+							String errorMsg = displayGraph(visualizer);
+							if (errorMsg != null) {
+								notifyUser(getDomainModelOwlModelsFolder(), errorMsg, true);
 							}
-		    				else {
-		    					System.err.println("Unable to find an instance of IGraphVisualizer to render graph for query.\n");
-		    				}
-
 		    			}
-		    			if (cntr > 0) 
-		    				answer.append(resultSetToQuotableString((ResultSet) rs));
-		    			if(cntr++ > 1)
-		    				answer.append(",\n");
+            			else {
+            				// not a graph
+    		    			if(cntr++ > 0)
+    		    				answer.append(",\n");
+    		    			((ResultSet) rs).setShowNamespaces(true);
+   		    				answer.append(((ResultSet) rs).toString());
+            			}
 					}
 					else {
 						throw new TranslationException("Expected ResultSet but got " + rs.getClass().getCanonicalName());
@@ -1695,14 +1688,63 @@ public class AnswerCurationManager {
 				answer.append(".\n");
 			}
 			if (rss != null) {
-				retVal = answer.toString();
+				retVal = stringToQuotedeString(answer.toString());
 			}
 			else {
 				retVal = "Failed to evaluate answer";
 			}
-			answerUser(getDomainModelOwlModelsFolder(), retVal , true, sc.getHostEObject());
+			answerUser(getDomainModelOwlModelsFolder(), retVal, true, sc.getHostEObject());
 		}
 		return retVal;
+	}
+
+/**
+ * 	invoke DialogAnswerProvider method displayGraph
+ * @param visualizer
+ * @return
+ */
+	private String displayGraph(IGraphVisualizer visualizer) {
+		if (getDialogAnswerProvider() != null) {
+			// talk to the user via the Dialog editor
+			Method acmic = null;
+			try {
+				acmic = getDialogAnswerProvider().getClass().getMethod("displayGraph", IGraphVisualizer.class);
+			} catch (NoSuchMethodException e1) {
+				// TODO Auto-generated catch block
+				e1.printStackTrace();
+			} catch (SecurityException e1) {
+				// TODO Auto-generated catch block
+				e1.printStackTrace();
+			}
+			if (acmic == null) {
+				Method[] dapMethods = getDialogAnswerProvider().getClass().getDeclaredMethods();
+				if (dapMethods != null) {
+					for (Method m : dapMethods) {
+						if (m.getName().equals("displayGraph")) {
+							acmic = m;
+							break;
+						}
+					}
+				}
+			}
+			if (acmic != null) {
+				acmic.setAccessible(true);
+				try {
+					Object retVal = acmic.invoke(getDialogAnswerProvider(), visualizer);
+					return retVal != null ? retVal.toString() : null;
+				} catch (IllegalAccessException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				} catch (IllegalArgumentException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				} catch (InvocationTargetException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+			}
+		}
+		return "Unable to find method to display graph";
 	}
 
 	private String whatIsNamedNode(org.eclipse.emf.ecore.resource.Resource resource, OntModel theModel, String modelFolder, NamedNode lastcmd) throws ConfigurationException, ExecutionException, TranslationException, InvalidNameException, ReasonerNotFoundException, QueryParseException, QueryCancelledException {
@@ -2160,14 +2202,14 @@ public class AnswerCurationManager {
 		return triples;
 	}
 
-	private String resultSetToQuotableString(ResultSet rs) {
+	private String resultSetToQuotedString(ResultSet rs) {
 		String resultStr;
 		rs.setShowNamespaces(true);
 		resultStr = rs.toString();
-		return resultSetToQuotableString(resultStr);
+		return stringToQuotedeString(resultStr);
 	}
 
-	private String resultSetToQuotableString(String resultStr) {
+	private String stringToQuotedeString(String resultStr) {
 		resultStr = resultStr.replace('"', '\'');
 		resultStr = resultStr.trim();
 		resultStr = "\"" + resultStr + "\"";
@@ -2258,13 +2300,13 @@ public class AnswerCurationManager {
 				}
 				else {
 					answer.append("\"");
-					answer.append(resultSetToQuotableString(rs));
+					answer.append(resultSetToQuotedString(rs));
 					answer.append("\"");
 				}
 			}
 			else {
 				answer.append("\"");
-				answer.append(resultSetToQuotableString(rs));
+				answer.append(resultSetToQuotedString(rs));
 				answer.append("\"");
 			}
 		}
@@ -2298,15 +2340,20 @@ public class AnswerCurationManager {
 			StatementContent statementAfter = idx < dialogStmts.size() - 1 ? dialogStmts.get(idx + 1).getStatement() : null;
 			StatementContent sc = ce.getStatement();
 			if (sc instanceof ExpectsAnswerContent) {
-				String question = removeLeadingComments(sc.getText().trim());
+				String question = sc.getText().trim();
 				if (getQuestionsAndAnswers().containsKey(question)) {
 					String ans = getQuestionsAndAnswers().get(question);
 //					System.out.println(ans + " ? " + ((AnswerContent)statementAfter).getAnswer().toString().trim());
-					if (statementAfter != null && statementAfter instanceof AnswerContent && 
-							((AnswerContent)statementAfter).getAnswer().toString().trim().equals(ans)) {
-						// this statement has already been answered		
-						((ExpectsAnswerContent) sc).setAnswer((AnswerContent) statementAfter);
-						continue;
+					if (statementAfter != null && statementAfter instanceof AnswerContent) {
+						
+						String val = ((AnswerContent)statementAfter).getAnswer().toString().trim();
+						val = SadlUtils.stripQuotes(val);
+						ans = SadlUtils.stripQuotes(ans);
+						if (val.equals(ans)) {
+							// this statement has already been answered		
+							((ExpectsAnswerContent) sc).setAnswer((AnswerContent) statementAfter);
+							continue;
+						}
 					}
 				}
 
@@ -2386,31 +2433,14 @@ public class AnswerCurationManager {
 	}
 
 	private boolean addQuestionAndAnswer(String question, String answer) {
-		String modQuestion = removeLeadingComments(question);
-		if (questionsAndAnswers.containsKey(modQuestion)) {
-			String oldAnswer = questionsAndAnswers.get(modQuestion);
+		if (questionsAndAnswers.containsKey(question)) {
+			String oldAnswer = questionsAndAnswers.get(question);
 			if (oldAnswer.equals(answer)) {
 				return false;
 			}
 		}
-		questionsAndAnswers.put(modQuestion, answer);
+		questionsAndAnswers.put(question, answer);
 		return true;
-	}
-
-	private String removeLeadingComments(String question) {
-		String lines[] = question.split("\\r?\\n");
-		String lastLine = null;
-		for (String line : lines) {
-			if (!line.trim().startsWith("//") && line.trim().length() > 0) {
-				lastLine = line;
-				break;
-			}
-		}
-		if (lastLine != null) {
-			int loc = question.indexOf(lastLine);
-			question = question.substring(loc).trim();
-		}
-		return question;
 	}
 
 	public void clearQuestionsAndAnsers() {
