@@ -184,5 +184,5 @@ class Mach(object):
 ").
 CM: "Would you like to save the extracted model (Mach.java.owl) in SADL format"?
 
-Build CAL_SOS.
+Save CAL_SOS.
 CM: "Failed: Unable to find model 'http://sadl.org/SpeedOfSound.sadl#CAL_SOS' in code model".

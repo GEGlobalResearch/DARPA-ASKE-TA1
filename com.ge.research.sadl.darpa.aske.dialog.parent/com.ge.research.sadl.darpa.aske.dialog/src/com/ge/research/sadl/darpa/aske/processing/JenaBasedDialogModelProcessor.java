@@ -939,44 +939,46 @@ public class JenaBasedDialogModelProcessor extends JenaBasedSadlModelProcessor {
 		String targetModelUrl = null;
 		String targetModelAlias = ((SaveStatement)element).getSaveTarget();
 		Map<String, String[]> targetModelMap = getAnswerCurationManager().getTargetModelMap();
-		if (targetModelAlias != null) {
-			String[] uris = targetModelMap.get(targetModelAlias);
-			if (uris == null) {
-				addError("Model with alias '" + targetModelAlias + "' not found in target models.", element);
-			}
-			else {
-				targetModelUri = uris[0];
-				targetModelUrl = uris[1];
-			}
+		if (targetModelMap == null || targetModelMap.size() < 1) {
+			addError("No target models have been identified. Cannot identify a model into which to save.", element);
 		}
 		else {
-			if (targetModelMap.size() > 1){
-				addError("There are multiple target models identified; please specify which one to save to.", element);
-			}
-			else if (targetModelMap.size() < 1) {
-				addError("No target models have been identified. Cannot identify a model into which to save.", element);
+			if (targetModelAlias != null) {
+				String[] uris = targetModelMap.get(targetModelAlias);
+				if (uris == null) {
+					addError("Model with alias '" + targetModelAlias + "' not found in target models.", element);
+				}
+				else {
+					targetModelUri = uris[0];
+					targetModelUrl = uris[1];
+				}
 			}
 			else {
-				String[] uris = targetModelMap.get(targetModelMap.keySet().iterator().next());
-				targetModelUri = uris[0];
-				targetModelUrl = uris[1];
+				if (targetModelMap.size() > 1){
+					addError("There are multiple target models identified; please specify which one to save to.", element);
+				}
+				else {
+					String[] uris = targetModelMap.get(targetModelMap.keySet().iterator().next());
+					targetModelUri = uris[0];
+					targetModelUrl = uris[1];
+				}
 			}
-		}
-		if (targetModelUri != null) {
-			String equationUri = getDeclarationExtensions().getConceptUri(equationSR);
-			Individual extractedModelInstance = getTheJenaModel().getIndividual(equationUri);
-			if (extractedModelInstance == null) {
-				getAnswerCurationManager().notifyUser(getConfigMgr().getModelFolder(), "No equation with URI '" + equationUri + "' is found in current model.", true);
+			if (targetModelUri != null) {
+				String equationUri = getDeclarationExtensions().getConceptUri(equationSR);
+				Individual extractedModelInstance = getTheJenaModel().getIndividual(equationUri);
+				if (extractedModelInstance == null) {
+					getAnswerCurationManager().notifyUser(getConfigMgr().getModelFolder(), "No equation with URI '" + equationUri + "' is found in current model.", true);
+				}
+				else if (extractedModelInstance.getNameSpace().equals(targetModelAlias)) {
+					getAnswerCurationManager().notifyUser(getConfigMgr().getModelFolder(), "The equation with URI '" + equationUri + "' is already in the target model '" + targetModelAlias + "'", true);
+				}
+				System.out.println("Ready to build model '" + equationUri + "'");
+				SaveContent sc = new SaveContent(element, Agent.USER);
+				sc.setTargetModelUri(targetModelUrl);
+				sc.setTargetModelActualUrl(targetModelUrl);
+				sc.setSourceEquationUri(extractedModelInstance.getURI());
+				return sc;
 			}
-			else if (extractedModelInstance.getNameSpace().equals(targetModelAlias)) {
-				getAnswerCurationManager().notifyUser(getConfigMgr().getModelFolder(), "The equation with URI '" + equationUri + "' is already in the target model '" + targetModelAlias + "'", true);
-			}
-			System.out.println("Ready to build model '" + equationUri + "'");
-			SaveContent sc = new SaveContent(element, Agent.USER);
-			sc.setTargetModelUri(targetModelUrl);
-			sc.setTargetModelActualUrl(targetModelUrl);
-			sc.setSourceEquationUri(extractedModelInstance.getURI());
-			return sc;
 		}
 		return null;
 	}
