@@ -639,14 +639,14 @@ public class AnswerCurationManager {
 		if (argStmt != null) {
 			com.hp.hpl.jena.rdf.model.Resource ddList = argStmt.getObject().asResource();
 			if (ddList instanceof Resource) {
-				String argQuery = "select ?argName ?argType where {<" + modelInstance.getURI() + "> <" + 
+				String argQuery = "select distinct ?argName ?argType where {<" + modelInstance.getURI() + "> <" + 
 						SadlConstants.SADL_IMPLICIT_MODEL_ARGUMENTS_PROPERTY_URI + 
 						"> ?ddList . ?ddList <http://jena.hpl.hp.com/ARQ/list#member> ?member . ?member <" +
 						SadlConstants.SADL_IMPLICIT_MODEL_DESCRIPTOR_NAME_PROPERTY_URI + "> ?argName . ?member <" +
 						SadlConstants.SADL_IMPLICIT_MODEL_DATATYPE_PROPERTY_URI + "> ?argType}";							// query to get the argument names and types
 				ResultSet rs = reasoner.ask(argQuery);
 				System.out.println(rs != null ? rs.toString() : "no argument results");
-				String retQuery = "select ?retName ?retType where {<" + modelInstance.getURI() + "> <" + 
+				String retQuery = "select distinct ?retName ?retType where {<" + modelInstance.getURI() + "> <" + 
 						SadlConstants.SADL_IMPLICIT_MODEL_RETURN_TYPES_PROPERTY_URI + 
 						"> ?ddList . ?ddList <http://jena.hpl.hp.com/ARQ/list#member> ?member . OPTIONAL{?member <" +
 						SadlConstants.SADL_IMPLICIT_MODEL_DESCRIPTOR_NAME_PROPERTY_URI + "> ?retName} . ?member <" +
