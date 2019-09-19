@@ -1656,7 +1656,7 @@ public class AnswerCurationManager {
 		    				if (visualizer != null) {
 		    					String graphsDirectory = new File(getDomainModelOwlModelsFolder()).getParent() + "/Graphs";
 		    					new File(graphsDirectory).mkdir();
-            					String baseFileName = "QueryMetadata"+((ResultSet) rss[cntr+numOfModels]).getResultAt(0, 0).toString();
+            					String baseFileName = "QueryMetadata_"+((ResultSet) rss[cntr+numOfModels]).getResultAt(0, 0).toString();
 		    					visualizer.initialize(
 		    		                    graphsDirectory,
 		    		                    baseFileName,
@@ -1674,11 +1674,12 @@ public class AnswerCurationManager {
 		    			}
             			else {
             				// not a graph
-    		    			if(cntr++ > 0)
+    		    			if(cntr > 0)
     		    				answer.append(",\n");
     		    			((ResultSet) rs).setShowNamespaces(true);
    		    				answer.append(((ResultSet) rs).toString());
             			}
+            			cntr++;
 					}
 					else {
 						throw new TranslationException("Expected ResultSet but got " + rs.getClass().getCanonicalName());
