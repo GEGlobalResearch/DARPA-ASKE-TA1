@@ -409,6 +409,7 @@ public class JenaBasedDialogInferenceProcessor extends JenaBasedSadlInferencePro
 			"prefix mm:<http://aske.ge.com/metamodel#>\n" + 
 			"prefix cg:<http://aske.ge.com/compgraphmodel#>\n" + 
 			"prefix rdf:<http://www.w3.org/1999/02/22-rdf-syntax-ns#>\n" + 
+			"prefix rdfs:<http://www.w3.org/2000/01/rdf-schema#>\n" + 
 			"\n" + 
 			"select ?X ?Y ?Z ?X_style ?X_color ?Z_shape ?Z_tooltip\n" + 
 			"where {\n" + 
@@ -425,16 +426,18 @@ public class JenaBasedDialogInferenceProcessor extends JenaBasedSadlInferencePro
 			"     ?EI2 imp:augmentedType ?EI3. \n" + 
 			"     ?EI3 imp:constraints ?EI4.\n" + 
 			"     ?EI4 rdf:rest*/rdf:first ?EI5.\n" + 
-			"     ?EI5 imp:gpPredicate ?Input.\n" + 
-			"       filter (?Input != <http://www.w3.org/1999/02/22-rdf-syntax-ns#type>)\n" + 
+			"     ?EI5 imp:gpPredicate ?InputProp.\n" + 
+			"       filter (?InputProp != <http://www.w3.org/1999/02/22-rdf-syntax-ns#type>)\n" +
+			"     ?InputProp rdfs:range ?Input." +
 			"\n" + 
 			"     ?EQ imp:returnTypes ?EO1.\n" + 
 			"     ?EO1 rdf:rest*/rdf:first ?EO2.\n" + 
 			"     ?EO2 imp:augmentedType ?EO3. \n" + 
 			"     ?EO3 imp:constraints ?EO4.\n" + 
 			"     ?EO4 rdf:rest*/rdf:first ?EO5.\n" + 
-			"     ?EO5 imp:gpPredicate ?Output.\n" + 
-			"       filter (?Output != <http://www.w3.org/1999/02/22-rdf-syntax-ns#type>) \n" + 
+			"     ?EO5 imp:gpPredicate ?OutputProp.\n" + 
+			"       filter (?OutputProp != <http://www.w3.org/1999/02/22-rdf-syntax-ns#type>) \n" + 
+			"     ?OutputProp rdfs:range ?Output." +
 			"\n" + 
 			"    # There's an eqn that outputs EQ's input (a parent Eqn)\n" + 
 			"    ?CCG mm:subgraph ?SG1.\n" + 
@@ -445,7 +448,7 @@ public class JenaBasedDialogInferenceProcessor extends JenaBasedSadlInferencePro
 			"    ?E12 imp:augmentedType ?E13. \n" + 
 			"    ?E13 imp:constraints ?E14.\n" + 
 			"    ?E14 rdf:rest*/rdf:first ?E15.\n" + 
-			"    ?E15 imp:gpPredicate ?Input.\n" + 
+			"    ?E15 imp:gpPredicate ?InputProp.\n" + 
 			"\n" + 
 			"    ?EQ imp:expression ?Scr.\n" + 
 			"    ?Scr imp:script ?Expr.\n" + 
@@ -468,17 +471,18 @@ public class JenaBasedDialogInferenceProcessor extends JenaBasedSadlInferencePro
 			"     ?EI2 imp:augmentedType ?EI3. \n" + 
 			"     ?EI3 imp:constraints ?EI4.\n" + 
 			"     ?EI4 rdf:rest*/rdf:first ?EI5.\n" + 
-			"     ?EI5 imp:gpPredicate ?Input.\n" + 
-			"       filter (?Input != <http://www.w3.org/1999/02/22-rdf-syntax-ns#type>)\n" + 
+			"     ?EI5 imp:gpPredicate ?InputProp.\n" + 
+			"       filter (?InputProp != <http://www.w3.org/1999/02/22-rdf-syntax-ns#type>)\n" +
+			"     ?InputProp rdfs:range ?Input." +
 			"\n" + 
 			"     ?EQ imp:returnTypes ?EO1.\n" + 
 			"     ?EO1 rdf:rest*/rdf:first ?EO2.\n" + 
 			"     ?EO2 imp:augmentedType ?EO3. \n" + 
 			"     ?EO3 imp:constraints ?EO4.\n" + 
 			"     ?EO4 rdf:rest*/rdf:first ?EO5.\n" + 
-			"     ?EO5 imp:gpPredicate ?Output.\n" + 
-			"       filter (?Output != <http://www.w3.org/1999/02/22-rdf-syntax-ns#type>) \n" + 
-			"\n" + 
+			"     ?EO5 imp:gpPredicate ?OutputProp.\n" + 
+			"       filter (?OutputProp != <http://www.w3.org/1999/02/22-rdf-syntax-ns#type>) \n" + 
+			"     ?OutputProp rdfs:range ?Output." +			"\n" + 
 			"    ?EQ imp:expression ?Scr.\n" + 
 			"    ?Scr imp:script ?Expr.\n" + 
 			"    ?Scr imp:language ?lang.\n" + 
@@ -495,13 +499,14 @@ public class JenaBasedDialogInferenceProcessor extends JenaBasedSadlInferencePro
 			"      ?E22 imp:augmentedType ?E23. \n" + 
 			"      ?E23 imp:constraints ?E24.\n" + 
 			"      ?E24 rdf:rest*/rdf:first ?E25.\n" + 
-			"      ?E25 imp:gpPredicate ?Input.\n" + 
+			"      ?E25 imp:gpPredicate ?InputProp.\n" + 
 			"    }\n" + 
 			"      \n" + 
 			"    bind('filled' as ?X_style)\n" + 
 			"    bind('yellow' as ?X_color)\n" + 
 			"}}union\n" + 
-			" {select (?Output as ?X) ?Y (?Value as ?Z) ?X_style ?X_color ('oval' as ?Z_shape) ('output value' as ?Z_tooltip)\n" + 
+//			" {select (?Output as ?X) ?Y (?Value as ?Z) ?X_style ?X_color ('oval' as ?Z_shape) ('output value' as ?Z_tooltip)\n" + 
+			" {select (?Output as ?X) ?Y (concat(concat(strbefore(?Value,'.'),'.'),substr(strafter(?Value,'.'),1,4)) as ?Z) ?X_style ?X_color ('oval' as ?Z_shape) ('output value' as ?Z_tooltip)\n" + 
 			"  where {\n" + 
 			"    ?CCG mm:subgraph ?SG.\n" + 
 			"    filter (?CCG in (COMPGRAPH)).\n" + 

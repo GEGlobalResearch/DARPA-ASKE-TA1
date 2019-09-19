@@ -1674,7 +1674,7 @@ public class AnswerCurationManager {
 		    			}
             			else {
             				// not a graph
-    		    			if(cntr > 0)
+    		    			if(cntr-numOfModels > 0)
     		    				answer.append(",\n");
     		    			((ResultSet) rs).setShowNamespaces(true);
    		    				answer.append(((ResultSet) rs).toString());
