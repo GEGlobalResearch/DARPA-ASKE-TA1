@@ -17,7 +17,7 @@ import org.eclipse.xtext.ui.editor.model.IXtextDocument
 
 class DialogAnswerProviders implements IPartListener2, IDialogAnswerProviders {
 
-	static val DIALOG_EDITOR_ID = 'com.ge.research.sadl.darpa.aske.Dialog'
+	public static val DIALOG_EDITOR_ID = 'com.ge.research.sadl.darpa.aske.Dialog'
 
 	@Inject
 	Provider<DialogAnswerProvider> factory
@@ -26,9 +26,16 @@ class DialogAnswerProviders implements IPartListener2, IDialogAnswerProviders {
 	new() {
 		providers = newHashMap
 		Display.^default.asyncExec [
+			// Before we register this as a part listener, we iterate through all opened editors
+			// and register the answer providers for all opened `Dialog` editors.
+			val workbench = PlatformUI.workbench
+			val window = workbench.activeWorkbenchWindow
+			val dialogDocuments = window.activePage.editorReferences.map[dialogDocument].filterNull
+			for (document : dialogDocuments) {
+				register(document)
+			}
 			PlatformUI.workbench.activeWorkbenchWindow.partService.addPartListener(this)
 		]
-		// TODO: iterate through all opened editor and call register. Restored editors won't get the `partOpened` event.
 	}
 
 	override getAllProviders() {
