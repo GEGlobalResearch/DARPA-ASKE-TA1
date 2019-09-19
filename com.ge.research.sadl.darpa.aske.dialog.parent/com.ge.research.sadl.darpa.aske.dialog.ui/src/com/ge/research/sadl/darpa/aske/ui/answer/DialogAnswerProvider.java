@@ -53,6 +53,7 @@ import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IResource;
 import org.eclipse.core.resources.IncrementalProjectBuilder;
 import org.eclipse.core.resources.ResourcesPlugin;
+import org.eclipse.core.runtime.IAdaptable;
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.Path;
 import org.eclipse.emf.common.util.URI;
@@ -61,7 +62,12 @@ import org.eclipse.emf.ecore.resource.Resource;
 import org.eclipse.jface.text.BadLocationException;
 import org.eclipse.jface.text.IDocument;
 import org.eclipse.jface.text.IRegion;
+import org.eclipse.swt.custom.StyledText;
+import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Display;
+import org.eclipse.ui.IEditorInput;
+import org.eclipse.ui.IEditorReference;
+import org.eclipse.ui.IFileEditorInput;
 import org.eclipse.ui.IWorkbench;
 import org.eclipse.ui.IWorkbenchPage;
 import org.eclipse.ui.IWorkbenchPart;
@@ -70,7 +76,6 @@ import org.eclipse.ui.PartInitException;
 import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.ide.IDE;
 import org.eclipse.xtext.nodemodel.INode;
-import org.eclipse.xtext.nodemodel.impl.CompositeNodeWithSemanticElement;
 import org.eclipse.xtext.nodemodel.util.NodeModelUtils;
 import org.eclipse.xtext.preferences.IPreferenceValues;
 import org.eclipse.xtext.preferences.IPreferenceValuesProvider;
@@ -211,7 +216,7 @@ public class DialogAnswerProvider implements IDialogAnswerProvider {
 	}
 
 	private Object[] getSourceText(EObject object) {
-		INode node = getParserObjectNode(object);
+		INode node = NodeModelUtils.findActualNodeFor(object);
 		if (node != null) {
 			String txt = NodeModelUtils.getTokenText(node);
 			int start = NodeModelUtils.getNode(object).getTotalOffset();
@@ -221,29 +226,6 @@ public class DialogAnswerProvider implements IDialogAnswerProvider {
 			ret[1] = start;
 			ret[2] = length;
 			return ret;
-		}
-		return null;
-	}
-
-	private INode getParserObjectNode(EObject object) {
-		Object r = object.eResource();
-		if (r instanceof XtextResource) {
-			INode root = ((XtextResource) r).getParseResult().getRootNode();
-			for (INode node : root.getAsTreeIterable()) {
-				if (node instanceof CompositeNodeWithSemanticElement) {
-					EObject semanticElement = ((CompositeNodeWithSemanticElement) node).getSemanticElement();
-					if (semanticElement != null && semanticElement.equals(object)) {
-						// this is the one!
-						return node;
-					}
-				}
-			}
-		}
-		org.eclipse.emf.common.util.TreeIterator<EObject> titr = object.eAllContents();
-		while (titr.hasNext()) {
-			EObject el = titr.next();
-			// TODO what's supposed to happen here?
-			int i = 0;
 		}
 		return null;
 	}
@@ -264,9 +246,9 @@ public class DialogAnswerProvider implements IDialogAnswerProvider {
 			Object[] srcinfo = getSourceText((EObject) ctx);
 //			String srctext = (String) srcinfo[0];
 			int start = (int) srcinfo[1];
-			int len = (int) srcinfo[2];
+			int length = (int) srcinfo[2];
 			// find location of this in document
-			loc = start + len + 1;
+			loc = start + length + 1;
 			int docLen = document.getLength();
 			int testLen = Math.min(5, docLen - loc);
 			String test = document.get(loc, testLen);
@@ -276,11 +258,12 @@ public class DialogAnswerProvider implements IDialogAnswerProvider {
 			if (!test.startsWith("\r\n")) {
 				modContent += "\r\n";
 			}
-			document.replace(start + len + 1, 0, modContent);
-			loc = start + len + 1;
+			document.replace(start + length + 1, 0, modContent);
+			loc = start + length + 1;
 			if (document instanceof XtextDocument && ctx instanceof EObject) {
-				// is there a way to move the cursor?
-//				ITextRegionWithLineInformation rwli = NodeModelUtils.getNode((EObject) ctx).getTextRegionWithLineInformation();
+				final URI expectedUri = ((EObject) ctx).eResource().getURI();
+				final int caretOffset = start + length + 1 + modContent.length();
+				setCaretOffsetInEditor(expectedUri, caretOffset); // Async
 			}
 		} else {
 			loc = document.getLength();
@@ -288,6 +271,37 @@ public class DialogAnswerProvider implements IDialogAnswerProvider {
 		}
 		LOGGER.debug("Adding to Dialog editor: " + modContent);
 		return textAtLocation(document, modContent, loc);
+	}
+
+	private void setCaretOffsetInEditor(URI uri, int caretOffset) {
+		Display.getDefault().asyncExec(() -> {
+			IWorkbenchPage page = PlatformUI.getWorkbench().getActiveWorkbenchWindow().getActivePage();
+			for (IEditorReference editorRef : page.getEditorReferences()) {
+				if (DialogAnswerProviders.DIALOG_EDITOR_ID.equals(editorRef.getId())) {
+					IEditorInput editorInput;
+					try {
+						editorInput = editorRef.getEditorInput();
+						if (editorInput instanceof IFileEditorInput) {
+							String path = ((IFileEditorInput) editorInput).getFile().getFullPath().toPortableString();
+							URI editorUri = URI.createPlatformResourceURI(path, true);
+							if (editorUri.equals(uri)) {
+								IWorkbenchPart part = editorRef.getPart(false);
+								if (part instanceof IAdaptable) {
+									Control control = part.getAdapter(Control.class);
+									if (control instanceof StyledText) {
+										((StyledText) control).setCaretOffset(caretOffset);
+										control.redraw();
+									}
+								}
+								break;
+							}
+						}
+					} catch (PartInitException e) {
+						e.printStackTrace();
+					}
+				}
+			}
+		});
 	}
 
 	/**
