@@ -28,6 +28,7 @@ class DialogAnswerProviders implements IPartListener2, IDialogAnswerProviders {
 		Display.^default.asyncExec [
 			PlatformUI.workbench.activeWorkbenchWindow.partService.addPartListener(this)
 		]
+		// TODO: iterate through all opened editor and call register. Restored editors won't get the `partOpened` event.
 	}
 
 	override getAllProviders() {
