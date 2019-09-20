@@ -12,6 +12,7 @@ import com.ge.research.sadl.darpa.aske.processing.JenaBasedDialogModelProcessor
 
 class DialogTest extends AbstractDialogTest {
 
+	@Ignore
 	@Test
 	def void dummy_test() {
 		'''
@@ -197,6 +198,7 @@ class DialogTest extends AbstractDialogTest {
 		]
 	}
 
+	@Ignore
 	@Test
 	def void saveThroughEval_01_test() {
 		'''
@@ -372,7 +374,8 @@ class DialogTest extends AbstractDialogTest {
 			assertEquals(0, errors.size)
 		]
 	}
-//	@Ignore
+
+	@Ignore
 	@Test
 	def void saveThroughEval_02_test() {
 		'''
@@ -547,6 +550,7 @@ class DialogTest extends AbstractDialogTest {
 		]
 	}
 
+	@Ignore
 	@Test
 	def void testGetTranslatorInstance() {
 		val cm = new ConfigurationManager
