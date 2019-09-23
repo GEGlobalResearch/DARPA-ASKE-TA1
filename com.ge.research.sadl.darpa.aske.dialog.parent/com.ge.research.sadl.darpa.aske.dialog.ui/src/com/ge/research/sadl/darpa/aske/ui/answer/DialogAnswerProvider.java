@@ -44,7 +44,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.atomic.AtomicReference;
-import java.util.function.Consumer;
 
 import org.eclipse.core.filesystem.EFS;
 import org.eclipse.core.filesystem.IFileStore;
@@ -88,12 +87,11 @@ import org.slf4j.LoggerFactory;
 import com.ge.research.sadl.builder.ConfigurationManagerForIdeFactory;
 import com.ge.research.sadl.builder.IConfigurationManagerForIDE;
 import com.ge.research.sadl.darpa.aske.curation.AnswerCurationManager;
+import com.ge.research.sadl.darpa.aske.curation.BaseDialogAnswerProvider;
 import com.ge.research.sadl.darpa.aske.dialog.ui.internal.DialogActivator;
 import com.ge.research.sadl.darpa.aske.preferences.DialogPreferences;
 import com.ge.research.sadl.darpa.aske.processing.DialogConstants;
-import com.ge.research.sadl.darpa.aske.processing.IDialogAnswerProvider;
 import com.ge.research.sadl.darpa.aske.processing.MixedInitiativeElement;
-import com.ge.research.sadl.darpa.aske.processing.MixedInitiativeTextualResponse;
 import com.ge.research.sadl.model.visualizer.IGraphVisualizer;
 import com.ge.research.sadl.processing.OntModelProvider;
 import com.ge.research.sadl.reasoner.ConfigurationException;
@@ -102,14 +100,12 @@ import com.ge.research.sadl.ui.handlers.SadlActionHandler;
 import com.google.common.base.Preconditions;
 import com.google.inject.Injector;
 
-public class DialogAnswerProvider implements IDialogAnswerProvider {
+public class DialogAnswerProvider extends BaseDialogAnswerProvider {
 
 	private static final Logger LOGGER = LoggerFactory.getLogger(DialogAnswerProvider.class);
 
 	private IXtextDocument document;
 	private IConfigurationManagerForIDE configManager;
-	private AnswerCurationManager answerConfigurationManager;
-	private Map<String, MixedInitiativeElement> mixedInitiativeElements;
 
 	public void configure(IXtextDocument document) {
 		Preconditions.checkState(this.document == null, "Already initialized.");
@@ -123,6 +119,7 @@ public class DialogAnswerProvider implements IDialogAnswerProvider {
 	}
 
 	public void dispose() {
+		super.dispose();
 		if (answerConfigurationManager != null) {
 			answerConfigurationManager.clearQuestionsAndAnsers();
 		}
@@ -134,6 +131,7 @@ public class DialogAnswerProvider implements IDialogAnswerProvider {
 	 * @param visualizer -- IGraphVisualizer instance that contains graphing info
 	 * @return -- null if successful else an error message
 	 */
+	// XXX: called via reflection from the com.ge.research.sadl.darpa.aske.curation.AnswerCurationManager.displayGraph(IGraphVisualizer)
 	public String displayGraph(IGraphVisualizer visualizer) {
 		String[] errorMsg = { null };
 		String fileToOpen = visualizer.getGraphFileToOpen();
@@ -230,7 +228,7 @@ public class DialogAnswerProvider implements IDialogAnswerProvider {
 		return null;
 	}
 
-	public synchronized boolean addCurationManagerContentToDialog(IDocument document, IRegion reg, String content,
+	private synchronized boolean addCurationManagerContentToDialog(IDocument document, IRegion reg, String content,
 			Object ctx, boolean quote) throws BadLocationException {
 		String modContent;
 		int loc;
@@ -259,6 +257,8 @@ public class DialogAnswerProvider implements IDialogAnswerProvider {
 				modContent += "\r\n";
 			}
 			document.replace(start + length + 1, 0, modContent);
+			System.out.println("AFTER UPDATE:\n" + document.get());
+			System.out.println("ENDOF-DOC");
 			loc = start + length + 1;
 			if (document instanceof XtextDocument && ctx instanceof EObject) {
 				final URI expectedUri = ((EObject) ctx).eResource().getURI();
@@ -328,29 +328,6 @@ public class DialogAnswerProvider implements IDialogAnswerProvider {
 		return false;
 	}
 
-	public String addCurationManagerInitiatedContent(AnswerCurationManager acm, String content) {
-		answerConfigurationManager = acm;
-		Consumer<MixedInitiativeElement> respond = a -> this.provideResponse(a);
-		MixedInitiativeTextualResponse question = new MixedInitiativeTextualResponse(content);
-		MixedInitiativeElement questionElement = new MixedInitiativeElement(question, respond);
-		addMixedInitiativeElement(content, questionElement);
-		initiateMixedInitiativeInteraction(questionElement);
-		return "success";
-	}
-
-	@Override
-	public String addCurationManagerInitiatedContent(AnswerCurationManager acm, String methodToCall, List<Object> args,
-			String content) {
-
-		answerConfigurationManager = acm;
-		Consumer<MixedInitiativeElement> respond = a -> this.provideResponse(a);
-		MixedInitiativeTextualResponse question = new MixedInitiativeTextualResponse(content);
-		MixedInitiativeElement questionElement = new MixedInitiativeElement(question, respond, acm, methodToCall, args);
-		addMixedInitiativeElement(content, questionElement);
-		initiateMixedInitiativeInteraction(questionElement);
-		return "success";
-	}
-
 	@Override
 	public boolean addCurationManagerAnswerContent(AnswerCurationManager acm, String content, Object ctx) {
 		answerConfigurationManager = acm;
@@ -360,25 +337,6 @@ public class DialogAnswerProvider implements IDialogAnswerProvider {
 			e.printStackTrace();
 		}
 		return false;
-	}
-
-	private void addMixedInitiativeElement(String key, MixedInitiativeElement element) {
-		if (key.endsWith(".") || key.endsWith("?")) {
-			// drop EOS
-			key = key.substring(0, key.length() - 1);
-		}
-		mixedInitiativeElements.put(key, element);
-	}
-
-	@Override
-	public boolean removeMixedInitiativeElement(String key) {
-		mixedInitiativeElements.remove(key);
-		return true;
-	}
-
-	@Override
-	public MixedInitiativeElement getMixedInitiativeElement(String key) {
-		return mixedInitiativeElements.get(key);
 	}
 
 	@Override
@@ -505,7 +463,12 @@ public class DialogAnswerProvider implements IDialogAnswerProvider {
 		}
 	}
 
-	private void displayFiles(String codeModelFolder, List<File> sadlFiles) {
+	protected IConfigurationManagerForIDE getConfigManager() {
+		return configManager;
+	}
+
+	@Override
+	protected void displayFiles(String codeModelFolder, List<File> sadlFiles) {
 		File cmf = new File(codeModelFolder);
 		IProject codeModelProject = null;
 		if (cmf.exists()) {

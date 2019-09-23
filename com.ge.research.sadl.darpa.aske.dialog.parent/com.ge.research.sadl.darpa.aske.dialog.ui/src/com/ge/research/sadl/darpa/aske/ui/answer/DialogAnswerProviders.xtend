@@ -21,7 +21,7 @@ class DialogAnswerProviders implements IPartListener2, IDialogAnswerProviders {
 
 	@Inject
 	Provider<DialogAnswerProvider> factory
-	val Map<URI, DialogAnswerProvider> providers
+	val Map<URI, IDialogAnswerProvider> providers
 
 	new() {
 		providers = newHashMap
