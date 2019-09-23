@@ -549,6 +549,377 @@ class DialogTest extends AbstractDialogTest {
 			assertTrue(secondLaw250 !== null && secondLaw250.equals("[250.]"))
 		]
 	}
+	
+	@Ignore	// this test will only pass if the service is running at the specified URL
+	@Test
+	def void testUnittedQuantityTriples() {
+		'''
+			uri "http://aske.ge.com/sciknow" alias sciknow .
+			
+			Temperature is a type of UnittedQuantity.
+			Pressure is a type of UnittedQuantity.
+			
+			Speed is a type of UnittedQuantity.
+			Mass is a type of UnittedQuantity.
+			Volume is a type of UnittedQuantity.
+			Density is a type of UnittedQuantity.
+			Length is a type of UnittedQuantity.
+			Time is a type of UnittedQuantity.
+			
+				
+			PhysicalThing is a class,
+				described by mass with values of type Mass
+				described by volume with values of type Volume
+				described by density with values of type Density
+				described by temperature with values of type Temperature
+			   .
+			
+			Gas is a type of PhysicalThing
+				described by pressure with values of type Pressure.
+			Air is a type of Gas.
+		'''.sadl
+		
+		'''
+			uri "http://aske.ge.com/hypersonicsV2" alias hypersonicsV2 .
+			
+			//import "http://aske.ge.com/compgraph". 
+			import "http://aske.ge.com/sciknow".
+			
+			Altitude is a type of UnittedQuantity.
+			AtmosphericTemperature is a type of Temperature.
+			AtmosphericPressure is a type of Pressure.
+			StaticTemperature is a type of AtmosphericTemperature.
+			StaticPressure is a type of AtmosphericPressure.
+			TotalTemperature is a type of AtmosphericTemperature.
+			TotalPressure is a type of AtmosphericPressure.
+			SpeedOfSound is a type of UnittedQuantity.
+			AirSpeed is a type of Speed.
+			MachSpeed is a type of Speed.
+			
+			StaticTemperatureEquation is a type of ^Equation.
+			StaticPressureEquation is a type of ^Equation.
+			SpeedOfSoundEquation is a type of ^Equation.
+			MachSpeedEquation is a type of ^Equation.
+			TotalTemperatureEquation is a type of ^Equation.
+			TotalPressureEquation is a type of ^Equation.
+			
+			altitude describes Air with values of type Altitude.
+			staticTemperature is a type of temperature.
+			staticTemperature describes Air with values of type StaticTemperature.
+			totalTemperature is a type of temperature.
+			totalTemperature describes Air with values of type TotalTemperature.
+			staticPressure is a type of pressure.
+			staticPressure describes Air with values of type StaticPressure.
+			totalPressure is a type of pressure.
+			totalPressure describes Air with values of type TotalPressure.
+			
+			speed describes PhysicalThing with values of type Speed.
+			speedOfSound describes Air with values of type SpeedOfSound.
+			airSpeed describes Air with values of type AirSpeed.
+			machSpeed describes Air with values of type MachSpeed.
+			
+			gamma describes Air with values of type double.
+			rgas describes Air with values of type double.
+			
+			
+			//tropo_c1 describes Air with values of type double.
+			//tropo_c2 describes Air with values of type double.
+			
+			////Troposphere Constants
+			//Equation tropo_C1_Eq() returns double (tropo_c1 of some Air {F}) : return 59.0 .
+			//Equation tropo_C2_Eq() returns double (tropo_c2 of some Air {"1/ft"}) : return .00356 .
+			
+			Equation gamma_const() returns double (gamma of some Air): return 1.4 . //unitless
+			gamma_const has expression (a Script script "1.4" language Python).
+			
+			Equation rgas_const() returns double (rgas of some Air): return 1718 . //ft*lb/slug/Rankine
+			//ft*lb/slug/Rankine = ft^2/sec^2/Rankine
+			rgas_const has expression (a Script script "1718" language Python).
+			
+			//Equation farenheitToRankine(double f (temperature of some PhysicalThing {F}))
+			//		returns double (temperature of the PhysicalThing {Rankine}) : f + 459.67. 
+			
+			Equation mphToftpersec(double s (speed of a PhysicalThing {mph}))
+					returns double (speed of the PhysicalThing {"ft/sec"}):
+					return s*5280/3600.
+			// Code expression if using Pint for unit conversion.
+			mphToftpersec has expression (a Script script "s * 5280/3600" language Python).
+			
+			//air is an Air with altitude alt.
+			//alt is an Altitude.
+			
+			
+			//Equation st_temp_eq(Altitude alt (altitude of some Air 
+			//	                            and unit of alt is "ft" 
+			//	                            and ^value of alt < 36152 ) )
+			//	returns StaticTemperature (staticTemperature of the Air {F}) : 
+			//	return (a StaticTemperature with ^value (59 - 0.00356 * ^value of alt) unit "F") .
+			
+			//Equation foo(double alt (Altitude)) //altitude of some Air))
+			//	returns double (Altitude) :
+			//	return alt.
+			
+			st_temp_eq_tropo is a StaticTemperatureEquation.
+			
+			Equation st_temp_eq_tropo(double alt (altitude of some Air and alt < 36152 {ft}) )
+				returns double (staticTemperature of the Air {F}) : 
+				return 59 - 0.00356 * alt .
+			
+			st_temp_eq_tropo has expression (a Script with script "59 - 0.00356 * alt" language Python).
+			
+			st_temp_eq_lowerStrato is a StaticTemperatureEquation.
+			Equation st_temp_eq_lowerStrato(double alt (altitude of some Air and alt < 82345 and alt >= 36152 {m}))
+				returns double (staticTemperature of the Air {F}) : 
+				return -70 .
+			
+			st_temp_eq_lowerStrato has expression (a Script with script "-70" language Python).
+			
+			st_temp_eq_upperStrato is a StaticTemperatureEquation.
+			Equation st_temp_eq_upperStrato(double alt (altitude of some Air and alt > 82345 {ft}) )
+				returns double (staticTemperature of the Air {F}) : 
+				return -205.05 + .00164 * alt .
+			
+			st_temp_eq_upperStrato has expression (a Script with script "-205.05 + .00164 * alt" language Python).
+			
+			
+			st_pressure_eq_tropo is a StaticPressureEquation.
+			Equation st_pressure_eq_tropo(double alt (altitude of some Air and alt < 36152 {ft}))
+				returns double (staticPressure of the Air {"force_pound/ft**2"}) : 
+				return -2116.0 * ((59 - 0.00356 * alt + 459.7) / 518.6)^5.256 .
+			
+			st_pressure_eq_tropo has expression (a Script with script "-2116.0 * ((59 - 0.00356 * alt + 459.7) / 518.6)**5.256" language Python).
+			
+			
+			
+			st_pressure_eq_lowerStrato is a StaticPressureEquation.
+			Equation st_pressure_eq_lowerStrato(double alt (altitude of some Air and alt < 82345 
+				                            and alt > 36152 {ft}) )
+				returns double (staticPressure of the Air {"force_pound/ft**2"}) : 
+				//return 473.1 * exp(1.73 - .000048 * alt) .
+				return 473.1 * e^(1.73 - .000048 * alt) .
+			
+			st_pressure_eq_lowerStrato has expression (a Script with script "473.1 * math.exp(1.73 - .000048 * alt)" language Python).
+			
+			st_pressure_eq_upperStrato is a StaticPressureEquation.
+			Equation st_pressure_eq_upperStrato(double alt (altitude of some Air and alt > 82345 {ft}) )
+				returns double (staticPressure of the Air {"force_pound/ft**2"}) : 
+				return 51.97 * (((-205.05 + .00164 * alt) + 459.7)/ 389.98)^-11.388 .
+				
+			st_pressure_eq_upperStrato has expression (a Script with script "51.97 * (((-205.05 + .00164 * alt) + 459.7)/ 389.98)**-11.388" language Python).
+				
+			sos_eq is a SpeedOfSoundEquation.
+			Equation sos_eq(double ts0 (staticTemperature of some Air {F}),
+							double g (gamma of the Air),
+							double R (rgas of the Air)
+							)
+				returns double (speedOfSound of the Air {"ft/sec"}) :
+				return sqrt(g * R * ts0) .
+			
+			sos_eq has expression (a Script with script "g * R * ts0" language Python).
+							
+			mach_speed_eq is a MachSpeedEquation.
+			//Equation mach_speed_eq(double u0 (airSpeed of some Air {"mph"}),
+			//					double a0 (speedOfSound of the Air {"ft/sec"}) )
+			//			returns double (machSpeed of the Air) :
+			//			//return u0 * 5280.0 / 3600.0 / a0 .
+			//			// 1 mile = 5280 ft
+			//			// 
+			//			return u0*5280.0 * 3600.0 * a0 .
+			
+			Equation mach_speed_eq(double u0 (airSpeed of some Air {"ft/sec"}),
+								double a0 (speedOfSound of the Air {"ft/sec"}) )
+						returns double (machSpeed of the Air) :
+						return u0 / a0 .
+			
+			mach_speed_eq has expression (a Script with script "u0 / a0" language Python).
+						
+			total_temp_eq is a TotalTemperatureEquation.
+			Equation total_temp_eq(double ts0 (staticTemperature of some Air {F}),
+								   double mach (machSpeed of the Air) )
+						returns double (totalTemperature of the Air {F}) :
+						return ts0*(1.0 + 0.5*(1.4-1.0)*mach*mach).
+			
+			total_temp_eq has expression (a Script with script "ts0*(1.0 + 0.5*(1.4-1.0)*mach*mach)" language Python).
+			
+			
+			total_pressure_eq is a TotalTemperatureEquation.
+			Equation total_pressure_eq(double ps0 (staticPressure of some Air {"force_pound/ft**2"}),
+								   double mach (machSpeed of the Air) )
+						returns double (totalPressure of the Air {"force_pound/ft**2"}) :
+						//return ps0*(1.0 + 0.5*(1.4-1.0)*mach*mach)^(1.4/(1.4-1.0)).
+						return ps0*(1.0 + 0.5*(1.4-1.0)*mach*mach)^(1.4*(1.4-1.0)).
+			
+			total_pressure_eq has expression (a Script with script "ps0*(1.0 + 0.5*(1.4-1.0)*mach*mach)**(1.4*(1.4-1.0))" language Python).
+		'''.sadl
+		
+		'''
+			uri "http://aske.ge.com/compgraphmodel" alias compgraphmodel .
+			
+			Thing is a class
+				described by name with values of type string
+				described by description with values of type string
+				.
+			
+			ComputationalGraph is a class.
+			
+			KChain is a type of ComputationalGraph.
+			
+			DBN is a type of ComputationalGraph
+				//described by input with values of type UnittedQuantity
+				described by node with a single value of type DataDescriptor //was Argument
+				// 'script' is a string containing python code for the computation
+				//described by script with values of type string
+				described by hasEquation with a single value of type ^Equation
+				described by hasModel with a single value of type ^ExternalEquation
+				// DBN info
+				described by ^type with values of type NodeType
+				described by distribution with a single value of type Distribution	
+				described by range with values of type Range 
+				.
+			
+			
+			TaskType is a class, must be one of {prognosis,counterfactual,sensitivityAnalysis,riskAssessment,optimization}.
+			
+			
+			NodeType is a class, must be one of {equation,discrete,continuous,constant,deterministic,stochastic_transient,stochastic} .
+			
+			Distribution is a class, must be one of {uniform,discrete_custom} .
+			
+			PTable is a type of Thing.
+			       //described by 
+			
+			Range is a class
+				described by lower with a single value of type float
+				described by upper with a single value of type float
+				.
+		'''.sadl
+		
+		'''
+			uri "http://aske.ge.com/metamodel" alias mm.
+			 
+			import "http://aske.ge.com/compgraphmodel".
+			
+			//Composite CG
+			CCG is a type of ComputationalGraph
+			    described by subgraph with values of type SubGraph //Multiple subgraphs
+			    //described by modelError with values of type decimal
+			 	.
+			 
+			SubGraph is a class
+			 	described by cgraph with a single value of type ComputationalGraph
+			 	described by output with values of type UnittedQuantity
+			 	.
+			
+			QueryType is a class must be one of {prognostic,calibration,explanation,sensitivity}.
+			 
+			CGQuery is a class
+				described by queryType with a single value of type QueryType
+			 	described by input with values of type UnittedQuantity
+			 	described by machineGenerated with a single value of type boolean
+			 	described by execution with values of type CGExecution //A query can result in multiple models and executions
+			 	.
+			 	
+			CGExecution is a class
+			 	described by startTime with a single value of type dateTime
+			 	described by endTime with a single value of type dateTime
+			 	described by compGraph with a single value of type CCG //A DBN in our case.
+			 	described by output with values of type UnittedQuantity
+			 	described by accuracy with a single value of type decimal
+				.
+			
+			Dataset is a type of Thing
+				described by creator with a single value of type string //Person
+			//	described by location with a single value of type string
+				.
+			
+			CSVDataset is a type of Dataset
+				described by column with values of type CSVColumn 
+				.
+				
+			CSVColumn is a type of Thing
+				described by header with values of type string
+				described by colType with values of type string
+				described by variable with values of type UnittedQuantity //Variable
+				described by percentMissingValues with values of type float
+				. 
+			
+			parent describes ^Equation with values of type ^Equation.
+		'''.sadl
+		
+		'''
+			uri "http://aske.ge.com/dbnnodes" alias dbnnodes .
+			
+			import "http://aske.ge.com/compgraphmodel".
+			import "http://aske.ge.com/hypersonicsV2". 
+			
+			// Hypersonics domain DBNs. The general DBN definitions are in CompGraphModel.sadl
+			
+			
+			//Note: need implicitModel to have semType with value of type UnittedQuantity.
+					
+			AltitudeDBN is a type of DBN.
+			node of AltitudeDBN always has value (a DataDescriptor localDescriptorName "altitude" augmentedType (a SemanticType semType Altitude) ).
+			distribution of AltitudeDBN always has value uniform.
+			range of AltitudeDBN always has value (a Range lower 0 upper 60000).
+			
+			AirSpeedDBN is a type of DBN.
+			node of AirSpeedDBN always has value (a DataDescriptor localDescriptorName "speed" augmentedType (a SemanticType semType AirSpeed) ).
+			distribution of AirSpeedDBN always has value uniform.
+			range of AirSpeedDBN always has value (a Range lower 0 upper 5000).
+			
+			
+			StaticTempDBN is a type of DBN.
+			hasEquation of StaticTempDBN only has values of type StaticTemperatureEquation. //StaticTempEq. //or StaticTempEq2) .
+			//hasEquation of StaticTempDBN has at most one value of type StaticTempEq2. // {StaticTempEq or StaticTempEq2} .
+			range of StaticTempDBN always has value (a Range with lower 359 with upper 700).
+			distribution of StaticTempDBN always has value uniform. //should be default value
+			
+			
+			StaticPressureDBN is a type of DBN.
+			hasEquation of  StaticPressureDBN only has values of type StaticPressureEquation.
+			range of StaticPressureDBN always has value (a Range with lower 0 with upper 30000).
+			distribution of StaticPressureDBN always has value uniform.
+			
+			SpeedOfSoundDBN is a type of DBN.
+			hasEquation of  SpeedOfSoundDBN only has values of type SpeedOfSoundEquation.
+			range of SpeedOfSoundDBN always has value (a Range with lower 270 with upper 350).
+			distribution of SpeedOfSoundDBN always has value uniform.
+			
+			MachSpeedDBN is a type of DBN.
+			hasEquation of  MachSpeedDBN only has values of type MachSpeedEquation.
+			range of MachSpeedDBN always has value (a Range with lower 0 with upper 20).
+			distribution of MachSpeedDBN always has value uniform.
+			
+			
+			TotalTemperatureDBN is a type of DBN.
+			hasEquation of  TotalTemperatureDBN only has values of type TotalTemperatureEquation.
+			range of TotalTemperatureDBN always has value (a Range with lower 359 with upper 2000).
+			distribution of TotalTemperatureDBN always has value uniform.
+			
+			TotalPressureDBN is a type of DBN.
+			hasEquation of  TotalPressureDBN only has values of type TotalPressureEquation.
+			range of TotalPressureDBN always has value (a Range with lower 0 with upper 50000).
+			distribution of TotalPressureDBN always has value uniform.
+		'''.sadl
+		
+		'''
+			uri "http://aske.ge.com/testdiag" alias testdiag.
+			
+			import "http://aske.ge.com/metamodel".
+			import "http://aske.ge.com/hypersonicsV2".
+			import "http://aske.ge.com/dbnnodes".
+			
+			what is the staticTemperature of some Air when the altitude of the Air is 35000 ft?
+		'''.assertValidatesTo [ ontModel, issues, processor |
+			assertNotNull(ontModel)
+			val stmtitr = ontModel.listStatements()
+			while (stmtitr.hasNext) {
+				println(stmtitr.nextStatement)
+			}
+			val errors = issues.filter[severity === Severity.ERROR]
+			assertEquals(0, errors.size)
+		]
+	}
 
 	@Ignore
 	@Test

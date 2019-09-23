@@ -1221,15 +1221,26 @@ public class DialogAnswerProvider extends DefaultAutoEditStrategyProvider implem
 			if (tsburl != null) {
 				map.put(DialogPreferences.ANSWER_TEXT_SERVICE_BASE_URI.getId(), tsburl);
 			}
-			String cgsburl = preferenceValues.getPreference(DialogPreferences.ANSWER_CG_SERVICE_BASE_URI);
-			if (cgsburl != null) {
-				map.put(DialogPreferences.ANSWER_CG_SERVICE_BASE_URI.getId(), cgsburl);
-			}
 			String j2psburl = preferenceValues.getPreference(DialogPreferences.ANSWER_JAVA_TO_PYTHON_SERVICE_BASE_URI);
 			if (j2psburl != null) {
 				map.put(DialogPreferences.ANSWER_JAVA_TO_PYTHON_SERVICE_BASE_URI.getId(), j2psburl);
 			}
-//			preferenceValues.getPreference(DialogPreferences.)
+			String usekchain = preferenceValues.getPreference(DialogPreferences.USE_ANSWER_KCHAIN_CG_SERVICE);
+			if (usekchain != null) {
+				map.put(DialogPreferences.USE_ANSWER_KCHAIN_CG_SERVICE.getId(), usekchain);
+			}
+			String kchaincgsburl = preferenceValues.getPreference(DialogPreferences.ANSWER_KCHAIN_CG_SERVICE_BASE_URI);
+			if (kchaincgsburl != null) {
+				map.put(DialogPreferences.ANSWER_KCHAIN_CG_SERVICE_BASE_URI.getId(), kchaincgsburl);
+			}
+			String dbncgsburl = preferenceValues.getPreference(DialogPreferences.ANSWER_DBN_CG_SERVICE_BASE_URI);
+			if (dbncgsburl != null) {
+				map.put(DialogPreferences.ANSWER_DBN_CG_SERVICE_BASE_URI.getId(), dbncgsburl);
+			}
+			String usedbn = preferenceValues.getPreference(DialogPreferences.USE_DBN_KCHAIN_CG_SERVICE);
+			if (usedbn != null) {
+				map.put(DialogPreferences.USE_DBN_KCHAIN_CG_SERVICE.getId(), usedbn);
+			}
 			return map;
 		}
 		return null;
