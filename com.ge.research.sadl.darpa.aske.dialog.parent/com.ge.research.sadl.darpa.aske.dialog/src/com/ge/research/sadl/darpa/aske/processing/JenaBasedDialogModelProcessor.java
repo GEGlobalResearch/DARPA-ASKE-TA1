@@ -97,15 +97,20 @@ import com.ge.research.sadl.jena.MetricsProcessor;
 import com.ge.research.sadl.jena.UtilsForJena;
 import com.ge.research.sadl.model.CircularDefinitionException;
 import com.ge.research.sadl.model.ModelError;
+import com.ge.research.sadl.model.gp.BuiltinElement;
+import com.ge.research.sadl.model.gp.BuiltinElement.BuiltinType;
 import com.ge.research.sadl.model.gp.Equation;
 import com.ge.research.sadl.model.gp.GraphPatternElement;
 import com.ge.research.sadl.model.gp.Junction;
+import com.ge.research.sadl.model.gp.Literal;
 import com.ge.research.sadl.model.gp.NamedNode;
+import com.ge.research.sadl.model.gp.NamedNode.NodeType;
 import com.ge.research.sadl.model.gp.Node;
 import com.ge.research.sadl.model.gp.ProxyNode;
 import com.ge.research.sadl.model.gp.Query;
 import com.ge.research.sadl.model.gp.Rule;
 import com.ge.research.sadl.model.gp.TripleElement;
+import com.ge.research.sadl.model.gp.VariableNode;
 import com.ge.research.sadl.processing.OntModelProvider;
 import com.ge.research.sadl.processing.SadlConstants;
 import com.ge.research.sadl.processing.SadlInferenceException;
@@ -136,9 +141,14 @@ import com.ge.research.sadl.utils.ResourceManager;
 import com.google.common.collect.Iterables;
 import com.google.inject.Inject;
 import com.hp.hpl.jena.ontology.Individual;
+import com.hp.hpl.jena.ontology.OntClass;
 import com.hp.hpl.jena.ontology.OntModel;
 import com.hp.hpl.jena.ontology.Ontology;
+import com.hp.hpl.jena.rdf.model.Property;
+import com.hp.hpl.jena.rdf.model.RDFNode;
 import com.hp.hpl.jena.rdf.model.RDFWriter;
+import com.hp.hpl.jena.rdf.model.StmtIterator;
+import com.hp.hpl.jena.vocabulary.RDFS;
 
 public class JenaBasedDialogModelProcessor extends JenaBasedSadlModelProcessor {
 	private static final Logger logger = LoggerFactory.getLogger(JenaBasedDialogModelProcessor.class);
@@ -939,44 +949,46 @@ public class JenaBasedDialogModelProcessor extends JenaBasedSadlModelProcessor {
 		String targetModelUrl = null;
 		String targetModelAlias = ((SaveStatement)element).getSaveTarget();
 		Map<String, String[]> targetModelMap = getAnswerCurationManager().getTargetModelMap();
-		if (targetModelAlias != null) {
-			String[] uris = targetModelMap.get(targetModelAlias);
-			if (uris == null) {
-				addError("Model with alias '" + targetModelAlias + "' not found in target models.", element);
-			}
-			else {
-				targetModelUri = uris[0];
-				targetModelUrl = uris[1];
-			}
+		if (targetModelMap == null || targetModelMap.size() < 1) {
+			addError("No target models have been identified. Cannot identify a model into which to save.", element);
 		}
 		else {
-			if (targetModelMap.size() > 1){
-				addError("There are multiple target models identified; please specify which one to save to.", element);
-			}
-			else if (targetModelMap.size() < 1) {
-				addError("No target models have been identified. Cannot identify a model into which to save.", element);
+			if (targetModelAlias != null) {
+				String[] uris = targetModelMap.get(targetModelAlias);
+				if (uris == null) {
+					addError("Model with alias '" + targetModelAlias + "' not found in target models.", element);
+				}
+				else {
+					targetModelUri = uris[0];
+					targetModelUrl = uris[1];
+				}
 			}
 			else {
-				String[] uris = targetModelMap.get(targetModelMap.keySet().iterator().next());
-				targetModelUri = uris[0];
-				targetModelUrl = uris[1];
+				if (targetModelMap.size() > 1){
+					addError("There are multiple target models identified; please specify which one to save to.", element);
+				}
+				else {
+					String[] uris = targetModelMap.get(targetModelMap.keySet().iterator().next());
+					targetModelUri = uris[0];
+					targetModelUrl = uris[1];
+				}
 			}
-		}
-		if (targetModelUri != null) {
-			String equationUri = getDeclarationExtensions().getConceptUri(equationSR);
-			Individual extractedModelInstance = getTheJenaModel().getIndividual(equationUri);
-			if (extractedModelInstance == null) {
-				getAnswerCurationManager().notifyUser(getConfigMgr().getModelFolder(), "No equation with URI '" + equationUri + "' is found in current model.", true);
+			if (targetModelUri != null) {
+				String equationUri = getDeclarationExtensions().getConceptUri(equationSR);
+				Individual extractedModelInstance = getTheJenaModel().getIndividual(equationUri);
+				if (extractedModelInstance == null) {
+					getAnswerCurationManager().notifyUser(getConfigMgr().getModelFolder(), "No equation with URI '" + equationUri + "' is found in current model.", true);
+				}
+				else if (extractedModelInstance.getNameSpace().equals(targetModelAlias)) {
+					getAnswerCurationManager().notifyUser(getConfigMgr().getModelFolder(), "The equation with URI '" + equationUri + "' is already in the target model '" + targetModelAlias + "'", true);
+				}
+				System.out.println("Ready to build model '" + equationUri + "'");
+				SaveContent sc = new SaveContent(element, Agent.USER);
+				sc.setTargetModelUri(targetModelUrl);
+				sc.setTargetModelActualUrl(targetModelUrl);
+				sc.setSourceEquationUri(extractedModelInstance.getURI());
+				return sc;
 			}
-			else if (extractedModelInstance.getNameSpace().equals(targetModelAlias)) {
-				getAnswerCurationManager().notifyUser(getConfigMgr().getModelFolder(), "The equation with URI '" + equationUri + "' is already in the target model '" + targetModelAlias + "'", true);
-			}
-			System.out.println("Ready to build model '" + equationUri + "'");
-			SaveContent sc = new SaveContent(element, Agent.USER);
-			sc.setTargetModelUri(targetModelUrl);
-			sc.setTargetModelActualUrl(targetModelUrl);
-			sc.setSourceEquationUri(extractedModelInstance.getURI());
-			return sc;
 		}
 		return null;
 	}
@@ -1087,7 +1099,63 @@ public class JenaBasedDialogModelProcessor extends JenaBasedSadlModelProcessor {
 			if (whenObj instanceof GraphPatternElement) {
 				whenObj = dift.addImpliedAndExpandedProperties((GraphPatternElement)whenObj);
 				List<GraphPatternElement> gpes = new ArrayList<GraphPatternElement>();
-				gpes.add((GraphPatternElement) whenObj);
+				if (!ignoreUnittedQuantities && whenObj instanceof TripleElement && 
+						((TripleElement)whenObj).getObject() instanceof Literal &&
+						((Literal)(((TripleElement)whenObj).getObject())).getUnits() != null) {
+					String propUri = ((TripleElement)whenObj).getPredicate().getURI();
+					// create a typed variable for the UnittedQuantity blank node, actual type range of prop
+					Property prop = getTheJenaModel().getProperty(propUri);
+					StmtIterator rngItr = getTheJenaModel().listStatements(prop.asResource(), RDFS.range, (RDFNode)null);
+					OntClass unittedQuantitySubclass = null;
+					if (rngItr.hasNext()) {
+						RDFNode rng = rngItr.nextStatement().getObject();
+						if (!rngItr.hasNext()) {
+							if (rng.isURIResource() && rng.canAs(OntClass.class)) {
+								unittedQuantitySubclass = rng.as(OntClass.class);
+							}
+						}
+						if (unittedQuantitySubclass == null) {
+							// apparently has more than 1 range, use UnittedQuantity
+							unittedQuantitySubclass = getTheJenaModel().getOntClass(SadlConstants.SADL_IMPLICIT_MODEL_UNITTEDQUANTITY_URI);
+						}
+					}
+					VariableNode var = new VariableNode(getNewVar(whatIsTarget));
+					NamedNode type = new NamedNode(unittedQuantitySubclass.getURI());
+					type.setNodeType(NodeType.ClassNode);
+					var.setType(validateNode(type));
+					Literal valueLiteral = (Literal) ((TripleElement)whenObj).getObject();
+					((TripleElement)whenObj).setObject(var);
+					String units = valueLiteral.getUnits();
+					Literal unitsLiteral = new Literal();
+					unitsLiteral.setValue(units);
+					valueLiteral.setUnits(null);
+					TripleElement valueTriple = new TripleElement(var, 
+							new NamedNode(SadlConstants.SADL_IMPLICIT_MODEL_VALUE_URI), valueLiteral);
+					TripleElement unitTriple = new TripleElement(var, 
+							new NamedNode(SadlConstants.SADL_IMPLICIT_MODEL_UNIT_URI), unitsLiteral);
+					gpes.add((TripleElement)whenObj);
+					gpes.add(valueTriple);
+					gpes.add(unitTriple);
+				}
+//				else if (!ignoreUnittedQuantities && whenObj instanceof BuiltinElement &&
+//						((BuiltinElement)whenObj).getFuncType().equals(BuiltinType.Equal) &&
+//						((BuiltinElement)whenObj).getArguments().get(1) instanceof Literal &&
+//						((Literal)((BuiltinElement)whenObj).getArguments().get(1)).getUnits() != null) {
+//					Literal val = (Literal)((BuiltinElement)whenObj).getArguments().get(1);
+//					String units = val.getUnits();
+//					val.setUnits(null);
+//					Literal unitsLiteral = new Literal();
+//					unitsLiteral.setValue(units);
+//					TripleElement valueTriple = new TripleElement(((BuiltinElement)whenObj).getArguments().get(0), 
+//							new NamedNode(SadlConstants.SADL_IMPLICIT_MODEL_VALUE_URI), val);
+//					TripleElement unitTriple = new TripleElement(((BuiltinElement)whenObj).getArguments().get(0), 
+//							new NamedNode(SadlConstants.SADL_IMPLICIT_MODEL_UNIT_URI), unitsLiteral);
+//					gpes.add(valueTriple);
+//					gpes.add(unitTriple);
+//				}
+				else {
+					gpes.add((GraphPatternElement) whenObj);
+				}
 				Object temp = dift.cook(gpes, false);
 				if (temp instanceof List<?>) {
 					if (((List<?>)temp).size() == 1) {

@@ -10,6 +10,7 @@ import com.ge.research.sadl.reasoner.ConfigurationManager
 
 class DialogTest extends com.ge.research.sadl.darpa.aske.tests.AbstractDialogTest {
 
+	@Ignore
 	@Test
 	def void dummy_test() {
 		'''
@@ -192,6 +193,7 @@ class DialogTest extends com.ge.research.sadl.darpa.aske.tests.AbstractDialogTes
 		]
 	}
 
+	@Ignore
 	@Test
 	def void saveThroughEval_test() {
 		'''
@@ -354,7 +356,7 @@ class DialogTest extends com.ge.research.sadl.darpa.aske.tests.AbstractDialogTes
 		]
 	}
 
-//	@Ignore
+	@Ignore
 	@Test
 	def void testGetTranslatorInstance() {
 		val cm = new ConfigurationManager

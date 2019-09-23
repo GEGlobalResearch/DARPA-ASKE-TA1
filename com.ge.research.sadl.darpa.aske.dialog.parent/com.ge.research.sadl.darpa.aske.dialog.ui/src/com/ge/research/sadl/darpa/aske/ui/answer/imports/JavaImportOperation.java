@@ -112,8 +112,6 @@ public class JavaImportOperation extends WorkspaceModifyOperation {
 
     private List selectedFiles;
     
-    private String outputFilename;
-
     private IFile targetResource;
     
     private Object fileObject;
@@ -625,10 +623,7 @@ public class JavaImportOperation extends WorkspaceModifyOperation {
     	String fileObjectPath = provider.getFullPath(importFilePath.toFile());
     	monitor.subTask(fileObjectPath);
     	String fileObjectS = importFilePath.toFile().getName();  //((File)fileObject).getName();
-    	String outputfn = getOutputFilename();
-    	if (outputfn == null) {
-    		outputfn = fileObjectS.substring(0, fileObjectS.lastIndexOf(".")) + ".owl";
-    	}
+    	String outputfn = AnswerCurationManager.getImportOutputFilename(fileObjectS);
 
 		if (outputfn.lastIndexOf('.') > 0) {
 			int lio = ((String) outputfn).lastIndexOf('.');
@@ -1329,14 +1324,6 @@ public class JavaImportOperation extends WorkspaceModifyOperation {
 		});
 		
 		return i.get();
-	}
-
-	private String getOutputFilename() {
-		return outputFilename;
-	}
-
-	private void setOutputFilename(String fn) {
-		this.outputFilename = fn;
 	}
 
 	private IFile getTargetResource() {

@@ -772,6 +772,11 @@ public class JenaBasedDialogInferenceProcessor extends JenaBasedSadlInferencePro
 				
 				// create triple: cgq, mm:input, sinst
 				OntProperty inputprop = getTheJenaModel().getOntProperty(METAMODEL_INPUT_PROP);
+				if (inputprop == null) {
+// TODO need EObject to display error marker in Dialog window... 
+					System.err.println("Unable to find property '" + METAMODEL_INPUT_PROP + "'; is the meta model imported?");
+					return null;
+				}
 				ingestKGTriple(cgq, inputprop, ssp);
 //				ingestKGTriple(cgq, inputprop, sinst);
 				
