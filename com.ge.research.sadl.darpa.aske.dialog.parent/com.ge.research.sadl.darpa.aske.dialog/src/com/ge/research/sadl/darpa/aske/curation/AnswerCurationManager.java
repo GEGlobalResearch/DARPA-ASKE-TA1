@@ -1179,7 +1179,13 @@ public class AnswerCurationManager {
 		if (dialogAnswerProvider == null) {
 			setDialogAnswerProvider((IDialogAnswerProvider) getDomainModelConfigurationManager().getPrivateKeyValuePair(DialogConstants.DIALOG_ANSWER_PROVIDER));
 			if (dialogAnswerProvider == null) {
-				dialogAnswerProvider = new DialogAnswerProviderConsoleForTest();
+				setDialogAnswerProvider(new DialogAnswerProviderConsoleForTest());
+			}
+		} else if (dialogAnswerProvider instanceof DialogAnswerProviderConsoleForTest) {
+			IDialogAnswerProvider provider = (IDialogAnswerProvider) getDomainModelConfigurationManager().getPrivateKeyValuePair(DialogConstants.DIALOG_ANSWER_PROVIDER);
+			if (provider != null && !(provider instanceof DialogAnswerProviderConsoleForTest)) {
+				dialogAnswerProvider.dispose(); // Dispose the current, console-based answer provider.
+				setDialogAnswerProvider(provider); // Updated with the`document`-aware dialog provider.
 			}
 		}
 		return dialogAnswerProvider;
