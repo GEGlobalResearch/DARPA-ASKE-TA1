@@ -2461,6 +2461,7 @@ public class AnswerCurationManager {
 
 	public void clearQuestionsAndAnsers() {
 		questionsAndAnswers.clear();
+		setDialogAnswerProvider(null);
 	}
 
 }
