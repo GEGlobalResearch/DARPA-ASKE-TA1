@@ -112,6 +112,7 @@ public class DialogAnswerProvider extends BaseDialogAnswerProvider {
 		if (answerConfigurationManager != null) {
 			answerConfigurationManager.clearQuestionsAndAnsers();
 		}
+		configManager.addPrivateKeyValuePair(DialogConstants.DIALOG_ANSWER_PROVIDER, null);
 	}
 
 	/**
