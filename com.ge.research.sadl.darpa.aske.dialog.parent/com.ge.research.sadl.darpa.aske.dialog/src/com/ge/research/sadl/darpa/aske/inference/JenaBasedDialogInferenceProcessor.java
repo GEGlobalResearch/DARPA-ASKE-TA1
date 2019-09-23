@@ -134,12 +134,12 @@ public class JenaBasedDialogInferenceProcessor extends JenaBasedSadlInferencePro
 	public static final String MODELERROR_PROP = METAMODEL_PREFIX + "modelError";
 
 	
-	public static final String DEPENDENCY_GRAPH_INSERT = "prefix dbn:<http://aske.ge.com/dbn#>\n" + 
+	public static final String DEPENDENCY_GRAPH_INSERT = "prefix cg:<http://aske.ge.com/compgraphmodel#>\n" + 
 			"prefix imp:<http://sadl.org/sadlimplicitmodel#>\n" +
-			"prefix sci:<http://aske.ge.com/sciknow#>" +
+			"prefix sci:<http://aske.ge.com/sciknow#>\n" +
 			"prefix rdfs:<http://www.w3.org/2000/01/rdf-schema#>\n" +
-			"prefix rdf:<http://www.w3.org/1999/02/22-rdf-syntax-ns#>" +
-			"insert {?EqCh dbn:parent ?EqPa}\n" + 
+			"prefix rdf:<http://www.w3.org/1999/02/22-rdf-syntax-ns#>\n" +
+			"insert {?EqCh cg:parent ?EqPa}\n" + 
 			"where {\n" +
 			"  ?EqCh a imp:Equation.\n" + 
 			" ?EqCh imp:arguments ?AL2.\n" + 
@@ -160,51 +160,59 @@ public class JenaBasedDialogInferenceProcessor extends JenaBasedSadlInferencePro
 			" \n" + 
 			" filter( ?EqPa != ?EqCh) " + 
 			"}";
+	
+	public static final String CHECK_DEPENDENCY = "select distinct ?EqCh ?EqPa where { ?EqCh <http://aske.ge.com/compgraphmodel#parent> ?EqPa}";
+	
 	public static final String BUILD_COMP_GRAPH = "prefix hyper:<http://aske.ge.com/hypersonicsV2#>\n" + 
-			"prefix dbn:<http://aske.ge.com/dbnnodes#>\n" + 
 			"prefix imp:<http://sadl.org/sadlimplicitmodel#> \n" + 
 			"prefix owl:<http://www.w3.org/2002/07/owl#> \n" + 
 			"prefix rdfs:<http://www.w3.org/2000/01/rdf-schema#>\n" + 
-			"prefix rdf:<http://www.w3.org/1999/02/22-rdf-syntax-ns#>" +
-			"prefix sci:<http://aske.ge.com/sciknow#>\n" + 
+			"prefix rdf:<http://www.w3.org/1999/02/22-rdf-syntax-ns#>prefix sci:<http://aske.ge.com/sciknow#>\n" + 
 			"prefix cg:<http://aske.ge.com/compgraphmodel#>\n" + 
 			"\n" + 
 			"select distinct ?DBN ?Out ?Eq where { \n" + 
-			"  {select distinct ?Eq ?Out where { \n" + 
+			"  {select distinct ?Eq where { \n" + 
 			"     ?EqOut a imp:Equation. \n" + 
 			"     ?EqOut imp:returnTypes ?EO1. \n" + 
 			"     ?EO1 rdf:rest*/rdf:first ?EO2.\n" + 
 			"     ?EO2 imp:augmentedType ?EO3. \n" + 
 			"     ?EO3 imp:constraints ?EO4.\n" + 
 			"     ?EO4 rdf:rest*/rdf:first ?EO5.\n" + 
-			"     ?EO5 imp:gpPredicate ?Out.\n" + 
-			"     filter (?Out in ( LISTOFOUTPUTS )).\n" + 
+			"     ?EO5 imp:gpPredicate ?Op.\n" + 
+			"     filter (?Op in ( LISTOFOUTPUTS )).\n" + 
 			"\n" + 
-			"     ?EqOut dbn:parent* ?EqIn. \n" + 
+			"     ?EqOut cg:parent* ?EqIn. \n" + 
 			"     ?EqIn imp:arguments ?EI1.\n" + 
 			"     ?EI1 rdf:rest*/rdf:first ?EI2.\n" + 
 			"     ?EI2 imp:augmentedType ?EI3. \n" + 
 			"     ?EI3 imp:constraints ?EI4.\n" + 
 			"     ?EI4 rdf:rest*/rdf:first ?EI5.\n" + 
-			"     ?EI5 imp:gpPredicate ?In.\n" + 
-			"     filter (?In in ( LISTOFINPUTS )). \n" + 
+			"     ?EI5 imp:gpPredicate ?Ip.\n" + 
+			"     filter (?Ip in ( LISTOFINPUTS )). \n" + 
 			"\n" + 
-			"     ?EqOut dbn:parent* ?Eq. \n" + 
-			"     ?Eq dbn:parent* ?EqIn. \n" + 
+			"     ?EqOut cg:parent* ?Eq. \n" + 
+			"     ?Eq cg:parent* ?EqIn. \n" + 
 			"  }} \n" + 
+			"\n" + 
+			"  ?Eq imp:returnTypes ?O1. \n" + 
+			"  ?O1 rdf:rest*/rdf:first ?O2.\n" + 
+			"  ?O2 imp:augmentedType ?O3. \n" + 
+			"  ?O3 imp:constraints ?O4.\n" + 
+			"  ?O4 rdf:rest*/rdf:first ?O5.\n" + 
+			"  ?O5 imp:gpPredicate ?Out.\n" + 
+			"  filter (?Out != <http://www.w3.org/1999/02/22-rdf-syntax-ns#type>) \n" + 
+			"\n" + 
+			"\n" + 
 			"  ?DBN rdfs:subClassOf ?EQR. \n" + 
 			"  ?EQR owl:onProperty cg:hasEquation.\n" + 
 			"  ?EQR owl:allValuesFrom ?EqClass.\n" + 
 			"  ?Eq a ?EqClass. \n" + 
 			"}";
+
 	
-//	public static final String LOOKUP_EQNS = "prefix hyper:<http://aske.ge.com/hypersonics#>\n" + 
-//			"prefix dbn:<http://aske.ge.com/dbn#>\n" + 
-//			"prefix imp:<http://sadl.org/sadlimplicitmodel#>\n" + 
-//			"prefix owl:<http://www.w3.org/2002/07/owl#>\n" + 
+//	public static final String LOOKUP_EQNS = 
 //			"prefix rdfs:<http://www.w3.org/2000/01/rdf-schema#>\n" +
 //			"prefix sci:<http://aske.ge.com/sciknow#>\n" +
-//			"prefix afn:<http://jena.apache.org/ARQ/function#>\n" +
 //			"select distinct ?EqOut where {\n" + 
 //			"    ?EqOut a ?EqClass. \n" + 
 //			"    ?EqClass rdfs:subClassOf imp:Equation.\n" + 
@@ -214,7 +222,6 @@ public class JenaBasedDialogInferenceProcessor extends JenaBasedSadlInferencePro
 //			"}";
 	
 	public static final String RETRIEVE_MODELS = "prefix hyper:<http://aske.ge.com/hypersonicsV2#>\n" + 
-			"prefix dbn:<http://aske.ge.com/dbnnodes#> \n" + 
 			"prefix imp:<http://sadl.org/sadlimplicitmodel#>\n" + 
 			"prefix sci:<http://aske.ge.com/sciknow#> \n" + 
 			"prefix owl:<http://www.w3.org/2002/07/owl#> \n" + 
@@ -257,7 +264,6 @@ public class JenaBasedDialogInferenceProcessor extends JenaBasedSadlInferencePro
 			"order by ?Model";
 	
 	public static final String RETRIEVE_NODES = "prefix hyper:<http://aske.ge.com/hypersonicsV2#>\n" + 
-			"prefix dbn:<http://aske.ge.com/dbnnodes#>\n" + 
 			"prefix imp:<http://sadl.org/sadlimplicitmodel#>\n" + 
 			"prefix sci:<http://aske.ge.com/sciknow#>\n" + 
 			"prefix mm:<http://aske.ge.com/metamodel#>\n" + 
@@ -334,7 +340,7 @@ public class JenaBasedDialogInferenceProcessor extends JenaBasedSadlInferencePro
 			"     ?EqO3 imp:constraints ?EqO4.\n" + 
 			"     ?EqO4 rdf:rest*/rdf:first ?EqO5.\n" + 
 			"     ?EqO5 imp:gpPredicate ?Node.\n" + 
-			"     optional{?EqO2 imp:specifiedUnits/rdf:first ?CUnits.}" +
+			"     optional{?EqO2 imp:specifiedUnits/rdf:first ?NUnits.}" +
 			"\n" + 
 			"     ?DBN rdfs:subClassOf ?DB. \n" + 
 			"     ?DB owl:onProperty cg:distribution. \n" + 
@@ -841,7 +847,15 @@ public class JenaBasedDialogInferenceProcessor extends JenaBasedSadlInferencePro
 		
 		
 		// Insert dependency graph
+		//String tmp = DEPENDENCY_GRAPH_INSERT
 		UpdateAction.parseExecute(DEPENDENCY_GRAPH_INSERT , getTheJenaModel());
+		
+		ResultSetRewindable depTest = queryKnowledgeGraph(CHECK_DEPENDENCY, getTheJenaModel());
+		
+		if (!depTest.hasNext()) {
+			throw new SadlInferenceException("Dependency inference failed");
+		}
+			
 		
 		//getTheJenaModel().write(System.out, "TTL" );
 
@@ -967,7 +981,7 @@ public class JenaBasedDialogInferenceProcessor extends JenaBasedSadlInferencePro
 					models = queryKnowledgeGraph(queryStr, getTheJenaModel());
 					modelsCSVString = convertResultSetToString(models);
 					System.out.println(modelsCSVString);
-		
+					
 					queryStr = RETRIEVE_NODES.replaceAll("EQNSLIST", listOfEqns);
 					queryStr = queryStr.replaceAll("COMPGRAPH", "<" + cgIns.getURI() + ">");
 					nodes = queryKnowledgeGraph(queryStr, getTheJenaModel().union(qhmodel));
@@ -984,6 +998,12 @@ public class JenaBasedDialogInferenceProcessor extends JenaBasedSadlInferencePro
 					class2lbl = getClassLabelMapping(dbnJson);
 					
 		            dbnResultsJson = executeDBN(dbnJson);
+		            
+		            //TODO: send sensitivity request to DBN
+		            //queryMode = "sensitivity";
+		            //cgJson = kgResultsToJson(nodesCSVString, modelsCSVString, queryMode, "");
+		            //dbnJson = generateDBNjson(cgJson);
+		            //dbnResultsJson = executeDBN(dbnJson);
 		            
 		            //check if DBN execution was successful
 		            
@@ -1256,21 +1276,27 @@ private TripleElement getInputTypeTriple(Node varNode, TripleElement[] triples) 
 		com.hp.hpl.jena.query.Query qinv;
 		QueryExecution qexec;
 		
+		//This is a roundabout way to initialize eqnsRes. There must be a better way?
 		queryStr = BUILD_COMP_GRAPH.replaceAll("LISTOFOUTPUTS", "").replaceAll("LISTOFINPUTS", "");
-		qinv = QueryFactory.create(queryStr);
-		qexec = QueryExecutionFactory.create(qinv, getTheJenaModel());
-		eqnsRes = qexec.execSelect() ;
+		//qinv = QueryFactory.create(queryStr);
+		//qexec = QueryExecutionFactory.create(qinv, getTheJenaModel());
+		//eqnsRes = qexec.execSelect() ;
+		eqnsRes = queryKnowledgeGraph(queryStr, getTheJenaModel());
 		
 		for(RDFNode ic : inputsList) 
 			for(RDFNode oc : outputsList) {
 				inpStr = "<" + ic.toString() + ">";
 				outpStr = "<" + oc.toString() + ">";
 				queryStr = BUILD_COMP_GRAPH.replaceAll("LISTOFOUTPUTS", outpStr).replaceAll("LISTOFINPUTS", inpStr);
-				qinv = QueryFactory.create(queryStr);
-				qexec = QueryExecutionFactory.create(qinv, getTheJenaModel()); 
-				eqns = qexec.execSelect() ;
-				boolean r = eqns.hasNext();
-				System.out.println(r);
+
+				//qinv = QueryFactory.create(queryStr);
+				//qexec = QueryExecutionFactory.create(qinv, getTheJenaModel()); 
+				//eqns = qexec.execSelect() ;
+				
+				eqns = queryKnowledgeGraph(queryStr, getTheJenaModel());
+				
+				//boolean r = eqns.hasNext();
+				//System.out.println(r);
 				if (!eqns.hasNext()) {
 					queryStr = BUILD_COMP_GRAPH.replaceAll("LISTOFOUTPUTS", inpStr).replaceAll("LISTOFINPUTS", outpStr);
 					qinv = QueryFactory.create(queryStr);
@@ -1681,7 +1707,7 @@ private TripleElement getInputTypeTriple(Node varNode, TripleElement[] triples) 
 
 
 	private ResultSetRewindable queryKnowledgeGraph(String queryStr, Model model) {
-		System.out.println(queryStr);
+		//System.out.println(queryStr);
 		com.hp.hpl.jena.query.Query qm = QueryFactory.create(queryStr);
 		QueryExecution qe = QueryExecutionFactory.create(qm, model); 
 		//com.hp.hpl.jena.query.ResultSetRewindable 
