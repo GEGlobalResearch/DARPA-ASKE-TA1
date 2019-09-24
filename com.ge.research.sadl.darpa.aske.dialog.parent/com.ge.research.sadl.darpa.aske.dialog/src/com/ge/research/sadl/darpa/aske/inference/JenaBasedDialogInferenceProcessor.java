@@ -274,7 +274,7 @@ public class JenaBasedDialogInferenceProcessor extends JenaBasedSadlInferencePro
 			"\n" + 
 			"select distinct ?Node (str(?NUnits) as ?NodeOutputUnits) ?Child (str(?CUnits) as ?ChildInputUnits) ?Distribution ?Lower ?Upper ?Eq ?Value \n" +
 			" where {\n" + 
-			"  {select distinct ?Node ?Child ?CUnits ?Distribution ?Lower ?Upper ?Eq where { \n" + 
+			"  {select distinct ?Node ?NUnits ?Child ?CUnits ?Distribution ?Lower ?Upper ?Eq where { \n" + 
 			"     ?Eq imp:arguments ?EI1.\n" + 
 			"     ?EI1 rdf:rest*/rdf:first ?EI2.\n" + 
 			"     ?EI2 imp:augmentedType ?EI3. \n" + 
@@ -284,6 +284,10 @@ public class JenaBasedDialogInferenceProcessor extends JenaBasedSadlInferencePro
 			"       filter (?Node != <http://www.w3.org/1999/02/22-rdf-syntax-ns#type>)\n" +
 			"     optional{?EI2 imp:specifiedUnits/rdf:first ?CUnits.}" + 
 			"\n" + 
+			"     optional{\n" + 
+			"       ?Var ?Node ?UQNode.\n" + 
+			"       ?UQNode imp:unit ?NUnits.\n" + 
+			"     }" + 
 			"     ?Eq imp:returnTypes ?EO1.\n" + 
 			"     ?EO1 rdf:rest*/rdf:first ?EO2.\n" + 
 			"     ?EO2 imp:augmentedType ?EO3. \n" + 
@@ -685,7 +689,7 @@ public class JenaBasedDialogInferenceProcessor extends JenaBasedSadlInferencePro
 						TripleElement inputTypeTr = getInputTypeTriple(varNode, triples); // get the property triple, e.g. (v0, hypersonicsV2:altitude, v1)
 						quantity[0] = inputTypeTr;
 						quantity[1] = tr;
-						//quantity[2] = // this will add the units triple
+						quantity[2] = getInputUnitsTriple(varNode,triples);
 						insertions.add(quantity);
 					}
 					else if (tr.getObject() == null) { //(v0, hypersonicsV2:staticTemperature, null)
@@ -791,33 +795,27 @@ public class JenaBasedDialogInferenceProcessor extends JenaBasedSadlInferencePro
 				sss = getTheJenaModel().getResource(ns+ss);
 
 				//String s1p = 
-				sp = itr.getPredicate().getURI();
-				ssp = getTheJenaModel().getProperty(sp);
+//				sp = itr.getPredicate().getURI();
+//				ssp = getTheJenaModel().getProperty(sp);
 
 				Node valObj = itr.getObject();
-
+				Node p = itr.getPredicate();
+				
 				RDFNode val = null;
 				
-				if (valObj instanceof Literal) {
-					if (ssp.canAs(OntProperty.class)) {
-						OntResource rng = ssp.as(OntProperty.class).getRange();
-						try {
-							val = SadlUtils.getLiteralMatchingDataPropertyRange(getTheJenaModel(), rng.getURI(), ((Literal)valObj).getValue());
-						} catch (TranslationException e) {
-							//  Auto-generated catch block
-							e.printStackTrace();
-						}
-					}
-					else {
-						val = getTheJenaModel().createTypedLiteral(((Literal)valObj).getValue());
-					}
-				}
-				else {
-					val = getTheJenaModel().getResource(valObj.getURI());
-				}
-
-				ingestKGTriple(sss, ssp, val);
+				val = getObjectAsLiteralOrResource(p, valObj);
 				
+				ingestKGTriple(sss, ssp, val); // (#v1, #value, 30000^^decimal )
+				
+				//ingest units triple
+				itr = insertions.get(i)[2]; //e.g. itr = (v1, units, "ft")
+				if (itr != null) {
+					//String s1p = 
+					sp = itr.getPredicate().getURI();
+					ssp = getTheJenaModel().getProperty(sp);
+					sso = getObjectAsLiteralOrResource(itr.getPredicate(), itr.getObject());
+					ingestKGTriple(sss, ssp, sso); // (#v1, #unit, ft^^string )
+				}
 			}
 		}
 		//getTheJenaModel().write(System.out, "TTL" );
@@ -1261,6 +1259,39 @@ public class JenaBasedDialogInferenceProcessor extends JenaBasedSadlInferencePro
 	}
 
 
+
+private RDFNode getObjectAsLiteralOrResource(Node property, Node object) {
+		Property prop = getTheJenaModel().getProperty(property.getURI());
+		RDFNode obj=null;
+		if (object instanceof Literal) {
+			if (prop.canAs(OntProperty.class)) {
+				OntResource rng = prop.as(OntProperty.class).getRange();
+				try {
+					obj = SadlUtils.getLiteralMatchingDataPropertyRange(getTheJenaModel(), rng.getURI(), ((Literal)object).getValue());
+				} catch (TranslationException e) {
+					//  Auto-generated catch block
+					e.printStackTrace();
+				}
+			}
+			else {
+				obj = getTheJenaModel().createTypedLiteral(((Literal)object).getValue());
+			}
+		}
+		else {
+			obj = getTheJenaModel().getResource(object.getURI());
+		}
+
+		return obj;
+	}
+
+private TripleElement getInputUnitsTriple(Node varNode, TripleElement[] triples) {
+		for(int i=0; i<triples.length; i++) {
+			if(triples[i].getSubject().equals(varNode) && triples[i].getPredicate().getName().contains("unit")) { // && !triples[i].getPredicate().getName().contains("value")) {
+				return triples[i];
+			}
+		}
+		return null;
+	}
 
 private TripleElement getInputTypeTriple(Node varNode, TripleElement[] triples) {
 		// TODO Auto-generated method stub
