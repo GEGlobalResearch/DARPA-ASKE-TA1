@@ -1,0 +1,146 @@
+uri "http://com.ge.research.answer.java/TemperatureConversion" alias hgra
+    (note "This ontology was created by extraction from code by the ANSWER JavaModelExtractorJP.").
+
+import "http://sadl.org/CodeExtractionModel.sadl" as cem.
+
+
+// RDF Properties:
+^first is a property.
+
+
+// Individuals:
+TemperatureConversion is a cem:Class,
+    has cem:comment (a cem:Comment
+    with cem:endsAt 29,
+    with cem:beginsAt 1,
+    with cem:commentContent "
+ * Copyright 2018 General Electric Company
+ "),
+    has cem:comment (a cem:Comment
+    with cem:endsAt 29,
+    with cem:beginsAt 11,
+    with cem:commentContent "
+ * Class to provide temperature conversions between different units
+ * @author 200005201
+ *
+ "),
+    has cem:serialization "/**
+ * Class to provide temperature conversions between different units
+ * @author 200005201
+ */
+public class TemperatureConversion {
+
+    /**
+     * Method to convert from F to C
+     * @param tf -- temperature in degrees F
+     * @return -- temperature in degrees C
+     */
+    public float convertFtoC(float tf) {
+        return (float) ((tf - 32.0) * 9.0 / 5.0);
+    }
+
+    /**
+     * Method to convert from C to F
+     * @param tc -- temperature in degrees C
+     * @return -- temperature in degrees F
+     */
+    public float convertCtoF(float tc) {
+        return tc * 5 / 9 + 32;
+    }
+}",
+    has cem:comment (a cem:Comment
+    with cem:endsAt 29,
+    with cem:beginsAt 11,
+    with cem:commentContent "
+ * Class to provide temperature conversions between different units
+ * @author 200005201
+ *
+ "),
+    has cem:comment (a cem:Comment
+    with cem:endsAt 28,
+    with cem:beginsAt 26,
+    with cem:commentContent "
+	 * Method to convert from C to F
+	 * @param tc -- temperature in degrees C
+	 * @return -- temperature in degrees F
+	 "),
+    has cem:comment (a cem:Comment
+    with cem:endsAt 19,
+    with cem:beginsAt 17,
+    with cem:commentContent "
+	 * Method to convert from F to C
+	 * @param tf -- temperature in degrees F
+	 * @return -- temperature in degrees C
+	 ").
+TemperatureConversion.convertCtoF is a cem:Method,
+    has cem:serialization "/**
+ * Method to convert from C to F
+ * @param tc -- temperature in degrees C
+ * @return -- temperature in degrees F
+ */
+public float convertCtoF(float tc) {
+    return tc * 5 / 9 + 32;
+}",
+    has cem:cmReturnTypes (a -13616a68:16d647d7f17:-7612
+    with ^first "float"),
+    has cem:comment (a cem:Comment
+    with cem:endsAt 28,
+    with cem:beginsAt 26,
+    with cem:commentContent "
+	 * Method to convert from C to F
+	 * @param tc -- temperature in degrees C
+	 * @return -- temperature in degrees F
+	 "),
+    has cem:doesComputation true,
+    has cem:endsAt 28,
+    has cem:beginsAt 26,
+    has cem:cmArguments (a -13616a68:16d647d7f17:-7626
+    with ^first TemperatureConversion.convertCtoF.tc),
+    has cem:containedIn TemperatureConversion.
+TemperatureConversion.convertCtoF.tc is a cem:MethodArgument,
+    has cem:reference (a cem:Reference
+    with cem:endsAt 27,
+    with cem:beginsAt 27,
+    with cem:usage cem:Used,
+    with cem:codeBlock TemperatureConversion.convertCtoF),
+    has cem:varType "float",
+    has cem:varName "tc",
+    has cem:reference (a cem:Reference
+    with cem:input true,
+    with cem:endsAt 26,
+    with cem:beginsAt 26,
+    with cem:usage cem:Defined,
+    with cem:codeBlock TemperatureConversion.convertCtoF).
+TemperatureConversion.convertFtoC is a cem:Method,
+    has cem:serialization "/**
+ * Method to convert from F to C
+ * @param tf -- temperature in degrees F
+ * @return -- temperature in degrees C
+ */
+public float convertFtoC(float tf) {
+    return (float) ((tf - 32.0) * 9.0 / 5.0);
+}",
+    has cem:cmReturnTypes (a -13616a68:16d647d7f17:-7612
+    with ^first "float"),
+    has cem:comment (a cem:Comment
+    with cem:endsAt 19,
+    with cem:beginsAt 17,
+    with cem:commentContent "
+	 * Method to convert from F to C
+	 * @param tf -- temperature in degrees F
+	 * @return -- temperature in degrees C
+	 "),
+    has cem:endsAt 19,
+    has cem:beginsAt 17,
+    has cem:cmArguments (a -13616a68:16d647d7f17:-7626
+    with ^first TemperatureConversion.convertFtoC.tf),
+    has cem:containedIn TemperatureConversion.
+TemperatureConversion.convertFtoC.tf is a cem:MethodArgument,
+    has cem:varType "float",
+    has cem:varName "tf",
+    has cem:reference (a cem:Reference
+    with cem:input true,
+    with cem:endsAt 17,
+    with cem:beginsAt 17,
+    with cem:usage cem:Defined,
+    with cem:codeBlock TemperatureConversion.convertFtoC).

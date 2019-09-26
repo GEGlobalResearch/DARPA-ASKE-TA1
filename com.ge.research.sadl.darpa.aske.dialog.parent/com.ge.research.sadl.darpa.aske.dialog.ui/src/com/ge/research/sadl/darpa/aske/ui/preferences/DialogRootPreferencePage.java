@@ -36,6 +36,8 @@
  ***********************************************************************/
 package com.ge.research.sadl.darpa.aske.ui.preferences;
 
+import static com.ge.research.sadl.preferences.SadlPreferences.GRAPH_IMPLICIT_ELEMENTS;
+
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -58,6 +60,7 @@ import com.ge.research.sadl.reasoner.ConfigurationItem;
 import com.ge.research.sadl.reasoner.ConfigurationItem.NameValuePair;
 import com.ge.research.sadl.reasoner.ConfigurationManager;
 import com.ge.research.sadl.reasoner.IConfigurationManager;
+import com.ge.research.sadl.ui.preferences.FieldEditorExtensions.BooleanFieldEditorExt;
 import com.ge.research.sadl.ui.preferences.FieldEditorExtensions.FieldEditorExt;
 import com.ge.research.sadl.ui.preferences.FieldEditorExtensions.StringFieldEditorExt;
 import com.google.common.collect.FluentIterable;
@@ -136,8 +139,12 @@ public class DialogRootPreferencePage extends LanguageRootPreferencePage {
 		// General SADL Settings
 		Composite generalSettings = createSettingsGroup(getFieldEditorParent(), SWT.NONE, "Dialog Settings");
 		addField(new StringFieldEditorExt(DialogPreferences.ANSWER_TEXT_SERVICE_BASE_URI.getId(), "Text to Triples Host and Port:", generalSettings));
-		addField(new StringFieldEditorExt(DialogPreferences.ANSWER_CG_SERVICE_BASE_URI.getId(), "Computational Graph Service Host and Port:", generalSettings));
 		addField(new StringFieldEditorExt(DialogPreferences.ANSWER_JAVA_TO_PYTHON_SERVICE_BASE_URI.getId(), "Java to Python Translation Service Host and Port:", generalSettings));
+		Composite computationalGraphSettings = createSettingsGroup(generalSettings, SWT.NONE, "Computational Graph Settings");
+		addField(new BooleanFieldEditorExt(DialogPreferences.USE_DBN_KCHAIN_CG_SERVICE.getId(), "Use DBN", computationalGraphSettings));		
+		addField(new StringFieldEditorExt(DialogPreferences.ANSWER_DBN_CG_SERVICE_BASE_URI.getId(), "DBN Service Host and Port:", computationalGraphSettings));
+		addField(new BooleanFieldEditorExt(DialogPreferences.USE_ANSWER_KCHAIN_CG_SERVICE.getId(), "Use K-CHAIN", computationalGraphSettings));		
+		addField(new StringFieldEditorExt(DialogPreferences.ANSWER_KCHAIN_CG_SERVICE_BASE_URI.getId(), "K-CHAIN Service Host and Port:", computationalGraphSettings));
 //		addField(new StringFieldEditorExt(DialogPreferences.ANSWER_CODE_EXTRACTION_KBASE_ROOT.getId(), "Code Extraction KBase Root:", generalSettings));
 	}
 
@@ -152,7 +159,7 @@ public class DialogRootPreferencePage extends LanguageRootPreferencePage {
 
 		//General Settings
 		store.setDefault(DialogPreferences.ANSWER_TEXT_SERVICE_BASE_URI.getId(), DialogPreferences.ANSWER_TEXT_SERVICE_BASE_URI.getDefaultValue());
-		store.setDefault(DialogPreferences.ANSWER_CG_SERVICE_BASE_URI.getId(), DialogPreferences.ANSWER_CG_SERVICE_BASE_URI.getDefaultValue());
+		store.setDefault(DialogPreferences.ANSWER_KCHAIN_CG_SERVICE_BASE_URI.getId(), DialogPreferences.ANSWER_KCHAIN_CG_SERVICE_BASE_URI.getDefaultValue());
 		store.setDefault(DialogPreferences.ANSWER_JAVA_TO_PYTHON_SERVICE_BASE_URI.getId(), DialogPreferences.ANSWER_JAVA_TO_PYTHON_SERVICE_BASE_URI.getDefaultValue());
 		store.setDefault(DialogPreferences.ANSWER_CODE_EXTRACTION_KBASE_ROOT.getId(), DialogPreferences.ANSWER_CODE_EXTRACTION_KBASE_ROOT.getDefaultValue());
 		setPreferenceStore(store);

@@ -2,7 +2,7 @@
  * Note: This license has also been called the "New BSD License" or 
  * "Modified BSD License". See also the 2-clause BSD License.
  *
- * Copyright © 2018-2019 - General Electric Company, All Rights Reserved
+ * Copyright ï¿½ 2018-2019 - General Electric Company, All Rights Reserved
  * 
  * Projects: ANSWER and KApEESH, developed with the support of the Defense 
  * Advanced Research Projects Agency (DARPA) under Agreement  No.  
@@ -36,6 +36,7 @@
  ***********************************************************************/
 package com.ge.research.sadl.darpa.aske.processing;
 
+import java.io.File;
 import java.util.List;
 
 import org.eclipse.emf.ecore.resource.Resource;
@@ -49,9 +50,13 @@ public interface IDialogAnswerProvider {
 	String addCurationManagerInitiatedContent(AnswerCurationManager answerCurationManager, String methodToCall,
 			List<Object> args, String content);
 
-	String initiateMixedInitiativeInteraction(MixedInitiativeElement element);
+	String addCurationManagerInitiatedContent(AnswerCurationManager answerCurationManager, StatementContent ssc);
 
-	void provideResponse(MixedInitiativeElement response);
+//	String initiateMixedInitiativeInteraction(MixedInitiativeElement element);
+
+	String initiateMixedInitiativeInteraction(QuestionWithCallbackContent element);
+
+	void provideResponse(QuestionWithCallbackContent response);
 
 	public MixedInitiativeElement getMixedInitiativeElement(String key);
 
@@ -60,5 +65,7 @@ public interface IDialogAnswerProvider {
 	Resource getResource();
 
 	boolean addCurationManagerAnswerContent(AnswerCurationManager acm, String content, Object ctx);
+
+	void updateProjectAndDisplaySadlFiles(String projectName, String modelsFolder, List<File> sadlFiles);
 
 }

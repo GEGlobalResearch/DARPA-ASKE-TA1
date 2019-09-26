@@ -95,12 +95,15 @@ import com.ge.research.sadl.builder.ConfigurationManagerForIDE;
 import com.ge.research.sadl.builder.ConfigurationManagerForIdeFactory;
 import com.ge.research.sadl.builder.IConfigurationManagerForIDE;
 import com.ge.research.sadl.darpa.aske.curation.AnswerCurationManager;
+import com.ge.research.sadl.darpa.aske.curation.AnswerCurationManager.Agent;
 import com.ge.research.sadl.darpa.aske.dialog.ui.internal.DialogActivator;
 import com.ge.research.sadl.darpa.aske.preferences.DialogPreferences;
 import com.ge.research.sadl.darpa.aske.processing.DialogConstants;
 import com.ge.research.sadl.darpa.aske.processing.IDialogAnswerProvider;
 import com.ge.research.sadl.darpa.aske.processing.MixedInitiativeElement;
 import com.ge.research.sadl.darpa.aske.processing.MixedInitiativeTextualResponse;
+import com.ge.research.sadl.darpa.aske.processing.QuestionWithCallbackContent;
+import com.ge.research.sadl.darpa.aske.processing.StatementContent;
 import com.ge.research.sadl.darpa.aske.ui.handler.DialogRunInferenceHandler;
 import com.ge.research.sadl.darpa.aske.ui.handler.RunDialogQuery;
 import com.ge.research.sadl.model.gp.GraphPatternElement;
@@ -856,23 +859,44 @@ public class DialogAnswerProvider extends DefaultAutoEditStrategyProvider implem
 
 	public String addCurationManagerInitiatedContent(AnswerCurationManager acm, String content) {
 		setAnswerConfigurationManager(acm);
-        Consumer<MixedInitiativeElement> respond = a -> this.provideResponse(a);
-        MixedInitiativeTextualResponse question = new MixedInitiativeTextualResponse(content);
-        MixedInitiativeElement questionElement = new MixedInitiativeElement(question, respond);
-		addMixedInitiativeElement(content, questionElement);
-        initiateMixedInitiativeInteraction(questionElement);
+//        Consumer<MixedInitiativeElement> respond = a -> this.provideResponse(a);
+//        MixedInitiativeTextualResponse question = new MixedInitiativeTextualResponse(content);
+//        MixedInitiativeElement questionElement = new MixedInitiativeElement(question, respond);
+//		addMixedInitiativeElement(content, questionElement);
+//        initiateMixedInitiativeInteraction(questionElement);
+		try {
+			boolean quote = isContentQuoted(content);
+			addCurationManagerContentToDialog(getTheDocument(), null, content, null, quote);
+		} catch (BadLocationException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 		return "success";
+	}
+
+	@Override
+	public String addCurationManagerInitiatedContent(AnswerCurationManager answerCurationManager,
+			StatementContent sc) {
+		try {
+			addCurationManagerContentToDialog(getTheDocument(), null, sc.getText(), null, false);
+		} catch (BadLocationException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		return null;
 	}
 
 	@Override
 	public String addCurationManagerInitiatedContent(AnswerCurationManager acm, String methodToCall,
 			List<Object> args, String content) {
 		setAnswerConfigurationManager(acm);
-        Consumer<MixedInitiativeElement> respond = a -> this.provideResponse(a);
-        MixedInitiativeTextualResponse question = new MixedInitiativeTextualResponse(content);
-        MixedInitiativeElement questionElement = new MixedInitiativeElement(question, respond, acm, methodToCall, args);
-		addMixedInitiativeElement(content, questionElement);
-        initiateMixedInitiativeInteraction(questionElement);
+//        Consumer<MixedInitiativeElement> respond = a -> this.provideResponse(a);
+//        MixedInitiativeTextualResponse question = new MixedInitiativeTextualResponse(content);
+//        MixedInitiativeElement questionElement = new MixedInitiativeElement(question, respond, acm, methodToCall, args);
+//		addMixedInitiativeElement(content, questionElement);
+		QuestionWithCallbackContent qwcc = new QuestionWithCallbackContent(null, Agent.CM, methodToCall, args, content);
+        initiateMixedInitiativeInteraction(qwcc);
+        acm.addUnansweredQuestion(content, qwcc);
 		return "success";
 	}
 	
@@ -907,9 +931,24 @@ public class DialogAnswerProvider extends DefaultAutoEditStrategyProvider implem
 		return mixedInitiativeElements.get(key);
 	}
 
+//	@Override
+//	public String initiateMixedInitiativeInteraction(MixedInitiativeElement element) {
+//		String content = element.getContent().toString();
+//		if (getTheDocument() != null) {
+//			try {
+//				boolean quote = isContentQuoted(content);
+//				addCurationManagerContentToDialog(getTheDocument(), null, content, null, quote);
+//			} catch (BadLocationException e) {
+//				// TODO Auto-generated catch block
+//				e.printStackTrace();
+//			}
+//		}
+//		return null;
+//	}
+
 	@Override
-	public String initiateMixedInitiativeInteraction(MixedInitiativeElement element) {
-		String content = element.getContent().toString();
+	public String initiateMixedInitiativeInteraction(QuestionWithCallbackContent element) {
+		String content = element.getTheQuestion();
 		if (getTheDocument() != null) {
 			try {
 				boolean quote = isContentQuoted(content);
@@ -931,15 +970,15 @@ public class DialogAnswerProvider extends DefaultAutoEditStrategyProvider implem
 	}
 
 	@Override
-	public void provideResponse(MixedInitiativeElement response) {
-		if (response.getCurationManager() != null) {
-			AnswerCurationManager acm = response.getCurationManager();
-			String methodToCall = response.getMethodToCall();
+	public void provideResponse(QuestionWithCallbackContent question) {
+//		if (response.getCurationManager() != null) {
+			AnswerCurationManager acm = getAnswerConfigurationManager();
+			String methodToCall = question.getMethodToCall();
 			Method[] methods = acm.getClass().getMethods();
 			for (Method m : methods) {
 				if (m.getName().equals(methodToCall)) {
 					// call the method
-					List<Object> args = response.getArguments();
+					List<Object> args = question.getArguments();
 					try {
 						Object results = null;
 						if (args.size() == 0) {
@@ -1018,20 +1057,6 @@ public class DialogAnswerProvider extends DefaultAutoEditStrategyProvider implem
 												}
 											}
 										}
-										if (projectName != null) {	// only not null if doing SADL conversion
-											IProject project = ResourcesPlugin.getWorkspace().getRoot().getProject(projectName);
-											try {
-												project.build(IncrementalProjectBuilder.AUTO_BUILD, null);
-												// display new SADL file
-												displayFiles(getConfigMgr().getModelFolder(), sadlFiles);
-											} catch (CoreException e) {
-												// TODO Auto-generated catch block
-												e.printStackTrace();
-											} catch (IOException e) {
-												// TODO Auto-generated catch block
-												e.printStackTrace();
-											}
-										}
 									}
 								}
 							}
@@ -1050,7 +1075,33 @@ public class DialogAnswerProvider extends DefaultAutoEditStrategyProvider implem
 					break;
 				}
 			}
-		}	
+//		}	
+	}
+	
+	@Override
+	public void updateProjectAndDisplaySadlFiles(String projectName, String modelsFolder, List<File> sadlFiles) {
+		String prjname = projectName;
+		IProject prj = ResourcesPlugin.getPlugin().getWorkspace().getRoot().getProject(prjname);
+		try {
+			prj.refreshLocal(IResource.DEPTH_INFINITE, null);
+		} catch (CoreException e1) {
+			// TODO Auto-generated catch block
+			e1.printStackTrace();
+		}
+		if (projectName != null) {	// only not null if doing SADL conversion
+			IProject project = ResourcesPlugin.getWorkspace().getRoot().getProject(projectName);
+			try {
+				project.build(IncrementalProjectBuilder.AUTO_BUILD, null);
+				// display new SADL file
+				displayFiles(getConfigMgr().getModelFolder(), sadlFiles);
+			} catch (CoreException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		}
 	}
 
 	private void insertExtractedModelImport(XtextDocument doc, AnswerCurationManager acm) {
@@ -1221,15 +1272,26 @@ public class DialogAnswerProvider extends DefaultAutoEditStrategyProvider implem
 			if (tsburl != null) {
 				map.put(DialogPreferences.ANSWER_TEXT_SERVICE_BASE_URI.getId(), tsburl);
 			}
-			String cgsburl = preferenceValues.getPreference(DialogPreferences.ANSWER_CG_SERVICE_BASE_URI);
-			if (cgsburl != null) {
-				map.put(DialogPreferences.ANSWER_CG_SERVICE_BASE_URI.getId(), cgsburl);
-			}
 			String j2psburl = preferenceValues.getPreference(DialogPreferences.ANSWER_JAVA_TO_PYTHON_SERVICE_BASE_URI);
 			if (j2psburl != null) {
 				map.put(DialogPreferences.ANSWER_JAVA_TO_PYTHON_SERVICE_BASE_URI.getId(), j2psburl);
 			}
-//			preferenceValues.getPreference(DialogPreferences.)
+			String usekchain = preferenceValues.getPreference(DialogPreferences.USE_ANSWER_KCHAIN_CG_SERVICE);
+			if (usekchain != null) {
+				map.put(DialogPreferences.USE_ANSWER_KCHAIN_CG_SERVICE.getId(), usekchain);
+			}
+			String kchaincgsburl = preferenceValues.getPreference(DialogPreferences.ANSWER_KCHAIN_CG_SERVICE_BASE_URI);
+			if (kchaincgsburl != null) {
+				map.put(DialogPreferences.ANSWER_KCHAIN_CG_SERVICE_BASE_URI.getId(), kchaincgsburl);
+			}
+			String dbncgsburl = preferenceValues.getPreference(DialogPreferences.ANSWER_DBN_CG_SERVICE_BASE_URI);
+			if (dbncgsburl != null) {
+				map.put(DialogPreferences.ANSWER_DBN_CG_SERVICE_BASE_URI.getId(), dbncgsburl);
+			}
+			String usedbn = preferenceValues.getPreference(DialogPreferences.USE_DBN_KCHAIN_CG_SERVICE);
+			if (usedbn != null) {
+				map.put(DialogPreferences.USE_DBN_KCHAIN_CG_SERVICE.getId(), usedbn);
+			}
 			return map;
 		}
 		return null;

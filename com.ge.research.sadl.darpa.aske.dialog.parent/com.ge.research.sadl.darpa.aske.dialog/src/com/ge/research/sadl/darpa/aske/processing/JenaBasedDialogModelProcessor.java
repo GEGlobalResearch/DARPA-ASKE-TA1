@@ -108,6 +108,7 @@ import com.ge.research.sadl.model.gp.NamedNode.NodeType;
 import com.ge.research.sadl.model.gp.Node;
 import com.ge.research.sadl.model.gp.ProxyNode;
 import com.ge.research.sadl.model.gp.Query;
+import com.ge.research.sadl.model.gp.RDFTypeNode;
 import com.ge.research.sadl.model.gp.Rule;
 import com.ge.research.sadl.model.gp.TripleElement;
 import com.ge.research.sadl.model.gp.VariableNode;
@@ -148,6 +149,7 @@ import com.hp.hpl.jena.rdf.model.Property;
 import com.hp.hpl.jena.rdf.model.RDFNode;
 import com.hp.hpl.jena.rdf.model.RDFWriter;
 import com.hp.hpl.jena.rdf.model.StmtIterator;
+import com.hp.hpl.jena.vocabulary.RDF;
 import com.hp.hpl.jena.vocabulary.RDFS;
 
 public class JenaBasedDialogModelProcessor extends JenaBasedSadlModelProcessor {
@@ -155,7 +157,10 @@ public class JenaBasedDialogModelProcessor extends JenaBasedSadlModelProcessor {
 	private boolean modelChanged;
 	
 	private String textServiceUrl = null;
-	private String cgServiceUrl = null;
+	private String dbnCgServiceUrl = null;
+	private boolean useDbn = true;
+	private String kchainCgServiceUrl = null;
+	private boolean useKchain = false;
 	private AnswerCurationManager answerCurationManager = null;
 
 	@Inject IPreferenceValuesProvider preferenceProvider;
@@ -172,11 +177,6 @@ public class JenaBasedDialogModelProcessor extends JenaBasedSadlModelProcessor {
 			return;
 		}
 	
-		String textserviceurl = context.getPreferenceValues().getPreference(DialogPreferences.ANSWER_TEXT_SERVICE_BASE_URI);
-		String cgserviceurl = context.getPreferenceValues().getPreference(DialogPreferences.ANSWER_CG_SERVICE_BASE_URI);
-//		System.out.println(textserviceurl);
-//		System.out.println(cgserviceurl);
-
 		logger.debug("onValidate called for Resource '" + resource.getURI() + "'");
 		if (mode.shouldCheck(CheckType.EXPENSIVE)) {
 			// do expensive validation, i.e. those that should only be done when 'validate'
@@ -367,7 +367,7 @@ public class JenaBasedDialogModelProcessor extends JenaBasedSadlModelProcessor {
 				try {
 					StatementContent sc = processDialogModelElement(element);
 					if (sc != null) {
-						ConversationElement ce = new ConversationElement(getAnswerCurationManager().getConversation(), sc, Agent.USER);
+						ConversationElement ce = new ConversationElement(getAnswerCurationManager().getConversation(), sc, sc.getAgent());
 						getAnswerCurationManager().addToConversation(ce);
 					}
 				} catch (JenaProcessorException e1) {
@@ -924,7 +924,7 @@ public class JenaBasedDialogModelProcessor extends JenaBasedSadlModelProcessor {
 //		return ce;
 //	}	
 	
-	private AnswerContent  processAnswerCMStatement( AnswerCMStatement element) throws IOException, TranslationException, InvalidNameException, InvalidTypeException, ConfigurationException, JenaProcessorException, QueryParseException, QueryCancelledException, ReasonerNotFoundException {
+	private StatementContent  processAnswerCMStatement( AnswerCMStatement element) throws IOException, TranslationException, InvalidNameException, InvalidTypeException, ConfigurationException, JenaProcessorException, QueryParseException, QueryCancelledException, ReasonerNotFoundException {
 		EObject stmt = element.getSstmt();
 		if (stmt != null) {
 			StatementContent sc = processDialogModelElement((SadlModelElement) stmt);
@@ -935,9 +935,19 @@ public class JenaBasedDialogModelProcessor extends JenaBasedSadlModelProcessor {
 		else {
 			String str = element.getStr();
 			if (str != null) {
-				AnswerContent ac = new AnswerContent(element, Agent.CM);
-				ac.setAnswer(str);
-				return ac;
+				String eos = getEos(element);
+				if (eos.equals(".")) {
+					AnswerContent ac = new AnswerContent(element, Agent.CM);
+					ac.setAnswer(str);
+					return ac;
+				}
+				else if (eos.equals("?")) {
+					QuestionWithCallbackContent qwcc = new QuestionWithCallbackContent(element, Agent.CM, null, null, str);
+					return qwcc;
+				}
+				else {
+					throw new IOException("Statement has unexpected ending character.");
+				}
 			}
 		}
 		return null;
@@ -1129,11 +1139,13 @@ public class JenaBasedDialogModelProcessor extends JenaBasedSadlModelProcessor {
 					Literal unitsLiteral = new Literal();
 					unitsLiteral.setValue(units);
 					valueLiteral.setUnits(null);
+					TripleElement varTypeTriple = new TripleElement(var, new RDFTypeNode(), type);
 					TripleElement valueTriple = new TripleElement(var, 
 							new NamedNode(SadlConstants.SADL_IMPLICIT_MODEL_VALUE_URI), valueLiteral);
 					TripleElement unitTriple = new TripleElement(var, 
 							new NamedNode(SadlConstants.SADL_IMPLICIT_MODEL_UNIT_URI), unitsLiteral);
 					gpes.add((TripleElement)whenObj);
+					gpes.add(varTypeTriple);
 					gpes.add(valueTriple);
 					gpes.add(unitTriple);
 				}
@@ -1296,10 +1308,24 @@ public class JenaBasedDialogModelProcessor extends JenaBasedSadlModelProcessor {
 		if (textServiceUrl != null) {
 			setTextServiceUrl(textServiceUrl);
 		}
-		String cgServiceUrl = context.getPreferenceValues().getPreference(DialogPreferences.ANSWER_CG_SERVICE_BASE_URI);
-		if (cgServiceUrl != null) {
-			setCgServiceUrl(cgServiceUrl);
+		String useDbn = context.getPreferenceValues().getPreference(DialogPreferences.USE_DBN_KCHAIN_CG_SERVICE);
+		if (useDbn != null) {
+			setUseDbn(Boolean.parseBoolean(useDbn.trim()));
 		}
+		String dbncgserviceurl = context.getPreferenceValues().getPreference(DialogPreferences.ANSWER_DBN_CG_SERVICE_BASE_URI);
+		if (dbncgserviceurl != null) {
+			setDbnCgServiceUrl(dbncgserviceurl);
+		}
+		String kchaincgserviceurl = context.getPreferenceValues().getPreference(DialogPreferences.ANSWER_KCHAIN_CG_SERVICE_BASE_URI);
+		if (kchaincgserviceurl != null) {
+			setKchainCgServiceUrl(kchaincgserviceurl);
+		}
+		String useKchain = context.getPreferenceValues().getPreference(DialogPreferences.USE_ANSWER_KCHAIN_CG_SERVICE);
+		if (useKchain != null) {
+			setUseKchain(Boolean.parseBoolean(useKchain.trim()));
+		}
+//		System.out.println(textserviceurl);
+//		System.out.println(cgserviceurl);
 	}
 
 	public String getTextServiceUrl() {
@@ -1310,12 +1336,20 @@ public class JenaBasedDialogModelProcessor extends JenaBasedSadlModelProcessor {
 		this.textServiceUrl = textServiceUrl;
 	}
 
-	public String getCgServiceUrl() {
-		return cgServiceUrl;
+	public String getDbnCgServiceUrl() {
+		return dbnCgServiceUrl;
 	}
 
-	private void setCgServiceUrl(String cgServiceUrl) {
-		this.cgServiceUrl = cgServiceUrl;
+	private void setDbnCgServiceUrl(String cgServiceUrl) {
+		this.dbnCgServiceUrl = cgServiceUrl;
+	}
+
+	public String getKchainCgServiceUrl() {
+		return kchainCgServiceUrl;
+	}
+
+	private void setKchainCgServiceUrl(String cgServiceUrl) {
+		this.kchainCgServiceUrl = cgServiceUrl;
 	}
 
 	private java.nio.file.Path checkCodeExtractionSadlModelExistence(Resource resource, ProcessorContext context)
@@ -1485,6 +1519,22 @@ public class JenaBasedDialogModelProcessor extends JenaBasedSadlModelProcessor {
 				"then\r\n" + 
 				"	output of ref is true and isImplicit of ref is true.      	 \r\n";
 		return content;
+	}
+
+	private boolean isUseDbn() {
+		return useDbn;
+	}
+
+	private void setUseDbn(boolean useDbn) {
+		this.useDbn = useDbn;
+	}
+
+	private boolean isUseKchain() {
+		return useKchain;
+	}
+
+	private void setUseKchain(boolean useKchain) {
+		this.useKchain = useKchain;
 	}
 
 }
