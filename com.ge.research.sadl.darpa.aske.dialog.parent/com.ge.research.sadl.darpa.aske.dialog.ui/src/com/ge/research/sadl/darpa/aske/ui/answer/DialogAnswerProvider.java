@@ -81,6 +81,7 @@ import org.eclipse.xtext.preferences.IPreferenceValuesProvider;
 import org.eclipse.xtext.resource.XtextResource;
 import org.eclipse.xtext.ui.editor.model.IXtextDocument;
 import org.eclipse.xtext.ui.editor.model.XtextDocument;
+import org.eclipse.xtext.util.Exceptions;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -231,47 +232,53 @@ public class DialogAnswerProvider extends BaseDialogAnswerProvider {
 
 	private synchronized boolean addCurationManagerContentToDialog(IDocument document, IRegion reg, String content,
 			Object ctx, boolean quote) throws BadLocationException {
-		String modContent;
-		int loc;
-		if (quote) {
-			modContent = generateDoubleQuotedContentForDialog(content);
-		} else {
-			modContent = content.startsWith("CM:") ? content : ("CM: " + content);
-			if (!modContent.trim().endsWith(".") && !modContent.trim().endsWith("?")) {
-				modContent += ".";
+
+		Display.getDefault().syncExec(() -> {
+			try {
+				String modContent;
+				int loc;
+				if (quote) {
+					modContent = generateDoubleQuotedContentForDialog(content);
+				} else {
+					modContent = content.startsWith("CM:") ? content : ("CM: " + content);
+					if (!modContent.trim().endsWith(".") && !modContent.trim().endsWith("?")) {
+						modContent += ".";
+					}
+				}
+				if (ctx instanceof EObject && getSourceText((EObject) ctx) != null) {
+					Object[] srcinfo = getSourceText((EObject) ctx);
+					// String srctext = (String) srcinfo[0];
+					int start = (int) srcinfo[1];
+					int length = (int) srcinfo[2];
+					// find location of this in document
+					loc = start + length + 1;
+					int docLen = document.getLength();
+					int testLen = Math.min(5, docLen - loc);
+					String test = document.get(loc, testLen);
+					if (!test.startsWith(" ")) {
+						modContent = " " + modContent;
+					}
+					if (!test.startsWith("\r\n")) {
+						modContent += "\r\n";
+					}
+					document.replace(start + length + 1, 0, modContent);
+					loc = start + length + 1;
+					if (document instanceof XtextDocument && ctx instanceof EObject) {
+						final URI expectedUri = ((EObject) ctx).eResource().getURI();
+						final int caretOffset = start + length + 1 + modContent.length();
+						setCaretOffsetInEditor(expectedUri, caretOffset); // Async
+					}
+				} else {
+					loc = document.getLength();
+					document.set(document.get() + modContent + "\n");
+				}
+				LOGGER.debug("Adding to Dialog editor: " + modContent);
+				textAtLocation(document, modContent, loc);
+			} catch (BadLocationException e) {
+				Exceptions.throwUncheckedException(e);
 			}
-		}
-		if (ctx instanceof EObject && getSourceText((EObject) ctx) != null) {
-			Object[] srcinfo = getSourceText((EObject) ctx);
-//			String srctext = (String) srcinfo[0];
-			int start = (int) srcinfo[1];
-			int length = (int) srcinfo[2];
-			// find location of this in document
-			loc = start + length + 1;
-			int docLen = document.getLength();
-			int testLen = Math.min(5, docLen - loc);
-			String test = document.get(loc, testLen);
-			if (!test.startsWith(" ")) {
-				modContent = " " + modContent;
-			}
-			if (!test.startsWith("\r\n")) {
-				modContent += "\r\n";
-			}
-			document.replace(start + length + 1, 0, modContent);
-			System.out.println("AFTER UPDATE:\n" + document.get());
-			System.out.println("ENDOF-DOC");
-			loc = start + length + 1;
-			if (document instanceof XtextDocument && ctx instanceof EObject) {
-				final URI expectedUri = ((EObject) ctx).eResource().getURI();
-				final int caretOffset = start + length + 1 + modContent.length();
-				setCaretOffsetInEditor(expectedUri, caretOffset); // Async
-			}
-		} else {
-			loc = document.getLength();
-			document.set(document.get() + modContent + "\n");
-		}
-		LOGGER.debug("Adding to Dialog editor: " + modContent);
-		return textAtLocation(document, modContent, loc);
+		});
+		return true;
 	}
 
 	private void setCaretOffsetInEditor(URI uri, int caretOffset) {
@@ -464,7 +471,8 @@ public class DialogAnswerProvider extends BaseDialogAnswerProvider {
 		}
 	}
 
-	protected IConfigurationManagerForIDE getConfigManager() {
+	@Override
+	protected IConfigurationManagerForIDE getConfigMgr() {
 		return configManager;
 	}
 
@@ -567,7 +575,7 @@ public class DialogAnswerProvider extends BaseDialogAnswerProvider {
 		final URI uri = URI.createPlatformResourceURI(file.getFullPath().toString(), true);
 		return getPreferences(uri);
 	}
-	
+
 	protected Map<String, String> getPreferences(URI uri) {
 		Injector reqInjector = safeGetInjector(DialogActivator.COM_GE_RESEARCH_SADL_DARPA_ASKE_DIALOG);
 		IPreferenceValuesProvider pvp = reqInjector.getInstance(IPreferenceValuesProvider.class);
@@ -602,16 +610,16 @@ public class DialogAnswerProvider extends BaseDialogAnswerProvider {
 		}
 		return null;
 	}
-	
-	protected final Injector safeGetInjector(String name){
+
+	protected final Injector safeGetInjector(String name) {
 		final AtomicReference<Injector> i = new AtomicReference<Injector>();
-		Display.getDefault().syncExec(new Runnable(){
+		Display.getDefault().syncExec(new Runnable() {
 			@Override
 			public void run() {
 				i.set(DialogActivator.getInstance().getInjector(name));
 			}
 		});
-		
+
 		return i.get();
 	}
 
