@@ -1,0 +1,210 @@
+/**********************************************************************
+* Note: This license has also been called the "New BSD License" or
+* "Modified BSD License". See also the 2-clause BSD License.
+*
+* Copyright © 2018-2019 - General Electric Company, All Rights Reserved
+*
+* Project: KApEESH, developed with the support of the Defense Advanced
+* Research Projects Agency (DARPA) under Agreement  No.  HR00111990007.
+*
+* Redistribution and use in source and binary forms, with or without
+* modification, are permitted provided that the following conditions are met:
+* 1. Redistributions of source code must retain the above copyright notice,
+*    this list of conditions and the following disclaimer.
+*
+* 2. Redistributions in binary form must reproduce the above copyright notice,
+*    this list of conditions and the following disclaimer in the documentation
+*    and/or other materials provided with the distribution.
+*
+* 3. Neither the name of the copyright holder nor the names of its
+*    contributors may be used to endorse or promote products derived
+*    from this software without specific prior written permission.
+*
+* THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
+* AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+* IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
+* ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE
+* LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR
+* CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF
+* SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS
+* INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN
+* CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
+* ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF
+* THE POSSIBILITY OF SUCH DAMAGE.
+*
+***********************************************************************/
+uri "http://aske.ge.com/hypersonicsV2" alias hypersonicsV2 .
+
+//import "http://aske.ge.com/compgraph". 
+import "http://aske.ge.com/sciknow".
+
+Altitude is a type of UnittedQuantity.
+AtmosphericTemperature is a type of Temperature.
+AtmosphericPressure is a type of Pressure.
+StaticTemperature is a type of AtmosphericTemperature.
+StaticPressure is a type of AtmosphericPressure.
+TotalTemperature is a type of AtmosphericTemperature.
+TotalPressure is a type of AtmosphericPressure.
+SpeedOfSound is a type of UnittedQuantity.
+AirSpeed is a type of Speed.
+MachSpeed is a type of Speed.
+GammaConstant is a type of UnittedQuantity.
+RgasConstant is a type of UnittedQuantity.
+
+StaticTemperatureEquation is a type of ^Equation.
+StaticPressureEquation is a type of ^Equation.
+SpeedOfSoundEquation is a type of ^Equation.
+MachSpeedEquation is a type of ^Equation.
+TotalTemperatureEquation is a type of ^Equation.
+TotalPressureEquation is a type of ^Equation.
+
+GammaConstEquation is a type of ^Equation.
+RgasConstEquation is a type of ^Equation.
+
+altitude describes Air with values of type Altitude.
+staticTemperature is a type of temperature.
+staticTemperature describes Air with values of type StaticTemperature.
+totalTemperature is a type of temperature.
+totalTemperature describes Air with values of type TotalTemperature.
+staticPressure is a type of pressure.
+staticPressure describes Air with values of type StaticPressure.
+totalPressure is a type of pressure.
+totalPressure describes Air with values of type TotalPressure.
+
+speed describes PhysicalThing with values of type Speed.
+speedOfSound describes Air with values of type SpeedOfSound.
+airSpeed describes Air with values of type AirSpeed.
+machSpeed describes Air with values of type MachSpeed.
+
+gamma describes Air with values of type GammaConstant.
+rgas describes Air with values of type RgasConstant.
+
+
+//tropo_c1 describes Air with values of type double.
+//tropo_c2 describes Air with values of type double.
+
+////Troposphere Constants
+//Equation tropo_C1_Eq() returns double (tropo_c1 of some Air {F}) : return 59.0 .
+//Equation tropo_C2_Eq() returns double (tropo_c2 of some Air {"1/ft"}) : return .00356 .
+
+gamma_const is a GammaConstEquation.
+Equation gamma_const() returns double (gamma of some Air): return 1.4 . //unitless
+gamma_const has expression (a Script script "1.4" language Python).
+
+
+rgas_const is a RgasConstEquation.
+Equation rgas_const() returns double (rgas of some Air): return 1718 . //ft*lb/slug/Rankine
+//ft*lb/slug/Rankine = ft^2/sec^2/Rankine
+rgas_const has expression (a Script script "1718" language Python).
+
+//Equation farenheitToRankine(double f (temperature of some PhysicalThing {F}))
+//		returns double (temperature of the PhysicalThing {Rankine}) : f + 459.67. 
+
+Equation mphToftpersec(double s (speed of a PhysicalThing {mph}))
+		returns double (speed of the PhysicalThing {"ft/sec"}):
+		return s*5280/3600.
+// Code expression if using Pint for unit conversion.
+mphToftpersec has expression (a Script script "s * 5280/3600" language Python).
+
+//air is an Air with altitude alt.
+//alt is an Altitude.
+
+
+//Equation st_temp_eq(Altitude alt (altitude of some Air 
+//	                            and unit of alt is "ft" 
+//	                            and ^value of alt < 36152 ) )
+//	returns StaticTemperature (staticTemperature of the Air {F}) : 
+//	return (a StaticTemperature with ^value (59 - 0.00356 * ^value of alt) unit "F") .
+
+//Equation foo(double alt (Altitude)) //altitude of some Air))
+//	returns double (Altitude) :
+//	return alt.
+
+st_temp_eq_tropo is a StaticTemperatureEquation.
+
+Equation st_temp_eq_tropo(double alt (altitude of some Air and alt < 36152 {ft}) )
+	returns double (staticTemperature of the Air {F}) : 
+	return 59 - 0.00356 * alt .
+st_temp_eq_tropo has expression (a Script with script "59 - 0.00356 * alt" language Python).
+
+st_temp_eq_lowerStrato is a StaticTemperatureEquation.
+Equation st_temp_eq_lowerStrato(double alt (altitude of some Air and alt < 82345 and alt >= 36152 {m}))
+	returns double (staticTemperature of the Air {F}) : 
+	return -70 .
+st_temp_eq_lowerStrato has expression (a Script with script "-70" language Python).
+
+st_temp_eq_upperStrato is a StaticTemperatureEquation.
+Equation st_temp_eq_upperStrato(double alt (altitude of some Air and alt > 82345 {ft}) )
+	returns double (staticTemperature of the Air {F}) : 
+	return -205.05 + .00164 * alt .
+st_temp_eq_upperStrato has expression (a Script with script "-205.05 + .00164 * alt" language Python).
+
+
+st_pressure_eq_tropo is a StaticPressureEquation.
+Equation st_pressure_eq_tropo(double alt (altitude of some Air and alt < 36152 {ft}))
+	returns double (staticPressure of the Air {"force_pound/ft**2"}) : 
+	return -2116.0 * ((59 - 0.00356 * alt + 459.7) / 518.6)^5.256 .
+
+st_pressure_eq_tropo has expression (a Script with script "-2116.0 * ((59 - 0.00356 * alt + 459.7) / 518.6)**5.256" language Python).
+
+
+
+st_pressure_eq_lowerStrato is a StaticPressureEquation.
+Equation st_pressure_eq_lowerStrato(double alt (altitude of some Air and alt < 82345 
+	                            and alt > 36152 {ft}) )
+	returns double (staticPressure of the Air {"force_pound/ft**2"}) : 
+	//return 473.1 * exp(1.73 - .000048 * alt) .
+	return 473.1 * e^(1.73 - .000048 * alt) .
+
+st_pressure_eq_lowerStrato has expression (a Script with script "473.1 * math.exp(1.73 - .000048 * alt)" language Python).
+
+st_pressure_eq_upperStrato is a StaticPressureEquation.
+Equation st_pressure_eq_upperStrato(double alt (altitude of some Air and alt > 82345 {ft}) )
+	returns double (staticPressure of the Air {"force_pound/ft**2"}) : 
+	return 51.97 * (((-205.05 + .00164 * alt) + 459.7)/ 389.98)^-11.388 .
+	
+st_pressure_eq_upperStrato has expression (a Script with script "51.97 * (((-205.05 + .00164 * alt) + 459.7)/ 389.98)**-11.388" language Python).
+	
+sos_eq is a SpeedOfSoundEquation.
+Equation sos_eq(double ts0 (staticTemperature of some Air {F}),
+				double g (gamma of the Air),
+				double R (rgas of the Air)
+				)
+	returns double (speedOfSound of the Air {"ft/sec"}) :
+	return sqrt(g * R * ts0) .
+
+sos_eq has expression (a Script with script "math.sqrt(abs(g * R * ts0))" language Python).
+				
+mach_speed_eq is a MachSpeedEquation.
+//Equation mach_speed_eq(double u0 (airSpeed of some Air {"mph"}),
+//					double a0 (speedOfSound of the Air {"ft/sec"}) )
+//			returns double (machSpeed of the Air) :
+//			//return u0 * 5280.0 / 3600.0 / a0 .
+//			// 1 mile = 5280 ft
+//			// 
+//			return u0*5280.0 * 3600.0 * a0 .
+
+Equation mach_speed_eq(double u0 (airSpeed of some Air {"ft/sec"}),
+					double a0 (speedOfSound of the Air {"ft/sec"}) )
+			returns double (machSpeed of the Air) :
+			return u0 / a0 .
+
+mach_speed_eq has expression (a Script with script "u0 / a0" language Python).
+			
+total_temp_eq is a TotalTemperatureEquation.
+Equation total_temp_eq(double ts0 (staticTemperature of some Air {F}),
+					   double mach (machSpeed of the Air) )
+			returns double (totalTemperature of the Air {F}) :
+			return ts0*(1.0 + 0.5*(1.4-1.0)*mach*mach).
+
+total_temp_eq has expression (a Script with script "ts0*(1.0 + 0.5*(1.4-1.0)*mach*mach)" language Python).
+
+
+total_pressure_eq is a TotalPressureEquation.
+Equation total_pressure_eq(double ps0 (staticPressure of some Air {"force_pound/ft**2"}),
+					   double mach (machSpeed of the Air) )
+			returns double (totalPressure of the Air {"force_pound/ft**2"}) :
+			//return ps0*(1.0 + 0.5*(1.4-1.0)*mach*mach)^(1.4/(1.4-1.0)).
+			return ps0*(1.0 + 0.5*(1.4-1.0)*mach*mach)^(1.4*(1.4-1.0)).
+
+total_pressure_eq has expression (a Script with script "ps0*(1.0 + 0.5*(1.4-1.0)*mach*mach)**(1.4*(1.4-1.0))" language Python).
