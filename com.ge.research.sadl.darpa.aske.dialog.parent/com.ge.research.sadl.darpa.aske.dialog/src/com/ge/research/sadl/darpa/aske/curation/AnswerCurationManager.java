@@ -54,8 +54,14 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.concurrent.ExecutionException;
 
+import org.eclipse.core.resources.IProject;
+import org.eclipse.core.resources.IResource;
+import org.eclipse.core.resources.IncrementalProjectBuilder;
+import org.eclipse.core.resources.ResourcesPlugin;
+import org.eclipse.core.runtime.CoreException;
 import org.eclipse.emf.common.util.URI;
 import org.eclipse.emf.ecore.EObject;
 import org.slf4j.Logger;
@@ -75,6 +81,8 @@ import com.ge.research.sadl.darpa.aske.processing.ExpectsAnswerContent;
 import com.ge.research.sadl.darpa.aske.processing.HowManyValuesContent;
 import com.ge.research.sadl.darpa.aske.processing.IDialogAnswerProvider;
 import com.ge.research.sadl.darpa.aske.processing.ModifiedAskContent;
+import com.ge.research.sadl.darpa.aske.processing.QuestionWithCallbackContent;
+import com.ge.research.sadl.darpa.aske.processing.SadlStatementContent;
 import com.ge.research.sadl.darpa.aske.processing.SaveContent;
 import com.ge.research.sadl.darpa.aske.processing.StatementContent;
 import com.ge.research.sadl.darpa.aske.processing.WhatIsContent;
@@ -142,6 +150,7 @@ public class AnswerCurationManager {
 	private String domainModelowlModelsFolder;
 	
 	private Map<String, String> questionsAndAnswers = new HashMap<String, String>();
+	private Map<String, QuestionWithCallbackContent> unansweredQuestions = new HashMap<String, QuestionWithCallbackContent>();
 	
 	private IConfigurationManagerForIDE domainModelConfigurationManager;
 	private Map<String, String> preferences = null;
@@ -242,7 +251,7 @@ public class AnswerCurationManager {
 				}
 				String content = readFileToString(f);
 				String fileIdentifier = ConfigurationManagerForIdeFactory.formatPathRemoveBackslashes(f.getCanonicalPath());
-				getTextProcessor().process(fileIdentifier, content, null);
+				getTextProcessor().processText(fileIdentifier, content, null);
 				File of = saveTextOwlFile(outputOwlFileName);
 				outputOwlFiles.put(of, false);
 				outputOwlFileName = of.getCanonicalPath();
@@ -290,9 +299,9 @@ public class AnswerCurationManager {
 			if (saveAsSadl.equals(SaveAsSadl.AskUserSaveAsSadl)) {
 				// ask user if they want a SADL file saved
 				IDialogAnswerProvider dap = getDialogAnswerProvider();
-				if (dap == null) {
-					dap = new DialogAnswerProviderConsoleForTest();
-				}
+//				if (dap == null) {
+//					dap = new DialogAnswerProviderConsoleForTest();
+//				}
 				List<Object> args = new ArrayList<Object>();
 				args.add(outputOwlFiles);
 				// the strings must be unique to the question or they will get used as answers to subsequent questions with the same string
@@ -484,7 +493,8 @@ public class AnswerCurationManager {
 	//									System.out.println(sadlDeclaration);
 	//									System.out.println("SADL equation:");
 	//									System.out.println(sadlDeclaration);
-										notifyUser(codeModelFolder, sd, false);
+										SadlStatementContent ssc = new SadlStatementContent(null, Agent.CM, sd);
+										notifyUser(codeModelFolder, ssc, false);
 										getExtractionProcessor().addNewSadlContent(sd);
 									}
 								} catch (IOException e) {
@@ -1085,6 +1095,37 @@ public class AnswerCurationManager {
 		}
 	}
 	
+	private void notifyUser(String codeModelFolder, StatementContent sc, boolean quote) {
+		if (getDialogAnswerProvider() != null) {
+			// talk to the user via the Dialog editor
+			Method acmic = null;
+			try {
+				acmic = getDialogAnswerProvider().getClass().getMethod("addCurationManagerInitiatedContent", AnswerCurationManager.class, StatementContent.class);
+			} catch (NoSuchMethodException e1) {
+				// TODO Auto-generated catch block
+				e1.printStackTrace();
+			} catch (SecurityException e1) {
+				// TODO Auto-generated catch block
+				e1.printStackTrace();
+			}
+			if (acmic != null) {
+				acmic.setAccessible(true);
+				try {
+					acmic.invoke(getDialogAnswerProvider(), this, sc);
+				} catch (IllegalAccessException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				} catch (IllegalArgumentException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				} catch (InvocationTargetException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+			}
+		}
+	}
+
 	public String answerUser(String modelFolder, String msg, boolean quote, EObject ctx) throws ConfigurationException {
 		if (quote) {
 			msg = doubleQuoteContent(msg);
@@ -1192,6 +1233,12 @@ public class AnswerCurationManager {
 				dialogAnswerProvider = new DialogAnswerProviderConsoleForTest();
 			}
 		}
+		else if (dialogAnswerProvider instanceof DialogAnswerProviderConsoleForTest) {
+			IDialogAnswerProvider provider = (IDialogAnswerProvider) getDomainModelConfigurationManager().getPrivateKeyValuePair(DialogConstants.DIALOG_ANSWER_PROVIDER);
+			if (provider != null && !(provider instanceof DialogAnswerProviderConsoleForTest)) {
+				setDialogAnswerProvider(provider); // Updated with the`document`-aware dialog provider.
+			}
+		}		
 		return dialogAnswerProvider;
 	}
 
@@ -2345,11 +2392,19 @@ public class AnswerCurationManager {
 		List<ConversationElement> dialogStmts = dc.getStatements();
 		Map<ConversationElement, ConversationElement> additionMap = new HashMap<ConversationElement, ConversationElement>();  // new CE, CE before
 		List<ConversationElement> additions = new ArrayList<ConversationElement>();
+		StatementContent lastStatement = null;
 		for (ConversationElement ce : dialogStmts) {
 			int idx = dialogStmts.indexOf(ce);
 			StatementContent statementAfter = idx < dialogStmts.size() - 1 ? dialogStmts.get(idx + 1).getStatement() : null;
 			StatementContent sc = ce.getStatement();
-			if (sc instanceof ExpectsAnswerContent) {
+			if (sc instanceof AnswerContent) {
+				if (lastStatement != null) {
+					if (applyAnswerToUnansweredQuestion(lastStatement, sc)) {
+					}
+				}
+				lastStatement = null;
+			}
+			else if (sc instanceof ExpectsAnswerContent) {
 				String question = sc.getText().trim();
 				if (getQuestionsAndAnswers().containsKey(question)) {
 					String ans = getQuestionsAndAnswers().get(question);
@@ -2366,9 +2421,16 @@ public class AnswerCurationManager {
 						}
 					}
 				}
+				else if (sc instanceof QuestionWithCallbackContent) {
+					String key = getUnansweredQuestionKey((QuestionWithCallbackContent)sc);
+					if (key != null) {
+						replaceUnansweredQuestionStatementContent(key, (QuestionWithCallbackContent)sc);
+						lastStatement = sc;
+					}
+				}
 
 				// this statement needs an answer
-				if (sc instanceof ExpectsAnswerContent) {
+				else if (sc instanceof ExpectsAnswerContent) {
 					try {
 						String answer = processUserRequest(resource, ontModel, modelName, (ExpectsAnswerContent)sc);
 						if (answer != null) {
@@ -2424,6 +2486,163 @@ public class AnswerCurationManager {
 		}
 	}
 
+	private boolean applyAnswerToUnansweredQuestion(StatementContent question, StatementContent sc) {
+		if (question instanceof QuestionWithCallbackContent && sc instanceof AnswerContent) {
+			List<Object> args = ((QuestionWithCallbackContent)question).getArguments();
+			if (args != null) {
+				if (args.size() > 0) {
+					if (!args.get(args.size() - 1).equals(((AnswerContent)sc).getAnswer())) {
+						((QuestionWithCallbackContent)question).getArguments().add(((AnswerContent)sc).getAnswer());					
+					}
+				}
+				else {
+					((QuestionWithCallbackContent)question).getArguments().add(((AnswerContent)sc).getAnswer());					
+				}	
+			}
+			provideResponse((QuestionWithCallbackContent) question);
+			String key = getUnansweredQuestionKey((QuestionWithCallbackContent) question);
+			getUnansweredQuestions().remove(key);
+			addQuestionAndAnswer(key, ((AnswerContent)sc).getAnswer().toString());
+			((QuestionWithCallbackContent)question).setAnswer((AnswerContent) sc);
+			return true;
+		}
+		return false;
+	}
+
+	public void provideResponse(QuestionWithCallbackContent question) {
+		String methodToCall = question.getMethodToCall();
+		Method[] methods = this.getClass().getMethods();
+		for (Method m : methods) {
+			if (m.getName().equals(methodToCall)) {
+				// call the method
+				List<Object> args = question.getArguments();
+				try {
+					Object results = null;
+					if (args.size() == 0) {
+						results = m.invoke(this, null);
+					}
+					else {
+						Object arg0 = args.get(0);
+						if (args.size() == 1) {
+							results = m.invoke(this, arg0);
+						}
+						else {
+							Object arg1 = args.get(1);
+							if (args.size() == 2) {
+								results = m.invoke(this, arg0, arg1);
+							}
+							if (methodToCall.equals("saveAsSadlFile")) {
+								Set owlFiles = ((Map)arg0).keySet();
+								Iterator owlFilesItr = owlFiles.iterator();
+								if (AnswerCurationManager.isYes(arg1)) {
+									while (owlFilesItr.hasNext()) {
+										File owlfile = (File)owlFilesItr.next();
+										// delete OWL file so it won't be indexed
+										if (owlfile.exists()) {
+											owlfile.delete();
+											try {
+												String outputOwlFileName = owlfile.getCanonicalPath();
+												String altUrl = new SadlUtils().fileNameToFileUrl(outputOwlFileName);
+
+												String publicUri = getDomainModelConfigurationManager().getPublicUriFromActualUrl(altUrl);
+												if (publicUri != null) {
+													getDomainModelConfigurationManager().deleteModel(publicUri);
+													getDomainModelConfigurationManager().deleteMapping(altUrl, publicUri);
+												}
+											} catch (ConfigurationException e) {
+												// TODO Auto-generated catch block
+												e.printStackTrace();
+											} catch (URISyntaxException e) {
+												// TODO Auto-generated catch block
+												e.printStackTrace();
+											} catch (IOException e) {
+												// TODO Auto-generated catch block
+												e.printStackTrace();
+											}
+										}
+									}
+									String projectName = null;
+									List<File> sadlFiles = new ArrayList<File>();
+									for (int i = 0; i < ((List<?>) results).size(); i++) {
+										Object result = ((List<?>) results).get(i);
+										File sf = new File(result.toString());
+										if (sf.exists()) {
+											sadlFiles.add(sf);
+											projectName = sf.getParentFile().getParentFile().getName();
+										}
+									}
+									getDialogAnswerProvider().updateProjectAndDisplaySadlFiles(projectName, getDomainModelOwlModelsFolder(), sadlFiles);
+								}
+								else {
+									while (owlFilesItr.hasNext()) {
+										File owlFile = (File) owlFilesItr.next();	
+										// add import of OWL file from policy file since there won't be a SADL file to build an OWL and create mappings.
+										try {
+											String importActualUrl = new SadlUtils().fileNameToFileUrl(owlFile.getCanonicalPath());
+											String altUrl = new SadlUtils().fileNameToFileUrl(importActualUrl);
+											String importPublicUri = getDomainModelConfigurationManager().getPublicUriFromActualUrl(altUrl);
+											String prefix = getDomainModelConfigurationManager().getGlobalPrefix(importPublicUri);
+											getDomainModelConfigurationManager().addMapping(importActualUrl, importPublicUri, prefix, false, "AnswerCurationManager");
+											String prjname = owlFile.getParentFile().getParentFile().getName();
+										} catch (IOException e) {
+											// TODO Auto-generated catch block
+											e.printStackTrace();
+										} catch (URISyntaxException e) {
+											// TODO Auto-generated catch block
+											e.printStackTrace();
+										} catch (ConfigurationException e) {
+											// TODO Auto-generated catch block
+											e.printStackTrace();
+										}
+									}
+								}
+							}
+						}
+					}
+					//						System.out.println(result.toString());
+				} catch (IllegalAccessException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				} catch (IllegalArgumentException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				} catch (InvocationTargetException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+				break;
+			}
+		}
+		//		}	
+	}
+
+	private void replaceUnansweredQuestionStatementContent(String key, QuestionWithCallbackContent sc) {
+		if (key != null) {
+			QuestionWithCallbackContent uq = getUnansweredQuestions().get(key);
+			sc.setMethodToCall(uq.getMethodToCall());
+			sc.setArguments(uq.getArguments());
+			getUnansweredQuestions().put(key, sc);
+		}
+	}
+
+	private String getUnansweredQuestionKey(QuestionWithCallbackContent sc) {
+		String txt2 = sc.getTheQuestion();
+		for (String uaq : getUnansweredQuestions().keySet()) {
+			String trimmed = uaq;
+			if (trimmed.endsWith("?")) {
+				trimmed = trimmed.substring(0, trimmed.length() - 1);
+			}
+			trimmed = SadlUtils.stripQuotes(trimmed.trim());
+			if (trimmed.endsWith("?")) {
+				trimmed = trimmed.substring(0, trimmed.length() - 1);
+			}
+			if (trimmed.equals(txt2)) {
+				return uaq;
+			}
+		}
+		return null;
+	}
+
 	private Map<String, String> getQuestionsAndAnswers() {
 		return questionsAndAnswers;
 	}
@@ -2455,6 +2674,14 @@ public class AnswerCurationManager {
 
 	public void clearQuestionsAndAnsers() {
 		questionsAndAnswers.clear();
+	}
+
+	public Map<String, QuestionWithCallbackContent> getUnansweredQuestions() {
+		return unansweredQuestions;
+	}
+
+	public void addUnansweredQuestion(String questionString, QuestionWithCallbackContent unansweredQuestion) {
+		unansweredQuestions.put(questionString, unansweredQuestion);
 	}
 
 }

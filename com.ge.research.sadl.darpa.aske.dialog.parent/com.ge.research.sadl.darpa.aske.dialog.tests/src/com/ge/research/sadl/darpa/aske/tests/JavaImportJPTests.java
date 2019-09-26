@@ -140,6 +140,8 @@ public class JavaImportJPTests {
 		jme.setDefaultCodeModelName(defaultCodeModelName);
 		jme.setIncludeSerialization(false);
 		assertTrue(jme.process("TemperatureConversion class", javaContent));
+		OntModel codeModel = acm.getExtractionProcessor().getCodeModel();
+		codeModel.write(System.out);
 	}
 
 	@Test

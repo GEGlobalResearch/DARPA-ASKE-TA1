@@ -48,7 +48,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Scanner;
-import java.util.function.Consumer;
 
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IResource;
@@ -58,10 +57,13 @@ import org.eclipse.core.runtime.CoreException;
 import org.eclipse.emf.ecore.resource.Resource;
 
 import com.ge.research.sadl.darpa.aske.curation.AnswerCurationManager.Agent;
-import com.ge.research.sadl.darpa.aske.processing.ConversationElement;
+import com.ge.research.sadl.darpa.aske.processing.AnswerContent;
 import com.ge.research.sadl.darpa.aske.processing.IDialogAnswerProvider;
+import com.ge.research.sadl.darpa.aske.processing.InformationContent;
 import com.ge.research.sadl.darpa.aske.processing.MixedInitiativeElement;
 import com.ge.research.sadl.darpa.aske.processing.MixedInitiativeTextualResponse;
+import com.ge.research.sadl.darpa.aske.processing.QuestionWithCallbackContent;
+import com.ge.research.sadl.darpa.aske.processing.StatementContent;
 import com.ge.research.sadl.reasoner.ConfigurationException;
 import com.ge.research.sadl.reasoner.IConfigurationManager;
 import com.ge.research.sadl.reasoner.utils.SadlUtils;
@@ -76,12 +78,19 @@ public class DialogAnswerProviderConsoleForTest implements IDialogAnswerProvider
 	@Override
 	public String addCurationManagerInitiatedContent(AnswerCurationManager answerCurationManager, String content) {
 		setCurationManager(answerCurationManager);
-        Consumer<MixedInitiativeElement> respond = a -> this.provideResponse(a);
-        MixedInitiativeTextualResponse question = new MixedInitiativeTextualResponse(content);
-        MixedInitiativeElement questionElement = new MixedInitiativeElement(question, respond);
-		addMixedInitiativeElement(content, questionElement);
-//		getCurationManager().addToConversation(new ConversationElement(getCurationManager().getConversation(), questionElement, Agent.CM));
-        initiateMixedInitiativeInteraction(questionElement);
+		InformationContent ic = new InformationContent(null, Agent.CM, content);
+//        Consumer<MixedInitiativeElement> respond = a -> this.provideResponse(a);
+//        MixedInitiativeTextualResponse question = new MixedInitiativeTextualResponse(content);
+//        MixedInitiativeElement questionElement = new MixedInitiativeElement(question, respond);
+//		addMixedInitiativeElement(content, questionElement);
+////		getCurationManager().addToConversation(new ConversationElement(getCurationManager().getConversation(), questionElement, Agent.CM));
+        initiateMixedInitiativeInteraction(ic);
+		return "success";
+	}
+	
+	@Override
+	public String addCurationManagerInitiatedContent(AnswerCurationManager answerCurationManager, StatementContent ssc) {
+		addCurationManagerAnswerContent(getCurationManager(), ssc.getText(), ssc.getHostEObject());
 		return "success";
 	}
 	
@@ -89,12 +98,15 @@ public class DialogAnswerProviderConsoleForTest implements IDialogAnswerProvider
 	public String addCurationManagerInitiatedContent(AnswerCurationManager answerCurationManager, String methodToCall,
 			List<Object> args, String content) {
 		setCurationManager(answerCurationManager);
-        Consumer<MixedInitiativeElement> respond = a -> this.provideResponse(a);
+//        Consumer<MixedInitiativeElement> respond = a -> this.provideResponse(a);
         MixedInitiativeTextualResponse question = new MixedInitiativeTextualResponse(content);
-        MixedInitiativeElement questionElement = new MixedInitiativeElement(question, respond, answerCurationManager, methodToCall, args);
-		addMixedInitiativeElement(content, questionElement);
+//        MixedInitiativeElement questionElement = new MixedInitiativeElement(question, respond, answerCurationManager, methodToCall, args);
+//		addMixedInitiativeElement(content, questionElement);
 //		getCurationManager().addToConversation(new ConversationElement(getCurationManager().getConversation(), questionElement, Agent.CM));
-        initiateMixedInitiativeInteraction(questionElement);
+//        initiateMixedInitiativeInteraction(questionElement);
+		QuestionWithCallbackContent qwcc = new QuestionWithCallbackContent(null, Agent.CM, methodToCall, args, content);
+        initiateMixedInitiativeInteraction(qwcc);
+        answerCurationManager.addUnansweredQuestion(content, qwcc);
 		return "success";
 	}
 
@@ -107,21 +119,43 @@ public class DialogAnswerProviderConsoleForTest implements IDialogAnswerProvider
 	/* (non-Javadoc)
 	 * @see com.ge.research.sadl.darpa.aske.tests.IDialogAnswerProvider#initiateMixedInitiativeInteraction(com.ge.research.sadl.darpa.aske.processing.MixedInitiativeElement)
 	 */
+//	@Override
+//	public String initiateMixedInitiativeInteraction(MixedInitiativeElement element) {
+//		String output = element.getContent().toString();
+//		System.out.println("CM: " + output);
+//		String answer = null;
+//		if (output.trim().endsWith("?")) {
+////			System.out.println("?");
+////			read(System.in, 100000, element);
+//			answer = getUserInput();
+//			element.addArgument(answer);
+//			provideResponse(element);
+//		}
+//		return answer;
+//	}
+	
 	@Override
-	public String initiateMixedInitiativeInteraction(MixedInitiativeElement element) {
-		String output = element.getContent().toString();
+	public String initiateMixedInitiativeInteraction(QuestionWithCallbackContent element) {
+		String output = element.getTheQuestion();
 		System.out.println("CM: " + output);
 		String answer = null;
 		if (output.trim().endsWith("?")) {
 //			System.out.println("?");
 //			read(System.in, 100000, element);
 			answer = getUserInput();
-			element.addArgument(answer);
+			element.getArguments().add(answer);
+			AnswerContent ac = new AnswerContent(null, Agent.USER);
+			ac.setAnswer(answer);
+			element.setAnswer(ac);
 			provideResponse(element);
 		}
 		return answer;
 	}
-	
+
+	private void initiateMixedInitiativeInteraction(InformationContent ic) {
+		addCurationManagerAnswerContent(getCurationManager(), ic.getInfoMessage(), ic.getHostEObject());
+	}
+
 	private String getUserInput() {
 		String answer = null;
 		if (userInputScanner == null) {
@@ -155,16 +189,17 @@ public class DialogAnswerProviderConsoleForTest implements IDialogAnswerProvider
 	 * @see com.ge.research.sadl.darpa.aske.tests.IDialogAnswerProvider#provideResponse(com.ge.research.sadl.darpa.aske.processing.MixedInitiativeElement)
 	 */
 	@Override
-	public void provideResponse(MixedInitiativeElement response) {
+	public void provideResponse(QuestionWithCallbackContent question) {
 //		System.out.println("Response: " + response.toString());
-		if (response.getCurationManager() != null) {
-			setCurationManager(response.getCurationManager());
-			String methodToCall = response.getMethodToCall();
+		AnswerContent answer = question.getAnswer();
+//		if (response.getCurationManager() != null) {
+//			setCurationManager(response.getCurationManager());
+			String methodToCall = question.getMethodToCall();
 			Method[] methods = getCurationManager().getClass().getMethods();
 			for (Method m : methods) {
 				if (m.getName().equals(methodToCall)) {
 					// call the method
-					List<Object> args = response.getArguments();
+					List<Object> args = question.getArguments();
 					try {
 						Object results = null;
 						if (args.size() == 0) {
@@ -243,7 +278,7 @@ public class DialogAnswerProviderConsoleForTest implements IDialogAnswerProvider
 												}
 											}
 										}
-										response.setResult(sadlFiles);
+										answer.setOtherResults(sadlFiles);
 										if (projectName != null) {	// only not null if doing SADL conversion
 											try {
 												IProject project = ResourcesPlugin.getWorkspace().getRoot().getProject(projectName);
@@ -280,7 +315,7 @@ public class DialogAnswerProviderConsoleForTest implements IDialogAnswerProvider
 					break;
 				}
 			}
-		}	
+//		}	
 	}
 	
     private void displayFiles(String modelFolder, List<File> sadlFiles) {
@@ -404,6 +439,12 @@ public class DialogAnswerProviderConsoleForTest implements IDialogAnswerProvider
 	public Resource getResource() {
 		// TODO Auto-generated method stub
 		return null;
+	}
+
+	@Override
+	public void updateProjectAndDisplaySadlFiles(String projectName, String modelFolder, List<File> sadlFiles) {
+		displayFiles(modelFolder, sadlFiles);
+		
 	}
 
 }

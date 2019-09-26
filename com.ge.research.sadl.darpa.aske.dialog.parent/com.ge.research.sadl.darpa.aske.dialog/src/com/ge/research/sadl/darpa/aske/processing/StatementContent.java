@@ -13,6 +13,7 @@ import com.ge.research.sadl.darpa.aske.curation.AnswerCurationManager.Agent;
 public abstract class StatementContent {
 	private EObject hostEObject;
 	private Agent agent;
+	private String unParsedText = null;
 	
 	public StatementContent(EObject host) {
 		setHostEObject(host);
@@ -21,6 +22,12 @@ public abstract class StatementContent {
 	public StatementContent(EObject host, Agent agnt) {
 		setHostEObject(host);
 		setAgent(agnt);
+	}
+
+	public StatementContent(EObject host, Agent agnt, String text) {
+		setHostEObject(host);
+		setAgent(agnt);
+		setUnParsedText(text);
 	}
 
 	public EObject getHostEObject() {
@@ -32,15 +39,24 @@ public abstract class StatementContent {
 	}
 	
 	public String getText() {
-		return removeLeadingComments(NodeModelUtils.findActualNodeFor(getHostEObject()).getText());
+		if (getHostEObject() != null) {
+			return removeLeadingComments(NodeModelUtils.findActualNodeFor(getHostEObject()).getText());
+		}
+		return getUnParsedText();
 	}
 	
 	public int getOffset() {
-		return NodeModelUtils.findActualNodeFor(getHostEObject()).getTotalOffset();
+		if (getHostEObject() != null) {
+			return NodeModelUtils.findActualNodeFor(getHostEObject()).getTotalOffset();
+		}
+		return -1;
 	}
 
 	public int getLength() {
-		return NodeModelUtils.findActualNodeFor(getHostEObject()).getLength();
+		if (getHostEObject() != null) {
+			return NodeModelUtils.findActualNodeFor(getHostEObject()).getLength();
+		}
+		return -1;
 	}
 	
 	public Agent getAgent() {
@@ -69,6 +85,14 @@ public abstract class StatementContent {
 			text = text.substring(loc).trim();
 		}
 		return text;
+	}
+
+	private String getUnParsedText() {
+		return unParsedText;
+	}
+
+	private void setUnParsedText(String unParsedText) {
+		this.unParsedText = unParsedText;
 	}
 
 

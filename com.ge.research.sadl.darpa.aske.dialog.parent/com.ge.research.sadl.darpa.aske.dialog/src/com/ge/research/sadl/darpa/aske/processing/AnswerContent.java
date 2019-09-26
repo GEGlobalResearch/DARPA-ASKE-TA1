@@ -7,6 +7,7 @@ import com.ge.research.sadl.darpa.aske.curation.AnswerCurationManager.Agent;
 public class AnswerContent extends StatementContent {
 	private Object answer;
 	private ExpectsAnswerContent answerTo;
+	private Object otherResults;
 
 	public AnswerContent(EObject host) {
 		super(host);
@@ -32,5 +33,13 @@ public class AnswerContent extends StatementContent {
 
 	public void setAnswer(Object answer) {
 		this.answer = answer;
+	}
+
+	public Object getOtherResults() {
+		return otherResults;
+	}
+
+	public void setOtherResults(Object otherResults) {
+		this.otherResults = otherResults;
 	}
 }

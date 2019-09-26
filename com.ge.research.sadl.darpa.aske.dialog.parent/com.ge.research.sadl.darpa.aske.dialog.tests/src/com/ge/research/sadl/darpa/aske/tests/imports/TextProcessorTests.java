@@ -35,11 +35,16 @@
  ***********************************************************************/
 package com.ge.research.sadl.darpa.aske.tests.imports;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
+import java.util.List;
 
+import org.eclipse.jdt.core.compiler.InvalidInputException;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -76,7 +81,7 @@ public class TextProcessorTests {
 
 //	@Ignore
 	@Test
-	public void test() throws ConfigurationException, IOException {
+	public void test() throws ConfigurationException, IOException, InvalidInputException {
 		File sourceFile = new File(new File(".").getAbsolutePath() + "/resources/");
 		File domainProjectFolder = new File(sourceFile + "/TestSadlProject");
 		File domainModelFolder = new File(domainProjectFolder.getAbsoluteFile() + "/OwlModels");
@@ -84,13 +89,25 @@ public class TextProcessorTests {
 		TextProcessor tp = new TextProcessor(new AnswerCurationManager(domainProjectModelFolder, 
 				ConfigurationManagerForIdeFactory.getConfigurationManagerForIDE(domainProjectModelFolder, null), null), null);
 		tp.setTextmodelPrefix("sos");
-		tp.setTextmodelName("http://darpa.aske.ta1.ge/sostest");
-		tp.process(null, "a^2 = R * T * gamma", null);
+		String localityURI = "http://darpa.aske.ta1.ge/sostest";
+		tp.setTextmodelName(localityURI);
+		int[] result = tp.processText(localityURI, "a^2 = R * T * gamma", localityURI);
+		assertNotNull(result);
+		assertEquals(0, result[0]);
+		assertEquals(1, result[1]);
+		System.out.println("nc=" + result[0] + ", neq=" + result[1]);
+
+		List<String[]> results = tp.processName("T", localityURI);
+		for (String[] use : results) {
+			System.out.println("Variable '" + use[0] + "' used in equation '" + use[1] + "'");
+		}
+		
+//		tp.processUnitExtraciton("ft/sec", localityURI);
 	}
 
 //	@Ignore
 	@Test
-	public void test2() throws ConfigurationException, IOException {
+	public void test2() throws ConfigurationException, IOException, InvalidInputException {
 		File sourceFile = new File(new File(".").getAbsolutePath() + "/resources/");
 		File domainProjectFolder = new File(sourceFile + "/TestSadlProject");
 		File domainModelFolder = new File(domainProjectFolder.getAbsoluteFile() + "/OwlModels");
@@ -98,20 +115,36 @@ public class TextProcessorTests {
 		TextProcessor tp = new TextProcessor(new AnswerCurationManager(domainProjectModelFolder, 
 				ConfigurationManagerForIdeFactory.getConfigurationManagerForIDE(domainProjectModelFolder, null), null), null);
 		tp.setTextmodelPrefix("sos");
-		tp.setTextmodelName("http://darpa.aske.ta1.ge/sostest");
-		tp.process(null, "The speed of sound is a concept known in physics ", null);
+		String localityURI = "http://darpa.aske.ta1.ge/sostest";
+		tp.setTextmodelName(localityURI);
+		int[] result = tp.processText(localityURI, "The speed of sound is a concept known in physics ", localityURI);
+		assertNotNull(result);
+//		assertEquals(0, result[0]);
+//		assertEquals(1, result[1]);
+		System.out.println("nc=" + result[0] + ", neq=" + result[1]);
+		List<String[]> results = tp.processName("speed", localityURI);
+		for (String[] use : results) {
+			System.out.println("Variable '" + use[0] + "' used in equation '" + use[1] + "'");
+		}
 	}
 
 //	@Ignore
 	@Test
-	public void test3() throws IOException, ConfigurationException {
+	public void test3() throws IOException, ConfigurationException, InvalidInputException {
 		File textFile = new File(getTextExtractionPrjFolder() + "/ExtractedModels/Sources/Sound.txt");
 		String javaContent = readFile(textFile);
 		TextProcessor tp = new TextProcessor(new AnswerCurationManager(getDomainProjectModelFolder(), 
 				ConfigurationManagerForIdeFactory.getConfigurationManagerForIDE(getDomainProjectModelFolder(), null), null), null);
 		tp.setTextmodelPrefix("sos");
 		tp.setTextmodelName("http://darpa.aske.ta1.ge/sostest");
-		tp.process(null, javaContent, null);
+		String localityURI = "http://darpa.aske.ta1.ge/sostest";
+		tp.setTextmodelName(localityURI);
+		int[] result = tp.processText(localityURI, javaContent, localityURI);
+		System.out.println("nc=" + result[0] + ", neq=" + result[1]);
+		List<String[]> results = tp.processName("T", localityURI);
+		for (String[] use : results) {
+			System.out.println("Variable '" + use[0] + "' used in equation '" + use[1] + "'");
+		}
 	}
 
 //	@Ignore

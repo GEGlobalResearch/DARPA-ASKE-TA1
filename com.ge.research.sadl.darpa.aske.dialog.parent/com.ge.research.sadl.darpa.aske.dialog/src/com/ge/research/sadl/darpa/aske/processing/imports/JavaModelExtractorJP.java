@@ -2,7 +2,7 @@
  * Note: This license has also been called the "New BSD License" or 
  * "Modified BSD License". See also the 2-clause BSD License.
  *
- * Copyright © 2018-2019 - General Electric Company, All Rights Reserved
+ * Copyright ï¿½ 2018-2019 - General Electric Company, All Rights Reserved
  * 
  * Projects: ANSWER and KApEESH, developed with the support of the Defense 
  * Advanced Research Projects Agency (DARPA) under Agreement  No.  
@@ -1111,6 +1111,9 @@ public class JavaModelExtractorJP implements IModelFromCodeExtractor {
 
 	@Override
 	public void setCodeModelName(String codeModelName) {
+		if (codeModelName != null && !codeModelName.startsWith("http://")) {
+			codeModelName = "http://" + codeModelName;
+		}
 		this.codeModelName = codeModelName;
 		getCurationMgr().getExtractionProcessor().setCodeModelName(codeModelName);
 	}

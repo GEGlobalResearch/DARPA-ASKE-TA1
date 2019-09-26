@@ -13,4 +13,8 @@ public class SadlStatementContent extends StatementContent {
 	public SadlStatementContent(EObject host, Agent agnt) {
 		super(host, agnt);
 	}
+
+	public SadlStatementContent(EObject host, Agent agnt, String stmtText) {
+		super(host, agnt, stmtText);
+	}
 }

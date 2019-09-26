@@ -367,7 +367,7 @@ public class JenaBasedDialogModelProcessor extends JenaBasedSadlModelProcessor {
 				try {
 					StatementContent sc = processDialogModelElement(element);
 					if (sc != null) {
-						ConversationElement ce = new ConversationElement(getAnswerCurationManager().getConversation(), sc, Agent.USER);
+						ConversationElement ce = new ConversationElement(getAnswerCurationManager().getConversation(), sc, sc.getAgent());
 						getAnswerCurationManager().addToConversation(ce);
 					}
 				} catch (JenaProcessorException e1) {
@@ -924,7 +924,7 @@ public class JenaBasedDialogModelProcessor extends JenaBasedSadlModelProcessor {
 //		return ce;
 //	}	
 	
-	private AnswerContent  processAnswerCMStatement( AnswerCMStatement element) throws IOException, TranslationException, InvalidNameException, InvalidTypeException, ConfigurationException, JenaProcessorException, QueryParseException, QueryCancelledException, ReasonerNotFoundException {
+	private StatementContent  processAnswerCMStatement( AnswerCMStatement element) throws IOException, TranslationException, InvalidNameException, InvalidTypeException, ConfigurationException, JenaProcessorException, QueryParseException, QueryCancelledException, ReasonerNotFoundException {
 		EObject stmt = element.getSstmt();
 		if (stmt != null) {
 			StatementContent sc = processDialogModelElement((SadlModelElement) stmt);
@@ -935,9 +935,19 @@ public class JenaBasedDialogModelProcessor extends JenaBasedSadlModelProcessor {
 		else {
 			String str = element.getStr();
 			if (str != null) {
-				AnswerContent ac = new AnswerContent(element, Agent.CM);
-				ac.setAnswer(str);
-				return ac;
+				String eos = getEos(element);
+				if (eos.equals(".")) {
+					AnswerContent ac = new AnswerContent(element, Agent.CM);
+					ac.setAnswer(str);
+					return ac;
+				}
+				else if (eos.equals("?")) {
+					QuestionWithCallbackContent qwcc = new QuestionWithCallbackContent(element, Agent.CM, null, null, str);
+					return qwcc;
+				}
+				else {
+					throw new IOException("Statement has unexpected ending character.");
+				}
 			}
 		}
 		return null;

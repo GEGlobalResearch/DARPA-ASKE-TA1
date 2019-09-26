@@ -14,7 +14,7 @@ public class OwlToSadlModelTest {
 
 	@Test
 	public void test() throws IOException, OwlImportException {
-		String owlFilePath = "resources/M5Snapshot/ExtractedModels/Mach.java.owl";
+		String owlFilePath = "resources/M5Snapshot/ExtractedModels/Mach.java.saveForTest.owl";
 		File owlFile = new File(owlFilePath);
 		assertTrue(owlFile.exists());
 		System.out.println(owlFile.getAbsolutePath());
