@@ -607,9 +607,9 @@ public class JavaModelExtractorJP implements IModelFromCodeExtractor {
 			if (sendCommentsToTextService ) {
 				String locality = null;
 				String inputIdentifier = "CodeComments";
-				String tpresult = null;
+				int[] tpresult = null;
 				try {
-					tpresult = getCurationMgr().getTextProcessor().process(inputIdentifier, cmt.getContent(), locality);
+					tpresult = getCurationMgr().getTextProcessor().processText(inputIdentifier, cmt.getContent(), locality);
 				} catch (ConfigurationException e) {
 					// TODO Auto-generated catch block
 					e.printStackTrace();
@@ -618,7 +618,7 @@ public class JavaModelExtractorJP implements IModelFromCodeExtractor {
 					e.printStackTrace();
 				}
 				System.out.println("Text: " + cmt.getContent());
-				System.out.println("   returned: " + tpresult);
+				System.out.println("nc=" + tpresult[0] + ", neq=" + tpresult[1]);
 			}
 
 			if (subject != null) {
