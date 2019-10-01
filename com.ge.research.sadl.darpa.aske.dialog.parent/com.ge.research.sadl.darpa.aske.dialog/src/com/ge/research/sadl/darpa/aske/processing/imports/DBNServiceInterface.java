@@ -1,6 +1,10 @@
 package com.ge.research.sadl.darpa.aske.processing.imports;
 
+import java.io.BufferedReader;
 import java.io.IOException;
+import java.io.InputStreamReader;
+import java.io.OutputStream;
+import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -17,7 +21,7 @@ import com.google.gson.JsonParser;
  * @author 200005201
  *
  */
-public class KChainServiceInterface extends JsonServiceInterface {
+public class DBNServiceInterface extends JsonServiceInterface {
 
 	/**
 	 * Method to build a KChain computational graph model
@@ -29,7 +33,7 @@ public class KChainServiceInterface extends JsonServiceInterface {
 	 * @return--true if sucessful else false
 	 * @throws IOException
 	 */
-	public boolean buildCGModel(String modelUri, String equationModel, String dataLocation, List<String[]> inputs, List<String[]> outputs) throws IOException {
+	public boolean executeDBN(String modelUri, String equationModel, String dataLocation, List<String[]> inputs, List<String[]> outputs) throws IOException {
 		/*
 		{
 		  "inputVariables": [
@@ -56,10 +60,9 @@ public class KChainServiceInterface extends JsonServiceInterface {
 		String host = "vesuvius-dev.crd.ge.com";
 		//				String host = "3.39.122.58";
 		int port = 12345;
-		String kchainServiceURL = "http://" + host + ":" + port + "/darpa/aske/kchain/";
+		String dbnServiceURL = "http://" + host + ":" + port + "/process";
 
-		String buildServiceURL = kchainServiceURL + "build";
-		URL serviceUrl = new URL(buildServiceURL);			
+		URL serviceUrl = new URL(dbnServiceURL);			
 
 		JsonObject json = generateRequestJson(modelUri, equationModel, dataLocation, inputs, outputs);
 		
@@ -226,5 +229,5 @@ public class KChainServiceInterface extends JsonServiceInterface {
 		}
 		return retLists;
 	}
-
+	
 }

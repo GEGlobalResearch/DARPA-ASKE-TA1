@@ -41,10 +41,8 @@ import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
+import java.io.FilenameFilter;
 import java.io.IOException;
-import java.io.InputStream;
-import java.io.UnsupportedEncodingException;
-import java.net.URISyntaxException;
 import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -76,8 +74,6 @@ import com.ge.research.sadl.model.gp.Node;
 import com.ge.research.sadl.model.gp.TripleElement;
 import com.ge.research.sadl.processing.OntModelProvider;
 import com.ge.research.sadl.processing.SadlInferenceException;
-import com.hp.hpl.jena.reasoner.rulesys.Builtin;
-import com.hp.hpl.jena.tdb.store.Hash;
 import com.ge.research.sadl.reasoner.ConfigurationException;
 import com.ge.research.sadl.reasoner.ConfigurationManager;
 import com.ge.research.sadl.reasoner.IReasoner;
@@ -93,15 +89,16 @@ import com.hp.hpl.jena.ontology.OntModel;
 import com.hp.hpl.jena.ontology.OntModelSpec;
 import com.hp.hpl.jena.ontology.OntProperty;
 import com.hp.hpl.jena.ontology.OntResource;
+import com.hp.hpl.jena.query.QueryExecution;
+import com.hp.hpl.jena.query.QueryExecutionFactory;
+import com.hp.hpl.jena.query.QueryFactory;
+import com.hp.hpl.jena.query.QuerySolution;
+import com.hp.hpl.jena.query.ResultSetRewindable;
 import com.hp.hpl.jena.rdf.model.Model;
 import com.hp.hpl.jena.rdf.model.ModelFactory;
 import com.hp.hpl.jena.rdf.model.Property;
 import com.hp.hpl.jena.rdf.model.RDFNode;
-import com.hp.hpl.jena.rdf.model.RDFVisitor;
-import com.hp.hpl.jena.query.*;
 import com.hp.hpl.jena.update.UpdateAction;
-import com.hp.hpl.jena.vocabulary.RDF;
-import com.hp.hpl.jena.sparql.util.ResultSetUtils;
 
 public class JenaBasedDialogInferenceProcessor extends JenaBasedSadlInferenceProcessor {
 
@@ -1535,24 +1532,16 @@ private RDFNode getObjectAsLiteralOrResource(Node property, Node object) {
 
 		
 		configMgr = ConfigurationManagerForIdeFactory.getConfigurationManagerForIDE(modelFolderUri, format);
-		IReasoner reasoner = configMgr.getReasoner();
-	
+		String prologReasonerClassName = "com.ge.research.sadl.swi_prolog.reasoner.SWIPrologReasonerPlugin";
+		IReasoner reasoner = configMgr.getOtherReasoner(prologReasonerClassName);
+		String instanceDatafile = "http://aske.ge.com/MetaData.owl";
+		reasoner.initializeReasoner((new File(modelFolderUri).getParent()), instanceDatafile, null);
 		
-		if (!reasoner.isInitialized()) {
-			reasoner.setConfigurationManager(configMgr);
-			//String modelName = configMgr.getPublicUriFromActualUrl(new SadlUtils().fileNameToFileUrl(modelFolderUri + "/" + owlFileName));
-			//model name something like http://aske.ge.com/metamodel
-			//String mname = getModelName();
-			reasoner.initializeReasoner(modelFolderUri, getModelName(), format); 
-			//reasoner.loadInstanceData(qhmodel);
-			//System.out.print("reasoner is not initialized");
-			//return null;
-		}
-
+//		assertTrue(pr.loadInstanceData(instanceDatafile));
+		loadAllOwlFilesInProject(modelFolderUri, reasoner);
+	
 		String modelFile = getModelFolderPath(resource) + File.separator + qhOwlFileName;
-//		String baseModel = getModelFolderPath(resource) + File.separator + getModelName();
-//		reasoner.loadRules(baseModel);
-		reasoner.loadRules(modelFile);
+		reasoner.loadInstanceData(modelFile);
 		
 		String pquery = reasoner.prepareQuery(query);
 
@@ -1560,6 +1549,51 @@ private RDFNode getObjectAsLiteralOrResource(Node property, Node object) {
 		return res;
 	}
 	
+	private boolean loadAllOwlFilesInProject(String owlModelsFolder, IReasoner reasoner) throws IOException, ConfigurationException {
+		String[] excludeFiles = {"CodeExtractionModel.owl", "metrics.owl"};
+		File omf = new File(owlModelsFolder);
+		if (!omf.exists()) {
+			throw new IOException("Model folder '" + owlModelsFolder + "' does not exist");
+		}
+		if (!omf.isDirectory()) {
+			throw new IOException("'" + owlModelsFolder + "' is not a folder");
+		}
+		FilenameFilter filter = new FilenameFilter() {
+			public boolean accept(java.io.File dir, String name) {
+				if(name != null) {
+					return name.endsWith(".owl");
+				}else {
+					return false;
+				}
+			}
+		};
+		File[] owlFiles = omf.listFiles(filter);
+		for (File owlFile : owlFiles) {
+			boolean exclude = false;
+			for (String exf : excludeFiles) {
+				if (owlFile.getName().endsWith(exf)) {
+					exclude = true;
+					break;
+				}
+			}
+			if (exclude) {
+				continue;
+			}
+			reasoner.loadInstanceData(owlFile.getCanonicalPath());
+			File plFile = new File(owlFileToPlFile(owlFile));
+			if (plFile.exists()) {
+				reasoner.loadRules(plFile.getCanonicalPath());
+			}
+		}
+		return true;
+	}
+
+	private String owlFileToPlFile(File owlFile) throws IOException {
+		String altFN = owlFile.getCanonicalPath();
+		String rulefn = altFN.substring(0, altFN.lastIndexOf(".")) + ".pl";
+		return rulefn;
+	}
+
 	private ResultSet runReasonerQuery(Resource resource, String query) throws Exception {
 		String modelFolderUri = getModelFolderPath(resource); //getOwlModelsFolderPath(path).toString(); 
 		final String format = ConfigurationManager.RDF_XML_ABBREV_FORMAT;
