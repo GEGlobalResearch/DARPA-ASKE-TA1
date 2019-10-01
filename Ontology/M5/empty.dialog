@@ -1,0 +1,5 @@
+ uri "http://sadl.org/empty.dialog" alias empty.
+ 
+ import "http://sadl.org/SpeedOfSound.sadl".
+ 
+ 

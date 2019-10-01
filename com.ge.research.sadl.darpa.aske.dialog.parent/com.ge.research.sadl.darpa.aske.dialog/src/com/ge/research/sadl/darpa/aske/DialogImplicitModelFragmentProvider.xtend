@@ -2,7 +2,7 @@
  * Note: This license has also been called the "New BSD License" or 
  * "Modified BSD License". See also the 2-clause BSD License.
  *
- * Copyright © 2018-2019 - General Electric Company, All Rights Reserved
+ * Copyright ï¿½ 2018-2019 - General Electric Company, All Rights Reserved
  * 
  * Projects: ANSWER and KApEESH, developed with the support of the Defense 
  * Advanced Research Projects Agency (DARPA) under Agreement  No.  
@@ -50,6 +50,9 @@ class DialogImplicitModelFragmentProvider implements ISadlImplicitModelFragmentP
 
 	public static val DIALOG_IMPLICIT_MODEL_FRAGMENT = '''
 		/****** The following content comes from the Dialog implicit model fragment provider ******/
+		ConversationElement is a class, described by text with a single value of type string.
+		{QuestionElement, AnswerElement} are types of ConversationElement.
+		dialogAnswer describes QuestionElement with values of type AnswerElement.
 		// these properties used by TA2
 		model describes DataTable with values of type ^Equation.
 		^data describes ^Equation with values of type DataTable.

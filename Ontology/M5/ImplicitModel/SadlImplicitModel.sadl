@@ -8,11 +8,12 @@ UnittedQuantity is a type of ScientificConcept,
 	described by ^value with values of type decimal,
 	described by stddev with values of type decimal,
 	described by unit with values of type string.
-UnittedQuantity has impliedProperty ^value.
 
-DataDescriptor is a class, described by localDescriptorName with a single value of type string,
+DataDescriptor is a class, described by localDescriptorName (note "If this DataDescriptor is associated with a named parameter, this is the name") with a single value of type string,
 	described by dataType (note "the simple data type, e.g., float") with a single value of type anyURI,
-	described by augmentedType (note "ties the DataDescriptor to the semantic domain model") with values of type AugmentedType.
+	described by specifiedUnits (note "the array of possible units") with a single value of type string List,
+	described by augmentedType (note "ties the DataDescriptor to the semantic domain model") with values of type AugmentedType,
+	described by descriptorVariable (note "This identifies the GPVariable, if any, in the AugmentedType which is associated with this DataDescriptor").
 dataType of DataDescriptor has at most 1 value.
 descriptorVariable of DataDescriptor has at most 1 value.
 
@@ -26,7 +27,7 @@ returnTypes describes ^Equation with a single value of type DataDescriptor List.
 
 ExternalEquation is a type of ^Equation,
 	described by externalURI with a single value of type anyURI,
-	described by externalURL with values of type string.
+	described by externalURL with values of type anyURI.
 	
 AugmentedType is a class.
 augTypeUnits describes AugmentedType with a single value of type string List.
@@ -61,6 +62,72 @@ NamedQuery is a class.
 
 
 /****** The following content comes from the Dialog implicit model fragment provider ******/
+ConversationElement is a class, described by text with a single value of type string.
+{QuestionElement, AnswerElement} are types of ConversationElement.
+dialogAnswer describes QuestionElement with values of type AnswerElement.
 // these properties used by TA2
 model describes DataTable with values of type ^Equation.
 ^data describes ^Equation with values of type DataTable.
+
+
+/****** The following content comes from the Requirements implicit model fragment provider ******/
+Event is a class.
+
+TestState is a class.
+state describes TestState.
+isDefault is a type of annotation. 
+prerequisiteState is a type of annotation. 
+
+input is a type of annotation.
+description is a type of annotation.
+
+
+reference_class is a type of annotation.
+reference_property is a type of annotation.
+reference_range is a type of annotation.
+reference_instance is a type of annotation.
+reference_test_name is a type of annotation.
+
+TEST_INTERFACE is a class, must be one of {Test_Input, Test_Output, Test_Input_Output, No_Test_Interface}.
+PHYSICAL_MAPPING is a class.
+physical_value describes PHYSICAL_MAPPING with values of type decimal.
+physical_value of PHYSICAL_MAPPING has exactly 1 values.
+
+
+INTERFACE_DEFINITION is a class.
+	functional_max describes INTERFACE_DEFINITION with values of type decimal.
+	functional_max of INTERFACE_DEFINITION has exactly 1 values.
+	functional_min describes INTERFACE_DEFINITION with values of type decimal.
+	functional_min of INTERFACE_DEFINITION has exactly 1 values.
+	physical_max describes INTERFACE_DEFINITION with values of type decimal.
+	physical_max of INTERFACE_DEFINITION has exactly 1 values.
+	physical_min describes INTERFACE_DEFINITION with values of type decimal.
+	physical_min of INTERFACE_DEFINITION has exactly 1 values.
+	tolerance describes INTERFACE_DEFINITION with values of type decimal.
+	tolerance of INTERFACE_DEFINITION has exactly 1 values.
+	resolution describes INTERFACE_DEFINITION with values of type decimal.
+	resolution of INTERFACE_DEFINITION has exactly 1 values.
+	active_threshold describes INTERFACE_DEFINITION with values of type decimal.
+	active_threshold of INTERFACE_DEFINITION has exactly 1 values.
+	inactive_threshold describes INTERFACE_DEFINITION with values of type decimal.
+	inactive_threshold of INTERFACE_DEFINITION has exactly 1 values.
+	true_for_time describes INTERFACE_DEFINITION with values of type decimal.
+	true_for_time of INTERFACE_DEFINITION has exactly 1 values.
+	false_for_time describes INTERFACE_DEFINITION with values of type decimal.
+	false_for_time of INTERFACE_DEFINITION has exactly 1 values.
+
+	test_interface describes INTERFACE_DEFINITION with values of type TEST_INTERFACE.
+	test_interface of INTERFACE_DEFINITION has exactly 1 values.
+
+	physical_mapping describes INTERFACE_DEFINITION with values of type PHYSICAL_MAPPING.
+	physical_mapping of PHYSICAL_MAPPING has exactly 1 values.
+	
+Specification is a class.
+{Requirement, Assertion, Assumption, Verify} are types of Specification.
+augments describes Verify with values of type Specification.	
+
+TRANSITION_RESTRICTION is a class,
+	described by transition_type with values of type TRANSITION_TYPE.
+TRANSITION_TYPE is a class, must be one of {one_time,invalid}.
+first_state is a type of annotation.
+next_state is a type of annotation.

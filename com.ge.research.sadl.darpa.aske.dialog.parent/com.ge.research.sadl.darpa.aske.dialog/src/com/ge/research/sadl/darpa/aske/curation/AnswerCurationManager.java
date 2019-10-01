@@ -703,6 +703,17 @@ public class AnswerCurationManager {
 			outputs.add(output1);
 
 		 */
+		String msg = "";
+		if (rsInputs == null) {
+			msg += "Input result set is empty. ";
+		}
+		if (rsOutputs == null) {
+			msg += "Input result set is empty.";
+		}
+		if (msg != null) {
+			System.err.println(msg);
+			return msg;
+		}
 		rsInputs.setShowNamespaces(false);
 		rsOutputs.setShowNamespaces(false);
 		
