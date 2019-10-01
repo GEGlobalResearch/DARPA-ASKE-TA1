@@ -113,6 +113,8 @@ public class DialogAnswerProvider extends BaseDialogAnswerProvider {
 		this.document = document;
 		this.document.readOnly(resource -> {
 			initializedConfigManager(resource);
+			AnswerCurationManager answerCurationManager = new AnswerCurationManager(getConfigMgr().getModelFolder(), getConfigMgr(), resource, null);
+			getConfigMgr().addPrivateKeyValuePair(DialogConstants.ANSWER_CURATION_MANAGER, answerCurationManager);
 			Object lastCommand = OntModelProvider.getPrivateKeyValuePair(resource, DialogConstants.LAST_DIALOG_COMMAND);
 			LOGGER.debug("DialogAnswerProvider: Last cmd: " + (lastCommand == null ? "null" : lastCommand.toString()));
 			return null; // Void

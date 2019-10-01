@@ -759,10 +759,7 @@ public class JenaBasedDialogModelProcessor extends JenaBasedSadlModelProcessor {
 				}
 			}
 			else {
-				// need to get a new one
-// TODO get preferences				
-				answerCurationManager = new AnswerCurationManager(getConfigMgr().getModelFolder(), getConfigMgr(), null);
-				getConfigMgr().addPrivateKeyValuePair(DialogConstants.ANSWER_CURATION_MANAGER, answerCurationManager);
+				throw new IOException("AnswerCurationManager must already exist!");
 			}
 		}
 		return answerCurationManager;
@@ -884,6 +881,15 @@ public class JenaBasedDialogModelProcessor extends JenaBasedSadlModelProcessor {
 			return;
 		}
 		super.onGenerate(resource, fsa, context);
+		try {
+			getAnswerCurationManager().saveQuestionsAndAnswersToFile();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (ConfigurationException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 	}
 
 	protected String getOwlFilename(URI lastSeg, String format) {

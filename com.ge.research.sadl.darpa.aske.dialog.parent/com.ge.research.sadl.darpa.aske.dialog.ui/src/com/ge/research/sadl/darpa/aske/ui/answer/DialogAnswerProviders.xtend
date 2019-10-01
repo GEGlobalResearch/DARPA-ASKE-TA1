@@ -83,7 +83,11 @@ class DialogAnswerProviders implements IPartListener2, IDialogAnswerProviders {
 	override partOpened(IWorkbenchPartReference partRef) {
 		val document = partRef.dialogDocument
 		if (document !== null) {
+			val xtduri = getUri(document)
 			document.register
+			val provider = getProvider(xtduri)
+			val rsrc = provider.resource
+			val i = 0
 		}
 	}
 

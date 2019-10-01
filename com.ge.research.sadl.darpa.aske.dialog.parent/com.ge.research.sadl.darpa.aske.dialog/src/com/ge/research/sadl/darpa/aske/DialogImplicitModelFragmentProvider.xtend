@@ -50,9 +50,6 @@ class DialogImplicitModelFragmentProvider implements ISadlImplicitModelFragmentP
 
 	public static val DIALOG_IMPLICIT_MODEL_FRAGMENT = '''
 		/****** The following content comes from the Dialog implicit model fragment provider ******/
-		ConversationElement is a class, described by text with a single value of type string.
-		{QuestionElement, AnswerElement} are types of ConversationElement.
-		dialogAnswer describes QuestionElement with values of type AnswerElement.
 		// these properties used by TA2
 		model describes DataTable with values of type ^Equation.
 		^data describes ^Equation with values of type DataTable.

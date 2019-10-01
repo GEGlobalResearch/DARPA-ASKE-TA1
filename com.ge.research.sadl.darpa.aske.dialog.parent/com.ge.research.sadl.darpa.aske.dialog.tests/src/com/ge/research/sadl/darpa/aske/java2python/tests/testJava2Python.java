@@ -69,7 +69,7 @@ public class testJava2Python {
 	@Test
 	public void test() throws IOException, ConfigurationException {
 		IConfigurationManagerForIDE cm = ConfigurationManagerForIdeFactory.getConfigurationManagerForIDE(getDomainProjectModelFolder(), null);
-		AnswerCurationManager acm = new AnswerCurationManager(getDomainProjectModelFolder(), cm, null);
+		AnswerCurationManager acm = new AnswerCurationManager(getDomainProjectModelFolder(), cm, null, null);
 		AnswerExtractionProcessor ep = new AnswerExtractionProcessor(acm, null);
 		String code = "  public double CAL_SOS (double T, double G, double R, double Q) {\n" + 
 				"      double WOW = 1 + (G - 1) / (1 + (G - 1) * Math.pow((Q / T), 2) *\n" + 

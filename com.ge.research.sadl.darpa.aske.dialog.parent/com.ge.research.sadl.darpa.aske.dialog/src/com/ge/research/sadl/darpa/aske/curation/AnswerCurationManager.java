@@ -58,6 +58,7 @@ import java.util.concurrent.ExecutionException;
 
 import org.eclipse.emf.common.util.URI;
 import org.eclipse.emf.ecore.EObject;
+import org.eclipse.xtext.resource.XtextResource;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -85,6 +86,7 @@ import com.ge.research.sadl.darpa.aske.processing.imports.CodeExtractionExceptio
 import com.ge.research.sadl.darpa.aske.processing.imports.IModelFromCodeExtractor;
 import com.ge.research.sadl.darpa.aske.processing.imports.KChainServiceInterface;
 import com.ge.research.sadl.darpa.aske.processing.imports.TextProcessor;
+import com.ge.research.sadl.jena.inference.SadlJenaModelGetterPutter;
 import com.ge.research.sadl.jena.reasoner.JenaReasonerPlugin;
 import com.ge.research.sadl.model.gp.GraphPatternElement;
 import com.ge.research.sadl.model.gp.Junction;
@@ -100,12 +102,14 @@ import com.ge.research.sadl.model.visualizer.GraphVizVisualizer;
 import com.ge.research.sadl.model.visualizer.IGraphVisualizer;
 import com.ge.research.sadl.owl2sadl.OwlImportException;
 import com.ge.research.sadl.owl2sadl.OwlToSadl;
+import com.ge.research.sadl.processing.IModelProcessor;
 import com.ge.research.sadl.processing.ISadlInferenceProcessor;
 import com.ge.research.sadl.processing.OntModelProvider;
 import com.ge.research.sadl.processing.SadlConstants;
 import com.ge.research.sadl.processing.SadlInferenceException;
 import com.ge.research.sadl.reasoner.ConfigurationException;
 import com.ge.research.sadl.reasoner.IConfigurationManager;
+import com.ge.research.sadl.reasoner.IConfigurationManagerForEditing.Scope;
 import com.ge.research.sadl.reasoner.IReasoner;
 import com.ge.research.sadl.reasoner.InvalidNameException;
 import com.ge.research.sadl.reasoner.QueryCancelledException;
@@ -122,9 +126,12 @@ import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import com.hp.hpl.jena.ontology.Individual;
 import com.hp.hpl.jena.ontology.OntClass;
+import com.hp.hpl.jena.ontology.OntDocumentManager;
 import com.hp.hpl.jena.ontology.OntModel;
+import com.hp.hpl.jena.ontology.OntModelSpec;
 import com.hp.hpl.jena.ontology.OntProperty;
 import com.hp.hpl.jena.ontology.Restriction;
+import com.hp.hpl.jena.rdf.model.ModelFactory;
 import com.hp.hpl.jena.rdf.model.RDFNode;
 import com.hp.hpl.jena.rdf.model.Resource;
 import com.hp.hpl.jena.rdf.model.Statement;
@@ -139,9 +146,10 @@ import com.hp.hpl.jena.vocabulary.XSD;
 public class AnswerCurationManager {
 	
 	protected static final Logger logger = LoggerFactory.getLogger(AnswerCurationManager.class);
+	private XtextResource resource = null;
 	private String domainModelowlModelsFolder;
 	
-	private Map<String, String> questionsAndAnswers = new HashMap<String, String>();
+	private Map<String, String> questionsAndAnswers = new HashMap<String, String>();	// question text is the key, answer text is the value
 	
 	private IConfigurationManagerForIDE domainModelConfigurationManager;
 	private Map<String, String> preferences = null;
@@ -160,10 +168,12 @@ public class AnswerCurationManager {
 	private Map<String, String[]> targetModelMap = null;
 	private OwlToSadl owl2sadl = null;
 
-	public AnswerCurationManager (String modelFolder, IConfigurationManagerForIDE configMgr, Map<String,String> prefs) {
+	public AnswerCurationManager (String modelFolder, IConfigurationManagerForIDE configMgr, XtextResource resource, Map<String,String> prefs) {
 		setDomainModelOwlModelsFolder(modelFolder);
 		setDomainModelConfigurationManager(configMgr);
 		setPreferences(prefs);
+		setResource(resource);
+		loadQuestionsAndAnswersFromFile();
 	}
 
 	public String getDomainModelOwlModelsFolder() {
@@ -543,6 +553,9 @@ public class AnswerCurationManager {
 	 */
 	public String processSaveRequest(org.eclipse.emf.ecore.resource.Resource resource, OntModel ontModel, String modelName, SaveContent sc) throws ConfigurationException, IOException, QueryParseException, QueryCancelledException, ReasonerNotFoundException {
 		String returnValue = null;
+		if (resource == null) {
+			throw new IOException("Argument resource in processSaveRequest cannot be null");
+		}
 		URI resourceURI = resource.getURI();
 		IReasoner reasoner = null;
 		if (ResourceManager.isSyntheticUri(null, resourceURI)) {
@@ -2474,5 +2487,92 @@ public class AnswerCurationManager {
 		questionsAndAnswers.clear();
 		setDialogAnswerProvider(null);
 	}
+	
+	public boolean saveQuestionsAndAnswersToFile() throws ConfigurationException, IOException {
+		Map<String, String> qna = getQuestionsAndAnswers();
+		if (qna != null && !qna.isEmpty()) {
+			// write out Q and Q mappings
+			if (getResource() != null) {
+				String rsrcFn = getResource().getURI().lastSegment();
+				String qnaFn = getDomainModelOwlModelsFolder() + "/" + rsrcFn + ".qna.owl";
+				String modelName = "http://com.ge.research.ask/Dialog/QNA/" + rsrcFn;
+				OntDocumentManager owlDocMgr = getDomainModelConfigurationManager().getJenaDocumentMgr();
+				OntModelSpec spec = new OntModelSpec(OntModelSpec.OWL_MEM);
+				if (getDomainModelOwlModelsFolder() != null && !getDomainModelOwlModelsFolder().startsWith(IModelProcessor.SYNTHETIC_FROM_TEST)) {
+					File mff = new File(getDomainModelOwlModelsFolder());
+					mff.mkdirs();
+					spec.setImportModelGetter(new SadlJenaModelGetterPutter(spec, getDomainModelOwlModelsFolder()));
+				}
+				if (owlDocMgr != null) {
+					spec.setDocumentManager(owlDocMgr);
+					owlDocMgr.setProcessImports(true);
+				}
+				OntModel qnaModel = ModelFactory.createOntologyModel(spec);
+	//			qnaModel.addSubModel(getDomainModelConfigurationManager().getOntModel(SadlConstants.SADL_IMPLICIT_MODEL_URI, Scope.LOCALONLY));
+				OntClass qclass = qnaModel.createClass(DialogConstants.SADL_IMPLICIT_MODEL_QUESTION_ELEMENT_URI);
+				OntClass aclass = qnaModel.createClass(DialogConstants.SADL_IMPLICIT_MODEL_ANSWER_ELEMENT_URI);
+				OntProperty txtprop = qnaModel.createOntProperty(DialogConstants.SADL_IMPLICIT_MODEL_TEXT_PROPERY_URI);
+				OntProperty haprop = qnaModel.createOntProperty(DialogConstants.SADL_IMPLICIT_MODEL_HAS_ANSWER_PROPERY_URI);
+				if (qclass == null || aclass == null || txtprop == null || haprop == null) {
+					System.err.println("Unable to save mappings between questions and answers, no meta-model found. Do you need to update the SadlImplicitModel?");
+				}
+				else {
+					Iterator<String> itr = qna.keySet().iterator();
+					while (itr.hasNext()) {
+						String qtxt = itr.next();
+						String atxt = qna.get(qtxt);
+						Individual qInst = qnaModel.createIndividual(qclass);
+						qInst.addProperty(txtprop, qnaModel.createTypedLiteral(qtxt));
+						Individual aInst = qnaModel.createIndividual(aclass);
+						aInst.addProperty(txtprop,  qnaModel.createTypedLiteral(atxt));
+						qInst.addProperty(haprop, aInst);
+					}
+					getDomainModelConfigurationManager().saveOwlFile(qnaModel, modelName, qnaFn);
+					return true;
+				}
+			}
+		}	
+		return false;
+	}
 
+	public boolean loadQuestionsAndAnswersFromFile() {
+		if (getResource() != null) {
+			String rsrcFn = getResource().getURI().lastSegment();
+			String qnaFn = getDomainModelOwlModelsFolder() + "/" + rsrcFn + ".qna.owl";
+			File qnaFile = new File(qnaFn);
+			if (qnaFile.exists()) {
+				// read in Q and A mappings
+				OntModel qnaModel = getDomainModelConfigurationManager().loadOntModel(qnaFn);
+				OntProperty txtprop = qnaModel.createOntProperty(DialogConstants.SADL_IMPLICIT_MODEL_TEXT_PROPERY_URI);
+				OntProperty haprop = qnaModel.createOntProperty(DialogConstants.SADL_IMPLICIT_MODEL_HAS_ANSWER_PROPERY_URI);
+				StmtIterator sitr = qnaModel.listStatements(null, haprop, (RDFNode)null);
+				while (sitr.hasNext()) {
+					Statement stmt = sitr.nextStatement();
+					Resource subj = stmt.getSubject();
+					RDFNode obj = stmt.getObject();
+					Statement qtxtpropstmt = subj.getProperty(txtprop);
+					if (qtxtpropstmt != null) {
+						String qtxt = qtxtpropstmt.getObject().asLiteral().getValue().toString();
+						if (obj.isResource()) {
+							Statement atxtpropstmt = obj.asResource().getProperty(txtprop);
+							if (atxtpropstmt != null) {
+								String atxt = atxtpropstmt.getObject().asLiteral().getValue().toString();
+								addQuestionAndAnswer(qtxt, atxt);
+							}
+						}
+					}
+				}
+				return true;
+			}
+		}
+		return false;
+	}
+
+	private XtextResource getResource() {
+		return resource;
+	}
+
+	private void setResource(XtextResource resource) {
+		this.resource = resource;
+	}
 }

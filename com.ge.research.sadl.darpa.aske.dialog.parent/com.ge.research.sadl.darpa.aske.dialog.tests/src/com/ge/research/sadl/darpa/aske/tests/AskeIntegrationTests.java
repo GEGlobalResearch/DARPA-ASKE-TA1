@@ -69,7 +69,7 @@ public class AskeIntegrationTests {
 		}
 		File codeFile = new File(getExtractionKbRoot() + "/ExtractedModels/Sources/Mach.java");
 		IConfigurationManagerForIDE cm = ConfigurationManagerForIdeFactory.getConfigurationManagerForIDE(getDomainProjectModelFolder(), null);
-		AnswerCurationManager acm = new AnswerCurationManager(getDomainProjectModelFolder(), cm, null);
+		AnswerCurationManager acm = new AnswerCurationManager(getDomainProjectModelFolder(), cm, null, null);
 		acm.getExtractionProcessor().getCodeExtractor().setCodeModelFolder(getExtractionProjectModelFolder());
 		
 		IDialogAnswerProvider dapcft = new DialogAnswerProviderConsoleForTest();

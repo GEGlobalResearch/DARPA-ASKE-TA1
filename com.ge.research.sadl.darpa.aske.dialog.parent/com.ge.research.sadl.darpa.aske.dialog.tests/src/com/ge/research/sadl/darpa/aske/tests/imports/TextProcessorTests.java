@@ -82,7 +82,7 @@ public class TextProcessorTests {
 		File domainModelFolder = new File(domainProjectFolder.getAbsoluteFile() + "/OwlModels");
 		setDomainProjectModelFolder(domainModelFolder.getCanonicalPath());
 		TextProcessor tp = new TextProcessor(new AnswerCurationManager(domainProjectModelFolder, 
-				ConfigurationManagerForIdeFactory.getConfigurationManagerForIDE(domainProjectModelFolder, null), null), null);
+				ConfigurationManagerForIdeFactory.getConfigurationManagerForIDE(domainProjectModelFolder, null), null, null), null);
 		tp.setTextmodelPrefix("sos");
 		tp.setTextmodelName("http://darpa.aske.ta1.ge/sostest");
 		tp.process(null, "a^2 = R * T * gamma", null);
@@ -96,7 +96,7 @@ public class TextProcessorTests {
 		File domainModelFolder = new File(domainProjectFolder.getAbsoluteFile() + "/OwlModels");
 		setDomainProjectModelFolder(domainModelFolder.getCanonicalPath());
 		TextProcessor tp = new TextProcessor(new AnswerCurationManager(domainProjectModelFolder, 
-				ConfigurationManagerForIdeFactory.getConfigurationManagerForIDE(domainProjectModelFolder, null), null), null);
+				ConfigurationManagerForIdeFactory.getConfigurationManagerForIDE(domainProjectModelFolder, null), null, null), null);
 		tp.setTextmodelPrefix("sos");
 		tp.setTextmodelName("http://darpa.aske.ta1.ge/sostest");
 		tp.process(null, "The speed of sound is a concept known in physics ", null);
@@ -108,7 +108,7 @@ public class TextProcessorTests {
 		File textFile = new File(getTextExtractionPrjFolder() + "/ExtractedModels/Sources/Sound.txt");
 		String javaContent = readFile(textFile);
 		TextProcessor tp = new TextProcessor(new AnswerCurationManager(getDomainProjectModelFolder(), 
-				ConfigurationManagerForIdeFactory.getConfigurationManagerForIDE(getDomainProjectModelFolder(), null), null), null);
+				ConfigurationManagerForIdeFactory.getConfigurationManagerForIDE(getDomainProjectModelFolder(), null), null, null), null);
 		tp.setTextmodelPrefix("sos");
 		tp.setTextmodelName("http://darpa.aske.ta1.ge/sostest");
 		tp.process(null, javaContent, null);
@@ -119,7 +119,7 @@ public class TextProcessorTests {
 	public void test4() throws ConfigurationException, IOException {
 		File textFile = new File(getTextExtractionPrjFolder() + "/ExtractedModels/Sources/Sound.txt");
 		IConfigurationManagerForIDE cm = ConfigurationManagerForIdeFactory.getConfigurationManagerForIDE(getDomainProjectModelFolder(), null);
-		AnswerCurationManager acm = new AnswerCurationManager(getDomainProjectModelFolder(), cm, null);
+		AnswerCurationManager acm = new AnswerCurationManager(getDomainProjectModelFolder(), cm, null, null);
 		acm.getExtractionProcessor().getTextProcessor().setTextModelFolder(getExtractionProjectModelFolder());
 		
 		IDialogAnswerProvider dapcft = new DialogAnswerProviderConsoleForTest();
