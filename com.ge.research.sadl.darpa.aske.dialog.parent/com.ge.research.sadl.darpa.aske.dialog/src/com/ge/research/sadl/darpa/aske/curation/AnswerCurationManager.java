@@ -223,10 +223,7 @@ public class AnswerCurationManager {
 			for (File f : textFiles) {
 				getExtractionProcessor().reset();
 				String outputFilename = f.getName();
-				String outputOwlFileName = outputFilename + ".owl";
-				if (outputFilename.endsWith(".sadl")) {
-					outputFilename = outputFilename.substring(0, outputFilename.length() - 5) + ".owl";
-				}
+				String outputOwlFileName =  getImportOutputFilename(outputFilename);
 				if (getExtractionProcessor().getTextProcessor().getTextmodelPrefix() == null) {
 					String defPrefix;
 					if (outputFilename.endsWith(".owl")) {
@@ -260,7 +257,7 @@ public class AnswerCurationManager {
 				// reset code extractor and text processor from any previous file
 				getExtractionProcessor().reset();
 				String outputFilename = f.getName();
-				String outputOwlFileName = outputFilename + ".owl";
+				String outputOwlFileName =  getImportOutputFilename(outputFilename);
 				if (outputFilename.endsWith(".sadl")) {
 					outputFilename = outputFilename.substring(0, outputFilename.length() - 5) + ".owl";
 				}
@@ -324,6 +321,19 @@ public class AnswerCurationManager {
 		}
 	}
 	
+	/**
+	 * Method to determine the output OWL filename created by an import, derived from the input import filename
+	 * @param outputFilename
+	 * @return
+	 */
+	public static String getImportOutputFilename(String outputFilename) {
+		String outputOwlFileName = outputFilename + ".owl";
+		if (outputFilename.endsWith(".sadl")) {
+			outputFilename = outputFilename.substring(0, outputFilename.length() - 5) + ".owl";
+		}
+		return outputOwlFileName;
+	}
+
 	private File saveTextOwlFile(String outputFilename) throws ConfigurationException, IOException {
 		File of = new File(new File(getExtractionProcessor().getTextProcessor().getTextModelFolder()).getParent() + 
 				"/" + DialogConstants.EXTRACTED_MODELS_FOLDER_PATH_FRAGMENT + "/" + outputFilename);
@@ -919,7 +929,7 @@ public class AnswerCurationManager {
 		String eqUri = getExtractionProcessor().getCodeModelName() + "#" + methodName.toString().trim();
 		sb.append(" \"");
 		sb.append(eqUri);
-		sb.append("\".\n");
+		sb.append("\".");
 		returnSadlStatements.add(sb.toString());
 		
 		// now add the scripts in Java and Python
@@ -928,7 +938,7 @@ public class AnswerCurationManager {
 		sb2.append(escapeDoubleQuotes(javaCode));
 		sb2.append("\"\n), has expression (a Script with language Python, with script \n\"");
 		sb2.append(escapeDoubleQuotes(pythonCode));
-		sb2.append("\").");
+		sb2.append("\").\n");
 		returnSadlStatements.add(sb2.toString());
 		return returnSadlStatements;
 	}

@@ -61,6 +61,6 @@ public interface IDialogAnswerProvider {
 
 	boolean addCurationManagerAnswerContent(AnswerCurationManager acm, String content, Object ctx);
 
-	public void dispose();
+	void dispose();
 
 }

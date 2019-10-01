@@ -1,46 +1,4 @@
-/********************************************************************** 
- * Note: This license has also been called the "New BSD License" or 
- * "Modified BSD License". See also the 2-clause BSD License.
- *
- * Copyright © 2018-2019 - General Electric Company, All Rights Reserved
- * 
- * Project: ANSWER, developed with the support of the Defense Advanced 
- * Research Projects Agency (DARPA) under Agreement  No.  HR00111990006. 
- *
- * Redistribution and use in source and binary forms, with or without 
- * modification, are permitted provided that the following conditions are met:
- * 1. Redistributions of source code must retain the above copyright notice, 
- *    this list of conditions and the following disclaimer.
- *
- * 2. Redistributions in binary form must reproduce the above copyright notice, 
- *    this list of conditions and the following disclaimer in the documentation 
- *    and/or other materials provided with the distribution.
- *
- * 3. Neither the name of the copyright holder nor the names of its 
- *    contributors may be used to endorse or promote products derived 
- *    from this software without specific prior written permission.
- *
- * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" 
- * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE 
- * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE 
- * ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE 
- * LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR 
- * CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF 
- * SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS 
- * INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN 
- * CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) 
- * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF 
- * THE POSSIBILITY OF SUCH DAMAGE.
- *
- ***********************************************************************/
-uri "http://answer/build.dialog" alias bldlg.
-
-import "http://sadl.org/SpeedOfSound.sadl".
-
-CM: "Parsing code file 'C:/Users/200005201/sadl3-master6/git/DARPA-ASKE-TA1/Ontology/M5/ExtractedModels/Sources/Isentrop.java'".
-CM: "The following methods doing computation were found in the extraction:".
-CM: External Isentrop.CAL_GNU(double TT, double M, double G, double Q) returns double: "http://com.ge.research.sadl.darpa.aske.answer/Isentrop_java#Isentrop.CAL_GNU".
-CM: Isentrop.CAL_GNU has expression (a Script with language Java, with script 
+External Isentrop.CAL_GNU(double TT, double M, double G, double Q) returns double: "http://com.ge.research.sadl.darpa.aske.answer/Isentrop_java#Isentrop.CAL_GNU".Isentrop.CAL_GNU has expression (a Script with language Java, with script 
 "double CAL_GNU(double TT, double M, double G, double Q) {
     if (M <= 1) {
         return 0;
@@ -113,9 +71,7 @@ class Isentrop(object):
         return NU
 
 ").
-
-CM: External Isentrop.CAL_DQDT(double TT, double M, double G, double Q) returns double: "http://com.ge.research.sadl.darpa.aske.answer/Isentrop_java#Isentrop.CAL_DQDT".
-CM: Isentrop.CAL_DQDT has expression (a Script with language Java, with script 
+External Isentrop.CAL_DQDT(double TT, double M, double G, double Q) returns double: "http://com.ge.research.sadl.darpa.aske.answer/Isentrop_java#Isentrop.CAL_DQDT".Isentrop.CAL_DQDT has expression (a Script with language Java, with script 
 "double CAL_DQDT(double TT, double M, double G, double Q) {
     double T = CAL_T(TT, M, G, Q);
     return (((Math.exp(Q / TT) - 1) / (Math.exp(Q / T) - 1)) * Math.pow((T / TT), (1 / (G - 1))) * Math.exp(Q / T * Math.exp(Q / T) / (Math.exp(Q / T) - 1) - Q / TT * Math.exp(Q / TT) / (Math.exp(Q / TT) - 1)));
@@ -131,9 +87,7 @@ class Isentrop(object):
         return (((Math.exp(Q / TT) - 1) / (Math.exp(Q / T) - 1)) * Math.pow((T / TT), (1 / (G - 1))) * Math.exp(Q / T * Math.exp(Q / T) / (Math.exp(Q / T) - 1) - Q / TT * Math.exp(Q / TT) / (Math.exp(Q / TT) - 1)))
 
 ").
-
-CM: External Isentrop.CAL_GAM(double T, double G, double Q) returns double: "http://com.ge.research.sadl.darpa.aske.answer/Isentrop_java#Isentrop.CAL_GAM".
-CM: Isentrop.CAL_GAM has expression (a Script with language Java, with script 
+External Isentrop.CAL_GAM(double T, double G, double Q) returns double: "http://com.ge.research.sadl.darpa.aske.answer/Isentrop_java#Isentrop.CAL_GAM".Isentrop.CAL_GAM has expression (a Script with language Java, with script 
 "double CAL_GAM(double T, double G, double Q) {
     return (1 + (G - 1) / (1 + (G - 1) * (Math.pow((Q / T), 2) * Math.exp(Q / T) / Math.pow((Math.exp(Q / T) - 1), 2))));
 }"
@@ -147,9 +101,7 @@ class Isentrop(object):
         return (1 + (G - 1) / (1 + (G - 1) * (Math.pow((Q / T), 2) * Math.exp(Q / T) / Math.pow((Math.exp(Q / T) - 1), 2))))
 
 ").
-
-CM: External Isentrop.getMach(int sub, double corair) returns double: "http://com.ge.research.sadl.darpa.aske.answer/Isentrop_java#Isentrop.getMach".
-CM: Isentrop.getMach has expression (a Script with language Java, with script 
+External Isentrop.getMach(int sub, double corair) returns double: "http://com.ge.research.sadl.darpa.aske.answer/Isentrop_java#Isentrop.getMach".Isentrop.getMach has expression (a Script with language Java, with script 
 "public double getMach(int sub, double corair) {
     /* Utility to get the Mach number given the corrected airflow per area */
     double number, chokair;
@@ -234,9 +186,7 @@ class Isentrop(object):
         return (number)
 
 ").
-
-CM: External Isentrop.CAL_MFGNU(double TT, double NU, double G, double Q) returns double: "http://com.ge.research.sadl.darpa.aske.answer/Isentrop_java#Isentrop.CAL_MFGNU".
-CM: Isentrop.CAL_MFGNU has expression (a Script with language Java, with script 
+External Isentrop.CAL_MFGNU(double TT, double NU, double G, double Q) returns double: "http://com.ge.research.sadl.darpa.aske.answer/Isentrop_java#Isentrop.CAL_MFGNU".Isentrop.CAL_MFGNU has expression (a Script with language Java, with script 
 "double CAL_MFGNU(double TT, double NU, double G, double Q) {
     if (NU <= 0) {
         return 1;
@@ -323,9 +273,7 @@ class Isentrop(object):
         return M
 
 ").
-
-CM: External Isentrop.CAL_SOS(double T, double G, double R, double Q) returns double: "http://com.ge.research.sadl.darpa.aske.answer/Isentrop_java#Isentrop.CAL_SOS".
-CM: Isentrop.CAL_SOS has expression (a Script with language Java, with script 
+External Isentrop.CAL_SOS(double T, double G, double R, double Q) returns double: "http://com.ge.research.sadl.darpa.aske.answer/Isentrop_java#Isentrop.CAL_SOS".Isentrop.CAL_SOS has expression (a Script with language Java, with script 
 "double CAL_SOS(double T, double G, double R, double Q) {
     double WOW = 1 + (G - 1) / (1 + (G - 1) * Math.pow((Q / T), 2) * Math.exp(Q / T) / Math.pow((Math.exp(Q / T) - 1), 2));
     return (Math.sqrt(32.174 * T * R * WOW));
@@ -341,9 +289,7 @@ class Isentrop(object):
         return (Math.sqrt(32.174 * T * R * WOW))
 
 ").
-
-CM: External Isentrop.CAL_ASQA(double TT, double M, double G, double Q) returns double: "http://com.ge.research.sadl.darpa.aske.answer/Isentrop_java#Isentrop.CAL_ASQA".
-CM: Isentrop.CAL_ASQA has expression (a Script with language Java, with script 
+External Isentrop.CAL_ASQA(double TT, double M, double G, double Q) returns double: "http://com.ge.research.sadl.darpa.aske.answer/Isentrop_java#Isentrop.CAL_ASQA".Isentrop.CAL_ASQA has expression (a Script with language Java, with script 
 "double CAL_ASQA(double TT, double M, double G, double Q) {
     double T = CAL_T(TT, M, G, Q);
     double TSTAR = CAL_T(TT, 1, G, Q);
@@ -367,9 +313,7 @@ class Isentrop(object):
         return (CAL_DQDT(TT, M, G, Q) * SOSRAT * M / CAL_DQDT(TT, 1, G, Q))
 
 ").
-
-CM: External Isentrop.CAL_WCOR(double TT, double M, double G, double Q) returns double: "http://com.ge.research.sadl.darpa.aske.answer/Isentrop_java#Isentrop.CAL_WCOR".
-CM: Isentrop.CAL_WCOR has expression (a Script with language Java, with script 
+External Isentrop.CAL_WCOR(double TT, double M, double G, double Q) returns double: "http://com.ge.research.sadl.darpa.aske.answer/Isentrop_java#Isentrop.CAL_WCOR".Isentrop.CAL_WCOR has expression (a Script with language Java, with script 
 "double CAL_WCOR(double TT, double M, double G, double Q) {
     double T = CAL_T(TT, M, G, Q);
     double TRAT = T / TT;
@@ -393,9 +337,7 @@ class Isentrop(object):
         return wcortp / 144
 
 ").
-
-CM: External Isentrop.CAL_PQPT_LOOP(double TT, double prattp, double G, double Q) returns double: "http://com.ge.research.sadl.darpa.aske.answer/Isentrop_java#Isentrop.CAL_PQPT_LOOP".
-CM: Isentrop.CAL_PQPT_LOOP has expression (a Script with language Java, with script 
+External Isentrop.CAL_PQPT_LOOP(double TT, double prattp, double G, double Q) returns double: "http://com.ge.research.sadl.darpa.aske.answer/Isentrop_java#Isentrop.CAL_PQPT_LOOP".Isentrop.CAL_PQPT_LOOP has expression (a Script with language Java, with script 
 "double CAL_PQPT_LOOP(double TT, double prattp, double G, double Q) {
     double M = 10;
     double ML = 0;
@@ -446,9 +388,7 @@ class Isentrop(object):
         return M
 
 ").
-
-CM: External Isentrop.CAL_PQPT(double TT, double M, double G, double Q) returns double: "http://com.ge.research.sadl.darpa.aske.answer/Isentrop_java#Isentrop.CAL_PQPT".
-CM: Isentrop.CAL_PQPT has expression (a Script with language Java, with script 
+External Isentrop.CAL_PQPT(double TT, double M, double G, double Q) returns double: "http://com.ge.research.sadl.darpa.aske.answer/Isentrop_java#Isentrop.CAL_PQPT".Isentrop.CAL_PQPT has expression (a Script with language Java, with script 
 "double CAL_PQPT(double TT, double M, double G, double Q) {
     double T = CAL_T(TT, M, G, Q);
     return (((Math.exp(Q / TT) - 1) / (Math.exp(Q / T) - 1)) * Math.pow((T / TT), (G / (G - 1))) * Math.exp(Q / T * Math.exp(Q / T) / (Math.exp(Q / T) - 1) - Q / TT * Math.exp(Q / TT) / (Math.exp(Q / TT) - 1)));
@@ -464,9 +404,7 @@ class Isentrop(object):
         return (((Math.exp(Q / TT) - 1) / (Math.exp(Q / T) - 1)) * Math.pow((T / TT), (G / (G - 1))) * Math.exp(Q / T * Math.exp(Q / T) / (Math.exp(Q / T) - 1) - Q / TT * Math.exp(Q / TT) / (Math.exp(Q / TT) - 1)))
 
 ").
-
-CM: External Isentrop.TQTT(double M, double G) returns double: "http://com.ge.research.sadl.darpa.aske.answer/Isentrop_java#Isentrop.TQTT".
-CM: Isentrop.TQTT has expression (a Script with language Java, with script 
+External Isentrop.TQTT(double M, double G) returns double: "http://com.ge.research.sadl.darpa.aske.answer/Isentrop_java#Isentrop.TQTT".Isentrop.TQTT has expression (a Script with language Java, with script 
 "double TQTT(double M, double G) {
     return Math.pow((1 + (G - 1) / 2 * Math.pow(M, 2)), -1);
 }"
@@ -480,5 +418,3 @@ class Isentrop(object):
         return Math.pow((1 + (G - 1) / 2 * Math.pow(M, 2)), -1)
 
 ").
-
-CM: "Would you like to save the extracted model (Isentrop.java.owl) in SADL format"?

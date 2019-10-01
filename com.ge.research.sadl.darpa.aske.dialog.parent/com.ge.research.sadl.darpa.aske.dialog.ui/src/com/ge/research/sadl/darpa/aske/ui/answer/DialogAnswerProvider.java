@@ -38,16 +38,20 @@ package com.ge.research.sadl.darpa.aske.ui.answer;
 
 import java.io.File;
 import java.io.IOException;
+import java.lang.reflect.Method;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.concurrent.atomic.AtomicReference;
 
 import org.eclipse.core.filesystem.EFS;
 import org.eclipse.core.filesystem.IFileStore;
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IResource;
+import org.eclipse.core.resources.IncrementalProjectBuilder;
 import org.eclipse.core.resources.ResourcesPlugin;
-import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IAdaptable;
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.Path;
@@ -72,8 +76,12 @@ import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.ide.IDE;
 import org.eclipse.xtext.nodemodel.INode;
 import org.eclipse.xtext.nodemodel.util.NodeModelUtils;
+import org.eclipse.xtext.preferences.IPreferenceValues;
+import org.eclipse.xtext.preferences.IPreferenceValuesProvider;
+import org.eclipse.xtext.resource.XtextResource;
 import org.eclipse.xtext.ui.editor.model.IXtextDocument;
 import org.eclipse.xtext.ui.editor.model.XtextDocument;
+import org.eclipse.xtext.util.Exceptions;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -81,13 +89,17 @@ import com.ge.research.sadl.builder.ConfigurationManagerForIdeFactory;
 import com.ge.research.sadl.builder.IConfigurationManagerForIDE;
 import com.ge.research.sadl.darpa.aske.curation.AnswerCurationManager;
 import com.ge.research.sadl.darpa.aske.curation.BaseDialogAnswerProvider;
+import com.ge.research.sadl.darpa.aske.dialog.ui.internal.DialogActivator;
+import com.ge.research.sadl.darpa.aske.preferences.DialogPreferences;
 import com.ge.research.sadl.darpa.aske.processing.DialogConstants;
 import com.ge.research.sadl.darpa.aske.processing.MixedInitiativeElement;
 import com.ge.research.sadl.model.visualizer.IGraphVisualizer;
 import com.ge.research.sadl.processing.OntModelProvider;
 import com.ge.research.sadl.reasoner.ConfigurationException;
+import com.ge.research.sadl.reasoner.utils.SadlUtils;
 import com.ge.research.sadl.ui.handlers.SadlActionHandler;
 import com.google.common.base.Preconditions;
+import com.google.inject.Injector;
 
 public class DialogAnswerProvider extends BaseDialogAnswerProvider {
 
@@ -220,47 +232,53 @@ public class DialogAnswerProvider extends BaseDialogAnswerProvider {
 
 	private synchronized boolean addCurationManagerContentToDialog(IDocument document, IRegion reg, String content,
 			Object ctx, boolean quote) throws BadLocationException {
-		String modContent;
-		int loc;
-		if (quote) {
-			modContent = generateDoubleQuotedContentForDialog(content);
-		} else {
-			modContent = content.startsWith("CM:") ? content : ("CM: " + content);
-			if (!modContent.trim().endsWith(".") && !modContent.trim().endsWith("?")) {
-				modContent += ".";
+		
+		Display.getDefault().syncExec(() -> {
+			try {
+				String modContent;
+				int loc;
+				if (quote) {
+					modContent = generateDoubleQuotedContentForDialog(content);
+				} else {
+					modContent = content.startsWith("CM:") ? content : ("CM: " + content);
+					if (!modContent.trim().endsWith(".") && !modContent.trim().endsWith("?")) {
+						modContent += ".";
+					}
+				}
+				if (ctx instanceof EObject && getSourceText((EObject) ctx) != null) {
+					Object[] srcinfo = getSourceText((EObject) ctx);
+					// String srctext = (String) srcinfo[0];
+					int start = (int) srcinfo[1];
+					int length = (int) srcinfo[2];
+					// find location of this in document
+					loc = start + length + 1;
+					int docLen = document.getLength();
+					int testLen = Math.min(5, docLen - loc);
+					String test = document.get(loc, testLen);
+					if (!test.startsWith(" ")) {
+						modContent = " " + modContent;
+					}
+					if (!test.startsWith("\r\n")) {
+						modContent += "\r\n";
+					}
+					document.replace(start + length + 1, 0, modContent);
+					loc = start + length + 1;
+					if (document instanceof XtextDocument && ctx instanceof EObject) {
+						final URI expectedUri = ((EObject) ctx).eResource().getURI();
+						final int caretOffset = start + length + 1 + modContent.length();
+						setCaretOffsetInEditor(expectedUri, caretOffset); // Async
+					}
+				} else {
+					loc = document.getLength();
+					document.set(document.get() + modContent + "\n");
+				}
+				LOGGER.debug("Adding to Dialog editor: " + modContent);
+				textAtLocation(document, modContent, loc);
+			} catch (BadLocationException e) {
+				Exceptions.throwUncheckedException(e);
 			}
-		}
-		if (ctx instanceof EObject && getSourceText((EObject) ctx) != null) {
-			Object[] srcinfo = getSourceText((EObject) ctx);
-//			String srctext = (String) srcinfo[0];
-			int start = (int) srcinfo[1];
-			int length = (int) srcinfo[2];
-			// find location of this in document
-			loc = start + length + 1;
-			int docLen = document.getLength();
-			int testLen = Math.min(5, docLen - loc);
-			String test = document.get(loc, testLen);
-			if (!test.startsWith(" ")) {
-				modContent = " " + modContent;
-			}
-			if (!test.startsWith("\r\n")) {
-				modContent += "\r\n";
-			}
-			document.replace(start + length + 1, 0, modContent);
-			System.out.println("AFTER UPDATE:\n" + document.get());
-			System.out.println("ENDOF-DOC");
-			loc = start + length + 1;
-			if (document instanceof XtextDocument && ctx instanceof EObject) {
-				final URI expectedUri = ((EObject) ctx).eResource().getURI();
-				final int caretOffset = start + length + 1 + modContent.length();
-				setCaretOffsetInEditor(expectedUri, caretOffset); // Async
-			}
-		} else {
-			loc = document.getLength();
-			document.set(document.get() + modContent + "\n");
-		}
-		LOGGER.debug("Adding to Dialog editor: " + modContent);
-		return textAtLocation(document, modContent, loc);
+		});
+		return true;
 	}
 
 	private void setCaretOffsetInEditor(URI uri, int caretOffset) {
@@ -351,7 +369,110 @@ public class DialogAnswerProvider extends BaseDialogAnswerProvider {
 		return false;
 	}
 
-	protected IConfigurationManagerForIDE getConfigManager() {
+	@Override
+	public void provideResponse(MixedInitiativeElement response) {
+		if (response.getCurationManager() != null) {
+			AnswerCurationManager acm = response.getCurationManager();
+			String methodToCall = response.getMethodToCall();
+			Method[] methods = acm.getClass().getMethods();
+			for (Method m : methods) {
+				if (m.getName().equals(methodToCall)) {
+					// call the method
+					List<Object> args = response.getArguments();
+					try {
+						Object results = null;
+						if (args.size() == 0) {
+							results = m.invoke(acm);
+						} else {
+							Object arg0 = args.get(0);
+							if (args.size() == 1) {
+								results = m.invoke(acm, arg0);
+							} else {
+								Object arg1 = args.get(1);
+								if (args.size() == 2) {
+									results = m.invoke(acm, arg0, arg1);
+								}
+								if (methodToCall.equals("saveAsSadlFile")) {
+									if (arg0 instanceof List<?> && results instanceof List<?>) {
+										String projectName = null;
+										List<File> sadlFiles = new ArrayList<File>();
+										for (int i = 0; i < ((List<?>) results).size(); i++) {
+											Object result = ((List<?>) results).get(i);
+											File owlfile = (File) ((List<?>) arg0).get(i);
+											if (AnswerCurationManager.isYes(arg1)) {
+												File sf = new File(result.toString());
+												if (sf.exists()) {
+													sadlFiles.add(sf);
+													// delete OWL file so it won't be indexed
+													if (owlfile.exists()) {
+														owlfile.delete();
+														try {
+															String outputOwlFileName = owlfile.getCanonicalPath();
+															String altUrl = new SadlUtils()
+																	.fileNameToFileUrl(outputOwlFileName);
+
+															String publicUri = acm.getDomainModelConfigurationManager()
+																	.getPublicUriFromActualUrl(altUrl);
+															if (publicUri != null) {
+																acm.getDomainModelConfigurationManager()
+																		.deleteModel(publicUri);
+																acm.getDomainModelConfigurationManager()
+																		.deleteMapping(altUrl, publicUri);
+															}
+														} catch (Exception e) {
+															e.printStackTrace();
+														}
+													}
+													projectName = sf.getParentFile().getParentFile().getName();
+												}
+											} else {
+												// add import of OWL file from policy file since there won't be a SADL
+												// file to build an OWL and create mappings.
+												try {
+													String importActualUrl = new SadlUtils()
+															.fileNameToFileUrl(arg0.toString());
+													String altUrl = new SadlUtils().fileNameToFileUrl(importActualUrl);
+													String importPublicUri = acm.getDomainModelConfigurationManager()
+															.getPublicUriFromActualUrl(altUrl);
+													String prefix = acm.getDomainModelConfigurationManager()
+															.getGlobalPrefix(importPublicUri);
+													acm.getDomainModelConfigurationManager().addMapping(importActualUrl,
+															importPublicUri, prefix, false, "AnswerCurationManager");
+													String prjname = owlfile.getParentFile().getParentFile().getName();
+													IProject prj = ResourcesPlugin.getWorkspace().getRoot()
+															.getProject(prjname);
+													prj.refreshLocal(IResource.DEPTH_INFINITE, null);
+												} catch (Exception e) {
+													e.printStackTrace();
+													e.printStackTrace();
+												}
+											}
+										}
+										if (projectName != null) { // only not null if doing SADL conversion
+											IProject project = ResourcesPlugin.getWorkspace().getRoot()
+													.getProject(projectName);
+											try {
+												project.build(IncrementalProjectBuilder.AUTO_BUILD, null);
+												// display new SADL file
+												displayFiles(configManager.getModelFolder(), sadlFiles);
+											} catch (Exception e) {
+												e.printStackTrace();
+											}
+										}
+									}
+								}
+							}
+						}
+					} catch (Exception e) {
+						e.printStackTrace();
+					}
+				}
+			}
+		}
+	}
+
+	@Override
+	protected IConfigurationManagerForIDE getConfigMgr() {
 		return configManager;
 	}
 
@@ -444,11 +565,62 @@ public class DialogAnswerProvider extends BaseDialogAnswerProvider {
 				} catch (IOException e2) {
 					e2.printStackTrace();
 				}
-
-			} catch (CoreException e) {
+			} catch (Exception e) {
 				e.printStackTrace();
 			}
 		}
+	}
+
+	protected Map<String, String> getPreferences(IFile file) {
+		final URI uri = URI.createPlatformResourceURI(file.getFullPath().toString(), true);
+		return getPreferences(uri);
+	}
+
+	protected Map<String, String> getPreferences(URI uri) {
+		Injector reqInjector = safeGetInjector(DialogActivator.COM_GE_RESEARCH_SADL_DARPA_ASKE_DIALOG);
+		IPreferenceValuesProvider pvp = reqInjector.getInstance(IPreferenceValuesProvider.class);
+		IPreferenceValues preferenceValues = pvp.getPreferenceValues(new XtextResource(uri));
+		if (preferenceValues != null) {
+			Map<String, String> map = new HashMap<String, String>();
+			String tsburl = preferenceValues.getPreference(DialogPreferences.ANSWER_TEXT_SERVICE_BASE_URI);
+			if (tsburl != null) {
+				map.put(DialogPreferences.ANSWER_TEXT_SERVICE_BASE_URI.getId(), tsburl);
+			}
+			String j2psburl = preferenceValues.getPreference(DialogPreferences.ANSWER_JAVA_TO_PYTHON_SERVICE_BASE_URI);
+			if (j2psburl != null) {
+				map.put(DialogPreferences.ANSWER_JAVA_TO_PYTHON_SERVICE_BASE_URI.getId(), j2psburl);
+			}
+			String usekchain = preferenceValues.getPreference(DialogPreferences.USE_ANSWER_KCHAIN_CG_SERVICE);
+			if (usekchain != null) {
+				map.put(DialogPreferences.USE_ANSWER_KCHAIN_CG_SERVICE.getId(), usekchain);
+			}
+			String kchaincgsburl = preferenceValues.getPreference(DialogPreferences.ANSWER_KCHAIN_CG_SERVICE_BASE_URI);
+			if (kchaincgsburl != null) {
+				map.put(DialogPreferences.ANSWER_KCHAIN_CG_SERVICE_BASE_URI.getId(), kchaincgsburl);
+			}
+			String dbncgsburl = preferenceValues.getPreference(DialogPreferences.ANSWER_DBN_CG_SERVICE_BASE_URI);
+			if (dbncgsburl != null) {
+				map.put(DialogPreferences.ANSWER_DBN_CG_SERVICE_BASE_URI.getId(), dbncgsburl);
+			}
+			String usedbn = preferenceValues.getPreference(DialogPreferences.USE_DBN_KCHAIN_CG_SERVICE);
+			if (usedbn != null) {
+				map.put(DialogPreferences.USE_DBN_KCHAIN_CG_SERVICE.getId(), usedbn);
+			}
+			return map;
+		}
+		return null;
+	}
+
+	protected final Injector safeGetInjector(String name) {
+		final AtomicReference<Injector> i = new AtomicReference<Injector>();
+		Display.getDefault().syncExec(new Runnable() {
+			@Override
+			public void run() {
+				i.set(DialogActivator.getInstance().getInjector(name));
+			}
+		});
+
+		return i.get();
 	}
 
 	public Resource getResource() {
