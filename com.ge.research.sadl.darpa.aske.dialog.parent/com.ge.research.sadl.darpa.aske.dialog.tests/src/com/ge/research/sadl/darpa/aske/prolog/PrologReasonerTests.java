@@ -39,15 +39,16 @@ public class PrologReasonerTests {
 		String prologReasonerClassName = "com.ge.research.sadl.swi_prolog.reasoner.SWIPrologReasonerPlugin";
 		IReasoner pr = configMgr.getOtherReasoner(prologReasonerClassName);
 		assertNotNull(pr);
-		String instanceDatafile = "http://aske.ge.com/MetaData";
+		String instanceDatafile = "http://aske.ge.com/MetaData.owl";
 		assertEquals(1, pr.initializeReasoner(getKbRoot(), instanceDatafile, null));
 		
 //		assertTrue(pr.loadInstanceData(instanceDatafile));
 		assertTrue(loadAllOwlFilesInProject(getProjectModelFolder(), pr));
-		String query = "select ?i where {?i <rdf:type> <CCG>}";
+		String query = "select Y Z where holds(X,Y,Z)";
 		ResultSet rs = pr.ask(query );
 		assertNotNull(rs);
 		System.out.println(rs.toString());
+		
 		
 	}
 	

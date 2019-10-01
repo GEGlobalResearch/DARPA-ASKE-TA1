@@ -129,6 +129,7 @@ public class JenaBasedDialogInferenceProcessor extends JenaBasedSadlInferencePro
 	public static final String METAMODEL_CGEXEC_CLASS = METAMODEL_PREFIX + "CGExecution";
 	public static final String METAMODEL_STARTTIME_PROP = METAMODEL_PREFIX + "startTime";
 	public static final String VALUE_PROP = "http://sadl.org/sadlimplicitmodel#value";
+	public static final String UNIT_PROP = "http://sadl.org/sadlimplicitmodel#unit";
 	public static final String STDDEV_PROP = "http://sadl.org/sadlimplicitmodel#stddev";
 	public static final String VARERROR_PROP = "http://sadl.org/sadlimplicitmodel#varError";
 	public static final String MODELERROR_PROP = METAMODEL_PREFIX + "modelError";
@@ -665,7 +666,7 @@ public class JenaBasedDialogInferenceProcessor extends JenaBasedSadlInferencePro
 		
 		// Triples of triples representing a quantity
 		// v0 altitude v1, v1 value 35000, v1 units "ft"
-		TripleElement[] quantity = new TripleElement[3];
+		TripleElement[] quantity; // = new TripleElement[4];
 
 		List<TripleElement[]> insertions = new ArrayList<TripleElement[]>();
 		List<TripleElement> queryPatterns = new ArrayList<TripleElement>();
@@ -685,11 +686,12 @@ public class JenaBasedDialogInferenceProcessor extends JenaBasedSadlInferencePro
 				if (tr.getPredicate().getURI() != null) {
 		
 					if (tr.getPredicate().getName().contains("value")) { //input value triple (v1, sadlimplicitmodel:value, 35000)
-						Node varNode = tr.getSubject();
-						TripleElement inputTypeTr = getInputTypeTriple(varNode, triples); // get the property triple, e.g. (v0, hypersonicsV2:altitude, v1)
-						quantity[0] = inputTypeTr;
-						quantity[1] = tr;
-						quantity[2] = getInputUnitsTriple(varNode,triples);
+						//Node varNode = tr.getSubject();
+						quantity = createUQtriplesArray(tr,triples);
+//						TripleElement inputTypeTr = getInputTypeTriple(varNode, triples); // get the property triple, e.g. (v0, hypersonicsV2:altitude, v1)
+//						quantity[0] = inputTypeTr;
+//						quantity[1] = tr;
+//						quantity[2] = getInputUnitsTriple(varNode,triples);
 						insertions.add(quantity);
 					}
 					else if (tr.getObject() == null) { //(v0, hypersonicsV2:staticTemperature, null)
@@ -777,45 +779,45 @@ public class JenaBasedDialogInferenceProcessor extends JenaBasedSadlInferencePro
 				// create triple: cgq, mm:input, sinst
 				OntProperty inputprop = getTheJenaModel().getOntProperty(METAMODEL_INPUT_PROP);
 				if (inputprop == null) {
-// TODO need EObject to display error marker in Dialog window... 
+					// TODO need EObject to display error marker in Dialog window... 
 					System.err.println("Unable to find property '" + METAMODEL_INPUT_PROP + "'; is the meta model imported?");
 					return null;
 				}
 				ingestKGTriple(cgq, inputprop, ssp);
-//				ingestKGTriple(cgq, inputprop, sinst);
 				
 				// Add property to list of inputs
 				inputsList.add(ssp);
 				
 				//ingest value triple
-				itr = insertions.get(i)[1]; //e.g. itr = (v1 ^value 30000)
+				itr = insertions.get(i)[1]; //e.g. itr = (v1 :value 30000)
 
-				//String s1s = 
 				ss = itr.getSubject().getName();
 				sss = getTheJenaModel().getResource(ns+ss);
-
-				//String s1p = 
-//				sp = itr.getPredicate().getURI();
-//				ssp = getTheJenaModel().getProperty(sp);
-
-				Node valObj = itr.getObject();
-				Node p = itr.getPredicate();
+				sp = itr.getPredicate().getURI();
+				ssp = getTheJenaModel().getProperty(sp);
+				RDFNode val = getObjectAsLiteralOrResource(itr.getPredicate(), itr.getObject());
 				
-				RDFNode val = null;
-				
-				val = getObjectAsLiteralOrResource(p, valObj);
-				
-				ingestKGTriple(sss, ssp, val); // (#v1, #value, 30000^^decimal )
+				ingestKGTriple(sss, ssp, val);
+				//ingestKGTriple(sss, getTheJenaModel().getProperty(VALUE_PROP), val); // (#v1, #value, 30000^^decimal )
 				
 				//ingest units triple
 				itr = insertions.get(i)[2]; //e.g. itr = (v1, units, "ft")
 				if (itr != null) {
-					//String s1p = 
 					sp = itr.getPredicate().getURI();
 					ssp = getTheJenaModel().getProperty(sp);
 					sso = getObjectAsLiteralOrResource(itr.getPredicate(), itr.getObject());
 					ingestKGTriple(sss, ssp, sso); // (#v1, #unit, ft^^string )
+					//ingestKGTriple(sss, getTheJenaModel().getProperty(UNIT_PROP), sso); // (#v1, #unit, ft^^string )
 				}
+				
+				itr = insertions.get(i)[3]; // (v1 rdf:type :Altitude)
+				ss = itr.getSubject().getName();
+				sss = getTheJenaModel().getResource(ns+ss);
+				sp = itr.getPredicate().getURI();
+				ssp = getTheJenaModel().getProperty(sp);
+				so = itr.getObject().getNamespace() + itr.getObject().getName();
+				sso = getTheJenaModel().getResource(so);
+				ingestKGTriple(sss, ssp, sso); 
 			}
 		}
 		//getTheJenaModel().write(System.out, "TTL" );
@@ -1042,6 +1044,9 @@ public class JenaBasedDialogInferenceProcessor extends JenaBasedSadlInferencePro
 //						}
 						//}
 
+						// Save metadata owl file 
+						saveMetaDataFile(resource);
+
 			            
 						// create ResultSet
 						results[i] = retrieveCompGraph(resource, cgIns);
@@ -1260,6 +1265,24 @@ public class JenaBasedDialogInferenceProcessor extends JenaBasedSadlInferencePro
 
 
 
+private TripleElement[] createUQtriplesArray(TripleElement valueTriple, TripleElement[] triples) {
+		// TODO Auto-generated method stub
+		TripleElement[] quantity = new TripleElement[4];
+		Node varNode = valueTriple.getSubject();
+		quantity[1] = valueTriple;  // (v1 :value 30000)
+		
+		for (TripleElement tr : triples) {
+			if(tr.getObject() != null && tr.getObject().equals(varNode)) {
+				quantity[0] = tr; // (v0 :altitude v1)
+			} else if ( tr.getSubject().equals(varNode) && tr.getPredicate().getName().contains("unit")) { // (v1 :unit "ft")
+				quantity[2] = tr;
+			} else if ( tr.getSubject().equals(varNode) && tr.getPredicate().getName().contains("type")) { // (vi rdf:type :Altitude)
+				quantity[3] = tr;
+			}
+		}
+		return quantity;
+	}
+
 private RDFNode getObjectAsLiteralOrResource(Node property, Node object) {
 		Property prop = getTheJenaModel().getProperty(property.getURI());
 		RDFNode obj=null;
@@ -1284,24 +1307,24 @@ private RDFNode getObjectAsLiteralOrResource(Node property, Node object) {
 		return obj;
 	}
 
-private TripleElement getInputUnitsTriple(Node varNode, TripleElement[] triples) {
-		for(int i=0; i<triples.length; i++) {
-			if(triples[i].getSubject().equals(varNode) && triples[i].getPredicate().getName().contains("unit")) { // && !triples[i].getPredicate().getName().contains("value")) {
-				return triples[i];
-			}
-		}
-		return null;
-	}
-
-private TripleElement getInputTypeTriple(Node varNode, TripleElement[] triples) {
-		// TODO Auto-generated method stub
-		for(int i=0; i<triples.length; i++) {
-			if(triples[i].getObject() != null && triples[i].getObject().equals(varNode)) { // && !triples[i].getPredicate().getName().contains("value")) {
-				return triples[i];
-			}
-		}
-		return null;
-	}
+//private TripleElement getInputUnitsTriple(Node varNode, TripleElement[] triples) {
+//		for(int i=0; i<triples.length; i++) {
+//			if(triples[i].getSubject().equals(varNode) && triples[i].getPredicate().getName().contains("unit")) { // && !triples[i].getPredicate().getName().contains("value")) {
+//				return triples[i];
+//			}
+//		}
+//		return null;
+//	}
+//
+//private TripleElement getInputTypeTriple(Node varNode, TripleElement[] triples) {
+//		// TODO Auto-generated method stub
+//		for(int i=0; i<triples.length; i++) {
+//			if(triples[i].getObject() != null && triples[i].getObject().equals(varNode)) { // && !triples[i].getPredicate().getName().contains("value")) {
+//				return triples[i];
+//			}
+//		}
+//		return null;
+//	}
 
 //TODO
 	private com.hp.hpl.jena.query.ResultSetRewindable retrieveCG(List<RDFNode> inputsList, List<RDFNode> outputsList) {
@@ -1505,7 +1528,37 @@ private TripleElement getInputTypeTriple(Node varNode, TripleElement[] triples) 
 		return runReasonerQuery(resource, query);
 	}
 
+	private ResultSet runPrologQuery(Resource resource, String query) throws Exception {
+		String modelFolderUri = getModelFolderPath(resource); //getOwlModelsFolderPath(path).toString(); 
+		final String format = ConfigurationManager.RDF_XML_ABBREV_FORMAT;
+		IConfigurationManagerForIDE configMgr;
+
+		
+		configMgr = ConfigurationManagerForIdeFactory.getConfigurationManagerForIDE(modelFolderUri, format);
+		IReasoner reasoner = configMgr.getReasoner();
 	
+		
+		if (!reasoner.isInitialized()) {
+			reasoner.setConfigurationManager(configMgr);
+			//String modelName = configMgr.getPublicUriFromActualUrl(new SadlUtils().fileNameToFileUrl(modelFolderUri + "/" + owlFileName));
+			//model name something like http://aske.ge.com/metamodel
+			//String mname = getModelName();
+			reasoner.initializeReasoner(modelFolderUri, getModelName(), format); 
+			//reasoner.loadInstanceData(qhmodel);
+			//System.out.print("reasoner is not initialized");
+			//return null;
+		}
+
+		String modelFile = getModelFolderPath(resource) + File.separator + qhOwlFileName;
+//		String baseModel = getModelFolderPath(resource) + File.separator + getModelName();
+//		reasoner.loadRules(baseModel);
+		reasoner.loadRules(modelFile);
+		
+		String pquery = reasoner.prepareQuery(query);
+
+		ResultSet res = reasoner.ask(pquery);
+		return res;
+	}
 	
 	private ResultSet runReasonerQuery(Resource resource, String query) throws Exception {
 		String modelFolderUri = getModelFolderPath(resource); //getOwlModelsFolderPath(path).toString(); 
@@ -1521,14 +1574,30 @@ private TripleElement getInputTypeTriple(Node varNode, TripleElement[] triples) 
 			reasoner.setConfigurationManager(configMgr);
 			//String modelName = configMgr.getPublicUriFromActualUrl(new SadlUtils().fileNameToFileUrl(modelFolderUri + "/" + owlFileName));
 			//model name something like http://aske.ge.com/metamodel
+			//String mname = getModelName();
 			reasoner.initializeReasoner(modelFolderUri, getModelName(), format); 
 			//reasoner.loadInstanceData(qhmodel);
 			//System.out.print("reasoner is not initialized");
 			//return null;
 		}
-	
-		reasoner.loadInstanceData(qhmodel);	//Need to load new metadata
-		reasoner.loadInstanceData(getTheJenaModel());
+
+		String family = reasoner.getReasonerFamily();
+		
+//		String modelFile = "http://aske.ge.com/MetaData.owl";		
+//		reasoner.loadInstanceData(modelFile);
+		
+		if (family.equals("Jena-Based")) {
+			reasoner.loadInstanceData(qhmodel);	//Need to load new metadata
+			reasoner.loadInstanceData(getTheJenaModel());
+		}
+		else if (family.equals("Prolog-Based")) {
+			String modelFile = getModelFolderPath(resource) + File.separator + qhOwlFileName;
+			String baseModel = getModelFolderPath(resource) + File.separator + getModelName();
+			reasoner.loadRules(baseModel);
+			reasoner.loadRules(modelFile);
+		}
+			
+		
 		String pquery = reasoner.prepareQuery(query);
 
 		ResultSet res = reasoner.ask(pquery);
@@ -1800,7 +1869,7 @@ private TripleElement getInputTypeTriple(Node varNode, TripleElement[] triples) 
 	        httpclient.close();
 	        return responseTxt;
 		} catch (IOException e) {
-			e.printStackTrace();
+			//e.printStackTrace();
 			System.err.println("DBN execution service request failed.");
 	        httpclient.close();
 			return "";
