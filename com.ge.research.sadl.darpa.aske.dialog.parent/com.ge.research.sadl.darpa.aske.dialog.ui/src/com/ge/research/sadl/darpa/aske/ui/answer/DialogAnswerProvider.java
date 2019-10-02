@@ -52,6 +52,7 @@ import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IResource;
 import org.eclipse.core.resources.IncrementalProjectBuilder;
 import org.eclipse.core.resources.ResourcesPlugin;
+import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IAdaptable;
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.Path;
@@ -89,10 +90,20 @@ import com.ge.research.sadl.builder.ConfigurationManagerForIdeFactory;
 import com.ge.research.sadl.builder.IConfigurationManagerForIDE;
 import com.ge.research.sadl.darpa.aske.curation.AnswerCurationManager;
 import com.ge.research.sadl.darpa.aske.curation.BaseDialogAnswerProvider;
+import com.ge.research.sadl.darpa.aske.curation.AnswerCurationManager.Agent;
 import com.ge.research.sadl.darpa.aske.dialog.ui.internal.DialogActivator;
 import com.ge.research.sadl.darpa.aske.preferences.DialogPreferences;
 import com.ge.research.sadl.darpa.aske.processing.DialogConstants;
 import com.ge.research.sadl.darpa.aske.processing.MixedInitiativeElement;
+import com.ge.research.sadl.darpa.aske.processing.MixedInitiativeTextualResponse;
+import com.ge.research.sadl.darpa.aske.processing.QuestionWithCallbackContent;
+import com.ge.research.sadl.darpa.aske.processing.StatementContent;
+import com.ge.research.sadl.darpa.aske.ui.handler.DialogRunInferenceHandler;
+import com.ge.research.sadl.darpa.aske.ui.handler.RunDialogQuery;
+import com.ge.research.sadl.model.gp.GraphPatternElement;
+import com.ge.research.sadl.model.gp.Node;
+import com.ge.research.sadl.model.gp.Query;
+import com.ge.research.sadl.model.gp.TripleElement;
 import com.ge.research.sadl.model.visualizer.IGraphVisualizer;
 import com.ge.research.sadl.processing.OntModelProvider;
 import com.ge.research.sadl.reasoner.ConfigurationException;
@@ -114,9 +125,8 @@ public class DialogAnswerProvider extends BaseDialogAnswerProvider {
 		this.document.readOnly(resource -> {
 			initializedConfigManager(resource);
 			AnswerCurationManager answerCurationManager = new AnswerCurationManager(getConfigMgr().getModelFolder(), getConfigMgr(), resource, null);
+			setAnswerConfigurationManager(answerCurationManager);
 			getConfigMgr().addPrivateKeyValuePair(DialogConstants.ANSWER_CURATION_MANAGER, answerCurationManager);
-			Object lastCommand = OntModelProvider.getPrivateKeyValuePair(resource, DialogConstants.LAST_DIALOG_COMMAND);
-			LOGGER.debug("DialogAnswerProvider: Last cmd: " + (lastCommand == null ? "null" : lastCommand.toString()));
 			return null; // Void
 		});
 	}
@@ -217,6 +227,14 @@ public class DialogAnswerProvider extends BaseDialogAnswerProvider {
 		return modContent;
 	}
 
+	private IXtextDocument getTheDocument() {
+		return document;
+	}
+
+	private void setTheDocument(XtextDocument theDocument) {
+		this.document = theDocument;
+	}
+	
 	private Object[] getSourceText(EObject object) {
 		INode node = NodeModelUtils.findActualNodeFor(object);
 		if (node != null) {
@@ -282,7 +300,7 @@ public class DialogAnswerProvider extends BaseDialogAnswerProvider {
 		});
 		return true;
 	}
-
+	
 	private void setCaretOffsetInEditor(URI uri, int caretOffset) {
 		Display.getDefault().asyncExec(() -> {
 			IWorkbenchPage page = PlatformUI.getWorkbench().getActiveWorkbenchWindow().getActivePage();
@@ -313,7 +331,7 @@ public class DialogAnswerProvider extends BaseDialogAnswerProvider {
 			}
 		});
 	}
-
+	
 	/**
 	 * Method to check to see if the content was added successfully
 	 * 
@@ -339,6 +357,18 @@ public class DialogAnswerProvider extends BaseDialogAnswerProvider {
 	}
 
 	@Override
+	public String addCurationManagerInitiatedContent(AnswerCurationManager answerCurationManager,
+			StatementContent sc) {
+		try {
+			addCurationManagerContentToDialog(getTheDocument(), null, sc.getText(), null, false);
+		} catch (BadLocationException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		return null;
+	}
+
+	@Override
 	public boolean addCurationManagerAnswerContent(AnswerCurationManager acm, String content, Object ctx) {
 		answerConfigurationManager = acm;
 		try {
@@ -350,9 +380,9 @@ public class DialogAnswerProvider extends BaseDialogAnswerProvider {
 	}
 
 	@Override
-	public String initiateMixedInitiativeInteraction(MixedInitiativeElement element) {
-		String content = element.getContent().toString();
-		if (document != null) {
+	public String initiateMixedInitiativeInteraction(QuestionWithCallbackContent element) {
+		String content = element.getTheQuestion();
+		if (getTheDocument() != null) {
 			try {
 				boolean quote = isContentQuoted(content);
 				addCurationManagerContentToDialog(document, null, content, null, quote);
@@ -372,15 +402,15 @@ public class DialogAnswerProvider extends BaseDialogAnswerProvider {
 	}
 
 	@Override
-	public void provideResponse(MixedInitiativeElement response) {
-		if (response.getCurationManager() != null) {
-			AnswerCurationManager acm = response.getCurationManager();
-			String methodToCall = response.getMethodToCall();
+	public void provideResponse(QuestionWithCallbackContent question) {
+//		if (response.getCurationManager() != null) {
+			AnswerCurationManager acm = getAnswerConfigurationManager();
+			String methodToCall = question.getMethodToCall();
 			Method[] methods = acm.getClass().getMethods();
 			for (Method m : methods) {
 				if (m.getName().equals(methodToCall)) {
 					// call the method
-					List<Object> args = response.getArguments();
+					List<Object> args = question.getArguments();
 					try {
 						Object results = null;
 						if (args.size() == 0) {
@@ -469,6 +499,32 @@ public class DialogAnswerProvider extends BaseDialogAnswerProvider {
 						e.printStackTrace();
 					}
 				}
+			}
+//		}	
+	}
+	
+	@Override
+	public void updateProjectAndDisplaySadlFiles(String projectName, String modelsFolder, List<File> sadlFiles) {
+		String prjname = projectName;
+		IProject prj = ResourcesPlugin.getPlugin().getWorkspace().getRoot().getProject(prjname);
+		try {
+			prj.refreshLocal(IResource.DEPTH_INFINITE, null);
+		} catch (CoreException e1) {
+			// TODO Auto-generated catch block
+			e1.printStackTrace();
+		}
+		if (projectName != null) {	// only not null if doing SADL conversion
+			IProject project = ResourcesPlugin.getWorkspace().getRoot().getProject(projectName);
+			try {
+				project.build(IncrementalProjectBuilder.AUTO_BUILD, null);
+				// display new SADL file
+				displayFiles(getConfigMgr().getModelFolder(), sadlFiles);
+			} catch (CoreException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
 			}
 		}
 	}

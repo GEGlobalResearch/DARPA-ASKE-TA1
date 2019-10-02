@@ -336,15 +336,6 @@ public class JenaBasedDialogModelProcessor extends JenaBasedSadlModelProcessor {
 		if (elements != null) {
 			Iterator<SadlModelElement> elitr = elements.iterator();
 			Object lastElement = null;
-			AnswerCMStatement lastACMQuestion = null;
-//			if (!elitr.hasNext() && !model.getImports().isEmpty()) {
-//				// 
-//				MixedInitiativeTextualResponse mir = new MixedInitiativeTextualResponse("What is your name?", false);
-//				int endOffset = NodeModelUtils.findActualNodeFor(model).getEndOffset();
-//				mir.setInsertionPoint(endOffset);
-//				OntModelProvider.addPrivateKeyValuePair(resource, DialogConstants.LAST_DIALOG_COMMAND, mir);
-//				
-//			}
 			while (elitr.hasNext()) {
 				// check for cancelation from time to time
 				if (cancelIndicator.isCanceled()) {
@@ -367,7 +358,7 @@ public class JenaBasedDialogModelProcessor extends JenaBasedSadlModelProcessor {
 				try {
 					StatementContent sc = processDialogModelElement(element);
 					if (sc != null) {
-						ConversationElement ce = new ConversationElement(getAnswerCurationManager().getConversation(), sc, Agent.USER);
+						ConversationElement ce = new ConversationElement(getAnswerCurationManager().getConversation(), sc, sc.getAgent());
 						getAnswerCurationManager().addToConversation(ce);
 					}
 				} catch (JenaProcessorException e1) {
@@ -930,7 +921,7 @@ public class JenaBasedDialogModelProcessor extends JenaBasedSadlModelProcessor {
 //		return ce;
 //	}	
 	
-	private AnswerContent  processAnswerCMStatement( AnswerCMStatement element) throws IOException, TranslationException, InvalidNameException, InvalidTypeException, ConfigurationException, JenaProcessorException, QueryParseException, QueryCancelledException, ReasonerNotFoundException {
+	private StatementContent  processAnswerCMStatement( AnswerCMStatement element) throws IOException, TranslationException, InvalidNameException, InvalidTypeException, ConfigurationException, JenaProcessorException, QueryParseException, QueryCancelledException, ReasonerNotFoundException {
 		EObject stmt = element.getSstmt();
 		if (stmt != null) {
 			StatementContent sc = processDialogModelElement((SadlModelElement) stmt);
@@ -941,9 +932,19 @@ public class JenaBasedDialogModelProcessor extends JenaBasedSadlModelProcessor {
 		else {
 			String str = element.getStr();
 			if (str != null) {
-				AnswerContent ac = new AnswerContent(element, Agent.CM);
-				ac.setAnswer(str);
-				return ac;
+				String eos = getEos(element);
+				if (eos.equals(".")) {
+					AnswerContent ac = new AnswerContent(element, Agent.CM);
+					ac.setAnswer(str);
+					return ac;
+				}
+				else if (eos.equals("?")) {
+					QuestionWithCallbackContent qwcc = new QuestionWithCallbackContent(element, Agent.CM, null, null, str);
+					return qwcc;
+				}
+				else {
+					throw new IOException("Statement has unexpected ending character.");
+				}
 			}
 		}
 		return null;

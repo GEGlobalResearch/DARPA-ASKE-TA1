@@ -48,6 +48,8 @@ import org.eclipse.emf.ecore.resource.Resource;
 
 import com.ge.research.sadl.darpa.aske.processing.MixedInitiativeElement;
 import com.ge.research.sadl.darpa.aske.processing.MixedInitiativeTextualResponse;
+import com.ge.research.sadl.darpa.aske.processing.QuestionWithCallbackContent;
+import com.ge.research.sadl.darpa.aske.processing.StatementContent;
 import com.ge.research.sadl.reasoner.IConfigurationManager;
 
 public class DialogAnswerProviderConsoleForTest extends BaseDialogAnswerProvider {
@@ -63,20 +65,19 @@ public class DialogAnswerProviderConsoleForTest extends BaseDialogAnswerProvider
 		return true;
 	}
 
-	@Override
-	public String initiateMixedInitiativeInteraction(MixedInitiativeElement element) {
-		String output = element.getContent().toString();
-		System.out.println("CM: " + output);
-		String answer = null;
-		if (output.trim().endsWith("?")) {
-//			System.out.println("?");
-//			read(System.in, 100000, element);
-			answer = getUserInput();
-			element.addArgument(answer);
-			provideResponse(element);
-		}
-		return answer;
-	}
+//	public String initiateMixedInitiativeInteraction(MixedInitiativeElement element) {
+		//String output = element.getContent().toString();
+		//System.out.println("CM: " + output);
+		//String answer = null;
+		//if (output.trim().endsWith("?")) {
+////			System.out.println("?");
+//			//read(System.in, 100000, element);
+//			answer = getUserInput();
+//			element.addArgument(answer);
+//			provideResponse(element);
+//		}
+//		return answer;
+//	}
 
 	@Override
 	@SuppressWarnings("deprecation")
@@ -200,6 +201,31 @@ public class DialogAnswerProviderConsoleForTest extends BaseDialogAnswerProvider
 		String tmp = new String(threadValue);
 		setValue("");
 		return tmp;
+	}
+
+	@Override
+	public String addCurationManagerInitiatedContent(AnswerCurationManager answerCurationManager,
+			StatementContent ssc) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public String initiateMixedInitiativeInteraction(QuestionWithCallbackContent element) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public void provideResponse(QuestionWithCallbackContent response) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void updateProjectAndDisplaySadlFiles(String projectName, String modelsFolder, List<File> sadlFiles) {
+		// TODO Auto-generated method stub
+		
 	}
 
 }

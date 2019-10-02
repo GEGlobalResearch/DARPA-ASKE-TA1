@@ -2,7 +2,7 @@
  * Note: This license has also been called the "New BSD License" or 
  * "Modified BSD License". See also the 2-clause BSD License.
  *
- * Copyright © 2018-2019 - General Electric Company, All Rights Reserved
+ * Copyright ï¿½ 2018-2019 - General Electric Company, All Rights Reserved
  * 
  * Projects: ANSWER and KApEESH, developed with the support of the Defense 
  * Advanced Research Projects Agency (DARPA) under Agreement  No.  
@@ -607,9 +607,9 @@ public class JavaModelExtractorJP implements IModelFromCodeExtractor {
 			if (sendCommentsToTextService ) {
 				String locality = null;
 				String inputIdentifier = "CodeComments";
-				String tpresult = null;
+				int[] tpresult = null;
 				try {
-					tpresult = getCurationMgr().getTextProcessor().process(inputIdentifier, cmt.getContent(), locality);
+					tpresult = getCurationMgr().getTextProcessor().processText(inputIdentifier, cmt.getContent(), locality);
 				} catch (ConfigurationException e) {
 					// TODO Auto-generated catch block
 					e.printStackTrace();
@@ -618,7 +618,7 @@ public class JavaModelExtractorJP implements IModelFromCodeExtractor {
 					e.printStackTrace();
 				}
 				System.out.println("Text: " + cmt.getContent());
-				System.out.println("   returned: " + tpresult);
+				System.out.println("nc=" + tpresult[0] + ", neq=" + tpresult[1]);
 			}
 
 			if (subject != null) {
@@ -1111,6 +1111,9 @@ public class JavaModelExtractorJP implements IModelFromCodeExtractor {
 
 	@Override
 	public void setCodeModelName(String codeModelName) {
+		if (codeModelName != null && !codeModelName.startsWith("http://")) {
+			codeModelName = "http://" + codeModelName;
+		}
 		this.codeModelName = codeModelName;
 		getCurationMgr().getExtractionProcessor().setCodeModelName(codeModelName);
 	}
