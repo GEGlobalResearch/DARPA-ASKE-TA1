@@ -696,9 +696,11 @@ public class JavaImportOperation extends WorkspaceModifyOperation {
 	    	ConfigurationManagerForIDE domainModelConfigMgr = ConfigurationManagerForIdeFactory.getConfigurationManagerForIDE(domainModelModelFolder, null);
     		acm = (AnswerCurationManager) domainModelConfigMgr.getPrivateKeyValuePair(DialogConstants.ANSWER_CURATION_MANAGER);
     		if (acm == null) {
-        		Map<String, String> preferences = getPreferences(targetResource);
-    			acm = new AnswerCurationManager(codeModelModelFolderUri, domainModelConfigMgr, preferences);
-    			domainModelConfigMgr.addPrivateKeyValuePair(DialogConstants.ANSWER_CURATION_MANAGER, acm);
+//        		Map<String, String> preferences = getPreferences(targetResource);
+//    			acm = new AnswerCurationManager(codeModelModelFolderUri, domainModelConfigMgr, preferences);
+//    			domainModelConfigMgr.addPrivateKeyValuePair(DialogConstants.ANSWER_CURATION_MANAGER, acm);
+    			System.err.println("A Dialog Window must be open in order to do an an import of code and/or text");
+    			return null;
     		}
     		
     		List<File> txtFiles = getTextFilesInDir(null, importFilePath.toFile());

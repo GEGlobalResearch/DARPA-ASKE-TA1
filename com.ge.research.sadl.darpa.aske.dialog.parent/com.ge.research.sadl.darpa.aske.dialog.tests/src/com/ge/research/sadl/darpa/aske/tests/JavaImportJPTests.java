@@ -38,6 +38,7 @@ package com.ge.research.sadl.darpa.aske.tests;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 
 import java.io.BufferedReader;
 import java.io.File;
@@ -131,7 +132,7 @@ public class JavaImportJPTests {
 				"	}\r\n" + 
 				"}\r\n";
 		IConfigurationManagerForIDE cm = ConfigurationManagerForIdeFactory.getConfigurationManagerForIDE(getDomainProjectModelFolder(), null);
-		AnswerCurationManager acm = new AnswerCurationManager(getDomainProjectModelFolder(), cm, null);
+		AnswerCurationManager acm = new AnswerCurationManager(getDomainProjectModelFolder(), cm, null, null);
 		IModelFromCodeExtractor jme = new JavaModelExtractorJP(acm, null);
 		jme.setCodeModelFolder(getExtractionProjectModelFolder());
 		String defaultCodeModelPrefix = "Temp";
@@ -178,7 +179,7 @@ public class JavaImportJPTests {
 				"}\r\n";
 		
 		IConfigurationManagerForIDE cm = ConfigurationManagerForIdeFactory.getConfigurationManagerForIDE(getDomainProjectModelFolder(), null);
-		AnswerCurationManager acm = new AnswerCurationManager(getDomainProjectModelFolder(), cm, null);
+		AnswerCurationManager acm = new AnswerCurationManager(getDomainProjectModelFolder(), cm, null, null);
 		IModelFromCodeExtractor jme = new JavaModelExtractorJP(acm, null);
 		jme.setCodeModelFolder(getExtractionProjectModelFolder());
 		String defaultCodeModelPrefix = "temp";
@@ -226,7 +227,7 @@ public class JavaImportJPTests {
 				"";
 		
 		IConfigurationManagerForIDE cm = ConfigurationManagerForIdeFactory.getConfigurationManagerForIDE(getDomainProjectModelFolder(), null);
-		AnswerCurationManager acm = new AnswerCurationManager(getDomainProjectModelFolder(), cm, null);
+		AnswerCurationManager acm = new AnswerCurationManager(getDomainProjectModelFolder(), cm, null, null);
 		IModelFromCodeExtractor jme = new JavaModelExtractorJP(acm, null);
 		jme.setCodeModelFolder(getExtractionProjectModelFolder());
 		String defaultCodeModelPrefix = "physicalobject";
@@ -242,7 +243,7 @@ public class JavaImportJPTests {
 		assertTrue(sourceFile.exists());
 		String javaContent = readFile(sourceFile);
 		IConfigurationManagerForIDE cm = ConfigurationManagerForIdeFactory.getConfigurationManagerForIDE(getDomainProjectModelFolder(), null);
-		AnswerCurationManager acm = new AnswerCurationManager(getDomainProjectModelFolder(), cm, null);
+		AnswerCurationManager acm = new AnswerCurationManager(getDomainProjectModelFolder(), cm, null, null);
 		IModelFromCodeExtractor jme = new JavaModelExtractorJP(acm, null);
 		jme.setCodeModelFolder(getExtractionProjectModelFolder());
 		String defaultCodeModelPrefix = "Isentrop";
@@ -258,7 +259,7 @@ public class JavaImportJPTests {
 		File codeFile = new File(getCodeExtractionKbRoot() + "/ExtractedModels/Sources/Mach.java");
 		assertTrue(codeFile.exists());
 		IConfigurationManagerForIDE cm = ConfigurationManagerForIdeFactory.getConfigurationManagerForIDE(getDomainProjectModelFolder(), null);
-		AnswerCurationManager acm = new AnswerCurationManager(getDomainProjectModelFolder(), cm, null);
+		AnswerCurationManager acm = new AnswerCurationManager(getDomainProjectModelFolder(), cm, null, null);
 		acm.getExtractionProcessor().getCodeExtractor().setCodeModelFolder(getExtractionProjectModelFolder());
 		
 		IDialogAnswerProvider dapcft = new DialogAnswerProviderConsoleForTest();
@@ -327,7 +328,7 @@ public class JavaImportJPTests {
 		
 		File codeFile = new File(getCodeExtractionKbRoot() + "/ExtractedModels/Sources/Mach.java");
 		IConfigurationManagerForIDE cm = ConfigurationManagerForIdeFactory.getConfigurationManagerForIDE(getDomainProjectModelFolder(), null);
-		AnswerCurationManager acm = new AnswerCurationManager(getDomainProjectModelFolder(), cm, null);
+		AnswerCurationManager acm = new AnswerCurationManager(getDomainProjectModelFolder(), cm, null, null);
 		acm.getExtractionProcessor().getCodeExtractor().setCodeModelFolder(getExtractionProjectModelFolder());
 		
 		IDialogAnswerProvider dapcft = new DialogAnswerProviderConsoleForTest();
@@ -397,14 +398,20 @@ public class JavaImportJPTests {
 			assertTrue(owlF.exists());
 			
 			IConfigurationManagerForIDE cm = ConfigurationManagerForIdeFactory.getConfigurationManagerForIDE(getDomainProjectModelFolder(), null);
-			AnswerCurationManager acm = new AnswerCurationManager(getDomainProjectModelFolder(), cm, null);
+			AnswerCurationManager acm = new AnswerCurationManager(getDomainProjectModelFolder(), cm, null, null);
 			OntModel om = cm.loadOntModel(owlF.getCanonicalPath());
 			String equationToBuildUri = cm.getBaseUriFromOwlFile(owlF.getCanonicalPath()) + "#Mach.CAL_SOS";
 			Resource resource = null;
 			String modelName = om.getNsPrefixMap().get("");
 			SaveContent sc = new SaveContent(null, Agent.USER);
 			sc.setSourceEquationUri(equationToBuildUri);
-			String result = acm.processSaveRequest(resource, om, modelName, sc );
+			try {
+				String result = acm.processSaveRequest(resource, om, modelName, sc );
+				fail("Headless test should not be able to save extraction");
+			}
+			catch(IOException e) {
+				
+			}
 		}
 
 	String getCodeExtractionKbRoot() {

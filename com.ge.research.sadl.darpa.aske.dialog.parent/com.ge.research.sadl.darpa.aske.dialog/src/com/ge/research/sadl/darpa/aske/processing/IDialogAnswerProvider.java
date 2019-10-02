@@ -52,8 +52,6 @@ public interface IDialogAnswerProvider {
 
 	String addCurationManagerInitiatedContent(AnswerCurationManager answerCurationManager, StatementContent ssc);
 
-//	String initiateMixedInitiativeInteraction(MixedInitiativeElement element);
-
 	String initiateMixedInitiativeInteraction(QuestionWithCallbackContent element);
 
 	void provideResponse(QuestionWithCallbackContent response);
@@ -65,6 +63,8 @@ public interface IDialogAnswerProvider {
 	Resource getResource();
 
 	boolean addCurationManagerAnswerContent(AnswerCurationManager acm, String content, Object ctx);
+
+	void dispose();
 
 	void updateProjectAndDisplaySadlFiles(String projectName, String modelsFolder, List<File> sadlFiles);
 

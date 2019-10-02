@@ -4,17 +4,17 @@ uri "http://com.ge.research.sadl.darpa.aske.answer/Sound" alias Sound_txt
 
 
 // Individuals:
-eq_139890718640576 is a ExternalEquation,
-    has expression (a Script
-    with language Python,
-    with script "a = tf.math.pow( R * T * gamma, 1/2)"),
-    has expression (a Script
-    with language Text,
-    with script "a^2 = R * T * gamma").
-eq_139890718852032 is a ExternalEquation,
+eq_139890719323072 is a ExternalEquation,
     has expression (a Script
     with language Python,
     with script "a = tf.math.pow( R * T *  (  1 + ( gamma-1 ) / ( 1 + ( gamma-1 ) *  (  ( theta/T ) ** 2 *  tf.math.exp( theta/T ) / (  tf.math.exp( theta/T ) - 1 ) ** 2 )  ) ) , 1/2)"),
     has expression (a Script
     with language Text,
     with script "a^2 = R * T * {1 + (gamma - 1) / ( 1 + (gamma-1) * [(theta/T)^2 * e^(theta/T) /(e^(theta/T) -1)^2]) }").
+eq_139890720095808 is a ExternalEquation,
+    has expression (a Script
+    with language Python,
+    with script "a = tf.math.pow( R * T * gamma, 1/2)"),
+    has expression (a Script
+    with language Text,
+    with script "a^2 = R * T * gamma").

@@ -2,7 +2,7 @@
  * Note: This license has also been called the "New BSD License" or 
  * "Modified BSD License". See also the 2-clause BSD License.
  *
- * Copyright © 2018-2019 - General Electric Company, All Rights Reserved
+ * Copyright ï¿½ 2018-2019 - General Electric Company, All Rights Reserved
  * 
  * Projects: ANSWER and KApEESH, developed with the support of the Defense 
  * Advanced Research Projects Agency (DARPA) under Agreement  No.  
@@ -47,6 +47,10 @@ public class DialogConstants {
 	
 	public static final String SADL_IMPLICIT_MODEL_DIALOG_MODEL_PROPERTY_URI = SadlConstants.SADL_IMPLICIT_MODEL_URI + "#model";
 	public static final String SADL_IMPLICIT_MODEL_DIALOG_DATA_PROPERTY_URI = SadlConstants.SADL_IMPLICIT_MODEL_URI + "#data";
+	public static final String SADL_IMPLICIT_MODEL_QUESTION_ELEMENT_URI = SadlConstants.SADL_IMPLICIT_MODEL_URI + "#QuestionElement";
+	public static final String SADL_IMPLICIT_MODEL_ANSWER_ELEMENT_URI = SadlConstants.SADL_IMPLICIT_MODEL_URI + "#AnswerElement";
+	public static final String SADL_IMPLICIT_MODEL_TEXT_PROPERY_URI = SadlConstants.SADL_IMPLICIT_MODEL_URI + "#text";
+	public static final String SADL_IMPLICIT_MODEL_HAS_ANSWER_PROPERY_URI = SadlConstants.SADL_IMPLICIT_MODEL_URI + "#dialogAnswer";
 	
 	public static final String EXTRACTED_MODELS_FOLDER_PATH_FRAGMENT = "ExtractedModels";
 	public static final String CODE_EXTRACTION_MODEL_FILENAME = "CodeExtractionModel.sadl";

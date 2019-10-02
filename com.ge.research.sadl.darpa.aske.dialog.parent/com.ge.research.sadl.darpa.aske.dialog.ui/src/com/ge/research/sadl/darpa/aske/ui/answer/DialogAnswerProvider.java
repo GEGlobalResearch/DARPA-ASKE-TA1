@@ -38,39 +38,36 @@ package com.ge.research.sadl.darpa.aske.ui.answer;
 
 import java.io.File;
 import java.io.IOException;
-import java.lang.reflect.Field;
-import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
-import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.atomic.AtomicReference;
-import java.util.function.Consumer;
 
 import org.eclipse.core.filesystem.EFS;
 import org.eclipse.core.filesystem.IFileStore;
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IResource;
-import org.eclipse.core.resources.IResourceChangeEvent;
-import org.eclipse.core.resources.IResourceChangeListener;
 import org.eclipse.core.resources.IncrementalProjectBuilder;
 import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.CoreException;
+import org.eclipse.core.runtime.IAdaptable;
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.Path;
-import org.eclipse.emf.common.util.EList;
 import org.eclipse.emf.common.util.URI;
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.ecore.resource.Resource;
 import org.eclipse.jface.text.BadLocationException;
-import org.eclipse.jface.text.DocumentCommand;
-import org.eclipse.jface.text.IAutoEditStrategy;
 import org.eclipse.jface.text.IDocument;
 import org.eclipse.jface.text.IRegion;
+import org.eclipse.swt.custom.StyledText;
+import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Display;
+import org.eclipse.ui.IEditorInput;
+import org.eclipse.ui.IEditorReference;
+import org.eclipse.ui.IFileEditorInput;
 import org.eclipse.ui.IWorkbench;
 import org.eclipse.ui.IWorkbenchPage;
 import org.eclipse.ui.IWorkbenchPart;
@@ -79,27 +76,24 @@ import org.eclipse.ui.PartInitException;
 import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.ide.IDE;
 import org.eclipse.xtext.nodemodel.INode;
-import org.eclipse.xtext.nodemodel.impl.CompositeNodeWithSemanticElement;
 import org.eclipse.xtext.nodemodel.util.NodeModelUtils;
 import org.eclipse.xtext.preferences.IPreferenceValues;
 import org.eclipse.xtext.preferences.IPreferenceValuesProvider;
 import org.eclipse.xtext.resource.XtextResource;
-import org.eclipse.xtext.ui.editor.autoedit.DefaultAutoEditStrategyProvider;
+import org.eclipse.xtext.ui.editor.model.IXtextDocument;
 import org.eclipse.xtext.ui.editor.model.XtextDocument;
-import org.eclipse.xtext.ui.resource.IResourceSetProvider;
-import org.eclipse.xtext.util.concurrent.IUnitOfWork;
+import org.eclipse.xtext.util.Exceptions;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.ge.research.sadl.builder.ConfigurationManagerForIDE;
 import com.ge.research.sadl.builder.ConfigurationManagerForIdeFactory;
 import com.ge.research.sadl.builder.IConfigurationManagerForIDE;
 import com.ge.research.sadl.darpa.aske.curation.AnswerCurationManager;
+import com.ge.research.sadl.darpa.aske.curation.BaseDialogAnswerProvider;
 import com.ge.research.sadl.darpa.aske.curation.AnswerCurationManager.Agent;
 import com.ge.research.sadl.darpa.aske.dialog.ui.internal.DialogActivator;
 import com.ge.research.sadl.darpa.aske.preferences.DialogPreferences;
 import com.ge.research.sadl.darpa.aske.processing.DialogConstants;
-import com.ge.research.sadl.darpa.aske.processing.IDialogAnswerProvider;
 import com.ge.research.sadl.darpa.aske.processing.MixedInitiativeElement;
 import com.ge.research.sadl.darpa.aske.processing.MixedInitiativeTextualResponse;
 import com.ge.research.sadl.darpa.aske.processing.QuestionWithCallbackContent;
@@ -111,548 +105,63 @@ import com.ge.research.sadl.model.gp.Node;
 import com.ge.research.sadl.model.gp.Query;
 import com.ge.research.sadl.model.gp.TripleElement;
 import com.ge.research.sadl.model.visualizer.IGraphVisualizer;
-import com.ge.research.sadl.owl2sadl.OwlToSadl;
-import com.ge.research.sadl.parser.antlr.SADLParser;
 import com.ge.research.sadl.processing.OntModelProvider;
 import com.ge.research.sadl.reasoner.ConfigurationException;
 import com.ge.research.sadl.reasoner.utils.SadlUtils;
-import com.ge.research.sadl.sADL.SadlImport;
-import com.ge.research.sadl.sADL.SadlModel;
-import com.ge.research.sadl.sADL.SadlModelElement;
 import com.ge.research.sadl.ui.handlers.SadlActionHandler;
-import com.google.inject.Inject;
+import com.google.common.base.Preconditions;
 import com.google.inject.Injector;
-import com.google.inject.Provider;
-import com.hp.hpl.jena.ontology.OntModel;
 
-public class DialogAnswerProvider extends DefaultAutoEditStrategyProvider implements IDialogAnswerProvider, IResourceChangeListener {
-	private static final Logger logger = LoggerFactory.getLogger(DialogAnswerProvider.class);
-	private XtextDocument theDocument;
-	private Resource resource;
-	private IConfigurationManagerForIDE configMgr = null;
-	private AnswerCurationManager answerConfigurationManager = null;
+public class DialogAnswerProvider extends BaseDialogAnswerProvider {
 
-	@Inject
-	protected IResourceSetProvider resourceSetProvider;
+	private static final Logger LOGGER = LoggerFactory.getLogger(DialogAnswerProvider.class);
 
-//	@Inject
-//	protected Provider<SadlRunQueryHandler> handlerProvider;
+	private IXtextDocument document;
+	private IConfigurationManagerForIDE configManager;
 
-	@Inject
-	protected Provider<DialogRunInferenceHandler> handlerProvider;		// Provider will give new instance
-	
-	@Inject
-	protected SADLParser sadlParser;
-	
-	@Inject
-	protected Provider<RunDialogQuery> rdqProvider;
-	private Map<String, MixedInitiativeElement> mixedInitiativeElements = new HashMap<String, MixedInitiativeElement>();
-
-	@Override
-	protected void configure(IEditStrategyAcceptor acceptor) {
-
-	    IAutoEditStrategy strategy = new IAutoEditStrategy() 
-	    {
-
-	        private List<String> sadlkeywords = null;
-			private IGraphVisualizer visualizer = null;
-			private OntModel theModel;
-			private OwlToSadl owl2sadl;
-
-			@Override
-	        public void customizeDocumentCommand(IDocument document, DocumentCommand command) 
-	        {
-				int cursorLocation = findCursorLocation(document, command);
-//	            if ( command.text.length() == 0 || command.text.charAt(0) > ' ') return;
-
-	            IRegion reg = ((XtextDocument) document).getLastDamage();
-
-	            try {
-//	            	ServiceLoader<Builtin> itr = ServiceLoader.load(Builtin.class);
-//	            	Iterator<Builtin> itrr = itr.iterator();
-//	            	while (itrr.hasNext()) {
-//	            		System.out.println(itrr.next().getClass().getCanonicalName());
-//	            	}
-	                if (document instanceof XtextDocument) {
-	                	setResource(getResourceFromDocument((XtextDocument)document));
-	    				
-	                	String insertionText = null;
-
-                		setTheDocument((XtextDocument) document);
-                		String modelFolder = setDialogAnswerProvider(resource);
-		                Object lastcmd = OntModelProvider.getPrivateKeyValuePair(resource, DialogConstants.LAST_DIALOG_COMMAND);
-		                logger.debug("DialogAnswerProvider: Last cmd: " + (lastcmd != null ? lastcmd.toString() : "null"));
-
-//	                	if (lastcmd instanceof Query) {
-//	                		if (isDocToModelQuery((Query)lastcmd)) {
-//	                			insertionText = (String) processDocToModelQuery(resource, (Query)lastcmd);
-//		                		insertionText = checkForEOS(insertionText);
-//		                		Object ctx = ((Query)lastcmd).getContext();
-//		                		addCurationManagerContentToDialog(document, reg, insertionText, ctx, true);
-//	                		}
-//	                		else if (isModelToDocQuery((Query)lastcmd)) {
-//	                			lastcmd = processModelToDocQuery(resource, (Query)lastcmd);
-//	                		}
-//	                		else {
-//		                		ResultSet rs = runQuery(resource, (Query)lastcmd);
-//		                		String resultStr = null;
-//		                		if (rs != null) {
-//		                			resultStr = resultSetToQuotableString(rs);
-//		                		}
-//		                		insertionText = (resultStr != null ? resultStr : "\"Failed to find results\"");
-//		                		insertionText = checkForEOS(insertionText);
-//		                		Object ctx = ((Query)lastcmd).getContext();
-//		                		addCurationManagerContentToDialog(document, reg, insertionText, ctx, true);
-//	                		}
-//	                	}
-//	                	else if (lastcmd instanceof NamedNode) {
-//	                		whatIsNamedNode(document, reg, resource, lastcmd);
-//	                	}
-//	                	else if (lastcmd instanceof WhatIsConstruct) {
-//	                		Object trgt = ((WhatIsConstruct)lastcmd).getTarget();
-//	                		Object whn = ((WhatIsConstruct)lastcmd).getWhen();
-//	                		if (trgt instanceof NamedNode && whn == null) {
-//	                			whatIsNamedNode(document, reg, resource, (NamedNode)trgt);
-//	                		}
-//	                		else if (trgt instanceof Object[] && whn == null) {
-//		                		if (allTripleElements((Object[])trgt)) {
-//			                		Object ctx = null;
-//		                			TripleElement[] triples = flattenTriples((Object[])trgt);
-//		                			ctx = triples[0].getContext();
-//					                OntModelProvider.addPrivateKeyValuePair(resource, DialogConstants.LAST_DIALOG_COMMAND, triples);
-//			                		StringBuilder answer = new StringBuilder();
-//			                		ResultSet[] rss = insertTriplesAndQuery(resource, triples);
-//			                		String resultStr = null;
-//			                		if (rss != null) {
-//			                			StringBuilder sb = new StringBuilder();
-//			                			if (triples[0].getSubject() instanceof VariableNode && 
-//			                					((VariableNode)triples[0].getSubject()).getType() instanceof NamedNode) {
-//			                				sb.append("the ");
-//			                				sb.append(((VariableNode)(triples[0].getSubject())).getType().getName());
-//			                				sb.append(" has ");
-//			                				sb.append(triples[0].getPredicate().getName());
-//			                				sb.append(" ");
-//			                				sb.append(rss[0].getResultAt(0, 0).toString());
-//			                				resultStr = sb.toString();
-//			                			}
-//			                			else {
-//				                			for (ResultSet rs : rss) {
-//				                				rs.setShowNamespaces(true);
-//				                				sb.append(rs.toString());
-//				                			}
-//			                				resultStr = resultSetToQuotableString(sb.toString());
-//			                			}
-//			                		}
-//			                		insertionText = (resultStr != null ? resultStr : "\"Failed to find results\"");
-//			                		addCurationManagerContentToDialog(document, reg, insertionText, ctx, true);
-//		                		}
-//	                		}
-//	                		else {
-//	                			// there is a when clause, and this is in a WhatIsConstruct
-//	                			List<TripleElement> tripleLst = new ArrayList<TripleElement>();
-//                				if (trgt instanceof TripleElement) {
-//	                				tripleLst.add((TripleElement)trgt);
-//                				}
-//                				else if (trgt instanceof Junction) {
-//                					tripleLst = addTriplesFromJunction((Junction) trgt, tripleLst);
-//                				}
-//	                			if (whn instanceof TripleElement) {
-//	                				// we have a when statement
-//	                				tripleLst.add((TripleElement)whn);
-//	                			}
-//	                			else if (whn instanceof Junction) {
-//	                				tripleLst = addTriplesFromJunction((Junction) whn, tripleLst);
-//	                			}
-//                				TripleElement[] triples = new TripleElement[tripleLst.size()];
-//                				triples = tripleLst.toArray(triples);
-//	                			
-//				                OntModelProvider.addPrivateKeyValuePair(resource, DialogConstants.LAST_DIALOG_COMMAND, triples);
-//		                		StringBuilder answer = new StringBuilder();
-//		                		ResultSet[] rss = insertTriplesAndQuery(resource, triples);
-//		                		if (rss != null) {
-//		                			int cntr = 0;
-//			                		for (ResultSet rs : rss) {
-//			                			if (cntr == 0) {
-//			                				// this is the first ResultSet, construct a graph if possible
-//			                				if (rs.getColumnCount() != 3) {
-//			                					System.err.println("Can't construct graph; not 3 columns. Unexpected result.");
-//			                				}
-////			                				this.graphVisualizerHandler.resultSetToGraph(path, resultSet, description, baseFileName, orientation, properties);
-//			                				
-//			                				IGraphVisualizer visualizer = new GraphVizVisualizer();
-//			                				if (visualizer != null) {
-//			                					String graphsDirectory = new File(modelFolder).getParent() + "/Graphs";
-//			                					new File(graphsDirectory).mkdir();
-//			                					String baseFileName = "QueryMetadata";
-//			                					visualizer.initialize(
-//			                		                    graphsDirectory,
-//			                		                    baseFileName,
-//			                		                    baseFileName,
-//			                		                    null,
-//			                		                    IGraphVisualizer.Orientation.TD,
-//			                		                    "Assembled Model");
-//			                					rs.setShowNamespaces(false);
-//			                		            visualizer.graphResultSetData(rs);				                				}
-//			        						String fileToOpen = visualizer.getGraphFileToOpen();
-//			        						if (fileToOpen != null) {
-//			        							File fto = new File(fileToOpen);
-//			        							if (fto.isFile()) {
-//			        								IFileStore fileStore = EFS.getLocalFileSystem().getStore(fto.toURI());
-//			        								IWorkbenchPage page = PlatformUI.getWorkbench().getActiveWorkbenchWindow().getActivePage();
-//			        								try {
-//			        									IDE.openEditorOnFileStore(page, fileStore);
-//			        								}
-//			        								catch (Throwable t) {
-//			        									System.err.println("Error trying to display graph file '" + fileToOpen + "': " + t.getMessage());
-//			        								}
-//			        							}
-//			        							else if (fileToOpen != null) {
-//			        								System.err.println("Failed to open graph file '" + fileToOpen + "'. Try opening it manually.");
-//			        							}
-//			        						}
-//			                				else {
-//			                					System.err.println("Unable to find an instance of IGraphVisualizer to render graph for query.\n");
-//			                				}
-//
-//			                			}
-//			                			if (cntr > 0) 
-//			                				answer.append(resultSetToQuotableString(rs));
-//			                			if(cntr++ > 1)
-//			                				answer.append(",\n");
-//			                			
-//			                		}
-//			                		answer.append(".\n");
-//		                		}
-//		                		Object ctx = triples[0].getContext();
-//		                		addCurationManagerContentToDialog(document, reg, answer.toString(), ctx, true);
-////	                			}
-////	                			else {
-//////	                				rdqProvider.get().execute(null, null, null);
-////	                				System.out.println("Target is: " + trgt.toString());
-////	                				System.out.println("When is: " + whn.toString());
-////	                			}
-//	                		}
-//	                	}
-//	                	else if (lastcmd instanceof HowManyValuesConstruct) {
-//	                		// this is a HowManyValues  ??
-//	                		Object article = ((Object[])lastcmd)[0];
-//	                		Object cls = ((Object[])lastcmd)[1];
-//	                		Object prop = ((Object[])lastcmd)[2];
-//	                		Object typ = ((Object[])lastcmd)[3];
-//	                		StringBuilder answer = new StringBuilder("CM: ");
-//	                		answer.append(prop.toString());
-//	                		answer.append(" describes ");
-//	                		answer.append(cls.toString());
-//	                		answer.append(" with exactly ");
-//	                		
-//	                	}
-//	                	else if (lastcmd instanceof Object[]) {
-//	                		System.err.println("Unhandled Object[] lastcmd");
-//	                	}
-//	                	else if (lastcmd instanceof TripleElement) {
-//	                		StringBuilder answer = new StringBuilder();
-//	                		addTripleQuestion(resource, (TripleElement)lastcmd, answer);
-//	                		Object ctx = ((TripleElement)lastcmd).getContext();
-//	                		addCurationManagerContentToDialog(document, reg, answer.toString(), ctx, true);
-//	                	}
-//	                	else if (lastcmd instanceof MixedInitiativeTextualResponse) {
-//	                		int ip = ((MixedInitiativeTextualResponse)lastcmd).getInsertionPoint();
-//	                		boolean quote = ((MixedInitiativeTextualResponse)lastcmd).isQuoteResponse();
-//	                		String content = ((MixedInitiativeTextualResponse)lastcmd).getResponse();
-//	                		Region nreg = new Region(ip, content.length());
-//	                		Object ctx = null; //((MixedInitiativeTextualResponse)lastcmd).getContext();
-//	                		addCurationManagerContentToDialog(document, nreg, content, ctx, quote);
-//	                	}
-//	                	else if (lastcmd instanceof BuildConstruct) {
-//	                		processBuildRequest(resource, (BuildConstruct)lastcmd);
-//	                	}
-//	                	else if (lastcmd != null) {
-//                			logger.debug("    Lastcmd '" + lastcmd.getClass().getCanonicalName() + "' not handled yet!");
-//	                	}
-//		                String possibleKWD = token.toLowerCase();
-//		                if ( token.equals(possibleKWD.toUpperCase()) || !KWDS.contains(possibleKWD) ) return;
-//		                document.replace(reg.getOffset(), reg.getLength(), possibleKWD.toUpperCase());
-	                }
-	            } 
-	            catch (Exception e) 
-	            {
-	                logger.debug("AutoEdit error (of type " + e.getClass().getCanonicalName() + "): " + e.getMessage());   
-	            }
-	        }
-
-			private int findCursorLocation(IDocument document, DocumentCommand command) {
-				// determine the cursor location
-				int len = command.length;
-				int caroffset = command.caretOffset;
-				int offset = command.offset;
-				String txt = command.text;
-				if (document instanceof XtextDocument) {
-					XtextDocument xdoc = (XtextDocument)document;
-					try {
-						if (len > 0) {
-							String doctxt = xdoc.get(offset, Math.max(txt.length(),len));
-							if (doctxt.equals(txt)) {
-								return offset;
-							}
-						}
-					} catch (BadLocationException e) {
-						// TODO Auto-generated catch block
-						e.printStackTrace();
-					}
-				}
-//				XtextEditor xtextEditor = EditorUtils.getActiveXtextEditor(event);
-				return -1;
-			}
-
-			private String checkForEOS(String insertionText) {
-				if (!insertionText.endsWith(".") && !insertionText.endsWith("?")) {
-					insertionText += ".";
-				}
-				return insertionText;
-			}
-
-			private boolean isDocToModelQuery(Query lastcmd) {
-				List<GraphPatternElement> patterns = lastcmd.getPatterns();
-				if (patterns != null) {
-					for (GraphPatternElement gpe : patterns) {
-						if (gpe instanceof TripleElement) {
-							if (((TripleElement)gpe).getPredicate().getURI().equals(DialogConstants.SADL_IMPLICIT_MODEL_DIALOG_MODEL_PROPERTY_URI)) {
-								return true;
-							}
-						}
-					}
-				}
-				return false;
-			}
-
-			private boolean isModelToDocQuery(Query lastcmd) {
-				List<GraphPatternElement> patterns = lastcmd.getPatterns();
-				if (patterns != null) {
-					for (GraphPatternElement gpe : patterns) {
-						if (gpe instanceof TripleElement) {
-							if (((TripleElement)gpe).getPredicate().getURI().equals(DialogConstants.SADL_IMPLICIT_MODEL_DIALOG_DATA_PROPERTY_URI)) {
-								return true;
-							}
-						}
-					}
-				}
-				return false;
-			}
-
-    // AG: This is where the output for TA2 is processed and inserted into the dialog.
-//			private String processDocToModelQuery(Resource resource, Query lastcmd) throws ExecutionException {
-//				List<GraphPatternElement> patterns = lastcmd.getPatterns();
-//        		StringBuilder answer = new StringBuilder();
-//        		
-//        		try {
-//					for (GraphPatternElement gpe : patterns) {
-//						if (gpe instanceof TripleElement) {
-//							if (((TripleElement)gpe).getPredicate().getURI().equals(DialogConstants.SADL_IMPLICIT_MODEL_DIALOG_MODEL_PROPERTY_URI)) {
-//								Node doc = ((TripleElement)gpe).getSubject();
-//								// get the name and semantic type of each column
-//								// TODO check for aliases for column names and use alias if exists
-//								String tableColSemTypeQuery = "select distinct ?colname ?typ where {<" + doc.getURI() +
-//										"> <columnDescriptors> ?cdlist . ?cdlist <http://jena.hpl.hp.com/ARQ/list#member> ?member . " + 
-//										"?member <descriptorName> ?colname . ?member <augmentedType> ?augtype . ?augtype <semType> ?typ}";
-//		                		((Query)lastcmd).setSparqlQueryString(tableColSemTypeQuery);
-//								ResultSet rrs = runQuery(resource, (Query)lastcmd);
-//								if (rrs != null && rrs.getRowCount() > 0) {
-//									// TODO 
-//									// convert to triples, one set for each column
-//									// <doc, columnname, colname>
-//									// <colname, semtypeprop, semtype>
-//									rrs.setShowNamespaces(true);
-//									Map<String,String> colNamesAndTypes = new HashMap<String,String>();
-//									for (int i = 0; i <= rrs.getColumnCount(); i++) {
-//										String colname = rrs.getResultAt(i, 0).toString();
-//										String semtyp = rrs.getResultAt(i, 1).toString();
-//										colNamesAndTypes.put(colname, semtyp);
-//									}
-//									Iterator<String> keyitr = colNamesAndTypes.keySet().iterator();
-//									NamedNode docNN = new NamedNode(doc.getURI());
-//	//								NamedNode descriptorNameNN = new NamedNode(SadlConstants.SADL_IMPLICIT_MODEL_DESCRIPTOR_NAME_PROPERTY_URI);
-//	//								NamedNode augmentedTypeNN = new NamedNode(SadlConstants.SADL_IMPLICIT_MODEL_AUGMENTED_TYPE_PROPERTY_URI);
-//									List<TripleElement> triplesList = new ArrayList<TripleElement>();
-//									while (keyitr.hasNext()) {
-//										String colname = keyitr.next();
-//										NamedNode colNameNN = new NamedNode(colname);
-//										String semtyp = colNamesAndTypes.get(colname);
-//										NamedNode semtypNN = new NamedNode(semtyp);
-//										TripleElement tr = new TripleElement(docNN, colNameNN, semtypNN);
-//										triplesList.add(tr);
-//									}
-//									TripleElement[] triples = triplesList.toArray(new TripleElement[triplesList.size()]);
-//					                OntModelProvider.addPrivateKeyValuePair(resource, DialogConstants.LAST_DIALOG_COMMAND, triples);
-//			                		ResultSet[] rss = insertTriplesAndQuery(resource, triples);
-//									int numResultSets = rss.length;
-//									
-//									// 
-//									// TODO 
-//									// SIMILAR TO WhatIfConstruct with a when
-//			                		String modelFolder = setDialogAnswerProvider(resource);
-//	
-//			                		if (rss != null) {
-//			                			int cntr = 0;
-//			                			int numOfModels = 0; //rss.length/2;
-//			                			for(int i=0; i<rss.length; i++)
-//			                				if (rss[i] != null)
-//			                					numOfModels ++;
-//			                			numOfModels /= 2;
-//				                		for (ResultSet rs : rss) {
-//				                			if(rs == null)
-//				                				continue;
-//			                				String[] colnames = rs.getColumnNames();
-//			                				String cols = String.join(" ",colnames);
-//			                				if ( cols.contains("_style") ) {
-//			                					
-//				                			//if (cntr == 0) {
-//				                				// this is the first ResultSet, construct a graph if possible
-//				                				//if (rs.getColumnCount() != 3) {
-//				                				//	System.err.println("Can't construct graph; not 3 columns. Unexpected result.");
-//				                				//}
-//	//			                				this.graphVisualizerHandler.resultSetToGraph(path, resultSet, description, baseFileName, orientation, properties);
-//				                				
-//				                				IGraphVisualizer visualizer = new GraphVizVisualizer();
-//				                				if (visualizer != null) {
-//				                					String graphsDirectory = new File(modelFolder).getParent() + "/Graphs";
-//				                					new File(graphsDirectory).mkdir();
-//				                					String baseFileName = "QueryMetadata"+rss[cntr+numOfModels].getResultAt(0, 0).toString();
-//				                					visualizer.initialize(
-//				                		                    graphsDirectory,
-//				                		                    baseFileName,
-//				                		                    baseFileName,
-//				                		                    null,
-//				                		                    IGraphVisualizer.Orientation.TD,
-//				                		                    "Assembled Model " + rss[cntr+numOfModels].getResultAt(0, 0));
-//				                					rs.setShowNamespaces(false);
-//				                		            visualizer.graphResultSetData(rs); }
-//				        						String fileToOpen = visualizer.getGraphFileToOpen();
-//				        						if (fileToOpen != null) {
-//				        							File fto = new File(fileToOpen);
-//				        							if (fto.isFile()) {
-//				        								IFileStore fileStore = EFS.getLocalFileSystem().getStore(fto.toURI());
-//				        								IWorkbenchPage page = PlatformUI.getWorkbench().getActiveWorkbenchWindow().getActivePage();
-//				        								try {
-//				        									IDE.openEditorOnFileStore(page, fileStore);
-//				        								}
-//				        								catch (Throwable t) {
-//				        									System.err.println("Error trying to display graph file '" + fileToOpen + "': " + t.getMessage());
-//				        								}
-//				        							}
-//				        							else if (fileToOpen != null) {
-//				        								System.err.println("Failed to open graph file '" + fileToOpen + "'. Try opening it manually.");
-//				        							}
-//				        						}
-//				                				else {
-//				                					System.err.println("Unable to find an instance of IGraphVisualizer to render graph for query.\n");
-//				                				}
-//	
-//				                			}
-//			                				else {
-//			                				//if (cntr > 0) 
-//				                				//answer.append(resultSetToQuotableString(rs));
-//			                					answer.append(rs);
-//					                			//if(cntr < (numOfModels*2-1))
-//					                			//	answer.setLength(answer.length()-1);
-//				                			//if(cntr++ > 1)
-//				                				answer.append("\n");
-//			                				}
-//			                				cntr++;
-//				                		}
-//				                		//answer resultSetToQuotableString(answer.toString());
-//				                		//answer.append(".\n");
-//			                		}
-//			                		//Object ctx = triples[0].getContext();
-//			                		//addCurationManagerContentToDialog(document, reg, answer.toString(), ctx, true);
-//			                		
-//								}
-//							}
-//						}
-//					}
-//					return resultSetToQuotableString(answer.toString());
-//        		}
-//        		catch (Exception e)
-//        		{
-//	                logger.debug("AutoEdit error (of type " + e.getClass().getCanonicalName() + "): " + e.getMessage());   
-//	                return null;
-//	            }
-//			}
-
-			private Object processModelToDocQuery(Resource resource, Query lastcmd) {
-				List<GraphPatternElement> patterns = lastcmd.getPatterns();
-				for (GraphPatternElement gpe : patterns) {
-					if (gpe instanceof TripleElement) {
-						if (((TripleElement)gpe).getPredicate().getURI().equals(DialogConstants.SADL_IMPLICIT_MODEL_DIALOG_DATA_PROPERTY_URI)) {
-							Node doc = ((TripleElement)gpe).getSubject();
-							
-						}
-					}
-				}
-				return lastcmd;
-			}
-
-			private Resource getResourceFromDocument(XtextDocument document) {
-				Class<?> c = document.getClass();
-
-			    Field resfield;
-				try {
-					resfield = c.getDeclaredField("resource");
-					resfield.setAccessible(true);
-					return (Resource) resfield.get(document);
-				} catch (NoSuchFieldException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				} catch (SecurityException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				} catch (IllegalArgumentException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				} catch (IllegalAccessException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				}
-				return null;
-			}
-
-			private OntModel getTheModel() {
-				if (theModel == null) {
-					setTheModel(OntModelProvider.find(getResource()));
-				}
-				return theModel;
-			}
-
-			private void setTheModel(OntModel theModel) {
-				this.theModel = theModel;
-			}
-
-		};
-
-	    
-	    acceptor.accept(strategy, IDocument.DEFAULT_CONTENT_TYPE);
-
-	    super.configure(acceptor);
-
+	public void configure(IXtextDocument document) {
+		Preconditions.checkState(this.document == null, "Already initialized.");
+		this.document = document;
+		this.document.readOnly(resource -> {
+			initializedConfigManager(resource);
+			AnswerCurationManager answerCurationManager = new AnswerCurationManager(getConfigMgr().getModelFolder(), getConfigMgr(), resource, null);
+			setAnswerConfigurationManager(answerCurationManager);
+			getConfigMgr().addPrivateKeyValuePair(DialogConstants.ANSWER_CURATION_MANAGER, answerCurationManager);
+			return null; // Void
+		});
 	}
-	
+
+	public void dispose() {
+		super.dispose();
+		if (answerConfigurationManager != null) {
+			answerConfigurationManager.clearQuestionsAndAnsers();
+		}
+		configManager.addPrivateKeyValuePair(DialogConstants.DIALOG_ANSWER_PROVIDER, null);
+	}
+
 	/**
 	 * Method to display graph
+	 * 
 	 * @param visualizer -- IGraphVisualizer instance that contains graphing info
 	 * @return -- null if successful else an error message
 	 */
+	// XXX: called via reflection from the com.ge.research.sadl.darpa.aske.curation.AnswerCurationManager.displayGraph(IGraphVisualizer)
 	public String displayGraph(IGraphVisualizer visualizer) {
-		String[] errorMsg = {null};
+		String[] errorMsg = { null };
 		String fileToOpen = visualizer.getGraphFileToOpen();
 		if (fileToOpen != null) {
 			File fto = new File(fileToOpen);
 			if (fto.isFile()) {
 				IFileStore fileStore = EFS.getLocalFileSystem().getStore(fto.toURI());
 				new Thread(new Runnable() {
-				      public void run() {
-				            try { Thread.sleep(1000); } catch (Exception e) { }
-				            Display.getDefault().asyncExec(new Runnable() {
-				               public void run() {
-				   				try {
+					public void run() {
+						try {
+							Thread.sleep(1000);
+						} catch (Exception e) {
+						}
+						Display.getDefault().asyncExec(new Runnable() {
+							public void run() {
+								try {
 									IWorkbench wb = PlatformUI.getWorkbench();
 									IWorkbenchWindow awbw = wb.getActiveWorkbenchWindow();
 									IWorkbenchPage page = null;
@@ -660,44 +169,39 @@ public class DialogAnswerProvider extends DefaultAutoEditStrategyProvider implem
 										if (wb.getWorkbenchWindowCount() == 1) {
 											page = wb.getWorkbenchWindows()[0].getActivePage();
 										}
-								    }
-									else {
+									} else {
 										page = PlatformUI.getWorkbench().getActiveWorkbenchWindow().getActivePage();
 									}
 									if (page != null) {
 										IDE.openEditorOnFileStore(page, fileStore);
-									}
-									else {
+									} else {
 										errorMsg[0] = "Error trying to get active window";
 										System.err.println(errorMsg);
 									}
-								}
-								catch (Throwable t) {
-									errorMsg[0] = "Error trying to display graph file '" + fileToOpen + "': " + t.getMessage();
+								} catch (Throwable t) {
+									errorMsg[0] = "Error trying to display graph file '" + fileToOpen + "': "
+											+ t.getMessage();
 									System.err.println(errorMsg);
 								}
-				               }
-				            });
-				      }
-				   }).start();
-			}
-			else if (fileToOpen != null) {
+							}
+						});
+					}
+				}).start();
+			} else if (fileToOpen != null) {
 				errorMsg[0] = "Failed to open graph file '" + fileToOpen + "'. Try opening it manually.";
 				System.err.println(errorMsg);
 			}
-		}
-		else {
+		} else {
 			errorMsg[0] = "Unable to find an instance of IGraphVisualizer to render graph for query.";
 			System.err.println(errorMsg + "\n");
 		}
 		return errorMsg[0];
 	}
 
-	private String setDialogAnswerProvider(Resource resource) throws ConfigurationException {
+	private String initializedConfigManager(Resource resource) throws ConfigurationException {
 		String modelFolder = SadlActionHandler.getModelFolderFromResource(resource);
-		ConfigurationManagerForIDE cfgmgr = ConfigurationManagerForIdeFactory.getConfigurationManagerForIDE(modelFolder, null);
-		setConfigMgr(cfgmgr);
-		cfgmgr.addPrivateKeyValuePair(DialogConstants.DIALOG_ANSWER_PROVIDER, this);
+		configManager = ConfigurationManagerForIdeFactory.getConfigurationManagerForIDE(modelFolder, null);
+		configManager.addPrivateKeyValuePair(DialogConstants.DIALOG_ANSWER_PROVIDER, this);
 		return modelFolder;
 	}
 
@@ -711,12 +215,10 @@ public class DialogAnswerProvider extends DefaultAutoEditStrategyProvider implem
 			if (content.endsWith(".") || content.endsWith("?")) {
 				String lastChar = content.substring(content.length() - 1);
 				modContent = "\"" + content.substring(0, content.length() - 1).replaceAll("\"", "'") + "\"" + lastChar;
-			}
-			else {
+			} else {
 				modContent = "\"" + content.replaceAll("\"", "'") + "\"" + ".";
 			}
-		}
-		else {
+		} else {
 			modContent = content;
 		}
 		if (prependCM) {
@@ -725,116 +227,114 @@ public class DialogAnswerProvider extends DefaultAutoEditStrategyProvider implem
 		return modContent;
 	}
 
-	private XtextDocument getTheDocument() {
-		return theDocument;
+	private IXtextDocument getTheDocument() {
+		return document;
 	}
 
 	private void setTheDocument(XtextDocument theDocument) {
-		this.theDocument = theDocument;
+		this.document = theDocument;
 	}
 	
-	public Object[] getSourceText(EObject po) {
-		INode node = getParserObjectNode(po);
+	private Object[] getSourceText(EObject object) {
+		INode node = NodeModelUtils.findActualNodeFor(object);
 		if (node != null) {
 			String txt = NodeModelUtils.getTokenText(node);
-			int start = NodeModelUtils.getNode(po).getTotalOffset();
-			int len = NodeModelUtils.getNode(po).getTotalLength();
+			int start = NodeModelUtils.getNode(object).getTotalOffset();
+			int length = NodeModelUtils.getNode(object).getTotalLength();
 			Object[] ret = new Object[3];
 			ret[0] = txt.trim();
 			ret[1] = start;
-			ret[2] = len;
+			ret[2] = length;
 			return ret;
 		}
 		return null;
 	}
 
-	public int[] getStartAndLength(EObject po) {
-		INode node = getParserObjectNode(po);
-		if (node != null) {
-			int start = NodeModelUtils.getNode(po).getTotalOffset();
-			int len = NodeModelUtils.getNode(po).getTotalLength();
-			int[] ret = new int[2];
-			ret[0] = start;
-			ret[1] = len;
-			return ret;
-		}
-		return null;
-	}
-
-	protected INode getParserObjectNode(EObject po) {
-		Object r = po.eResource();
-		if (r instanceof XtextResource) {
-			INode root = ((XtextResource) r).getParseResult().getRootNode();
-	        for(INode node : root.getAsTreeIterable()) {   
-	        	if (node instanceof CompositeNodeWithSemanticElement) {
-	        		EObject semElt = ((CompositeNodeWithSemanticElement)node).getSemanticElement();
-	        		if (semElt != null && semElt.equals(po)) {
-	        			// this is the one!
-       					return node;
-	        		}
-	        	}
-	        }
-		}
-		org.eclipse.emf.common.util.TreeIterator<EObject> titr = po.eAllContents();
-		while (titr.hasNext()) {
-			EObject el = titr.next();
-//TODO what's supposed to happen here?
-			int i = 0;
-		}
-		return null;
+	private synchronized boolean addCurationManagerContentToDialog(IDocument document, IRegion reg, String content,
+			Object ctx, boolean quote) throws BadLocationException {
+		
+		Display.getDefault().syncExec(() -> {
+			try {
+				String modContent;
+				int loc;
+				if (quote) {
+					modContent = generateDoubleQuotedContentForDialog(content);
+				} else {
+					modContent = content.startsWith("CM:") ? content : ("CM: " + content);
+					if (!modContent.trim().endsWith(".") && !modContent.trim().endsWith("?")) {
+						modContent += ".";
+					}
+				}
+				if (ctx instanceof EObject && getSourceText((EObject) ctx) != null) {
+					Object[] srcinfo = getSourceText((EObject) ctx);
+					// String srctext = (String) srcinfo[0];
+					int start = (int) srcinfo[1];
+					int length = (int) srcinfo[2];
+					// find location of this in document
+					loc = start + length + 1;
+					int docLen = document.getLength();
+					int testLen = Math.min(5, docLen - loc);
+					String test = document.get(loc, testLen);
+					if (!test.startsWith(" ")) {
+						modContent = " " + modContent;
+					}
+					if (!test.startsWith("\r\n")) {
+						modContent += "\r\n";
+					}
+					document.replace(start + length + 1, 0, modContent);
+					loc = start + length + 1;
+					if (document instanceof XtextDocument && ctx instanceof EObject) {
+						final URI expectedUri = ((EObject) ctx).eResource().getURI();
+						final int caretOffset = start + length + 1 + modContent.length();
+						setCaretOffsetInEditor(expectedUri, caretOffset); // Async
+					}
+				} else {
+					loc = document.getLength();
+					document.set(document.get() + modContent + "\n");
+				}
+				LOGGER.debug("Adding to Dialog editor: " + modContent);
+				textAtLocation(document, modContent, loc);
+			} catch (BadLocationException e) {
+				Exceptions.throwUncheckedException(e);
+			}
+		});
+		return true;
 	}
 	
-	public synchronized boolean addCurationManagerContentToDialog(IDocument document, IRegion reg, String content, Object ctx, boolean quote)
-			throws BadLocationException {
-		String modContent;
-		int loc;
-		if (quote) {
-			modContent = generateDoubleQuotedContentForDialog(content);
-		}
-		else {
-			modContent = content.startsWith("CM:") ? content : ("CM: " + content);
-			if (!modContent.trim().endsWith(".") && !modContent.trim().endsWith("?")) {
-				modContent += ".";
+	private void setCaretOffsetInEditor(URI uri, int caretOffset) {
+		Display.getDefault().asyncExec(() -> {
+			IWorkbenchPage page = PlatformUI.getWorkbench().getActiveWorkbenchWindow().getActivePage();
+			for (IEditorReference editorRef : page.getEditorReferences()) {
+				if (DialogAnswerProviders.DIALOG_EDITOR_ID.equals(editorRef.getId())) {
+					IEditorInput editorInput;
+					try {
+						editorInput = editorRef.getEditorInput();
+						if (editorInput instanceof IFileEditorInput) {
+							String path = ((IFileEditorInput) editorInput).getFile().getFullPath().toPortableString();
+							URI editorUri = URI.createPlatformResourceURI(path, true);
+							if (editorUri.equals(uri)) {
+								IWorkbenchPart part = editorRef.getPart(false);
+								if (part instanceof IAdaptable) {
+									Control control = part.getAdapter(Control.class);
+									if (control instanceof StyledText) {
+										((StyledText) control).setCaretOffset(caretOffset);
+										control.redraw();
+									}
+								}
+								break;
+							}
+						}
+					} catch (PartInitException e) {
+						e.printStackTrace();
+					}
+				}
 			}
-		}
-//		if (!modContent.startsWith(" ")) {
-//			modContent = " " + modContent;
-//		}
-		if (ctx instanceof EObject && getSourceText((EObject)ctx) != null) {
-//			String damageStr = document.get(reg.getOffset(), reg.getLength());
-			Object[] srcinfo = getSourceText((EObject)ctx);
-			String srctext = (String) srcinfo[0];
-			int start = (int) srcinfo[1];
-			int len = (int) srcinfo[2];
-			//find location of this in document
-			loc = start + len + 1;
-			int docLen = document.getLength();
-			int testLen = Math.min(5, docLen - loc);
-			String test = document.get(loc, testLen);
-			if (!test.startsWith(" ")) {
-				modContent = " " + modContent;
-			}
-			if (!test.startsWith("\r\n")) {
-				modContent += "\r\n";
-			}
-		    document.replace(start + len + 1, 0, modContent);
-		    loc = start + len + 1;
-		    if (document instanceof XtextDocument && ctx instanceof EObject) {
-		    	// is there a way to move the cursor?
-//				ITextRegionWithLineInformation rwli = NodeModelUtils.getNode((EObject) ctx).getTextRegionWithLineInformation();
-		    }
-		}
-		else {
-			loc = document.getLength();
-//			document.replace(loc, 0, modContent + "\n");
-			document.set(document.get() + modContent + "\n");
-		}
-		logger.debug("Adding to Dialog editor: " + modContent);
-		return textAtLocation(document, modContent, loc);
+		});
 	}
 	
 	/**
 	 * Method to check to see if the content was added successfully
+	 * 
 	 * @param document
 	 * @param content
 	 * @param loc
@@ -850,28 +350,10 @@ public class DialogAnswerProvider extends DefaultAutoEditStrategyProvider implem
 					return true;
 				}
 			} catch (BadLocationException e) {
-				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
 		}
 		return false;
-	}
-
-	public String addCurationManagerInitiatedContent(AnswerCurationManager acm, String content) {
-		setAnswerConfigurationManager(acm);
-//        Consumer<MixedInitiativeElement> respond = a -> this.provideResponse(a);
-//        MixedInitiativeTextualResponse question = new MixedInitiativeTextualResponse(content);
-//        MixedInitiativeElement questionElement = new MixedInitiativeElement(question, respond);
-//		addMixedInitiativeElement(content, questionElement);
-//        initiateMixedInitiativeInteraction(questionElement);
-		try {
-			boolean quote = isContentQuoted(content);
-			addCurationManagerContentToDialog(getTheDocument(), null, content, null, quote);
-		} catch (BadLocationException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-		return "success";
 	}
 
 	@Override
@@ -887,64 +369,15 @@ public class DialogAnswerProvider extends DefaultAutoEditStrategyProvider implem
 	}
 
 	@Override
-	public String addCurationManagerInitiatedContent(AnswerCurationManager acm, String methodToCall,
-			List<Object> args, String content) {
-		setAnswerConfigurationManager(acm);
-//        Consumer<MixedInitiativeElement> respond = a -> this.provideResponse(a);
-//        MixedInitiativeTextualResponse question = new MixedInitiativeTextualResponse(content);
-//        MixedInitiativeElement questionElement = new MixedInitiativeElement(question, respond, acm, methodToCall, args);
-//		addMixedInitiativeElement(content, questionElement);
-		QuestionWithCallbackContent qwcc = new QuestionWithCallbackContent(null, Agent.CM, methodToCall, args, content);
-        initiateMixedInitiativeInteraction(qwcc);
-        acm.addUnansweredQuestion(content, qwcc);
-		return "success";
-	}
-	
-	@Override
 	public boolean addCurationManagerAnswerContent(AnswerCurationManager acm, String content, Object ctx) {
-		setAnswerConfigurationManager(acm);
+		answerConfigurationManager = acm;
 		try {
-			return addCurationManagerContentToDialog(getTheDocument(), null, content, ctx, false);
+			return addCurationManagerContentToDialog(document, null, content, ctx, false);
 		} catch (BadLocationException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 		return false;
 	}
-	
-	private void addMixedInitiativeElement(String key, MixedInitiativeElement element) {
-		if (key.endsWith(".") || key.endsWith("?")) {
-			// drop EOS
-			key = key.substring(0, key.length() - 1);
-		}
-		mixedInitiativeElements.put(key, element);
-	}
-	
-	@Override
-	public boolean removeMixedInitiativeElement(String key) {
-		mixedInitiativeElements.remove(key);
-		return true;
-	}
-	
-	@Override
-	public MixedInitiativeElement getMixedInitiativeElement(String key) {
-		return mixedInitiativeElements.get(key);
-	}
-
-//	@Override
-//	public String initiateMixedInitiativeInteraction(MixedInitiativeElement element) {
-//		String content = element.getContent().toString();
-//		if (getTheDocument() != null) {
-//			try {
-//				boolean quote = isContentQuoted(content);
-//				addCurationManagerContentToDialog(getTheDocument(), null, content, null, quote);
-//			} catch (BadLocationException e) {
-//				// TODO Auto-generated catch block
-//				e.printStackTrace();
-//			}
-//		}
-//		return null;
-//	}
 
 	@Override
 	public String initiateMixedInitiativeInteraction(QuestionWithCallbackContent element) {
@@ -952,9 +385,8 @@ public class DialogAnswerProvider extends DefaultAutoEditStrategyProvider implem
 		if (getTheDocument() != null) {
 			try {
 				boolean quote = isContentQuoted(content);
-				addCurationManagerContentToDialog(getTheDocument(), null, content, null, quote);
+				addCurationManagerContentToDialog(document, null, content, null, quote);
 			} catch (BadLocationException e) {
-				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
 		}
@@ -982,14 +414,12 @@ public class DialogAnswerProvider extends DefaultAutoEditStrategyProvider implem
 					try {
 						Object results = null;
 						if (args.size() == 0) {
-							results = m.invoke(acm, null);
-						}
-						else {
+							results = m.invoke(acm);
+						} else {
 							Object arg0 = args.get(0);
 							if (args.size() == 1) {
 								results = m.invoke(acm, arg0);
-							}
-							else {
+							} else {
 								Object arg1 = args.get(1);
 								if (args.size() == 2) {
 									results = m.invoke(acm, arg0, arg1);
@@ -1010,69 +440,64 @@ public class DialogAnswerProvider extends DefaultAutoEditStrategyProvider implem
 														owlfile.delete();
 														try {
 															String outputOwlFileName = owlfile.getCanonicalPath();
-															String altUrl = new SadlUtils().fileNameToFileUrl(outputOwlFileName);
-															
-															String publicUri = acm.getDomainModelConfigurationManager().getPublicUriFromActualUrl(altUrl);
+															String altUrl = new SadlUtils()
+																	.fileNameToFileUrl(outputOwlFileName);
+
+															String publicUri = acm.getDomainModelConfigurationManager()
+																	.getPublicUriFromActualUrl(altUrl);
 															if (publicUri != null) {
-																acm.getDomainModelConfigurationManager().deleteModel(publicUri);
-																acm.getDomainModelConfigurationManager().deleteMapping(altUrl, publicUri);
+																acm.getDomainModelConfigurationManager()
+																		.deleteModel(publicUri);
+																acm.getDomainModelConfigurationManager()
+																		.deleteMapping(altUrl, publicUri);
 															}
-														} catch (ConfigurationException e) {
-															// TODO Auto-generated catch block
-															e.printStackTrace();
-														} catch (URISyntaxException e) {
-															// TODO Auto-generated catch block
-															e.printStackTrace();
-														} catch (IOException e) {
-															// TODO Auto-generated catch block
+														} catch (Exception e) {
 															e.printStackTrace();
 														}
 													}
 													projectName = sf.getParentFile().getParentFile().getName();
 												}
-											}				
-											else {
-												// add import of OWL file from policy file since there won't be a SADL file to build an OWL and create mappings.
+											} else {
+												// add import of OWL file from policy file since there won't be a SADL
+												// file to build an OWL and create mappings.
 												try {
-													String importActualUrl = new SadlUtils().fileNameToFileUrl(arg0.toString());
+													String importActualUrl = new SadlUtils()
+															.fileNameToFileUrl(arg0.toString());
 													String altUrl = new SadlUtils().fileNameToFileUrl(importActualUrl);
-													String importPublicUri = acm.getDomainModelConfigurationManager().getPublicUriFromActualUrl(altUrl);
-													String prefix = acm.getDomainModelConfigurationManager().getGlobalPrefix(importPublicUri);
-													acm.getDomainModelConfigurationManager().addMapping(importActualUrl, importPublicUri, prefix, false, "AnswerCurationManager");
+													String importPublicUri = acm.getDomainModelConfigurationManager()
+															.getPublicUriFromActualUrl(altUrl);
+													String prefix = acm.getDomainModelConfigurationManager()
+															.getGlobalPrefix(importPublicUri);
+													acm.getDomainModelConfigurationManager().addMapping(importActualUrl,
+															importPublicUri, prefix, false, "AnswerCurationManager");
 													String prjname = owlfile.getParentFile().getParentFile().getName();
-													IProject prj = ResourcesPlugin.getPlugin().getWorkspace().getRoot().getProject(prjname);
+													IProject prj = ResourcesPlugin.getWorkspace().getRoot()
+															.getProject(prjname);
 													prj.refreshLocal(IResource.DEPTH_INFINITE, null);
-												} catch (IOException e) {
-													// TODO Auto-generated catch block
+												} catch (Exception e) {
 													e.printStackTrace();
-												} catch (URISyntaxException e) {
-													// TODO Auto-generated catch block
-													e.printStackTrace();
-												} catch (ConfigurationException e) {
-													// TODO Auto-generated catch block
-													e.printStackTrace();
-												} catch (CoreException e) {
-													// TODO Auto-generated catch block
 													e.printStackTrace();
 												}
+											}
+										}
+										if (projectName != null) { // only not null if doing SADL conversion
+											IProject project = ResourcesPlugin.getWorkspace().getRoot()
+													.getProject(projectName);
+											try {
+												project.build(IncrementalProjectBuilder.AUTO_BUILD, null);
+												// display new SADL file
+												displayFiles(configManager.getModelFolder(), sadlFiles);
+											} catch (Exception e) {
+												e.printStackTrace();
 											}
 										}
 									}
 								}
 							}
 						}
-//						System.out.println(result.toString());
-					} catch (IllegalAccessException e) {
-						// TODO Auto-generated catch block
-						e.printStackTrace();
-					} catch (IllegalArgumentException e) {
-						// TODO Auto-generated catch block
-						e.printStackTrace();
-					} catch (InvocationTargetException e) {
-						// TODO Auto-generated catch block
+					} catch (Exception e) {
 						e.printStackTrace();
 					}
-					break;
 				}
 			}
 //		}	
@@ -1104,71 +529,31 @@ public class DialogAnswerProvider extends DefaultAutoEditStrategyProvider implem
 		}
 	}
 
-	private void insertExtractedModelImport(XtextDocument doc, AnswerCurationManager acm) {
-		String cmn = acm.getExtractionProcessor().getCodeModelName();
-		String insert = "import \"" + cmn + "\".\n\r";
-		if (cmn != null) {
-			doc.readOnly(new IUnitOfWork.Void<XtextResource>() {
-
-				@Override
-				public void process(XtextResource rsrc) throws Exception {
-					// TODO Auto-generated method stub
-					EList<EObject> cntnts = rsrc.getContents();
-					if (cntnts.get(0) instanceof SadlModel) {
-						int loc = -1;
-						SadlModel sm = (SadlModel) cntnts.get(0);
-						EList<SadlImport> imprts = sm.getImports();
-						if (imprts != null) {
-							// insert import after last import
-							int[] info = getStartAndLength(imprts.get(imprts.size() - 1));
-							loc = info[0] + info[1];
-						}
-						else {
-							// insert import after uri
-							EList<SadlModelElement> elements = sm.getElements();
-							if (elements != null) {
-								int[] info = getStartAndLength(elements.get(elements.size() - 1));
-								loc = info[0] + info[1];
-							}
-							else {
-								loc = doc.getLength();
-							}
-						}
-						if (loc > 0) {
-							// insert at loc
-							try {
-								doc.replace(loc + 1, insert.length(), insert);
-							} catch (BadLocationException e) {
-								// TODO Auto-generated catch block
-								e.printStackTrace();
-							}
-						}
-					}
-					
-				}
-			});
-		}
+	@Override
+	protected IConfigurationManagerForIDE getConfigMgr() {
+		return configManager;
 	}
 
-	private void displayFiles(String codeModelFolder, List<File> sadlFiles) {
+	@Override
+	protected void displayFiles(String codeModelFolder, List<File> sadlFiles) {
 		File cmf = new File(codeModelFolder);
-    	IProject codeModelProject = null;
+		IProject codeModelProject = null;
 		if (cmf.exists()) {
 			File prjf = cmf.getParentFile();
 			codeModelProject = ResourcesPlugin.getWorkspace().getRoot().getProject(prjf.getName());
 		}
 		if (codeModelProject != null) {
 			try {
-	     		// open files to be imported in the code model project
-	    		IProject project = codeModelProject;
-	    		if (!project.isOpen())
-	    		    project.open(null);
+				// open files to be imported in the code model project
+				IProject project = codeModelProject;
+				if (!project.isOpen())
+					project.open(null);
 				try {
 					List<IFile> iFiles = new ArrayList<IFile>();
 					List<IPath> locations = new ArrayList<IPath>();
 					for (File sf : sadlFiles) {
 						String prjname = project.getFullPath().lastSegment();
-			    		IPath location = new Path(sf.getCanonicalPath());
+						IPath location = new Path(sf.getCanonicalPath());
 						locations.add(location);
 						String[] segarray = location.segments();
 						int segsAdded = 0;
@@ -1182,86 +567,73 @@ public class DialogAnswerProvider extends DefaultAutoEditStrategyProvider implem
 								sb.append(seg);
 							}
 							if (!prjFound && seg.equals(prjname)) {
-								prjFound = true;;
+								prjFound = true;
+								;
 							}
 						}
 						IFile file = project.getFile(sb.toString());
 						iFiles.add(file);
 					}
-	    			project.refreshLocal(IResource.DEPTH_INFINITE, null);
-	    			for (int i = 0; i < iFiles.size(); i++) {
-	    				IFile file = iFiles.get(i);
-	    				IPath location = locations.get(i);
-			    		if (!file.exists()) {
-			    			file.createLink(location, IResource.NONE, null);
-			    		}
-	    			}
-		    		IWorkbenchWindow window = PlatformUI.getWorkbench().getActiveWorkbenchWindow();
-		    	    if (window != null) {
-		    	    	IWorkbenchPage page = window.getActivePage();
-		    	    	if (page != null) {
-		    	    		for (IPath location : locations) {
-			        		    try {
-			        		    	IWorkbenchPart actpart = page.getActivePart();
-			            		    IFileStore fileStore = EFS.getLocalFileSystem().getStore(location);
-			            		    IDE.openEditorOnFileStore( page, fileStore );
-			            		    page.bringToTop(actpart);
-				    		    } catch ( PartInitException e ) {
-				    		        System.err.println("Unable to open '" + location.lastSegment() + "' in an editor.");
-				    		    }
-		    	    		}
-		    	    	}
-		    	    }
-		    	    else {
-		    	    	PlatformUI.getWorkbench().getDisplay().asyncExec(new Runnable() {
-		    	    	    public void run() {
-		    	    	        IWorkbenchWindow window = PlatformUI.getWorkbench().getActiveWorkbenchWindow();
-		    		    	    if (window != null) {
-		    		    	    	IWorkbenchPage page = window.getActivePage();
-		    		    	    	if (page != null) {
-		    		    	    		for (IPath location : locations) {
-			    		        		    try {
-			    		        		    	IWorkbenchPart actpart = page.getActivePart();
-			    		            		    IFileStore fileStore = EFS.getLocalFileSystem().getStore(location);
-			    		            		    IDE.openEditorOnFileStore( page, fileStore );
-			    		            		    page.bringToTop(actpart);
-			    			    		    } catch ( PartInitException e ) {
-			    			    		        System.err.println("Unable to open '" + location.lastSegment() + "' in an editor.");
-			    			    		    }
-		    		    	    		}
-		    		    	    	}
-		    		    	    }
-		    	    	    }
-		    	    	});
-		    	    }
+					project.refreshLocal(IResource.DEPTH_INFINITE, null);
+					for (int i = 0; i < iFiles.size(); i++) {
+						IFile file = iFiles.get(i);
+						IPath location = locations.get(i);
+						if (!file.exists()) {
+							file.createLink(location, IResource.NONE, null);
+						}
+					}
+					IWorkbenchWindow window = PlatformUI.getWorkbench().getActiveWorkbenchWindow();
+					if (window != null) {
+						IWorkbenchPage page = window.getActivePage();
+						if (page != null) {
+							for (IPath location : locations) {
+								try {
+									IWorkbenchPart actpart = page.getActivePart();
+									IFileStore fileStore = EFS.getLocalFileSystem().getStore(location);
+									IDE.openEditorOnFileStore(page, fileStore);
+									page.bringToTop(actpart);
+								} catch (PartInitException e) {
+									System.err.println("Unable to open '" + location.lastSegment() + "' in an editor.");
+								}
+							}
+						}
+					} else {
+						PlatformUI.getWorkbench().getDisplay().asyncExec(new Runnable() {
+							public void run() {
+								IWorkbenchWindow window = PlatformUI.getWorkbench().getActiveWorkbenchWindow();
+								if (window != null) {
+									IWorkbenchPage page = window.getActivePage();
+									if (page != null) {
+										for (IPath location : locations) {
+											try {
+												IWorkbenchPart actpart = page.getActivePart();
+												IFileStore fileStore = EFS.getLocalFileSystem().getStore(location);
+												IDE.openEditorOnFileStore(page, fileStore);
+												page.bringToTop(actpart);
+											} catch (PartInitException e) {
+												System.err.println("Unable to open '" + location.lastSegment()
+														+ "' in an editor.");
+											}
+										}
+									}
+								}
+							}
+						});
+					}
 				} catch (IOException e2) {
-					// TODO Auto-generated catch block
 					e2.printStackTrace();
 				}
-	 
-	    	} catch (CoreException e) {
-//	    		IStatus coreStatus = e.getStatus();
-//	    		String newMessage = NLS.bind(DataTransferMessages.ImportOperation_coreImportError, sf, coreStatus.getMessage());
-//	    		IStatus status = new Status(coreStatus.getSeverity(), coreStatus
-//	    				.getPlugin(), coreStatus.getCode(), newMessage, null);
-	    		e.printStackTrace();
-	    	}
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
 		}
-	}
-
-	private IConfigurationManagerForIDE getConfigMgr() {
-		return configMgr;
-	}
-
-	private void setConfigMgr(IConfigurationManagerForIDE configMgr) {
-		this.configMgr = configMgr;
 	}
 
 	protected Map<String, String> getPreferences(IFile file) {
 		final URI uri = URI.createPlatformResourceURI(file.getFullPath().toString(), true);
 		return getPreferences(uri);
 	}
-	
+
 	protected Map<String, String> getPreferences(URI uri) {
 		Injector reqInjector = safeGetInjector(DialogActivator.COM_GE_RESEARCH_SADL_DARPA_ASKE_DIALOG);
 		IPreferenceValuesProvider pvp = reqInjector.getInstance(IPreferenceValuesProvider.class);
@@ -1297,39 +669,21 @@ public class DialogAnswerProvider extends DefaultAutoEditStrategyProvider implem
 		return null;
 	}
 
-	protected final Injector safeGetInjector(String name){
+	protected final Injector safeGetInjector(String name) {
 		final AtomicReference<Injector> i = new AtomicReference<Injector>();
-		Display.getDefault().syncExec(new Runnable(){
+		Display.getDefault().syncExec(new Runnable() {
 			@Override
 			public void run() {
 				i.set(DialogActivator.getInstance().getInjector(name));
 			}
 		});
-		
+
 		return i.get();
 	}
 
 	public Resource getResource() {
-		return resource;
-	}
-
-	private void setResource(Resource resource) {
-		this.resource = resource;
-	}
-
-	public AnswerCurationManager getAnswerConfigurationManager() {
-		return answerConfigurationManager;
-	}
-
-	public void setAnswerConfigurationManager(AnswerCurationManager answerConfigurationManager) {
-		this.answerConfigurationManager = answerConfigurationManager;
-	}
-
-	@Override
-	public void resourceChanged(IResourceChangeEvent event) {
-		if (event.getType() == IResourceChangeEvent.PRE_CLOSE) {
-			getAnswerConfigurationManager().clearQuestionsAndAnsers();
-		}
+		Preconditions.checkState(this.document != null, "Not initialized yet.");
+		return this.document.readOnly(resource -> resource);
 	}
 
 }

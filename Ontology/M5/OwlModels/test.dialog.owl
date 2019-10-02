@@ -4,7 +4,6 @@
     xmlns:sadlbasemodel="http://sadl.org/sadlbasemodel"
     xmlns:owl="http://www.w3.org/2002/07/owl#"
     xmlns:sadlimplicitmodel="http://sadl.org/sadlimplicitmodel"
-    xmlns:sos="http://sadl.org/SpeedOfSound.sadl"
     xmlns:builtinfunctions="http://sadl.org/builtinfunctions"
     xmlns:j.0="http://sadl.org/sadlimplicitmodel#"
     xmlns:rdfs="http://www.w3.org/2000/01/rdf-schema#"
@@ -21,15 +20,15 @@
     <j.0:expression>
       <j.0:Script>
         <j.0:script rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
-        >#!/usr/bin/env python
-""" generated source for module inputfile """
-class Mach(object):
-    """ generated source for class Mach """
-    def CAL_SOS(self, T, G, R, Q):
-        """ generated source for method CAL_SOS """
-        WOW = 1 + (G - 1) / (1 + (G - 1) * Math.pow((Q / T), 2) * Math.exp(Q / T) / Math.pow((Math.exp(Q / T) - 1), 2))
-        return (Math.sqrt(32.174 * T * R * WOW))
-
+        >#!/usr/bin/env python&#xD;
+""" generated source for module inputfile """&#xD;
+class Mach(object):&#xD;
+    """ generated source for class Mach """&#xD;
+    def CAL_SOS(self, T, G, R, Q):&#xD;
+        """ generated source for method CAL_SOS """&#xD;
+        WOW = 1 + (G - 1) / (1 + (G - 1) * Math.pow((Q / T), 2) * Math.exp(Q / T) / Math.pow((Math.exp(Q / T) - 1), 2))&#xD;
+        return (Math.sqrt(32.174 * T * R * WOW))&#xD;
+&#xD;
 </j.0:script>
         <j.0:language rdf:resource="http://sadl.org/sadlimplicitmodel#Python"/>
       </j.0:Script>
@@ -97,14 +96,14 @@ class Mach(object):
     <j.0:expression>
       <j.0:Script>
         <j.0:script rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
-        >#!/usr/bin/env python
-""" generated source for module inputfile """
-class Mach(object):
-    """ generated source for class Mach """
-    def TQTT(self, M, G):
-        """ generated source for method TQTT """
-        return Math.pow((1 + (G - 1) / 2 * Math.pow(M, 2)), -1)
-
+        >#!/usr/bin/env python&#xD;
+""" generated source for module inputfile """&#xD;
+class Mach(object):&#xD;
+    """ generated source for class Mach """&#xD;
+    def TQTT(self, M, G):&#xD;
+        """ generated source for method TQTT """&#xD;
+        return Math.pow((1 + (G - 1) / 2 * Math.pow(M, 2)), -1)&#xD;
+&#xD;
 </j.0:script>
         <j.0:language rdf:resource="http://sadl.org/sadlimplicitmodel#Python"/>
       </j.0:Script>
@@ -155,37 +154,37 @@ class Mach(object):
     <j.0:expression>
       <j.0:Script>
         <j.0:script rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
-        >#!/usr/bin/env python
-""" generated source for module inputfile """
-class Mach(object):
-    """ generated source for class Mach """
-    def CAL_TT(self, T, M, G, Q):
-        """ generated source for method CAL_TT """
-        TT = T / TQTT(M, G)
-        EPS = 0.00001
-        Z = 1
-        Z2 = 0
-        TT2 = 0
-        TT1 = float()
-        Z1 = float()
-        i = 1
-        while Math.abs(Z) &gt; EPS:
-            Z = Math.pow(M, 2) - 2 * TT / CAL_GAM(T, G, Q) / T * (G / (G - 1) * (1 - T / TT) + Q / TT * (1 / (Math.exp(Q / TT) - 1) - 1 / (Math.exp(Q / T) - 1)))
-            if i == 1:
-                Z2 = Z
-                TT2 = TT
-                TT = TT2 + 100
-                i = 2
-            else:
-                TT1 = TT2
-                Z1 = Z2
-                TT2 = TT
-                Z2 = Z
-                TT = TT2 - Z2 * (TT2 - TT1) / (Z2 - Z1)
-        if M &lt;= 0.1:
-            TT = T / TQTT(M, G)
-        return TT
-
+        >#!/usr/bin/env python&#xD;
+""" generated source for module inputfile """&#xD;
+class Mach(object):&#xD;
+    """ generated source for class Mach """&#xD;
+    def CAL_TT(self, T, M, G, Q):&#xD;
+        """ generated source for method CAL_TT """&#xD;
+        TT = T / TQTT(M, G)&#xD;
+        EPS = 0.00001&#xD;
+        Z = 1&#xD;
+        Z2 = 0&#xD;
+        TT2 = 0&#xD;
+        TT1 = float()&#xD;
+        Z1 = float()&#xD;
+        i = 1&#xD;
+        while Math.abs(Z) &gt; EPS:&#xD;
+            Z = Math.pow(M, 2) - 2 * TT / CAL_GAM(T, G, Q) / T * (G / (G - 1) * (1 - T / TT) + Q / TT * (1 / (Math.exp(Q / TT) - 1) - 1 / (Math.exp(Q / T) - 1)))&#xD;
+            if i == 1:&#xD;
+                Z2 = Z&#xD;
+                TT2 = TT&#xD;
+                TT = TT2 + 100&#xD;
+                i = 2&#xD;
+            else:&#xD;
+                TT1 = TT2&#xD;
+                Z1 = Z2&#xD;
+                TT2 = TT&#xD;
+                Z2 = Z&#xD;
+                TT = TT2 - Z2 * (TT2 - TT1) / (Z2 - Z1)&#xD;
+        if M &lt;= 0.1:&#xD;
+            TT = T / TQTT(M, G)&#xD;
+        return TT&#xD;
+&#xD;
 </j.0:script>
         <j.0:language rdf:resource="http://sadl.org/sadlimplicitmodel#Python"/>
       </j.0:Script>
@@ -277,14 +276,14 @@ class Mach(object):
     <j.0:expression>
       <j.0:Script>
         <j.0:script rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
-        >#!/usr/bin/env python
-""" generated source for module inputfile """
-class Mach(object):
-    """ generated source for class Mach """
-    def CAL_GAM(self, T, G, Q):
-        """ generated source for method CAL_GAM """
-        return (1 + (G - 1) / (1 + (G - 1) * (Math.pow((Q / T), 2) * Math.exp(Q / T) / Math.pow((Math.exp(Q / T) - 1), 2))))
-
+        >#!/usr/bin/env python&#xD;
+""" generated source for module inputfile """&#xD;
+class Mach(object):&#xD;
+    """ generated source for class Mach """&#xD;
+    def CAL_GAM(self, T, G, Q):&#xD;
+        """ generated source for method CAL_GAM """&#xD;
+        return (1 + (G - 1) / (1 + (G - 1) * (Math.pow((Q / T), 2) * Math.exp(Q / T) / Math.pow((Math.exp(Q / T) - 1), 2))))&#xD;
+&#xD;
 </j.0:script>
         <j.0:language rdf:resource="http://sadl.org/sadlimplicitmodel#Python"/>
       </j.0:Script>
@@ -343,37 +342,37 @@ class Mach(object):
     <j.0:expression>
       <j.0:Script>
         <j.0:script rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
-        >#!/usr/bin/env python
-""" generated source for module inputfile """
-class Mach(object):
-    """ generated source for class Mach """
-    def CAL_T(self, TT, M, G, Q):
-        """ generated source for method CAL_T """
-        T = TT * TQTT(M, G)
-        EPS = 0.00001
-        Z = 1
-        Z2 = 0
-        T2 = 0
-        T1 = float()
-        Z1 = float()
-        i = 1
-        while Math.abs(Z) &gt; EPS:
-            Z = Math.pow(M, 2) - 2 * TT / CAL_GAM(T, G, Q) / T * (G / (G - 1) * (1 - T / TT) + Q / TT * (1 / (Math.exp(Q / TT) - 1) - 1 / (Math.exp(Q / T) - 1)))
-            if i == 1:
-                Z2 = Z
-                T2 = T
-                T = T2 + 100
-                i = 2
-            else:
-                T1 = T2
-                Z1 = Z2
-                T2 = T
-                Z2 = Z
-                T = T2 - Z2 * (T2 - T1) / (Z2 - Z1)
-        if M &lt;= 0.1:
-            T = TT * TQTT(M, G)
-        return T
-
+        >#!/usr/bin/env python&#xD;
+""" generated source for module inputfile """&#xD;
+class Mach(object):&#xD;
+    """ generated source for class Mach """&#xD;
+    def CAL_T(self, TT, M, G, Q):&#xD;
+        """ generated source for method CAL_T """&#xD;
+        T = TT * TQTT(M, G)&#xD;
+        EPS = 0.00001&#xD;
+        Z = 1&#xD;
+        Z2 = 0&#xD;
+        T2 = 0&#xD;
+        T1 = float()&#xD;
+        Z1 = float()&#xD;
+        i = 1&#xD;
+        while Math.abs(Z) &gt; EPS:&#xD;
+            Z = Math.pow(M, 2) - 2 * TT / CAL_GAM(T, G, Q) / T * (G / (G - 1) * (1 - T / TT) + Q / TT * (1 / (Math.exp(Q / TT) - 1) - 1 / (Math.exp(Q / T) - 1)))&#xD;
+            if i == 1:&#xD;
+                Z2 = Z&#xD;
+                T2 = T&#xD;
+                T = T2 + 100&#xD;
+                i = 2&#xD;
+            else:&#xD;
+                T1 = T2&#xD;
+                Z1 = Z2&#xD;
+                T2 = T&#xD;
+                Z2 = Z&#xD;
+                T = T2 - Z2 * (T2 - T1) / (Z2 - Z1)&#xD;
+        if M &lt;= 0.1:&#xD;
+            T = TT * TQTT(M, G)&#xD;
+        return T&#xD;
+&#xD;
 </j.0:script>
         <j.0:language rdf:resource="http://sadl.org/sadlimplicitmodel#Python"/>
       </j.0:Script>
