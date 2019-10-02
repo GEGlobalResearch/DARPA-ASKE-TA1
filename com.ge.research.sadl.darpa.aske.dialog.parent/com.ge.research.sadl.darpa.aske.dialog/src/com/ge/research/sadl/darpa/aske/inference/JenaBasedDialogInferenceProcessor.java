@@ -995,17 +995,17 @@ public class JenaBasedDialogInferenceProcessor extends JenaBasedSadlInferencePro
 //					}
 		
 					
-					cgJson = kgResultsToJson(nodesCSVString, modelsCSVString, queryMode, "");
-					dbnJson = generateDBNjson(cgJson);
-					class2lbl = getClassLabelMapping(dbnJson);
+					cgJson 		= kgResultsToJson(nodesCSVString, modelsCSVString, queryMode, "");
+					dbnJson 	= generateDBNjson(cgJson);
+					class2lbl 	= getClassLabelMapping(dbnJson);
 					
 		            dbnResultsJson = executeDBN(dbnJson);
 		            
-		            //TODO: send sensitivity request to DBN
-		            //queryMode = "sensitivity";
-		            //cgJson = kgResultsToJson(nodesCSVString, modelsCSVString, queryMode, "");
-		            //dbnJson = generateDBNjson(cgJson);
-		            //dbnResultsJson = executeDBN(dbnJson);
+//		            //TODO: send sensitivity request to DBN
+//		            queryMode = "sensitivity";
+//		            cgJson = kgResultsToJson(nodesCSVString, modelsCSVString, queryMode, "");
+//		            dbnJson = generateDBNjson(cgJson);
+//		            String dbnResultsJsonSensitivity = executeDBN(dbnJson);
 		            
 		            //check if DBN execution was successful
 		            
@@ -1041,9 +1041,13 @@ public class JenaBasedDialogInferenceProcessor extends JenaBasedSadlInferencePro
 //						}
 						//}
 
-						// Save metadata owl file 
-						saveMetaDataFile(resource);
-
+//						// Save metadata owl file 
+//						saveMetaDataFile(resource);
+//						ResultSet assumpCheck = checkModelAssumptions(resource, cgIns.toString());
+//						if (assumpCheck == null || !assumpCheck.hasNext() || assumpCheck.next().toString().equals("false")) {
+//							System.out.println("Model " + cgIns.toString() + " does not satisfy its assumptions");
+//						}
+						
 			            
 						// create ResultSet
 						results[i] = retrieveCompGraph(resource, cgIns);
@@ -1261,6 +1265,14 @@ public class JenaBasedDialogInferenceProcessor extends JenaBasedSadlInferencePro
 	}
 
 
+
+private ResultSet checkModelAssumptions(Resource resource, String model) throws Exception {
+		// TODO Auto-generated method stub
+		//String query = "select Eq Var Oper Val VP where assumption(Eq,Var,Oper,Val,VP).";
+		String query = "select where model_satisfies_assumptions('" + model + "')";
+		ResultSet result = runPrologQuery(resource, query);
+		return result;
+	}
 
 private TripleElement[] createUQtriplesArray(TripleElement valueTriple, TripleElement[] triples) {
 		// TODO Auto-generated method stub
@@ -1540,12 +1552,12 @@ private RDFNode getObjectAsLiteralOrResource(Node property, Node object) {
 //		assertTrue(pr.loadInstanceData(instanceDatafile));
 		loadAllOwlFilesInProject(modelFolderUri, reasoner);
 	
-		String modelFile = getModelFolderPath(resource) + File.separator + qhOwlFileName;
-		reasoner.loadInstanceData(modelFile);
+		//String modelFile = getModelFolderPath(resource) + File.separator + qhOwlFileName;
+		//reasoner.loadInstanceData(modelFile);
 		
-		String pquery = reasoner.prepareQuery(query);
+		//String pquery = reasoner.prepareQuery(query);
 
-		ResultSet res = reasoner.ask(pquery);
+		ResultSet res = reasoner.ask(query);
 		return res;
 	}
 	
@@ -1615,21 +1627,23 @@ private RDFNode getObjectAsLiteralOrResource(Node property, Node object) {
 			//return null;
 		}
 
-		String family = reasoner.getReasonerFamily();
+		reasoner.loadInstanceData(qhmodel);	//Need to load new metadata
+		
+//		String family = reasoner.getReasonerFamily();
 		
 //		String modelFile = "http://aske.ge.com/MetaData.owl";		
 //		reasoner.loadInstanceData(modelFile);
 		
-		if (family.equals("Jena-Based")) {
-			reasoner.loadInstanceData(qhmodel);	//Need to load new metadata
-			reasoner.loadInstanceData(getTheJenaModel());
-		}
-		else if (family.equals("Prolog-Based")) {
-			String modelFile = getModelFolderPath(resource) + File.separator + qhOwlFileName;
-			String baseModel = getModelFolderPath(resource) + File.separator + getModelName();
-			reasoner.loadRules(baseModel);
-			reasoner.loadRules(modelFile);
-		}
+//		if (family.equals("Jena-Based")) {
+//			reasoner.loadInstanceData(qhmodel);	//Need to load new metadata
+//			reasoner.loadInstanceData(getTheJenaModel());
+//		}
+//		else if (family.equals("Prolog-Based")) {
+//			String modelFile = getModelFolderPath(resource) + File.separator + qhOwlFileName;
+//			String baseModel = getModelFolderPath(resource) + File.separator + getModelName();
+//			reasoner.loadRules(baseModel);
+//			reasoner.loadRules(modelFile);
+//		}
 			
 		
 		String pquery = reasoner.prepareQuery(query);

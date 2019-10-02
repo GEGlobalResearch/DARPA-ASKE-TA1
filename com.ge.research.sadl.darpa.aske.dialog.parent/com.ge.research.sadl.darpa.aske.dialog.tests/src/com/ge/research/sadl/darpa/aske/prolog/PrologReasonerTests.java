@@ -40,11 +40,12 @@ public class PrologReasonerTests {
 		IReasoner pr = configMgr.getOtherReasoner(prologReasonerClassName);
 		assertNotNull(pr);
 		String instanceDatafile = "http://aske.ge.com/MetaData.owl";
-		assertEquals(1, pr.initializeReasoner(getKbRoot(), instanceDatafile, null));
+		assertEquals(1, pr.initializeReasoner("", instanceDatafile, null));
+		//assertEquals(1, pr.initializeReasoner(getKbRoot(), instanceDatafile, null));
 		
 //		assertTrue(pr.loadInstanceData(instanceDatafile));
 		assertTrue(loadAllOwlFilesInProject(getProjectModelFolder(), pr));
-		String query = "select Y Z where holds(X,Y,Z)";
+		String query = "select where holds(X,Y,Z)";
 		ResultSet rs = pr.ask(query );
 		assertNotNull(rs);
 		System.out.println(rs.toString());
