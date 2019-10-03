@@ -40,8 +40,10 @@ import static org.junit.Assert.assertNotNull;
 
 import java.io.BufferedReader;
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.FileReader;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 
 import org.eclipse.jdt.core.compiler.InvalidInputException;
@@ -62,6 +64,8 @@ import com.ge.research.sadl.reasoner.QueryCancelledException;
 import com.ge.research.sadl.reasoner.QueryParseException;
 import com.ge.research.sadl.reasoner.ReasonerNotFoundException;
 import com.ge.research.sadl.reasoner.ResultSet;
+import com.hp.hpl.jena.rdf.model.Model;
+import com.hp.hpl.jena.rdf.model.ModelFactory;
 
 public class TextProcessorTests {
 
@@ -149,7 +153,7 @@ public class TextProcessorTests {
 
 //	@Ignore
 	@Test
-	public void test4() throws ConfigurationException, IOException {
+	public void test4() throws ConfigurationException, IOException, InvalidNameException {
 		File textFile = new File(getTextExtractionPrjFolder() + "/ExtractedModels/Sources/Sound.txt");
 		IConfigurationManagerForIDE cm = ConfigurationManagerForIdeFactory.getConfigurationManagerForIDE(getDomainProjectModelFolder(), null);
 		AnswerCurationManager acm = new AnswerCurationManager(getDomainProjectModelFolder(), cm, null, null);
@@ -168,18 +172,43 @@ public class TextProcessorTests {
 		new File(genFolder).mkdirs();
 
 		acm.getExtractionProcessor().getTextProcessor().addFile(textFile);
-		acm.processImports(SaveAsSadl.SaveAsSadl);
-
+		SaveAsSadl sas = SaveAsSadl.DoNotSaveAsSadl;
+//		SaveAsSadl sas = SaveAsSadl.SaveAsSadl;
+//		SaveAsSadl sas = SaveAsSadl.AskUserSaveAsSadl;
 		String owlFileName = genFolder + "/" + textFile.getName() + ".owl";
 		String sadlFileName = owlFileName + ".sadl";
-		String sadlFileContent = readFile(new File(sadlFileName));
-		System.out.println(sadlFileContent);
+		File sf = new File(sadlFileName);
+		if (sf.exists()) {
+			sf.delete();
+		}
+		acm.processImports(sas); 
+
+		if (!sas.equals(SaveAsSadl.DoNotSaveAsSadl)) {
+			if (sf.exists()) {
+				String sadlFileContent = readFile(new File(sadlFileName));
+				System.out.println(sadlFileContent);
+			}
+		}
 
 		String query = "select ?eq ?lg ?sc where {?eq <rdf:type> <ExternalEquation> . ?eq <expression> ?scrbn . \r\n" + 
 				"		?scrbn <language> ?lg . ?scrbn <script> ?sc }";
+		String somePythonScript = null;
 		try {
 			ResultSet rs =acm.getExtractionProcessor().getTextProcessor().executeSparqlQuery(query);
-			System.out.println(rs.toStringWithIndent(5));
+			System.out.println("Equations in text extraction model: (" + (rs != null ? rs.getRowCount() : 0) + ")");
+			if (rs != null) {
+				rs.setShowNamespaces(false);
+				System.out.println(rs.toStringWithIndent(5));
+				for (int r = 0; r < rs.getRowCount(); r++) {
+					if (rs.getResultAt(r, 1).toString().equals("Python")) {
+						somePythonScript = rs.getResultAt(r, 2).toString();
+						break;
+					}
+				}
+			}
+			else {
+				System.out.println("   none");
+			}
 		} catch (ReasonerNotFoundException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -193,6 +222,75 @@ public class TextProcessorTests {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
+		
+		if (somePythonScript != null) {
+			List<Object> params = new ArrayList<Object>();
+			params.add(somePythonScript);
+//			String query2 = cm.getTranslator().parameterizeQuery(acm.getExtractionProcessor().getTextModel(), DialogConstants.ARGUMENTS_BY_EQUATION_PYTHON_SCRIPT_QUERY, params);
+			String query2 = "select distinct ?argName where {?eq <expression> ?sc . ?sc <language> ?lang . ?sc <script> 'a = tf.math.pow( R * T * gamma, 1/2)' . \r\n" + 
+					"?eq <http://sadl.org/sadlimplicitmodel#arguments> ?ddList . \r\n" + 
+					"?ddList <http://jena.hpl.hp.com/ARQ/list#member> ?member . ?member <http://sadl.org/sadlimplicitmodel#descriptorName> ?argName}";
+			try {
+				System.out.println("Equation arguments:");
+				ResultSet rs =acm.getExtractionProcessor().getTextProcessor().executeSparqlQuery(query2);
+				if (rs != null) {
+					rs.setShowNamespaces(false);
+					System.out.println(rs.toStringWithIndent(5));
+					for (int c = 0; c < rs.getColumnCount(); c++) {
+						String param = rs.getResultAt(0, c).toString();
+						List<String[]> pnResults = acm.getExtractionProcessor().getTextProcessor().processName(param, acm.getExtractionProcessor().getTextModelName());
+						if (pnResults != null) {
+							System.out.println("For parameter " + param + ":");
+							for (String[] pnr : pnResults) {
+								for (int i = 0; i < pnr.length; i++) {
+									System.out.println(pnr[i]);
+								}
+							}
+						}
+					}	
+				}
+				else {
+					System.out.println("   none");
+				}
+			} catch (ReasonerNotFoundException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			} catch (InvalidNameException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			} catch (QueryParseException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			} catch (QueryCancelledException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			} catch (InvalidInputException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		}
+
+	}
+	
+	@Test
+	public void testReadN3FromService() throws IOException {
+		File n3File = new File(getTextExtractionPrjFolder().getParent() + "/MiscFiles/SoundTxtExtract.n3");
+		Model m = getModel(n3File, "N3");
+		assertNotNull(m);
+	}
+
+	public Model getModel(File f, String format) throws IOException {
+		if (f.exists()) {
+		    FileInputStream in = new FileInputStream( f );
+			Model m = ModelFactory.createDefaultModel().read( in, "", format );
+	    	if (m instanceof Model) {
+	    		return m;
+	    	}
+		}
+		{
+			System.err.println("File '" + f.getCanonicalPath() + "' does not exist.");
+		}
+	    return null;
 	}
 
 	private String readFile(File file) throws IOException {

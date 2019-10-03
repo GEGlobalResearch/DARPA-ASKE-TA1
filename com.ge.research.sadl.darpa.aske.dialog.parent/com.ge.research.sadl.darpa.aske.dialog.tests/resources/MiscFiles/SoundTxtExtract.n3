@@ -1,0 +1,1914 @@
+@prefix ns1: <http://sadl.org/sadlimplicitmodel#> .
+@prefix ns2: <http://www.wikidata.org/prop/direct/> .
+@prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix xml: <http://www.w3.org/XML/1998/namespace> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+
+<http://www.wikidata.org/entity/Q11423> a <http://www.wikidata.org/entity/Q28733284>,
+        <http://www.wikidata.org/entity/Q30337748>,
+        <http://www.wikidata.org/entity/Q3386703> ;
+    rdfs:label "mass" ;
+    ns2:P1687 <http://www.wikidata.org/entity/P2067> .
+
+<http://www.wikidata.org/entity/Q1256787> a <http://www.wikidata.org/entity/Q107715> ;
+    rdfs:label "Speed",
+        "rotational speed",
+        "speed",
+        "speed." .
+
+<http://www.wikidata.org/entity/Q179388> a <http://www.wikidata.org/entity/Q3386703> ;
+    rdfs:label "heat capacity" .
+
+<http://www.wikidata.org/entity/Q2230241> a <http://www.wikidata.org/entity/Q1167393> ;
+    rdfs:label "momentum",
+        "momentum indicator" .
+
+<http://www.wikidata.org/entity/Q28912099> a <http://www.wikidata.org/entity/Q187685> ;
+    rdfs:label "Investigation of the mechanism of action of papain",
+        "of" .
+
+<http://www.wikidata.org/entity/P2067> rdfs:label "mass" .
+
+<http://www.wikidata.org/entity/P2075> rdfs:label "speed of sound" .
+
+<http://www.wikidata.org/entity/Q11466> rdfs:label "temperature" .
+
+<http://www.wikidata.org/entity/Q1167393> rdfs:label "economic indicator" .
+
+<http://www.wikidata.org/entity/Q15222637> rdfs:label "unit of speed" .
+
+<http://www.wikidata.org/entity/Q187685> rdfs:label "doctoral thesis" .
+
+<http://www.wikidata.org/entity/Q28733284> rdfs:label "scalar magnitude" .
+
+<http://www.wikidata.org/entity/Q30337748> rdfs:label "ISQ base quantity" .
+
+<http://www.wikidata.org/entity/Q3711325> rdfs:label "speed" .
+
+<http://www.wikidata.org/entity/Q4292136> rdfs:label "mechanical properties of fiber" .
+
+<http://www.wikidata.org/entity/Q764285> rdfs:label "chemical property" .
+
+<http://www.wikidata.org/entity/Q107715> rdfs:label "physical quantity" .
+
+<http://www.wikidata.org/entity/Q3386703> rdfs:label "extensive physical quantity" .
+
+<http://www.wikidata.org/entity/Q124003> a <http://www.wikidata.org/entity/Q15222637>,
+        <http://www.wikidata.org/entity/Q4292136>,
+        <http://www.wikidata.org/entity/Q764285> ;
+    rdfs:label "speed of",
+        "speed of \"sound\"",
+        "speed of sound",
+        "speed of sound.",
+        "speed of sound?" ;
+    rdfs:subClassOf <http://www.wikidata.org/entity/Q3711325> ;
+    ns2:P1687 <http://www.wikidata.org/entity/P2075> .
+
+<http://www.wikidata.org/entity/Q327408> a <http://www.wikidata.org/entity/Q107715> ;
+    rdfs:label "color temperature",
+        "temperature",
+        "temperature." ;
+    rdfs:subClassOf <http://www.wikidata.org/entity/Q11466> .
+
+[] a ns1:ExternalEquation ;
+    ns1:arguments [ rdf:first [ a ns1:DataDescriptor ;
+                    ns1:dataType ns1:anyDataType ;
+                    ns1:descriptorName "R" ] ;
+            rdf:rest [ rdf:first [ a ns1:DataDescriptor ;
+                            ns1:augmentedType [ a ns1:SemanticType ;
+                                    ns1:semType <http://www.wikidata.org/entity/Q327408> ],
+                                [ a ns1:SemanticType ;
+                                    ns1:semType <http://www.wikidata.org/entity/Q327408> ] ;
+                            ns1:dataType ns1:anyDataType ;
+                            ns1:descriptorName "T" ] ;
+                    rdf:rest [ rdf:first [ a ns1:DataDescriptor ;
+                                    ns1:dataType ns1:anyDataType ;
+                                    ns1:descriptorName "gamma" ] ;
+                            rdf:rest [ ] ] ] ] ;
+    ns1:expression [ a ns1:Script ;
+            ns1:language ns1:Python ;
+            ns1:script "a = tf.math.pow( R * T * gamma, 1/2)" ],
+        [ a ns1:Script ;
+            ns1:language ns1:Text ;
+            ns1:script "a^2 = R * T * gamma" ] ;
+    ns1:returnTypes [ rdf:first [ a ns1:DataDescriptor ;
+                    ns1:augmentedType [ a ns1:SemanticType ;
+                            ns1:semType <http://www.wikidata.org/entity/Q124003> ],
+                        [ a ns1:SemanticType ;
+                            ns1:semType <http://www.wikidata.org/entity/Q124003> ] ;
+                    ns1:dataType ns1:anyDataType ;
+                    ns1:descriptorName "a^2" ] ;
+            rdf:rest [ ] ] .
+
+[] a ns1:ExternalEquation ;
+    ns1:arguments [ rdf:first [ a ns1:DataDescriptor ;
+                    ns1:dataType ns1:anyDataType ;
+                    ns1:descriptorName "R" ] ;
+            rdf:rest [ rdf:first [ a ns1:DataDescriptor ;
+                            ns1:augmentedType [ a ns1:SemanticType ;
+                                    ns1:semType <http://www.wikidata.org/entity/Q327408> ],
+                                [ a ns1:SemanticType ;
+                                    ns1:semType <http://www.wikidata.org/entity/Q327408> ],
+                                [ a ns1:SemanticType ;
+                                    ns1:semType <http://www.wikidata.org/entity/Q327408> ],
+                                [ a ns1:SemanticType ;
+                                    ns1:semType <http://www.wikidata.org/entity/Q327408> ],
+                                [ a ns1:SemanticType ;
+                                    ns1:semType <http://www.wikidata.org/entity/Q327408> ],
+                                [ a ns1:SemanticType ;
+                                    ns1:semType <http://www.wikidata.org/entity/Q327408> ],
+                                [ a ns1:SemanticType ;
+                                    ns1:semType <http://www.wikidata.org/entity/Q327408> ],
+                                [ a ns1:SemanticType ;
+                                    ns1:semType <http://www.wikidata.org/entity/Q327408> ],
+                                [ a ns1:SemanticType ;
+                                    ns1:semType <http://www.wikidata.org/entity/Q327408> ],
+                                [ a ns1:SemanticType ;
+                                    ns1:semType <http://www.wikidata.org/entity/Q327408> ],
+                                [ a ns1:SemanticType ;
+                                    ns1:semType <http://www.wikidata.org/entity/Q327408> ],
+                                [ a ns1:SemanticType ;
+                                    ns1:semType <http://www.wikidata.org/entity/Q327408> ],
+                                [ a ns1:SemanticType ;
+                                    ns1:semType <http://www.wikidata.org/entity/Q327408> ] ;
+                            ns1:dataType ns1:anyDataType ;
+                            ns1:descriptorName "T" ] ;
+                    rdf:rest [ rdf:first [ a ns1:DataDescriptor ;
+                                    ns1:dataType ns1:anyDataType ;
+                                    ns1:descriptorName "gamma" ] ;
+                            rdf:rest [ rdf:first [ a ns1:DataDescriptor ;
+                                            ns1:dataType ns1:anyDataType ;
+                                            ns1:descriptorName "theta" ] ;
+                                    rdf:rest [ ] ] ] ] ] ;
+    ns1:expression [ a ns1:Script ;
+            ns1:language ns1:Text ;
+            ns1:script "a^2 = R * T * {1 + (gamma - 1) / ( 1 + (gamma-1) * [(theta/T)^2 * e^(theta/T) /(e^(theta/T) -1)^2]) }" ],
+        [ a ns1:Script ;
+            ns1:language ns1:Python ;
+            ns1:script "a = tf.math.pow( R * T *  (  1 + ( gamma-1 ) / ( 1 + ( gamma-1 ) *  (  ( theta/T ) ** 2 *  tf.math.exp( theta/T ) / (  tf.math.exp( theta/T ) - 1 ) ** 2 )  ) ) , 1/2)" ] ;
+    ns1:returnTypes [ rdf:first [ a ns1:DataDescriptor ;
+                    ns1:augmentedType [ a ns1:SemanticType ;
+                            ns1:semType <http://www.wikidata.org/entity/Q124003> ],
+                        [ a ns1:SemanticType ;
+                            ns1:semType <http://www.wikidata.org/entity/Q124003> ],
+                        [ a ns1:SemanticType ;
+                            ns1:semType <http://www.wikidata.org/entity/Q124003> ],
+                        [ a ns1:SemanticType ;
+                            ns1:semType <http://www.wikidata.org/entity/Q124003> ],
+                        [ a ns1:SemanticType ;
+                            ns1:semType <http://www.wikidata.org/entity/Q124003> ],
+                        [ a ns1:SemanticType ;
+                            ns1:semType <http://www.wikidata.org/entity/Q124003> ],
+                        [ a ns1:SemanticType ;
+                            ns1:semType <http://www.wikidata.org/entity/Q124003> ],
+                        [ a ns1:SemanticType ;
+                            ns1:semType <http://www.wikidata.org/entity/Q124003> ],
+                        [ a ns1:SemanticType ;
+                            ns1:semType <http://www.wikidata.org/entity/Q124003> ],
+                        [ a ns1:SemanticType ;
+                            ns1:semType <http://www.wikidata.org/entity/Q124003> ],
+                        [ a ns1:SemanticType ;
+                            ns1:semType <http://www.wikidata.org/entity/Q124003> ],
+                        [ a ns1:SemanticType ;
+                            ns1:semType <http://www.wikidata.org/entity/Q124003> ],
+                        [ a ns1:SemanticType ;
+                            ns1:semType <http://www.wikidata.org/entity/Q124003> ] ;
+                    ns1:dataType ns1:anyDataType ;
+                    ns1:descriptorName "a^2" ] ;
+            rdf:rest [ ] ] .
+
+[] a ns1:ExternalEquation ;
+    ns1:arguments [ rdf:first [ a ns1:DataDescriptor ;
+                    ns1:dataType ns1:anyDataType ;
+                    ns1:descriptorName "R" ] ;
+            rdf:rest [ rdf:first [ a ns1:DataDescriptor ;
+                            ns1:augmentedType [ a ns1:SemanticType ;
+                                    ns1:semType <http://www.wikidata.org/entity/Q327408> ],
+                                [ a ns1:SemanticType ;
+                                    ns1:semType <http://www.wikidata.org/entity/Q327408> ],
+                                [ a ns1:SemanticType ;
+                                    ns1:semType <http://www.wikidata.org/entity/Q327408> ],
+                                [ a ns1:SemanticType ;
+                                    ns1:semType <http://www.wikidata.org/entity/Q327408> ],
+                                [ a ns1:SemanticType ;
+                                    ns1:semType <http://www.wikidata.org/entity/Q327408> ],
+                                [ a ns1:SemanticType ;
+                                    ns1:semType <http://www.wikidata.org/entity/Q327408> ],
+                                [ a ns1:SemanticType ;
+                                    ns1:semType <http://www.wikidata.org/entity/Q327408> ],
+                                [ a ns1:SemanticType ;
+                                    ns1:semType <http://www.wikidata.org/entity/Q327408> ] ;
+                            ns1:dataType ns1:anyDataType ;
+                            ns1:descriptorName "T" ] ;
+                    rdf:rest [ rdf:first [ a ns1:DataDescriptor ;
+                                    ns1:dataType ns1:anyDataType ;
+                                    ns1:descriptorName "gamma" ] ;
+                            rdf:rest [ rdf:first [ a ns1:DataDescriptor ;
+                                            ns1:dataType ns1:anyDataType ;
+                                            ns1:descriptorName "theta" ] ;
+                                    rdf:rest [ ] ] ] ] ] ;
+    ns1:expression [ a ns1:Script ;
+            ns1:language ns1:Python ;
+            ns1:script "a = tf.math.pow( R * T *  (  1 + ( gamma-1 ) / ( 1 + ( gamma-1 ) *  (  ( theta/T ) ** 2 *  tf.math.exp( theta/T ) / (  tf.math.exp( theta/T ) - 1 ) ** 2 )  ) ) , 1/2)" ],
+        [ a ns1:Script ;
+            ns1:language ns1:Text ;
+            ns1:script "a^2 = R * T * {1 + (gamma - 1) / ( 1 + (gamma-1) * [(theta/T)^2 * e^(theta/T) /(e^(theta/T) -1)^2]) }" ] ;
+    ns1:returnTypes [ rdf:first [ a ns1:DataDescriptor ;
+                    ns1:augmentedType [ a ns1:SemanticType ;
+                            ns1:semType <http://www.wikidata.org/entity/Q124003> ],
+                        [ a ns1:SemanticType ;
+                            ns1:semType <http://www.wikidata.org/entity/Q124003> ],
+                        [ a ns1:SemanticType ;
+                            ns1:semType <http://www.wikidata.org/entity/Q124003> ],
+                        [ a ns1:SemanticType ;
+                            ns1:semType <http://www.wikidata.org/entity/Q124003> ],
+                        [ a ns1:SemanticType ;
+                            ns1:semType <http://www.wikidata.org/entity/Q124003> ],
+                        [ a ns1:SemanticType ;
+                            ns1:semType <http://www.wikidata.org/entity/Q124003> ],
+                        [ a ns1:SemanticType ;
+                            ns1:semType <http://www.wikidata.org/entity/Q124003> ],
+                        [ a ns1:SemanticType ;
+                            ns1:semType <http://www.wikidata.org/entity/Q124003> ] ;
+                    ns1:dataType ns1:anyDataType ;
+                    ns1:descriptorName "a^2" ] ;
+            rdf:rest [ ] ] .
+
+[] a ns1:ExternalEquation ;
+    ns1:arguments [ rdf:first [ a ns1:DataDescriptor ;
+                    ns1:dataType ns1:anyDataType ;
+                    ns1:descriptorName "R" ] ;
+            rdf:rest [ rdf:first [ a ns1:DataDescriptor ;
+                            ns1:augmentedType [ a ns1:SemanticType ;
+                                    ns1:semType <http://www.wikidata.org/entity/Q327408> ],
+                                [ a ns1:SemanticType ;
+                                    ns1:semType <http://www.wikidata.org/entity/Q327408> ],
+                                [ a ns1:SemanticType ;
+                                    ns1:semType <http://www.wikidata.org/entity/Q327408> ],
+                                [ a ns1:SemanticType ;
+                                    ns1:semType <http://www.wikidata.org/entity/Q327408> ],
+                                [ a ns1:SemanticType ;
+                                    ns1:semType <http://www.wikidata.org/entity/Q327408> ],
+                                [ a ns1:SemanticType ;
+                                    ns1:semType <http://www.wikidata.org/entity/Q327408> ],
+                                [ a ns1:SemanticType ;
+                                    ns1:semType <http://www.wikidata.org/entity/Q327408> ],
+                                [ a ns1:SemanticType ;
+                                    ns1:semType <http://www.wikidata.org/entity/Q327408> ],
+                                [ a ns1:SemanticType ;
+                                    ns1:semType <http://www.wikidata.org/entity/Q327408> ],
+                                [ a ns1:SemanticType ;
+                                    ns1:semType <http://www.wikidata.org/entity/Q327408> ],
+                                [ a ns1:SemanticType ;
+                                    ns1:semType <http://www.wikidata.org/entity/Q327408> ],
+                                [ a ns1:SemanticType ;
+                                    ns1:semType <http://www.wikidata.org/entity/Q327408> ] ;
+                            ns1:dataType ns1:anyDataType ;
+                            ns1:descriptorName "T" ] ;
+                    rdf:rest [ rdf:first [ a ns1:DataDescriptor ;
+                                    ns1:dataType ns1:anyDataType ;
+                                    ns1:descriptorName "gamma" ] ;
+                            rdf:rest [ rdf:first [ a ns1:DataDescriptor ;
+                                            ns1:dataType ns1:anyDataType ;
+                                            ns1:descriptorName "theta" ] ;
+                                    rdf:rest [ ] ] ] ] ] ;
+    ns1:expression [ a ns1:Script ;
+            ns1:language ns1:Python ;
+            ns1:script "a = tf.math.pow( R * T *  (  1 + ( gamma-1 ) / ( 1 + ( gamma-1 ) *  (  ( theta/T ) ** 2 *  tf.math.exp( theta/T ) / (  tf.math.exp( theta/T ) - 1 ) ** 2 )  ) ) , 1/2)" ],
+        [ a ns1:Script ;
+            ns1:language ns1:Text ;
+            ns1:script "a^2 = R * T * {1 + (gamma - 1) / ( 1 + (gamma-1) * [(theta/T)^2 * e^(theta/T) /(e^(theta/T) -1)^2]) }" ] ;
+    ns1:returnTypes [ rdf:first [ a ns1:DataDescriptor ;
+                    ns1:augmentedType [ a ns1:SemanticType ;
+                            ns1:semType <http://www.wikidata.org/entity/Q124003> ],
+                        [ a ns1:SemanticType ;
+                            ns1:semType <http://www.wikidata.org/entity/Q124003> ],
+                        [ a ns1:SemanticType ;
+                            ns1:semType <http://www.wikidata.org/entity/Q124003> ],
+                        [ a ns1:SemanticType ;
+                            ns1:semType <http://www.wikidata.org/entity/Q124003> ],
+                        [ a ns1:SemanticType ;
+                            ns1:semType <http://www.wikidata.org/entity/Q124003> ],
+                        [ a ns1:SemanticType ;
+                            ns1:semType <http://www.wikidata.org/entity/Q124003> ],
+                        [ a ns1:SemanticType ;
+                            ns1:semType <http://www.wikidata.org/entity/Q124003> ],
+                        [ a ns1:SemanticType ;
+                            ns1:semType <http://www.wikidata.org/entity/Q124003> ],
+                        [ a ns1:SemanticType ;
+                            ns1:semType <http://www.wikidata.org/entity/Q124003> ],
+                        [ a ns1:SemanticType ;
+                            ns1:semType <http://www.wikidata.org/entity/Q124003> ],
+                        [ a ns1:SemanticType ;
+                            ns1:semType <http://www.wikidata.org/entity/Q124003> ],
+                        [ a ns1:SemanticType ;
+                            ns1:semType <http://www.wikidata.org/entity/Q124003> ] ;
+                    ns1:dataType ns1:anyDataType ;
+                    ns1:descriptorName "a^2" ] ;
+            rdf:rest [ ] ] .
+
+[] a ns1:ExternalEquation ;
+    ns1:arguments [ rdf:first [ a ns1:DataDescriptor ;
+                    ns1:dataType ns1:anyDataType ;
+                    ns1:descriptorName "R" ] ;
+            rdf:rest [ rdf:first [ a ns1:DataDescriptor ;
+                            ns1:augmentedType [ a ns1:SemanticType ;
+                                    ns1:semType <http://www.wikidata.org/entity/Q327408> ],
+                                [ a ns1:SemanticType ;
+                                    ns1:semType <http://www.wikidata.org/entity/Q327408> ],
+                                [ a ns1:SemanticType ;
+                                    ns1:semType <http://www.wikidata.org/entity/Q327408> ] ;
+                            ns1:dataType ns1:anyDataType ;
+                            ns1:descriptorName "T" ] ;
+                    rdf:rest [ rdf:first [ a ns1:DataDescriptor ;
+                                    ns1:dataType ns1:anyDataType ;
+                                    ns1:descriptorName "gamma" ] ;
+                            rdf:rest [ rdf:first [ a ns1:DataDescriptor ;
+                                            ns1:dataType ns1:anyDataType ;
+                                            ns1:descriptorName "theta" ] ;
+                                    rdf:rest [ ] ] ] ] ] ;
+    ns1:expression [ a ns1:Script ;
+            ns1:language ns1:Text ;
+            ns1:script "a^2 = R * T * {1 + (gamma - 1) / ( 1 + (gamma-1) * [(theta/T)^2 * e^(theta/T) /(e^(theta/T) -1)^2]) }" ],
+        [ a ns1:Script ;
+            ns1:language ns1:Python ;
+            ns1:script "a = tf.math.pow( R * T *  (  1 + ( gamma-1 ) / ( 1 + ( gamma-1 ) *  (  ( theta/T ) ** 2 *  tf.math.exp( theta/T ) / (  tf.math.exp( theta/T ) - 1 ) ** 2 )  ) ) , 1/2)" ] ;
+    ns1:returnTypes [ rdf:first [ a ns1:DataDescriptor ;
+                    ns1:augmentedType [ a ns1:SemanticType ;
+                            ns1:semType <http://www.wikidata.org/entity/Q124003> ],
+                        [ a ns1:SemanticType ;
+                            ns1:semType <http://www.wikidata.org/entity/Q124003> ],
+                        [ a ns1:SemanticType ;
+                            ns1:semType <http://www.wikidata.org/entity/Q124003> ] ;
+                    ns1:dataType ns1:anyDataType ;
+                    ns1:descriptorName "a^2" ] ;
+            rdf:rest [ ] ] .
+
+[] a ns1:ExternalEquation ;
+    ns1:arguments [ rdf:first [ a ns1:DataDescriptor ;
+                    ns1:dataType ns1:anyDataType ;
+                    ns1:descriptorName "R" ] ;
+            rdf:rest [ rdf:first [ a ns1:DataDescriptor ;
+                            ns1:augmentedType [ a ns1:SemanticType ;
+                                    ns1:semType <http://www.wikidata.org/entity/Q327408> ],
+                                [ a ns1:SemanticType ;
+                                    ns1:semType <http://www.wikidata.org/entity/Q327408> ],
+                                [ a ns1:SemanticType ;
+                                    ns1:semType <http://www.wikidata.org/entity/Q327408> ],
+                                [ a ns1:SemanticType ;
+                                    ns1:semType <http://www.wikidata.org/entity/Q327408> ] ;
+                            ns1:dataType ns1:anyDataType ;
+                            ns1:descriptorName "T" ] ;
+                    rdf:rest [ rdf:first [ a ns1:DataDescriptor ;
+                                    ns1:dataType ns1:anyDataType ;
+                                    ns1:descriptorName "gamma" ] ;
+                            rdf:rest [ rdf:first [ a ns1:DataDescriptor ;
+                                            ns1:dataType ns1:anyDataType ;
+                                            ns1:descriptorName "theta" ] ;
+                                    rdf:rest [ ] ] ] ] ] ;
+    ns1:expression [ a ns1:Script ;
+            ns1:language ns1:Text ;
+            ns1:script "a^2 = R * T * {1 + (gamma - 1) / ( 1 + (gamma-1) * [(theta/T)^2 * e^(theta/T) /(e^(theta/T) -1)^2]) }" ],
+        [ a ns1:Script ;
+            ns1:language ns1:Python ;
+            ns1:script "a = tf.math.pow( R * T *  (  1 + ( gamma-1 ) / ( 1 + ( gamma-1 ) *  (  ( theta/T ) ** 2 *  tf.math.exp( theta/T ) / (  tf.math.exp( theta/T ) - 1 ) ** 2 )  ) ) , 1/2)" ] ;
+    ns1:returnTypes [ rdf:first [ a ns1:DataDescriptor ;
+                    ns1:augmentedType [ a ns1:SemanticType ;
+                            ns1:semType <http://www.wikidata.org/entity/Q124003> ],
+                        [ a ns1:SemanticType ;
+                            ns1:semType <http://www.wikidata.org/entity/Q124003> ],
+                        [ a ns1:SemanticType ;
+                            ns1:semType <http://www.wikidata.org/entity/Q124003> ],
+                        [ a ns1:SemanticType ;
+                            ns1:semType <http://www.wikidata.org/entity/Q124003> ] ;
+                    ns1:dataType ns1:anyDataType ;
+                    ns1:descriptorName "a^2" ] ;
+            rdf:rest [ ] ] .
+
+[] a ns1:ExternalEquation ;
+    ns1:arguments [ rdf:first [ a ns1:DataDescriptor ;
+                    ns1:dataType ns1:anyDataType ;
+                    ns1:descriptorName "R" ] ;
+            rdf:rest [ rdf:first [ a ns1:DataDescriptor ;
+                            ns1:augmentedType [ a ns1:SemanticType ;
+                                    ns1:semType <http://www.wikidata.org/entity/Q327408> ],
+                                [ a ns1:SemanticType ;
+                                    ns1:semType <http://www.wikidata.org/entity/Q327408> ],
+                                [ a ns1:SemanticType ;
+                                    ns1:semType <http://www.wikidata.org/entity/Q327408> ],
+                                [ a ns1:SemanticType ;
+                                    ns1:semType <http://www.wikidata.org/entity/Q327408> ],
+                                [ a ns1:SemanticType ;
+                                    ns1:semType <http://www.wikidata.org/entity/Q327408> ],
+                                [ a ns1:SemanticType ;
+                                    ns1:semType <http://www.wikidata.org/entity/Q327408> ],
+                                [ a ns1:SemanticType ;
+                                    ns1:semType <http://www.wikidata.org/entity/Q327408> ],
+                                [ a ns1:SemanticType ;
+                                    ns1:semType <http://www.wikidata.org/entity/Q327408> ],
+                                [ a ns1:SemanticType ;
+                                    ns1:semType <http://www.wikidata.org/entity/Q327408> ],
+                                [ a ns1:SemanticType ;
+                                    ns1:semType <http://www.wikidata.org/entity/Q327408> ],
+                                [ a ns1:SemanticType ;
+                                    ns1:semType <http://www.wikidata.org/entity/Q327408> ] ;
+                            ns1:dataType ns1:anyDataType ;
+                            ns1:descriptorName "T" ] ;
+                    rdf:rest [ rdf:first [ a ns1:DataDescriptor ;
+                                    ns1:dataType ns1:anyDataType ;
+                                    ns1:descriptorName "gamma" ] ;
+                            rdf:rest [ ] ] ] ] ;
+    ns1:expression [ a ns1:Script ;
+            ns1:language ns1:Text ;
+            ns1:script "a^2 = R * T * gamma" ],
+        [ a ns1:Script ;
+            ns1:language ns1:Python ;
+            ns1:script "a = tf.math.pow( R * T * gamma, 1/2)" ] ;
+    ns1:returnTypes [ rdf:first [ a ns1:DataDescriptor ;
+                    ns1:augmentedType [ a ns1:SemanticType ;
+                            ns1:semType <http://www.wikidata.org/entity/Q124003> ],
+                        [ a ns1:SemanticType ;
+                            ns1:semType <http://www.wikidata.org/entity/Q124003> ],
+                        [ a ns1:SemanticType ;
+                            ns1:semType <http://www.wikidata.org/entity/Q124003> ],
+                        [ a ns1:SemanticType ;
+                            ns1:semType <http://www.wikidata.org/entity/Q124003> ],
+                        [ a ns1:SemanticType ;
+                            ns1:semType <http://www.wikidata.org/entity/Q124003> ],
+                        [ a ns1:SemanticType ;
+                            ns1:semType <http://www.wikidata.org/entity/Q124003> ],
+                        [ a ns1:SemanticType ;
+                            ns1:semType <http://www.wikidata.org/entity/Q124003> ],
+                        [ a ns1:SemanticType ;
+                            ns1:semType <http://www.wikidata.org/entity/Q124003> ],
+                        [ a ns1:SemanticType ;
+                            ns1:semType <http://www.wikidata.org/entity/Q124003> ],
+                        [ a ns1:SemanticType ;
+                            ns1:semType <http://www.wikidata.org/entity/Q124003> ],
+                        [ a ns1:SemanticType ;
+                            ns1:semType <http://www.wikidata.org/entity/Q124003> ] ;
+                    ns1:dataType ns1:anyDataType ;
+                    ns1:descriptorName "a^2" ] ;
+            rdf:rest [ ] ] .
+
+[] a ns1:ExternalEquation ;
+    ns1:arguments [ rdf:first [ a ns1:DataDescriptor ;
+                    ns1:dataType ns1:anyDataType ;
+                    ns1:descriptorName "R" ] ;
+            rdf:rest [ rdf:first [ a ns1:DataDescriptor ;
+                            ns1:augmentedType [ a ns1:SemanticType ;
+                                    ns1:semType <http://www.wikidata.org/entity/Q327408> ] ;
+                            ns1:dataType ns1:anyDataType ;
+                            ns1:descriptorName "T" ] ;
+                    rdf:rest [ rdf:first [ a ns1:DataDescriptor ;
+                                    ns1:dataType ns1:anyDataType ;
+                                    ns1:descriptorName "gamma" ] ;
+                            rdf:rest [ rdf:first [ a ns1:DataDescriptor ;
+                                            ns1:dataType ns1:anyDataType ;
+                                            ns1:descriptorName "theta" ] ;
+                                    rdf:rest [ ] ] ] ] ] ;
+    ns1:expression [ a ns1:Script ;
+            ns1:language ns1:Python ;
+            ns1:script "a = tf.math.pow( R * T *  (  1 + ( gamma-1 ) / ( 1 + ( gamma-1 ) *  (  ( theta/T ) ** 2 *  tf.math.exp( theta/T ) / (  tf.math.exp( theta/T ) - 1 ) ** 2 )  ) ) , 1/2)" ],
+        [ a ns1:Script ;
+            ns1:language ns1:Text ;
+            ns1:script "a^2 = R * T * {1 + (gamma - 1) / ( 1 + (gamma-1) * [(theta/T)^2 * e^(theta/T) /(e^(theta/T) -1)^2]) }" ] ;
+    ns1:returnTypes [ rdf:first [ a ns1:DataDescriptor ;
+                    ns1:augmentedType [ a ns1:SemanticType ;
+                            ns1:semType <http://www.wikidata.org/entity/Q124003> ] ;
+                    ns1:dataType ns1:anyDataType ;
+                    ns1:descriptorName "a^2" ] ;
+            rdf:rest [ ] ] .
+
+[] a ns1:ExternalEquation ;
+    ns1:arguments [ rdf:first [ a ns1:DataDescriptor ;
+                    ns1:dataType ns1:anyDataType ;
+                    ns1:descriptorName "R" ] ;
+            rdf:rest [ rdf:first [ a ns1:DataDescriptor ;
+                            ns1:augmentedType [ a ns1:SemanticType ;
+                                    ns1:semType <http://www.wikidata.org/entity/Q327408> ],
+                                [ a ns1:SemanticType ;
+                                    ns1:semType <http://www.wikidata.org/entity/Q327408> ],
+                                [ a ns1:SemanticType ;
+                                    ns1:semType <http://www.wikidata.org/entity/Q327408> ],
+                                [ a ns1:SemanticType ;
+                                    ns1:semType <http://www.wikidata.org/entity/Q327408> ],
+                                [ a ns1:SemanticType ;
+                                    ns1:semType <http://www.wikidata.org/entity/Q327408> ],
+                                [ a ns1:SemanticType ;
+                                    ns1:semType <http://www.wikidata.org/entity/Q327408> ] ;
+                            ns1:dataType ns1:anyDataType ;
+                            ns1:descriptorName "T" ] ;
+                    rdf:rest [ rdf:first [ a ns1:DataDescriptor ;
+                                    ns1:dataType ns1:anyDataType ;
+                                    ns1:descriptorName "gamma" ] ;
+                            rdf:rest [ ] ] ] ] ;
+    ns1:expression [ a ns1:Script ;
+            ns1:language ns1:Text ;
+            ns1:script "a^2 = R * T * gamma" ],
+        [ a ns1:Script ;
+            ns1:language ns1:Python ;
+            ns1:script "a = tf.math.pow( R * T * gamma, 1/2)" ] ;
+    ns1:returnTypes [ rdf:first [ a ns1:DataDescriptor ;
+                    ns1:augmentedType [ a ns1:SemanticType ;
+                            ns1:semType <http://www.wikidata.org/entity/Q124003> ],
+                        [ a ns1:SemanticType ;
+                            ns1:semType <http://www.wikidata.org/entity/Q124003> ],
+                        [ a ns1:SemanticType ;
+                            ns1:semType <http://www.wikidata.org/entity/Q124003> ],
+                        [ a ns1:SemanticType ;
+                            ns1:semType <http://www.wikidata.org/entity/Q124003> ],
+                        [ a ns1:SemanticType ;
+                            ns1:semType <http://www.wikidata.org/entity/Q124003> ],
+                        [ a ns1:SemanticType ;
+                            ns1:semType <http://www.wikidata.org/entity/Q124003> ] ;
+                    ns1:dataType ns1:anyDataType ;
+                    ns1:descriptorName "a^2" ] ;
+            rdf:rest [ ] ] .
+
+[] a ns1:ExternalEquation ;
+    ns1:arguments [ rdf:first [ a ns1:DataDescriptor ;
+                    ns1:dataType ns1:anyDataType ;
+                    ns1:descriptorName "R" ] ;
+            rdf:rest [ rdf:first [ a ns1:DataDescriptor ;
+                            ns1:augmentedType [ a ns1:SemanticType ;
+                                    ns1:semType <http://www.wikidata.org/entity/Q327408> ],
+                                [ a ns1:SemanticType ;
+                                    ns1:semType <http://www.wikidata.org/entity/Q327408> ],
+                                [ a ns1:SemanticType ;
+                                    ns1:semType <http://www.wikidata.org/entity/Q327408> ],
+                                [ a ns1:SemanticType ;
+                                    ns1:semType <http://www.wikidata.org/entity/Q327408> ],
+                                [ a ns1:SemanticType ;
+                                    ns1:semType <http://www.wikidata.org/entity/Q327408> ],
+                                [ a ns1:SemanticType ;
+                                    ns1:semType <http://www.wikidata.org/entity/Q327408> ],
+                                [ a ns1:SemanticType ;
+                                    ns1:semType <http://www.wikidata.org/entity/Q327408> ],
+                                [ a ns1:SemanticType ;
+                                    ns1:semType <http://www.wikidata.org/entity/Q327408> ] ;
+                            ns1:dataType ns1:anyDataType ;
+                            ns1:descriptorName "T" ] ;
+                    rdf:rest [ rdf:first [ a ns1:DataDescriptor ;
+                                    ns1:dataType ns1:anyDataType ;
+                                    ns1:descriptorName "gamma" ] ;
+                            rdf:rest [ ] ] ] ] ;
+    ns1:expression [ a ns1:Script ;
+            ns1:language ns1:Text ;
+            ns1:script "a^2 = R * T * gamma" ],
+        [ a ns1:Script ;
+            ns1:language ns1:Python ;
+            ns1:script "a = tf.math.pow( R * T * gamma, 1/2)" ] ;
+    ns1:returnTypes [ rdf:first [ a ns1:DataDescriptor ;
+                    ns1:augmentedType [ a ns1:SemanticType ;
+                            ns1:semType <http://www.wikidata.org/entity/Q124003> ],
+                        [ a ns1:SemanticType ;
+                            ns1:semType <http://www.wikidata.org/entity/Q124003> ],
+                        [ a ns1:SemanticType ;
+                            ns1:semType <http://www.wikidata.org/entity/Q124003> ],
+                        [ a ns1:SemanticType ;
+                            ns1:semType <http://www.wikidata.org/entity/Q124003> ],
+                        [ a ns1:SemanticType ;
+                            ns1:semType <http://www.wikidata.org/entity/Q124003> ],
+                        [ a ns1:SemanticType ;
+                            ns1:semType <http://www.wikidata.org/entity/Q124003> ],
+                        [ a ns1:SemanticType ;
+                            ns1:semType <http://www.wikidata.org/entity/Q124003> ],
+                        [ a ns1:SemanticType ;
+                            ns1:semType <http://www.wikidata.org/entity/Q124003> ] ;
+                    ns1:dataType ns1:anyDataType ;
+                    ns1:descriptorName "a^2" ] ;
+            rdf:rest [ ] ] .
+
+[] a ns1:ExternalEquation ;
+    ns1:arguments [ rdf:first [ a ns1:DataDescriptor ;
+                    ns1:dataType ns1:anyDataType ;
+                    ns1:descriptorName "R" ] ;
+            rdf:rest [ rdf:first [ a ns1:DataDescriptor ;
+                            ns1:augmentedType [ a ns1:SemanticType ;
+                                    ns1:semType <http://www.wikidata.org/entity/Q327408> ] ;
+                            ns1:dataType ns1:anyDataType ;
+                            ns1:descriptorName "T" ] ;
+                    rdf:rest [ rdf:first [ a ns1:DataDescriptor ;
+                                    ns1:dataType ns1:anyDataType ;
+                                    ns1:descriptorName "gamma" ] ;
+                            rdf:rest [ ] ] ] ] ;
+    ns1:expression [ a ns1:Script ;
+            ns1:language ns1:Text ;
+            ns1:script "a^2 = R * T * gamma" ],
+        [ a ns1:Script ;
+            ns1:language ns1:Python ;
+            ns1:script "a = tf.math.pow( R * T * gamma, 1/2)" ] ;
+    ns1:returnTypes [ rdf:first [ a ns1:DataDescriptor ;
+                    ns1:augmentedType [ a ns1:SemanticType ;
+                            ns1:semType <http://www.wikidata.org/entity/Q124003> ] ;
+                    ns1:dataType ns1:anyDataType ;
+                    ns1:descriptorName "a^2" ] ;
+            rdf:rest [ ] ] .
+
+[] a ns1:ExternalEquation ;
+    ns1:arguments [ rdf:first [ a ns1:DataDescriptor ;
+                    ns1:dataType ns1:anyDataType ;
+                    ns1:descriptorName "R" ] ;
+            rdf:rest [ rdf:first [ a ns1:DataDescriptor ;
+                            ns1:augmentedType [ a ns1:SemanticType ;
+                                    ns1:semType <http://www.wikidata.org/entity/Q327408> ],
+                                [ a ns1:SemanticType ;
+                                    ns1:semType <http://www.wikidata.org/entity/Q327408> ],
+                                [ a ns1:SemanticType ;
+                                    ns1:semType <http://www.wikidata.org/entity/Q327408> ],
+                                [ a ns1:SemanticType ;
+                                    ns1:semType <http://www.wikidata.org/entity/Q327408> ],
+                                [ a ns1:SemanticType ;
+                                    ns1:semType <http://www.wikidata.org/entity/Q327408> ],
+                                [ a ns1:SemanticType ;
+                                    ns1:semType <http://www.wikidata.org/entity/Q327408> ],
+                                [ a ns1:SemanticType ;
+                                    ns1:semType <http://www.wikidata.org/entity/Q327408> ],
+                                [ a ns1:SemanticType ;
+                                    ns1:semType <http://www.wikidata.org/entity/Q327408> ],
+                                [ a ns1:SemanticType ;
+                                    ns1:semType <http://www.wikidata.org/entity/Q327408> ],
+                                [ a ns1:SemanticType ;
+                                    ns1:semType <http://www.wikidata.org/entity/Q327408> ],
+                                [ a ns1:SemanticType ;
+                                    ns1:semType <http://www.wikidata.org/entity/Q327408> ],
+                                [ a ns1:SemanticType ;
+                                    ns1:semType <http://www.wikidata.org/entity/Q327408> ],
+                                [ a ns1:SemanticType ;
+                                    ns1:semType <http://www.wikidata.org/entity/Q327408> ],
+                                [ a ns1:SemanticType ;
+                                    ns1:semType <http://www.wikidata.org/entity/Q327408> ],
+                                [ a ns1:SemanticType ;
+                                    ns1:semType <http://www.wikidata.org/entity/Q327408> ],
+                                [ a ns1:SemanticType ;
+                                    ns1:semType <http://www.wikidata.org/entity/Q327408> ] ;
+                            ns1:dataType ns1:anyDataType ;
+                            ns1:descriptorName "T" ] ;
+                    rdf:rest [ rdf:first [ a ns1:DataDescriptor ;
+                                    ns1:dataType ns1:anyDataType ;
+                                    ns1:descriptorName "gamma" ] ;
+                            rdf:rest [ rdf:first [ a ns1:DataDescriptor ;
+                                            ns1:dataType ns1:anyDataType ;
+                                            ns1:descriptorName "theta" ] ;
+                                    rdf:rest [ ] ] ] ] ] ;
+    ns1:expression [ a ns1:Script ;
+            ns1:language ns1:Text ;
+            ns1:script "a^2 = R * T * {1 + (gamma - 1) / ( 1 + (gamma-1) * [(theta/T)^2 * e^(theta/T) /(e^(theta/T) -1)^2]) }" ],
+        [ a ns1:Script ;
+            ns1:language ns1:Python ;
+            ns1:script "a = tf.math.pow( R * T *  (  1 + ( gamma-1 ) / ( 1 + ( gamma-1 ) *  (  ( theta/T ) ** 2 *  tf.math.exp( theta/T ) / (  tf.math.exp( theta/T ) - 1 ) ** 2 )  ) ) , 1/2)" ] ;
+    ns1:returnTypes [ rdf:first [ a ns1:DataDescriptor ;
+                    ns1:augmentedType [ a ns1:SemanticType ;
+                            ns1:semType <http://www.wikidata.org/entity/Q124003> ],
+                        [ a ns1:SemanticType ;
+                            ns1:semType <http://www.wikidata.org/entity/Q124003> ],
+                        [ a ns1:SemanticType ;
+                            ns1:semType <http://www.wikidata.org/entity/Q124003> ],
+                        [ a ns1:SemanticType ;
+                            ns1:semType <http://www.wikidata.org/entity/Q124003> ],
+                        [ a ns1:SemanticType ;
+                            ns1:semType <http://www.wikidata.org/entity/Q124003> ],
+                        [ a ns1:SemanticType ;
+                            ns1:semType <http://www.wikidata.org/entity/Q124003> ],
+                        [ a ns1:SemanticType ;
+                            ns1:semType <http://www.wikidata.org/entity/Q124003> ],
+                        [ a ns1:SemanticType ;
+                            ns1:semType <http://www.wikidata.org/entity/Q124003> ],
+                        [ a ns1:SemanticType ;
+                            ns1:semType <http://www.wikidata.org/entity/Q124003> ],
+                        [ a ns1:SemanticType ;
+                            ns1:semType <http://www.wikidata.org/entity/Q124003> ],
+                        [ a ns1:SemanticType ;
+                            ns1:semType <http://www.wikidata.org/entity/Q124003> ],
+                        [ a ns1:SemanticType ;
+                            ns1:semType <http://www.wikidata.org/entity/Q124003> ],
+                        [ a ns1:SemanticType ;
+                            ns1:semType <http://www.wikidata.org/entity/Q124003> ],
+                        [ a ns1:SemanticType ;
+                            ns1:semType <http://www.wikidata.org/entity/Q124003> ],
+                        [ a ns1:SemanticType ;
+                            ns1:semType <http://www.wikidata.org/entity/Q124003> ],
+                        [ a ns1:SemanticType ;
+                            ns1:semType <http://www.wikidata.org/entity/Q124003> ] ;
+                    ns1:dataType ns1:anyDataType ;
+                    ns1:descriptorName "a^2" ] ;
+            rdf:rest [ ] ] .
+
+[] a ns1:ExternalEquation ;
+    ns1:arguments [ rdf:first [ a ns1:DataDescriptor ;
+                    ns1:dataType ns1:anyDataType ;
+                    ns1:descriptorName "R" ] ;
+            rdf:rest [ rdf:first [ a ns1:DataDescriptor ;
+                            ns1:augmentedType [ a ns1:SemanticType ;
+                                    ns1:semType <http://www.wikidata.org/entity/Q327408> ],
+                                [ a ns1:SemanticType ;
+                                    ns1:semType <http://www.wikidata.org/entity/Q327408> ],
+                                [ a ns1:SemanticType ;
+                                    ns1:semType <http://www.wikidata.org/entity/Q327408> ],
+                                [ a ns1:SemanticType ;
+                                    ns1:semType <http://www.wikidata.org/entity/Q327408> ],
+                                [ a ns1:SemanticType ;
+                                    ns1:semType <http://www.wikidata.org/entity/Q327408> ],
+                                [ a ns1:SemanticType ;
+                                    ns1:semType <http://www.wikidata.org/entity/Q327408> ],
+                                [ a ns1:SemanticType ;
+                                    ns1:semType <http://www.wikidata.org/entity/Q327408> ],
+                                [ a ns1:SemanticType ;
+                                    ns1:semType <http://www.wikidata.org/entity/Q327408> ],
+                                [ a ns1:SemanticType ;
+                                    ns1:semType <http://www.wikidata.org/entity/Q327408> ],
+                                [ a ns1:SemanticType ;
+                                    ns1:semType <http://www.wikidata.org/entity/Q327408> ],
+                                [ a ns1:SemanticType ;
+                                    ns1:semType <http://www.wikidata.org/entity/Q327408> ] ;
+                            ns1:dataType ns1:anyDataType ;
+                            ns1:descriptorName "T" ] ;
+                    rdf:rest [ rdf:first [ a ns1:DataDescriptor ;
+                                    ns1:dataType ns1:anyDataType ;
+                                    ns1:descriptorName "gamma" ] ;
+                            rdf:rest [ rdf:first [ a ns1:DataDescriptor ;
+                                            ns1:dataType ns1:anyDataType ;
+                                            ns1:descriptorName "theta" ] ;
+                                    rdf:rest [ ] ] ] ] ] ;
+    ns1:expression [ a ns1:Script ;
+            ns1:language ns1:Text ;
+            ns1:script "a^2 = R * T * {1 + (gamma - 1) / ( 1 + (gamma-1) * [(theta/T)^2 * e^(theta/T) /(e^(theta/T) -1)^2]) }" ],
+        [ a ns1:Script ;
+            ns1:language ns1:Python ;
+            ns1:script "a = tf.math.pow( R * T *  (  1 + ( gamma-1 ) / ( 1 + ( gamma-1 ) *  (  ( theta/T ) ** 2 *  tf.math.exp( theta/T ) / (  tf.math.exp( theta/T ) - 1 ) ** 2 )  ) ) , 1/2)" ] ;
+    ns1:returnTypes [ rdf:first [ a ns1:DataDescriptor ;
+                    ns1:augmentedType [ a ns1:SemanticType ;
+                            ns1:semType <http://www.wikidata.org/entity/Q124003> ],
+                        [ a ns1:SemanticType ;
+                            ns1:semType <http://www.wikidata.org/entity/Q124003> ],
+                        [ a ns1:SemanticType ;
+                            ns1:semType <http://www.wikidata.org/entity/Q124003> ],
+                        [ a ns1:SemanticType ;
+                            ns1:semType <http://www.wikidata.org/entity/Q124003> ],
+                        [ a ns1:SemanticType ;
+                            ns1:semType <http://www.wikidata.org/entity/Q124003> ],
+                        [ a ns1:SemanticType ;
+                            ns1:semType <http://www.wikidata.org/entity/Q124003> ],
+                        [ a ns1:SemanticType ;
+                            ns1:semType <http://www.wikidata.org/entity/Q124003> ],
+                        [ a ns1:SemanticType ;
+                            ns1:semType <http://www.wikidata.org/entity/Q124003> ],
+                        [ a ns1:SemanticType ;
+                            ns1:semType <http://www.wikidata.org/entity/Q124003> ],
+                        [ a ns1:SemanticType ;
+                            ns1:semType <http://www.wikidata.org/entity/Q124003> ],
+                        [ a ns1:SemanticType ;
+                            ns1:semType <http://www.wikidata.org/entity/Q124003> ] ;
+                    ns1:dataType ns1:anyDataType ;
+                    ns1:descriptorName "a^2" ] ;
+            rdf:rest [ ] ] .
+
+[] a ns1:ExternalEquation ;
+    ns1:arguments [ rdf:first [ a ns1:DataDescriptor ;
+                    ns1:dataType ns1:anyDataType ;
+                    ns1:descriptorName "R" ] ;
+            rdf:rest [ rdf:first [ a ns1:DataDescriptor ;
+                            ns1:augmentedType [ a ns1:SemanticType ;
+                                    ns1:semType <http://www.wikidata.org/entity/Q327408> ],
+                                [ a ns1:SemanticType ;
+                                    ns1:semType <http://www.wikidata.org/entity/Q327408> ],
+                                [ a ns1:SemanticType ;
+                                    ns1:semType <http://www.wikidata.org/entity/Q327408> ],
+                                [ a ns1:SemanticType ;
+                                    ns1:semType <http://www.wikidata.org/entity/Q327408> ],
+                                [ a ns1:SemanticType ;
+                                    ns1:semType <http://www.wikidata.org/entity/Q327408> ],
+                                [ a ns1:SemanticType ;
+                                    ns1:semType <http://www.wikidata.org/entity/Q327408> ],
+                                [ a ns1:SemanticType ;
+                                    ns1:semType <http://www.wikidata.org/entity/Q327408> ] ;
+                            ns1:dataType ns1:anyDataType ;
+                            ns1:descriptorName "T" ] ;
+                    rdf:rest [ rdf:first [ a ns1:DataDescriptor ;
+                                    ns1:dataType ns1:anyDataType ;
+                                    ns1:descriptorName "gamma" ] ;
+                            rdf:rest [ rdf:first [ a ns1:DataDescriptor ;
+                                            ns1:dataType ns1:anyDataType ;
+                                            ns1:descriptorName "theta" ] ;
+                                    rdf:rest [ ] ] ] ] ] ;
+    ns1:expression [ a ns1:Script ;
+            ns1:language ns1:Text ;
+            ns1:script "a^2 = R * T * {1 + (gamma - 1) / ( 1 + (gamma-1) * [(theta/T)^2 * e^(theta/T) /(e^(theta/T) -1)^2]) }" ],
+        [ a ns1:Script ;
+            ns1:language ns1:Python ;
+            ns1:script "a = tf.math.pow( R * T *  (  1 + ( gamma-1 ) / ( 1 + ( gamma-1 ) *  (  ( theta/T ) ** 2 *  tf.math.exp( theta/T ) / (  tf.math.exp( theta/T ) - 1 ) ** 2 )  ) ) , 1/2)" ] ;
+    ns1:returnTypes [ rdf:first [ a ns1:DataDescriptor ;
+                    ns1:augmentedType [ a ns1:SemanticType ;
+                            ns1:semType <http://www.wikidata.org/entity/Q124003> ],
+                        [ a ns1:SemanticType ;
+                            ns1:semType <http://www.wikidata.org/entity/Q124003> ],
+                        [ a ns1:SemanticType ;
+                            ns1:semType <http://www.wikidata.org/entity/Q124003> ],
+                        [ a ns1:SemanticType ;
+                            ns1:semType <http://www.wikidata.org/entity/Q124003> ],
+                        [ a ns1:SemanticType ;
+                            ns1:semType <http://www.wikidata.org/entity/Q124003> ],
+                        [ a ns1:SemanticType ;
+                            ns1:semType <http://www.wikidata.org/entity/Q124003> ],
+                        [ a ns1:SemanticType ;
+                            ns1:semType <http://www.wikidata.org/entity/Q124003> ] ;
+                    ns1:dataType ns1:anyDataType ;
+                    ns1:descriptorName "a^2" ] ;
+            rdf:rest [ ] ] .
+
+[] a ns1:ExternalEquation ;
+    ns1:arguments [ rdf:first [ a ns1:DataDescriptor ;
+                    ns1:dataType ns1:anyDataType ;
+                    ns1:descriptorName "R" ] ;
+            rdf:rest [ rdf:first [ a ns1:DataDescriptor ;
+                            ns1:augmentedType [ a ns1:SemanticType ;
+                                    ns1:semType <http://www.wikidata.org/entity/Q327408> ],
+                                [ a ns1:SemanticType ;
+                                    ns1:semType <http://www.wikidata.org/entity/Q327408> ],
+                                [ a ns1:SemanticType ;
+                                    ns1:semType <http://www.wikidata.org/entity/Q327408> ],
+                                [ a ns1:SemanticType ;
+                                    ns1:semType <http://www.wikidata.org/entity/Q327408> ],
+                                [ a ns1:SemanticType ;
+                                    ns1:semType <http://www.wikidata.org/entity/Q327408> ],
+                                [ a ns1:SemanticType ;
+                                    ns1:semType <http://www.wikidata.org/entity/Q327408> ],
+                                [ a ns1:SemanticType ;
+                                    ns1:semType <http://www.wikidata.org/entity/Q327408> ],
+                                [ a ns1:SemanticType ;
+                                    ns1:semType <http://www.wikidata.org/entity/Q327408> ],
+                                [ a ns1:SemanticType ;
+                                    ns1:semType <http://www.wikidata.org/entity/Q327408> ],
+                                [ a ns1:SemanticType ;
+                                    ns1:semType <http://www.wikidata.org/entity/Q327408> ],
+                                [ a ns1:SemanticType ;
+                                    ns1:semType <http://www.wikidata.org/entity/Q327408> ],
+                                [ a ns1:SemanticType ;
+                                    ns1:semType <http://www.wikidata.org/entity/Q327408> ],
+                                [ a ns1:SemanticType ;
+                                    ns1:semType <http://www.wikidata.org/entity/Q327408> ],
+                                [ a ns1:SemanticType ;
+                                    ns1:semType <http://www.wikidata.org/entity/Q327408> ],
+                                [ a ns1:SemanticType ;
+                                    ns1:semType <http://www.wikidata.org/entity/Q327408> ] ;
+                            ns1:dataType ns1:anyDataType ;
+                            ns1:descriptorName "T" ] ;
+                    rdf:rest [ rdf:first [ a ns1:DataDescriptor ;
+                                    ns1:dataType ns1:anyDataType ;
+                                    ns1:descriptorName "gamma" ] ;
+                            rdf:rest [ rdf:first [ a ns1:DataDescriptor ;
+                                            ns1:dataType ns1:anyDataType ;
+                                            ns1:descriptorName "theta" ] ;
+                                    rdf:rest [ ] ] ] ] ] ;
+    ns1:expression [ a ns1:Script ;
+            ns1:language ns1:Text ;
+            ns1:script "a^2 = R * T * {1 + (gamma - 1) / ( 1 + (gamma-1) * [(theta/T)^2 * e^(theta/T) /(e^(theta/T) -1)^2]) }" ],
+        [ a ns1:Script ;
+            ns1:language ns1:Python ;
+            ns1:script "a = tf.math.pow( R * T *  (  1 + ( gamma-1 ) / ( 1 + ( gamma-1 ) *  (  ( theta/T ) ** 2 *  tf.math.exp( theta/T ) / (  tf.math.exp( theta/T ) - 1 ) ** 2 )  ) ) , 1/2)" ] ;
+    ns1:returnTypes [ rdf:first [ a ns1:DataDescriptor ;
+                    ns1:augmentedType [ a ns1:SemanticType ;
+                            ns1:semType <http://www.wikidata.org/entity/Q124003> ],
+                        [ a ns1:SemanticType ;
+                            ns1:semType <http://www.wikidata.org/entity/Q124003> ],
+                        [ a ns1:SemanticType ;
+                            ns1:semType <http://www.wikidata.org/entity/Q124003> ],
+                        [ a ns1:SemanticType ;
+                            ns1:semType <http://www.wikidata.org/entity/Q124003> ],
+                        [ a ns1:SemanticType ;
+                            ns1:semType <http://www.wikidata.org/entity/Q124003> ],
+                        [ a ns1:SemanticType ;
+                            ns1:semType <http://www.wikidata.org/entity/Q124003> ],
+                        [ a ns1:SemanticType ;
+                            ns1:semType <http://www.wikidata.org/entity/Q124003> ],
+                        [ a ns1:SemanticType ;
+                            ns1:semType <http://www.wikidata.org/entity/Q124003> ],
+                        [ a ns1:SemanticType ;
+                            ns1:semType <http://www.wikidata.org/entity/Q124003> ],
+                        [ a ns1:SemanticType ;
+                            ns1:semType <http://www.wikidata.org/entity/Q124003> ],
+                        [ a ns1:SemanticType ;
+                            ns1:semType <http://www.wikidata.org/entity/Q124003> ],
+                        [ a ns1:SemanticType ;
+                            ns1:semType <http://www.wikidata.org/entity/Q124003> ],
+                        [ a ns1:SemanticType ;
+                            ns1:semType <http://www.wikidata.org/entity/Q124003> ],
+                        [ a ns1:SemanticType ;
+                            ns1:semType <http://www.wikidata.org/entity/Q124003> ],
+                        [ a ns1:SemanticType ;
+                            ns1:semType <http://www.wikidata.org/entity/Q124003> ] ;
+                    ns1:dataType ns1:anyDataType ;
+                    ns1:descriptorName "a^2" ] ;
+            rdf:rest [ ] ] .
+
+[] a ns1:ExternalEquation ;
+    ns1:arguments [ rdf:first [ a ns1:DataDescriptor ;
+                    ns1:dataType ns1:anyDataType ;
+                    ns1:descriptorName "R" ] ;
+            rdf:rest [ rdf:first [ a ns1:DataDescriptor ;
+                            ns1:augmentedType [ a ns1:SemanticType ;
+                                    ns1:semType <http://www.wikidata.org/entity/Q327408> ],
+                                [ a ns1:SemanticType ;
+                                    ns1:semType <http://www.wikidata.org/entity/Q327408> ],
+                                [ a ns1:SemanticType ;
+                                    ns1:semType <http://www.wikidata.org/entity/Q327408> ],
+                                [ a ns1:SemanticType ;
+                                    ns1:semType <http://www.wikidata.org/entity/Q327408> ] ;
+                            ns1:dataType ns1:anyDataType ;
+                            ns1:descriptorName "T" ] ;
+                    rdf:rest [ rdf:first [ a ns1:DataDescriptor ;
+                                    ns1:dataType ns1:anyDataType ;
+                                    ns1:descriptorName "gamma" ] ;
+                            rdf:rest [ ] ] ] ] ;
+    ns1:expression [ a ns1:Script ;
+            ns1:language ns1:Python ;
+            ns1:script "a = tf.math.pow( R * T * gamma, 1/2)" ],
+        [ a ns1:Script ;
+            ns1:language ns1:Text ;
+            ns1:script "a^2 = R * T * gamma" ] ;
+    ns1:returnTypes [ rdf:first [ a ns1:DataDescriptor ;
+                    ns1:augmentedType [ a ns1:SemanticType ;
+                            ns1:semType <http://www.wikidata.org/entity/Q124003> ],
+                        [ a ns1:SemanticType ;
+                            ns1:semType <http://www.wikidata.org/entity/Q124003> ],
+                        [ a ns1:SemanticType ;
+                            ns1:semType <http://www.wikidata.org/entity/Q124003> ],
+                        [ a ns1:SemanticType ;
+                            ns1:semType <http://www.wikidata.org/entity/Q124003> ] ;
+                    ns1:dataType ns1:anyDataType ;
+                    ns1:descriptorName "a^2" ] ;
+            rdf:rest [ ] ] .
+
+[] a ns1:ExternalEquation ;
+    ns1:arguments [ rdf:first [ a ns1:DataDescriptor ;
+                    ns1:dataType ns1:anyDataType ;
+                    ns1:descriptorName "R" ] ;
+            rdf:rest [ rdf:first [ a ns1:DataDescriptor ;
+                            ns1:augmentedType [ a ns1:SemanticType ;
+                                    ns1:semType <http://www.wikidata.org/entity/Q327408> ],
+                                [ a ns1:SemanticType ;
+                                    ns1:semType <http://www.wikidata.org/entity/Q327408> ],
+                                [ a ns1:SemanticType ;
+                                    ns1:semType <http://www.wikidata.org/entity/Q327408> ],
+                                [ a ns1:SemanticType ;
+                                    ns1:semType <http://www.wikidata.org/entity/Q327408> ],
+                                [ a ns1:SemanticType ;
+                                    ns1:semType <http://www.wikidata.org/entity/Q327408> ],
+                                [ a ns1:SemanticType ;
+                                    ns1:semType <http://www.wikidata.org/entity/Q327408> ],
+                                [ a ns1:SemanticType ;
+                                    ns1:semType <http://www.wikidata.org/entity/Q327408> ],
+                                [ a ns1:SemanticType ;
+                                    ns1:semType <http://www.wikidata.org/entity/Q327408> ],
+                                [ a ns1:SemanticType ;
+                                    ns1:semType <http://www.wikidata.org/entity/Q327408> ],
+                                [ a ns1:SemanticType ;
+                                    ns1:semType <http://www.wikidata.org/entity/Q327408> ] ;
+                            ns1:dataType ns1:anyDataType ;
+                            ns1:descriptorName "T" ] ;
+                    rdf:rest [ rdf:first [ a ns1:DataDescriptor ;
+                                    ns1:dataType ns1:anyDataType ;
+                                    ns1:descriptorName "gamma" ] ;
+                            rdf:rest [ rdf:first [ a ns1:DataDescriptor ;
+                                            ns1:dataType ns1:anyDataType ;
+                                            ns1:descriptorName "theta" ] ;
+                                    rdf:rest [ ] ] ] ] ] ;
+    ns1:expression [ a ns1:Script ;
+            ns1:language ns1:Text ;
+            ns1:script "a^2 = R * T * {1 + (gamma - 1) / ( 1 + (gamma-1) * [(theta/T)^2 * e^(theta/T) /(e^(theta/T) -1)^2]) }" ],
+        [ a ns1:Script ;
+            ns1:language ns1:Python ;
+            ns1:script "a = tf.math.pow( R * T *  (  1 + ( gamma-1 ) / ( 1 + ( gamma-1 ) *  (  ( theta/T ) ** 2 *  tf.math.exp( theta/T ) / (  tf.math.exp( theta/T ) - 1 ) ** 2 )  ) ) , 1/2)" ] ;
+    ns1:returnTypes [ rdf:first [ a ns1:DataDescriptor ;
+                    ns1:augmentedType [ a ns1:SemanticType ;
+                            ns1:semType <http://www.wikidata.org/entity/Q124003> ],
+                        [ a ns1:SemanticType ;
+                            ns1:semType <http://www.wikidata.org/entity/Q124003> ],
+                        [ a ns1:SemanticType ;
+                            ns1:semType <http://www.wikidata.org/entity/Q124003> ],
+                        [ a ns1:SemanticType ;
+                            ns1:semType <http://www.wikidata.org/entity/Q124003> ],
+                        [ a ns1:SemanticType ;
+                            ns1:semType <http://www.wikidata.org/entity/Q124003> ],
+                        [ a ns1:SemanticType ;
+                            ns1:semType <http://www.wikidata.org/entity/Q124003> ],
+                        [ a ns1:SemanticType ;
+                            ns1:semType <http://www.wikidata.org/entity/Q124003> ],
+                        [ a ns1:SemanticType ;
+                            ns1:semType <http://www.wikidata.org/entity/Q124003> ],
+                        [ a ns1:SemanticType ;
+                            ns1:semType <http://www.wikidata.org/entity/Q124003> ],
+                        [ a ns1:SemanticType ;
+                            ns1:semType <http://www.wikidata.org/entity/Q124003> ] ;
+                    ns1:dataType ns1:anyDataType ;
+                    ns1:descriptorName "a^2" ] ;
+            rdf:rest [ ] ] .
+
+[] a ns1:ExternalEquation ;
+    ns1:arguments [ rdf:first [ a ns1:DataDescriptor ;
+                    ns1:dataType ns1:anyDataType ;
+                    ns1:descriptorName "R" ] ;
+            rdf:rest [ rdf:first [ a ns1:DataDescriptor ;
+                            ns1:augmentedType [ a ns1:SemanticType ;
+                                    ns1:semType <http://www.wikidata.org/entity/Q327408> ],
+                                [ a ns1:SemanticType ;
+                                    ns1:semType <http://www.wikidata.org/entity/Q327408> ],
+                                [ a ns1:SemanticType ;
+                                    ns1:semType <http://www.wikidata.org/entity/Q327408> ] ;
+                            ns1:dataType ns1:anyDataType ;
+                            ns1:descriptorName "T" ] ;
+                    rdf:rest [ rdf:first [ a ns1:DataDescriptor ;
+                                    ns1:dataType ns1:anyDataType ;
+                                    ns1:descriptorName "gamma" ] ;
+                            rdf:rest [ ] ] ] ] ;
+    ns1:expression [ a ns1:Script ;
+            ns1:language ns1:Python ;
+            ns1:script "a = tf.math.pow( R * T * gamma, 1/2)" ],
+        [ a ns1:Script ;
+            ns1:language ns1:Text ;
+            ns1:script "a^2 = R * T * gamma" ] ;
+    ns1:returnTypes [ rdf:first [ a ns1:DataDescriptor ;
+                    ns1:augmentedType [ a ns1:SemanticType ;
+                            ns1:semType <http://www.wikidata.org/entity/Q124003> ],
+                        [ a ns1:SemanticType ;
+                            ns1:semType <http://www.wikidata.org/entity/Q124003> ],
+                        [ a ns1:SemanticType ;
+                            ns1:semType <http://www.wikidata.org/entity/Q124003> ] ;
+                    ns1:dataType ns1:anyDataType ;
+                    ns1:descriptorName "a^2" ] ;
+            rdf:rest [ ] ] .
+
+[] a ns1:ExternalEquation ;
+    ns1:arguments [ rdf:first [ a ns1:DataDescriptor ;
+                    ns1:dataType ns1:anyDataType ;
+                    ns1:descriptorName "R" ] ;
+            rdf:rest [ rdf:first [ a ns1:DataDescriptor ;
+                            ns1:augmentedType [ a ns1:SemanticType ;
+                                    ns1:semType <http://www.wikidata.org/entity/Q327408> ],
+                                [ a ns1:SemanticType ;
+                                    ns1:semType <http://www.wikidata.org/entity/Q327408> ],
+                                [ a ns1:SemanticType ;
+                                    ns1:semType <http://www.wikidata.org/entity/Q327408> ],
+                                [ a ns1:SemanticType ;
+                                    ns1:semType <http://www.wikidata.org/entity/Q327408> ],
+                                [ a ns1:SemanticType ;
+                                    ns1:semType <http://www.wikidata.org/entity/Q327408> ],
+                                [ a ns1:SemanticType ;
+                                    ns1:semType <http://www.wikidata.org/entity/Q327408> ],
+                                [ a ns1:SemanticType ;
+                                    ns1:semType <http://www.wikidata.org/entity/Q327408> ],
+                                [ a ns1:SemanticType ;
+                                    ns1:semType <http://www.wikidata.org/entity/Q327408> ],
+                                [ a ns1:SemanticType ;
+                                    ns1:semType <http://www.wikidata.org/entity/Q327408> ],
+                                [ a ns1:SemanticType ;
+                                    ns1:semType <http://www.wikidata.org/entity/Q327408> ] ;
+                            ns1:dataType ns1:anyDataType ;
+                            ns1:descriptorName "T" ] ;
+                    rdf:rest [ rdf:first [ a ns1:DataDescriptor ;
+                                    ns1:dataType ns1:anyDataType ;
+                                    ns1:descriptorName "gamma" ] ;
+                            rdf:rest [ ] ] ] ] ;
+    ns1:expression [ a ns1:Script ;
+            ns1:language ns1:Python ;
+            ns1:script "a = tf.math.pow( R * T * gamma, 1/2)" ],
+        [ a ns1:Script ;
+            ns1:language ns1:Text ;
+            ns1:script "a^2 = R * T * gamma" ] ;
+    ns1:returnTypes [ rdf:first [ a ns1:DataDescriptor ;
+                    ns1:augmentedType [ a ns1:SemanticType ;
+                            ns1:semType <http://www.wikidata.org/entity/Q124003> ],
+                        [ a ns1:SemanticType ;
+                            ns1:semType <http://www.wikidata.org/entity/Q124003> ],
+                        [ a ns1:SemanticType ;
+                            ns1:semType <http://www.wikidata.org/entity/Q124003> ],
+                        [ a ns1:SemanticType ;
+                            ns1:semType <http://www.wikidata.org/entity/Q124003> ],
+                        [ a ns1:SemanticType ;
+                            ns1:semType <http://www.wikidata.org/entity/Q124003> ],
+                        [ a ns1:SemanticType ;
+                            ns1:semType <http://www.wikidata.org/entity/Q124003> ],
+                        [ a ns1:SemanticType ;
+                            ns1:semType <http://www.wikidata.org/entity/Q124003> ],
+                        [ a ns1:SemanticType ;
+                            ns1:semType <http://www.wikidata.org/entity/Q124003> ],
+                        [ a ns1:SemanticType ;
+                            ns1:semType <http://www.wikidata.org/entity/Q124003> ],
+                        [ a ns1:SemanticType ;
+                            ns1:semType <http://www.wikidata.org/entity/Q124003> ] ;
+                    ns1:dataType ns1:anyDataType ;
+                    ns1:descriptorName "a^2" ] ;
+            rdf:rest [ ] ] .
+
+[] a ns1:ExternalEquation ;
+    ns1:arguments [ rdf:first [ a ns1:DataDescriptor ;
+                    ns1:dataType ns1:anyDataType ;
+                    ns1:descriptorName "R" ] ;
+            rdf:rest [ rdf:first [ a ns1:DataDescriptor ;
+                            ns1:augmentedType [ a ns1:SemanticType ;
+                                    ns1:semType <http://www.wikidata.org/entity/Q327408> ],
+                                [ a ns1:SemanticType ;
+                                    ns1:semType <http://www.wikidata.org/entity/Q327408> ],
+                                [ a ns1:SemanticType ;
+                                    ns1:semType <http://www.wikidata.org/entity/Q327408> ],
+                                [ a ns1:SemanticType ;
+                                    ns1:semType <http://www.wikidata.org/entity/Q327408> ],
+                                [ a ns1:SemanticType ;
+                                    ns1:semType <http://www.wikidata.org/entity/Q327408> ],
+                                [ a ns1:SemanticType ;
+                                    ns1:semType <http://www.wikidata.org/entity/Q327408> ],
+                                [ a ns1:SemanticType ;
+                                    ns1:semType <http://www.wikidata.org/entity/Q327408> ],
+                                [ a ns1:SemanticType ;
+                                    ns1:semType <http://www.wikidata.org/entity/Q327408> ],
+                                [ a ns1:SemanticType ;
+                                    ns1:semType <http://www.wikidata.org/entity/Q327408> ],
+                                [ a ns1:SemanticType ;
+                                    ns1:semType <http://www.wikidata.org/entity/Q327408> ],
+                                [ a ns1:SemanticType ;
+                                    ns1:semType <http://www.wikidata.org/entity/Q327408> ],
+                                [ a ns1:SemanticType ;
+                                    ns1:semType <http://www.wikidata.org/entity/Q327408> ],
+                                [ a ns1:SemanticType ;
+                                    ns1:semType <http://www.wikidata.org/entity/Q327408> ],
+                                [ a ns1:SemanticType ;
+                                    ns1:semType <http://www.wikidata.org/entity/Q327408> ],
+                                [ a ns1:SemanticType ;
+                                    ns1:semType <http://www.wikidata.org/entity/Q327408> ] ;
+                            ns1:dataType ns1:anyDataType ;
+                            ns1:descriptorName "T" ] ;
+                    rdf:rest [ rdf:first [ a ns1:DataDescriptor ;
+                                    ns1:dataType ns1:anyDataType ;
+                                    ns1:descriptorName "gamma" ] ;
+                            rdf:rest [ ] ] ] ] ;
+    ns1:expression [ a ns1:Script ;
+            ns1:language ns1:Text ;
+            ns1:script "a^2 = R * T * gamma" ],
+        [ a ns1:Script ;
+            ns1:language ns1:Python ;
+            ns1:script "a = tf.math.pow( R * T * gamma, 1/2)" ] ;
+    ns1:returnTypes [ rdf:first [ a ns1:DataDescriptor ;
+                    ns1:augmentedType [ a ns1:SemanticType ;
+                            ns1:semType <http://www.wikidata.org/entity/Q124003> ],
+                        [ a ns1:SemanticType ;
+                            ns1:semType <http://www.wikidata.org/entity/Q124003> ],
+                        [ a ns1:SemanticType ;
+                            ns1:semType <http://www.wikidata.org/entity/Q124003> ],
+                        [ a ns1:SemanticType ;
+                            ns1:semType <http://www.wikidata.org/entity/Q124003> ],
+                        [ a ns1:SemanticType ;
+                            ns1:semType <http://www.wikidata.org/entity/Q124003> ],
+                        [ a ns1:SemanticType ;
+                            ns1:semType <http://www.wikidata.org/entity/Q124003> ],
+                        [ a ns1:SemanticType ;
+                            ns1:semType <http://www.wikidata.org/entity/Q124003> ],
+                        [ a ns1:SemanticType ;
+                            ns1:semType <http://www.wikidata.org/entity/Q124003> ],
+                        [ a ns1:SemanticType ;
+                            ns1:semType <http://www.wikidata.org/entity/Q124003> ],
+                        [ a ns1:SemanticType ;
+                            ns1:semType <http://www.wikidata.org/entity/Q124003> ],
+                        [ a ns1:SemanticType ;
+                            ns1:semType <http://www.wikidata.org/entity/Q124003> ],
+                        [ a ns1:SemanticType ;
+                            ns1:semType <http://www.wikidata.org/entity/Q124003> ],
+                        [ a ns1:SemanticType ;
+                            ns1:semType <http://www.wikidata.org/entity/Q124003> ],
+                        [ a ns1:SemanticType ;
+                            ns1:semType <http://www.wikidata.org/entity/Q124003> ],
+                        [ a ns1:SemanticType ;
+                            ns1:semType <http://www.wikidata.org/entity/Q124003> ] ;
+                    ns1:dataType ns1:anyDataType ;
+                    ns1:descriptorName "a^2" ] ;
+            rdf:rest [ ] ] .
+
+[] a ns1:ExternalEquation ;
+    ns1:arguments [ rdf:first [ a ns1:DataDescriptor ;
+                    ns1:dataType ns1:anyDataType ;
+                    ns1:descriptorName "R" ] ;
+            rdf:rest [ rdf:first [ a ns1:DataDescriptor ;
+                            ns1:augmentedType [ a ns1:SemanticType ;
+                                    ns1:semType <http://www.wikidata.org/entity/Q327408> ],
+                                [ a ns1:SemanticType ;
+                                    ns1:semType <http://www.wikidata.org/entity/Q327408> ],
+                                [ a ns1:SemanticType ;
+                                    ns1:semType <http://www.wikidata.org/entity/Q327408> ],
+                                [ a ns1:SemanticType ;
+                                    ns1:semType <http://www.wikidata.org/entity/Q327408> ],
+                                [ a ns1:SemanticType ;
+                                    ns1:semType <http://www.wikidata.org/entity/Q327408> ],
+                                [ a ns1:SemanticType ;
+                                    ns1:semType <http://www.wikidata.org/entity/Q327408> ],
+                                [ a ns1:SemanticType ;
+                                    ns1:semType <http://www.wikidata.org/entity/Q327408> ],
+                                [ a ns1:SemanticType ;
+                                    ns1:semType <http://www.wikidata.org/entity/Q327408> ],
+                                [ a ns1:SemanticType ;
+                                    ns1:semType <http://www.wikidata.org/entity/Q327408> ],
+                                [ a ns1:SemanticType ;
+                                    ns1:semType <http://www.wikidata.org/entity/Q327408> ],
+                                [ a ns1:SemanticType ;
+                                    ns1:semType <http://www.wikidata.org/entity/Q327408> ],
+                                [ a ns1:SemanticType ;
+                                    ns1:semType <http://www.wikidata.org/entity/Q327408> ],
+                                [ a ns1:SemanticType ;
+                                    ns1:semType <http://www.wikidata.org/entity/Q327408> ] ;
+                            ns1:dataType ns1:anyDataType ;
+                            ns1:descriptorName "T" ] ;
+                    rdf:rest [ rdf:first [ a ns1:DataDescriptor ;
+                                    ns1:dataType ns1:anyDataType ;
+                                    ns1:descriptorName "gamma" ] ;
+                            rdf:rest [ ] ] ] ] ;
+    ns1:expression [ a ns1:Script ;
+            ns1:language ns1:Python ;
+            ns1:script "a = tf.math.pow( R * T * gamma, 1/2)" ],
+        [ a ns1:Script ;
+            ns1:language ns1:Text ;
+            ns1:script "a^2 = R * T * gamma" ] ;
+    ns1:returnTypes [ rdf:first [ a ns1:DataDescriptor ;
+                    ns1:augmentedType [ a ns1:SemanticType ;
+                            ns1:semType <http://www.wikidata.org/entity/Q124003> ],
+                        [ a ns1:SemanticType ;
+                            ns1:semType <http://www.wikidata.org/entity/Q124003> ],
+                        [ a ns1:SemanticType ;
+                            ns1:semType <http://www.wikidata.org/entity/Q124003> ],
+                        [ a ns1:SemanticType ;
+                            ns1:semType <http://www.wikidata.org/entity/Q124003> ],
+                        [ a ns1:SemanticType ;
+                            ns1:semType <http://www.wikidata.org/entity/Q124003> ],
+                        [ a ns1:SemanticType ;
+                            ns1:semType <http://www.wikidata.org/entity/Q124003> ],
+                        [ a ns1:SemanticType ;
+                            ns1:semType <http://www.wikidata.org/entity/Q124003> ],
+                        [ a ns1:SemanticType ;
+                            ns1:semType <http://www.wikidata.org/entity/Q124003> ],
+                        [ a ns1:SemanticType ;
+                            ns1:semType <http://www.wikidata.org/entity/Q124003> ],
+                        [ a ns1:SemanticType ;
+                            ns1:semType <http://www.wikidata.org/entity/Q124003> ],
+                        [ a ns1:SemanticType ;
+                            ns1:semType <http://www.wikidata.org/entity/Q124003> ],
+                        [ a ns1:SemanticType ;
+                            ns1:semType <http://www.wikidata.org/entity/Q124003> ],
+                        [ a ns1:SemanticType ;
+                            ns1:semType <http://www.wikidata.org/entity/Q124003> ] ;
+                    ns1:dataType ns1:anyDataType ;
+                    ns1:descriptorName "a^2" ] ;
+            rdf:rest [ ] ] .
+
+[] a ns1:ExternalEquation ;
+    ns1:arguments [ rdf:first [ a ns1:DataDescriptor ;
+                    ns1:dataType ns1:anyDataType ;
+                    ns1:descriptorName "R" ] ;
+            rdf:rest [ rdf:first [ a ns1:DataDescriptor ;
+                            ns1:augmentedType [ a ns1:SemanticType ;
+                                    ns1:semType <http://www.wikidata.org/entity/Q327408> ],
+                                [ a ns1:SemanticType ;
+                                    ns1:semType <http://www.wikidata.org/entity/Q327408> ],
+                                [ a ns1:SemanticType ;
+                                    ns1:semType <http://www.wikidata.org/entity/Q327408> ],
+                                [ a ns1:SemanticType ;
+                                    ns1:semType <http://www.wikidata.org/entity/Q327408> ],
+                                [ a ns1:SemanticType ;
+                                    ns1:semType <http://www.wikidata.org/entity/Q327408> ],
+                                [ a ns1:SemanticType ;
+                                    ns1:semType <http://www.wikidata.org/entity/Q327408> ],
+                                [ a ns1:SemanticType ;
+                                    ns1:semType <http://www.wikidata.org/entity/Q327408> ],
+                                [ a ns1:SemanticType ;
+                                    ns1:semType <http://www.wikidata.org/entity/Q327408> ],
+                                [ a ns1:SemanticType ;
+                                    ns1:semType <http://www.wikidata.org/entity/Q327408> ] ;
+                            ns1:dataType ns1:anyDataType ;
+                            ns1:descriptorName "T" ] ;
+                    rdf:rest [ rdf:first [ a ns1:DataDescriptor ;
+                                    ns1:dataType ns1:anyDataType ;
+                                    ns1:descriptorName "gamma" ] ;
+                            rdf:rest [ rdf:first [ a ns1:DataDescriptor ;
+                                            ns1:dataType ns1:anyDataType ;
+                                            ns1:descriptorName "theta" ] ;
+                                    rdf:rest [ ] ] ] ] ] ;
+    ns1:expression [ a ns1:Script ;
+            ns1:language ns1:Text ;
+            ns1:script "a^2 = R * T * {1 + (gamma - 1) / ( 1 + (gamma-1) * [(theta/T)^2 * e^(theta/T) /(e^(theta/T) -1)^2]) }" ],
+        [ a ns1:Script ;
+            ns1:language ns1:Python ;
+            ns1:script "a = tf.math.pow( R * T *  (  1 + ( gamma-1 ) / ( 1 + ( gamma-1 ) *  (  ( theta/T ) ** 2 *  tf.math.exp( theta/T ) / (  tf.math.exp( theta/T ) - 1 ) ** 2 )  ) ) , 1/2)" ] ;
+    ns1:returnTypes [ rdf:first [ a ns1:DataDescriptor ;
+                    ns1:augmentedType [ a ns1:SemanticType ;
+                            ns1:semType <http://www.wikidata.org/entity/Q124003> ],
+                        [ a ns1:SemanticType ;
+                            ns1:semType <http://www.wikidata.org/entity/Q124003> ],
+                        [ a ns1:SemanticType ;
+                            ns1:semType <http://www.wikidata.org/entity/Q124003> ],
+                        [ a ns1:SemanticType ;
+                            ns1:semType <http://www.wikidata.org/entity/Q124003> ],
+                        [ a ns1:SemanticType ;
+                            ns1:semType <http://www.wikidata.org/entity/Q124003> ],
+                        [ a ns1:SemanticType ;
+                            ns1:semType <http://www.wikidata.org/entity/Q124003> ],
+                        [ a ns1:SemanticType ;
+                            ns1:semType <http://www.wikidata.org/entity/Q124003> ],
+                        [ a ns1:SemanticType ;
+                            ns1:semType <http://www.wikidata.org/entity/Q124003> ],
+                        [ a ns1:SemanticType ;
+                            ns1:semType <http://www.wikidata.org/entity/Q124003> ] ;
+                    ns1:dataType ns1:anyDataType ;
+                    ns1:descriptorName "a^2" ] ;
+            rdf:rest [ ] ] .
+
+[] a ns1:ExternalEquation ;
+    ns1:arguments [ rdf:first [ a ns1:DataDescriptor ;
+                    ns1:dataType ns1:anyDataType ;
+                    ns1:descriptorName "R" ] ;
+            rdf:rest [ rdf:first [ a ns1:DataDescriptor ;
+                            ns1:augmentedType [ a ns1:SemanticType ;
+                                    ns1:semType <http://www.wikidata.org/entity/Q327408> ],
+                                [ a ns1:SemanticType ;
+                                    ns1:semType <http://www.wikidata.org/entity/Q327408> ],
+                                [ a ns1:SemanticType ;
+                                    ns1:semType <http://www.wikidata.org/entity/Q327408> ],
+                                [ a ns1:SemanticType ;
+                                    ns1:semType <http://www.wikidata.org/entity/Q327408> ],
+                                [ a ns1:SemanticType ;
+                                    ns1:semType <http://www.wikidata.org/entity/Q327408> ],
+                                [ a ns1:SemanticType ;
+                                    ns1:semType <http://www.wikidata.org/entity/Q327408> ],
+                                [ a ns1:SemanticType ;
+                                    ns1:semType <http://www.wikidata.org/entity/Q327408> ],
+                                [ a ns1:SemanticType ;
+                                    ns1:semType <http://www.wikidata.org/entity/Q327408> ],
+                                [ a ns1:SemanticType ;
+                                    ns1:semType <http://www.wikidata.org/entity/Q327408> ],
+                                [ a ns1:SemanticType ;
+                                    ns1:semType <http://www.wikidata.org/entity/Q327408> ],
+                                [ a ns1:SemanticType ;
+                                    ns1:semType <http://www.wikidata.org/entity/Q327408> ],
+                                [ a ns1:SemanticType ;
+                                    ns1:semType <http://www.wikidata.org/entity/Q327408> ],
+                                [ a ns1:SemanticType ;
+                                    ns1:semType <http://www.wikidata.org/entity/Q327408> ],
+                                [ a ns1:SemanticType ;
+                                    ns1:semType <http://www.wikidata.org/entity/Q327408> ],
+                                [ a ns1:SemanticType ;
+                                    ns1:semType <http://www.wikidata.org/entity/Q327408> ],
+                                [ a ns1:SemanticType ;
+                                    ns1:semType <http://www.wikidata.org/entity/Q327408> ] ;
+                            ns1:dataType ns1:anyDataType ;
+                            ns1:descriptorName "T" ] ;
+                    rdf:rest [ rdf:first [ a ns1:DataDescriptor ;
+                                    ns1:dataType ns1:anyDataType ;
+                                    ns1:descriptorName "gamma" ] ;
+                            rdf:rest [ ] ] ] ] ;
+    ns1:expression [ a ns1:Script ;
+            ns1:language ns1:Python ;
+            ns1:script "a = tf.math.pow( R * T * gamma, 1/2)" ],
+        [ a ns1:Script ;
+            ns1:language ns1:Text ;
+            ns1:script "a^2 = R * T * gamma" ] ;
+    ns1:returnTypes [ rdf:first [ a ns1:DataDescriptor ;
+                    ns1:augmentedType [ a ns1:SemanticType ;
+                            ns1:semType <http://www.wikidata.org/entity/Q124003> ],
+                        [ a ns1:SemanticType ;
+                            ns1:semType <http://www.wikidata.org/entity/Q124003> ],
+                        [ a ns1:SemanticType ;
+                            ns1:semType <http://www.wikidata.org/entity/Q124003> ],
+                        [ a ns1:SemanticType ;
+                            ns1:semType <http://www.wikidata.org/entity/Q124003> ],
+                        [ a ns1:SemanticType ;
+                            ns1:semType <http://www.wikidata.org/entity/Q124003> ],
+                        [ a ns1:SemanticType ;
+                            ns1:semType <http://www.wikidata.org/entity/Q124003> ],
+                        [ a ns1:SemanticType ;
+                            ns1:semType <http://www.wikidata.org/entity/Q124003> ],
+                        [ a ns1:SemanticType ;
+                            ns1:semType <http://www.wikidata.org/entity/Q124003> ],
+                        [ a ns1:SemanticType ;
+                            ns1:semType <http://www.wikidata.org/entity/Q124003> ],
+                        [ a ns1:SemanticType ;
+                            ns1:semType <http://www.wikidata.org/entity/Q124003> ],
+                        [ a ns1:SemanticType ;
+                            ns1:semType <http://www.wikidata.org/entity/Q124003> ],
+                        [ a ns1:SemanticType ;
+                            ns1:semType <http://www.wikidata.org/entity/Q124003> ],
+                        [ a ns1:SemanticType ;
+                            ns1:semType <http://www.wikidata.org/entity/Q124003> ],
+                        [ a ns1:SemanticType ;
+                            ns1:semType <http://www.wikidata.org/entity/Q124003> ],
+                        [ a ns1:SemanticType ;
+                            ns1:semType <http://www.wikidata.org/entity/Q124003> ],
+                        [ a ns1:SemanticType ;
+                            ns1:semType <http://www.wikidata.org/entity/Q124003> ] ;
+                    ns1:dataType ns1:anyDataType ;
+                    ns1:descriptorName "a^2" ] ;
+            rdf:rest [ ] ] .
+
+[] a ns1:ExternalEquation ;
+    ns1:arguments [ rdf:first [ a ns1:DataDescriptor ;
+                    ns1:dataType ns1:anyDataType ;
+                    ns1:descriptorName "R" ] ;
+            rdf:rest [ rdf:first [ a ns1:DataDescriptor ;
+                            ns1:augmentedType [ a ns1:SemanticType ;
+                                    ns1:semType <http://www.wikidata.org/entity/Q327408> ],
+                                [ a ns1:SemanticType ;
+                                    ns1:semType <http://www.wikidata.org/entity/Q327408> ],
+                                [ a ns1:SemanticType ;
+                                    ns1:semType <http://www.wikidata.org/entity/Q327408> ],
+                                [ a ns1:SemanticType ;
+                                    ns1:semType <http://www.wikidata.org/entity/Q327408> ],
+                                [ a ns1:SemanticType ;
+                                    ns1:semType <http://www.wikidata.org/entity/Q327408> ],
+                                [ a ns1:SemanticType ;
+                                    ns1:semType <http://www.wikidata.org/entity/Q327408> ],
+                                [ a ns1:SemanticType ;
+                                    ns1:semType <http://www.wikidata.org/entity/Q327408> ],
+                                [ a ns1:SemanticType ;
+                                    ns1:semType <http://www.wikidata.org/entity/Q327408> ],
+                                [ a ns1:SemanticType ;
+                                    ns1:semType <http://www.wikidata.org/entity/Q327408> ],
+                                [ a ns1:SemanticType ;
+                                    ns1:semType <http://www.wikidata.org/entity/Q327408> ],
+                                [ a ns1:SemanticType ;
+                                    ns1:semType <http://www.wikidata.org/entity/Q327408> ],
+                                [ a ns1:SemanticType ;
+                                    ns1:semType <http://www.wikidata.org/entity/Q327408> ],
+                                [ a ns1:SemanticType ;
+                                    ns1:semType <http://www.wikidata.org/entity/Q327408> ],
+                                [ a ns1:SemanticType ;
+                                    ns1:semType <http://www.wikidata.org/entity/Q327408> ] ;
+                            ns1:dataType ns1:anyDataType ;
+                            ns1:descriptorName "T" ] ;
+                    rdf:rest [ rdf:first [ a ns1:DataDescriptor ;
+                                    ns1:dataType ns1:anyDataType ;
+                                    ns1:descriptorName "gamma" ] ;
+                            rdf:rest [ rdf:first [ a ns1:DataDescriptor ;
+                                            ns1:dataType ns1:anyDataType ;
+                                            ns1:descriptorName "theta" ] ;
+                                    rdf:rest [ ] ] ] ] ] ;
+    ns1:expression [ a ns1:Script ;
+            ns1:language ns1:Text ;
+            ns1:script "a^2 = R * T * {1 + (gamma - 1) / ( 1 + (gamma-1) * [(theta/T)^2 * e^(theta/T) /(e^(theta/T) -1)^2]) }" ],
+        [ a ns1:Script ;
+            ns1:language ns1:Python ;
+            ns1:script "a = tf.math.pow( R * T *  (  1 + ( gamma-1 ) / ( 1 + ( gamma-1 ) *  (  ( theta/T ) ** 2 *  tf.math.exp( theta/T ) / (  tf.math.exp( theta/T ) - 1 ) ** 2 )  ) ) , 1/2)" ] ;
+    ns1:returnTypes [ rdf:first [ a ns1:DataDescriptor ;
+                    ns1:augmentedType [ a ns1:SemanticType ;
+                            ns1:semType <http://www.wikidata.org/entity/Q124003> ],
+                        [ a ns1:SemanticType ;
+                            ns1:semType <http://www.wikidata.org/entity/Q124003> ],
+                        [ a ns1:SemanticType ;
+                            ns1:semType <http://www.wikidata.org/entity/Q124003> ],
+                        [ a ns1:SemanticType ;
+                            ns1:semType <http://www.wikidata.org/entity/Q124003> ],
+                        [ a ns1:SemanticType ;
+                            ns1:semType <http://www.wikidata.org/entity/Q124003> ],
+                        [ a ns1:SemanticType ;
+                            ns1:semType <http://www.wikidata.org/entity/Q124003> ],
+                        [ a ns1:SemanticType ;
+                            ns1:semType <http://www.wikidata.org/entity/Q124003> ],
+                        [ a ns1:SemanticType ;
+                            ns1:semType <http://www.wikidata.org/entity/Q124003> ],
+                        [ a ns1:SemanticType ;
+                            ns1:semType <http://www.wikidata.org/entity/Q124003> ],
+                        [ a ns1:SemanticType ;
+                            ns1:semType <http://www.wikidata.org/entity/Q124003> ],
+                        [ a ns1:SemanticType ;
+                            ns1:semType <http://www.wikidata.org/entity/Q124003> ],
+                        [ a ns1:SemanticType ;
+                            ns1:semType <http://www.wikidata.org/entity/Q124003> ],
+                        [ a ns1:SemanticType ;
+                            ns1:semType <http://www.wikidata.org/entity/Q124003> ],
+                        [ a ns1:SemanticType ;
+                            ns1:semType <http://www.wikidata.org/entity/Q124003> ] ;
+                    ns1:dataType ns1:anyDataType ;
+                    ns1:descriptorName "a^2" ] ;
+            rdf:rest [ ] ] .
+
+[] a ns1:ExternalEquation ;
+    ns1:arguments [ rdf:first [ a ns1:DataDescriptor ;
+                    ns1:dataType ns1:anyDataType ;
+                    ns1:descriptorName "R" ] ;
+            rdf:rest [ rdf:first [ a ns1:DataDescriptor ;
+                            ns1:augmentedType [ a ns1:SemanticType ;
+                                    ns1:semType <http://www.wikidata.org/entity/Q327408> ],
+                                [ a ns1:SemanticType ;
+                                    ns1:semType <http://www.wikidata.org/entity/Q327408> ],
+                                [ a ns1:SemanticType ;
+                                    ns1:semType <http://www.wikidata.org/entity/Q327408> ],
+                                [ a ns1:SemanticType ;
+                                    ns1:semType <http://www.wikidata.org/entity/Q327408> ],
+                                [ a ns1:SemanticType ;
+                                    ns1:semType <http://www.wikidata.org/entity/Q327408> ] ;
+                            ns1:dataType ns1:anyDataType ;
+                            ns1:descriptorName "T" ] ;
+                    rdf:rest [ rdf:first [ a ns1:DataDescriptor ;
+                                    ns1:dataType ns1:anyDataType ;
+                                    ns1:descriptorName "gamma" ] ;
+                            rdf:rest [ ] ] ] ] ;
+    ns1:expression [ a ns1:Script ;
+            ns1:language ns1:Python ;
+            ns1:script "a = tf.math.pow( R * T * gamma, 1/2)" ],
+        [ a ns1:Script ;
+            ns1:language ns1:Text ;
+            ns1:script "a^2 = R * T * gamma" ] ;
+    ns1:returnTypes [ rdf:first [ a ns1:DataDescriptor ;
+                    ns1:augmentedType [ a ns1:SemanticType ;
+                            ns1:semType <http://www.wikidata.org/entity/Q124003> ],
+                        [ a ns1:SemanticType ;
+                            ns1:semType <http://www.wikidata.org/entity/Q124003> ],
+                        [ a ns1:SemanticType ;
+                            ns1:semType <http://www.wikidata.org/entity/Q124003> ],
+                        [ a ns1:SemanticType ;
+                            ns1:semType <http://www.wikidata.org/entity/Q124003> ],
+                        [ a ns1:SemanticType ;
+                            ns1:semType <http://www.wikidata.org/entity/Q124003> ] ;
+                    ns1:dataType ns1:anyDataType ;
+                    ns1:descriptorName "a^2" ] ;
+            rdf:rest [ ] ] .
+
+[] a ns1:ExternalEquation ;
+    ns1:arguments [ rdf:first [ a ns1:DataDescriptor ;
+                    ns1:dataType ns1:anyDataType ;
+                    ns1:descriptorName "R" ] ;
+            rdf:rest [ rdf:first [ a ns1:DataDescriptor ;
+                            ns1:augmentedType [ a ns1:SemanticType ;
+                                    ns1:semType <http://www.wikidata.org/entity/Q327408> ],
+                                [ a ns1:SemanticType ;
+                                    ns1:semType <http://www.wikidata.org/entity/Q327408> ],
+                                [ a ns1:SemanticType ;
+                                    ns1:semType <http://www.wikidata.org/entity/Q327408> ],
+                                [ a ns1:SemanticType ;
+                                    ns1:semType <http://www.wikidata.org/entity/Q327408> ],
+                                [ a ns1:SemanticType ;
+                                    ns1:semType <http://www.wikidata.org/entity/Q327408> ],
+                                [ a ns1:SemanticType ;
+                                    ns1:semType <http://www.wikidata.org/entity/Q327408> ] ;
+                            ns1:dataType ns1:anyDataType ;
+                            ns1:descriptorName "T" ] ;
+                    rdf:rest [ rdf:first [ a ns1:DataDescriptor ;
+                                    ns1:dataType ns1:anyDataType ;
+                                    ns1:descriptorName "gamma" ] ;
+                            rdf:rest [ rdf:first [ a ns1:DataDescriptor ;
+                                            ns1:dataType ns1:anyDataType ;
+                                            ns1:descriptorName "theta" ] ;
+                                    rdf:rest [ ] ] ] ] ] ;
+    ns1:expression [ a ns1:Script ;
+            ns1:language ns1:Text ;
+            ns1:script "a^2 = R * T * {1 + (gamma - 1) / ( 1 + (gamma-1) * [(theta/T)^2 * e^(theta/T) /(e^(theta/T) -1)^2]) }" ],
+        [ a ns1:Script ;
+            ns1:language ns1:Python ;
+            ns1:script "a = tf.math.pow( R * T *  (  1 + ( gamma-1 ) / ( 1 + ( gamma-1 ) *  (  ( theta/T ) ** 2 *  tf.math.exp( theta/T ) / (  tf.math.exp( theta/T ) - 1 ) ** 2 )  ) ) , 1/2)" ] ;
+    ns1:returnTypes [ rdf:first [ a ns1:DataDescriptor ;
+                    ns1:augmentedType [ a ns1:SemanticType ;
+                            ns1:semType <http://www.wikidata.org/entity/Q124003> ],
+                        [ a ns1:SemanticType ;
+                            ns1:semType <http://www.wikidata.org/entity/Q124003> ],
+                        [ a ns1:SemanticType ;
+                            ns1:semType <http://www.wikidata.org/entity/Q124003> ],
+                        [ a ns1:SemanticType ;
+                            ns1:semType <http://www.wikidata.org/entity/Q124003> ],
+                        [ a ns1:SemanticType ;
+                            ns1:semType <http://www.wikidata.org/entity/Q124003> ],
+                        [ a ns1:SemanticType ;
+                            ns1:semType <http://www.wikidata.org/entity/Q124003> ] ;
+                    ns1:dataType ns1:anyDataType ;
+                    ns1:descriptorName "a^2" ] ;
+            rdf:rest [ ] ] .
+
+[] a ns1:ExternalEquation ;
+    ns1:arguments [ rdf:first [ a ns1:DataDescriptor ;
+                    ns1:dataType ns1:anyDataType ;
+                    ns1:descriptorName "R" ] ;
+            rdf:rest [ rdf:first [ a ns1:DataDescriptor ;
+                            ns1:augmentedType [ a ns1:SemanticType ;
+                                    ns1:semType <http://www.wikidata.org/entity/Q327408> ],
+                                [ a ns1:SemanticType ;
+                                    ns1:semType <http://www.wikidata.org/entity/Q327408> ],
+                                [ a ns1:SemanticType ;
+                                    ns1:semType <http://www.wikidata.org/entity/Q327408> ],
+                                [ a ns1:SemanticType ;
+                                    ns1:semType <http://www.wikidata.org/entity/Q327408> ],
+                                [ a ns1:SemanticType ;
+                                    ns1:semType <http://www.wikidata.org/entity/Q327408> ],
+                                [ a ns1:SemanticType ;
+                                    ns1:semType <http://www.wikidata.org/entity/Q327408> ],
+                                [ a ns1:SemanticType ;
+                                    ns1:semType <http://www.wikidata.org/entity/Q327408> ] ;
+                            ns1:dataType ns1:anyDataType ;
+                            ns1:descriptorName "T" ] ;
+                    rdf:rest [ rdf:first [ a ns1:DataDescriptor ;
+                                    ns1:dataType ns1:anyDataType ;
+                                    ns1:descriptorName "gamma" ] ;
+                            rdf:rest [ ] ] ] ] ;
+    ns1:expression [ a ns1:Script ;
+            ns1:language ns1:Python ;
+            ns1:script "a = tf.math.pow( R * T * gamma, 1/2)" ],
+        [ a ns1:Script ;
+            ns1:language ns1:Text ;
+            ns1:script "a^2 = R * T * gamma" ] ;
+    ns1:returnTypes [ rdf:first [ a ns1:DataDescriptor ;
+                    ns1:augmentedType [ a ns1:SemanticType ;
+                            ns1:semType <http://www.wikidata.org/entity/Q124003> ],
+                        [ a ns1:SemanticType ;
+                            ns1:semType <http://www.wikidata.org/entity/Q124003> ],
+                        [ a ns1:SemanticType ;
+                            ns1:semType <http://www.wikidata.org/entity/Q124003> ],
+                        [ a ns1:SemanticType ;
+                            ns1:semType <http://www.wikidata.org/entity/Q124003> ],
+                        [ a ns1:SemanticType ;
+                            ns1:semType <http://www.wikidata.org/entity/Q124003> ],
+                        [ a ns1:SemanticType ;
+                            ns1:semType <http://www.wikidata.org/entity/Q124003> ],
+                        [ a ns1:SemanticType ;
+                            ns1:semType <http://www.wikidata.org/entity/Q124003> ] ;
+                    ns1:dataType ns1:anyDataType ;
+                    ns1:descriptorName "a^2" ] ;
+            rdf:rest [ ] ] .
+
+[] a ns1:ExternalEquation ;
+    ns1:arguments [ rdf:first [ a ns1:DataDescriptor ;
+                    ns1:dataType ns1:anyDataType ;
+                    ns1:descriptorName "R" ] ;
+            rdf:rest [ rdf:first [ a ns1:DataDescriptor ;
+                            ns1:augmentedType [ a ns1:SemanticType ;
+                                    ns1:semType <http://www.wikidata.org/entity/Q327408> ],
+                                [ a ns1:SemanticType ;
+                                    ns1:semType <http://www.wikidata.org/entity/Q327408> ],
+                                [ a ns1:SemanticType ;
+                                    ns1:semType <http://www.wikidata.org/entity/Q327408> ],
+                                [ a ns1:SemanticType ;
+                                    ns1:semType <http://www.wikidata.org/entity/Q327408> ],
+                                [ a ns1:SemanticType ;
+                                    ns1:semType <http://www.wikidata.org/entity/Q327408> ],
+                                [ a ns1:SemanticType ;
+                                    ns1:semType <http://www.wikidata.org/entity/Q327408> ],
+                                [ a ns1:SemanticType ;
+                                    ns1:semType <http://www.wikidata.org/entity/Q327408> ],
+                                [ a ns1:SemanticType ;
+                                    ns1:semType <http://www.wikidata.org/entity/Q327408> ],
+                                [ a ns1:SemanticType ;
+                                    ns1:semType <http://www.wikidata.org/entity/Q327408> ] ;
+                            ns1:dataType ns1:anyDataType ;
+                            ns1:descriptorName "T" ] ;
+                    rdf:rest [ rdf:first [ a ns1:DataDescriptor ;
+                                    ns1:dataType ns1:anyDataType ;
+                                    ns1:descriptorName "gamma" ] ;
+                            rdf:rest [ ] ] ] ] ;
+    ns1:expression [ a ns1:Script ;
+            ns1:language ns1:Text ;
+            ns1:script "a^2 = R * T * gamma" ],
+        [ a ns1:Script ;
+            ns1:language ns1:Python ;
+            ns1:script "a = tf.math.pow( R * T * gamma, 1/2)" ] ;
+    ns1:returnTypes [ rdf:first [ a ns1:DataDescriptor ;
+                    ns1:augmentedType [ a ns1:SemanticType ;
+                            ns1:semType <http://www.wikidata.org/entity/Q124003> ],
+                        [ a ns1:SemanticType ;
+                            ns1:semType <http://www.wikidata.org/entity/Q124003> ],
+                        [ a ns1:SemanticType ;
+                            ns1:semType <http://www.wikidata.org/entity/Q124003> ],
+                        [ a ns1:SemanticType ;
+                            ns1:semType <http://www.wikidata.org/entity/Q124003> ],
+                        [ a ns1:SemanticType ;
+                            ns1:semType <http://www.wikidata.org/entity/Q124003> ],
+                        [ a ns1:SemanticType ;
+                            ns1:semType <http://www.wikidata.org/entity/Q124003> ],
+                        [ a ns1:SemanticType ;
+                            ns1:semType <http://www.wikidata.org/entity/Q124003> ],
+                        [ a ns1:SemanticType ;
+                            ns1:semType <http://www.wikidata.org/entity/Q124003> ],
+                        [ a ns1:SemanticType ;
+                            ns1:semType <http://www.wikidata.org/entity/Q124003> ] ;
+                    ns1:dataType ns1:anyDataType ;
+                    ns1:descriptorName "a^2" ] ;
+            rdf:rest [ ] ] .
+
+[] a ns1:ExternalEquation ;
+    ns1:arguments [ rdf:first [ a ns1:DataDescriptor ;
+                    ns1:dataType ns1:anyDataType ;
+                    ns1:descriptorName "R" ] ;
+            rdf:rest [ rdf:first [ a ns1:DataDescriptor ;
+                            ns1:augmentedType [ a ns1:SemanticType ;
+                                    ns1:semType <http://www.wikidata.org/entity/Q327408> ],
+                                [ a ns1:SemanticType ;
+                                    ns1:semType <http://www.wikidata.org/entity/Q327408> ],
+                                [ a ns1:SemanticType ;
+                                    ns1:semType <http://www.wikidata.org/entity/Q327408> ],
+                                [ a ns1:SemanticType ;
+                                    ns1:semType <http://www.wikidata.org/entity/Q327408> ],
+                                [ a ns1:SemanticType ;
+                                    ns1:semType <http://www.wikidata.org/entity/Q327408> ],
+                                [ a ns1:SemanticType ;
+                                    ns1:semType <http://www.wikidata.org/entity/Q327408> ],
+                                [ a ns1:SemanticType ;
+                                    ns1:semType <http://www.wikidata.org/entity/Q327408> ],
+                                [ a ns1:SemanticType ;
+                                    ns1:semType <http://www.wikidata.org/entity/Q327408> ],
+                                [ a ns1:SemanticType ;
+                                    ns1:semType <http://www.wikidata.org/entity/Q327408> ],
+                                [ a ns1:SemanticType ;
+                                    ns1:semType <http://www.wikidata.org/entity/Q327408> ],
+                                [ a ns1:SemanticType ;
+                                    ns1:semType <http://www.wikidata.org/entity/Q327408> ],
+                                [ a ns1:SemanticType ;
+                                    ns1:semType <http://www.wikidata.org/entity/Q327408> ] ;
+                            ns1:dataType ns1:anyDataType ;
+                            ns1:descriptorName "T" ] ;
+                    rdf:rest [ rdf:first [ a ns1:DataDescriptor ;
+                                    ns1:dataType ns1:anyDataType ;
+                                    ns1:descriptorName "gamma" ] ;
+                            rdf:rest [ ] ] ] ] ;
+    ns1:expression [ a ns1:Script ;
+            ns1:language ns1:Text ;
+            ns1:script "a^2 = R * T * gamma" ],
+        [ a ns1:Script ;
+            ns1:language ns1:Python ;
+            ns1:script "a = tf.math.pow( R * T * gamma, 1/2)" ] ;
+    ns1:returnTypes [ rdf:first [ a ns1:DataDescriptor ;
+                    ns1:augmentedType [ a ns1:SemanticType ;
+                            ns1:semType <http://www.wikidata.org/entity/Q124003> ],
+                        [ a ns1:SemanticType ;
+                            ns1:semType <http://www.wikidata.org/entity/Q124003> ],
+                        [ a ns1:SemanticType ;
+                            ns1:semType <http://www.wikidata.org/entity/Q124003> ],
+                        [ a ns1:SemanticType ;
+                            ns1:semType <http://www.wikidata.org/entity/Q124003> ],
+                        [ a ns1:SemanticType ;
+                            ns1:semType <http://www.wikidata.org/entity/Q124003> ],
+                        [ a ns1:SemanticType ;
+                            ns1:semType <http://www.wikidata.org/entity/Q124003> ],
+                        [ a ns1:SemanticType ;
+                            ns1:semType <http://www.wikidata.org/entity/Q124003> ],
+                        [ a ns1:SemanticType ;
+                            ns1:semType <http://www.wikidata.org/entity/Q124003> ],
+                        [ a ns1:SemanticType ;
+                            ns1:semType <http://www.wikidata.org/entity/Q124003> ],
+                        [ a ns1:SemanticType ;
+                            ns1:semType <http://www.wikidata.org/entity/Q124003> ],
+                        [ a ns1:SemanticType ;
+                            ns1:semType <http://www.wikidata.org/entity/Q124003> ],
+                        [ a ns1:SemanticType ;
+                            ns1:semType <http://www.wikidata.org/entity/Q124003> ] ;
+                    ns1:dataType ns1:anyDataType ;
+                    ns1:descriptorName "a^2" ] ;
+            rdf:rest [ ] ] .
+
+[] a ns1:ExternalEquation ;
+    ns1:arguments [ rdf:first [ a ns1:DataDescriptor ;
+                    ns1:dataType ns1:anyDataType ;
+                    ns1:descriptorName "R" ] ;
+            rdf:rest [ rdf:first [ a ns1:DataDescriptor ;
+                            ns1:augmentedType [ a ns1:SemanticType ;
+                                    ns1:semType <http://www.wikidata.org/entity/Q327408> ],
+                                [ a ns1:SemanticType ;
+                                    ns1:semType <http://www.wikidata.org/entity/Q327408> ] ;
+                            ns1:dataType ns1:anyDataType ;
+                            ns1:descriptorName "T" ] ;
+                    rdf:rest [ rdf:first [ a ns1:DataDescriptor ;
+                                    ns1:dataType ns1:anyDataType ;
+                                    ns1:descriptorName "gamma" ] ;
+                            rdf:rest [ rdf:first [ a ns1:DataDescriptor ;
+                                            ns1:dataType ns1:anyDataType ;
+                                            ns1:descriptorName "theta" ] ;
+                                    rdf:rest [ ] ] ] ] ] ;
+    ns1:expression [ a ns1:Script ;
+            ns1:language ns1:Text ;
+            ns1:script "a^2 = R * T * {1 + (gamma - 1) / ( 1 + (gamma-1) * [(theta/T)^2 * e^(theta/T) /(e^(theta/T) -1)^2]) }" ],
+        [ a ns1:Script ;
+            ns1:language ns1:Python ;
+            ns1:script "a = tf.math.pow( R * T *  (  1 + ( gamma-1 ) / ( 1 + ( gamma-1 ) *  (  ( theta/T ) ** 2 *  tf.math.exp( theta/T ) / (  tf.math.exp( theta/T ) - 1 ) ** 2 )  ) ) , 1/2)" ] ;
+    ns1:returnTypes [ rdf:first [ a ns1:DataDescriptor ;
+                    ns1:augmentedType [ a ns1:SemanticType ;
+                            ns1:semType <http://www.wikidata.org/entity/Q124003> ],
+                        [ a ns1:SemanticType ;
+                            ns1:semType <http://www.wikidata.org/entity/Q124003> ] ;
+                    ns1:dataType ns1:anyDataType ;
+                    ns1:descriptorName "a^2" ] ;
+            rdf:rest [ ] ] .
+
+[] a ns1:ExternalEquation ;
+    ns1:arguments [ rdf:first [ a ns1:DataDescriptor ;
+                    ns1:dataType ns1:anyDataType ;
+                    ns1:descriptorName "R" ] ;
+            rdf:rest [ rdf:first [ a ns1:DataDescriptor ;
+                            ns1:augmentedType [ a ns1:SemanticType ;
+                                    ns1:semType <http://www.wikidata.org/entity/Q327408> ],
+                                [ a ns1:SemanticType ;
+                                    ns1:semType <http://www.wikidata.org/entity/Q327408> ],
+                                [ a ns1:SemanticType ;
+                                    ns1:semType <http://www.wikidata.org/entity/Q327408> ],
+                                [ a ns1:SemanticType ;
+                                    ns1:semType <http://www.wikidata.org/entity/Q327408> ],
+                                [ a ns1:SemanticType ;
+                                    ns1:semType <http://www.wikidata.org/entity/Q327408> ] ;
+                            ns1:dataType ns1:anyDataType ;
+                            ns1:descriptorName "T" ] ;
+                    rdf:rest [ rdf:first [ a ns1:DataDescriptor ;
+                                    ns1:dataType ns1:anyDataType ;
+                                    ns1:descriptorName "gamma" ] ;
+                            rdf:rest [ rdf:first [ a ns1:DataDescriptor ;
+                                            ns1:dataType ns1:anyDataType ;
+                                            ns1:descriptorName "theta" ] ;
+                                    rdf:rest [ ] ] ] ] ] ;
+    ns1:expression [ a ns1:Script ;
+            ns1:language ns1:Python ;
+            ns1:script "a = tf.math.pow( R * T *  (  1 + ( gamma-1 ) / ( 1 + ( gamma-1 ) *  (  ( theta/T ) ** 2 *  tf.math.exp( theta/T ) / (  tf.math.exp( theta/T ) - 1 ) ** 2 )  ) ) , 1/2)" ],
+        [ a ns1:Script ;
+            ns1:language ns1:Text ;
+            ns1:script "a^2 = R * T * {1 + (gamma - 1) / ( 1 + (gamma-1) * [(theta/T)^2 * e^(theta/T) /(e^(theta/T) -1)^2]) }" ] ;
+    ns1:returnTypes [ rdf:first [ a ns1:DataDescriptor ;
+                    ns1:augmentedType [ a ns1:SemanticType ;
+                            ns1:semType <http://www.wikidata.org/entity/Q124003> ],
+                        [ a ns1:SemanticType ;
+                            ns1:semType <http://www.wikidata.org/entity/Q124003> ],
+                        [ a ns1:SemanticType ;
+                            ns1:semType <http://www.wikidata.org/entity/Q124003> ],
+                        [ a ns1:SemanticType ;
+                            ns1:semType <http://www.wikidata.org/entity/Q124003> ],
+                        [ a ns1:SemanticType ;
+                            ns1:semType <http://www.wikidata.org/entity/Q124003> ] ;
+                    ns1:dataType ns1:anyDataType ;
+                    ns1:descriptorName "a^2" ] ;
+            rdf:rest [ ] ] .
+
+[] a ns1:ExternalEquation ;
+    ns1:arguments [ rdf:first [ a ns1:DataDescriptor ;
+                    ns1:dataType ns1:anyDataType ;
+                    ns1:descriptorName "R" ] ;
+            rdf:rest [ rdf:first [ a ns1:DataDescriptor ;
+                            ns1:augmentedType [ a ns1:SemanticType ;
+                                    ns1:semType <http://www.wikidata.org/entity/Q327408> ],
+                                [ a ns1:SemanticType ;
+                                    ns1:semType <http://www.wikidata.org/entity/Q327408> ],
+                                [ a ns1:SemanticType ;
+                                    ns1:semType <http://www.wikidata.org/entity/Q327408> ],
+                                [ a ns1:SemanticType ;
+                                    ns1:semType <http://www.wikidata.org/entity/Q327408> ],
+                                [ a ns1:SemanticType ;
+                                    ns1:semType <http://www.wikidata.org/entity/Q327408> ],
+                                [ a ns1:SemanticType ;
+                                    ns1:semType <http://www.wikidata.org/entity/Q327408> ],
+                                [ a ns1:SemanticType ;
+                                    ns1:semType <http://www.wikidata.org/entity/Q327408> ],
+                                [ a ns1:SemanticType ;
+                                    ns1:semType <http://www.wikidata.org/entity/Q327408> ],
+                                [ a ns1:SemanticType ;
+                                    ns1:semType <http://www.wikidata.org/entity/Q327408> ],
+                                [ a ns1:SemanticType ;
+                                    ns1:semType <http://www.wikidata.org/entity/Q327408> ],
+                                [ a ns1:SemanticType ;
+                                    ns1:semType <http://www.wikidata.org/entity/Q327408> ],
+                                [ a ns1:SemanticType ;
+                                    ns1:semType <http://www.wikidata.org/entity/Q327408> ],
+                                [ a ns1:SemanticType ;
+                                    ns1:semType <http://www.wikidata.org/entity/Q327408> ],
+                                [ a ns1:SemanticType ;
+                                    ns1:semType <http://www.wikidata.org/entity/Q327408> ] ;
+                            ns1:dataType ns1:anyDataType ;
+                            ns1:descriptorName "T" ] ;
+                    rdf:rest [ rdf:first [ a ns1:DataDescriptor ;
+                                    ns1:dataType ns1:anyDataType ;
+                                    ns1:descriptorName "gamma" ] ;
+                            rdf:rest [ ] ] ] ] ;
+    ns1:expression [ a ns1:Script ;
+            ns1:language ns1:Python ;
+            ns1:script "a = tf.math.pow( R * T * gamma, 1/2)" ],
+        [ a ns1:Script ;
+            ns1:language ns1:Text ;
+            ns1:script "a^2 = R * T * gamma" ] ;
+    ns1:returnTypes [ rdf:first [ a ns1:DataDescriptor ;
+                    ns1:augmentedType [ a ns1:SemanticType ;
+                            ns1:semType <http://www.wikidata.org/entity/Q124003> ],
+                        [ a ns1:SemanticType ;
+                            ns1:semType <http://www.wikidata.org/entity/Q124003> ],
+                        [ a ns1:SemanticType ;
+                            ns1:semType <http://www.wikidata.org/entity/Q124003> ],
+                        [ a ns1:SemanticType ;
+                            ns1:semType <http://www.wikidata.org/entity/Q124003> ],
+                        [ a ns1:SemanticType ;
+                            ns1:semType <http://www.wikidata.org/entity/Q124003> ],
+                        [ a ns1:SemanticType ;
+                            ns1:semType <http://www.wikidata.org/entity/Q124003> ],
+                        [ a ns1:SemanticType ;
+                            ns1:semType <http://www.wikidata.org/entity/Q124003> ],
+                        [ a ns1:SemanticType ;
+                            ns1:semType <http://www.wikidata.org/entity/Q124003> ],
+                        [ a ns1:SemanticType ;
+                            ns1:semType <http://www.wikidata.org/entity/Q124003> ],
+                        [ a ns1:SemanticType ;
+                            ns1:semType <http://www.wikidata.org/entity/Q124003> ],
+                        [ a ns1:SemanticType ;
+                            ns1:semType <http://www.wikidata.org/entity/Q124003> ],
+                        [ a ns1:SemanticType ;
+                            ns1:semType <http://www.wikidata.org/entity/Q124003> ],
+                        [ a ns1:SemanticType ;
+                            ns1:semType <http://www.wikidata.org/entity/Q124003> ],
+                        [ a ns1:SemanticType ;
+                            ns1:semType <http://www.wikidata.org/entity/Q124003> ] ;
+                    ns1:dataType ns1:anyDataType ;
+                    ns1:descriptorName "a^2" ] ;
+            rdf:rest [ ] ] .
+
+

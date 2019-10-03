@@ -57,4 +57,49 @@ public class DialogConstants {
 	public static final String CODE_EXTRACTION_MODEL_URI = "http://sadl.org/CodeExtractionModel.sadl";
 	public static final String CODE_EXTRACTION_MODEL_PREFIX = "cem";
 	public static final String CODE_EXTRACTION_MODEL_SERIALIZATION_PROPERTY_URI = CODE_EXTRACTION_MODEL_URI + "#serialization";
+	
+	// query to get the argument names and types for an equation, parameterized by equation URI
+	public static final String ARGUMENTS_BY_EQUATION_URI_QUERY = "select ?argName ?argType where { ? <" + 
+			SadlConstants.SADL_IMPLICIT_MODEL_ARGUMENTS_PROPERTY_URI + 
+			"> ?ddList . ?ddList <http://jena.hpl.hp.com/ARQ/list#member> ?member . ?member <" +
+			SadlConstants.SADL_IMPLICIT_MODEL_DESCRIPTOR_NAME_PROPERTY_URI + "> ?argName . ?member <" +
+			SadlConstants.SADL_IMPLICIT_MODEL_DATATYPE_PROPERTY_URI + "> ?argType}";			
+
+	// query to get the return types for an equation, parameterized by equation URI
+	public static final String RETURN_BY_EQUATION_URI_QUERY = "select ?retName ?retType where { ? <" + 
+			SadlConstants.SADL_IMPLICIT_MODEL_RETURN_TYPES_PROPERTY_URI + 
+			"> ?ddList . ?ddList <http://jena.hpl.hp.com/ARQ/list#member> ?member . OPTIONAL{?member <" +
+			SadlConstants.SADL_IMPLICIT_MODEL_DESCRIPTOR_NAME_PROPERTY_URI + "> ?retName} . ?member <" +
+			SadlConstants.SADL_IMPLICIT_MODEL_DATATYPE_PROPERTY_URI + "> ?retType}";							
+
+	// query to get the Python script for an equation, parameterized by equation URI
+	public static final String 	PYTHON_SCRIPT_BY_EQUATION_URI_QUERY = "select ?pyScript where { ? <" + 
+			SadlConstants.SADL_IMPLICIT_MODEL_EXPRESSTION_PROPERTY_URI +
+			"> ?sc . ?sc <" + SadlConstants.SADL_IMPLICIT_MODEL_LANGUAGE_PROPERTY_URI + "> <" + 
+			SadlConstants.SADL_IMPLICIT_MODEL_PYTHON_LANGUAGE_INST_URI +
+			"> . ?sc <" + SadlConstants.SADL_IMPLICIT_MODEL_SCRIPT_PROPERTY_URI + "> ?pyScript}";				
+
+	// query to get the argument names and types for an equation, parameterized by equation Python script
+	public static final String ARGUMENTS_BY_EQUATION_PYTHON_SCRIPT_QUERY = "select ?argName ?argType where {?eq <" + 
+			SadlConstants.SADL_IMPLICIT_MODEL_EXPRESSTION_PROPERTY_URI +
+			"> ?sc . ?sc <" + SadlConstants.SADL_IMPLICIT_MODEL_LANGUAGE_PROPERTY_URI + "> <" + 
+			SadlConstants.SADL_IMPLICIT_MODEL_PYTHON_LANGUAGE_INST_URI +
+			"> . ?sc <" + SadlConstants.SADL_IMPLICIT_MODEL_SCRIPT_PROPERTY_URI + "> ? . ?eq <" + 
+			SadlConstants.SADL_IMPLICIT_MODEL_ARGUMENTS_PROPERTY_URI + 
+			"> ?ddList . ?ddList <http://jena.hpl.hp.com/ARQ/list#member> ?member . ?member <" +
+			SadlConstants.SADL_IMPLICIT_MODEL_DESCRIPTOR_NAME_PROPERTY_URI + "> ?argName . ?member <" +
+			SadlConstants.SADL_IMPLICIT_MODEL_DATATYPE_PROPERTY_URI + "> ?argType}";			
+
+	// query to get the return types for an equation, parameterized by equation Python script
+	public static final String RETURN_BY_EQUATION_PYTHON_SCRIPT_QUERY = "select ?retName ?retType where {?eq <" +
+			SadlConstants.SADL_IMPLICIT_MODEL_EXPRESSTION_PROPERTY_URI + 
+			"> ?sc . ?sc <" + SadlConstants.SADL_IMPLICIT_MODEL_LANGUAGE_PROPERTY_URI + "> <" +
+			SadlConstants.SADL_IMPLICIT_MODEL_PYTHON_LANGUAGE_INST_URI + 
+			"> . ?sc <" + SadlConstants.SADL_IMPLICIT_MODEL_SCRIPT_PROPERTY_URI + "> ? . ?eq <" +  
+			SadlConstants.SADL_IMPLICIT_MODEL_RETURN_TYPES_PROPERTY_URI + 
+			"> ?ddList . ?ddList <http://jena.hpl.hp.com/ARQ/list#member> ?member . OPTIONAL{?member <" +
+			SadlConstants.SADL_IMPLICIT_MODEL_DESCRIPTOR_NAME_PROPERTY_URI + "> ?retName} . ?member <" +
+			SadlConstants.SADL_IMPLICIT_MODEL_DATATYPE_PROPERTY_URI + "> ?retType}";							
+
+
 }

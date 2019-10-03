@@ -46,7 +46,6 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
-import java.util.concurrent.ExecutionException;
 
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IncrementalProjectBuilder;
@@ -72,7 +71,6 @@ import org.eclipse.xtext.resource.XtextSyntaxDiagnostic;
 import org.eclipse.xtext.util.CancelIndicator;
 import org.eclipse.xtext.validation.CheckMode;
 import org.eclipse.xtext.validation.CheckType;
-import org.eclipse.xtext.xbase.controlflow.EvaluationContext;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -97,8 +95,6 @@ import com.ge.research.sadl.jena.MetricsProcessor;
 import com.ge.research.sadl.jena.UtilsForJena;
 import com.ge.research.sadl.model.CircularDefinitionException;
 import com.ge.research.sadl.model.ModelError;
-import com.ge.research.sadl.model.gp.BuiltinElement;
-import com.ge.research.sadl.model.gp.BuiltinElement.BuiltinType;
 import com.ge.research.sadl.model.gp.Equation;
 import com.ge.research.sadl.model.gp.GraphPatternElement;
 import com.ge.research.sadl.model.gp.Junction;
@@ -114,7 +110,6 @@ import com.ge.research.sadl.model.gp.TripleElement;
 import com.ge.research.sadl.model.gp.VariableNode;
 import com.ge.research.sadl.processing.OntModelProvider;
 import com.ge.research.sadl.processing.SadlConstants;
-import com.ge.research.sadl.processing.SadlInferenceException;
 import com.ge.research.sadl.processing.ValidationAcceptor;
 import com.ge.research.sadl.reasoner.ConfigurationException;
 import com.ge.research.sadl.reasoner.InvalidNameException;
@@ -149,7 +144,6 @@ import com.hp.hpl.jena.rdf.model.Property;
 import com.hp.hpl.jena.rdf.model.RDFNode;
 import com.hp.hpl.jena.rdf.model.RDFWriter;
 import com.hp.hpl.jena.rdf.model.StmtIterator;
-import com.hp.hpl.jena.vocabulary.RDF;
 import com.hp.hpl.jena.vocabulary.RDFS;
 
 public class JenaBasedDialogModelProcessor extends JenaBasedSadlModelProcessor {
@@ -309,7 +303,7 @@ public class JenaBasedDialogModelProcessor extends JenaBasedSadlModelProcessor {
 
 		try {
 			if (!getAnswerCurationManager().dialogAnserProviderInitialized()) {
-				System.out.println("DialogAnswerProvider not yet initialized. Touch window.");
+				System.err.println("DialogAnswerProvider not yet initialized. Touch window.");
 //				return;
 			}
 		} catch (IOException e2) {
@@ -989,7 +983,6 @@ public class JenaBasedDialogModelProcessor extends JenaBasedSadlModelProcessor {
 				else if (extractedModelInstance.getNameSpace().equals(targetModelAlias)) {
 					getAnswerCurationManager().notifyUser(getConfigMgr().getModelFolder(), "The equation with URI '" + equationUri + "' is already in the target model '" + targetModelAlias + "'", true);
 				}
-				System.out.println("Ready to build model '" + equationUri + "'");
 				SaveContent sc = new SaveContent(element, Agent.USER);
 				sc.setTargetModelUri(targetModelUrl);
 				sc.setTargetModelActualUrl(targetModelUrl);
