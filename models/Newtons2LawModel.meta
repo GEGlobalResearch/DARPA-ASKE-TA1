@@ -1,5 +1,5 @@
 
-›„
+­„
 =
 Mul
 x"T
@@ -11,29 +11,28 @@ C
 Placeholder
 output"dtype"
 dtypetype"
-shapeshape:*1.13.12
-b'unknown'ö
+shapeshape:*1.12.02b'v1.12.0-rc2-3-ga6d8ffae09'ö
 I
-MassPlaceholder*
-dtype0*
-shape:*
+MassPlaceholder*
 _output_shapes
-:
+:*
+dtype0*
+shape:
 Q
-AccelerationPlaceholder*
-dtype0*
-shape:*
+AccelerationPlaceholder*
 _output_shapes
-:
+:*
+dtype0*
+shape:
 R
 Newtons2LawModel/mulMulMassAcceleration*
 T0*
 _output_shapes
-:""$
-output
-
-Newtons2LawModel/mul:0"#
+:""#
 input
 
 Mass:0
-Acceleration:0
+Acceleration:0"$
+output
+
+Newtons2LawModel/mul:0

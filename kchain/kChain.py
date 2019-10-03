@@ -171,21 +171,8 @@ class kChainModel(object):
                 * metagraphLoc: string of location on disk where computational model was stored
             
         """ 
-        in_dims = len(inputVar)
-                
-        inStr = inputVar[0]['name'] + ' = inArg[0]'
-        for ii in range(1,in_dims):
-            inStr = inStr + '\n    ' + inputVar[ii]['name'] + ' = inArg['+str(ii)+']'            
-        
-        #4 spaces is ideal for indentation
-        #construct the python function around the python snippet
-        stringfun = 'import tensorflow as tf'\
-        +'\ndef '+mdlName+'(inArg):'\
-        +'\n    '+ inStr\
-        +'\n    '+ eqMdl\
-        +'\n    return '+ outputVar[0]['name'] + '\n\n'
-        
-        print(stringfun)
+        #create python function script using the equation script      
+        stringfun = self._makePyFunc(inputVar, outputVar, mdlName, eqMdl)
         
         #write the python code into a file where AutoGraph can read it
         self._makePyFile(stringfun)
@@ -200,6 +187,8 @@ class kChainModel(object):
             print(tmp_method)
         
         metagraphLoc = "../models/" + mdlName
+        
+        in_dims = len(inputVar)
         
         tf.reset_default_graph()
         mdl = tf.Graph()
@@ -229,6 +218,43 @@ class kChainModel(object):
         
         return mdl, metagraphLoc
     
+    def _makePyFunc(self, inputVar, outputVar, mdlName, eqMdl):
+        """
+        Create formatted TensorFlow-compatible python code from equation strings
+        
+        Arguments:
+            inputVar (JSON array):
+                array of JSON variable objects with name, type, value, and unit fields
+            outputVar (JSON array):
+                array of JSON variable objects with name, type, value, and unit fields
+            mdlName (string):
+                Name to assign to the final model (E.g.: 'Newtons2ndLaw')
+            eqMdl (string):
+                Equation relating inputs to output (E.g.: "F = m * a")
+        
+        Returns:
+            (string):
+                * stringfun: formatted python code as string to be written in python file
+        
+        """
+        in_dims = len(inputVar)
+                
+        inStr = inputVar[0]['name'] + ' = inArg[0]'
+        for ii in range(1,in_dims):
+            inStr = inStr + '\n    ' + inputVar[ii]['name'] + ' = inArg['+str(ii)+']'            
+        
+        #4 spaces is ideal for indentation
+        #construct the python function around the python snippet
+        stringfun = 'import tensorflow as tf'\
+        +'\ndef '+mdlName+'(inArg):'\
+        +'\n    '+ inStr\
+        +'\n    '+ eqMdl\
+        +'\n    return '+ outputVar[0]['name'] + '\n\n'
+        
+        print(stringfun)
+        
+        return stringfun
+    
     def _makePyFile(self, stringfun):
         """
         Write the formatted code into a python module for conversion to tensorflow graph
@@ -240,7 +266,6 @@ class kChainModel(object):
         tempPath = 'eqnModels/__init__.py'
         with open(tempPath, 'w+') as f:
             f.write(stringfun)
-        #TODO: update a json array for encoded equation models with inputs, outputs, string
     
     def _getVarType(self, typeStr):
         """
