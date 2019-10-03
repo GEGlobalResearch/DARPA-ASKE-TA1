@@ -171,20 +171,7 @@ class kChainModel(object):
                 * metagraphLoc: string of location on disk where computational model was stored
             
         """ 
-        #create python function script using the equation script      
-        stringfun = self._makePyFunc(inputVar, outputVar, mdlName, eqMdl)
-        
-        #write the python code into a file where AutoGraph can read it
-        self._makePyFile(stringfun)
-        
-        #reload the eqnModels package as a method was newly added
-        imp.reload(eqnModels)
-        
-        #get the method created by the code
-        tmp_method = getattr(eqnModels, mdlName)
-        
-        if self.debug:
-            print(tmp_method)
+        pyFunc = self._getPyFuncHandle(inputVar, outputVar, mdlName, eqMdl)
         
         metagraphLoc = "../models/" + mdlName
         
@@ -203,7 +190,7 @@ class kChainModel(object):
             tfType = self._getVarType(outputVar[0]['type'])
             
             #create TensorFlow graph from python code
-            tf_model = ag.to_graph(tmp_method)
+            tf_model = ag.to_graph(pyFunc)
             
             #obtain TensorFlow model of input and outputs
             output = tf_model(invars)
@@ -218,7 +205,7 @@ class kChainModel(object):
         
         return mdl, metagraphLoc
     
-    def _makePyFunc(self, inputVar, outputVar, mdlName, eqMdl):
+    def _makePyFuncScript(self, inputVar, outputVar, mdlName, eqMdl):
         """
         Create formatted TensorFlow-compatible python code from equation strings
         
@@ -255,6 +242,42 @@ class kChainModel(object):
         
         return stringfun
     
+    def _getPyFuncHandle(self, inputVar, outputVar, mdlName, eqMdl):
+        """
+        Obtain Python method handle from equation strings
+        
+        Arguments:
+            inputVar (JSON array):
+                array of JSON variable objects with name, type, value, and unit fields
+            outputVar (JSON array):
+                array of JSON variable objects with name, type, value, and unit fields
+            mdlName (string):
+                Name to assign to the final model (E.g.: 'Newtons2ndLaw')
+            eqMdl (string):
+                Equation relating inputs to output (E.g.: "F = m * a")
+        
+        Returns:
+            (string):
+                * stringfun: formatted python code as string to be written in python file
+        
+        """
+        #create python function script using the equation script      
+        stringfun = self._makePyFuncScript(inputVar, outputVar, mdlName, eqMdl)
+        
+        #write the python code into a file where AutoGraph can read it
+        self._makePyFile(stringfun)
+        
+        #reload the eqnModels package as a method was newly added
+        imp.reload(eqnModels)
+        
+        #get the method created by the code
+        pyFunc = getattr(eqnModels, mdlName)
+        
+        if self.debug:
+            print(pyFunc)
+        
+        return pyFunc
+        
     def _makePyFile(self, stringfun):
         """
         Write the formatted code into a python module for conversion to tensorflow graph
@@ -602,4 +625,80 @@ class kChainModel(object):
         """
         with open('defaultValues.txt', 'w') as outfile:  
             json.dump(defValues, outfile, indent=4)
+    
+    def appendSubGraph(mdl, func, inputVars, outputVars, nodeDict={}, funcList=[], defaultValue={}):
         
+        rebuildFlag = False
+        with mdl.as_default():
+            invars = []
+            outvars = []
+            o = {}
+    
+            for node in inputVars:
+                if node['name'] in nodeDict.keys():
+                    tmp = nodeDict[node['name']]['graphRef']
+                    invars.append(tmp)
+                    node = nodeDict[node['name']]
+                    node['subModel'].append(func.__name__)
+                    nodeDict[node['name']] = node
+                else:
+                    tfType = tf.float32
+                    tmp = tf.placeholder(tfType, name=node['name'])
+                    invars.append(tmp)
+                    node['graphRef'] = tmp
+                    node['subModel'] = list()
+                    node['subModel'].append(func.__name__)
+                    nodeDict[node['name']] = node
+    
+            tf_model = ag.to_graph(func)
+            output = tf_model(invars)
+    
+            for node in outputVars:
+                if node['name'] in nodeDict.keys():
+                    print('Option 2 encountered - rebuilding graph')
+                    rebuildFlag = True
+                    # Create a clean graph
+                    mdl = tf.Graph()
+                    # in funcList add entry of current function before any consumer function
+                    for index in range(len(funcList)):
+                        if funcList[index]['name'] in node['subModel']:
+                            break
+                    F = {}
+                    F['func'] = func
+                    F['name'] = func.__name__
+                    F['inputVar'] = inputVars
+                    F['outputVar'] = outputVars
+                    funcList.insert(index, F)
+                    mdl, nodeDict, funcList, defaultValues = appendSubGraphFromList(mdl, funcList, nodeDict = {}, funcList = [], defaultValues = {})
+                else:
+                    tfType = tf.float32
+                    tmp = output
+                    outvars.append(tmp)
+                    node['graphRef'] = tmp
+                    node['subModel'] = list()
+                    node['subModel'].append(func.__name__)
+                    nodeDict[node['name']] = node
+    
+            for node in outvars:
+                tf.add_to_collection("output", node)
+    
+            for node in invars:
+                tf.add_to_collection("input", node) 
+    
+        if not rebuildFlag:
+            F = {}
+            F['func'] = func
+            F['name'] = func.__name__
+            F['inputVar'] = inputVars
+            F['outputVar'] = outputVars
+            funcList.append(F)
+            for node in inputVars:
+                if 'value' in node.keys():
+                    defaultValues[node['name']] = node['value']
+    
+        o['mdl'] = mdl
+        o['nodeDict'] = nodeDict
+        o['funcList'] = funcList
+        o['defaultValues'] = defaultValues
+            
+        return o
