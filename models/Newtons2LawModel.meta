@@ -1,38 +1,0 @@
-
-≠Ñ
-=
-Mul
-x"T
-y"T
-z"T"
-Ttype:
-2	ê
-C
-Placeholder
-output"dtype"
-dtypetype"
-shapeshape:*1.12.02b'v1.12.0-rc2-3-ga6d8ffae09'ˆ
-I
-MassPlaceholder*
-_output_shapes
-:*
-dtype0*
-shape:
-Q
-AccelerationPlaceholder*
-_output_shapes
-:*
-dtype0*
-shape:
-R
-Newtons2LawModel/mulMulMassAcceleration*
-T0*
-_output_shapes
-:""#
-input
-
-Mass:0
-Acceleration:0"$
-output
-
-Newtons2LawModel/mul:0

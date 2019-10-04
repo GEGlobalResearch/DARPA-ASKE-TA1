@@ -43,7 +43,7 @@ import kChain as kc
 if __name__ == '__main__':
     #setting up the REST service
     app = connexion.App(__name__, specification_dir='swagger/')
-    app.add_api('my_app.yaml')
+    app.add_api('kchain_app.yaml')
     application = app.app
     app.run(port=12345)
     
@@ -62,15 +62,57 @@ def build(body):
         body['equationModel'] = None
         
     #call K-CHAIN build function with necessary general inputs
-    ko.build(inputVar = body['inputVariables'], 
-             outputVar = body['outputVariables'], 
-             mdlName = body['modelName'], 
-             dataLoc = body['dataLocation'],
-             eqMdl = body['equationModel'])
+    ko.append(mdlName = None,
+             inputVars = body['inputVariables'], 
+             outputVars = body['outputVariables'], 
+             subMdlName = body['modelName'], 
+             eqMdl = body['equationModel'],
+             dataLoc = body['dataLocation'])
+
+#        ko.build(inputVar = body['inputVariables'], 
+#             outputVar = body['outputVariables'], 
+#             mdlName = body['modelName'], 
+#             dataLoc = body['dataLocation'],
+#             eqMdl = body['equationModel'])
     
     #construct output packet
     outputPacket = {"modelType" : ko.modelType,
                     "trainedState" : ko.trainedState,
+                    "metagraphLocation" : ko.meta_graph_loc}
+    
+    print(outputPacket)
+    
+    return outputPacket
+
+
+def append(body):
+    #wrapper function to interact with K-CHAIN append function
+    
+    ko = kc.kChainModel(debug=False)
+    
+    print(body)
+    
+    #handle non-required inputs with appropriate format in JSON
+    
+    if not 'targetModelName' in body.keys():
+        body['targetModelName'] = None
+        
+    if not 'dataLocation' in body.keys():
+        body['dataLocation'] = None
+    
+    if not 'equationModel' in body.keys():
+        body['equationModel'] = None
+        
+    #call K-CHAIN append function with necessary general inputs
+    ko.append(mdlName = body['targetModelName'],
+             inputVars = body['inputVariables'], 
+             outputVars = body['outputVariables'], 
+             subMdlName = body['modelName'], 
+             eqMdl = body['equationModel'],
+             dataLoc = body['dataLocation'])
+    
+    #construct output packet
+    outputPacket = {"modelType" : ko.modelType,
                     "metagraphLocation" : ko.meta_graph_loc}
     
     print(outputPacket)
@@ -202,5 +244,31 @@ def tryLocalDemo4():
                  }
     evaluate(inputPacket)
 
+def tryLocalDemo5():
+    #Create kchain model with equation
+    inputPacket = {
+                  "inputVariables": [
+                    {
+                      "name": "Mass",
+                      "type": "double",
+                      "value": "1.0"
+                    },
+                    {
+                      "name": "Velocity",
+                      "type": "double"
+                    }
+                  ],
+                  "outputVariables": [
+                    {
+                      "name": "Momentum",
+                      "type": "double"
+                    }
+                  ],
+                   "equationModel" : "Momentum = Mass * Velocity",
+                   "modelName" : "Momentum"
+                 }
+    build(inputPacket)
+
+    
 #tryLocalDemo2()
 #tryLocalDemo4()

@@ -49,6 +49,8 @@ import os
 import json
 import importlib as imp
 import eqnModels
+import pickle
+
 from tensorflow.python import autograph as ag
 
 class kChainModel(object):
@@ -481,6 +483,7 @@ class kChainModel(object):
         
         # Create a clean graph and import the MetaGraphDef nodes.
         new_graph = tf.Graph()    
+        nodeDict, funcList = self._getNodeDictFuncList(metagraphLoc)
         
         with tf.Session(graph=new_graph) as sess:
         
@@ -497,7 +500,9 @@ class kChainModel(object):
                 print('AttributeError showed up')
                 
             #recollect output and input vars from original graph
-            output = tf.get_collection("output")[0]    
+            output = list()
+            for node in outputVar:
+                output.append(new_graph.get_tensor_by_name(nodeDict[node['name']]['graphRef']))#tf.get_collection("output")[0]    
             
             #setup feed dictionary for task at hand
             fd = {}
@@ -507,7 +512,7 @@ class kChainModel(object):
                     tstr = node['value'][1:-1]
                 else:
                     tstr = node['value']
-                fd[new_graph.get_tensor_by_name(node['name']+':0')] = np.fromstring(tstr, 
+                fd[new_graph.get_tensor_by_name(nodeDict[node['name']]['graphRef'])] = np.fromstring(tstr, 
                    sep = ',').reshape(-1,1)
         
             #get output predictions
@@ -516,19 +521,19 @@ class kChainModel(object):
             defaultValuesUsed = []
             outval, defaultValuesUsed, missingVar = self._runSessionWithDefaults(sess, new_graph, inputVar,
                                                                      output, fd, defaultValues, 
-                                                                     defaultValuesUsed)
+                                                                     defaultValuesUsed, nodeDict)
             # Close the session
             sess.close()
         
         if outval is not None:
-            outputVar[0]['value'] = np.array2string(outval.reshape(-1,),
+            outputVar[0]['value'] = np.array2string(outval[0].reshape(-1,),
                                                      separator = ',')
         else:
             outputVar[0]['value'] = None
                 
         return outputVar, defaultValuesUsed, missingVar
     
-    def _runSessionWithDefaults(self, sess, mdl, inputVar, output, fd, defaultValues, defaultValuesUsed):
+    def _runSessionWithDefaults(self, sess, mdl, inputVar, output, fd, defaultValues, defaultValuesUsed, nodeDict):
         """
         Run a TensorFlow session with given inputs and fill in missing values from defaults or inform user about missing information
         
@@ -547,6 +552,8 @@ class kChainModel(object):
                 Name:Value pairs of default values from model build stage
             defaultValuesUsed (JSON Array):
                 array of default variable JSON objects with name and value fields (empty initially)
+            nodeDict (Dictionary):
+                all nodes in computational graph (along with unique TF names of nodes)
     
         Returns:
             (output type, Default JSON array, string):
@@ -581,7 +588,7 @@ class kChainModel(object):
                 
             #look for value available in default values
             if varName in defaultValues.keys():
-                tmp = mdl.get_tensor_by_name(varName+':0')
+                tmp = mdl.get_tensor_by_name(nodeDict[varName]['graphRef']) #nodeDict[node['name']]['graphRef']
                 #if user wants multiple evaluations together, the default values
                 #need to be repeated same number of times.
                 if len(fd) > 0: 
@@ -598,7 +605,7 @@ class kChainModel(object):
                 #run session with updated list of inputs from default values
                 aval, defaultValuesUsed, missingVar = self._runSessionWithDefaults(sess, mdl, inputVar, 
                                                                                    output, fd, defaultValues, 
-                                                                                   defaultValuesUsed)
+                                                                                   defaultValuesUsed, nodeDict)
             else:
                 #if missing variable is not in the list of default variables, then inform user
                 print('Please provide value for : ' + varName)
@@ -626,58 +633,195 @@ class kChainModel(object):
         with open('defaultValues.txt', 'w') as outfile:  
             json.dump(defValues, outfile, indent=4)
     
-    def appendSubGraph(mdl, func, inputVars, outputVars, nodeDict={}, funcList=[], defaultValue={}):
+    def append(self, mdlName, inputVars, outputVars, subMdlName, eqMdl, dataLoc = None):
+        #check if mdl exists
+        if mdlName is not None:
+            metagraphLoc = "../models/" + mdlName
+            if os.path.exists(metagraphLoc+'.meta'):
+                #if yes, then:
+                # Import the previously exported meta graph and load Graph model as mdl
+                
+                # Create a clean graph and import the MetaGraphDef nodes.
+                mdl = tf.Graph()    
+                with tf.Session(graph=mdl) as sess:
+                
+                    # Import the previously exported meta graph.
+                    new_saver = tf.train.import_meta_graph(metagraphLoc+'.meta')
+                    
+                    #load the weights and parameter values
+                    try: 
+                        new_saver.restore(sess, metagraphLoc)
+                    except ValueError:
+                        ## Initialize values in the session ##
+                        sess.run(tf.global_variables_initializer())
+                    except AttributeError:
+                        print('AttributeError showed up')
+                        
+                #load nodeDict, funcList, defaultValues
+                defaultValues = self._getDefaultValues()
+                nodeDict, funcList = self._getNodeDictFuncList(metagraphLoc)
+            else:
+                #if no, then:
+                #initialize clean graph as mdl
+                mdl = tf.Graph()
+                tf.reset_default_graph()    
+                nodeDict = {}
+                defaultValues = {}
+                funcList = []
+        else:
+            #if no, then:
+            metagraphLoc = "../models/" + subMdlName
+            #initialize clean graph as mdl
+            mdl = tf.Graph()
+            tf.reset_default_graph()
+            nodeDict = {}
+            defaultValues = {}
+            funcList = []
+            
+        #Assume eqMdl string is present
+        #prepare python function from equation script
+        pyFunc = self._getPyFuncHandle(inputVars, outputVars, subMdlName, eqMdl)        
         
+        #TODO: Allow data-driven model if equation is absent
+        #else get handle of NN model
+        
+        #call appendSubGraph
+        o = self.appendSubGraph(mdl, pyFunc, eqMdl, inputVars, outputVars, nodeDict, funcList, defaultValues)
+        mdl = o['mdl']  
+        nodeDict = o['nodeDict']
+        funcList = o['funcList']
+        defaultValues = o['defaultValues']
+        
+        #TODO: Fit to data
+        #data is available
+        #update trainedState in funcList
+            
+        #save model locally as a MetaGraph
+        tf.train.export_meta_graph(filename = metagraphLoc+'.meta', graph = mdl)
+        
+        #update model type
+        self.modelType = 'Physics'
+        
+        self.modelGraph = mdl
+        self.meta_graph_loc = metagraphLoc
+        
+        #save nodeDict, funcList, defaultValues
+        self._setDefaultValues(defaultValues)
+        self._setNodeDictFuncList(metagraphLoc, nodeDict, funcList)
+        
+        # Intialize the Session
+        sess = tf.Session(graph=mdl)
+        
+        # Initialize writer to allow visualization of model in TensorBoard
+        writer = tf.summary.FileWriter("log/example/model", sess.graph)
+        
+        # Close the writer
+        writer.close()
+        
+        # Close the session
+        sess.close()
+        
+    
+    def appendSubGraph(self, mdl, func, eqStr, inputVars, outputVars, nodeDict={}, funcList=[], defaultValues={}):
         rebuildFlag = False
+            
         with mdl.as_default():
             invars = []
             outvars = []
             o = {}
-    
+            print("Initial Input list")
+            print(inputVars)
+            print(nodeDict)
+            
             for node in inputVars:
                 if node['name'] in nodeDict.keys():
-                    tmp = nodeDict[node['name']]['graphRef']
+                    tmp = mdl.get_tensor_by_name(nodeDict[node['name']]['graphRef'])
                     invars.append(tmp)
-                    node = nodeDict[node['name']]
-                    node['subModel'].append(func.__name__)
-                    nodeDict[node['name']] = node
+                    nodeTmp = nodeDict[node['name']]
+                    if func.__name__ not in nodeTmp['subModel']:
+                        nodeTmp['subModel'].append(func.__name__)
+                    nodeDict[node['name']] = nodeTmp
+                    node['subModel'] = nodeTmp['subModel']
+                    node['graphRef'] = nodeTmp['graphRef']
                 else:
                     tfType = tf.float32
                     tmp = tf.placeholder(tfType, name=node['name'])
                     invars.append(tmp)
-                    node['graphRef'] = tmp
+                    node['graphRef'] = tmp.name
                     node['subModel'] = list()
                     node['subModel'].append(func.__name__)
                     nodeDict[node['name']] = node
-    
+            
+            print("Updated Input List")
+            print(inputVars)
+            print(nodeDict)
+            
             tf_model = ag.to_graph(func)
             output = tf_model(invars)
-    
+            
+            print("Inital Output List")
+            print(outputVars)
+            
+            
             for node in outputVars:
                 if node['name'] in nodeDict.keys():
                     print('Option 2 encountered - rebuilding graph')
                     rebuildFlag = True
                     # Create a clean graph
                     mdl = tf.Graph()
-                    # in funcList add entry of current function before any consumer function
+                    
+                    #find index of functions already in graph that use output of current model
                     for index in range(len(funcList)):
-                        if funcList[index]['name'] in node['subModel']:
+                        if funcList[index]['name'] in nodeDict[node['name']]['subModel']:
                             break
+                    
                     F = {}
-                    F['func'] = func
+                    if eqStr is None:
+                        #function exists in this package (for data-driven case)
+                        F['func'] = func
+                        F['eqStr'] = None
+                    else:
+                        #equation-based models
+                        F['func'] = None
+                        F['eqStr'] = eqStr
+
                     F['name'] = func.__name__
                     F['inputVar'] = inputVars
                     F['outputVar'] = outputVars
-                    funcList.insert(index, F)
-                    mdl, nodeDict, funcList, defaultValues = appendSubGraphFromList(mdl, funcList, nodeDict = {}, funcList = [], defaultValues = {})
+                    
+                    #check if this consumer function is same as the new function
+                    if funcList[index]['name'] is F['name']:
+                        #if same, then replace
+                        funcList[index] = F
+                    else:
+                        #else insert in the list
+                        #In funcList add entry of current function before any consumer function
+                        #since, func output is later used as input to other models
+                        funcList.insert(index, F)
+                    
+                    print(funcList)
+                    print(nodeDict)
+                    
+                    mdl, nodeDict, funcList, defaultValues = self.appendSubGraphFromList(mdl, funcList, nodeDict = {}, funcList = [], defaultValues = {})
                 else:
                     tfType = tf.float32
-                    tmp = output
+                    print(output)
+                    print(tf_model)
+                    print(func)
+                    print(eqStr)
+                    print(invars)
+                    
+                    tmp = output[0]
                     outvars.append(tmp)
-                    node['graphRef'] = tmp
+                    node['graphRef'] = tmp.name
                     node['subModel'] = list()
                     node['subModel'].append(func.__name__)
                     nodeDict[node['name']] = node
+            
+            print("Updated Output List")
+            print(outputVars)
+            print(nodeDict)
+            
     
             for node in outvars:
                 tf.add_to_collection("output", node)
@@ -687,7 +831,15 @@ class kChainModel(object):
     
         if not rebuildFlag:
             F = {}
-            F['func'] = func
+            if eqStr is None:
+                #function exists in this package (for data-driven case)
+                F['func'] = func
+                F['eqStr'] = None
+            else:
+                #equation-based models
+                F['func'] = None
+                F['eqStr'] = eqStr
+                
             F['name'] = func.__name__
             F['inputVar'] = inputVars
             F['outputVar'] = outputVars
@@ -695,10 +847,43 @@ class kChainModel(object):
             for node in inputVars:
                 if 'value' in node.keys():
                     defaultValues[node['name']] = node['value']
-    
+        
+        print(funcList)
+        
         o['mdl'] = mdl
         o['nodeDict'] = nodeDict
         o['funcList'] = funcList
         o['defaultValues'] = defaultValues
             
         return o
+    
+    def appendSubGraphFromList(self, mdl, funcSeqList, nodeDict, funcList, defaultValues):
+        for f in funcSeqList:
+            
+            if f['func'] is None and f['eqStr'] is not None:
+                f['func'] = self._getPyFuncHandle(f['inputVar'], f['outputVar'], f['name'], f['eqStr'])
+                
+            o = self.appendSubGraph(mdl, f['func'], f['eqStr'], f['inputVar'], f['outputVar'], nodeDict, funcList, defaultValues)     
+            mdl = o['mdl']  
+            nodeDict = o['nodeDict']
+            funcList = o['funcList']
+            defaultValues = o['defaultValues']
+            #print(nodeDict)
+        return mdl, nodeDict, funcList, defaultValues
+
+    def _getNodeDictFuncList(self, metagraphLoc):
+        if os.path.exists(metagraphLoc+'.pickle'):
+            modelData = pickle.load(open(metagraphLoc+".pickle", "rb"))
+            nodeDict = modelData['nodeDict']
+            funcList = modelData['funcList']
+        else:
+            nodeDict = {}
+            funcList = []
+        return nodeDict, funcList
+        
+        
+    def _setNodeDictFuncList(self, metagraphLoc, nodeDict, funcList):
+        modelData = {}
+        modelData['nodeDict'] = nodeDict
+        modelData['funcList'] = funcList
+        pickle.dump(modelData, open(metagraphLoc+".pickle", "wb" ))
