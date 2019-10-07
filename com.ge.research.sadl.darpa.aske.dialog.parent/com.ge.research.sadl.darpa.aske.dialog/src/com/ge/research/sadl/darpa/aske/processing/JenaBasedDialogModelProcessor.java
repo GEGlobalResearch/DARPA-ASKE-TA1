@@ -255,6 +255,7 @@ public class JenaBasedDialogModelProcessor extends JenaBasedSadlModelProcessor {
 				}
 			}
 			checkCodeExtractionSadlModelExistence(resource, context);
+			importSadlListModel(resource);		// an import could happen at any time and require a list model
 		} catch (IOException e1) {
 			e1.printStackTrace();
 		} catch (ConfigurationException e1) {

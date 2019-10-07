@@ -1,6 +1,7 @@
 package com.ge.research.sadl.darpa.aske.processing.imports;
 
 import java.io.IOException;
+import java.net.ConnectException;
 import java.net.URL;
 
 import com.google.gson.JsonElement;
@@ -23,31 +24,41 @@ public class JavaToPythonServiceInterface extends JsonServiceInterface {
 		
 		logger.debug(json.toString());
 	
-		String response = makeConnectionAndGetResponse(serviceUrl, json);
-		String pythonCode = null;
-		logger.debug(response);
-		if (response != null && response.length() > 0) {
-			JsonElement je = new JsonParser().parse(response);
-			if (je.isJsonObject()) {
-				JsonObject jobj = je.getAsJsonObject();
-				JsonElement status = jobj.get("status");
-				logger.debug("Status: " + status.getAsString());
-				if (!status.getAsString().equalsIgnoreCase("SUCCESS")) {
-					throw new IOException("Method translation failed: " + status.getAsString());
+		try {
+			String response = makeConnectionAndGetResponse(serviceUrl, json);
+			String pythonCode = null;
+			logger.debug(response);
+			if (response != null && response.length() > 0) {
+				JsonElement je = new JsonParser().parse(response);
+				if (je.isJsonObject()) {
+					JsonObject jobj = je.getAsJsonObject();
+					JsonElement status = jobj.get("status");
+					logger.debug("Status: " + status.getAsString());
+					if (!status.getAsString().equalsIgnoreCase("SUCCESS")) {
+						throw new IOException("Method translation failed: " + status.getAsString());
+					}
+					pythonCode = jobj.get("code").getAsString();
+					logger.debug(pythonCode);
+	
 				}
-				pythonCode = jobj.get("code").getAsString();
-				logger.debug(pythonCode);
-
+				else if (je instanceof JsonPrimitive) {
+					String status = ((JsonPrimitive)je).getAsString();
+					logger.debug(status);
+				}
+				return pythonCode;
 			}
-			else if (je instanceof JsonPrimitive) {
-				String status = ((JsonPrimitive)je).getAsString();
-				logger.debug(status);
+			else {
+				throw new IOException("No response received from service " + translateMethodServiceURL);
 			}
 		}
-		else {
-			throw new IOException("No response received from service " + translateMethodServiceURL);
+		catch (IOException e) {
+			if (e.getCause() instanceof ConnectException) {
+				throw new IOException(e.getMessage() + "(URL=" + translateMethodServiceURL + ")", e.getCause());
+			}
+			else {
+				throw e;
+			}
 		}
-		return pythonCode;
 	}
 	
 	public JavaToPythonServiceInterface(String serviceBaseUri) {
