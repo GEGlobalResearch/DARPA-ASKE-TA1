@@ -80,6 +80,7 @@ import com.ge.research.sadl.reasoner.IReasoner;
 import com.ge.research.sadl.reasoner.ResultSet;
 import com.ge.research.sadl.reasoner.TranslationException;
 import com.ge.research.sadl.reasoner.utils.SadlUtils;
+import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
@@ -130,6 +131,11 @@ public class JenaBasedDialogInferenceProcessor extends JenaBasedSadlInferencePro
 	public static final String STDDEV_PROP = "http://sadl.org/sadlimplicitmodel#stddev";
 	public static final String VARERROR_PROP = "http://sadl.org/sadlimplicitmodel#varError";
 	public static final String MODELERROR_PROP = METAMODEL_PREFIX + "modelError";
+	public static final String METAMODEL_SENS_PROP = METAMODEL_PREFIX + "sensitivity";
+	public static final String METAMODEL_INPUTSENS_PROP = METAMODEL_PREFIX + "inputSensitivity";
+	public static final String METAMODEL_SENSVALUE_PROP = METAMODEL_PREFIX + "sensitivityValue";
+	public static final String METAMODEL_SENSITIVITY = METAMODEL_PREFIX + "Sensitivity";
+	public static final String METAMODEL_INPUTSENSITIVITY = METAMODEL_PREFIX + "InputSensitivity";
 
 	
 	public static final String DEPENDENCY_GRAPH_INSERT = "prefix cg:<http://aske.ge.com/compgraphmodel#>\n" + 
@@ -390,9 +396,10 @@ public class JenaBasedDialogInferenceProcessor extends JenaBasedSadlInferencePro
 			"  ?Q mm:execution/mm:compGraph ?CG. \n" +
 			"   filter (?CG in (COMPGRAPH)).\n" + 
 			"  optional{\n" + 
-			"    ?Q mm:input ?Node.\n" +
-			"    ?Obj1 ?Node ?Obj2. \n" +
-			"    ?Obj2 imp:value ?Value.}\n " + 
+			"    ?Q mm:input ?Inp.\n" +
+			"    ?Inp a ?IType." +
+			"    ?Node rdfs:range ?IType." +
+			"    ?Inp imp:value ?Value.}\n " + 
 			"} order by ?Node";
 	public static final String CGQUERY = "prefix imp:<http://sadl.org/sadlimplicitmodel#>\n" +
 			"select distinct ?Input ?EQ ?Output ?Input_style ?Input_color ?Output_tooltip\n" + //(?Expr as ?EQ_tooltip)
@@ -584,6 +591,8 @@ public class JenaBasedDialogInferenceProcessor extends JenaBasedSadlInferencePro
 			"  ?doc imp:dataLocation ?furl.\n" + 
 			"}";
 
+
+
 	public JenaBasedDialogInferenceProcessor(OntModel theModel) {
 		setTheJenaModel(theModel);
 	}
@@ -753,7 +762,22 @@ public class JenaBasedDialogInferenceProcessor extends JenaBasedSadlInferencePro
 		//Individual sinst;
 		TripleElement itr;
 		
+		//Create a new metaData file for every query, or make query variables unique.
+		
+		
 		// Create list of inputs & ingest input values
+		if (insertions != null && insertions.size() > 0) {
+			for (int i = 0; i < insertions.size(); i++) {
+				
+				itr = insertions.get(i)[0]; //e.g. itr = (v0 altitude v1)
+				sp = itr.getPredicate().getURI();
+				ssp = getTheJenaModel().getProperty(sp);
+				// Add property to list of inputs
+				inputsList.add(ssp);
+			}
+		}
+		
+		// ingest input values
 		if (insertions != null && insertions.size() > 0) {
 			for (int i = 0; i < insertions.size(); i++) {
 				
@@ -770,20 +794,26 @@ public class JenaBasedDialogInferenceProcessor extends JenaBasedSadlInferencePro
 				sss = getTheJenaModel().getResource(ns+ss);
 				ssp = getTheJenaModel().getProperty(sp);
 				sso = getTheJenaModel().getResource(ns+so);
+
+				//com.hp.hpl.jena.rdf.model.Resource foo = qhmodel.getResource(ns+so+cgq.ge);
 				
-				ingestKGTriple(sss, ssp, sso); //works
+				// Add property to list of inputs
+//				inputsList.add(ssp);
 				
-				// create triple: cgq, mm:input, sinst
+				ingestKGTriple(sss, ssp, sso); //(:v0 :altitude :v1)
+				
+				// create triple: cgq, mm:input, property
 				OntProperty inputprop = getTheJenaModel().getOntProperty(METAMODEL_INPUT_PROP);
 				if (inputprop == null) {
 					// TODO need EObject to display error marker in Dialog window... 
 					System.err.println("Unable to find property '" + METAMODEL_INPUT_PROP + "'; is the meta model imported?");
 					return null;
 				}
-				ingestKGTriple(cgq, inputprop, ssp);
+				//ingestKGTriple(cgq, inputprop, ssp); //(bnode, mm:input, :altitude)
+
+				ingestKGTriple(cgq, inputprop, sso); //(bnode, mm:input, v1)
+
 				
-				// Add property to list of inputs
-				inputsList.add(ssp);
 				
 				//ingest value triple
 				itr = insertions.get(i)[1]; //e.g. itr = (v1 :value 30000)
@@ -808,13 +838,15 @@ public class JenaBasedDialogInferenceProcessor extends JenaBasedSadlInferencePro
 				}
 				
 				itr = insertions.get(i)[3]; // (v1 rdf:type :Altitude)
-				ss = itr.getSubject().getName();
-				sss = getTheJenaModel().getResource(ns+ss);
-				sp = itr.getPredicate().getURI();
-				ssp = getTheJenaModel().getProperty(sp);
-				so = itr.getObject().getNamespace() + itr.getObject().getName();
-				sso = getTheJenaModel().getResource(so);
-				ingestKGTriple(sss, ssp, sso); 
+				if (itr != null) {
+					ss = itr.getSubject().getName();
+					sss = getTheJenaModel().getResource(ns+ss);
+					sp = itr.getPredicate().getURI();
+					ssp = getTheJenaModel().getProperty(sp);
+					so = itr.getObject().getNamespace() + itr.getObject().getName();
+					sso = getTheJenaModel().getResource(so);
+					ingestKGTriple(sss, ssp, sso);
+				}
 			}
 		}
 		//getTheJenaModel().write(System.out, "TTL" );
@@ -884,7 +916,7 @@ public class JenaBasedDialogInferenceProcessor extends JenaBasedSadlInferencePro
 		Individual ce;
 		OntProperty execprop;
 		
-		Map<String,String> class2lbl;
+		Map<String,String> class2lbl, lbl2class;
 		Map<String,String[]> lbl2value;
 		
 		String queryMode;
@@ -961,15 +993,15 @@ public class JenaBasedDialogInferenceProcessor extends JenaBasedSadlInferencePro
 					//		insert new triples into graph
 					
 					
-					//TODO: create output instances and link them to ce
-					//      There may be multiple outputs, need to loop through them
-					// We may need to do this later after the results have been computed
-					for (RDFNode op : outputsList) {
-						outputType = op.as(OntProperty.class).getRange().toString();
-						oinst = createIndividualOfClass(qhmodel,outputType);
-						ingestKGTriple(ce,outputprop,oinst);
-					}
-					
+//					//TODO: create output instances and link them to ce
+//					//      There may be multiple outputs, need to loop through them
+//					// We may need to do this later after the results have been computed
+//					for (RDFNode op : outputsList) {
+//						outputType = op.as(OntProperty.class).getRange().toString();
+//						oinst = createIndividualOfClass(qhmodel,outputType);
+//						ingestKGTriple(ce,outputprop,oinst);
+//					}
+//					
 					
 					// Comp Graph instance
 					cgIns = qhmodel.createIndividual(METAMODEL_PREFIX + "CG_" + System.currentTimeMillis(), getTheJenaModel().getOntClass(METAMODEL_CCG));
@@ -999,13 +1031,24 @@ public class JenaBasedDialogInferenceProcessor extends JenaBasedSadlInferencePro
 					dbnJson 	= generateDBNjson(cgJson);
 					class2lbl 	= getClassLabelMapping(dbnJson);
 					
+					
+					
 		            dbnResultsJson = executeDBN(dbnJson);
 		            
-//		            //TODO: send sensitivity request to DBN
+		            //Send sensitivity request to DBN
 //		            queryMode = "sensitivity";
 //		            cgJson = kgResultsToJson(nodesCSVString, modelsCSVString, queryMode, "");
 //		            dbnJson = generateDBNjson(cgJson);
 //		            String dbnResultsJsonSensitivity = executeDBN(dbnJson);
+//		            String sensitivitiyOutcome = getDBNoutcome(dbnResultsJsonSensitivity);
+//		            
+//		            if(sensitivitiyOutcome.equals("Success")) {
+//			            lbl2class = getLabelClassMapping(dbnJson);
+//			            ingestSensitivityResults(cgIns, lbl2class, dbnResultsJsonSensitivity);
+//		            } else {
+//		            	System.err.println("Sensitivity computation failed");
+//		            }
+		            
 		            
 		            //check if DBN execution was successful
 		            
@@ -1017,12 +1060,23 @@ public class JenaBasedDialogInferenceProcessor extends JenaBasedSadlInferencePro
 			            lbl2value = getLabelToMeanStdMapping(dbnResultsJson);
 		//TODO
 			            createCGsubgraphs(cgIns, dbnEqns, dbnOutput, listOfEqns, class2lbl, lbl2value);
+			            
+						//TODO: create output instances and link them to ce
+						//      There may be multiple outputs, need to loop through them
+						// We may need to do this later after the results have been computed
+						for (RDFNode op : outputsList) {
+							outputType = op.as(OntProperty.class).getRange().toString();
+							oinst = createIndividualOfClass(qhmodel,outputType);
+							ingestKGTriple(ce,outputprop,oinst);
+						}
+						
+
 
 			            
 			            //add outputs to CG if calibration
 						//if(queryMode.equals("prognostic")) {
 
-			            //Comment out until switch from Class to Property for outputs
+//			            //Comment out until switch from Class to Property for outputs
 //			            for(OntClass oc : outputsList) {
 //							if (!dbnOutput.values().contains(oc)) {//if no DBN has this output, ie it's an model input 
 //								String ocls = oc.toString();
@@ -1041,13 +1095,14 @@ public class JenaBasedDialogInferenceProcessor extends JenaBasedSadlInferencePro
 //						}
 						//}
 
-//						// Save metadata owl file 
 //						saveMetaDataFile(resource);
 //						ResultSet assumpCheck = checkModelAssumptions(resource, cgIns.toString());
-//						if (assumpCheck == null || !assumpCheck.hasNext() || assumpCheck.next().toString().equals("false")) {
-//							System.out.println("Model " + cgIns.toString() + " does not satisfy its assumptions");
+////						if (assumpCheck == null || !assumpCheck.hasNext() || assumpCheck.next().toString().equals("false")) {
+////							System.out.println("Model " + cgIns.toString() + " does not satisfy its assumptions");
+////						}
+//						if (assumpCheck != null) {
+//							System.out.println(assumpCheck.toString());
 //						}
-						
 			            
 						// create ResultSet
 						results[i] = retrieveCompGraph(resource, cgIns);
@@ -1266,10 +1321,13 @@ public class JenaBasedDialogInferenceProcessor extends JenaBasedSadlInferencePro
 
 
 
+
+
+
 private ResultSet checkModelAssumptions(Resource resource, String model) throws Exception {
 		// TODO Auto-generated method stub
 		//String query = "select Eq Var Oper Val VP where assumption(Eq,Var,Oper,Val,VP).";
-		String query = "select where model_satisfies_assumptions('" + model + "')";
+		String query = "select Res Trace where model_satisfies_assumptions('" + model + "', Res, Trace)";
 		ResultSet result = runPrologQuery(resource, query);
 		return result;
 	}
@@ -1692,6 +1750,60 @@ private RDFNode getObjectAsLiteralOrResource(Node property, Node object) {
 
 
 
+	private void ingestSensitivityResults(Individual cgIns, Map<String, String> lbl2class, String dbnResultsJsonSensitivity) {
+		OntProperty sensprop = 	getTheJenaModel().getOntProperty(METAMODEL_SENS_PROP);
+		OntProperty outputprop = 	getTheJenaModel().getOntProperty(METAMODEL_OUTPUT_PROP);
+		OntProperty inputsensprop = 	getTheJenaModel().getOntProperty(METAMODEL_INPUTSENS_PROP);
+		OntProperty inputprop = 	getTheJenaModel().getOntProperty(METAMODEL_INPUT_PROP);
+		OntProperty inputsensvalprop = 	getTheJenaModel().getOntProperty(METAMODEL_SENSVALUE_PROP);
+
+        JsonParser parser = new JsonParser();
+        JsonElement jsonTree = parser.parse(dbnResultsJsonSensitivity);
+        JsonObject jsonObject, jvalues, jsens;
+        JsonArray jinputs, sensvals;
+        Set<Entry<String, JsonElement>> sensRes;
+        
+        String outputlbl, outputType, inputType, v;
+        RDFNode op,ip;
+        
+        Individual sensIns, inputSens;
+
+        if (jsonTree.isJsonObject()) {
+            jsonObject = jsonTree.getAsJsonObject();
+            jsens = jsonObject.getAsJsonObject("results").getAsJsonObject("sens");
+            jinputs = jsens.getAsJsonArray("inputs");
+
+            sensRes = jsens.entrySet();
+            
+            for ( Entry<String, JsonElement> node : sensRes ) {
+            	if (node.getKey().equals("inputs")) {
+            		continue;
+            	}
+
+            	sensIns = createIndividualOfClass(qhmodel,METAMODEL_SENSITIVITY);
+                ingestKGTriple(cgIns, sensprop, sensIns);
+            	
+            	outputlbl = node.getKey(); // "a0"
+            	outputType = lbl2class.get(outputlbl); //e.g. "http...#staticTemperature"
+            	op = qhmodel.getResource(outputType); //
+            	ingestKGTriple(sensIns, outputprop, op);
+            	
+            	jvalues = (JsonObject)node.getValue();
+            	sensvals = jvalues.getAsJsonArray("totalEffect") ;
+            	
+            	for (int i = 0; i<jinputs.size() ; i++) {
+            		inputType = lbl2class.get(jinputs.get(i).getAsString());
+            		ip = qhmodel.getResource(inputType);
+            		inputSens = createIndividualOfClass(qhmodel, METAMODEL_INPUTSENSITIVITY);
+            		v = sensvals.get(0).getAsJsonArray().get(i).getAsString();
+
+            		ingestKGTriple(sensIns, inputsensprop, inputSens);
+            		ingestKGTriple(inputSens, inputprop, ip);
+            		qhmodel.add(inputSens, inputsensvalprop, v); //sensval should be encoded as proper literal
+            	}
+            }
+        }
+	}
 
 
 
@@ -1757,16 +1869,19 @@ private RDFNode getObjectAsLiteralOrResource(Node property, Node object) {
 			//	//qhmodel.add(sgIns, outputprop, outputInstance.get(o));
 			//}
 			//else {
+			
+			//CONTINUE HERE
+			
 			RDFNode otype = dbnOutput.get(dbn); //this is a property now 
 			//TODO
 
-			RDFNode otypeProp = getTheJenaModel().getProperty(dbnOutput.get(dbn).toString());
+			RDFNode otypeProp = getTheJenaModel().getProperty(dbnOutput.get(dbn).toString()); //e.g. :altutude
 			
-			rng = otypeProp.as(OntProperty.class).getRange().toString();
+			rng = otypeProp.as(OntProperty.class).getRange().toString(); //e.g. :Altitude
 			
 			//rng = otype.as(OntProperty.class).getRange().toString();
 
-			outpIns = createIndividualOfClass(qhmodel, rng);
+			outpIns = createIndividualOfClass(qhmodel, rng); //e.g. instance of :Altitude
 			   //getTheJenaModel().add(outpIns, RDF.type, ostr);
 //				getTheJenaModel().add(sgIns, outputprop, outpIns);
 //				qhmodel.add(sgIns, outputprop, outpIns);
@@ -1833,6 +1948,33 @@ private RDFNode getObjectAsLiteralOrResource(Node property, Node object) {
         return lbl2value;
 	}
 
+//foo
+
+private Map<String, String> getLabelClassMapping(String dbnJson) {
+	// TODO Auto-generated method stub
+    JsonParser parser = new JsonParser();
+    JsonElement jsonTree = parser.parse(dbnJson);
+    Map<String,String> lbl2class = new HashMap<String, String>();
+    JsonObject jsonObject;
+    JsonObject jres;
+    Set<Entry<String, JsonElement>> keys;
+    
+    if (jsonTree.isJsonObject()) {
+        jsonObject = jsonTree.getAsJsonObject();
+        //JsonArray jsonRes = (JsonArray) jsonObject.get("results");
+        
+        jres = (JsonObject) jsonObject.get("mapping");
+        keys = jres.entrySet();
+        
+        for (Map.Entry<String, JsonElement> k: keys) {
+        	//System.out.println(k.getKey() + "   " + k.getValue());  //jres.get(k.getKey()).toString());
+        	//String foo = k.getValue().getAsString();
+        	lbl2class.put(k.getKey(), k.getValue().getAsString());
+        }	
+    }
+    return lbl2class;
+}
+
 
 	private Map<String, String> getClassLabelMapping(String dbnJson) {
         JsonParser parser = new JsonParser();
@@ -1850,7 +1992,7 @@ private RDFNode getObjectAsLiteralOrResource(Node property, Node object) {
             keys = jres.entrySet();
             
             for (Map.Entry<String, JsonElement> k: keys) {
-            	System.out.println(k.getKey() + "   " + k.getValue());  //jres.get(k.getKey()).toString());
+            	//System.out.println(k.getKey() + "   " + k.getValue());  //jres.get(k.getKey()).toString());
             	//String foo = k.getValue().getAsString();
             	class2lbl.put(k.getValue().getAsString(), k.getKey());
             }	
