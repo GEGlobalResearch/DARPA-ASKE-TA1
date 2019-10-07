@@ -71,6 +71,10 @@ public class DialogAnswerProviderConsoleForTest extends BaseDialogAnswerProvider
 	private static String threadValue = "";
 	private Scanner userInputScanner = null;
 	private List<Thread> waitingInteractions = new ArrayList<Thread>();
+	
+	public DialogAnswerProviderConsoleForTest() {
+		super();
+	}
 
 	@Override
 	public String addCurationManagerInitiatedContent(AnswerCurationManager answerCurationManager, String content) {
