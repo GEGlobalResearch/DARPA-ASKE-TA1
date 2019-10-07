@@ -43,6 +43,7 @@ import java.io.IOException;
 import java.io.StringReader;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
+import java.net.ConnectException;
 import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -534,8 +535,16 @@ public class AnswerCurationManager {
 										getExtractionProcessor().addNewSadlContent(sd);
 									}
 								} catch (IOException e) {
-									// TODO Auto-generated catch block
-									e.printStackTrace();
+									if (e.getCause() instanceof ConnectException) {
+										StringBuilder sb = new StringBuilder(e.getMessage());
+										sb.append(" to translate Java to Python. ");
+										sb.append(e.getCause().getMessage());
+										sb.append(".");
+										System.err.println(sb.toString());
+									}
+									else {
+										e.printStackTrace();
+									}
 								} catch (CodeExtractionException e) {
 									// TODO Auto-generated catch block
 									e.printStackTrace();
