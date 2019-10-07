@@ -24,6 +24,7 @@ public abstract class BaseDialogAnswerProvider implements IDialogAnswerProvider 
 	protected AnswerCurationManager answerConfigurationManager;
 	protected Map<String, MixedInitiativeElement> mixedInitiativeElements = new HashMap<>();
 
+	@Override
 	public String addCurationManagerInitiatedContent(AnswerCurationManager acm, String content) {
 		answerConfigurationManager = acm;
 //		Consumer<MixedInitiativeElement> respond = a -> this.provideResponse(a);

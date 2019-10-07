@@ -60,7 +60,6 @@ import com.ge.research.sadl.reasoner.CircularDependencyException;
 import com.ge.research.sadl.reasoner.ConfigurationException;
 import com.ge.research.sadl.reasoner.IConfigurationManagerForEditing.Scope;
 import com.ge.research.sadl.reasoner.IReasoner;
-import com.ge.research.sadl.reasoner.ITranslator;
 import com.ge.research.sadl.reasoner.InvalidNameException;
 import com.ge.research.sadl.reasoner.QueryCancelledException;
 import com.ge.research.sadl.reasoner.QueryParseException;
@@ -68,7 +67,6 @@ import com.ge.research.sadl.reasoner.ReasonerNotFoundException;
 import com.ge.research.sadl.reasoner.ResultSet;
 import com.ge.research.sadl.reasoner.TranslationException;
 import com.ge.research.sadl.reasoner.utils.SadlUtils;
-import com.ge.research.sadl.sADL.SadlResource;
 import com.github.javaparser.JavaParser;
 import com.github.javaparser.Range;
 import com.github.javaparser.ast.CompilationUnit;
@@ -106,7 +104,6 @@ import com.hp.hpl.jena.rdf.model.Literal;
 import com.hp.hpl.jena.rdf.model.Model;
 import com.hp.hpl.jena.rdf.model.ModelFactory;
 import com.hp.hpl.jena.rdf.model.Property;
-import com.hp.hpl.jena.rdf.model.RDFList;
 import com.hp.hpl.jena.rdf.model.RDFNode;
 import com.hp.hpl.jena.rdf.model.Resource;
 import com.hp.hpl.jena.rdf.model.StmtIterator;
@@ -231,7 +228,7 @@ public class JavaModelExtractorJP implements IModelFromCodeExtractor {
 				addOutputMapping(methodCalled, (MethodCallExpr)node);
 			}
 			else {
-				System.err.println("Unexprected node type in postProcessingList: " + node.getClass().getCanonicalName());
+				logger.debug("Unexprected node type in postProcessingList: " + node.getClass().getCanonicalName());
 			}
 		}
 	}
@@ -441,7 +438,7 @@ public class JavaModelExtractorJP implements IModelFromCodeExtractor {
 					e.printStackTrace();
 				}
 			}
-			System.out.println(methInst.getURI() + " returns " + ((rt != null && rt.length() > 0) ? rt : "void"));
+			logger.debug(methInst.getURI() + " returns " + ((rt != null && rt.length() > 0) ? rt : "void"));
 			addSerialization(methInst, ((MethodDeclaration) childNode).toString());
 		}
 		else if (childNode instanceof MethodCallExpr) {
@@ -554,10 +551,10 @@ public class JavaModelExtractorJP implements IModelFromCodeExtractor {
 			}
 		}
 //		else if (childNode instanceof ImportDeclaration) {
-//			System.out.println("Ignoring '" + childNode.toString() + "'");
+//			logger.debug("Ignoring '" + childNode.toString() + "'");
 //		}
 		else {
-			System.err.println("Block child unhandled Node '" + childNode.toString().trim() + "' of type " + childNode.getClass().getCanonicalName());
+			logger.debug("Block child unhandled Node '" + childNode.toString().trim() + "' of type " + childNode.getClass().getCanonicalName());
 		}
 		investigateComments(childNode, containingInst);
 	}
@@ -588,18 +585,18 @@ public class JavaModelExtractorJP implements IModelFromCodeExtractor {
 			cmt = ocmts.get(i);
 			Optional<Range> rng = cmt.getRange();
 			if (rng.isPresent()) {
-				System.out.println("Found orphaned comment at line " + rng.get().getLineCount() + "(" + rng.get().begin.toString() + " to " + rng.get().end.toString() + ")");
+				logger.debug("Found orphaned comment at line " + rng.get().getLineCount() + "(" + rng.get().begin.toString() + " to " + rng.get().end.toString() + ")");
 			}
 			else {
-				System.out.println("Found orphaned comment but range not known");
+				logger.debug("Found orphaned comment but range not known");
 			}
-			System.out.println("   " + cmt.getContent());
+			logger.debug("   " + cmt.getContent());
 		}
 	}
 
 	private void investigateComment(Node childNode, Individual subject, Comment cmt) {
 		if (cmt != null) {
-			System.out.println("   " + cmt.getContent());
+			logger.debug("   " + cmt.getContent());
 			Individual cmtInst = getCodeModel().createIndividual(getCommentClass());
 			if (subject == null) {
 				subject = rootContainingInstance;
@@ -617,8 +614,8 @@ public class JavaModelExtractorJP implements IModelFromCodeExtractor {
 					// TODO Auto-generated catch block
 					e.printStackTrace();
 				}
-				System.out.println("Text: " + cmt.getContent());
-				System.out.println("nc=" + tpresult[0] + ", neq=" + tpresult[1]);
+				logger.debug("Text: " + cmt.getContent());
+				logger.debug("nc=" + tpresult[0] + ", neq=" + tpresult[1]);
 			}
 
 			if (subject != null) {
@@ -627,14 +624,14 @@ public class JavaModelExtractorJP implements IModelFromCodeExtractor {
 				addRange(cmtInst, childNode);
 			}
 			else {
-				System.err.println("Unable to add comment because there is no known subject");
+				logger.debug("Unable to add comment because there is no known subject");
 			}
 			Optional<Range> rng = childNode.getRange();
 			if (rng.isPresent()) {
-				System.out.println("Found comment at line " + rng.get().getLineCount() + "(" + rng.get().begin.toString() + " to " + rng.get().end.toString() + ")");
+				logger.debug("Found comment at line " + rng.get().getLineCount() + "(" + rng.get().begin.toString() + " to " + rng.get().end.toString() + ")");
 			}
 			else {
-				System.out.println("Found comment but range not known");
+				logger.debug("Found comment but range not known");
 			}
 		}
 	}
@@ -672,7 +669,7 @@ public class JavaModelExtractorJP implements IModelFromCodeExtractor {
 			}
 		}
 		else {
-			System.err.println("NameExpr (" + nnm + ") not found; it should already exist!");
+			logger.debug("NameExpr (" + nnm + ") not found; it should already exist!");
 		}
 		return varInst;
 	}
@@ -792,7 +789,7 @@ public class JavaModelExtractorJP implements IModelFromCodeExtractor {
 			NodeList<VariableDeclarator> vars = ((VariableDeclarationExpr)varNode).getVariables();
 			for (int i = 0; i < vars.size(); i++) {
 				if (i > 0) {
-					System.err.println("Multiple vars (" + varNode.toString() + ") in VariableDeclarationExpr not current handled");
+					logger.debug("Multiple vars (" + varNode.toString() + ") in VariableDeclarationExpr not current handled");
 				}
 				VariableDeclarator var = vars.get(i);
 				origName = var.getNameAsString();

@@ -38,10 +38,8 @@ package com.ge.research.sadl.darpa.aske.processing.imports;
 
 import java.io.File;
 import java.io.IOException;
-import java.net.URL;
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
@@ -51,23 +49,16 @@ import org.eclipse.jdt.core.compiler.InvalidInputException;
 import com.ge.research.sadl.builder.IConfigurationManagerForIDE;
 import com.ge.research.sadl.darpa.aske.curation.AnswerCurationManager;
 import com.ge.research.sadl.darpa.aske.preferences.DialogPreferences;
-import com.ge.research.sadl.jena.UtilsForJena;
 import com.ge.research.sadl.processing.SadlConstants;
 import com.ge.research.sadl.reasoner.ConfigurationException;
+import com.ge.research.sadl.reasoner.IConfigurationManagerForEditing.Scope;
 import com.ge.research.sadl.reasoner.IReasoner;
-import com.ge.research.sadl.reasoner.ITranslator;
 import com.ge.research.sadl.reasoner.InvalidNameException;
 import com.ge.research.sadl.reasoner.QueryCancelledException;
 import com.ge.research.sadl.reasoner.QueryParseException;
 import com.ge.research.sadl.reasoner.ReasonerNotFoundException;
 import com.ge.research.sadl.reasoner.ResultSet;
-import com.ge.research.sadl.reasoner.IConfigurationManagerForEditing.Scope;
 import com.ge.research.sadl.reasoner.utils.SadlUtils;
-import com.google.gson.JsonArray;
-import com.google.gson.JsonElement;
-import com.google.gson.JsonObject;
-import com.google.gson.JsonParser;
-import com.hp.hpl.jena.ontology.Individual;
 import com.hp.hpl.jena.ontology.OntDocumentManager;
 import com.hp.hpl.jena.ontology.OntModel;
 import com.hp.hpl.jena.ontology.OntModelSpec;
@@ -101,72 +92,7 @@ public class TextProcessor {
 	}
 
 	/**
-	 * Method to find semantic content related to the name provided, e.g., if the locality were the text surrounding an equation, which contained the phrase
-	 * "where T is the temperature of the air", then a call with name "T" might return the 
-	 * @param name
-	 * @param locality
-	 * @return
-	 * @throws InvalidInputException 
-	 * @throws IOException 
-	 */
-	public List<String[]> processName(String name, String locality) throws InvalidInputException, IOException {
-		if (name == null) {
-			throw new InvalidInputException("Name cannot be null");
-		}
-		if (locality == null) {
-			throw new InvalidInputException("Locality cannot be null");
-		}
-		try {
-			String msg = "Searching for name '" + name + "' in locality '" + locality + "'.";
-			getCurationManager().notifyUser(getTextModelConfigMgr().getModelFolder(), msg, true);
-		} catch (ConfigurationException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-		StringBuilder sb = new StringBuilder();
-//		String baseServiceUrl = "http://vesuvius-dev.crd.ge.com:4200/darpa/aske/";		// dev environment for stable development of other components
-		String baseServiceUrl = "http://vesuvius063.crd.ge.com:4200/darpa/aske/";		// test environment for service development
-		
-		String servicePreference = getPreference(DialogPreferences.ANSWER_TEXT_SERVICE_BASE_URI.getId());
-		if (servicePreference != null) {
-			baseServiceUrl = servicePreference + "/darpa/aske/";
-		}
-		String equationVariableContextServiceURL = baseServiceUrl + "equationVariableContext";
-		URL serviceUrl = new URL(equationVariableContextServiceURL);			
-		JsonObject json = new JsonObject();
-		json.addProperty("localityURI", locality);
-		json.addProperty("variableName", name);
-//		System.out.println(text);
-		String response = getCurationManager().makeConnectionAndGetResponse(serviceUrl, json);
-//		System.out.println(response);
-		if (response != null && response.length() > 0) {
-			OntModel theModel = getCurationManager().getExtractionProcessor().getTextModel();
-			JsonElement je = new JsonParser().parse(response);
-			System.out.println(je.toString());
-			if (je instanceof JsonArray) {
-				JsonArray sentences = je.getAsJsonArray();
-				if (sentences != null) {
-					List<String[]> results = new ArrayList<String[]>();
-					for (JsonElement element : sentences) {
-						if (element != null) {
-							JsonObject sentence = element.getAsJsonObject();
-							String varName = sentence.get("variableName").getAsString();
-							String eqStr = sentence.get("equationString").getAsString();
-							String[] use = new String[2];
-							use[0] = varName;
-							use[1] = eqStr;
-							results.add(use);
-						}
-					}
-					return results;
-				}
-			}
-		}
-		return null;
-	}
-	
-	/**
-	 * Mehod to process a block of text via the textToTriples service to find equations and concepts
+	 * Method to process a block of text via the textToTriples service to find equations and concepts
 	 * @param inputIdentifier -- the identifier, normally a model URI, of the source text
 	 * @param text --  the source text to be processed
 	 * @param locality -- the URI of the model to be used as context for the extraction
@@ -183,132 +109,38 @@ public class TextProcessor {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-		StringBuilder sb = new StringBuilder();
-//		String baseServiceUrl = "http://vesuvius-dev.crd.ge.com:4200/darpa/aske/";		// dev environment for stable development of other components
-		String baseServiceUrl = "http://vesuvius063.crd.ge.com:4200/darpa/aske/";		// test environment for service development
+		String serviceBaseUri = getPreference(DialogPreferences.ANSWER_TEXT_SERVICE_BASE_URI.getId());
+		TextProcessingServiceInterface tpsi = new TextProcessingServiceInterface(serviceBaseUri);
+		return tpsi.processText(inputIdentifier, text, locality);
+	}
+	
+	public String[] retrieveGraph(String locality) throws IOException {
+		logger.debug("Retrieving graph for locality '" + locality + "'");
+		String serviceBaseUri = getPreference(DialogPreferences.ANSWER_TEXT_SERVICE_BASE_URI.getId());
+		TextProcessingServiceInterface tpsi = new TextProcessingServiceInterface(serviceBaseUri);
+		return tpsi.retrieveGraph(locality);
+	}
 		
-		String servicePreference = getPreference(DialogPreferences.ANSWER_TEXT_SERVICE_BASE_URI.getId());
-		if (servicePreference != null) {
-			baseServiceUrl = servicePreference + "/darpa/aske/";
+	/**
+	 * Method to find semantic content related to the name provided, e.g., if the locality were the text surrounding an equation, which contained the phrase
+	 * "where T is the temperature of the air", then a call with name "T" might return the 
+	 * @param name
+	 * @param locality
+	 * @return
+	 * @throws InvalidInputException 
+	 * @throws IOException 
+	 */
+	public List<String[]> processName(String name, String locality) throws InvalidInputException, IOException {
+		try {
+			String msg = "Searching for name '" + name + "' in locality '" + locality + "'.";
+			getCurationManager().notifyUser(getTextModelConfigMgr().getModelFolder(), msg, true);
+		} catch (ConfigurationException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
 		}
-		String textToTripleServiceURL = baseServiceUrl + "text2triples";
-		URL serviceUrl = new URL(textToTripleServiceURL);			
-		if (text == null) {
-			text = "Hello world";
-		}
-		if (locality == null) {
-			locality = "NYI";
-		}
-		JsonObject json = new JsonObject();
-		json.addProperty("localityURI", locality);
-		json.addProperty("text", text);
-//		System.out.println(text);
-		String response = getCurationManager().makeConnectionAndGetResponse(serviceUrl, json);
-//		System.out.println(response);
-		if (response != null && response.length() > 0) {
-			OntModel theModel = getCurationManager().getExtractionProcessor().getTextModel();
-			JsonElement je = new JsonParser().parse(response);
-			if (je.isJsonObject()) {
-				int nc = je.getAsJsonObject().get("numConceptsExtracted").getAsInt();
-				int neq = je.getAsJsonObject().get("numEquationsExtracted").getAsInt();
-				System.out.println("nc=" + nc + ", neq=" + neq);
-				int[] results = new int[2];
-				results[0] = nc;
-				results[1] = neq;
-				return results;
-			}
-//			JsonArray sentences = new JsonParser().parse(response).getAsJsonArray();
-//			if (sentences != null) {
-//				for (JsonElement element : sentences) {
-//					if (element != null) {
-//						JsonObject sentence = element.getAsJsonObject();
-//						String originalText = sentence.get("text").getAsString();
-////						System.out.println("Extracted from text:" + originalText);
-//						JsonArray concepts = sentence.get("concepts").getAsJsonArray();
-//						for (JsonElement concept : concepts) {
-//							String matchingText = concept.getAsJsonObject().get("string").getAsString();
-//							int startInOrigText = concept.getAsJsonObject().get("start").getAsInt();
-//							int endInOrigText = concept.getAsJsonObject().get("end").getAsInt();
-//							double extractionConfidence = concept.getAsJsonObject().get("extractionConfScore").getAsDouble();
-////							System.out.println("  Match in substring '" + matchingText + "(" + startInOrigText + "," + endInOrigText + "):");
-//							JsonArray triples = concept.getAsJsonObject().get("triples").getAsJsonArray();
-//							String eqName = null;
-//							String eqExpr1 = null;
-//							String eqExpr2 = null;
-//							String eqScript1 = null;
-//							String eqScript2 = null;
-//							String lang1 = null;
-//							String lang2 = null;
-//							for (JsonElement triple : triples) {
-//								String subject = triple.getAsJsonObject().get("subject").getAsString();
-//								String predicate = triple.getAsJsonObject().get("predicate").getAsString();
-//								String object = triple.getAsJsonObject().get("object").getAsString();
-//								double tripleConfidenceScore = triple.getAsJsonObject().get("tripleConfScore").getAsDouble();
-//								System.out.println("     <" + subject + ", " + predicate + ", " + object + "> (" + tripleConfidenceScore + ")");
-//								if (object.equals("<http://sadl.org/sadlimplicitmodel#ExternalEquation>")) {
-//									// equation found
-//									eqName = subject;
-//									// predicate assumed to be rdf:type
-//								}
-//								if (eqName != null && subject.equals(eqName)) {
-//									if (predicate.equals("<http://sadl.org/sadlimplicitmodel#expression>")) {
-//										if (eqExpr1 == null) {
-//											eqExpr1 = object;
-//										}
-//										else {
-//											eqExpr2 = object;
-//										}
-//									}
-//								}
-//								if (eqExpr1 != null && subject.equals(eqExpr1)) {
-//									if (predicate.equals("<" + SadlConstants.SADL_IMPLICIT_MODEL_SCRIPT_PROPERTY_URI + ">")) {
-//										eqScript1 = UtilsForJena.stripQuotes(object);
-//									}
-//									else if (predicate.equals("<" + SadlConstants.SADL_IMPLICIT_MODEL_LANGUAGE_PROPERTY_URI + ">")) {
-//										lang1 = object;
-//									}
-//								}
-//								if (eqExpr2 != null && subject.equals(eqExpr2)) {
-//									if (predicate.equals("<" + SadlConstants.SADL_IMPLICIT_MODEL_SCRIPT_PROPERTY_URI + ">")) {
-//										eqScript2 = UtilsForJena.stripQuotes(object);
-//									}
-//									else if (predicate.equals("<" + SadlConstants.SADL_IMPLICIT_MODEL_LANGUAGE_PROPERTY_URI + ">")) {
-//										lang2 = object;
-//									}
-//								}
-//							}
-//							if (eqName != null) {
-//								// add to model
-//								Individual eqInst = theModel.createIndividual(getCurationManager().getExtractionProcessor().getTextModelName() + "#" + eqName,
-//										theModel.getOntClass(SadlConstants.SADL_IMPLICIT_MODEL_EXTERNAL_EQUATION_CLASS_URI));
-//								if (eqName.startsWith("_:")) {
-//									eqName = eqName.substring(2);
-//								}
-//								if (eqScript1 != null) {
-//									Individual script1 = theModel.createIndividual(theModel.getOntClass(SadlConstants.SADL_IMPLICIT_MODEL_SCRIPT_CLASS_URI));
-//									script1.addProperty(theModel.getProperty(SadlConstants.SADL_IMPLICIT_MODEL_SCRIPT_PROPERTY_URI), theModel.createTypedLiteral(eqScript1));
-//									script1.addProperty(theModel.getProperty(SadlConstants.SADL_IMPLICIT_MODEL_LANGUAGE_PROPERTY_URI), theModel.getIndividual(lang1.substring(1, lang1.length() - 1)));
-//									eqInst.addProperty(theModel.getProperty(SadlConstants.SADL_IMPLICIT_MODEL_EXPRESSTION_PROPERTY_URI), script1);
-//								}
-//								if (eqScript2 != null) {
-//									Individual script2 = theModel.createIndividual(theModel.getOntClass(SadlConstants.SADL_IMPLICIT_MODEL_SCRIPT_CLASS_URI));
-//									script2.addProperty(theModel.getProperty(SadlConstants.SADL_IMPLICIT_MODEL_SCRIPT_PROPERTY_URI), theModel.createTypedLiteral(eqScript2));
-//									script2.addProperty(theModel.getProperty(SadlConstants.SADL_IMPLICIT_MODEL_LANGUAGE_PROPERTY_URI), theModel.getIndividual(lang2.substring(1, lang2.length() - 1)));
-//									eqInst.addProperty(theModel.getProperty(SadlConstants.SADL_IMPLICIT_MODEL_EXPRESSTION_PROPERTY_URI), script2);									
-//								}
-//							}
-//						}
-//					}
-//				}
-//			}
-//			System.out.println("The extracted model is:");
-//			theModel.write(System.out, "N3");
-//			addTextModel(inputIdentifier, theModel);
-		}
-		else {
-			System.err.println("No response received from service " + textToTripleServiceURL);
-		}
-		return null;
+		String serviceUri = getPreference(DialogPreferences.ANSWER_TEXT_SERVICE_BASE_URI.getId());
+		TextProcessingServiceInterface tpsi = new TextProcessingServiceInterface(serviceUri);
+		return tpsi.processName(name, locality);
 	}
 	
 	public void addTextModel(String key, OntModel textModel) {
@@ -494,4 +326,5 @@ public class TextProcessor {
 		ResultSet results =  reasoner.ask(query);
 		return results;
 	}
+
 }

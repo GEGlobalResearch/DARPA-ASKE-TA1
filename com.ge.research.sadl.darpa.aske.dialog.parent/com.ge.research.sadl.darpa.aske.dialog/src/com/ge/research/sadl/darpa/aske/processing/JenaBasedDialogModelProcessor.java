@@ -46,7 +46,6 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
-import java.util.concurrent.ExecutionException;
 
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IncrementalProjectBuilder;
@@ -72,7 +71,6 @@ import org.eclipse.xtext.resource.XtextSyntaxDiagnostic;
 import org.eclipse.xtext.util.CancelIndicator;
 import org.eclipse.xtext.validation.CheckMode;
 import org.eclipse.xtext.validation.CheckType;
-import org.eclipse.xtext.xbase.controlflow.EvaluationContext;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -97,8 +95,6 @@ import com.ge.research.sadl.jena.MetricsProcessor;
 import com.ge.research.sadl.jena.UtilsForJena;
 import com.ge.research.sadl.model.CircularDefinitionException;
 import com.ge.research.sadl.model.ModelError;
-import com.ge.research.sadl.model.gp.BuiltinElement;
-import com.ge.research.sadl.model.gp.BuiltinElement.BuiltinType;
 import com.ge.research.sadl.model.gp.Equation;
 import com.ge.research.sadl.model.gp.GraphPatternElement;
 import com.ge.research.sadl.model.gp.Junction;
@@ -114,7 +110,6 @@ import com.ge.research.sadl.model.gp.TripleElement;
 import com.ge.research.sadl.model.gp.VariableNode;
 import com.ge.research.sadl.processing.OntModelProvider;
 import com.ge.research.sadl.processing.SadlConstants;
-import com.ge.research.sadl.processing.SadlInferenceException;
 import com.ge.research.sadl.processing.ValidationAcceptor;
 import com.ge.research.sadl.reasoner.ConfigurationException;
 import com.ge.research.sadl.reasoner.InvalidNameException;
@@ -149,7 +144,6 @@ import com.hp.hpl.jena.rdf.model.Property;
 import com.hp.hpl.jena.rdf.model.RDFNode;
 import com.hp.hpl.jena.rdf.model.RDFWriter;
 import com.hp.hpl.jena.rdf.model.StmtIterator;
-import com.hp.hpl.jena.vocabulary.RDF;
 import com.hp.hpl.jena.vocabulary.RDFS;
 
 public class JenaBasedDialogModelProcessor extends JenaBasedSadlModelProcessor {
@@ -307,15 +301,15 @@ public class JenaBasedDialogModelProcessor extends JenaBasedSadlModelProcessor {
 	    	return;
 	    }
 
-		try {
-			if (!getAnswerCurationManager().dialogAnserProviderInitialized()) {
-				System.out.println("DialogAnswerProvider not yet initialized. Touch window.");
-//				return;
-			}
-		} catch (IOException e2) {
-			// TODO Auto-generated catch block
-			e2.printStackTrace();
-		}
+//		try {
+//			if (!getAnswerCurationManager().dialogAnserProviderInitialized()) {
+//				System.err.println("DialogAnswerProvider not yet initialized. Touch window.");
+////				return;
+//			}
+//		} catch (IOException e2) {
+//			// TODO Auto-generated catch block
+//			e2.printStackTrace();
+//		}
 
 		// create validator for expressions
 		initializeModelValidator();
@@ -462,7 +456,7 @@ public class JenaBasedDialogModelProcessor extends JenaBasedSadlModelProcessor {
 	}
 
 	private StatementContent processDialogModelElement(SadlModelElement element) throws JenaProcessorException, InvalidNameException, InvalidTypeException, TranslationException, IOException, ConfigurationException, QueryParseException, QueryCancelledException, ReasonerNotFoundException {
-		StatementContent sc = null;
+		clearCruleVariables();
 		if (element instanceof AnswerCMStatement) {
 			return processAnswerCMStatement((AnswerCMStatement)element);
 		}
@@ -989,7 +983,6 @@ public class JenaBasedDialogModelProcessor extends JenaBasedSadlModelProcessor {
 				else if (extractedModelInstance.getNameSpace().equals(targetModelAlias)) {
 					getAnswerCurationManager().notifyUser(getConfigMgr().getModelFolder(), "The equation with URI '" + equationUri + "' is already in the target model '" + targetModelAlias + "'", true);
 				}
-				System.out.println("Ready to build model '" + equationUri + "'");
 				SaveContent sc = new SaveContent(element, Agent.USER);
 				sc.setTargetModelUri(targetModelUrl);
 				sc.setTargetModelActualUrl(targetModelUrl);
@@ -1107,8 +1100,13 @@ public class JenaBasedDialogModelProcessor extends JenaBasedSadlModelProcessor {
 				whenObj = dift.addImpliedAndExpandedProperties((GraphPatternElement)whenObj);
 				List<GraphPatternElement> gpes = new ArrayList<GraphPatternElement>();
 				if (!ignoreUnittedQuantities && whenObj instanceof TripleElement && 
-						((TripleElement)whenObj).getObject() instanceof Literal &&
-						((Literal)(((TripleElement)whenObj).getObject())).getUnits() != null) {
+						(((TripleElement)whenObj).getObject() instanceof Literal &&
+						((Literal)(((TripleElement)whenObj).getObject())).getUnits() != null) ||			// this operand to the || is for when the unit of a UnittedQuanity is given
+						(((TripleElement)whenObj).getObject() instanceof ProxyNode &&		// this operand to the || is for when no unit is given but there is an implied property and 
+																							// value of the UnittedQuantity is given
+								((ProxyNode)((TripleElement)whenObj).getObject()).getProxyFor() instanceof TripleElement &&
+								((TripleElement)((ProxyNode)((TripleElement)whenObj).getObject()).getProxyFor()).getPredicate() instanceof NamedNode &&
+						((NamedNode)((TripleElement)((ProxyNode)((TripleElement)whenObj).getObject()).getProxyFor()).getPredicate()).getURI().equals(SadlConstants.SADL_IMPLICIT_MODEL_VALUE_URI))) {
 					String propUri = ((TripleElement)whenObj).getPredicate().getURI();
 					// create a typed variable for the UnittedQuantity blank node, actual type range of prop
 					Property prop = getTheJenaModel().getProperty(propUri);
@@ -1130,21 +1128,29 @@ public class JenaBasedDialogModelProcessor extends JenaBasedSadlModelProcessor {
 					NamedNode type = new NamedNode(unittedQuantitySubclass.getURI());
 					type.setNodeType(NodeType.ClassNode);
 					var.setType(validateNode(type));
-					Literal valueLiteral = (Literal) ((TripleElement)whenObj).getObject();
+					Literal valueLiteral;
+					if (((TripleElement)whenObj).getObject() instanceof Literal) {
+						valueLiteral = (Literal) ((TripleElement)whenObj).getObject();
+					}
+					else {
+						valueLiteral = (Literal) ((TripleElement)((ProxyNode)((TripleElement)whenObj).getObject()).getProxyFor()).getObject();
+					}
 					((TripleElement)whenObj).setObject(var);
 					String units = valueLiteral.getUnits();
-					Literal unitsLiteral = new Literal();
-					unitsLiteral.setValue(units);
-					valueLiteral.setUnits(null);
 					TripleElement varTypeTriple = new TripleElement(var, new RDFTypeNode(), type);
 					TripleElement valueTriple = new TripleElement(var, 
 							new NamedNode(SadlConstants.SADL_IMPLICIT_MODEL_VALUE_URI), valueLiteral);
-					TripleElement unitTriple = new TripleElement(var, 
-							new NamedNode(SadlConstants.SADL_IMPLICIT_MODEL_UNIT_URI), unitsLiteral);
 					gpes.add((TripleElement)whenObj);
 					gpes.add(varTypeTriple);
 					gpes.add(valueTriple);
-					gpes.add(unitTriple);
+					if (units != null) {
+						Literal unitsLiteral = new Literal();
+						unitsLiteral.setValue(units);
+						valueLiteral.setUnits(null);
+						TripleElement unitTriple = new TripleElement(var, 
+								new NamedNode(SadlConstants.SADL_IMPLICIT_MODEL_UNIT_URI), unitsLiteral);
+						gpes.add(unitTriple);
+					}
 				}
 //				else if (!ignoreUnittedQuantities && whenObj instanceof BuiltinElement &&
 //						((BuiltinElement)whenObj).getFuncType().equals(BuiltinType.Equal) &&

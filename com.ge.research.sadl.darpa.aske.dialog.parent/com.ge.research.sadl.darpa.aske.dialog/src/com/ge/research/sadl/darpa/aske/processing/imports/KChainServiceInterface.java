@@ -3,7 +3,6 @@ package com.ge.research.sadl.darpa.aske.processing.imports;
 import java.io.IOException;
 import java.net.URL;
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.List;
 
 import com.google.gson.JsonArray;
@@ -18,6 +17,13 @@ import com.google.gson.JsonParser;
  *
  */
 public class KChainServiceInterface extends JsonServiceInterface {
+    private static final String DARPA_ASKE_KCHAIN_SERVICE_URL_FRAGMENT = "/darpa/aske/kchain/";
+
+	private String kchainServiceURL = null;
+
+	public KChainServiceInterface(String serviceBaseUri) {
+		setKchainServiceURL(serviceBaseUri);
+	}
 
 	/**
 	 * Method to build a KChain computational graph model
@@ -29,7 +35,7 @@ public class KChainServiceInterface extends JsonServiceInterface {
 	 * @return--true if sucessful else false
 	 * @throws IOException
 	 */
-	public boolean buildCGModel(String modelUri, String equationModel, String dataLocation, List<String[]> inputs, List<String[]> outputs) throws IOException {
+	public Object[] buildCGModel(String modelUri, String equationModel, String dataLocation, List<String[]> inputs, List<String[]> outputs) throws IOException {
 		/*
 		{
 		  "inputVariables": [
@@ -53,19 +59,15 @@ public class KChainServiceInterface extends JsonServiceInterface {
 		 */
 		//				String host = "3.39.122.224";
 		//				String host = "3.1.176.139";
-		String host = "vesuvius-dev.crd.ge.com";
-		//				String host = "3.39.122.58";
-		int port = 12345;
-		String kchainServiceURL = "http://" + host + ":" + port + "/darpa/aske/kchain/";
 
-		String buildServiceURL = kchainServiceURL + "build";
+		String buildServiceURL = getKchainServiceURL() + "build";
 		URL serviceUrl = new URL(buildServiceURL);			
 
 		JsonObject json = generateRequestJson(modelUri, equationModel, dataLocation, inputs, outputs);
 		
 		String jsonResponse = makeConnectionAndGetResponse(serviceUrl, json);
 
-		System.out.println(jsonResponse);
+		logger.debug(jsonResponse);
 
 		/*
 		{
@@ -75,28 +77,20 @@ public class KChainServiceInterface extends JsonServiceInterface {
 		}
 		 */
 		JsonElement je = new JsonParser().parse(jsonResponse);
+		Object[] returnValues = new Object[3];
 		if (je.isJsonObject()) {
 			JsonObject jobj = je.getAsJsonObject();
 			String modelType = jobj.get("modelType").getAsString();
+			returnValues[0] = modelType;
 			String metagraphLocation = jobj.get("metagraphLocation").getAsString();
+			returnValues[1] = metagraphLocation;
 			boolean trained = jobj.get("trainedState").getAsBoolean();	
-
-			Double[] dfd = null;
-			//		JsonElement dfelement = jobj.get("degreeFitness");
-			//		if (dfelement != null) {
-			//			JsonArray df = dfelement.getAsJsonArray();
-			//			dfd = new Double[df.size()];
-			//			int idx = 0;
-			//			for (JsonElement arrel : df) {
-			//				dfd[idx++] = arrel.getAsDouble();
-			//			}
-			//		}
-			//				 add to KG: 
-			return addCGModeltoExistingKGModel(modelUri, modelType, metagraphLocation, dfd);
+			returnValues[2] = trained;
 		}
 		else {
 			throw new IOException("Unexpected response: " + je.toString());
 		}
+		return returnValues;
 	}
 
 	private JsonObject generateRequestJson(String modelUri, String equationModel, String dataLocation,
@@ -131,7 +125,7 @@ public class KChainServiceInterface extends JsonServiceInterface {
 			jarrout.add(outputj);
 		}
 		
-		System.out.println(json.toString());
+		logger.debug(json.toString());
 		return json;
 	}
 	
@@ -162,20 +156,14 @@ public class KChainServiceInterface extends JsonServiceInterface {
 		}
 		 */
 
-//		String host = "3.39.122.224";
-//		String host = "3.1.176.139";
-		String host = "vesuvius-dev.crd.ge.com";
-//		String host = "3.39.122.58";
-		int port = 12345;
-		String kchainServiceURL = "http://" + host + ":" + port + "/darpa/aske/kchain/";
-		String evalServiceURL = kchainServiceURL + "evaluate";
-		URL serviceUrl = new URL(evalServiceURL);			
-
+		String evalServiceURL = getKchainServiceURL() + "evaluate";
+		URL serviceUrl = new URL(evalServiceURL);	
+		
 		JsonObject json = generateRequestJson(modelUri, null, null, inputs, outputs);
 		
 		String jsonResponse = makeConnectionAndGetResponse(serviceUrl, json);
 		
-		System.out.println(jsonResponse);
+		logger.debug(jsonResponse);
 		
 		/*
 		{
@@ -225,6 +213,21 @@ public class KChainServiceInterface extends JsonServiceInterface {
 			retLists.add(defaultValues);
 		}
 		return retLists;
+	}
+	
+	private String getKchainServiceURL() {
+		return kchainServiceURL;
+	}
+
+	private void setKchainServiceURL(String baseUrl) {
+		String host = "vesuvius-dev.crd.ge.com";	// default
+		int port = 12345;			// default
+		if (baseUrl != null) {
+			kchainServiceURL = baseUrl + DARPA_ASKE_KCHAIN_SERVICE_URL_FRAGMENT;
+		}
+		else {
+			kchainServiceURL = "http://" + host + ":" + port + DARPA_ASKE_KCHAIN_SERVICE_URL_FRAGMENT;
+		}
 	}
 
 }

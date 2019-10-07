@@ -40,14 +40,10 @@ import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
-import java.io.InputStreamReader;
-import java.io.OutputStream;
 import java.io.StringReader;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
-import java.net.HttpURLConnection;
 import java.net.URISyntaxException;
-import java.net.URL;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
@@ -67,6 +63,7 @@ import com.ge.research.sadl.builder.ConfigurationManagerForIdeFactory;
 import com.ge.research.sadl.builder.IConfigurationManagerForIDE;
 import com.ge.research.sadl.darpa.aske.dialog.AnswerCMStatement;
 import com.ge.research.sadl.darpa.aske.inference.JenaBasedDialogInferenceProcessor;
+import com.ge.research.sadl.darpa.aske.preferences.DialogPreferences;
 import com.ge.research.sadl.darpa.aske.processing.AnswerContent;
 import com.ge.research.sadl.darpa.aske.processing.AnswerPendingContent;
 import com.ge.research.sadl.darpa.aske.processing.ConversationElement;
@@ -90,7 +87,6 @@ import com.ge.research.sadl.darpa.aske.processing.imports.IModelFromCodeExtracto
 import com.ge.research.sadl.darpa.aske.processing.imports.KChainServiceInterface;
 import com.ge.research.sadl.darpa.aske.processing.imports.TextProcessor;
 import com.ge.research.sadl.jena.inference.SadlJenaModelGetterPutter;
-import com.ge.research.sadl.jena.reasoner.JenaReasonerPlugin;
 import com.ge.research.sadl.model.gp.GraphPatternElement;
 import com.ge.research.sadl.model.gp.Junction;
 import com.ge.research.sadl.model.gp.Junction.JunctionType;
@@ -123,10 +119,6 @@ import com.ge.research.sadl.reasoner.SadlCommandResult;
 import com.ge.research.sadl.reasoner.TranslationException;
 import com.ge.research.sadl.reasoner.utils.SadlUtils;
 import com.ge.research.sadl.utils.ResourceManager;
-import com.google.gson.JsonArray;
-import com.google.gson.JsonElement;
-import com.google.gson.JsonObject;
-import com.google.gson.JsonParser;
 import com.hp.hpl.jena.ontology.Individual;
 import com.hp.hpl.jena.ontology.OntClass;
 import com.hp.hpl.jena.ontology.OntDocumentManager;
@@ -203,6 +195,18 @@ public class AnswerCurationManager {
 	private void setPreferences(Map<String, String> preferences) {
 		this.preferences = preferences;
 	}
+	
+	/**
+	 * Method to get the preference identified by key
+	 * @param key
+	 * @return
+	 */
+	public String getPreference(String key) {
+		if (preferences != null) {
+			return preferences.get(key);
+		}
+		return null;
+	}
 
 	public TextProcessor getTextProcessor() {
 		return getExtractionProcessor().getTextProcessor();
@@ -230,7 +234,7 @@ public class AnswerCurationManager {
 	 * @throws ConfigurationException 
 	 */
 	public void processImports(SaveAsSadl saveAsSadl) throws IOException, ConfigurationException {
-		Map<File, Boolean> outputOwlFiles = new HashMap<File, Boolean>();
+		Map<File, Boolean> outputOwlFiles = new HashMap<File, Boolean>();	// Map of imports, value is true if code, false if text extraction
 //		List<File> outputOwlFiles = new ArrayList<File>();
 		List<File> textFiles = getExtractionProcessor().getTextProcessor().getTextFiles();
 		if (textFiles != null) {
@@ -256,7 +260,34 @@ public class AnswerCurationManager {
 				}
 				String content = readFileToString(f);
 				String fileIdentifier = ConfigurationManagerForIdeFactory.formatPathRemoveBackslashes(f.getCanonicalPath());
-				getTextProcessor().processText(fileIdentifier, content, null);
+				int[] results = getTextProcessor().processText(fileIdentifier, content, getExtractionProcessor().getTextModelName());
+				int numConcepts = results[0];
+				int numEquations = results[1];
+				String msg = numConcepts + " concepts and " + numEquations + " equations extracted from file '" + outputFilename + "'";
+				notifyUser(getTextProcessor().getTextModelFolder(), msg, true);
+				if (numEquations > 0) {
+					String[] saveGraphResults = getTextProcessor().retrieveGraph(getExtractionProcessor().getTextModelName());
+					if (saveGraphResults != null) {
+						String format = saveGraphResults[0];
+						String serializedGraph = saveGraphResults[1];
+						if (serializedGraph != null) {
+							try {
+								OntModel newModel = getTextProcessor().getTextModelConfigMgr().getOntModel(getExtractionProcessor().getTextModelName(), serializedGraph, Scope.INCLUDEIMPORTS, format);
+//								logger.debug("The new model:");
+//								newModel.write(System.err, "N-TRIPLES");
+								OntModel theModel = getExtractionProcessor().getTextModel();
+//								logger.debug("The existing model:");
+//								theModel.write(System.err, "N-TRIPLES");
+								theModel.add(newModel);
+							}
+							catch (Exception e) {
+								logger.debug("Failed to read triples into OntModel: " + e.getMessage());
+								logger.debug(serializedGraph);
+							}
+							
+						}
+					}
+				}
 				File of = saveTextOwlFile(outputOwlFileName);
 				outputOwlFiles.put(of, false);
 				outputOwlFileName = of.getCanonicalPath();
@@ -495,9 +526,9 @@ public class AnswerCurationManager {
 									pythoncode = ep.translateMethodJavaToPython(className, javaCode);
 									List<String> sadlDeclaration = convertExtractedMethodToExternalEquationInSadlSyntax(methodName, javaCode, pythoncode);
 									for (String sd : sadlDeclaration) {
-	//									System.out.println(sadlDeclaration);
-	//									System.out.println("SADL equation:");
-	//									System.out.println(sadlDeclaration);
+	//									logger.debug(sadlDeclaration);
+	//									logger.debug("SADL equation:");
+	//									logger.debug(sadlDeclaration);
 										SadlStatementContent ssc = new SadlStatementContent(null, Agent.CM, sd);
 										notifyUser(codeModelFolder, ssc, false);
 										getExtractionProcessor().addNewSadlContent(sd);
@@ -573,10 +604,10 @@ public class AnswerCurationManager {
 		Individual extractedModelInstance = ontModel.getIndividual(equationToBuildUri);
 		if (extractedModelInstance == null) {
 			// try getting a text extraction model?
-			ontModel.write(System.out, "N3");
+//			ontModel.write(System.out, "N3");
 			StmtIterator stmtItr = ontModel.listStatements(null, RDF.type, ontModel.getOntClass("http://sadl.org/sadlimplicitmodel#ExternalEquation"));
 			while (stmtItr.hasNext()) {
-				System.out.println(stmtItr.nextStatement().getSubject().toString());
+				logger.debug(stmtItr.nextStatement().getSubject().toString());
 			}
 			throw new NotFoundException("Equation with URI " + equationToBuildUri + " not found.");
 		}
@@ -590,21 +621,21 @@ public class AnswerCurationManager {
 						SadlConstants.SADL_IMPLICIT_MODEL_DESCRIPTOR_NAME_PROPERTY_URI + "> ?argName . ?member <" +
 						SadlConstants.SADL_IMPLICIT_MODEL_DATATYPE_PROPERTY_URI + "> ?argType}";							// query to get the argument names and types
 				ResultSet rs = reasoner.ask(argQuery);
-				System.out.println(rs != null ? rs.toString() : "no argument results");
+				logger.debug(rs != null ? rs.toString() : "no argument results");
 				String retQuery = "select ?retName ?retType where {<" + extractedModelInstance.getURI() + "> <" + 
 						SadlConstants.SADL_IMPLICIT_MODEL_RETURN_TYPES_PROPERTY_URI + 
 						"> ?ddList . ?ddList <http://jena.hpl.hp.com/ARQ/list#member> ?member . OPTIONAL{?member <" +
 						SadlConstants.SADL_IMPLICIT_MODEL_DESCRIPTOR_NAME_PROPERTY_URI + "> ?retName} . ?member <" +
 						SadlConstants.SADL_IMPLICIT_MODEL_DATATYPE_PROPERTY_URI + "> ?retType}";							// query to get the return types
 				ResultSet rs2 = reasoner.ask(retQuery);
-				System.out.println(rs2 != null ? rs2.toString() : "no return type results");
+				logger.debug(rs2 != null ? rs2.toString() : "no return type results");
 				String pythonScriptQuery = "select ?pyScript where {<" + extractedModelInstance.getURI() + "> <" + 
 						SadlConstants.SADL_IMPLICIT_MODEL_EXPRESSTION_PROPERTY_URI +
 						"> ?sc . ?sc <" + SadlConstants.SADL_IMPLICIT_MODEL_LANGUAGE_PROPERTY_URI + "> <" + 
 						SadlConstants.SADL_IMPLICIT_MODEL_PYTHON_LANGUAGE_INST_URI +
 						"> . ?sc <" + SadlConstants.SADL_IMPLICIT_MODEL_SCRIPT_PROPERTY_URI + "> ?pyScript}";				// query to get the Python script for the equation
 				ResultSet rs3 = reasoner.ask(pythonScriptQuery);
-				System.out.println(rs3 != null ? rs3.toString() : "no Python script results");
+				logger.debug(rs3 != null ? rs3.toString() : "no Python script results");
 				if (rs3 != null && rs3.getRowCount() != 1) {
 					return "There appears to be more than one Python script associated with the equation. Unable to save.";
 				}
@@ -618,11 +649,11 @@ public class AnswerCurationManager {
 						}
 						String methName = returns[0];
 						String modifiedPythonScript = returns[1];
-						System.out.println(modifiedPythonScript);		
+						logger.debug(modifiedPythonScript);		
 						// this seems klugey also
 	//					returnValue = getExtractionProcessor().saveToComputationalGraph(equationToBuildUri, methName, rs, rs2, modifiedPythonScript, null);
 						returnValue = getExtractionProcessor().saveToComputationalGraph(methName, methName, rs, rs2, modifiedPythonScript, null);
-						System.out.println("saveToComputationalGraph returned '" + returnValue + "'");
+						logger.debug("saveToComputationalGraph returned '" + returnValue + "'");
 					}
 				}
 				else {
@@ -663,16 +694,17 @@ public class AnswerCurationManager {
 						SadlConstants.SADL_IMPLICIT_MODEL_DESCRIPTOR_NAME_PROPERTY_URI + "> ?argName . ?member <" +
 						SadlConstants.SADL_IMPLICIT_MODEL_DATATYPE_PROPERTY_URI + "> ?argType}";							// query to get the argument names and types
 				ResultSet rs = reasoner.ask(argQuery);
-				System.out.println(rs != null ? rs.toString() : "no argument results");
+				logger.debug(rs != null ? rs.toString() : "no argument results");
 				String retQuery = "select distinct ?retName ?retType where {<" + modelInstance.getURI() + "> <" + 
 						SadlConstants.SADL_IMPLICIT_MODEL_RETURN_TYPES_PROPERTY_URI + 
 						"> ?ddList . ?ddList <http://jena.hpl.hp.com/ARQ/list#member> ?member . OPTIONAL{?member <" +
 						SadlConstants.SADL_IMPLICIT_MODEL_DESCRIPTOR_NAME_PROPERTY_URI + "> ?retName} . ?member <" +
 						SadlConstants.SADL_IMPLICIT_MODEL_DATATYPE_PROPERTY_URI + "> ?retType}";							// query to get the return types
 				ResultSet rs2 = reasoner.ask(retQuery);
-				System.out.println(rs2 != null ? rs2.toString() : "no return type results");
+				logger.debug(rs2 != null ? rs2.toString() : "no return type results");
 				
 				returnValue = evaluateInComputationalGraph(modelInstance, rs, rs2, params);
+				answerUser(getDomainModelOwlModelsFolder(), returnValue, true, sc.getHostEObject());
 			}
 		}
 		return returnValue;
@@ -728,8 +760,8 @@ public class AnswerCurationManager {
 		if (rsOutputs == null) {
 			msg += "Input result set is empty.";
 		}
-		if (msg != null) {
-			System.err.println(msg);
+		if (msg.length() > 0) {
+			logger.debug(msg);
 			return msg;
 		}
 		rsInputs.setShowNamespaces(false);
@@ -796,7 +828,8 @@ public class AnswerCurationManager {
 	 * @throws IOException
 	 */
 	public List<List<String[]>> evaluateInComputationalGraph(String modelUri, List<String[]> inputs, List<String[]> outputs) throws IOException {
-		KChainServiceInterface kcService = new KChainServiceInterface();
+		String serviceBaseUri = getPreference(DialogPreferences.ANSWER_KCHAIN_CG_SERVICE_BASE_URI.getId());
+		KChainServiceInterface kcService = new KChainServiceInterface(serviceBaseUri);
 		List<List<String[]>> results = kcService.evalCGModel(modelUri, inputs, outputs);
 						
 		return results;
@@ -828,11 +861,6 @@ public class AnswerCurationManager {
 		return methodCode.toString();
 	}
 
-	private String javaMethodToPython(String serviceUri, String javaCode) throws IOException {
-		return getExtractionProcessor().translateMethodJavaToPython("DummyClass", javaCode);
-	}
-
-	
 	public boolean importCodeSnippetToComputationalGraph(Object rs, String userInput) throws InvalidNameException, ConfigurationException, ReasonerNotFoundException, QueryParseException, QueryCancelledException, CodeExtractionException {
 		boolean success = false;
 		if (rs instanceof ResultSet) {
@@ -843,12 +871,12 @@ public class AnswerCurationManager {
 				for (int r = 0; r < ((ResultSet)rs).getRowCount(); r++) {
 					Object rsa = ((ResultSet) rs).getResultAt(r, 0);
 					if (rsa.toString().equals(userInput)) {
-						System.out.println("Ready to import method " + rsa.toString());
+						logger.debug("Ready to import method " + rsa.toString());
 						
 						if (cns[3].equals("s")) {
 							String methScript = ((ResultSet)rs).getResultAt(r, 3).toString();
-							System.out.println("Ready to build CG with method '" + rsa.toString() + "':");
-							System.out.println(methScript);
+							logger.debug("Ready to build CG with method '" + rsa.toString() + "':");
+							logger.debug(methScript);
 							AnswerExtractionProcessor ep = getExtractionProcessor();
 							String className;
 							if (userInput.indexOf('.') > 0) {
@@ -863,9 +891,8 @@ public class AnswerCurationManager {
 								pythoncode = ep.translateMethodJavaToPython(className, methScript);
 								List<String> sadlDeclaration = convertExtractedMethodToExternalEquationInSadlSyntax(rsa.toString(), methScript, pythoncode);
 								for (String sd : sadlDeclaration) {
-									System.out.println(sadlDeclaration);
-									System.out.println("SADL equation:");
-									System.out.println(sadlDeclaration);
+									logger.debug("SADL equation:");
+									logger.debug(sd);
 								}
 								success = true;
 							} catch (IOException e) {
@@ -913,7 +940,7 @@ public class AnswerCurationManager {
 		inputQuery += "> <cmArguments>/<sadllistmodel:rest>*/<sadllistmodel:first> ?arg . ?arg <varName> ?argName . OPTIONAL{?arg <varType> ?argtyp}}";
 		inputQuery = getInitializedCodeModelReasoner().prepareQuery(inputQuery);
 		ResultSet inputResults =  getInitializedCodeModelReasoner().ask(inputQuery);
-		System.out.println(inputResults != null ? inputResults.toStringWithIndent(5) : "no results");
+		logger.debug(inputResults != null ? inputResults.toStringWithIndent(5) : "no results");
 		if (inputResults != null) {
 			for (int r = 0; r < inputResults.getRowCount(); r++) {
 				String argType = inputResults.getResultAt(r, 2).toString();
@@ -933,7 +960,7 @@ public class AnswerCurationManager {
 		outputTypeQuery += "> <cmReturnTypes>/<sadllistmodel:rest>*/<sadllistmodel:first> ?rettyp }";
 		outputTypeQuery = getInitializedCodeModelReasoner().prepareQuery(outputTypeQuery);
 		ResultSet outputResults =  getInitializedCodeModelReasoner().ask(outputTypeQuery);
-		System.out.println(outputResults != null ? outputResults.toStringWithIndent(5) : "no results");
+		logger.debug(outputResults != null ? outputResults.toStringWithIndent(5) : "no results");
 		if (outputResults != null) {
 			int numReturnValues = outputResults.getRowCount();
 			if (numReturnValues > 1) {
@@ -1223,7 +1250,7 @@ public class AnswerCurationManager {
 		char[] buf = new char[10];
 		int numRead = 0;
 		while ((numRead = reader.read(buf)) != -1) {
-//			System.out.println(numRead);
+//			logger.debug(numRead);
 			String readData = String.valueOf(buf, 0, numRead);
 			fileData.append(readData);
 			buf = new char[1024];
@@ -1258,12 +1285,6 @@ public class AnswerCurationManager {
 				setDialogAnswerProvider(provider); // Updated with the`document`-aware dialog provider.
 			}
 		}
-	//	else if (dialogAnswerProvider instanceof DialogAnswerProviderConsoleForTest) {
-	//		IDialogAnswerProvider provider = (IDialogAnswerProvider) getDomainModelConfigurationManager().getPrivateKeyValuePair(DialogConstants.DIALOG_ANSWER_PROVIDER);
-	//		if (provider != null && !(provider instanceof DialogAnswerProviderConsoleForTest)) {
-	//			setDialogAnswerProvider(provider); // Updated with the`document`-aware dialog provider.
-	//		}
-	//	}		
 		return dialogAnswerProvider;
 	}
 
@@ -1272,106 +1293,9 @@ public class AnswerCurationManager {
 	}
 	
 	public Object[] buildCGModel(String baseServiceUri, String modelUri, String equationModel, String dataLocation, List<String[]> inputs, List<String[]> outputs) throws IOException {
-//		String host = "3.39.122.224";
-//		String host = "3.1.176.139";
-//		int port = 12345;
-		String kchainServiceURL = baseServiceUri + "/darpa/aske/kchain/";
-		
-		JsonObject json = new JsonObject();
-		json.addProperty("modelName", modelUri);
-		if (equationModel != null) {
-			json.addProperty("equationModel", equationModel);
-		}
-		if (dataLocation != null) {
-			json.addProperty("dataLocation", dataLocation);
-		}
-		JsonArray jarrin = new JsonArray();
-		json.add("inputVariables", jarrin);
-		for (String[] input : inputs) {
-			JsonObject inputj = new JsonObject();
-			inputj.addProperty("name", input[0]);
-			inputj.addProperty("type", input[1]);
-			if (input.length > 2) {
-				inputj.addProperty("value", input[2]);
-			}
-			jarrin.add(inputj);
-		}
-		JsonArray jarrout = new JsonArray();
-		json.add("outputVariables", jarrout);
-		for (String[] output : outputs) {
-			JsonObject outputj = new JsonObject();
-			outputj.addProperty("name", output[0]);
-			outputj.addProperty("type", output[1]);
-			jarrout.add(outputj);
-		}
-		
-		String buildServiceURL = kchainServiceURL + "build";
-		URL serviceUrl = new URL(buildServiceURL);			
-
-		String jsonResponse = makeConnectionAndGetResponse(serviceUrl, json);
-		
-		System.out.println(jsonResponse);
-		
-		JsonElement je = new JsonParser().parse(jsonResponse);
-		Object[] returnValues = new Object[3];
-		if (je.isJsonObject()) {
-			JsonObject jobj = je.getAsJsonObject();
-			String modelType = jobj.get("modelType").getAsString();
-			returnValues[0] = modelType;
-			String metagraphLocation = jobj.get("metagraphLocation").getAsString();
-			returnValues[1] = metagraphLocation;
-			boolean trained = jobj.get("trainedState").getAsBoolean();	
-			returnValues[2] = trained;
-		}
-		else {
-			throw new IOException("Unexpected response: " + je.toString());
-		}
-		return returnValues;
-	}
-
-	public String makeConnectionAndGetResponse(URL url, JsonObject jsonObject) throws IOException {
-		String response = "";
-		HttpURLConnection connection = null;
-		try {
-			connection = (HttpURLConnection) url.openConnection();                     
-			connection.setDoOutput(true);
-			connection.setRequestMethod("POST"); 
-			connection.setRequestProperty("Content-Type", "application/json");
-
-			OutputStream outputStream = connection.getOutputStream();
-			outputStream.write(jsonObject.toString().getBytes());
-			outputStream.flush();
-			BufferedReader br = null;
-			try {
-				br = new BufferedReader(
-						new InputStreamReader(connection.getInputStream()));                                     
-				String output = "";
-				while((output = br.readLine()) != null) 
-					response = response + output;                 
-				outputStream.close();
-			}
-			catch (Exception e) {
-				System.err.println("Error reading response: " + e.getMessage());
-				e.printStackTrace();
-				throw new IOException(e.getMessage(), e);
-			}
-			finally {
-				if (br != null) {
-					br.close();
-				}
-			}
-		} catch (Exception e) {
-			System.err.println(e.getMessage() + "\nJsonObject:");
-			System.err.println(jsonObject.toString());
-			e.printStackTrace();
-			throw new IOException(e.getMessage(), e);
-		}
-		finally {
-			if (connection != null) {
-				connection.disconnect();
-			}
-		}
-		return response;
+		String serviceURL = getPreference(DialogPreferences.ANSWER_KCHAIN_CG_SERVICE_BASE_URI.getId());
+		KChainServiceInterface kcsi = new KChainServiceInterface(serviceURL);
+		return kcsi.buildCGModel(modelUri, equationModel, dataLocation, inputs, outputs);
 	}
 
 	private IReasoner getInitializedCodeModelReasoner() throws ConfigurationException, ReasonerNotFoundException {
@@ -1513,7 +1437,7 @@ public class AnswerCurationManager {
 			retVal = processEvalRequest(resource, theModel, modelName, (EvalContent)sc);
 		}
 		else {
-			System.out.println("Need to add '" + sc.getClass().getCanonicalName() + "' to processUserRequest");
+			logger.debug("Need to add '" + sc.getClass().getCanonicalName() + "' to processUserRequest");
 			retVal = "Not yet implemented";
 		}
 		return retVal;
@@ -1730,7 +1654,7 @@ public class AnswerCurationManager {
             			if ( cols.contains("_style") ) {
 		    				// this is the first ResultSet, construct a graph if possible
 //		    				if (((ResultSet) rs).getColumnCount() != 3) {
-//		    					System.err.println("Can't construct graph; not 3 columns. Unexpected result.");
+//		    					logger.debug("Can't construct graph; not 3 columns. Unexpected result.");
 //		    				}
 //            				this.graphVisualizerHandler.resultSetToGraph(path, resultSet, description, baseFileName, orientation, properties);
 		    				
@@ -2266,7 +2190,7 @@ public class AnswerCurationManager {
 				triples.addAll(flattenJunction((Junction) lhs));
 			}
 			else {
-				System.err.println("Encountered unsupported type flattening Junction: " + lhs.getClass().getCanonicalName());
+				logger.debug("Encountered unsupported type flattening Junction: " + lhs.getClass().getCanonicalName());
 			}
 			GraphPatternElement rhs = ((ProxyNode) cmd.getRhs()).getProxyFor();
 			if (rhs instanceof TripleElement) {
@@ -2276,11 +2200,11 @@ public class AnswerCurationManager {
 				triples.addAll(flattenJunction((Junction) rhs));
 			}
 			else {
-				System.err.println("Encountered unsupported type flattening Junction: " + rhs.getClass().getCanonicalName());
+				logger.debug("Encountered unsupported type flattening Junction: " + rhs.getClass().getCanonicalName());
 			}
 		}
 		else {
-			System.err.println("Encountered disjunctive type flattening Junction");
+			logger.debug("Encountered disjunctive type flattening Junction");
 		}
 		return triples;
 	}
@@ -2436,7 +2360,7 @@ public class AnswerCurationManager {
 				currentQuestions.add(question);
 				if (getQuestionsAndAnswers().containsKey(question)) {
 					String ans = getQuestionsAndAnswers().get(question);
-//					System.out.println(ans + " ? " + ((AnswerContent)statementAfter).getAnswer().toString().trim());
+//					logger.debug(ans + " ? " + ((AnswerContent)statementAfter).getAnswer().toString().trim());
 					if (statementAfter != null && statementAfter instanceof AnswerContent) {
 						
 						String val = ((AnswerContent)statementAfter).getAnswer().toString().trim();
@@ -2507,9 +2431,9 @@ public class AnswerCurationManager {
 			for (int i = additions.size() - 1; i >= 0; i--) {
 				ConversationElement newCE = additions.get(i);
 				ConversationElement preceeding = additionMap.get(newCE);
-				System.out.println("Conversation element '" + preceeding.toString() + "' has new addition following it:");
-				System.out.println("   " + newCE.toString());
-				System.out.println("   Answer is: " + getQuestionsAndAnswers().get(preceeding.getText().trim()));
+				logger.debug("Conversation element '" + preceeding.toString() + "' has new addition following it:");
+				logger.debug("   " + newCE.toString());
+				logger.debug("   Answer is: " + getQuestionsAndAnswers().get(preceeding.getText().trim()));
 			}
 		}
 		Map<String, String> qna = getQuestionsAndAnswers();
@@ -2649,7 +2573,7 @@ public class AnswerCurationManager {
 							}
 						}
 					}
-					//						System.out.println(result.toString());
+					//						logger.debug(result.toString());
 				} catch (IllegalAccessException e) {
 					// TODO Auto-generated catch block
 					e.printStackTrace();
@@ -2753,7 +2677,7 @@ public class AnswerCurationManager {
 				OntProperty txtprop = qnaModel.createOntProperty(DialogConstants.SADL_IMPLICIT_MODEL_TEXT_PROPERY_URI);
 				OntProperty haprop = qnaModel.createOntProperty(DialogConstants.SADL_IMPLICIT_MODEL_HAS_ANSWER_PROPERY_URI);
 				if (qclass == null || aclass == null || txtprop == null || haprop == null) {
-					System.err.println("Unable to save mappings between questions and answers, no meta-model found. Do you need to update the SadlImplicitModel?");
+					logger.debug("Unable to save mappings between questions and answers, no meta-model found. Do you need to update the SadlImplicitModel?");
 				}
 				else {
 					Iterator<String> itr = qna.keySet().iterator();

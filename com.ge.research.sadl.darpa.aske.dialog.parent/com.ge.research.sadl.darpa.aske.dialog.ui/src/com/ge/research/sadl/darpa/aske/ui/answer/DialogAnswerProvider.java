@@ -124,7 +124,8 @@ public class DialogAnswerProvider extends BaseDialogAnswerProvider {
 		this.document = document;
 		this.document.readOnly(resource -> {
 			initializedConfigManager(resource);
-			AnswerCurationManager answerCurationManager = new AnswerCurationManager(getConfigMgr().getModelFolder(), getConfigMgr(), resource, null);
+			Map<String, String> prefMap = getPreferences(resource.getURI());
+			AnswerCurationManager answerCurationManager = new AnswerCurationManager(getConfigMgr().getModelFolder(), getConfigMgr(), resource, prefMap);
 			setAnswerConfigurationManager(answerCurationManager);
 			getConfigMgr().addPrivateKeyValuePair(DialogConstants.ANSWER_CURATION_MANAGER, answerCurationManager);
 			return null; // Void

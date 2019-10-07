@@ -3,18 +3,28 @@ uri "http://com.ge.research.sadl.darpa.aske.answer/Sound" alias Sound_txt
 
 
 
+// Datatype Declarations:
+ns1:anyDataType is a type of {decimal or boolean or string or date or dateTime or anyURI}.
+
+
+// RDF Properties:
+ns1:descriptorName is a property.
+ns2:P1687 is a property.
+
+
+// Object properties without specified range:
+ns1:semType describes ns1:SemanticType.
+
+
 // Individuals:
-eq_139889919393416 is a sadlimplicitmodel:ExternalEquation,
-    has sadlimplicitmodel:expression (a sadlimplicitmodel:Script
-    with sadlimplicitmodel:language sadlimplicitmodel:Python,
-    with sadlimplicitmodel:script "a = tf.math.pow( R * T * gamma, 1/2)"),
-    has sadlimplicitmodel:expression (a sadlimplicitmodel:Script
-    with sadlimplicitmodel:language sadlimplicitmodel:Text,
-    with sadlimplicitmodel:script "a^2 = R * T * gamma").
-eq_139890719773632 is a sadlimplicitmodel:ExternalEquation,
-    has sadlimplicitmodel:expression (a sadlimplicitmodel:Script
-    with sadlimplicitmodel:language sadlimplicitmodel:Python,
-    with sadlimplicitmodel:script "a = tf.math.pow( R * T *  (  1 + ( gamma-1 ) / ( 1 + ( gamma-1 ) *  (  ( theta/T ) ** 2 *  tf.math.exp( theta/T ) / (  tf.math.exp( theta/T ) - 1 ) ** 2 )  ) ) , 1/2)"),
-    has sadlimplicitmodel:expression (a sadlimplicitmodel:Script
-    with sadlimplicitmodel:language sadlimplicitmodel:Text,
-    with sadlimplicitmodel:script "a^2 = R * T * {1 + (gamma - 1) / ( 1 + (gamma-1) * [(theta/T)^2 * e^(theta/T) /(e^(theta/T) -1)^2]) }").
+Q11423 (alias "mass") is a ,
+    has ns2:P1687 http://www.wikidata.org/entity/P2067 .
+Q124003 (alias "speed of \"sound\"", "speed of sound?", "speed of", "speed of sound.", "speed of sound") is a ,
+    has ns2:P1687 http://www.wikidata.org/entity/P2075,
+    has rdfs:subClassOf http://www.wikidata.org/entity/Q3711325 .
+Q1256787 (alias "Speed", "rotational speed", "speed", "speed.") is a .
+Q179388 (alias "heat capacity") is a .
+Q2230241 (alias "momentum", "momentum indicator") is a .
+Q28912099 (alias "Investigation of the mechanism of action of papain", "of") is a .
+Q327408 (alias "color temperature", "temperature", "temperature.") is a ,
+    has rdfs:subClassOf http://www.wikidata.org/entity/Q11466 .

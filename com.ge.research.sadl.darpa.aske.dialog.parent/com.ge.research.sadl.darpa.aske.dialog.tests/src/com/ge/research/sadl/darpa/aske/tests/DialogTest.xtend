@@ -556,6 +556,8 @@ class DialogTest extends AbstractDialogTest {
 		'''
 			uri "http://aske.ge.com/sciknow" alias sciknow .
 			
+			UnittedQuantity has impliedProperty ^value.
+			
 			Temperature is a type of UnittedQuantity.
 			Pressure is a type of UnittedQuantity.
 			
@@ -910,6 +912,7 @@ class DialogTest extends AbstractDialogTest {
 			import "http://aske.ge.com/dbnnodes".
 			
 			what is the staticTemperature of some Air when the altitude of the Air is 35000 ft?
+			what is the staticTemperature of some Air when the altitude of the Air is 35000?
 		'''.assertValidatesTo [ ontModel, issues, processor |
 			assertNotNull(ontModel)
 			val stmtitr = ontModel.listStatements()

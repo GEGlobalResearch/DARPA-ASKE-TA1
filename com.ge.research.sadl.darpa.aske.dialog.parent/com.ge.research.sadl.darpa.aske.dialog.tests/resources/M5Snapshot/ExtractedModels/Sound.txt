@@ -1,0 +1,13 @@
+<rdf:RDF
+    xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+    xmlns="http://com.ge.research.sadl.darpa.aske.answer/Sound#"
+    xmlns:owl="http://www.w3.org/2002/07/owl#"
+    xmlns:sadlimplicitmodel="http://sadl.org/sadlimplicitmodel"
+    xmlns:rdfs="http://www.w3.org/2000/01/rdf-schema#"
+    xmlns:xsd="http://www.w3.org/2001/XMLSchema#"
+  xml:base="http://com.ge.research.sadl.darpa.aske.answer/Sound">
+  <owl:Ontology rdf:about="http://com.ge.research.sadl.darpa.aske.answer/Sound">
+    <owl:imports rdf:resource="http://sadl.org/sadlimplicitmodel"/>
+    <rdfs:comment xml:lang="en">This ontology was created by extraction from text by the ANSWER TextProcessor.</rdfs:comment>
+  </owl:Ontology>
+</rdf:RDF>

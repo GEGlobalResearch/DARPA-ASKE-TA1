@@ -2,7 +2,7 @@
  * Note: This license has also been called the "New BSD License" or 
  * "Modified BSD License". See also the 2-clause BSD License.
  *
- * Copyright © 2018-2019 - General Electric Company, All Rights Reserved
+ * Copyright ï¿½ 2018-2019 - General Electric Company, All Rights Reserved
  * 
  * Projects: ANSWER and KApEESH, developed with the support of the Defense 
  * Advanced Research Projects Agency (DARPA) under Agreement  No.  
@@ -52,32 +52,6 @@ import com.hp.hpl.jena.ontology.OntModel;
 
 public interface IModelFromCodeExtractor {
 
-//	public class Tag {
-//		private String name;
-//		private String text;
-//		
-//		public Tag(String n, String t) {
-//			setName(n); 
-//			setText(t);
-//		}
-//
-//		public String getName() {
-//			return name;
-//		}
-//
-//		public void setName(String name) {
-//			this.name = name;
-//		}
-//
-//		public String getText() {
-//			return text;
-//		}
-//
-//		public void setText(String text) {
-//			this.text = text;
-//		}
-//	}
-//	
 	String getPackageName();
 
 	void addCodeFile(File javaFile);
@@ -96,8 +70,6 @@ public interface IModelFromCodeExtractor {
 
 	boolean process(String inputIdentifier, String content) throws ConfigurationException, IOException;
 
-//	Map<String, Tag> getTagMap();
-//
 	void setDefaultCodeModelName(String defmdlnm);
 	
 	String getDefaultCodeModelName();

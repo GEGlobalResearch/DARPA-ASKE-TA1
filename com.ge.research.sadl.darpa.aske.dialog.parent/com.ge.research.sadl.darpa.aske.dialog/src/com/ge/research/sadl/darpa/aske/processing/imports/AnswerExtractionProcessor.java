@@ -42,7 +42,12 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import com.ge.research.sadl.darpa.aske.curation.AnswerCurationManager;
+import com.ge.research.sadl.darpa.aske.preferences.DialogPreferences;
+import com.ge.research.sadl.darpa.aske.processing.DialogConstants;
 import com.ge.research.sadl.reasoner.ResultSet;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
@@ -51,6 +56,7 @@ import com.google.gson.JsonPrimitive;
 import com.hp.hpl.jena.ontology.OntModel;
 
 public class AnswerExtractionProcessor {
+	protected static final Logger logger = LoggerFactory.getLogger(AnswerExtractionProcessor.class);
 	private String documentContent;
 	private CodeLanguage language;
 	private String serializedCode;
@@ -240,45 +246,18 @@ public class AnswerExtractionProcessor {
 		this.codeModelPrefix = codeModelPrefix;
 	}
 
+	/**
+	 * Method to translate a Java method into Python. The Python code will be wrapped in a class.
+	 * 
+	 * @param className -- the name of the class to use to wrap the code
+	 * @param methodCode -- the Java method method code 
+	 * @return -- the Python code
+	 * @throws IOException
+	 */
 	public String translateMethodJavaToPython(String className, String methodCode) throws IOException {
-		StringBuilder sb = new StringBuilder();
-		String baseServiceUrl = "http://vesuvius-dev.crd.ge.com:19092/darpa/aske/";
-//		String baseServiceUrl = "http://vesuvius063.crd.ge.com:19092/darpa/aske/";
-		
-		String translateMethodServiceURL = baseServiceUrl + "translate/method/";
-		URL serviceUrl = new URL(translateMethodServiceURL);			
-
-		JsonObject json = new JsonObject();
-		json.addProperty("className", className);
-		json.addProperty("methodCode", methodCode);
-		
-//		System.out.println(json.toString());
-	
-		String response = getCurationManager().makeConnectionAndGetResponse(serviceUrl, json);
-//		System.out.println(response);
-		if (response != null && response.length() > 0) {
-			JsonElement je = new JsonParser().parse(response);
-			if (je.isJsonObject()) {
-				JsonObject jobj = je.getAsJsonObject();
-				JsonElement status = jobj.get("status");
-				System.out.println("Status: " + status.getAsString());
-				if (!status.getAsString().equalsIgnoreCase("SUCCESS")) {
-					throw new IOException("Method translation failed: " + status.getAsString());
-				}
-				String pythonCode = jobj.get("code").getAsString();
-//				System.out.println(pythonCode);
-				sb.append(pythonCode);
-
-			}
-			else if (je instanceof JsonPrimitive) {
-				String status = ((JsonPrimitive)je).getAsString();
-				System.err.println(status);
-			}
-		}
-		else {
-			throw new IOException("No response received from service " + translateMethodServiceURL);
-		}
-		return sb.toString();
+		String serviceBaseUrl = getCurationManager().getPreference(DialogPreferences.ANSWER_JAVA_TO_PYTHON_SERVICE_BASE_URI.getId());
+		JavaToPythonServiceInterface jtpsi = new JavaToPythonServiceInterface(serviceBaseUrl);
+		return jtpsi.translateMethodJavaToPython(className, methodCode);
 	}
 
 	public void reset() {
@@ -401,10 +380,12 @@ public class AnswerExtractionProcessor {
 	 */
 	public String saveToComputationalGraph(String modelUri, String modifiedPythonScript, String dataLocation,
 			List<String[]> inputs, List<String[]> outputs) throws IOException {
-		KChainServiceInterface kcService = new KChainServiceInterface();
+		String serviceBaseUri = getCurationManager().getPreference(DialogPreferences.ANSWER_KCHAIN_CG_SERVICE_BASE_URI.getId());
+		KChainServiceInterface kcService = new KChainServiceInterface(serviceBaseUri);
 		try {
-			if (kcService.buildCGModel(modelUri, modifiedPythonScript, dataLocation, inputs, outputs)) {
-				return modelUri;
+			Object[] results = kcService.buildCGModel(modelUri, modifiedPythonScript, dataLocation, inputs, outputs);
+			if (results != null && results.length == 3) {
+				return "Successfully built model '" + modelUri + "', type=" + results[0] + ", location=" + results[2];
 			}
 		}
 		catch (Exception e) {

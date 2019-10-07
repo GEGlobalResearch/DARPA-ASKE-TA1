@@ -46,8 +46,9 @@ import java.util.Iterator;
 import java.util.List;
 
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Test;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
@@ -55,6 +56,7 @@ import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 
 public class KChainServiceTest {
+	protected static final Logger logger = LoggerFactory.getLogger(KChainServiceTest.class);
 
 	@Before
 	public void setUp() throws Exception {
@@ -297,7 +299,7 @@ public class KChainServiceTest {
 		URL serviceUrl = new URL(evalServiceURL);			
 
 		String jsonResponse = makeConnectionAndGetResponse(serviceUrl, json);
-		System.out.println(jsonResponse);
+		logger.debug(jsonResponse);
 		JsonElement je = new JsonParser().parse(jsonResponse);
 		if (!je.isJsonObject()) {
 			throw new IOException("Unexpected response: " + je.toString());
@@ -483,7 +485,7 @@ public class KChainServiceTest {
 				
 				while (resultItr.hasNext()) {
 					String[] resultArr = resultItr.next();
-					System.out.println(resultArr[1] + " " + resultArr[0] + " " + resultArr[2]);
+					logger.debug(resultArr[1] + " " + resultArr[0] + " " + resultArr[2]);
 				}
 			}
 		}
@@ -546,14 +548,14 @@ public class KChainServiceTest {
 			jarrout.add(outputj);
 		}
 		
-		System.out.println(json.toString());
+		logger.debug(json.toString());
 		
 		String buildServiceURL = kchainServiceURL + "build";
 		URL serviceUrl = new URL(buildServiceURL);			
 
 		String jsonResponse = makeConnectionAndGetResponse(serviceUrl, json);
 		
-		System.out.println(jsonResponse);
+		logger.debug(jsonResponse);
 		
 /*
 {
@@ -629,11 +631,11 @@ public class KChainServiceTest {
 				br.close();
 			}
 			catch (Exception e) {
-				System.out.println("Error reading response: " + e.getMessage());
+				logger.debug("Error reading response: " + e.getMessage());
 			}
 			connection.disconnect();
 		} catch (Exception e) {
-			System.out.println(jsonObject.toString());
+			logger.debug(jsonObject.toString());
 			e.printStackTrace();
 		}
 		return response;
