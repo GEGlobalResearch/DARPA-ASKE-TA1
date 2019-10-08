@@ -141,7 +141,7 @@ public class DialogRootPreferencePage extends LanguageRootPreferencePage {
 		addField(new StringFieldEditorExt(DialogPreferences.ANSWER_TEXT_SERVICE_BASE_URI.getId(), "Text to Triples Host and Port:", generalSettings));
 		addField(new StringFieldEditorExt(DialogPreferences.ANSWER_JAVA_TO_PYTHON_SERVICE_BASE_URI.getId(), "Java to Python Translation Service Host and Port:", generalSettings));
 		Composite computationalGraphSettings = createSettingsGroup(generalSettings, SWT.NONE, "Computational Graph Settings");
-		addField(new BooleanFieldEditorExt(DialogPreferences.USE_DBN_KCHAIN_CG_SERVICE.getId(), "Use DBN", computationalGraphSettings));		
+		addField(new BooleanFieldEditorExt(DialogPreferences.USE_DBN_CG_SERVICE.getId(), "Use DBN", computationalGraphSettings));		
 		addField(new StringFieldEditorExt(DialogPreferences.ANSWER_DBN_CG_SERVICE_BASE_URI.getId(), "DBN Service Host and Port:", computationalGraphSettings));
 		addField(new BooleanFieldEditorExt(DialogPreferences.USE_ANSWER_KCHAIN_CG_SERVICE.getId(), "Use K-CHAIN", computationalGraphSettings));		
 		addField(new StringFieldEditorExt(DialogPreferences.ANSWER_KCHAIN_CG_SERVICE_BASE_URI.getId(), "K-CHAIN Service Host and Port:", computationalGraphSettings));
