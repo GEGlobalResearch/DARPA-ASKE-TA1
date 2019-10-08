@@ -103,7 +103,7 @@ public class TextProcessor {
 	public int[] processText(String inputIdentifier, String text, String locality) throws ConfigurationException, IOException {
 		initializeTextModel();
 		try {
-			String msg = "Importing text with identifier '" + inputIdentifier + "'.";
+			String msg = "Importing text with identifier '" + inputIdentifier + "' into locality '" + locality + "'.";
 			getCurationManager().notifyUser(getTextModelConfigMgr().getModelFolder(), msg, true);
 		} catch (ConfigurationException e) {
 			// TODO Auto-generated catch block
@@ -120,6 +120,13 @@ public class TextProcessor {
 		TextProcessingServiceInterface tpsi = new TextProcessingServiceInterface(serviceBaseUri);
 		return tpsi.retrieveGraph(locality);
 	}
+	
+	public String clearGraph(String locality) throws IOException {
+		logger.debug("Clearing graph for locality '" + locality + "'");
+		String serviceBaseUri = getPreference(DialogPreferences.ANSWER_TEXT_SERVICE_BASE_URI.getId());
+		TextProcessingServiceInterface tpsi = new TextProcessingServiceInterface(serviceBaseUri);
+		return tpsi.clearGraph(locality);
+	}
 		
 	/**
 	 * Method to find semantic content related to the name provided, e.g., if the locality were the text surrounding an equation, which contained the phrase
@@ -130,7 +137,7 @@ public class TextProcessor {
 	 * @throws InvalidInputException 
 	 * @throws IOException 
 	 */
-	public List<String[]> processName(String name, String locality) throws InvalidInputException, IOException {
+	public List<String[]> equationVariableContext(String name, String locality) throws InvalidInputException, IOException {
 		try {
 			String msg = "Searching for name '" + name + "' in locality '" + locality + "'.";
 			getCurationManager().notifyUser(getTextModelConfigMgr().getModelFolder(), msg, true);
@@ -140,7 +147,7 @@ public class TextProcessor {
 		}
 		String serviceUri = getPreference(DialogPreferences.ANSWER_TEXT_SERVICE_BASE_URI.getId());
 		TextProcessingServiceInterface tpsi = new TextProcessingServiceInterface(serviceUri);
-		return tpsi.processName(name, locality);
+		return tpsi.equationVariableContext(name, locality);
 	}
 	
 	public void addTextModel(String key, OntModel textModel) {
@@ -267,6 +274,9 @@ public class TextProcessor {
 	}
 
 	public IConfigurationManagerForIDE getTextModelConfigMgr() {
+		if (textModelConfigMgr == null) {
+			setTextModelConfigMgr(getCurationManager().getDomainModelConfigurationManager());
+		}
 		return textModelConfigMgr;
 	}
 
@@ -275,6 +285,9 @@ public class TextProcessor {
 	}
 
 	public String getTextmodelName() {
+		if (textmodelName == null) {
+			getCurationManager().setTextModelNameToDefault();
+		}
 		return textmodelName;
 	}
 
