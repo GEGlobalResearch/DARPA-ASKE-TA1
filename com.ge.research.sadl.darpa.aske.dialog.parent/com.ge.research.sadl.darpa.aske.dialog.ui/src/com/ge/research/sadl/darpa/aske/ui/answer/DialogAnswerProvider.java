@@ -661,9 +661,9 @@ public class DialogAnswerProvider extends BaseDialogAnswerProvider {
 			if (dbncgsburl != null) {
 				map.put(DialogPreferences.ANSWER_DBN_CG_SERVICE_BASE_URI.getId(), dbncgsburl);
 			}
-			String usedbn = preferenceValues.getPreference(DialogPreferences.USE_DBN_KCHAIN_CG_SERVICE);
+			String usedbn = preferenceValues.getPreference(DialogPreferences.USE_DBN_CG_SERVICE);
 			if (usedbn != null) {
-				map.put(DialogPreferences.USE_DBN_KCHAIN_CG_SERVICE.getId(), usedbn);
+				map.put(DialogPreferences.USE_DBN_CG_SERVICE.getId(), usedbn);
 			}
 			return map;
 		}

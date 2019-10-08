@@ -255,6 +255,7 @@ public class JenaBasedDialogModelProcessor extends JenaBasedSadlModelProcessor {
 				}
 			}
 			checkCodeExtractionSadlModelExistence(resource, context);
+			importSadlListModel(resource);		// an import could happen at any time and require a list model
 		} catch (IOException e1) {
 			e1.printStackTrace();
 		} catch (ConfigurationException e1) {
@@ -1311,7 +1312,7 @@ public class JenaBasedDialogModelProcessor extends JenaBasedSadlModelProcessor {
 		if (textServiceUrl != null) {
 			setTextServiceUrl(textServiceUrl);
 		}
-		String useDbn = context.getPreferenceValues().getPreference(DialogPreferences.USE_DBN_KCHAIN_CG_SERVICE);
+		String useDbn = context.getPreferenceValues().getPreference(DialogPreferences.USE_DBN_CG_SERVICE);
 		if (useDbn != null) {
 			setUseDbn(Boolean.parseBoolean(useDbn.trim()));
 		}
@@ -1416,9 +1417,9 @@ public class JenaBasedDialogModelProcessor extends JenaBasedSadlModelProcessor {
 				"cmArguments describes Method with a single value of type CodeVariable List.\r\n" + 
 				"cmReturnTypes describes Method with a single value of type string List.\r\n" + 
 				"cmSemanticReturnTypes describes Method with a single value of type string List.\r\n" + 
-				"doesComputation describes Method with a single value of type boolean.\r\n" +
-				"calls describes Method with values of type MethodCall.\r\n" +
-				"ExternalMethod is a type of Method.\r\n" +
+				"doesComputation describes Method with a single value of type boolean.\r\n" + 
+				"calls describes Method with values of type MethodCall.\r\n" + 
+				"ExternalMethod is a type of Method.\r\n" + 
 				"\r\n" + 
 				"// The reference to a CodeVariable can be its definition (Defined),\r\n" + 
 				"//	an assignment or reassignment (Reassigned), or just a reference\r\n" + 
@@ -1426,10 +1427,11 @@ public class JenaBasedDialogModelProcessor extends JenaBasedSadlModelProcessor {
 				"Usage is a class, must be one of {Defined, Used, Reassigned}.\r\n" + 
 				"\r\n" + 
 				"Reference  is a type of CodeElement\r\n" + 
-				"	described by firstRef with a single value of type boolean\r\n" + 
+				"	described by firstRef (note \"first reference in this CodeBlock\") \r\n" + 
+				"		with a single value of type boolean\r\n" + 
 				"	described by codeBlock with a single value of type CodeBlock\r\n" + 
 				"	described by usage with values of type Usage\r\n" + 
-				" 	described by input (note \"CodeVariable is an input to codeBlock CodeBlock\") \r\n" + 
+				" 	described by cem:input (note \"CodeVariable is an input to codeBlock CodeBlock\") \r\n" + 
 				" 		with a single value of type boolean\r\n" + 
 				" 	described by output (note \"CodeVariable is an output of codeBlock CodeBlock\") \r\n" + 
 				" 		with a single value of type boolean\r\n" + 
@@ -1437,7 +1439,7 @@ public class JenaBasedDialogModelProcessor extends JenaBasedSadlModelProcessor {
 				" 		with a single value of type boolean\r\n" + 
 				" 	described by setterArgument (note \"is this variable input to a setter?\") with a single value of type boolean\r\n" + 
 				" 	described by comment with values of type Comment.\r\n" + 
-				"	\r\n" + 
+				" 	\r\n" + 
 				"MethodCall is a type of CodeElement\r\n" + 
 				"	described by codeBlock with a single value of type CodeBlock\r\n" + 
 				"	described by inputMapping with values of type InputMapping,\r\n" + 
@@ -1445,8 +1447,8 @@ public class JenaBasedDialogModelProcessor extends JenaBasedSadlModelProcessor {
 				"MethodCallMapping is a class,\r\n" + 
 				"	described by callingVariable with a single value of type CodeVariable,\r\n" + 
 				"	described by calledVariable with a single value of type CodeVariable.\r\n" + 
-				"{InputMapping, OutputMapping} are types of MethodCallMapping.\r\n" + 
-				"\r\n" +
+				"{InputMapping, OutputMapping} are types of MethodCallMapping.		\r\n" + 
+				"	\r\n" + 
 				"Comment (note \"CodeBlock and Reference can have a Comment\") is a type of CodeElement\r\n" + 
 				" 	described by commentContent with a single value of type string.	\r\n" + 
 				"\r\n" + 
@@ -1469,58 +1471,44 @@ public class JenaBasedDialogModelProcessor extends JenaBasedSadlModelProcessor {
 				"   cls is a type of CodeVariable\r\n" + 
 				"then inst is a CodeVariable. \r\n" + 
 				"\r\n" + 
-				"Rule SetNotFirstRef1\r\n" + 
+				"Rule Transitive2  \r\n" + 
+				"if inst is a cls and \r\n" + 
+				"   cls is a type of CodeBlock\r\n" + 
+				"then inst is a CodeBlock. \r\n" + 
+				"\r\n" + 
+				"Rule FindFirstRef\r\n" + 
 				"if c is a CodeVariable and\r\n" + 
 				"   ref is reference of c and\r\n" + 
-				"   oneOf(usage of ref, Used, Reassigned) and  \r\n" + 
-				"   ref2 is reference of c and\r\n" + 
-				"   ref != ref2 and\r\n" + 
-				"   cb is codeBlock of ref and   \r\n" + 
-				"   cb2 is codeBlock of ref2 and\r\n" + 
-				"   cb = cb2 and\r\n" + 
-				"   l1 is beginsAt of ref and\r\n" + 
-				"   l2 is beginsAt of ref2 and\r\n" + 
-				"   l2 > l1   // so ref2 is at an earlier location that ref\r\n" + 
-				"then firstRef of ref2 is false.   \r\n" + 
+				"   ref has codeBlock cb and\r\n" + 
+				"   l is beginsAt of ref and\r\n" + 
+				"   minLoc = min(c, reference, r, r, codeBlock, cb, r, beginsAt) and\r\n" + 
+				"   l = minLoc\r\n" + 
+				"then firstRef of ref is true\r\n" + 
+				"//	and print(c, \" at \", minLoc, \" is first reference.\")\r\n" + 
+				".\r\n" + 
 				"\r\n" + 
-				"// first reference is of type \"Used\" or all earlier refs are of type \"Used\"	\r\n" + 
-				"// this does not cover when no ref2 with l2 < l1 exists\r\n" + 
-				"Rule SetAsInput1\r\n" + 
-				"if c is CodeVariable and\r\n" + 
-				"   ref is reference of c and\r\n" + 
-				"   input of ref is not known and \r\n" + 
-				"   usage of ref is Used and\r\n" + 
-				"   ref2 is reference of c and\r\n" + 
-				"   ref != ref2 and\r\n" + 
-				"   cb is codeBlock of ref and   \r\n" + 
-				"   cb2 is codeBlock of ref2 and\r\n" + 
-				"   cb = cb2 and   \r\n" + 
-				"   l1 is beginsAt of ref and\r\n" + 
-				"   l2 is beginsAt of ref2 and\r\n" + 
-				"   l2 < l1 and  // so ref2 is at an earlier location that ref\r\n" + 
-				"   noValue(ref2, usage, Reassigned) // no earlier reassignment of c exists\r\n" + 
-				"then input of ref is true and isImplicit of ref is true. \r\n" + 
+				"Rule ImplicitInput\r\n" + 
+				"if cb is a CodeBlock and\r\n" + 
+				"   ref has codeBlock cb and\r\n" + 
+				"   ref has firstRef true and\r\n" + 
+				"   ref has usage Used\r\n" + 
+				"   and cv has reference ref\r\n" + 
+				"   and ref has beginsAt loc\r\n" + 
+				"then input of ref is true and isImplicit of ref is true\r\n" + 
+				"//	and print(cb, cv, loc, \" implicit input\")\r\n" + 
+				".\r\n" + 
 				"\r\n" + 
-				"// if there is no l2 as specified in the previous rules, then the following covers that case\r\n" + 
-				"// do I need to consider codeBlock?????\r\n" + 
-				"Rule SetAsInput2\r\n" + 
-				"if c is a CodeVariable and\r\n" + 
-				"   ref is reference of c and\r\n" + 
-				"   input of ref is not known and\r\n" + 
-				"   usage of ref is Used and \r\n" + 
-				"   noValue(ref, firstRef)\r\n" + 
-				"then input of ref is true and isImplicit of ref is true. \r\n" + 
-				"\r\n" + 
-				"// \"it is an output if it is computed and is argument to a setter\"\r\n" + 
-				"// or I could try to use the notion of a constant\r\n" + 
-				"Rule SetAsOutput\r\n" + 
-				"if c is a CodeVariable and\r\n" + 
-				"   setterArgument of c is true and\r\n" + 
-				"   ref is a reference of c and\r\n" + 
-				"   output of ref is not known and\r\n" + 
-				"   usage of ref is Defined //check this?\r\n" + 
-				"then\r\n" + 
-				"	output of ref is true and isImplicit of ref is true.      	 \r\n";
+				"Rule ImplicitOutput\r\n" + 
+				"if cb is a CodeBlock and\r\n" + 
+				"   ref has codeBlock cb and\r\n" + 
+				"   ref has firstRef true and\r\n" + 
+				"   ref has usage Reassigned\r\n" + 
+				"   and cv has reference ref\r\n" + 
+				"   and noValue(cv, reference, ref2, ref2, codeBlock, cb, ref2, usage, Defined)\r\n" + 
+				"   and ref has beginsAt loc\r\n" + 
+				"then output of ref is true and isImplicit of ref is true\r\n" + 
+				"//	and print(cb, cv, loc, \" implicit output\")\r\n" + 
+				".";
 		return content;
 	}
 

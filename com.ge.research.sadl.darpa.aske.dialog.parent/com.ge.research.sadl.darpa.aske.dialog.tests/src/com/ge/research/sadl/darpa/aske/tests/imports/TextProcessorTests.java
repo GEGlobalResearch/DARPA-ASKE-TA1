@@ -37,6 +37,7 @@ package com.ge.research.sadl.darpa.aske.tests.imports;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
 
 import java.io.BufferedReader;
 import java.io.File;
@@ -95,15 +96,23 @@ public class TextProcessorTests {
 		tp.setTextmodelPrefix("sos");
 		String localityURI = "http://darpa.aske.ta1.ge/sostest";
 		tp.setTextmodelName(localityURI);
+		String msg = tp.clearGraph(localityURI);
+		System.out.println("Clear graph response: " + msg);
 		int[] result = tp.processText(localityURI, "a^2 = R * T * gamma", localityURI);
 		assertNotNull(result);
 		assertEquals(0, result[0]);
 		assertEquals(1, result[1]);
 		System.out.println("nc=" + result[0] + ", neq=" + result[1]);
-
-		List<String[]> results = tp.processName("T", localityURI);
-		for (String[] use : results) {
-			System.out.println("Variable '" + use[0] + "' used in equation '" + use[1] + "'");
+		List<String[]> results = tp.equationVariableContext("T", localityURI);
+		if (results != null) {
+			for (String[] use : results) {
+				if (use[0] != null && use[0].length() > 0) {
+					System.out.println("Variable '" + use[0] + "' used in equation '" + use[1] + "'");
+				}
+				else {
+					System.out.println("Nothing found: " + use[2]);
+				}
+			}
 		}
 		
 //		tp.processUnitExtraciton("ft/sec", localityURI);
@@ -121,14 +130,24 @@ public class TextProcessorTests {
 		tp.setTextmodelPrefix("sos");
 		String localityURI = "http://darpa.aske.ta1.ge/sostest";
 		tp.setTextmodelName(localityURI);
+		String msg = tp.clearGraph(localityURI);
+		System.out.println("Clear graph response: " + msg);
 		int[] result = tp.processText(localityURI, "The speed of sound is a concept known in physics ", localityURI);
 		assertNotNull(result);
-//		assertEquals(0, result[0]);
-//		assertEquals(1, result[1]);
+//		assertEquals(1, result[0]);
+//		assertEquals(0, result[1]);
 		System.out.println("nc=" + result[0] + ", neq=" + result[1]);
-		List<String[]> results = tp.processName("speed", localityURI);
+		List<String[]> results = tp.equationVariableContext("speed", localityURI);
 		for (String[] use : results) {
-			System.out.println("Variable '" + use[0] + "' used in equation '" + use[1] + "'");
+			assertNotNull(use);
+			assertNull(use[0]);
+			assertNotNull(use[2]);
+			System.out.println("Variable '" + use[0] + "' used in equation '" + use[1] + "', msg='" + use[2] + "'");
+			if (use[0] == null) {
+				String[] rgresult = tp.retrieveGraph(localityURI);
+				System.out.println(rgresult[0]);
+				System.out.println(rgresult[1]);
+			}
 		}
 	}
 
@@ -143,11 +162,18 @@ public class TextProcessorTests {
 		tp.setTextmodelName("http://darpa.aske.ta1.ge/sostest");
 		String localityURI = "http://darpa.aske.ta1.ge/sostest";
 		tp.setTextmodelName(localityURI);
+		String msg = tp.clearGraph(localityURI);
+		System.out.println("Clear graph response: " + msg);
 		int[] result = tp.processText(localityURI, javaContent, localityURI);
 		System.out.println("nc=" + result[0] + ", neq=" + result[1]);
-		List<String[]> results = tp.processName("T", localityURI);
+		List<String[]> results = tp.equationVariableContext("T", localityURI);
 		for (String[] use : results) {
-			System.out.println("Variable '" + use[0] + "' used in equation '" + use[1] + "'");
+			if (use.length == 1) {
+				System.out.println("Failed: " + use[0]);
+			}
+			else {
+				System.out.println("Variable '" + use[0] + "' used in equation '" + use[1] + "'");
+			}
 		}
 	}
 
@@ -181,6 +207,8 @@ public class TextProcessorTests {
 		if (sf.exists()) {
 			sf.delete();
 		}
+		String msg = acm.getExtractionProcessor().getTextProcessor().clearGraph(acm.getExtractionProcessor().getTextProcessor().getTextmodelName());
+		System.out.println("Clear graph response: " + msg);
 		acm.processImports(sas); 
 
 		if (!sas.equals(SaveAsSadl.DoNotSaveAsSadl)) {
@@ -190,7 +218,7 @@ public class TextProcessorTests {
 			}
 		}
 
-		String query = "select ?eq ?lg ?sc where {?eq <rdf:type> <ExternalEquation> . ?eq <expression> ?scrbn . \r\n" + 
+		String query = "select distinct ?eq ?lg ?sc where {?eq <rdf:type> <ExternalEquation> . ?eq <expression> ?scrbn . \r\n" + 
 				"		?scrbn <language> ?lg . ?scrbn <script> ?sc }";
 		String somePythonScript = null;
 		try {
@@ -238,7 +266,7 @@ public class TextProcessorTests {
 					System.out.println(rs.toStringWithIndent(5));
 					for (int c = 0; c < rs.getColumnCount(); c++) {
 						String param = rs.getResultAt(0, c).toString();
-						List<String[]> pnResults = acm.getExtractionProcessor().getTextProcessor().processName(param, acm.getExtractionProcessor().getTextModelName());
+						List<String[]> pnResults = acm.getExtractionProcessor().getTextProcessor().equationVariableContext(param, acm.getExtractionProcessor().getTextModelName());
 						if (pnResults != null) {
 							System.out.println("For parameter " + param + ":");
 							for (String[] pnr : pnResults) {
