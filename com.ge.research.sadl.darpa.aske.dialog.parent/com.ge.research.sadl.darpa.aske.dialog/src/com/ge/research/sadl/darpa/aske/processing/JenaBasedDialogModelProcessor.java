@@ -1312,7 +1312,7 @@ public class JenaBasedDialogModelProcessor extends JenaBasedSadlModelProcessor {
 		if (textServiceUrl != null) {
 			setTextServiceUrl(textServiceUrl);
 		}
-		String useDbn = context.getPreferenceValues().getPreference(DialogPreferences.USE_DBN_KCHAIN_CG_SERVICE);
+		String useDbn = context.getPreferenceValues().getPreference(DialogPreferences.USE_DBN_CG_SERVICE);
 		if (useDbn != null) {
 			setUseDbn(Boolean.parseBoolean(useDbn.trim()));
 		}

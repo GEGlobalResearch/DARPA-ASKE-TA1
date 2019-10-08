@@ -254,11 +254,6 @@ public class AnswerCurationManager {
 					getExtractionProcessor().getTextProcessor().setTextmodelPrefix(defPrefix);
 					getExtractionProcessor().setTextModelPrefix(defPrefix);
 				}
-				if (getExtractionProcessor().getTextProcessor().getTextmodelName() == null) {
-					String defName = "http://com.ge.research.sadl.darpa.aske.answer/" + getExtractionProcessor().getTextProcessor().getDefaultTextModelPrefix();
-					getExtractionProcessor().getTextProcessor().setTextmodelName(defName);
-					getExtractionProcessor().setTextModelName(defName);
-				}
 				String content = readFileToString(f);
 				String fileIdentifier = ConfigurationManagerForIdeFactory.formatPathRemoveBackslashes(f.getCanonicalPath());
 				int[] results = getTextProcessor().processText(fileIdentifier, content, getExtractionProcessor().getTextModelName());
@@ -365,6 +360,12 @@ public class AnswerCurationManager {
 				saveAsSadlFile(outputOwlFiles, "yes");
 			}
 		}
+	}
+
+	public void setTextModelNameToDefault() {
+		String defName = "http://com.ge.research.sadl.darpa.aske.answer/" + getExtractionProcessor().getTextProcessor().getDefaultTextModelPrefix();
+		getExtractionProcessor().getTextProcessor().setTextmodelName(defName);
+		getExtractionProcessor().setTextModelName(defName);
 	}
 	
 	/**
@@ -1651,7 +1652,7 @@ public class AnswerCurationManager {
 			if (rss != null) {
        			int numOfModels = 0; //rss.length/2;
     			for(int i=0; i<rss.length; i++) {
-    				if (rss[i] != null)
+    				if (rss[i] != null && rss[i] instanceof ResultSet)
     					numOfModels ++;
     			}
     			numOfModels /= 2;
@@ -1680,7 +1681,12 @@ public class AnswerCurationManager {
 		    		                    IGraphVisualizer.Orientation.TD,
 		    		                    "Assembled Model");
 		    					((ResultSet) rs).setShowNamespaces(false);
-		    		            visualizer.graphResultSetData((ResultSet) rs);	
+		    					try {
+		    						visualizer.graphResultSetData((ResultSet) rs);	
+		    					}
+		    					catch (Exception e) {
+		    						e.printStackTrace();
+		    					}
 		    		        }
 							String errorMsg = displayGraph(visualizer);
 							if (errorMsg != null) {
@@ -1696,7 +1702,8 @@ public class AnswerCurationManager {
             			}
 					}
 					else {
-						throw new TranslationException("Expected ResultSet but got " + rs.getClass().getCanonicalName());
+//						throw new TranslationException("Expected ResultSet but got " + rs.getClass().getCanonicalName());
+						answerUser(getDomainModelOwlModelsFolder(), stringToQuotedeString(rs.toString()), true, sc.getHostEObject());
 					}
 					
 				}
@@ -1918,14 +1925,14 @@ public class AnswerCurationManager {
 
 	private ISadlInferenceProcessor getInferenceProcessor() {
 		if (inferenceProcessor == null) {
-			inferenceProcessor = new JenaBasedDialogInferenceProcessor();
+			inferenceProcessor = new JenaBasedDialogInferenceProcessor(getPreferences());
 		}
 		return inferenceProcessor;
 	}
 
 	private ISadlInferenceProcessor getInferenceProcessor(OntModel theModel) {
 		if (inferenceProcessor == null) {
-			inferenceProcessor = new JenaBasedDialogInferenceProcessor(theModel);
+			inferenceProcessor = new JenaBasedDialogInferenceProcessor(theModel, getPreferences());
 		}
 		return inferenceProcessor;
 	}
