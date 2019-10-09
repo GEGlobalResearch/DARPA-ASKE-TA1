@@ -41,6 +41,8 @@ import com.ge.research.sadl.darpa.aske.ide.editor.contentassist.DialogIdeCrossre
 import com.ge.research.sadl.darpa.aske.ui.answer.DialogAnswerProviders
 import com.ge.research.sadl.darpa.aske.ui.answer.IDialogAnswerProviders
 import com.ge.research.sadl.darpa.aske.ui.contentassist.DialogOntologyContextProvider
+import com.ge.research.sadl.darpa.aske.ui.editor.folding.DialogFoldingFoldingRegionProvider
+import com.ge.research.sadl.darpa.aske.ui.editor.folding.DialogFoldingStructureProvider
 import com.ge.research.sadl.darpa.aske.ui.preferences.DialogPreferencesInitializer
 import com.ge.research.sadl.darpa.aske.ui.preferences.DialogRootPreferencePage
 import com.ge.research.sadl.darpa.aske.ui.syntaxcoloring.DialogHighlightingConfiguration
@@ -57,6 +59,10 @@ import org.eclipse.xtext.ide.editor.syntaxcoloring.AbstractAntlrTokenToAttribute
 import org.eclipse.xtext.ide.editor.syntaxcoloring.ISemanticHighlightingCalculator
 import org.eclipse.xtext.service.SingletonBinding
 import org.eclipse.xtext.ui.editor.contentassist.AbstractJavaBasedContentProposalProvider.ReferenceProposalCreator
+import org.eclipse.xtext.ui.editor.folding.DefaultFoldingRegionProvider
+import org.eclipse.xtext.ui.editor.folding.DefaultFoldingStructureProvider
+import org.eclipse.xtext.ui.editor.folding.IFoldingRegionProvider
+import org.eclipse.xtext.ui.editor.folding.IFoldingStructureProvider
 import org.eclipse.xtext.ui.editor.preferences.IPreferenceStoreInitializer
 import org.eclipse.xtext.ui.editor.preferences.LanguageRootPreferencePage
 import org.eclipse.xtext.ui.editor.syntaxcoloring.IHighlightingConfiguration
@@ -107,6 +113,22 @@ class DialogUiModule extends AbstractDialogUiModule {
 	@SingletonBinding(eager=true)
 	def Class<? extends IDialogAnswerProviders> bindIDialogEditorStateManager() {
 		return DialogAnswerProviders
+	}
+
+	def Class<? extends IFoldingStructureProvider> bindIFoldingStructureProvider() {
+		return DialogFoldingStructureProvider;
+	}
+
+	def Class<? extends DefaultFoldingStructureProvider> bindDefaultFoldingStructureProvider() {
+		return DialogFoldingStructureProvider;
+	}
+
+	def Class<? extends IFoldingRegionProvider> bindIFoldingRegionProvider() {
+		return DialogFoldingFoldingRegionProvider;
+	}
+
+	def Class<? extends DefaultFoldingRegionProvider> bindDefaultFoldingRegionProvider() {
+		return DialogFoldingFoldingRegionProvider;
 	}
 
 }

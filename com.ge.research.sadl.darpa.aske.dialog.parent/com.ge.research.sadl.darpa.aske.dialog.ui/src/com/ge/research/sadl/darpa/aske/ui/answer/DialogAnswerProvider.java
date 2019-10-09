@@ -65,9 +65,6 @@ import org.eclipse.jface.text.IRegion;
 import org.eclipse.swt.custom.StyledText;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Display;
-import org.eclipse.ui.IEditorInput;
-import org.eclipse.ui.IEditorReference;
-import org.eclipse.ui.IFileEditorInput;
 import org.eclipse.ui.IWorkbench;
 import org.eclipse.ui.IWorkbenchPage;
 import org.eclipse.ui.IWorkbenchPart;
@@ -83,7 +80,10 @@ import org.eclipse.xtext.resource.XtextResource;
 import org.eclipse.xtext.ui.editor.model.IXtextDocument;
 import org.eclipse.xtext.ui.editor.model.IXtextModelListener;
 import org.eclipse.xtext.ui.editor.model.XtextDocument;
+import org.eclipse.xtext.util.CancelIndicator;
 import org.eclipse.xtext.util.Exceptions;
+import org.eclipse.xtext.validation.CheckMode;
+import org.eclipse.xtext.validation.IResourceValidator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -97,6 +97,8 @@ import com.ge.research.sadl.darpa.aske.preferences.DialogPreferences;
 import com.ge.research.sadl.darpa.aske.processing.DialogConstants;
 import com.ge.research.sadl.darpa.aske.processing.QuestionWithCallbackContent;
 import com.ge.research.sadl.darpa.aske.processing.StatementContent;
+import com.ge.research.sadl.darpa.aske.ui.editor.DialogEditors;
+import com.ge.research.sadl.darpa.aske.ui.editor.DialogEditors.Options;
 import com.ge.research.sadl.model.visualizer.IGraphVisualizer;
 import com.ge.research.sadl.reasoner.ConfigurationException;
 import com.ge.research.sadl.reasoner.utils.SadlUtils;
@@ -146,6 +148,9 @@ public class DialogAnswerProvider extends BaseDialogAnswerProvider {
 		try {
 			System.out.println("[DialogAnswerProvider] >>> Registering... [" + uri + "]");
 			this.configManager = initializeConfigManager(resource);
+			// If we validate here, we trigger the dialog model processor to register the answer curation manager.
+			IResourceValidator validator = resource.getResourceServiceProvider().getResourceValidator();
+			validator.validate(resource, CheckMode.ALL, CancelIndicator.NullImpl);
 			System.out.println("[DialogAnswerProvider] <<< Registered. [" + uri + "]");
 		} catch (Exception e) {
 			System.out.println("[DialogAnswerProvider] <<< Failed to register answer provider. [" + uri + "]");
@@ -282,9 +287,10 @@ public class DialogAnswerProvider extends BaseDialogAnswerProvider {
 		return null;
 	}
 
-	private synchronized boolean addCurationManagerContentToDialog(IDocument document, IRegion reg, String content,
+	private synchronized boolean addCurationManagerContentToDialog(IXtextDocument document, IRegion reg, String content,
 			Object ctx, boolean quote) throws BadLocationException {
 
+		URI uri = document.readOnly(GetResourceUri.INSTANCE);
 		Display.getDefault().syncExec(() -> {
 			try {
 				String modContent;
@@ -316,13 +322,13 @@ public class DialogAnswerProvider extends BaseDialogAnswerProvider {
 					document.replace(start + length + 1, 0, modContent);
 					loc = start + length + 1;
 					if (document instanceof XtextDocument && ctx instanceof EObject) {
-						final URI expectedUri = ((EObject) ctx).eResource().getURI();
 						final int caretOffset = start + length + 1 + modContent.length();
-						setCaretOffsetInEditor(expectedUri, caretOffset); // Async
+						setCaretOffsetInEditor(uri, caretOffset);
 					}
 				} else {
 					loc = document.getLength();
-					document.set(document.get() + modContent + "\n");
+					document.set(document.get() + "\n" + modContent);
+					setCaretOffsetInEditor(uri, document.get().length() - 1);
 				}
 				LOGGER.debug("Adding to Dialog editor: " + modContent);
 				textAtLocation(document, modContent, loc);
@@ -334,31 +340,15 @@ public class DialogAnswerProvider extends BaseDialogAnswerProvider {
 	}
 
 	private void setCaretOffsetInEditor(URI uri, int caretOffset) {
-		Display.getDefault().asyncExec(() -> {
-			IWorkbenchPage page = PlatformUI.getWorkbench().getActiveWorkbenchWindow().getActivePage();
-			for (IEditorReference editorRef : page.getEditorReferences()) {
-				if (DialogAnswerProviders.DIALOG_EDITOR_ID.equals(editorRef.getId())) {
-					IEditorInput editorInput;
-					try {
-						editorInput = editorRef.getEditorInput();
-						if (editorInput instanceof IFileEditorInput) {
-							String path = ((IFileEditorInput) editorInput).getFile().getFullPath().toPortableString();
-							URI editorUri = URI.createPlatformResourceURI(path, true);
-							if (editorUri.equals(uri)) {
-								IWorkbenchPart part = editorRef.getPart(false);
-								if (part instanceof IAdaptable) {
-									Control control = part.getAdapter(Control.class);
-									if (control instanceof StyledText) {
-										((StyledText) control).setCaretOffset(caretOffset);
-										control.redraw();
-									}
-								}
-								break;
-							}
-						}
-					} catch (PartInitException e) {
-						e.printStackTrace();
-					}
+		Options options = new DialogEditors.Options(uri);
+		options.setActivate(true);
+		DialogEditors.asyncExec(options, editor -> {
+			if (editor instanceof IAdaptable) {
+				Control control = (Control) editor.getAdapter(Control.class);
+				if (control instanceof StyledText) {
+					((StyledText) control).setCaretOffset(caretOffset); // Sets the cursor.
+					((StyledText) control).setSelection(caretOffset); // Scrolls in the editor, if required.
+					control.redraw();
 				}
 			}
 		});
