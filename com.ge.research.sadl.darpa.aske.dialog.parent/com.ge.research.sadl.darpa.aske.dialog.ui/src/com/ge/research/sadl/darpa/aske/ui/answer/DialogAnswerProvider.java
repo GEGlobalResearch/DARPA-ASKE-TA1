@@ -146,11 +146,6 @@ public class DialogAnswerProvider extends BaseDialogAnswerProvider {
 		try {
 			System.out.println("[DialogAnswerProvider] >>> Registering... [" + uri + "]");
 			this.configManager = initializeConfigManager(resource);
-			Map<String, String> prefMap = getPreferences(uri);
-			AnswerCurationManager answerCurationManager = new AnswerCurationManager(getConfigMgr().getModelFolder(),
-					getConfigMgr(), resource, prefMap);
-			setAnswerConfigurationManager(answerCurationManager);
-			getConfigMgr().addPrivateKeyValuePair(DialogConstants.ANSWER_CURATION_MANAGER, answerCurationManager);
 			System.out.println("[DialogAnswerProvider] <<< Registered. [" + uri + "]");
 		} catch (Exception e) {
 			System.out.println("[DialogAnswerProvider] <<< Failed to register answer provider. [" + uri + "]");
