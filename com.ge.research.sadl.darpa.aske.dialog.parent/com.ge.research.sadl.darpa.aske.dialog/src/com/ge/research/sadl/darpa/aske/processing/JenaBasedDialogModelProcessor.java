@@ -43,6 +43,7 @@ import java.net.URISyntaxException;
 import java.nio.charset.Charset;
 import java.nio.file.Path;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
@@ -134,6 +135,7 @@ import com.ge.research.sadl.sADL.SadlSimpleTypeReference;
 import com.ge.research.sadl.sADL.SadlStatement;
 import com.ge.research.sadl.sADL.SadlTypeReference;
 import com.ge.research.sadl.utils.ResourceManager;
+import com.google.common.base.Preconditions;
 import com.google.common.collect.Iterables;
 import com.google.inject.Inject;
 import com.hp.hpl.jena.ontology.Individual;
@@ -745,7 +747,20 @@ public class JenaBasedDialogModelProcessor extends JenaBasedSadlModelProcessor {
 				}
 			}
 			else {
-				throw new IOException("AnswerCurationManager must already exist!");
+				Map<String, String> pmap = null;
+				Resource resource = Preconditions.checkNotNull(getCurrentResource(), "resource");
+				try {
+					IDialogAnswerProvider dap = getDialogAnswerProvider(resource);
+					if (dap != null) {
+						pmap = dap.getPreferences(resource.getURI());
+					}
+				} catch (ConfigurationException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+				answerCurationManager = new AnswerCurationManager(getConfigMgr().getModelFolder(), getConfigMgr(),
+						(XtextResource) resource, pmap);
+				getConfigMgr().addPrivateKeyValuePair(DialogConstants.ANSWER_CURATION_MANAGER, answerCurationManager);
 			}
 		}
 		return answerCurationManager;
@@ -1071,7 +1086,9 @@ public class JenaBasedDialogModelProcessor extends JenaBasedSadlModelProcessor {
 				((NamedNode)trgtObj).setContext(stmt);
 			}
 			else if (trgtObj instanceof Junction) {
-//				setGraphPatternContext(stmt, whatIsTarget, trgtObj);
+				if (stmt.eContainer() instanceof WhatIsStatement) {
+					setGraphPatternContext((WhatStatement) stmt.eContainer(), whatIsTarget, trgtObj);
+				}
 			}
 			else if (trgtObj instanceof TripleElement) {
 				((TripleElement)trgtObj).setContext(stmt);
@@ -1079,7 +1096,9 @@ public class JenaBasedDialogModelProcessor extends JenaBasedSadlModelProcessor {
 			else if (trgtObj instanceof Object[]) {
 				for (int i = 0; i < ((Object[])trgtObj).length; i++) {
 					Object obj = ((Object[])trgtObj)[i];
-//					setGraphPatternContext(stmt, whatIsTarget, obj);
+					if (stmt.eContainer() instanceof WhatIsStatement) {
+						setGraphPatternContext((WhatStatement) stmt, whatIsTarget, obj);
+					}
 				}
 			}
 			else {
@@ -1100,78 +1119,7 @@ public class JenaBasedDialogModelProcessor extends JenaBasedSadlModelProcessor {
 			if (whenObj instanceof GraphPatternElement) {
 				whenObj = dift.addImpliedAndExpandedProperties((GraphPatternElement)whenObj);
 				List<GraphPatternElement> gpes = new ArrayList<GraphPatternElement>();
-				if (!ignoreUnittedQuantities && whenObj instanceof TripleElement && 
-						(((TripleElement)whenObj).getObject() instanceof Literal &&
-						((Literal)(((TripleElement)whenObj).getObject())).getUnits() != null) ||			// this operand to the || is for when the unit of a UnittedQuanity is given
-						(((TripleElement)whenObj).getObject() instanceof ProxyNode &&		// this operand to the || is for when no unit is given but there is an implied property and 
-																							// value of the UnittedQuantity is given
-								((ProxyNode)((TripleElement)whenObj).getObject()).getProxyFor() instanceof TripleElement &&
-								((TripleElement)((ProxyNode)((TripleElement)whenObj).getObject()).getProxyFor()).getPredicate() instanceof NamedNode &&
-						((NamedNode)((TripleElement)((ProxyNode)((TripleElement)whenObj).getObject()).getProxyFor()).getPredicate()).getURI().equals(SadlConstants.SADL_IMPLICIT_MODEL_VALUE_URI))) {
-					String propUri = ((TripleElement)whenObj).getPredicate().getURI();
-					// create a typed variable for the UnittedQuantity blank node, actual type range of prop
-					Property prop = getTheJenaModel().getProperty(propUri);
-					StmtIterator rngItr = getTheJenaModel().listStatements(prop.asResource(), RDFS.range, (RDFNode)null);
-					OntClass unittedQuantitySubclass = null;
-					if (rngItr.hasNext()) {
-						RDFNode rng = rngItr.nextStatement().getObject();
-						if (!rngItr.hasNext()) {
-							if (rng.isURIResource() && rng.canAs(OntClass.class)) {
-								unittedQuantitySubclass = rng.as(OntClass.class);
-							}
-						}
-						if (unittedQuantitySubclass == null) {
-							// apparently has more than 1 range, use UnittedQuantity
-							unittedQuantitySubclass = getTheJenaModel().getOntClass(SadlConstants.SADL_IMPLICIT_MODEL_UNITTEDQUANTITY_URI);
-						}
-					}
-					VariableNode var = new VariableNode(getNewVar(whatIsTarget));
-					NamedNode type = new NamedNode(unittedQuantitySubclass.getURI());
-					type.setNodeType(NodeType.ClassNode);
-					var.setType(validateNode(type));
-					Literal valueLiteral;
-					if (((TripleElement)whenObj).getObject() instanceof Literal) {
-						valueLiteral = (Literal) ((TripleElement)whenObj).getObject();
-					}
-					else {
-						valueLiteral = (Literal) ((TripleElement)((ProxyNode)((TripleElement)whenObj).getObject()).getProxyFor()).getObject();
-					}
-					((TripleElement)whenObj).setObject(var);
-					String units = valueLiteral.getUnits();
-					TripleElement varTypeTriple = new TripleElement(var, new RDFTypeNode(), type);
-					TripleElement valueTriple = new TripleElement(var, 
-							new NamedNode(SadlConstants.SADL_IMPLICIT_MODEL_VALUE_URI), valueLiteral);
-					gpes.add((TripleElement)whenObj);
-					gpes.add(varTypeTriple);
-					gpes.add(valueTriple);
-					if (units != null) {
-						Literal unitsLiteral = new Literal();
-						unitsLiteral.setValue(units);
-						valueLiteral.setUnits(null);
-						TripleElement unitTriple = new TripleElement(var, 
-								new NamedNode(SadlConstants.SADL_IMPLICIT_MODEL_UNIT_URI), unitsLiteral);
-						gpes.add(unitTriple);
-					}
-				}
-//				else if (!ignoreUnittedQuantities && whenObj instanceof BuiltinElement &&
-//						((BuiltinElement)whenObj).getFuncType().equals(BuiltinType.Equal) &&
-//						((BuiltinElement)whenObj).getArguments().get(1) instanceof Literal &&
-//						((Literal)((BuiltinElement)whenObj).getArguments().get(1)).getUnits() != null) {
-//					Literal val = (Literal)((BuiltinElement)whenObj).getArguments().get(1);
-//					String units = val.getUnits();
-//					val.setUnits(null);
-//					Literal unitsLiteral = new Literal();
-//					unitsLiteral.setValue(units);
-//					TripleElement valueTriple = new TripleElement(((BuiltinElement)whenObj).getArguments().get(0), 
-//							new NamedNode(SadlConstants.SADL_IMPLICIT_MODEL_VALUE_URI), val);
-//					TripleElement unitTriple = new TripleElement(((BuiltinElement)whenObj).getArguments().get(0), 
-//							new NamedNode(SadlConstants.SADL_IMPLICIT_MODEL_UNIT_URI), unitsLiteral);
-//					gpes.add(valueTriple);
-//					gpes.add(unitTriple);
-//				}
-				else {
-					gpes.add((GraphPatternElement) whenObj);
-				}
+				gpes = unitSpecialConsiderations(gpes, whenObj, whatIsTarget);
 				Object temp = dift.cook(gpes, false);
 				if (temp instanceof List<?>) {
 					if (((List<?>)temp).size() == 1) {
@@ -1200,6 +1148,98 @@ public class JenaBasedDialogModelProcessor extends JenaBasedSadlModelProcessor {
 			e.printStackTrace();
 		}
 		return null;
+	}
+
+	private List<GraphPatternElement> unitSpecialConsiderations(List<GraphPatternElement> gpes, Object whenObj, EObject whatIsTarget)
+			throws TranslationException, InvalidNameException {
+		if (!ignoreUnittedQuantities) {
+			if (whenObj instanceof Junction) {
+				Object lhs = ((Junction)whenObj).getLhs();
+				if (lhs instanceof ProxyNode && ((ProxyNode)lhs).getProxyFor() instanceof GraphPatternElement) {
+					gpes = unitSpecialConsiderations(gpes, ((ProxyNode) lhs).getProxyFor(), whatIsTarget);
+				}
+				Object rhs = ((Junction)whenObj).getRhs();
+				if (rhs instanceof ProxyNode && ((ProxyNode)rhs).getProxyFor() instanceof GraphPatternElement) {
+					gpes = unitSpecialConsiderations(gpes, ((ProxyNode) rhs).getProxyFor(), whatIsTarget);
+				}
+			}
+			else if (whenObj instanceof TripleElement && 
+				((((TripleElement)whenObj).getObject() instanceof Literal &&
+				((Literal)(((TripleElement)whenObj).getObject())).getUnits() != null) ||			// this operand to the || is for when the unit of a UnittedQuanity is given
+				(((TripleElement)whenObj).getObject() instanceof ProxyNode &&		// this operand to the || is for when no unit is given but there is an implied property and 
+																					// value of the UnittedQuantity is given
+						((ProxyNode)((TripleElement)whenObj).getObject()).getProxyFor() instanceof TripleElement &&
+						((TripleElement)((ProxyNode)((TripleElement)whenObj).getObject()).getProxyFor()).getPredicate() instanceof NamedNode &&
+				((NamedNode)((TripleElement)((ProxyNode)((TripleElement)whenObj).getObject()).getProxyFor()).getPredicate()).getURI().equals(SadlConstants.SADL_IMPLICIT_MODEL_VALUE_URI)))) {
+				String propUri = ((TripleElement)whenObj).getPredicate().getURI();
+				// create a typed variable for the UnittedQuantity blank node, actual type range of prop
+				Property prop = getTheJenaModel().getProperty(propUri);
+				StmtIterator rngItr = getTheJenaModel().listStatements(prop.asResource(), RDFS.range, (RDFNode)null);
+				OntClass unittedQuantitySubclass = null;
+				if (rngItr.hasNext()) {
+					RDFNode rng = rngItr.nextStatement().getObject();
+					if (!rngItr.hasNext()) {
+						if (rng.isURIResource() && rng.canAs(OntClass.class)) {
+							unittedQuantitySubclass = rng.as(OntClass.class);
+						}
+					}
+					if (unittedQuantitySubclass == null) {
+						// apparently has more than 1 range, use UnittedQuantity
+						unittedQuantitySubclass = getTheJenaModel().getOntClass(SadlConstants.SADL_IMPLICIT_MODEL_UNITTEDQUANTITY_URI);
+					}
+				}
+				VariableNode var = new VariableNode(getNewVar(whatIsTarget));
+				NamedNode type = new NamedNode(unittedQuantitySubclass.getURI());
+				type.setNodeType(NodeType.ClassNode);
+				var.setType(validateNode(type));
+				Literal valueLiteral;
+				if (((TripleElement)whenObj).getObject() instanceof Literal) {
+					valueLiteral = (Literal) ((TripleElement)whenObj).getObject();
+				}
+				else {
+					valueLiteral = (Literal) ((TripleElement)((ProxyNode)((TripleElement)whenObj).getObject()).getProxyFor()).getObject();
+				}
+				((TripleElement)whenObj).setObject(var);
+				String units = valueLiteral.getUnits();
+				TripleElement varTypeTriple = new TripleElement(var, new RDFTypeNode(), type);
+				TripleElement valueTriple = new TripleElement(var, 
+						new NamedNode(SadlConstants.SADL_IMPLICIT_MODEL_VALUE_URI), valueLiteral);
+				gpes.add((TripleElement)whenObj);
+				gpes.add(varTypeTriple);
+				gpes.add(valueTriple);
+				if (units != null) {
+					Literal unitsLiteral = new Literal();
+					unitsLiteral.setValue(units);
+					valueLiteral.setUnits(null);
+					TripleElement unitTriple = new TripleElement(var, 
+							new NamedNode(SadlConstants.SADL_IMPLICIT_MODEL_UNIT_URI), unitsLiteral);
+					gpes.add(unitTriple);
+				}
+			}
+			//				else if (!ignoreUnittedQuantities && whenObj instanceof BuiltinElement &&
+			//						((BuiltinElement)whenObj).getFuncType().equals(BuiltinType.Equal) &&
+			//						((BuiltinElement)whenObj).getArguments().get(1) instanceof Literal &&
+			//						((Literal)((BuiltinElement)whenObj).getArguments().get(1)).getUnits() != null) {
+			//					Literal val = (Literal)((BuiltinElement)whenObj).getArguments().get(1);
+			//					String units = val.getUnits();
+			//					val.setUnits(null);
+			//					Literal unitsLiteral = new Literal();
+			//					unitsLiteral.setValue(units);
+			//					TripleElement valueTriple = new TripleElement(((BuiltinElement)whenObj).getArguments().get(0), 
+			//							new NamedNode(SadlConstants.SADL_IMPLICIT_MODEL_VALUE_URI), val);
+			//					TripleElement unitTriple = new TripleElement(((BuiltinElement)whenObj).getArguments().get(0), 
+			//							new NamedNode(SadlConstants.SADL_IMPLICIT_MODEL_UNIT_URI), unitsLiteral);
+			//					gpes.add(valueTriple);
+			//					gpes.add(unitTriple);
+			//				}
+			else {
+				gpes.add((GraphPatternElement) whenObj);
+			}
+		}
+		else {
+			gpes.add((GraphPatternElement) whenObj);
+		}
+		return gpes;
 	}
 	
 	private StatementContent processStatement(WhatValuesStatement stmt) {
@@ -1231,6 +1271,12 @@ public class JenaBasedDialogModelProcessor extends JenaBasedSadlModelProcessor {
 		return null;
 	}
 
+	/**
+	 * Method to set the contextual EObject of a GraphPatternElement
+	 * @param stmt
+	 * @param whatIsTarget
+	 * @param obj
+	 */
 	private void setGraphPatternContext(WhatStatement stmt, EObject whatIsTarget, Object obj) {
 		if (obj instanceof TripleElement) {
 			((TripleElement)obj).setContext(stmt.getStmt());

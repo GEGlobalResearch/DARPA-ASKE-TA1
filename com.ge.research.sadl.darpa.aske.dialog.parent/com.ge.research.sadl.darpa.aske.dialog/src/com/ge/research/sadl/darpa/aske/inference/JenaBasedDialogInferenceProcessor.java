@@ -105,7 +105,7 @@ import com.hp.hpl.jena.update.UpdateAction;
 public class JenaBasedDialogInferenceProcessor extends JenaBasedSadlInferenceProcessor {
 
 	private OntModel queryModel;
-	private Map<String, String> preferenceMap;
+//	private Map<String, String> preferenceMap;
 	
 //	public static final String queryHistoryKey = "MetaData";
 //	public static final String qhModelName = "http://aske.ge.com/MetaData";
@@ -597,16 +597,6 @@ public class JenaBasedDialogInferenceProcessor extends JenaBasedSadlInferencePro
 			"  ?doc imp:dataLocation ?furl.\n" + 
 			"}";
 
-
-
-	public JenaBasedDialogInferenceProcessor(OntModel theModel, Map<String, String> map) {
-		setTheJenaModel(theModel);
-		setPreferences(map);
-	}
-
-	public JenaBasedDialogInferenceProcessor(Map<String, String> map) {
-		setPreferences(map);
-	}
 
 	@Override
 	public boolean isSupported(String fileExtension) {
@@ -1269,7 +1259,7 @@ public class JenaBasedDialogInferenceProcessor extends JenaBasedSadlInferencePro
 	//			
 	//			results[1] = retrieveValues(resource, cgIns);
 				
-				if (results.length == 0) {
+				if (results == null || results.length == 0) {
 					results = dbnresults;
 				}
 				else {
@@ -2170,23 +2160,4 @@ private Map<String, String> getLabelClassMapping(String dbnJson) {
 		return dataContent;
 	}
 	
-	protected Map<String, String> getPreferences() {
-		return preferenceMap;
-	}
-
-	/**
-	 * Method to get the preference identified by key
-	 * @param key
-	 * @return
-	 */
-	public String getPreference(String key) {
-		if (preferenceMap != null) {
-			return preferenceMap.get(key);
-		}
-		return null;
-	}
-
-	public void setPreferences(Map<String, String> preferenceMap) {
-		this.preferenceMap = preferenceMap;
-	}	
 }

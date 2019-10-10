@@ -8,4 +8,8 @@ public class SparqlQueries {
 			"			{?ref <codeBlock> ?m . ?ref <isImplicit> true}\r\n" + 
 			"			UNION {?m <rdf:type> <ExternalMethod>} } }";
 
+	public static final String All_TEXT_EXTRACTED_METHODS = 
+			"select ?m ?ts ?ps where {?m <rdf:type> <ExternalEquation> . "
+			+ "?m <expression> ?exp . ?exp <language> <Text> . ?exp <script> ?ts . "
+			+ "?m <expression> ?exp2 . ?exp2 <language> <Python> . ?exp2 <script> ?ps}";
 }
