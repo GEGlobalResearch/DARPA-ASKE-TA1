@@ -65,9 +65,6 @@ import org.eclipse.jface.text.IRegion;
 import org.eclipse.swt.custom.StyledText;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Display;
-import org.eclipse.ui.IEditorInput;
-import org.eclipse.ui.IEditorReference;
-import org.eclipse.ui.IFileEditorInput;
 import org.eclipse.ui.IWorkbench;
 import org.eclipse.ui.IWorkbenchPage;
 import org.eclipse.ui.IWorkbenchPart;
@@ -81,31 +78,28 @@ import org.eclipse.xtext.preferences.IPreferenceValues;
 import org.eclipse.xtext.preferences.IPreferenceValuesProvider;
 import org.eclipse.xtext.resource.XtextResource;
 import org.eclipse.xtext.ui.editor.model.IXtextDocument;
+import org.eclipse.xtext.ui.editor.model.IXtextModelListener;
 import org.eclipse.xtext.ui.editor.model.XtextDocument;
+import org.eclipse.xtext.util.CancelIndicator;
 import org.eclipse.xtext.util.Exceptions;
+import org.eclipse.xtext.validation.CheckMode;
+import org.eclipse.xtext.validation.IResourceValidator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.ge.research.sadl.builder.ConfigurationManagerForIDE;
 import com.ge.research.sadl.builder.ConfigurationManagerForIdeFactory;
 import com.ge.research.sadl.builder.IConfigurationManagerForIDE;
 import com.ge.research.sadl.darpa.aske.curation.AnswerCurationManager;
 import com.ge.research.sadl.darpa.aske.curation.BaseDialogAnswerProvider;
-import com.ge.research.sadl.darpa.aske.curation.AnswerCurationManager.Agent;
 import com.ge.research.sadl.darpa.aske.dialog.ui.internal.DialogActivator;
 import com.ge.research.sadl.darpa.aske.preferences.DialogPreferences;
 import com.ge.research.sadl.darpa.aske.processing.DialogConstants;
-import com.ge.research.sadl.darpa.aske.processing.MixedInitiativeElement;
-import com.ge.research.sadl.darpa.aske.processing.MixedInitiativeTextualResponse;
 import com.ge.research.sadl.darpa.aske.processing.QuestionWithCallbackContent;
 import com.ge.research.sadl.darpa.aske.processing.StatementContent;
-import com.ge.research.sadl.darpa.aske.ui.handler.DialogRunInferenceHandler;
-import com.ge.research.sadl.darpa.aske.ui.handler.RunDialogQuery;
-import com.ge.research.sadl.model.gp.GraphPatternElement;
-import com.ge.research.sadl.model.gp.Node;
-import com.ge.research.sadl.model.gp.Query;
-import com.ge.research.sadl.model.gp.TripleElement;
+import com.ge.research.sadl.darpa.aske.ui.editor.DialogEditors;
+import com.ge.research.sadl.darpa.aske.ui.editor.DialogEditors.Options;
 import com.ge.research.sadl.model.visualizer.IGraphVisualizer;
-import com.ge.research.sadl.processing.OntModelProvider;
 import com.ge.research.sadl.reasoner.ConfigurationException;
 import com.ge.research.sadl.reasoner.utils.SadlUtils;
 import com.ge.research.sadl.ui.handlers.SadlActionHandler;
@@ -118,26 +112,67 @@ public class DialogAnswerProvider extends BaseDialogAnswerProvider {
 
 	private IXtextDocument document;
 	private IConfigurationManagerForIDE configManager;
+	private IXtextModelListener modelListener;
 
 	public void configure(IXtextDocument document) {
 		Preconditions.checkState(this.document == null, "Already initialized.");
 		this.document = document;
 		this.document.readOnly(resource -> {
-			initializedConfigManager(resource);
-			Map<String, String> prefMap = getPreferences(resource.getURI());
-			AnswerCurationManager answerCurationManager = new AnswerCurationManager(getConfigMgr().getModelFolder(), getConfigMgr(), resource, prefMap);
-			setAnswerConfigurationManager(answerCurationManager);
-			getConfigMgr().addPrivateKeyValuePair(DialogConstants.ANSWER_CURATION_MANAGER, answerCurationManager);
+			// The `OwlModels` folder might not exist this point.
+			// Instead of creating the expected folder structure, we delay the configuration
+			// manager initialization and the dialog answer provider registration.
+			// See: https://github.com/GEGlobalResearch/DARPA-ASKE-TA1/issues/37
+			if (SadlActionHandler.getModelFolderFromResource(resource) != null) {
+				doConfigure(resource);
+			} else {
+				modelListener = r -> {
+					if (SadlActionHandler.getModelFolderFromResource(r) != null) {
+						doConfigure(r);
+						DialogAnswerProvider.this.document.removeModelListener(modelListener);
+						modelListener = null;
+					}
+				};
+				this.document.addModelListener(modelListener);
+			}
 			return null; // Void
 		});
 	}
 
+	/**
+	 * Does the initialization of the configuration and the answer curation manager.
+	 * Expects an existing `OwlModels` folder. Otherwise, throws a runtime
+	 * exception.
+	 */
+	protected void doConfigure(XtextResource resource) {
+		URI uri = resource.getURI();
+		try {
+			System.out.println("[DialogAnswerProvider] >>> Registering... [" + uri + "]");
+			this.configManager = initializeConfigManager(resource);
+			// If we validate here, we trigger the dialog model processor to register the answer curation manager.
+			IResourceValidator validator = resource.getResourceServiceProvider().getResourceValidator();
+			validator.validate(resource, CheckMode.ALL, CancelIndicator.NullImpl);
+			System.out.println("[DialogAnswerProvider] <<< Registered. [" + uri + "]");
+		} catch (Exception e) {
+			System.out.println("[DialogAnswerProvider] <<< Failed to register answer provider. [" + uri + "]");
+			e.printStackTrace();
+			throw new RuntimeException("Error occurred during the configuration for " + uri, e);
+		}
+	}
+
 	public void dispose() {
+		URI uri = document.readOnly(GetResourceUri.INSTANCE);
+		System.out.println("[DialogAnswerProvider] >>> Disposing... [" + uri + "]");
 		super.dispose();
+		if (modelListener != null) {
+			this.document.removeModelListener(modelListener);
+		}
 		if (answerConfigurationManager != null) {
 			answerConfigurationManager.clearQuestionsAndAnsers();
 		}
-		configManager.addPrivateKeyValuePair(DialogConstants.DIALOG_ANSWER_PROVIDER, null);
+		if (configManager != null) {
+			configManager.addPrivateKeyValuePair(DialogConstants.DIALOG_ANSWER_PROVIDER, null);
+		}
+		System.out.println("[DialogAnswerProvider] >>> Disposed. [" + uri + "]");
 	}
 
 	/**
@@ -146,7 +181,8 @@ public class DialogAnswerProvider extends BaseDialogAnswerProvider {
 	 * @param visualizer -- IGraphVisualizer instance that contains graphing info
 	 * @return -- null if successful else an error message
 	 */
-	// XXX: called via reflection from the com.ge.research.sadl.darpa.aske.curation.AnswerCurationManager.displayGraph(IGraphVisualizer)
+	// XXX: called via reflection from the
+	// com.ge.research.sadl.darpa.aske.curation.AnswerCurationManager.displayGraph(IGraphVisualizer)
 	public String displayGraph(IGraphVisualizer visualizer) {
 		String[] errorMsg = { null };
 		String fileToOpen = visualizer.getGraphFileToOpen();
@@ -199,11 +235,11 @@ public class DialogAnswerProvider extends BaseDialogAnswerProvider {
 		return errorMsg[0];
 	}
 
-	private String initializedConfigManager(Resource resource) throws ConfigurationException {
+	private IConfigurationManagerForIDE initializeConfigManager(Resource resource) throws ConfigurationException {
 		String modelFolder = SadlActionHandler.getModelFolderFromResource(resource);
-		configManager = ConfigurationManagerForIdeFactory.getConfigurationManagerForIDE(modelFolder, null);
+		ConfigurationManagerForIDE configManager = ConfigurationManagerForIdeFactory.getConfigurationManagerForIDE(modelFolder, null);
 		configManager.addPrivateKeyValuePair(DialogConstants.DIALOG_ANSWER_PROVIDER, this);
-		return modelFolder;
+		return configManager;
 	}
 
 	private String generateDoubleQuotedContentForDialog(String content) {
@@ -235,7 +271,7 @@ public class DialogAnswerProvider extends BaseDialogAnswerProvider {
 	private void setTheDocument(XtextDocument theDocument) {
 		this.document = theDocument;
 	}
-	
+
 	private Object[] getSourceText(EObject object) {
 		INode node = NodeModelUtils.findActualNodeFor(object);
 		if (node != null) {
@@ -251,9 +287,10 @@ public class DialogAnswerProvider extends BaseDialogAnswerProvider {
 		return null;
 	}
 
-	private synchronized boolean addCurationManagerContentToDialog(IDocument document, IRegion reg, String content,
+	private synchronized boolean addCurationManagerContentToDialog(IXtextDocument document, IRegion reg, String content,
 			Object ctx, boolean quote) throws BadLocationException {
-		
+
+		URI uri = document.readOnly(GetResourceUri.INSTANCE);
 		Display.getDefault().syncExec(() -> {
 			try {
 				String modContent;
@@ -285,13 +322,13 @@ public class DialogAnswerProvider extends BaseDialogAnswerProvider {
 					document.replace(start + length + 1, 0, modContent);
 					loc = start + length + 1;
 					if (document instanceof XtextDocument && ctx instanceof EObject) {
-						final URI expectedUri = ((EObject) ctx).eResource().getURI();
 						final int caretOffset = start + length + 1 + modContent.length();
-						setCaretOffsetInEditor(expectedUri, caretOffset); // Async
+						setCaretOffsetInEditor(uri, caretOffset);
 					}
 				} else {
 					loc = document.getLength();
-					document.set(document.get() + modContent + "\n");
+					document.set(document.get() + "\n" + modContent);
+					setCaretOffsetInEditor(uri, document.get().length() - 1);
 				}
 				LOGGER.debug("Adding to Dialog editor: " + modContent);
 				textAtLocation(document, modContent, loc);
@@ -301,38 +338,22 @@ public class DialogAnswerProvider extends BaseDialogAnswerProvider {
 		});
 		return true;
 	}
-	
+
 	private void setCaretOffsetInEditor(URI uri, int caretOffset) {
-		Display.getDefault().asyncExec(() -> {
-			IWorkbenchPage page = PlatformUI.getWorkbench().getActiveWorkbenchWindow().getActivePage();
-			for (IEditorReference editorRef : page.getEditorReferences()) {
-				if (DialogAnswerProviders.DIALOG_EDITOR_ID.equals(editorRef.getId())) {
-					IEditorInput editorInput;
-					try {
-						editorInput = editorRef.getEditorInput();
-						if (editorInput instanceof IFileEditorInput) {
-							String path = ((IFileEditorInput) editorInput).getFile().getFullPath().toPortableString();
-							URI editorUri = URI.createPlatformResourceURI(path, true);
-							if (editorUri.equals(uri)) {
-								IWorkbenchPart part = editorRef.getPart(false);
-								if (part instanceof IAdaptable) {
-									Control control = part.getAdapter(Control.class);
-									if (control instanceof StyledText) {
-										((StyledText) control).setCaretOffset(caretOffset);
-										control.redraw();
-									}
-								}
-								break;
-							}
-						}
-					} catch (PartInitException e) {
-						e.printStackTrace();
-					}
+		Options options = new DialogEditors.Options(uri);
+		options.setActivate(true);
+		DialogEditors.asyncExec(options, editor -> {
+			if (editor instanceof IAdaptable) {
+				Control control = (Control) editor.getAdapter(Control.class);
+				if (control instanceof StyledText) {
+					((StyledText) control).setCaretOffset(caretOffset); // Sets the cursor.
+					((StyledText) control).setSelection(caretOffset); // Scrolls in the editor, if required.
+					control.redraw();
 				}
 			}
 		});
 	}
-	
+
 	/**
 	 * Method to check to see if the content was added successfully
 	 * 
@@ -358,8 +379,7 @@ public class DialogAnswerProvider extends BaseDialogAnswerProvider {
 	}
 
 	@Override
-	public String addCurationManagerInitiatedContent(AnswerCurationManager answerCurationManager,
-			StatementContent sc) {
+	public String addCurationManagerInitiatedContent(AnswerCurationManager answerCurationManager, StatementContent sc) {
 		try {
 			addCurationManagerContentToDialog(getTheDocument(), null, sc.getText(), null, false);
 		} catch (BadLocationException e) {
@@ -405,105 +425,105 @@ public class DialogAnswerProvider extends BaseDialogAnswerProvider {
 	@Override
 	public void provideResponse(QuestionWithCallbackContent question) {
 //		if (response.getCurationManager() != null) {
-			AnswerCurationManager acm = getAnswerConfigurationManager();
-			String methodToCall = question.getMethodToCall();
-			Method[] methods = acm.getClass().getMethods();
-			for (Method m : methods) {
-				if (m.getName().equals(methodToCall)) {
-					// call the method
-					List<Object> args = question.getArguments();
-					try {
-						Object results = null;
-						if (args.size() == 0) {
-							results = m.invoke(acm);
+		AnswerCurationManager acm = getAnswerConfigurationManager();
+		String methodToCall = question.getMethodToCall();
+		Method[] methods = acm.getClass().getMethods();
+		for (Method m : methods) {
+			if (m.getName().equals(methodToCall)) {
+				// call the method
+				List<Object> args = question.getArguments();
+				try {
+					Object results = null;
+					if (args.size() == 0) {
+						results = m.invoke(acm);
+					} else {
+						Object arg0 = args.get(0);
+						if (args.size() == 1) {
+							results = m.invoke(acm, arg0);
 						} else {
-							Object arg0 = args.get(0);
-							if (args.size() == 1) {
-								results = m.invoke(acm, arg0);
-							} else {
-								Object arg1 = args.get(1);
-								if (args.size() == 2) {
-									results = m.invoke(acm, arg0, arg1);
-								}
-								if (methodToCall.equals("saveAsSadlFile")) {
-									if (arg0 instanceof List<?> && results instanceof List<?>) {
-										String projectName = null;
-										List<File> sadlFiles = new ArrayList<File>();
-										for (int i = 0; i < ((List<?>) results).size(); i++) {
-											Object result = ((List<?>) results).get(i);
-											File owlfile = (File) ((List<?>) arg0).get(i);
-											if (AnswerCurationManager.isYes(arg1)) {
-												File sf = new File(result.toString());
-												if (sf.exists()) {
-													sadlFiles.add(sf);
-													// delete OWL file so it won't be indexed
-													if (owlfile.exists()) {
-														owlfile.delete();
-														try {
-															String outputOwlFileName = owlfile.getCanonicalPath();
-															String altUrl = new SadlUtils()
-																	.fileNameToFileUrl(outputOwlFileName);
+							Object arg1 = args.get(1);
+							if (args.size() == 2) {
+								results = m.invoke(acm, arg0, arg1);
+							}
+							if (methodToCall.equals("saveAsSadlFile")) {
+								if (arg0 instanceof List<?> && results instanceof List<?>) {
+									String projectName = null;
+									List<File> sadlFiles = new ArrayList<File>();
+									for (int i = 0; i < ((List<?>) results).size(); i++) {
+										Object result = ((List<?>) results).get(i);
+										File owlfile = (File) ((List<?>) arg0).get(i);
+										if (AnswerCurationManager.isYes(arg1)) {
+											File sf = new File(result.toString());
+											if (sf.exists()) {
+												sadlFiles.add(sf);
+												// delete OWL file so it won't be indexed
+												if (owlfile.exists()) {
+													owlfile.delete();
+													try {
+														String outputOwlFileName = owlfile.getCanonicalPath();
+														String altUrl = new SadlUtils()
+																.fileNameToFileUrl(outputOwlFileName);
 
-															String publicUri = acm.getDomainModelConfigurationManager()
-																	.getPublicUriFromActualUrl(altUrl);
-															if (publicUri != null) {
-																acm.getDomainModelConfigurationManager()
-																		.deleteModel(publicUri);
-																acm.getDomainModelConfigurationManager()
-																		.deleteMapping(altUrl, publicUri);
-															}
-														} catch (Exception e) {
-															e.printStackTrace();
+														String publicUri = acm.getDomainModelConfigurationManager()
+																.getPublicUriFromActualUrl(altUrl);
+														if (publicUri != null) {
+															acm.getDomainModelConfigurationManager()
+																	.deleteModel(publicUri);
+															acm.getDomainModelConfigurationManager()
+																	.deleteMapping(altUrl, publicUri);
 														}
+													} catch (Exception e) {
+														e.printStackTrace();
 													}
-													projectName = sf.getParentFile().getParentFile().getName();
 												}
-											} else {
-												// add import of OWL file from policy file since there won't be a SADL
-												// file to build an OWL and create mappings.
-												try {
-													String importActualUrl = new SadlUtils()
-															.fileNameToFileUrl(arg0.toString());
-													String altUrl = new SadlUtils().fileNameToFileUrl(importActualUrl);
-													String importPublicUri = acm.getDomainModelConfigurationManager()
-															.getPublicUriFromActualUrl(altUrl);
-													String prefix = acm.getDomainModelConfigurationManager()
-															.getGlobalPrefix(importPublicUri);
-													acm.getDomainModelConfigurationManager().addMapping(importActualUrl,
-															importPublicUri, prefix, false, "AnswerCurationManager");
-													String prjname = owlfile.getParentFile().getParentFile().getName();
-													IProject prj = ResourcesPlugin.getWorkspace().getRoot()
-															.getProject(prjname);
-													prj.refreshLocal(IResource.DEPTH_INFINITE, null);
-												} catch (Exception e) {
-													e.printStackTrace();
-													e.printStackTrace();
-												}
+												projectName = sf.getParentFile().getParentFile().getName();
 											}
-										}
-										if (projectName != null) { // only not null if doing SADL conversion
-											IProject project = ResourcesPlugin.getWorkspace().getRoot()
-													.getProject(projectName);
+										} else {
+											// add import of OWL file from policy file since there won't be a SADL
+											// file to build an OWL and create mappings.
 											try {
-												project.build(IncrementalProjectBuilder.AUTO_BUILD, null);
-												// display new SADL file
-												displayFiles(configManager.getModelFolder(), sadlFiles);
+												String importActualUrl = new SadlUtils()
+														.fileNameToFileUrl(arg0.toString());
+												String altUrl = new SadlUtils().fileNameToFileUrl(importActualUrl);
+												String importPublicUri = acm.getDomainModelConfigurationManager()
+														.getPublicUriFromActualUrl(altUrl);
+												String prefix = acm.getDomainModelConfigurationManager()
+														.getGlobalPrefix(importPublicUri);
+												acm.getDomainModelConfigurationManager().addMapping(importActualUrl,
+														importPublicUri, prefix, false, "AnswerCurationManager");
+												String prjname = owlfile.getParentFile().getParentFile().getName();
+												IProject prj = ResourcesPlugin.getWorkspace().getRoot()
+														.getProject(prjname);
+												prj.refreshLocal(IResource.DEPTH_INFINITE, null);
 											} catch (Exception e) {
 												e.printStackTrace();
+												e.printStackTrace();
 											}
+										}
+									}
+									if (projectName != null) { // only not null if doing SADL conversion
+										IProject project = ResourcesPlugin.getWorkspace().getRoot()
+												.getProject(projectName);
+										try {
+											project.build(IncrementalProjectBuilder.AUTO_BUILD, null);
+											// display new SADL file
+											displayFiles(configManager.getModelFolder(), sadlFiles);
+										} catch (Exception e) {
+											e.printStackTrace();
 										}
 									}
 								}
 							}
 						}
-					} catch (Exception e) {
-						e.printStackTrace();
 					}
+				} catch (Exception e) {
+					e.printStackTrace();
 				}
 			}
+		}
 //		}	
 	}
-	
+
 	@Override
 	public void updateProjectAndDisplaySadlFiles(String projectName, String modelsFolder, List<File> sadlFiles) {
 		String prjname = projectName;
@@ -514,7 +534,7 @@ public class DialogAnswerProvider extends BaseDialogAnswerProvider {
 			// TODO Auto-generated catch block
 			e1.printStackTrace();
 		}
-		if (projectName != null) {	// only not null if doing SADL conversion
+		if (projectName != null) { // only not null if doing SADL conversion
 			IProject project = ResourcesPlugin.getWorkspace().getRoot().getProject(projectName);
 			try {
 				project.build(IncrementalProjectBuilder.AUTO_BUILD, null);
