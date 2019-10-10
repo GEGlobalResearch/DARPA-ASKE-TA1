@@ -156,6 +156,8 @@ public class AnswerCurationManager {
 	private IDialogAnswerProvider dialogAnswerProvider = null;	// The instance of an implementer of a DialogAnswerProvider
 
 	private IReasoner codeModelReasoner;
+	private IReasoner textModelReasoner;
+
 	public enum SaveAsSadl{SaveAsSadl, DoNotSaveAsSadl, AskUserSaveAsSadl}
 
 	public enum Agent {USER, CM}
@@ -191,6 +193,11 @@ public class AnswerCurationManager {
 	}
 
 	private Map<String, String> getPreferences() {
+		if (preferences == null) {
+			if (getDialogAnswerProvider() != null) {
+				preferences = getDialogAnswerProvider().getPreferences(getResource().getURI());
+			}
+		}
 		return preferences;
 	}
 
@@ -419,49 +426,103 @@ public class AnswerCurationManager {
 		return of;
 	}
 
-	private void runInferenceDisplayInterestingTextModelResults(String outputOwlFileName, SaveAsSadl saveAsSadl) throws ConfigurationException {
+	private void runInferenceDisplayInterestingTextModelResults(String outputOwlFileName, SaveAsSadl saveAsSadl) throws ConfigurationException, IOException {
 		// clear reasoner from any previous model
-		IConfigurationManagerForIDE textModelConfigMgr = getExtractionProcessor().getTextProcessor().getTextModelConfigMgr();
-		textModelConfigMgr.clearReasoner();
-		IReasoner reasoner = textModelConfigMgr.getReasoner();
+		clearTextModelReasoner();
 		String textModelFolder = getOwlModelsFolder();		// same as code model folder, at least for now
-		if (reasoner == null) {
-			// use domain model folder because that's the project we're working in
-			notifyUser(textModelFolder, "Unable to instantiate reasoner to analyze extracted code model.", true);
-		}
-		else {
-			if (!reasoner.isInitialized()) {
-				reasoner.setConfigurationManager(textModelConfigMgr);
+		try {
+			if (getInitializedTextModelReasoner() == null) {
+				// use domain model folder because that's the project we're working in
+				notifyUser(textModelFolder, "Unable to instantiate reasoner to analyze extracted code model.", true);
+			}
+			else {
+				String queryString = "select ?lang ?expr where {?eq <rdf:type> <ExternalEquation> . ?eq <expression> ?script . ?script <script> ?expr . ?script <language> ?lang}";
+				queryString = getInitializedTextModelReasoner().prepareQuery(queryString);
+				ResultSet results =  getInitializedTextModelReasoner().ask(queryString);
+				if (results != null && results.getRowCount() > 0) {
+					results.setShowNamespaces(false);
+					notifyUser(textModelFolder, "Equations found in extraction:\n" + results.toStringWithIndent(0, false), true);
+				}
+				else {
+					notifyUser(textModelFolder, "No equations were found in this extraction from text.", true);
+				}
+				String importinfo = "To import this model for exploration in this window, add an import at the top of the window (after the 'uri' statement) for URI:\n   " + 
+							getExtractionProcessor().getTextModelName() + "\n.";
+				notifyUser(textModelFolder, importinfo, true);
+	
+				queryString = SparqlQueries.All_TEXT_EXTRACTED_METHODS;	// ?m ?ts ?ps
 				try {
-					reasoner.initializeReasoner(textModelFolder, getExtractionProcessor().getTextModelName(), null);
-					String queryString = "select ?lang ?expr where {?eq <rdf:type> <ExternalEquation> . ?eq <expression> ?script . ?script <script> ?expr . ?script <language> ?lang}";
-					queryString = reasoner.prepareQuery(queryString);
-					ResultSet results =  reasoner.ask(queryString);
+					queryString = getInitializedTextModelReasoner().prepareQuery(queryString);
+					results =  getInitializedTextModelReasoner().ask(queryString);
 					if (results != null && results.getRowCount() > 0) {
 						results.setShowNamespaces(false);
-						notifyUser(textModelFolder, "Equations found in extraction:\n" + results.toStringWithIndent(0, false), true);
+						String[] cns = ((ResultSet) results).getColumnNames();
+						if (cns[0].equals("m") && cns[1].equals("ts") && cns[2].equals("ps")) {
+							notifyUser(textModelFolder, "The following methods were found in the text:", true);
+							for (int r = 0; r < results.getRowCount(); r++) {
+								String methodName = results.getResultAt(r, 0).toString();
+								String txtscript = results.getResultAt(r, 1).toString();
+								String pyscript = results.getResultAt(r, 2).toString();
+								if (methodName != null && txtscript != null && pyscript != null) {
+									try {
+										List<String> sadlDeclaration = convertTextExtractedMethodToExternalEquationInSadlSyntax(methodName, "Text", txtscript, "Python", pyscript);
+										for (String sd : sadlDeclaration) {
+											SadlStatementContent ssc = new SadlStatementContent(null, Agent.CM, sd);
+											notifyUser(textModelFolder, ssc, false);
+											getExtractionProcessor().addNewSadlContent(sd);
+										}
+									} catch (CodeExtractionException e) {
+										// TODO Auto-generated catch block
+										e.printStackTrace();
+									}								
+								}
+							}
+						}
 					}
-					else {
-						notifyUser(textModelFolder, "No equations were found in this extraction from text.", true);
-					}
-					String importinfo = "To import this model for exploration in this window, add an import at the top of the window (after the 'uri' statement) for URI:\n   " + 
-							getExtractionProcessor().getTextModelName() + "\n.";
-					notifyUser(textModelFolder, importinfo, true);
-				} catch (ReasonerNotFoundException e) {
-					notifyUser(textModelFolder, e.getMessage(), true);
-					e.printStackTrace();
 				} catch (InvalidNameException e) {
-					notifyUser(textModelFolder, e.getMessage(), true);
+					// TODO Auto-generated catch block
 					e.printStackTrace();
 				} catch (QueryParseException e) {
-					notifyUser(textModelFolder, e.getMessage(), true);
+					// TODO Auto-generated catch block
 					e.printStackTrace();
 				} catch (QueryCancelledException e) {
-					notifyUser(textModelFolder, e.getMessage(), true);
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				} catch (ReasonerNotFoundException e) {
+					// TODO Auto-generated catch block
 					e.printStackTrace();
 				}
 			}
+		} catch (InvalidNameException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (QueryParseException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (QueryCancelledException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (ReasonerNotFoundException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
 		}		
+	}
+
+	private IReasoner getInitializedTextModelReasoner() throws ConfigurationException, ReasonerNotFoundException {
+		if (getTextModelReasoner() == null) {
+			setTextModelReasoner(getExtractionProcessor().getTextProcessor().getTextModelConfigMgr().getReasoner());
+			String codeModelFolder = getOwlModelsFolder();
+			if (!getTextModelReasoner().isInitialized()) {
+				IConfigurationManagerForIDE textModelConfigMgr = getExtractionProcessor().getCodeExtractor().getCodeModelConfigMgr();
+				getTextModelReasoner().setConfigurationManager(textModelConfigMgr);
+				getTextModelReasoner().initializeReasoner(codeModelFolder, getExtractionProcessor().getCodeModelName(), null);
+			}
+		}
+		return codeModelReasoner;
+	}
+
+	private void clearTextModelReasoner() {
+		getConfigurationManager().clearReasoner();
 	}
 
 	private void runInferenceDisplayInterestingCodeModelResults(String outputOwlFileName, SaveAsSadl saveAsSadl, String fileContent)
@@ -538,7 +599,7 @@ public class AnswerCurationManager {
 									}
 								}
 								try {
-									List<String> sadlDeclaration = convertExtractedMethodToExternalEquationInSadlSyntax(methodName, javaCode, pythoncode);
+									List<String> sadlDeclaration = convertCodeExtractedMethodToExternalEquationInSadlSyntax(methodName, "Java", javaCode, "Python", pythoncode);
 									for (String sd : sadlDeclaration) {
 	//									logger.debug(sadlDeclaration);
 	//									logger.debug("SADL equation:");
@@ -581,8 +642,7 @@ public class AnswerCurationManager {
 	}
 
 	private void clearCodeModelReasoner() {
-		getExtractionProcessor().getCodeExtractor().getCodeModelConfigMgr().clearReasoner();
-		setCodeModelReasoner(null);
+		getConfigurationManager().clearReasoner();
 	}
 	
 	/**
@@ -900,7 +960,7 @@ public class AnswerCurationManager {
 							String pythoncode = null;
 							try {
 								pythoncode = ep.translateMethodJavaToPython(className, methScript);
-								List<String> sadlDeclaration = convertExtractedMethodToExternalEquationInSadlSyntax(rsa.toString(), methScript, pythoncode);
+								List<String> sadlDeclaration = convertCodeExtractedMethodToExternalEquationInSadlSyntax(rsa.toString(), "Java", methScript, "Python", pythoncode);
 								for (String sd : sadlDeclaration) {
 									logger.debug("SADL equation:");
 									logger.debug(sd);
@@ -926,7 +986,8 @@ public class AnswerCurationManager {
 	}
 
 	/**
-	 * Method to convert extracted code to an instance of SADL External
+	 * Method to convert a method extracted from text to an instance of SADL External. Note
+	 * that methods extracted from text will use the SadlImplicitModel as the meta-model for representation.
 	 * @param methodName -- should be the name of the method in the extracted code model
 	 * @param pythoncode 
 	 * @param methScript 
@@ -938,7 +999,121 @@ public class AnswerCurationManager {
 	 * @throws QueryCancelledException
 	 * @throws CodeExtractionException 
 	 */
-	private List<String> convertExtractedMethodToExternalEquationInSadlSyntax(String methodName, String javaCode, String pythonCode) throws InvalidNameException, ConfigurationException,
+	private List<String> convertTextExtractedMethodToExternalEquationInSadlSyntax(String methodName, String lang1, String code1, String lang2, String code2) throws InvalidNameException, ConfigurationException,
+			ReasonerNotFoundException, QueryParseException, QueryCancelledException, CodeExtractionException {
+		List<String> returnSadlStatements = new ArrayList<String>();
+		StringBuilder sb = new StringBuilder("External ");
+		sb.append(methodName);
+		sb.append("(");
+		clearCodeModelReasoner();
+		// get inputs and outputs and identify semantic meaning thereof
+		String inputQuery = "select ?arg ?argName ?argtyp where {<";
+//		inputQuery += methodName.toString().trim();
+//		inputQuery += "> <arguments>/<sadllistmodel:rest>*/<sadllistmodel:first> ?arg . ?arg <localDescriptorName> ?argName . OPTIONAL{?arg <dataType> ?argtyp}}";
+		inputQuery = "select ?m ?argName ?argtyp where {?m <rdf:type> <ExternalEquation> . "
+				+ "?m <expression> ?exp . ?exp <language> <" + lang1 + "> . ?exp <script> '" + code1 + "'  . "
+				+ "?m <expression> ?exp2 . ?exp2 <language> <" + lang2 + "> . ?exp2 <script> '" + code2 + "' . "
+				+ "?m <arguments>/<sadllistmodel:rest>*/<sadllistmodel:first> ?arg . ?arg <localDescriptorName> ?argName . OPTIONAL{?arg <dataType> ?argtyp}}";
+
+		IReasoner reasoner = getConfigurationManager().getReasoner();
+		if (!reasoner.isInitialized()) {
+			reasoner.setConfigurationManager(getConfigurationManager());
+			reasoner.initializeReasoner(getOwlModelsFolder(), getExtractionProcessor().getTextModelName(), null);
+		}
+		inputQuery = reasoner.prepareQuery(inputQuery);
+		ResultSet inputResults =  reasoner.ask(inputQuery);
+		logger.debug(inputResults != null ? inputResults.toStringWithIndent(5) : "no results");
+		if (inputResults != null) {
+			for (int r = 0; r < inputResults.getRowCount(); r++) {
+				String argType = inputResults.getResultAt(r, 2).toString();
+				String argName = inputResults.getResultAt(r, 1).toString();
+				if (r > 0) {
+					sb.append(", ");
+				}
+				sb.append(argType);
+				sb.append(" ");
+				sb.append(argName);
+			}
+		}
+		sb.append(") returns ");
+		
+//		String outputTypeQuery = "select ?retname ?rettyp where {<";
+//		outputTypeQuery += methodName.toString().trim();
+//		outputTypeQuery += "> <returnTypes>/<sadllistmodel:rest>*/<sadllistmodel:first> ?rt . OPTIONAL{?rt <localDescriptorName> ?retname} . ?rt <dataType> ?rettyp}";
+		String outputTypeQuery = "select ?m ?argName ?argtyp where {?m <rdf:type> <ExternalEquation> . " + 
+				"?m <expression> ?exp . ?exp <language> <" + lang1 + "> . ?exp <script> '" + code1 + "'  . " + 
+				"?m <expression> ?exp2 . ?exp2 <language> <" + lang2 + "> . ?exp2 <script> '" + code2 + "' ." +
+				"?m <returnTypes>/<sadllistmodel:rest>*/<sadllistmodel:first> ?rt . OPTIONAL{?rt <localDescriptorName> ?retname} . ?rt <dataType> ?rettyp}";
+		outputTypeQuery = getInitializedCodeModelReasoner().prepareQuery(outputTypeQuery);
+		ResultSet outputResults =  getInitializedCodeModelReasoner().ask(outputTypeQuery);
+		logger.debug(outputResults != null ? outputResults.toStringWithIndent(5) : "no results");
+		if (outputResults != null) {
+			int numReturnValues = outputResults.getRowCount();
+			if (numReturnValues > 1) {
+				sb.append("[");
+			}
+			for (int r = 0; r < numReturnValues; r++) {
+				String retName = outputResults.getResultAt(r, 0).toString();
+				Object rt = outputResults.getResultAt(r, 0);
+				if (rt != null) {
+					String retType = rt.toString();
+					if (r > 0) {
+						sb.append(", ");
+					}
+					sb.append(retType);
+				}
+			}
+			sb.append(":");
+			if (numReturnValues > 1) {
+				sb.append("]");
+			}	
+		}
+		else {
+			// SADL doesn't currently support an equation that doesn't return anything
+			throw new CodeExtractionException("Equations that do not return a value are not supported.");
+		}
+		String eqUri = getExtractionProcessor().getCodeModelName() + "#" + methodName.toString().trim();
+		sb.append(" \"");
+		sb.append(eqUri);
+		sb.append("\".");
+		returnSadlStatements.add(sb.toString());
+		
+		// now add the scripts for lang1 and lang2
+		StringBuilder sb2 = new StringBuilder(methodName);
+		if (lang1 != null && code1 != null) {
+			sb2.append(" has expression (a Script with language ");
+			sb2.append(lang1);
+			sb2.append(", with script \n\"");
+			sb2.append(escapeDoubleQuotes(code1));
+			sb2.append("\"");
+		}
+		if (lang2 != null && code2 != null) {
+			sb2.append("\n), has expression (a Script with language ");
+			sb2.append(lang2);
+			sb2.append(", with script \n\"");
+			sb2.append(escapeDoubleQuotes(code2));
+			sb2.append("\"");
+		}
+		sb2.append(").\n");
+		returnSadlStatements.add(sb2.toString());
+		return returnSadlStatements;
+	}
+
+	/**
+	 * Method to convert a method extracted from code to an instance of SADL External. Note
+	 * that methods extracted from code use the CodeExtractionModel as the meta-model for representation.
+	 * @param methodName -- should be the name of the method in the extracted code model
+	 * @param pythoncode 
+	 * @param methScript 
+	 * @return -- the serialization of the new instance of External in SADL syntax
+	 * @throws InvalidNameException
+	 * @throws ConfigurationException
+	 * @throws ReasonerNotFoundException
+	 * @throws QueryParseException
+	 * @throws QueryCancelledException
+	 * @throws CodeExtractionException 
+	 */
+	private List<String> convertCodeExtractedMethodToExternalEquationInSadlSyntax(String methodName, String lang1, String code1, String lang2, String code2) throws InvalidNameException, ConfigurationException,
 			ReasonerNotFoundException, QueryParseException, QueryCancelledException, CodeExtractionException {
 		List<String> returnSadlStatements = new ArrayList<String>();
 		StringBuilder sb = new StringBuilder("External ");
@@ -983,8 +1158,8 @@ public class AnswerCurationManager {
 					sb.append(", ");
 				}
 				sb.append(retType);
-				sb.append(":");
 			}
+			sb.append(":");
 			if (numReturnValues > 1) {
 				sb.append("]");
 			}	
@@ -999,15 +1174,23 @@ public class AnswerCurationManager {
 		sb.append("\".");
 		returnSadlStatements.add(sb.toString());
 		
-		// now add the scripts in Java and Python
+		// now add the scripts for lang1 and lang2
 		StringBuilder sb2 = new StringBuilder(methodName);
-		sb2.append(" has expression (a Script with language Java, with script \n\"");
-		sb2.append(escapeDoubleQuotes(javaCode));
-		if (pythonCode != null) {
-			sb2.append("\"\n), has expression (a Script with language Python, with script \n\"");
-			sb2.append(escapeDoubleQuotes(pythonCode));
+		if (lang1 != null && code1 != null) {
+			sb2.append(" has expression (a Script with language ");
+			sb2.append(lang1);
+			sb2.append(", with script \n\"");
+			sb2.append(escapeDoubleQuotes(code1));
+			sb2.append("\"");
 		}
-		sb2.append("\").\n");
+		if (lang2 != null && code2 != null) {
+			sb2.append("\n), has expression (a Script with language ");
+			sb2.append(lang2);
+			sb2.append(", with script \n\"");
+			sb2.append(escapeDoubleQuotes(code2));
+			sb2.append("\"");
+		}
+		sb2.append(").\n");
 		returnSadlStatements.add(sb2.toString());
 		return returnSadlStatements;
 	}
@@ -1929,14 +2112,16 @@ public class AnswerCurationManager {
 
 	private ISadlInferenceProcessor getInferenceProcessor() {
 		if (inferenceProcessor == null) {
-			inferenceProcessor = new JenaBasedDialogInferenceProcessor(getPreferences());
+			inferenceProcessor = new JenaBasedDialogInferenceProcessor();
+			inferenceProcessor.setPreferences(getPreferences());
 		}
 		return inferenceProcessor;
 	}
 
 	private ISadlInferenceProcessor getInferenceProcessor(OntModel theModel) {
 		if (inferenceProcessor == null) {
-			inferenceProcessor = new JenaBasedDialogInferenceProcessor(theModel, getPreferences());
+			inferenceProcessor.setPreferences(getPreferences());
+			inferenceProcessor.setTheJenaModel(theModel);
 		}
 		return inferenceProcessor;
 	}
@@ -2779,5 +2964,13 @@ public class AnswerCurationManager {
 			outputFilename = outputFilename.substring(0, outputFilename.length() - 5) + ".owl";
 		}
 		return outputOwlFileName;
+	}
+
+	private IReasoner getTextModelReasoner() {
+		return textModelReasoner;
+	}
+
+	private void setTextModelReasoner(IReasoner textModelReasoner) {
+		this.textModelReasoner = textModelReasoner;
 	}
 }

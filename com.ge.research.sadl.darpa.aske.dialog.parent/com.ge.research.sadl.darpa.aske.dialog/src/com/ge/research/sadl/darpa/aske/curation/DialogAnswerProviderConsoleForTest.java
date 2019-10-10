@@ -53,6 +53,7 @@ import org.eclipse.core.resources.IResource;
 import org.eclipse.core.resources.IncrementalProjectBuilder;
 import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.CoreException;
+import org.eclipse.emf.common.util.URI;
 import org.eclipse.emf.ecore.resource.Resource;
 
 import com.ge.research.sadl.darpa.aske.curation.AnswerCurationManager.Agent;
@@ -409,5 +410,11 @@ public class DialogAnswerProviderConsoleForTest extends BaseDialogAnswerProvider
 	public void updateProjectAndDisplaySadlFiles(String projectName, String modelFolder, List<File> sadlFiles) {
 		displayFiles(modelFolder, sadlFiles);
 		
+	}
+
+	@Override
+	public Map<String, String> getPreferences(URI uri) {
+		// TODO Auto-generated method stub
+		return null;
 	}
 }

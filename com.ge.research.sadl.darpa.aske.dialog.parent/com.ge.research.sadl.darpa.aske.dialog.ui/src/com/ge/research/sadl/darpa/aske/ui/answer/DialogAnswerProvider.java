@@ -655,7 +655,8 @@ public class DialogAnswerProvider extends BaseDialogAnswerProvider {
 		return getPreferences(uri);
 	}
 
-	protected Map<String, String> getPreferences(URI uri) {
+	@Override
+	public Map<String, String> getPreferences(URI uri) {
 		Injector reqInjector = safeGetInjector(DialogActivator.COM_GE_RESEARCH_SADL_DARPA_ASKE_DIALOG);
 		IPreferenceValuesProvider pvp = reqInjector.getInstance(IPreferenceValuesProvider.class);
 		IPreferenceValues preferenceValues = pvp.getPreferenceValues(new XtextResource(uri));
