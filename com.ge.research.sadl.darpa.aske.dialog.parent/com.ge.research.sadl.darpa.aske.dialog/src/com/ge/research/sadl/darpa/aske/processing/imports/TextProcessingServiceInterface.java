@@ -1,6 +1,7 @@
 package com.ge.research.sadl.darpa.aske.processing.imports;
 
 import java.io.IOException;
+import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
@@ -14,6 +15,7 @@ import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
+import com.google.gson.JsonPrimitive;
 import com.hp.hpl.jena.ontology.OntModel;
 
 /**
@@ -28,6 +30,32 @@ public class TextProcessingServiceInterface extends JsonServiceInterface {
 	private static final Logger logger = Logger.getLogger (TextProcessingServiceInterface.class) ;
     
 	private String textServiceURL = null;
+	
+	public class EquationVariableContextResponse {
+		private String message;
+		private List<String[]> results;
+		
+		public EquationVariableContextResponse(String msg, List<String[]> results) {
+			setMessage(msg);
+			setResults(results);
+		}
+		
+		public String getMessage() {
+			return message;
+		}
+		
+		private void setMessage(String message) {
+			this.message = message;
+		}
+		
+		public List<String[]> getResults() {
+			return results;
+		}
+		
+		private void setResults(List<String[]> results) {
+			this.results = results;
+		}
+	}
 
 	public TextProcessingServiceInterface(String serviceBaseUri) {
 		setTextServiceURL(serviceBaseUri);
@@ -38,7 +66,8 @@ public class TextProcessingServiceInterface extends JsonServiceInterface {
 	}
 
 	private void setTextServiceURL(String baseUrl) {
-		String host = "vesuvius063";	// default
+//		String host = "vesuvius-dev.crd.ge.com";	// default
+		String host = "vesuvius063.crd.ge.com";	// default
 		int port = 4200;			// default
 		if (baseUrl != null) {
 			textServiceURL = baseUrl + DARPA_ASKE_TEXT_SERVICE_URL_FRAGMENT;
@@ -48,6 +77,12 @@ public class TextProcessingServiceInterface extends JsonServiceInterface {
 		}
 	}
 
+	/**
+	 * Method to retrieve a specified graph from the text service.
+	 * @param locality -- identifies the graph to be retrieved
+	 * @return -- String[2], where first is the serialization of the triples returned and the second is the format in which they are serialized, e.g., "n3"
+	 * @throws IOException
+	 */
 	public String[] retrieveGraph(String locality) throws IOException {
 		logger.debug("Retrieving graph for locality '" + locality + "'");
 		String retrieveGraphServiceURL = getTextServiceURL() + "saveGraph";
@@ -74,6 +109,32 @@ public class TextProcessingServiceInterface extends JsonServiceInterface {
 				triples = triples.replace("\\\\", "\\");
 				results[1] = triples;
 				return results;
+			}
+		}
+		return null;
+	}
+	
+	/**
+	 * Method to clear a specified graph in the text service. For example, if a text has been processed and one
+	 * wished to process it again, discarding the previous results.
+	 * @param locality -- identifies the grpah to be cleared
+	 * @return -- ?
+	 * @throws IOException
+	 */
+	public String clearGraph(String locality) throws IOException {
+		logger.debug("Retrieving graph for locality '" + locality + "'");
+		String retrieveGraphServiceURL = getTextServiceURL() + "clearGraph";
+		URL serviceUrl = new URL(retrieveGraphServiceURL);			
+		JsonObject json = new JsonObject();
+		json.addProperty("localityURI", locality);
+		String response = makeConnectionAndGetResponse(serviceUrl, json);
+//		logger.debug(response);
+		if (response != null && response.length() > 0) {
+//			OntModel theModel = getCurationManager().getExtractionProcessor().getTextModel();
+			JsonElement je = new JsonParser().parse(response);
+			if (je.isJsonObject()) {
+				String msg = je.getAsJsonObject().get("message").getAsString();
+				return msg;
 			}
 		}
 		return null;
@@ -124,7 +185,7 @@ public class TextProcessingServiceInterface extends JsonServiceInterface {
 	 * @throws InvalidInputException 
 	 * @throws IOException 
 	 */
-	public List<String[]> processName(String name, String locality) throws InvalidInputException, IOException {
+	public EquationVariableContextResponse equationVariableContext(String name, String locality) throws InvalidInputException, IOException {
 		if (name == null) {
 			throw new InvalidInputException("Name cannot be null");
 		}
@@ -142,24 +203,32 @@ public class TextProcessingServiceInterface extends JsonServiceInterface {
 		if (response != null && response.length() > 0) {
 			JsonElement je = new JsonParser().parse(response);
 			logger.debug(je.toString());
-			if (je instanceof JsonArray) {
-				JsonArray sentences = je.getAsJsonArray();
-				if (sentences != null) {
-					List<String[]> results = new ArrayList<String[]>();
-					for (JsonElement element : sentences) {
-						if (element != null) {
-							JsonObject sentence = element.getAsJsonObject();
-							String varName = sentence.get("variableName").getAsString();
-							String eqStr = sentence.get("equationString").getAsString();
-							String[] use = new String[2];
-							use[0] = varName;
-							use[1] = eqStr;
-							results.add(use);
-						}
+			JsonElement msg = je.getAsJsonObject().get("message");
+			JsonElement rslts = je.getAsJsonObject().get("results");
+			List<String[]> results = new ArrayList<String[]>();
+			if (rslts.isJsonArray()) {
+				for (JsonElement rslt : rslts.getAsJsonArray()) {
+					JsonElement eqStr = rslt.getAsJsonObject().get("equationString");
+					JsonElement vn = rslt.getAsJsonObject().get("variableName");
+					String[] use = new String[2];
+					if (vn != null) {
+						use[0] = eqStr != null ? eqStr.getAsString() : null;
+						use[1] = vn != null ? vn.getAsString() : null;
 					}
-					return results;
+					results.add(use);
 				}
 			}
+			String msgStr = null;
+			if (msg instanceof JsonPrimitive) {
+				if (msg.getAsJsonPrimitive().isString()) {
+					msgStr = msg.getAsJsonPrimitive().getAsString();
+				}
+				else {
+					msgStr = msg.toString();
+				}
+			}
+			EquationVariableContextResponse evcr = new EquationVariableContextResponse(msgStr, results);
+			return evcr;
 		}
 		return null;
 	}

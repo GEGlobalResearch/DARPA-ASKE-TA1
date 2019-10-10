@@ -444,12 +444,12 @@ public class DialogAnswerProvider extends BaseDialogAnswerProvider {
 															String altUrl = new SadlUtils()
 																	.fileNameToFileUrl(outputOwlFileName);
 
-															String publicUri = acm.getDomainModelConfigurationManager()
+															String publicUri = acm.getConfigurationManager()
 																	.getPublicUriFromActualUrl(altUrl);
 															if (publicUri != null) {
-																acm.getDomainModelConfigurationManager()
+																acm.getConfigurationManager()
 																		.deleteModel(publicUri);
-																acm.getDomainModelConfigurationManager()
+																acm.getConfigurationManager()
 																		.deleteMapping(altUrl, publicUri);
 															}
 														} catch (Exception e) {
@@ -465,11 +465,11 @@ public class DialogAnswerProvider extends BaseDialogAnswerProvider {
 													String importActualUrl = new SadlUtils()
 															.fileNameToFileUrl(arg0.toString());
 													String altUrl = new SadlUtils().fileNameToFileUrl(importActualUrl);
-													String importPublicUri = acm.getDomainModelConfigurationManager()
+													String importPublicUri = acm.getConfigurationManager()
 															.getPublicUriFromActualUrl(altUrl);
-													String prefix = acm.getDomainModelConfigurationManager()
+													String prefix = acm.getConfigurationManager()
 															.getGlobalPrefix(importPublicUri);
-													acm.getDomainModelConfigurationManager().addMapping(importActualUrl,
+													acm.getConfigurationManager().addMapping(importActualUrl,
 															importPublicUri, prefix, false, "AnswerCurationManager");
 													String prjname = owlfile.getParentFile().getParentFile().getName();
 													IProject prj = ResourcesPlugin.getWorkspace().getRoot()
@@ -661,9 +661,9 @@ public class DialogAnswerProvider extends BaseDialogAnswerProvider {
 			if (dbncgsburl != null) {
 				map.put(DialogPreferences.ANSWER_DBN_CG_SERVICE_BASE_URI.getId(), dbncgsburl);
 			}
-			String usedbn = preferenceValues.getPreference(DialogPreferences.USE_DBN_KCHAIN_CG_SERVICE);
+			String usedbn = preferenceValues.getPreference(DialogPreferences.USE_DBN_CG_SERVICE);
 			if (usedbn != null) {
-				map.put(DialogPreferences.USE_DBN_KCHAIN_CG_SERVICE.getId(), usedbn);
+				map.put(DialogPreferences.USE_DBN_CG_SERVICE.getId(), usedbn);
 			}
 			return map;
 		}

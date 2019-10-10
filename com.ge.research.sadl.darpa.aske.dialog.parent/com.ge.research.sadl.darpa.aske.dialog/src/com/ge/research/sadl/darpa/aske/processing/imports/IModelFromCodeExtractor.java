@@ -62,35 +62,29 @@ public interface IModelFromCodeExtractor {
 	
 	void setCodeFiles(List<File> codeFiles);
 
-	String getCodeModelFolder();
-
-	void setCodeModelFolder(String codeModelFolder);
-	
 	IConfigurationManagerForIDE getCodeModelConfigMgr();
 
-	boolean process(String inputIdentifier, String content) throws ConfigurationException, IOException;
+	boolean process(String inputIdentifier, String content, String modelName, String modelPrefix) throws ConfigurationException, IOException;
 
-	void setDefaultCodeModelName(String defmdlnm);
+	String getCodeModelName();
 	
-	String getDefaultCodeModelName();
+	void setCodeModelName(String modelName);
 	
-	void setDefaultCodeModelPrefix(String prefix);
-	
-	String getDefaultCodeModelPrefix();
-
-	void setCodeModelPrefix(String codeModelPrefix);
-
 	String getCodeModelPrefix();
+	
+	void setCodeModelPrefix(String prefix);
 
 	String getCodeModelNamespace();
-
-	void setCodeModelName(String codeModelName);
 
 	void addCodeModel(String key, OntModel codeModel);
 
 	Map<String,OntModel> getCodeModels();
 
 	OntModel getCodeModel(String key);
+	
+	void setCurrentCodeModel(OntModel m);
+	
+	OntModel getCurrentCodeModel();
 
 	boolean isIncludeSerialization();
 

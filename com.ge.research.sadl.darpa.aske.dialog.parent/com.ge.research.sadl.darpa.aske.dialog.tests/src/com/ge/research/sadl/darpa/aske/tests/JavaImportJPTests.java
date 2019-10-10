@@ -133,14 +133,14 @@ public class JavaImportJPTests {
 				"}\r\n";
 		IConfigurationManagerForIDE cm = ConfigurationManagerForIdeFactory.getConfigurationManagerForIDE(getDomainProjectModelFolder(), null);
 		AnswerCurationManager acm = new AnswerCurationManager(getDomainProjectModelFolder(), cm, null, null);
-		IModelFromCodeExtractor jme = new JavaModelExtractorJP(acm, null);
-		jme.setCodeModelFolder(getExtractionProjectModelFolder());
+		IModelFromCodeExtractor jme = acm.getCodeExtractor();
+		acm.setOwlModelsFolder(getExtractionProjectModelFolder());
 		String defaultCodeModelPrefix = "Temp";
 		String defaultCodeModelName = "http://com.ge.research.darpa.aske.ta1.explore/" + defaultCodeModelPrefix;
-		jme.setDefaultCodeModelPrefix(defaultCodeModelPrefix);
-		jme.setDefaultCodeModelName(defaultCodeModelName);
+//		jme.setCodeModelPrefix(defaultCodeModelPrefix);
+//		jme.setCodeModelName(defaultCodeModelName);
 		jme.setIncludeSerialization(false);
-		assertTrue(jme.process("TemperatureConversion class", javaContent));
+		assertTrue(jme.process("TemperatureConversion class", javaContent, defaultCodeModelName, defaultCodeModelPrefix));
 		OntModel codeModel = acm.getExtractionProcessor().getCodeModel();
 		codeModel.write(System.out);
 	}
@@ -181,13 +181,13 @@ public class JavaImportJPTests {
 		IConfigurationManagerForIDE cm = ConfigurationManagerForIdeFactory.getConfigurationManagerForIDE(getDomainProjectModelFolder(), null);
 		AnswerCurationManager acm = new AnswerCurationManager(getDomainProjectModelFolder(), cm, null, null);
 		IModelFromCodeExtractor jme = new JavaModelExtractorJP(acm, null);
-		jme.setCodeModelFolder(getExtractionProjectModelFolder());
+		acm.setOwlModelsFolder(getExtractionProjectModelFolder());
 		String defaultCodeModelPrefix = "temp";
 		String defaultCodeModelName = "http://com.ge.research.darpa.aske.ta1.explore/" + defaultCodeModelPrefix;
-		jme.setDefaultCodeModelPrefix(defaultCodeModelPrefix);
-		jme.setDefaultCodeModelName(defaultCodeModelName);
+		jme.setCodeModelPrefix(defaultCodeModelPrefix);
+		jme.setCodeModelName(defaultCodeModelName);
 		jme.setIncludeSerialization(false);
-		assertTrue(jme.process("TemperatureConversion class", javaContent));
+		assertTrue(jme.process("TemperatureConversion class", javaContent, null, null));
 	}
 
 	@Test
@@ -229,12 +229,12 @@ public class JavaImportJPTests {
 		IConfigurationManagerForIDE cm = ConfigurationManagerForIdeFactory.getConfigurationManagerForIDE(getDomainProjectModelFolder(), null);
 		AnswerCurationManager acm = new AnswerCurationManager(getDomainProjectModelFolder(), cm, null, null);
 		IModelFromCodeExtractor jme = new JavaModelExtractorJP(acm, null);
-		jme.setCodeModelFolder(getExtractionProjectModelFolder());
+		acm.setOwlModelsFolder(getExtractionProjectModelFolder());
 		String defaultCodeModelPrefix = "physicalobject";
 		String defaultCodeModelName = "http://com.ge.research.darpa.aske.ta1.explore/" + defaultCodeModelPrefix;
-		jme.setDefaultCodeModelPrefix(defaultCodeModelPrefix);
-		jme.setDefaultCodeModelName(defaultCodeModelName);
-		assertTrue(jme.process("PhysicalObject class", javaContent));
+		jme.setCodeModelPrefix(defaultCodeModelPrefix);
+		jme.setCodeModelName(defaultCodeModelName);
+		assertTrue(jme.process("PhysicalObject class", javaContent, defaultCodeModelName, defaultCodeModelPrefix));
 	}
 	
 	@Test
@@ -245,13 +245,13 @@ public class JavaImportJPTests {
 		IConfigurationManagerForIDE cm = ConfigurationManagerForIdeFactory.getConfigurationManagerForIDE(getDomainProjectModelFolder(), null);
 		AnswerCurationManager acm = new AnswerCurationManager(getDomainProjectModelFolder(), cm, null, null);
 		IModelFromCodeExtractor jme = new JavaModelExtractorJP(acm, null);
-		jme.setCodeModelFolder(getExtractionProjectModelFolder());
+		acm.setOwlModelsFolder(getExtractionProjectModelFolder());
 		String defaultCodeModelPrefix = "Isentrop";
 		String defaultCodeModelName = "http://com.ge.research.darpa.aske.ta1.explore/" + defaultCodeModelPrefix;
-		jme.setDefaultCodeModelPrefix(defaultCodeModelPrefix);
-		jme.setDefaultCodeModelName(defaultCodeModelName);
+		jme.setCodeModelPrefix(defaultCodeModelPrefix);
+		jme.setCodeModelName(defaultCodeModelName);
 		jme.setIncludeSerialization(false);
-		assertTrue(jme.process("Isentrop.java", javaContent));
+		assertTrue(jme.process("Isentrop.java", javaContent, defaultCodeModelName, defaultCodeModelPrefix));
 	}
 	
 	@Test
@@ -260,7 +260,7 @@ public class JavaImportJPTests {
 		assertTrue(codeFile.exists());
 		IConfigurationManagerForIDE cm = ConfigurationManagerForIdeFactory.getConfigurationManagerForIDE(getDomainProjectModelFolder(), null);
 		AnswerCurationManager acm = new AnswerCurationManager(getDomainProjectModelFolder(), cm, null, null);
-		acm.getExtractionProcessor().getCodeExtractor().setCodeModelFolder(getExtractionProjectModelFolder());
+		acm.setOwlModelsFolder(getExtractionProjectModelFolder());
 		
 		IDialogAnswerProvider dapcft = new DialogAnswerProviderConsoleForTest();
 		cm.addPrivateKeyValuePair(DialogConstants.DIALOG_ANSWER_PROVIDER, dapcft);
@@ -269,10 +269,10 @@ public class JavaImportJPTests {
 		
 		String defaultCodeModelPrefix = includeSerialization ? "MachSz" : "Mach";
 		String defaultCodeModelName = "http://com.ge.research.darpa.aske.ta1.explore/" + defaultCodeModelPrefix;
-		acm.getExtractionProcessor().getCodeExtractor().setDefaultCodeModelPrefix(defaultCodeModelPrefix);
-		acm.getExtractionProcessor().getCodeExtractor().setDefaultCodeModelName(defaultCodeModelName);
+		acm.getExtractionProcessor().getCodeExtractor().setCodeModelPrefix(defaultCodeModelPrefix);
+		acm.getExtractionProcessor().getCodeExtractor().setCodeModelName(defaultCodeModelName);
 		
-		String genFolder = new File(acm.getExtractionProcessor().getCodeExtractor().getCodeModelFolder()).getParent() + 
+		String genFolder = new File(acm.getOwlModelsFolder()).getParent() + 
 				"/" + DialogConstants.EXTRACTED_MODELS_FOLDER_PATH_FRAGMENT;
 		new File(genFolder).mkdirs();
 //		String owlFileName = genFolder + "/" + defaultCodeModelPrefix + ".owl";
@@ -329,7 +329,7 @@ public class JavaImportJPTests {
 		File codeFile = new File(getCodeExtractionKbRoot() + "/ExtractedModels/Sources/Mach.java");
 		IConfigurationManagerForIDE cm = ConfigurationManagerForIdeFactory.getConfigurationManagerForIDE(getDomainProjectModelFolder(), null);
 		AnswerCurationManager acm = new AnswerCurationManager(getDomainProjectModelFolder(), cm, null, null);
-		acm.getExtractionProcessor().getCodeExtractor().setCodeModelFolder(getExtractionProjectModelFolder());
+		acm.setOwlModelsFolder(getExtractionProjectModelFolder());
 		
 		IDialogAnswerProvider dapcft = new DialogAnswerProviderConsoleForTest();
 		cm.addPrivateKeyValuePair(DialogConstants.DIALOG_ANSWER_PROVIDER, dapcft);
@@ -338,17 +338,18 @@ public class JavaImportJPTests {
 		
 		String defaultCodeModelPrefix = includeSerialization ? "MachSz" : "Mach";
 		String defaultCodeModelName = "http://com.ge.research.darpa.aske.ta1.explore/" + defaultCodeModelPrefix;
-		acm.getExtractionProcessor().getCodeExtractor().setDefaultCodeModelPrefix(defaultCodeModelPrefix);
-		acm.getExtractionProcessor().getCodeExtractor().setDefaultCodeModelName(defaultCodeModelName);
+		acm.getExtractionProcessor().getCodeExtractor().setCodeModelPrefix(defaultCodeModelPrefix);
+		acm.getExtractionProcessor().getCodeExtractor().setCodeModelName(defaultCodeModelName);
 		
-		String genFolder = new File(acm.getExtractionProcessor().getCodeExtractor().getCodeModelFolder()).getParent() + 
+		String genFolder = new File(acm.getOwlModelsFolder()).getParent() + 
 				"/" + DialogConstants.EXTRACTED_MODELS_FOLDER_PATH_FRAGMENT;
 		new File(genFolder).mkdirs();
 //		String owlFileName = genFolder + "/" + defaultCodeModelPrefix + ".owl";
 
 		acm.getExtractionProcessor().getCodeExtractor().addCodeFile(codeFile);
 		acm.getExtractionProcessor().getCodeExtractor().setIncludeSerialization(includeSerialization);
-		acm.processImports(SaveAsSadl.AskUserSaveAsSadl);
+//		acm.processImports(SaveAsSadl.AskUserSaveAsSadl);
+		acm.processImports(SaveAsSadl.SaveAsSadl);
 		assertTrue(owlF.exists() || sadlF.exists());
 		if (sadlF.exists()) {
 			String sadlContent = acm.getExtractionProcessor().getGeneratedSadlContent();

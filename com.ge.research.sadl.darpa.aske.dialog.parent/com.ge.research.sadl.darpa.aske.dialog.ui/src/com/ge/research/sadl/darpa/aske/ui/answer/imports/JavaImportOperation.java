@@ -952,15 +952,22 @@ public class JavaImportOperation extends WorkspaceModifyOperation {
             	acm = localAcm;
             }
             String modelFolder = convertProjectRelativePathToAbsolutePath(destinationContainer.getProject().getFullPath().append("OwlModels").toPortableString());
-            Object dap = acm.getDomainModelConfigurationManager().getPrivateKeyValuePair(DialogConstants.DIALOG_ANSWER_PROVIDER);
+           if (acm == null) {
+           	throw new CoreException(new Status(IStatus.ERROR, PlatformUI.PLUGIN_ID, 0, 
+        			"Failed to get a curation manager. Are you trying to import into a different project than the open Dialog window?", null));
+           }
+            Object dap = acm.getConfigurationManager().getPrivateKeyValuePair(DialogConstants.DIALOG_ANSWER_PROVIDER);
             if (dap == null) {
             	throw new CoreException(new Status(IStatus.ERROR, PlatformUI.PLUGIN_ID, 0, 
             			"A Dialog Editor window must be opened and some activity in the window before imports can be processed", null));
             }
-            acm.getExtractionProcessor().getCodeExtractor().setCodeModelFolder(modelFolder);
+            acm.setOwlModelsFolder(modelFolder);
         }
         try {
         	importFiles(acm);
+        }
+        catch (Throwable t) {
+        	t.printStackTrace();
         }
         finally {
         	// must clear prior files so a following import won't do them again
@@ -1318,9 +1325,9 @@ public class JavaImportOperation extends WorkspaceModifyOperation {
 			if (dbncgsburl != null) {
 				map.put(DialogPreferences.ANSWER_DBN_CG_SERVICE_BASE_URI.getId(), dbncgsburl);
 			}
-			String usedbn = preferenceValues.getPreference(DialogPreferences.USE_DBN_KCHAIN_CG_SERVICE);
+			String usedbn = preferenceValues.getPreference(DialogPreferences.USE_DBN_CG_SERVICE);
 			if (usedbn != null) {
-				map.put(DialogPreferences.USE_DBN_KCHAIN_CG_SERVICE.getId(), usedbn);
+				map.put(DialogPreferences.USE_DBN_CG_SERVICE.getId(), usedbn);
 			}
 			return map;
 		}

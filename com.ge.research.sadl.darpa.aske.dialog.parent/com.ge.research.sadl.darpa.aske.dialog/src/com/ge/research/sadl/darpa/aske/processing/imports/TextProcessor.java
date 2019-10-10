@@ -49,6 +49,7 @@ import org.eclipse.jdt.core.compiler.InvalidInputException;
 import com.ge.research.sadl.builder.IConfigurationManagerForIDE;
 import com.ge.research.sadl.darpa.aske.curation.AnswerCurationManager;
 import com.ge.research.sadl.darpa.aske.preferences.DialogPreferences;
+import com.ge.research.sadl.darpa.aske.processing.imports.TextProcessingServiceInterface.EquationVariableContextResponse;
 import com.ge.research.sadl.processing.SadlConstants;
 import com.ge.research.sadl.reasoner.ConfigurationException;
 import com.ge.research.sadl.reasoner.IConfigurationManagerForEditing.Scope;
@@ -80,11 +81,11 @@ public class TextProcessor {
 
 	private OntModel textModel;
 	private Map<String, OntModel> textModels;
-	private String textmodelName;	// the name of the model being created by extraction
+	private String textModelName;	// the name of the model being created by extraction
 	private String textmodelPrefix;	// the prefix of the model being created by extraction
 
-	private String defaultTextModelName = null;
-	private String defaultTextModelPrefix = null;
+//	private String defaultTextModelName = null;
+//	private String defaultTextModelPrefix = null;
 
 	public TextProcessor(AnswerCurationManager answerCurationManager, Map<String, String> preferences) {
 		setCurationManager(answerCurationManager);
@@ -96,14 +97,15 @@ public class TextProcessor {
 	 * @param inputIdentifier -- the identifier, normally a model URI, of the source text
 	 * @param text --  the source text to be processed
 	 * @param locality -- the URI of the model to be used as context for the extraction
+	 * @param prefix 
 	 * @return -- an array int[2], 0th element being the number of concepts found in the text, 1st element being the number of equations found in the text
 	 * @throws ConfigurationException
 	 * @throws IOException
 	 */
-	public int[] processText(String inputIdentifier, String text, String locality) throws ConfigurationException, IOException {
-		initializeTextModel();
+	public int[] processText(String inputIdentifier, String text, String modelName, String modelPrefix) throws ConfigurationException, IOException {
+		initializeTextModel(modelName, modelPrefix);
 		try {
-			String msg = "Importing text with identifier '" + inputIdentifier + "'.";
+			String msg = "Importing text with identifier '" + inputIdentifier + "' into locality '" + modelName + "'.";
 			getCurationManager().notifyUser(getTextModelConfigMgr().getModelFolder(), msg, true);
 		} catch (ConfigurationException e) {
 			// TODO Auto-generated catch block
@@ -111,7 +113,7 @@ public class TextProcessor {
 		}
 		String serviceBaseUri = getPreference(DialogPreferences.ANSWER_TEXT_SERVICE_BASE_URI.getId());
 		TextProcessingServiceInterface tpsi = new TextProcessingServiceInterface(serviceBaseUri);
-		return tpsi.processText(inputIdentifier, text, locality);
+		return tpsi.processText(inputIdentifier, text, modelName);
 	}
 	
 	public String[] retrieveGraph(String locality) throws IOException {
@@ -119,6 +121,13 @@ public class TextProcessor {
 		String serviceBaseUri = getPreference(DialogPreferences.ANSWER_TEXT_SERVICE_BASE_URI.getId());
 		TextProcessingServiceInterface tpsi = new TextProcessingServiceInterface(serviceBaseUri);
 		return tpsi.retrieveGraph(locality);
+	}
+	
+	public String clearGraph(String locality) throws IOException {
+		logger.debug("Clearing graph for locality '" + locality + "'");
+		String serviceBaseUri = getPreference(DialogPreferences.ANSWER_TEXT_SERVICE_BASE_URI.getId());
+		TextProcessingServiceInterface tpsi = new TextProcessingServiceInterface(serviceBaseUri);
+		return tpsi.clearGraph(locality);
 	}
 		
 	/**
@@ -130,7 +139,7 @@ public class TextProcessor {
 	 * @throws InvalidInputException 
 	 * @throws IOException 
 	 */
-	public List<String[]> processName(String name, String locality) throws InvalidInputException, IOException {
+	public EquationVariableContextResponse equationVariableContext(String name, String locality) throws InvalidInputException, IOException {
 		try {
 			String msg = "Searching for name '" + name + "' in locality '" + locality + "'.";
 			getCurationManager().notifyUser(getTextModelConfigMgr().getModelFolder(), msg, true);
@@ -140,7 +149,7 @@ public class TextProcessor {
 		}
 		String serviceUri = getPreference(DialogPreferences.ANSWER_TEXT_SERVICE_BASE_URI.getId());
 		TextProcessingServiceInterface tpsi = new TextProcessingServiceInterface(serviceUri);
-		return tpsi.processName(name, locality);
+		return tpsi.equationVariableContext(name, locality);
 	}
 	
 	public void addTextModel(String key, OntModel textModel) {
@@ -157,20 +166,28 @@ public class TextProcessor {
 		return null;
 	}
 
-	private void initializeTextModel() throws ConfigurationException, IOException {
+	private void initializeTextModel(String modelName, String modelPrefix) throws ConfigurationException, IOException {
 		if (getCurationManager().getExtractionProcessor().getTextModel() == null) {
 			// create new text model	
-			setTextModelConfigMgr(getCurationManager().getDomainModelConfigurationManager());
+			setTextModelConfigMgr(getCurationManager().getConfigurationManager());
 			OntDocumentManager owlDocMgr = getTextModelConfigMgr().getJenaDocumentMgr();
 			OntModelSpec spec = new OntModelSpec(OntModelSpec.OWL_MEM);
 			if (owlDocMgr != null) {
 				spec.setDocumentManager(owlDocMgr);
 				owlDocMgr.setProcessImports(true);
 			}
-			getCurationManager().getExtractionProcessor().setTextModel(ModelFactory.createOntologyModel(spec));	
-			setTextModel(getCurationManager().getExtractionProcessor().getTextModel());
-			getTextModel().setNsPrefix(getTextModelPrefix(), getTextModelNamespace());
-			Ontology modelOntology = getTextModel().createOntology(getTextModelName());
+			setTextModel(ModelFactory.createOntologyModel(spec));	
+			if (getTextModelName() == null) {
+				setTextModelName(modelName);	// don't override a preset model name
+			}
+			if (getTextModelPrefix() == null) {
+				if (modelPrefix == null) {
+					throw new ConfigurationException("Model prefix is required");
+				}
+				setTextModelPrefix(modelPrefix);	// don't override a preset model name
+			}
+			getCurrentTextModel().setNsPrefix(getTextModelPrefix(), getCurationManager().getExtractionProcessor().getNamespaceFromModelName(getTextModelName()));
+			Ontology modelOntology = getCurrentTextModel().createOntology(getTextModelName());
 			logger.debug("Ontology '" + getTextModelName() + "' created");
 			modelOntology.addComment("This ontology was created by extraction from text by the ANSWER TextProcessor.", "en");
 			OntModel importedOntModel = getTextModelConfigMgr().getOntModel(SadlConstants.SADL_IMPLICIT_MODEL_URI, Scope.INCLUDEIMPORTS);
@@ -182,35 +199,15 @@ public class TextProcessor {
 	}
 	
 	private void addImportToJenaModel(String modelName, String importUri, String importPrefix, Model importedOntModel) {
-		getTextModel().getDocumentManager().addModel(importUri, importedOntModel, true);
-		Ontology modelOntology = getTextModel().createOntology(modelName);
+		getCurrentTextModel().getDocumentManager().addModel(importUri, importedOntModel, true);
+		Ontology modelOntology = getCurrentTextModel().createOntology(modelName);
 		if (importPrefix != null) {
-			getTextModel().setNsPrefix(importPrefix, importUri);
+			getCurrentTextModel().setNsPrefix(importPrefix, importUri);
 		}
-		com.hp.hpl.jena.rdf.model.Resource importedOntology = getTextModel().createResource(importUri);
+		com.hp.hpl.jena.rdf.model.Resource importedOntology = getCurrentTextModel().createResource(importUri);
 		modelOntology.addImport(importedOntology);
-		getTextModel().addSubModel(importedOntModel);
-		getTextModel().addLoadedImport(importUri);
-	}
-
-	private String getTextModelName() {
-		return this.getTextmodelName();
-	}
-
-	private String getTextModelNamespace() {
-		return getTextModelName() + "#";
-	}
-
-	private String getTextModelPrefix() {
-		return this.getTextmodelPrefix();
-	}
-
-	private void setTextModel(OntModel textModel) {
-		this.textModel = textModel;	
-	}
-	
-	private OntModel getTextModel() {
-		return textModel;
+		getCurrentTextModel().addSubModel(importedOntModel);
+		getCurrentTextModel().addLoadedImport(importUri);
 	}
 
 	public Map<String, String> getPreferences() {
@@ -267,6 +264,9 @@ public class TextProcessor {
 	}
 
 	public IConfigurationManagerForIDE getTextModelConfigMgr() {
+		if (textModelConfigMgr == null) {
+			setTextModelConfigMgr(getCurationManager().getConfigurationManager());
+		}
 		return textModelConfigMgr;
 	}
 
@@ -274,44 +274,28 @@ public class TextProcessor {
 		this.textModelConfigMgr = textMetaModelConfigMgr;
 	}
 
-	public String getTextmodelName() {
-		return textmodelName;
+	public void setTextModel(OntModel textModel) {
+		this.textModel = textModel;	
+	}
+	
+	public OntModel getCurrentTextModel() {
+		return textModel;
 	}
 
-	public void setTextmodelName(String textmodelName) {
-		this.textmodelName = textmodelName;
+	public String getTextModelName() {
+		return textModelName;
 	}
 
-	public String getTextmodelPrefix() {
+	public void setTextModelName(String textmodelName) {
+		this.textModelName = textmodelName;
+	}
+
+	public String getTextModelPrefix() {
 		return textmodelPrefix;
 	}
 
-	public void setTextmodelPrefix(String textmodelPrefix) {
+	public void setTextModelPrefix(String textmodelPrefix) {
 		this.textmodelPrefix = textmodelPrefix;
-	}
-
-	public String getTextModelFolder() {
-		return textModelFolder;
-	}
-
-	public void setTextModelFolder(String textModelFolder) {
-		this.textModelFolder = textModelFolder;
-	}
-
-	public String getDefaultTextModelName() {
-		return defaultTextModelName;
-	}
-
-	public void setDefaultTextModelName(String defaultTextModelName) {
-		this.defaultTextModelName = defaultTextModelName;
-	}
-
-	public String getDefaultTextModelPrefix() {
-		return defaultTextModelPrefix;
-	}
-
-	public void setDefaultTextModelPrefix(String defaultTextModelPrefix) {
-		this.defaultTextModelPrefix = defaultTextModelPrefix;
 	}
 
 	public ResultSet executeSparqlQuery(String query) throws ConfigurationException, ReasonerNotFoundException, IOException, InvalidNameException, QueryParseException, QueryCancelledException {

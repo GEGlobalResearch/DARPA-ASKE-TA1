@@ -159,7 +159,7 @@ public class DialogAnswerProviderConsoleForTest extends BaseDialogAnswerProvider
 	@Override
 	protected IConfigurationManager getConfigMgr() {
 		if (answerConfigurationManager != null) {
-			return answerConfigurationManager.getDomainModelConfigurationManager();
+			return answerConfigurationManager.getConfigurationManager();
 		}
 		return null;
 	}
@@ -320,10 +320,10 @@ public class DialogAnswerProviderConsoleForTest extends BaseDialogAnswerProvider
 															String outputOwlFileName = owlfile.getCanonicalPath();
 															String altUrl = new SadlUtils().fileNameToFileUrl(outputOwlFileName);
 															
-															String publicUri = getAnswerConfigurationManager().getDomainModelConfigurationManager().getPublicUriFromActualUrl(altUrl);
+															String publicUri = getAnswerConfigurationManager().getConfigurationManager().getPublicUriFromActualUrl(altUrl);
 															if (publicUri != null) {
-																getAnswerConfigurationManager().getDomainModelConfigurationManager().deleteModel(publicUri);
-																getAnswerConfigurationManager().getDomainModelConfigurationManager().deleteMapping(altUrl, publicUri);
+																getAnswerConfigurationManager().getConfigurationManager().deleteModel(publicUri);
+																getAnswerConfigurationManager().getConfigurationManager().deleteMapping(altUrl, publicUri);
 															}
 														} catch (ConfigurationException e) {
 															// TODO Auto-generated catch block
@@ -344,9 +344,9 @@ public class DialogAnswerProviderConsoleForTest extends BaseDialogAnswerProvider
 												try {
 													String importActualUrl = new SadlUtils().fileNameToFileUrl(arg0.toString());
 													String altUrl = new SadlUtils().fileNameToFileUrl(importActualUrl);
-													String importPublicUri = getAnswerConfigurationManager().getDomainModelConfigurationManager().getPublicUriFromActualUrl(altUrl);
-													String prefix = getAnswerConfigurationManager().getDomainModelConfigurationManager().getGlobalPrefix(importPublicUri);
-													getAnswerConfigurationManager().getDomainModelConfigurationManager().addMapping(importActualUrl, importPublicUri, prefix, false, "AnswerCurationManager");
+													String importPublicUri = getAnswerConfigurationManager().getConfigurationManager().getPublicUriFromActualUrl(altUrl);
+													String prefix = getAnswerConfigurationManager().getConfigurationManager().getGlobalPrefix(importPublicUri);
+													getAnswerConfigurationManager().getConfigurationManager().addMapping(importActualUrl, importPublicUri, prefix, false, "AnswerCurationManager");
 													String prjname = owlfile.getParentFile().getParentFile().getName();
 													IProject prj = ResourcesPlugin.getPlugin().getWorkspace().getRoot().getProject(prjname);
 													prj.refreshLocal(IResource.DEPTH_INFINITE, null);

@@ -70,7 +70,7 @@ public class AskeIntegrationTests {
 		File codeFile = new File(getExtractionKbRoot() + "/ExtractedModels/Sources/Mach.java");
 		IConfigurationManagerForIDE cm = ConfigurationManagerForIdeFactory.getConfigurationManagerForIDE(getDomainProjectModelFolder(), null);
 		AnswerCurationManager acm = new AnswerCurationManager(getDomainProjectModelFolder(), cm, null, null);
-		acm.getExtractionProcessor().getCodeExtractor().setCodeModelFolder(getExtractionProjectModelFolder());
+		acm.setOwlModelsFolder(getExtractionProjectModelFolder());
 		
 		IDialogAnswerProvider dapcft = new DialogAnswerProviderConsoleForTest();
 		cm.addPrivateKeyValuePair(DialogConstants.DIALOG_ANSWER_PROVIDER, dapcft);
@@ -78,10 +78,10 @@ public class AskeIntegrationTests {
 		boolean includeSerialization = true; //false; //true;	
 		String defaultCodeModelPrefix = includeSerialization ? "MachSz" : "Mach";
 		String defaultCodeModelName = "http://com.ge.research.darpa.aske.ta1.explore/" + defaultCodeModelPrefix;
-		acm.getExtractionProcessor().getCodeExtractor().setDefaultCodeModelPrefix(defaultCodeModelPrefix);
-		acm.getExtractionProcessor().getCodeExtractor().setDefaultCodeModelName(defaultCodeModelName);
+		acm.getExtractionProcessor().getCodeExtractor().setCodeModelPrefix(defaultCodeModelPrefix);
+		acm.getExtractionProcessor().getCodeExtractor().setCodeModelName(defaultCodeModelName);
 		
-		String genFolder = new File(acm.getExtractionProcessor().getCodeExtractor().getCodeModelFolder()).getParent() + 
+		String genFolder = new File(acm.getOwlModelsFolder()).getParent() + 
 				"/" + DialogConstants.EXTRACTED_MODELS_FOLDER_PATH_FRAGMENT;
 		new File(genFolder).mkdirs();
 		acm.getExtractionProcessor().getCodeExtractor().addCodeFile(codeFile);

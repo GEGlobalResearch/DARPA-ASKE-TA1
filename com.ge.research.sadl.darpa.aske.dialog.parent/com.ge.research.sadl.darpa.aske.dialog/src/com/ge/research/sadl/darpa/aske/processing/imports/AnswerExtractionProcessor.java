@@ -37,7 +37,6 @@
 package com.ge.research.sadl.darpa.aske.processing.imports;
 
 import java.io.IOException;
-import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -47,12 +46,7 @@ import org.slf4j.LoggerFactory;
 
 import com.ge.research.sadl.darpa.aske.curation.AnswerCurationManager;
 import com.ge.research.sadl.darpa.aske.preferences.DialogPreferences;
-import com.ge.research.sadl.darpa.aske.processing.DialogConstants;
 import com.ge.research.sadl.reasoner.ResultSet;
-import com.google.gson.JsonElement;
-import com.google.gson.JsonObject;
-import com.google.gson.JsonParser;
-import com.google.gson.JsonPrimitive;
 import com.hp.hpl.jena.ontology.OntModel;
 
 public class AnswerExtractionProcessor {
@@ -61,12 +55,6 @@ public class AnswerExtractionProcessor {
 	private CodeLanguage language;
 	private String serializedCode;
 	private OntModel contextModel;	// the knowledge graph to use during extraction
-	private OntModel textModel;		// the knowledge graph extension to the contextModel extracted from text
-	private String textModelName;
-	private String textModelPrefix;
-	private OntModel codeModel;		// the knowledge graph extension to the context model extracted from code
-	private String codeModelName;
-	private String codeModelPrefix;
 	private IModelFromCodeExtractor codeExtractor;
 	private TextProcessor textProcessor;
 	private Map<String, String> preferences = null;
@@ -100,15 +88,6 @@ public class AnswerExtractionProcessor {
 		return null;
 	}
 
-	public OntModel extractModelFromCode() {
-		OntModel extractedModel = null;
-		if (getTextModel() == null && getDocumentContent() != null) {
-			setTextModel(extractModelFromText());
-		}
-		
-		return extractedModel;
-	}
-
 	public CodeLanguage getLanguage() {
 		return language;
 	}
@@ -134,12 +113,12 @@ public class AnswerExtractionProcessor {
 	}
 
 	public OntModel getTextModel() {
-		return textModel;
+		return getTextProcessor().getCurrentTextModel();
 	}
 
-	public void setTextModel(OntModel textModel) {
-		this.textModel = textModel;
-	}
+//	public void setTextModel(OntModel textModel) {
+//		this.textModel = textModel;
+//	}
 
 	private String getDocumentContent() {
 		return documentContent;
@@ -150,12 +129,12 @@ public class AnswerExtractionProcessor {
 	}
 
 	public OntModel getCodeModel() {
-		return codeModel;
+		return getCodeExtractor().getCurrentCodeModel();
 	}
 
-	public void setCodeModel(OntModel codeModel) {
-		this.codeModel = codeModel;
-	}
+//	public void setCodeModel(OntModel codeModel) {
+//		this.codeModel = codeModel;
+//	}
 
 	public IModelFromCodeExtractor getCodeExtractor(CodeLanguage language) {
 		if (codeExtractor == null) {
@@ -222,28 +201,24 @@ public class AnswerExtractionProcessor {
 	}
 
 	public String getTextModelName() {
-		return textModelName;
-	}
-
-	public void setTextModelName(String textModelName) {
-		getTextProcessor().setTextmodelName(textModelName);
-		this.textModelName = textModelName;
+		return getTextProcessor().getTextModelName();
 	}
 
 	public String getCodeModelName() {
-		return codeModelName;
-	}
-
-	public void setCodeModelName(String codeModelName) {
-		this.codeModelName = codeModelName;
+		return getCodeExtractor().getCodeModelName();
 	}
 
 	public String getCodeModelPrefix() {
-		return codeModelPrefix;
+		return getCodeExtractor().getCodeModelPrefix();
 	}
 
-	public void setCodeModelPrefix(String codeModelPrefix) {
-		this.codeModelPrefix = codeModelPrefix;
+	/**
+	 * method to get the namespace from the model name by adding a "#" to the end
+	 * @param modelName
+	 * @return
+	 */
+	public String getNamespaceFromModelName(String modelName) {
+		return modelName + "#";
 	}
 
 	/**
@@ -261,23 +236,16 @@ public class AnswerExtractionProcessor {
 	}
 
 	public void reset() {
-		setCodeModel(null);
+		getCodeExtractor().setCurrentCodeModel(null);
 		getCodeExtractor().setCodeModelName(null);
-		getCodeExtractor().setDefaultCodeModelName(null);
-		setCodeModelPrefix(null);
-		getCodeExtractor().setDefaultCodeModelPrefix(null);
-		setTextModel(null);
-		setTextModelName(null);
-		setTextModelPrefix(null);
+		getCodeExtractor().setCodeModelPrefix(null);
+		getTextProcessor().setTextModel(null);
+		getTextProcessor().setTextModelName(null);
+		getTextProcessor().setTextModelPrefix(null);
 	}
 
 	public String getTextModelPrefix() {
-		return textModelPrefix;
-	}
-
-	public void setTextModelPrefix(String textModelPrefix) {
-		getTextProcessor().setTextmodelPrefix(textModelPrefix);
-		this.textModelPrefix = textModelPrefix;
+		return getTextProcessor().getTextModelPrefix();
 	}
 
 	/**

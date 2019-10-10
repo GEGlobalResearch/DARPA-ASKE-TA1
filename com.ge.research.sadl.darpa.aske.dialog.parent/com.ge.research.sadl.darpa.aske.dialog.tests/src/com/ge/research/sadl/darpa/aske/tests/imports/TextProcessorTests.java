@@ -36,7 +36,10 @@
 package com.ge.research.sadl.darpa.aske.tests.imports;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
 
 import java.io.BufferedReader;
 import java.io.File;
@@ -57,6 +60,7 @@ import com.ge.research.sadl.darpa.aske.curation.AnswerCurationManager.SaveAsSadl
 import com.ge.research.sadl.darpa.aske.curation.DialogAnswerProviderConsoleForTest;
 import com.ge.research.sadl.darpa.aske.processing.DialogConstants;
 import com.ge.research.sadl.darpa.aske.processing.IDialogAnswerProvider;
+import com.ge.research.sadl.darpa.aske.processing.imports.TextProcessingServiceInterface.EquationVariableContextResponse;
 import com.ge.research.sadl.darpa.aske.processing.imports.TextProcessor;
 import com.ge.research.sadl.reasoner.ConfigurationException;
 import com.ge.research.sadl.reasoner.InvalidNameException;
@@ -92,18 +96,23 @@ public class TextProcessorTests {
 		setDomainProjectModelFolder(domainModelFolder.getCanonicalPath());
 		TextProcessor tp = new TextProcessor(new AnswerCurationManager(domainProjectModelFolder, 
 				ConfigurationManagerForIdeFactory.getConfigurationManagerForIDE(domainProjectModelFolder, null), null, null), null);
-		tp.setTextmodelPrefix("sos");
+		tp.setTextModelPrefix("sos");
 		String localityURI = "http://darpa.aske.ta1.ge/sostest";
-		tp.setTextmodelName(localityURI);
-		int[] result = tp.processText(localityURI, "a^2 = R * T * gamma", localityURI);
+		tp.setTextModelName(localityURI);
+		String msg = tp.clearGraph(localityURI);
+		System.out.println("Clear graph response: " + msg);
+		int[] result = tp.processText(localityURI, "a^2 = R * T * gamma", localityURI, null);
 		assertNotNull(result);
 		assertEquals(0, result[0]);
 		assertEquals(1, result[1]);
 		System.out.println("nc=" + result[0] + ", neq=" + result[1]);
-
-		List<String[]> results = tp.processName("T", localityURI);
-		for (String[] use : results) {
-			System.out.println("Variable '" + use[0] + "' used in equation '" + use[1] + "'");
+		EquationVariableContextResponse results = tp.equationVariableContext("T", localityURI);
+		if (results != null) {
+			System.out.println(results.getMessage());
+			for (String[] use : results.getResults()) {
+				assertTrue(use!= null && use.length == 2);
+				System.out.println("Parameter '" + use[1] + "' used in '" + use[0] + "'");
+			}
 		}
 		
 //		tp.processUnitExtraciton("ft/sec", localityURI);
@@ -118,18 +127,19 @@ public class TextProcessorTests {
 		setDomainProjectModelFolder(domainModelFolder.getCanonicalPath());
 		TextProcessor tp = new TextProcessor(new AnswerCurationManager(domainProjectModelFolder, 
 				ConfigurationManagerForIdeFactory.getConfigurationManagerForIDE(domainProjectModelFolder, null), null, null), null);
-		tp.setTextmodelPrefix("sos");
+		tp.setTextModelPrefix("sos");
 		String localityURI = "http://darpa.aske.ta1.ge/sostest";
-		tp.setTextmodelName(localityURI);
-		int[] result = tp.processText(localityURI, "The speed of sound is a concept known in physics ", localityURI);
+		tp.setTextModelName(localityURI);
+		String msg = tp.clearGraph(localityURI);
+		System.out.println("Clear graph response: " + msg);
+		int[] result = tp.processText(localityURI, "The speed of sound is a concept known in physics ", localityURI, "sos");
 		assertNotNull(result);
-//		assertEquals(0, result[0]);
-//		assertEquals(1, result[1]);
+//		assertEquals(1, result[0]);
+//		assertEquals(0, result[1]);
 		System.out.println("nc=" + result[0] + ", neq=" + result[1]);
-		List<String[]> results = tp.processName("speed", localityURI);
-		for (String[] use : results) {
-			System.out.println("Variable '" + use[0] + "' used in equation '" + use[1] + "'");
-		}
+		EquationVariableContextResponse results = tp.equationVariableContext("speed", localityURI);
+		System.out.println(results.getMessage());
+		assertTrue(results.getResults().isEmpty());
 	}
 
 //	@Ignore
@@ -139,15 +149,20 @@ public class TextProcessorTests {
 		String javaContent = readFile(textFile);
 		TextProcessor tp = new TextProcessor(new AnswerCurationManager(getDomainProjectModelFolder(), 
 				ConfigurationManagerForIdeFactory.getConfigurationManagerForIDE(getDomainProjectModelFolder(), null), null, null), null);
-		tp.setTextmodelPrefix("sos");
-		tp.setTextmodelName("http://darpa.aske.ta1.ge/sostest");
+		tp.setTextModelPrefix("sos");
+		tp.setTextModelName("http://darpa.aske.ta1.ge/sostest");
 		String localityURI = "http://darpa.aske.ta1.ge/sostest";
-		tp.setTextmodelName(localityURI);
-		int[] result = tp.processText(localityURI, javaContent, localityURI);
+		tp.setTextModelName(localityURI);
+		String msg = tp.clearGraph(localityURI);
+		System.out.println("Clear graph response: " + msg);
+		int[] result = tp.processText(localityURI, javaContent, localityURI, "sos");
 		System.out.println("nc=" + result[0] + ", neq=" + result[1]);
-		List<String[]> results = tp.processName("T", localityURI);
-		for (String[] use : results) {
-			System.out.println("Variable '" + use[0] + "' used in equation '" + use[1] + "'");
+		EquationVariableContextResponse results = tp.equationVariableContext("T", localityURI);
+		System.out.println(results.getMessage());
+		assertFalse(results.getMessage().isEmpty());
+		for (String[] use : results.getResults()) {
+			assertTrue(use!= null && use.length == 2);
+			System.out.println("Parameter '" + use[1] + "' used in '" + use[0] + "'");
 		}
 	}
 
@@ -157,17 +172,16 @@ public class TextProcessorTests {
 		File textFile = new File(getTextExtractionPrjFolder() + "/ExtractedModels/Sources/Sound.txt");
 		IConfigurationManagerForIDE cm = ConfigurationManagerForIdeFactory.getConfigurationManagerForIDE(getDomainProjectModelFolder(), null);
 		AnswerCurationManager acm = new AnswerCurationManager(getDomainProjectModelFolder(), cm, null, null);
-		acm.getExtractionProcessor().getTextProcessor().setTextModelFolder(getExtractionProjectModelFolder());
 		
 		IDialogAnswerProvider dapcft = new DialogAnswerProviderConsoleForTest();
 		cm.addPrivateKeyValuePair(DialogConstants.DIALOG_ANSWER_PROVIDER, dapcft);
 		
 		String defaultTextModelPrefix = "Sound";
 		String defaultTextModelName = "http://com.ge.research.darpa.aske.ta1.explore/" + defaultTextModelPrefix;
-		acm.getExtractionProcessor().getTextProcessor().setDefaultTextModelPrefix(defaultTextModelPrefix);
-		acm.getExtractionProcessor().getTextProcessor().setDefaultTextModelName(defaultTextModelName);
+		acm.getExtractionProcessor().getTextProcessor().setTextModelPrefix(defaultTextModelPrefix);
+		acm.getExtractionProcessor().getTextProcessor().setTextModelName(defaultTextModelName);
 		
-		String genFolder = new File(acm.getExtractionProcessor().getTextProcessor().getTextModelFolder()).getParent() + 
+		String genFolder = new File(acm.getOwlModelsFolder()).getParent() + 
 		"/" + DialogConstants.EXTRACTED_MODELS_FOLDER_PATH_FRAGMENT;
 		new File(genFolder).mkdirs();
 
@@ -181,6 +195,8 @@ public class TextProcessorTests {
 		if (sf.exists()) {
 			sf.delete();
 		}
+		String msg = acm.getExtractionProcessor().getTextProcessor().clearGraph(acm.getExtractionProcessor().getTextProcessor().getTextModelName());
+		System.out.println("Clear graph response: " + msg);
 		acm.processImports(sas); 
 
 		if (!sas.equals(SaveAsSadl.DoNotSaveAsSadl)) {
@@ -190,7 +206,7 @@ public class TextProcessorTests {
 			}
 		}
 
-		String query = "select ?eq ?lg ?sc where {?eq <rdf:type> <ExternalEquation> . ?eq <expression> ?scrbn . \r\n" + 
+		String query = "select distinct ?eq ?lg ?sc where {?eq <rdf:type> <ExternalEquation> . ?eq <expression> ?scrbn . \r\n" + 
 				"		?scrbn <language> ?lg . ?scrbn <script> ?sc }";
 		String somePythonScript = null;
 		try {
@@ -238,13 +254,12 @@ public class TextProcessorTests {
 					System.out.println(rs.toStringWithIndent(5));
 					for (int c = 0; c < rs.getColumnCount(); c++) {
 						String param = rs.getResultAt(0, c).toString();
-						List<String[]> pnResults = acm.getExtractionProcessor().getTextProcessor().processName(param, acm.getExtractionProcessor().getTextModelName());
+						EquationVariableContextResponse pnResults = acm.getExtractionProcessor().getTextProcessor().equationVariableContext(param, acm.getExtractionProcessor().getTextModelName());
 						if (pnResults != null) {
-							System.out.println("For parameter " + param + ":");
-							for (String[] pnr : pnResults) {
-								for (int i = 0; i < pnr.length; i++) {
-									System.out.println(pnr[i]);
-								}
+							System.out.println(pnResults.getMessage());
+							for (String[] use : pnResults.getResults()) {
+								assertTrue(use!= null && use.length == 2);
+								System.out.println("Parameter '" + use[1] + "' used in '" + use[0] + "'");
 							}
 						}
 					}	
