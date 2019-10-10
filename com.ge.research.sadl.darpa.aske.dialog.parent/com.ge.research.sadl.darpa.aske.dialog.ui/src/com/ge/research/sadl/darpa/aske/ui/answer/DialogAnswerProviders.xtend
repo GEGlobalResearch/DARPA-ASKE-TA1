@@ -49,12 +49,10 @@ class DialogAnswerProviders implements IPartListener2, IDialogAnswerProviders {
 	def void register(IXtextDocument document) {
 		val uri = document.uri
 		if (!providers.containsKey(uri)) {
-			println('''Registering new answer provider for editor: «uri»''')
 			val provider = factory.get
 			try {
 				provider.configure(document)
 			} catch (Exception e) {
-				println('''ERROR: failed to configure answer provider «uri»''')
 				e.printStackTrace
 			}
 			providers.put(uri, provider)
@@ -68,7 +66,6 @@ class DialogAnswerProviders implements IPartListener2, IDialogAnswerProviders {
 		if (provider === null) {
 			println('''WARN: answer provider was not registered for «uri»''')
 		} else {
-			println('''Unregistering and disposing answer provider for editor: «uri»''')
 			provider.dispose
 		}
 	}
@@ -83,11 +80,7 @@ class DialogAnswerProviders implements IPartListener2, IDialogAnswerProviders {
 	override partOpened(IWorkbenchPartReference partRef) {
 		val document = partRef.dialogDocument
 		if (document !== null) {
-			val xtduri = getUri(document)
 			document.register
-			val provider = getProvider(xtduri)
-			val rsrc = provider.resource
-			val i = 0
 		}
 	}
 

@@ -45,6 +45,7 @@ import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.net.ConnectException;
 import java.net.URISyntaxException;
+import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
@@ -523,6 +524,20 @@ public class AnswerCurationManager {
 								String pythoncode = null;
 								try {
 									pythoncode = ep.translateMethodJavaToPython(className, javaCode);
+								} catch (IOException e) {
+									Throwable cause = e.getCause();
+									if (cause instanceof ConnectException || cause instanceof UnknownHostException) {
+										StringBuilder sb = new StringBuilder(e.getMessage());
+										sb.append(" to translate Java to Python. ");
+										sb.append(cause.getMessage());
+										sb.append(".");
+										System.err.println(sb.toString());
+									}
+									else {
+										e.printStackTrace();
+									}
+								}
+								try {
 									List<String> sadlDeclaration = convertExtractedMethodToExternalEquationInSadlSyntax(methodName, javaCode, pythoncode);
 									for (String sd : sadlDeclaration) {
 	//									logger.debug(sadlDeclaration);
@@ -531,17 +546,6 @@ public class AnswerCurationManager {
 										SadlStatementContent ssc = new SadlStatementContent(null, Agent.CM, sd);
 										notifyUser(codeModelFolder, ssc, false);
 										getExtractionProcessor().addNewSadlContent(sd);
-									}
-								} catch (IOException e) {
-									if (e.getCause() instanceof ConnectException) {
-										StringBuilder sb = new StringBuilder(e.getMessage());
-										sb.append(" to translate Java to Python. ");
-										sb.append(e.getCause().getMessage());
-										sb.append(".");
-										System.err.println(sb.toString());
-									}
-									else {
-										e.printStackTrace();
 									}
 								} catch (CodeExtractionException e) {
 									// TODO Auto-generated catch block
@@ -999,8 +1003,10 @@ public class AnswerCurationManager {
 		StringBuilder sb2 = new StringBuilder(methodName);
 		sb2.append(" has expression (a Script with language Java, with script \n\"");
 		sb2.append(escapeDoubleQuotes(javaCode));
-		sb2.append("\"\n), has expression (a Script with language Python, with script \n\"");
-		sb2.append(escapeDoubleQuotes(pythonCode));
+		if (pythonCode != null) {
+			sb2.append("\"\n), has expression (a Script with language Python, with script \n\"");
+			sb2.append(escapeDoubleQuotes(pythonCode));
+		}
 		sb2.append("\").\n");
 		returnSadlStatements.add(sb2.toString());
 		return returnSadlStatements;
