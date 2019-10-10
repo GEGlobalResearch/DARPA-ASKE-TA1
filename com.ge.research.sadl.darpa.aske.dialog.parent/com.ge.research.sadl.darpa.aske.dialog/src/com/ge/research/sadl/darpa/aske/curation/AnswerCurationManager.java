@@ -1337,7 +1337,7 @@ public class AnswerCurationManager {
 		}
 	}
 	
-	private void notifyUser(String codeModelFolder, StatementContent sc, boolean quote) {
+	public void notifyUser(String codeModelFolder, StatementContent sc, boolean quote) {
 		if (getDialogAnswerProvider() != null) {
 			// talk to the user via the Dialog editor
 			Method acmic = null;

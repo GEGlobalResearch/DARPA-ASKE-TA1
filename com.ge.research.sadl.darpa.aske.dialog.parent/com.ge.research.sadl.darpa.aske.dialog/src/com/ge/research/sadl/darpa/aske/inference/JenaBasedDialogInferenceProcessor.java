@@ -66,7 +66,11 @@ import org.eclipse.emf.ecore.resource.Resource;
 import com.ge.research.sadl.builder.ConfigurationManagerForIDE;
 import com.ge.research.sadl.builder.ConfigurationManagerForIdeFactory;
 import com.ge.research.sadl.builder.IConfigurationManagerForIDE;
+import com.ge.research.sadl.darpa.aske.curation.AnswerCurationManager;
+import com.ge.research.sadl.darpa.aske.curation.AnswerCurationManager.Agent;
 import com.ge.research.sadl.darpa.aske.preferences.DialogPreferences;
+import com.ge.research.sadl.darpa.aske.processing.DialogConstants;
+import com.ge.research.sadl.darpa.aske.processing.SadlStatementContent;
 import com.ge.research.sadl.jena.JenaBasedSadlInferenceProcessor;
 import com.ge.research.sadl.jena.UtilsForJena;
 import com.ge.research.sadl.model.gp.Literal;
@@ -635,6 +639,48 @@ public class JenaBasedDialogInferenceProcessor extends JenaBasedSadlInferencePro
 
 		if (useDbn) {
 			
+//			//Create a model for this query [don't need it?]
+//			OntModel queryModel;
+//			String queryKey = null;
+//			String queryGraphNamePrefix = "http://aske.ge.com/";
+//			String queryOwlFileName = null;
+//			String queryOwlFilePath = getModelFolderPath(resource) + File.separator;  //+ qhOwlFileName;
+	//	
+//			queryKey = cgq.getLocalName();
+//			queryModel = ModelFactory.createOntologyModel(OntModelSpec.OWL_MEM);
+//			OntModelProvider.addPrivateKeyValuePair(resource, queryKey, queryModel);
+			String kgsDirectory = getModelFolderPath(resource) + File.separator  + "Queries";
+			new File(kgsDirectory).mkdir();
+			
+			String queryModelFileName = "Q_" + System.currentTimeMillis();
+			//String queryModelName = METAMODEL_PREFIX + "Model_" + queryModelFileName;
+			String queryInstanceName = METAMODEL_PREFIX + queryModelFileName;
+			String queryOwlFileWithPath = kgsDirectory + File.separator + queryModelFileName + ".owl";
+
+			//ConfigurationManagerForIDE cmgr = null;
+			//Object qhModelObj = OntModelProvider.getPrivateKeyValuePair(resource, queryHistoryKey);
+			
+			File f = new File(queryOwlFileWithPath);
+			if (f.exists() && !f.isDirectory()) {
+				throw new SadlInferenceException("Query model file already exists");
+			}
+			else {
+				queryModel = ModelFactory.createOntologyModel(OntModelSpec.OWL_MEM);
+			}
+			
+			OntModelProvider.addPrivateKeyValuePair(resource, queryModelFileName, queryModel);
+		
+
+			ConfigurationManagerForIDE cmgr = null;
+			try {
+				//String p = getModelFolderPath(resource);
+				cmgr = ConfigurationManagerForIdeFactory.getConfigurationManagerForIDE(getModelFolderPath(resource), ConfigurationManagerForIDE.getOWLFormat());
+			} catch (ConfigurationException e1) {
+				//  Auto-generated catch block
+				e1.printStackTrace();
+			}
+			
+			
 			// Triples representing a quantity
 			// v0 altitude v1, v1 value 35000, v1 units "ft", v1 type Altitude
 			TripleElement[] quantity; // = new TripleElement[4];
@@ -670,39 +716,8 @@ public class JenaBasedDialogInferenceProcessor extends JenaBasedSadlInferencePro
 			}
 			
 		
-//			//Create a model for this query [don't need it?]
-//			OntModel queryModel;
-//			String queryKey = null;
-//			String queryGraphNamePrefix = "http://aske.ge.com/";
-//			String queryOwlFileName = null;
-//			String queryOwlFilePath = getModelFolderPath(resource) + File.separator;  //+ qhOwlFileName;
-	//	
-//			queryKey = cgq.getLocalName();
-//			queryModel = ModelFactory.createOntologyModel(OntModelSpec.OWL_MEM);
-//			OntModelProvider.addPrivateKeyValuePair(resource, queryKey, queryModel);
-			String kgsDirectory = getModelFolderPath(resource) + File.separator  + "Queries";
-			new File(kgsDirectory).mkdir();
-			
-			String queryModelFileName = "Q_" + System.currentTimeMillis();
-			//String queryModelName = METAMODEL_PREFIX + "Model_" + queryModelFileName;
-			String queryInstanceName = METAMODEL_PREFIX + queryModelFileName;
-			String queryOwlFileWithPath = kgsDirectory + File.separator + queryModelFileName + ".owl";
 
-			//ConfigurationManagerForIDE cmgr = null;
-			//Object qhModelObj = OntModelProvider.getPrivateKeyValuePair(resource, queryHistoryKey);
-			
-			File f = new File(queryOwlFileWithPath);
-			if (f.exists() && !f.isDirectory()) {
-				throw new SadlInferenceException("Query model file already exists");
-			}
-			else {
-				queryModel = ModelFactory.createOntologyModel(OntModelSpec.OWL_MEM);
-			}
-			
-			OntModelProvider.addPrivateKeyValuePair(resource, queryModelFileName, queryModel);
-		
 
-		
 		
 
 
@@ -1074,7 +1089,27 @@ public class JenaBasedDialogInferenceProcessor extends JenaBasedSadlInferencePro
 							
 							dbnresults[i+numOfModels] = retrieveValues(resource, cgIns);
 	
-			            
+							// convert to SADL to insert into dialog window
+							ResultSet rs = dbnresults[i+numOfModels];
+							List<String> sadlDeclaration = new ArrayList<String>();
+							for (int row = 0; row < rs.getRowCount(); row++) {
+								StringBuilder sb = new StringBuilder("a CGExecution ");
+								sb.append(rs.getResultAt(row, 0).toString());
+								sb.append(" output (a ");
+								sb.append(rs.getResultAt(row, 1).toString());
+								sb.append(" with ^value ");
+								sb.append(rs.getResultAt(row, 2));
+								sb.append(", with stddev ");
+								sb.append(rs.getResultAt(row, 3));
+								sb.append(").");
+								sadlDeclaration.add(sb.toString());
+							}
+							
+							for (String sd : sadlDeclaration) {
+								SadlStatementContent ssc = new SadlStatementContent(null, Agent.CM, sd);
+								AnswerCurationManager acm = (AnswerCurationManager) cmgr.getPrivateKeyValuePair(DialogConstants.ANSWER_CURATION_MANAGER);
+								acm.notifyUser(getModelFolderPath(resource), ssc, false);
+							}
 			            }
 			            else {
 			            	dbnresults = null;
