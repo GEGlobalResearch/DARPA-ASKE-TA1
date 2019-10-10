@@ -30,6 +30,32 @@ public class TextProcessingServiceInterface extends JsonServiceInterface {
 	private static final Logger logger = Logger.getLogger (TextProcessingServiceInterface.class) ;
     
 	private String textServiceURL = null;
+	
+	public class EquationVariableContextResponse {
+		private String message;
+		private List<String[]> results;
+		
+		public EquationVariableContextResponse(String msg, List<String[]> results) {
+			setMessage(msg);
+			setResults(results);
+		}
+		
+		public String getMessage() {
+			return message;
+		}
+		
+		private void setMessage(String message) {
+			this.message = message;
+		}
+		
+		public List<String[]> getResults() {
+			return results;
+		}
+		
+		private void setResults(List<String[]> results) {
+			this.results = results;
+		}
+	}
 
 	public TextProcessingServiceInterface(String serviceBaseUri) {
 		setTextServiceURL(serviceBaseUri);
@@ -40,7 +66,8 @@ public class TextProcessingServiceInterface extends JsonServiceInterface {
 	}
 
 	private void setTextServiceURL(String baseUrl) {
-		String host = "vesuvius063";	// default
+//		String host = "vesuvius-dev.crd.ge.com";	// default
+		String host = "vesuvius063.crd.ge.com";	// default
 		int port = 4200;			// default
 		if (baseUrl != null) {
 			textServiceURL = baseUrl + DARPA_ASKE_TEXT_SERVICE_URL_FRAGMENT;
@@ -158,7 +185,7 @@ public class TextProcessingServiceInterface extends JsonServiceInterface {
 	 * @throws InvalidInputException 
 	 * @throws IOException 
 	 */
-	public List<String[]> equationVariableContext(String name, String locality) throws InvalidInputException, IOException {
+	public EquationVariableContextResponse equationVariableContext(String name, String locality) throws InvalidInputException, IOException {
 		if (name == null) {
 			throw new InvalidInputException("Name cannot be null");
 		}
@@ -178,37 +205,30 @@ public class TextProcessingServiceInterface extends JsonServiceInterface {
 			logger.debug(je.toString());
 			JsonElement msg = je.getAsJsonObject().get("message");
 			JsonElement rslts = je.getAsJsonObject().get("results");
-			JsonElement vn = null;
-			JsonElement eqstr = null;
 			List<String[]> results = new ArrayList<String[]>();
 			if (rslts.isJsonArray()) {
 				for (JsonElement rslt : rslts.getAsJsonArray()) {
-					eqstr = rslt.getAsJsonObject().get("equationString");
-					vn = rslt.getAsJsonObject().get("variableName");
+					JsonElement eqStr = rslt.getAsJsonObject().get("equationString");
+					JsonElement vn = rslt.getAsJsonObject().get("variableName");
 					String[] use = new String[2];
 					if (vn != null) {
-						use[0] = vn.getAsString();
-						if (eqstr != null) {
-							use[1] = eqstr.getAsString();
-						}
+						use[0] = eqStr != null ? eqStr.getAsString() : null;
+						use[1] = vn != null ? vn.getAsString() : null;
 					}
 					results.add(use);
 				}
 			}
-			if (results.isEmpty()) {
-				// failed to get any results--get the message
-				if (msg instanceof JsonPrimitive) {
-					String[] failureMsg = new String[1];
-					if (msg.getAsJsonPrimitive().isString()) {
-						failureMsg[0] = msg.getAsJsonPrimitive().getAsString();
-					}
-					else {
-						failureMsg[0] = msg.toString();
-					}
-					results.add(failureMsg);
+			String msgStr = null;
+			if (msg instanceof JsonPrimitive) {
+				if (msg.getAsJsonPrimitive().isString()) {
+					msgStr = msg.getAsJsonPrimitive().getAsString();
+				}
+				else {
+					msgStr = msg.toString();
 				}
 			}
-			return results;
+			EquationVariableContextResponse evcr = new EquationVariableContextResponse(msgStr, results);
+			return evcr;
 		}
 		return null;
 	}

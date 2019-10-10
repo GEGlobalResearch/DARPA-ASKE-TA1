@@ -65,7 +65,7 @@ public abstract class BaseDialogAnswerProvider implements IDialogAnswerProvider 
 
 	protected IConfigurationManager getConfigMgr() {
 		if (answerConfigurationManager != null) {
-			return answerConfigurationManager.getDomainModelConfigurationManager();
+			return answerConfigurationManager.getConfigurationManager();
 		}
 		return null;
 	}

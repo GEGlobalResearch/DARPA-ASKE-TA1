@@ -143,12 +143,12 @@ public class AnswerCurationManager {
 	
 	protected static final Logger logger = LoggerFactory.getLogger(AnswerCurationManager.class);
 	private XtextResource resource = null;
-	private String domainModelowlModelsFolder;
+	private String owlModelsFolder;
 	
 	private Map<String, String> questionsAndAnswers = new HashMap<String, String>();	// question text is the key, answer text is the value
 	private Map<String, QuestionWithCallbackContent> unansweredQuestions = new HashMap<String, QuestionWithCallbackContent>();
 	
-	private IConfigurationManagerForIDE domainModelConfigurationManager;
+	private IConfigurationManagerForIDE configurationManager;
 	private Map<String, String> preferences = null;
 	private AnswerExtractionProcessor extractionProcessor = null;
 
@@ -166,27 +166,27 @@ public class AnswerCurationManager {
 	private OwlToSadl owl2sadl = null;
 
 	public AnswerCurationManager (String modelFolder, IConfigurationManagerForIDE configMgr, XtextResource resource, Map<String,String> prefs) {
-		setDomainModelOwlModelsFolder(modelFolder);
-		setDomainModelConfigurationManager(configMgr);
+		setOwlModelsFolder(modelFolder);
+		setConfigurationManager(configMgr);
 		setPreferences(prefs);
 		setResource(resource);
 		loadQuestionsAndAnswersFromFile();
 	}
 
-	public String getDomainModelOwlModelsFolder() {
-		return domainModelowlModelsFolder;
+	public String getOwlModelsFolder() {
+		return owlModelsFolder;
 	}
 
-	private void setDomainModelOwlModelsFolder(String owlModelsFolder) {
-		this.domainModelowlModelsFolder = owlModelsFolder;
+	public void setOwlModelsFolder(String owlModelsFolder) {
+		this.owlModelsFolder = owlModelsFolder;
 	}
 
-	public IConfigurationManagerForIDE getDomainModelConfigurationManager() {
-		return domainModelConfigurationManager;
+	public IConfigurationManagerForIDE getConfigurationManager() {
+		return configurationManager;
 	}
 
-	private void setDomainModelConfigurationManager(IConfigurationManagerForIDE projectConfigurationManager) {
-		this.domainModelConfigurationManager = projectConfigurationManager;
+	private void setConfigurationManager(IConfigurationManagerForIDE projectConfigurationManager) {
+		this.configurationManager = projectConfigurationManager;
 	}
 
 	private Map<String, String> getPreferences() {
@@ -235,32 +235,23 @@ public class AnswerCurationManager {
 	 * @throws ConfigurationException 
 	 */
 	public void processImports(SaveAsSadl saveAsSadl) throws IOException, ConfigurationException {
-		Map<File, Boolean> outputOwlFiles = new HashMap<File, Boolean>();	// Map of imports, value is true if code, false if text extraction
+		Map<File, Boolean> outputOwlFilesBySourceType = new HashMap<File, Boolean>();	// Map of imports, value is true if code, false if text extraction
 //		List<File> outputOwlFiles = new ArrayList<File>();
 		List<File> textFiles = getExtractionProcessor().getTextProcessor().getTextFiles();
 		if (textFiles != null) {
 			for (File f : textFiles) {
 				getExtractionProcessor().reset();
-				String outputFilename = f.getName();
-				String outputOwlFileName =  getImportOutputFilename(outputFilename);
-				if (getExtractionProcessor().getTextProcessor().getTextmodelPrefix() == null) {
-					String defPrefix;
-					if (outputFilename.endsWith(".owl")) {
-						defPrefix = outputFilename.substring(0, outputFilename.length() - 4);
-					}
-					else {
-						defPrefix = outputFilename.replaceAll("\\.", "_");
-					}
-					getExtractionProcessor().getTextProcessor().setTextmodelPrefix(defPrefix);
-					getExtractionProcessor().setTextModelPrefix(defPrefix);
-				}
+				String outputOwlFileName =  getOutputFilenameFromIputFile(f);
+				String outputModelName = getModelNameFromInputFile(f);
+				String prefix = getModelPrefixFromInputFile(f);
+
 				String content = readFileToString(f);
 				String fileIdentifier = ConfigurationManagerForIdeFactory.formatPathRemoveBackslashes(f.getCanonicalPath());
-				int[] results = getTextProcessor().processText(fileIdentifier, content, getExtractionProcessor().getTextModelName());
+				int[] results = getTextProcessor().processText(fileIdentifier, content, outputModelName, prefix);
 				int numConcepts = results[0];
 				int numEquations = results[1];
-				String msg = numConcepts + " concepts and " + numEquations + " equations extracted from file '" + outputFilename + "'";
-				notifyUser(getTextProcessor().getTextModelFolder(), msg, true);
+				String msg = numConcepts + " concepts and " + numEquations + " equations extracted from file '" + f.getCanonicalPath() + "'";
+				notifyUser(getOwlModelsFolder(), msg, true);
 				if (numEquations > 0) {
 					String[] saveGraphResults = getTextProcessor().retrieveGraph(getExtractionProcessor().getTextModelName());
 					if (saveGraphResults != null) {
@@ -285,7 +276,7 @@ public class AnswerCurationManager {
 					}
 				}
 				File of = saveTextOwlFile(outputOwlFileName);
-				outputOwlFiles.put(of, false);
+				outputOwlFilesBySourceType.put(of, false);
 				outputOwlFileName = of.getCanonicalPath();
 				// run inference on the model, interact with user to refine results
 				runInferenceDisplayInterestingTextModelResults(outputOwlFileName, saveAsSadl);
@@ -297,31 +288,15 @@ public class AnswerCurationManager {
 			for (File f : codeFiles) {
 				// reset code extractor and text processor from any previous file
 				getExtractionProcessor().reset();
-				String outputFilename = f.getName();
-				String outputOwlFileName =  getImportOutputFilename(outputFilename);
-				if (outputFilename.endsWith(".sadl")) {
-					outputFilename = outputFilename.substring(0, outputFilename.length() - 5) + ".owl";
-				}
-				String defPrefix;
-				if (outputFilename.endsWith(".owl")) {
-					defPrefix = outputFilename.substring(0, outputFilename.length() - 4);
-				}
-				else {
-					defPrefix = outputFilename.replaceAll("\\.", "_");
-				}
-				String defName = "http://com.ge.research.sadl.darpa.aske.answer/" + defPrefix;
-				if (getExtractionProcessor().getCodeExtractor().getDefaultCodeModelName() == null) {
-					getExtractionProcessor().getCodeExtractor().setDefaultCodeModelName(defName);
-				}
-				if (getExtractionProcessor().getCodeExtractor().getDefaultCodeModelPrefix() == null) {
-					getExtractionProcessor().getCodeExtractor().setDefaultCodeModelPrefix(defPrefix);
-				}
-
+				String outputOwlFileName =  getOutputFilenameFromIputFile(f);
+				String outputModelName = getModelNameFromInputFile(f);
+				String prefix = getModelPrefixFromInputFile(f);
+				
 				String content = readFileToString(f);
 				String fileIdentifier = ConfigurationManagerForIdeFactory.formatPathRemoveBackslashes(f.getCanonicalPath());
-				getCodeExtractor().process(fileIdentifier, content);				
+				getCodeExtractor().process(fileIdentifier, content, outputModelName, prefix);				
 				File of = saveCodeOwlFile(outputOwlFileName);
-				outputOwlFiles.put(of, true);
+				outputOwlFilesBySourceType.put(of, true);
 				outputOwlFileName = of.getCanonicalPath();
 				// run inference on the model, interact with user to refine results
 				runInferenceDisplayInterestingCodeModelResults(outputOwlFileName, saveAsSadl, content);
@@ -335,11 +310,11 @@ public class AnswerCurationManager {
 //					dap = new DialogAnswerProviderConsoleForTest();
 //				}
 				List<Object> args = new ArrayList<Object>();
-				args.add(outputOwlFiles);
+				args.add(outputOwlFilesBySourceType);
 				// the strings must be unique to the question or they will get used as answers to subsequent questions with the same string
-				if (outputOwlFiles.size() > 0) {
+				if (outputOwlFilesBySourceType.size() > 0) {
 					StringBuilder sb = new StringBuilder();
-					Iterator<File> ofitr = outputOwlFiles.keySet().iterator();
+					Iterator<File> ofitr = outputOwlFilesBySourceType.keySet().iterator();
 					int cntr = 0;
 					while (ofitr.hasNext()) {
 						File of = ofitr.next();
@@ -357,32 +332,54 @@ public class AnswerCurationManager {
 				}
 			}
 			if (saveAsSadl != null && saveAsSadl.equals(SaveAsSadl.SaveAsSadl)) {
-				saveAsSadlFile(outputOwlFiles, "yes");
+				saveAsSadlFile(outputOwlFilesBySourceType, "yes");
 			}
 		}
 	}
 
-	public void setTextModelNameToDefault() {
-		String defName = "http://com.ge.research.sadl.darpa.aske.answer/" + getExtractionProcessor().getTextProcessor().getDefaultTextModelPrefix();
-		getExtractionProcessor().getTextProcessor().setTextmodelName(defName);
-		getExtractionProcessor().setTextModelName(defName);
-	}
-	
 	/**
-	 * Method to determine the output OWL filename created by an import, derived from the input import filename
+	 * Method to generate a unique model name for an import from the input File to the import
 	 * @param outputFilename
 	 * @return
 	 */
-	public static String getImportOutputFilename(String outputFilename) {
-		String outputOwlFileName = outputFilename + ".owl";
-		if (outputFilename.endsWith(".sadl")) {
-			outputFilename = outputFilename.substring(0, outputFilename.length() - 5) + ".owl";
-		}
+	public String getModelNameFromInputFile(File inputFile) {
+		String name = "http://com.ge.research.sadl.darpa.aske.answer/" + getModelPrefixFromInputFile(inputFile);
+		return name;
+	}
+	
+	/**
+	 * Method to generate the output OWL filename for an import from the input File to the import
+	 * @param outputFilename
+	 * @return
+	 */
+	public static String getOutputFilenameFromIputFile(File inputFile) {
+		String inputFilename = inputFile.getName();
+		String outputOwlFileName = inputFilename + ".owl";
+//		if (inputFilename.endsWith(".sadl")) {
+//			inputFilename = inputFilename.substring(0, inputFilename.length() - 5) + ".owl";
+//		}
 		return outputOwlFileName;
+	}
+	
+	/**
+	 * Method to generate a unique model prefix from the input File to the import
+	 * @param inputFile
+	 * @return
+	 */
+	public String getModelPrefixFromInputFile(File inputFile) {
+		String prefix;
+		String inputFilename = inputFile.getName();
+		if (inputFilename.endsWith(".owl")) {
+			prefix = inputFilename.substring(0, inputFilename.length() - 4);
+		}
+		else {
+			prefix = inputFilename.replaceAll("\\.", "_");
+		}
+		return prefix;
 	}
 
 	private File saveTextOwlFile(String outputFilename) throws ConfigurationException, IOException {
-		File of = new File(new File(getExtractionProcessor().getTextProcessor().getTextModelFolder()).getParent() + 
+		File of = new File(new File(getOwlModelsFolder()).getParent() + 
 				"/" + DialogConstants.EXTRACTED_MODELS_FOLDER_PATH_FRAGMENT + "/" + outputFilename);
 		of.getParentFile().mkdirs();
 		getExtractionProcessor().getTextProcessor().getTextModelConfigMgr().saveOwlFile(getExtractionProcessor().getTextModel(), getExtractionProcessor().getTextModelName(), of.getCanonicalPath());
@@ -402,7 +399,7 @@ public class AnswerCurationManager {
 	}
 
 	private File saveCodeOwlFile(String outputFilename) throws ConfigurationException, IOException {
-		File of = new File(new File(getExtractionProcessor().getCodeExtractor().getCodeModelFolder()).getParent() + 
+		File of = new File(new File(getOwlModelsFolder()).getParent() + 
 				"/" + DialogConstants.EXTRACTED_MODELS_FOLDER_PATH_FRAGMENT + "/" + outputFilename);
 		of.getParentFile().mkdirs();
 		getExtractionProcessor().getCodeExtractor().getCodeModelConfigMgr().saveOwlFile(getExtractionProcessor().getCodeModel(), getExtractionProcessor().getCodeModelName(), of.getCanonicalPath());
@@ -426,7 +423,7 @@ public class AnswerCurationManager {
 		IConfigurationManagerForIDE textModelConfigMgr = getExtractionProcessor().getTextProcessor().getTextModelConfigMgr();
 		textModelConfigMgr.clearReasoner();
 		IReasoner reasoner = textModelConfigMgr.getReasoner();
-		String textModelFolder = getExtractionProcessor().getCodeExtractor().getCodeModelFolder();		// same as code model folder, at least for now
+		String textModelFolder = getOwlModelsFolder();		// same as code model folder, at least for now
 		if (reasoner == null) {
 			// use domain model folder because that's the project we're working in
 			notifyUser(textModelFolder, "Unable to instantiate reasoner to analyze extracted code model.", true);
@@ -470,7 +467,7 @@ public class AnswerCurationManager {
 			throws ConfigurationException, IOException {
 		// clear reasoner from any previous model
 		clearCodeModelReasoner();
-		String codeModelFolder = getExtractionProcessor().getCodeExtractor().getCodeModelFolder();
+		String codeModelFolder = getOwlModelsFolder();
 		try {
 			if (getInitializedCodeModelReasoner() == null) {
 				// use domain model folder because that's the project we're working in
@@ -605,10 +602,10 @@ public class AnswerCurationManager {
 		URI resourceURI = resource.getURI();
 		IReasoner reasoner = null;
 		if (ResourceManager.isSyntheticUri(null, resourceURI)) {
-			reasoner = getInitializedReasonerForConfiguration(getDomainModelConfigurationManager(), ontModel, modelName);
+			reasoner = getInitializedReasonerForConfiguration(getConfigurationManager(), ontModel, modelName);
 		}
 		else {
-			reasoner = getInitializedReasonerForConfiguration(domainModelConfigurationManager, modelName);
+			reasoner = getInitializedReasonerForConfiguration(configurationManager, modelName);
 		}
 		String equationToBuildUri = sc.getSourceEquationUri();
 		Individual extractedModelInstance = ontModel.getIndividual(equationToBuildUri);
@@ -683,10 +680,10 @@ public class AnswerCurationManager {
 		URI resourceURI = resource.getURI();
 		IReasoner reasoner = null;
 		if (ResourceManager.isSyntheticUri(null, resourceURI)) {
-			reasoner = getInitializedReasonerForConfiguration(getDomainModelConfigurationManager(), ontModel, modelName);
+			reasoner = getInitializedReasonerForConfiguration(getConfigurationManager(), ontModel, modelName);
 		}
 		else {
-			reasoner = getInitializedReasonerForConfiguration(domainModelConfigurationManager, modelName);
+			reasoner = getInitializedReasonerForConfiguration(configurationManager, modelName);
 		}
 		Node equationToEvaluate = sc.getEquationName();
 		List<Node> params = sc.getParameters();
@@ -714,7 +711,7 @@ public class AnswerCurationManager {
 				logger.debug(rs2 != null ? rs2.toString() : "no return type results");
 				
 				returnValue = evaluateInComputationalGraph(modelInstance, rs, rs2, params);
-				answerUser(getDomainModelOwlModelsFolder(), returnValue, true, sc.getHostEObject());
+				answerUser(getOwlModelsFolder(), returnValue, true, sc.getHostEObject());
 			}
 		}
 		return returnValue;
@@ -1090,7 +1087,7 @@ public class AnswerCurationManager {
 				}
 				else {
 					try {
-						notifyUser(getDomainModelConfigurationManager().getModelFolder(), "Failed to save " + outputOwlFile.getName() + " as SADL file.", true);
+						notifyUser(getConfigurationManager().getModelFolder(), "Failed to save " + outputOwlFile.getName() + " as SADL file.", true);
 					} catch (ConfigurationException e) {
 						// TODO Auto-generated catch block
 						e.printStackTrace();
@@ -1277,19 +1274,19 @@ public class AnswerCurationManager {
 	 */
 	public boolean dialogAnserProviderInitialized() {
 		if (dialogAnswerProvider == null) {
-			setDialogAnswerProvider((IDialogAnswerProvider) getDomainModelConfigurationManager().getPrivateKeyValuePair(DialogConstants.DIALOG_ANSWER_PROVIDER));
+			setDialogAnswerProvider((IDialogAnswerProvider) getConfigurationManager().getPrivateKeyValuePair(DialogConstants.DIALOG_ANSWER_PROVIDER));
 		}
 		return (dialogAnswerProvider != null);
 	}
 
 	protected IDialogAnswerProvider getDialogAnswerProvider() {
 		if (dialogAnswerProvider == null) {
-			setDialogAnswerProvider((IDialogAnswerProvider) getDomainModelConfigurationManager().getPrivateKeyValuePair(DialogConstants.DIALOG_ANSWER_PROVIDER));
+			setDialogAnswerProvider((IDialogAnswerProvider) getConfigurationManager().getPrivateKeyValuePair(DialogConstants.DIALOG_ANSWER_PROVIDER));
 			if (dialogAnswerProvider == null) {
 				setDialogAnswerProvider(new DialogAnswerProviderConsoleForTest());
 			}
 		} else if (dialogAnswerProvider instanceof DialogAnswerProviderConsoleForTest) {
-			IDialogAnswerProvider provider = (IDialogAnswerProvider) getDomainModelConfigurationManager().getPrivateKeyValuePair(DialogConstants.DIALOG_ANSWER_PROVIDER);
+			IDialogAnswerProvider provider = (IDialogAnswerProvider) getConfigurationManager().getPrivateKeyValuePair(DialogConstants.DIALOG_ANSWER_PROVIDER);
 			if (provider != null && !(provider instanceof DialogAnswerProviderConsoleForTest)) {
 				dialogAnswerProvider.dispose(); // Dispose the current, console-based answer provider.
 				setDialogAnswerProvider(provider); // Updated with the`document`-aware dialog provider.
@@ -1311,7 +1308,7 @@ public class AnswerCurationManager {
 	private IReasoner getInitializedCodeModelReasoner() throws ConfigurationException, ReasonerNotFoundException {
 		if (codeModelReasoner == null) {
 			codeModelReasoner = getExtractionProcessor().getCodeExtractor().getCodeModelConfigMgr().getReasoner();
-			String codeModelFolder = getExtractionProcessor().getCodeExtractor().getCodeModelFolder();
+			String codeModelFolder = getOwlModelsFolder();
 			if (!codeModelReasoner.isInitialized()) {
 				IConfigurationManagerForIDE codeModelConfigMgr = getExtractionProcessor().getCodeExtractor().getCodeModelConfigMgr();
 				codeModelReasoner.setConfigurationManager(codeModelConfigMgr);
@@ -1489,7 +1486,7 @@ public class AnswerCurationManager {
 			quote = true;
 		}
 		if (answer != null) {
-			answerUser(getDomainModelOwlModelsFolder(), answer, quote, sc.getHostEObject());
+			answerUser(getOwlModelsFolder(), answer, quote, sc.getHostEObject());
 			return answer;
 		}
 		return null;
@@ -1529,7 +1526,7 @@ public class AnswerCurationManager {
 			}
 		}
 		String answer = sb.toString();
-		answerUser(getDomainModelOwlModelsFolder(), answer, false, sc.getHostEObject());
+		answerUser(getOwlModelsFolder(), answer, false, sc.getHostEObject());
 		return answer;
 	}
 
@@ -1568,7 +1565,7 @@ public class AnswerCurationManager {
 		}
 		sb.insert(0, "unlimited number of values of type ");
 		String answer = sb.toString();
-		answerUser(getDomainModelOwlModelsFolder(), answer, true, sc.getHostEObject());
+		answerUser(getOwlModelsFolder(), answer, true, sc.getHostEObject());
 		return answer;
 	}
 
@@ -1581,7 +1578,7 @@ public class AnswerCurationManager {
 		if (trgt instanceof NamedNode && whn == null) {
 			String answer;
 			try {
-				answer = whatIsNamedNode(resource, theModel, getDomainModelOwlModelsFolder(), (NamedNode)trgt);
+				answer = whatIsNamedNode(resource, theModel, getOwlModelsFolder(), (NamedNode)trgt);
 			}
 			catch (Exception e) {
 				answer = e.getMessage();
@@ -1624,7 +1621,7 @@ public class AnswerCurationManager {
 					}
 				}
 				String insertionText = (resultStr != null ? resultStr : "\"Failed to find results\"");
-				answerUser(getDomainModelOwlModelsFolder(), insertionText, false, sc.getHostEObject());
+				answerUser(getOwlModelsFolder(), insertionText, false, sc.getHostEObject());
 				retVal = insertionText;
 			}
 		}
@@ -1670,7 +1667,7 @@ public class AnswerCurationManager {
 		    				
 		    				IGraphVisualizer visualizer = new GraphVizVisualizer();
 		    				if (visualizer != null) {
-		    					String graphsDirectory = new File(getDomainModelOwlModelsFolder()).getParent() + "/Graphs";
+		    					String graphsDirectory = new File(getOwlModelsFolder()).getParent() + "/Graphs";
 		    					new File(graphsDirectory).mkdir();
             					String baseFileName = "QueryMetadata_"+((ResultSet) rss[cntr+numOfModels]).getResultAt(0, 0).toString();
 		    					visualizer.initialize(
@@ -1690,7 +1687,7 @@ public class AnswerCurationManager {
 		    		        }
 							String errorMsg = displayGraph(visualizer);
 							if (errorMsg != null) {
-								notifyUser(getDomainModelOwlModelsFolder(), errorMsg, true);
+								notifyUser(getOwlModelsFolder(), errorMsg, true);
 							}
 		    			}
             			else {
@@ -1704,7 +1701,7 @@ public class AnswerCurationManager {
 					}
 					else {
 //						throw new TranslationException("Expected ResultSet but got " + rs.getClass().getCanonicalName());
-						answerUser(getDomainModelOwlModelsFolder(), stringToQuotedeString(rs.toString()), true, sc.getHostEObject());
+						answerUser(getOwlModelsFolder(), stringToQuotedeString(rs.toString()), true, sc.getHostEObject());
 					}
 					
 				}
@@ -1716,7 +1713,7 @@ public class AnswerCurationManager {
 			else {
 				retVal = "Failed to evaluate answer";
 			}
-			answerUser(getDomainModelOwlModelsFolder(), retVal, true, sc.getHostEObject());
+			answerUser(getOwlModelsFolder(), retVal, true, sc.getHostEObject());
 		}
 		return retVal;
 	}
@@ -2534,10 +2531,10 @@ public class AnswerCurationManager {
 												String outputOwlFileName = owlfile.getCanonicalPath();
 												String altUrl = new SadlUtils().fileNameToFileUrl(outputOwlFileName);
 
-												String publicUri = getDomainModelConfigurationManager().getPublicUriFromActualUrl(altUrl);
+												String publicUri = getConfigurationManager().getPublicUriFromActualUrl(altUrl);
 												if (publicUri != null) {
-													getDomainModelConfigurationManager().deleteModel(publicUri);
-													getDomainModelConfigurationManager().deleteMapping(altUrl, publicUri);
+													getConfigurationManager().deleteModel(publicUri);
+													getConfigurationManager().deleteMapping(altUrl, publicUri);
 												}
 											} catch (ConfigurationException e) {
 												// TODO Auto-generated catch block
@@ -2561,7 +2558,7 @@ public class AnswerCurationManager {
 											projectName = sf.getParentFile().getParentFile().getName();
 										}
 									}
-									getDialogAnswerProvider().updateProjectAndDisplaySadlFiles(projectName, getDomainModelOwlModelsFolder(), sadlFiles);
+									getDialogAnswerProvider().updateProjectAndDisplaySadlFiles(projectName, getOwlModelsFolder(), sadlFiles);
 								}
 								else {
 									while (owlFilesItr.hasNext()) {
@@ -2570,9 +2567,9 @@ public class AnswerCurationManager {
 										try {
 											String importActualUrl = new SadlUtils().fileNameToFileUrl(owlFile.getCanonicalPath());
 											String altUrl = new SadlUtils().fileNameToFileUrl(importActualUrl);
-											String importPublicUri = getDomainModelConfigurationManager().getPublicUriFromActualUrl(altUrl);
-											String prefix = getDomainModelConfigurationManager().getGlobalPrefix(importPublicUri);
-											getDomainModelConfigurationManager().addMapping(importActualUrl, importPublicUri, prefix, false, "AnswerCurationManager");
+											String importPublicUri = getConfigurationManager().getPublicUriFromActualUrl(altUrl);
+											String prefix = getConfigurationManager().getGlobalPrefix(importPublicUri);
+											getConfigurationManager().addMapping(importActualUrl, importPublicUri, prefix, false, "AnswerCurationManager");
 											String prjname = owlFile.getParentFile().getParentFile().getName();
 										} catch (IOException e) {
 											// TODO Auto-generated catch block
@@ -2670,17 +2667,17 @@ public class AnswerCurationManager {
 	public boolean saveQuestionsAndAnswersToFile() throws ConfigurationException, IOException {
 		if (getResource() != null) {
 			String rsrcFn = getResource().getURI().lastSegment();
-			String qnaFn = getDomainModelOwlModelsFolder() + "/" + rsrcFn + ".qna.owl";
+			String qnaFn = getOwlModelsFolder() + "/" + rsrcFn + ".qna.owl";
 			Map<String, String> qna = getQuestionsAndAnswers();
 			if (qna != null && !qna.isEmpty()) {
 				// write out Q and Q mappings
 				String modelName = "http://com.ge.research.ask/Dialog/QNA/" + rsrcFn;
-				OntDocumentManager owlDocMgr = getDomainModelConfigurationManager().getJenaDocumentMgr();
+				OntDocumentManager owlDocMgr = getConfigurationManager().getJenaDocumentMgr();
 				OntModelSpec spec = new OntModelSpec(OntModelSpec.OWL_MEM);
-				if (getDomainModelOwlModelsFolder() != null && !getDomainModelOwlModelsFolder().startsWith(IModelProcessor.SYNTHETIC_FROM_TEST)) {
-					File mff = new File(getDomainModelOwlModelsFolder());
+				if (getOwlModelsFolder() != null && !getOwlModelsFolder().startsWith(IModelProcessor.SYNTHETIC_FROM_TEST)) {
+					File mff = new File(getOwlModelsFolder());
 					mff.mkdirs();
-					spec.setImportModelGetter(new SadlJenaModelGetterPutter(spec, getDomainModelOwlModelsFolder()));
+					spec.setImportModelGetter(new SadlJenaModelGetterPutter(spec, getOwlModelsFolder()));
 				}
 				if (owlDocMgr != null) {
 					spec.setDocumentManager(owlDocMgr);
@@ -2706,7 +2703,7 @@ public class AnswerCurationManager {
 						aInst.addProperty(txtprop,  qnaModel.createTypedLiteral(atxt));
 						qInst.addProperty(haprop, aInst);
 					}
-					getDomainModelConfigurationManager().saveOwlFile(qnaModel, modelName, qnaFn);
+					getConfigurationManager().saveOwlFile(qnaModel, modelName, qnaFn);
 					return true;
 				}
 			}
@@ -2724,11 +2721,11 @@ public class AnswerCurationManager {
 	public boolean loadQuestionsAndAnswersFromFile() {
 		if (getResource() != null) {
 			String rsrcFn = getResource().getURI().lastSegment();
-			String qnaFn = getDomainModelOwlModelsFolder() + "/" + rsrcFn + ".qna.owl";
+			String qnaFn = getOwlModelsFolder() + "/" + rsrcFn + ".qna.owl";
 			File qnaFile = new File(qnaFn);
 			if (qnaFile.exists()) {
 				// read in Q and A mappings
-				OntModel qnaModel = getDomainModelConfigurationManager().loadOntModel(qnaFn);
+				OntModel qnaModel = getConfigurationManager().loadOntModel(qnaFn);
 				OntProperty txtprop = qnaModel.createOntProperty(DialogConstants.SADL_IMPLICIT_MODEL_TEXT_PROPERY_URI);
 				OntProperty haprop = qnaModel.createOntProperty(DialogConstants.SADL_IMPLICIT_MODEL_HAS_ANSWER_PROPERY_URI);
 				StmtIterator sitr = qnaModel.listStatements(null, haprop, (RDFNode)null);
@@ -2770,4 +2767,11 @@ public class AnswerCurationManager {
 		unansweredQuestions.put(questionString, unansweredQuestion);
 	}
 
+	public static String getImportOutputFilename(String outputFilename) {
+		String outputOwlFileName = outputFilename + ".owl";
+		if (outputFilename.endsWith(".sadl")) {
+			outputFilename = outputFilename.substring(0, outputFilename.length() - 5) + ".owl";
+		}
+		return outputOwlFileName;
+	}
 }
