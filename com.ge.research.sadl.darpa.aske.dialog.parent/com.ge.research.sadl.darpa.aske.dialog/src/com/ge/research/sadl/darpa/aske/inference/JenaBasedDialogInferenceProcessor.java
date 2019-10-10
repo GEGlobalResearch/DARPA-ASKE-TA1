@@ -103,13 +103,13 @@ import com.hp.hpl.jena.update.UpdateAction;
 
 public class JenaBasedDialogInferenceProcessor extends JenaBasedSadlInferenceProcessor {
 
-	private OntModel qhmodel;
+	private OntModel queryModel;
+
+//	public static final String queryHistoryKey = "MetaData";
+//	public static final String qhModelName = "http://aske.ge.com/MetaData";
+//	public static final String qhOwlFileName = "MetaData.owl";
+
 	
-	public static final String queryHistoryKey = "MetaData";
-	public static final String qhModelName = "http://aske.ge.com/MetaData";
-	public static final String qhOwlFileName = "MetaData.owl";
-
-
 	public static final String METAMODEL_PREFIX = "http://aske.ge.com/metamodel#";
 	public static final String METAMODEL_QUERY_CLASS = METAMODEL_PREFIX + "CGQuery";
 	public static final String METAMODEL_INPUT_PROP = METAMODEL_PREFIX + "input";
@@ -274,7 +274,8 @@ public class JenaBasedDialogInferenceProcessor extends JenaBasedSadlInferencePro
 			"prefix cg:<http://aske.ge.com/compgraphmodel#>\n" + 
 			"prefix owl:<http://www.w3.org/2002/07/owl#>\n" + 
 			"prefix rdfs:<http://www.w3.org/2000/01/rdf-schema#>\n" + 
-			"prefix rdf:<http://www.w3.org/1999/02/22-rdf-syntax-ns#>\n" + 
+			"prefix rdf:<http://www.w3.org/1999/02/22-rdf-syntax-ns#>\n"+
+			"prefix sl:<http://sadl.org/sadllistmodel#>\n" + 
 			"\n" + 
 			"select distinct ?Node (str(?NUnits) as ?NodeOutputUnits) ?Child (str(?CUnits) as ?ChildInputUnits) ?Distribution ?Lower ?Upper ?Eq ?Value \n" +
 			" where {\n" + 
@@ -290,8 +291,8 @@ public class JenaBasedDialogInferenceProcessor extends JenaBasedSadlInferencePro
 			"\n" + 
 			"     optional{\n" + 
 			"       ?Var ?Node ?UQNode.\n" + 
-			"       ?UQNode imp:unit ?NUnits.\n" + 
-			"     }" + 
+			"       ?UQNode imp:unit ?InputUnitsQuery.\n" + 
+			"     }\n" + 
 			"     ?Eq imp:returnTypes ?EO1.\n" + 
 			"     ?EO1 rdf:rest*/rdf:first ?EO2.\n" + 
 			"     ?EO2 imp:augmentedType ?EO3. \n" + 
@@ -304,9 +305,10 @@ public class JenaBasedDialogInferenceProcessor extends JenaBasedSadlInferencePro
 			"\n" + 
 			"     ?DBN rdfs:subClassOf ?N1. \n" + 
 			"     ?N1 owl:onProperty cg:node. \n" + 
-			"     ?N1 owl:hasValue/imp:augmentedType/imp:semType ?Type. \n" + 
-			"     ?Node rdfs:range ?Type.\n" + 
-			"		\n" + 
+			"     ?N1 owl:hasValue ?TypeIns.\n" + 
+			"     ?TypeIns a ?Type. \n" + 
+			"     ?Node rdfs:range ?Type." +
+			"\n" + 
 			"     ?DBN rdfs:subClassOf ?DB. \n" + 
 			"     ?DB owl:onProperty cg:distribution. \n" + 
 			"     ?DB owl:hasValue ?Distribution.\n" + 
@@ -315,7 +317,9 @@ public class JenaBasedDialogInferenceProcessor extends JenaBasedSadlInferencePro
 			"     ?RB owl:onProperty cg:range. \n" + 
 			"     ?RB owl:hasValue ?Range.\n" + 
 			"     ?Range cg:lower ?Lower.\n" + 
-			"     ?Range cg:upper ?Upper.\n" + 
+			"     ?Range cg:upper ?Upper.\n" +
+			"     optional {?DBN rdfs:subClassOf/owl:hasValue/imp:specifiedUnits/sl:first ?DBNUnits.}\n" + 
+			"     bind( if(bound(?InputUnitsQuery), ?InputUnitsQuery, ?DBNUnits) as ?NUnits ).\n " +   
 			"  }} \n" + 
 			"  union {\n" + 
 			"  select distinct ?Node ?NUnits ?Child ?CUnits ?Distribution ?Lower ?Upper ?Eq where {\n" + 
@@ -625,35 +629,32 @@ public class JenaBasedDialogInferenceProcessor extends JenaBasedSadlInferencePro
 		}
 
 		
-//		String queryHistoryKey = "MetaData";
-//		String qhModelName = "http://aske.ge.com/MetaData";
-//		String qhOwlFileName = "MetaData.owl";
-		String qhOwlFileWithPath = getModelFolderPath(resource) + File.separator + qhOwlFileName;
-		//Path qhpath = Paths.get(qhOwlFileWithPath);
-		ConfigurationManagerForIDE cmgr = null;
-		Object qhModelObj = OntModelProvider.getPrivateKeyValuePair(resource, queryHistoryKey);
-		
-		if (qhModelObj == null) {
-			File f = new File(qhOwlFileWithPath);
-			if (f.exists() && !f.isDirectory()) {
-			//if (Files.exists(qhpath)) {
-				try {
-					//String p = getModelFolderPath(resource);
-					cmgr = new ConfigurationManagerForIDE(getModelFolderPath(resource), ConfigurationManagerForIDE.getOWLFormat());
-				} catch (ConfigurationException e1) {
-					//  Auto-generated catch block
-					e1.printStackTrace();
-				}
-				qhmodel = cmgr.loadOntModel(qhOwlFileWithPath);
-			}
-			else {
-				qhmodel = ModelFactory.createOntologyModel(OntModelSpec.OWL_MEM);
-			}
-			OntModelProvider.addPrivateKeyValuePair(resource, queryHistoryKey, qhmodel);
-		}
-		else {
-			qhmodel = (OntModel) qhModelObj;
-		}
+//		String qhOwlFileWithPath = getModelFolderPath(resource) + File.separator + qhOwlFileName;
+//		//Path qhpath = Paths.get(qhOwlFileWithPath);
+//		ConfigurationManagerForIDE cmgr = null;
+//		Object qhModelObj = OntModelProvider.getPrivateKeyValuePair(resource, queryHistoryKey);
+//		
+//		if (qhModelObj == null) {
+//			File f = new File(qhOwlFileWithPath);
+//			if (f.exists() && !f.isDirectory()) {
+//			//if (Files.exists(qhpath)) {
+//				try {
+//					//String p = getModelFolderPath(resource);
+//					cmgr = new ConfigurationManagerForIDE(getModelFolderPath(resource), ConfigurationManagerForIDE.getOWLFormat());
+//				} catch (ConfigurationException e1) {
+//					//  Auto-generated catch block
+//					e1.printStackTrace();
+//				}
+//				qhmodel = cmgr.loadOntModel(qhOwlFileWithPath);
+//			}
+//			else {
+//				qhmodel = ModelFactory.createOntologyModel(OntModelSpec.OWL_MEM);
+//			}
+//			OntModelProvider.addPrivateKeyValuePair(resource, queryHistoryKey, qhmodel);
+//		}
+//		else {
+//			qhmodel = (OntModel) qhModelObj;
+//		}
 		
 		// To do: Alfredo
 		// ingest query object and store to CGQuery model file
@@ -670,8 +671,8 @@ public class JenaBasedDialogInferenceProcessor extends JenaBasedSadlInferencePro
 		
 	
 		
-		// Triples of triples representing a quantity
-		// v0 altitude v1, v1 value 35000, v1 units "ft"
+		// Triples representing a quantity
+		// v0 altitude v1, v1 value 35000, v1 units "ft", v1 type Altitude
 		TripleElement[] quantity; // = new TripleElement[4];
 
 		List<TripleElement[]> insertions = new ArrayList<TripleElement[]>();
@@ -686,18 +687,11 @@ public class JenaBasedDialogInferenceProcessor extends JenaBasedSadlInferencePro
 		
 		for (int i = 0; i < triples.length; i++) {
 			TripleElement tr = triples[i];
-			//Node snode = tr.getSubject();
 			if (tr.getSubject() instanceof NamedNode) {
 				
 				if (tr.getPredicate().getURI() != null) {
-		
 					if (tr.getPredicate().getName().contains("value")) { //input value triple (v1, sadlimplicitmodel:value, 35000)
-						//Node varNode = tr.getSubject();
 						quantity = createUQtriplesArray(tr,triples);
-//						TripleElement inputTypeTr = getInputTypeTriple(varNode, triples); // get the property triple, e.g. (v0, hypersonicsV2:altitude, v1)
-//						quantity[0] = inputTypeTr;
-//						quantity[1] = tr;
-//						quantity[2] = getInputUnitsTriple(varNode,triples);
 						insertions.add(quantity);
 					}
 					else if (tr.getObject() == null) { //(v0, hypersonicsV2:staticTemperature, null)
@@ -711,13 +705,6 @@ public class JenaBasedDialogInferenceProcessor extends JenaBasedSadlInferencePro
 			}
 		}
 
-		// Query instance
-		OntClass cgquery = getTheJenaModel().getOntClass(METAMODEL_QUERY_CLASS);
-		//Individual cgq = getTheJenaModel().createIndividual(cgquery);
-		Individual cgq = createIndividualOfClass(qhmodel,METAMODEL_QUERY_CLASS);
-		// This is how to add properties to the individual
-		//i.addProperty(RDFS.comment, "something");
-	    //i.addRDFType(OWL2.NamedIndividual);
 		
 //		//Create a model for this query [don't need it?]
 //		OntModel queryModel;
@@ -730,29 +717,29 @@ public class JenaBasedDialogInferenceProcessor extends JenaBasedSadlInferencePro
 //		queryModel = ModelFactory.createOntologyModel(OntModelSpec.OWL_MEM);
 //		OntModelProvider.addPrivateKeyValuePair(resource, queryKey, queryModel);
 		
+		String kgsDirectory = getModelFolderPath(resource) + File.separator  + "Queries";
+		new File(kgsDirectory).mkdir();
+		
+		String queryModelFileName = "Q_" + System.currentTimeMillis();
+		//String queryModelName = METAMODEL_PREFIX + "Model_" + queryModelFileName;
+		String queryInstanceName = METAMODEL_PREFIX + queryModelFileName;
+		String queryOwlFileWithPath = kgsDirectory + File.separator + queryModelFileName + ".owl";
+
+		//ConfigurationManagerForIDE cmgr = null;
+		//Object qhModelObj = OntModelProvider.getPrivateKeyValuePair(resource, queryHistoryKey);
+		
+		File f = new File(queryOwlFileWithPath);
+		if (f.exists() && !f.isDirectory()) {
+			throw new SadlInferenceException("Query model file already exists");
+		}
+		else {
+			queryModel = ModelFactory.createOntologyModel(OntModelSpec.OWL_MEM);
+		}
+		OntModelProvider.addPrivateKeyValuePair(resource, queryModelFileName, queryModel);
+
 
 		
-//		//Create execution instance with time [not here. Need one for each model]
-//		OntClass cexec = getTheJenaModel().getOntClass(METAMODEL_CGEXEC_CLASS);
-//		Individual ce = qhmodel.createIndividual(cexec);
-//		//OntProperty stprop = getTheJenaModel().getOntProperty(METAMODEL_STARTTIME_PROP);
-//
-////		String DATE_FORMAT_NOW = "yyyy-MM-dd HH:mm:ss";
-////		Calendar cal = Calendar.getInstance();
-////		SimpleDateFormat sdf = new SimpleDateFormat(DATE_FORMAT_NOW);
-////		XSDDateTime tim = sdf.format(cal.getTime());
-////		qhmodel.add(ce,stprop,(XSDDateTime)val).asCalendar().getTime());
-//		
-//		OntProperty execprop = getTheJenaModel().getOntProperty(METAMODEL_EXEC_PROP);
-//		if (execprop == null) {
-//			System.err.println("Can't find property '" + METAMODEL_EXEC_PROP + "'. Something is wrong.");
-//			return null;
-//		}
-//		else {
-//			qhmodel.add(cgq,execprop,ce);
-//		}
 		
-
 		String ss, sp, so, ns;
 		com.hp.hpl.jena.rdf.model.Resource sss;
 		Property ssp;
@@ -777,6 +764,15 @@ public class JenaBasedDialogInferenceProcessor extends JenaBasedSadlInferencePro
 			}
 		}
 		
+		// Query instance
+		//OntClass cgquery = getTheJenaModel().getOntClass(METAMODEL_QUERY_CLASS);
+		//Individual cgq = getTheJenaModel().createIndividual(cgquery);
+		//Individual cgq = createIndividualOfClass(queryModel, METAMODEL_QUERY_CLASS);
+		Individual cgq = queryModel.createIndividual(queryInstanceName, getTheJenaModel().getOntClass(METAMODEL_QUERY_CLASS));
+		// This is how to add properties to the individual
+		//i.addProperty(RDFS.comment, "something");
+	    //i.addRDFType(OWL2.NamedIndividual);
+
 		// ingest input values
 		if (insertions != null && insertions.size() > 0) {
 			for (int i = 0; i < insertions.size(); i++) {
@@ -968,7 +964,7 @@ public class JenaBasedDialogInferenceProcessor extends JenaBasedSadlInferencePro
 	
 					//Create execution instance with time
 					cexec = getTheJenaModel().getOntClass(METAMODEL_CGEXEC_CLASS);
-					ce = qhmodel.createIndividual(cexec);
+					ce = queryModel.createIndividual(cexec);
 					//OntProperty stprop = getTheJenaModel().getOntProperty(METAMODEL_STARTTIME_PROP);
 			
 //					String DATE_FORMAT_NOW = "yyyy-MM-dd HH:mm:ss";
@@ -1004,7 +1000,7 @@ public class JenaBasedDialogInferenceProcessor extends JenaBasedSadlInferencePro
 //					
 					
 					// Comp Graph instance
-					cgIns = qhmodel.createIndividual(METAMODEL_PREFIX + "CG_" + System.currentTimeMillis(), getTheJenaModel().getOntClass(METAMODEL_CCG));
+					cgIns = queryModel.createIndividual(METAMODEL_PREFIX + "CG_" + System.currentTimeMillis(), getTheJenaModel().getOntClass(METAMODEL_CCG));
 					//qhmodel.add(ce, getTheJenaModel().getOntProperty(METAMODEL_COMPGRAPH_PROP), cgIns);
 					ingestKGTriple(ce, getTheJenaModel().getOntProperty(METAMODEL_COMPGRAPH_PROP), cgIns);
 					//getTheJenaModel().add(ce, RDF.type, getTheJenaModel().getOntClass(METAMODEL_CCG));
@@ -1018,7 +1014,7 @@ public class JenaBasedDialogInferenceProcessor extends JenaBasedSadlInferencePro
 					
 					queryStr = RETRIEVE_NODES.replaceAll("EQNSLIST", listOfEqns);
 					queryStr = queryStr.replaceAll("COMPGRAPH", "<" + cgIns.getURI() + ">");
-					nodes = queryKnowledgeGraph(queryStr, getTheJenaModel().union(qhmodel));
+					nodes = queryKnowledgeGraph(queryStr, getTheJenaModel().union(queryModel));
 					nodesCSVString = convertResultSetToString(nodes);
 					System.out.println(nodesCSVString);
 		
@@ -1066,7 +1062,7 @@ public class JenaBasedDialogInferenceProcessor extends JenaBasedSadlInferencePro
 						// We may need to do this later after the results have been computed
 						for (RDFNode op : outputsList) {
 							outputType = op.as(OntProperty.class).getRange().toString();
-							oinst = createIndividualOfClass(qhmodel,outputType);
+							oinst = createIndividualOfClass(queryModel,outputType);
 							ingestKGTriple(ce,outputprop,oinst);
 						}
 						
@@ -1187,7 +1183,7 @@ public class JenaBasedDialogInferenceProcessor extends JenaBasedSadlInferencePro
 			            
 						//Create execution instance with time
 						cexec = getTheJenaModel().getOntClass(METAMODEL_CGEXEC_CLASS);
-						ce = qhmodel.createIndividual(cexec);
+						ce = queryModel.createIndividual(cexec);
 						//OntProperty stprop = getTheJenaModel().getOntProperty(METAMODEL_STARTTIME_PROP);
 				
 //						String DATE_FORMAT_NOW = "yyyy-MM-dd HH:mm:ss";
@@ -1209,10 +1205,10 @@ public class JenaBasedDialogInferenceProcessor extends JenaBasedSadlInferencePro
 						//TODO: create output instances and link them to ce
 						//      There is only one output for datasets
 						outputType = oputType.as(OntProperty.class).getRange().toString();
-						oinst = createIndividualOfClass(qhmodel,outputType);
+						oinst = createIndividualOfClass(queryModel,outputType);
 						ingestKGTriple(ce,outputprop,oinst);
 						
-						cgIns = qhmodel.createIndividual(METAMODEL_PREFIX + "CG_" + System.currentTimeMillis(), getTheJenaModel().getOntClass(METAMODEL_CCG));
+						cgIns = queryModel.createIndividual(METAMODEL_PREFIX + "CG_" + System.currentTimeMillis(), getTheJenaModel().getOntClass(METAMODEL_CCG));
 						//getTheJenaModel().add(cgIns, RDF.type, getTheJenaModel().getOntClass(METAMODEL_CCG));
 						// Each comp graph is attached to the execution instance
 						//qhmodel.add(ce, getTheJenaModel().getOntProperty(METAMODEL_COMPGRAPH_PROP), cgIns);
@@ -1224,7 +1220,7 @@ public class JenaBasedDialogInferenceProcessor extends JenaBasedSadlInferencePro
 						
 						queryStr = RETRIEVE_NODES.replaceAll("EQNSLIST", listOfEqns);
 						queryStr = queryStr.replaceAll("COMPGRAPH", "<" + cgIns.getURI() + ">");
-						nodes = queryKnowledgeGraph(queryStr, getTheJenaModel().union(qhmodel));
+						nodes = queryKnowledgeGraph(queryStr, getTheJenaModel().union(queryModel));
 						
 						modelsCSVString = convertResultSetToString(models);
 						nodesCSVString = convertResultSetToString(nodes);
@@ -1258,7 +1254,7 @@ public class JenaBasedDialogInferenceProcessor extends JenaBasedSadlInferencePro
 							
 			            	//Ingest model error
 			            	String modelError = getModelError(dbnResultsJson);
-			    			qhmodel.add(cgIns, getTheJenaModel().getProperty(MODELERROR_PROP), modelError);
+			    			queryModel.add(cgIns, getTheJenaModel().getProperty(MODELERROR_PROP), modelError);
 			            	
 			            	lbl2value = getLabelToMeanStdMapping(dbnResultsJson);
 						
@@ -1287,7 +1283,7 @@ public class JenaBasedDialogInferenceProcessor extends JenaBasedSadlInferencePro
 			
 			
 			// Save metadata owl file 
-			saveMetaDataFile(resource);
+			saveMetaDataFile(resource, queryModelFileName);
 		
 //			// create ResultSet
 //			results[0] = retrieveCompGraph(resource, cgIns);
@@ -1439,7 +1435,7 @@ private RDFNode getObjectAsLiteralOrResource(Node property, Node object) {
 	}
 
 	private void ingestKGTriple(com.hp.hpl.jena.rdf.model.Resource s, Property pred, RDFNode o) {
-		qhmodel.add(s,pred,o);
+		queryModel.add(s,pred,o);
 		//getTheJenaModel().add(s,pred,o);
 	}
 
@@ -1685,7 +1681,7 @@ private RDFNode getObjectAsLiteralOrResource(Node property, Node object) {
 			//return null;
 		}
 
-		reasoner.loadInstanceData(qhmodel);	//Need to load new metadata
+		reasoner.loadInstanceData(queryModel);	//Need to load new metadata
 		
 //		String family = reasoner.getReasonerFamily();
 		
@@ -1711,16 +1707,18 @@ private RDFNode getObjectAsLiteralOrResource(Node property, Node object) {
 	}
 
 
-	private void saveMetaDataFile(Resource resource) {
-		String qhOwlFileWithPath = getModelFolderPath(resource) + File.separator + qhOwlFileName;
+	private void saveMetaDataFile(Resource resource, String queryModelFileName) {
+		String qhOwlFileWithPath = getModelFolderPath(resource) + File.separator + "Queries" + File.separator + queryModelFileName + ".owl";
+		String queryModelName = "http://aske.ge.com/" + "Model_" + queryModelFileName;
+		
 		File f = new File(qhOwlFileWithPath);
 
 		String qhGlobalPrefix = null;
 		try {
-			getConfigMgr(null).saveOwlFile(qhmodel, qhModelName, qhOwlFileWithPath);
+			getConfigMgr(null).saveOwlFile(queryModel, queryModelName, qhOwlFileWithPath);
 			String fileUrl = (new UtilsForJena()).fileNameToFileUrl(qhOwlFileWithPath);
 			if (!f.exists() && !f.isDirectory()) {
-				getConfigMgr(null).addMapping(fileUrl, qhModelName, qhGlobalPrefix, false, "DialogInference"); //Only if new file
+				getConfigMgr(null).addMapping(fileUrl, queryModelName, qhGlobalPrefix, false, "DialogInference"); //Only if new file
 			}
 		} catch (Exception e) {
 			//  Auto-generated catch block
@@ -1780,12 +1778,12 @@ private RDFNode getObjectAsLiteralOrResource(Node property, Node object) {
             		continue;
             	}
 
-            	sensIns = createIndividualOfClass(qhmodel,METAMODEL_SENSITIVITY);
+            	sensIns = createIndividualOfClass(queryModel,METAMODEL_SENSITIVITY);
                 ingestKGTriple(cgIns, sensprop, sensIns);
             	
             	outputlbl = node.getKey(); // "a0"
             	outputType = lbl2class.get(outputlbl); //e.g. "http...#staticTemperature"
-            	op = qhmodel.getResource(outputType); //
+            	op = queryModel.getResource(outputType); //
             	ingestKGTriple(sensIns, outputprop, op);
             	
             	jvalues = (JsonObject)node.getValue();
@@ -1793,13 +1791,13 @@ private RDFNode getObjectAsLiteralOrResource(Node property, Node object) {
             	
             	for (int i = 0; i<jinputs.size() ; i++) {
             		inputType = lbl2class.get(jinputs.get(i).getAsString());
-            		ip = qhmodel.getResource(inputType);
-            		inputSens = createIndividualOfClass(qhmodel, METAMODEL_INPUTSENSITIVITY);
+            		ip = queryModel.getResource(inputType);
+            		inputSens = createIndividualOfClass(queryModel, METAMODEL_INPUTSENSITIVITY);
             		v = sensvals.get(0).getAsJsonArray().get(i).getAsString();
 
             		ingestKGTriple(sensIns, inputsensprop, inputSens);
             		ingestKGTriple(inputSens, inputprop, ip);
-            		qhmodel.add(inputSens, inputsensvalprop, v); //sensval should be encoded as proper literal
+            		queryModel.add(inputSens, inputsensvalprop, v); //sensval should be encoded as proper literal
             	}
             }
         }
@@ -1834,11 +1832,11 @@ private RDFNode getObjectAsLiteralOrResource(Node property, Node object) {
 //			RDFNode s = soln.get("?Eq") ; 
 //			RDFNode p = soln.get("?DBN") ;
 //			RDFNode o = soln.get("?Out") ;
-			sgIns = createIndividualOfClass(qhmodel,METAMODEL_SUBGRAPH);
+			sgIns = createIndividualOfClass(queryModel,METAMODEL_SUBGRAPH);
 			   //getTheJenaModel().add(sgIns, RDF.type, getTheJenaModel().getOntClass(METAMODEL_SUBGRAPH));
 			//qhmodel.add(cgIns, subgraphprop, sgIns);
 			ingestKGTriple(cgIns, subgraphprop, sgIns);
-			dbnIns = createIndividualOfClass(qhmodel,dbn.toString());
+			dbnIns = createIndividualOfClass(queryModel,dbn.toString());
 			   //getTheJenaModel().add(dbnIns, RDF.type, getTheJenaModel().getOntClass(dbn.toString()));
 
 			//getTheJenaModel().add(sgIns, cgraphprop, dbnIns);
@@ -1860,7 +1858,7 @@ private RDFNode getObjectAsLiteralOrResource(Node property, Node object) {
 				if (eqn != null)
 					break;
 			}
-			RDFNode e = qhmodel.getResource(eqn);  //getIndividual(eqn);
+			RDFNode e = queryModel.getResource(eqn);  //getIndividual(eqn);
 			//qhmodel.add(dbnIns, hasEqnProp, e);
 			ingestKGTriple(dbnIns, hasEqnProp, e);
 			//RDFNode o = dbnOutput.get(dbn);
@@ -1881,7 +1879,7 @@ private RDFNode getObjectAsLiteralOrResource(Node property, Node object) {
 			
 			//rng = otype.as(OntProperty.class).getRange().toString();
 
-			outpIns = createIndividualOfClass(qhmodel, rng); //e.g. instance of :Altitude
+			outpIns = createIndividualOfClass(queryModel, rng); //e.g. instance of :Altitude
 			   //getTheJenaModel().add(outpIns, RDF.type, ostr);
 //				getTheJenaModel().add(sgIns, outputprop, outpIns);
 //				qhmodel.add(sgIns, outputprop, outpIns);
@@ -1894,10 +1892,10 @@ private RDFNode getObjectAsLiteralOrResource(Node property, Node object) {
 			
 			String cls = class2lbl.get(otype.toString());
 			String[] ms = lbl2value.get(cls);  //class2lbl.get(o.toString()));
-			qhmodel.add(outpIns, getTheJenaModel().getProperty(VALUE_PROP), ms[0] );
-			qhmodel.add(outpIns, getTheJenaModel().getProperty(STDDEV_PROP), ms[1] );
+			queryModel.add(outpIns, getTheJenaModel().getProperty(VALUE_PROP), ms[0] );
+			queryModel.add(outpIns, getTheJenaModel().getProperty(STDDEV_PROP), ms[1] );
 			if(ms[2] != null)
-				qhmodel.add(outpIns, getTheJenaModel().getProperty(VARERROR_PROP), ms[2] );
+				queryModel.add(outpIns, getTheJenaModel().getProperty(VARERROR_PROP), ms[2] );
 			
 			//Add to JenaModel too?
 			
