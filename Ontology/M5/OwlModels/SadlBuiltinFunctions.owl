@@ -23,7 +23,6 @@
     </j.0:returnTypes>
     <j.0:arguments rdf:parseType="Collection">
       <j.0:DataDescriptor>
-        <j.0:specifiedUnits rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#nil"/>
         <j.0:dataType>http://www.w3.org/2001/XMLSchema#string</j.0:dataType>
         <j.0:descriptorVariable>
           <j.0:GPVariable rdf:ID="isDType_X"/>
@@ -82,7 +81,6 @@
     </j.0:returnTypes>
     <j.0:arguments rdf:parseType="Collection">
       <j.0:DataDescriptor>
-        <j.0:specifiedUnits rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#nil"/>
         <j.0:dataType>http://www.w3.org/2001/XMLSchema#decimal</j.0:dataType>
         <j.0:descriptorVariable>
           <j.0:GPVariable rdf:ID="abs_X"/>
@@ -108,7 +106,6 @@
     </j.0:returnTypes>
     <j.0:arguments rdf:parseType="Collection">
       <j.0:DataDescriptor>
-        <j.0:specifiedUnits rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#nil"/>
         <j.0:dataType>http://www.w3.org/2001/XMLSchema#decimal</j.0:dataType>
         <j.0:descriptorVariable>
           <j.0:GPVariable rdf:ID="addOne_X"/>
@@ -134,7 +131,6 @@
     </j.0:returnTypes>
     <j.0:arguments rdf:parseType="Collection">
       <j.0:DataDescriptor>
-        <j.0:specifiedUnits rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#nil"/>
         <j.0:dataType>http://www.w3.org/2001/XMLSchema#string</j.0:dataType>
         <j.0:descriptorVariable>
           <j.0:GPVariable rdf:ID="listMapAsObject_X"/>
@@ -142,13 +138,11 @@
         <j.0:localDescriptorName>X</j.0:localDescriptorName>
       </j.0:DataDescriptor>
       <j.0:DataDescriptor>
-        <j.0:specifiedUnits rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#nil"/>
         <j.0:dataType>http://www.w3.org/2001/XMLSchema#string</j.0:dataType>
         <j.0:descriptorVariable rdf:resource="#listMapAsObject_X"/>
         <j.0:localDescriptorName>X</j.0:localDescriptorName>
       </j.0:DataDescriptor>
       <j.0:DataDescriptor>
-        <j.0:specifiedUnits rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#nil"/>
         <j.0:dataType>http://www.w3.org/2001/XMLSchema#string</j.0:dataType>
         <j.0:descriptorVariable rdf:resource="#listMapAsObject_X"/>
         <j.0:localDescriptorName>X</j.0:localDescriptorName>
@@ -172,7 +166,6 @@
     </j.0:returnTypes>
     <j.0:arguments rdf:parseType="Collection">
       <j.0:DataDescriptor>
-        <j.0:specifiedUnits rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#nil"/>
         <j.0:dataType>http://www.w3.org/2001/XMLSchema#decimal</j.0:dataType>
         <j.0:descriptorVariable>
           <j.0:GPVariable rdf:ID="min_X"/>
@@ -180,7 +173,6 @@
         <j.0:localDescriptorName>X</j.0:localDescriptorName>
       </j.0:DataDescriptor>
       <j.0:DataDescriptor>
-        <j.0:specifiedUnits rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#nil"/>
         <j.0:dataType>http://www.w3.org/2001/XMLSchema#decimal</j.0:dataType>
         <j.0:descriptorVariable rdf:resource="#min_X"/>
         <j.0:localDescriptorName>X</j.0:localDescriptorName>
@@ -253,7 +245,6 @@
     </j.0:returnTypes>
     <j.0:arguments rdf:parseType="Collection">
       <j.0:DataDescriptor>
-        <j.0:specifiedUnits rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#nil"/>
         <j.0:dataType>http://www.w3.org/2001/XMLSchema#decimal</j.0:dataType>
         <j.0:descriptorVariable>
           <j.0:GPVariable rdf:ID="le_X"/>
@@ -261,7 +252,6 @@
         <j.0:localDescriptorName>X</j.0:localDescriptorName>
       </j.0:DataDescriptor>
       <j.0:DataDescriptor>
-        <j.0:specifiedUnits rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#nil"/>
         <j.0:dataType>http://www.w3.org/2001/XMLSchema#decimal</j.0:dataType>
         <j.0:descriptorVariable rdf:resource="#le_X"/>
         <j.0:localDescriptorName>X</j.0:localDescriptorName>
@@ -296,7 +286,6 @@
     </j.0:returnTypes>
     <j.0:arguments rdf:parseType="Collection">
       <j.0:DataDescriptor>
-        <j.0:specifiedUnits rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#nil"/>
         <j.0:dataType>http://www.w3.org/2001/XMLSchema#string</j.0:dataType>
         <j.0:descriptorVariable>
           <j.0:GPVariable rdf:ID="uriConcat_X"/>
@@ -304,7 +293,6 @@
         <j.0:localDescriptorName>X</j.0:localDescriptorName>
       </j.0:DataDescriptor>
       <j.0:DataDescriptor>
-        <j.0:specifiedUnits rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#nil"/>
         <j.0:dataType>http://www.w3.org/2001/XMLSchema#string</j.0:dataType>
         <j.0:descriptorVariable rdf:resource="#uriConcat_X"/>
         <j.0:localDescriptorName>X</j.0:localDescriptorName>
@@ -339,7 +327,6 @@
     </j.0:returnTypes>
     <j.0:arguments rdf:parseType="Collection">
       <j.0:DataDescriptor>
-        <j.0:specifiedUnits rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#nil"/>
         <j.0:dataType>http://www.w3.org/2001/XMLSchema#string</j.0:dataType>
         <j.0:descriptorVariable>
           <j.0:GPVariable rdf:ID="notBNode_X"/>
@@ -453,7 +440,6 @@
     </j.0:returnTypes>
     <j.0:arguments rdf:parseType="Collection">
       <j.0:DataDescriptor>
-        <j.0:specifiedUnits rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#nil"/>
         <j.0:dataType>http://www.w3.org/2001/XMLSchema#string</j.0:dataType>
         <j.0:descriptorVariable>
           <j.0:GPVariable rdf:ID="regex_X"/>
@@ -461,7 +447,6 @@
         <j.0:localDescriptorName>X</j.0:localDescriptorName>
       </j.0:DataDescriptor>
       <j.0:DataDescriptor>
-        <j.0:specifiedUnits rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#nil"/>
         <j.0:dataType>http://www.w3.org/2001/XMLSchema#string</j.0:dataType>
         <j.0:descriptorVariable rdf:resource="#regex_X"/>
         <j.0:localDescriptorName>X</j.0:localDescriptorName>
@@ -485,7 +470,6 @@
     </j.0:returnTypes>
     <j.0:arguments rdf:parseType="Collection">
       <j.0:DataDescriptor>
-        <j.0:specifiedUnits rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#nil"/>
         <j.0:dataType>http://www.w3.org/2001/XMLSchema#string</j.0:dataType>
         <j.0:descriptorVariable>
           <j.0:GPVariable rdf:ID="listLength_X"/>
@@ -533,7 +517,6 @@
     </j.0:returnTypes>
     <j.0:arguments rdf:parseType="Collection">
       <j.0:DataDescriptor>
-        <j.0:specifiedUnits rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#nil"/>
         <j.0:dataType>http://www.w3.org/2001/XMLSchema#string</j.0:dataType>
         <j.0:descriptorVariable>
           <j.0:GPVariable rdf:ID="notLiteral_X"/>
@@ -559,7 +542,6 @@
     </j.0:returnTypes>
     <j.0:arguments rdf:parseType="Collection">
       <j.0:DataDescriptor>
-        <j.0:specifiedUnits rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#nil"/>
         <j.0:dataType>http://www.w3.org/2001/XMLSchema#string</j.0:dataType>
         <j.0:descriptorVariable>
           <j.0:GPVariable rdf:ID="listEqual_X"/>
@@ -567,7 +549,6 @@
         <j.0:localDescriptorName>X</j.0:localDescriptorName>
       </j.0:DataDescriptor>
       <j.0:DataDescriptor>
-        <j.0:specifiedUnits rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#nil"/>
         <j.0:dataType>http://www.w3.org/2001/XMLSchema#string</j.0:dataType>
         <j.0:descriptorVariable rdf:resource="#listEqual_X"/>
         <j.0:localDescriptorName>X</j.0:localDescriptorName>
@@ -586,7 +567,6 @@
     >com.ge.research.sadl.jena.reasoner.builtin#print</j.0:externalURI>
     <j.0:arguments rdf:parseType="Collection">
       <j.0:DataDescriptor>
-        <j.0:specifiedUnits rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#nil"/>
         <j.0:dataType>http://www.w3.org/2001/XMLSchema#string</j.0:dataType>
         <j.0:descriptorVariable>
           <j.0:GPVariable rdf:ID="print_X"/>
@@ -612,7 +592,6 @@
     </j.0:returnTypes>
     <j.0:arguments rdf:parseType="Collection">
       <j.0:DataDescriptor>
-        <j.0:specifiedUnits rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#nil"/>
         <j.0:dataType>http://www.w3.org/2001/XMLSchema#string</j.0:dataType>
         <j.0:descriptorVariable>
           <j.0:GPVariable rdf:ID="listContains_X"/>
@@ -620,7 +599,6 @@
         <j.0:localDescriptorName>X</j.0:localDescriptorName>
       </j.0:DataDescriptor>
       <j.0:DataDescriptor>
-        <j.0:specifiedUnits rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#nil"/>
         <j.0:dataType>http://www.w3.org/2001/XMLSchema#string</j.0:dataType>
         <j.0:descriptorVariable rdf:resource="#listContains_X"/>
         <j.0:localDescriptorName>X</j.0:localDescriptorName>
@@ -704,7 +682,6 @@
     </j.0:returnTypes>
     <j.0:arguments rdf:parseType="Collection">
       <j.0:DataDescriptor>
-        <j.0:specifiedUnits rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#nil"/>
         <j.0:dataType>http://www.w3.org/2001/XMLSchema#string</j.0:dataType>
         <j.0:descriptorVariable>
           <j.0:GPVariable rdf:ID="bound_X"/>
@@ -741,7 +718,6 @@
     </j.0:returnTypes>
     <j.0:arguments rdf:parseType="Collection">
       <j.0:DataDescriptor>
-        <j.0:specifiedUnits rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#nil"/>
         <j.0:dataType>http://www.w3.org/2001/XMLSchema#decimal</j.0:dataType>
         <j.0:descriptorVariable>
           <j.0:GPVariable rdf:ID="ge_X"/>
@@ -749,7 +725,6 @@
         <j.0:localDescriptorName>X</j.0:localDescriptorName>
       </j.0:DataDescriptor>
       <j.0:DataDescriptor>
-        <j.0:specifiedUnits rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#nil"/>
         <j.0:dataType>http://www.w3.org/2001/XMLSchema#decimal</j.0:dataType>
         <j.0:descriptorVariable rdf:resource="#ge_X"/>
         <j.0:localDescriptorName>X</j.0:localDescriptorName>
@@ -784,7 +759,6 @@
     </j.0:returnTypes>
     <j.0:arguments rdf:parseType="Collection">
       <j.0:DataDescriptor>
-        <j.0:specifiedUnits rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#nil"/>
         <j.0:dataType>http://www.w3.org/2001/XMLSchema#string</j.0:dataType>
         <j.0:descriptorVariable>
           <j.0:GPVariable rdf:ID="notBType_X"/>
@@ -810,7 +784,6 @@
     </j.0:returnTypes>
     <j.0:arguments rdf:parseType="Collection">
       <j.0:DataDescriptor>
-        <j.0:specifiedUnits rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#nil"/>
         <j.0:dataType>http://www.w3.org/2001/XMLSchema#decimal</j.0:dataType>
         <j.0:descriptorVariable>
           <j.0:GPVariable rdf:ID="acos_X"/>
@@ -836,7 +809,6 @@
     </j.0:returnTypes>
     <j.0:arguments rdf:parseType="Collection">
       <j.0:DataDescriptor>
-        <j.0:specifiedUnits rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#nil"/>
         <j.0:dataType>http://www.w3.org/2001/XMLSchema#string</j.0:dataType>
         <j.0:descriptorVariable>
           <j.0:GPVariable rdf:ID="isBNode_X"/>
@@ -862,7 +834,6 @@
     </j.0:returnTypes>
     <j.0:arguments rdf:parseType="Collection">
       <j.0:DataDescriptor>
-        <j.0:specifiedUnits rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#nil"/>
         <j.0:dataType>http://www.w3.org/2001/XMLSchema#string</j.0:dataType>
         <j.0:descriptorVariable>
           <j.0:GPVariable rdf:ID="notDType_X"/>
@@ -910,7 +881,6 @@
     </j.0:returnTypes>
     <j.0:arguments rdf:parseType="Collection">
       <j.0:DataDescriptor>
-        <j.0:specifiedUnits rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#nil"/>
         <j.0:dataType>http://www.w3.org/2001/XMLSchema#string</j.0:dataType>
         <j.0:descriptorVariable>
           <j.0:GPVariable rdf:ID="listMapAsSubject_X"/>
@@ -918,13 +888,11 @@
         <j.0:localDescriptorName>X</j.0:localDescriptorName>
       </j.0:DataDescriptor>
       <j.0:DataDescriptor>
-        <j.0:specifiedUnits rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#nil"/>
         <j.0:dataType>http://www.w3.org/2001/XMLSchema#string</j.0:dataType>
         <j.0:descriptorVariable rdf:resource="#listMapAsSubject_X"/>
         <j.0:localDescriptorName>X</j.0:localDescriptorName>
       </j.0:DataDescriptor>
       <j.0:DataDescriptor>
-        <j.0:specifiedUnits rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#nil"/>
         <j.0:dataType>http://www.w3.org/2001/XMLSchema#string</j.0:dataType>
         <j.0:descriptorVariable rdf:resource="#listMapAsSubject_X"/>
         <j.0:localDescriptorName>X</j.0:localDescriptorName>
@@ -970,7 +938,6 @@
     </j.0:returnTypes>
     <j.0:arguments rdf:parseType="Collection">
       <j.0:DataDescriptor>
-        <j.0:specifiedUnits rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#nil"/>
         <j.0:dataType>http://www.w3.org/2001/XMLSchema#decimal</j.0:dataType>
         <j.0:descriptorVariable>
           <j.0:GPVariable rdf:ID="max_X"/>
@@ -978,7 +945,6 @@
         <j.0:localDescriptorName>X</j.0:localDescriptorName>
       </j.0:DataDescriptor>
       <j.0:DataDescriptor>
-        <j.0:specifiedUnits rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#nil"/>
         <j.0:dataType>http://www.w3.org/2001/XMLSchema#decimal</j.0:dataType>
         <j.0:descriptorVariable rdf:resource="#max_X"/>
         <j.0:localDescriptorName>X</j.0:localDescriptorName>
@@ -1002,7 +968,6 @@
     </j.0:returnTypes>
     <j.0:arguments rdf:parseType="Collection">
       <j.0:DataDescriptor>
-        <j.0:specifiedUnits rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#nil"/>
         <j.0:dataType>http://www.w3.org/2001/XMLSchema#string</j.0:dataType>
         <j.0:descriptorVariable>
           <j.0:GPVariable rdf:ID="listEntry_X"/>
@@ -1010,7 +975,6 @@
         <j.0:localDescriptorName>X</j.0:localDescriptorName>
       </j.0:DataDescriptor>
       <j.0:DataDescriptor>
-        <j.0:specifiedUnits rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#nil"/>
         <j.0:dataType>http://www.w3.org/2001/XMLSchema#int</j.0:dataType>
         <j.0:descriptorVariable rdf:resource="#listEntry_X"/>
         <j.0:localDescriptorName>X</j.0:localDescriptorName>
@@ -1034,7 +998,6 @@
     </j.0:returnTypes>
     <j.0:arguments rdf:parseType="Collection">
       <j.0:DataDescriptor>
-        <j.0:specifiedUnits rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#nil"/>
         <j.0:dataType>http://www.w3.org/2001/XMLSchema#decimal</j.0:dataType>
         <j.0:descriptorVariable>
           <j.0:GPVariable rdf:ID="difference_X"/>
@@ -1042,7 +1005,6 @@
         <j.0:localDescriptorName>X</j.0:localDescriptorName>
       </j.0:DataDescriptor>
       <j.0:DataDescriptor>
-        <j.0:specifiedUnits rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#nil"/>
         <j.0:dataType>http://www.w3.org/2001/XMLSchema#decimal</j.0:dataType>
         <j.0:descriptorVariable rdf:resource="#difference_X"/>
         <j.0:localDescriptorName>X</j.0:localDescriptorName>
@@ -1077,7 +1039,6 @@
     </j.0:returnTypes>
     <j.0:arguments rdf:parseType="Collection">
       <j.0:DataDescriptor>
-        <j.0:specifiedUnits rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#nil"/>
         <j.0:dataType>http://www.w3.org/2001/XMLSchema#string</j.0:dataType>
         <j.0:descriptorVariable>
           <j.0:GPVariable rdf:ID="isLiteral_X"/>
@@ -1103,7 +1064,6 @@
     </j.0:returnTypes>
     <j.0:arguments rdf:parseType="Collection">
       <j.0:DataDescriptor>
-        <j.0:specifiedUnits rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#nil"/>
         <j.0:dataType>http://www.w3.org/2001/XMLSchema#string</j.0:dataType>
         <j.0:descriptorVariable>
           <j.0:GPVariable rdf:ID="unbound_X"/>
@@ -1129,7 +1089,6 @@
     </j.0:returnTypes>
     <j.0:arguments rdf:parseType="Collection">
       <j.0:DataDescriptor>
-        <j.0:specifiedUnits rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#nil"/>
         <j.0:dataType>http://www.w3.org/2001/XMLSchema#string</j.0:dataType>
         <j.0:descriptorVariable>
           <j.0:GPVariable rdf:ID="listNotEqual_X"/>
@@ -1137,7 +1096,6 @@
         <j.0:localDescriptorName>X</j.0:localDescriptorName>
       </j.0:DataDescriptor>
       <j.0:DataDescriptor>
-        <j.0:specifiedUnits rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#nil"/>
         <j.0:dataType>http://www.w3.org/2001/XMLSchema#string</j.0:dataType>
         <j.0:descriptorVariable rdf:resource="#listNotEqual_X"/>
         <j.0:localDescriptorName>X</j.0:localDescriptorName>
@@ -1172,7 +1130,6 @@
     </j.0:returnTypes>
     <j.0:arguments rdf:parseType="Collection">
       <j.0:DataDescriptor>
-        <j.0:specifiedUnits rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#nil"/>
         <j.0:dataType>http://www.w3.org/2001/XMLSchema#string</j.0:dataType>
         <j.0:descriptorVariable>
           <j.0:GPVariable rdf:ID="countLiteralValues_X"/>
@@ -1180,7 +1137,6 @@
         <j.0:localDescriptorName>X</j.0:localDescriptorName>
       </j.0:DataDescriptor>
       <j.0:DataDescriptor>
-        <j.0:specifiedUnits rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#nil"/>
         <j.0:dataType>http://www.w3.org/2001/XMLSchema#string</j.0:dataType>
         <j.0:descriptorVariable rdf:resource="#countLiteralValues_X"/>
         <j.0:localDescriptorName>X</j.0:localDescriptorName>
@@ -1204,7 +1160,6 @@
     </j.0:returnTypes>
     <j.0:arguments rdf:parseType="Collection">
       <j.0:DataDescriptor>
-        <j.0:specifiedUnits rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#nil"/>
         <j.0:dataType>http://www.w3.org/2001/XMLSchema#string</j.0:dataType>
         <j.0:descriptorVariable>
           <j.0:GPVariable rdf:ID="listNotContains_X"/>
@@ -1212,7 +1167,6 @@
         <j.0:localDescriptorName>X</j.0:localDescriptorName>
       </j.0:DataDescriptor>
       <j.0:DataDescriptor>
-        <j.0:specifiedUnits rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#nil"/>
         <j.0:dataType>http://www.w3.org/2001/XMLSchema#string</j.0:dataType>
         <j.0:descriptorVariable rdf:resource="#listNotContains_X"/>
         <j.0:localDescriptorName>X</j.0:localDescriptorName>
@@ -1258,7 +1212,6 @@
     </j.0:returnTypes>
     <j.0:arguments rdf:parseType="Collection">
       <j.0:DataDescriptor>
-        <j.0:specifiedUnits rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#nil"/>
         <j.0:dataType>http://www.w3.org/2001/XMLSchema#string</j.0:dataType>
         <j.0:descriptorVariable>
           <j.0:GPVariable rdf:ID="strConcat_X"/>
@@ -1266,7 +1219,6 @@
         <j.0:localDescriptorName>X</j.0:localDescriptorName>
       </j.0:DataDescriptor>
       <j.0:DataDescriptor>
-        <j.0:specifiedUnits rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#nil"/>
         <j.0:dataType>http://www.w3.org/2001/XMLSchema#string</j.0:dataType>
         <j.0:descriptorVariable rdf:resource="#strConcat_X"/>
         <j.0:localDescriptorName>X</j.0:localDescriptorName>

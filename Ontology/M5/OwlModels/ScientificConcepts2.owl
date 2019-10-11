@@ -274,7 +274,6 @@
     </j.0:returnTypes>
     <j.0:arguments rdf:parseType="Collection">
       <j.0:DataDescriptor>
-        <j.0:specifiedUnits rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#nil"/>
         <j.0:dataType>http://sadl.org/sadlimplicitmodel#ExternalEquation</j.0:dataType>
         <j.0:descriptorVariable>
           <j.0:ExternalEquation rdf:ID="cgSC_eq">
@@ -284,7 +283,6 @@
         <j.0:localDescriptorName>eq</j.0:localDescriptorName>
       </j.0:DataDescriptor>
       <j.0:DataDescriptor>
-        <j.0:specifiedUnits rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#nil"/>
         <j.0:dataType>http://sadl.org/ScientificConcepts2.sadl#primitiveData</j.0:dataType>
         <j.0:descriptorVariable>
           <scicncpts2:primitiveData rdf:ID="cgSC_arg">
@@ -312,7 +310,6 @@
     </j.0:returnTypes>
     <j.0:arguments rdf:parseType="Collection">
       <j.0:DataDescriptor>
-        <j.0:specifiedUnits rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#nil"/>
         <j.0:dataType>http://www.w3.org/2001/XMLSchema#string</j.0:dataType>
         <j.0:descriptorVariable>
           <j.0:GPVariable rdf:ID="unitResolver_operation"/>
@@ -320,7 +317,6 @@
         <j.0:localDescriptorName>operation</j.0:localDescriptorName>
       </j.0:DataDescriptor>
       <j.0:DataDescriptor>
-        <j.0:specifiedUnits rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#nil"/>
         <j.0:dataType>http://www.w3.org/2001/XMLSchema#string</j.0:dataType>
         <j.0:descriptorVariable>
           <j.0:GPVariable rdf:ID="unitResolver_u"/>
@@ -385,7 +381,6 @@
             </j.0:constraints>
           </j.0:SemanticConstraint>
         </j.0:augmentedType>
-        <j.0:specifiedUnits rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#nil"/>
         <j.0:dataType>http://www.w3.org/2001/XMLSchema#decimal</j.0:dataType>
         <j.0:descriptorVariable rdf:resource="#densityEq_m"/>
         <j.0:localDescriptorName>m</j.0:localDescriptorName>
@@ -404,7 +399,6 @@
             </j.0:constraints>
           </j.0:SemanticConstraint>
         </j.0:augmentedType>
-        <j.0:specifiedUnits rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#nil"/>
         <j.0:dataType>http://www.w3.org/2001/XMLSchema#decimal</j.0:dataType>
         <j.0:descriptorVariable rdf:resource="#densityEq_v"/>
         <j.0:localDescriptorName>v</j.0:localDescriptorName>
@@ -428,7 +422,6 @@
     </j.0:returnTypes>
     <j.0:arguments rdf:parseType="Collection">
       <j.0:DataDescriptor>
-        <j.0:specifiedUnits rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#nil"/>
         <j.0:dataType>http://sadl.org/sadlimplicitmodel#ExternalEquation</j.0:dataType>
         <j.0:descriptorVariable>
           <j.0:ExternalEquation rdf:ID="cg_eq">
@@ -438,7 +431,6 @@
         <j.0:localDescriptorName>eq</j.0:localDescriptorName>
       </j.0:DataDescriptor>
       <j.0:DataDescriptor>
-        <j.0:specifiedUnits rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#nil"/>
         <j.0:dataType>http://sadl.org/ScientificConcepts2.sadl#primitiveData</j.0:dataType>
         <j.0:descriptorVariable>
           <scicncpts2:primitiveData rdf:ID="cg_arg">

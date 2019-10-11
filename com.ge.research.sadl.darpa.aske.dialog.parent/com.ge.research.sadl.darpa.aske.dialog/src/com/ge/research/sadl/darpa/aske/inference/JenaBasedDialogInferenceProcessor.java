@@ -66,7 +66,11 @@ import org.eclipse.emf.ecore.resource.Resource;
 import com.ge.research.sadl.builder.ConfigurationManagerForIDE;
 import com.ge.research.sadl.builder.ConfigurationManagerForIdeFactory;
 import com.ge.research.sadl.builder.IConfigurationManagerForIDE;
+import com.ge.research.sadl.darpa.aske.curation.AnswerCurationManager;
+import com.ge.research.sadl.darpa.aske.curation.AnswerCurationManager.Agent;
 import com.ge.research.sadl.darpa.aske.preferences.DialogPreferences;
+import com.ge.research.sadl.darpa.aske.processing.DialogConstants;
+import com.ge.research.sadl.darpa.aske.processing.SadlStatementContent;
 import com.ge.research.sadl.jena.JenaBasedSadlInferenceProcessor;
 import com.ge.research.sadl.jena.UtilsForJena;
 import com.ge.research.sadl.model.gp.Literal;
@@ -638,17 +642,17 @@ public class JenaBasedDialogInferenceProcessor extends JenaBasedSadlInferencePro
 			ConfigurationManagerForIDE cmgr = null;
 			Object qhModelObj = OntModelProvider.getPrivateKeyValuePair(resource, queryHistoryKey);
 			
+			try {
+				//String p = getModelFolderPath(resource);
+				cmgr = ConfigurationManagerForIdeFactory.getConfigurationManagerForIDE(getModelFolderPath(resource), ConfigurationManagerForIDE.getOWLFormat());
+			} catch (ConfigurationException e1) {
+				//  Auto-generated catch block
+				e1.printStackTrace();
+			}
 			if (qhModelObj == null) {
 				File f = new File(qhOwlFileWithPath);
 				if (f.exists() && !f.isDirectory()) {
 				//if (Files.exists(qhpath)) {
-					try {
-						//String p = getModelFolderPath(resource);
-						cmgr = new ConfigurationManagerForIDE(getModelFolderPath(resource), ConfigurationManagerForIDE.getOWLFormat());
-					} catch (ConfigurationException e1) {
-						//  Auto-generated catch block
-						e1.printStackTrace();
-					}
 					qhmodel = cmgr.loadOntModel(qhOwlFileWithPath);
 				}
 				else {
@@ -1113,8 +1117,28 @@ public class JenaBasedDialogInferenceProcessor extends JenaBasedSadlInferencePro
 							dbnresults[i] = retrieveCompGraph(resource, cgIns);
 							
 							dbnresults[i+numOfModels] = retrieveValues(resource, cgIns);
-	
-			            
+							// convert to SADL to insert into dialog window
+							ResultSet rs = dbnresults[i+numOfModels];
+							List<String> sadlDeclaration = new ArrayList<String>();
+							for (int row = 0; row < rs.getRowCount(); row++) {
+								StringBuilder sb = new StringBuilder("a CGExecution ");
+								sb.append(rs.getResultAt(row, 0).toString());
+								sb.append(" output (a ");
+								sb.append(rs.getResultAt(row, 1).toString());
+								sb.append(" with ^value ");
+								sb.append(rs.getResultAt(row, 2));
+								sb.append(", with stddev ");
+								sb.append(rs.getResultAt(row, 3));
+								sb.append(").");
+								sadlDeclaration.add(sb.toString());
+							}
+							
+							for (String sd : sadlDeclaration) {
+								SadlStatementContent ssc = new SadlStatementContent(null, Agent.CM, sd);
+								AnswerCurationManager acm = (AnswerCurationManager) cmgr.getPrivateKeyValuePair(DialogConstants.ANSWER_CURATION_MANAGER);
+								acm.notifyUser(getModelFolderPath(resource), ssc, false);
+							}
+
 			            }
 			            else {
 			            	dbnresults = null;

@@ -688,14 +688,14 @@ public class AnswerCurationManager {
 			if (ddList instanceof Resource) {
 				String argQuery = "select ?argName ?argType where {<" + extractedModelInstance.getURI() + "> <" + 
 						SadlConstants.SADL_IMPLICIT_MODEL_ARGUMENTS_PROPERTY_URI + 
-						"> ?ddList . ?ddList <http://jena.hpl.hp.com/ARQ/list#member> ?member . ?member <" +
+						">/<sadllistmodel:rest>*/<sadllistmodel:first> ?member . ?member <" +
 						SadlConstants.SADL_IMPLICIT_MODEL_DESCRIPTOR_NAME_PROPERTY_URI + "> ?argName . ?member <" +
 						SadlConstants.SADL_IMPLICIT_MODEL_DATATYPE_PROPERTY_URI + "> ?argType}";							// query to get the argument names and types
 				ResultSet rs = reasoner.ask(argQuery);
 				logger.debug(rs != null ? rs.toString() : "no argument results");
 				String retQuery = "select ?retName ?retType where {<" + extractedModelInstance.getURI() + "> <" + 
 						SadlConstants.SADL_IMPLICIT_MODEL_RETURN_TYPES_PROPERTY_URI + 
-						"> ?ddList . ?ddList <http://jena.hpl.hp.com/ARQ/list#member> ?member . OPTIONAL{?member <" +
+						">/<sadllistmodel:rest>*/<sadllistmodel:first> ?member . OPTIONAL{?member <" +
 						SadlConstants.SADL_IMPLICIT_MODEL_DESCRIPTOR_NAME_PROPERTY_URI + "> ?retName} . ?member <" +
 						SadlConstants.SADL_IMPLICIT_MODEL_DATATYPE_PROPERTY_URI + "> ?retType}";							// query to get the return types
 				ResultSet rs2 = reasoner.ask(retQuery);
@@ -1337,7 +1337,13 @@ public class AnswerCurationManager {
 		}
 	}
 	
-	private void notifyUser(String codeModelFolder, StatementContent sc, boolean quote) {
+	/**
+	 * Method to call to put Statements into the Dialog window.
+	 * @param codeModelFolder
+	 * @param sc
+	 * @param quote
+	 */
+	public void notifyUser(String codeModelFolder, StatementContent sc, boolean quote) {
 		if (getDialogAnswerProvider() != null) {
 			// talk to the user via the Dialog editor
 			Method acmic = null;
@@ -1661,7 +1667,7 @@ public class AnswerCurationManager {
 				}
 				else {
 					answer = rs.toString();
-					answer.replace("\"", "'");
+					answer = answer.replace("\"", "'");
 				}
 				quote = true;
 			}
@@ -2428,6 +2434,7 @@ public class AnswerCurationManager {
 	}
 
 	private Object[] insertTriplesAndQuery(org.eclipse.emf.ecore.resource.Resource resource, TripleElement[] triples) throws ExecutionException, SadlInferenceException {
+		getConfigurationManager().addPrivateKeyValuePair(DialogConstants.ANSWER_CURATION_MANAGER, this);
 		return getInferenceProcessor().insertTriplesAndQuery(resource, triples);
 	}
 
