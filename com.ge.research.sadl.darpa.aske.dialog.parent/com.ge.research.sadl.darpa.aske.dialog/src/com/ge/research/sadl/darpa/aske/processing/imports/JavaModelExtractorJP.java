@@ -399,7 +399,7 @@ public class JavaModelExtractorJP implements IModelFromCodeExtractor {
 				try {
 					Individual argCV = getOrCreateCodeVariable(param, methInst, getMethodVariableClass());
 					argList.add(argCV);
-				} catch (CodeExtractionException e) {
+				} catch (AnswerExtractionException e) {
 					// TODO Auto-generated catch block
 					e.printStackTrace();
 				}
@@ -450,7 +450,7 @@ public class JavaModelExtractorJP implements IModelFromCodeExtractor {
         		if (expr instanceof NameExpr) {
         			try {
 						setSetterArgument(mc, (NameExpr)expr, containingInst);
-					} catch (CodeExtractionException e) {
+					} catch (AnswerExtractionException e) {
 						// TODO Auto-generated catch block
 						e.printStackTrace();
 					}
@@ -484,7 +484,7 @@ public class JavaModelExtractorJP implements IModelFromCodeExtractor {
 			try {
 				OntClass codeVarClass = getMethodVariableClass();
 				Individual vdInst = getOrCreateCodeVariable(vdecl, containingInst, codeVarClass);
-			} catch (CodeExtractionException e) {
+			} catch (AnswerExtractionException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
@@ -494,7 +494,7 @@ public class JavaModelExtractorJP implements IModelFromCodeExtractor {
 			try {
 				OntClass codeVarClass = getClassFieldClass();	// TODO is this always field or only in a class?
 				Individual fdInst = getOrCreateCodeVariable(childNode, containingInst, codeVarClass);
-			} catch (CodeExtractionException e) {
+			} catch (AnswerExtractionException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
@@ -650,7 +650,7 @@ public class JavaModelExtractorJP implements IModelFromCodeExtractor {
 		if (varInst == null && !lookToLargerScope) {
 			try {
 				varInst = getOrCreateCodeVariable(childNode, nm, nnm, containingInst, getCodeVariableClass(childNode), inputOutput);
-			} catch (CodeExtractionException e) {
+			} catch (AnswerExtractionException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
@@ -662,7 +662,7 @@ public class JavaModelExtractorJP implements IModelFromCodeExtractor {
 	          	if (isSetterArgument) {
 	          		ref.setPropertyValue(getSetterArgumentProperty(), getCurrentCodeModel().createTypedLiteral(true));
 	          	}
-			} catch (CodeExtractionException e) {
+			} catch (AnswerExtractionException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
@@ -710,7 +710,7 @@ public class JavaModelExtractorJP implements IModelFromCodeExtractor {
 		return varInst;
 	}
 
-	private void setSetterArgument(MethodCallExpr mc, NameExpr arg, Individual containingInst) throws CodeExtractionException {
+	private void setSetterArgument(MethodCallExpr mc, NameExpr arg, Individual containingInst) throws AnswerExtractionException {
 		boolean isArgToSetter = false;
 		if (mc.getNameAsString().startsWith("set") || mc.getNameAsString().contains(".set")) {
 			isArgToSetter = true;
@@ -733,14 +733,14 @@ public class JavaModelExtractorJP implements IModelFromCodeExtractor {
 		}
 	}
 
-	private Individual createReference(Node varNode, Individual codeVarInst, Individual containingInst, USAGE usage) throws CodeExtractionException {
+	private Individual createReference(Node varNode, Individual codeVarInst, Individual containingInst, USAGE usage) throws AnswerExtractionException {
 		Individual ref = createNewReference(containingInst, varNode, usage);
 		codeVarInst.addProperty(getReferenceProperty(), ref);
 		return ref;
 	}
 
 //	private Individual createNewReference(Individual blkInst, int beginsAt, int endsAt, USAGE usage) throws CodeExtractionException {
-	private Individual createNewReference(Individual blkInst, Node varNode, USAGE usage) throws CodeExtractionException {
+	private Individual createNewReference(Individual blkInst, Node varNode, USAGE usage) throws AnswerExtractionException {
 		Individual refInst = getCurrentCodeModel().createIndividual(getReferenceClass());
 		if (blkInst != null) {
 			refInst.addProperty(getCodeBlockProperty(), blkInst);
@@ -761,7 +761,7 @@ public class JavaModelExtractorJP implements IModelFromCodeExtractor {
 		return methInst;
 	}
 
-	private Individual getOrCreateCodeVariable(Node varNode, Individual containingInst, OntClass codeVarClass) throws CodeExtractionException {
+	private Individual getOrCreateCodeVariable(Node varNode, Individual containingInst, OntClass codeVarClass) throws AnswerExtractionException {
 		Individual cvInst = null;
 		String origName = null;
 		String nnm = null;
@@ -810,14 +810,14 @@ public class JavaModelExtractorJP implements IModelFromCodeExtractor {
 			return findCodeVariableAndAddReference(varNode, nm.getNameAsString(), containingInst, USAGE.Defined, false, InputOutput.Input, false);
 		}
 		else {
-			throw new CodeExtractionException("Unexpected CodeVariable varNode type: " + varNode.getClass().getCanonicalName());
+			throw new AnswerExtractionException("Unexpected CodeVariable varNode type: " + varNode.getClass().getCanonicalName());
 		}
 		cvInst = getOrCreateCodeVariable(varNode, origName, nnm, containingInst, codeVarClass, null);
 		return cvInst;
 	}
 
 	private Individual getOrCreateCodeVariable(Node varNode, String origName, String nnm, Individual containingInst,
-			OntClass codeVarClass, InputOutput inputOutput) throws CodeExtractionException {
+			OntClass codeVarClass, InputOutput inputOutput) throws AnswerExtractionException {
 		Individual cvInst;
 		cvInst = getCurrentCodeModel().getIndividual(getCodeModelNamespace() + nnm);
 		if (cvInst == null && codeVarClass != null) {
@@ -887,7 +887,7 @@ public class JavaModelExtractorJP implements IModelFromCodeExtractor {
     	return clsInst;
 	}
 
-	private Individual getUsageInstance(USAGE usage) throws CodeExtractionException {
+	private Individual getUsageInstance(USAGE usage) throws AnswerExtractionException {
 		if (usage.equals(USAGE.Defined)) {
 			return getCurrentCodeModel().getIndividual(getCodeMetaModelUri() + "#Defined");
 		}
@@ -897,7 +897,7 @@ public class JavaModelExtractorJP implements IModelFromCodeExtractor {
 		else if (usage.equals(USAGE.Reassigned)) {
 			return getCurrentCodeModel().getIndividual(getCodeMetaModelUri() + "#Reassigned");
 		}
-		throw new CodeExtractionException("Unexpected USAGE: " + usage.toString());
+		throw new AnswerExtractionException("Unexpected USAGE: " + usage.toString());
 	}
 
 	private Property getSetterArgumentProperty() {
