@@ -1011,12 +1011,13 @@ public class AnswerCurationManager {
 		clearCodeModelReasoner();
 		// get inputs and outputs and identify semantic meaning thereof
 		String inputQuery = "select ?arg ?argName ?argtyp where {<";
-//		inputQuery += methodName.toString().trim();
+		inputQuery += methodName.toString().trim();
 //		inputQuery += "> <arguments>/<sadllistmodel:rest>*/<sadllistmodel:first> ?arg . ?arg <localDescriptorName> ?argName . OPTIONAL{?arg <dataType> ?argtyp}}";
-		inputQuery = "select ?m ?argName ?argtyp where {?m <rdf:type> <ExternalEquation> . "
-				+ "?m <expression> ?exp . ?exp <language> <" + lang1 + "> . ?exp <script> '" + code1 + "'  . "
-				+ "?m <expression> ?exp2 . ?exp2 <language> <" + lang2 + "> . ?exp2 <script> '" + code2 + "' . "
-				+ "?m <arguments>/<sadllistmodel:rest>*/<sadllistmodel:first> ?arg . ?arg <localDescriptorName> ?argName . OPTIONAL{?arg <dataType> ?argtyp}}";
+		inputQuery += "> <arguments>/<rdf:rest>*/<rdf:first> ?arg . ?arg <localDescriptorName> ?argName . OPTIONAL{?arg <dataType> ?argtyp}}";
+//		inputQuery = "select ?m ?argName ?argtyp where {?m <rdf:type> <ExternalEquation> . "
+//				+ "?m <expression> ?exp . ?exp <language> <" + lang1 + "> . ?exp <script> '" + code1 + "'  . "
+//				+ "?m <expression> ?exp2 . ?exp2 <language> <" + lang2 + "> . ?exp2 <script> '" + code2 + "' . "
+//				+ "?m <arguments>/<sadllistmodel:rest>*/<sadllistmodel:first> ?arg . ?arg <localDescriptorName> ?argName . OPTIONAL{?arg <dataType> ?argtyp}}";
 
 		IReasoner reasoner = getConfigurationManager().getReasoner();
 		if (!reasoner.isInitialized()) {
@@ -1027,6 +1028,7 @@ public class AnswerCurationManager {
 		ResultSet inputResults =  reasoner.ask(inputQuery);
 		logger.debug(inputResults != null ? inputResults.toStringWithIndent(5) : "no results");
 		if (inputResults != null) {
+			inputResults.setShowNamespaces(false);
 			for (int r = 0; r < inputResults.getRowCount(); r++) {
 				String argType = inputResults.getResultAt(r, 2).toString();
 				String argName = inputResults.getResultAt(r, 1).toString();
@@ -1040,24 +1042,26 @@ public class AnswerCurationManager {
 		}
 		sb.append(") returns ");
 		
-//		String outputTypeQuery = "select ?retname ?rettyp where {<";
-//		outputTypeQuery += methodName.toString().trim();
+		String outputTypeQuery = "select ?retname ?rettyp where {<";
+		outputTypeQuery += methodName.toString().trim();
 //		outputTypeQuery += "> <returnTypes>/<sadllistmodel:rest>*/<sadllistmodel:first> ?rt . OPTIONAL{?rt <localDescriptorName> ?retname} . ?rt <dataType> ?rettyp}";
-		String outputTypeQuery = "select ?m ?argName ?argtyp where {?m <rdf:type> <ExternalEquation> . " + 
-				"?m <expression> ?exp . ?exp <language> <" + lang1 + "> . ?exp <script> '" + code1 + "'  . " + 
-				"?m <expression> ?exp2 . ?exp2 <language> <" + lang2 + "> . ?exp2 <script> '" + code2 + "' ." +
-				"?m <returnTypes>/<sadllistmodel:rest>*/<sadllistmodel:first> ?rt . OPTIONAL{?rt <localDescriptorName> ?retname} . ?rt <dataType> ?rettyp}";
+		outputTypeQuery += "> <returnTypes>/<rdf:rest>*/<rdf:first> ?rt . OPTIONAL{?rt <localDescriptorName> ?retname} . ?rt <dataType> ?rettyp}";
+//		String outputTypeQuery = "select ?m ?argName ?argtyp where {?m <rdf:type> <ExternalEquation> . " + 
+//				"?m <expression> ?exp . ?exp <language> <" + lang1 + "> . ?exp <script> '" + code1 + "'  . " + 
+//				"?m <expression> ?exp2 . ?exp2 <language> <" + lang2 + "> . ?exp2 <script> '" + code2 + "' ." +
+//				"?m <returnTypes>/<sadllistmodel:rest>*/<sadllistmodel:first> ?rt . OPTIONAL{?rt <localDescriptorName> ?retname} . ?rt <dataType> ?rettyp}";
 		outputTypeQuery = getInitializedTextModelReasoner().prepareQuery(outputTypeQuery);
 		ResultSet outputResults =  getInitializedTextModelReasoner().ask(outputTypeQuery);
 		logger.debug(outputResults != null ? outputResults.toStringWithIndent(5) : "no results");
 		if (outputResults != null) {
+			outputResults.setShowNamespaces(false);
 			int numReturnValues = outputResults.getRowCount();
 			if (numReturnValues > 1) {
 				sb.append("[");
 			}
 			for (int r = 0; r < numReturnValues; r++) {
 				String retName = outputResults.getResultAt(r, 0).toString();
-				Object rt = outputResults.getResultAt(r, 0);
+				Object rt = outputResults.getResultAt(r, 1);
 				if (rt != null) {
 					String retType = rt.toString();
 					if (r > 0) {
@@ -1073,6 +1077,7 @@ public class AnswerCurationManager {
 		}
 		else {
 			// SADL doesn't currently support an equation that doesn't return anything
+			getTextProcessor().getCurrentTextModel().write(System.err);
 			throw new AnswerExtractionException("Equations that do not return a value are not supported.");
 		}
 		String eqUri = getExtractionProcessor().getCodeModelName() + "#" + methodName.toString().trim();
