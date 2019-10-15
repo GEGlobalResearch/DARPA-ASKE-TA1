@@ -61,6 +61,7 @@ import org.apache.http.entity.StringEntity;
 import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.message.BasicNameValuePair;
 import org.apache.http.util.EntityUtils;
+import org.eclipse.emf.common.util.URI;
 import org.eclipse.emf.ecore.resource.Resource;
 
 import com.ge.research.sadl.builder.ConfigurationManagerForIDE;
@@ -72,6 +73,7 @@ import com.ge.research.sadl.darpa.aske.preferences.DialogPreferences;
 import com.ge.research.sadl.darpa.aske.processing.DialogConstants;
 import com.ge.research.sadl.darpa.aske.processing.SadlStatementContent;
 import com.ge.research.sadl.jena.JenaBasedSadlInferenceProcessor;
+import com.ge.research.sadl.jena.JenaBasedSadlModelProcessor;
 import com.ge.research.sadl.jena.UtilsForJena;
 import com.ge.research.sadl.model.gp.Literal;
 import com.ge.research.sadl.model.gp.NamedNode;
@@ -105,6 +107,7 @@ import com.hp.hpl.jena.rdf.model.ModelFactory;
 import com.hp.hpl.jena.rdf.model.Property;
 import com.hp.hpl.jena.rdf.model.RDFNode;
 import com.hp.hpl.jena.update.UpdateAction;
+import com.hp.hpl.jena.vocabulary.RDF;
 
 public class JenaBasedDialogInferenceProcessor extends JenaBasedSadlInferenceProcessor {
 
@@ -136,7 +139,7 @@ public class JenaBasedDialogInferenceProcessor extends JenaBasedSadlInferencePro
 	public static final String UNIT_PROP = "http://sadl.org/sadlimplicitmodel#unit";
 	public static final String STDDEV_PROP = "http://sadl.org/sadlimplicitmodel#stddev";
 	public static final String VARERROR_PROP = "http://sadl.org/sadlimplicitmodel#varError";
-	public static final String MODELERROR_PROP = METAMODEL_PREFIX + "modelError";
+	public static final String MODELERROR_PROP = METAMODEL_PREFIX + "accuracy";
 	public static final String METAMODEL_SENS_PROP = METAMODEL_PREFIX + "sensitivity";
 	public static final String METAMODEL_INPUTSENS_PROP = METAMODEL_PREFIX + "inputSensitivity";
 	public static final String METAMODEL_SENSVALUE_PROP = METAMODEL_PREFIX + "sensitivityValue";
@@ -601,6 +604,19 @@ public class JenaBasedDialogInferenceProcessor extends JenaBasedSadlInferencePro
 			"  ?doc imp:dataLocation ?furl.\n" + 
 			"}";
 
+	private static final String SENSITIVITYQUERY = "prefix mm:<http://aske.ge.com/metamodel#>\n" + 
+			"prefix rdfs:<http://www.w3.org/2000/01/rdf-schema#>\n" + 
+			"\n" + 
+			"select distinct (strafter(str(?O),'#') as ?Output) (strafter(str(?I),'#') as ?Input) ?Sensitivity\n" + 
+			"where { \n" + 
+			" ?CG mm:sensitivity ?SS.\n" + 
+			"     filter (?CG in ( COMPGRAPH )) \n" + 
+			" ?SS mm:output ?O.\n" + 
+			" ?SS mm:inputSensitivity ?Sy.\n" + 
+			" ?Sy mm:input ?I.\n" + 
+			" ?Sy mm:sensitivityValue ?Sensitivity\n" + 
+			" } ";
+
 
 	@Override
 	public boolean isSupported(String fileExtension) {
@@ -649,7 +665,8 @@ public class JenaBasedDialogInferenceProcessor extends JenaBasedSadlInferencePro
 //			queryKey = cgq.getLocalName();
 //			queryModel = ModelFactory.createOntologyModel(OntModelSpec.OWL_MEM);
 //			OntModelProvider.addPrivateKeyValuePair(resource, queryKey, queryModel);
-			String kgsDirectory = getModelFolderPath(resource) + File.separator  + "Queries";
+			
+			String kgsDirectory = new File(getModelFolderPath(resource)).getParent() + File.separator  + "Queries";
 			new File(kgsDirectory).mkdir();
 			
 			String queryModelFileName = "Q_" + System.currentTimeMillis();
@@ -657,6 +674,9 @@ public class JenaBasedDialogInferenceProcessor extends JenaBasedSadlInferencePro
 			String queryInstanceName = METAMODEL_PREFIX + queryModelFileName;
 			String queryOwlFileWithPath = kgsDirectory + File.separator + queryModelFileName + ".owl";
 
+			String queryModelURI = "http://aske.ge.com/" + "Model_" + queryModelFileName;
+			
+			
 			//ConfigurationManagerForIDE cmgr = null;
 			//Object qhModelObj = OntModelProvider.getPrivateKeyValuePair(resource, queryHistoryKey);
 			
@@ -985,6 +1005,7 @@ public class JenaBasedDialogInferenceProcessor extends JenaBasedSadlInferencePro
 						
 						// Comp Graph instance
 						cgIns = queryModel.createIndividual(METAMODEL_PREFIX + "CG_" + System.currentTimeMillis(), getTheJenaModel().getOntClass(METAMODEL_CCG));
+						getTheJenaModel().add(cgIns, RDF.type, getTheJenaModel().getOntClass(METAMODEL_CCG));
 						//qhmodel.add(ce, getTheJenaModel().getOntProperty(METAMODEL_COMPGRAPH_PROP), cgIns);
 						ingestKGTriple(ce, getTheJenaModel().getOntProperty(METAMODEL_COMPGRAPH_PROP), cgIns);
 						//getTheJenaModel().add(ce, RDF.type, getTheJenaModel().getOntClass(METAMODEL_CCG));
@@ -1015,19 +1036,6 @@ public class JenaBasedDialogInferenceProcessor extends JenaBasedSadlInferencePro
 						
 			            dbnResultsJson = executeDBN(dbnJson);
 			            
-			            //Send sensitivity request to DBN
-	//		            queryMode = "sensitivity";
-	//		            cgJson = kgResultsToJson(nodesCSVString, modelsCSVString, queryMode, "");
-	//		            dbnJson = generateDBNjson(cgJson);
-	//		            String dbnResultsJsonSensitivity = executeDBN(dbnJson);
-	//		            String sensitivitiyOutcome = getDBNoutcome(dbnResultsJsonSensitivity);
-	//		            
-	//		            if(sensitivitiyOutcome.equals("Success")) {
-	//			            lbl2class = getLabelClassMapping(dbnJson);
-	//			            ingestSensitivityResults(cgIns, lbl2class, dbnResultsJsonSensitivity);
-	//		            } else {
-	//		            	System.err.println("Sensitivity computation failed");
-	//		            }
 			            
 			            
 			            //check if DBN execution was successful
@@ -1075,14 +1083,35 @@ public class JenaBasedDialogInferenceProcessor extends JenaBasedSadlInferencePro
 	//						}
 							//}
 	
-	//						saveMetaDataFile(resource);
-	//						ResultSet assumpCheck = checkModelAssumptions(resource, cgIns.toString());
-	////						if (assumpCheck == null || !assumpCheck.hasNext() || assumpCheck.next().toString().equals("false")) {
-	////							System.out.println("Model " + cgIns.toString() + " does not satisfy its assumptions");
-	////						}
-	//						if (assumpCheck != null) {
-	//							System.out.println(assumpCheck.toString());
+							
+							
+							AnswerCurationManager acm = (AnswerCurationManager) cmgr.getPrivateKeyValuePair(DialogConstants.ANSWER_CURATION_MANAGER);
+
+							saveMetaDataFile(resource,queryModelFileName); //so we can query the the eqns in the CCG
+							
+							ResultSet assumpCheck = checkModelAssumptions(resource, cgIns.toString(), queryModelURI);
+	//						if (assumpCheck == null || !assumpCheck.hasNext() || assumpCheck.next().toString().equals("false")) {
+	//							System.out.println("Model " + cgIns.toString() + " does not satisfy its assumptions");
 	//						}
+							if (assumpCheck != null) {
+								System.out.println(assumpCheck.toString());
+								
+								StringBuilder sb = new StringBuilder("The CCG " + cgIns.getLocalName() + " has assumptionsSatisfied ");
+								//StringBuilder sb = new StringBuilder("the CCG " + cgIns.getLocalName() + " has assumptionsSatisfied ");
+								if( assumpCheck.getResultAt(0, 0).equals("satisfied")) {
+									sb.append("true");
+								} else {
+									sb.append(" false unsatisfiedAssumption \"");
+									sb.append(assumpCheck.getResultAt(0, 1).toString());
+									sb.append("\"");
+								}
+								sb.append(".");
+								//sadlDeclaration.add(sb.toString());
+								SadlStatementContent ssc = new SadlStatementContent(null, Agent.CM, sb.toString());
+								acm.notifyUser(getModelFolderPath(resource), ssc, false);
+							}
+							
+							
 				            
 							// create ResultSet
 							dbnresults[i] = retrieveCompGraph(resource, cgIns);
@@ -1093,33 +1122,103 @@ public class JenaBasedDialogInferenceProcessor extends JenaBasedSadlInferencePro
 							ResultSet rs = dbnresults[i+numOfModels];
 							List<String> sadlDeclaration = new ArrayList<String>();
 							for (int row = 0; row < rs.getRowCount(); row++) {
-								StringBuilder sb = new StringBuilder("a CGExecution ");
+								StringBuilder sb = new StringBuilder("The CGExecution with compGraph ");
+								//StringBuilder sb = new StringBuilder("The CGExecution ");
 								sb.append(rs.getResultAt(row, 0).toString());
-								sb.append(" output (a ");
+								sb.append(" has output (a ");
 								sb.append(rs.getResultAt(row, 1).toString());
 								sb.append(" with ^value ");
 								sb.append(rs.getResultAt(row, 2));
 								sb.append(", with stddev ");
 								sb.append(rs.getResultAt(row, 3));
-								sb.append(").");
+								sb.append(").\n");
 								sadlDeclaration.add(sb.toString());
 							}
 							
 							for (String sd : sadlDeclaration) {
 								SadlStatementContent ssc = new SadlStatementContent(null, Agent.CM, sd);
-								AnswerCurationManager acm = (AnswerCurationManager) cmgr.getPrivateKeyValuePair(DialogConstants.ANSWER_CURATION_MANAGER);
+//								AnswerCurationManager acm = (AnswerCurationManager) cmgr.getPrivateKeyValuePair(DialogConstants.ANSWER_CURATION_MANAGER);
 								acm.notifyUser(getModelFolderPath(resource), ssc, false);
 							}
+							
+							if ( assumpCheck != null && assumpCheck.getResultAt(0, 0).equals("satisfied") ) {
+					            //Send sensitivity request to DBN
+					            //queryMode = "sensitivity";
+					            cgJson = kgResultsToJson(nodesCSVString, modelsCSVString, "sensitivity", "");
+					            dbnJson = generateDBNjson(cgJson);
+					            String dbnResultsJsonSensitivity = executeDBN(dbnJson);
+					            String sensitivitiyOutcome = getDBNoutcome(dbnResultsJsonSensitivity);
+					            
+					            if(sensitivitiyOutcome.equals("Success")) {
+						            lbl2class = getLabelClassMapping(dbnJson);
+						            ingestSensitivityResults(cgIns, lbl2class, dbnResultsJsonSensitivity);
+						            
+					            } else {
+					            	System.err.println("Sensitivity computation failed");
+					            }
+
+					            ResultSet sensres = retrieveSensitivityResults(resource, cgIns);
+					            String outp = "", nxtoutp = "";
+					            //int opcount = 0;
+					            if (sensres != null && sensres.getRowCount() > 0) {
+									StringBuilder sb = new StringBuilder("The CCG " + cgIns.getLocalName() );
+	
+									for (int row = 0; row < sensres.getRowCount(); row++) {
+										nxtoutp = sensres.getResultAt(row, 0).toString();
+										if (!nxtoutp.equals(outp)) {
+											if (!outp.equals("")) {
+												sb.append("\n  )");
+											}
+											sb.append("\n  has sensitivity (a Sensitivity output " + nxtoutp);
+											outp = nxtoutp;
+											//opcount++;
+										}
+										sb.append("\n      inputSensitivity (a InputSensitivity input ");
+										sb.append(sensres.getResultAt(row, 1).toString()); //input
+										sb.append(", sensitivityValue ");
+										String v = sensres.getResultAt(row, 2).toString();
+										if (v.equals("NaN")) {
+											sb.append("0");
+										}
+										else {
+											sb.append(v);
+										}
+										sb.append(")");
+										
+									}
+									if (!nxtoutp.equals("")) {
+										sb.append("\n  ).\n");
+									}
+									SadlStatementContent ssc = new SadlStatementContent(null, Agent.CM, sb.toString());
+									acm.notifyUser(getModelFolderPath(resource), ssc, false);
+					            }
+							}//assumptions satisfied
+				            
+							
+							
 			            }
 			            else {
 			            	dbnresults = null;
 			            	//System.err.println("DBN execution failed. Message: " + dbnResultsJson.toString());
 			            }
-					}
+					}// end of models loop
 					if (numOfModels < 1) {
 						dbnresults = null;
 						//System.out.println("Unable to assemble a model with current knowledge");
 					}
+					
+					
+					String projectName = new File(getModelFolderPath(resource)).getParentFile().getName(); // ASKE_P2
+					
+					Resource newRsrc = resource.getResourceSet()
+							.createResource(URI.createPlatformResourceURI(projectName + "/Queries/" + queryModelFileName + ".owl" , false));
+					newRsrc.load(resource.getResourceSet().getLoadOptions());
+					JenaBasedSadlModelProcessor.refreshResource(newRsrc);
+					//SadlUtils fileNameToFileUrl
+					String owlURL = new SadlUtils().fileNameToFileUrl(queryOwlFileWithPath);
+					cmgr.addMapping(owlURL, queryModelURI, "", true, "JBDIP");
+					cmgr.addJenaMapping(queryModelURI, owlURL);
+
 					
 					
 				} else if (outputsList.size() > 0 && docPatterns.size() > 0) { //models from dataset
@@ -1258,7 +1357,9 @@ public class JenaBasedDialogInferenceProcessor extends JenaBasedSadlInferencePro
 								
 				            	//Ingest model error
 				            	String modelError = getModelError(dbnResultsJson);
+				            	Property errorProp = getTheJenaModel().getProperty(MODELERROR_PROP);
 				            	queryModel.add(cgIns, getTheJenaModel().getProperty(MODELERROR_PROP), modelError);
+				            	getTheJenaModel().add(cgIns, errorProp, modelError);
 				            	
 				            	lbl2value = getLabelToMeanStdMapping(dbnResultsJson);
 							
@@ -1331,12 +1432,18 @@ public class JenaBasedDialogInferenceProcessor extends JenaBasedSadlInferencePro
 
 
 
+//foo
+private ResultSet retrieveSensitivityResults(Resource resource, Individual cgIns) throws Exception {
+	String query = SENSITIVITYQUERY.replaceAll("COMPGRAPH", "<" + cgIns.getURI() + ">");
+	ResultSet res = runReasonerQuery(resource, query);
+	return res;
+	}
 
-private ResultSet checkModelAssumptions(Resource resource, String model) throws Exception {
+private ResultSet checkModelAssumptions(Resource resource, String model, String instanceDataURI) throws Exception {
 		// TODO Auto-generated method stub
 		//String query = "select Eq Var Oper Val VP where assumption(Eq,Var,Oper,Val,VP).";
 		String query = "select Res Trace where model_satisfies_assumptions('" + model + "', Res, Trace)";
-		ResultSet result = runPrologQuery(resource, query);
+		ResultSet result = runPrologQuery(resource, query, instanceDataURI);
 		return result;
 	}
 
@@ -1603,20 +1710,22 @@ private RDFNode getObjectAsLiteralOrResource(Node property, Node object) {
 		return runReasonerQuery(resource, query);
 	}
 
-	private ResultSet runPrologQuery(Resource resource, String query) throws Exception {
-		String modelFolderUri = getModelFolderPath(resource); //getOwlModelsFolderPath(path).toString(); 
+	private ResultSet runPrologQuery(Resource resource, String query, String instanceDataURI) throws Exception {
+		String modelFolder = getModelFolderPath(resource); //getOwlModelsFolderPath(path).toString(); 
 		final String format = ConfigurationManager.RDF_XML_ABBREV_FORMAT;
 		IConfigurationManagerForIDE configMgr;
 
 		
-		configMgr = ConfigurationManagerForIdeFactory.getConfigurationManagerForIDE(modelFolderUri, format);
+		configMgr = ConfigurationManagerForIdeFactory.getConfigurationManagerForIDE(modelFolder, format);
 		String prologReasonerClassName = "com.ge.research.sadl.swi_prolog.reasoner.SWIPrologReasonerPlugin";
 		IReasoner reasoner = configMgr.getOtherReasoner(prologReasonerClassName);
-		String instanceDatafile = "http://aske.ge.com/MetaData.owl";
-		reasoner.initializeReasoner((new File(modelFolderUri).getParent()), instanceDatafile, null);
+		//String instanceDatafile = "http://aske.ge.com/MetaData.owl";
+		reasoner.initializeReasoner((new File(modelFolder).getParent()), instanceDataURI, null);
 		
 //		assertTrue(pr.loadInstanceData(instanceDatafile));
-		loadAllOwlFilesInProject(modelFolderUri, reasoner);
+		loadAllOwlFilesInProject(modelFolder, reasoner);
+		String queriesFolder = new File(getModelFolderPath(resource)).getParent() + "/Queries";
+		loadAllOwlFilesInProject(queriesFolder, reasoner);
 	
 		//String modelFile = getModelFolderPath(resource) + File.separator + qhOwlFileName;
 		//reasoner.loadInstanceData(modelFile);
@@ -1720,7 +1829,8 @@ private RDFNode getObjectAsLiteralOrResource(Node property, Node object) {
 
 
 	private void saveMetaDataFile(Resource resource, String queryModelFileName) {
-		String qhOwlFileWithPath = getModelFolderPath(resource) + File.separator + "Queries" + File.separator + queryModelFileName + ".owl";
+		
+		String qhOwlFileWithPath = new File(getModelFolderPath(resource)).getParent() + File.separator + "Queries" + File.separator + queryModelFileName + ".owl";
 		String queryModelName = "http://aske.ge.com/" + "Model_" + queryModelFileName;
 		
 		File f = new File(qhOwlFileWithPath);
@@ -1795,20 +1905,27 @@ private RDFNode getObjectAsLiteralOrResource(Node property, Node object) {
             	
             	outputlbl = node.getKey(); // "a0"
             	outputType = lbl2class.get(outputlbl); //e.g. "http...#staticTemperature"
-            	op = queryModel.getResource(outputType); //
-            	ingestKGTriple(sensIns, outputprop, op);
+            	//op = queryModel.getResource(outputType); //
+            	RDFNode otypeProp = getTheJenaModel().getProperty(outputType);
+        		String rng = otypeProp.as(OntProperty.class).getRange().toString();
+        		OntClass outputClass = getTheJenaModel().getOntClass(rng);
+            	ingestKGTriple(sensIns, outputprop, outputClass);
             	
             	jvalues = (JsonObject)node.getValue();
             	sensvals = jvalues.getAsJsonArray("totalEffect") ;
             	
             	for (int i = 0; i<jinputs.size() ; i++) {
             		inputType = lbl2class.get(jinputs.get(i).getAsString());
-            		ip = queryModel.getResource(inputType);
+            		//ip = queryModel.getResource(inputType);
+            		RDFNode itypeProp = getTheJenaModel().getProperty(inputType);
+            		rng = itypeProp.as(OntProperty.class).getRange().toString();
+            		OntClass inputClass = getTheJenaModel().getOntClass(rng);
             		inputSens = createIndividualOfClass(queryModel, METAMODEL_INPUTSENSITIVITY);
             		v = sensvals.get(0).getAsJsonArray().get(i).getAsString();
 
             		ingestKGTriple(sensIns, inputsensprop, inputSens);
-            		ingestKGTriple(inputSens, inputprop, ip);
+            		//ingestKGTriple(inputSens, inputprop, ip);
+            		ingestKGTriple(inputSens, inputprop, inputClass);
             		queryModel.add(inputSens, inputsensvalprop, v); //sensval should be encoded as proper literal
             	}
             }
