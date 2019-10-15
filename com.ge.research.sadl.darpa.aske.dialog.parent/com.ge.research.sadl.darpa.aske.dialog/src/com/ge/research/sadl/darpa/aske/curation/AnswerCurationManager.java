@@ -84,7 +84,7 @@ import com.ge.research.sadl.darpa.aske.processing.WhatIsContent;
 import com.ge.research.sadl.darpa.aske.processing.WhatValuesContent;
 import com.ge.research.sadl.darpa.aske.processing.imports.AnswerExtractionProcessor;
 import com.ge.research.sadl.darpa.aske.processing.imports.AnswerExtractionProcessor.CodeLanguage;
-import com.ge.research.sadl.darpa.aske.processing.imports.CodeExtractionException;
+import com.ge.research.sadl.darpa.aske.processing.imports.AnswerExtractionException;
 import com.ge.research.sadl.darpa.aske.processing.imports.IModelFromCodeExtractor;
 import com.ge.research.sadl.darpa.aske.processing.imports.KChainServiceInterface;
 import com.ge.research.sadl.darpa.aske.processing.imports.TextProcessor;
@@ -109,6 +109,7 @@ import com.ge.research.sadl.processing.OntModelProvider;
 import com.ge.research.sadl.processing.SadlConstants;
 import com.ge.research.sadl.processing.SadlInferenceException;
 import com.ge.research.sadl.reasoner.ConfigurationException;
+import com.ge.research.sadl.reasoner.ConfigurationItem;
 import com.ge.research.sadl.reasoner.IConfigurationManager;
 import com.ge.research.sadl.reasoner.IConfigurationManagerForEditing.Scope;
 import com.ge.research.sadl.reasoner.IReasoner;
@@ -194,7 +195,7 @@ public class AnswerCurationManager {
 
 	private Map<String, String> getPreferences() {
 		if (preferences == null) {
-			if (getDialogAnswerProvider() != null) {
+			if (getDialogAnswerProvider() != null && getResource() != null) {
 				preferences = getDialogAnswerProvider().getPreferences(getResource().getURI());
 			}
 		}
@@ -471,9 +472,9 @@ public class AnswerCurationManager {
 											notifyUser(textModelFolder, ssc, false);
 											getExtractionProcessor().addNewSadlContent(sd);
 										}
-									} catch (CodeExtractionException e) {
-										// TODO Auto-generated catch block
-										e.printStackTrace();
+									} catch (AnswerExtractionException e) {
+										String msg = "Error converting method '" + methodName + "': " + e.getMessage();
+										notifyUser(textModelFolder, msg, true);
 									}								
 								}
 							}
@@ -510,15 +511,17 @@ public class AnswerCurationManager {
 
 	private IReasoner getInitializedTextModelReasoner() throws ConfigurationException, ReasonerNotFoundException {
 		if (getTextModelReasoner() == null) {
-			setTextModelReasoner(getExtractionProcessor().getTextProcessor().getTextModelConfigMgr().getReasoner());
-			String codeModelFolder = getOwlModelsFolder();
+			IConfigurationManagerForIDE textModelConfigMgr = getExtractionProcessor().getTextProcessor().getTextModelConfigMgr();
+			setTextModelReasoner(textModelConfigMgr.getReasoner());
 			if (!getTextModelReasoner().isInitialized()) {
-				IConfigurationManagerForIDE textModelConfigMgr = getExtractionProcessor().getCodeExtractor().getCodeModelConfigMgr();
 				getTextModelReasoner().setConfigurationManager(textModelConfigMgr);
-				getTextModelReasoner().initializeReasoner(codeModelFolder, getExtractionProcessor().getCodeModelName(), null);
+				List<ConfigurationItem> configItems = null;  // TODO map preferences to configItems
+				//				getTextModelReasoner().initializeReasoner(codeModelFolder, getExtractionProcessor().getCodeModelName(), null);
+				getTextModelReasoner().initializeReasoner(getExtractionProcessor().getTextModel(), 
+						getExtractionProcessor().getCodeModelName(), null, configItems);
 			}
 		}
-		return codeModelReasoner;
+		return textModelReasoner;
 	}
 
 	private void clearTextModelReasoner() {
@@ -608,7 +611,7 @@ public class AnswerCurationManager {
 										notifyUser(codeModelFolder, ssc, false);
 										getExtractionProcessor().addNewSadlContent(sd);
 									}
-								} catch (CodeExtractionException e) {
+								} catch (AnswerExtractionException e) {
 									// TODO Auto-generated catch block
 									e.printStackTrace();
 								}
@@ -932,7 +935,7 @@ public class AnswerCurationManager {
 		return methodCode.toString();
 	}
 
-	public boolean importCodeSnippetToComputationalGraph(Object rs, String userInput) throws InvalidNameException, ConfigurationException, ReasonerNotFoundException, QueryParseException, QueryCancelledException, CodeExtractionException {
+	public boolean importCodeSnippetToComputationalGraph(Object rs, String userInput) throws InvalidNameException, ConfigurationException, ReasonerNotFoundException, QueryParseException, QueryCancelledException, AnswerExtractionException {
 		boolean success = false;
 		if (rs instanceof ResultSet) {
 			boolean sns = ((ResultSet)rs).getShowNamespaces();
@@ -972,7 +975,7 @@ public class AnswerCurationManager {
 							}
 						}
 						else {
-							throw new CodeExtractionException("No method script found");
+							throw new AnswerExtractionException("No method script found");
 						}
 						break;
 					}
@@ -997,10 +1000,10 @@ public class AnswerCurationManager {
 	 * @throws ReasonerNotFoundException
 	 * @throws QueryParseException
 	 * @throws QueryCancelledException
-	 * @throws CodeExtractionException 
+	 * @throws AnswerExtractionException 
 	 */
 	private List<String> convertTextExtractedMethodToExternalEquationInSadlSyntax(String methodName, String lang1, String code1, String lang2, String code2) throws InvalidNameException, ConfigurationException,
-			ReasonerNotFoundException, QueryParseException, QueryCancelledException, CodeExtractionException {
+			ReasonerNotFoundException, QueryParseException, QueryCancelledException, AnswerExtractionException {
 		List<String> returnSadlStatements = new ArrayList<String>();
 		StringBuilder sb = new StringBuilder("External ");
 		sb.append(methodName);
@@ -1044,8 +1047,8 @@ public class AnswerCurationManager {
 				"?m <expression> ?exp . ?exp <language> <" + lang1 + "> . ?exp <script> '" + code1 + "'  . " + 
 				"?m <expression> ?exp2 . ?exp2 <language> <" + lang2 + "> . ?exp2 <script> '" + code2 + "' ." +
 				"?m <returnTypes>/<sadllistmodel:rest>*/<sadllistmodel:first> ?rt . OPTIONAL{?rt <localDescriptorName> ?retname} . ?rt <dataType> ?rettyp}";
-		outputTypeQuery = getInitializedCodeModelReasoner().prepareQuery(outputTypeQuery);
-		ResultSet outputResults =  getInitializedCodeModelReasoner().ask(outputTypeQuery);
+		outputTypeQuery = getInitializedTextModelReasoner().prepareQuery(outputTypeQuery);
+		ResultSet outputResults =  getInitializedTextModelReasoner().ask(outputTypeQuery);
 		logger.debug(outputResults != null ? outputResults.toStringWithIndent(5) : "no results");
 		if (outputResults != null) {
 			int numReturnValues = outputResults.getRowCount();
@@ -1070,7 +1073,7 @@ public class AnswerCurationManager {
 		}
 		else {
 			// SADL doesn't currently support an equation that doesn't return anything
-			throw new CodeExtractionException("Equations that do not return a value are not supported.");
+			throw new AnswerExtractionException("Equations that do not return a value are not supported.");
 		}
 		String eqUri = getExtractionProcessor().getCodeModelName() + "#" + methodName.toString().trim();
 		sb.append(" \"");
@@ -1111,10 +1114,10 @@ public class AnswerCurationManager {
 	 * @throws ReasonerNotFoundException
 	 * @throws QueryParseException
 	 * @throws QueryCancelledException
-	 * @throws CodeExtractionException 
+	 * @throws AnswerExtractionException 
 	 */
 	private List<String> convertCodeExtractedMethodToExternalEquationInSadlSyntax(String methodName, String lang1, String code1, String lang2, String code2) throws InvalidNameException, ConfigurationException,
-			ReasonerNotFoundException, QueryParseException, QueryCancelledException, CodeExtractionException {
+			ReasonerNotFoundException, QueryParseException, QueryCancelledException, AnswerExtractionException {
 		List<String> returnSadlStatements = new ArrayList<String>();
 		StringBuilder sb = new StringBuilder("External ");
 		sb.append(methodName);
@@ -1166,7 +1169,7 @@ public class AnswerCurationManager {
 		}
 		else {
 			// SADL doesn't currently support an equation that doesn't return anything
-			throw new CodeExtractionException("Equations that do not return a value are not supported.");
+			throw new AnswerExtractionException("Equations that do not return a value are not supported.");
 		}
 		String eqUri = getExtractionProcessor().getCodeModelName() + "#" + methodName.toString().trim();
 		sb.append(" \"");

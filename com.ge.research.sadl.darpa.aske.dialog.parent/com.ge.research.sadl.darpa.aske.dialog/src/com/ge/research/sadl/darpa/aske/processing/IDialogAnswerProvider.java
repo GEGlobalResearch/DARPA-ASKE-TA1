@@ -71,5 +71,13 @@ public interface IDialogAnswerProvider {
 	void updateProjectAndDisplaySadlFiles(String projectName, String modelsFolder, List<File> sadlFiles);
 
 	Map<String, String> getPreferences(URI uri);
+	
+	/**
+	 * Method to add an import statement to the Dialog model either after the last existing import statement
+	 * or, if none, after the model "uri" statement.
+	 * @param importStatement
+	 * @return true if successful else false if error, e.g., import already exists.
+	 */
+	boolean addImport(String importStatement);
 
 }

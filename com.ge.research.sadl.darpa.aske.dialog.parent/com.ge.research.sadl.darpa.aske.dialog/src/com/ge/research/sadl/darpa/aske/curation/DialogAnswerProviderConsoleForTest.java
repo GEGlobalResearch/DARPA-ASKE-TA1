@@ -417,4 +417,10 @@ public class DialogAnswerProviderConsoleForTest extends BaseDialogAnswerProvider
 		// TODO Auto-generated method stub
 		return null;
 	}
+
+	@Override
+	public boolean addImport(String importStatement) {
+		// TODO Auto-generated method stub
+		return false;
+	}
 }

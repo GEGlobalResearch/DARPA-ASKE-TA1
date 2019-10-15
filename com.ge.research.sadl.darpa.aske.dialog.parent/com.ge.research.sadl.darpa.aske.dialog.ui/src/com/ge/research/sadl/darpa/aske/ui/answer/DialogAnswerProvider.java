@@ -56,6 +56,7 @@ import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IAdaptable;
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.Path;
+import org.eclipse.emf.common.util.EList;
 import org.eclipse.emf.common.util.URI;
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.ecore.resource.Resource;
@@ -102,6 +103,8 @@ import com.ge.research.sadl.darpa.aske.ui.editor.DialogEditors.Options;
 import com.ge.research.sadl.model.visualizer.IGraphVisualizer;
 import com.ge.research.sadl.reasoner.ConfigurationException;
 import com.ge.research.sadl.reasoner.utils.SadlUtils;
+import com.ge.research.sadl.sADL.SadlImport;
+import com.ge.research.sadl.sADL.SadlModel;
 import com.ge.research.sadl.ui.handlers.SadlActionHandler;
 import com.google.common.base.Preconditions;
 import com.google.inject.Injector;
@@ -337,6 +340,28 @@ public class DialogAnswerProvider extends BaseDialogAnswerProvider {
 			}
 		});
 		return true;
+	}
+
+	@Override
+	public boolean addImport(String importStatement) {
+		Resource rsrc = getResource();
+		if (rsrc instanceof XtextResource) {
+			SadlModel model = (SadlModel) rsrc.getContents().get(0);
+			if (model.getImports() != null) {
+				EList<SadlImport> importlst = model.getImports();
+				for (SadlImport imprt : importlst) {
+					if (imprt.toString().equals(importStatement)) {
+						return false;
+					}
+				}
+				// add after last import
+			}
+			else {
+				// add before elements
+			}
+			return true;
+		}
+		return false;
 	}
 
 	private void setCaretOffsetInEditor(URI uri, int caretOffset) {
