@@ -1080,7 +1080,7 @@ public class AnswerCurationManager {
 			getTextProcessor().getCurrentTextModel().write(System.err);
 			throw new AnswerExtractionException("Equations that do not return a value are not supported.");
 		}
-		String eqUri = getExtractionProcessor().getCodeModelName() + "#" + methodName.toString().trim();
+		String eqUri = getExtractionProcessor().getTextModelName() + "#" + methodName.toString().trim();
 		sb.append(" \"");
 		sb.append(eqUri);
 		sb.append("\".");
