@@ -154,7 +154,7 @@ public class JenaBasedDialogInferenceProcessor extends JenaBasedSadlInferencePro
 			"prefix rdf:<http://www.w3.org/1999/02/22-rdf-syntax-ns#>\n" +
 			"insert {?EqCh cg:parent ?EqPa}\n" + 
 			"where {\n" +
-			"  ?EqCh a imp:Equation.\n" + 
+			//"  ?EqCh a imp:Equation.\n" + //to include External equations
 			" ?EqCh imp:arguments ?AL2.\n" + 
 			" ?AL2 rdf:rest*/rdf:first ?AO2.\n" + 
 			" ?AO2 imp:augmentedType ?Type2.\n" + 
@@ -163,7 +163,7 @@ public class JenaBasedDialogInferenceProcessor extends JenaBasedSadlInferencePro
 			" ?C2 imp:gpPredicate ?P.\n" + 
 			" filter (?P != <http://www.w3.org/1999/02/22-rdf-syntax-ns#type>)\n" + 
 			"\n" + 
-			" ?EqPa a imp:Equation.\n" + 
+			//" ?EqPa a imp:Equation.\n" + 
 			" ?EqPa imp:returnTypes ?AL1.\n" + 
 			" ?AL1 rdf:rest*/rdf:first ?AO1.\n" + 
 			" ?AO1 imp:augmentedType ?Type1.\n" + 
@@ -185,7 +185,7 @@ public class JenaBasedDialogInferenceProcessor extends JenaBasedSadlInferencePro
 			"\n" + 
 			"select distinct ?DBN ?Out ?Eq where { \n" + 
 			"  {select distinct ?Eq where { \n" + 
-			"     ?EqOut a imp:Equation. \n" + 
+			//"     ?EqOut a imp:Equation. \n" + // to include External equation
 			"     ?EqOut imp:returnTypes ?EO1. \n" + 
 			"     ?EO1 rdf:rest*/rdf:first ?EO2.\n" + 
 			"     ?EO2 imp:augmentedType ?EO3. \n" + 
@@ -242,7 +242,7 @@ public class JenaBasedDialogInferenceProcessor extends JenaBasedSadlInferencePro
 			"prefix rdfs:<http://www.w3.org/2000/01/rdf-schema#>\n" + 
 			"prefix rdf:<http://www.w3.org/1999/02/22-rdf-syntax-ns#>\n" + 
 			"\n" + 
-			"select distinct ?Model ?Input (str(?EI2Label) as ?InputLabel) ?UniqueInputLabel ?Output (str(?expr) as ?ModelForm) where { \n" + 
+			"select distinct ?Model ?Input (str(?EI2Label) as ?InputLabel) ?UniqueInputLabel ?Output (str(?expr) as ?ModelForm) (str(?Fun) as ?Function) where { \n" + 
 			"	  ?Model rdfs:subClassOf cg:DBN.\n" + 
 			"	  ?Model rdfs:subClassOf ?BN.\n" + 
 			"	  ?BN owl:onProperty cg:hasEquation.\n" + 
@@ -269,10 +269,15 @@ public class JenaBasedDialogInferenceProcessor extends JenaBasedSadlInferencePro
 			"     ?EO5 imp:gpPredicate ?Output.\n" + 
 			"       filter (?Output != <http://www.w3.org/1999/02/22-rdf-syntax-ns#type>)\n" + 
 			"\n" + 
-			"	  ?Eq imp:expression ?Scr.\n" + 
-			"	  ?Scr imp:script ?expr.\n" + 
-			"     ?Scr imp:language ?lang.\n" + 
-			"       filter ( ?lang = <http://sadl.org/sadlimplicitmodel#Python> )\n" + 
+			"	  optional{\n" + 
+			"  	    ?Eq imp:expression ?Scr.\n" + 
+			"	    ?Scr imp:script ?expr.\n" + 
+			"       ?Scr imp:language ?lang.\n" + 
+			"          filter ( ?lang = <http://sadl.org/sadlimplicitmodel#Python> )\n" + 
+			"	  }\n" + 
+			"	  optional {\n" + 
+			"	    ?Eq imp:externalURI ?Fun.\n" + 
+			"	  }\n "+
 			"}\n" + 
 			"order by ?Model";
 	
