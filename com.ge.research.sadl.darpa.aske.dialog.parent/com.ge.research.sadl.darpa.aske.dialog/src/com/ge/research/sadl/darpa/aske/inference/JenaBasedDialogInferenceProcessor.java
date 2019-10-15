@@ -1094,27 +1094,25 @@ public class JenaBasedDialogInferenceProcessor extends JenaBasedSadlInferencePro
 
 							saveMetaDataFile(resource,queryModelFileName); //so we can query the the eqns in the CCG
 							
-							ResultSet assumpCheck = checkModelAssumptions(resource, cgIns.toString(), queryModelURI);
-	//						if (assumpCheck == null || !assumpCheck.hasNext() || assumpCheck.next().toString().equals("false")) {
-	//							System.out.println("Model " + cgIns.toString() + " does not satisfy its assumptions");
-	//						}
-							if (assumpCheck != null) {
-								System.out.println(assumpCheck.toString());
-								
-								StringBuilder sb = new StringBuilder("The CCG " + cgIns.getLocalName() + " has assumptionsSatisfied ");
-								//StringBuilder sb = new StringBuilder("the CCG " + cgIns.getLocalName() + " has assumptionsSatisfied ");
-								if( assumpCheck.getResultAt(0, 0).equals("satisfied")) {
-									sb.append("true");
-								} else {
-									sb.append(" false unsatisfiedAssumption \"");
-									sb.append(assumpCheck.getResultAt(0, 1).toString());
-									sb.append("\"");
-								}
-								sb.append(".");
-								//sadlDeclaration.add(sb.toString());
-								SadlStatementContent ssc = new SadlStatementContent(null, Agent.CM, sb.toString());
-								acm.notifyUser(getModelFolderPath(resource), ssc, false);
-							}
+							ResultSet assumpCheck = null;
+//							assumpCheck = checkModelAssumptions(resource, cgIns.toString(), queryModelURI);
+//							if (assumpCheck != null) {
+//								System.out.println(assumpCheck.toString());
+//								
+//								StringBuilder sb = new StringBuilder("The CCG " + cgIns.getLocalName() + " has assumptionsSatisfied ");
+//								//StringBuilder sb = new StringBuilder("the CCG " + cgIns.getLocalName() + " has assumptionsSatisfied ");
+//								if( assumpCheck.getResultAt(0, 0).equals("satisfied")) {
+//									sb.append("true");
+//								} else {
+//									sb.append(" false unsatisfiedAssumption \"");
+//									sb.append(assumpCheck.getResultAt(0, 1).toString());
+//									sb.append("\"");
+//								}
+//								sb.append(".");
+//								//sadlDeclaration.add(sb.toString());
+//								SadlStatementContent ssc = new SadlStatementContent(null, Agent.CM, sb.toString());
+//								acm.notifyUser(getModelFolderPath(resource), ssc, false);
+//							}
 							
 							
 				            
