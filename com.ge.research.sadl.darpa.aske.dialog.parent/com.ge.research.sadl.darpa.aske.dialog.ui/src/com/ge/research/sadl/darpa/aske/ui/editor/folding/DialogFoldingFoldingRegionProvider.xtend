@@ -46,7 +46,7 @@ class DialogFoldingFoldingRegionProvider extends DefaultFoldingRegionProvider {
 		// This magic 180 value should be tuned. It is just an example for `Mach.java`.
 		// The range of the last statement should not be collapsed
 		// as the node length does not exceeds 180 characters.
-		return node.length > 180
+		return node.length > 400
 	}
 
 }

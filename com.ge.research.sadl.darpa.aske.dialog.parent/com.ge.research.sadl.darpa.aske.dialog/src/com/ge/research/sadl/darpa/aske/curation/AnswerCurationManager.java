@@ -662,8 +662,9 @@ public class AnswerCurationManager {
 	 * @throws QueryParseException
 	 * @throws QueryCancelledException
 	 * @throws ReasonerNotFoundException
+	 * @throws InvalidNameException 
 	 */
-	public String processSaveRequest(org.eclipse.emf.ecore.resource.Resource resource, OntModel ontModel, String modelName, SaveContent sc) throws ConfigurationException, IOException, QueryParseException, QueryCancelledException, ReasonerNotFoundException {
+	public String processSaveRequest(org.eclipse.emf.ecore.resource.Resource resource, OntModel ontModel, String modelName, SaveContent sc) throws ConfigurationException, IOException, QueryParseException, QueryCancelledException, ReasonerNotFoundException, InvalidNameException {
 		String returnValue = null;
 		if (resource == null) {
 			throw new IOException("Argument resource in processSaveRequest cannot be null");
@@ -696,6 +697,7 @@ public class AnswerCurationManager {
 						">/<sadllistmodel:rest>*/<sadllistmodel:first> ?member . ?member <" +
 						SadlConstants.SADL_IMPLICIT_MODEL_DESCRIPTOR_NAME_PROPERTY_URI + "> ?argName . ?member <" +
 						SadlConstants.SADL_IMPLICIT_MODEL_DATATYPE_PROPERTY_URI + "> ?argType}";							// query to get the argument names and types
+				argQuery = reasoner.prepareQuery(argQuery);
 				ResultSet rs = reasoner.ask(argQuery);
 				logger.debug(rs != null ? rs.toString() : "no argument results");
 				String retQuery = "select ?retName ?retType where {<" + extractedModelInstance.getURI() + "> <" + 
@@ -703,6 +705,7 @@ public class AnswerCurationManager {
 						">/<sadllistmodel:rest>*/<sadllistmodel:first> ?member . OPTIONAL{?member <" +
 						SadlConstants.SADL_IMPLICIT_MODEL_DESCRIPTOR_NAME_PROPERTY_URI + "> ?retName} . ?member <" +
 						SadlConstants.SADL_IMPLICIT_MODEL_DATATYPE_PROPERTY_URI + "> ?retType}";							// query to get the return types
+				retQuery = reasoner.prepareQuery(retQuery);
 				ResultSet rs2 = reasoner.ask(retQuery);
 				logger.debug(rs2 != null ? rs2.toString() : "no return type results");
 				String pythonScriptQuery = "select ?pyScript where {<" + extractedModelInstance.getURI() + "> <" + 
@@ -719,7 +722,15 @@ public class AnswerCurationManager {
 					String pythonScript = rs3.getResultAt(0, 0).toString();
 					CodeLanguage language = CodeLanguage.JAVA;																	// only code we extract from currently (what about from text?)
 					if (language.equals(CodeLanguage.JAVA)) {
-						String[] returns = getExtractionProcessor().getCodeExtractor(CodeLanguage.JAVA).extractPythonEquationFromCodeExtractionModel(pythonScript);
+						String[] returns;
+						String useKCStr = getPreference(DialogPreferences.USE_ANSWER_KCHAIN_CG_SERVICE.getId());
+						boolean useKC = useKCStr != null ? Boolean.parseBoolean(useKCStr) : false;
+						if (useKC) {
+							returns = getExtractionProcessor().getCodeExtractor(CodeLanguage.JAVA).extractPythonTFEquationFromCodeExtractionModel(pythonScript, extractedModelInstance.getLocalName());
+						}
+						else {
+							returns = getExtractionProcessor().getCodeExtractor(CodeLanguage.JAVA).extractPythonEquationFromCodeExtractionModel(pythonScript, extractedModelInstance.getLocalName());
+						}
 						if (returns.length != 2) {
 							throw new IOException("Invalid return from extractPythonEquationFromCodeExtractionModel; expected String[] of size 2");
 						}
@@ -731,6 +742,9 @@ public class AnswerCurationManager {
 						returnValue = getExtractionProcessor().saveToComputationalGraph(methName, methName, rs, rs2, modifiedPythonScript, null);
 						logger.debug("saveToComputationalGraph returned '" + returnValue + "'");
 					}
+					else if (language.equals(CodeLanguage.PYTHON)) {
+						
+					}
 				}
 				else {
 					returnValue = "Failed to find a Python script for equation '" + equationToBuildUri + "'.";
@@ -740,11 +754,12 @@ public class AnswerCurationManager {
 		if (returnValue == null) {
 			return returnValue = "Failed: Unable to find model '" + equationToBuildUri + "' in code model.";
 		}
+		answerUser(getOwlModelsFolder(), returnValue, true, sc.getHostEObject());
 		return returnValue;
 	}
 
 	private String processEvalRequest(org.eclipse.emf.ecore.resource.Resource resource, OntModel ontModel,
-			String modelName, EvalContent sc) throws ConfigurationException, ReasonerNotFoundException, IOException, EquationNotFoundException, QueryParseException, QueryCancelledException {
+			String modelName, EvalContent sc) throws ConfigurationException, ReasonerNotFoundException, IOException, EquationNotFoundException, QueryParseException, QueryCancelledException, InvalidNameException {
 		String returnValue = "Evaluation failed";
 		URI resourceURI = resource.getURI();
 		IReasoner reasoner = null;
@@ -764,22 +779,38 @@ public class AnswerCurationManager {
 		if (argStmt != null) {
 			com.hp.hpl.jena.rdf.model.Resource ddList = argStmt.getObject().asResource();
 			if (ddList instanceof Resource) {
-				String argQuery = "select distinct ?argName ?argType where {<" + modelInstance.getURI() + "> <" + 
+//				String argQuery = "select distinct ?argName ?argType where {<" + modelInstance.getURI() + "> <" + 
+//						SadlConstants.SADL_IMPLICIT_MODEL_ARGUMENTS_PROPERTY_URI + 
+//						"> ?ddList . ?ddList <http://jena.hpl.hp.com/ARQ/list#member> ?member . ?member <" +
+//						SadlConstants.SADL_IMPLICIT_MODEL_DESCRIPTOR_NAME_PROPERTY_URI + "> ?argName . ?member <" +
+//						SadlConstants.SADL_IMPLICIT_MODEL_DATATYPE_PROPERTY_URI + "> ?argType}";							// query to get the argument names and types
+				String argQuery = "select ?argName ?argType where {<" + modelInstance.getURI() + "> <" + 
 						SadlConstants.SADL_IMPLICIT_MODEL_ARGUMENTS_PROPERTY_URI + 
-						"> ?ddList . ?ddList <http://jena.hpl.hp.com/ARQ/list#member> ?member . ?member <" +
+						">/<sadllistmodel:rest>*/<sadllistmodel:first> ?member . ?member <" +
 						SadlConstants.SADL_IMPLICIT_MODEL_DESCRIPTOR_NAME_PROPERTY_URI + "> ?argName . ?member <" +
 						SadlConstants.SADL_IMPLICIT_MODEL_DATATYPE_PROPERTY_URI + "> ?argType}";							// query to get the argument names and types
+				argQuery = reasoner.prepareQuery(argQuery);
 				ResultSet rs = reasoner.ask(argQuery);
 				logger.debug(rs != null ? rs.toString() : "no argument results");
-				String retQuery = "select distinct ?retName ?retType where {<" + modelInstance.getURI() + "> <" + 
+//				String retQuery = "select distinct ?retName ?retType where {<" + modelInstance.getURI() + "> <" + 
+//						SadlConstants.SADL_IMPLICIT_MODEL_RETURN_TYPES_PROPERTY_URI + 
+//						"> ?ddList . ?ddList <http://jena.hpl.hp.com/ARQ/list#member> ?member . OPTIONAL{?member <" +
+//						SadlConstants.SADL_IMPLICIT_MODEL_DESCRIPTOR_NAME_PROPERTY_URI + "> ?retName} . ?member <" +
+//						SadlConstants.SADL_IMPLICIT_MODEL_DATATYPE_PROPERTY_URI + "> ?retType}";							// query to get the return types
+				String retQuery = "select ?retName ?retType where {<" + modelInstance.getURI() + "> <" + 
 						SadlConstants.SADL_IMPLICIT_MODEL_RETURN_TYPES_PROPERTY_URI + 
-						"> ?ddList . ?ddList <http://jena.hpl.hp.com/ARQ/list#member> ?member . OPTIONAL{?member <" +
+						">/<sadllistmodel:rest>*/<sadllistmodel:first> ?member . OPTIONAL{?member <" +
 						SadlConstants.SADL_IMPLICIT_MODEL_DESCRIPTOR_NAME_PROPERTY_URI + "> ?retName} . ?member <" +
 						SadlConstants.SADL_IMPLICIT_MODEL_DATATYPE_PROPERTY_URI + "> ?retType}";							// query to get the return types
+				retQuery = reasoner.prepareQuery(retQuery);
 				ResultSet rs2 = reasoner.ask(retQuery);
 				logger.debug(rs2 != null ? rs2.toString() : "no return type results");
-				
-				returnValue = evaluateInComputationalGraph(modelInstance, rs, rs2, params);
+				try {
+					returnValue = evaluateInComputationalGraph(modelInstance, rs, rs2, params);
+				}
+				catch (IOException e) {
+					returnValue = e.getMessage();
+				}
 				answerUser(getOwlModelsFolder(), returnValue, true, sc.getHostEObject());
 			}
 		}
@@ -965,7 +996,7 @@ public class AnswerCurationManager {
 							String pythoncode = null;
 							try {
 								pythoncode = ep.translateMethodJavaToPython(className, methScript);
-								List<String> sadlDeclaration = convertCodeExtractedMethodToExternalEquationInSadlSyntax(rsa.toString(), "Java", methScript, "Python", pythoncode);
+								List<String> sadlDeclaration = convertCodeExtractedMethodToExternalEquationInSadlSyntax(rsa.toString(), "Java", methScript, "Python-TF", pythoncode);
 								for (String sd : sadlDeclaration) {
 									logger.debug("SADL equation:");
 									logger.debug(sd);
@@ -2012,7 +2043,8 @@ public class AnswerCurationManager {
 			return answer.toString();
 		}
 		else if (typ.equals(NodeType.FunctionNode)) {
-			addInstanceDeclaration(resource, nn, answer);
+//			addInstanceDeclaration(resource, nn, answer);
+			answer.append(getOwlToSadl(theModel).individualToSadl(nn.getURI(), false));
 			Object ctx = ((NamedNode)lastcmd).getContext();
 			answerUser(modelFolder, answer.toString(), false, (EObject) ctx);
 			return answer.toString();
@@ -2687,6 +2719,17 @@ public class AnswerCurationManager {
 				logger.debug("   Answer is: " + getQuestionsAndAnswers().get(preceeding.getText().trim()));
 			}
 		}
+		else {
+			if (getDelayedImportAdditions() != null) {
+				for (String imprt : getDelayedImportAdditions()) {
+					Object dap = getConfigurationManager().getPrivateKeyValuePair(DialogConstants.DIALOG_ANSWER_PROVIDER);
+					if (dap instanceof IDialogAnswerProvider) {
+						((IDialogAnswerProvider)dap).addImport(imprt);
+					}	
+				}
+				getDelayedImportAdditions().clear();
+			}
+		}
 		Map<String, String> qna = getQuestionsAndAnswers();
 		if (!currentQuestions.isEmpty()) {
 			if (!qna.isEmpty()) {
@@ -2708,15 +2751,6 @@ public class AnswerCurationManager {
 		else {
 			// there are no questions, clear qna
 			qna.clear();
-		}
-		if (getDelayedImportAdditions() != null) {
-			for (String imprt : getDelayedImportAdditions()) {
-				Object dap = getConfigurationManager().getPrivateKeyValuePair(DialogConstants.DIALOG_ANSWER_PROVIDER);
-				if (dap instanceof IDialogAnswerProvider) {
-					((IDialogAnswerProvider)dap).addImport(imprt);
-				}	
-			}
-			getDelayedImportAdditions().clear();
 		}
 	}
 

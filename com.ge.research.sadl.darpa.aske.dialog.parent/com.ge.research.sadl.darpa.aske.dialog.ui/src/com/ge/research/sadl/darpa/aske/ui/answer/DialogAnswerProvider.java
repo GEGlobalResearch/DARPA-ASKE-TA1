@@ -322,6 +322,9 @@ public class DialogAnswerProvider extends BaseDialogAnswerProvider {
 					int start = (int) srcinfo[1];
 					int length = (int) srcinfo[2];
 					// find location of this in document
+					if (!srcinfo[0].toString().endsWith(" ")) {
+						modContent = " " + modContent;
+					}
 					loc = start + length + 1;
 					int docLen = document.getLength();
 					int testLen = Math.min(5, docLen - loc);
