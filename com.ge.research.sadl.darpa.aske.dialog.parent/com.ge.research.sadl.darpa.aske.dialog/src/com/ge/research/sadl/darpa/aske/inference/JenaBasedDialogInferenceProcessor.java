@@ -1230,12 +1230,10 @@ public class JenaBasedDialogInferenceProcessor extends JenaBasedSadlInferencePro
 						//SadlUtils fileNameToFileUrl
 						String owlURL = new SadlUtils().fileNameToFileUrl(queryOwlFileWithPath);
 						cmgr.addMapping(owlURL, queryModelURI, "", true, "JBDIP");
-						cmgr.addJenaMapping(queryModelURI, owlURL);
+						cmgr.addJenaMapping(queryModelURI, owlURL);	
 						
-						Object dap = cmgr.getPrivateKeyValuePair(DialogConstants.DIALOG_ANSWER_PROVIDER);
-						if (dap instanceof IDialogAnswerProvider) {
-							((IDialogAnswerProvider)dap).addImport("import \"" + queryModelURI + "\".");
-						}	
+						AnswerCurationManager acm = (AnswerCurationManager) cmgr.getPrivateKeyValuePair(DialogConstants.ANSWER_CURATION_MANAGER);
+						acm.addDelayedImportAddition("import \"" + queryModelURI + "\".");
 					}
 					
 				} else if (outputsList.size() > 0 && docPatterns.size() > 0) { //models from dataset

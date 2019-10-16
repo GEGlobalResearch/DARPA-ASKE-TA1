@@ -168,6 +168,8 @@ public class AnswerCurationManager {
 
 	private Map<String, String[]> targetModelMap = null;
 	private OwlToSadl owl2sadl = null;
+	
+	private List<String> delayedImportAdditions = null;
 
 	public AnswerCurationManager (String modelFolder, IConfigurationManagerForIDE configMgr, XtextResource resource, Map<String,String> prefs) {
 		setOwlModelsFolder(modelFolder);
@@ -2677,6 +2679,15 @@ public class AnswerCurationManager {
 			// there are no questions, clear qna
 			qna.clear();
 		}
+		if (getDelayedImportAdditions() != null) {
+			for (String imprt : getDelayedImportAdditions()) {
+				Object dap = getConfigurationManager().getPrivateKeyValuePair(DialogConstants.DIALOG_ANSWER_PROVIDER);
+				if (dap instanceof IDialogAnswerProvider) {
+					((IDialogAnswerProvider)dap).addImport(imprt);
+				}	
+			}
+			getDelayedImportAdditions().clear();
+		}
 	}
 
 	private boolean applyAnswerToUnansweredQuestion(StatementContent question, StatementContent sc) {
@@ -2987,5 +2998,16 @@ public class AnswerCurationManager {
 
 	private void setTextModelReasoner(IReasoner textModelReasoner) {
 		this.textModelReasoner = textModelReasoner;
+	}
+
+	public List<String> getDelayedImportAdditions() {
+		return delayedImportAdditions;
+	}
+
+	public void addDelayedImportAddition(String delayedImportAddition) {
+		if (delayedImportAdditions == null) {
+			delayedImportAdditions = new ArrayList<String>();
+		}
+		delayedImportAdditions.add(delayedImportAddition);
 	}
 }

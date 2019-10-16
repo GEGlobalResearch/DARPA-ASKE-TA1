@@ -378,6 +378,7 @@ public class DialogAnswerProvider extends BaseDialogAnswerProvider {
 				precedingObj = model;
 			}
 			if (precedingObj != null) {
+				String precedingObjText = NodeModelUtils.getTokenText(NodeModelUtils.getNode(precedingObj));
 				try {
 					return addCurationManagerContentToDialog(document, null, importStatement, precedingObj, false, false, false);
 				} catch (BadLocationException e) {
