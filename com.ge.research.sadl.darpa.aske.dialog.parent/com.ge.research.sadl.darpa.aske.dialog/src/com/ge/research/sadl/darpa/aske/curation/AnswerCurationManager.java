@@ -2005,7 +2005,8 @@ public class AnswerCurationManager {
 			return answer.toString();
 		}
 		else if (typ.equals(NodeType.InstanceNode)) {
-			addInstanceDeclaration(resource, nn, answer);
+//			addInstanceDeclaration(resource, nn, answer);
+			answer.append(getOwlToSadl(theModel).individualToSadl(nn.getURI(), false));
 			Object ctx = ((NamedNode)lastcmd).getContext();
 			answerUser(modelFolder, answer.toString(), false, (EObject) ctx);
 			return answer.toString();
@@ -2026,6 +2027,7 @@ public class AnswerCurationManager {
 	private OwlToSadl getOwlToSadl(OntModel model) {
 		if (owl2sadl  == null) {
 			owl2sadl = new OwlToSadl(model);
+			owl2sadl.setNeverUsePrefixes(true);
 		}
 		return owl2sadl;
 	}
@@ -2082,7 +2084,7 @@ public class AnswerCurationManager {
 						!pobjURI.toString().startsWith(RDF.getURI())) {
 					Object vobjURI = rs.getResultAt(r, 1);
 					if (isBlankNode(vobjURI.toString())) {
-						answer = addBlankNodeObject(resource, answer, vobjURI.toString());
+						answer = addBlankNodeObject(resource, answer, nn, pobjURI.toString());
 					}
 					else {
 						rs.setShowNamespaces(false);
@@ -2157,8 +2159,36 @@ public class AnswerCurationManager {
 		return answer;
 	}
 
+	private StringBuilder addBlankNodeObject(org.eclipse.emf.ecore.resource.Resource resource2, StringBuilder answer,
+			NamedNode subjNN, String pobjURI) throws ConfigurationException, TranslationException, InvalidNameException, ReasonerNotFoundException, QueryParseException, QueryCancelledException {
+		String query = "select ?t ?p ?v where {<" + subjNN.getURI() + "> <" + pobjURI + "> ?bn . ?bn ?p ?v }";
+		Query q = new Query();
+		q.setSparqlQueryString(query);
+		ResultSet rs = runQuery(resource, q);
+		if (rs != null) {
+//			rs.setShowNamespaces(false);
+			for (int r = 0; r < rs.getRowCount(); r++) {
+				if (rs.getResultAt(r, 1).toString().equals(RDF.type.getURI())) {
+					rs.setShowNamespaces(false);
+					String typ = rs.getResultAt(r, 2).toString();
+					answer.append(", has ");
+					int predLNIdx = pobjURI.indexOf("#");
+					if (predLNIdx > 0) {
+						String predLN = pobjURI.substring(predLNIdx + 1);
+						answer.append(predLN);
+						answer.append(" (a ");
+						answer.append(typ);
+						answer.append(")");
+						break;
+					}
+				}
+			}
+		}
+		return answer;
+	}
+
 	private boolean isBlankNode(String uri) {
-		if (uri.startsWith("-")) {
+		if (uri.startsWith("-") || uri.contains("blank node")) {
 			return true;
 		}
 		return false;
