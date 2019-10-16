@@ -292,6 +292,11 @@ public class DialogAnswerProvider extends BaseDialogAnswerProvider {
 
 	private synchronized boolean addCurationManagerContentToDialog(IXtextDocument document, IRegion reg, String content,
 			Object ctx, boolean quote) throws BadLocationException {
+		return addCurationManagerContentToDialog(document, reg, content, ctx, quote, true, true);
+	}
+	
+	private synchronized boolean addCurationManagerContentToDialog(IXtextDocument document, IRegion reg, String content,
+			Object ctx, boolean quote, boolean prependAgent, boolean repositionCursor) throws BadLocationException {
 
 		URI uri = document.readOnly(GetResourceUri.INSTANCE);
 		Display.getDefault().syncExec(() -> {
@@ -301,7 +306,12 @@ public class DialogAnswerProvider extends BaseDialogAnswerProvider {
 				if (quote) {
 					modContent = generateDoubleQuotedContentForDialog(content);
 				} else {
-					modContent = content.startsWith("CM:") ? content : ("CM: " + content);
+					if (prependAgent) {
+						modContent = content.startsWith("CM:") ? content : ("CM: " + content);
+					}
+					else {
+						modContent = content;
+					}
 					if (!modContent.trim().endsWith(".") && !modContent.trim().endsWith("?")) {
 						modContent += ".";
 					}
@@ -324,14 +334,16 @@ public class DialogAnswerProvider extends BaseDialogAnswerProvider {
 					}
 					document.replace(start + length + 1, 0, modContent);
 					loc = start + length + 1;
-					if (document instanceof XtextDocument && ctx instanceof EObject) {
-						final int caretOffset = start + length + 1 + modContent.length();
+					if (repositionCursor && document instanceof XtextDocument && ctx instanceof EObject) {
+						final int caretOffset = loc + modContent.length();
 						setCaretOffsetInEditor(uri, caretOffset);
 					}
 				} else {
 					loc = document.getLength();
 					document.set(document.get() + "\n" + modContent);
-					setCaretOffsetInEditor(uri, document.get().length() - 1);
+					if (repositionCursor) {
+						setCaretOffsetInEditor(uri, document.get().length() - 1);
+					}
 				}
 				LOGGER.debug("Adding to Dialog editor: " + modContent);
 				textAtLocation(document, modContent, loc);
@@ -367,7 +379,7 @@ public class DialogAnswerProvider extends BaseDialogAnswerProvider {
 			}
 			if (precedingObj != null) {
 				try {
-					return addCurationManagerContentToDialog(document, null, importStatement, precedingObj, false);
+					return addCurationManagerContentToDialog(document, null, importStatement, precedingObj, false, false, false);
 				} catch (BadLocationException e) {
 					// TODO Auto-generated catch block
 					e.printStackTrace();
