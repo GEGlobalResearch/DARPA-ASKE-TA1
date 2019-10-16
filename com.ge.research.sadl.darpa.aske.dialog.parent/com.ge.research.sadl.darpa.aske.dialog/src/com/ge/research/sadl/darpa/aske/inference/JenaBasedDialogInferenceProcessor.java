@@ -71,6 +71,7 @@ import com.ge.research.sadl.darpa.aske.curation.AnswerCurationManager;
 import com.ge.research.sadl.darpa.aske.curation.AnswerCurationManager.Agent;
 import com.ge.research.sadl.darpa.aske.preferences.DialogPreferences;
 import com.ge.research.sadl.darpa.aske.processing.DialogConstants;
+import com.ge.research.sadl.darpa.aske.processing.IDialogAnswerProvider;
 import com.ge.research.sadl.darpa.aske.processing.SadlStatementContent;
 import com.ge.research.sadl.jena.JenaBasedSadlInferenceProcessor;
 import com.ge.research.sadl.jena.JenaBasedSadlModelProcessor;
@@ -1221,8 +1222,11 @@ public class JenaBasedDialogInferenceProcessor extends JenaBasedSadlInferencePro
 					String owlURL = new SadlUtils().fileNameToFileUrl(queryOwlFileWithPath);
 					cmgr.addMapping(owlURL, queryModelURI, "", true, "JBDIP");
 					cmgr.addJenaMapping(queryModelURI, owlURL);
-
 					
+					Object dap = cmgr.getPrivateKeyValuePair(DialogConstants.DIALOG_ANSWER_PROVIDER);
+					if (dap instanceof IDialogAnswerProvider) {
+						((IDialogAnswerProvider)dap).addImport("import \"" + queryModelURI + "\".");
+					}
 					
 				} else if (outputsList.size() > 0 && docPatterns.size() > 0) { //models from dataset
 					
