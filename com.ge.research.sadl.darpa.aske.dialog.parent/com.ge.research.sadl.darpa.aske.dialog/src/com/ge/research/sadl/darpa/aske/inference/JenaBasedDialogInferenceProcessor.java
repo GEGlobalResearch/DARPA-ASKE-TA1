@@ -149,7 +149,8 @@ public class JenaBasedDialogInferenceProcessor extends JenaBasedSadlInferencePro
 	public static final String METAMODEL_SENSVALUE_PROP = METAMODEL_PREFIX + "sensitivityValue";
 	public static final String METAMODEL_SENSITIVITY = METAMODEL_PREFIX + "Sensitivity";
 	public static final String METAMODEL_INPUTSENSITIVITY = METAMODEL_PREFIX + "InputSensitivity";
-
+	public static final String METAMODEL_ASSUMPTIONSSATISFIED_PROP = METAMODEL_PREFIX + "assumptionsSatisfied";
+	public static final String METAMODEL_ASSUMPTIONUNSATISFIED_PROP = METAMODEL_PREFIX + "unsatisfiedAssumption";
 	
 	public static final String DEPENDENCY_GRAPH_INSERT = "prefix cg:<http://aske.ge.com/compgraphmodel#>\n" + 
 			"prefix imp:<http://sadl.org/sadlimplicitmodel#>\n" +
@@ -979,7 +980,9 @@ public class JenaBasedDialogInferenceProcessor extends JenaBasedSadlInferencePro
 		
 						//Create execution instance with time
 						cexec = getTheJenaModel().getOntClass(METAMODEL_CGEXEC_CLASS);
-						ce = queryModel.createIndividual(cexec);
+						//String cexecStr = cexec.getLocalName();
+						//ce = queryModel.createIndividual(cexecStr + "_" + System.currentTimeMillis(), cexec);
+						ce = createIndividualOfClass(queryModel, null, cexec.toString());
 						//OntProperty stprop = getTheJenaModel().getOntProperty(METAMODEL_STARTTIME_PROP);
 				
 	//					String DATE_FORMAT_NOW = "yyyy-MM-dd HH:mm:ss";
@@ -1016,6 +1019,7 @@ public class JenaBasedDialogInferenceProcessor extends JenaBasedSadlInferencePro
 						
 						// Comp Graph instance
 						cgIns = queryModel.createIndividual(queryModelPrefix + "CG_" + System.currentTimeMillis(), getTheJenaModel().getOntClass(METAMODEL_CCG));
+						//cgIns = queryModel.createIndividual("CG_" + System.currentTimeMillis(), getTheJenaModel().getOntClass(METAMODEL_CCG));
 						getTheJenaModel().add(cgIns, RDF.type, getTheJenaModel().getOntClass(METAMODEL_CCG));
 						//qhmodel.add(ce, getTheJenaModel().getOntProperty(METAMODEL_COMPGRAPH_PROP), cgIns);
 						ingestKGTriple(ce, getTheJenaModel().getOntProperty(METAMODEL_COMPGRAPH_PROP), cgIns);
@@ -1058,14 +1062,14 @@ public class JenaBasedDialogInferenceProcessor extends JenaBasedSadlInferencePro
 				            
 				            lbl2value = getLabelToMeanStdMapping(dbnResultsJson);
 			//TODO
-				            createCGsubgraphs(cgIns, dbnEqns, dbnOutput, listOfEqns, class2lbl, lbl2value);
+				            createCGsubgraphs(cgIns, dbnEqns, dbnOutput, listOfEqns, class2lbl, lbl2value, queryModelPrefix);
 				            
 							//TODO: create output instances and link them to ce
 							//      There may be multiple outputs, need to loop through them
 							// We may need to do this later after the results have been computed
 							for (RDFNode op : outputsList) {
 								outputType = op.as(OntProperty.class).getRange().toString();
-								oinst = createIndividualOfClass(queryModel,outputType);
+								oinst = createIndividualOfClass(queryModel, null, outputType);
 								ingestKGTriple(ce,outputprop,oinst);
 							}
 							
@@ -1109,6 +1113,8 @@ public class JenaBasedDialogInferenceProcessor extends JenaBasedSadlInferencePro
 								//StringBuilder sb = new StringBuilder("the CCG " + cgIns.getLocalName() + " has assumptionsSatisfied ");
 								if( assumpCheck.getResultAt(0, 0).equals("satisfied")) {
 									sb.append("true");
+									RDFNode obj = getTheJenaModel().createTypedLiteral(true);
+									ingestKGTriple(cgIns, getTheJenaModel().getOntProperty(METAMODEL_ASSUMPTIONSSATISFIED_PROP), obj);
 								} else {
 									sb.append(" false unsatisfiedAssumption \"");
 									sb.append(assumpCheck.getResultAt(0, 1).toString());
@@ -1162,7 +1168,7 @@ public class JenaBasedDialogInferenceProcessor extends JenaBasedSadlInferencePro
 					            
 					            if(sensitivitiyOutcome.equals("Success")) {
 						            lbl2class = getLabelClassMapping(dbnJson);
-						            ingestSensitivityResults(cgIns, lbl2class, dbnResultsJsonSensitivity);
+						            ingestSensitivityResults(cgIns, lbl2class, dbnResultsJsonSensitivity, queryModelPrefix);
 						            
 					            } else {
 					            	System.err.println("Sensitivity computation failed");
@@ -1324,7 +1330,7 @@ public class JenaBasedDialogInferenceProcessor extends JenaBasedSadlInferencePro
 							//TODO: create output instances and link them to ce
 							//      There is only one output for datasets
 							outputType = oputType.as(OntProperty.class).getRange().toString();
-							oinst = createIndividualOfClass(queryModel,outputType);
+							oinst = createIndividualOfClass(queryModel,null, outputType);
 							ingestKGTriple(ce,outputprop,oinst);
 							
 							cgIns = queryModel.createIndividual(queryModelPrefix + "CG_" + System.currentTimeMillis(), getTheJenaModel().getOntClass(METAMODEL_CCG));
@@ -1379,7 +1385,7 @@ public class JenaBasedDialogInferenceProcessor extends JenaBasedSadlInferencePro
 				            	
 				            	lbl2value = getLabelToMeanStdMapping(dbnResultsJson);
 							
-					            createCGsubgraphs(cgIns, dbnEqns, dbnOutput, listOfEqns, class2lbl, lbl2value); //, outputInstance);
+					            createCGsubgraphs(cgIns, dbnEqns, dbnOutput, listOfEqns, class2lbl, lbl2value, queryModelPrefix); //, outputInstance);
 								
 					            resultsList.add(numOfModels-1, retrieveCompGraph(resource, cgIns));
 					            resultsList.add(numOfModels*2-1, retrieveValuesHypothesis(resource, cgIns));
@@ -1889,7 +1895,7 @@ private RDFNode getObjectAsLiteralOrResource(Node property, Node object) {
 
 
 
-	private void ingestSensitivityResults(Individual cgIns, Map<String, String> lbl2class, String dbnResultsJsonSensitivity) {
+	private void ingestSensitivityResults(Individual cgIns, Map<String, String> lbl2class, String dbnResultsJsonSensitivity, String prefix) {
 		OntProperty sensprop = 	getTheJenaModel().getOntProperty(METAMODEL_SENS_PROP);
 		OntProperty outputprop = 	getTheJenaModel().getOntProperty(METAMODEL_OUTPUT_PROP);
 		OntProperty inputsensprop = 	getTheJenaModel().getOntProperty(METAMODEL_INPUTSENS_PROP);
@@ -1919,7 +1925,7 @@ private RDFNode getObjectAsLiteralOrResource(Node property, Node object) {
             		continue;
             	}
 
-            	sensIns = createIndividualOfClass(queryModel,METAMODEL_SENSITIVITY);
+            	sensIns = createIndividualOfClass(queryModel, prefix, METAMODEL_SENSITIVITY);
                 ingestKGTriple(cgIns, sensprop, sensIns);
             	
             	outputlbl = node.getKey(); // "a0"
@@ -1939,7 +1945,7 @@ private RDFNode getObjectAsLiteralOrResource(Node property, Node object) {
             		RDFNode itypeProp = getTheJenaModel().getProperty(inputType);
             		rng = itypeProp.as(OntProperty.class).getRange().toString();
             		OntClass inputClass = getTheJenaModel().getOntClass(rng);
-            		inputSens = createIndividualOfClass(queryModel, METAMODEL_INPUTSENSITIVITY);
+            		inputSens = createIndividualOfClass(queryModel, null, METAMODEL_INPUTSENSITIVITY);
             		v = sensvals.get(0).getAsJsonArray().get(i).getAsString();
 
             		ingestKGTriple(sensIns, inputsensprop, inputSens);
@@ -1958,7 +1964,7 @@ private RDFNode getObjectAsLiteralOrResource(Node property, Node object) {
 //			Map<String, String[]> lbl2value, 
 //			Map<OntClass, Individual> outputInstance) {
 		private void createCGsubgraphs(Individual cgIns, Map<RDFNode, String[]> dbnEqns, Map<RDFNode, RDFNode> dbnOutput,
-				String listOfEqns, Map<String, String> class2lbl, Map<String, String[]> lbl2value) //, Map<OntClass, Individual> outputInstance)
+				String listOfEqns, Map<String, String> class2lbl, Map<String, String[]> lbl2value, String prefix) //, Map<OntClass, Individual> outputInstance)
 		{
 
 		OntProperty subgraphprop = 	getTheJenaModel().getOntProperty(METAMODEL_SUBG_PROP);
@@ -1980,11 +1986,11 @@ private RDFNode getObjectAsLiteralOrResource(Node property, Node object) {
 //			RDFNode s = soln.get("?Eq") ; 
 //			RDFNode p = soln.get("?DBN") ;
 //			RDFNode o = soln.get("?Out") ;
-			sgIns = createIndividualOfClass(queryModel,METAMODEL_SUBGRAPH);
+			sgIns = createIndividualOfClass(queryModel,null, METAMODEL_SUBGRAPH);
 			   //getTheJenaModel().add(sgIns, RDF.type, getTheJenaModel().getOntClass(METAMODEL_SUBGRAPH));
 			//qhmodel.add(cgIns, subgraphprop, sgIns);
 			ingestKGTriple(cgIns, subgraphprop, sgIns);
-			dbnIns = createIndividualOfClass(queryModel,dbn.toString());
+			dbnIns = createIndividualOfClass(queryModel,null, dbn.toString());
 			   //getTheJenaModel().add(dbnIns, RDF.type, getTheJenaModel().getOntClass(dbn.toString()));
 
 			//getTheJenaModel().add(sgIns, cgraphprop, dbnIns);
@@ -2027,7 +2033,7 @@ private RDFNode getObjectAsLiteralOrResource(Node property, Node object) {
 			
 			//rng = otype.as(OntProperty.class).getRange().toString();
 
-			outpIns = createIndividualOfClass(queryModel, rng); //e.g. instance of :Altitude
+			outpIns = createIndividualOfClass(queryModel, null, rng); //e.g. instance of :Altitude
 			   //getTheJenaModel().add(outpIns, RDF.type, ostr);
 //				getTheJenaModel().add(sgIns, outputprop, outpIns);
 //				qhmodel.add(sgIns, outputprop, outpIns);
@@ -2279,8 +2285,16 @@ private Map<String, String> getLabelClassMapping(String dbnJson) {
 	}
 
 
-	private Individual createIndividualOfClass(OntModel model, String classUriStr) {
-		return model.createIndividual(getTheJenaModel().getOntClass(classUriStr));
+	private Individual createIndividualOfClass(OntModel model, String prefix, String classUriStr) {
+		OntClass ontClass = getTheJenaModel().getOntClass(classUriStr);
+		Individual ind;
+		if (prefix == null) {
+			ind = model.createIndividual(ontClass); //make it a blank node
+		}
+		else {
+			ind = model.createIndividual(prefix + ontClass.getLocalName()+ "_" + System.currentTimeMillis(), ontClass);
+		}
+		return ind;
 	}
 
 	private boolean commonSubject(TripleElement[] triples) {
