@@ -119,6 +119,9 @@ public class JenaBasedDialogInferenceProcessor extends JenaBasedSadlInferencePro
 //	public static final String qhOwlFileName = "MetaData.owl";
 
 	
+	public static final String CGMODELS_FOLDER = "ComputationalGraphModels";
+	
+	
 	public static final String METAMODEL_PREFIX = "http://aske.ge.com/metamodel#";
 	public static final String METAMODEL_QUERY_CLASS = METAMODEL_PREFIX + "CGQuery";
 	public static final String METAMODEL_INPUT_PROP = METAMODEL_PREFIX + "input";
@@ -671,7 +674,7 @@ public class JenaBasedDialogInferenceProcessor extends JenaBasedSadlInferencePro
 //			queryModel = ModelFactory.createOntologyModel(OntModelSpec.OWL_MEM);
 //			OntModelProvider.addPrivateKeyValuePair(resource, queryKey, queryModel);
 			
-			String kgsDirectory = new File(getModelFolderPath(resource)).getParent() + File.separator  + "Queries";
+			String kgsDirectory = new File(getModelFolderPath(resource)).getParent() + File.separator  + CGMODELS_FOLDER;
 			new File(kgsDirectory).mkdir();
 			
 			String queryModelFileName = "Q_" + System.currentTimeMillis();
@@ -967,6 +970,7 @@ public class JenaBasedDialogInferenceProcessor extends JenaBasedSadlInferencePro
 					
 					dbnresults = new ResultSet[numOfModels*2]; 
 					
+					String resmsg = null;
 					
 					for(int i=0; i<numOfModels; i++) {
 						listOfEqns = modelEqnList[i];
@@ -1045,10 +1049,10 @@ public class JenaBasedDialogInferenceProcessor extends JenaBasedSadlInferencePro
 			            
 			            //check if DBN execution was successful
 			            
-			            String resmsg = getDBNoutcome(dbnResultsJson).trim();
+			            resmsg = getDBNoutcome(dbnResultsJson);
 			            //boolean suc = resmsg.equals("Success");
 			            
-			            if(resmsg.equals("Success")) {
+			            if(resmsg != null && resmsg.equals("Success")) {
 				            
 				            lbl2value = getLabelToMeanStdMapping(dbnResultsJson);
 			//TODO
@@ -1095,24 +1099,25 @@ public class JenaBasedDialogInferenceProcessor extends JenaBasedSadlInferencePro
 							saveMetaDataFile(resource,queryModelFileName); //so we can query the the eqns in the CCG
 							
 							ResultSet assumpCheck = null;
-//							assumpCheck = checkModelAssumptions(resource, cgIns.toString(), queryModelURI);
-//							if (assumpCheck != null) {
-//								System.out.println(assumpCheck.toString());
-//								
-//								StringBuilder sb = new StringBuilder("The CCG " + cgIns.getLocalName() + " has assumptionsSatisfied ");
-//								//StringBuilder sb = new StringBuilder("the CCG " + cgIns.getLocalName() + " has assumptionsSatisfied ");
-//								if( assumpCheck.getResultAt(0, 0).equals("satisfied")) {
-//									sb.append("true");
-//								} else {
-//									sb.append(" false unsatisfiedAssumption \"");
-//									sb.append(assumpCheck.getResultAt(0, 1).toString());
-//									sb.append("\"");
-//								}
-//								sb.append(".");
-//								//sadlDeclaration.add(sb.toString());
-//								SadlStatementContent ssc = new SadlStatementContent(null, Agent.CM, sb.toString());
-//								acm.notifyUser(getModelFolderPath(resource), ssc, false);
-//							}
+							assumpCheck = checkModelAssumptions(resource, cgIns.toString(), queryModelURI);
+							if (assumpCheck != null) {
+								System.out.println(assumpCheck.toString());
+								
+								StringBuilder sb = new StringBuilder("The CCG " + cgIns.getLocalName() + " has assumptionsSatisfied ");
+								//StringBuilder sb = new StringBuilder("the CCG " + cgIns.getLocalName() + " has assumptionsSatisfied ");
+								if( assumpCheck.getResultAt(0, 0).equals("satisfied")) {
+									sb.append("true");
+								} else {
+									sb.append(" false unsatisfiedAssumption \"");
+									sb.append(assumpCheck.getResultAt(0, 1).toString());
+									sb.append("\"");
+								}
+								sb.append(".");
+								//sadlDeclaration.add(sb.toString());
+								SadlStatementContent ssc = new SadlStatementContent(null, Agent.CM, sb.toString());
+								System.out.println(ssc.toString());
+								//acm.notifyUser(getModelFolderPath(resource), ssc, false);
+							}
 							
 							
 				            
@@ -1141,7 +1146,8 @@ public class JenaBasedDialogInferenceProcessor extends JenaBasedSadlInferencePro
 							for (String sd : sadlDeclaration) {
 								SadlStatementContent ssc = new SadlStatementContent(null, Agent.CM, sd);
 //								AnswerCurationManager acm = (AnswerCurationManager) cmgr.getPrivateKeyValuePair(DialogConstants.ANSWER_CURATION_MANAGER);
-								acm.notifyUser(getModelFolderPath(resource), ssc, false);
+								System.out.println(ssc.toString());
+								//acm.notifyUser(getModelFolderPath(resource), ssc, false);
 							}
 							
 							if ( assumpCheck != null && assumpCheck.getResultAt(0, 0).equals("satisfied") ) {
@@ -1193,7 +1199,8 @@ public class JenaBasedDialogInferenceProcessor extends JenaBasedSadlInferencePro
 										sb.append("\n  ).\n");
 									}
 									SadlStatementContent ssc = new SadlStatementContent(null, Agent.CM, sb.toString());
-									acm.notifyUser(getModelFolderPath(resource), ssc, false);
+									System.out.println(ssc.toString());
+									//acm.notifyUser(getModelFolderPath(resource), ssc, false);
 					            }
 							}//assumptions satisfied
 				            
@@ -1210,18 +1217,20 @@ public class JenaBasedDialogInferenceProcessor extends JenaBasedSadlInferencePro
 						//System.out.println("Unable to assemble a model with current knowledge");
 					}
 					
-					
-					String projectName = new File(getModelFolderPath(resource)).getParentFile().getName(); // ASKE_P2
-					
-					Resource newRsrc = resource.getResourceSet()
-							.createResource(URI.createPlatformResourceURI(projectName + "/Queries/" + queryModelFileName + ".owl" , false));
-					newRsrc.load(resource.getResourceSet().getLoadOptions());
-					JenaBasedSadlModelProcessor.refreshResource(newRsrc);
-					//SadlUtils fileNameToFileUrl
-					String owlURL = new SadlUtils().fileNameToFileUrl(queryOwlFileWithPath);
-					cmgr.addMapping(owlURL, queryModelURI, "", true, "JBDIP");
-					cmgr.addJenaMapping(queryModelURI, owlURL);
+					if(resmsg != null && resmsg.equals("Success")) {
+						saveMetaDataFile(resource,queryModelFileName); //to include sensitivity results
 
+						String projectName = new File(getModelFolderPath(resource)).getParentFile().getName(); // ASKE_P2
+						
+						Resource newRsrc = resource.getResourceSet()
+								.createResource(URI.createPlatformResourceURI(projectName + File.separator + CGMODELS_FOLDER + File.separator + queryModelFileName + ".owl" , false));
+						newRsrc.load(resource.getResourceSet().getLoadOptions());
+						JenaBasedSadlModelProcessor.refreshResource(newRsrc);
+						//SadlUtils fileNameToFileUrl
+						String owlURL = new SadlUtils().fileNameToFileUrl(queryOwlFileWithPath);
+						cmgr.addMapping(owlURL, queryModelURI, "", true, "JBDIP");
+						cmgr.addJenaMapping(queryModelURI, owlURL);
+					}
 					
 					
 				} else if (outputsList.size() > 0 && docPatterns.size() > 0) { //models from dataset
@@ -1351,7 +1360,7 @@ public class JenaBasedDialogInferenceProcessor extends JenaBasedSadlInferencePro
 		
 							// Run the model
 							dbnResultsJson = executeDBN(dbnJson);
-				            String resmsg = getDBNoutcome(dbnResultsJson).trim();
+				            String resmsg = getDBNoutcome(dbnResultsJson);
 				            //boolean suc = resmsg.equals("Success");
 				            
 				            if(resmsg.equals("Success")) {
@@ -1587,14 +1596,17 @@ private RDFNode getObjectAsLiteralOrResource(Node property, Node object) {
 
 	private String getDBNoutcome(String dbnResultsJson) {
         JsonParser parser = new JsonParser();
-        JsonElement jsonTree = parser.parse(dbnResultsJson);
-        JsonObject jsonObject;
         String jres = null;
-
-        if (jsonTree.isJsonObject()) {
-            jsonObject = jsonTree.getAsJsonObject();
-            if (jsonObject.has("modelStatus")) 
-                jres = jsonObject.get("modelStatus").getAsString();
+        if (!dbnResultsJson.equals("")) {
+	        JsonElement jsonTree = parser.parse(dbnResultsJson);
+	        JsonObject jsonObject;
+	        //String jres = null;
+	
+	        if (jsonTree.isJsonObject()) {
+	            jsonObject = jsonTree.getAsJsonObject();
+	            if (jsonObject.has("modelStatus")) 
+	                jres = jsonObject.get("modelStatus").getAsString().trim();
+	        }
         }
         return jres;
 	}
@@ -1727,7 +1739,7 @@ private RDFNode getObjectAsLiteralOrResource(Node property, Node object) {
 		
 //		assertTrue(pr.loadInstanceData(instanceDatafile));
 		loadAllOwlFilesInProject(modelFolder, reasoner);
-		String queriesFolder = new File(getModelFolderPath(resource)).getParent() + "/Queries";
+		String queriesFolder = new File(getModelFolderPath(resource)).getParent() + File.separator + CGMODELS_FOLDER;
 		loadAllOwlFilesInProject(queriesFolder, reasoner);
 	
 		//String modelFile = getModelFolderPath(resource) + File.separator + qhOwlFileName;
@@ -1796,7 +1808,7 @@ private RDFNode getObjectAsLiteralOrResource(Node property, Node object) {
 		
 		if (!reasoner.isInitialized()) {
 			reasoner.setConfigurationManager(configMgr);
-			//String modelName = configMgr.getPublicUriFromActualUrl(new SadlUtils().fileNameToFileUrl(modelFolderUri + "/" + owlFileName));
+			//String modelName = configMgr.getPublicUriFromActualUrl(new SadlUtils().fileNameToFileUrl(modelFolderUri + File.separator + owlFileName));
 			//model name something like http://aske.ge.com/metamodel
 			//String mname = getModelName();
 			reasoner.initializeReasoner(modelFolderUri, getModelName(), format); 
@@ -1833,7 +1845,7 @@ private RDFNode getObjectAsLiteralOrResource(Node property, Node object) {
 
 	private void saveMetaDataFile(Resource resource, String queryModelFileName) {
 		
-		String qhOwlFileWithPath = new File(getModelFolderPath(resource)).getParent() + File.separator + "Queries" + File.separator + queryModelFileName + ".owl";
+		String qhOwlFileWithPath = new File(getModelFolderPath(resource)).getParent() + File.separator + CGMODELS_FOLDER + File.separator + queryModelFileName + ".owl";
 		String queryModelName = "http://aske.ge.com/" + "Model_" + queryModelFileName;
 		
 		File f = new File(qhOwlFileWithPath);
