@@ -678,11 +678,12 @@ public class JenaBasedDialogInferenceProcessor extends JenaBasedSadlInferencePro
 			new File(kgsDirectory).mkdir();
 			
 			String queryModelFileName = "Q_" + System.currentTimeMillis();
-			//String queryModelName = METAMODEL_PREFIX + "Model_" + queryModelFileName;
-			String queryInstanceName = METAMODEL_PREFIX + queryModelFileName;
+			String queryModelURI = "http://aske.ge.com/" + "Model_" + queryModelFileName;
+			String queryModelPrefix = queryModelURI + "#";
+			//String queryInstanceName = METAMODEL_PREFIX + queryModelFileName;
+			String queryInstanceName = queryModelPrefix + queryModelFileName;
 			String queryOwlFileWithPath = kgsDirectory + File.separator + queryModelFileName + ".owl";
 
-			String queryModelURI = "http://aske.ge.com/" + "Model_" + queryModelFileName;
 			
 			
 			//ConfigurationManagerForIDE cmgr = null;
@@ -1013,7 +1014,7 @@ public class JenaBasedDialogInferenceProcessor extends JenaBasedSadlInferencePro
 	//					
 						
 						// Comp Graph instance
-						cgIns = queryModel.createIndividual(METAMODEL_PREFIX + "CG_" + System.currentTimeMillis(), getTheJenaModel().getOntClass(METAMODEL_CCG));
+						cgIns = queryModel.createIndividual(queryModelPrefix + "CG_" + System.currentTimeMillis(), getTheJenaModel().getOntClass(METAMODEL_CCG));
 						getTheJenaModel().add(cgIns, RDF.type, getTheJenaModel().getOntClass(METAMODEL_CCG));
 						//qhmodel.add(ce, getTheJenaModel().getOntProperty(METAMODEL_COMPGRAPH_PROP), cgIns);
 						ingestKGTriple(ce, getTheJenaModel().getOntProperty(METAMODEL_COMPGRAPH_PROP), cgIns);
@@ -1146,8 +1147,8 @@ public class JenaBasedDialogInferenceProcessor extends JenaBasedSadlInferencePro
 							for (String sd : sadlDeclaration) {
 								SadlStatementContent ssc = new SadlStatementContent(null, Agent.CM, sd);
 //								AnswerCurationManager acm = (AnswerCurationManager) cmgr.getPrivateKeyValuePair(DialogConstants.ANSWER_CURATION_MANAGER);
-								System.out.println(ssc.toString());
-								//acm.notifyUser(getModelFolderPath(resource), ssc, false);
+								//System.out.println(ssc.toString());
+								acm.notifyUser(getModelFolderPath(resource), ssc, false);
 							}
 							
 							if ( assumpCheck != null && assumpCheck.getResultAt(0, 0).equals("satisfied") ) {
@@ -1323,7 +1324,7 @@ public class JenaBasedDialogInferenceProcessor extends JenaBasedSadlInferencePro
 							oinst = createIndividualOfClass(queryModel,outputType);
 							ingestKGTriple(ce,outputprop,oinst);
 							
-							cgIns = queryModel.createIndividual(METAMODEL_PREFIX + "CG_" + System.currentTimeMillis(), getTheJenaModel().getOntClass(METAMODEL_CCG));
+							cgIns = queryModel.createIndividual(queryModelPrefix + "CG_" + System.currentTimeMillis(), getTheJenaModel().getOntClass(METAMODEL_CCG));
 							//getTheJenaModel().add(cgIns, RDF.type, getTheJenaModel().getOntClass(METAMODEL_CCG));
 							// Each comp graph is attached to the execution instance
 							//qhmodel.add(ce, getTheJenaModel().getOntProperty(METAMODEL_COMPGRAPH_PROP), cgIns);
