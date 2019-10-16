@@ -345,19 +345,33 @@ public class DialogAnswerProvider extends BaseDialogAnswerProvider {
 	@Override
 	public boolean addImport(String importStatement) {
 		Resource rsrc = getResource();
+		EObject precedingObj = null;
 		if (rsrc instanceof XtextResource) {
 			SadlModel model = (SadlModel) rsrc.getContents().get(0);
-			if (model.getImports() != null) {
+			if (!model.getImports().isEmpty()) {
+				SadlImport lastImport = null;
 				EList<SadlImport> importlst = model.getImports();
 				for (SadlImport imprt : importlst) {
 					if (imprt.toString().equals(importStatement)) {
 						return false;
 					}
+					lastImport = imprt;
 				}
 				// add after last import
+				precedingObj = lastImport;
+				
 			}
 			else {
 				// add before elements
+				precedingObj = model;
+			}
+			if (precedingObj != null) {
+				try {
+					return addCurationManagerContentToDialog(document, null, importStatement, precedingObj, false);
+				} catch (BadLocationException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
 			}
 			return true;
 		}
