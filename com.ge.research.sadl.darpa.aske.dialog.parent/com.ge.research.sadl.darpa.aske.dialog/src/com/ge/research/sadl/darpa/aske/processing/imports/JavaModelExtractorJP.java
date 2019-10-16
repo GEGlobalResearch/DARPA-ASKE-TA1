@@ -1277,9 +1277,31 @@ public class JavaModelExtractorJP implements IModelFromCodeExtractor {
 		}
 		return lastInst;
 	}
+	
+	@Override
+	public String[] extractPythonTFEquationFromCodeExtractionModel(String pythonScript) {
+		return extractPythonTFEquationFromCodeExtractionModel(pythonScript, null);
+	}
+
+	@Override
+	public String[] extractPythonTFEquationFromCodeExtractionModel(String pythonScript, String defaultMethodName) {
+		String modifiedScript;		
+		if (pythonScript.contains("math.")) {
+			modifiedScript = pythonScript.replaceAll("math.", "tf.math.");
+		}
+		else {
+			modifiedScript = pythonScript.replaceAll("Math.", "tf.math.");
+		}
+		return extractPythonEquationFromCodeExtractionModel(modifiedScript, defaultMethodName);
+	}
 
 	@Override
 	public String[] extractPythonEquationFromCodeExtractionModel(String pythonScript) {
+		return extractPythonEquationFromCodeExtractionModel(pythonScript, null);
+	}
+
+	@Override
+	public String[] extractPythonEquationFromCodeExtractionModel(String pythonScript, String defaultMethodName) {
 		/*
 		 * A typical script coming from the Java to Python service looks like this (indentation preserved):
 
@@ -1293,7 +1315,7 @@ class Mach(object):
         return (Math.sqrt(32.174 * T * R * WOW))
 
 		 * We need to find the line containing "generated source for method <methodName>" and extract the name of the method.
-		 * Then we ned to replace the "return " with "<methodName> =".
+		 * Then we need to replace the "return " with "<methodName> =".
 		 * If there are multiple rows (newlines) we need to place the number of spaces that the row ending in the newline is indented from the "def <methName>..." line.
 		 * This becomes the name of the output variable in K-CHAIN.
 		 */
@@ -1344,10 +1366,9 @@ class Mach(object):
 			lineCnt++;
 		}
 		scanner.close();
-	    String modifiedScript = sb.toString();
-	    modifiedScript = modifiedScript.replaceAll("Math.", "tf.math.");
+	    String modifiedScript = sb.length() > 0 ? sb.toString() : pythonScript;
 		String[] returns = new String[2];
-		returns[0] = methName;
+		returns[0] = methName != null ? methName : defaultMethodName;
 		returns[1] = modifiedScript;
 		return returns;
 	}

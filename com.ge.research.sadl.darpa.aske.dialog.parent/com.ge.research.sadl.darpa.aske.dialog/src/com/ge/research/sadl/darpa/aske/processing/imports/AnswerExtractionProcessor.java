@@ -62,7 +62,7 @@ public class AnswerExtractionProcessor {
 	private String sadlContent;
 	
 	public enum CodeLanguage {
-		JAVA
+		JAVA, PYTHON, PYTHON_TF, TEXT, OTHERLANGUAGE
 		}
 
 

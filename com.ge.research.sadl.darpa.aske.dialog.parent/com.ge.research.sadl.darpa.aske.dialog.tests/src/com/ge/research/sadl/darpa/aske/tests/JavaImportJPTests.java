@@ -393,7 +393,7 @@ public class JavaImportJPTests {
 	}
 
 	@Test
-		public void test_07() throws IOException, ConfigurationException, OwlImportException, QueryParseException, QueryCancelledException, ReasonerNotFoundException {
+		public void test_07() throws IOException, ConfigurationException, OwlImportException, QueryParseException, QueryCancelledException, ReasonerNotFoundException, InvalidNameException {
 			// test save command given an OWL file generated from a .dialog file is available as input.
 			File owlF = new File(getCodeExtractionKbRoot() + "\\OwlModels\\test2.dialog.owl");
 			assertTrue(owlF.exists());
