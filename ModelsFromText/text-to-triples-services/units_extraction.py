@@ -1,7 +1,12 @@
 from typing import List
 import json
 import requests
-import triple_store_query_execution as queryExecution
+import triple_store_query_execution as query
+import spacy
+from rdflib import Graph
+import text_to_triples_service as t2t
+
+variable_mappings = {0: 'entity',  1: 'equation', 2: 'variableName'}
 
 
 class UnitsExtraction:
@@ -11,6 +16,7 @@ class UnitsExtraction:
     units_synonym_URI_str = ''
     query_execution = None
     units_ontology_graph_uri = ''
+    nlp = None
 
     # Initializes appropriate variables with values from the config file
     def __init__(self, config):
@@ -18,16 +24,23 @@ class UnitsExtraction:
         self.nlp_service_url = config.NLPServiceURL
         self.units_ontology_file = config.UnitsOntologyPath
         self.units_synonym_URI_str = config.UnitsSynonymURIList
-        self.query_execution = queryExecution.QueryExecution(config)
+        self.query_execution = query.QueryExecution(config)
         self.units_ontology_graph_uri = config.UnitsOntologyGraphURI
+        self.nlp = spacy.load('en_core_web_sm')
 
     # Main method to identify and extract units mentioned in text
     # also returns the scientific concept associated with the unit
-    def extract_units(self, text):
+    def extract_units(self, text: str, locality_uri: str, text_to_triples_obj: t2t.TextToTriples):
+
+        g = text_to_triples_obj.get_graph(locality_uri)
+
         concept_mapper_service_url = self.nlp_service_url + '/conceptTaggingJSON'
+        text = self.pre_process(text)
+
         input_info = self.get_request_payload(text)
         headers = {'Content-Type': 'application/json'}
         input_info_json = (json.dumps(input_info))
+
         r = requests.post(concept_mapper_service_url, input_info_json, headers=headers)
         response = r.json()
         unit_info_list: List[object] = []
@@ -53,14 +66,52 @@ class UnitsExtraction:
                             related_concept_name = str(unit_response["relatedConceptName"])
                             related_concept_name = related_concept_name.replace("unit", "").strip()
 
+                            # use related concept name to search local graph
+                            # ?x rdfs:label related_concept_name
+                            # ?x semType ?eq
+                            # return equation?
+                            unit_context_list = self.get_equation(g, related_concept_name)
+
                             unit_info = {"unitText": unit_text, "unitName": unit_response["unitName"],
                                          "unitURI": unit_uri, "relatedConceptName": related_concept_name,
                                          "relatedConceptURI": unit_response["relatedConceptURI"],
-                                         "start": concept["startByte"], "end": concept["endByte"]}
+                                         "start": concept["startByte"], "end": concept["endByte"],
+                                         "unit_context": unit_context_list}
                             unit_info_list.append(unit_info)
 
         print(unit_info_list)
         return unit_info_list
+
+    def get_equation(self, g: Graph, label: str) -> []:
+        unit_context_list = []
+        query_string = ("select ?entity ?equation ?variableName where {"
+                        "?entity rdfs:label '" + label + "'. "
+                        "OPTIONAL { "
+                        "?augTypeObj <http://sadl.org/sadlimplicitmodel#semType> ?entity . "
+                        "?dataDesc <http://sadl.org/sadlimplicitmodel#augmentedType> ?augTypeObj ."
+                        "?dataDesc <http://sadl.org/sadlimplicitmodel#localDescriptorName> ?variableName ." 
+                        "?list rdf:rest*/rdf:first ?dataDesc ."
+                        "?equation a <http://sadl.org/sadlimplicitmodel#ExternalEquation> . "
+                        "{?equation <http://sadl.org/sadlimplicitmodel#arguments> ?list .} "
+                        "} }")
+
+        print("\nlabel ... \n" + label + "\n")
+        print("\nquery results ... \n")
+        if g is not None:
+            query_result = g.query(query_string)
+            #for row in query_result:
+            #   print(row)
+
+            for row in query_result:
+                unit_context = {}
+                for i in range(0, len(row)):
+                    if row[i] is not None:
+                        unit_context[variable_mappings[i]] = row[i]
+                unit_context_list.append(unit_context)
+        print("\n")
+        #g2 = None
+        #query_result2 = g2.query(query_string)
+        return unit_context_list
 
     # Executes SPARQL query against the Units Ontology in the triple store
     # returns unit uri, unit label, parent class uri and label
@@ -103,3 +154,15 @@ class UnitsExtraction:
 
         owl_line_list.append(owl_line.strip())
         return owl_line_list
+
+    # Lemmatize the sentence
+    def pre_process(self, text: str) -> str:
+        doc = self.nlp(text)
+        mod_text = ''
+
+        for token in doc:
+            print(token.lemma_, token.text)
+            mod_text = mod_text + " " + token.lemma_
+
+        return mod_text.strip()
+

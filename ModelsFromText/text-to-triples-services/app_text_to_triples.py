@@ -41,6 +41,7 @@
 import config
 import connexion
 import text_to_triples_service as t2t
+import text_to_triples_backward_compatible_service as t2tbcs
 import locality_search as locality
 import units_extraction as units
 import sys
@@ -57,18 +58,38 @@ application.config['config_file'] = sys.argv[1]
 config = config.Config(sys.argv[1])
 application.config['config_obj'] = config
 
+# Initialize text to triples object
+t2t_obj = t2t.TextToTriples(application.config['config_obj'])
+
+# Initialize the units extraction object
+units_extract = units.UnitsExtraction(application.config['config_obj'])
+
 
 def text_to_triples(body):
-    return t2t.text_to_triples(body, application.config['config_obj'])
+    return t2t_obj.text_to_triples(body)
 
 
 def get_equation_var_context(body):
-    return locality.get_equation_var_context(body)
+    # return locality.get_equation_var_context(body, application.config['config_obj'])
+    return locality.local_variable_search(body, t2t_obj, config)
 
 
 def get_units_info(body):
-    units_extract = units.UnitsExtraction(application.config['config_obj'])
-    return units_extract.extract_units(body["text"])
+    return units_extract.extract_units(body["text"], body["localityURI"], t2t_obj)
+
+
+def save_graph(body):
+    g = t2t_obj.get_graph(body["localityURI"])
+    return t2t_obj.save_graph(g)
+
+
+def clear_graph(body):
+    return t2t_obj.clear_graph(body["localityURI"])
+
+
+# TODO: Backward compatible method. Need to retire. Do not use.
+def text_to_triples_backward_compatible(body):
+    return t2tbcs.text_to_triples_backward_compatible(body, application.config['config_obj'])
 
 
 def process_example_doc(body):
@@ -82,7 +103,8 @@ def process_example_doc(body):
     for con in content:
         text = text + " " + con
 
-    return t2t.text_to_triples({"text": text, "locality": "string"}, application.config['config_obj'])
+    return t2tbcs.text_to_triples_backward_compatible({"text": text, "localityURI": "string"},
+                                                      application.config['config_obj'])
 
 
 if __name__ == '__main__':
