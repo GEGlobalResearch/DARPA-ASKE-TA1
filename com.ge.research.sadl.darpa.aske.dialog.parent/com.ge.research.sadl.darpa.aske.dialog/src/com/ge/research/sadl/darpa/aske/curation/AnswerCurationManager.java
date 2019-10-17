@@ -258,6 +258,8 @@ public class AnswerCurationManager {
 
 				String content = readFileToString(f);
 				String fileIdentifier = ConfigurationManagerForIdeFactory.formatPathRemoveBackslashes(f.getCanonicalPath());
+				String clearMsg = getExtractionProcessor().getTextProcessor().clearGraph(outputModelName);
+
 				int[] results = getTextProcessor().processText(fileIdentifier, content, outputModelName, prefix);
 				int numConcepts = results[0];
 				int numEquations = results[1];
