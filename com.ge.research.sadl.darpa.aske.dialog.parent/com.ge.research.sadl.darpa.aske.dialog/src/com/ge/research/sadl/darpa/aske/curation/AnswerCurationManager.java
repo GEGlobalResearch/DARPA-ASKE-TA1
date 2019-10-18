@@ -670,6 +670,7 @@ public class AnswerCurationManager {
 
 	private void clearCodeModelReasoner() {
 		getConfigurationManager().clearReasoner();
+		codeModelReasoner = null;
 	}
 	
 	/**
@@ -1510,48 +1511,6 @@ public class AnswerCurationManager {
 		}
 		InformationContent ic = new InformationContent(null, Agent.CM, msg);
 		notifyUser(modelFolder, ic, quote);
-//		if (quote) {
-//			msg = doubleQuoteContent(msg);
-//		}
-//		if (getDialogAnswerProvider() != null) {
-//			// talk to the user via the Dialog editor
-//			Method acmic = null;
-//			try {
-//				acmic = getDialogAnswerProvider().getClass().getMethod("addCurationManagerInitiatedContent", AnswerCurationManager.class, String.class);
-//			} catch (NoSuchMethodException e1) {
-//				// TODO Auto-generated catch block
-//				e1.printStackTrace();
-//			} catch (SecurityException e1) {
-//				// TODO Auto-generated catch block
-//				e1.printStackTrace();
-//			}
-//			if (acmic == null) {
-//				Method[] dapMethods = getDialogAnswerProvider().getClass().getDeclaredMethods();
-//				if (dapMethods != null) {
-//					for (Method m : dapMethods) {
-//						if (m.getName().equals("addCurationManagerInitiatedContent")) {
-//							acmic = m;
-//							break;
-//						}
-//					}
-//				}
-//			}
-//			if (acmic != null) {
-//				acmic.setAccessible(true);
-//				try {
-//					acmic.invoke(getDialogAnswerProvider(), this, msg);
-//				} catch (IllegalAccessException e) {
-//					// TODO Auto-generated catch block
-//					e.printStackTrace();
-//				} catch (IllegalArgumentException e) {
-//					// TODO Auto-generated catch block
-//					e.printStackTrace();
-//				} catch (InvocationTargetException e) {
-//					// TODO Auto-generated catch block
-//					e.printStackTrace();
-//				}
-//			}
-//		}
 	}
 	
 	/**

@@ -994,7 +994,8 @@ public class JenaBasedDialogModelProcessor extends JenaBasedSadlModelProcessor {
 				String equationUri = getDeclarationExtensions().getConceptUri(equationSR);
 				Individual extractedModelInstance = getTheJenaModel().getIndividual(equationUri);
 				if (extractedModelInstance == null) {
-					getAnswerCurationManager().notifyUser(getConfigMgr().getModelFolder(), "No equation with URI '" + equationUri + "' is found in current model.", true);
+					addError("No equation with URI '" + equationUri + "' is found in current model.", equationSR);
+					return null;
 				}
 				else if (extractedModelInstance.getNameSpace().equals(targetModelAlias)) {
 					getAnswerCurationManager().notifyUser(getConfigMgr().getModelFolder(), "The equation with URI '" + equationUri + "' is already in the target model '" + targetModelAlias + "'", true);
