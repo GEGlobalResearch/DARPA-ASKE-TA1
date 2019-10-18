@@ -169,7 +169,17 @@ public class JavaModelExtractorJP implements IModelFromCodeExtractor {
 	//use ASTParse to parse string
 	private void parse(String inputIdentifier, String modelFolder, String javaCodeContent) throws IOException, ConfigurationException {
 		try {
-			String msg = "Parsing code file '" + inputIdentifier + "'.";
+			String source = null;
+			if (inputIdentifier.lastIndexOf('/') > 0) {
+				source = inputIdentifier.substring(inputIdentifier.lastIndexOf('/') + 1);
+			}
+			else if (inputIdentifier.lastIndexOf('\\') > 0) {
+				source = inputIdentifier.substring(inputIdentifier.lastIndexOf('\\') + 1);
+			}
+			else {
+				source = inputIdentifier;
+			}
+			String msg = "Parsing code file '" + source + "'.";
 			getCurationMgr().notifyUser(modelFolder, msg, true);
 		} catch (ConfigurationException e) {
 			// TODO Auto-generated catch block
@@ -1286,7 +1296,7 @@ public class JavaModelExtractorJP implements IModelFromCodeExtractor {
 	@Override
 	public String[] extractPythonTFEquationFromCodeExtractionModel(String pythonScript, String defaultMethodName) {
 		String modifiedScript;		
-		if (pythonScript.contains("math.")) {
+		if (pythonScript.contains(" math.")) {
 			modifiedScript = pythonScript.replaceAll("math.", "tf.math.");
 		}
 		else {

@@ -75,6 +75,7 @@ import com.ge.research.sadl.darpa.aske.processing.EvalContent;
 import com.ge.research.sadl.darpa.aske.processing.ExpectsAnswerContent;
 import com.ge.research.sadl.darpa.aske.processing.HowManyValuesContent;
 import com.ge.research.sadl.darpa.aske.processing.IDialogAnswerProvider;
+import com.ge.research.sadl.darpa.aske.processing.InformationContent;
 import com.ge.research.sadl.darpa.aske.processing.ModifiedAskContent;
 import com.ge.research.sadl.darpa.aske.processing.QuestionWithCallbackContent;
 import com.ge.research.sadl.darpa.aske.processing.SadlStatementContent;
@@ -129,7 +130,9 @@ import com.hp.hpl.jena.ontology.OntModel;
 import com.hp.hpl.jena.ontology.OntModelSpec;
 import com.hp.hpl.jena.ontology.OntProperty;
 import com.hp.hpl.jena.ontology.Restriction;
+import com.hp.hpl.jena.rdf.model.Literal;
 import com.hp.hpl.jena.rdf.model.ModelFactory;
+import com.hp.hpl.jena.rdf.model.NodeIterator;
 import com.hp.hpl.jena.rdf.model.RDFNode;
 import com.hp.hpl.jena.rdf.model.Resource;
 import com.hp.hpl.jena.rdf.model.Statement;
@@ -170,6 +173,7 @@ public class AnswerCurationManager {
 	private OwlToSadl owl2sadl = null;
 	
 	private List<String> delayedImportAdditions = null;
+	private Boolean useKCHAIN = null;
 
 	public AnswerCurationManager (String modelFolder, IConfigurationManagerForIDE configMgr, XtextResource resource, Map<String,String> prefs) {
 		setOwlModelsFolder(modelFolder);
@@ -258,21 +262,24 @@ public class AnswerCurationManager {
 
 				String content = readFileToString(f);
 				String fileIdentifier = ConfigurationManagerForIdeFactory.formatPathRemoveBackslashes(f.getCanonicalPath());
+				
+				// clear any existing localityURI graph before processing text.
+// TODO this should eventually be a user choice?				
 				String clearMsg = getExtractionProcessor().getTextProcessor().clearGraph(outputModelName);
 
 				int[] results = getTextProcessor().processText(fileIdentifier, content, outputModelName, prefix);
 				int numConcepts = results[0];
 				int numEquations = results[1];
-				String msg = numConcepts + " concepts and " + numEquations + " equations extracted from file '" + f.getCanonicalPath() + "'";
+				String msg = "Found " + numConcepts + " concepts and " + numEquations + " equations.";
 				notifyUser(getOwlModelsFolder(), msg, true);
 				if (numEquations > 0) {
-					String[] saveGraphResults = getTextProcessor().retrieveGraph(getExtractionProcessor().getTextModelName());
+					String[] saveGraphResults = getTextProcessor().retrieveGraph(outputModelName);
 					if (saveGraphResults != null) {
 						String format = saveGraphResults[0];
 						String serializedGraph = saveGraphResults[1];
 						if (serializedGraph != null) {
 							try {
-								OntModel newModel = getTextProcessor().getTextModelConfigMgr().getOntModel(getExtractionProcessor().getTextModelName(), serializedGraph, Scope.INCLUDEIMPORTS, format);
+								OntModel newModel = getTextProcessor().getTextModelConfigMgr().getOntModel(outputModelName, serializedGraph, Scope.INCLUDEIMPORTS, format);
 //								logger.debug("The new model:");
 //								newModel.write(System.err, "N-TRIPLES");
 								OntModel theModel = getExtractionProcessor().getTextModel();
@@ -444,33 +451,32 @@ public class AnswerCurationManager {
 				String queryString = "select ?lang ?expr where {?eq <rdf:type> <ExternalEquation> . ?eq <expression> ?script . ?script <script> ?expr . ?script <language> ?lang}";
 				queryString = getInitializedTextModelReasoner().prepareQuery(queryString);
 				ResultSet results =  getInitializedTextModelReasoner().ask(queryString);
-				if (results != null && results.getRowCount() > 0) {
-					results.setShowNamespaces(false);
-					notifyUser(textModelFolder, "Equations found in extraction:\n" + results.toStringWithIndent(0, false), true);
-				}
-				else {
+				if (results == null || results.getRowCount() == 0) {
 					notifyUser(textModelFolder, "No equations were found in this extraction from text.", true);
 				}
-				String importinfo = "To import this model for exploration in this window, add an import at the top of the window (after the 'uri' statement) for URI:\n   " + 
-							getExtractionProcessor().getTextModelName() + "\n.";
-				notifyUser(textModelFolder, importinfo, true);
+//				String importinfo = "To import this model for exploration in this window, add an import at the top of the window (after the 'uri' statement) for URI:\n   " + 
+//							getExtractionProcessor().getTextModelName() + "\n.";
+//				notifyUser(textModelFolder, importinfo, true);
 	
-				queryString = SparqlQueries.All_TEXT_EXTRACTED_METHODS;	// ?m ?ts ?ps
+				queryString = SparqlQueries.All_TEXT_EXTRACTED_METHODS;	// ?m ?ts ?ps ?ptfs
 				try {
 					queryString = getInitializedTextModelReasoner().prepareQuery(queryString);
 					results =  getInitializedTextModelReasoner().ask(queryString);
 					if (results != null && results.getRowCount() > 0) {
 						results.setShowNamespaces(false);
 						String[] cns = ((ResultSet) results).getColumnNames();
-						if (cns[0].equals("m") && cns[1].equals("ts") && cns[2].equals("ps")) {
-							notifyUser(textModelFolder, "The following methods were found in the text:", true);
+						if (cns[0].equals("m") && cns[1].equals("ts") && cns[2].equals("ps") && cns[3].equals("ptfs")) {
+							notifyUser(textModelFolder, "The following equations were found in the text:", true);
 							for (int r = 0; r < results.getRowCount(); r++) {
 								String methodName = results.getResultAt(r, 0).toString();
 								String txtscript = results.getResultAt(r, 1).toString();
 								String pyscript = results.getResultAt(r, 2).toString();
-								if (methodName != null && txtscript != null && pyscript != null) {
+								String pytfscript = results.getResultAt(r, 3).toString();
+								String pyscriptToUse = useKCHAIN() ? pytfscript : pyscript;
+								String lang = useKCHAIN() ? "Python-TF" : "Python";
+								if (methodName != null && txtscript != null && pyscriptToUse != null) {
 									try {
-										List<String> sadlDeclaration = convertTextExtractedMethodToExternalEquationInSadlSyntax(methodName, "Text", txtscript, "Python", pyscript);
+										List<String> sadlDeclaration = convertTextExtractedMethodToExternalEquationInSadlSyntax(methodName, "Text", txtscript, lang, pyscriptToUse);
 										for (String sd : sadlDeclaration) {
 											SadlStatementContent ssc = new SadlStatementContent(null, Agent.CM, sd);
 											notifyUser(textModelFolder, ssc, false);
@@ -513,6 +519,20 @@ public class AnswerCurationManager {
 		}		
 	}
 
+	private boolean useKCHAIN() {
+		if (useKCHAIN  != null) {
+			return useKCHAIN;
+		}
+		String prefstr = getPreference(DialogPreferences.USE_ANSWER_KCHAIN_CG_SERVICE.getId());
+		if (prefstr != null) {
+			useKCHAIN = Boolean.parseBoolean(prefstr);
+		}
+		else {
+			useKCHAIN = true;
+		}
+		return useKCHAIN;
+	}
+
 	private IReasoner getInitializedTextModelReasoner() throws ConfigurationException, ReasonerNotFoundException {
 		if (getTextModelReasoner() == null) {
 			IConfigurationManagerForIDE textModelConfigMgr = getExtractionProcessor().getTextProcessor().getTextModelConfigMgr();
@@ -550,7 +570,7 @@ public class AnswerCurationManager {
 					results.setShowNamespaces(false);
 					String[] cns = ((ResultSet) results).getColumnNames();
 					if (cns[0].equals("m") && cns[1].equals("b") && cns[2].equals("e") && cns[3].equals("s")) {
-						notifyUser(codeModelFolder, "The following methods doing computation were found in the extraction:", true);
+						notifyUser(codeModelFolder, "The following methods deemed of interest were found in the extraction:", true);
 						for (int r = 0; r < results.getRowCount(); r++) {
 							String methodName = results.getResultAt(r, 0).toString();
 							String javaCode = results.getResultAt(r, 3).toString();
@@ -690,66 +710,28 @@ public class AnswerCurationManager {
 			}
 			throw new NotFoundException("Equation with URI " + equationToBuildUri + " not found.");
 		}
+		String retName =  null;
 		Statement argStmt = extractedModelInstance.getProperty(ontModel.getProperty(SadlConstants.SADL_IMPLICIT_MODEL_ARGUMENTS_PROPERTY_URI));
 		if (argStmt != null) {
 			com.hp.hpl.jena.rdf.model.Resource ddList = argStmt.getObject().asResource();
 			if (ddList instanceof Resource) {
-				String argQuery = "select ?argName ?argType where {<" + extractedModelInstance.getURI() + "> <" + 
-						SadlConstants.SADL_IMPLICIT_MODEL_ARGUMENTS_PROPERTY_URI + 
-						">/<sadllistmodel:rest>*/<sadllistmodel:first> ?member . ?member <" +
-						SadlConstants.SADL_IMPLICIT_MODEL_DESCRIPTOR_NAME_PROPERTY_URI + "> ?argName . ?member <" +
-						SadlConstants.SADL_IMPLICIT_MODEL_DATATYPE_PROPERTY_URI + "> ?argType}";							// query to get the argument names and types
-				argQuery = reasoner.prepareQuery(argQuery);
-				ResultSet rs = reasoner.ask(argQuery);
+				ResultSet rs = getMethodArguments(ontModel, reasoner, extractedModelInstance);
 				logger.debug(rs != null ? rs.toString() : "no argument results");
-				String retQuery = "select ?retName ?retType where {<" + extractedModelInstance.getURI() + "> <" + 
-						SadlConstants.SADL_IMPLICIT_MODEL_RETURN_TYPES_PROPERTY_URI + 
-						">/<sadllistmodel:rest>*/<sadllistmodel:first> ?member . OPTIONAL{?member <" +
-						SadlConstants.SADL_IMPLICIT_MODEL_DESCRIPTOR_NAME_PROPERTY_URI + "> ?retName} . ?member <" +
-						SadlConstants.SADL_IMPLICIT_MODEL_DATATYPE_PROPERTY_URI + "> ?retType}";							// query to get the return types
-				retQuery = reasoner.prepareQuery(retQuery);
-				ResultSet rs2 = reasoner.ask(retQuery);
-				logger.debug(rs2 != null ? rs2.toString() : "no return type results");
-				String pythonScriptQuery = "select ?pyScript where {<" + extractedModelInstance.getURI() + "> <" + 
-						SadlConstants.SADL_IMPLICIT_MODEL_EXPRESSTION_PROPERTY_URI +
-						"> ?sc . ?sc <" + SadlConstants.SADL_IMPLICIT_MODEL_LANGUAGE_PROPERTY_URI + "> <" + 
-						SadlConstants.SADL_IMPLICIT_MODEL_PYTHON_LANGUAGE_INST_URI +
-						"> . ?sc <" + SadlConstants.SADL_IMPLICIT_MODEL_SCRIPT_PROPERTY_URI + "> ?pyScript}";				// query to get the Python script for the equation
-				ResultSet rs3 = reasoner.ask(pythonScriptQuery);
-				logger.debug(rs3 != null ? rs3.toString() : "no Python script results");
-				if (rs3 != null && rs3.getRowCount() != 1) {
-					return "There appears to be more than one Python script associated with the equation. Unable to save.";
-				}
-				if (rs3 != null) {
-					String pythonScript = rs3.getResultAt(0, 0).toString();
-					CodeLanguage language = CodeLanguage.JAVA;																	// only code we extract from currently (what about from text?)
-					if (language.equals(CodeLanguage.JAVA)) {
-						String[] returns;
-						String useKCStr = getPreference(DialogPreferences.USE_ANSWER_KCHAIN_CG_SERVICE.getId());
-						boolean useKC = useKCStr != null ? Boolean.parseBoolean(useKCStr) : false;
-						if (useKC) {
-							returns = getExtractionProcessor().getCodeExtractor(CodeLanguage.JAVA).extractPythonTFEquationFromCodeExtractionModel(pythonScript, extractedModelInstance.getLocalName());
-						}
-						else {
-							returns = getExtractionProcessor().getCodeExtractor(CodeLanguage.JAVA).extractPythonEquationFromCodeExtractionModel(pythonScript, extractedModelInstance.getLocalName());
-						}
-						if (returns.length != 2) {
-							throw new IOException("Invalid return from extractPythonEquationFromCodeExtractionModel; expected String[] of size 2");
-						}
-						String methName = returns[0];
-						String modifiedPythonScript = returns[1];
-						logger.debug(modifiedPythonScript);		
-						// this seems klugey also
-	//					returnValue = getExtractionProcessor().saveToComputationalGraph(equationToBuildUri, methName, rs, rs2, modifiedPythonScript, null);
-						returnValue = getExtractionProcessor().saveToComputationalGraph(methName, methName, rs, rs2, modifiedPythonScript, null);
+				ResultSet rs2 = getMethodReturns(ontModel, reasoner, extractedModelInstance);
+				try {
+					String[] scriptInfo = getMethodScript(ontModel, reasoner, extractedModelInstance);
+					retName = scriptInfo[0] != null ? scriptInfo[0] : retName;
+					String script = scriptInfo[1];
+					logger.debug(script != null ? script : "no Python script results");
+					if (script != null) {
+						returnValue = getExtractionProcessor().saveToComputationalGraph(extractedModelInstance, retName, rs, rs2, script, null);
 						logger.debug("saveToComputationalGraph returned '" + returnValue + "'");
 					}
-					else if (language.equals(CodeLanguage.PYTHON)) {
-						
+					else {
+						returnValue = "Failed to find a Python script for equation '" + equationToBuildUri + "'.";
 					}
-				}
-				else {
-					returnValue = "Failed to find a Python script for equation '" + equationToBuildUri + "'.";
+				} catch (TranslationException e) {
+					returnValue = e.getMessage();
 				}
 			}
 		}
@@ -758,6 +740,199 @@ public class AnswerCurationManager {
 		}
 		answerUser(getOwlModelsFolder(), returnValue, true, sc.getHostEObject());
 		return returnValue;
+	}
+
+	private String[] getMethodScript(OntModel ontModel, IReasoner reasoner, Individual extractedModelInstance)
+			throws QueryParseException, QueryCancelledException, IOException, TranslationException {
+		String[] scriptInfo = null;
+		String pythonScriptQuery = "select ?pyScript where {<" + extractedModelInstance.getURI() + "> <" + 
+				SadlConstants.SADL_IMPLICIT_MODEL_EXPRESSTION_PROPERTY_URI +
+				"> ?sc . ?sc <" + SadlConstants.SADL_IMPLICIT_MODEL_LANGUAGE_PROPERTY_URI + "> <" + 
+				(useKCHAIN() ? SadlConstants.SADL_IMPLICIT_MODEL_PYTHON_TF_LANGUAGE_INST_URI : SadlConstants.SADL_IMPLICIT_MODEL_PYTHON_LANGUAGE_INST_URI) +
+				"> . ?sc <" + SadlConstants.SADL_IMPLICIT_MODEL_SCRIPT_PROPERTY_URI + "> ?pyScript}";				// query to get the Python script for the equation
+		ResultSet rs3 = reasoner.ask(pythonScriptQuery);
+		if (rs3 != null) {
+			if (rs3.getRowCount() != 1) {
+				throw new TranslationException("There appears to be more than one Python script associated with the equation. Unable to save.");
+			}
+			String pythonScript = rs3.getResultAt(0, 0).toString();
+			CodeLanguage language = CodeLanguage.JAVA;																	// only code we extract from currently (what about from text?)
+			if (language.equals(CodeLanguage.JAVA)) {
+				String[] returns;
+				if (useKCHAIN()) {
+					returns = getExtractionProcessor().getCodeExtractor(CodeLanguage.JAVA).extractPythonTFEquationFromCodeExtractionModel(pythonScript, extractedModelInstance.getLocalName());
+				}
+				else {
+					returns = getExtractionProcessor().getCodeExtractor(CodeLanguage.JAVA).extractPythonEquationFromCodeExtractionModel(pythonScript, extractedModelInstance.getLocalName());
+				}
+				if (returns.length != 2) {
+					throw new IOException("Invalid return from extractPythonEquationFromCodeExtractionModel; expected String[] of size 2");
+				}
+				scriptInfo = returns;
+			}
+		}
+		else {
+			String pythonScript = null;
+			String pythonTFScript = null;
+			NodeIterator expritr = extractedModelInstance.listPropertyValues(ontModel.getProperty(SadlConstants.SADL_IMPLICIT_MODEL_EXPRESSTION_PROPERTY_URI));
+			while (expritr.hasNext()) {
+				RDFNode exp = expritr.next();
+				if (exp.isResource()) {
+					RDFNode lang = exp.asResource().getProperty(ontModel.getProperty(SadlConstants.SADL_IMPLICIT_MODEL_LANGUAGE_PROPERTY_URI)).getObject();
+					String langStr = null;
+					if (lang instanceof Resource) {
+						langStr = lang.asResource().toString();
+					}
+					else if (lang instanceof Literal) {
+						langStr = ((Literal)lang).getValue().toString();
+					}
+					boolean thisOne = false;
+					if (langStr != null &&langStr.equals(SadlConstants.SADL_IMPLICIT_MODEL_PYTHON_TF_LANGUAGE_INST_URI)) {
+						Statement scprtstmt = exp.asResource().getProperty(ontModel.getProperty(SadlConstants.SADL_IMPLICIT_MODEL_SCRIPT_PROPERTY_URI));
+						if (scprtstmt != null) {
+							pythonTFScript = scprtstmt.getObject().asLiteral().getValue().toString();
+						}
+						if (useKCHAIN()) {
+							scriptInfo = new String[2];
+							scriptInfo[0] = null;
+							scriptInfo[1] = pythonTFScript;
+							thisOne = true;
+						}
+					}
+					else if (langStr != null && langStr.equals(SadlConstants.SADL_IMPLICIT_MODEL_PYTHON_LANGUAGE_INST_URI)) {
+						Statement scprtstmt = exp.asResource().getProperty(ontModel.getProperty(SadlConstants.SADL_IMPLICIT_MODEL_SCRIPT_PROPERTY_URI));
+						if (scprtstmt != null) {
+							pythonScript = scprtstmt.getObject().asLiteral().getValue().toString();
+						}
+					}
+					if (thisOne) {
+						break;
+					}
+				}
+			}
+			if (scriptInfo == null) {
+				if (useKCHAIN() && pythonScript != null) {
+					String[] returns = getExtractionProcessor().getCodeExtractor(CodeLanguage.JAVA).extractPythonTFEquationFromCodeExtractionModel(pythonScript, extractedModelInstance.getLocalName());
+					scriptInfo = returns;
+				}
+			}
+		}
+		
+		return scriptInfo;
+	}
+
+	private ResultSet getMethodReturns(OntModel ontModel, IReasoner reasoner, Individual extractedModelInstance)
+			throws InvalidNameException, ConfigurationException, QueryParseException, QueryCancelledException {
+		//				String retQuery = "select ?retName ?retType where {<" + extractedModelInstance.getURI() + "> <" + 
+		//						SadlConstants.SADL_IMPLICIT_MODEL_RETURN_TYPES_PROPERTY_URI + 
+		//						">/<sadllistmodel:rest>*/<sadllistmodel:first> ?member . OPTIONAL{?member <" +
+		//						SadlConstants.SADL_IMPLICIT_MODEL_DESCRIPTOR_NAME_PROPERTY_URI + "> ?retName} . ?member <" +
+		//						SadlConstants.SADL_IMPLICIT_MODEL_DATATYPE_PROPERTY_URI + "> ?retType}";							// query to get the return types
+		String retQuery = "select ?retName ?retType where {<" + extractedModelInstance.getURI() + "> <" + 
+				SadlConstants.SADL_IMPLICIT_MODEL_RETURN_TYPES_PROPERTY_URI + 
+				"> ?retlst . ?retlst <sadllistmodel:rest>*/<sadllistmodel:first> ?member . OPTIONAL{?member <" +
+				SadlConstants.SADL_IMPLICIT_MODEL_DESCRIPTOR_NAME_PROPERTY_URI + "> ?retName} . ?member <" +
+				SadlConstants.SADL_IMPLICIT_MODEL_DATATYPE_PROPERTY_URI + "> ?retType}";							// query to get the return types
+		retQuery = reasoner.prepareQuery(retQuery);
+		ResultSet rs2 = reasoner.ask(retQuery);
+		logger.debug(rs2 != null ? rs2.toString() : "no return type results");
+		if (rs2 == null) {
+			StmtIterator stmtitr = ontModel.listStatements(extractedModelInstance, ontModel.getProperty(SadlConstants.SADL_IMPLICIT_MODEL_RETURN_TYPES_PROPERTY_URI), (RDFNode)null);
+			int r = 0;
+			while (stmtitr.hasNext()) {
+				String[] properties = new String[2];
+				properties[0] = SadlConstants.SADL_IMPLICIT_MODEL_DESCRIPTOR_NAME_PROPERTY_URI;
+				properties[1] = SadlConstants.SADL_IMPLICIT_MODEL_DATATYPE_PROPERTY_URI;
+				List<RDFNode[]> propertyValues = getListMemberProperties(ontModel, stmtitr.nextStatement().getObject(), properties);
+				int numArgs = propertyValues.size();
+				String[] colNames = {"retName", "retType"};
+				Object[][] data = new Object[numArgs][properties.length];
+				for (RDFNode[] nd : propertyValues) {
+					String ldn = nd[0] != null ? nd[0].toString() : null;
+					data[r][0] = ldn;
+					String dt = nd[1].toString();
+					if (dt.contains("#")) {
+						dt = dt.substring(dt.indexOf("#") + 1);
+					}
+					data[r][1] = dt;
+					r++;
+				}
+				rs2 = new ResultSet(colNames, data);
+			}
+		}
+		return rs2;
+	}
+
+	private ResultSet getMethodArguments(OntModel ontModel, IReasoner reasoner, Individual extractedModelInstance)
+			throws InvalidNameException, ConfigurationException, QueryParseException, QueryCancelledException {
+		//				String argQuery = "select ?argName ?argType where {<" + extractedModelInstance.getURI() + "> <" + 
+		//						SadlConstants.SADL_IMPLICIT_MODEL_ARGUMENTS_PROPERTY_URI + 
+		//						">/<sadllistmodel:rest>*/<sadllistmodel:first> ?member . ?member <" +
+		//						SadlConstants.SADL_IMPLICIT_MODEL_DESCRIPTOR_NAME_PROPERTY_URI + "> ?argName . ?member <" +
+		//						SadlConstants.SADL_IMPLICIT_MODEL_DATATYPE_PROPERTY_URI + "> ?argType}";							// query to get the argument names and types
+		String argQuery = "select ?argName ?argType where {<" + extractedModelInstance.getURI() + "> <" + 
+				SadlConstants.SADL_IMPLICIT_MODEL_ARGUMENTS_PROPERTY_URI + 
+				"> ?arglst . ?arglst <sadllistmodel:rest>*/<sadllistmodel:first> ?member . ?member <" +
+				SadlConstants.SADL_IMPLICIT_MODEL_DESCRIPTOR_NAME_PROPERTY_URI + "> ?argName . ?member <" +
+				SadlConstants.SADL_IMPLICIT_MODEL_DATATYPE_PROPERTY_URI + "> ?argType}";							// query to get the argument names and types
+		argQuery = reasoner.prepareQuery(argQuery);
+		ResultSet rs = reasoner.ask(argQuery);
+		if (rs == null) {
+			StmtIterator stmtitr = ontModel.listStatements(extractedModelInstance, ontModel.getProperty(SadlConstants.SADL_IMPLICIT_MODEL_ARGUMENTS_PROPERTY_URI), (RDFNode)null);
+			int r = 0;
+			while (stmtitr.hasNext()) {
+				String[] properties = new String[2];
+				properties[0] = SadlConstants.SADL_IMPLICIT_MODEL_DESCRIPTOR_NAME_PROPERTY_URI;
+				properties[1] = SadlConstants.SADL_IMPLICIT_MODEL_DATATYPE_PROPERTY_URI;
+				List<RDFNode[]> propertyValues = getListMemberProperties(ontModel, stmtitr.nextStatement().getObject(), properties);
+				int numArgs = propertyValues.size();
+				String[] colNames = {"argName", "argType"};
+				Object[][] data = new Object[numArgs][properties.length];
+				for (RDFNode[] nd : propertyValues) {
+					String ldn = nd[0].toString();
+					data[r][0] = ldn;
+					String dt = nd[1].toString();
+					if (dt.contains("#")) {
+						dt = dt.substring(dt.indexOf("#") + 1);
+					}
+					data[r][1] = dt;
+					r++;
+				}
+				rs = new ResultSet(colNames, data);
+			}
+		}
+		return rs;
+	}
+
+	private List<RDFNode[]> getListMemberProperties(OntModel model, RDFNode node, String[] properties) {
+		if (node.isResource()) {
+			Statement stmt = node.asResource().getProperty(model.getProperty(SadlConstants.SADL_LIST_MODEL_FIRST_URI));
+			if (stmt != null) {
+				RDFNode obj = stmt.getObject();
+				RDFNode[] values = null;
+				if (obj.isResource()) {
+					values = new RDFNode[properties.length];
+					for (int pidx = 0; pidx < properties.length; pidx++) {
+						Statement ldnstmt = obj.asResource().getProperty(model.getProperty(properties[pidx]));
+						if (ldnstmt != null) {
+							values[pidx] = ldnstmt.getObject();
+						}
+					}
+				}
+				Statement stmt2 = node.asResource().getProperty(model.getProperty(SadlConstants.SADL_LIST_MODEL_REST_URI));
+				if (stmt2 != null) {
+					List<RDFNode[]> more = getListMemberProperties(model, stmt2.getObject(), properties);
+					more.add(values);
+					return more;
+				}
+				else {
+					List<RDFNode[]> lst = new ArrayList<RDFNode[]>();
+					lst.add(values);
+					return lst;
+				}
+			}
+		}
+		return null;
 	}
 
 	private String processEvalRequest(org.eclipse.emf.ecore.resource.Resource resource, OntModel ontModel,
@@ -781,31 +956,8 @@ public class AnswerCurationManager {
 		if (argStmt != null) {
 			com.hp.hpl.jena.rdf.model.Resource ddList = argStmt.getObject().asResource();
 			if (ddList instanceof Resource) {
-//				String argQuery = "select distinct ?argName ?argType where {<" + modelInstance.getURI() + "> <" + 
-//						SadlConstants.SADL_IMPLICIT_MODEL_ARGUMENTS_PROPERTY_URI + 
-//						"> ?ddList . ?ddList <http://jena.hpl.hp.com/ARQ/list#member> ?member . ?member <" +
-//						SadlConstants.SADL_IMPLICIT_MODEL_DESCRIPTOR_NAME_PROPERTY_URI + "> ?argName . ?member <" +
-//						SadlConstants.SADL_IMPLICIT_MODEL_DATATYPE_PROPERTY_URI + "> ?argType}";							// query to get the argument names and types
-				String argQuery = "select ?argName ?argType where {<" + modelInstance.getURI() + "> <" + 
-						SadlConstants.SADL_IMPLICIT_MODEL_ARGUMENTS_PROPERTY_URI + 
-						">/<sadllistmodel:rest>*/<sadllistmodel:first> ?member . ?member <" +
-						SadlConstants.SADL_IMPLICIT_MODEL_DESCRIPTOR_NAME_PROPERTY_URI + "> ?argName . ?member <" +
-						SadlConstants.SADL_IMPLICIT_MODEL_DATATYPE_PROPERTY_URI + "> ?argType}";							// query to get the argument names and types
-				argQuery = reasoner.prepareQuery(argQuery);
-				ResultSet rs = reasoner.ask(argQuery);
-				logger.debug(rs != null ? rs.toString() : "no argument results");
-//				String retQuery = "select distinct ?retName ?retType where {<" + modelInstance.getURI() + "> <" + 
-//						SadlConstants.SADL_IMPLICIT_MODEL_RETURN_TYPES_PROPERTY_URI + 
-//						"> ?ddList . ?ddList <http://jena.hpl.hp.com/ARQ/list#member> ?member . OPTIONAL{?member <" +
-//						SadlConstants.SADL_IMPLICIT_MODEL_DESCRIPTOR_NAME_PROPERTY_URI + "> ?retName} . ?member <" +
-//						SadlConstants.SADL_IMPLICIT_MODEL_DATATYPE_PROPERTY_URI + "> ?retType}";							// query to get the return types
-				String retQuery = "select ?retName ?retType where {<" + modelInstance.getURI() + "> <" + 
-						SadlConstants.SADL_IMPLICIT_MODEL_RETURN_TYPES_PROPERTY_URI + 
-						">/<sadllistmodel:rest>*/<sadllistmodel:first> ?member . OPTIONAL{?member <" +
-						SadlConstants.SADL_IMPLICIT_MODEL_DESCRIPTOR_NAME_PROPERTY_URI + "> ?retName} . ?member <" +
-						SadlConstants.SADL_IMPLICIT_MODEL_DATATYPE_PROPERTY_URI + "> ?retType}";							// query to get the return types
-				retQuery = reasoner.prepareQuery(retQuery);
-				ResultSet rs2 = reasoner.ask(retQuery);
+				ResultSet rs = getMethodArguments(ontModel, reasoner, modelInstance);
+				ResultSet rs2 = getMethodReturns(ontModel, reasoner, modelInstance);
 				logger.debug(rs2 != null ? rs2.toString() : "no return type results");
 				try {
 					returnValue = evaluateInComputationalGraph(modelInstance, rs, rs2, params);
@@ -915,15 +1067,25 @@ public class AnswerCurationManager {
 		for (int r = 0; r < rs2RowCount; r++) {
 			String[] output = new String[rs2ColCount];
 			for (int c = 0; c < rs2ColCount; c++) {
-				output[0] = modelToEvaluate.getLocalName();
+				String alias = modelToEvaluate.getLabel(null);
+				output[0] = alias != null ? alias : modelToEvaluate.getLocalName();
 				output[1] = rsOutputs.getResultAt(r, 1).toString();
 			}
 			outputs.add(output);
 		}
 		
-		List<List<String[]>> results = evaluateInComputationalGraph(modelToEvaluate.getLocalName(), inputs, outputs);
+		List<List<String[]>> results = evaluateInComputationalGraph(pythonify(modelToEvaluate.getLocalName()), inputs, outputs);
 		String retVal = results.get(0).get(0)[2];
 		return retVal;
+	}
+
+	/**
+	 * Method to convert a code extracted name into a valid Python name
+	 * @param localName
+	 * @return
+	 */
+	public String pythonify(String localName) {
+		return localName.replace('.', '_');
 	}
 
 	/**
@@ -1042,8 +1204,7 @@ public class AnswerCurationManager {
 		List<String> returnSadlStatements = new ArrayList<String>();
 		StringBuilder sb = new StringBuilder("External ");
 		sb.append(methodName);
-		sb.append("(");
-		clearCodeModelReasoner();
+
 		// get inputs and outputs and identify semantic meaning thereof
 		String inputQuery = "select ?arg ?argName ?argtyp where {<";
 		inputQuery += methodName.toString().trim();
@@ -1053,7 +1214,6 @@ public class AnswerCurationManager {
 //				+ "?m <expression> ?exp . ?exp <language> <" + lang1 + "> . ?exp <script> '" + code1 + "'  . "
 //				+ "?m <expression> ?exp2 . ?exp2 <language> <" + lang2 + "> . ?exp2 <script> '" + code2 + "' . "
 //				+ "?m <arguments>/<sadllistmodel:rest>*/<sadllistmodel:first> ?arg . ?arg <localDescriptorName> ?argName . OPTIONAL{?arg <dataType> ?argtyp}}";
-
 		IReasoner reasoner = getConfigurationManager().getReasoner();
 		if (!reasoner.isInitialized()) {
 			reasoner.setConfigurationManager(getConfigurationManager());
@@ -1061,6 +1221,26 @@ public class AnswerCurationManager {
 		}
 		inputQuery = reasoner.prepareQuery(inputQuery);
 		ResultSet inputResults =  reasoner.ask(inputQuery);
+		String outputTypeQuery = "select ?retname ?rettyp where {<";
+		outputTypeQuery += methodName.toString().trim();
+//		outputTypeQuery += "> <returnTypes>/<sadllistmodel:rest>*/<sadllistmodel:first> ?rt . OPTIONAL{?rt <localDescriptorName> ?retname} . ?rt <dataType> ?rettyp}";
+		outputTypeQuery += "> <returnTypes>/<rdf:rest>*/<rdf:first> ?rt . OPTIONAL{?rt <localDescriptorName> ?retname} . ?rt <dataType> ?rettyp}";
+//		String outputTypeQuery = "select ?m ?argName ?argtyp where {?m <rdf:type> <ExternalEquation> . " + 
+//				"?m <expression> ?exp . ?exp <language> <" + lang1 + "> . ?exp <script> '" + code1 + "'  . " + 
+//				"?m <expression> ?exp2 . ?exp2 <language> <" + lang2 + "> . ?exp2 <script> '" + code2 + "' ." +
+//				"?m <returnTypes>/<sadllistmodel:rest>*/<sadllistmodel:first> ?rt . OPTIONAL{?rt <localDescriptorName> ?retname} . ?rt <dataType> ?rettyp}";
+		outputTypeQuery = getInitializedTextModelReasoner().prepareQuery(outputTypeQuery);
+		ResultSet outputResults =  getInitializedTextModelReasoner().ask(outputTypeQuery);
+		String retName = outputResults.getResultAt(0, 0).toString();		// this assumes a single return value
+		if (retName != null) {
+			sb.append(" (alias \"");
+			sb.append(retName);
+			sb.append("\") ");
+		}
+
+		sb.append("(");
+		clearCodeModelReasoner();
+
 		logger.debug(inputResults != null ? inputResults.toStringWithIndent(5) : "no results");
 		if (inputResults != null) {
 			inputResults.setShowNamespaces(false);
@@ -1077,16 +1257,6 @@ public class AnswerCurationManager {
 		}
 		sb.append(") returns ");
 		
-		String outputTypeQuery = "select ?retname ?rettyp where {<";
-		outputTypeQuery += methodName.toString().trim();
-//		outputTypeQuery += "> <returnTypes>/<sadllistmodel:rest>*/<sadllistmodel:first> ?rt . OPTIONAL{?rt <localDescriptorName> ?retname} . ?rt <dataType> ?rettyp}";
-		outputTypeQuery += "> <returnTypes>/<rdf:rest>*/<rdf:first> ?rt . OPTIONAL{?rt <localDescriptorName> ?retname} . ?rt <dataType> ?rettyp}";
-//		String outputTypeQuery = "select ?m ?argName ?argtyp where {?m <rdf:type> <ExternalEquation> . " + 
-//				"?m <expression> ?exp . ?exp <language> <" + lang1 + "> . ?exp <script> '" + code1 + "'  . " + 
-//				"?m <expression> ?exp2 . ?exp2 <language> <" + lang2 + "> . ?exp2 <script> '" + code2 + "' ." +
-//				"?m <returnTypes>/<sadllistmodel:rest>*/<sadllistmodel:first> ?rt . OPTIONAL{?rt <localDescriptorName> ?retname} . ?rt <dataType> ?rettyp}";
-		outputTypeQuery = getInitializedTextModelReasoner().prepareQuery(outputTypeQuery);
-		ResultSet outputResults =  getInitializedTextModelReasoner().ask(outputTypeQuery);
 		logger.debug(outputResults != null ? outputResults.toStringWithIndent(5) : "no results");
 		if (outputResults != null) {
 			outputResults.setShowNamespaces(false);
@@ -1095,7 +1265,6 @@ public class AnswerCurationManager {
 				sb.append("[");
 			}
 			for (int r = 0; r < numReturnValues; r++) {
-				String retName = outputResults.getResultAt(r, 0).toString();
 				Object rt = outputResults.getResultAt(r, 1);
 				if (rt != null) {
 					String retType = rt.toString();
@@ -1339,45 +1508,50 @@ public class AnswerCurationManager {
 		if (quote) {
 			msg = doubleQuoteContent(msg);
 		}
-		if (getDialogAnswerProvider() != null) {
-			// talk to the user via the Dialog editor
-			Method acmic = null;
-			try {
-				acmic = getDialogAnswerProvider().getClass().getMethod("addCurationManagerInitiatedContent", AnswerCurationManager.class, String.class);
-			} catch (NoSuchMethodException e1) {
-				// TODO Auto-generated catch block
-				e1.printStackTrace();
-			} catch (SecurityException e1) {
-				// TODO Auto-generated catch block
-				e1.printStackTrace();
-			}
-			if (acmic == null) {
-				Method[] dapMethods = getDialogAnswerProvider().getClass().getDeclaredMethods();
-				if (dapMethods != null) {
-					for (Method m : dapMethods) {
-						if (m.getName().equals("addCurationManagerInitiatedContent")) {
-							acmic = m;
-							break;
-						}
-					}
-				}
-			}
-			if (acmic != null) {
-				acmic.setAccessible(true);
-				try {
-					acmic.invoke(getDialogAnswerProvider(), this, msg);
-				} catch (IllegalAccessException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				} catch (IllegalArgumentException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				} catch (InvocationTargetException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				}
-			}
-		}
+		InformationContent ic = new InformationContent(null, Agent.CM, msg);
+		notifyUser(modelFolder, ic, quote);
+//		if (quote) {
+//			msg = doubleQuoteContent(msg);
+//		}
+//		if (getDialogAnswerProvider() != null) {
+//			// talk to the user via the Dialog editor
+//			Method acmic = null;
+//			try {
+//				acmic = getDialogAnswerProvider().getClass().getMethod("addCurationManagerInitiatedContent", AnswerCurationManager.class, String.class);
+//			} catch (NoSuchMethodException e1) {
+//				// TODO Auto-generated catch block
+//				e1.printStackTrace();
+//			} catch (SecurityException e1) {
+//				// TODO Auto-generated catch block
+//				e1.printStackTrace();
+//			}
+//			if (acmic == null) {
+//				Method[] dapMethods = getDialogAnswerProvider().getClass().getDeclaredMethods();
+//				if (dapMethods != null) {
+//					for (Method m : dapMethods) {
+//						if (m.getName().equals("addCurationManagerInitiatedContent")) {
+//							acmic = m;
+//							break;
+//						}
+//					}
+//				}
+//			}
+//			if (acmic != null) {
+//				acmic.setAccessible(true);
+//				try {
+//					acmic.invoke(getDialogAnswerProvider(), this, msg);
+//				} catch (IllegalAccessException e) {
+//					// TODO Auto-generated catch block
+//					e.printStackTrace();
+//				} catch (IllegalArgumentException e) {
+//					// TODO Auto-generated catch block
+//					e.printStackTrace();
+//				} catch (InvocationTargetException e) {
+//					// TODO Auto-generated catch block
+//					e.printStackTrace();
+//				}
+//			}
+//		}
 	}
 	
 	/**
