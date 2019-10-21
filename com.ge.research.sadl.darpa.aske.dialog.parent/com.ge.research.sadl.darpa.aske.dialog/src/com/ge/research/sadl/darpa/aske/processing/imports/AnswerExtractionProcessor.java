@@ -47,6 +47,7 @@ import org.slf4j.LoggerFactory;
 import com.ge.research.sadl.darpa.aske.curation.AnswerCurationManager;
 import com.ge.research.sadl.darpa.aske.preferences.DialogPreferences;
 import com.ge.research.sadl.reasoner.ResultSet;
+import com.hp.hpl.jena.ontology.Individual;
 import com.hp.hpl.jena.ontology.OntModel;
 
 public class AnswerExtractionProcessor {
@@ -116,9 +117,9 @@ public class AnswerExtractionProcessor {
 		return getTextProcessor().getCurrentTextModel();
 	}
 
-//	public void setTextModel(OntModel textModel) {
-//		this.textModel = textModel;
-//	}
+	public void setTextModel(OntModel textModel) {
+		getTextProcessor().setTextModel(textModel);
+	}
 
 	private String getDocumentContent() {
 		return documentContent;
@@ -250,7 +251,7 @@ public class AnswerExtractionProcessor {
 
 	/**
 	 * Method to save a Python script as an equation in the target computational graph
-	 * @param modelUri--the URI of the equation to be saved
+	 * @param modelToEvaluate--the equation to be saved
 	 * @param outputName--the name of the output of the calculation
 	 * @param rs--a ResultSet containing input names and types
 	 * @param rs2--a ResultSet containing output names (may be null) and types
@@ -259,7 +260,7 @@ public class AnswerExtractionProcessor {
 	 * @return--the URI of the successfully created model in the computational graph or null if not successful
 	 * @throws IOException
 	 */
-	public String saveToComputationalGraph(String modelUri, String outputName, ResultSet rsInputs, ResultSet rsOutputs, String modifiedPythonScript, String dataLocation) throws IOException {
+	public String saveToComputationalGraph(Individual modelToEvaluate, String outputName, ResultSet rsInputs, ResultSet rsOutputs, String modifiedPythonScript, String dataLocation) throws IOException {
 		// construct String inputs to the service
 		/*
 		 * Construct after this manner:
@@ -327,13 +328,14 @@ public class AnswerExtractionProcessor {
 		for (int r = 0; r < rs2RowCount; r++) {
 			String[] output = new String[rs2ColCount];
 			for (int c = 0; c < rs2ColCount; c++) {
-				output[0] = outputName;
+				String alias = modelToEvaluate.getLabel(null);
+				output[0] = alias != null ? alias : (outputName != null) ? outputName : modelToEvaluate.getLocalName();
 				output[1] = rsOutputs.getResultAt(r, 1).toString();
 			}
 			outputs.add(output);
 		}
 		
-		return saveToComputationalGraph(modelUri, modifiedPythonScript, dataLocation, inputs, outputs);
+		return saveToComputationalGraph(getCurationManager().pythonify(modelToEvaluate.getLocalName()), modifiedPythonScript, dataLocation, inputs, outputs);
 	}
 
 	/**

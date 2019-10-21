@@ -490,8 +490,31 @@ public class KChainServiceTest {
 			}
 		}
 	}
+	
+	@Test
+	public void testCAL_SOS() {
+		System.out.println(CAL_SOS(592.0, 1.4, 53.3, 5500.0));
+	}
 
-	public boolean buildCGModel(String modelUri, String equationModel, String dataLocation, List<String[]> inputs, List<String[]> outputs) throws IOException {
+	public double CAL_SOS (double T, double G, double R, double Q) {
+		double WOW = 1 + (G - 1) / (1 + (G - 1) * Math.pow((Q / T), 2) *
+				Math.exp(Q / T) / Math.pow((Math.exp(Q / T) - 1), 2));
+		return (Math.sqrt(/*32.174 **/ T * R * WOW));
+	}
+
+	@Test
+	public void testEquation_2() {
+		System.out.println(equation2(286.0, 273.15, 1.4, 3056.0));
+	}
+
+	public double equation2 (double R, double T, double G, double Q) {
+//		a = tf.math.pow(R * T *  (  1 + ( gamma-1 ) / ( 1 + ( gamma-1 ) *  ( tf.math.pow( theta/T,2) *  tf.math.exp( theta/T ) /  tf.math.pow( tf.math.exp( theta/T ) - 1,2 ))  ) ), 1/2)
+		double a = Math.pow(R * T *  (  1 + ( G-1 ) / ( 1 + ( G-1 ) *  ( Math.pow( Q/T,2) *  Math.exp( Q/T ) /  Math.pow( Math.exp( Q/T ) - 1,2 ))  ) ), .5);
+//		double a = Math.pow(R * T *  (  1.0 + ( G-1.0 ) / ( 1.0 + ( G-1.0 ) *  ( Math.pow( Q/T,2) *  Math.exp( Q/T ) /  Math.pow( Math.exp( Q/T ) - 1.0,2 ))  ) ), 1/2);
+		return a;
+	}
+
+public boolean buildCGModel(String modelUri, String equationModel, String dataLocation, List<String[]> inputs, List<String[]> outputs) throws IOException {
 /*
 {
   "inputVariables": [

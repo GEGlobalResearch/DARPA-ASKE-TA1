@@ -64,7 +64,7 @@ public class KChainServiceInterface extends JsonServiceInterface {
 		URL serviceUrl = new URL(buildServiceURL);			
 
 		JsonObject json = generateRequestJson(modelUri, equationModel, dataLocation, inputs, outputs);
-		
+		logger.debug(json.toString());
 		String jsonResponse = makeConnectionAndGetResponse(serviceUrl, json);
 
 		logger.debug(jsonResponse);
@@ -160,6 +160,7 @@ public class KChainServiceInterface extends JsonServiceInterface {
 		URL serviceUrl = new URL(evalServiceURL);	
 		
 		JsonObject json = generateRequestJson(modelUri, null, null, inputs, outputs);
+		logger.debug(json.toString());
 		
 		String jsonResponse = makeConnectionAndGetResponse(serviceUrl, json);
 		

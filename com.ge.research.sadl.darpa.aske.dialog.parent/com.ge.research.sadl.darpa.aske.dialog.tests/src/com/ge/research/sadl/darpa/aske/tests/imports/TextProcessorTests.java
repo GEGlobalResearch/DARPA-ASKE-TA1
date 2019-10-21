@@ -198,6 +198,9 @@ public class TextProcessorTests {
 		String msg = acm.getExtractionProcessor().getTextProcessor().clearGraph(acm.getExtractionProcessor().getTextProcessor().getTextModelName());
 		System.out.println("Clear graph response: " + msg);
 		acm.processImports(sas); 
+		
+//		System.err.println("The extracted model:");
+//		acm.getExtractionProcessor().getTextModel().write(System.err, "N3");
 
 		if (!sas.equals(SaveAsSadl.DoNotSaveAsSadl)) {
 			if (sf.exists()) {
@@ -208,7 +211,7 @@ public class TextProcessorTests {
 
 		String query = "select distinct ?eq ?lg ?sc where {?eq <rdf:type> <ExternalEquation> . ?eq <expression> ?scrbn . \r\n" + 
 				"		?scrbn <language> ?lg . ?scrbn <script> ?sc }";
-		String somePythonScript = null;
+		String anEquation = null;
 		try {
 			ResultSet rs =acm.getExtractionProcessor().getTextProcessor().executeSparqlQuery(query);
 			System.out.println("Equations in text extraction model: (" + (rs != null ? rs.getRowCount() : 0) + ")");
@@ -216,8 +219,8 @@ public class TextProcessorTests {
 				rs.setShowNamespaces(false);
 				System.out.println(rs.toStringWithIndent(5));
 				for (int r = 0; r < rs.getRowCount(); r++) {
-					if (rs.getResultAt(r, 1).toString().equals("Python")) {
-						somePythonScript = rs.getResultAt(r, 2).toString();
+					if (rs.getResultAt(r, 1).toString().equals("Python-TF")) {
+						anEquation = rs.getResultAt(r, 0).toString();
 						break;
 					}
 				}
@@ -239,15 +242,12 @@ public class TextProcessorTests {
 			e.printStackTrace();
 		}
 		
-		if (somePythonScript != null) {
-			List<Object> params = new ArrayList<Object>();
-			params.add(somePythonScript);
-//			String query2 = cm.getTranslator().parameterizeQuery(acm.getExtractionProcessor().getTextModel(), DialogConstants.ARGUMENTS_BY_EQUATION_PYTHON_SCRIPT_QUERY, params);
-			String query2 = "select distinct ?argName where {?eq <expression> ?sc . ?sc <language> ?lang . ?sc <script> 'a = tf.math.pow( R * T * gamma, 1/2)' . \r\n" + 
-					"?eq <http://sadl.org/sadlimplicitmodel#arguments> ?ddList . \r\n" + 
-					"?ddList <http://jena.hpl.hp.com/ARQ/list#member> ?member . ?member <http://sadl.org/sadlimplicitmodel#descriptorName> ?argName}";
+		if (anEquation != null) {
+			List<Object> params = new ArrayList<Object>();		// TODO change to parameterized query
+			params.add(anEquation);
+			String query2 = "select ?arg ?argName ?argtyp where {<" + anEquation + "> <arguments>/<rdf:rest>*/<rdf:first> ?arg . ?arg <localDescriptorName> ?argName . OPTIONAL{?arg <dataType> ?argtyp}}";
 			try {
-				System.out.println("Equation arguments:");
+				System.out.println("Equation arguments for " + anEquation + ":");
 				ResultSet rs =acm.getExtractionProcessor().getTextProcessor().executeSparqlQuery(query2);
 				if (rs != null) {
 					rs.setShowNamespaces(false);

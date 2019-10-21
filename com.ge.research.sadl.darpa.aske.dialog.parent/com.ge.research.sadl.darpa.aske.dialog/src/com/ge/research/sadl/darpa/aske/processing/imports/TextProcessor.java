@@ -105,7 +105,17 @@ public class TextProcessor {
 	public int[] processText(String inputIdentifier, String text, String modelName, String modelPrefix) throws ConfigurationException, IOException {
 		initializeTextModel(modelName, modelPrefix);
 		try {
-			String msg = "Importing text with identifier '" + inputIdentifier + "' into locality '" + modelName + "'.";
+			String source = null;
+			if (inputIdentifier.lastIndexOf('/') > 0) {
+				source = inputIdentifier.substring(inputIdentifier.lastIndexOf('/') + 1);
+			}
+			else if (inputIdentifier.lastIndexOf('\\') > 0) {
+				source = inputIdentifier.substring(inputIdentifier.lastIndexOf('\\') + 1);
+			}
+			else {
+				source = inputIdentifier;
+			}
+			String msg = "Extracting text from '" + source + "' into locality '" + modelName + "'.";
 			getCurationManager().notifyUser(getTextModelConfigMgr().getModelFolder(), msg, true);
 		} catch (ConfigurationException e) {
 			// TODO Auto-generated catch block

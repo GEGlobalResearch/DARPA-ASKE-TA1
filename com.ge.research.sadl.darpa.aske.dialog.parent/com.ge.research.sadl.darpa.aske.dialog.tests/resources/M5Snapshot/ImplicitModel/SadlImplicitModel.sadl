@@ -9,13 +9,15 @@ UnittedQuantity is a type of ScientificConcept,
 	described by stddev with values of type decimal,
 	described by unit with values of type string.
 
-DataDescriptor is a class, described by localDescriptorName with a single value of type string,
+DataDescriptor is a class, described by localDescriptorName (note "If this DataDescriptor is associated with a named parameter, this is the name") with a single value of type string,
 	described by dataType (note "the simple data type, e.g., float") with a single value of type anyURI,
-	described by augmentedType (note "ties the DataDescriptor to the semantic domain model") with values of type AugmentedType.
+	described by specifiedUnits (note "the array of possible units") with a single value of type string List,
+	described by augmentedType (note "ties the DataDescriptor to the semantic domain model") with values of type AugmentedType,
+	described by descriptorVariable (note "This identifies the GPVariable, if any, in the AugmentedType which is associated with this DataDescriptor").
 dataType of DataDescriptor has at most 1 value.
 descriptorVariable of DataDescriptor has at most 1 value.
 
-Language is a class, must be one of {Java, Python, Text, OtherLanguage}.
+Language is a class, must be one of {Java, Python, Python-TF, Text, OtherLanguage}.
 Script is a class, described by language with a single value of type Language,
 	described by script with a single value of type string.
 ^Equation is a class,
@@ -25,7 +27,7 @@ returnTypes describes ^Equation with a single value of type DataDescriptor List.
 
 ExternalEquation is a type of ^Equation,
 	described by externalURI with a single value of type anyURI,
-	described by externalURL with values of type string.
+	described by externalURL with values of type anyURI.
 	
 AugmentedType is a class.
 augTypeUnits describes AugmentedType with a single value of type string List.

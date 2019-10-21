@@ -9,7 +9,8 @@ public class SparqlQueries {
 			"			UNION {?m <rdf:type> <ExternalMethod>} } }";
 
 	public static final String All_TEXT_EXTRACTED_METHODS = 
-			"select ?m ?ts ?ps where {?m <rdf:type> <ExternalEquation> . "
+			"select distinct ?m ?ts ?ps ?ptfs where {?m <rdf:type> <ExternalEquation> . "
 			+ "?m <expression> ?exp . ?exp <language> <Text> . ?exp <script> ?ts . "
-			+ "?m <expression> ?exp2 . ?exp2 <language> <Python> . ?exp2 <script> ?ps}";
+			+ "?m <expression> ?exp2 . ?exp2 <language> <Python> . ?exp2 <script> ?ps . "
+			+ "?m <expression> ?exp3 . ?exp3 <language> <Python-TF> . ?exp3 <script> ?ptfs}";
 }
