@@ -157,11 +157,12 @@ public class JenaBasedDialogInferenceProcessor extends JenaBasedSadlInferencePro
 			"prefix sci:<http://aske.ge.com/sciknow#>\n" +
 			"prefix rdfs:<http://www.w3.org/2000/01/rdf-schema#>\n" +
 			"prefix rdf:<http://www.w3.org/1999/02/22-rdf-syntax-ns#>\n" +
+			"prefix list:<http://sadl.org/sadllistmodel#>\n" +
 			"insert {?EqCh cg:parent ?EqPa}\n" + 
 			"where {\n" +
 			//"  ?EqCh a imp:Equation.\n" + //to include External equations
 			" ?EqCh imp:arguments ?AL2.\n" + 
-			" ?AL2 rdf:rest*/rdf:first ?AO2.\n" + 
+			" ?AL2 list:rest*/list:first ?AO2.\n" + 
 			" ?AO2 imp:augmentedType ?Type2.\n" + 
 			" ?Type2 imp:constraints ?CL2.\n" + 
 			" ?CL2 rdf:rest*/rdf:first ?C2.\n" + 
@@ -170,7 +171,7 @@ public class JenaBasedDialogInferenceProcessor extends JenaBasedSadlInferencePro
 			"\n" + 
 			//" ?EqPa a imp:Equation.\n" + 
 			" ?EqPa imp:returnTypes ?AL1.\n" + 
-			" ?AL1 rdf:rest*/rdf:first ?AO1.\n" + 
+			" ?AL1 list:rest*/list:first ?AO1.\n" + 
 			" ?AO1 imp:augmentedType ?Type1.\n" + 
 			" ?Type1 imp:constraints ?CL1.\n" + 
 			" ?CL1 rdf:rest*/rdf:first ?C1.\n" + 
@@ -187,12 +188,13 @@ public class JenaBasedDialogInferenceProcessor extends JenaBasedSadlInferencePro
 			"prefix rdfs:<http://www.w3.org/2000/01/rdf-schema#>\n" + 
 			"prefix rdf:<http://www.w3.org/1999/02/22-rdf-syntax-ns#>prefix sci:<http://aske.ge.com/sciknow#>\n" + 
 			"prefix cg:<http://aske.ge.com/compgraphmodel#>\n" + 
+			"prefix list:<http://sadl.org/sadllistmodel#>\n" +
 			"\n" + 
 			"select distinct ?DBN ?Out ?Eq where { \n" + 
 			"  {select distinct ?Eq where { \n" + 
 			//"     ?EqOut a imp:Equation. \n" + // to include External equation
 			"     ?EqOut imp:returnTypes ?EO1. \n" + 
-			"     ?EO1 rdf:rest*/rdf:first ?EO2.\n" + 
+			"     ?EO1 list:rest*/list:first ?EO2.\n" + 
 			"     ?EO2 imp:augmentedType ?EO3. \n" + 
 			"     ?EO3 imp:constraints ?EO4.\n" + 
 			"     ?EO4 rdf:rest*/rdf:first ?EO5.\n" + 
@@ -201,7 +203,7 @@ public class JenaBasedDialogInferenceProcessor extends JenaBasedSadlInferencePro
 			"\n" + 
 			"     ?EqOut cg:parent* ?EqIn. \n" + 
 			"     ?EqIn imp:arguments ?EI1.\n" + 
-			"     ?EI1 rdf:rest*/rdf:first ?EI2.\n" + 
+			"     ?EI1 list:rest*/list:first ?EI2.\n" + 
 			"     ?EI2 imp:augmentedType ?EI3. \n" + 
 			"     ?EI3 imp:constraints ?EI4.\n" + 
 			"     ?EI4 rdf:rest*/rdf:first ?EI5.\n" + 
@@ -213,7 +215,7 @@ public class JenaBasedDialogInferenceProcessor extends JenaBasedSadlInferencePro
 			"  }} \n" + 
 			"\n" + 
 			"  ?Eq imp:returnTypes ?O1. \n" + 
-			"  ?O1 rdf:rest*/rdf:first ?O2.\n" + 
+			"  ?O1 list:rest*/list:first ?O2.\n" + 
 			"  ?O2 imp:augmentedType ?O3. \n" + 
 			"  ?O3 imp:constraints ?O4.\n" + 
 			"  ?O4 rdf:rest*/rdf:first ?O5.\n" + 
@@ -246,6 +248,7 @@ public class JenaBasedDialogInferenceProcessor extends JenaBasedSadlInferencePro
 			"prefix cg:<http://aske.ge.com/compgraphmodel#>\n" + 
 			"prefix rdfs:<http://www.w3.org/2000/01/rdf-schema#>\n" + 
 			"prefix rdf:<http://www.w3.org/1999/02/22-rdf-syntax-ns#>\n" + 
+			"prefix list:<http://sadl.org/sadllistmodel#>\n" +
 			"\n" + 
 			"select distinct ?Model ?Input (str(?EI2Label) as ?InputLabel) ?UniqueInputLabel ?Output (str(?expr) as ?ModelForm) (str(?Fun) as ?Function) where { \n" + 
 			"	  ?Model rdfs:subClassOf cg:DBN.\n" + 
@@ -256,7 +259,7 @@ public class JenaBasedDialogInferenceProcessor extends JenaBasedSadlInferencePro
 			"	    filter (?Eq in ( EQNSLIST )) .\n" + 
 			"\n" + 
 			"	  ?Eq imp:arguments ?EI1.\n" + 
-			"     ?EI1 rdf:rest*/rdf:first ?EI2.\n" + 
+			"     ?EI1 list:rest*/list:first ?EI2.\n" + 
 			"     ?EI2 imp:localDescriptorName ?EI2Label.\n" + 
 			"     ?EI2 imp:descriptorVariable ?UniqueInputLabel.\n" + 
 			"     ?EI2 imp:augmentedType ?EI3. \n" + 
@@ -267,7 +270,7 @@ public class JenaBasedDialogInferenceProcessor extends JenaBasedSadlInferencePro
 			"     ?EI5 imp:gpObject ?Label.\n" + 
 			"\n" + 
 			"	  ?Eq imp:returnTypes ?EO1. \n" + 
-			"     ?EO1 rdf:rest*/rdf:first ?EO2.\n" + 
+			"     ?EO1 list:rest*/list:first ?EO2.\n" + 
 			"     ?EO2 imp:augmentedType ?EO3. \n" + 
 			"     ?EO3 imp:constraints ?EO4.\n" + 
 			"     ?EO4 rdf:rest*/rdf:first ?EO5.\n" + 
@@ -294,26 +297,26 @@ public class JenaBasedDialogInferenceProcessor extends JenaBasedSadlInferencePro
 			"prefix owl:<http://www.w3.org/2002/07/owl#>\n" + 
 			"prefix rdfs:<http://www.w3.org/2000/01/rdf-schema#>\n" + 
 			"prefix rdf:<http://www.w3.org/1999/02/22-rdf-syntax-ns#>\n"+
-			"prefix sl:<http://sadl.org/sadllistmodel#>\n" + 
+			"prefix list:<http://sadl.org/sadllistmodel#>\n" +
 			"\n" + 
 			"select distinct ?Node (str(?NUnits) as ?NodeOutputUnits) ?Child (str(?CUnits) as ?ChildInputUnits) ?Distribution ?Lower ?Upper ?Eq ?Value \n" +
 			" where {\n" + 
 			"  {select distinct ?Node ?NUnits ?Child ?CUnits ?Distribution ?Lower ?Upper ?Eq where { \n" + 
 			"     ?Eq imp:arguments ?EI1.\n" + 
-			"     ?EI1 rdf:rest*/rdf:first ?EI2.\n" + 
+			"     ?EI1 list:rest*/list:first ?EI2.\n" + 
 			"     ?EI2 imp:augmentedType ?EI3. \n" + 
 			"     ?EI3 imp:constraints ?EI4.\n" + 
 			"     ?EI4 rdf:rest*/rdf:first ?EI5.\n" + 
 			"     ?EI5 imp:gpPredicate ?Node.\n" + 
 			"       filter (?Node != <http://www.w3.org/1999/02/22-rdf-syntax-ns#type>)\n" +
-			"     optional{?EI2 imp:specifiedUnits/rdf:first ?CUnits.}" + 
+			"     optional{?EI2 imp:specifiedUnits/list:first ?CUnits.}" + 
 			"\n" + 
 			"     optional{\n" + 
 			"       ?Var ?Node ?UQNode.\n" + 
 			"       ?UQNode imp:unit ?InputUnitsQuery.\n" + 
 			"     }\n" + 
 			"     ?Eq imp:returnTypes ?EO1.\n" + 
-			"     ?EO1 rdf:rest*/rdf:first ?EO2.\n" + 
+			"     ?EO1 list:rest*/list:first ?EO2.\n" + 
 			"     ?EO2 imp:augmentedType ?EO3. \n" + 
 			"     ?EO3 imp:constraints ?EO4.\n" + 
 			"     ?EO4 rdf:rest*/rdf:first ?EO5.\n" + 
@@ -337,22 +340,22 @@ public class JenaBasedDialogInferenceProcessor extends JenaBasedSadlInferencePro
 			"     ?RB owl:hasValue ?Range.\n" + 
 			"     ?Range cg:lower ?Lower.\n" + 
 			"     ?Range cg:upper ?Upper.\n" +
-			"     optional {?DBN rdfs:subClassOf/owl:hasValue/imp:specifiedUnits/sl:first ?DBNUnits.}\n" + 
+			"     optional {?DBN rdfs:subClassOf/owl:hasValue/imp:specifiedUnits/list:first ?DBNUnits.}\n" + 
 			"     bind( if(bound(?InputUnitsQuery), ?InputUnitsQuery, ?DBNUnits) as ?NUnits ).\n " +   
 			"  }} \n" + 
 			"  union {\n" + 
 			"  select distinct ?Node ?NUnits ?Child ?CUnits ?Distribution ?Lower ?Upper ?Eq where {\n" + 
 			"     ?Eq imp:arguments ?EI1.\n" + 
-			"     ?EI1 rdf:rest*/rdf:first ?EI2.\n" + 
+			"     ?EI1 list:rest*/list:first ?EI2.\n" + 
 			"     ?EI2 imp:augmentedType ?EI3. \n" + 
 			"     ?EI3 imp:constraints ?EI4.\n" + 
 			"     ?EI4 rdf:rest*/rdf:first ?EI5.\n" + 
 			"     ?EI5 imp:gpPredicate ?Node.\n" + 
 			"       filter (?Node != <http://www.w3.org/1999/02/22-rdf-syntax-ns#type>)\n" + 
-			"     optional{?EI2 imp:specifiedUnits/rdf:first ?CUnits.}" + 
+			"     optional{?EI2 imp:specifiedUnits/list:first ?CUnits.}" + 
 			"\n" + 
 			"     ?Eq imp:returnTypes ?EO1.\n" + 
-			"     ?EO1 rdf:rest*/rdf:first ?EO2.\n" + 
+			"     ?EO1 list:rest*/list:first ?EO2.\n" + 
 			"     ?EO2 imp:augmentedType ?EO3. \n" + 
 			"     ?EO3 imp:constraints ?EO4.\n" + 
 			"     ?EO4 rdf:rest*/rdf:first ?EO5.\n" + 
@@ -366,12 +369,12 @@ public class JenaBasedDialogInferenceProcessor extends JenaBasedSadlInferencePro
 			"     ?EB owl:allValuesFrom ?EqC. \n" + 
 			"     ?Eq1 a ?EqC. \n" + 
 			"     ?Eq1 imp:returnTypes ?EqO1.\n" + 
-			"     ?EqO1 rdf:rest*/rdf:first ?EqO2.\n" + 
+			"     ?EqO1 list:rest*/list:first ?EqO2.\n" + 
 			"     ?EqO2 imp:augmentedType ?EqO3. \n" + 
 			"     ?EqO3 imp:constraints ?EqO4.\n" + 
 			"     ?EqO4 rdf:rest*/rdf:first ?EqO5.\n" + 
 			"     ?EqO5 imp:gpPredicate ?Node.\n" + 
-			"     optional{?EqO2 imp:specifiedUnits/rdf:first ?NUnits.}" +
+			"     optional{?EqO2 imp:specifiedUnits/list:first ?NUnits.}" +
 			"\n" + 
 			"     ?DBN rdfs:subClassOf ?DB. \n" + 
 			"     ?DB owl:onProperty cg:distribution. \n" + 
@@ -386,16 +389,16 @@ public class JenaBasedDialogInferenceProcessor extends JenaBasedSadlInferencePro
 			"  union {\n" + 
 			"  select distinct ?Eq ?Node ?NUnits ?Distribution ?Lower ?Upper where { \n" + 
 			"     ?Eq imp:returnTypes ?EO1.\n" + 
-			"     ?EO1 rdf:rest*/rdf:first ?EO2.\n" + 
+			"     ?EO1 list:rest*/list:first ?EO2.\n" + 
 			"     ?EO2 imp:augmentedType ?EO3. \n" + 
 			"     ?EO3 imp:constraints ?EO4.\n" + 
 			"     ?EO4 rdf:rest*/rdf:first ?EO5.\n" + 
 			"     ?EO5 imp:gpPredicate ?Node. \n" + 
 			"       filter (?Eq in ( EQNSLIST ))\n" + 
-			"     optional{?EO2 imp:specifiedUnits/rdf:first ?NUnits.}\n" + 
+			"     optional{?EO2 imp:specifiedUnits/list:first ?NUnits.}\n" + 
 			"     filter not exists { \n" + 
 			"	?Eq1 imp:arguments ?EI1.\n" + 
-			"        ?EI1 rdf:rest*/rdf:first ?EI2.\n" + 
+			"        ?EI1 list:rest*/list:first ?EI2.\n" + 
 			"        ?EI2 imp:augmentedType ?EI3. \n" + 
 			"        ?EI3 imp:constraints ?EI4.\n" + 
 			"        ?EI4 rdf:rest*/rdf:first ?EI5.\n" + 
@@ -448,6 +451,7 @@ public class JenaBasedDialogInferenceProcessor extends JenaBasedSadlInferencePro
 			"prefix cg:<http://aske.ge.com/compgraphmodel#>\n" + 
 			"prefix rdf:<http://www.w3.org/1999/02/22-rdf-syntax-ns#>\n" + 
 			"prefix rdfs:<http://www.w3.org/2000/01/rdf-schema#>\n" + 
+			"prefix list:<http://sadl.org/sadllistmodel#>\n" +
 			"\n" + 
 			"select ?X ?Y ?Z ?X_style ?X_color ?Z_shape ?Z_tooltip\n" + 
 			"where {\n" + 
@@ -460,7 +464,7 @@ public class JenaBasedDialogInferenceProcessor extends JenaBasedSadlInferencePro
 			"    ?CG cg:hasEquation ?EQ.\n" + 
 			"\n" + 
 			"     ?EQ imp:arguments ?EI1.\n" + 
-			"     ?EI1 rdf:rest*/rdf:first ?EI2.\n" + 
+			"     ?EI1 list:rest*/list:first ?EI2.\n" + 
 			"     ?EI2 imp:augmentedType ?EI3. \n" + 
 			"     ?EI3 imp:constraints ?EI4.\n" + 
 			"     ?EI4 rdf:rest*/rdf:first ?EI5.\n" + 
@@ -469,7 +473,7 @@ public class JenaBasedDialogInferenceProcessor extends JenaBasedSadlInferencePro
 			"     ?InputProp rdfs:range ?Input." +
 			"\n" + 
 			"     ?EQ imp:returnTypes ?EO1.\n" + 
-			"     ?EO1 rdf:rest*/rdf:first ?EO2.\n" + 
+			"     ?EO1 list:rest*/list:first ?EO2.\n" + 
 			"     ?EO2 imp:augmentedType ?EO3. \n" + 
 			"     ?EO3 imp:constraints ?EO4.\n" + 
 			"     ?EO4 rdf:rest*/rdf:first ?EO5.\n" + 
@@ -482,17 +486,19 @@ public class JenaBasedDialogInferenceProcessor extends JenaBasedSadlInferencePro
 			"    ?SG1 mm:cgraph ?CG1.\n" + 
 			"    ?CG1 cg:hasEquation ?EQ1.\n" + 
 			"    ?EQ1 imp:returnTypes ?E11.\n" + 
-			"    ?E11 rdf:rest*/rdf:first ?E12.\n" + 
+			"    ?E11 list:rest*/list:first ?E12.\n" + 
 			"    ?E12 imp:augmentedType ?E13. \n" + 
 			"    ?E13 imp:constraints ?E14.\n" + 
 			"    ?E14 rdf:rest*/rdf:first ?E15.\n" + 
 			"    ?E15 imp:gpPredicate ?InputProp.\n" + 
-			"\n" + 
-			"    ?EQ imp:expression ?Scr.\n" + 
-			"    ?Scr imp:script ?Expr.\n" + 
-			"    ?Scr imp:language ?lang.\n" + 
-			"       filter ( ?lang = <http://sadl.org/sadlimplicitmodel#Python> )\n" + 
-			"    bind(str(?Expr) as ?Z_tooltip)\n" + 
+			"\n" +
+			"    optional{ \n" +
+			"      ?EQ imp:expression ?Scr.\n" + 
+			"      ?Scr imp:script ?Expr.\n" + 
+			"      ?Scr imp:language ?lang.\n" + 
+			"         filter ( ?lang = <http://sadl.org/sadlimplicitmodel#Python> )\n" + 
+			"      bind(str(?Expr) as ?Z_tooltip)\n" +
+			"    }\n " + 
 			"    bind('solid' as ?X_style)\n" + 
 			"    bind('black' as ?X_color)\n" + 
 			"}}union\n" + 
@@ -505,7 +511,7 @@ public class JenaBasedDialogInferenceProcessor extends JenaBasedSadlInferencePro
 			"    ?CG cg:hasEquation ?EQ.\n" + 
 			"\n" + 
 			"     ?EQ imp:arguments ?EI1.\n" + 
-			"     ?EI1 rdf:rest*/rdf:first ?EI2.\n" + 
+			"     ?EI1 list:rest*/list:first ?EI2.\n" + 
 			"     ?EI2 imp:augmentedType ?EI3. \n" + 
 			"     ?EI3 imp:constraints ?EI4.\n" + 
 			"     ?EI4 rdf:rest*/rdf:first ?EI5.\n" + 
@@ -514,7 +520,7 @@ public class JenaBasedDialogInferenceProcessor extends JenaBasedSadlInferencePro
 			"     ?InputProp rdfs:range ?Input." +
 			"\n" + 
 			"     ?EQ imp:returnTypes ?EO1.\n" + 
-			"     ?EO1 rdf:rest*/rdf:first ?EO2.\n" + 
+			"     ?EO1 list:rest*/list:first ?EO2.\n" + 
 			"     ?EO2 imp:augmentedType ?EO3. \n" + 
 			"     ?EO3 imp:constraints ?EO4.\n" + 
 			"     ?EO4 rdf:rest*/rdf:first ?EO5.\n" + 
@@ -533,7 +539,7 @@ public class JenaBasedDialogInferenceProcessor extends JenaBasedSadlInferencePro
 			"      ?SG2 mm:cgraph ?CG2.\n" + 
 			"      ?CG2 cg:hasEquation ?EQ2.\n" + 
 			"      ?EQ2 imp:returnTypes ?E21.\n" + 
-			"      ?E21 rdf:rest*/rdf:first ?E22.\n" + 
+			"      ?E21 list:rest*/rdf:first ?E22.\n" + 
 			"      ?E22 imp:augmentedType ?E23. \n" + 
 			"      ?E23 imp:constraints ?E24.\n" + 
 			"      ?E24 rdf:rest*/rdf:first ?E25.\n" + 
@@ -735,6 +741,23 @@ public class JenaBasedDialogInferenceProcessor extends JenaBasedSadlInferencePro
 							quantity = createUQtriplesArray(tr,triples);
 							insertions.add(quantity);
 						}
+						else if(tr.getObject() instanceof Literal && !tr.getPredicate().getName().contains("unit")) {
+								
+								Property pr = getTheJenaModel().getProperty(tr.getPredicate().getURI());
+								String rng = pr.as(OntProperty.class).getRange().toString();
+								Individual newvar = createIndividualOfClass(queryModel, null, null, rng);
+								
+								Property p = getTheJenaModel().getProperty("http://sadl.org/sadlimplicitmodel#value");
+																
+								//RDFNode val = getObjectAsLiteralOrResource(tr.getPredicate(), tr.getObject());
+								
+								//double v = Double.parseDouble(tr.getObject().getName());
+								RDFNode val = getTheJenaModel().createTypedLiteral(((Literal)tr.getObject()).getValue());
+								
+								ingestKGTriple(newvar, p, val);
+
+								inputsList.add(pr);
+						}
 						else if (tr.getObject() == null) { //(v0, hypersonicsV2:staticTemperature, null)
 							// this is an output
 							queryPatterns.add(tr);
@@ -801,6 +824,7 @@ public class JenaBasedDialogInferenceProcessor extends JenaBasedSadlInferencePro
 					so = itr.getObject().getName();
 					
 					ns = getModelName() + "#";
+					ns = queryModelPrefix;
 					
 					sss = getTheJenaModel().getResource(ns+ss);
 					ssp = getTheJenaModel().getProperty(sp);
@@ -982,7 +1006,7 @@ public class JenaBasedDialogInferenceProcessor extends JenaBasedSadlInferencePro
 						cexec = getTheJenaModel().getOntClass(METAMODEL_CGEXEC_CLASS);
 						//String cexecStr = cexec.getLocalName();
 						//ce = queryModel.createIndividual(cexecStr + "_" + System.currentTimeMillis(), cexec);
-						ce = createIndividualOfClass(queryModel, null, cexec.toString());
+						ce = createIndividualOfClass(queryModel, null, null, cexec.toString());
 						//OntProperty stprop = getTheJenaModel().getOntProperty(METAMODEL_STARTTIME_PROP);
 				
 	//					String DATE_FORMAT_NOW = "yyyy-MM-dd HH:mm:ss";
@@ -1067,11 +1091,11 @@ public class JenaBasedDialogInferenceProcessor extends JenaBasedSadlInferencePro
 							//TODO: create output instances and link them to ce
 							//      There may be multiple outputs, need to loop through them
 							// We may need to do this later after the results have been computed
-							for (RDFNode op : outputsList) {
-								outputType = op.as(OntProperty.class).getRange().toString();
-								oinst = createIndividualOfClass(queryModel, null, outputType);
-								ingestKGTriple(ce,outputprop,oinst);
-							}
+//							for (RDFNode op : outputsList) {
+//								outputType = op.as(OntProperty.class).getRange().toString();
+//								oinst = createIndividualOfClass(queryModel, null, outputType);
+//								ingestKGTriple(ce,outputprop,oinst);
+//							}
 							
 	
 	
@@ -1105,7 +1129,7 @@ public class JenaBasedDialogInferenceProcessor extends JenaBasedSadlInferencePro
 							saveMetaDataFile(resource,queryModelFileName); //so we can query the the eqns in the CCG
 							
 							ResultSet assumpCheck = null;
-							assumpCheck = checkModelAssumptions(resource, cgIns.toString(), queryModelURI);
+							assumpCheck = checkModelAssumptions(resource, cgIns.toString(), queryModelURI, queryOwlFileWithPath);
 							if (assumpCheck != null) {
 								System.out.println(assumpCheck.toString());
 								
@@ -1119,6 +1143,12 @@ public class JenaBasedDialogInferenceProcessor extends JenaBasedSadlInferencePro
 									sb.append(" false unsatisfiedAssumption \"");
 									sb.append(assumpCheck.getResultAt(0, 1).toString());
 									sb.append("\"");
+									String trace = assumpCheck.getResultAt(0, 1).toString();
+									trace = trace.substring(1, trace.length()).replaceAll("'", " ");
+									trace = "\"" + trace + "\"";
+									
+									RDFNode obj = getTheJenaModel().createTypedLiteral(trace);
+									ingestKGTriple(cgIns, getTheJenaModel().getOntProperty(METAMODEL_ASSUMPTIONUNSATISFIED_PROP), obj);
 								}
 								sb.append(".");
 								//sadlDeclaration.add(sb.toString());
@@ -1137,20 +1167,23 @@ public class JenaBasedDialogInferenceProcessor extends JenaBasedSadlInferencePro
 							// convert to SADL to insert into dialog window
 							ResultSet rs = dbnresults[i+numOfModels];
 							List<String> sadlDeclaration = new ArrayList<String>();
-							for (int row = 0; row < rs.getRowCount(); row++) {
+							if (rs.getRowCount() > 0) {
 								StringBuilder sb = new StringBuilder("The CGExecution with compGraph ");
-								//StringBuilder sb = new StringBuilder("The CGExecution ");
-								sb.append(rs.getResultAt(row, 0).toString());
-								sb.append(" has output (a ");
-								sb.append(rs.getResultAt(row, 1).toString());
-								sb.append(" with ^value ");
-								sb.append(rs.getResultAt(row, 2));
-								sb.append(", with stddev ");
-								sb.append(rs.getResultAt(row, 3));
-								sb.append(").\n");
+								sb.append(rs.getResultAt(0, 0).toString());
+								sb.append("\n");
+								for (int row = 0; row < rs.getRowCount(); row++) {
+									//StringBuilder sb = new StringBuilder("The CGExecution ");
+									sb.append("    has output (a ");
+									sb.append(rs.getResultAt(row, 1).toString());
+									sb.append(" with ^value ");
+									sb.append(rs.getResultAt(row, 2));
+									sb.append(", with stddev ");
+									sb.append(rs.getResultAt(row, 3));
+									sb.append(")\n");
+								}
+								sb.append(".\n");
 								sadlDeclaration.add(sb.toString());
-							}
-							
+							}							
 							for (String sd : sadlDeclaration) {
 								SadlStatementContent ssc = new SadlStatementContent(null, Agent.CM, sd);
 //								AnswerCurationManager acm = (AnswerCurationManager) cmgr.getPrivateKeyValuePair(DialogConstants.ANSWER_CURATION_MANAGER);
@@ -1158,6 +1191,7 @@ public class JenaBasedDialogInferenceProcessor extends JenaBasedSadlInferencePro
 								acm.notifyUser(getModelFolderPath(resource), ssc, false);
 							}
 							
+							//If assumptions are satisfied, compute sensitivity
 							if ( assumpCheck != null && assumpCheck.getResultAt(0, 0).equals("satisfied") ) {
 					            //Send sensitivity request to DBN
 					            //queryMode = "sensitivity";
@@ -1174,6 +1208,8 @@ public class JenaBasedDialogInferenceProcessor extends JenaBasedSadlInferencePro
 					            	System.err.println("Sensitivity computation failed");
 					            }
 
+					            saveMetaDataFile(resource,queryModelFileName); //so we can query the the eqns in the CCG
+					            
 					            ResultSet sensres = retrieveSensitivityResults(resource, cgIns);
 					            String outp = "", nxtoutp = "";
 					            //int opcount = 0;
@@ -1330,7 +1366,7 @@ public class JenaBasedDialogInferenceProcessor extends JenaBasedSadlInferencePro
 							//TODO: create output instances and link them to ce
 							//      There is only one output for datasets
 							outputType = oputType.as(OntProperty.class).getRange().toString();
-							oinst = createIndividualOfClass(queryModel,null, outputType);
+							oinst = createIndividualOfClass(queryModel,null, null, outputType);
 							ingestKGTriple(ce,outputprop,oinst);
 							
 							cgIns = queryModel.createIndividual(queryModelPrefix + "CG_" + System.currentTimeMillis(), getTheJenaModel().getOntClass(METAMODEL_CCG));
@@ -1461,11 +1497,11 @@ private ResultSet retrieveSensitivityResults(Resource resource, Individual cgIns
 	return res;
 	}
 
-private ResultSet checkModelAssumptions(Resource resource, String model, String instanceDataURI) throws Exception {
+private ResultSet checkModelAssumptions(Resource resource, String model, String instanceDataURI, String queryOwlFileWithPath) throws Exception {
 		// TODO Auto-generated method stub
 		//String query = "select Eq Var Oper Val VP where assumption(Eq,Var,Oper,Val,VP).";
 		String query = "select Res Trace where model_satisfies_assumptions('" + model + "', Res, Trace)";
-		ResultSet result = runPrologQuery(resource, query, instanceDataURI);
+		ResultSet result = runPrologQuery(resource, query, instanceDataURI, queryOwlFileWithPath);
 		return result;
 	}
 
@@ -1735,7 +1771,7 @@ private RDFNode getObjectAsLiteralOrResource(Node property, Node object) {
 		return runReasonerQuery(resource, query);
 	}
 
-	private ResultSet runPrologQuery(Resource resource, String query, String instanceDataURI) throws Exception {
+	private ResultSet runPrologQuery(Resource resource, String query, String instanceDataURI, String queryOwlFileWithPath) throws Exception {
 		String modelFolder = getModelFolderPath(resource); //getOwlModelsFolderPath(path).toString(); 
 		final String format = ConfigurationManager.RDF_XML_ABBREV_FORMAT;
 		IConfigurationManagerForIDE configMgr;
@@ -1749,8 +1785,12 @@ private RDFNode getObjectAsLiteralOrResource(Node property, Node object) {
 		
 //		assertTrue(pr.loadInstanceData(instanceDatafile));
 		loadAllOwlFilesInProject(modelFolder, reasoner);
-		String queriesFolder = new File(getModelFolderPath(resource)).getParent() + File.separator + CGMODELS_FOLDER;
-		loadAllOwlFilesInProject(queriesFolder, reasoner);
+		
+		//String queriesFolder = new File(getModelFolderPath(resource)).getParent() + File.separator + CGMODELS_FOLDER;
+		//loadAllOwlFilesInProject(queriesFolder, reasoner);
+		
+		File queryModelFile = new File(queryOwlFileWithPath);
+		reasoner.loadInstanceData(queryModelFile.getCanonicalPath());
 	
 		//String modelFile = getModelFolderPath(resource) + File.separator + qhOwlFileName;
 		//reasoner.loadInstanceData(modelFile);
@@ -1925,8 +1965,8 @@ private RDFNode getObjectAsLiteralOrResource(Node property, Node object) {
             		continue;
             	}
 
-            	sensIns = createIndividualOfClass(queryModel, prefix, METAMODEL_SENSITIVITY);
-                ingestKGTriple(cgIns, sensprop, sensIns);
+            	//sensIns = createIndividualOfClass(queryModel, prefix, node.toString(), METAMODEL_SENSITIVITY);
+                //ingestKGTriple(cgIns, sensprop, sensIns);
             	
             	outputlbl = node.getKey(); // "a0"
             	outputType = lbl2class.get(outputlbl); //e.g. "http...#staticTemperature"
@@ -1934,7 +1974,11 @@ private RDFNode getObjectAsLiteralOrResource(Node property, Node object) {
             	RDFNode otypeProp = getTheJenaModel().getProperty(outputType);
         		String rng = otypeProp.as(OntProperty.class).getRange().toString();
         		OntClass outputClass = getTheJenaModel().getOntClass(rng);
-            	ingestKGTriple(sensIns, outputprop, outputClass);
+
+            	sensIns = createIndividualOfClass(queryModel, prefix, outputClass.getLocalName(), METAMODEL_SENSITIVITY);
+                ingestKGTriple(cgIns, sensprop, sensIns);
+        		
+        		ingestKGTriple(sensIns, outputprop, outputClass);
             	
             	jvalues = (JsonObject)node.getValue();
             	sensvals = jvalues.getAsJsonArray("totalEffect") ;
@@ -1945,7 +1989,7 @@ private RDFNode getObjectAsLiteralOrResource(Node property, Node object) {
             		RDFNode itypeProp = getTheJenaModel().getProperty(inputType);
             		rng = itypeProp.as(OntProperty.class).getRange().toString();
             		OntClass inputClass = getTheJenaModel().getOntClass(rng);
-            		inputSens = createIndividualOfClass(queryModel, null, METAMODEL_INPUTSENSITIVITY);
+            		inputSens = createIndividualOfClass(queryModel, null, null, METAMODEL_INPUTSENSITIVITY);
             		v = sensvals.get(0).getAsJsonArray().get(i).getAsString();
 
             		ingestKGTriple(sensIns, inputsensprop, inputSens);
@@ -1986,11 +2030,11 @@ private RDFNode getObjectAsLiteralOrResource(Node property, Node object) {
 //			RDFNode s = soln.get("?Eq") ; 
 //			RDFNode p = soln.get("?DBN") ;
 //			RDFNode o = soln.get("?Out") ;
-			sgIns = createIndividualOfClass(queryModel,null, METAMODEL_SUBGRAPH);
+			sgIns = createIndividualOfClass(queryModel,null, null, METAMODEL_SUBGRAPH);
 			   //getTheJenaModel().add(sgIns, RDF.type, getTheJenaModel().getOntClass(METAMODEL_SUBGRAPH));
 			//qhmodel.add(cgIns, subgraphprop, sgIns);
 			ingestKGTriple(cgIns, subgraphprop, sgIns);
-			dbnIns = createIndividualOfClass(queryModel,null, dbn.toString());
+			dbnIns = createIndividualOfClass(queryModel,null, null, dbn.toString());
 			   //getTheJenaModel().add(dbnIns, RDF.type, getTheJenaModel().getOntClass(dbn.toString()));
 
 			//getTheJenaModel().add(sgIns, cgraphprop, dbnIns);
@@ -2022,7 +2066,7 @@ private RDFNode getObjectAsLiteralOrResource(Node property, Node object) {
 			//}
 			//else {
 			
-			//CONTINUE HERE
+			//***CONTINUE HERE
 			
 			RDFNode otype = dbnOutput.get(dbn); //this is a property now 
 			//TODO
@@ -2033,7 +2077,7 @@ private RDFNode getObjectAsLiteralOrResource(Node property, Node object) {
 			
 			//rng = otype.as(OntProperty.class).getRange().toString();
 
-			outpIns = createIndividualOfClass(queryModel, null, rng); //e.g. instance of :Altitude
+			outpIns = createIndividualOfClass(queryModel, null, null, rng); //e.g. instance of :Altitude
 			   //getTheJenaModel().add(outpIns, RDF.type, ostr);
 //				getTheJenaModel().add(sgIns, outputprop, outpIns);
 //				qhmodel.add(sgIns, outputprop, outpIns);
@@ -2285,14 +2329,14 @@ private Map<String, String> getLabelClassMapping(String dbnJson) {
 	}
 
 
-	private Individual createIndividualOfClass(OntModel model, String prefix, String classUriStr) {
+	private Individual createIndividualOfClass(OntModel model, String prefix, String nameprefix, String classUriStr) {
 		OntClass ontClass = getTheJenaModel().getOntClass(classUriStr);
 		Individual ind;
 		if (prefix == null) {
 			ind = model.createIndividual(ontClass); //make it a blank node
 		}
 		else {
-			ind = model.createIndividual(prefix + ontClass.getLocalName()+ "_" + System.currentTimeMillis(), ontClass);
+			ind = model.createIndividual(prefix + ontClass.getLocalName()+ "_" + nameprefix + System.currentTimeMillis(), ontClass);
 		}
 		return ind;
 	}
