@@ -923,7 +923,7 @@ public class AnswerCurationManager {
 				Statement stmt2 = node.asResource().getProperty(model.getProperty(SadlConstants.SADL_LIST_MODEL_REST_URI));
 				if (stmt2 != null) {
 					List<RDFNode[]> more = getListMemberProperties(model, stmt2.getObject(), properties);
-					more.add(values);
+					more.add(0, values);
 					return more;
 				}
 				else {
