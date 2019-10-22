@@ -51,6 +51,7 @@ class DialogImplicitModelFragmentProvider implements ISadlImplicitModelFragmentP
 	public static val DIALOG_IMPLICIT_MODEL_FRAGMENT = '''
 		/****** The following content comes from the Dialog implicit model fragment provider ******/
 		// these properties used by TA2
+		UnittedQuantity has impliedProperty ^value.
 		model describes DataTable with values of type ^Equation.
 		^data describes ^Equation with values of type DataTable.
 	''';

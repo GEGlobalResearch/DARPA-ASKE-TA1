@@ -230,17 +230,6 @@ public class JenaBasedDialogInferenceProcessor extends JenaBasedSadlInferencePro
 			"}";
 
 	
-//	public static final String LOOKUP_EQNS = 
-//			"prefix rdfs:<http://www.w3.org/2000/01/rdf-schema#>\n" +
-//			"prefix sci:<http://aske.ge.com/sciknow#>\n" +
-//			"select distinct ?EqOut where {\n" + 
-//			"    ?EqOut a ?EqClass. \n" + 
-//			"    ?EqClass rdfs:subClassOf imp:Equation.\n" + 
-//			"     ?EqOut sci:output ?Oinst.\n" + 
-//			"     ?Oinst a ?Out.\n" + 
-//			"     filter (?Out in ( LISTOFOUTPUTS )).\n" + 
-//			"}";
-	
 	public static final String RETRIEVE_MODELS = "prefix hyper:<http://aske.ge.com/hypersonicsV2#>\n" + 
 			"prefix imp:<http://sadl.org/sadlimplicitmodel#>\n" + 
 			"prefix sci:<http://aske.ge.com/sciknow#> \n" + 
@@ -453,7 +442,7 @@ public class JenaBasedDialogInferenceProcessor extends JenaBasedSadlInferencePro
 			"prefix rdfs:<http://www.w3.org/2000/01/rdf-schema#>\n" + 
 			"prefix list:<http://sadl.org/sadllistmodel#>\n" +
 			"\n" + 
-			"select ?X ?Y ?Z ?X_style ?X_color ?Z_shape ?Z_tooltip\n" + 
+			"select distinct ?X ?Y ?Z ?X_style ?X_color ?Z_shape ?Z_tooltip\n" + 
 			"where {\n" + 
 			"{select (?Input as ?X) (?EQ as ?Y) (?Output as ?Z) ?X_style ?X_color ('box' as ?Z_shape) ?Z_tooltip\n" + 
 			"where {\n" + 
@@ -820,7 +809,7 @@ public class JenaBasedDialogInferenceProcessor extends JenaBasedSadlInferencePro
 					
 					ingestKGTriple(sss, ssp, sso); //(:v0 :altitude :v1)
 					
-					// create triple: cgq, mm:input, property
+					// create triple: cgq, mm:input, inputVar
 					OntProperty inputprop = getTheJenaModel().getOntProperty(METAMODEL_INPUT_PROP);
 					if (inputprop == null) {
 						// TODO need EObject to display error marker in Dialog window... 
@@ -883,6 +872,7 @@ public class JenaBasedDialogInferenceProcessor extends JenaBasedSadlInferencePro
 				itr = queryPatterns.get(i);
 				sp = itr.getPredicate().getURI(); // e.g. #altitude
 				ssp = getTheJenaModel().getProperty(sp);
+				//ssp = getTheJenaModel().getProperty(queryModelPrefix+sp);
 				outputsList.add(ssp);
 					
 				mapPropertiesToOutputObj.put(itr.getSubject().toString(), sp.toString());
