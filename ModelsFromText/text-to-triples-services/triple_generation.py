@@ -47,6 +47,7 @@ entity_uri_attributes_cache = {}
 
 def populate_graph_entity_triples(g: Graph, entity_uri: str, label: str, similarity_score: float,
                                   match_text: str) -> Graph:
+    match_text = match_text.replace(".", "")
     g.add((URIRef(entity_uri), RDFS.label, Literal(match_text)))
     g.add((URIRef(entity_uri), RDFS.label, Literal(label)))
     g = get_entity_attributes_graph(entity_uri, g)
