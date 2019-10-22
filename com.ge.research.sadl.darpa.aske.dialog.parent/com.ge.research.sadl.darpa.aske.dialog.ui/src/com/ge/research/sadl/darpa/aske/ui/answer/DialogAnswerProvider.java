@@ -149,14 +149,14 @@ public class DialogAnswerProvider extends BaseDialogAnswerProvider {
 	protected void doConfigure(XtextResource resource) {
 		URI uri = resource.getURI();
 		try {
-			System.out.println("[DialogAnswerProvider] >>> Registering... [" + uri + "]");
+			LOGGER.debug("[DialogAnswerProvider] >>> Registering... [" + uri + "]");
 			this.configManager = initializeConfigManager(resource);
 			// If we validate here, we trigger the dialog model processor to register the answer curation manager.
 			IResourceValidator validator = resource.getResourceServiceProvider().getResourceValidator();
 			validator.validate(resource, CheckMode.ALL, CancelIndicator.NullImpl);
-			System.out.println("[DialogAnswerProvider] <<< Registered. [" + uri + "]");
+			LOGGER.debug("[DialogAnswerProvider] <<< Registered. [" + uri + "]");
 		} catch (Exception e) {
-			System.out.println("[DialogAnswerProvider] <<< Failed to register answer provider. [" + uri + "]");
+			System.err.println("[DialogAnswerProvider] <<< Failed to register answer provider. [" + uri + "]");
 			e.printStackTrace();
 			throw new RuntimeException("Error occurred during the configuration for " + uri, e);
 		}
@@ -164,7 +164,7 @@ public class DialogAnswerProvider extends BaseDialogAnswerProvider {
 
 	public void dispose() {
 		URI uri = document.readOnly(GetResourceUri.INSTANCE);
-		System.out.println("[DialogAnswerProvider] >>> Disposing... [" + uri + "]");
+		LOGGER.debug("[DialogAnswerProvider] >>> Disposing... [" + uri + "]");
 		super.dispose();
 		if (modelListener != null) {
 			this.document.removeModelListener(modelListener);
@@ -175,7 +175,7 @@ public class DialogAnswerProvider extends BaseDialogAnswerProvider {
 		if (configManager != null) {
 			configManager.addPrivateKeyValuePair(DialogConstants.DIALOG_ANSWER_PROVIDER, null);
 		}
-		System.out.println("[DialogAnswerProvider] >>> Disposed. [" + uri + "]");
+		LOGGER.debug("[DialogAnswerProvider] >>> Disposed. [" + uri + "]");
 	}
 
 	/**
@@ -292,12 +292,13 @@ public class DialogAnswerProvider extends BaseDialogAnswerProvider {
 
 	private synchronized boolean addCurationManagerContentToDialog(IXtextDocument document, IRegion reg, String content,
 			Object ctx, boolean quote) throws BadLocationException {
-		return addCurationManagerContentToDialog(document, reg, content, ctx, quote, true, true);
+		return addCurationManagerContentToDialog(document, reg, content, ctx, quote, true, true, true);
 	}
 	
 	private synchronized boolean addCurationManagerContentToDialog(IXtextDocument document, IRegion reg, String content,
-			Object ctx, boolean quote, boolean prependAgent, boolean repositionCursor) throws BadLocationException {
-
+			Object ctx, boolean quote, boolean prependAgent, boolean repositionCursor, boolean addLeadingSpaces) throws BadLocationException {
+		LOGGER.debug(content);
+//		System.err.println("addCMContent: " + content);
 		URI uri = document.readOnly(GetResourceUri.INSTANCE);
 		Display.getDefault().syncExec(() -> {
 			try {
@@ -322,14 +323,14 @@ public class DialogAnswerProvider extends BaseDialogAnswerProvider {
 					int start = (int) srcinfo[1];
 					int length = (int) srcinfo[2];
 					// find location of this in document
-					if (!srcinfo[0].toString().endsWith(" ")) {
+					if (addLeadingSpaces && !srcinfo[0].toString().endsWith(" ")) {
 						modContent = " " + modContent;
 					}
 					loc = start + length + 1;
 					int docLen = document.getLength();
 					int testLen = Math.min(5, docLen - loc);
 					String test = document.get(loc, testLen);
-					if (!test.startsWith(" ")) {
+					if (addLeadingSpaces && !test.startsWith(" ")) {
 						modContent = " " + modContent;
 					}
 					if (!test.startsWith("\r\n")) {
@@ -359,6 +360,8 @@ public class DialogAnswerProvider extends BaseDialogAnswerProvider {
 
 	@Override
 	public boolean addImport(String importStatement) {
+		LOGGER.debug(importStatement);
+//		System.err.println("addImport: " + importStatement);
 		Resource rsrc = getResource();
 		EObject precedingObj = null;
 		if (rsrc instanceof XtextResource) {
@@ -383,7 +386,7 @@ public class DialogAnswerProvider extends BaseDialogAnswerProvider {
 			if (precedingObj != null) {
 				String precedingObjText = NodeModelUtils.getTokenText(NodeModelUtils.getNode(precedingObj));
 				try {
-					return addCurationManagerContentToDialog(document, null, importStatement, precedingObj, false, false, false);
+					return addCurationManagerContentToDialog(document, null, importStatement, precedingObj, false, false, false, false);
 				} catch (BadLocationException e) {
 					// TODO Auto-generated catch block
 					e.printStackTrace();
