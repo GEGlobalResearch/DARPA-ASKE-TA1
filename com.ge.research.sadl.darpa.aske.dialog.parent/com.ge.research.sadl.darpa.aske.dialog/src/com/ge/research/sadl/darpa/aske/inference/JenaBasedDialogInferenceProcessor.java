@@ -329,7 +329,7 @@ public class JenaBasedDialogInferenceProcessor extends JenaBasedSadlInferencePro
 			"     ?RB owl:hasValue ?Range.\n" + 
 			"     ?Range cg:lower ?Lower.\n" + 
 			"     ?Range cg:upper ?Upper.\n" +
-			"     optional {?DBN rdfs:subClassOf/owl:hasValue/imp:specifiedUnits/list:first ?DBNUnits.}\n" + 
+			"     optional {?DBN rdfs:subClassOf/owl:hasValue/imp:unit ?DBNUnits.}\n" + 
 			"     bind( if(bound(?InputUnitsQuery), ?InputUnitsQuery, ?DBNUnits) as ?NUnits ).\n " +   
 			"  }} \n" + 
 			"  union {\n" + 
