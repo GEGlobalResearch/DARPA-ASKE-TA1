@@ -1,16 +1,12 @@
-Models From Text
+## Models From Text ##
 
-The following instructions are for a Linux environment.
+**The following installation instructions are for a Linux environment:**
 
-1. Build and run the docker container for searching over Wikidata terms. This docker container will load Wikidata terms from `[ModelsFromText/wikidata-for-elasticsearch](https://github.com/GEGlobalResearch/DARPA-ASKE-TA1/blob/development_text_extraction/ModelsFromText/wikidata-for-elasticsearch/all-terms-wikidata.json)` into an Elasticsearch instance.
+1. Build and run the docker container for searching over Wikidata terms. This docker container will load Wikidata terms from [ModelsFromText/wikidata-for-elasticsearch](https://github.com/GEGlobalResearch/DARPA-ASKE-TA1/blob/development_text_extraction/ModelsFromText/wikidata-for-elasticsearch/all-terms-wikidata.json) into an Elasticsearch instance.
 
 2. Download and run an docker container consisting of an ontology-driven concept mapper service.
 
-3. Create a conda environment for text extraction services.
-
-`
-conda env create -f conda-env/aske-ta1-text-env.yml
-`
+3. Create a conda environment for text extraction services: `conda env create -f conda-env/aske-ta1-text-env.yml`
 
 4. Run `source activate aske-ta1` to check if the environment is created.
 
