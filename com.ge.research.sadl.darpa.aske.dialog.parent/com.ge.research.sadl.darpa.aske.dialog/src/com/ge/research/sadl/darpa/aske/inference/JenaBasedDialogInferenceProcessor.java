@@ -741,23 +741,6 @@ public class JenaBasedDialogInferenceProcessor extends JenaBasedSadlInferencePro
 							quantity = createUQtriplesArray(tr,triples);
 							insertions.add(quantity);
 						}
-						else if(tr.getObject() instanceof Literal && !tr.getPredicate().getName().contains("unit")) {
-								
-								Property pr = getTheJenaModel().getProperty(tr.getPredicate().getURI());
-								String rng = pr.as(OntProperty.class).getRange().toString();
-								Individual newvar = createIndividualOfClass(queryModel, null, null, rng);
-								
-								Property p = getTheJenaModel().getProperty("http://sadl.org/sadlimplicitmodel#value");
-																
-								//RDFNode val = getObjectAsLiteralOrResource(tr.getPredicate(), tr.getObject());
-								
-								//double v = Double.parseDouble(tr.getObject().getName());
-								RDFNode val = getTheJenaModel().createTypedLiteral(((Literal)tr.getObject()).getValue());
-								
-								ingestKGTriple(newvar, p, val);
-
-								inputsList.add(pr);
-						}
 						else if (tr.getObject() == null) { //(v0, hypersonicsV2:staticTemperature, null)
 							// this is an output
 							queryPatterns.add(tr);

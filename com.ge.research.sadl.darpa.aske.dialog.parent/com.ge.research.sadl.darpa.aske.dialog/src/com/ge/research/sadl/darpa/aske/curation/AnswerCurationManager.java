@@ -1281,7 +1281,7 @@ public class AnswerCurationManager {
 			}	
 		}
 		else {
-			// SADL doesn't currently support an equation that doesn't return anything
+			// ANSWER doesn't currently support an equation that doesn't return anything
 			getTextProcessor().getCurrentTextModel().write(System.err);
 			throw new AnswerExtractionException("Equations that do not return a value are not supported.");
 		}
@@ -2855,6 +2855,7 @@ public class AnswerCurationManager {
 			}
 		}
 		else {
+			// additions is empty so there haven't been any other things added in this pass so now add any imports
 			if (getDelayedImportAdditions() != null) {
 				for (String imprt : getDelayedImportAdditions()) {
 					Object dap = getConfigurationManager().getPrivateKeyValuePair(DialogConstants.DIALOG_ANSWER_PROVIDER);
