@@ -1027,13 +1027,13 @@ public class JenaBasedDialogInferenceProcessor extends JenaBasedSadlInferencePro
 						queryStr = RETRIEVE_MODELS.replaceAll("EQNSLIST", listOfEqns);
 						models = queryKnowledgeGraph(queryStr, getTheJenaModel());
 						modelsCSVString = convertResultSetToString(models);
-						System.out.println(modelsCSVString);
+//						System.out.println(modelsCSVString);
 						
 						queryStr = RETRIEVE_NODES.replaceAll("EQNSLIST", listOfEqns);
 						queryStr = queryStr.replaceAll("COMPGRAPH", "<" + cgIns.getURI() + ">");
 						nodes = queryKnowledgeGraph(queryStr, getTheJenaModel().union(queryModel));
 						nodesCSVString = convertResultSetToString(nodes);
-						System.out.println(nodesCSVString);
+//						System.out.println(nodesCSVString);
 			
 	//					if (nodes.size() <= 0) {
 	//						return null;
@@ -1104,7 +1104,7 @@ public class JenaBasedDialogInferenceProcessor extends JenaBasedSadlInferencePro
 							ResultSet assumpCheck = null;
 							assumpCheck = checkModelAssumptions(resource, cgIns.toString(), queryModelURI, queryOwlFileWithPath);
 							if (assumpCheck != null) {
-								System.out.println(assumpCheck.toString());
+//								System.out.println(assumpCheck.toString());
 								
 								StringBuilder sb = new StringBuilder("The CCG " + cgIns.getLocalName() + " has assumptionsSatisfied ");
 								//StringBuilder sb = new StringBuilder("the CCG " + cgIns.getLocalName() + " has assumptionsSatisfied ");
@@ -1126,7 +1126,7 @@ public class JenaBasedDialogInferenceProcessor extends JenaBasedSadlInferencePro
 								sb.append(".");
 								//sadlDeclaration.add(sb.toString());
 								SadlStatementContent ssc = new SadlStatementContent(null, Agent.CM, sb.toString());
-								System.out.println(ssc.toString());
+//								System.out.println(ssc.toString());
 								//acm.notifyUser(getModelFolderPath(resource), ssc, false);
 							}
 							
@@ -1216,7 +1216,7 @@ public class JenaBasedDialogInferenceProcessor extends JenaBasedSadlInferencePro
 										sb.append("\n  ).\n");
 									}
 									SadlStatementContent ssc = new SadlStatementContent(null, Agent.CM, sb.toString());
-									System.out.println(ssc.toString());
+//									System.out.println(ssc.toString());
 									//acm.notifyUser(getModelFolderPath(resource), ssc, false);
 					            }
 							}//assumptions satisfied
@@ -1282,8 +1282,8 @@ public class JenaBasedDialogInferenceProcessor extends JenaBasedSadlInferencePro
 						
 						listOfInputs = strUriList(inpl);
 						listOfOutputs = strUriList(outpl);
-						System.out.println(listOfInputs);
-						System.out.println(listOfOutputs);
+//						System.out.println(listOfInputs);
+//						System.out.println(listOfOutputs);
 	
 						queryStr = BUILD_COMP_GRAPH.replaceAll("LISTOFINPUTS", listOfInputs).replaceAll("LISTOFOUTPUTS", listOfOutputs);
 						com.hp.hpl.jena.query.Query q = QueryFactory.create(queryStr);
@@ -1463,7 +1463,6 @@ public class JenaBasedDialogInferenceProcessor extends JenaBasedSadlInferencePro
 
 
 
-//foo
 private ResultSet retrieveSensitivityResults(Resource resource, Individual cgIns) throws Exception {
 	String query = SENSITIVITYQUERY.replaceAll("COMPGRAPH", "<" + cgIns.getURI() + ">");
 	ResultSet res = runReasonerQuery(resource, query);
@@ -2098,7 +2097,7 @@ private RDFNode getObjectAsLiteralOrResource(Node property, Node object) {
                 keys = jres.entrySet();
                 
                 for (Map.Entry<String, JsonElement> k: keys) {
-                	System.out.println(k.getKey() + "   " + jres.get(k.getKey()).toString());
+//                	System.out.println(k.getKey() + "   " + jres.get(k.getKey()).toString());
                 	JsonObject vpair = jres.getAsJsonObject(k.getKey());
                 	String[] vpr = new String[3];
                 	if (vpair.has("mean")) {
@@ -2190,7 +2189,7 @@ private Map<String, String> getLabelClassMapping(String dbnJson) {
 	      //RDFNode p = soln.get("?DBN") ;
 	      //Resource r = soln.getResource("VarR") ;
 	      //Literal l = soln.getLiteral("VarL") ; 
-	      System.out.println(s.toString()); // + "  " + p.toString() );
+//	      System.out.println(s.toString()); // + "  " + p.toString() );
 	      listOfEqns += "<" + s.toString() +">,";
 	      //listOfEqnObjs.add(s);
 	    }
@@ -2224,7 +2223,7 @@ private Map<String, String> getLabelClassMapping(String dbnJson) {
 			CloseableHttpResponse response = httpclient.execute(httppost);
 	        HttpEntity respEntity = response.getEntity();
 	        String responseTxt = EntityUtils.toString(respEntity, "UTF-8");
-	        System.out.println(responseTxt);
+//	        System.out.println(responseTxt);
 	        httpclient.close();
 	        return responseTxt;
 		} catch (IOException e) {
@@ -2248,7 +2247,7 @@ private Map<String, String> getLabelClassMapping(String dbnJson) {
 	        CloseableHttpResponse response = httpclient.execute(httppost);
 	        HttpEntity respEntity = response.getEntity();
 	        String responseTxt = EntityUtils.toString(respEntity, "UTF-8");
-	        System.out.println(responseTxt);
+//	        System.out.println(responseTxt);
 	        httpclient.close();
 	        return responseTxt;
         } catch (IOException e) {
