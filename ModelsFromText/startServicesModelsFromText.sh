@@ -4,13 +4,6 @@
 #
 
 
-# Before starting these services, ensure Docker container for elastic search is built and running
-# To build and run Docker container for Elasticsearch run the following commands
-# cd ModelsFromText/wikidata-for-elasticsearch
-# docker build --tag=elasticsearch-aske 
-# docker run -it -d elasticsearch-aske
-
-
 DIR="$(pwd)"
 echo $DIR
 
