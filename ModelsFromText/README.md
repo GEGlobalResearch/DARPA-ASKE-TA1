@@ -1,6 +1,11 @@
-## Models From Text ##
+# Models From Text #
 
-**The following installation instructions are for a Linux environment:**
+## Pre-requisites ##
+* Docker
+* Anaconda
+
+## Installation ##
+**The following instructions are for a Linux environment:**
 
 1. Build and run the docker container for searching over Wikidata terms. This docker container will load Wikidata terms from [ModelsFromText/wikidata-for-elasticsearch](https://github.com/GEGlobalResearch/DARPA-ASKE-TA1/blob/development_text_extraction/ModelsFromText/wikidata-for-elasticsearch/all-terms-wikidata.json) into an Elasticsearch instance.
 
