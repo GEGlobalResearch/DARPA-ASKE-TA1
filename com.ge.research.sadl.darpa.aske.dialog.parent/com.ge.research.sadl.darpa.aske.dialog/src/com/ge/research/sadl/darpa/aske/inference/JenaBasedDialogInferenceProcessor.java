@@ -968,7 +968,8 @@ public class JenaBasedDialogInferenceProcessor extends JenaBasedSadlInferencePro
 					String[] modelEqnList = buildEqnsLists(numOfModels, dbnEqns);
 	
 					
-					dbnresults = new ResultSet[numOfModels*2]; 
+					//dbnresults = new ResultSet[numOfModels*2]; 
+					dbnresults = new ResultSet[numOfModels]; 
 					
 					String resmsg = null;
 					
@@ -1099,7 +1100,7 @@ public class JenaBasedDialogInferenceProcessor extends JenaBasedSadlInferencePro
 							
 							AnswerCurationManager acm = (AnswerCurationManager) cmgr.getPrivateKeyValuePair(DialogConstants.ANSWER_CURATION_MANAGER);
 
-							saveMetaDataFile(resource,queryModelFileName); //so we can query the the eqns in the CCG
+							saveMetaDataFile(resource,queryModelURI,queryModelFileName); //so we can query the the eqns in the CCG
 							
 							ResultSet assumpCheck = null;
 							assumpCheck = checkModelAssumptions(resource, cgIns.toString(), queryModelURI, queryOwlFileWithPath);
@@ -1135,10 +1136,11 @@ public class JenaBasedDialogInferenceProcessor extends JenaBasedSadlInferencePro
 							// create ResultSet
 							dbnresults[i] = retrieveCompGraph(resource, cgIns);
 							
-							dbnresults[i+numOfModels] = retrieveValues(resource, cgIns);
+//							dbnresults[i+numOfModels] = retrieveValues(resource, cgIns);
 
 							// convert to SADL to insert into dialog window
-							ResultSet rs = dbnresults[i+numOfModels];
+							//ResultSet rs = dbnresults[i+numOfModels];
+							ResultSet rs = retrieveValues(resource, cgIns);
 							List<String> sadlDeclaration = new ArrayList<String>();
 							if (rs.getRowCount() > 0) {
 								StringBuilder sb = new StringBuilder("The CGExecution with compGraph ");
@@ -1181,7 +1183,7 @@ public class JenaBasedDialogInferenceProcessor extends JenaBasedSadlInferencePro
 					            	System.err.println("Sensitivity computation failed");
 					            }
 
-					            saveMetaDataFile(resource,queryModelFileName); //so we can query the the eqns in the CCG
+					            saveMetaDataFile(resource,queryModelURI,queryModelFileName); //so we can query the the eqns in the CCG
 					            
 					            ResultSet sensres = retrieveSensitivityResults(resource, cgIns);
 					            String outp = "", nxtoutp = "";
@@ -1235,7 +1237,7 @@ public class JenaBasedDialogInferenceProcessor extends JenaBasedSadlInferencePro
 					}
 					
 					if(resmsg != null && resmsg.equals("Success")) {
-						saveMetaDataFile(resource,queryModelFileName); //to include sensitivity results
+						saveMetaDataFile(resource,queryModelURI,queryModelFileName); //to include sensitivity results
 
 						String projectName = new File(getModelFolderPath(resource)).getParentFile().getName(); // ASKE_P2
 						
@@ -1419,7 +1421,7 @@ public class JenaBasedDialogInferenceProcessor extends JenaBasedSadlInferencePro
 				
 				
 				// Save metadata owl file 
-				saveMetaDataFile(resource, queryModelFileName);
+				saveMetaDataFile(resource,queryModelURI, queryModelFileName);
 			
 	//			// create ResultSet
 	//			results[0] = retrieveCompGraph(resource, cgIns);
@@ -1753,6 +1755,8 @@ private RDFNode getObjectAsLiteralOrResource(Node property, Node object) {
 		String prologReasonerClassName = "com.ge.research.sadl.swi_prolog.reasoner.SWIPrologReasonerPlugin";
 		IReasoner reasoner = configMgr.getOtherReasoner(prologReasonerClassName);
 		//String instanceDatafile = "http://aske.ge.com/MetaData.owl";
+
+		//reasoner.initializeReasoner((new File(modelFolder).getParent()), queryOwlFileWithPath, null);
 		reasoner.initializeReasoner((new File(modelFolder).getParent()), instanceDataURI, null);
 		
 //		assertTrue(pr.loadInstanceData(instanceDatafile));
@@ -1865,20 +1869,15 @@ private RDFNode getObjectAsLiteralOrResource(Node property, Node object) {
 	}
 
 
-	private void saveMetaDataFile(Resource resource, String queryModelFileName) {
-		
+	private void saveMetaDataFile(Resource resource, String queryModelURI, String queryModelFileName) {
 		String qhOwlFileWithPath = new File(getModelFolderPath(resource)).getParent() + File.separator + CGMODELS_FOLDER + File.separator + queryModelFileName + ".owl";
-		String queryModelName = "http://aske.ge.com/" + "Model_" + queryModelFileName;
 		
-		File f = new File(qhOwlFileWithPath);
 
 		String qhGlobalPrefix = null;
 		try {
-			getConfigMgr(null).saveOwlFile(queryModel, queryModelName, qhOwlFileWithPath);
+			getConfigMgr(null).saveOwlFile(queryModel, queryModelURI, qhOwlFileWithPath);
 			String fileUrl = (new UtilsForJena()).fileNameToFileUrl(qhOwlFileWithPath);
-			if (!f.exists() && !f.isDirectory()) {
-				getConfigMgr(null).addMapping(fileUrl, queryModelName, qhGlobalPrefix, false, "DialogInference"); //Only if new file
-			}
+			getConfigMgr(null).addMapping(fileUrl, queryModelURI, qhGlobalPrefix, false, "DialogInference"); //Only if new file
 		} catch (Exception e) {
 			//  Auto-generated catch block
 			e.printStackTrace();
