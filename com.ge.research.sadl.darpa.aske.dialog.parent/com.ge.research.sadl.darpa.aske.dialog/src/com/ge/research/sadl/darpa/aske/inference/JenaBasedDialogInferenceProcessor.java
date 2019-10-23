@@ -442,9 +442,9 @@ public class JenaBasedDialogInferenceProcessor extends JenaBasedSadlInferencePro
 			"prefix rdfs:<http://www.w3.org/2000/01/rdf-schema#>\n" + 
 			"prefix list:<http://sadl.org/sadllistmodel#>\n" +
 			"\n" + 
-			"select distinct ?X ?Y ?Z ?X_style ?X_color ?Z_shape ?Z_tooltip\n" + 
+			"select distinct (strafter(str(?CCG),'#') as ?Model) ?X ?Y ?Z ?X_style ?X_color ?Z_shape ?Z_tooltip\n" + 
 			"where {\n" + 
-			"{select (?Input as ?X) (?EQ as ?Y) (?Output as ?Z) ?X_style ?X_color ('box' as ?Z_shape) ?Z_tooltip\n" + 
+			"{select ?CCG (?Input as ?X) (?EQ as ?Y) (?Output as ?Z) ?X_style ?X_color ('box' as ?Z_shape) ?Z_tooltip\n" + 
 			"where {\n" + 
 			"    ?CCG a mm:CCG.\n" + 
 			"    filter (?CCG in (COMPGRAPH)).\n" + 
@@ -491,7 +491,7 @@ public class JenaBasedDialogInferenceProcessor extends JenaBasedSadlInferencePro
 			"    bind('solid' as ?X_style)\n" + 
 			"    bind('black' as ?X_color)\n" + 
 			"}}union\n" + 
-			"{select (?Input as ?X) (?EQ as ?Y) (?Output as ?Z) ?X_style ?X_color ('box' as ?Z_shape) ?Z_tooltip\n" + 
+			"{select ?CCG (?Input as ?X) (?EQ as ?Y) (?Output as ?Z) ?X_style ?X_color ('box' as ?Z_shape) ?Z_tooltip\n" + 
 			"where {\n" + 
 			"    ?CCG a mm:CCG.\n" + 
 			"    filter (?CCG in (COMPGRAPH)).\n" + 
@@ -539,7 +539,7 @@ public class JenaBasedDialogInferenceProcessor extends JenaBasedSadlInferencePro
 			"    bind('yellow' as ?X_color)\n" + 
 			"}}union\n" + 
 //			" {select (?Output as ?X) ?Y (?Value as ?Z) ?X_style ?X_color ('oval' as ?Z_shape) ('output value' as ?Z_tooltip)\n" + 
-			" {select (?Output as ?X) ?Y (concat(concat(strbefore(?Value,'.'),'.'),substr(strafter(?Value,'.'),1,4)) as ?Z) ?X_style ?X_color ('oval' as ?Z_shape) ('output value' as ?Z_tooltip)\n" + 
+			" {select ?CCG (?Output as ?X) ?Y (concat(concat(strbefore(?Value,'.'),'.'),substr(strafter(?Value,'.'),1,4)) as ?Z) ?X_style ?X_color ('oval' as ?Z_shape) ('output value' as ?Z_tooltip)\n" + 
 			"  where {\n" + 
 			"    ?CCG mm:subgraph ?SG.\n" + 
 			"    filter (?CCG in (COMPGRAPH)).\n" + 
@@ -1424,9 +1424,6 @@ public class JenaBasedDialogInferenceProcessor extends JenaBasedSadlInferencePro
 				saveMetaDataFile(resource,queryModelURI, queryModelFileName);
 			
 	//			// create ResultSet
-	//			results[0] = retrieveCompGraph(resource, cgIns);
-	//			
-	//			results[1] = retrieveValues(resource, cgIns);
 				
 				if (results == null || results.length == 0) {
 					results = dbnresults;
@@ -2237,7 +2234,8 @@ private Map<String, String> getLabelClassMapping(String dbnJson) {
 	@SuppressWarnings("deprecation")
 	private String generateDBNjson(String jsonTxt) {
 		DefaultHttpClient httpclient = new DefaultHttpClient();
-		HttpPost httppost = new HttpPost("http://vesuvius063.crd.ge.com:46000/dbn/jsonGenerator");
+//		HttpPost httppost = new HttpPost("http://vesuvius063.crd.ge.com:46000/dbn/jsonGenerator");
+		HttpPost httppost = new HttpPost("http://mazama6.crd.ge.com:46000/dbn/jsonGenerator");
         httppost.setHeader("Accept", "application/json");
         httppost.setHeader("Content-type", "application/json");
         
@@ -2261,7 +2259,8 @@ private Map<String, String> getLabelClassMapping(String dbnJson) {
 	@SuppressWarnings("deprecation")
 	private String kgResultsToJson(String nodesCSVString, String modelsCSVString, String mode, String obsData) throws Exception {
 		DefaultHttpClient httpclient = new DefaultHttpClient();
-		HttpPost httppost = new HttpPost("http://vesuvius063.crd.ge.com:46000/dbn/SADLResultSetToJson");
+//		HttpPost httppost = new HttpPost("http://vesuvius063.crd.ge.com:46000/dbn/SADLResultSetToJson");
+		HttpPost httppost = new HttpPost("http://mazama6.crd.ge.com:46000/dbn/SADLResultSetToJson");
 		httppost.setHeader("Accept", "application/json");
         httppost.setHeader("Content-type", "application/x-www-form-urlencoded");
         

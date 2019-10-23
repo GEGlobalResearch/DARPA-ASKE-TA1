@@ -47,6 +47,7 @@ import java.net.ConnectException;
 import java.net.URISyntaxException;
 import java.net.UnknownHostException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -1960,10 +1961,10 @@ public class AnswerCurationManager {
 		}
 		else if (trgt instanceof Object[] && whn == null) {
 			if (allTripleElements((Object[])trgt)) {
-				Object ctx = null;
+				//Object ctx = null;
 				TripleElement[] triples = flattenTriples((Object[])trgt);
-				ctx = triples[0].getContext();
-				StringBuilder answer = new StringBuilder();
+				//ctx = triples[0].getContext();
+				//StringBuilder answer = new StringBuilder();
 				Object[] rss = insertTriplesAndQuery(resource, triples);
 				String resultStr = null;
 				if (rss != null) {
@@ -2018,12 +2019,14 @@ public class AnswerCurationManager {
 			StringBuilder answer = new StringBuilder();
 			Object[] rss = insertTriplesAndQuery(resource, triples);
 			if (rss != null) {
-       			int numOfModels = 0; //rss.length/2;
-    			for(int i=0; i<rss.length; i++) {
-    				if (rss[i] != null && rss[i] instanceof ResultSet)
-    					numOfModels ++;
-    			}
-    			numOfModels /= 2;
+//       			int numOfModels = 0; //rss.length/2;
+//    			for(int i=0; i<rss.length; i++) {
+//    				if (rss[i] != null && rss[i] instanceof ResultSet)
+//    					numOfModels ++;
+//    			}
+//    			numOfModels /= 2;
+
+//				int numOfModels = rss.length;
 				int cntr = 0;
 				for (Object rs : rss) {
 					if (rs instanceof ResultSet) {
@@ -2035,22 +2038,24 @@ public class AnswerCurationManager {
 //		    					logger.debug("Can't construct graph; not 3 columns. Unexpected result.");
 //		    				}
 //            				this.graphVisualizerHandler.resultSetToGraph(path, resultSet, description, baseFileName, orientation, properties);
-		    				
+            				ResultSet rstemp = ((ResultSet)rs).deleteResultSetColumn("Model");
+
 		    				IGraphVisualizer visualizer = new GraphVizVisualizer();
 		    				if (visualizer != null) {
 		    					String graphsDirectory = new File(getOwlModelsFolder()).getParent() + "/Graphs";
 		    					new File(graphsDirectory).mkdir();
-            					String baseFileName = "QueryMetadata_"+((ResultSet) rss[cntr+numOfModels]).getResultAt(0, 0).toString();
+//            					String baseFileName = "QueryMetadata_"+((ResultSet) rss[cntr+numOfModels]).getResultAt(0, 0).toString();
+            					String baseFileName = "QueryMetadata_" + ((ResultSet)rs).getResultAt(0, 0).toString();
 		    					visualizer.initialize(
 		    		                    graphsDirectory,
 		    		                    baseFileName,
 		    		                    baseFileName,
 		    		                    null,
 		    		                    IGraphVisualizer.Orientation.TD,
-		    		                    "Assembled Model");
-		    					((ResultSet) rs).setShowNamespaces(false);
+		    		                    "Composed Model " + ((ResultSet)rs).getResultAt(0, 0).toString());
+		    					((ResultSet) rstemp).setShowNamespaces(false);
 		    					try {
-		    						visualizer.graphResultSetData((ResultSet) rs);	
+		    						visualizer.graphResultSetData(rstemp);	
 		    					}
 		    					catch (Exception e) {
 		    						e.printStackTrace();
@@ -2063,12 +2068,14 @@ public class AnswerCurationManager {
 		    			}
             			else {
             				// not a graph
-    		    			if(cntr-numOfModels > 0)
+//    		    			if(cntr-numOfModels > 0)
+    		    			if(cntr > 0)
     		    				answer.append(",\n");
     		    			((ResultSet) rs).setShowNamespaces(true);
    		    				answer.append(((ResultSet) rs).toString());
+   		    				cntr++;
             			}
-            			cntr++;
+            			//cntr++;
 					}
 					else {
 //						throw new TranslationException("Expected ResultSet but got " + rs.getClass().getCanonicalName());
@@ -2076,7 +2083,9 @@ public class AnswerCurationManager {
 					}
 					
 				}
-				answer.append(".\n");
+				if (cntr > 0) {
+					answer.append(".\n");
+				}
 			}
 			if (rss != null) {
 				retVal = stringToQuotedeString(answer.toString());
@@ -2084,10 +2093,61 @@ public class AnswerCurationManager {
 			else {
 				retVal = "Failed to evaluate answer";
 			}
-			answerUser(getOwlModelsFolder(), retVal, true, sc.getHostEObject());
+			if (!retVal.equals(stringToQuotedeString(""))) {
+				answerUser(getOwlModelsFolder(), retVal, true, sc.getHostEObject());
+			}
 		}
 		return retVal;
 	}
+
+//private ResultSet deleteResultSetColumn(ResultSet rs, String columnName) {
+//		// TODO Auto-generated method stub
+//		Object[][] table = rs.getData();
+//		Object[][] newTable = new Object[table.length][];
+//		ResultSet res;
+//		
+//		int rowLength = rs.getColumnCount();
+//		int colPosition = getColumnPosition(rs, columnName);
+//		if (colPosition < 0) {//the column is not in the resultset
+//			res = rs;
+//		}
+//		else {
+//			for (int i=0; i<table.length; i++) {
+//				int j=0;
+//				Object[] row = new Object[rowLength-1]; //java.util.Arrays.copyOfRange(table[i], 1, table[i].length);
+//				for(; j<colPosition; j++) {
+//					row[j] = table[i][j];
+//				}
+//				for( ; j<rowLength-1; j++) {
+//					row[j] = table[i][j+1];
+//				}
+//				newTable[i] = row.clone();
+//			}
+//			String[] colNames = rs.getColumnNames();
+//			String[] newColNames = new String[rowLength-1];
+//			int i=0;
+//			for(; i<colPosition; i++) {
+//					newColNames[i] = colNames[i];
+//			}
+//			for(; i<rowLength-1; i++) {
+//				newColNames[i] = colNames[i+1];
+//		}
+//			res = new ResultSet(newColNames, newTable);
+//	}
+//		return res;
+//}
+//
+//private int getColumnPosition(ResultSet rs, String columnName) {
+//	String[] cnames = rs.getColumnNames();
+//	int pos=-1;
+//	for(int i=0; i<cnames.length; i++) {
+//		if(cnames[i].equals(columnName)) {
+//			pos = i;
+//			break;
+//		}
+//	}
+//	return pos;
+//}
 
 /**
  * 	invoke DialogAnswerProvider method displayGraph
