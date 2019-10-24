@@ -1,0 +1,115 @@
+swagger: "2.0"
+
+host: "vesuvius-dev.crd.ge.com:19092"
+
+info:
+  title: "Java to Python translation REST endpoints"
+  version: "1.0"
+
+basePath: /darpa/aske
+
+paths:
+#  /items/:
+#    get:
+#      operationId: translate.hello
+#      responses:
+#        '200':
+#          description: 'Fetch a list of items'
+#          schema:
+#            type: array
+#            items:
+#              $ref: '#/definitions/Item'
+
+  /translate/file/:
+    post:
+      operationId: "translate-new.translateFile"
+      summary: "Translates an input file"
+      description: ""
+      consumes:
+      - "multipart/form-data"
+      produces:
+      - "application/json"
+      parameters:
+      - name: "javaFile"
+        in: "formData"
+        required: true
+        type: "file"
+      responses:
+        '200':
+          description: 'Translate input Java file to Python'
+          schema:
+            $ref: '#/definitions/Result'
+
+  /translate/method/:
+    post:
+      operationId: "translate-new.translateMethod"
+      summary: "Translates an input java method"
+      description: ""
+      consumes:
+##      - "application/x-www-form-urlencoded"
+      - "application/json"
+      produces:
+      - "application/json"
+      parameters:
+      - in: "body"
+        name: "javaMethod"
+        required: true
+        schema:
+          $ref: "#/definitions/Method"
+      responses:
+        '200':
+          description: 'Translate input Java method to Python'
+          schema:
+            $ref: '#/definitions/Result'
+   
+  /translate/expression/:
+    post:
+      operationId: "translate-new.translateExpression"
+      summary: "Translates an input java expression"
+      description: ""
+      consumes:
+      - "application/json"
+      produces:
+      - "application/json"
+      parameters:
+      - name: "javaExpr"
+        in: "body"
+        required: true
+        schema:
+          $ref: '#/definitions/Expression'
+      responses:
+        '200':
+          description: 'Translate input Java expression to Python'
+          schema:
+            $ref: '#/definitions/Result'
+
+definitions:
+  Result:
+    type: object
+    properties:
+      status:
+        type: string
+      code: 
+        type: string
+  Method:
+    type: object
+    properties:
+      methodCode:
+        type: string
+        description: "Body of the Java method to translate"
+      className:
+        type: string
+        description: "Name to class to wrap around the method"
+  Expression:
+    type: object
+    properties:
+      exprCode:
+        type: string
+        description: "The Java expression to translate"
+      methodName:
+        type: string
+        description: "Name to method to wrap around the expression"
+      className:
+        type: string
+        description: "Name to class to wrap around the method"
+
