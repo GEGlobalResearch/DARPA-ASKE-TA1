@@ -1036,11 +1036,6 @@ public class JenaBasedDialogInferenceProcessor extends JenaBasedSadlInferencePro
 						nodesCSVString = convertResultSetToString(nodes);
 //						System.out.println(nodesCSVString);
 			
-	//					if (nodes.size() <= 0) {
-	//						return null;
-	//					}
-			
-						
 						cgJson 		= kgResultsToJson(nodesCSVString, modelsCSVString, queryMode, "");
 						dbnJson 	= generateDBNjson(cgJson);
 						class2lbl 	= getClassLabelMapping(dbnJson);
@@ -1072,14 +1067,29 @@ public class JenaBasedDialogInferenceProcessor extends JenaBasedSadlInferencePro
 //							}
 							
 	
-	
+				            for(RDFNode outType : outputsList) {
+				            	if( class2lbl.containsKey(outType.toString())) {
+				            		
+				        			String rng = outType.as(OntProperty.class).getRange().toString(); //e.g. :Altitude
+				        			
+				        			Individual outpIns = createIndividualOfClass(queryModel, null, null, rng); //e.g. instance of :Altitude
+				        			ingestKGTriple(ce, outputprop, outpIns);
+				        			
+				        			String cls = class2lbl.get(outType.toString());
+				        			String[] ms = lbl2value.get(cls);  //class2lbl.get(o.toString()));
+				        			queryModel.add(outpIns, getTheJenaModel().getProperty(VALUE_PROP), ms[0] );
+				        			queryModel.add(outpIns, getTheJenaModel().getProperty(STDDEV_PROP), ms[1] );
+				        			if(ms[2] != null)
+				        				queryModel.add(outpIns, getTheJenaModel().getProperty(VARERROR_PROP), ms[2] );
+				            	}
+				            }
 				            
 				            //add outputs to CG if calibration
 							//if(queryMode.equals("prognostic")) {
 	
 	//			            //Comment out until switch from Class to Property for outputs
 	//			            for(OntClass oc : outputsList) {
-	//							if (!dbnOutput.values().contains(oc)) {//if no DBN has this output, ie it's an model input 
+	//							if (!dbnOutput.values().contains(oc)) {//if no DBN has this output, ie it's a model input 
 	//								String ocls = oc.toString();
 	//								String cls = class2lbl.get(ocls);
 	//								String[] ms = lbl2value.get(cls);  
@@ -1448,12 +1458,6 @@ public class JenaBasedDialogInferenceProcessor extends JenaBasedSadlInferencePro
 				e.printStackTrace();
 			}
 
-		//		Object[] results = new Object[outputInstance.keySet().size()];
-		//		for(OntClass oclass : outputInstance.keySet()) {
-		//			results[0] = outputInstance.get(oclass);
-		//	
-		//		}
-				
 		}
 		return null;
 	}
@@ -1469,7 +1473,6 @@ private ResultSet retrieveSensitivityResults(Resource resource, Individual cgIns
 	}
 
 private ResultSet checkModelAssumptions(Resource resource, String model, String instanceDataURI, String queryOwlFileWithPath) throws Exception {
-		// TODO Auto-generated method stub
 		//String query = "select Eq Var Oper Val VP where assumption(Eq,Var,Oper,Val,VP).";
 		String query = "select Res Trace where model_satisfies_assumptions('" + model + "', Res, Trace)";
 		ResultSet result = runPrologQuery(resource, query, instanceDataURI, queryOwlFileWithPath);
@@ -1477,7 +1480,6 @@ private ResultSet checkModelAssumptions(Resource resource, String model, String 
 	}
 
 private TripleElement[] createUQtriplesArray(TripleElement valueTriple, TripleElement[] triples) {
-		// TODO Auto-generated method stub
 		TripleElement[] quantity = new TripleElement[4];
 		Node varNode = valueTriple.getSubject();
 		quantity[1] = valueTriple;  // (v1 :value 30000)
@@ -1528,7 +1530,6 @@ private RDFNode getObjectAsLiteralOrResource(Node property, Node object) {
 //	}
 //
 //private TripleElement getInputTypeTriple(Node varNode, TripleElement[] triples) {
-//		// TODO Auto-generated method stub
 //		for(int i=0; i<triples.length; i++) {
 //			if(triples[i].getObject() != null && triples[i].getObject().equals(varNode)) { // && !triples[i].getPredicate().getName().contains("value")) {
 //				return triples[i];
@@ -1537,7 +1538,6 @@ private RDFNode getObjectAsLiteralOrResource(Node property, Node object) {
 //		return null;
 //	}
 
-//TODO
 	private com.hp.hpl.jena.query.ResultSetRewindable retrieveCG(List<RDFNode> inputsList, List<RDFNode> outputsList) {
 		com.hp.hpl.jena.query.ResultSet eqns;
 		com.hp.hpl.jena.query.ResultSet eqnsRes;
@@ -1917,7 +1917,6 @@ private RDFNode getObjectAsLiteralOrResource(Node property, Node object) {
         Set<Entry<String, JsonElement>> sensRes;
         
         String outputlbl, outputType, inputType, v;
-        RDFNode op,ip;
         
         Individual sensIns, inputSens;
 
@@ -1971,10 +1970,7 @@ private RDFNode getObjectAsLiteralOrResource(Node property, Node object) {
 
 
 
-//	private void createCGsubgraphs(Individual cgIns, ResultSetRewindable eqnsResults, 
-//			Map<String, String> class2lbl,
-//			Map<String, String[]> lbl2value, 
-//			Map<OntClass, Individual> outputInstance) {
+
 		private void createCGsubgraphs(Individual cgIns, Map<RDFNode, String[]> dbnEqns, Map<RDFNode, RDFNode> dbnOutput,
 				String listOfEqns, Map<String, String> class2lbl, Map<String, String[]> lbl2value, String prefix) //, Map<OntClass, Individual> outputInstance)
 		{
@@ -1987,28 +1983,12 @@ private RDFNode getObjectAsLiteralOrResource(Node property, Node object) {
 		Individual sgIns, dbnIns, outpIns;
 		String rng;
 		
-		//need to do before querying for Nodes
-//		qhmodel.add(ce, getTheJenaModel().getOntProperty(METAMODEL_COMPGRAPH_PROP), cgIns);
-
-		//String cgInsStr = cgIns.getURI();
-		//System.out.println("***CG instance: " + cgInsStr);
-		
-		//for (RDFNode eq : listOfEqnObjs) {
 		for( RDFNode dbn : dbnEqns.keySet() ) {
-//			RDFNode s = soln.get("?Eq") ; 
-//			RDFNode p = soln.get("?DBN") ;
-//			RDFNode o = soln.get("?Out") ;
 			sgIns = createIndividualOfClass(queryModel,null, null, METAMODEL_SUBGRAPH);
-			   //getTheJenaModel().add(sgIns, RDF.type, getTheJenaModel().getOntClass(METAMODEL_SUBGRAPH));
-			//qhmodel.add(cgIns, subgraphprop, sgIns);
 			ingestKGTriple(cgIns, subgraphprop, sgIns);
 			dbnIns = createIndividualOfClass(queryModel,null, null, dbn.toString());
-			   //getTheJenaModel().add(dbnIns, RDF.type, getTheJenaModel().getOntClass(dbn.toString()));
-
-			//getTheJenaModel().add(sgIns, cgraphprop, dbnIns);
-			//qhmodel.add(sgIns, cgraphprop, dbnIns);
 			ingestKGTriple(sgIns, cgraphprop, dbnIns);
-			//getTheJenaModel().add(dbnIns, hasEqnProp, s); //the equation is already an instance
+
 			String[] modelEqns = listOfEqns.split(",");
 			String[] deqs = dbnEqns.get(dbn);
 			String eqn=null;
@@ -2024,37 +2004,17 @@ private RDFNode getObjectAsLiteralOrResource(Node property, Node object) {
 				if (eqn != null)
 					break;
 			}
-			RDFNode e = queryModel.getResource(eqn);  //getIndividual(eqn);
-			//qhmodel.add(dbnIns, hasEqnProp, e);
+			RDFNode e = queryModel.getResource(eqn); 
 			ingestKGTriple(dbnIns, hasEqnProp, e);
-			//RDFNode o = dbnOutput.get(dbn);
-			//if (outputInstance.containsKey(o)) {
-			//	outpIns = outputInstance.get(o);
-			//	//qhmodel.add(sgIns, outputprop, outputInstance.get(o));
-			//}
-			//else {
-			
-			//***CONTINUE HERE
 			
 			RDFNode otype = dbnOutput.get(dbn); //this is a property now 
-			//TODO
 
-			RDFNode otypeProp = getTheJenaModel().getProperty(dbnOutput.get(dbn).toString()); //e.g. :altutude
+			RDFNode otypeProp = getTheJenaModel().getProperty(dbnOutput.get(dbn).toString()); //e.g. :altitude
 			
 			rng = otypeProp.as(OntProperty.class).getRange().toString(); //e.g. :Altitude
 			
-			//rng = otype.as(OntProperty.class).getRange().toString();
-
 			outpIns = createIndividualOfClass(queryModel, null, null, rng); //e.g. instance of :Altitude
-			   //getTheJenaModel().add(outpIns, RDF.type, ostr);
-//				getTheJenaModel().add(sgIns, outputprop, outpIns);
-//				qhmodel.add(sgIns, outputprop, outpIns);
-			//}
-			//getTheJenaModel().add(sgIns, outputprop, outpIns);
-			//qhmodel.add(sgIns, outputprop, outpIns);
 			ingestKGTriple(sgIns, outputprop, outpIns);
-			
-			//String ocls = dbnOutput.get(dbn).toString();
 			
 			String cls = class2lbl.get(otype.toString());
 			String[] ms = lbl2value.get(cls);  //class2lbl.get(o.toString()));
@@ -2063,11 +2023,6 @@ private RDFNode getObjectAsLiteralOrResource(Node property, Node object) {
 			if(ms[2] != null)
 				queryModel.add(outpIns, getTheJenaModel().getProperty(VARERROR_PROP), ms[2] );
 			
-			//Add to JenaModel too?
-			
-			//TODO: add (obj prop uq) triple using mapPropertiesToOutputObj
-			//oobj = mapPropertiesToOutputObj.get(otypeProp.toString());
-			// ingestKGTriple( qhmodel.getResource(oobj),  otypeProp, outpIns);
 		}
 	}
 
@@ -2112,10 +2067,8 @@ private RDFNode getObjectAsLiteralOrResource(Node property, Node object) {
         return lbl2value;
 	}
 
-//foo
 
 private Map<String, String> getLabelClassMapping(String dbnJson) {
-	// TODO Auto-generated method stub
     JsonParser parser = new JsonParser();
     JsonElement jsonTree = parser.parse(dbnJson);
     Map<String,String> lbl2class = new HashMap<String, String>();
@@ -2174,28 +2127,28 @@ private Map<String, String> getLabelClassMapping(String dbnJson) {
 	}
 
 
-	private String getEqnUrisFromResults(ResultSetRewindable eqnsResults) {
-		QuerySolution soln;
-		String listOfEqns = "";
-		eqnsResults.reset();
-		for ( ; eqnsResults.hasNext() ; )
-	    {
-	      soln = eqnsResults.nextSolution() ;
-	      RDFNode s = soln.get("?Eqns") ; 
-	      //RDFNode p = soln.get("?DBN") ;
-	      //Resource r = soln.getResource("VarR") ;
-	      //Literal l = soln.getLiteral("VarL") ; 
-//	      System.out.println(s.toString()); // + "  " + p.toString() );
-	      listOfEqns += "<" + s.toString() +">,";
-	      //listOfEqnObjs.add(s);
-	    }
-		if(listOfEqns.length() <= 0)
-			return "";
-		else {
-			listOfEqns = listOfEqns.substring(0,listOfEqns.length()-1);
-			return listOfEqns;
-		}
-	}
+//	private String getEqnUrisFromResults(ResultSetRewindable eqnsResults) {
+//		QuerySolution soln;
+//		String listOfEqns = "";
+//		eqnsResults.reset();
+//		for ( ; eqnsResults.hasNext() ; )
+//	    {
+//	      soln = eqnsResults.nextSolution() ;
+//	      RDFNode s = soln.get("?Eqns") ; 
+//	      //RDFNode p = soln.get("?DBN") ;
+//	      //Resource r = soln.getResource("VarR") ;
+//	      //Literal l = soln.getLiteral("VarL") ; 
+////	      System.out.println(s.toString()); // + "  " + p.toString() );
+//	      listOfEqns += "<" + s.toString() +">,";
+//	      //listOfEqnObjs.add(s);
+//	    }
+//		if(listOfEqns.length() <= 0)
+//			return "";
+//		else {
+//			listOfEqns = listOfEqns.substring(0,listOfEqns.length()-1);
+//			return listOfEqns;
+//		}
+//	}
 
 
 	@SuppressWarnings("deprecation")
@@ -2340,11 +2293,9 @@ private Map<String, String> getLabelClassMapping(String dbnJson) {
 					dataContent += line + "\n"; 
 				}
 			} catch (IOException e) {
-				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
 		} catch (FileNotFoundException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
         } finally {
             if (br != null) {
