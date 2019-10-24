@@ -1950,7 +1950,7 @@ public class AnswerCurationManager {
 		if (trgt instanceof NamedNode && whn == null) {
 			String answer;
 			try {
-				answer = whatIsNamedNode(resource, theModel, getOwlModelsFolder(), (NamedNode)trgt);
+				answer = whatIsNamedNode(resource, theModel, modelName, getOwlModelsFolder(), (NamedNode)trgt);
 			}
 			catch (Exception e) {
 				answer = e.getMessage();
@@ -2198,7 +2198,7 @@ public class AnswerCurationManager {
 		return "Unable to find method to display graph";
 	}
 
-	private String whatIsNamedNode(org.eclipse.emf.ecore.resource.Resource resource, OntModel theModel, String modelFolder, NamedNode lastcmd) throws ConfigurationException, ExecutionException, TranslationException, InvalidNameException, ReasonerNotFoundException, QueryParseException, QueryCancelledException {
+	private String whatIsNamedNode(org.eclipse.emf.ecore.resource.Resource resource, OntModel theModel, String modelName, String modelFolder,  NamedNode lastcmd) throws ConfigurationException, ExecutionException, TranslationException, InvalidNameException, ReasonerNotFoundException, QueryParseException, QueryCancelledException, OwlImportException {
 		// what is NamedNode?
 		NamedNode nn = (NamedNode) lastcmd;
 		NodeType typ = nn.getNodeType();
@@ -2211,7 +2211,7 @@ public class AnswerCurationManager {
 //			if (answer.length() == len) {
 //				answer.append(" is a class");
 //			}
-			answer.append(getOwlToSadl(theModel).classToSadl(nn.getURI()));
+			answer.append(getOwlToSadl(theModel, modelName).classToSadl(nn.getURI()));
 //			isFirstProperty = addDomainAndRange(resource, nn, isFirstProperty, answer);
 //			addQualifiedCardinalityRestriction(resource, nn, isFirstProperty, answer);		
 			Object ctx = ((NamedNode)lastcmd).getContext();
@@ -2249,6 +2249,11 @@ public class AnswerCurationManager {
 			logger.debug(answer.toString());
 			return answer.toString();
 		}
+	}
+
+	private OwlToSadl getOwlToSadl(OntModel theModel, String modelName) {
+		// TODO Auto-generated method stub
+		return null;
 	}
 
 	private OwlToSadl getOwlToSadl(OntModel model) {

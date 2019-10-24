@@ -41,24 +41,48 @@ import requests
 
 
 def text_to_python(string_expression):
-    equation_parameters = {}
+    text_equation_parameters = {}
+    code_equation_parameters = {}
+
     URL = "http://localhost:5002/convertTextToCode"
     body = {"equation": string_expression}
     PARAMS = json.dumps(body)
     headers = {'content-type': 'application/json; charset=UTF-8'}
     r = requests.get(url=URL, data=PARAMS, headers=headers)
 
-    results = r.json()
+    results = None
 
-    if "inputVars" in results:
-        equation_parameters["inputVars"] = results["inputVars"]
-    if "returnVar" in results:
-        equation_parameters["returnVar"] = results["returnVar"]
-    elif "modifiedLHS" in results:
-        returnVar = []
-        returnVar.append(results["modifiedLHS"])
-        equation_parameters["returnVar"] = returnVar
-    if "codeEquation" in results:
-        equation_parameters["codeEquation"] = results["codeEquation"]
+    try:
+        results = r.json()
+        print("\n")
+        print(results)
+    except json.decoder.JSONDecodeError:
+        print("\n")
+        print(string_expression)
+        print("\n")
 
-    return equation_parameters
+    if "text" in results:
+        text = results["text"]
+        if "inputVars" in text:
+            text_equation_parameters["inputVars"] = text["inputVars"]
+        if "outputVars" in text:
+            text_equation_parameters["outputVars"] = text["outputVars"]
+
+    if "code" in results:
+        code = results["code"]
+        if "pyCode" in code:
+            code_equation_parameters["pyCode"] = code["pyCode"]
+        if "tfCode" in code:
+            code_equation_parameters["tfCode"] = code["tfCode"]
+        if "inputVars" in code:
+            code_equation_parameters["inputVars"] = code["inputVars"]
+        if "outputVars" in code:
+            return_vars = [code["outputVars"]]
+            code_equation_parameters["outputVars"] = return_vars
+
+    # if "codeEquation" in results:
+    #   equation_parameters["codeEquation"] = results["codeEquation"]
+
+    equation_results = {"text": text_equation_parameters, "code": code_equation_parameters}
+
+    return equation_results

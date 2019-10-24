@@ -143,6 +143,7 @@ public class DialogRootPreferencePage extends LanguageRootPreferencePage {
 		Composite computationalGraphSettings = createSettingsGroup(generalSettings, SWT.NONE, "Computational Graph Settings");
 		addField(new BooleanFieldEditorExt(DialogPreferences.USE_DBN_CG_SERVICE.getId(), "Use DBN", computationalGraphSettings));		
 		addField(new StringFieldEditorExt(DialogPreferences.ANSWER_DBN_CG_SERVICE_BASE_URI.getId(), "DBN Service Host and Port:", computationalGraphSettings));
+		addField(new StringFieldEditorExt(DialogPreferences.DBN_INPUT_JSON_GENERATION_SERVICE_BASE_URI.getId(), "DBN Json Generation Service Host and Port:", computationalGraphSettings));
 		addField(new BooleanFieldEditorExt(DialogPreferences.USE_ANSWER_KCHAIN_CG_SERVICE.getId(), "Use K-CHAIN", computationalGraphSettings));		
 		addField(new StringFieldEditorExt(DialogPreferences.ANSWER_KCHAIN_CG_SERVICE_BASE_URI.getId(), "K-CHAIN Service Host and Port:", computationalGraphSettings));
 //		addField(new StringFieldEditorExt(DialogPreferences.ANSWER_CODE_EXTRACTION_KBASE_ROOT.getId(), "Code Extraction KBase Root:", generalSettings));
@@ -160,6 +161,10 @@ public class DialogRootPreferencePage extends LanguageRootPreferencePage {
 		//General Settings
 		store.setDefault(DialogPreferences.ANSWER_TEXT_SERVICE_BASE_URI.getId(), DialogPreferences.ANSWER_TEXT_SERVICE_BASE_URI.getDefaultValue());
 		store.setDefault(DialogPreferences.ANSWER_KCHAIN_CG_SERVICE_BASE_URI.getId(), DialogPreferences.ANSWER_KCHAIN_CG_SERVICE_BASE_URI.getDefaultValue());
+		store.setDefault(DialogPreferences.USE_ANSWER_KCHAIN_CG_SERVICE.getId(), DialogPreferences.USE_ANSWER_KCHAIN_CG_SERVICE.getDefaultValue());
+		store.setDefault(DialogPreferences.ANSWER_DBN_CG_SERVICE_BASE_URI.getId(), DialogPreferences.ANSWER_DBN_CG_SERVICE_BASE_URI.getDefaultValue());
+		store.setDefault(DialogPreferences.DBN_INPUT_JSON_GENERATION_SERVICE_BASE_URI.getId(), DialogPreferences.DBN_INPUT_JSON_GENERATION_SERVICE_BASE_URI.getDefaultValue());
+		store.setDefault(DialogPreferences.USE_DBN_CG_SERVICE.getId(), DialogPreferences.USE_DBN_CG_SERVICE.getDefaultValue());
 		store.setDefault(DialogPreferences.ANSWER_JAVA_TO_PYTHON_SERVICE_BASE_URI.getId(), DialogPreferences.ANSWER_JAVA_TO_PYTHON_SERVICE_BASE_URI.getDefaultValue());
 		store.setDefault(DialogPreferences.ANSWER_CODE_EXTRACTION_KBASE_ROOT.getId(), DialogPreferences.ANSWER_CODE_EXTRACTION_KBASE_ROOT.getDefaultValue());
 		setPreferenceStore(store);

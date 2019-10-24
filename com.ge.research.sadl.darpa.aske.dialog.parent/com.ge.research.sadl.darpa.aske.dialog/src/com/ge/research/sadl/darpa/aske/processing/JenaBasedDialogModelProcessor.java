@@ -154,6 +154,7 @@ public class JenaBasedDialogModelProcessor extends JenaBasedSadlModelProcessor {
 	
 	private String textServiceUrl = null;
 	private String dbnCgServiceUrl = null;
+	private String dbninputjsongenerationserviceurl = null;
 	private boolean useDbn = true;
 	private String kchainCgServiceUrl = null;
 	private boolean useKchain = false;
@@ -1367,6 +1368,10 @@ public class JenaBasedDialogModelProcessor extends JenaBasedSadlModelProcessor {
 		if (dbncgserviceurl != null) {
 			setDbnCgServiceUrl(dbncgserviceurl);
 		}
+		String dbninputjsongenerationserviceurl = context.getPreferenceValues().getPreference(DialogPreferences.DBN_INPUT_JSON_GENERATION_SERVICE_BASE_URI);
+		if (dbninputjsongenerationserviceurl != null) {
+			setDbnInputJsonGenerationServiceUrl(dbninputjsongenerationserviceurl);
+		}
 		String kchaincgserviceurl = context.getPreferenceValues().getPreference(DialogPreferences.ANSWER_KCHAIN_CG_SERVICE_BASE_URI);
 		if (kchaincgserviceurl != null) {
 			setKchainCgServiceUrl(kchaincgserviceurl);
@@ -1393,6 +1398,15 @@ public class JenaBasedDialogModelProcessor extends JenaBasedSadlModelProcessor {
 
 	private void setDbnCgServiceUrl(String cgServiceUrl) {
 		this.dbnCgServiceUrl = cgServiceUrl;
+	}
+
+	private void setDbnInputJsonGenerationServiceUrl(String dbninputjsongenerationserviceurl) {
+		this.dbninputjsongenerationserviceurl = dbninputjsongenerationserviceurl;
+		
+	}
+	
+	public String getDbnInputJsonGenerationServiceUrl() {
+		return dbninputjsongenerationserviceurl;
 	}
 
 	public String getKchainCgServiceUrl() {

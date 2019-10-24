@@ -1322,6 +1322,10 @@ public class JavaImportOperation extends WorkspaceModifyOperation {
 			if (dbncgsburl != null) {
 				map.put(DialogPreferences.ANSWER_DBN_CG_SERVICE_BASE_URI.getId(), dbncgsburl);
 			}
+			String dbnjsongensburl = preferenceValues.getPreference(DialogPreferences.DBN_INPUT_JSON_GENERATION_SERVICE_BASE_URI);
+			if (dbnjsongensburl != null) {
+				map.put(DialogPreferences.DBN_INPUT_JSON_GENERATION_SERVICE_BASE_URI.getId(), dbnjsongensburl);
+			}
 			String usedbn = preferenceValues.getPreference(DialogPreferences.USE_DBN_CG_SERVICE);
 			if (usedbn != null) {
 				map.put(DialogPreferences.USE_DBN_CG_SERVICE.getId(), usedbn);
