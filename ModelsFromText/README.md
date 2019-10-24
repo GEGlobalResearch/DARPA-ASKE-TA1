@@ -29,12 +29,14 @@ docker run -it -d elasticsearch-aske
 
 7. Run `./startServicesModelsFromText.sh` to start all the relevant text extraction services.
 
-8. The services will be running if you are able to access its [API documentation](http://localhost:4200/darpa/aske/ui/)
+## Validation and Example Usage ##
 
-9. Log files for the services can be found under `logs/`.
+1. The services will be running if you are able to access its [API documentation](http://localhost:4200/darpa/aske/ui/)
 
-10. Start a jupyter notebook `jupyter notebook`.
+2. Log files for the services can be found under `logs/`.
 
-11. Example usage for text-extraction APIs and overview in each service can be found in the following notebook `api-example-code/text_to_triples_client.ipynb` 
+3. Start a jupyter notebook `jupyter notebook`.
 
-(Tip: If you are behind a firewall, make sure your proxies are set correctly)
+4. Example usage for text-extraction APIs and overview in each service can be found in the following notebook `api-example-code/text_to_triples_client.ipynb` 
+
+(Tip: If you are behind a firewall, make sure your proxies are set correctly. Running into problems? Open an [issue](https://github.com/GEGlobalResearch/DARPA-ASKE-TA1/issues))
