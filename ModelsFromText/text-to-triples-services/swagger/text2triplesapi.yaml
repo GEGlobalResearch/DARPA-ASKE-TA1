@@ -20,16 +20,16 @@ schemes:
 - "https"
 - "http"
 paths:
-  /text2triples:
+  /text2triplesWebDemo:
     post:
       tags:
-      - "text2triples"
-      operationId: "app_text_to_triples.text_to_triples"
+      - "demo-services"
+      operationId: "app_text_to_triples.text_to_triples_backward_compatible"
       consumes:
       - application/json
-      produces: 
+      produces:
       - application/json
-      parameters: 
+      parameters:
       - in: "body"
         name: "body"
         required: true
@@ -42,6 +42,28 @@ paths:
             type: "array"
             items:
               $ref: "#/definitions/Triples"
+        405:
+          description: "Invalid input"
+  /text2triples:
+    post:
+      tags:
+      - "text2triples"
+      operationId: "app_text_to_triples.text_to_triples"
+      consumes:
+      - application/json
+      produces:
+      - application/json
+      parameters:
+      - in: "body"
+        name: "body"
+        required: true
+        schema:
+          $ref: "#/definitions/Text"
+      responses:
+        200:
+          description: "successful operation"
+          schema:
+              $ref: "#/definitions/ProcessText"
         405:
           description: "Invalid input"
   /equationVariableContext:
@@ -65,9 +87,10 @@ paths:
         200:
           description: OK
           schema:
-            type: "array"
-            items:
-              $ref: '#/definitions/EquationContextInfo'
+            $ref: '#/definitions/VarSearchResults'
+            #type: "array"
+            #items:
+            #  $ref: '#/definitions/EquationContextInfo'
   /processExampleDoc:
     post:
       tags:
@@ -75,11 +98,11 @@ paths:
       summary: ""
       description: ""
       operationId: "app_text_to_triples.process_example_doc"
-      consumes: 
+      consumes:
       - application/json
-      produces: 
+      produces:
       - application/json
-      parameters: 
+      parameters:
       - in: "body"
         name: "body"
         required: true
@@ -92,18 +115,82 @@ paths:
             type: "array"
             items:
               $ref: "#/definitions/Triples"
-    
-    
+  /unitextraction:
+    post:
+      tags:
+      - "text2triples"
+      summary: ""
+      description: ""
+      operationId: "app_text_to_triples.get_units_info"
+      consumes:
+      - application/json
+      produces:
+      - application/json
+      parameters:
+      - in: "body"
+        name: "body"
+        required: true
+        schema:
+          $ref: '#/definitions/Text'
+      responses:
+        200:
+          description: OK
+          schema:
+            type: "array"
+            items:
+              $ref: "#/definitions/Units"
+  /saveGraph:
+    post:
+      tags:
+      - "text2triples"
+      operationId: "app_text_to_triples.save_graph"
+      consumes:
+      - application/json
+      produces:
+      - application/json
+      parameters:
+      - in: "body"
+        name: "body"
+        required: true
+        schema:
+          $ref: '#/definitions/Graph'
+      responses:
+        200:
+          description: OK
+          schema:
+            $ref: "#/definitions/SaveGraph"
+  /clearGraph:
+    post:
+      tags:
+      - "text2triples"
+      operationId: "app_text_to_triples.clear_graph"
+      consumes:
+      - application/json
+      produces:
+      - application/json
+      parameters:
+      - in: "body"
+        name: "body"
+        required: true
+        schema:
+          $ref: '#/definitions/Graph'
+      responses:
+        200:
+          description: OK
+          schema:
+            $ref: "#/definitions/ClearGraph"
+
+
 definitions:
   Text:
     type: "object"
-    required: 
+    required:
     - "text"
-    - "locality"
+    - "localityURI"
     properties:
       text:
         type: "string"
-      locality:
+      localityURI:
         type: "string"
     xml:
       name: "Text"
@@ -136,10 +223,10 @@ definitions:
         type: "array"
         items:
           $ref: '#/definitions/Concept'
-  
+
   Concept:
     type: "object"
-    required: 
+    required:
     - "string"
     - "start"
     - "end"
@@ -190,6 +277,59 @@ definitions:
     properties:
       docId:
         type: "string"
+  VarSearchResults:
+    type: "object"
+    properties:
+      message:
+        type: "string"
+      results:
+        type: "array"
+        items:
+          $ref: '#/definitions/EquationContextInfo'
+  Units:
+    type: "object"
+    properties:
+      unitText:
+        type: "string"
+      unitName:
+        type: "string"
+      unitURI:
+        type: "string"
+      relatedConceptName:
+        type: "string"
+      relatedConceptURI:
+        type: "string"
+      start:
+        type: "integer"
+      end:
+        type: "integer"
+  ProcessText:
+    type: "object"
+    properties:
+      message:
+        type: "string"
+
+  Graph:
+    type: "object"
+    properties:
+      localityURI:
+        type: "string"
+
+  SaveGraph:
+    type: "object"
+    properties:
+      triples:
+        type: "string"
+      serializationFormat:
+        type: "string"
+
+  ClearGraph:
+    type: "object"
+    properties:
+      message:
+        type: "string"
+
+
 externalDocs:
   description: "Find out more about the ANSWER system"
   url: "https://github.com/GEGlobalResearch/DARPA-ASKE-TA1/wiki"
