@@ -9,7 +9,7 @@ echo $DIR
 
 echo "=== Downloading models from https://github.com/GEGlobalResearch/DARPA-ASKE-TA1/releases/download/TA-2019-10-22-Text-Extraction-Model/resources.zip ==="
 
-wget https://github.com/GEGlobalResearch/DARPA-ASKE-TA1/releases/download/TA-2019-10-22-Text-Extraction-Model/resources.zip
+wget https://github.com/GEGlobalResearch/DARPA-ASKE-TA1/releases/download/TA1-2019-04-12/resources.zip
 
 echo "=== Unzipping ... ==="
 
