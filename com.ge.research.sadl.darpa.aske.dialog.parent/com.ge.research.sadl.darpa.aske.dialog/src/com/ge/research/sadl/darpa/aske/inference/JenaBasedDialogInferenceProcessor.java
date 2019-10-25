@@ -564,11 +564,8 @@ public class JenaBasedDialogInferenceProcessor extends JenaBasedSadlInferencePro
 			"    ?Oinst imp:value ?Mean.\n" + 
 			"    ?Oinst imp:stddev ?StdDev.\n" +
 			"  } union {\n" +
-//			"   ?CCG mm:subgraph ?SG. \n" + 
 			"   filter (?CCG in (COMPGRAPH)).\n" +
-//			"   ?Q mm:execution ?CE.\n" + 
 			"   ?CE mm:compGraph ?CCG.\n" + 
-//			"   ?Q mm:output ?Vinst.\n" + 
 			"   ?CE mm:output ?Vinst.\n" + 
 			"   ?Vinst a ?Var.\n" + 
 			"   ?Vinst imp:value ?Mean.\n" +
