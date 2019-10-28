@@ -1233,7 +1233,8 @@ public class JenaBasedDialogInferenceProcessor extends JenaBasedSadlInferencePro
 							}//assumptions satisfied
 				            
 							
-							
+							saveMetaDataFile(resource,queryModelURI,queryModelFileName); //so we can query the the eqns in the CCG
+
 			            }
 			            else {
 			            	dbnresults = null;
