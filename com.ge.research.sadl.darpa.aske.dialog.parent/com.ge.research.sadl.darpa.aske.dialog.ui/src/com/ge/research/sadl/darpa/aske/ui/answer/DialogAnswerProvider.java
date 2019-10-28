@@ -359,8 +359,7 @@ public class DialogAnswerProvider extends BaseDialogAnswerProvider {
 	}
 
 	@Override
-	public boolean addImport(String importStatement) {
-		LOGGER.debug(importStatement);
+	public boolean addImports(List<String> importStatements) {
 //		System.err.println("addImport: " + importStatement);
 		Resource rsrc = getResource();
 		EObject precedingObj = null;
@@ -370,8 +369,8 @@ public class DialogAnswerProvider extends BaseDialogAnswerProvider {
 				SadlImport lastImport = null;
 				EList<SadlImport> importlst = model.getImports();
 				for (SadlImport imprt : importlst) {
-					if (imprt.toString().equals(importStatement)) {
-						return false;
+					if (importStatements.contains(imprt.toString())) {	
+						importStatements.remove(importStatements.indexOf(imprt.toString()));
 					}
 					lastImport = imprt;
 				}
@@ -384,9 +383,18 @@ public class DialogAnswerProvider extends BaseDialogAnswerProvider {
 				precedingObj = model;
 			}
 			if (precedingObj != null) {
+				StringBuilder sb = new StringBuilder();
+				for (int i = 0; i < importStatements.size(); i++) {
+					String importStatement = importStatements.get(i);
+					LOGGER.debug(importStatement);
+					if (i > 0) {
+						sb.append("\n");
+					}
+					sb.append(importStatement);
+				}
 				String precedingObjText = NodeModelUtils.getTokenText(NodeModelUtils.getNode(precedingObj));
 				try {
-					return addCurationManagerContentToDialog(document, null, importStatement, precedingObj, false, false, false, false);
+					return addCurationManagerContentToDialog(document, null, sb.toString(), precedingObj, false, false, false, false);
 				} catch (BadLocationException e) {
 					// TODO Auto-generated catch block
 					e.printStackTrace();

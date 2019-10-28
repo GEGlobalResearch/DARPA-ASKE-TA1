@@ -2865,11 +2865,9 @@ public class AnswerCurationManager {
 		else {
 			// additions is empty so there haven't been any other things added in this pass so now add any imports
 			if (getDelayedImportAdditions() != null) {
-				for (String imprt : getDelayedImportAdditions()) {
-					Object dap = getConfigurationManager().getPrivateKeyValuePair(DialogConstants.DIALOG_ANSWER_PROVIDER);
-					if (dap instanceof IDialogAnswerProvider) {
-						((IDialogAnswerProvider)dap).addImport(imprt);
-					}	
+				Object dap = getConfigurationManager().getPrivateKeyValuePair(DialogConstants.DIALOG_ANSWER_PROVIDER);
+				if (dap instanceof IDialogAnswerProvider) {
+					((IDialogAnswerProvider)dap).addImports(getDelayedImportAdditions());
 				}
 				getDelayedImportAdditions().clear();
 			}

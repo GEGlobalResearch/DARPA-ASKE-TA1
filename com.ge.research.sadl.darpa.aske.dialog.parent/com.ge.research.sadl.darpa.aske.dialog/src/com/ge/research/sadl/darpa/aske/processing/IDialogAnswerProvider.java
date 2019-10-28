@@ -73,11 +73,11 @@ public interface IDialogAnswerProvider {
 	Map<String, String> getPreferences(URI uri);
 	
 	/**
-	 * Method to add an import statement to the Dialog model either after the last existing import statement
+	 * Method to add import statements to the Dialog model either after the last existing import statement
 	 * or, if none, after the model "uri" statement.
-	 * @param importStatement
+	 * @param importStatements
 	 * @return true if successful else false if error, e.g., import already exists.
 	 */
-	boolean addImport(String importStatement);
+	boolean addImports(List<String> importStatements);
 
 }
