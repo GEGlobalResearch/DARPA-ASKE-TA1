@@ -2824,7 +2824,7 @@ public class AnswerCurationManager {
 		// ConversationElements are processed in order (must process a save before an evaluate, for example),
 		//	but the actual insertion of new responses into the Dialog occurs in reverse order so that the locations
 		//	are less complicated to determine
-		this.owl2sadl = null;
+		resetForConversationProcessing();
 		DialogContent dc = getConversation();
 		List<ConversationElement> dialogStmts = dc.getStatements();
 		Map<ConversationElement, ConversationElement> additionMap = new HashMap<ConversationElement, ConversationElement>();  // new CE, CE before
@@ -2955,6 +2955,13 @@ public class AnswerCurationManager {
 			// there are no questions, clear qna
 			qna.clear();
 		}
+	}
+
+	/**
+	 * In this method do any cleanup necessary before starting to process the conversation anew
+	 */
+	private void resetForConversationProcessing() {
+		this.owl2sadl = null;
 	}
 
 	private boolean applyAnswerToUnansweredQuestion(StatementContent question, StatementContent sc) {
