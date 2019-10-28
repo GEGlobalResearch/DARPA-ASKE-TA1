@@ -88,7 +88,7 @@ def build(body):
 def append(body):
     #wrapper function to interact with K-CHAIN append function
     
-    ko = kc.kChainModel(debug=False)
+    ko = kc.kChainModel(debug=True)
     
     print(body)
     

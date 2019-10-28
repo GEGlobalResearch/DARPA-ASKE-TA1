@@ -232,13 +232,17 @@ class kChainModel(object):
         for ii in range(1,in_dims):
             inStr = inStr + '\n    ' + inputVar[ii]['name'] + ' = inArg['+str(ii)+']'            
         
+        outStr = outputVar[0]['name']
+        for ii in range(1,len(outputVar)):
+            outStr = outStr + ', ' + outputVar[ii]['name']    
+        
         #4 spaces is ideal for indentation
         #construct the python function around the python snippet
         stringfun = 'import tensorflow as tf'\
         +'\ndef '+mdlName+'(inArg):'\
         +'\n    '+ inStr\
         +'\n    '+ eqMdl\
-        +'\n    return '+ outputVar[0]['name'] + '\n\n'
+        +'\n    return '+ outStr + '\n\n'
         
         print(stringfun)
         
@@ -502,6 +506,8 @@ class kChainModel(object):
             #recollect output and input vars from original graph
             output = list()
             for node in outputVar:
+                print('In eval now: \n')
+                print(nodeDict)
                 output.append(new_graph.get_tensor_by_name(nodeDict[node['name']]['graphRef']))#tf.get_collection("output")[0]    
             
             #setup feed dictionary for task at hand
@@ -630,7 +636,7 @@ class kChainModel(object):
         """
         Writes json with provided values back to file
         """
-        with open('defaultValues.txt', 'w') as outfile:  
+        with open('defaultValues.txt', 'w+') as outfile:  
             json.dump(defValues, outfile, indent=4)
     
     def append(self, mdlName, inputVars, outputVars, subMdlName, eqMdl, dataLoc = None):
@@ -671,6 +677,8 @@ class kChainModel(object):
         else:
             #if no, then:
             metagraphLoc = "../models/" + subMdlName
+            mdlName = subMdlName
+            
             #initialize clean graph as mdl
             mdl = tf.Graph()
             tf.reset_default_graph()
@@ -686,11 +694,7 @@ class kChainModel(object):
         #else get handle of NN model
         
         #call appendSubGraph
-        o = self.appendSubGraph(mdl, pyFunc, eqMdl, inputVars, outputVars, nodeDict, funcList, defaultValues)
-        mdl = o['mdl']  
-        nodeDict = o['nodeDict']
-        funcList = o['funcList']
-        defaultValues = o['defaultValues']
+        mdl, nodeDict, funcList, defaultValues = self.appendSubGraph(mdl, pyFunc, eqMdl, inputVars, outputVars, nodeDict, funcList, defaultValues)
         
         #TODO: Fit to data
         #data is available
@@ -713,7 +717,7 @@ class kChainModel(object):
         sess = tf.Session(graph=mdl)
         
         # Initialize writer to allow visualization of model in TensorBoard
-        writer = tf.summary.FileWriter("log/example/model", sess.graph)
+        writer = tf.summary.FileWriter("log/example/model/"+mdlName, sess.graph, filename_suffix=mdlName)
         
         # Close the writer
         writer.close()
@@ -728,7 +732,7 @@ class kChainModel(object):
         with mdl.as_default():
             invars = []
             outvars = []
-            o = {}
+
             print("Initial Input list")
             print(inputVars)
             print(nodeDict)
@@ -740,9 +744,18 @@ class kChainModel(object):
                     nodeTmp = nodeDict[node['name']]
                     if func.__name__ not in nodeTmp['subModel']:
                         nodeTmp['subModel'].append(func.__name__)
+                    
+                    if node['name'] in defaultValues.keys() and 'value' not in nodeTmp.keys():
+                        nodeTmp['value'] = defaultValues[node['name']]
+                    
+                    if 'value' in node.keys():
+                        nodeTmp['value'] = node['value']
+                        defaultValues[node['name']] = node['value']
+                        
                     nodeDict[node['name']] = nodeTmp
                     node['subModel'] = nodeTmp['subModel']
                     node['graphRef'] = nodeTmp['graphRef']
+                    
                 else:
                     tfType = tf.float32
                     tmp = tf.placeholder(tfType, name=node['name'])
@@ -752,12 +765,14 @@ class kChainModel(object):
                     node['subModel'].append(func.__name__)
                     nodeDict[node['name']] = node
             
+            
             print("Updated Input List")
             print(inputVars)
             print(nodeDict)
             
             tf_model = ag.to_graph(func)
             output = tf_model(invars)
+            
             
             print("Inital Output List")
             print(outputVars)
@@ -766,7 +781,12 @@ class kChainModel(object):
             for node in outputVars:
                 if node['name'] in nodeDict.keys():
                     print('Option 2 encountered - rebuilding graph')
+                    
+                    print('Default Values:')
+                    print(defaultValues)
+                    
                     rebuildFlag = True
+                    
                     # Create a clean graph
                     mdl = tf.Graph()
                     
@@ -791,37 +811,52 @@ class kChainModel(object):
                     
                     #check if this consumer function is same as the new function
                     if funcList[index]['name'] is F['name']:
-                        #if same, then replace
+                        #if same, then replace to overwrite old with new
+                        print('Original Function : \n')
+                        print(funcList[index])
                         funcList[index] = F
+                        print('Replaced Function : \n')
+                        print(F)
                     else:
                         #else insert in the list
                         #In funcList add entry of current function before any consumer function
                         #since, func output is later used as input to other models
+                        print('Original Function : \n')
+                        print(funcList[index])
                         funcList.insert(index, F)
+                        print('Inserted Function : \n')
+                        print(funcList[index])
                     
                     print(funcList)
                     print(nodeDict)
                     
-                    mdl, nodeDict, funcList, defaultValues = self.appendSubGraphFromList(mdl, funcList, nodeDict = {}, funcList = [], defaultValues = {})
+                    mdl, nodeDict, funcList, defaultValues = self.appendSubGraphFromList(mdl, funcList, nodeDict = {}, funcList = [], defaultValues = defaultValues)
+                
                 else:
                     tfType = tf.float32
-                    print(output)
-                    print(tf_model)
-                    print(func)
-                    print(eqStr)
-                    print(invars)
                     
-                    tmp = output[0]
+                    if self.debug:
+                        print(output)
+                        print(tf_model)
+                        print(func)
+                        print(eqStr)
+                        print(invars)
+                    
+                    tmp = output
+                    print(tmp)
                     outvars.append(tmp)
                     node['graphRef'] = tmp.name
                     node['subModel'] = list()
                     node['subModel'].append(func.__name__)
+                    if node['name'] in defaultValues.keys():
+                        node['value'] = defaultValues[node['name']]
                     nodeDict[node['name']] = node
             
-            print("Updated Output List")
-            print(outputVars)
-            print(nodeDict)
-            
+            if self.debug:
+                print("Updated Output List")
+                print(outputVars)
+                print(nodeDict)
+                
     
             for node in outvars:
                 tf.add_to_collection("output", node)
@@ -848,27 +883,19 @@ class kChainModel(object):
                 if 'value' in node.keys():
                     defaultValues[node['name']] = node['value']
         
-        print(funcList)
-        
-        o['mdl'] = mdl
-        o['nodeDict'] = nodeDict
-        o['funcList'] = funcList
-        o['defaultValues'] = defaultValues
-            
-        return o
+        if self.debug:
+            print(funcList)
+
+        return mdl, nodeDict, funcList, defaultValues
     
     def appendSubGraphFromList(self, mdl, funcSeqList, nodeDict, funcList, defaultValues):
         for f in funcSeqList:
-            
             if f['func'] is None and f['eqStr'] is not None:
                 f['func'] = self._getPyFuncHandle(f['inputVar'], f['outputVar'], f['name'], f['eqStr'])
                 
-            o = self.appendSubGraph(mdl, f['func'], f['eqStr'], f['inputVar'], f['outputVar'], nodeDict, funcList, defaultValues)     
-            mdl = o['mdl']  
-            nodeDict = o['nodeDict']
-            funcList = o['funcList']
-            defaultValues = o['defaultValues']
+            mdl, nodeDict, funcList, defaultValues = self.appendSubGraph(mdl, f['func'], f['eqStr'], f['inputVar'], f['outputVar'], nodeDict, funcList, defaultValues)
             #print(nodeDict)
+            
         return mdl, nodeDict, funcList, defaultValues
 
     def _getNodeDictFuncList(self, metagraphLoc):
