@@ -2252,8 +2252,11 @@ public class AnswerCurationManager {
 	}
 
 	private OwlToSadl getOwlToSadl(OntModel theModel, String modelName) {
-		// TODO Auto-generated method stub
-		return null;
+		if (owl2sadl == null) {
+			owl2sadl = new OwlToSadl(theModel, modelName);
+			owl2sadl.setNeverUsePrefixes(true);
+		}
+		return owl2sadl;
 	}
 
 	private OwlToSadl getOwlToSadl(OntModel model) {
