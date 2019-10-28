@@ -419,7 +419,7 @@ public class DialogAnswerProviderConsoleForTest extends BaseDialogAnswerProvider
 	}
 
 	@Override
-	public boolean addImport(String importStatement) {
+	public boolean addImports(List<String> importStatements) {
 		// TODO Auto-generated method stub
 		return false;
 	}

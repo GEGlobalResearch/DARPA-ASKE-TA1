@@ -360,7 +360,10 @@ public class DialogAnswerProvider extends BaseDialogAnswerProvider {
 
 	@Override
 	public boolean addImports(List<String> importStatements) {
-//		System.err.println("addImport: " + importStatement);
+		if (importStatements == null || importStatements.size() == 0) {
+			return false;
+		}
+
 		Resource rsrc = getResource();
 		EObject precedingObj = null;
 		if (rsrc instanceof XtextResource) {
@@ -392,7 +395,7 @@ public class DialogAnswerProvider extends BaseDialogAnswerProvider {
 					}
 					sb.append(importStatement);
 				}
-				String precedingObjText = NodeModelUtils.getTokenText(NodeModelUtils.getNode(precedingObj));
+//				String precedingObjText = NodeModelUtils.getTokenText(NodeModelUtils.getNode(precedingObj));
 				try {
 					return addCurationManagerContentToDialog(document, null, sb.toString(), precedingObj, false, false, false, false);
 				} catch (BadLocationException e) {

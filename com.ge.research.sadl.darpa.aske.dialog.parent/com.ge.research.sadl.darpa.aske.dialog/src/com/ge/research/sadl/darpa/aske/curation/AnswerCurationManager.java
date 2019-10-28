@@ -2824,6 +2824,7 @@ public class AnswerCurationManager {
 		// ConversationElements are processed in order (must process a save before an evaluate, for example),
 		//	but the actual insertion of new responses into the Dialog occurs in reverse order so that the locations
 		//	are less complicated to determine
+		this.owl2sadl = null;
 		DialogContent dc = getConversation();
 		List<ConversationElement> dialogStmts = dc.getStatements();
 		Map<ConversationElement, ConversationElement> additionMap = new HashMap<ConversationElement, ConversationElement>();  // new CE, CE before
@@ -2924,7 +2925,7 @@ public class AnswerCurationManager {
 		}
 		else {
 			// additions is empty so there haven't been any other things added in this pass so now add any imports
-			if (getDelayedImportAdditions() != null) {
+			if (getDelayedImportAdditions() != null && getDelayedImportAdditions().size() > 0) {
 				Object dap = getConfigurationManager().getPrivateKeyValuePair(DialogConstants.DIALOG_ANSWER_PROVIDER);
 				if (dap instanceof IDialogAnswerProvider) {
 					((IDialogAnswerProvider)dap).addImports(getDelayedImportAdditions());
