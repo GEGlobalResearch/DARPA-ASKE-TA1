@@ -2153,8 +2153,10 @@ private Map<String, String> getLabelClassMapping(String dbnJson) {
 	@SuppressWarnings("deprecation")
 	private String executeDBN(String jsonTxt)  {
 		DefaultHttpClient httpclient = new DefaultHttpClient();
-        //httppost = new HttpPost("http://3.1.46.19:5000/process");
-		HttpPost httppost = new HttpPost("http://alpha.ubl.research.ge.com:5000/process");
+		String dbnBaseUrl = getPreference(DialogPreferences.ANSWER_DBN_CG_SERVICE_BASE_URI.getId());
+        String dbnUrl = dbnBaseUrl + "/process";
+        HttpPost httppost = new HttpPost(dbnUrl);
+//		HttpPost httppost = new HttpPost("http://alpha.ubl.research.ge.com:5000/process");
         //httppost = new HttpPost("http://vesuvius001.crd.ge.com:5000/process");
         httppost.setHeader("Accept", "*/*");
         httppost.setHeader("Content-type", "application/json");
@@ -2187,7 +2189,10 @@ private Map<String, String> getLabelClassMapping(String dbnJson) {
 	private String generateDBNjson(String jsonTxt) {
 		DefaultHttpClient httpclient = new DefaultHttpClient();
 //		HttpPost httppost = new HttpPost("http://vesuvius063.crd.ge.com:46000/dbn/jsonGenerator");
-		HttpPost httppost = new HttpPost("http://mazama6.crd.ge.com:46000/dbn/jsonGenerator");
+//		HttpPost httppost = new HttpPost("http://mazama6.crd.ge.com:46000/dbn/jsonGenerator");
+		String dbnBaseUrl = getPreference(DialogPreferences.DBN_INPUT_JSON_GENERATION_SERVICE_BASE_URI.getId());
+        String jsonGenUrl = dbnBaseUrl + "/dbn/jsonGenerator";
+        HttpPost httppost = new HttpPost(jsonGenUrl);
         httppost.setHeader("Accept", "application/json");
         httppost.setHeader("Content-type", "application/json");
         
@@ -2212,7 +2217,10 @@ private Map<String, String> getLabelClassMapping(String dbnJson) {
 	private String kgResultsToJson(String nodesCSVString, String modelsCSVString, String mode, String obsData) throws Exception {
 		DefaultHttpClient httpclient = new DefaultHttpClient();
 //		HttpPost httppost = new HttpPost("http://vesuvius063.crd.ge.com:46000/dbn/SADLResultSetToJson");
-		HttpPost httppost = new HttpPost("http://mazama6.crd.ge.com:46000/dbn/SADLResultSetToJson");
+//		HttpPost httppost = new HttpPost("http://mazama6.crd.ge.com:46000/dbn/SADLResultSetToJson");
+		String dbnBaseUrl = getPreference(DialogPreferences.DBN_INPUT_JSON_GENERATION_SERVICE_BASE_URI.getId());
+        String jsonGenUrl = dbnBaseUrl + "/dbn/SADLResultSetToJson";
+        HttpPost httppost = new HttpPost(jsonGenUrl);
 		httppost.setHeader("Accept", "application/json");
         httppost.setHeader("Content-type", "application/x-www-form-urlencoded");
         
