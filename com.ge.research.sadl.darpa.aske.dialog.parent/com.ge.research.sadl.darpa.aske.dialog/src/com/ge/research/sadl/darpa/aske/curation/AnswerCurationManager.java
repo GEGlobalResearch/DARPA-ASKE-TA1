@@ -2232,7 +2232,7 @@ public class AnswerCurationManager {
 		}
 		else if (typ.equals(NodeType.InstanceNode)) {
 //			addInstanceDeclaration(resource, nn, answer);
-			answer.append(getOwlToSadl(theModel).individualToSadl(nn.getURI(), false));
+			answer.append(getOwlToSadl(theModel, modelName).individualToSadl(nn.getURI(), false));
 			Object ctx = ((NamedNode)lastcmd).getContext();
 			answerUser(modelFolder, answer.toString(), false, (EObject) ctx);
 			return answer.toString();
