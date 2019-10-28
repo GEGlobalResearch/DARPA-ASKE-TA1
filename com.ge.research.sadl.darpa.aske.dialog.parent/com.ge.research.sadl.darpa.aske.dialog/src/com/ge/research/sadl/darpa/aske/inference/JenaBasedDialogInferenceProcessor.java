@@ -119,6 +119,8 @@ public class JenaBasedDialogInferenceProcessor extends JenaBasedSadlInferencePro
 //	public static final String qhModelName = "http://aske.ge.com/MetaData";
 //	public static final String qhOwlFileName = "MetaData.owl";
 
+	public static final boolean debugMode = false;
+	
 	
 	public static final String CGMODELS_FOLDER = "ComputationalGraphModels";
 	
@@ -1025,13 +1027,13 @@ public class JenaBasedDialogInferenceProcessor extends JenaBasedSadlInferencePro
 						queryStr = RETRIEVE_MODELS.replaceAll("EQNSLIST", listOfEqns);
 						models = queryKnowledgeGraph(queryStr, getTheJenaModel());
 						modelsCSVString = convertResultSetToString(models);
-//						System.out.println(modelsCSVString);
+						if (debugMode) {System.out.println(modelsCSVString);}
 						
 						queryStr = RETRIEVE_NODES.replaceAll("EQNSLIST", listOfEqns);
 						queryStr = queryStr.replaceAll("COMPGRAPH", "<" + cgIns.getURI() + ">");
 						nodes = queryKnowledgeGraph(queryStr, getTheJenaModel().union(queryModel));
 						nodesCSVString = convertResultSetToString(nodes);
-//						System.out.println(nodesCSVString);
+						if (debugMode) {System.out.println(nodesCSVString);}
 			
 						cgJson 		= kgResultsToJson(nodesCSVString, modelsCSVString, queryMode, "");
 						dbnJson 	= generateDBNjson(cgJson);
@@ -1225,7 +1227,7 @@ public class JenaBasedDialogInferenceProcessor extends JenaBasedSadlInferencePro
 										sb.append("\n  ).\n");
 									}
 									SadlStatementContent ssc = new SadlStatementContent(null, Agent.CM, sb.toString());
-//									System.out.println(ssc.toString());
+									if (debugMode) {System.out.println(ssc.toString());}
 									//acm.notifyUser(getModelFolderPath(resource), ssc, false);
 					            }
 							}//assumptions satisfied
@@ -2169,7 +2171,7 @@ private Map<String, String> getLabelClassMapping(String dbnJson) {
 			CloseableHttpResponse response = httpclient.execute(httppost);
 	        HttpEntity respEntity = response.getEntity();
 	        String responseTxt = EntityUtils.toString(respEntity, "UTF-8");
-//	        System.out.println(responseTxt);
+	        if (debugMode) {System.out.println(responseTxt);}
 	        httpclient.close();
 	        return responseTxt;
 		} catch (IOException e) {
@@ -2194,7 +2196,7 @@ private Map<String, String> getLabelClassMapping(String dbnJson) {
 	        CloseableHttpResponse response = httpclient.execute(httppost);
 	        HttpEntity respEntity = response.getEntity();
 	        String responseTxt = EntityUtils.toString(respEntity, "UTF-8");
-//	        System.out.println(responseTxt);
+	        if (debugMode) {System.out.println(responseTxt);}
 	        httpclient.close();
 	        return responseTxt;
         } catch (IOException e) {
