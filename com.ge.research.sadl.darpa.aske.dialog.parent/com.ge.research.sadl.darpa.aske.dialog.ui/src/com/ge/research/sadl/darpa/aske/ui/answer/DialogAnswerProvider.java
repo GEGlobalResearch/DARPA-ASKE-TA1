@@ -113,6 +113,7 @@ public class DialogAnswerProvider extends BaseDialogAnswerProvider {
 	private IXtextDocument document;
 	private IConfigurationManagerForIDE configManager;
 	private IXtextModelListener modelListener;
+	private URI uri;
 
 	public void configure(IXtextDocument document) {
 		Preconditions.checkState(this.document == null, "Already initialized.");
@@ -144,7 +145,7 @@ public class DialogAnswerProvider extends BaseDialogAnswerProvider {
 	 * exception.
 	 */
 	protected void doConfigure(XtextResource resource) {
-		URI uri = resource.getURI();
+		uri = resource.getURI();
 		try {
 			LOGGER.debug("[DialogAnswerProvider] >>> Registering... [" + uri + "]");
 			this.configManager = initializeConfigManager(resource);
@@ -296,7 +297,6 @@ public class DialogAnswerProvider extends BaseDialogAnswerProvider {
 			Object ctx, boolean quote, boolean prependAgent, boolean repositionCursor, boolean addLeadingSpaces) throws BadLocationException {
 		LOGGER.debug(content);
 //		System.err.println("addCMContent: " + content);
-		URI uri = document.readOnly(GetResourceUri.INSTANCE);
 		Display.getDefault().asyncExec(() -> {
 			try {
 				String modContent;
