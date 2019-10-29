@@ -43,7 +43,6 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.concurrent.atomic.AtomicReference;
 
 import org.eclipse.core.filesystem.EFS;
 import org.eclipse.core.filesystem.IFileStore;
@@ -93,7 +92,6 @@ import com.ge.research.sadl.builder.ConfigurationManagerForIdeFactory;
 import com.ge.research.sadl.builder.IConfigurationManagerForIDE;
 import com.ge.research.sadl.darpa.aske.curation.AnswerCurationManager;
 import com.ge.research.sadl.darpa.aske.curation.BaseDialogAnswerProvider;
-import com.ge.research.sadl.darpa.aske.dialog.ui.internal.DialogActivator;
 import com.ge.research.sadl.darpa.aske.preferences.DialogPreferences;
 import com.ge.research.sadl.darpa.aske.processing.DialogConstants;
 import com.ge.research.sadl.darpa.aske.processing.QuestionWithCallbackContent;
@@ -107,7 +105,6 @@ import com.ge.research.sadl.sADL.SadlImport;
 import com.ge.research.sadl.sADL.SadlModel;
 import com.ge.research.sadl.ui.handlers.SadlActionHandler;
 import com.google.common.base.Preconditions;
-import com.google.inject.Injector;
 
 public class DialogAnswerProvider extends BaseDialogAnswerProvider {
 
@@ -300,7 +297,7 @@ public class DialogAnswerProvider extends BaseDialogAnswerProvider {
 		LOGGER.debug(content);
 //		System.err.println("addCMContent: " + content);
 		URI uri = document.readOnly(GetResourceUri.INSTANCE);
-		Display.getDefault().syncExec(() -> {
+		Display.getDefault().asyncExec(() -> {
 			try {
 				String modContent;
 				int loc;
@@ -719,16 +716,10 @@ public class DialogAnswerProvider extends BaseDialogAnswerProvider {
 		}
 	}
 
-	protected Map<String, String> getPreferences(IFile file) {
-		final URI uri = URI.createPlatformResourceURI(file.getFullPath().toString(), true);
-		return getPreferences(uri);
-	}
-
 	@Override
-	public Map<String, String> getPreferences(URI uri) {
-		Injector reqInjector = safeGetInjector(DialogActivator.COM_GE_RESEARCH_SADL_DARPA_ASKE_DIALOG);
-		IPreferenceValuesProvider pvp = reqInjector.getInstance(IPreferenceValuesProvider.class);
-		IPreferenceValues preferenceValues = pvp.getPreferenceValues(new XtextResource(uri));
+	public Map<String, String> getPreferences(Resource resource) {
+		IPreferenceValuesProvider pvp = ((XtextResource)resource).getResourceServiceProvider().get(IPreferenceValuesProvider.class);
+		IPreferenceValues preferenceValues = pvp.getPreferenceValues(resource);
 		if (preferenceValues != null) {
 			Map<String, String> map = new HashMap<String, String>();
 			String tsburl = preferenceValues.getPreference(DialogPreferences.ANSWER_TEXT_SERVICE_BASE_URI);
@@ -762,18 +753,6 @@ public class DialogAnswerProvider extends BaseDialogAnswerProvider {
 			return map;
 		}
 		return null;
-	}
-
-	protected final Injector safeGetInjector(String name) {
-		final AtomicReference<Injector> i = new AtomicReference<Injector>();
-		Display.getDefault().syncExec(new Runnable() {
-			@Override
-			public void run() {
-				i.set(DialogActivator.getInstance().getInjector(name));
-			}
-		});
-
-		return i.get();
 	}
 
 	public Resource getResource() {
