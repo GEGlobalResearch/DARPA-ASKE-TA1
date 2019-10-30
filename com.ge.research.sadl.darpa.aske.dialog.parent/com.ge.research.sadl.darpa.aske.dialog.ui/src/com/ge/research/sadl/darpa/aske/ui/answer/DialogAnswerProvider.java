@@ -116,6 +116,7 @@ public class DialogAnswerProvider extends BaseDialogAnswerProvider {
 	private IXtextDocument document;
 	private IConfigurationManagerForIDE configManager;
 	private IXtextModelListener modelListener;
+	private URI uri;
 
 	public void configure(IXtextDocument document) {
 		Preconditions.checkState(this.document == null, "Already initialized.");
@@ -147,7 +148,7 @@ public class DialogAnswerProvider extends BaseDialogAnswerProvider {
 	 * exception.
 	 */
 	protected void doConfigure(XtextResource resource) {
-		URI uri = resource.getURI();
+		uri = resource.getURI();
 		try {
 			LOGGER.debug("[DialogAnswerProvider] >>> Registering... [" + uri + "]");
 			this.configManager = initializeConfigManager(resource);
@@ -299,8 +300,8 @@ public class DialogAnswerProvider extends BaseDialogAnswerProvider {
 			Object ctx, boolean quote, boolean prependAgent, boolean repositionCursor, boolean addLeadingSpaces) throws BadLocationException {
 		LOGGER.debug(content);
 //		System.err.println("addCMContent: " + content);
-		URI uri = document.readOnly(GetResourceUri.INSTANCE);
-		Display.getDefault().syncExec(() -> {
+//		URI uri = document.readOnly(GetResourceUri.INSTANCE);
+		Display.getDefault().asyncExec(() -> {
 			try {
 				String modContent;
 				int loc;
@@ -719,16 +720,17 @@ public class DialogAnswerProvider extends BaseDialogAnswerProvider {
 		}
 	}
 
-	protected Map<String, String> getPreferences(IFile file) {
-		final URI uri = URI.createPlatformResourceURI(file.getFullPath().toString(), true);
-		return getPreferences(uri);
-	}
+//	protected Map<String, String> getPreferences(IFile file) {
+//		final URI uri = URI.createPlatformResourceURI(file.getFullPath().toString(), true);
+//		return getPreferences(uri);
+//	}
 
 	@Override
-	public Map<String, String> getPreferences(URI uri) {
-		Injector reqInjector = safeGetInjector(DialogActivator.COM_GE_RESEARCH_SADL_DARPA_ASKE_DIALOG);
-		IPreferenceValuesProvider pvp = reqInjector.getInstance(IPreferenceValuesProvider.class);
-		IPreferenceValues preferenceValues = pvp.getPreferenceValues(new XtextResource(uri));
+	public Map<String, String> getPreferences(Resource resource) {
+//		Injector reqInjector = safeGetInjector(DialogActivator.COM_GE_RESEARCH_SADL_DARPA_ASKE_DIALOG);
+//		IPreferenceValuesProvider pvp = reqInjector.getInstance(IPreferenceValuesProvider.class);
+		IPreferenceValuesProvider pvp = ((XtextResource)resource).getResourceServiceProvider().get(IPreferenceValuesProvider.class);
+		IPreferenceValues preferenceValues = pvp.getPreferenceValues(resource);
 		if (preferenceValues != null) {
 			Map<String, String> map = new HashMap<String, String>();
 			String tsburl = preferenceValues.getPreference(DialogPreferences.ANSWER_TEXT_SERVICE_BASE_URI);
@@ -766,7 +768,7 @@ public class DialogAnswerProvider extends BaseDialogAnswerProvider {
 
 	protected final Injector safeGetInjector(String name) {
 		final AtomicReference<Injector> i = new AtomicReference<Injector>();
-		Display.getDefault().syncExec(new Runnable() {
+		Display.getDefault().asyncExec(new Runnable() {
 			@Override
 			public void run() {
 				i.set(DialogActivator.getInstance().getInjector(name));

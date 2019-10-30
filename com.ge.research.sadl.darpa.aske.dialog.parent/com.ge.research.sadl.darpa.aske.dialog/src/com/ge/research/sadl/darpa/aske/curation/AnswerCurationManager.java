@@ -203,7 +203,7 @@ public class AnswerCurationManager {
 	private Map<String, String> getPreferences() {
 		if (preferences == null) {
 			if (getDialogAnswerProvider() != null && getResource() != null) {
-				preferences = getDialogAnswerProvider().getPreferences(getResource().getURI());
+				preferences = getDialogAnswerProvider().getPreferences(getResource());
 			}
 		}
 		return preferences;
