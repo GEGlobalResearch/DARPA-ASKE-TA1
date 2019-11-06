@@ -68,6 +68,8 @@ import com.ge.research.sadl.reasoner.QueryCancelledException;
 import com.ge.research.sadl.reasoner.QueryParseException;
 import com.ge.research.sadl.reasoner.ReasonerNotFoundException;
 import com.ge.research.sadl.reasoner.ResultSet;
+import com.ge.research.sadl.reasoner.utils.SadlUtils;
+import com.ge.research.sadl.utils.ResourceManager;
 import com.hp.hpl.jena.rdf.model.Model;
 import com.hp.hpl.jena.rdf.model.ModelFactory;
 
@@ -172,6 +174,8 @@ public class TextProcessorTests {
 		File textFile = new File(getTextExtractionPrjFolder() + "/ExtractedModels/Sources/Sound.txt");
 		IConfigurationManagerForIDE cm = ConfigurationManagerForIdeFactory.getConfigurationManagerForIDE(getDomainProjectModelFolder(), null);
 		AnswerCurationManager acm = new AnswerCurationManager(getDomainProjectModelFolder(), cm, null, null);
+		String domainModelName = "http://sadl.org/SpeedOfSound.sadl";
+		acm.setDomainModel(cm.loadOntModel(new SadlUtils().fileUrlToFileName(cm.getAltUrlFromPublicUri(domainModelName)), true));
 		
 		IDialogAnswerProvider dapcft = new DialogAnswerProviderConsoleForTest();
 		cm.addPrivateKeyValuePair(DialogConstants.DIALOG_ANSWER_PROVIDER, dapcft);
@@ -258,8 +262,8 @@ public class TextProcessorTests {
 						if (pnResults != null) {
 							System.out.println(pnResults.getMessage());
 							for (String[] use : pnResults.getResults()) {
-								assertTrue(use!= null && use.length == 2);
-								System.out.println("Parameter '" + use[1] + "' used in '" + use[0] + "'");
+								assertTrue(use!= null && use.length == 4);
+								System.out.println(pnResults);
 							}
 						}
 					}	
@@ -284,7 +288,27 @@ public class TextProcessorTests {
 				e.printStackTrace();
 			}
 		}
-
+		
+		// now look for variable information
+		
+		try {
+			EquationVariableContextResponse evcr = acm.getTextProcessor().equationVariableContext("R", acm.getLocalityOfFileExtract(textFile.getCanonicalPath()));
+			if (evcr != null) {
+				System.out.println(evcr.toString());
+			}
+		} catch (InvalidInputException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		try {
+			EquationVariableContextResponse evcr = acm.getTextProcessor().equationVariableContext("T", acm.getLocalityOfFileExtract(textFile.getCanonicalPath()));
+			if (evcr != null) {
+				System.out.println(evcr.toString());
+			}
+		} catch (InvalidInputException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 	}
 	
 	@Test

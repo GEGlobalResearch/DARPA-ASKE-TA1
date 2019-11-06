@@ -42,7 +42,7 @@
  movesIn describes PhysicalObject with values of type Gas.
  mach describes PhysicalObject with a single value of type decimal.
  
- Gamma is a type of UnittedQuantity.
+ Gamma (alias "gamma") is a type of UnittedQuantity.
  gamma (note "treated as a calorically perfect gas") describes Gas with values of type Gamma.
  gammaCal (note "treated as a calorically imperfect gas") describes Gas with values of type Gamma.
 

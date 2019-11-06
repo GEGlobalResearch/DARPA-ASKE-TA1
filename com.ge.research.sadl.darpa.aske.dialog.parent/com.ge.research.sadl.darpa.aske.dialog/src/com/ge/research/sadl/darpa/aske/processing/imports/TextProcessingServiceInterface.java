@@ -55,6 +55,35 @@ public class TextProcessingServiceInterface extends JsonServiceInterface {
 		private void setResults(List<String[]> results) {
 			this.results = results;
 		}
+		
+		public String toString() {
+			StringBuilder sb = new StringBuilder();
+			sb.append(message);
+			sb.append("\n");
+			for (int i = 0; results != null && i < results.size(); i++) {
+				String[] result = results.get(i);
+				if (result.length >= 2) {
+					sb.append(result[1]);
+					sb.append(" appears in equation: \n");
+					sb.append("    ");
+					sb.append(result[0]);
+					sb.append("\n");
+					if (result.length == 4) {
+						if (result[2] != null) {
+							sb.append("concept: ");
+							sb.append(result[2]);
+							sb.append("\n");
+						}
+						if (result[3] != null) {
+							sb.append("uri: ");
+							sb.append(result[3]);
+							sb.append("\n");
+						}
+					}
+				}
+			}
+			return sb.toString();
+		}
 	}
 
 	public TextProcessingServiceInterface(String serviceBaseUri) {
@@ -98,8 +127,9 @@ public class TextProcessingServiceInterface extends JsonServiceInterface {
 				String format = je.getAsJsonObject().get("serializationFormat").getAsString();
 				String triples = je.getAsJsonObject().get("triples").getAsString();
 				logger.debug(triples);
-				String[] results = new String[2];
-				results[0] = format.toUpperCase();
+				String[] results = new String[3];
+				results[0] = locality;
+				results[1] = format.toUpperCase();
 				triples = triples.trim();
 				triples = triples.startsWith("b") ? triples.substring(1) : triples;
 				if (triples.startsWith("'") && triples.endsWith("'")) {
@@ -107,7 +137,7 @@ public class TextProcessingServiceInterface extends JsonServiceInterface {
 				}
 				triples = triples.replace("\\n", "\n");
 				triples = triples.replace("\\\\", "\\");
-				results[1] = triples;
+				results[2] = triples;
 				return results;
 			}
 		}
@@ -210,10 +240,14 @@ public class TextProcessingServiceInterface extends JsonServiceInterface {
 				for (JsonElement rslt : rslts.getAsJsonArray()) {
 					JsonElement eqStr = rslt.getAsJsonObject().get("equationString");
 					JsonElement vn = rslt.getAsJsonObject().get("variableName");
-					String[] use = new String[2];
+					JsonElement lbl = rslt.getAsJsonObject().get("entityLabel");
+					JsonElement uri = rslt.getAsJsonObject().get("entityURI");
+					String[] use = new String[4];
 					if (vn != null) {
 						use[0] = eqStr != null ? eqStr.getAsString() : null;
 						use[1] = vn != null ? vn.getAsString() : null;
+						use[2] = lbl != null ? lbl.getAsString() : null;
+						use[3] = uri != null ? uri.getAsString() : null;
 					}
 					results.add(use);
 				}

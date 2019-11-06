@@ -8,7 +8,6 @@ UnittedQuantity is a type of ScientificConcept,
 	described by ^value with values of type decimal,
 	described by stddev with values of type decimal,
 	described by unit with values of type string.
-UnittedQuantity has impliedProperty ^value.
 
 DataDescriptor is a class, described by localDescriptorName (note "If this DataDescriptor is associated with a named parameter, this is the name") with a single value of type string,
 	described by dataType (note "the simple data type, e.g., float") with a single value of type anyURI,
@@ -18,7 +17,7 @@ DataDescriptor is a class, described by localDescriptorName (note "If this DataD
 dataType of DataDescriptor has at most 1 value.
 descriptorVariable of DataDescriptor has at most 1 value.
 
-Language is a class, must be one of {Java, Python, Text, OtherLanguage}.
+Language is a class, must be one of {Java, Python, Python-TF, Text, OtherLanguage}.
 Script is a class, described by language with a single value of type Language,
 	described by script with a single value of type string.
 ^Equation is a class,
@@ -63,12 +62,8 @@ NamedQuery is a class.
 
 
 /****** The following content comes from the Dialog implicit model fragment provider ******/
-ConversationElement is a class, described by text with a single value of type string.
-{QuestionElement, AnswerElement} are types of ConversationElement.
-dialogAnswer describes QuestionElement with values of type AnswerElement.
-// these properties used by TA2
-model describes DataTable with values of type ^Equation.
-^data describes ^Equation with values of type DataTable.
+		// these properties used by TA2
+		UnittedQuantity has impliedProperty ^value.
 
 
 /****** The following content comes from the Requirements implicit model fragment provider ******/

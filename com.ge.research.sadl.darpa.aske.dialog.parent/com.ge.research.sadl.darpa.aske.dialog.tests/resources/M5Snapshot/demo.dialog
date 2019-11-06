@@ -40,7 +40,8 @@ import "http://sadl.org/SpeedOfSound.sadl".
 
 //What is Mach.CAL_SOS?
 
-//What is Acceleration?
+What is Acceleration?
+CM: Acceleration is a type of {sadlimplicitmodel:UnittedQuantity and scicncpts2:Derivative}.
 
 //What is specificGasConstantEq?
 

@@ -112,12 +112,6 @@
     </ns1:arguments>
     <ns1:expression>
       <ns1:Script>
-        <ns1:language rdf:resource="http://sadl.org/sadlimplicitmodel#Python"/>
-        <ns1:script>a = math.pow(R * T * gamma, 1/2)</ns1:script>
-      </ns1:Script>
-    </ns1:expression>
-    <ns1:expression>
-      <ns1:Script>
         <ns1:language rdf:resource="http://sadl.org/sadlimplicitmodel#Python-TF"/>
         <ns1:script>a = tf.math.pow(R * T * gamma, 1/2)</ns1:script>
       </ns1:Script>
@@ -126,6 +120,12 @@
       <ns1:Script>
         <ns1:language rdf:resource="http://sadl.org/sadlimplicitmodel#Text"/>
         <ns1:script>a^2 = R * T * gamma</ns1:script>
+      </ns1:Script>
+    </ns1:expression>
+    <ns1:expression>
+      <ns1:Script>
+        <ns1:language rdf:resource="http://sadl.org/sadlimplicitmodel#Python"/>
+        <ns1:script>a = math.pow(R * T * gamma, 1/2)</ns1:script>
       </ns1:Script>
     </ns1:expression>
     <ns1:returnTypes rdf:parseType="Resource">
@@ -186,8 +186,8 @@
     </ns1:arguments>
     <ns1:expression>
       <ns1:Script>
-        <ns1:language rdf:resource="http://sadl.org/sadlimplicitmodel#Text"/>
-        <ns1:script>a^2 = R * T * {1 + (gamma - 1) / ( 1 + (gamma-1) * [(theta/T)^2 * e^(theta/T) /(e^(theta/T) -1)^2]) }</ns1:script>
+        <ns1:language rdf:resource="http://sadl.org/sadlimplicitmodel#Python-TF"/>
+        <ns1:script>a = tf.math.pow(R * T *  (  1 + ( gamma-1 ) / ( 1 + ( gamma-1 ) *  ( tf.math.pow( theta/T,2) *  tf.math.exp( theta/T ) /  tf.math.pow( tf.math.exp( theta/T ) - 1,2 ))  ) ), 1/2)</ns1:script>
       </ns1:Script>
     </ns1:expression>
     <ns1:expression>
@@ -198,8 +198,8 @@
     </ns1:expression>
     <ns1:expression>
       <ns1:Script>
-        <ns1:language rdf:resource="http://sadl.org/sadlimplicitmodel#Python-TF"/>
-        <ns1:script>a = tf.math.pow(R * T *  (  1 + ( gamma-1 ) / ( 1 + ( gamma-1 ) *  ( tf.math.pow( theta/T,2) *  tf.math.exp( theta/T ) /  tf.math.pow( tf.math.exp( theta/T ) - 1,2 ))  ) ), 1/2)</ns1:script>
+        <ns1:language rdf:resource="http://sadl.org/sadlimplicitmodel#Text"/>
+        <ns1:script>a^2 = R * T * {1 + (gamma - 1) / ( 1 + (gamma-1) * [(theta/T)^2 * e^(theta/T) /(e^(theta/T) -1)^2]) }</ns1:script>
       </ns1:Script>
     </ns1:expression>
     <ns1:returnTypes rdf:parseType="Resource">

@@ -45,7 +45,7 @@ Derivative is a type of ScientificConcept,
 	described by withRespectTo with a single value of type class.
 	
 Time is a type of UnittedQuantity.
-Temperature is a type of UnittedQuantity.
+Temperature (alias "temperature") is a type of UnittedQuantity.
 Length is a type of UnittedQuantity.
 Position is a type of UnittedQuantity,
 	described by x-coordinate with values of type Length,

@@ -400,7 +400,7 @@ public class JavaImportJPTests {
 			
 			IConfigurationManagerForIDE cm = ConfigurationManagerForIdeFactory.getConfigurationManagerForIDE(getDomainProjectModelFolder(), null);
 			AnswerCurationManager acm = new AnswerCurationManager(getDomainProjectModelFolder(), cm, null, null);
-			OntModel om = cm.loadOntModel(owlF.getCanonicalPath());
+			OntModel om = cm.loadOntModel(owlF.getCanonicalPath(), true);
 			String equationToBuildUri = cm.getBaseUriFromOwlFile(owlF.getCanonicalPath()) + "#Mach.CAL_SOS";
 			Resource resource = null;
 			String modelName = om.getNsPrefixMap().get("");

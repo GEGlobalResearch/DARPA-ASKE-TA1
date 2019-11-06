@@ -102,14 +102,38 @@ External ceiling(--) returns --:
 External cos(--) returns --:
 "com.ge.research.sadl.jena.reasoner.builtin#cos".
 
+External countMatches(...) returns int:
+"com.ge.research.sadl.jena.reasoner.builtin#countMatches".
+
+External countUniqueMatches(--) returns --:
+"com.ge.research.sadl.jena.reasoner.builtin#countUniqueMatches".
+
 External floor(--) returns --:
 "com.ge.research.sadl.jena.reasoner.builtin#floor".
+
+External getClassFromConstraint(--) returns --:
+"com.ge.research.sadl.jena.reasoner.builtin#getClassFromConstraint".
+
+External getInstance(--) returns --:
+"com.ge.research.sadl.jena.reasoner.builtin#getInstance".
 
 External greaterThan(--) returns --:
 "com.ge.research.sadl.jena.reasoner.builtin#greaterThan".
 
 External lessThan(--) returns --:
 "com.ge.research.sadl.jena.reasoner.builtin#lessThan".
+
+External list(--) returns --:
+"com.ge.research.sadl.jena.reasoner.builtin#list".
+
+External listConcat(--) returns --:
+"com.ge.research.sadl.jena.reasoner.builtin#listConcat".
+
+External listSubtract(--) returns --:
+"com.ge.research.sadl.jena.reasoner.builtin#listSubtract".
+
+External listToString(--) returns --:
+"com.ge.research.sadl.jena.reasoner.builtin#listToString".
 
 External localname(--) returns --:
 "com.ge.research.sadl.jena.reasoner.builtin#localname".
@@ -132,8 +156,14 @@ External notOnlyValue(--) returns --:
 External noUnknownValues(--) returns --:
 "com.ge.research.sadl.jena.reasoner.builtin#noUnknownValues".
 
+External noValue(--) returns --:
+"com.ge.research.sadl.jena.reasoner.builtin#noValue".
+
 External noValuesOtherThan(--) returns --:
 "com.ge.research.sadl.jena.reasoner.builtin#noValuesOtherThan".
+
+External oneOf(--) returns --:
+"com.ge.research.sadl.jena.reasoner.builtin#oneOf".
 
 External pow(--) returns --:
 "com.ge.research.sadl.jena.reasoner.builtin#pow".
@@ -158,36 +188,6 @@ External sum(--) returns --:
 
 External tan(--) returns --:
 "com.ge.research.sadl.jena.reasoner.builtin#tan".
-
-External countMatches(...) returns int:
-"com.ge.research.sadl.jena.reasoner.builtin#countMatches".
-
-External countUniqueMatches(--) returns --:
-"com.ge.research.sadl.jena.reasoner.builtin#countUniqueMatches".
-
-External getClassFromConstraint(--) returns --:
-"com.ge.research.sadl.jena.reasoner.builtin#getClassFromConstraint".
-
-External getInstance(--) returns --:
-"com.ge.research.sadl.jena.reasoner.builtin#getInstance".
-
-External list(--) returns --:
-"com.ge.research.sadl.jena.reasoner.builtin#list".
-
-External listConcat(--) returns --:
-"com.ge.research.sadl.jena.reasoner.builtin#listConcat".
-
-External listSubtract(--) returns --:
-"com.ge.research.sadl.jena.reasoner.builtin#listSubtract".
-
-External listToString(--) returns --:
-"com.ge.research.sadl.jena.reasoner.builtin#listToString".
-
-External noValue(--) returns --:
-"com.ge.research.sadl.jena.reasoner.builtin#noValue".
-
-External oneOf(--) returns --:
-"com.ge.research.sadl.jena.reasoner.builtin#oneOf".
 
 External ^unique(--) returns --:
 "com.ge.research.sadl.jena.reasoner.builtin#unique".

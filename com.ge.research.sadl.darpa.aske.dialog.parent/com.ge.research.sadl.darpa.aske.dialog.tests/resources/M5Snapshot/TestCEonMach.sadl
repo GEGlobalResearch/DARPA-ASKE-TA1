@@ -36,7 +36,7 @@
  uri "http://sadl.org/TestCEonMach.sadl" alias TestCEonMach.
  
  import "http://sadl.org/CodeExtractionModel.sadl".
- import "http://com.ge.research.sadl.darpa.aske.answer/Mach_java".
+// import "http://com.ge.research.sadl.darpa.aske.answer/Mach_java".
  
 // Ask: "select ?m ?arg where {?m <rdf:type> <Method> . ?m <cmArguments> ?args . ?args <http://www.jena.hpl.hp.com/ARQ/list#member> ?arg} order by ?m".
 // Ask: "select distinct ?m ?arg where {?m <rdf:type> <Method> . ?m <cmArguments> ?args . ?args <rdf:rest>*/<rdf:first> ?arg}".
