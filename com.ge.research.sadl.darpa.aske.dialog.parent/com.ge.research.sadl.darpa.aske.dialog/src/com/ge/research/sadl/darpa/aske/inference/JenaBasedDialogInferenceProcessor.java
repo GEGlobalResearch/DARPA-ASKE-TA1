@@ -119,7 +119,7 @@ public class JenaBasedDialogInferenceProcessor extends JenaBasedSadlInferencePro
 //	public static final String qhModelName = "http://aske.ge.com/MetaData";
 //	public static final String qhOwlFileName = "MetaData.owl";
 
-	public static final boolean debugMode = false;
+	public static final boolean debugMode = true;
 	
 	
 	public static final String CGMODELS_FOLDER = "ComputationalGraphModels";
@@ -292,7 +292,7 @@ public class JenaBasedDialogInferenceProcessor extends JenaBasedSadlInferencePro
 			"\n" + 
 			"select distinct ?Node (str(?NUnits) as ?NodeOutputUnits) ?Child (str(?CUnits) as ?ChildInputUnits) ?Distribution ?Lower ?Upper ?Eq ?Value \n" +
 			" where {\n" + 
-			"  {select distinct ?Node ?NUnits ?Child ?CUnits ?Distribution ?Lower ?Upper ?Eq ?Value where { \n" + 
+			"  {select distinct ?Node ?NUnits ?Child ?CUnits ?Distribution ?Lower ?Upper ?Eq where { \n" + 
 			"     ?Eq imp:arguments ?EI1.\n" + 
 			"     ?EI1 list:rest*/list:first ?EI2.\n" + 
 			"     ?EI2 imp:augmentedType ?EI3. \n" + 
@@ -309,11 +309,11 @@ public class JenaBasedDialogInferenceProcessor extends JenaBasedSadlInferencePro
 			"       ?Var ?Node ?UQNode.\n" + 
 			"       ?UQNode imp:unit ?InputUnitsQuery.\n" + 
 			"     }\n" + 
-			"     optional{\n" + 
-			"       ?Q mm:input ?UQNode.\n" + 
-			"       ?Var ?Node ?UQNode.\n" + 
-			"       ?UQNode imp:value ?Value\n" + 
-			"     }\n" + 
+//			"     optional{\n" + 
+//			"       ?Q mm:input ?UQNode.\n" + 
+//			"       ?Var ?Node ?UQNode.\n" + 
+//			"       ?UQNode imp:value ?Value\n" + 
+//			"     }\n" + 
 			"     ?Eq imp:returnTypes ?EO1.\n" + 
 			"     ?EO1 list:rest*/list:first ?EO2.\n" + 
 			"     ?EO2 imp:augmentedType ?EO3. \n" + 
@@ -418,6 +418,13 @@ public class JenaBasedDialogInferenceProcessor extends JenaBasedSadlInferencePro
 			"     ?Range cg:lower ?Lower.\n" + 
 			"     ?Range cg:upper ?Upper.\n" + 
 			" }}\n" +
+			" ?Q mm:execution/mm:compGraph ?CG.\n" + 
+			"   filter (?CG in (COMPGRAPH)).\n" + 
+			"  optional{\n" + 
+			"    ?Q mm:input ?Inp.\n" + 
+			"    ?Inp a ?IType.\n" + 
+			"    ?Node rdfs:range ?IType.\n" + 
+			"    ?Inp imp:value ?Value.}" +
 			"} order by ?Node";
 
 	public static final String CGQUERY = "prefix imp:<http://sadl.org/sadlimplicitmodel#>\n" +
