@@ -386,7 +386,7 @@ public class JenaBasedDialogInferenceProcessor extends JenaBasedSadlInferencePro
 			"     ?Range cg:upper ?Upper. \n" + 
 			"  }}\n" + 
 			"  union {\n" + 
-			"  select distinct ?Eq ?Node ?NUnits ?Distribution ?Lower ?Upper where { \n" + 
+			"  select distinct ?Eq ?Node ?NUnits  ?CUnits ?Distribution ?Lower ?Upper where { \n" + 
 			"     ?Eq imp:returnTypes ?EO1.\n" + 
 			"     ?EO1 list:rest*/list:first ?EO2.\n" + 
 			"     ?EO2 imp:augmentedType ?EO3. \n" + 
@@ -403,7 +403,14 @@ public class JenaBasedDialogInferenceProcessor extends JenaBasedSadlInferencePro
 			"        ?EI4 rdf:rest*/rdf:first ?EI5.\n" + 
 			"        ?EI5 imp:gpPredicate ?Node.\n" + 
 			"	  filter (?Eq1 in ( EQNSLIST ))\n" + 
-			"      }\n" + 
+			"      }\n"+
+			"    ?Q mm:execution/mm:compGraph ?CG. \n" + 
+			"    filter (?CG in (COMPGRAPH)).\n" + 
+			"    optional{\n" + 
+			"       ?Q mm:input ?UQNode.\n" + 
+			"       ?Var ?Node ?UQNode.\n" + 
+			"       ?UQNode imp:unit ?CUnits.\n" + 
+			"     }" + 
 			"     ?DBN rdfs:subClassOf ?EB. \n" + 
 			"     ?EB owl:onProperty cg:hasEquation.  \n" + 
 			"     ?EB owl:allValuesFrom ?EqClass.\n" + 
