@@ -1158,9 +1158,10 @@ public class JenaBasedDialogInferenceProcessor extends JenaBasedSadlInferencePro
 							
 							
 				            
-							// create ResultSet
+							// Get the CG for diagram
 							dbnresults[i] = retrieveCompGraph(resource, cgIns);
 							
+							//Results for ouput -> Don't need anymore, we ouput SADL
 //							dbnresults[i+numOfModels] = retrieveValues(resource, cgIns);
 
 							// convert to SADL to insert into dialog window
@@ -2032,8 +2033,8 @@ private RDFNode getObjectAsLiteralOrResource(Node property, Node object) {
 			outpIns = createIndividualOfClass(queryModel, null, null, rng); //e.g. instance of :Altitude
 			ingestKGTriple(sgIns, outputprop, outpIns);
 			
-			String cls = class2lbl.get(otype.toString());
-			String[] ms = lbl2value.get(cls);  //class2lbl.get(o.toString()));
+			String varLabel = class2lbl.get(otype.toString());
+			String[] ms = lbl2value.get(varLabel);  //class2lbl.get(o.toString()));
 			queryModel.add(outpIns, getTheJenaModel().getProperty(VALUE_PROP), ms[0] );
 			queryModel.add(outpIns, getTheJenaModel().getProperty(STDDEV_PROP), ms[1] );
 			if(ms[2] != null)
