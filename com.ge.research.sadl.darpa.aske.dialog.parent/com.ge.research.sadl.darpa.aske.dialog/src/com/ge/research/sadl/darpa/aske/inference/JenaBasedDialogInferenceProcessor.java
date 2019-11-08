@@ -43,8 +43,11 @@ import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.FilenameFilter;
 import java.io.IOException;
+import java.net.URISyntaxException;
 import java.nio.charset.Charset;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -92,6 +95,7 @@ import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
+import com.hp.hpl.jena.datatypes.xsd.XSDDateTime;
 import com.hp.hpl.jena.ontology.Individual;
 import com.hp.hpl.jena.ontology.OntClass;
 import com.hp.hpl.jena.ontology.OntModel;
@@ -919,16 +923,10 @@ public class JenaBasedDialogInferenceProcessor extends JenaBasedSadlInferencePro
 	
 			// Inputs/Outputs filter parameters
 			
-			String listOfInputs = "";
-			String listOfOutputs = "";
-	
-			
 			com.hp.hpl.jena.query.ResultSetRewindable eqnsResults = null;
-			String queryStr = "";
 			QueryExecution qexec = null;
 			OntResource qtype;
 			OntProperty qtypeprop = getTheJenaModel().getOntProperty(METAMODEL_QUERYTYPE_PROP);
-			OntProperty outputprop = getTheJenaModel().getOntProperty(METAMODEL_OUTPUT_PROP);
 			String listOfEqns = "";
 			com.hp.hpl.jena.query.ResultSetRewindable models, nodes;
 			String modelsCSVString = "";
@@ -942,7 +940,6 @@ public class JenaBasedDialogInferenceProcessor extends JenaBasedSadlInferencePro
 			Map<String,String> class2lbl, lbl2class;
 			Map<String,String[]> lbl2value;
 			
-			String queryMode;
 			String cgJson, dbnJson, dbnResultsJson;
 			
 			String outputType;
@@ -952,250 +949,90 @@ public class JenaBasedDialogInferenceProcessor extends JenaBasedSadlInferencePro
 			Map<RDFNode, RDFNode> dbnOutput = new HashMap<RDFNode,RDFNode>();
 	
 			
-	//		ResultSet[] results = new ResultSet[2]; 
-			ResultSet[] dbnresults = null;
+			ResultSet[] dbnResults = null;
 			
 			try {
 			
 				if (outputsList.size() > 0 && docPatterns.size() <= 0) { 
 		
-					
-					listOfInputs = strUriList(inputsList);
-					listOfOutputs = strUriList(outputsList);
+					//String listOfInputs = strUriList(inputsList);
+					//String listOfOutputs = strUriList(outputsList);
 		
 					eqnsResults = retrieveCG(inputsList, outputsList);
-					queryMode = "prognostic";
-					
-					//qtype = getTheJenaModel().getOntResource(METAMODEL_PREFIX + "prognostic"); //don't distinguish prognostic/calibration
 					
 					dbnEqns = createDbnEqnMap(eqnsResults);
 					dbnOutput = createDbnOutputMap(eqnsResults);
-	
 					
-					int numOfModels = 1;
-					if (dbnEqns.isEmpty())
-						numOfModels = 0;
-					for (RDFNode dbnk :  dbnEqns.keySet()) {
-						numOfModels *= dbnEqns.get(dbnk).length;
-					}
+					int numOfModels = getNumberOfModels(dbnEqns);
 	
+					if (numOfModels > 0) {
+						//dbnresults = new ResultSet[numOfModels*2]; 
+						dbnResults = new ResultSet[numOfModels]; 
+					} else {
+						//System.out.println("Unable to assemble a model with current knowledge");
+					}
 					
 					String[] modelEqnList = buildEqnsLists(numOfModels, dbnEqns);
 	
 					
-					//dbnresults = new ResultSet[numOfModels*2]; 
-					dbnresults = new ResultSet[numOfModels]; 
-					
-					String resmsg = null;
+					Boolean foundAModel = false;
 					
 					for(int i=0; i<numOfModels; i++) {
 						listOfEqns = modelEqnList[i];
 		
 						//Create execution instance with time
-						cexec = getTheJenaModel().getOntClass(METAMODEL_CGEXEC_CLASS);
-						//String cexecStr = cexec.getLocalName();
-						//ce = queryModel.createIndividual(cexecStr + "_" + System.currentTimeMillis(), cexec);
-						ce = createIndividualOfClass(queryModel, null, null, cexec.toString());
-						//OntProperty stprop = getTheJenaModel().getOntProperty(METAMODEL_STARTTIME_PROP);
-				
-	//					String DATE_FORMAT_NOW = "yyyy-MM-dd HH:mm:ss";
-	//					Calendar cal = Calendar.getInstance();
-	//					SimpleDateFormat sdf = new SimpleDateFormat(DATE_FORMAT_NOW);
-	//					XSDDateTime tim = sdf.format(cal.getTime());;
-	////					qhmodel.add(ce,stprop,(XSDDateTime)val).asCalendar().getTime())
+						ce = createIndividualOfClass(queryModel, null, null, METAMODEL_CGEXEC_CLASS);
+						addTimePropertyToCE(ce, getModelProperty(getTheJenaModel(), METAMODEL_STARTTIME_PROP));
 						
-						
-						execprop = getTheJenaModel().getOntProperty(METAMODEL_EXEC_PROP);
-						if (execprop == null) {
-							System.err.println("Can't find property '" + METAMODEL_EXEC_PROP + "'. Something is wrong.");
-							return null;
-						}
-						else {
-							ingestKGTriple(cgq,execprop,ce);
-						}
+						ingestKGTriple(cgq, getModelProperty(getTheJenaModel(), METAMODEL_EXEC_PROP), ce);
 
-						//TODO: for each equation
-						//  	retrieve context triples
-						//		replace instances already in the graph (e.g. if (v0 type Air) in graph, and equation has (vv type Air), replace v0 for vv
-						//		insert new triples into graph
-						
-						
-	//					//TODO: create output instances and link them to ce
-	//					//      There may be multiple outputs, need to loop through them
-	//					// We may need to do this later after the results have been computed
-	//					for (RDFNode op : outputsList) {
-	//						outputType = op.as(OntProperty.class).getRange().toString();
-	//						oinst = createIndividualOfClass(qhmodel,outputType);
-	//						ingestKGTriple(ce,outputprop,oinst);
-	//					}
-	//					
-						
 						// Comp Graph instance
-						cgIns = queryModel.createIndividual(queryModelPrefix + "CG_" + System.currentTimeMillis(), getTheJenaModel().getOntClass(METAMODEL_CCG));
-						//cgIns = queryModel.createIndividual("CG_" + System.currentTimeMillis(), getTheJenaModel().getOntClass(METAMODEL_CCG));
-						getTheJenaModel().add(cgIns, RDF.type, getTheJenaModel().getOntClass(METAMODEL_CCG));
-						//qhmodel.add(ce, getTheJenaModel().getOntProperty(METAMODEL_COMPGRAPH_PROP), cgIns);
-						ingestKGTriple(ce, getTheJenaModel().getOntProperty(METAMODEL_COMPGRAPH_PROP), cgIns);
-						//getTheJenaModel().add(ce, RDF.type, getTheJenaModel().getOntClass(METAMODEL_CCG));
-	
-	
+						cgIns = queryModel.createIndividual(queryModelPrefix + "CG_" + System.currentTimeMillis(), getModelClass(getTheJenaModel(), METAMODEL_CCG));
+						//getTheJenaModel().add(cgIns, RDF.type, getTheJenaModel().getOntClass(METAMODEL_CCG));
+						ingestKGTriple(ce, getModelProperty(getTheJenaModel(), METAMODEL_COMPGRAPH_PROP), cgIns);
+
 						// Retrieve Models & Nodes
-						queryStr = RETRIEVE_MODELS.replaceAll("EQNSLIST", listOfEqns);
-						models = queryKnowledgeGraph(queryStr, getTheJenaModel());
-						modelsCSVString = convertResultSetToString(models);
-						if (debugMode) {System.out.println(modelsCSVString);}
-						
-						queryStr = RETRIEVE_NODES.replaceAll("EQNSLIST", listOfEqns);
-						queryStr = queryStr.replaceAll("COMPGRAPH", "<" + cgIns.getURI() + ">");
-						nodes = queryKnowledgeGraph(queryStr, getTheJenaModel().union(queryModel));
-						nodesCSVString = convertResultSetToString(nodes);
-						if (debugMode) {System.out.println(nodesCSVString);}
-			
-						cgJson 		= kgResultsToJson(nodesCSVString, modelsCSVString, queryMode, "");
+						modelsCSVString = retrieveCGforDBNSpec(listOfEqns, cgIns, RETRIEVE_MODELS);
+						nodesCSVString = retrieveCGforDBNSpec(listOfEqns, cgIns, RETRIEVE_NODES);
+
+						// Generate DBN Json
+						cgJson 		= kgResultsToJson(nodesCSVString, modelsCSVString, "prognostic", "");
 						dbnJson 	= generateDBNjson(cgJson);
+						
+						//Save the label mapping
 						class2lbl 	= getClassLabelMapping(dbnJson);
 						
-						
-						
+						// Execute DBN
 			            dbnResultsJson = executeDBN(dbnJson);
 			            
+			            //get DBN execution outcome
+			            String resmsg = getDBNoutcome(dbnResultsJson);
 			            
-			            
-			            //check if DBN execution was successful
-			            
-			            resmsg = getDBNoutcome(dbnResultsJson);
-			            //boolean suc = resmsg.equals("Success");
+			            //TODO: if exec was unsuccessful, ingest CG anyway and do something further
 			            
 			            if(resmsg != null && resmsg.equals("Success")) {
-				            
+							AnswerCurationManager acm = (AnswerCurationManager) cmgr.getPrivateKeyValuePair(DialogConstants.ANSWER_CURATION_MANAGER);
+			            	foundAModel = true;
 				            lbl2value = getLabelToMeanStdMapping(dbnResultsJson);
-			//TODO
 				            createCGsubgraphs(cgIns, dbnEqns, dbnOutput, listOfEqns, class2lbl, lbl2value, queryModelPrefix);
 				            
-							//TODO: create output instances and link them to ce
-							//      There may be multiple outputs, need to loop through them
-							// We may need to do this later after the results have been computed
-//							for (RDFNode op : outputsList) {
-//								outputType = op.as(OntProperty.class).getRange().toString();
-//								oinst = createIndividualOfClass(queryModel, null, outputType);
-//								ingestKGTriple(ce,outputprop,oinst);
-//							}
-							
-	
-				            for(RDFNode outType : outputsList) {
-				            	if( class2lbl.containsKey(outType.toString())) {
-				            		
-				        			String rng = outType.as(OntProperty.class).getRange().toString(); //e.g. :Altitude
-				        			
-				        			Individual outpIns = createIndividualOfClass(queryModel, null, null, rng); //e.g. instance of :Altitude
-				        			ingestKGTriple(ce, outputprop, outpIns);
-				        			
-				        			String cls = class2lbl.get(outType.toString());
-				        			String[] ms = lbl2value.get(cls);  //class2lbl.get(o.toString()));
-				        			queryModel.add(outpIns, getTheJenaModel().getProperty(VALUE_PROP), ms[0] );
-				        			queryModel.add(outpIns, getTheJenaModel().getProperty(STDDEV_PROP), ms[1] );
-				        			if(ms[2] != null)
-				        				queryModel.add(outpIns, getTheJenaModel().getProperty(VARERROR_PROP), ms[2] );
-				            	}
-				            }
-				            
-				            //add outputs to CG if calibration
-							//if(queryMode.equals("prognostic")) {
-	
-	//			            //Comment out until switch from Class to Property for outputs
-	//			            for(OntClass oc : outputsList) {
-	//							if (!dbnOutput.values().contains(oc)) {//if no DBN has this output, ie it's a model input 
-	//								String ocls = oc.toString();
-	//								String cls = class2lbl.get(ocls);
-	//								String[] ms = lbl2value.get(cls);  
-	//								Individual oinst = createIndividualOfClass(qhmodel,ocls);
-	//								//getTheJenaModel().add(oinst,RDF.type, ocls);
-	//								OntProperty outputprop = getTheJenaModel().getOntProperty(METAMODEL_OUTPUT_PROP);
-	//								//qhmodel.add(cgq, outputprop, oinst);
-	//								//TODO link oinst to ce not cgq
-	//								//ingestKGTriple(cgq, outputprop, oinst);
-	//								ingestKGTriple(ce, outputprop, oinst);
-	//								qhmodel.add(oinst, getTheJenaModel().getProperty(VALUE_PROP), ms[0] );
-	//								qhmodel.add(oinst, getTheJenaModel().getProperty(STDDEV_PROP), ms[1] );
-	//							}
-	//						}
-							//}
-	
-							
-							
-							AnswerCurationManager acm = (AnswerCurationManager) cmgr.getPrivateKeyValuePair(DialogConstants.ANSWER_CURATION_MANAGER);
+							//Create output instances and link them to ce
+							//There may be multiple outputs, need to loop through them
+				            createCEoutputInstances(outputsList, ce, class2lbl, lbl2value);
 
 							saveMetaDataFile(resource,queryModelURI,queryModelFileName); //so we can query the the eqns in the CCG
 							
-							ResultSet assumpCheck = null;
-							assumpCheck = checkModelAssumptions(resource, cgIns.toString(), queryModelURI, queryOwlFileWithPath);
-							if (assumpCheck != null) {
-//								System.out.println(assumpCheck.toString());
-								
-								StringBuilder sb = new StringBuilder("The CCG " + cgIns.getLocalName() + " has assumptionsSatisfied ");
-								//StringBuilder sb = new StringBuilder("the CCG " + cgIns.getLocalName() + " has assumptionsSatisfied ");
-								if( assumpCheck.getResultAt(0, 0).equals("satisfied")) {
-									sb.append("true");
-									RDFNode obj = getTheJenaModel().createTypedLiteral(true);
-									ingestKGTriple(cgIns, getTheJenaModel().getOntProperty(METAMODEL_ASSUMPTIONSSATISFIED_PROP), obj);
-								} else {
-									sb.append(" false unsatisfiedAssumption \"");
-									sb.append(assumpCheck.getResultAt(0, 1).toString());
-									sb.append("\"");
-									String trace = assumpCheck.getResultAt(0, 1).toString();
-									trace = trace.substring(1, trace.length()).replaceAll("'", " ");
-									trace = "\"" + trace + "\"";
-									
-									RDFNode obj = getTheJenaModel().createTypedLiteral(trace);
-									ingestKGTriple(cgIns, getTheJenaModel().getOntProperty(METAMODEL_ASSUMPTIONUNSATISFIED_PROP), obj);
-								}
-								sb.append(".");
-								//sadlDeclaration.add(sb.toString());
-								SadlStatementContent ssc = new SadlStatementContent(null, Agent.CM, sb.toString());
-//								System.out.println(ssc.toString());
-								//acm.notifyUser(getModelFolderPath(resource), ssc, false);
-							}
+							String assumpCheck = checkAssumptions(resource, queryModelURI, queryOwlFileWithPath, cgIns);
 							
+							// Get the CG info for diagram
+							dbnResults[i] = retrieveCompGraph(resource, cgIns);
 							
-				            
-							// Get the CG for diagram
-							dbnresults[i] = retrieveCompGraph(resource, cgIns);
-							
-							//Results for ouput -> Don't need anymore, we ouput SADL
-//							dbnresults[i+numOfModels] = retrieveValues(resource, cgIns);
-
 							// convert to SADL to insert into dialog window
-							//ResultSet rs = dbnresults[i+numOfModels];
-							ResultSet rs = retrieveValues(resource, cgIns);
-							List<String> sadlDeclaration = new ArrayList<String>();
-							if (rs.getRowCount() > 0) {
-								StringBuilder sb = new StringBuilder("The CGExecution with compGraph ");
-								sb.append(rs.getResultAt(0, 0).toString());
-								sb.append("\n");
-								for (int row = 0; row < rs.getRowCount(); row++) {
-									//StringBuilder sb = new StringBuilder("The CGExecution ");
-									sb.append("    has output (a ");
-									sb.append(rs.getResultAt(row, 1).toString());
-									sb.append(" with ^value ");
-									sb.append(rs.getResultAt(row, 2));
-									sb.append(", with stddev ");
-									sb.append(rs.getResultAt(row, 3));
-									sb.append(")\n");
-								}
-								sb.append(".\n");
-								sadlDeclaration.add(sb.toString());
-							}							
-							for (String sd : sadlDeclaration) {
-								SadlStatementContent ssc = new SadlStatementContent(null, Agent.CM, sd);
-//								AnswerCurationManager acm = (AnswerCurationManager) cmgr.getPrivateKeyValuePair(DialogConstants.ANSWER_CURATION_MANAGER);
-								//System.out.println(ssc.toString());
-								acm.notifyUser(getModelFolderPath(resource), ssc, false);
-							}
+							addResultsToDialog(resource, cgIns, acm);
 							
 							//If assumptions are satisfied, compute sensitivity
-							if ( assumpCheck != null && assumpCheck.getResultAt(0, 0).equals("satisfied") ) {
+							if ( assumpCheck.equals("satisfied") ) {
 					            //Send sensitivity request to DBN
-					            //queryMode = "sensitivity";
 					            cgJson = kgResultsToJson(nodesCSVString, modelsCSVString, "sensitivity", "");
 					            dbnJson = generateDBNjson(cgJson);
 					            String dbnResultsJsonSensitivity = executeDBN(dbnJson);
@@ -1210,75 +1047,25 @@ public class JenaBasedDialogInferenceProcessor extends JenaBasedSadlInferencePro
 					            }
 
 					            saveMetaDataFile(resource,queryModelURI,queryModelFileName); //so we can query the the eqns in the CCG
-					            
-					            ResultSet sensres = retrieveSensitivityResults(resource, cgIns);
-					            String outp = "", nxtoutp = "";
-					            //int opcount = 0;
-					            if (sensres != null && sensres.getRowCount() > 0) {
-									StringBuilder sb = new StringBuilder("The CCG " + cgIns.getLocalName() );
-	
-									for (int row = 0; row < sensres.getRowCount(); row++) {
-										nxtoutp = sensres.getResultAt(row, 0).toString();
-										if (!nxtoutp.equals(outp)) {
-											if (!outp.equals("")) {
-												sb.append("\n  )");
-											}
-											sb.append("\n  has sensitivity (a Sensitivity output " + nxtoutp);
-											outp = nxtoutp;
-											//opcount++;
-										}
-										sb.append("\n      inputSensitivity (a InputSensitivity input ");
-										sb.append(sensres.getResultAt(row, 1).toString()); //input
-										sb.append(", sensitivityValue ");
-										String v = sensres.getResultAt(row, 2).toString();
-										if (v.equals("NaN")) {
-											sb.append("0");
-										}
-										else {
-											sb.append(v);
-										}
-										sb.append(")");
-										
-									}
-									if (!nxtoutp.equals("")) {
-										sb.append("\n  ).\n");
-									}
-									SadlStatementContent ssc = new SadlStatementContent(null, Agent.CM, sb.toString());
-									if (debugMode) {System.out.println(ssc.toString());}
-									//acm.notifyUser(getModelFolderPath(resource), ssc, false);
-					            }
+					            addSensitivityResultsToDialog(resource, cgIns, acm);
 							}//assumptions satisfied
-				            
 							
-							saveMetaDataFile(resource,queryModelURI,queryModelFileName); //so we can query the the eqns in the CCG
+							//saveMetaDataFile(resource,queryModelURI,queryModelFileName); //so we can query the the eqns in the CCG
 
 			            }
 			            else {
-			            	dbnresults = null;
+			            	dbnResults[i] = null;
 			            	//System.err.println("DBN execution failed. Message: " + dbnResultsJson.toString());
 			            }
 					}// end of models loop
-					if (numOfModels < 1) {
-						dbnresults = null;
-						//System.out.println("Unable to assemble a model with current knowledge");
-					}
 					
-					if(resmsg != null && resmsg.equals("Success")) {
-						saveMetaDataFile(resource,queryModelURI,queryModelFileName); //to include sensitivity results
-
-						String projectName = new File(getModelFolderPath(resource)).getParentFile().getName(); // ASKE_P2
-						
-						Resource newRsrc = resource.getResourceSet()
-								.createResource(URI.createPlatformResourceURI(projectName + File.separator + CGMODELS_FOLDER + File.separator + queryModelFileName + ".owl" , false));
-						newRsrc.load(resource.getResourceSet().getLoadOptions());
-						JenaBasedSadlModelProcessor.refreshResource(newRsrc);
-						//SadlUtils fileNameToFileUrl
-						String owlURL = new SadlUtils().fileNameToFileUrl(queryOwlFileWithPath);
-						cmgr.addMapping(owlURL, queryModelURI, "", true, "JBDIP");
-						cmgr.addJenaMapping(queryModelURI, owlURL);	
-						
-						AnswerCurationManager acm = (AnswerCurationManager) cmgr.getPrivateKeyValuePair(DialogConstants.ANSWER_CURATION_MANAGER);
-						acm.addDelayedImportAddition("import \"" + queryModelURI + "\".");
+					
+					//If there were some results, create Eclipse resource, refresh, add mapping to ont-policy.rdf, add import stmt to dialog
+					if(foundAModel) {
+						//saveMetaDataFile(resource,queryModelURI,queryModelFileName); //to include sensitivity results
+						addQueryModelAsResource(resource, queryModelFileName, queryModelURI, queryOwlFileWithPath, cmgr);
+					} else {
+						dbnResults = null;
 					}
 					
 				} else if (outputsList.size() > 0 && docPatterns.size() > 0) { //models from dataset
@@ -1308,16 +1095,7 @@ public class JenaBasedDialogInferenceProcessor extends JenaBasedSadlInferencePro
 						//Individual oinst = createIndividualOfClass(qhmodel, oclass.getURI());
 						//outputInstance.put(oclass,oinst);
 						
-						
-						listOfInputs = strUriList(inpl);
-						listOfOutputs = strUriList(outpl);
-//						System.out.println(listOfInputs);
-//						System.out.println(listOfOutputs);
-	
-						queryStr = BUILD_COMP_GRAPH.replaceAll("LISTOFINPUTS", listOfInputs).replaceAll("LISTOFOUTPUTS", listOfOutputs);
-						com.hp.hpl.jena.query.Query q = QueryFactory.create(queryStr);
-						qexec = QueryExecutionFactory.create(q, getTheJenaModel()); 
-						eqnsResults = com.hp.hpl.jena.query.ResultSetFactory.makeRewindable(qexec.execSelect()) ;
+						eqnsResults = retrieveCG(inpl, outpl);
 						
 						//int ns = eqnsResults.size();
 						//boolean nn = eqnsResults.hasNext();
@@ -1349,27 +1127,19 @@ public class JenaBasedDialogInferenceProcessor extends JenaBasedSadlInferencePro
 							ce = queryModel.createIndividual(cexec);
 							//OntProperty stprop = getTheJenaModel().getOntProperty(METAMODEL_STARTTIME_PROP);
 					
-	//						String DATE_FORMAT_NOW = "yyyy-MM-dd HH:mm:ss";
-	//						Calendar cal = Calendar.getInstance();
-	//						SimpleDateFormat sdf = new SimpleDateFormat(DATE_FORMAT_NOW);
-	//						XSDDateTime tim = sdf.format(cal.getTime());;
-	////						qhmodel.add(ce,stprop,(XSDDateTime)val).asCalendar().getTime())
+							addTimePropertyToCE(ce, getModelProperty(getTheJenaModel(), METAMODEL_STARTTIME_PROP));
 							
+							ingestKGTriple(cgq,getModelProperty(getTheJenaModel(), METAMODEL_EXEC_PROP), ce);
 							
-							execprop = getTheJenaModel().getOntProperty(METAMODEL_EXEC_PROP);
-							if (execprop == null) {
-								System.err.println("Can't find property '" + METAMODEL_EXEC_PROP + "'. Something is wrong.");
-								return null;
-							}
-							else {
-								ingestKGTriple(cgq,execprop,ce);
-							}
-				            
 							//TODO: create output instances and link them to ce
 							//      There is only one output for datasets
 							outputType = oputType.as(OntProperty.class).getRange().toString();
 							oinst = createIndividualOfClass(queryModel,null, null, outputType);
+							OntProperty outputprop = getTheJenaModel().getOntProperty(METAMODEL_OUTPUT_PROP);
 							ingestKGTriple(ce,outputprop,oinst);
+							
+
+							
 							
 							cgIns = queryModel.createIndividual(queryModelPrefix + "CG_" + System.currentTimeMillis(), getTheJenaModel().getOntClass(METAMODEL_CCG));
 							//getTheJenaModel().add(cgIns, RDF.type, getTheJenaModel().getOntClass(METAMODEL_CCG));
@@ -1378,23 +1148,17 @@ public class JenaBasedDialogInferenceProcessor extends JenaBasedSadlInferencePro
 							ingestKGTriple(ce, getTheJenaModel().getOntProperty(METAMODEL_COMPGRAPH_PROP), cgIns);
 							
 							// Retrieve Models & Nodes
-							queryStr = RETRIEVE_MODELS.replaceAll("EQNSLIST", listOfEqns);
-							models = queryKnowledgeGraph(queryStr, getTheJenaModel());
+							modelsCSVString = retrieveCGforDBNSpec(listOfEqns, cgIns, RETRIEVE_MODELS);
+							nodesCSVString = retrieveCGforDBNSpec(listOfEqns, cgIns, RETRIEVE_NODES);
 							
-							queryStr = RETRIEVE_NODES.replaceAll("EQNSLIST", listOfEqns);
-							queryStr = queryStr.replaceAll("COMPGRAPH", "<" + cgIns.getURI() + ">");
-							nodes = queryKnowledgeGraph(queryStr, getTheJenaModel().union(queryModel));
 							
-							modelsCSVString = convertResultSetToString(models);
-							nodesCSVString = convertResultSetToString(nodes);
-	
 							String docUri = triples[0].getSubject().getURI();
 							
-							queryStr = DOCLOCATIONQUERY.replaceAll("DOCINSTANCE", docUri);
+							String queryStr = DOCLOCATIONQUERY.replaceAll("DOCINSTANCE", docUri);
 							
 							ResultSetRewindable fileRes = queryKnowledgeGraph(queryStr, getTheJenaModel());
 							if (fileRes.size() < 1) {
-								dbnresults = null;
+								dbnResults = null;
 								continue;
 							}
 							QuerySolution fsol = fileRes.nextSolution();
@@ -1435,8 +1199,8 @@ public class JenaBasedDialogInferenceProcessor extends JenaBasedSadlInferencePro
 						}
 						// else continue looking
 					}
-					dbnresults = new ResultSet[numOfModels*2];
-					dbnresults = resultsList.toArray(dbnresults);
+					dbnResults = new ResultSet[numOfModels*2];
+					dbnResults = resultsList.toArray(dbnResults);
 				}
 				
 			
@@ -1453,15 +1217,15 @@ public class JenaBasedDialogInferenceProcessor extends JenaBasedSadlInferencePro
 	//			// create ResultSet
 				
 				if (results == null || results.length == 0) {
-					results = dbnresults;
+					results = dbnResults;
 				}
 				else {
-					Object[] compositeResults = new Object[results.length + dbnresults.length];
+					Object[] compositeResults = new Object[results.length + dbnResults.length];
 					int idx = 0;
 					for (Object result : results) {
 						compositeResults[idx++] = result;
 					}
-					for (Object result : dbnresults) {
+					for (Object result : dbnResults) {
 						compositeResults[idx++] = result;
 					}
 					results = compositeResults;
@@ -1477,6 +1241,194 @@ public class JenaBasedDialogInferenceProcessor extends JenaBasedSadlInferencePro
 
 		}
 		return null;
+	}
+
+	private void addTimePropertyToCE(Individual execInstance, OntProperty timeProperty) throws TranslationException {
+		String DATE_FORMAT_NOW = "yyyy-MM-dd HH:mm:ss";
+		Calendar cal = Calendar.getInstance();
+		SimpleDateFormat sdf = new SimpleDateFormat(DATE_FORMAT_NOW);
+		String time = sdf.format(cal.getTime());
+		OntResource rng = timeProperty.as(OntProperty.class).getRange();
+		com.hp.hpl.jena.rdf.model.Literal timeLiteral = SadlUtils.getLiteralMatchingDataPropertyRange(getTheJenaModel(), rng.getURI(), time);
+		ingestKGTriple(execInstance, timeProperty, timeLiteral);
+	}
+
+	private void addQueryModelAsResource(Resource resource, String queryModelFileName, String queryModelURI,
+			String queryOwlFileWithPath, ConfigurationManagerForIDE cmgr)
+			throws IOException, URISyntaxException, ConfigurationException {
+		String projectName = new File(getModelFolderPath(resource)).getParentFile().getName(); // ASKE_P2
+		
+		Resource newRsrc = resource.getResourceSet()
+				.createResource(URI.createPlatformResourceURI(projectName + File.separator + CGMODELS_FOLDER + File.separator + queryModelFileName + ".owl" , false));
+		newRsrc.load(resource.getResourceSet().getLoadOptions());
+		JenaBasedSadlModelProcessor.refreshResource(newRsrc);
+		String owlURL = new SadlUtils().fileNameToFileUrl(queryOwlFileWithPath);
+		cmgr.addMapping(owlURL, queryModelURI, "", true, "JBDIP");
+		cmgr.addJenaMapping(queryModelURI, owlURL);	
+		
+		AnswerCurationManager acm = (AnswerCurationManager) cmgr.getPrivateKeyValuePair(DialogConstants.ANSWER_CURATION_MANAGER);
+		acm.addDelayedImportAddition("import \"" + queryModelURI + "\".");
+	}
+
+	private void addSensitivityResultsToDialog(Resource resource, Individual cgIns, AnswerCurationManager acm) throws Exception {
+		ResultSet sensres = retrieveSensitivityResults(resource, cgIns);
+		String outp = "", nxtoutp = "";
+		//int opcount = 0;
+		if (sensres != null && sensres.getRowCount() > 0) {
+			StringBuilder sb = new StringBuilder("The CCG " + cgIns.getLocalName() );
+
+			for (int row = 0; row < sensres.getRowCount(); row++) {
+				nxtoutp = sensres.getResultAt(row, 0).toString();
+				if (!nxtoutp.equals(outp)) {
+					if (!outp.equals("")) {
+						sb.append("\n  )");
+					}
+					sb.append("\n  has sensitivity (a Sensitivity output " + nxtoutp);
+					outp = nxtoutp;
+					//opcount++;
+				}
+				sb.append("\n      inputSensitivity (a InputSensitivity input ");
+				sb.append(sensres.getResultAt(row, 1).toString()); //input
+				sb.append(", sensitivityValue ");
+				String v = sensres.getResultAt(row, 2).toString();
+				if (v.equals("NaN")) {
+					sb.append("0");
+				}
+				else {
+					sb.append(v);
+				}
+				sb.append(")");
+				
+			}
+			if (!nxtoutp.equals("")) {
+				sb.append("\n  ).\n");
+			}
+			SadlStatementContent ssc = new SadlStatementContent(null, Agent.CM, sb.toString());
+			if (debugMode) {System.out.println(ssc.toString());}
+			//acm.notifyUser(getModelFolderPath(resource), ssc, false);
+		}
+	}
+
+	private void addResultsToDialog(Resource resource, Individual cgIns, AnswerCurationManager acm) throws Exception {
+		ResultSet rs = retrieveValues(resource, cgIns);
+		List<String> sadlDeclaration = new ArrayList<String>();
+		if (rs.getRowCount() > 0) {
+			StringBuilder sb = new StringBuilder("The CGExecution with compGraph ");
+			sb.append(rs.getResultAt(0, 0).toString());
+			sb.append("\n");
+			for (int row = 0; row < rs.getRowCount(); row++) {
+				//StringBuilder sb = new StringBuilder("The CGExecution ");
+				sb.append("    has output (a ");
+				sb.append(rs.getResultAt(row, 1).toString());
+				sb.append(" with ^value ");
+				sb.append(rs.getResultAt(row, 2));
+				sb.append(", with stddev ");
+				sb.append(rs.getResultAt(row, 3));
+				sb.append(")\n");
+			}
+			sb.append(".\n");
+			sadlDeclaration.add(sb.toString());
+		}							
+		for (String sd : sadlDeclaration) {
+			SadlStatementContent ssc = new SadlStatementContent(null, Agent.CM, sd);
+//			AnswerCurationManager acm = (AnswerCurationManager) cmgr.getPrivateKeyValuePair(DialogConstants.ANSWER_CURATION_MANAGER);
+			//System.out.println(ssc.toString());
+			acm.notifyUser(getModelFolderPath(resource), ssc, false);
+		}
+	}
+
+	private String checkAssumptions(Resource resource, String queryModelURI, String queryOwlFileWithPath, Individual cgIns) throws Exception {
+		ResultSet assumpCheck = null;
+		assumpCheck = checkModelAssumptions(resource, cgIns.toString(), queryModelURI, queryOwlFileWithPath);
+		if (assumpCheck != null) {
+			
+			StringBuilder sb = new StringBuilder("The CCG " + cgIns.getLocalName() + " has assumptionsSatisfied ");
+			//StringBuilder sb = new StringBuilder("the CCG " + cgIns.getLocalName() + " has assumptionsSatisfied ");
+			if( assumpCheck.getResultAt(0, 0).equals("satisfied")) {
+				sb.append("true");
+				RDFNode obj = getTheJenaModel().createTypedLiteral(true);
+				ingestKGTriple(cgIns, getTheJenaModel().getOntProperty(METAMODEL_ASSUMPTIONSSATISFIED_PROP), obj);
+			} else {
+				sb.append(" false unsatisfiedAssumption \"");
+				sb.append(assumpCheck.getResultAt(0, 1).toString());
+				sb.append("\"");
+				String trace = assumpCheck.getResultAt(0, 1).toString();
+				trace = trace.substring(1, trace.length()).replaceAll("'", " ");
+				trace = "\"" + trace + "\"";
+				
+				RDFNode obj = getTheJenaModel().createTypedLiteral(trace);
+				ingestKGTriple(cgIns, getTheJenaModel().getOntProperty(METAMODEL_ASSUMPTIONUNSATISFIED_PROP), obj);
+			}
+			sb.append(".");
+			//sadlDeclaration.add(sb.toString());
+			SadlStatementContent ssc = new SadlStatementContent(null, Agent.CM, sb.toString());
+			if (debugMode) {System.out.println(ssc.toString());}
+			//acm.notifyUser(getModelFolderPath(resource), ssc, false);
+		}
+		return assumpCheck.getResultAt(0, 0).toString();
+	}
+
+	private OntClass getModelClass(OntModel model, String uri) {
+		OntClass res = model.getOntClass(uri);
+		if (res == null) {
+			System.err.println("Can't find property '" + uri + "'. Something is wrong.");
+			return null;
+		} else {
+			return res;
+		}
+	}
+	private OntProperty getModelProperty(OntModel model, String uri) {
+		OntProperty res = model.getOntProperty(uri);
+		if (res == null) {
+			System.err.println("Can't find property '" + uri + "'. Something is wrong.");
+			return null;
+		} else {
+			return res;
+		}
+	}
+
+	private int getNumberOfModels(Map<RDFNode, String[]> dbnEqns) {
+		int numOfModels = 1;
+		if (dbnEqns.isEmpty())
+			numOfModels = 0;
+		for (RDFNode dbnk :  dbnEqns.keySet()) {
+			numOfModels *= dbnEqns.get(dbnk).length;
+		}
+		return numOfModels;
+	}
+
+	private void createCEoutputInstances(List<RDFNode> outputsList, Individual ce, Map<String, String> class2lbl, Map<String, String[]> lbl2value) {
+		
+		OntProperty outputprop = getTheJenaModel().getOntProperty(METAMODEL_OUTPUT_PROP);
+
+		for(RDFNode outType : outputsList) {
+			if( class2lbl.containsKey(outType.toString())) {
+				
+				String rng = outType.as(OntProperty.class).getRange().toString(); //e.g. :Altitude
+				
+				Individual outpIns = createIndividualOfClass(queryModel, null, null, rng); //e.g. instance of :Altitude
+				ingestKGTriple(ce, outputprop, outpIns);
+				
+				String cls = class2lbl.get(outType.toString());
+				String[] ms = lbl2value.get(cls);  //class2lbl.get(o.toString()));
+				queryModel.add(outpIns, getTheJenaModel().getProperty(VALUE_PROP), ms[0] );
+				queryModel.add(outpIns, getTheJenaModel().getProperty(STDDEV_PROP), ms[1] );
+				if(ms[2] != null)
+					queryModel.add(outpIns, getTheJenaModel().getProperty(VARERROR_PROP), ms[2] );
+			}
+		}
+	}
+
+	private String retrieveCGforDBNSpec(String listOfEqns, Individual cgIns, String queryTemplate) {
+		String queryStr;
+		com.hp.hpl.jena.query.ResultSetRewindable rset;
+		String csvString;
+		queryStr = queryTemplate.replaceAll("EQNSLIST", listOfEqns);
+		queryStr = queryStr.replaceAll("COMPGRAPH", "<" + cgIns.getURI() + ">");
+		rset = queryKnowledgeGraph(queryStr, getTheJenaModel().union(queryModel));
+		csvString = convertResultSetToString(rset);
+		if (debugMode) {System.out.println(csvString);}
+		return csvString;
 	}
 
 
@@ -1665,29 +1617,32 @@ private RDFNode getObjectAsLiteralOrResource(Node property, Node object) {
 
 
 	private String[] buildEqnsLists(int numOfModels, Map<RDFNode, String[]> dbnEqns) {
-		String[] modelEqnList = new String[numOfModels];
-		RDFNode prevKey;
-		Map<RDFNode, Integer> dbnEqnIdx = new HashMap<RDFNode,Integer>();
-
-		for(RDFNode dbnk : dbnEqns.keySet()) 
-			dbnEqnIdx.put(dbnk, 0);
-		
-		for(int m=0; m<numOfModels; m++) {
-			modelEqnList[m] = "";
-//			modelEqnList[m] = dbnEqn[ dbnEqnIdx[] ]
-			prevKey = null;
-			for(RDFNode dbnk : dbnEqns.keySet()) {
-				modelEqnList[m] += "<" + dbnEqns.get(dbnk)[ dbnEqnIdx.get(dbnk) ] + ">,";
-				
-				if( prevKey == null || dbnEqnIdx.get(prevKey) == 0 ) {
-				    if( dbnEqnIdx.get(dbnk) < dbnEqns.get(dbnk).length -1)
-				    	dbnEqnIdx.put(dbnk, dbnEqnIdx.get(dbnk)+1 );
-				    else
-				    	dbnEqnIdx.put(dbnk, 0);
-				    prevKey = dbnk;
+		String[] modelEqnList = null;
+		if (numOfModels > 0) {
+			modelEqnList = new String[numOfModels];
+			RDFNode prevKey;
+			Map<RDFNode, Integer> dbnEqnIdx = new HashMap<RDFNode,Integer>();
+	
+			for(RDFNode dbnk : dbnEqns.keySet()) 
+				dbnEqnIdx.put(dbnk, 0);
+			
+			for(int m=0; m<numOfModels; m++) {
+				modelEqnList[m] = "";
+	//			modelEqnList[m] = dbnEqn[ dbnEqnIdx[] ]
+				prevKey = null;
+				for(RDFNode dbnk : dbnEqns.keySet()) {
+					modelEqnList[m] += "<" + dbnEqns.get(dbnk)[ dbnEqnIdx.get(dbnk) ] + ">,";
+					
+					if( prevKey == null || dbnEqnIdx.get(prevKey) == 0 ) {
+					    if( dbnEqnIdx.get(dbnk) < dbnEqns.get(dbnk).length -1)
+					    	dbnEqnIdx.put(dbnk, dbnEqnIdx.get(dbnk)+1 );
+					    else
+					    	dbnEqnIdx.put(dbnk, 0);
+					    prevKey = dbnk;
+					}
 				}
+				modelEqnList[m] = modelEqnList[m].substring(0,modelEqnList[m].length()-1);
 			}
-			modelEqnList[m] = modelEqnList[m].substring(0,modelEqnList[m].length()-1);
 		}
 		return modelEqnList;
 	}
