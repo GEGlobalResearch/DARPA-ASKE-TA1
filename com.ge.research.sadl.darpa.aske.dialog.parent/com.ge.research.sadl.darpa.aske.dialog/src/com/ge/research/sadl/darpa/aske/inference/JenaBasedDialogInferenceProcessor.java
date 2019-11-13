@@ -294,9 +294,9 @@ public class JenaBasedDialogInferenceProcessor extends JenaBasedSadlInferencePro
 			"prefix rdf:<http://www.w3.org/1999/02/22-rdf-syntax-ns#>\n"+
 			"prefix list:<http://sadl.org/sadllistmodel#>\n" +
 			"\n" + 
-			"select distinct ?Node (str(?NUnits) as ?NodeOutputUnits) ?Child (str(?CUnits) as ?ChildInputUnits) ?Distribution ?Lower ?Upper ?Eq ?Value \n" +
+			"select distinct ?Node (str(?NUnits) as ?NodeOutputUnits) ?Child (str(?CUnits) as ?ChildInputUnits) ?Distribution ?Lower ?Upper ?Eq ?Value (str(?QUnits) as ?QueryUnits) \n" +
 			" where {\n" + 
-			"  {select distinct ?Node ?NUnits ?Child ?CUnits ?Distribution ?Lower ?Upper ?Eq where { \n" + 
+			"  {select distinct ?Node ?NUnits ?Child ?CUnits ?Distribution ?Lower ?Upper ?Eq ?QUnits where { \n" + 
 			"     ?Eq imp:arguments ?EI1.\n" + 
 			"     ?EI1 list:rest*/list:first ?EI2.\n" + 
 			"     ?EI2 imp:augmentedType ?EI3. \n" + 
@@ -311,13 +311,8 @@ public class JenaBasedDialogInferenceProcessor extends JenaBasedSadlInferencePro
 			"    optional{\n" + 
 			"       ?Q mm:input ?UQNode.\n" + 
 			"       ?Var ?Node ?UQNode.\n" + 
-			"       ?UQNode imp:unit ?InputUnitsQuery.\n" + 
+			"       ?UQNode imp:unit ?QUnits .\n" + 
 			"     }\n" + 
-//			"     optional{\n" + 
-//			"       ?Q mm:input ?UQNode.\n" + 
-//			"       ?Var ?Node ?UQNode.\n" + 
-//			"       ?UQNode imp:value ?Value\n" + 
-//			"     }\n" + 
 			"     ?Eq imp:returnTypes ?EO1.\n" + 
 			"     ?EO1 list:rest*/list:first ?EO2.\n" + 
 			"     ?EO2 imp:augmentedType ?EO3. \n" + 
@@ -343,11 +338,10 @@ public class JenaBasedDialogInferenceProcessor extends JenaBasedSadlInferencePro
 			"     ?RB owl:hasValue ?Range.\n" + 
 			"     ?Range cg:lower ?Lower.\n" + 
 			"     ?Range cg:upper ?Upper.\n" +
-			"     optional {?DBN rdfs:subClassOf/owl:hasValue/imp:unit ?DBNUnits.}\n" + 
-			"     bind( if(bound(?InputUnitsQuery), ?InputUnitsQuery, ?DBNUnits) as ?NUnits ).\n " +   
+			"     optional {?DBN rdfs:subClassOf/owl:hasValue/imp:unit ?NUnits.}\n" + 
 			"  }} \n" + 
 			"  union {\n" + 
-			"  select distinct ?Node ?NUnits ?Child ?CUnits ?Distribution ?Lower ?Upper ?Eq where {\n" + 
+			"  select distinct ?Node ?NUnits ?Child ?CUnits ?Distribution ?Lower ?Upper ?Eq ?QUnits where {\n" + 
 			"     ?Eq imp:arguments ?EI1.\n" + 
 			"     ?EI1 list:rest*/list:first ?EI2.\n" + 
 			"     ?EI2 imp:augmentedType ?EI3. \n" + 
@@ -367,6 +361,13 @@ public class JenaBasedDialogInferenceProcessor extends JenaBasedSadlInferencePro
 			"		\n" + 
 			"     filter (?Eq in ( EQNSLIST )) \n" + 
 			"\n" + 
+			"    ?Q mm:execution/mm:compGraph ?CG. \n" + 
+			"    filter (?CG in (COMPGRAPH)).\n" + 
+			"    optional{\n" + 
+			"       ?Q mm:input ?UQNode.\n" + 
+			"       ?Var ?Node ?UQNode.\n" + 
+			"       ?UQNode imp:unit ?QUnits .\n" + 
+			"     }\n" + 
 			"     ?DBN rdfs:subClassOf ?EB. \n" + 
 			"     ?EB owl:onProperty cg:hasEquation.  \n" + 
 			"     ?EB owl:allValuesFrom ?EqC. \n" + 
@@ -390,7 +391,7 @@ public class JenaBasedDialogInferenceProcessor extends JenaBasedSadlInferencePro
 			"     ?Range cg:upper ?Upper. \n" + 
 			"  }}\n" + 
 			"  union {\n" + 
-			"  select distinct ?Eq ?Node ?NUnits  ?CUnits ?Distribution ?Lower ?Upper where { \n" + 
+			"  select distinct ?Eq ?Node ?NUnits  ?Distribution ?Lower ?Upper ?QUnits where { \n" + 
 			"     ?Eq imp:returnTypes ?EO1.\n" + 
 			"     ?EO1 list:rest*/list:first ?EO2.\n" + 
 			"     ?EO2 imp:augmentedType ?EO3. \n" + 
@@ -413,8 +414,8 @@ public class JenaBasedDialogInferenceProcessor extends JenaBasedSadlInferencePro
 			"    optional{\n" + 
 			"       ?Q mm:input ?UQNode.\n" + 
 			"       ?Var ?Node ?UQNode.\n" + 
-			"       ?UQNode imp:unit ?CUnits.\n" + 
-			"     }" + 
+			"       ?UQNode imp:unit ?QUnits.\n" + 
+			"     }\n" + 
 			"     ?DBN rdfs:subClassOf ?EB. \n" + 
 			"     ?EB owl:onProperty cg:hasEquation.  \n" + 
 			"     ?EB owl:allValuesFrom ?EqClass.\n" + 
