@@ -35,21 +35,6 @@
   <owl:Class rdf:ID="Density">
     <rdfs:subClassOf rdf:resource="sadlimplicitmodel#UnittedQuantity"/>
   </owl:Class>
-  <owl:Class rdf:nodeID="A0">
-    <rdfs:subClassOf>
-      <owl:Restriction>
-        <owl:allValuesFrom rdf:nodeID="A0"/>
-        <owl:onProperty rdf:resource="sadllistmodel#rest"/>
-      </owl:Restriction>
-    </rdfs:subClassOf>
-    <rdfs:subClassOf>
-      <owl:Restriction>
-        <owl:allValuesFrom rdf:resource="sadlimplicitmodel#DataDescriptor"/>
-        <owl:onProperty rdf:resource="sadllistmodel#first"/>
-      </owl:Restriction>
-    </rdfs:subClassOf>
-    <rdfs:subClassOf rdf:resource="sadllistmodel#List"/>
-  </owl:Class>
   <owl:Class rdf:ID="Time">
     <rdfs:subClassOf rdf:resource="sadlimplicitmodel#UnittedQuantity"/>
   </owl:Class>
@@ -152,6 +137,21 @@
   </owl:Class>
   <owl:Class rdf:ID="Constant">
     <rdfs:subClassOf rdf:resource="sadlimplicitmodel#UnittedQuantity"/>
+  </owl:Class>
+  <owl:Class rdf:nodeID="A0">
+    <rdfs:subClassOf>
+      <owl:Restriction>
+        <owl:allValuesFrom rdf:nodeID="A0"/>
+        <owl:onProperty rdf:resource="sadllistmodel#rest"/>
+      </owl:Restriction>
+    </rdfs:subClassOf>
+    <rdfs:subClassOf>
+      <owl:Restriction>
+        <owl:allValuesFrom rdf:resource="sadlimplicitmodel#DataDescriptor"/>
+        <owl:onProperty rdf:resource="sadllistmodel#first"/>
+      </owl:Restriction>
+    </rdfs:subClassOf>
+    <rdfs:subClassOf rdf:resource="sadllistmodel#List"/>
   </owl:Class>
   <owl:Class rdf:about="#Derivative">
     <rdfs:subClassOf>

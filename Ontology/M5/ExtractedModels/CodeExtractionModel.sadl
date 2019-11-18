@@ -59,7 +59,8 @@ CodeVariable  is a type of CodeElement,
 	described by quantityKind (note "this should be qudt:QuantityKind") with a single value of type ScientificConcept,
 	described by reference with values of type Reference.   
 
-{ClassField, MethodArgument, MethodVariable} are types of CodeVariable. 	
+{ClassField, MethodArgument, MethodVariable, ConstantVariable} are types of CodeVariable.
+constantValue describes ConstantVariable with values of type UnittedQuantity.
 
 //External findFirstLocation (CodeVariable cv) returns int: "http://ToBeImplemented".
 

@@ -82,8 +82,13 @@ import com.github.javaparser.ast.comments.BlockComment;
 import com.github.javaparser.ast.comments.Comment;
 import com.github.javaparser.ast.expr.AssignExpr;
 import com.github.javaparser.ast.expr.BinaryExpr;
+import com.github.javaparser.ast.expr.BooleanLiteralExpr;
+import com.github.javaparser.ast.expr.DoubleLiteralExpr;
 import com.github.javaparser.ast.expr.EnclosedExpr;
 import com.github.javaparser.ast.expr.Expression;
+import com.github.javaparser.ast.expr.IntegerLiteralExpr;
+import com.github.javaparser.ast.expr.LiteralExpr;
+import com.github.javaparser.ast.expr.LongLiteralExpr;
 import com.github.javaparser.ast.expr.MethodCallExpr;
 import com.github.javaparser.ast.expr.NameExpr;
 import com.github.javaparser.ast.expr.VariableDeclarationExpr;
@@ -138,6 +143,8 @@ public class JavaModelExtractorJP implements IModelFromCodeExtractor {
 	private Map<Node,Individual> methodsFound = new HashMap<Node, Individual>();
 	private Individual methodWithBodyInProcess = null;
 	private boolean sendCommentsToTextService = false;	// change to true to send comments to text-to-triples service
+	private Map<Individual, LiteralExpr> potentialConstants = new HashMap<Individual, LiteralExpr>();
+	private List<Individual> discountedPotentialConstants = new ArrayList<Individual>();
 	
 	public JavaModelExtractorJP(AnswerCurationManager acm, Map<String, String> preferences) {
 		setCurationMgr(acm);
@@ -163,9 +170,58 @@ public class JavaModelExtractorJP implements IModelFromCodeExtractor {
 		String defPrefix = getCodeModelPrefix() + "_cmnt";
 		getCurationMgr().getTextProcessor().setTextModelPrefix(defPrefix);
 		parse(inputIdentifier, getCurationMgr().getOwlModelsFolder(), content);
+		try {
+			addConstants();
+		} catch (TranslationException e) {
+			throw new IOException(e.getMessage(), e);
+		}
 		return true;
 	}
 	
+	private void addConstants() throws TranslationException {
+		if (potentialConstants.size() > 0) {
+			if (discountedPotentialConstants.size() > 0) {
+				for (Individual inst : discountedPotentialConstants) {
+					potentialConstants.remove(inst);
+				}
+			}
+			System.out.println("Constants:");
+			for (Individual inst : potentialConstants.keySet()) {
+				LiteralExpr value = potentialConstants.get(inst);
+				System.out.println("   " + inst.getLocalName() + "=" + value.toString());
+				Literal lval;
+				if (value instanceof IntegerLiteralExpr) {
+					lval = SadlUtils.getLiteralMatchingDataPropertyRange(getCurrentCodeModel(),XSD.xint.getURI(), value.toString());
+				}
+				else if (value instanceof DoubleLiteralExpr) {
+					lval = SadlUtils.getLiteralMatchingDataPropertyRange(getCurrentCodeModel(),XSD.xdouble.getURI(), value.toString());
+				}
+				else if (value instanceof LongLiteralExpr) {
+					lval = SadlUtils.getLiteralMatchingDataPropertyRange(getCurrentCodeModel(),XSD.xlong.getURI(), value.toString());
+				}
+				else if (value instanceof BooleanLiteralExpr) {
+					lval = SadlUtils.getLiteralMatchingDataPropertyRange(getCurrentCodeModel(),XSD.xboolean.getURI(), value.toString());
+				}
+				else {
+					lval = SadlUtils.getLiteralMatchingDataPropertyRange(getCurrentCodeModel(),XSD.xstring.getURI(), value.toString());
+				}
+				inst.addRDFType(getConstantVariableClass());
+				Individual uq = createUnittedQuantity(lval, null);
+				inst.addProperty(getConstantValueProperty(), uq);
+			}
+		}
+	}
+
+	private Individual createUnittedQuantity(Literal lval, String unit) {
+		OntClass uqcls = getUnittedQuantityClass();
+		Individual uqinst = getCurrentCodeModel().createIndividual(uqcls);
+		uqinst.addProperty(getUnittedQuantityValueProperty(), lval);
+		if (unit != null) {
+			uqinst.addProperty(getUnittedQuantityUnitProperty(), unit);
+		}
+		return uqinst;
+	}
+
 	//use ASTParse to parse string
 	private void parse(String inputIdentifier, String modelFolder, String javaCodeContent) throws IOException, ConfigurationException {
 		try {
@@ -355,6 +411,12 @@ public class JavaModelExtractorJP implements IModelFromCodeExtractor {
 			setCodeMetaModelPrefix(DialogConstants.CODE_EXTRACTION_MODEL_PREFIX);
 			OntModel importedOntModel = getCodeModelConfigMgr().getOntModel(getCodeMetaModelUri(), Scope.INCLUDEIMPORTS);
 			addImportToJenaModel(getCodeModelName(), getCodeMetaModelUri(), getCodeMetaModelPrefix(), importedOntModel);
+			OntModel sadlImplicitModel = getCodeModelConfigMgr().getOntModel(getSadlImplicitModelUri(), Scope.INCLUDEIMPORTS);
+			addImportToJenaModel(getCodeModelName(), getSadlImplicitModelUri(), 
+					getCodeModelConfigMgr().getGlobalPrefix(getSadlImplicitModelUri()), sadlImplicitModel);
+			OntModel sadlListModel = getCodeModelConfigMgr().getOntModel(getSadlListModelUri(), Scope.INCLUDEIMPORTS);
+			addImportToJenaModel(getCodeModelName(), getSadlListModelUri(), 
+					getCodeModelConfigMgr().getGlobalPrefix(getSadlListModelUri()), sadlListModel);
 		}
 		else {
 			setCurrentCodeModel(getCurationMgr().getExtractionProcessor().getCodeModel());
@@ -512,6 +574,23 @@ public class JavaModelExtractorJP implements IModelFromCodeExtractor {
 		else if (childNode instanceof AssignExpr) {
 			AssignExpr ass = (AssignExpr)childNode;
 			List<Node> assChildren = ass.getChildNodes();
+			if (assChildren.size() == 2) {
+				Node n0 = assChildren.get(0);
+				Node n1 = assChildren.get(1);
+				if (n0 instanceof NameExpr) {
+					String nm = ((NameExpr)n0).getNameAsString();
+					Individual varInst = findDefinedVariable(nm, containingInst);
+					if (n1 instanceof LiteralExpr) {
+						if (varInst != null) {
+							System.out.println(varInst.getLocalName() + ": " + ass.toString());
+							addPotentialConstant(varInst, (LiteralExpr)n1);
+						}
+					}
+					else {
+						removePotentalConstant(varInst);
+					}
+				}
+			}
 			for (int j = 0; j < assChildren.size(); j++) {
 				processBlockChild(assChildren.get(j), containingInst, (j == 0 ? USAGE.Reassigned : USAGE.Used));					
 			}
@@ -566,6 +645,21 @@ public class JavaModelExtractorJP implements IModelFromCodeExtractor {
 			logger.debug("Block child unhandled Node '" + childNode.toString().trim() + "' of type " + childNode.getClass().getCanonicalName());
 		}
 		investigateComments(childNode, containingInst);
+	}
+
+	private void removePotentalConstant(Individual varInst) {
+		if (!discountedPotentialConstants.contains(varInst)) {
+			discountedPotentialConstants.add(varInst);
+		}
+	}
+
+	private void addPotentialConstant(Individual varInst, LiteralExpr n1) {
+		if (potentialConstants.containsKey(varInst)) {
+			removePotentalConstant(varInst);
+		}
+		else {
+			potentialConstants.put(varInst, n1);
+		}
 	}
 
 	private void addNodeToPostProcessingList(Node expr, Individual codeBlock) {
@@ -982,6 +1076,10 @@ public class JavaModelExtractorJP implements IModelFromCodeExtractor {
 		return getCurrentCodeModel().getOntProperty(getCodeMetaModelUri() + "#containedIn");
 	}
 
+	private Property getConstantValueProperty() {
+		return getCurrentCodeModel().getOntProperty(getCodeMetaModelUri() + "#constantValue");
+	}
+
 	private Property getReturnTypeProperty() {
 		return getCurrentCodeModel().getOntProperty(getCodeMetaModelUri() + "#cmReturnTypes");
 	}
@@ -1025,9 +1123,25 @@ public class JavaModelExtractorJP implements IModelFromCodeExtractor {
 	private OntClass getCodeVariableClass() {
 		return getCurrentCodeModel().getOntClass(getCodeMetaModelUri() + "#CodeVariable");
 	}
+	
+	private OntClass getUnittedQuantityClass() {
+		return getCurrentCodeModel().getOntClass(getSadlImplicitModelUri() + "#UnittedQuantity");
+	}
+
+	private Property getUnittedQuantityUnitProperty() {
+		return getCurrentCodeModel().getOntProperty(getSadlImplicitModelUri() + "#unit");
+	}
+
+	private Property getUnittedQuantityValueProperty() {
+		return getCurrentCodeModel().getOntProperty(getSadlImplicitModelUri() + "#value");
+	}
 
 	private OntClass getMethodVariableClass() {
 		return getCurrentCodeModel().getOntClass(getCodeMetaModelUri() + "#MethodVariable");
+	}
+
+	private Resource getConstantVariableClass() {
+		return getCurrentCodeModel().getOntClass(getCodeMetaModelUri() + "#ConstantVariable");
 	}
 
 	private Comment getComment(Node node) {
@@ -1136,6 +1250,13 @@ public class JavaModelExtractorJP implements IModelFromCodeExtractor {
 		this.codeModelPrefix = codeModelPrefix;
 	}
 
+	/**
+	 * Method to add an import to the model identified by modelName
+	 * @param modelName
+	 * @param importUri
+	 * @param importPrefix
+	 * @param importedOntModel
+	 */
 	private void addImportToJenaModel(String modelName, String importUri, String importPrefix, Model importedOntModel) {
 		getCurrentCodeModel().getDocumentManager().addModel(importUri, importedOntModel, true);
 		Ontology modelOntology = getCurrentCodeModel().createOntology(modelName);
@@ -1157,6 +1278,14 @@ public class JavaModelExtractorJP implements IModelFromCodeExtractor {
 
 	private String getCodeMetaModelUri() {
 		return codeMetaModelUri;
+	}
+	
+	private String getSadlImplicitModelUri() {
+		return "http://sadl.org/sadlimplicitmodel";
+	}
+
+	private String getSadlListModelUri() {
+		return "http://sadl.org/sadllistmodel";
 	}
 
 	private void setCodeMetaModelUri(String codeMetaModelUri) {

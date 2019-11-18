@@ -112,6 +112,7 @@ import com.ge.research.sadl.processing.ISadlInferenceProcessor;
 import com.ge.research.sadl.processing.OntModelProvider;
 import com.ge.research.sadl.processing.SadlConstants;
 import com.ge.research.sadl.processing.SadlInferenceException;
+import com.ge.research.sadl.reasoner.CircularDependencyException;
 import com.ge.research.sadl.reasoner.ConfigurationException;
 import com.ge.research.sadl.reasoner.ConfigurationItem;
 import com.ge.research.sadl.reasoner.IConfigurationManager;
@@ -184,6 +185,8 @@ public class AnswerCurationManager {
 	private Map<String, OntModel> extractionModelMap = new HashMap<String, OntModel>();
 	private Map<String, String> fileLocalityMap = new HashMap<String, String>();
 	private OntModel domainModel = null;
+	private boolean lookForSubclassInArticledClasses = true;	// should a domain of a property be replaced with a subclass
+																// that has appeared in other arguments augmented types
     
 	public AnswerCurationManager (String modelFolder, IConfigurationManagerForIDE configMgr, XtextResource resource, Map<String,String> prefs) {
 		setOwlModelsFolder(modelFolder);
@@ -601,7 +604,8 @@ public class AnswerCurationManager {
 						notifyUser(codeModelFolder, "The following methods deemed of interest were found in the extraction:", true);
 						for (int r = 0; r < results.getRowCount(); r++) {
 							String methodName = results.getResultAt(r, 0).toString();
-							String javaCode = results.getResultAt(r, 3).toString();
+							Object script = results.getResultAt(r, 3);
+							String javaCode = script != null ? script.toString() : null;
 							if (javaCode == null || !(javaCode.length() > 0)) {
 								// get code from fileContent
 								try {
@@ -1263,7 +1267,7 @@ public class AnswerCurationManager {
 		sb.append("(");
 		clearCodeModelReasoner();
 
-		List<String> articledClasses = new ArrayList<String>();
+		List<OntResource> articledClasses = new ArrayList<OntResource>();
 		logger.debug(inputResults != null ? inputResults.toStringWithIndent(5) : "no results");
 		if (inputResults != null) {
 			inputResults.setShowNamespaces(false);
@@ -1355,7 +1359,7 @@ public class AnswerCurationManager {
 	 * @throws IOException 
 	 * @throws InvalidInputException 
 	 */
-	private String getAugmentedTypeFromLocalitySearch(String name, String script, String locality, List<String> articledClasses) throws InvalidInputException, IOException {
+	private String getAugmentedTypeFromLocalitySearch(String name, String script, String locality, List<OntResource> articledClasses) throws InvalidInputException, IOException {
 		// search the locality for the argName
 		EquationVariableContextResponse evc = getTextProcessor().equationVariableContext(name, locality);
 		if (evc != null) {
@@ -1435,7 +1439,7 @@ public class AnswerCurationManager {
 	 * @param articledClasses
 	 * @return
 	 */
-	private String findOntModelResourceWithMatchingLocalname(String resourceName, String avoidanceName, List<String> articledClasses) {
+	private String findOntModelResourceWithMatchingLocalname(String resourceName, String avoidanceName, List<OntResource> articledClasses) {
 		OntModel dm = getDomainModel();
 		if (dm != null) {
 			OntResource resourceFound = null;
@@ -1471,7 +1475,7 @@ public class AnswerCurationManager {
 		return null;
 	}
 
-	private String resourceToAugmentedTypeContent(OntModel dm, String name, OntResource resourceFound, List<String> articledClasses) {
+	private String resourceToAugmentedTypeContent(OntModel dm, String name, OntResource resourceFound, List<OntResource> articledClasses) {
 		StringBuilder sb = new StringBuilder();
 		String prefix = getConfigurationManager().getGlobalPrefix(resourceFound.getNameSpace());
 		if (resourceFound.getLocalName().equals(name)) {
@@ -1485,15 +1489,21 @@ public class AnswerCurationManager {
 			while (dmitr.hasNext()) {
 				RDFNode domain = dmitr.nextStatement().getObject();
 				if (domain.isURIResource()) {
+					if (lookForSubclassInArticledClasses && domain.asResource().canAs(OntResource.class)) {
+						OntResource subclass = findSubclassInArticledClasses(articledClasses, domain.asResource().as(OntResource.class));
+						if (subclass != null) {
+							domain = subclass;
+						}
+					}
 					String ln = domain.asResource().getLocalName();
-					if (!articledClasses.contains(ln)) {
+					if (!articledClasses.contains(domain)) {
 						if (TextProcessor.isVowel(ln.charAt(0))) {
 							sb.append(" of an ");
 						}
 						else {
 							sb.append(" of a ");
 						}
-						articledClasses.add(ln);
+						articledClasses.add(domain.asResource().as(OntResource.class));
 					}
 					else {
 						sb.append(" of the ");
@@ -1505,6 +1515,20 @@ public class AnswerCurationManager {
 			}
 		}
 		return sb.toString();
+	}
+
+	private OntResource findSubclassInArticledClasses(List<OntResource> articledClasses, OntResource cls) {
+		for (OntResource or : articledClasses) {
+			try {
+				if (SadlUtils.classIsSubclassOf(or.as(OntClass.class), cls, true, null)) {
+					return or;
+				}
+			} catch (CircularDependencyException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		}
+		return null;
 	}
 
 	/**
@@ -1638,7 +1662,7 @@ public class AnswerCurationManager {
 					mdlName = getExtractionProcessor().getTextModelName();
 				}
 				if (mdl != null) {
-					OwlToSadl ots = new OwlToSadl(mdl);
+					OwlToSadl ots = new OwlToSadl(mdl, mdlName);
 					String sadlFN = outputOwlFile.getCanonicalPath() + ".sadl";
 					File sf = new File(sadlFN);
 					if (sf.exists()) {

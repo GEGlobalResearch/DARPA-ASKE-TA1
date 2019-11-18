@@ -1523,8 +1523,9 @@ public class JenaBasedDialogModelProcessor extends JenaBasedSadlModelProcessor {
 				"	described by quantityKind (note \"this should be qudt:QuantityKind\") with a single value of type ScientificConcept,\r\n" + 
 				"	described by reference with values of type Reference.   \r\n" + 
 				"\r\n" + 
-				"{ClassField, MethodArgument, MethodVariable} are types of CodeVariable. 	\r\n" + 
-				"\r\n" + 
+				"{ClassField, MethodArgument, MethodVariable, ConstantVariable} are types of CodeVariable. 	\r\n" + 
+				"\\r\\n" +
+				"constantValue describes ConstantVariable with values of type UnittedQuantity.\r\n" + 
 				"//External findFirstLocation (CodeVariable cv) returns int: \"http://ToBeImplemented\".\r\n" + 
 				"\r\n" + 
 				"Rule Transitive  \r\n" + 

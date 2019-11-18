@@ -265,7 +265,7 @@ public class JavaImportJPTests {
 		IDialogAnswerProvider dapcft = new DialogAnswerProviderConsoleForTest();
 		cm.addPrivateKeyValuePair(DialogConstants.DIALOG_ANSWER_PROVIDER, dapcft);
 		
-		boolean includeSerialization = true; //false; //true;
+		boolean includeSerialization = true;
 		
 		String defaultCodeModelPrefix = includeSerialization ? "MachSz" : "Mach";
 		String defaultCodeModelName = "http://com.ge.research.darpa.aske.ta1.explore/" + defaultCodeModelPrefix;
@@ -279,8 +279,10 @@ public class JavaImportJPTests {
 
 		acm.getExtractionProcessor().getCodeExtractor().addCodeFile(codeFile);
 		acm.getExtractionProcessor().getCodeExtractor().setIncludeSerialization(includeSerialization);
-		acm.processImports(SaveAsSadl.SaveAsSadl);
-		
+//		acm.processImports(SaveAsSadl.DoNotSaveAsSadl);
+//		acm.processImports(SaveAsSadl.SaveAsSadl);
+		acm.processImports(SaveAsSadl.AskUserSaveAsSadl);
+
 		String query = "select ?m ?b ?e ?s where {?m <rdf:type> <Method> . ?m <doesComputation> true . OPTIONAL {?m <beginsAt> ?b . ?m <endsAt> ?e . ?m <serialization> ?s} .\r\n" + 
 				"		MINUS {\r\n" + 
 				"			{?ref <codeBlock> ?m . ?ref <isImplicit> true}\r\n" + 
@@ -292,10 +294,13 @@ public class JavaImportJPTests {
 			assertEquals(5, rows);
 			String firstMethod = rs.getResultAt(0, 0).toString();
 			assertTrue(firstMethod != null && firstMethod.equals("http://com.ge.research.sadl.darpa.aske.answer/Mach_java#Mach.CAL_GAM"));
-			String firstMethodScript = rs.getResultAt(0, 3).toString();
-			assertTrue(firstMethodScript.equals("public double CAL_GAM(double T, double G, double Q) {\r\n" + 
+			Object script = rs.getResultAt(0, 3);
+			String firstMethodScript = script != null ? script.toString() : null;
+			if (includeSerialization) {
+				assertTrue(firstMethodScript.equals("public double CAL_GAM(double T, double G, double Q) {\r\n" + 
 					"    return (1 + (G - 1) / (1 + (G - 1) * (Math.pow((Q / T), 2) * Math.exp(Q / T) / Math.pow((Math.exp(Q / T) - 1), 2))));\r\n" + 
 					"}"));
+			}
 		} catch (ReasonerNotFoundException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -334,7 +339,7 @@ public class JavaImportJPTests {
 		IDialogAnswerProvider dapcft = new DialogAnswerProviderConsoleForTest();
 		cm.addPrivateKeyValuePair(DialogConstants.DIALOG_ANSWER_PROVIDER, dapcft);
 		
-		boolean includeSerialization = true; //false; //true;
+		boolean includeSerialization = false; //true;
 		
 		String defaultCodeModelPrefix = includeSerialization ? "MachSz" : "Mach";
 		String defaultCodeModelName = "http://com.ge.research.darpa.aske.ta1.explore/" + defaultCodeModelPrefix;
