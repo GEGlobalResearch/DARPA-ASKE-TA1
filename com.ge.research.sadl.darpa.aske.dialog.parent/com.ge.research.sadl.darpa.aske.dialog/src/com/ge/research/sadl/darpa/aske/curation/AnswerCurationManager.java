@@ -187,6 +187,7 @@ public class AnswerCurationManager {
 	private OntModel domainModel = null;
 	private boolean lookForSubclassInArticledClasses = true;	// should a domain of a property be replaced with a subclass
 																// that has appeared in other arguments augmented types
+	private Map<String, List<String>> unmatchedUrisAndLabels = null;	// Map of concept URIs and labels that were not matched in the domain ontology
     
 	public AnswerCurationManager (String modelFolder, IConfigurationManagerForIDE configMgr, XtextResource resource, Map<String,String> prefs) {
 		setOwlModelsFolder(modelFolder);
@@ -476,6 +477,13 @@ public class AnswerCurationManager {
 				notifyUser(textModelFolder, "Unable to instantiate reasoner to analyze extracted code model.", true);
 			}
 			else {
+				// initialize the unmatched URIs and labels memory for the set of equations
+				//	(another import could duplicate an unmatched URI, so there could be duplicate statements. It should not cause errors.
+				//	 To avoid, one could check the remembered conversation to see if such a statement already exists.)
+				if (getUnmatchedUrisAndLabels() != null) {
+					getUnmatchedUrisAndLabels().clear();
+				}
+				
 				String queryString = "select ?lang ?expr where {?eq <rdf:type> <ExternalEquation> . ?eq <expression> ?script . ?script <script> ?expr . ?script <language> ?lang}";
 				queryString = getInitializedTextModelReasoner().prepareQuery(queryString);
 				ResultSet results =  getInitializedTextModelReasoner().ask(queryString);
@@ -495,6 +503,7 @@ public class AnswerCurationManager {
 						String[] cns = ((ResultSet) results).getColumnNames();
 						if (cns[0].equals("m") && cns[1].equals("ts") && cns[2].equals("ps") && cns[3].equals("ptfs")) {
 							notifyUser(textModelFolder, "The following equations were found in the text:", true);
+							List<String> unmatchedStatementsAlreadyProcessed = null;
 							for (int r = 0; r < results.getRowCount(); r++) {
 								String methodName = results.getResultAt(r, 0).toString();
 								String txtscript = results.getResultAt(r, 1).toString();
@@ -505,6 +514,18 @@ public class AnswerCurationManager {
 								if (methodName != null && txtscript != null && pyscriptToUse != null) {
 									try {
 										List<String> sadlDeclaration = convertTextExtractedMethodToExternalEquationInSadlSyntax(methodName, "Text", txtscript, lang, pyscriptToUse, locality);
+										List<String> unmatchedConceptStatements = getUnmatchedConceptDeclarationStatements();
+										if (unmatchedConceptStatements != null) {
+											if (unmatchedStatementsAlreadyProcessed == null) unmatchedStatementsAlreadyProcessed = new ArrayList<String>();
+											for (String sd : unmatchedConceptStatements) {
+												if (!unmatchedStatementsAlreadyProcessed.contains(sd)) {
+													SadlStatementContent ssc = new SadlStatementContent(null, Agent.CM, sd);
+													notifyUser(textModelFolder, ssc, false);
+													getExtractionProcessor().addNewSadlContent(sd);
+													unmatchedStatementsAlreadyProcessed.add(sd);
+												}
+											}
+										}
 										for (String sd : sadlDeclaration) {
 											SadlStatementContent ssc = new SadlStatementContent(null, Agent.CM, sd);
 											notifyUser(textModelFolder, ssc, false);
@@ -1362,8 +1383,9 @@ public class AnswerCurationManager {
 	private String getAugmentedTypeFromLocalitySearch(String name, String script, String locality, List<OntResource> articledClasses) throws InvalidInputException, IOException {
 		// search the locality for the argName
 		EquationVariableContextResponse evc = getTextProcessor().equationVariableContext(name, locality);
+		List<String[]> evcr = null;
 		if (evc != null) {
-			List<String[]> evcr = evc.getResults();
+			evcr = evc.getResults();
 			if (evcr != null) {
 				for (String[] r : evcr) {
 					// r[0] is the script using this name, only consider results for this script
@@ -1384,12 +1406,6 @@ public class AnswerCurationManager {
 												return " (" + subj.getLocalName() + ")";
 											}
 										}
-									}
-								}
-								if (logger.isDebugEnabled()) {
-									StmtIterator litr = getDomainModel().listStatements(null, RDFS.label, (RDFNode)null);
-									while (litr.hasNext()) {
-										logger.debug(litr.nextStatement().toString());
 									}
 								}
 							}
@@ -1429,7 +1445,129 @@ public class AnswerCurationManager {
 				return " (" + matchingRsrcQN + ")";
 			}
 		}
+		if (evcr != null) {
+			List<String> thisNamesUris = null;
+			for (String[] r : evcr) {
+				if (r[3] != null) {
+					// we have a URI
+					if (thisNamesUris == null) thisNamesUris = new ArrayList<String>();
+					if (!thisNamesUris.contains(r[3])) {
+						thisNamesUris.add(r[3]);
+					}
+					if (getUnmatchedUrisAndLabels() == null) {
+						setUnmatchedUrisAndLabels(new HashMap<String, List<String>>());
+					}
+					
+					if (r[2] == null) {	// no label
+						getUnmatchedUrisAndLabels().put(r[3],  null);
+					}
+					else {
+						// we have a label; 
+						if (getUnmatchedUrisAndLabels().containsKey(r[3])) {
+							if (!getUnmatchedUrisAndLabels().get(r[3]).contains(r[2])) {
+								getUnmatchedUrisAndLabels().get(r[3]).add(r[2]);
+							}
+						}
+						else {	
+							List<String> labels = new ArrayList<String>();
+							labels.add(r[2]);
+							getUnmatchedUrisAndLabels().put(r[3], labels);
+						}
+					}
+				}
+			}
+			System.out.println("Unmapped concepts found for parameter '" + name + "':");
+			if (getUnmatchedUrisAndLabels() == null) {
+				System.out.println("   none");
+			}
+			else if (thisNamesUris != null) {
+				StringBuilder sb = null;
+				int cntr = 0;
+				for (String thisUri : thisNamesUris) {
+					if (getUnmatchedUrisAndLabels().containsKey(thisUri)) {
+						if (sb == null) sb = new StringBuilder(" (");
+						if (cntr > 0) sb.append(" or ");
+						sb.append(getLocalNameFromUri(thisUri));
+					}
+				}
+				if (sb != null) sb.append(") ");
+				return sb.toString();
+			}
+//				Iterator<String> itr = getUnmatchedUrisAndLabels().keySet().iterator();
+//				if (itr.hasNext()) {
+//					StringBuilder sb = new StringBuilder(" (");
+//					int cntr = 0;
+//					while (itr.hasNext()) {
+//						String uri = itr.next();
+//						System.out.println("   Uri: " + uri);
+//						if (cntr > 0) sb.append(" or ");
+//						sb.append(getLocalNameFromUri(uri));
+//						if (getUnmatchedUrisAndLabels() != null && getUnmatchedUrisAndLabels().containsKey(uri)) {
+//							System.out.println("      Labels:");
+//							if (getUnmatchedUrisAndLabels().get(uri) != null) {
+//								for (String label : getUnmatchedUrisAndLabels().get(uri)) {
+//									System.out.println("        " + label);
+//								}
+//							}
+//						}
+//						cntr++;
+//					}
+//					sb.append(") ");
+//					return sb.toString();
+//				}
+//			}
+		}
 		return null;
+	}
+
+	/**
+	 * Method to get the declaration of concepts not matched in the domain ontology for inclusion in the dialog window content
+	 * @return -- list of statements in SadlSyntax
+	 */
+	private List<String> getUnmatchedConceptDeclarationStatements() {
+		Map<String, List<String>> unmatched = getUnmatchedUrisAndLabels();
+		if (unmatched != null) {
+			List<String> stmts = new ArrayList<String>();
+			Iterator<String> itr = unmatched.keySet().iterator();
+			while (itr.hasNext()) {
+				String uri = itr.next();
+				StringBuilder sb = new StringBuilder();
+				String localName = getLocalNameFromUri(uri);
+				sb.append(localName);
+				List<String> labels = unmatched.get(uri);
+				if (labels != null) {
+					sb.append(" (alias ");
+					boolean first = true;
+					for (String label : labels) {
+						if (!first) sb.append(", ");
+						sb.append("\"");
+						sb.append(label);
+						sb.append("\"");
+						first = false;
+					}
+					sb.append(") is a class.");
+				}
+				stmts.add(sb.toString());
+			}
+			return stmts;
+		}
+		return null;
+	}
+
+	/** Method to extract a localname from an ontology resource URI
+	 * @param uri
+	 * @return
+	 */
+	private String getLocalNameFromUri(String uri) {
+		int lbl = uri.indexOf('#');
+		if ( lbl > 0) {
+			return uri.substring(lbl + 1);
+		}
+		int lastSlash = uri.lastIndexOf('/');
+		if (lastSlash > 0) {
+			return uri.substring(lastSlash + 1);
+		}
+		return uri;
 	}
 
 	/**
@@ -2457,9 +2595,13 @@ public class AnswerCurationManager {
 		}
 		else if (typ.equals(NodeType.FunctionNode)) {
 //			addInstanceDeclaration(resource, nn, answer);
-			answer.append(getOwlToSadl(theModel).individualToSadl(nn.getURI(), false));
-			Object ctx = ((NamedNode)lastcmd).getContext();
-			answerUser(modelFolder, answer.toString(), false, (EObject) ctx);
+			String[] sds = getOwlToSadl(theModel, modelName).equationToSadl(nn.getURI(), false, getConfigurationManager());
+			for (int i = sds.length - 1; i >= 0; i--) { // do in reverse order as they will be inserted at the same location
+				String sd = sds[i];
+				answer.append(sd);
+				Object ctx = ((NamedNode)lastcmd).getContext();
+				answerUser(modelFolder, sd, false, (EObject) ctx);
+			}
 			return answer.toString();
 		}
 		else {
@@ -2472,14 +2614,6 @@ public class AnswerCurationManager {
 	private OwlToSadl getOwlToSadl(OntModel theModel, String modelName) {
 		if (owl2sadl == null) {
 			owl2sadl = new OwlToSadl(theModel, modelName);
-			owl2sadl.setNeverUsePrefixes(true);
-		}
-		return owl2sadl;
-	}
-
-	private OwlToSadl getOwlToSadl(OntModel model) {
-		if (owl2sadl  == null) {
-			owl2sadl = new OwlToSadl(model);
 			owl2sadl.setNeverUsePrefixes(true);
 		}
 		return owl2sadl;
@@ -3510,5 +3644,13 @@ public class AnswerCurationManager {
 
 	public void setDomainModel(OntModel domainModel) {
 		this.domainModel = domainModel;
+	}
+
+	public Map<String, List<String>> getUnmatchedUrisAndLabels() {
+		return unmatchedUrisAndLabels;
+	}
+
+	private void setUnmatchedUrisAndLabels(Map<String, List<String>> unmatchedUrisAndLabels) {
+		this.unmatchedUrisAndLabels = unmatchedUrisAndLabels;
 	}
 }

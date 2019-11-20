@@ -87,6 +87,75 @@ public class TextProcessor {
 //	private String defaultTextModelName = null;
 //	private String defaultTextModelPrefix = null;
 
+	public class MergedEquationVariableContext {
+		private String conceptUri;
+		private List<String> labels = new ArrayList<String>();
+		private Map<String, String> equationsAndArguments = new HashMap<String, String>();
+		
+		public MergedEquationVariableContext(String uri) {
+			setConceptUri(uri);
+		}
+		
+		public MergedEquationVariableContext(List<List<String[]>> equationVariableContextResponses) throws AnswerExtractionException {
+			String uri = null;
+			for (List<String[]> response : equationVariableContextResponses) {
+				for (String[] content : response) {
+					if (uri == null) {
+						uri = content[3];
+					}
+					else if (!content[3].equals(uri)) {
+						throw new AnswerExtractionException("Cannot create MergedEquationVariableContext from contents with different URIs ('" +
+								content[3] + "' != '" + uri + "').");
+					}
+					addEquationAndArgument(content[0], content[1]);
+					addLabel(content[2]);
+				}
+			}
+			setConceptUri(uri);
+		}
+		
+		public String toString() {
+			StringBuilder sb = new StringBuilder("External concept uri: ");
+			sb.append(getConceptUri());
+			sb.append("\n  Labels: ");
+			boolean first = true;
+			for (String label : getLabels()) {
+				if (!first) sb.append(", ");
+				sb.append(label);
+			}
+			
+			return sb.toString();
+		}
+
+		public String getConceptUri() {
+			return conceptUri;
+		}
+		
+		private void setConceptUri(String conceptUri) {
+			this.conceptUri = conceptUri;
+		}
+
+		public List<String> getLabels() {
+			return labels;
+		}
+		
+		private void addLabel(String label) {
+			if (!labels.contains(label)) {
+				labels.add(label);
+			}
+		}
+		
+		private Map<String, String> getEquationsAndArguments() {
+			return equationsAndArguments;
+		}
+
+		private void addEquationAndArgument(String eq, String arg) {
+			if (!equationsAndArguments.containsKey(eq)) {
+				equationsAndArguments.put(eq, arg);
+			}
+		}
+	}
+
 	public TextProcessor(AnswerCurationManager answerCurationManager, Map<String, String> preferences) {
 		setCurationManager(answerCurationManager);
 		this.setPreferences(preferences);
@@ -174,6 +243,27 @@ public class TextProcessor {
 			return textModels.get(key);
 		}
 		return null;
+	}
+
+	public Map<String, MergedEquationVariableContext> unifyEquationVariableContentResponses(List<EquationVariableContextResponse> responses) {
+		Map<String, MergedEquationVariableContext> results = new HashMap<String, MergedEquationVariableContext>();
+		for (EquationVariableContextResponse evcr : responses) {
+			List<String[]> contentList = evcr.getResults();
+			for (String[] content : contentList) {
+				MergedEquationVariableContext mevc;
+				String uri = content[3];
+				if (!results.containsKey(uri)) {
+					mevc = new MergedEquationVariableContext(uri);
+					results.put(uri, mevc);
+				}
+				else {
+					mevc = results.get(uri);
+				}
+				mevc.addLabel(content[2]);
+				mevc.addEquationAndArgument(content[0], content[1]);
+			}
+		}
+		return results;
 	}
 
 	private void initializeTextModel(String modelName, String modelPrefix) throws ConfigurationException, IOException {
