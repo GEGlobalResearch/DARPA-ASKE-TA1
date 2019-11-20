@@ -37,6 +37,7 @@ package com.ge.research.sadl.darpa.aske.tests;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
@@ -279,10 +280,11 @@ public class JavaImportJPTests {
 
 		acm.getExtractionProcessor().getCodeExtractor().addCodeFile(codeFile);
 		acm.getExtractionProcessor().getCodeExtractor().setIncludeSerialization(includeSerialization);
-//		acm.processImports(SaveAsSadl.DoNotSaveAsSadl);
+		acm.processImports(SaveAsSadl.DoNotSaveAsSadl);
 //		acm.processImports(SaveAsSadl.SaveAsSadl);
-		acm.processImports(SaveAsSadl.AskUserSaveAsSadl);
+//		acm.processImports(SaveAsSadl.AskUserSaveAsSadl);
 
+		// Test extraction of methods
 		String query = "select ?m ?b ?e ?s where {?m <rdf:type> <Method> . ?m <doesComputation> true . OPTIONAL {?m <beginsAt> ?b . ?m <endsAt> ?e . ?m <serialization> ?s} .\r\n" + 
 				"		MINUS {\r\n" + 
 				"			{?ref <codeBlock> ?m . ?ref <isImplicit> true}\r\n" + 
@@ -313,7 +315,34 @@ public class JavaImportJPTests {
 		} catch (QueryCancelledException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
-		}	
+		}
+		
+		// Test extraction of constants
+		String cQuery = "select ?c ?v ?u where {?c <rdf:type> <ConstantVariable> . ?c <constantValue> ?uq . ?uq <value> ?v . OPTIONAL{?uq <unit> ?u}} order by ?c";
+		try {
+			ResultSet crs = acm.getCodeExtractor().executeSparqlQuery(cQuery);
+			assertNotNull(crs);
+			System.out.println(crs.toString());
+			assertTrue(crs.getRowCount() == 4);
+			crs.setShowNamespaces(false);
+			assertTrue(crs.getResultAt(0, 0).toString().equals("Mach.Q"));
+			assertTrue(crs.getResultAt(1, 0).toString().equals("Mach.R"));
+			assertTrue(crs.getResultAt(2, 0).toString().equals("Mach.gama"));
+			assertTrue(crs.getResultAt(3, 0).toString().equals("Mach.rgas"));
+		} catch (ReasonerNotFoundException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (InvalidNameException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (QueryParseException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (QueryCancelledException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
 	}
 	
 	@Test
