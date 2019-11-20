@@ -1,7 +1,6 @@
 package com.ge.research.sadl.darpa.aske.processing.imports;
 
 import java.io.IOException;
-import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
@@ -9,14 +8,11 @@ import java.util.List;
 import org.apache.log4j.Logger;
 import org.eclipse.jdt.core.compiler.InvalidInputException;
 
-import com.ge.research.sadl.darpa.aske.preferences.DialogPreferences;
 import com.ge.research.sadl.reasoner.ConfigurationException;
-import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import com.google.gson.JsonPrimitive;
-import com.hp.hpl.jena.ontology.OntModel;
 
 /**
  * 
@@ -85,11 +81,11 @@ public class TextProcessingServiceInterface extends JsonServiceInterface {
 			return sb.toString();
 		}
 	}
-
+	
 	public TextProcessingServiceInterface(String serviceBaseUri) {
 		setTextServiceURL(serviceBaseUri);
 	}
-
+	
 	private String getTextServiceURL() {
 		return textServiceURL;
 	}
