@@ -1524,7 +1524,7 @@ public class JenaBasedDialogModelProcessor extends JenaBasedSadlModelProcessor {
 				"	described by reference with values of type Reference.   \r\n" + 
 				"\r\n" + 
 				"{ClassField, MethodArgument, MethodVariable, ConstantVariable} are types of CodeVariable. 	\r\n" + 
-				"\\r\\n" +
+				"\r\n" +
 				"constantValue describes ConstantVariable with values of type UnittedQuantity.\r\n" + 
 				"//External findFirstLocation (CodeVariable cv) returns int: \"http://ToBeImplemented\".\r\n" + 
 				"\r\n" + 
