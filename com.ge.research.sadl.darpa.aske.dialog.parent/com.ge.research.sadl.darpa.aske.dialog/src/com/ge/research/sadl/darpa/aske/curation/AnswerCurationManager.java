@@ -79,6 +79,7 @@ import com.ge.research.sadl.darpa.aske.processing.HowManyValuesContent;
 import com.ge.research.sadl.darpa.aske.processing.IDialogAnswerProvider;
 import com.ge.research.sadl.darpa.aske.processing.InformationContent;
 import com.ge.research.sadl.darpa.aske.processing.ModifiedAskContent;
+import com.ge.research.sadl.darpa.aske.processing.QuestionContent;
 import com.ge.research.sadl.darpa.aske.processing.QuestionWithCallbackContent;
 import com.ge.research.sadl.darpa.aske.processing.SadlStatementContent;
 import com.ge.research.sadl.darpa.aske.processing.SaveContent;
@@ -2020,31 +2021,41 @@ public class AnswerCurationManager {
 		Query q = ((ModifiedAskContent)sc).getQuery();
 		String answer = null;
 		boolean quote = true;
+
 		try {
-			ResultSet rs = runQuery(resource, q);
-			if (rs != null) {
-				rs.setShowNamespaces(false);
-				if (rs.getColumnCount() == 1) {
-					if (rs.getRowCount() == 1) {
-						answer = rs.getResultAt(0, 0).toString();
-					}
-					else {
-						answer = "";
-						for (int i = 0; i < rs.getRowCount(); i++) {
-							if (i > 0) answer += ",";
-							answer += rs.getResultAt(i, 0);
+
+			if (isDocToModelQuery(q)) {
+				answer = processDocToModelQuery(resource, q, sc);
+	    		//insertionText = checkForEOS(insertionText);
+//	    		Object ctx = q.getContext();
+	    		//addCurationManagerContentToDialog(document, reg, insertionText, ctx, true);
+	    		//notifyUser()
+			} else {
+				ResultSet rs = runQuery(resource, q);
+				if (rs != null) {
+					rs.setShowNamespaces(false);
+					if (rs.getColumnCount() == 1) {
+						if (rs.getRowCount() == 1) {
+							answer = rs.getResultAt(0, 0).toString();
+						}
+						else {
+							answer = "";
+							for (int i = 0; i < rs.getRowCount(); i++) {
+								if (i > 0) answer += ",";
+								answer += rs.getResultAt(i, 0);
+							}
 						}
 					}
+					else {
+						answer = rs.toString();
+						answer = answer.replace("\"", "'");
+					}
+					quote = true;
 				}
 				else {
-					answer = rs.toString();
-					answer = answer.replace("\"", "'");
+					answer = "No results found";
+					quote = true;
 				}
-				quote = true;
-			}
-			else {
-				answer = "No results found";
-				quote = true;
 			}
 		}
 		catch (Exception e) {
@@ -2057,6 +2068,88 @@ public class AnswerCurationManager {
 		}
 		return null;
 	}
+
+	private boolean isDocToModelQuery(Query q) {
+		List<GraphPatternElement> patterns = q.getPatterns();
+		if (patterns != null) {
+			for (GraphPatternElement gpe : patterns) {
+				if (gpe instanceof TripleElement) {
+					if (((TripleElement)gpe).getPredicate().getURI().equals(DialogConstants.SADL_IMPLICIT_MODEL_DIALOG_MODEL_PROPERTY_URI)) {
+						return true;
+					}
+				}
+			}
+		}
+		return false;
+	}
+	
+	private String processDocToModelQuery(org.eclipse.emf.ecore.resource.Resource resource, Query q, ModifiedAskContent sc)  {
+		List<GraphPatternElement> patterns = q.getPatterns();
+		String retVal = null;
+		try {
+			for (GraphPatternElement gpe : patterns) {
+				if (gpe instanceof TripleElement) {
+					if (((TripleElement)gpe).getPredicate().getURI().equals(DialogConstants.SADL_IMPLICIT_MODEL_DIALOG_MODEL_PROPERTY_URI)) {
+						Node doc = ((TripleElement)gpe).getSubject();
+						// get the name and semantic type of each column
+						// TODO check for aliases for column names and use alias if exists
+						String tableColSemTypeQuery = "prefix rdf:<http://www.w3.org/1999/02/22-rdf-syntax-ns#> prefix rdfs:<http://www.w3.org/2000/01/rdf-schema#> select distinct ?colname ?typ where {<" + doc.getURI() +
+								"> <columnDescriptors> ?cdlist . ?cdlist rdf:rest*/rdf:first ?member . " + 
+								"?member <localDescriptorName> ?colname . ?member <augmentedType> ?augtype . ?augtype <semType> ?typC. ?typ rdfs:range ?typC.}";
+                		q.setSparqlQueryString(tableColSemTypeQuery);
+						ResultSet rrs = runQuery(resource, q);
+						if (rrs != null && rrs.getRowCount() > 0) {
+							// TODO 
+							// convert to triples, one set for each column
+							// <doc, columnname, colname>
+							// <colname, semtypeprop, semtype>
+							rrs.setShowNamespaces(true);
+							Map<String,String> colNamesAndTypes = new HashMap<String,String>();
+							for (int i = 0; i <= rrs.getColumnCount(); i++) {
+								String colname = rrs.getResultAt(i, 0).toString();
+								String semtyp = rrs.getResultAt(i, 1).toString();
+								colNamesAndTypes.put(colname, semtyp);
+							}
+							Iterator<String> keyitr = colNamesAndTypes.keySet().iterator();
+							NamedNode docNN = new NamedNode(doc.getURI());
+							List<TripleElement> triplesList = new ArrayList<TripleElement>();
+							while (keyitr.hasNext()) {
+								String colname = keyitr.next();
+								NamedNode colNameNN = new NamedNode(colname);
+								String semtyp = colNamesAndTypes.get(colname);
+								NamedNode semtypNN = new NamedNode(semtyp);
+								TripleElement tr = new TripleElement(docNN, colNameNN, semtypNN);
+								triplesList.add(tr);
+							}
+							TripleElement[] triples = triplesList.toArray(new TripleElement[triplesList.size()]);
+			                OntModelProvider.addPrivateKeyValuePair(resource, DialogConstants.LAST_DIALOG_COMMAND, triples);
+	                		Object[] rss = insertTriplesAndQuery(resource, triples);
+	                		
+	            			String answer = getAnswerAndVisualize(sc, rss);
+
+	            			if (rss != null) {
+	            				retVal = stringToQuotedeString(answer);
+	            			}
+	            			else {
+	            				retVal = "Failed to evaluate answer";
+	            			}
+	            			if (!retVal.equals(stringToQuotedeString(""))) {
+	            				answerUser(getOwlModelsFolder(), retVal, true, sc.getHostEObject());
+	            			}
+						}
+					}
+				}
+			}
+		}
+		catch (Exception e)
+		{
+            logger.debug("AutoEdit error (of type " + e.getClass().getCanonicalName() + "): " + e.getMessage());   
+            return null;
+        }
+		return retVal;
+	}
+	
+	
 
 	private String processWhatValuesContent(org.eclipse.emf.ecore.resource.Resource resource, OntModel theModel,
 			String modelName, WhatValuesContent sc) throws ConfigurationException {
@@ -2210,79 +2303,10 @@ public class AnswerCurationManager {
 			TripleElement[] triples = new TripleElement[tripleLst.size()];
 			triples = tripleLst.toArray(triples);
 			
-			StringBuilder answer = new StringBuilder();
 			Object[] rss = insertTriplesAndQuery(resource, triples);
+			String answer = getAnswerAndVisualize(sc, rss);
 			if (rss != null) {
-//       			int numOfModels = 0; //rss.length/2;
-//    			for(int i=0; i<rss.length; i++) {
-//    				if (rss[i] != null && rss[i] instanceof ResultSet)
-//    					numOfModels ++;
-//    			}
-//    			numOfModels /= 2;
-
-//				int numOfModels = rss.length;
-				int cntr = 0;
-				for (Object rs : rss) {
-					if (rs instanceof ResultSet) {
-             			String[] colnames = ((ResultSet) rs).getColumnNames();
-            			String cols = String.join(" ",colnames);
-            			if ( cols.contains("_style") ) {
-		    				// this is the first ResultSet, construct a graph if possible
-//		    				if (((ResultSet) rs).getColumnCount() != 3) {
-//		    					logger.debug("Can't construct graph; not 3 columns. Unexpected result.");
-//		    				}
-//            				this.graphVisualizerHandler.resultSetToGraph(path, resultSet, description, baseFileName, orientation, properties);
-            				ResultSet rstemp = ((ResultSet)rs).deleteResultSetColumn("Model");
-
-		    				IGraphVisualizer visualizer = new GraphVizVisualizer();
-		    				if (visualizer != null) {
-		    					String graphsDirectory = new File(getOwlModelsFolder()).getParent() + "/Graphs";
-		    					new File(graphsDirectory).mkdir();
-//            					String baseFileName = "QueryMetadata_"+((ResultSet) rss[cntr+numOfModels]).getResultAt(0, 0).toString();
-            					String baseFileName = "QueryMetadata_" + ((ResultSet)rs).getResultAt(0, 0).toString();
-		    					visualizer.initialize(
-		    		                    graphsDirectory,
-		    		                    baseFileName,
-		    		                    baseFileName,
-		    		                    null,
-		    		                    IGraphVisualizer.Orientation.TD,
-		    		                    "Composed Model " + ((ResultSet)rs).getResultAt(0, 0).toString());
-		    					((ResultSet) rstemp).setShowNamespaces(false);
-		    					try {
-		    						visualizer.graphResultSetData(rstemp);	
-		    					}
-		    					catch (Exception e) {
-		    						e.printStackTrace();
-		    					}
-		    		        }
-							String errorMsg = displayGraph(visualizer);
-							if (errorMsg != null) {
-								notifyUser(getOwlModelsFolder(), errorMsg, true);
-							}
-		    			}
-            			else {
-            				// not a graph
-//    		    			if(cntr-numOfModels > 0)
-    		    			if(cntr > 0)
-    		    				answer.append(",\n");
-    		    			((ResultSet) rs).setShowNamespaces(true);
-   		    				answer.append(((ResultSet) rs).toString());
-   		    				cntr++;
-            			}
-            			//cntr++;
-					}
-					else {
-//						throw new TranslationException("Expected ResultSet but got " + rs.getClass().getCanonicalName());
-						answerUser(getOwlModelsFolder(), stringToQuotedeString(rs.toString()), true, sc.getHostEObject());
-					}
-					
-				}
-				if (cntr > 0) {
-					answer.append(".\n");
-				}
-			}
-			if (rss != null) {
-				retVal = stringToQuotedeString(answer.toString());
+				retVal = stringToQuotedeString(answer);
 			}
 			else {
 				retVal = "Failed to evaluate answer";
@@ -2294,54 +2318,62 @@ public class AnswerCurationManager {
 		return retVal;
 	}
 
-//private ResultSet deleteResultSetColumn(ResultSet rs, String columnName) {
-//		// TODO Auto-generated method stub
-//		Object[][] table = rs.getData();
-//		Object[][] newTable = new Object[table.length][];
-//		ResultSet res;
-//		
-//		int rowLength = rs.getColumnCount();
-//		int colPosition = getColumnPosition(rs, columnName);
-//		if (colPosition < 0) {//the column is not in the resultset
-//			res = rs;
-//		}
-//		else {
-//			for (int i=0; i<table.length; i++) {
-//				int j=0;
-//				Object[] row = new Object[rowLength-1]; //java.util.Arrays.copyOfRange(table[i], 1, table[i].length);
-//				for(; j<colPosition; j++) {
-//					row[j] = table[i][j];
-//				}
-//				for( ; j<rowLength-1; j++) {
-//					row[j] = table[i][j+1];
-//				}
-//				newTable[i] = row.clone();
-//			}
-//			String[] colNames = rs.getColumnNames();
-//			String[] newColNames = new String[rowLength-1];
-//			int i=0;
-//			for(; i<colPosition; i++) {
-//					newColNames[i] = colNames[i];
-//			}
-//			for(; i<rowLength-1; i++) {
-//				newColNames[i] = colNames[i+1];
-//		}
-//			res = new ResultSet(newColNames, newTable);
-//	}
-//		return res;
-//}
-//
-//private int getColumnPosition(ResultSet rs, String columnName) {
-//	String[] cnames = rs.getColumnNames();
-//	int pos=-1;
-//	for(int i=0; i<cnames.length; i++) {
-//		if(cnames[i].equals(columnName)) {
-//			pos = i;
-//			break;
-//		}
-//	}
-//	return pos;
-//}
+	private String getAnswerAndVisualize(ExpectsAnswerContent sc, Object[] rss) throws ConfigurationException {
+		StringBuilder answer = new StringBuilder();
+		if (rss != null) {
+			int cntr = 0;
+			for (Object rs : rss) {
+				if (rs instanceof ResultSet) {
+		 			String[] colnames = ((ResultSet) rs).getColumnNames();
+					String cols = String.join(" ",colnames);
+					if ( cols.contains("_style") ) {
+						ResultSet rstemp = ((ResultSet)rs).deleteResultSetColumn("Model");
+
+						IGraphVisualizer visualizer = new GraphVizVisualizer();
+						if (visualizer != null) {
+							String graphsDirectory = new File(getOwlModelsFolder()).getParent() + "/Graphs";
+							new File(graphsDirectory).mkdir();
+							String baseFileName = "QueryMetadata_" + ((ResultSet)rs).getResultAt(0, 0).toString();
+							visualizer.initialize(
+				                    graphsDirectory,
+				                    baseFileName,
+				                    baseFileName,
+				                    null,
+				                    IGraphVisualizer.Orientation.TD,
+				                    "Composed Model " + ((ResultSet)rs).getResultAt(0, 0).toString());
+							((ResultSet) rstemp).setShowNamespaces(false);
+							try {
+								visualizer.graphResultSetData(rstemp);	
+							}
+							catch (Exception e) {
+								e.printStackTrace();
+							}
+				        }
+						String errorMsg = displayGraph(visualizer);
+						if (errorMsg != null) {
+							notifyUser(getOwlModelsFolder(), errorMsg, true);
+						}
+					}
+					else {
+		    			if(cntr > 0)
+		    				answer.append(",\n");
+		    			((ResultSet) rs).setShowNamespaces(true);
+						answer.append(((ResultSet) rs).toString());
+						cntr++;
+					}
+				}
+				else {
+					answerUser(getOwlModelsFolder(), stringToQuotedeString(rs.toString()), true, sc.getHostEObject());
+				}
+				
+			}
+			if (cntr > 0) {
+				answer.append(".\n");
+			}
+		}
+		return answer.toString();
+	}
+
 
 /**
  * 	invoke DialogAnswerProvider method displayGraph
