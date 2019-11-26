@@ -868,7 +868,7 @@ public class JavaFileResourceImportPage1 extends WizardResourceImportPage
 	                {
 	                    IProject project = (IProject)((IAdaptable)firstElement).getAdapter(IProject.class);
 	                    IPath path = project.getFullPath();
-	                    if (!path.toString().equals(target)) {
+	                    if (!target.startsWith(path.toString())) {
 	//                    	settings.put(STORE_PATH_VARIABLE_SELECTED_ID, target);
 	                    	this.setContainerFieldValue(target); // containerNameField.setText(target);
 	                    }
