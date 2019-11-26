@@ -226,11 +226,29 @@ class kChainModel(object):
                 * stringfun: formatted python code as string to be written in python file
         
         """
+#        in_dims = len(inputVar)
+#                
+#        inStr = inputVar[0]['name'] + ' = inArg[0]'
+#        for ii in range(1,in_dims):
+#            inStr = inStr + '\n    ' + inputVar[ii]['name'] + ' = inArg['+str(ii)+']'            
+#        
+#        outStr = outputVar[0]['name']
+#        for ii in range(1,len(outputVar)):
+#            outStr = outStr + ', ' + outputVar[ii]['name']    
+#        
+#        #4 spaces is ideal for indentation
+#        #construct the python function around the python snippet
+#        stringfun = 'import tensorflow as tf'\
+#        +'\ndef '+mdlName+'(inArg):'\
+#        +'\n    '+ inStr\
+#        +'\n    '+ eqMdl\
+#        +'\n    return '+ outStr + '\n\n'
+        
         in_dims = len(inputVar)
                 
-        inStr = inputVar[0]['name'] + ' = inArg[0]'
+        inStr = inputVar[0]['name']
         for ii in range(1,in_dims):
-            inStr = inStr + '\n    ' + inputVar[ii]['name'] + ' = inArg['+str(ii)+']'            
+            inStr = inStr + ', ' + inputVar[ii]['name']            
         
         outStr = outputVar[0]['name']
         for ii in range(1,len(outputVar)):
@@ -239,8 +257,7 @@ class kChainModel(object):
         #4 spaces is ideal for indentation
         #construct the python function around the python snippet
         stringfun = 'import tensorflow as tf'\
-        +'\ndef '+mdlName+'(inArg):'\
-        +'\n    '+ inStr\
+        +'\ndef '+mdlName+'('+inStr+'):'\
         +'\n    '+ eqMdl\
         +'\n    return '+ outStr + '\n\n'
         
@@ -781,7 +798,7 @@ class kChainModel(object):
             print(nodeDict)
             
             tf_model = ag.to_graph(func)
-            output = tf_model(invars)
+            output = tf_model(*invars)
             
             
             print("Inital Output List")
