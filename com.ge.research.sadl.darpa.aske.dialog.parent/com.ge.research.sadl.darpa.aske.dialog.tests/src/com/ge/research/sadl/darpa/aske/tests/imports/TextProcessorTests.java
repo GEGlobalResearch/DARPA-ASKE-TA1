@@ -346,9 +346,12 @@ public class TextProcessorTests {
 		assertFalse(results.getMessage().isEmpty());
 		for (String[] use : results.getResults()) {
 			assertTrue(use!= null && use.length == 4);
-			System.out.println("Parameter '" + use[1] + "' used in '" + use[0] + "'");
+			System.out.println("Variable '" + use[1] + "' used in '" + use[0] + "'");
 			if (use[2] != null) {
 				System.out.println("   concept labeled '" + use[2] + "' in external concept '" + use[3] + "'");
+			}
+			else {
+				System.out.println("     no concept label and external concept found.");
 			}
 			if (use[3] == null) {
 				// try the LHS of the equation
@@ -356,12 +359,20 @@ public class TextProcessorTests {
 					String lhs = use[0].substring(0, use[0].indexOf("=")).trim();
 					EquationVariableContextResponse results2 = tp.equationVariableContext(lhs, localityURI);
 					assertFalse(results2.getMessage().isEmpty());
-					for (String[] use2 : results2.getResults()) {
-						assertTrue(use2!= null && use2.length == 4);
-						System.out.println("Parameter '" + use2[1] + "' used in '" + use2[0] + "'");
-						if (use2[2] != null) {
-							System.out.println("   concept labeled '" + use2[2] + "' in external concept '" + use2[3] + "'");
+					if (results2.getResults().size() > 0) {
+						for (String[] use2 : results2.getResults()) {
+							assertTrue(use2!= null && use2.length == 4);
+							System.out.println("Equation LHS '" + use2[1] + "' used in '" + use2[0] + "'");
+							if (use2[2] != null) {
+								System.out.println("   concept labeled '" + use2[2] + "' in external concept '" + use2[3] + "'");
+							}
+							else {
+								System.out.println("    no concept label and external concept found for LHS of equation");
+							}
 						}
+					}
+					else {
+						System.out.println("No result for LHS of equation = '" + lhs + "'");
 					}
 				}
 			}
