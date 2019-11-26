@@ -739,17 +739,27 @@ class kChainModel(object):
             
             for node in inputVars:
                 if node['name'] in nodeDict.keys():
+                    # implies input variable exists in computational graph
+                    
+                    #get reference of that node
                     tmp = mdl.get_tensor_by_name(nodeDict[node['name']]['graphRef'])
                     invars.append(tmp)
                     nodeTmp = nodeDict[node['name']]
+                    
                     if func.__name__ not in nodeTmp['subModel']:
+                        #implies new submodel is being appended
                         nodeTmp['subModel'].append(func.__name__)
                     
                     if node['name'] in defaultValues.keys() and 'value' not in nodeTmp.keys():
+                        #implies default value of node is known but not assigned to node
                         nodeTmp['value'] = defaultValues[node['name']]
                     
                     if 'value' in node.keys():
+                        #default value to node provided by user
+                        
+                        #add value to node
                         nodeTmp['value'] = node['value']
+                        #overwrite or assign default value to node
                         defaultValues[node['name']] = node['value']
                         
                     nodeDict[node['name']] = nodeTmp
