@@ -870,7 +870,7 @@ public class JavaFileResourceImportPage1 extends WizardResourceImportPage
 	                    IPath path = project.getFullPath();
 	                    if (!target.startsWith(path.toString())) {
 	//                    	settings.put(STORE_PATH_VARIABLE_SELECTED_ID, target);
-	                    	this.setContainerFieldValue(target); // containerNameField.setText(target);
+	                    	this.setContainerFieldValue(path.toString()); // containerNameField.setText(target);
 	                    }
 	                }
                 }
