@@ -244,23 +244,30 @@ class kChainModel(object):
 #        +'\n    '+ eqMdl\
 #        +'\n    return '+ outStr + '\n\n'
         
-        in_dims = len(inputVar)
-                
-        inStr = inputVar[0]['name']
-        for ii in range(1,in_dims):
-            inStr = inStr + ', ' + inputVar[ii]['name']            
-        
-        outStr = outputVar[0]['name']
-        for ii in range(1,len(outputVar)):
-            outStr = outStr + ', ' + outputVar[ii]['name']    
-        
-        #4 spaces is ideal for indentation
-        #construct the python function around the python snippet
-        stringfun = 'import tensorflow as tf'\
-        +'\ndef '+mdlName+'('+inStr+'):'\
-        +'\n    '+ eqMdl\
-        +'\n    return '+ outStr + '\n\n'
-        
+        if eqMdl.find('def ') == -1:
+            #implies that str is not a method but only a code block
+            in_dims = len(inputVar)
+                    
+            inStr = inputVar[0]['name']
+            for ii in range(1,in_dims):
+                inStr = inStr + ', ' + inputVar[ii]['name']            
+            
+            outStr = outputVar[0]['name']
+            for ii in range(1,len(outputVar)):
+                outStr = outStr + ', ' + outputVar[ii]['name']    
+            
+            #4 spaces is ideal for indentation
+            #construct the python function around the python snippet
+            stringfun = 'import tensorflow as tf'\
+            +'\ndef '+mdlName+'('+inStr+'):'\
+            +'\n    '+ eqMdl\
+            +'\n    return '+ outStr + '\n\n'
+        else:
+            #implies that str consists of a method
+            print('Got a method to ingest')
+            stringfun = 'import tensorflow as tf'\
+            +'\n' + eqMdl + '\n\n'
+            
         print(stringfun)
         
         return stringfun
