@@ -130,7 +130,9 @@ import com.ge.research.sadl.sADL.SadlAnnotation;
 import com.ge.research.sadl.sADL.SadlInstance;
 import com.ge.research.sadl.sADL.SadlModel;
 import com.ge.research.sadl.sADL.SadlModelElement;
+import com.ge.research.sadl.sADL.SadlParameterDeclaration;
 import com.ge.research.sadl.sADL.SadlResource;
+import com.ge.research.sadl.sADL.SadlReturnDeclaration;
 import com.ge.research.sadl.sADL.SadlSimpleTypeReference;
 import com.ge.research.sadl.sADL.SadlStatement;
 import com.ge.research.sadl.sADL.SadlTypeReference;
@@ -490,6 +492,14 @@ public class JenaBasedDialogModelProcessor extends JenaBasedSadlModelProcessor {
 		}
 		else if (element instanceof ExternalEquationStatement) {
 			super.processStatement((ExternalEquationStatement)element);
+			List<Object> oc = OntModelProvider.getOtherContent(getCurrentResource());
+			if (oc != null && oc.size() > 0) {
+				Object obj = oc.get(oc.size() - 1);
+				if (obj instanceof Equation) {
+					Equation eq = (Equation)obj;
+					validateEquationAugmentedTypes((ExternalEquationStatement) element, eq);
+				}
+			}
 			return null;
 		}
 		else if (element instanceof EquationStatement) {
@@ -506,6 +516,23 @@ public class JenaBasedDialogModelProcessor extends JenaBasedSadlModelProcessor {
 		}	
 	}
 	
+	private void validateEquationAugmentedTypes(ExternalEquationStatement element, Equation eq) {
+		Iterator<SadlParameterDeclaration> spitr = element.getParameter().iterator();
+		while (spitr.hasNext()) {
+			SadlParameterDeclaration spd = spitr.next();
+			if (spd.getAugtype() == null) {
+				addWarning("Missing augmented type information", spd.getName());
+			}
+		}
+		Iterator<SadlReturnDeclaration> srtitr = element.getReturnType().iterator();
+		while (srtitr.hasNext()) {
+			SadlReturnDeclaration srd = srtitr.next();
+			if (srd.getAugtype() == null) {
+				addWarning("Missing augmented return type information", srd.getType());
+			}
+		}
+	}
+
 	private StatementContent processStatement(MyNameIsStatement element) throws IOException {
 		getAnswerCurationManager().setUserName(element.getAnswer());
 		AnswerContent ac = new AnswerContent(element, Agent.USER);
@@ -1479,6 +1506,7 @@ public class JenaBasedDialogModelProcessor extends JenaBasedSadlModelProcessor {
 				"cmReturnTypes describes Method with a single value of type string List.\r\n" + 
 				"cmSemanticReturnTypes describes Method with a single value of type string List.\r\n" + 
 				"doesComputation describes Method with a single value of type boolean.\r\n" + 
+				"incompleteInformation describes Method with a single value of type boolean.\r\n" + 
 				"calls describes Method with values of type MethodCall.\r\n" + 
 				"ExternalMethod is a type of Method.\r\n" + 
 				"\r\n" + 
