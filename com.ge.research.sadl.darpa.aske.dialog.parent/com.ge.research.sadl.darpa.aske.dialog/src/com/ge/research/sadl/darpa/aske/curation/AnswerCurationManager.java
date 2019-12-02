@@ -137,6 +137,7 @@ import com.hp.hpl.jena.ontology.OntResource;
 import com.hp.hpl.jena.ontology.Ontology;
 import com.hp.hpl.jena.ontology.Restriction;
 import com.hp.hpl.jena.rdf.model.Literal;
+import com.hp.hpl.jena.rdf.model.Model;
 import com.hp.hpl.jena.rdf.model.ModelFactory;
 import com.hp.hpl.jena.rdf.model.NodeIterator;
 import com.hp.hpl.jena.rdf.model.RDFNode;
@@ -188,6 +189,8 @@ public class AnswerCurationManager {
 	private boolean lookForSubclassInArticledClasses = true;	// should a domain of a property be replaced with a subclass
 																// that has appeared in other arguments augmented types
 	private Map<String, List<String>> unmatchedUrisAndLabels = null;	// Map of concept URIs and labels that were not matched in the domain ontology
+														
+	private List<String> addedTypeDeclarations = new ArrayList<String>();
     
 	public AnswerCurationManager (String modelFolder, IConfigurationManagerForIDE configMgr, XtextResource resource, Map<String,String> prefs) {
 		setOwlModelsFolder(modelFolder);
@@ -264,6 +267,7 @@ public class AnswerCurationManager {
 	 * @throws ConfigurationException 
 	 */
 	public void processImports(SaveAsSadl saveAsSadl) throws IOException, ConfigurationException {
+		addedTypeDeclarations.clear();
 		Map<File, Boolean> outputOwlFilesBySourceType = new HashMap<File, Boolean>();	// Map of imports, value is true if code, false if text extraction
 //		List<File> outputOwlFiles = new ArrayList<File>();
 		List<File> textFiles = getExtractionProcessor().getTextProcessor().getTextFiles();
@@ -669,12 +673,15 @@ public class AnswerCurationManager {
 									Throwable cause = e.getCause();
 									if (cause instanceof ConnectException || cause instanceof UnknownHostException) {
 										StringBuilder sb = new StringBuilder(e.getMessage());
-										sb.append(" to translate Java to Python. ");
+										sb.append(" to translate Java method '" + methodName + "' to Python. ");
 										sb.append(cause.getMessage());
 										sb.append(".");
 										System.err.println(sb.toString());
 									}
 									else {
+										StringBuilder sb = new StringBuilder(e.getMessage());
+										sb.append(" to translate Java method '" + methodName + "' to Python. ");
+										System.err.println(sb.toString());
 										e.printStackTrace();
 									}
 								}
@@ -764,33 +771,42 @@ public class AnswerCurationManager {
 			}
 			throw new NotFoundException("Equation with URI " + equationToBuildUri + " not found.");
 		}
-		String retName =  null;
-		Statement argStmt = extractedModelInstance.getProperty(ontModel.getProperty(SadlConstants.SADL_IMPLICIT_MODEL_ARGUMENTS_PROPERTY_URI));
-		if (argStmt != null) {
-			com.hp.hpl.jena.rdf.model.Resource ddList = argStmt.getObject().asResource();
-			if (ddList instanceof Resource) {
-				ResultSet rs = getMethodArguments(ontModel, reasoner, extractedModelInstance);
-				logger.debug(rs != null ? rs.toString() : "no argument results");
-				ResultSet rs2 = getMethodReturns(ontModel, reasoner, extractedModelInstance);
-				try {
-					String[] scriptInfo = getMethodScript(ontModel, reasoner, extractedModelInstance);
-					retName = scriptInfo[0] != null ? scriptInfo[0] : retName;
-					String script = scriptInfo[1];
-					logger.debug(script != null ? script : "no Python script results");
-					if (script != null) {
-						returnValue = getExtractionProcessor().saveToComputationalGraph(extractedModelInstance, retName, rs, rs2, script, null);
-						logger.debug("saveToComputationalGraph returned '" + returnValue + "'");
+		Resource type = extractedModelInstance.getRDFType(true);
+		if (type != null && type.isURIResource() && 
+				(type.getURI().equals(SadlConstants.SADL_IMPLICIT_MODEL_EQUATION_CLASS_URI) ||
+						type.getURI().equals(SadlConstants.SADL_IMPLICIT_MODEL_EXTERNAL_EQUATION_CLASS_URI)) ) {
+			String retName =  null;
+			Statement argStmt = extractedModelInstance.getProperty(ontModel.getProperty(SadlConstants.SADL_IMPLICIT_MODEL_ARGUMENTS_PROPERTY_URI));
+			if (argStmt != null) {
+				com.hp.hpl.jena.rdf.model.Resource ddList = argStmt.getObject().asResource();
+				if (ddList instanceof Resource) {
+					ResultSet rs = getMethodArguments(ontModel, reasoner, extractedModelInstance);
+					logger.debug(rs != null ? rs.toString() : "no argument results");
+					ResultSet rs2 = getMethodReturns(ontModel, reasoner, extractedModelInstance);
+					try {
+						String[] scriptInfo = getMethodScript(ontModel, reasoner, extractedModelInstance);
+						retName = (scriptInfo != null && scriptInfo[0] != null) ? scriptInfo[0] : retName;
+						String script = scriptInfo != null ? scriptInfo[1] : null;
+						logger.debug(script != null ? script : "no Python script results");
+						if (script != null) {
+							returnValue = getExtractionProcessor().saveToComputationalGraph(extractedModelInstance, retName, rs, rs2, script, null);
+							logger.debug("saveToComputationalGraph returned '" + returnValue + "'");
+						}
+						else {
+							returnValue = "Failed to find a Python script for equation '" + equationToBuildUri + "'.";
+						}
+					} catch (TranslationException e) {
+						returnValue = e.getMessage();
 					}
-					else {
-						returnValue = "Failed to find a Python script for equation '" + equationToBuildUri + "'.";
-					}
-				} catch (TranslationException e) {
-					returnValue = e.getMessage();
 				}
 			}
+			if (returnValue == null) {
+				return returnValue = "Failed: Unable to find model '" + equationToBuildUri + "' in code model.";
+			}
 		}
-		if (returnValue == null) {
-			return returnValue = "Failed: Unable to find model '" + equationToBuildUri + "' in code model.";
+		else {
+			// this is something else to save
+			return returnValue = "Saving '" + extractedModelInstance.getLocalName();
 		}
 		answerUser(getOwlModelsFolder(), returnValue, true, sc.getHostEObject());
 		return returnValue;
@@ -1221,7 +1237,7 @@ public class AnswerCurationManager {
 								}
 								success = true;
 							} catch (IOException e) {
-								// TODO Auto-generated catch block
+//								throw new AnswerExtractionException("Method '" + )
 								e.printStackTrace();
 							}
 						}
@@ -1440,6 +1456,9 @@ public class AnswerCurationManager {
 					}
 				}
 			}
+			else {
+				getDomainModel().write(System.err);
+			}
 			String matchingRsrcQN = findOntModelResourceWithMatchingLocalname(name, name, articledClasses);
 			if (matchingRsrcQN != null) {
 				return " (" + matchingRsrcQN + ")";
@@ -1548,6 +1567,12 @@ public class AnswerCurationManager {
 					sb.append(") is a class.");
 				}
 				stmts.add(sb.toString());
+				StringBuilder sb2 = new StringBuilder();
+				sb2.append(localName);
+				sb2.append(" definedBy \"");
+				sb2.append(getNamespaceFromUri(uri));
+				sb2.append("\".");
+				stmts.add(sb2.toString());
 			}
 			return stmts;
 		}
@@ -1556,7 +1581,7 @@ public class AnswerCurationManager {
 
 	/** Method to extract a localname from an ontology resource URI
 	 * @param uri
-	 * @return
+	 * @return local name
 	 */
 	private String getLocalNameFromUri(String uri) {
 		int lbl = uri.indexOf('#');
@@ -1566,6 +1591,22 @@ public class AnswerCurationManager {
 		int lastSlash = uri.lastIndexOf('/');
 		if (lastSlash > 0) {
 			return uri.substring(lastSlash + 1);
+		}
+		return uri;
+	}
+
+	/** Method to extract a namespace from an ontology resource URI
+	 * @param uri
+	 * @return namespace
+	 */
+	private String getNamespaceFromUri(String uri) {
+		int lbl = uri.indexOf('#');
+		if ( lbl > 0) {
+			return uri.substring(0, lbl);
+		}
+		int lastSlash = uri.lastIndexOf('/');
+		if (lastSlash > 0) {
+			return uri.substring(0, lastSlash);
 		}
 		return uri;
 	}
@@ -1690,6 +1731,7 @@ public class AnswerCurationManager {
 		sb.append(methodName);
 		sb.append("(");
 		clearCodeModelReasoner();
+		int typeDeclarationIndex = 0;
 		// get inputs and outputs and identify semantic meaning thereof
 		String inputQuery = "select ?arg ?argName ?argtyp where {<";
 		inputQuery += methodName.toString().trim();
@@ -1700,6 +1742,12 @@ public class AnswerCurationManager {
 		if (inputResults != null) {
 			for (int r = 0; r < inputResults.getRowCount(); r++) {
 				String argType = inputResults.getResultAt(r, 2).toString();
+				if (!typeFoundInSomeModel(argType)) {
+					if (!addedTypeDeclarations.contains(argType)) {
+						returnSadlStatements.add(typeDeclarationIndex++, (argType + " is a class."));
+						addedTypeDeclarations.add(argType);
+					}
+				}
 				String argName = inputResults.getResultAt(r, 1).toString();
 				if (r > 0) {
 					sb.append(", ");
@@ -1724,6 +1772,12 @@ public class AnswerCurationManager {
 			}
 			for (int r = 0; r < numReturnValues; r++) {
 				String retType = outputResults.getResultAt(r, 0).toString();
+				if (!typeFoundInSomeModel(retType)) {
+					if (!addedTypeDeclarations.contains(retType)) {
+						returnSadlStatements.add(typeDeclarationIndex++, (retType + " is a class."));
+						addedTypeDeclarations.add(retType);
+					}
+				}
 				if (r > 0) {
 					sb.append(", ");
 				}
@@ -1763,6 +1817,25 @@ public class AnswerCurationManager {
 		sb2.append(").\n");
 		returnSadlStatements.add(sb2.toString());
 		return returnSadlStatements;
+	}
+
+	/**
+	 * Method to find typeLocalName as a class in the current or some imported ontology
+	 * @param typeLocalName
+	 * @return
+	 */
+	private boolean typeFoundInSomeModel(String typeLocalName) {
+		List<String> primitiveTypes = new ArrayList<String>(Arrays.asList("string", "boolean", "decimal", "int", "long", "float", "double",
+				"duration", "dateTime", "time", "date", "gYearMonth", "gYear", "gMonthDay", "gDay", "gMonth", "hexBinary",
+				"base64Binary", "anyURI", "integer", "negativeInteger", "nonNegativeInteger", "positiveInteger",
+				"nonPositiveInteger", "byte", "unsignedByte", "unsignedInt", "anySimpleType", "data", "class"));
+		if (primitiveTypes.contains(typeLocalName)) {
+			return true;
+		}
+		if (findOntModelResourceWithMatchingLocalname(typeLocalName, null, null) != null) {
+			return true;
+		}
+		return false;
 	}
 
 	/**
