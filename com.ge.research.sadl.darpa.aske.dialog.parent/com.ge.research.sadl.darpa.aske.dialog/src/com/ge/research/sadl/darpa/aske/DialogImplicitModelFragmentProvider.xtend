@@ -50,8 +50,9 @@ class DialogImplicitModelFragmentProvider implements ISadlImplicitModelFragmentP
 
 	public static val DIALOG_IMPLICIT_MODEL_FRAGMENT = '''
 		/****** The following content comes from the Dialog implicit model fragment provider ******/
-				// these properties used by TA2
-				UnittedQuantity has impliedProperty ^value.
+		dependsOn is a property.
+		UnittedQuantity has impliedProperty ^value.
+		definedBy (alias "rdfs:isDefinedBy") is a type of annotation.
 	''';
 
 	@Override
