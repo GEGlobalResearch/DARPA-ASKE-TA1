@@ -286,7 +286,8 @@ public class JavaModelExtractorJP implements IModelFromCodeExtractor {
 				Individual methodCall = getCurrentCodeModel().createIndividual(getMethodCallClass());
 				methodCalled.addProperty(getCallsProperty(), methodCall);
 				Individual cb = postProcessingList.get(node);
-				methodCall.addProperty(getCodeBlockProperty(), cb);
+//				methodCall.addProperty(getCodeBlockProperty(), cb);
+				cb.addProperty(getCodeBlockProperty(), methodCalled);
 				
 				addRange(methodCall, node);
 
@@ -929,7 +930,6 @@ public class JavaModelExtractorJP implements IModelFromCodeExtractor {
           	Individual ref = createReference(varNode, cvInst, containingInst, USAGE.Defined);
           	setInputOutputIfKnown(ref, inputOutput);
           	cvInst.addProperty(getVarNameProperty(), getCurrentCodeModel().createTypedLiteral(origName));
-          	// TODO add varType
           	String typeStr = null;
           	if (varNode instanceof VariableDeclarator) {
           		typeStr = ((VariableDeclarator)varNode).getTypeAsString();
@@ -941,7 +941,7 @@ public class JavaModelExtractorJP implements IModelFromCodeExtractor {
           		int i = 0;
           	}
           	if (typeStr != null) {
-          		cvInst.addProperty(getCurrentCodeModel().getProperty(getCodeMetaModelUri() + "#varType"), getCurrentCodeModel().createTypedLiteral(typeStr));
+          		cvInst.addProperty(getVarTypeProperty(), getCurrentCodeModel().createTypedLiteral(typeStr));
           	}
 		}
 		return cvInst;
@@ -1068,6 +1068,10 @@ public class JavaModelExtractorJP implements IModelFromCodeExtractor {
 		return getCurrentCodeModel().getOntProperty(getCodeMetaModelUri() + "#doesComputation");
 	}
 	
+	private Property getIncompleteInformationProperty() {
+		return getCurrentCodeModel().getOntProperty(getCodeMetaModelUri() + "#incompleteInformation");
+	}
+
 	private Property getReferenceProperty() {
 		return getCurrentCodeModel().getOntProperty(getCodeMetaModelUri() + "#reference");
 	}
