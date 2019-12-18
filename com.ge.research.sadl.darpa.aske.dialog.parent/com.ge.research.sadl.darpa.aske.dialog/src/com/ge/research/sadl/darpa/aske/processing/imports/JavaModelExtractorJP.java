@@ -82,6 +82,7 @@ import com.github.javaparser.ast.comments.BlockComment;
 import com.github.javaparser.ast.comments.Comment;
 import com.github.javaparser.ast.expr.AssignExpr;
 import com.github.javaparser.ast.expr.BinaryExpr;
+import com.github.javaparser.ast.expr.BinaryExpr.Operator;
 import com.github.javaparser.ast.expr.BooleanLiteralExpr;
 import com.github.javaparser.ast.expr.DoubleLiteralExpr;
 import com.github.javaparser.ast.expr.EnclosedExpr;
@@ -115,6 +116,7 @@ import com.hp.hpl.jena.rdf.model.StmtIterator;
 import com.hp.hpl.jena.util.iterator.ExtendedIterator;
 import com.hp.hpl.jena.vocabulary.RDFS;
 import com.hp.hpl.jena.vocabulary.XSD;
+import com.ibm.icu.text.PluralRules.Operand;
 
 public class JavaModelExtractorJP implements IModelFromCodeExtractor {
     private static final Logger logger = Logger.getLogger (JavaModelExtractorJP.class) ;
@@ -149,7 +151,7 @@ public class JavaModelExtractorJP implements IModelFromCodeExtractor {
 	public JavaModelExtractorJP(AnswerCurationManager acm, Map<String, String> preferences) {
 		setCurationMgr(acm);
 		this.setPreferences(preferences);
-	    logger.setLevel(Level.ALL);
+//	    logger.setLevel(Level.ALL);
 	}
 	
 	private void initializeContent(String modelName, String modelPrefix) {
@@ -185,10 +187,10 @@ public class JavaModelExtractorJP implements IModelFromCodeExtractor {
 					potentialConstants.remove(inst);
 				}
 			}
-			System.out.println("Constants:");
+			logger.debug("Constants:");
 			for (Individual inst : potentialConstants.keySet()) {
 				LiteralExpr value = potentialConstants.get(inst);
-				System.out.println("   " + inst.getLocalName() + "=" + value.toString());
+				logger.debug("   " + inst.getLocalName() + "=" + value.toString());
 				Literal lval;
 				if (value instanceof IntegerLiteralExpr) {
 					lval = SadlUtils.getLiteralMatchingDataPropertyRange(getCurrentCodeModel(),XSD.xint.getURI(), value.toString());
@@ -583,7 +585,7 @@ public class JavaModelExtractorJP implements IModelFromCodeExtractor {
 					Individual varInst = findDefinedVariable(nm, containingInst);
 					if (n1 instanceof LiteralExpr) {
 						if (varInst != null) {
-							System.out.println(varInst.getLocalName() + ": " + ass.toString());
+							logger.debug(varInst.getLocalName() + ": " + ass.toString());
 							addPotentialConstant(varInst, (LiteralExpr)n1);
 						}
 					}
@@ -597,7 +599,18 @@ public class JavaModelExtractorJP implements IModelFromCodeExtractor {
 			}
 		}
 		else if (childNode instanceof BinaryExpr) {
-			containingInst.setPropertyValue(getDoesComputationProperty(), getCurrentCodeModel().createTypedLiteral(true));
+			Operator op = ((BinaryExpr)childNode).getOperator();
+			if (op.equals(Operator.DIVIDE) ||
+					op.equals(Operator.MINUS) ||
+					op.equals(Operator.MULTIPLY) ||
+					op.equals(Operator.PLUS) ||
+					op.equals(Operator.REMAINDER) ||
+					op.equals(Operator.SIGNED_RIGHT_SHIFT) ||
+					op.equals(Operator.UNSIGNED_RIGHT_SHIFT)
+					) {
+				containingInst.setPropertyValue(getDoesComputationProperty(), getCurrentCodeModel().createTypedLiteral(true));
+				logger.debug("BinaryExpr: " + ((BinaryExpr)childNode).toString());
+			}
 			processBlock(childNode, containingInst);
 		}
 		else if (childNode instanceof NameExpr) {

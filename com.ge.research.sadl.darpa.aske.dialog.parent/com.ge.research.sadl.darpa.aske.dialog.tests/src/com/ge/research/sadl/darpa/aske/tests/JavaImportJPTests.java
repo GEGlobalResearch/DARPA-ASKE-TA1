@@ -388,10 +388,84 @@ public class JavaImportJPTests {
 		if (sadlF.exists()) {
 			String sadlContent = acm.getExtractionProcessor().getGeneratedSadlContent();
 			System.out.println(sadlContent);
-		}
-		
+		}		
 	}
 	
+	@Test
+	public void test_07() throws IOException, ConfigurationException, OwlImportException, QueryParseException, QueryCancelledException, ReasonerNotFoundException, InvalidNameException {
+		// test save command given an OWL file generated from a .dialog file is available as input.
+		File owlF = new File(getCodeExtractionKbRoot() + "\\OwlModels\\test2.dialog.owl");
+		assertTrue(owlF.exists());
+		
+		IConfigurationManagerForIDE cm = ConfigurationManagerForIdeFactory.getConfigurationManagerForIDE(getDomainProjectModelFolder(), null);
+		AnswerCurationManager acm = new AnswerCurationManager(getDomainProjectModelFolder(), cm, null, null);
+		OntModel om = cm.loadOntModel(owlF.getCanonicalPath(), true);
+		String equationToBuildUri = cm.getBaseUriFromOwlFile(owlF.getCanonicalPath()) + "#Mach.CAL_SOS";
+		Resource resource = null;
+		String modelName = om.getNsPrefixMap().get("");
+		SaveContent sc = new SaveContent(null, Agent.USER);
+		sc.setSourceEquationUri(equationToBuildUri);
+		try {
+			String result = acm.processSaveRequest(resource, om, modelName, sc );
+			fail("Headless test should not be able to save extraction");
+		}
+		catch(IOException e) {
+			
+		}
+	}
+
+	@Test
+	public void test_08() throws IOException, ConfigurationException {
+		File codeFile = new File(getCodeExtractionKbRoot() + "/ExtractedModels/Sources/Turbo.java");
+		assertTrue(codeFile.exists());
+		// remove OWL and SADL files
+		File owlF = new File(getCodeExtractionKbRoot() + "/ExtractedModels\\Turbo.java.owl");
+		
+		if (owlF.exists()) {
+			owlF.delete();
+			assertFalse(owlF.exists());
+		}
+		File sadlF = new File(getCodeExtractionKbRoot() + "\\ExtractedModels\\Turbo.java.owl.sadl");
+		if (sadlF.exists()) {
+			sadlF.delete();
+			assertFalse(sadlF.exists());
+		}
+		
+		IConfigurationManagerForIDE cm = ConfigurationManagerForIdeFactory.getConfigurationManagerForIDE(getDomainProjectModelFolder(), null);
+		AnswerCurationManager acm = new AnswerCurationManager(getDomainProjectModelFolder(), cm, null, null);
+		acm.setOwlModelsFolder(getExtractionProjectModelFolder());
+		
+		IDialogAnswerProvider dapcft = new DialogAnswerProviderConsoleForTest();
+		cm.addPrivateKeyValuePair(DialogConstants.DIALOG_ANSWER_PROVIDER, dapcft);
+		
+		boolean includeSerialization = false; //true;
+		
+		String defaultCodeModelPrefix = includeSerialization ? "MachSz" : "Mach";
+		String defaultCodeModelName = "http://com.ge.research.darpa.aske.ta1.explore/" + defaultCodeModelPrefix;
+		acm.getExtractionProcessor().getCodeExtractor().setCodeModelPrefix(defaultCodeModelPrefix);
+		acm.getExtractionProcessor().getCodeExtractor().setCodeModelName(defaultCodeModelName);
+		
+		String genFolder = new File(acm.getOwlModelsFolder()).getParent() + 
+				"/" + DialogConstants.EXTRACTED_MODELS_FOLDER_PATH_FRAGMENT;
+		new File(genFolder).mkdirs();
+//		String owlFileName = genFolder + "/" + defaultCodeModelPrefix + ".owl";
+
+		acm.getExtractionProcessor().getCodeExtractor().addCodeFile(codeFile);
+		acm.getExtractionProcessor().getCodeExtractor().setIncludeSerialization(includeSerialization);
+//		acm.processImports(SaveAsSadl.AskUserSaveAsSadl);
+		acm.processImports(SaveAsSadl.DoNotSaveAsSadl);
+		assertTrue(owlF.exists());
+
+	}
+
+	String getCodeExtractionKbRoot() {
+		return codeExtractionKbRoot;
+	}
+
+	void setCodeExtractionKbRoot(String codeExtractionKbRoot) {
+		this.codeExtractionKbRoot = codeExtractionKbRoot;
+	}
+
 	private String readFile(File file) throws IOException {
 	    BufferedReader reader = new BufferedReader(new FileReader (file));
 	    String         line = null;
@@ -426,34 +500,4 @@ public class JavaImportJPTests {
 		this.domainProjectModelFolder = outputProjectModelFolder;
 	}
 
-	@Test
-		public void test_07() throws IOException, ConfigurationException, OwlImportException, QueryParseException, QueryCancelledException, ReasonerNotFoundException, InvalidNameException {
-			// test save command given an OWL file generated from a .dialog file is available as input.
-			File owlF = new File(getCodeExtractionKbRoot() + "\\OwlModels\\test2.dialog.owl");
-			assertTrue(owlF.exists());
-			
-			IConfigurationManagerForIDE cm = ConfigurationManagerForIdeFactory.getConfigurationManagerForIDE(getDomainProjectModelFolder(), null);
-			AnswerCurationManager acm = new AnswerCurationManager(getDomainProjectModelFolder(), cm, null, null);
-			OntModel om = cm.loadOntModel(owlF.getCanonicalPath(), true);
-			String equationToBuildUri = cm.getBaseUriFromOwlFile(owlF.getCanonicalPath()) + "#Mach.CAL_SOS";
-			Resource resource = null;
-			String modelName = om.getNsPrefixMap().get("");
-			SaveContent sc = new SaveContent(null, Agent.USER);
-			sc.setSourceEquationUri(equationToBuildUri);
-			try {
-				String result = acm.processSaveRequest(resource, om, modelName, sc );
-				fail("Headless test should not be able to save extraction");
-			}
-			catch(IOException e) {
-				
-			}
-		}
-
-	String getCodeExtractionKbRoot() {
-		return codeExtractionKbRoot;
-	}
-
-	void setCodeExtractionKbRoot(String codeExtractionKbRoot) {
-		this.codeExtractionKbRoot = codeExtractionKbRoot;
-	}
 }
