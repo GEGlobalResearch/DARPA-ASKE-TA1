@@ -1583,7 +1583,7 @@ public class JenaBasedDialogModelProcessor extends JenaBasedSadlModelProcessor {
 				"   ref has firstRef true and\r\n" + 
 				"   ref has usage Used\r\n" + 
 				"   and cv has reference ref\r\n" + 
-				"   and ref has beginsAt loc\r\n" + 
+				"//   and ref has beginsAt loc\r\n" + 
 				"then input of ref is true and isImplicit of ref is true\r\n" + 
 				"//	and print(cb, cv, loc, \" implicit input\")\r\n" + 
 				".\r\n" + 
@@ -1595,10 +1595,22 @@ public class JenaBasedDialogModelProcessor extends JenaBasedSadlModelProcessor {
 				"   ref has usage Reassigned\r\n" + 
 				"   and cv has reference ref\r\n" + 
 				"   and noValue(cv, reference, ref2, ref2, codeBlock, cb, ref2, usage, Defined)\r\n" + 
-				"   and ref has beginsAt loc\r\n" + 
+				"//   and ref has beginsAt loc\r\n" + 
 				"then output of ref is true and isImplicit of ref is true\r\n" + 
 				"//	and print(cb, cv, loc, \" implicit output\")\r\n" + 
-				".";
+				"." + 
+				"\r\n" + 
+				"ClassesToIgnore is a type of Class.\r\n" + 
+				"{Canvas, CardLayout, Graphics, Insets, Panel, Image, cem:Event, Choice, Button,\r\n" + 
+				"	Viewer, GridLayout\r\n" + 
+				"} are types of ClassesToIgnore.\r\n" + 
+				"\r\n" + 
+				"Ask ImplicitMethodInputs: \"select distinct ?m ?cv ?vt ?vn where {?r <isImplicit> true . ?r <http://sadl.org/CodeExtractionModel.sadl#input> true . \r\n" + 
+				"	?r <codeBlock> ?m . ?cv <reference> ?r . ?cv <varType> ?vt . ?cv <varName> ?vn} order by ?m ?vn\".\r\n" + 
+				"Ask ImplicitMethodOutputs: \"select distinct ?m ?cv ?vt ?vn where {?r <isImplicit> true . ?r <http://sadl.org/CodeExtractionModel.sadl#output> true . \r\n" + 
+				"	?r <codeBlock> ?m . ?cv <reference> ?r . ?cv <varType> ?vt. ?cv <varName> ?vn} order by ?m ?vn\".\r\n" + 
+				"Ask MethodsDoingComputation: \"select ?m where {?m <doesComputation> true}\".\r\n" + 
+				"Ask MethodCalls: \"select ?m ?mcalled where {?m <calls> ?mc . ?mc <codeBlock> ?mcalled} order by ?m ?mcalled\".";
 		return content;
 	}
 

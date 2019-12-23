@@ -39,6 +39,7 @@ package com.ge.research.sadl.darpa.aske.processing.imports;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
@@ -70,10 +71,13 @@ import com.ge.research.sadl.reasoner.utils.SadlUtils;
 import com.github.javaparser.JavaParser;
 import com.github.javaparser.Range;
 import com.github.javaparser.ast.CompilationUnit;
+import com.github.javaparser.ast.ImportDeclaration;
+import com.github.javaparser.ast.Modifier;
 import com.github.javaparser.ast.Node;
 import com.github.javaparser.ast.NodeList;
 import com.github.javaparser.ast.PackageDeclaration;
 import com.github.javaparser.ast.body.ClassOrInterfaceDeclaration;
+import com.github.javaparser.ast.body.ConstructorDeclaration;
 import com.github.javaparser.ast.body.FieldDeclaration;
 import com.github.javaparser.ast.body.MethodDeclaration;
 import com.github.javaparser.ast.body.Parameter;
@@ -87,16 +91,19 @@ import com.github.javaparser.ast.expr.BooleanLiteralExpr;
 import com.github.javaparser.ast.expr.DoubleLiteralExpr;
 import com.github.javaparser.ast.expr.EnclosedExpr;
 import com.github.javaparser.ast.expr.Expression;
+import com.github.javaparser.ast.expr.FieldAccessExpr;
 import com.github.javaparser.ast.expr.IntegerLiteralExpr;
 import com.github.javaparser.ast.expr.LiteralExpr;
 import com.github.javaparser.ast.expr.LongLiteralExpr;
 import com.github.javaparser.ast.expr.MethodCallExpr;
 import com.github.javaparser.ast.expr.NameExpr;
+import com.github.javaparser.ast.expr.ObjectCreationExpr;
 import com.github.javaparser.ast.expr.VariableDeclarationExpr;
 import com.github.javaparser.ast.stmt.BlockStmt;
 import com.github.javaparser.ast.stmt.ExpressionStmt;
 import com.github.javaparser.ast.stmt.IfStmt;
 import com.github.javaparser.ast.stmt.ReturnStmt;
+import com.github.javaparser.ast.type.ClassOrInterfaceType;
 import com.github.javaparser.symbolsolver.JavaSymbolSolver;
 import com.github.javaparser.symbolsolver.resolution.typesolvers.CombinedTypeSolver;
 import com.github.javaparser.symbolsolver.resolution.typesolvers.ReflectionTypeSolver;
@@ -112,8 +119,10 @@ import com.hp.hpl.jena.rdf.model.ModelFactory;
 import com.hp.hpl.jena.rdf.model.Property;
 import com.hp.hpl.jena.rdf.model.RDFNode;
 import com.hp.hpl.jena.rdf.model.Resource;
+import com.hp.hpl.jena.rdf.model.Statement;
 import com.hp.hpl.jena.rdf.model.StmtIterator;
 import com.hp.hpl.jena.util.iterator.ExtendedIterator;
+import com.hp.hpl.jena.vocabulary.RDF;
 import com.hp.hpl.jena.vocabulary.RDFS;
 import com.hp.hpl.jena.vocabulary.XSD;
 import com.ibm.icu.text.PluralRules.Operand;
@@ -141,12 +150,15 @@ public class JavaModelExtractorJP implements IModelFromCodeExtractor {
 	private boolean includeSerialization = true;
 	private String defaultCodeModelName = null;
 	private String defaultCodeModelPrefix = null;
-	private Map<Node, Individual> postProcessingList = new HashMap<Node, Individual>();
+	private Map<Node, Individual> postProcessingList = new HashMap<Node, Individual>(); // key is the MethodCallExpr
+																						// value is the calling method instance
 	private Map<Node,Individual> methodsFound = new HashMap<Node, Individual>();
 	private Individual methodWithBodyInProcess = null;
 	private boolean sendCommentsToTextService = false;	// change to true to send comments to text-to-triples service
 	private Map<Individual, LiteralExpr> potentialConstants = new HashMap<Individual, LiteralExpr>();
 	private List<Individual> discountedPotentialConstants = new ArrayList<Individual>();
+	private List<String> classesToIgnore = new ArrayList<String>();
+	private List<String> primitiveTypesList = null;
 	
 	public JavaModelExtractorJP(AnswerCurationManager acm, Map<String, String> preferences) {
 		setCurationMgr(acm);
@@ -267,6 +279,7 @@ public class JavaModelExtractorJP implements IModelFromCodeExtractor {
         	setCodeModelPrefix(derivePrefixFromPackage(getCodeModelName()));
         }
         initializeCodeModel(getCurationMgr().getOwlModelsFolder());
+        findAllClassesToIgnore(cu);
         processBlock(cu, null);
         postProcess();
 	}
@@ -275,8 +288,13 @@ public class JavaModelExtractorJP implements IModelFromCodeExtractor {
 		Iterator<Node> nitr = postProcessingList.keySet().iterator();
 		while (nitr.hasNext()) {
 			Node node = nitr.next();
+			Individual callingMethod = postProcessingList.get(node);
+			if (node instanceof MethodCallExpr && ignoreMethodCall((MethodCallExpr) node, callingMethod)) {
+				continue;
+			}
 			Node containerNode = null;
 			if (node instanceof MethodCallExpr) {
+				// node is the MethodCallExpr
 				Optional<Node> optContainer = ((MethodCallExpr)node).getParentNode();
 				if (optContainer.isPresent()) {
 					containerNode = optContainer.get();
@@ -284,17 +302,18 @@ public class JavaModelExtractorJP implements IModelFromCodeExtractor {
 				NodeList<Expression> args = ((MethodCallExpr)node).getArguments();
 				String methName = ((MethodCallExpr)node).getNameAsString();
 				Individual methodCalled = findMethodCalled((MethodCallExpr)node);
-				// create instance of MethodCall, link to methodCalled
+				// create instance of MethodCall that will contain details of this call
 				Individual methodCall = getCurrentCodeModel().createIndividual(getMethodCallClass());
-				methodCalled.addProperty(getCallsProperty(), methodCall);
-				Individual cb = postProcessingList.get(node);
+//				methodCalled.addProperty(getCallsProperty(), methodCall);
+//				methodCall.addProperty(getCallsProperty(), methodCalled);
 //				methodCall.addProperty(getCodeBlockProperty(), cb);
-				cb.addProperty(getCodeBlockProperty(), methodCalled);
+				callingMethod.addProperty(getCallsProperty(), methodCall);
+				methodCall.addProperty(getCodeBlockProperty(), methodCalled);
 				
 				addRange(methodCall, node);
 
-				addInputMapping(methodCalled, (MethodCallExpr)node);
-				addOutputMapping(methodCalled, (MethodCallExpr)node);
+				addInputMapping(callingMethod, methodCall, methodCalled, (MethodCallExpr)node);
+				addReturnedMapping(callingMethod, methodCall, methodCalled, containerNode, (MethodCallExpr)node);
 			}
 			else {
 				logger.debug("Unexprected node type in postProcessingList: " + node.getClass().getCanonicalName());
@@ -312,14 +331,71 @@ public class JavaModelExtractorJP implements IModelFromCodeExtractor {
 		return false;
 	}
 
-	private void addOutputMapping(Individual methodCalled, MethodCallExpr node) {
-		// TODO Auto-generated method stub
-		int i = 0;
+	private void addReturnedMapping(Individual methodCalling, Individual methodCall, Individual methodCalled, Node containerNode, MethodCallExpr node) {
+		if (containerNode instanceof AssignExpr) {
+			Expression assignedTo = ((AssignExpr)containerNode).getTarget();
+			if (assignedTo instanceof NameExpr) {
+				// Java can only return a single value
+				StmtIterator stmtitr = getCurrentCodeModel().listStatements(null, getCodeBlockProperty(), methodCalled);
+				while (stmtitr.hasNext()) {
+					Resource ref = stmtitr.next().getSubject();
+					Statement outputstmt = ref.getProperty(getOutputProperty());
+					if (outputstmt != null) {
+						RDFNode output = outputstmt.getObject();
+						if (output != null && output.isLiteral() && output.asLiteral().getValue().equals(true)) {
+							StmtIterator stmtitr2 = getCurrentCodeModel().listStatements(null, getReferenceProperty(), ref);
+							while (stmtitr2.hasNext()) {
+								Resource cv = stmtitr2.next().getSubject();
+//								System.out.println("\nSetting output mapping for " + cv.toString());
+								Individual mapping = getCurrentCodeModel().createIndividual(getOutputMappingClass());
+								mapping.addProperty(getCallingVariableProperty(), findDefinedVariable(((NameExpr)assignedTo).getNameAsString(), methodCalling));
+								mapping.addProperty(getCalledVariableProperty(), cv);
+								methodCall.addProperty(getReturnedMappingProperty(), mapping);
+							}
+						}
+					}
+//					else {
+//						StmtIterator stmtitr2 = getCurrentCodeModel().listStatements(null, getReferenceProperty(), ref);
+//						while (stmtitr2.hasNext()) {
+//							Resource cv = stmtitr2.next().getSubject();
+//							System.out.println("\nCodeVariable: " + cv.toString());
+//						}
+//						StmtIterator stmtitr3 = ref.listProperties();
+//						while (stmtitr3.hasNext()) {
+//							System.out.println(stmtitr3.next().toString());
+//						}
+//					}
+				}
+			}
+		}
 	}
 
-	private void addInputMapping(Individual methodCalled, MethodCallExpr node) {
-		// TODO Auto-generated method stub
-		int i = 0;
+	private void addInputMapping(Individual methodCalling, Individual methodCall, Individual methodCalled, MethodCallExpr node) {
+		Iterator<Expression> argsitr = node.getArguments().iterator();
+		List<Individual> argVars = null;
+		Statement argsstmt = methodCalled.getProperty(getArgumentsProperty());
+		if (argsstmt != null) {
+			RDFNode argsList = argsstmt.getObject();
+			if (argsList.canAs(Individual.class)) {
+				argVars = getMembersOfList(getCurrentCodeModel(), argsList.as(Individual.class));
+			}
+		}
+		if (argVars != null) {
+			Iterator<Individual> argvaritr = argVars.iterator();
+			while (argsitr.hasNext() && argvaritr.hasNext()) {
+				Individual argvar = argvaritr.next();
+				Expression argexpr = argsitr.next();
+				if (argexpr instanceof NameExpr) {
+					Individual mapping = getCurrentCodeModel().createIndividual(getInputMappingClass());
+					mapping.addProperty(getCallingVariableProperty(), findDefinedVariable(((NameExpr)argexpr).getNameAsString(), methodCalling));
+					mapping.addProperty(getCalledVariableProperty(), argvar);
+					methodCall.addProperty(getInputMappingProperty(), mapping);
+				}
+				else {
+					
+				}
+			}
+		}
 	}
 
 	private Individual findMethodCalled(MethodCallExpr node) {
@@ -420,11 +496,79 @@ public class JavaModelExtractorJP implements IModelFromCodeExtractor {
 			OntModel sadlListModel = getCodeModelConfigMgr().getOntModel(getSadlListModelUri(), Scope.INCLUDEIMPORTS);
 			addImportToJenaModel(getCodeModelName(), getSadlListModelUri(), 
 					getCodeModelConfigMgr().getGlobalPrefix(getSadlListModelUri()), sadlListModel);
+			OntClass ctic = getClassesToIgnoreClass();
+			if (ctic != null) {
+				ExtendedIterator<OntClass> extitr = ctic.listSubClasses();
+				if (extitr != null && extitr.hasNext()) {
+					while (extitr.hasNext()) {
+						Resource cti = extitr.next();
+						classesToIgnore.add(cti.getLocalName());
+					}
+					extitr.close();
+				}
+			}
 		}
 		else {
 			setCurrentCodeModel(getCurationMgr().getExtractionProcessor().getCodeModel());
 		}
 		
+	}
+
+	private void findAllClassesToIgnore(Node node) {
+		if (node instanceof ClassOrInterfaceDeclaration) {
+			ClassOrInterfaceDeclaration cls = (ClassOrInterfaceDeclaration) node;
+			Iterator<ClassOrInterfaceType> etitr = cls.getExtendedTypes().iterator();
+			while (etitr.hasNext()) {
+				ClassOrInterfaceType et = etitr.next();
+				if (classesToIgnore.contains(et.getNameAsString())) {
+					if (!classesToIgnore.contains(cls.getNameAsString())) {
+						classesToIgnore.add(cls.getNameAsString());
+						logger.debug("findAllClassesToIgnore added '" + cls.getNameAsString() + "' to classesToIgnore");
+					}
+				}
+				else {
+					findAllClassesToIgnore(et);
+				}
+			}
+		}
+		else if (node instanceof ImportDeclaration) {
+			return;
+		}
+		else if (node instanceof Modifier) {
+			return;
+		}
+		else if (node instanceof ClassOrInterfaceType) {
+			return;
+		}
+		else if (node instanceof MethodDeclaration) {
+			return;
+		}
+		else if (node instanceof ConstructorDeclaration) {
+			return;
+		}
+		else if (node instanceof FieldDeclaration) {
+			return;
+		}
+		else if (node instanceof FieldAccessExpr) {
+			return;
+		}
+		else if (node instanceof VariableDeclarator) {
+			return;
+		}
+		else if (node instanceof ObjectCreationExpr) {
+			return;
+		}
+		else if (node instanceof MethodCallExpr) {
+			return;
+		}
+		else if (node instanceof AssignExpr) {
+			return;
+		}
+		List<Node> childNodes = node.getChildNodes();
+		for (int i = 0; i < childNodes.size(); i++) {
+			Node childNode = childNodes.get(i);
+			findAllClassesToIgnore(childNode);
+		}
 	}
 
 	private void processBlock(Node blkNode, Individual containingInst) {
@@ -439,15 +583,17 @@ public class JavaModelExtractorJP implements IModelFromCodeExtractor {
 	private void processBlockChild(Node childNode, Individual containingInst, USAGE knownUsage) {
 		if (childNode instanceof ClassOrInterfaceDeclaration) {
 			ClassOrInterfaceDeclaration cls = (ClassOrInterfaceDeclaration) childNode;
-			Individual blkInst = getOrCreateClass(cls);
-			if (containingInst != null) {
-				getCurrentCodeModel().add(blkInst, getContainedInProperty(), containingInst);
+			if (!ignoreClass(cls, containingInst)) {
+				Individual blkInst = getOrCreateClass(cls);
+				if (containingInst != null) {
+					getCurrentCodeModel().add(blkInst, getContainedInProperty(), containingInst);
+				}
+				else {
+					setRootContainingInstance(blkInst);
+				}
+				processBlock(cls, blkInst);
+				addSerialization(blkInst, cls.toString());
 			}
-			else {
-				setRootContainingInstance(blkInst);
-			}
-			processBlock(cls, blkInst);
-			addSerialization(blkInst, cls.toString());
 		}
 		else if (childNode instanceof FieldDeclaration) {
 			FieldDeclaration fd = (FieldDeclaration) childNode;
@@ -458,82 +604,86 @@ public class JavaModelExtractorJP implements IModelFromCodeExtractor {
 		}
 		else if (childNode instanceof MethodDeclaration) {
 			MethodDeclaration m = (MethodDeclaration) childNode;
-			Comment cmnt = getComment(m);
-			Individual methInst = getOrCreateMethod(m, containingInst);
-			methodsFound.put(m, methInst);
-			if (containingInst != null) {
-				getCurrentCodeModel().add(methInst, getContainedInProperty(), containingInst);
-			}
-			// Note that this local scope overrides any variable of the same name in a
-			//	more global scope. Therefore do not look for an existing variable
-			NodeList<Parameter> args = m.getParameters();
-			List<Individual> argList = args.size() > 0 ? new ArrayList<Individual>() : null;
-			for (int j = 0; j < args.size(); j++) {
-				Parameter param = args.get(j);
-				String nm = param.getNameAsString();
-				try {
-					Individual argCV = getOrCreateCodeVariable(param, methInst, getMethodVariableClass());
-					argList.add(argCV);
-				} catch (AnswerExtractionException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				}
-			}
-			if (argList != null) {
-				try {
-					Individual typedList = addMembersToList(getCurrentCodeModel(), null, getCodeVariableListClass(), getCodeVariableClass(), argList.iterator());
-					methInst.addProperty(getArgumentsProperty(), typedList);
-				} catch (JenaProcessorException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				} catch (TranslationException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				}
-			}
-			addRange(methInst, m);
-			Individual prior = setMethodWithBodyInProcess(methInst);
-			processBlock(m, methInst);	// order matters--do this after parameters and before return
-			setMethodWithBodyInProcess(prior);
-			
 			String rt = m.getTypeAsString();
-			if (rt != null) {
-				List<Literal> rtypes = new ArrayList<Literal>();
-				rtypes.add(getCurrentCodeModel().createTypedLiteral(rt));
-				Individual returnTypes;
-				try {
-					returnTypes = addMembersToList(getCurrentCodeModel(), null, getStringListClass(), XSD.xstring, rtypes.iterator());
-					methInst.addProperty(getReturnTypeProperty(), returnTypes);
-				} catch (JenaProcessorException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				} catch (TranslationException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
+			if (rt == null || !ignoreClass(rt, containingInst, false)) {
+				Comment cmnt = getComment(m);
+				Individual methInst = getOrCreateMethod(m, containingInst);
+				methodsFound.put(m, methInst);
+				if (containingInst != null) {
+					getCurrentCodeModel().add(methInst, getContainedInProperty(), containingInst);
 				}
-			}
-			logger.debug(methInst.getURI() + " returns " + ((rt != null && rt.length() > 0) ? rt : "void"));
-			addSerialization(methInst, ((MethodDeclaration) childNode).toString());
-		}
-		else if (childNode instanceof MethodCallExpr) {
-			MethodCallExpr mc = (MethodCallExpr)childNode;
-			addNodeToPostProcessingList(mc, containingInst);
-        	NodeList<Expression> args = mc.getArguments();
-        	Iterator<Expression> nlitr = args.iterator();
-        	while (nlitr.hasNext()) {
-        		Expression expr = nlitr.next();
-        		if (expr instanceof NameExpr) {
-        			try {
-						setSetterArgument(mc, (NameExpr)expr, containingInst);
+				// Note that this local scope overrides any variable of the same name in a
+				//	more global scope. Therefore do not look for an existing variable
+				NodeList<Parameter> args = m.getParameters();
+				List<Individual> argList = args.size() > 0 ? new ArrayList<Individual>() : null;
+				for (int j = 0; j < args.size(); j++) {
+					Parameter param = args.get(j);
+					String nm = param.getNameAsString();
+					try {
+						Individual argCV = getOrCreateCodeVariable(param, methInst, getMethodVariableClass());
+						argList.add(argCV);
 					} catch (AnswerExtractionException e) {
 						// TODO Auto-generated catch block
 						e.printStackTrace();
 					}
-        		}
-        		else {
-           			processBlockChild(expr, containingInst, USAGE.Defined);        			
-        		}
-        	}
+				}
+				if (argList != null) {
+					try {
+						Individual typedList = addMembersToList(getCurrentCodeModel(), null, getCodeVariableListClass(), getCodeVariableClass(), argList.iterator());
+						methInst.addProperty(getArgumentsProperty(), typedList);
+					} catch (JenaProcessorException e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					} catch (TranslationException e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					}
+				}
+				addRange(methInst, m);
+				Individual prior = setMethodWithBodyInProcess(methInst);
+				processBlock(m, methInst);	// order matters--do this after parameters and before return
+				setMethodWithBodyInProcess(prior);
+				
+				if (rt != null) {
+					List<Literal> rtypes = new ArrayList<Literal>();
+					rtypes.add(getCurrentCodeModel().createTypedLiteral(rt));
+					Individual returnTypes;
+					try {
+						returnTypes = addMembersToList(getCurrentCodeModel(), null, getStringListClass(), XSD.xstring, rtypes.iterator());
+						methInst.addProperty(getReturnTypeProperty(), returnTypes);
+					} catch (JenaProcessorException e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					} catch (TranslationException e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					}
+				}
+				logger.debug(methInst.getURI() + " returns " + ((rt != null && rt.length() > 0) ? rt : "void"));
+				addSerialization(methInst, ((MethodDeclaration) childNode).toString());
+			}
+		}
+		else if (childNode instanceof MethodCallExpr) {
+			MethodCallExpr mc = (MethodCallExpr)childNode;
+			if (!ignoreMethodCall(mc, containingInst)) {
+				addNodeToPostProcessingList(mc, containingInst);
+	        	NodeList<Expression> args = mc.getArguments();
+	        	Iterator<Expression> nlitr = args.iterator();
+	        	while (nlitr.hasNext()) {
+	        		Expression expr = nlitr.next();
+	        		if (expr instanceof NameExpr) {
+	        			try {
+							setSetterArgument(mc, (NameExpr)expr, containingInst);
+						} catch (AnswerExtractionException e) {
+							// TODO Auto-generated catch block
+							e.printStackTrace();
+						}
+	        		}
+	        		else {
+	           			processBlockChild(expr, containingInst, USAGE.Defined);        			
+	        		}
+	        	}
+			}
 		}
 		else if (childNode instanceof BlockStmt) {
 			processBlock(childNode, containingInst);
@@ -546,6 +696,9 @@ public class JavaModelExtractorJP implements IModelFromCodeExtractor {
 			}
 			else if (expr instanceof VariableDeclarationExpr) {
 				processBlockChild(expr, containingInst, USAGE.Defined);
+			}
+			else if (expr instanceof MethodCallExpr) {
+				processBlockChild(expr, containingInst, USAGE.Used);
 			}
 			else {
 				processBlock(expr, containingInst);
@@ -629,6 +782,9 @@ public class JavaModelExtractorJP implements IModelFromCodeExtractor {
 			List<Node> returnChildren = ((ReturnStmt)childNode).getChildNodes();
 			if (!returnChildren.isEmpty()) {
 				Node ret0 = returnChildren.get(0);
+				if (ret0 instanceof EnclosedExpr) {
+					ret0 = ((EnclosedExpr)ret0).getInner();
+				}
 				if (ret0 instanceof NameExpr) {
 					// this is an output of this block. It should already exist.
 					String nm = ((NameExpr)ret0).getNameAsString();
@@ -661,6 +817,143 @@ public class JavaModelExtractorJP implements IModelFromCodeExtractor {
 		investigateComments(childNode, containingInst);
 	}
 
+	private boolean ignoreMethodCall(MethodCallExpr mc, Individual containingInst) {
+		if (mc.getScope().isPresent()) {
+			Expression scope = mc.getScope().get();
+			if (scope instanceof FieldAccessExpr) {
+				if (ignoreMethod((FieldAccessExpr)scope, containingInst)) {
+					return true;
+				}
+			}
+			else if (scope instanceof NameExpr) {
+				RDFNode tvtype = findDefinedVariableType(((NameExpr)scope).getNameAsString(), containingInst);
+				if (ignoreType(tvtype, containingInst)) {
+					return true;
+				}
+			}
+		}
+		// consider the type returned and if ignored class, ignore
+		if (mc.getParentNode().get() instanceof AssignExpr) {
+			AssignExpr ae = (AssignExpr) mc.getParentNode().get();
+			if (ae.getTarget() instanceof NameExpr) {
+				NameExpr aene = (NameExpr)ae.getTarget();
+				RDFNode tvtype = findDefinedVariableType(aene.getNameAsString(), containingInst);
+				if (ignoreType(tvtype, containingInst)) {
+					return true;
+				}
+			}
+		}
+		// consider the arguments and if ignored types ignore
+		Iterator<Expression> argitr = mc.getArguments().iterator();
+		while (argitr.hasNext()) {
+			Expression arg = argitr.next();
+			if (arg instanceof NameExpr) {
+				RDFNode typ = findDefinedVariableType(((NameExpr)arg).getNameAsString(), containingInst);
+				if (ignoreType(typ, containingInst)) {
+					return true;
+				}
+			}
+			else if (arg instanceof ObjectCreationExpr) {
+				ClassOrInterfaceType typ = ((ObjectCreationExpr)arg).getType();
+				if (ignoreClass(typ.getNameAsString(), containingInst, false)) {
+					return true;
+				}
+			}
+			else if (arg instanceof FieldAccessExpr) {
+				if (ignoreMethod((FieldAccessExpr)arg, containingInst)) {
+					return true;
+				}
+			}
+		}
+		return false;
+	}
+
+	private boolean ignoreMethod(FieldAccessExpr fae, Individual containingInst) {
+		Expression scope = fae.getScope();
+		if (scope instanceof NameExpr) {
+			if (ignoreClass(((NameExpr)scope).getNameAsString(), containingInst, true)) {
+				return true;
+			}
+		}
+		else if (scope instanceof FieldAccessExpr) {
+			if (ignoreMethod((FieldAccessExpr)scope, containingInst)) {
+				return true;
+			}
+		}
+		return false;
+	}
+
+	private boolean ignoreType(RDFNode tvtype, Individual containingInst) {
+		if (tvtype == null) {
+			// if the variable doesn't exist at this point it must have been an ignored type
+			return true;					
+		}
+		if (tvtype.isLiteral()) {
+			if (ignoreClass(tvtype.asLiteral().getValue().toString(), containingInst, true)) {
+				return true;
+			}
+		}
+		else if (tvtype.isURIResource()) {
+			if (ignoreClass(tvtype.asResource().getLocalName(), containingInst, true)) {
+				return true;
+			}
+		}
+		return false;
+	}
+	
+	private RDFNode findDefinedVariableType(String nm, Individual containingInst) {
+		RDFNode nmType = null;
+		Individual targetVar = findDefinedVariable(nm, containingInst);
+		if (targetVar != null) {
+			nmType = targetVar.getPropertyValue(getVarTypeProperty());
+		}
+		return nmType;
+	}
+
+	private boolean ignoreClass(ClassOrInterfaceDeclaration cls, Individual containingInst) {
+		if (ignoreClass(cls.getName().asString(), containingInst, false)) {
+			return true;
+		}
+		return false;
+	}
+	
+	private boolean ignoreClass(String clsname, Individual containingInst, boolean nullIsIgnore) {
+		if (classesToIgnore.contains(clsname)) {
+			return true;
+		}
+		OntClass cls = getCurrentCodeModel().getOntClass(getCodeModelNamespace() + clsname);
+		if (cls != null) {
+			ExtendedIterator<OntClass> extitr = cls.listSuperClasses();
+			while (extitr.hasNext()) {
+				if (classesToIgnore.contains(extitr.next().getLocalName())) {
+					extitr.close();
+					return true;
+				}
+			}
+		}
+		else if (containingInst != null && !isBuiltinType(clsname)) {
+			RDFNode tvtype = findDefinedVariableType(clsname, containingInst);
+			if ((nullIsIgnore || tvtype != null) && ignoreType(tvtype, containingInst)) {
+				return true;
+			}
+		}
+		return false;
+	}
+
+	private boolean isBuiltinType(String clsname) {
+		String[] builtinTypes = {"byte", "short", "int", "long", "float", "double", "char",
+				"String", "boolean", 
+				"Byte", "Short", "Integer", "Long", "Float", "Double", "Character",
+				"Boolean"};
+		if (primitiveTypesList == null) {
+			primitiveTypesList = Arrays.asList(builtinTypes);
+		}
+		if (primitiveTypesList .contains(clsname)) {
+			return true;
+		}
+		return false;
+	}
+
 	private void removePotentalConstant(Individual varInst) {
 		if (!discountedPotentialConstants.contains(varInst)) {
 			discountedPotentialConstants.add(varInst);
@@ -676,6 +969,11 @@ public class JavaModelExtractorJP implements IModelFromCodeExtractor {
 		}
 	}
 
+	/**
+	 * Method to add a method call to the post-processing list. 
+	 * @param expr -- the MethodCallExpr
+	 * @param codeBlock -- the code block (method) in which the call occurs
+	 */
 	private void addNodeToPostProcessingList(Node expr, Individual codeBlock) {
 		postProcessingList.put(expr, codeBlock);
 	}
@@ -815,14 +1113,23 @@ public class JavaModelExtractorJP implements IModelFromCodeExtractor {
 		return null;
 	}
 
+	/**
+	 * Method to find a CodeVariable given its name and containing instance
+	 * @param nm
+	 * @param containingInst
+	 * @return
+	 */
 	private Individual findDefinedVariable(String nm, Individual containingInst) {
-		Individual inst = containingInst;
-		String nnm = getCodeModelNamespace() + inst.getLocalName() + "." + nm;
-		Individual varInst = getCurrentCodeModel().getIndividual(nnm);
-		if (varInst == null) {
-			RDFNode obj = containingInst.getPropertyValue(getContainedInProperty());
-			if (obj != null && obj.isURIResource() && obj.canAs(Individual.class)) {
-				return findDefinedVariable(nm, obj.as(Individual.class));
+		Individual varInst = null;
+		if (containingInst != null) {
+			Individual inst = containingInst;
+			String nnm = getCodeModelNamespace() + inst.getLocalName() + "." + nm;
+			varInst = getCurrentCodeModel().getIndividual(nnm);
+			if (varInst == null) {
+				RDFNode obj = containingInst.getPropertyValue(getContainedInProperty());
+				if (obj != null && obj.isURIResource() && obj.canAs(Individual.class)) {
+					return findDefinedVariable(nm, obj.as(Individual.class));
+				}
 			}
 		}
 		return varInst;
@@ -936,27 +1243,32 @@ public class JavaModelExtractorJP implements IModelFromCodeExtractor {
 
 	private Individual getOrCreateCodeVariable(Node varNode, String origName, String nnm, Individual containingInst,
 			OntClass codeVarClass, InputOutput inputOutput) throws AnswerExtractionException {
-		Individual cvInst;
-		cvInst = getCurrentCodeModel().getIndividual(getCodeModelNamespace() + nnm);
-		if (cvInst == null && codeVarClass != null) {
-			cvInst = getCurrentCodeModel().createIndividual(getCodeModelNamespace() + nnm, codeVarClass);
-          	Individual ref = createReference(varNode, cvInst, containingInst, USAGE.Defined);
-          	setInputOutputIfKnown(ref, inputOutput);
-          	cvInst.addProperty(getVarNameProperty(), getCurrentCodeModel().createTypedLiteral(origName));
-          	String typeStr = null;
-          	if (varNode instanceof VariableDeclarator) {
-          		typeStr = ((VariableDeclarator)varNode).getTypeAsString();
-          	}
-          	else if (varNode instanceof Parameter) {
-          		typeStr = ((Parameter)varNode).getTypeAsString();
-          	}
-          	else {
-          		int i = 0;
-          	}
-          	if (typeStr != null) {
-          		cvInst.addProperty(getVarTypeProperty(), getCurrentCodeModel().createTypedLiteral(typeStr));
-          	}
-		}
+      	String typeStr = null;
+      	if (varNode instanceof VariableDeclarator) {
+      		typeStr = ((VariableDeclarator)varNode).getTypeAsString();
+      	}
+      	else if (varNode instanceof Parameter) {
+      		typeStr = ((Parameter)varNode).getTypeAsString();
+      	}
+      	else if (varNode instanceof VariableDeclarationExpr) {
+      		typeStr = ((VariableDeclarationExpr)varNode).getVariable(0).getTypeAsString();
+      	}
+      	else {
+      		int i = 0;
+      	}
+		Individual cvInst = null;
+     	if (typeStr != null) {
+      		if (!ignoreClass(typeStr, containingInst, false)) {
+       			cvInst = getCurrentCodeModel().getIndividual(getCodeModelNamespace() + nnm);
+      			if (cvInst == null && codeVarClass != null) {
+      				cvInst = getCurrentCodeModel().createIndividual(getCodeModelNamespace() + nnm, codeVarClass);
+      	          	Individual ref = createReference(varNode, cvInst, containingInst, USAGE.Defined);
+      	          	setInputOutputIfKnown(ref, inputOutput);
+      	          	cvInst.addProperty(getVarNameProperty(), getCurrentCodeModel().createTypedLiteral(origName));
+      			}
+      			cvInst.addProperty(getVarTypeProperty(), getCurrentCodeModel().createTypedLiteral(typeStr));
+      		}
+      	}
 		return cvInst;
 	}
 
@@ -1041,6 +1353,14 @@ public class JavaModelExtractorJP implements IModelFromCodeExtractor {
 		return getCurrentCodeModel().getOntProperty(getCodeMetaModelUri() + "#cmArguments");
 	}
 	
+	private Property getCallingVariableProperty() {
+		return getCurrentCodeModel().getOntProperty(getCodeMetaModelUri() + "#callingVariable");
+	}
+	
+	private Property getCalledVariableProperty() {
+		return getCurrentCodeModel().getOntProperty(getCodeMetaModelUri() + "#calledVariable");
+	}
+	
 	private OntClass getCodeVariableListClass() {
 		Property argProp = getArgumentsProperty();
 		StmtIterator stmtItr = getCurrentCodeModel().listStatements(argProp, RDFS.range, (RDFNode)null);
@@ -1113,6 +1433,22 @@ public class JavaModelExtractorJP implements IModelFromCodeExtractor {
 		return null;
 	}
 	
+	private com.hp.hpl.jena.rdf.model.Resource getInputMappingClass() {
+		return getCurrentCodeModel().getOntClass(getCodeMetaModelUri() + "#InputMapping");
+	}
+
+	private Property getInputMappingProperty() {
+		return getCurrentCodeModel().getProperty(getCodeMetaModelUri() + "#inputMapping");
+	}
+
+	private com.hp.hpl.jena.rdf.model.Resource getOutputMappingClass() {
+		return getCurrentCodeModel().getOntClass(getCodeMetaModelUri() + "#OutputMapping");
+	}
+
+	private Property getReturnedMappingProperty() {
+		return getCurrentCodeModel().getProperty(getCodeMetaModelUri() + "#returnedMapping");
+	}
+
 	private com.hp.hpl.jena.rdf.model.Resource getReferenceClass() {
 		return getCurrentCodeModel().getOntClass(getCodeMetaModelUri() + "#Reference");
 	}
@@ -1121,6 +1457,10 @@ public class JavaModelExtractorJP implements IModelFromCodeExtractor {
 		return getCurrentCodeModel().getOntClass(getCodeMetaModelUri() + "#Method");
 	}
 
+	private OntClass getClassesToIgnoreClass() {
+		return getCurrentCodeModel().getOntClass(getCodeMetaModelUri() + "#ClassesToIgnore");
+	}
+	
 	private com.hp.hpl.jena.rdf.model.Resource getCodeBlockClassClass() {
 		return getCurrentCodeModel().getOntClass(getCodeMetaModelUri() + "#Class");
 	}
@@ -1432,6 +1772,31 @@ public class JavaModelExtractorJP implements IModelFromCodeExtractor {
 			model.add(lastInst, model.getProperty(SadlConstants.SADL_LIST_MODEL_REST_URI), rest);
 		}
 		return lastInst;
+	}
+	
+	/** Method to return the members of a SADL typed list
+	 * 
+	 * @param model
+	 * @param typedList
+	 * @return
+	 */
+	protected List<Individual> getMembersOfList(OntModel model, Individual typedList) {
+		List<Individual> members = new ArrayList<Individual>();
+		Individual rest = typedList;
+		while (rest != null) {
+			RDFNode first = rest.getPropertyValue(model.getProperty(SadlConstants.SADL_LIST_MODEL_FIRST_URI));
+			if (first != null && first.isResource() && first.asResource().canAs(Individual.class)) {
+				members.add(first.asResource().as(Individual.class));
+				RDFNode restRdfNode = rest.getPropertyValue(model.getProperty(SadlConstants.SADL_LIST_MODEL_REST_URI));
+				if (restRdfNode != null && restRdfNode.canAs(Individual.class)) {
+					rest = restRdfNode.as(Individual.class);
+				}
+				else {
+					rest = null;
+				}
+			}
+		}
+		return members;
 	}
 	
 	@Override

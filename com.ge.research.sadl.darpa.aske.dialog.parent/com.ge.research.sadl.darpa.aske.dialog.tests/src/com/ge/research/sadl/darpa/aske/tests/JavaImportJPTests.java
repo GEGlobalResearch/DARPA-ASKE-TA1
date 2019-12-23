@@ -72,6 +72,8 @@ import com.ge.research.sadl.reasoner.QueryParseException;
 import com.ge.research.sadl.reasoner.ReasonerNotFoundException;
 import com.ge.research.sadl.reasoner.ResultSet;
 import com.hp.hpl.jena.ontology.OntModel;
+import com.hp.hpl.jena.rdf.model.StmtIterator;
+import com.hp.hpl.jena.vocabulary.RDF;
 
 public class JavaImportJPTests {
 	private static final Logger LOGGER = LoggerFactory.getLogger(JavaImportJPTests.class);
@@ -455,7 +457,11 @@ public class JavaImportJPTests {
 //		acm.processImports(SaveAsSadl.AskUserSaveAsSadl);
 		acm.processImports(SaveAsSadl.DoNotSaveAsSadl);
 		assertTrue(owlF.exists());
-
+		OntModel om = acm.getCodeExtractor().getCurrentCodeModel();
+		StmtIterator stmtItr = om.listStatements(null, RDF.type, om.getOntClass(DialogConstants.CODE_EXTRACTION_MODEL_URI + "#Method"));
+		while (stmtItr.hasNext()) {
+			System.out.println(stmtItr.next().toString());
+		}
 	}
 
 	String getCodeExtractionKbRoot() {
