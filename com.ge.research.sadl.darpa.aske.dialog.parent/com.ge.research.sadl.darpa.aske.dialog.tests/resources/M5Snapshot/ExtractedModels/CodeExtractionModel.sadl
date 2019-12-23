@@ -91,8 +91,8 @@ if cb is a CodeBlock and
    ref has firstRef true and
    ref has usage Used
    and cv has reference ref
-   and ref has beginsAt loc
-then input of ref is true and isImplicit of ref is true
+//   and ref has beginsAt loc
+then cem:input of ref is true and isImplicit of ref is true
 //	and print(cb, cv, loc, " implicit input")
 .
 
@@ -103,7 +103,7 @@ if cb is a CodeBlock and
    ref has usage Reassigned
    and cv has reference ref
    and noValue(cv, reference, ref2, ref2, codeBlock, cb, ref2, usage, Defined)
-   and ref has beginsAt loc
+//   and ref has beginsAt loc
 then output of ref is true and isImplicit of ref is true
 //	and print(cb, cv, loc, " implicit output")
 .   
@@ -170,3 +170,15 @@ then output of ref is true and isImplicit of ref is true
 //	output of ref is true and isImplicit of ref is true
 //	and print(c, " is implicit at ", l, " because it is Defined")
 //	.      	 
+
+ClassesToIgnore is a type of Class.
+{Canvas, CardLayout, Graphics, Insets, Panel, Image, cem:Event, Choice, Button,
+	Viewer, GridLayout
+} are types of ClassesToIgnore.
+
+Ask ImplicitMethodInputs: "select distinct ?m ?cv ?vt ?vn where {?r <isImplicit> true . ?r <http://sadl.org/CodeExtractionModel.sadl#input> true . 
+	?r <codeBlock> ?m . ?cv <reference> ?r . ?cv <varType> ?vt . ?cv <varName> ?vn} order by ?m ?vn".
+Ask ImplicitMethodOutputs: "select distinct ?m ?cv ?vt ?vn where {?r <isImplicit> true . ?r <http://sadl.org/CodeExtractionModel.sadl#output> true . 
+	?r <codeBlock> ?m . ?cv <reference> ?r . ?cv <varType> ?vt. ?cv <varName> ?vn} order by ?m ?vn".
+Ask MethodsDoingComputation: "select ?m where {?m <doesComputation> true}".
+Ask MethodCalls: "select ?m ?mcalled where {?m <calls> ?mc . ?mc <codeBlock> ?mcalled} order by ?m ?mcalled".

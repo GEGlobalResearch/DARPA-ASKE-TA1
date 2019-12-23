@@ -46,7 +46,7 @@
  gamma (note "treated as a calorically perfect gas") describes Gas with values of type Gamma.
  gammaCal (note "treated as a calorically imperfect gas") describes Gas with values of type Gamma.
 
- Theta is a type of Constant.
+ Theta (alias "theta") is a type of Constant.
  ThetaISU is a Theta with ^value 3056, with unit "Kelvin".
  ThetaImperial is a Theta with ^value 5500, with unit "Rankine".
  

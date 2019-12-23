@@ -13,9 +13,19 @@
     <owl:imports rdf:resource="http://sadl.org/sadlimplicitmodel"/>
     <rdfs:comment xml:lang="en">This ontology was created by extraction from text by the ANSWER TextProcessor.</rdfs:comment>
   </owl:Ontology>
-  <j.0:Q3386703 rdf:about="http://www.wikidata.org/entity/Q179388">
+  <rdf:Description rdf:about="http://www.wikidata.org/entity/Q179388">
     <rdfs:label>heat capacity</rdfs:label>
-  </j.0:Q3386703>
+    <rdfs:subClassOf>
+      <rdf:Description rdf:about="http://www.wikidata.org/entity/Q107715">
+        <rdfs:label>physical quantity</rdfs:label>
+      </rdf:Description>
+    </rdfs:subClassOf>
+    <rdfs:subClassOf>
+      <rdf:Description rdf:about="http://www.wikidata.org/entity/Q3386703">
+        <rdfs:label>extensive quantity</rdfs:label>
+      </rdf:Description>
+    </rdfs:subClassOf>
+  </rdf:Description>
   <j.0:Q187685 rdf:about="http://www.wikidata.org/entity/Q28912099">
     <rdfs:label>Investigation of the mechanism of action of papain</rdfs:label>
     <rdfs:label>of</rdfs:label>
@@ -51,17 +61,13 @@
     <rdfs:label>momentum indicator</rdfs:label>
   </j.0:Q1167393>
   <j.0:Q28733284 rdf:about="http://www.wikidata.org/entity/Q11423">
-    <rdf:type>
+    <rdfs:label>mass</rdfs:label>
+    <rdfs:subClassOf>
       <rdf:Description rdf:about="http://www.wikidata.org/entity/Q30337748">
         <rdfs:label>ISQ base quantity</rdfs:label>
       </rdf:Description>
-    </rdf:type>
-    <rdf:type>
-      <rdf:Description rdf:about="http://www.wikidata.org/entity/Q3386703">
-        <rdfs:label>extensive physical quantity</rdfs:label>
-      </rdf:Description>
-    </rdf:type>
-    <rdfs:label>mass</rdfs:label>
+    </rdfs:subClassOf>
+    <rdfs:subClassOf rdf:resource="http://www.wikidata.org/entity/Q3386703"/>
     <ns2:P1687>
       <rdf:Description rdf:about="http://www.wikidata.org/entity/P2067">
         <rdfs:label>mass</rdfs:label>
@@ -82,15 +88,16 @@
             <ns1:augmentedType>
               <ns1:SemanticType>
                 <ns1:semType>
-                  <j.0:Q107715 rdf:about="http://www.wikidata.org/entity/Q327408">
+                  <rdf:Description rdf:about="http://www.wikidata.org/entity/Q327408">
                     <rdfs:label>color temperature</rdfs:label>
                     <rdfs:label>temperature</rdfs:label>
+                    <rdfs:subClassOf rdf:resource="http://www.wikidata.org/entity/Q107715"/>
                     <rdfs:subClassOf>
                       <rdf:Description rdf:about="http://www.wikidata.org/entity/Q11466">
                         <rdfs:label>temperature</rdfs:label>
                       </rdf:Description>
                     </rdfs:subClassOf>
-                  </j.0:Q107715>
+                  </rdf:Description>
                 </ns1:semType>
               </ns1:SemanticType>
             </ns1:augmentedType>
@@ -139,11 +146,12 @@
       </rdf:rest>
     </ns1:returnTypes>
   </ns1:ExternalEquation>
-  <j.0:Q107715 rdf:about="http://www.wikidata.org/entity/Q1256787">
+  <rdf:Description rdf:about="http://www.wikidata.org/entity/Q1256787">
     <rdfs:label>Speed</rdfs:label>
     <rdfs:label>rotational speed</rdfs:label>
     <rdfs:label>speed</rdfs:label>
-  </j.0:Q107715>
+    <rdfs:subClassOf rdf:resource="http://www.wikidata.org/entity/Q107715"/>
+  </rdf:Description>
   <ns1:ExternalEquation rdf:ID="equation_2">
     <ns1:arguments rdf:parseType="Resource">
       <rdf:first>
@@ -213,9 +221,6 @@
       </rdf:rest>
     </ns1:returnTypes>
   </ns1:ExternalEquation>
-  <rdf:Description rdf:about="http://www.wikidata.org/entity/Q107715">
-    <rdfs:label>physical quantity</rdfs:label>
-  </rdf:Description>
   <rdf:Description rdf:about="http://www.wikidata.org/entity/Q28733284">
     <rdfs:label>scalar magnitude</rdfs:label>
   </rdf:Description>

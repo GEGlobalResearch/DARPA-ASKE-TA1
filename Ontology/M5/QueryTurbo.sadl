@@ -1,0 +1,13 @@
+ uri "http://sadl.org/QueryTurbo.sadl" alias QueryTurbo.
+ 
+ import "http://com.ge.research.sadl.darpa.aske.answer/Turbo_java".
+ 
+// Ask: ImplicitMethodInputs.
+// 
+// Ask: ImplicitMethodOutputs.
+// 
+// Ask: MethodCalls.
+
+ Graph: "select distinct ?m ?p ?mc where {?m <rdf:type> <Method> . OPTIONAL{ ?m ?p ?mci . ?mci <codeBlock> ?mc } . values ?p {<calls>}}".
+ 
+ Ask: "select distinct ?m where {?m <rdf:type> <Method>}".
