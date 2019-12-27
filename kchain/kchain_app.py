@@ -44,7 +44,7 @@ if __name__ == '__main__':
     #setting up the REST service
     app = connexion.App(__name__, specification_dir='swagger/')
     app.add_api('kchain_app.yaml')
-    application = app.app
+    #application = app.app
     app.run(port=12345)
     
 def build(body):
@@ -126,14 +126,31 @@ def evaluate(body):
     
     print(body)
     
-    #call K-CHAIN evaluate function with necessary general inputs
-    outputVar, defaultValuesUsed, missingVar = ko.evaluate(inputVar = body['inputVariables'], 
-             outputVar = body['outputVariables'], 
-             mdlName = body['modelName'])
+    inverseProblem = False
+    
+    for node in body["outputVariables"]:
+        if "value" in node.keys():
+            inverseProblem = True
     
     #construct output packet
     outputPacket = {}
+    
+    if inverseProblem:
+        x_opt, fx_opt, inputVar, outputVar, defaultValuesUsed, missingVar = ko.evaluateInverse(inputVar = body['inputVariables'], 
+                                                                                               outputVar = body['outputVariables'], 
+                                                                                               mdlName = body['modelName'])
+        outputPacket["error"] = str(fx_opt)
+    else:
+        #call K-CHAIN evaluate function with necessary general inputs
+        outputVar, defaultValuesUsed, missingVar = ko.evaluate(inputVar = body['inputVariables'], 
+                                                               outputVar = body['outputVariables'], 
+                                                               mdlName = body['modelName'])
+        inputVar = body['inputVariables']
+        outputPacket["error"] = ''
+        
+        
     outputPacket["outputVariables"] = outputVar
+    outputPacket["inputVariables"] = inputVar
     
     if len(defaultValuesUsed) > 0:
         #default values used in computation are sent back to inform user

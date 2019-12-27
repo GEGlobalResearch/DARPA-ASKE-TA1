@@ -60,7 +60,7 @@ paths:
     post:
       tags:
       - "K-CHAIN"
-      summary: "Runs a K-CHAIN model for given input variables and creates output values"
+      summary: "Runs a K-CHAIN model for given input variables and creates output values in forward mode and if certain output values are provided, then solves inverse problem and returns input values for variables of interest"
       operationId: "kchain_app.evaluate"
       consumes:
       - application/json
@@ -160,7 +160,7 @@ definitions:
       inputVariables:
         type: "array"
         items: 
-          $ref: "#/definitions/evariable"
+          $ref: "#/definitions/variable"
       outputVariables:
         type: "array"
         items: 
@@ -177,11 +177,17 @@ definitions:
         type: "array"
         items: 
           $ref: "#/definitions/variable"
+      inputVariables:
+        type: "array"
+        items: 
+          $ref: "#/definitions/variable"
       defaultsUsed:
         type: "array"
         items: 
           $ref: "#/definitions/dvariable"
       missingVar:
+        type: "string"
+      error:
         type: "string"
         
   variable:
@@ -196,21 +202,9 @@ definitions:
         type: "string"
       value:
         type: "string"
-      unit:
+      minValue:
         type: "string"
-  
-  evariable:
-    type: "object"
-    required:
-    - "name"
-    - "type"
-    - "value"
-    properties:
-      name:
-        type: "string"
-      type:
-        type: "string"
-      value:
+      maxValue:
         type: "string"
       unit:
         type: "string"

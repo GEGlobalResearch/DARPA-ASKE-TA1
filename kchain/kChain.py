@@ -52,6 +52,8 @@ import eqnModels
 import pickle
 
 from tensorflow.python import autograph as ag
+from GPyOpt.methods import BayesianOptimization as bo
+from GPyOpt import Design_space, experiment_design
 
 class kChainModel(object):
     
@@ -113,7 +115,7 @@ class kChainModel(object):
             self.trainedState = 1       
         
         #get local copy of default values
-        defaultValues = self._getDefaultValues()
+        defaultValues = self._getDefaultValues(metagraphLoc)
         
         
         # add any new default values assigned in build to local copy
@@ -121,7 +123,7 @@ class kChainModel(object):
             if 'value' in node.keys():
                 defaultValues[node['name']] = node['value']
         
-        self._setDefaultValues(defaultValues)
+        self._setDefaultValues(defaultValues, metagraphLoc)
         
         # Intialize the Session
         sess = tf.Session(graph=mdl)
@@ -530,8 +532,9 @@ class kChainModel(object):
             #recollect output and input vars from original graph
             output = list()
             for node in outputVar:
-                print('In eval now: \n')
-                print(nodeDict)
+                if self.debug:
+                    print('In eval now: \n')
+                    print(nodeDict)
                 output.append(new_graph.get_tensor_by_name(nodeDict[node['name']]['graphRef']))#tf.get_collection("output")[0]    
             
             #setup feed dictionary for task at hand
@@ -547,9 +550,10 @@ class kChainModel(object):
         
             #get output predictions
             #outval = sess.run(output, feed_dict=fd)
-            defaultValues = self._getDefaultValues()
+            defaultValues = self._getDefaultValues(metagraphLoc)
+            
             defaultValuesUsed = []
-            outval, defaultValuesUsed, missingVar = self._runSessionWithDefaults(sess, new_graph, inputVar,
+            outval, defaultValuesUsed, missingVar, fd = self._runSessionWithDefaults(sess, new_graph, inputVar,
                                                                      output, fd, defaultValues, 
                                                                      defaultValuesUsed, nodeDict)
             # Close the session
@@ -633,7 +637,7 @@ class kChainModel(object):
                     
                 defaultValuesUsed.append({'name':varName,'value':defaultValues[varName]})
                 #run session with updated list of inputs from default values
-                aval, defaultValuesUsed, missingVar = self._runSessionWithDefaults(sess, mdl, inputVar, 
+                aval, defaultValuesUsed, missingVar, fd = self._runSessionWithDefaults(sess, mdl, inputVar, 
                                                                                    output, fd, defaultValues, 
                                                                                    defaultValuesUsed, nodeDict)
             else:
@@ -642,26 +646,104 @@ class kChainModel(object):
                 aval = None
                 missingVar = varName
                 
-        return aval, defaultValuesUsed, missingVar
+        return aval, defaultValuesUsed, missingVar, fd
     
-    def _getDefaultValues(self):
+    def evaluateInverse(self, inputVar, outputVar, mdlName):
         """
-        Reads json from file and return if exists, else create new and return empty 
+        Evaluates a model with given inputs to compute output values
+        
+        Arguments:
+            inputVar (JSON array):
+                array of JSON variable objects with name, type, value, and unit fields
+            outputVar (JSON array):
+                array of JSON variable objects with name, type, value, and unit fields
+            mdlName (string):
+                Name to model to use (E.g.: 'Newtons2ndLaw')
+        
+        Returns:
+            (Output JSON array, Default JSON array, string):
+                * Output JSON array : array of output variable JSON objects with name, type, and value fields. The resulting output of the computation is assigned to the value field of the JSON object.
+                * Default JSON array : array of default variable JSON objects with name and value fields. 
+                * string : Name of missing variable, which is needed for inference
+            
         """
-        try:
-            with open('defaultValues.txt', 'r') as json_file:  
-                defaultValues = json.load(json_file)
-        except IOError:
-            defaultValues = {}
-        return defaultValues
+        #Setup domain and context from known values
+        domain = []
+        context = {}
+        for node in inputVar:
+            d1 = {'name': node['name'], 'type': 'continuous', 'domain': (float(node['minValue']),float(node['maxValue']))}
+            domain.append(d1)
+            if 'value' in node.keys():
+                context[node['name']] = float(node['value'])
+        
+        if self.debug:      
+            print(domain)
+            print(context)
+            
+        target = float(outputVar[0]['value'])
+        
+        #test evaluate
+        constraints = []
+        feasible_region = Design_space(space = domain, constraints = constraints)
+        x0 = experiment_design.initial_design('random', feasible_region, 1)
+        
+        for ii in range(len(inputVar)):
+            inputVar[ii]['value'] = str(x0[0][ii])
+            
+        outputVar, defaultValuesUsed, missingVar = self.evaluate(inputVar = inputVar, 
+                                                                 outputVar = outputVar,
+                                                                 mdlName = mdlName)
+        
+        if outputVar[0]['value'] is not None:
+            #Codegen to call evaluate with TF model within obj function
+            fx = lambda x : self.errC(x[0], t = target, mdlName = mdlName, 
+                                      inputVar = inputVar, outputVar = outputVar)
+            
+            #introduce stopping condition 
+            MAXITER = 35
     
+            #Use external objective function evaluation mode in GPyOpt to step
+            myBopt = bo(f = fx, domain=domain, acquisition_type='EI')
+            myBopt.run_optimization(max_iter=MAXITER, context=context)
+            
+            
+            x_opt = myBopt.x_opt
+            fx_opt = myBopt.fx_opt
+            
+            if self.debug:
+                myBopt.plot_convergence()
+                print(x_opt)
+                print(fx_opt)
+            
+            for ii in range(len(inputVar)):
+                inputVar[ii]['value'] = str(x_opt[ii])
+            
+            outputVar, defaultValuesUsed, missingVar = self.evaluate(inputVar = inputVar, 
+                                                                     outputVar = outputVar, 
+                                                                     mdlName = mdlName)
+            
+        else:
+            x_opt = None
+            fx_opt = None
+            
+            for ii in range(len(inputVar)):
+                inputVar[ii]['value'] = None
+            
+        return x_opt, fx_opt, inputVar, outputVar, defaultValuesUsed, missingVar
+        
+
+    def errC(self, x, t, mdlName, inputVar, outputVar):
+        
+        for ii in range(len(inputVar)):
+            inputVar[ii]['value'] = str(x[ii])
+            
+        outputVar, defaultValuesUsed, missingVar = self.evaluate(inputVar = inputVar, 
+             outputVar = outputVar, 
+             mdlName = mdlName)
     
-    def _setDefaultValues(self, defValues):
-        """
-        Writes json with provided values back to file
-        """
-        with open('defaultValues.txt', 'w+') as outfile:  
-            json.dump(defValues, outfile, indent=4)
+        fval = float(outputVar[0]['value'][1:-1])
+        return np.abs(fval-t)        
+        
     
     def append(self, mdlName, inputVars, outputVars, subMdlName, eqMdl, dataLoc = None):
         #check if mdl exists
@@ -688,7 +770,7 @@ class kChainModel(object):
                         print('AttributeError showed up')
                         
                 #load nodeDict, funcList, defaultValues
-                defaultValues = self._getDefaultValues()
+                defaultValues = self._getDefaultValues(metagraphLoc)
                 nodeDict, funcList = self._getNodeDictFuncList(metagraphLoc)
             else:
                 #if no, then:
@@ -734,7 +816,7 @@ class kChainModel(object):
         self.meta_graph_loc = metagraphLoc
         
         #save nodeDict, funcList, defaultValues
-        self._setDefaultValues(defaultValues)
+        self._setDefaultValues(defaultValues, metagraphLoc)
         self._setNodeDictFuncList(metagraphLoc, nodeDict, funcList)
         
         # Intialize the Session
@@ -937,9 +1019,13 @@ class kChainModel(object):
             modelData = pickle.load(open(metagraphLoc+".pickle", "rb"))
             nodeDict = modelData['nodeDict']
             funcList = modelData['funcList']
+            if self.debug:
+                print('Found nodeDict and funcList')
         else:
             nodeDict = {}
             funcList = []
+            if self.debug:
+                print('Did not find nodeDict and funcList')
         return nodeDict, funcList
         
         
@@ -948,3 +1034,29 @@ class kChainModel(object):
         modelData['nodeDict'] = nodeDict
         modelData['funcList'] = funcList
         pickle.dump(modelData, open(metagraphLoc+".pickle", "wb" ))
+        
+    def _getDefaultValues(self, metagraphLoc):
+        """
+        Reads json from file and return if exists, else create new and return empty 
+        """
+        if os.path.exists(metagraphLoc+"_defaultValues.txt"):
+            #C:\\Users\\212613144\\Repository\\DARPA-ASKE-TA1-Ext\\kchain\\
+            with open(metagraphLoc+"_defaultValues.txt", 'r') as json_file:  
+                defaultValues = json.load(json_file)
+            if self.debug:
+                print('Found file with Default values')
+        else:
+            defaultValues = {}
+            if self.debug:
+                print('Did not find file with Default values')
+            
+        return defaultValues
+    
+    
+    def _setDefaultValues(self, defValues, metagraphLoc):
+        """
+        Writes json with provided values back to file
+        """
+        with open(metagraphLoc+'_defaultValues.txt', 'w+') as outfile:  
+            json.dump(defValues, outfile, indent=4)
+    
