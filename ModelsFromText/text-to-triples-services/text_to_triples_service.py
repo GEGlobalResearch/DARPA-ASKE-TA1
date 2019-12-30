@@ -194,6 +194,12 @@ class TextToTriples:
                     if "outputVars" in text_parameters:
                         eq_variables.extend((text_parameters["outputVars"]))
 
+            print("eq variables")
+            print(eq_variables)
+
+            print("symbols")
+            print(symbols)
+
             # if eq_var is in symbols, get the data_desc_uri
             # attach wikidata URI as augmented type
             for symbol in symbol_list:
