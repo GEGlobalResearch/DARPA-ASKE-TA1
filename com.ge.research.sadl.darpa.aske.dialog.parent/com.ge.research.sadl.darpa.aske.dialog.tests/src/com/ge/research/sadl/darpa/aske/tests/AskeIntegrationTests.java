@@ -24,6 +24,7 @@ import com.ge.research.sadl.darpa.aske.curation.AnswerCurationManager.SaveAsSadl
 import com.ge.research.sadl.darpa.aske.processing.DialogConstants;
 import com.ge.research.sadl.darpa.aske.processing.IDialogAnswerProvider;
 import com.ge.research.sadl.darpa.aske.processing.SaveContent;
+import com.ge.research.sadl.darpa.aske.processing.imports.AnswerExtractionException;
 import com.ge.research.sadl.darpa.aske.processing.imports.KChainServiceInterface;
 import com.ge.research.sadl.reasoner.ConfigurationException;
 import com.ge.research.sadl.reasoner.InvalidNameException;
@@ -61,7 +62,7 @@ public class AskeIntegrationTests {
 
 	@Ignore
 	@Test
-	public void test_01() throws ConfigurationException, IOException, QueryParseException, QueryCancelledException, ReasonerNotFoundException, InvalidNameException {
+	public void test_01() throws ConfigurationException, IOException, QueryParseException, QueryCancelledException, ReasonerNotFoundException, InvalidNameException, AnswerExtractionException {
 		// remove OWL file
 		File owlF = new File(getExtractionKbRoot() + "/ExtractedModels/Mach.java.owl");	
 		if (owlF.exists()) {

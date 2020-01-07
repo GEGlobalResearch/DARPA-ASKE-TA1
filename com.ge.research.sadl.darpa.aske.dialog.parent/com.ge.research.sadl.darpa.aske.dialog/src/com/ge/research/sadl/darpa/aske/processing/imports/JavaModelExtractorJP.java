@@ -154,7 +154,7 @@ public class JavaModelExtractorJP implements IModelFromCodeExtractor {
 																						// value is the calling method instance
 	private Map<Node,Individual> methodsFound = new HashMap<Node, Individual>();
 	private Individual methodWithBodyInProcess = null;
-	private boolean sendCommentsToTextService = false;	// change to true to send comments to text-to-triples service
+	private boolean sendCommentsToTextService = true;	// change to true to send comments to text-to-triples service
 	private Map<Individual, LiteralExpr> potentialConstants = new HashMap<Individual, LiteralExpr>();
 	private List<Individual> discountedPotentialConstants = new ArrayList<Individual>();
 	private List<String> classesToIgnore = new ArrayList<String>();
@@ -1017,7 +1017,7 @@ public class JavaModelExtractorJP implements IModelFromCodeExtractor {
 				subject = rootContainingInstance;
 			}
 			if (sendCommentsToTextService ) {
-				String locality = null;
+				String locality = getCodeModelNamespace();
 				String inputIdentifier = "CodeComments";
 				int[] tpresult = null;
 				try {
@@ -1030,7 +1030,12 @@ public class JavaModelExtractorJP implements IModelFromCodeExtractor {
 					e.printStackTrace();
 				}
 				logger.debug("Text: " + cmt.getContent());
-				logger.debug("nc=" + tpresult[0] + ", neq=" + tpresult[1]);
+				if (tpresult != null) {
+					logger.debug("nc=" + tpresult[0] + ", neq=" + tpresult[1]);
+				}
+				else {
+					logger.debug("Comment not processed successfully");
+				}
 			}
 
 			if (subject != null) {

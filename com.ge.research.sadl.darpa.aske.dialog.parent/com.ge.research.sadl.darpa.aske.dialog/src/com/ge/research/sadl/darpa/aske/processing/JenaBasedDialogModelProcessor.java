@@ -148,6 +148,7 @@ import com.hp.hpl.jena.rdf.model.Property;
 import com.hp.hpl.jena.rdf.model.RDFNode;
 import com.hp.hpl.jena.rdf.model.RDFWriter;
 import com.hp.hpl.jena.rdf.model.StmtIterator;
+import com.hp.hpl.jena.sparql.util.NodeUtils;
 import com.hp.hpl.jena.vocabulary.RDFS;
 
 public class JenaBasedDialogModelProcessor extends JenaBasedSadlModelProcessor {
@@ -493,22 +494,52 @@ public class JenaBasedDialogModelProcessor extends JenaBasedSadlModelProcessor {
 		else if (element instanceof ExternalEquationStatement) {
 			super.processStatement((ExternalEquationStatement)element);
 			List<Object> oc = OntModelProvider.getOtherContent(getCurrentResource());
+			String eqUri  = null;
 			if (oc != null && oc.size() > 0) {
 				Object obj = oc.get(oc.size() - 1);
 				if (obj instanceof Equation) {
 					Equation eq = (Equation)obj;
 					validateEquationAugmentedTypes((ExternalEquationStatement) element, eq);
+					eqUri = eq.getUri();
 				}
+			}
+			if (eqUri != null) {
+				getAnswerCurationManager().addEquationInformation(eqUri, NodeModelUtils.findActualNodeFor(element).getText());
+			}
+			else {
+				addError("Unable to find URI of External equation", element);
 			}
 			return null;
 		}
 		else if (element instanceof EquationStatement) {
 			super.processStatement((EquationStatement)element);
+			List<Object> oc = OntModelProvider.getOtherContent(getCurrentResource());
+			String eqUri  = null;
+			if (oc != null && oc.size() > 0) {
+				Object obj = oc.get(oc.size() - 1);
+				if (obj instanceof Equation) {
+					Equation eq = (Equation)obj;
+					validateEquationAugmentedTypes((EquationStatement) element, eq);
+					eqUri = eq.getUri();
+				}
+			}
+			if (eqUri != null) {
+				getAnswerCurationManager().addEquationInformation(eqUri, NodeModelUtils.findActualNodeFor(element).getText());
+			}
+			else {
+				addError("Unable to find URI of External equation", element);
+			}
 			return null;
 		}
 		else if (element instanceof SadlStatement) {
 			SadlStatementContent ssc = new SadlStatementContent(element, Agent.USER);
 			super.processModelElement((SadlStatement)element);
+			if (element instanceof SadlInstance) {
+				String srUri = getDeclarationExtensions().getConceptUri(sadlResourceFromSadlInstance((SadlInstance)element));
+				if (getAnswerCurationManager().getEquationInformation(srUri) != null) {
+					getAnswerCurationManager().addEquationInformation(srUri, NodeModelUtils.findActualNodeFor(element).getText());
+				}
+			}
 			return ssc;
 		}
 		else {
@@ -517,6 +548,23 @@ public class JenaBasedDialogModelProcessor extends JenaBasedSadlModelProcessor {
 	}
 	
 	private void validateEquationAugmentedTypes(ExternalEquationStatement element, Equation eq) {
+		Iterator<SadlParameterDeclaration> spitr = element.getParameter().iterator();
+		while (spitr.hasNext()) {
+			SadlParameterDeclaration spd = spitr.next();
+			if (spd.getAugtype() == null) {
+				addWarning("Missing augmented type information", spd.getName());
+			}
+		}
+		Iterator<SadlReturnDeclaration> srtitr = element.getReturnType().iterator();
+		while (srtitr.hasNext()) {
+			SadlReturnDeclaration srd = srtitr.next();
+			if (srd.getAugtype() == null) {
+				addWarning("Missing augmented return type information", srd.getType());
+			}
+		}
+	}
+
+	private void validateEquationAugmentedTypes(EquationStatement element, Equation eq) {
 		Iterator<SadlParameterDeclaration> spitr = element.getParameter().iterator();
 		while (spitr.hasNext()) {
 			SadlParameterDeclaration spd = spitr.next();
@@ -1019,19 +1067,23 @@ public class JenaBasedDialogModelProcessor extends JenaBasedSadlModelProcessor {
 				}
 			}
 			if (targetModelUri != null) {
-				String equationUri = getDeclarationExtensions().getConceptUri(equationSR);
-				Individual extractedModelInstance = getTheJenaModel().getIndividual(equationUri);
-				if (extractedModelInstance == null) {
-					addError("No equation with URI '" + equationUri + "' is found in current model.", equationSR);
-					return null;
-				}
-				else if (extractedModelInstance.getNameSpace().equals(targetModelAlias)) {
-					getAnswerCurationManager().notifyUser(getConfigMgr().getModelFolder(), "The equation with URI '" + equationUri + "' is already in the target model '" + targetModelAlias + "'", true);
-				}
 				SaveContent sc = new SaveContent(element, Agent.USER);
-				sc.setTargetModelUri(targetModelUrl);
-				sc.setTargetModelActualUrl(targetModelUrl);
-				sc.setSourceEquationUri(extractedModelInstance.getURI());
+				sc.setTargetModelAlias(targetModelAlias);
+				if (element.getAll() != null && element.getAll().equals("all")) {
+					sc.setSaveAll(true);
+				}
+				else {
+					String equationUri = getDeclarationExtensions().getConceptUri(equationSR);
+					Individual extractedModelInstance = getTheJenaModel().getIndividual(equationUri);
+					if (extractedModelInstance == null) {
+						addError("No equation with URI '" + equationUri + "' is found in current model.", equationSR);
+						return null;
+					}
+					else if (extractedModelInstance.getNameSpace().equals(targetModelAlias)) {
+						getAnswerCurationManager().notifyUser(getConfigMgr().getModelFolder(), "The equation with URI '" + equationUri + "' is already in the target model '" + targetModelAlias + "'", true);
+					}
+					sc.setSourceEquationUri(extractedModelInstance.getURI());
+				}
 				return sc;
 			}
 		}

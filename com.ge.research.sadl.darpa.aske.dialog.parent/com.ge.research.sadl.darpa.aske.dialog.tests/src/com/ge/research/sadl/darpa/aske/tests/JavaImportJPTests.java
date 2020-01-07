@@ -45,8 +45,16 @@ import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
+import java.util.List;
 
 import org.eclipse.emf.ecore.resource.Resource;
+import org.eclipse.xtext.diagnostics.Severity;
+import org.eclipse.xtext.resource.XtextResource;
+import org.eclipse.xtext.validation.Issue;
+import org.eclipse.xtext.xbase.lib.IterableExtensions;
+import org.eclipse.xtext.xbase.lib.Functions.Function1;
+import org.eclipse.xtext.xbase.lib.Procedures.Procedure3;
+import org.junit.Assert;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
@@ -61,9 +69,13 @@ import com.ge.research.sadl.darpa.aske.curation.AnswerCurationManager.SaveAsSadl
 import com.ge.research.sadl.darpa.aske.curation.DialogAnswerProviderConsoleForTest;
 import com.ge.research.sadl.darpa.aske.processing.DialogConstants;
 import com.ge.research.sadl.darpa.aske.processing.IDialogAnswerProvider;
+import com.ge.research.sadl.darpa.aske.processing.JenaBasedDialogModelProcessor;
 import com.ge.research.sadl.darpa.aske.processing.SaveContent;
+import com.ge.research.sadl.darpa.aske.processing.imports.AnswerExtractionException;
 import com.ge.research.sadl.darpa.aske.processing.imports.IModelFromCodeExtractor;
 import com.ge.research.sadl.darpa.aske.processing.imports.JavaModelExtractorJP;
+import com.ge.research.sadl.jena.IJenaBasedModelProcessor;
+import com.ge.research.sadl.jena.JenaBasedSadlModelProcessor;
 import com.ge.research.sadl.owl2sadl.OwlImportException;
 import com.ge.research.sadl.reasoner.ConfigurationException;
 import com.ge.research.sadl.reasoner.InvalidNameException;
@@ -71,16 +83,20 @@ import com.ge.research.sadl.reasoner.QueryCancelledException;
 import com.ge.research.sadl.reasoner.QueryParseException;
 import com.ge.research.sadl.reasoner.ReasonerNotFoundException;
 import com.ge.research.sadl.reasoner.ResultSet;
+import com.ge.research.sadl.reasoner.utils.SadlUtils;
 import com.hp.hpl.jena.ontology.OntModel;
 import com.hp.hpl.jena.rdf.model.StmtIterator;
 import com.hp.hpl.jena.vocabulary.RDF;
 
-public class JavaImportJPTests {
+public class JavaImportJPTests extends AbstractDialogTest {
 	private static final Logger LOGGER = LoggerFactory.getLogger(JavaImportJPTests.class);
 
 	private String codeExtractionProjectModelFolder;
 	private String domainProjectModelFolder;
 	private String codeExtractionKbRoot;
+
+	private String speedOfSoundPath;
+	private String scientificConcepts2Path;
 	
 	@BeforeClass
 	public static void init() throws Exception
@@ -98,7 +114,8 @@ public class JavaImportJPTests {
 		File codeExtractionPrjFolder = new File(getCodeExtractionKbRoot());
 		assertTrue(codeExtractionPrjFolder.exists());
 		setExtractionProjectModelFolder(getCodeExtractionKbRoot() + "/OwlModels");
-		
+		setScientificConcepts2(getCodeExtractionKbRoot() + "/ScientificConcepts2.sadl");
+		setSpeedOfSoundPath(getCodeExtractionKbRoot() + "/SpeedOfSound.sadl");
 		setDomainProjectModelFolder(getExtractionProjectModelFolder());
 	}
 
@@ -394,7 +411,7 @@ public class JavaImportJPTests {
 	}
 	
 	@Test
-	public void test_07() throws IOException, ConfigurationException, OwlImportException, QueryParseException, QueryCancelledException, ReasonerNotFoundException, InvalidNameException {
+	public void test_07() throws IOException, ConfigurationException, OwlImportException, QueryParseException, QueryCancelledException, ReasonerNotFoundException, InvalidNameException, AnswerExtractionException {
 		// test save command given an OWL file generated from a .dialog file is available as input.
 		File owlF = new File(getCodeExtractionKbRoot() + "\\OwlModels\\test2.dialog.owl");
 		assertTrue(owlF.exists());
@@ -442,7 +459,7 @@ public class JavaImportJPTests {
 		
 		boolean includeSerialization = false; //true;
 		
-		String defaultCodeModelPrefix = includeSerialization ? "MachSz" : "Mach";
+		String defaultCodeModelPrefix = includeSerialization ? "TurboSz" : "Turbo";
 		String defaultCodeModelName = "http://com.ge.research.darpa.aske.ta1.explore/" + defaultCodeModelPrefix;
 		acm.getExtractionProcessor().getCodeExtractor().setCodeModelPrefix(defaultCodeModelPrefix);
 		acm.getExtractionProcessor().getCodeExtractor().setCodeModelName(defaultCodeModelName);
@@ -462,6 +479,161 @@ public class JavaImportJPTests {
 		while (stmtItr.hasNext()) {
 			System.out.println(stmtItr.next().toString());
 		}
+	}
+
+	@Test
+	public void test_09() throws IOException, ConfigurationException {
+	    this.sadl(getContent(getScientificConcepts2Path())); 
+	    this.sadl(getContent(getSpeedOfSoundPath()));
+
+		File codeFile = new File(getCodeExtractionKbRoot() + "/ExtractedModels/Sources/Turbo.java");
+		assertTrue(codeFile.exists());
+		// remove OWL and SADL files
+		File owlF = new File(getCodeExtractionKbRoot() + "/ExtractedModels\\Turbo.java.owl");
+
+		// start of Dialog file for extraction
+		StringBuilder dialogModelContent = new StringBuilder("uri \"http://darpa.aske.ge/test_09\" alias test_09.\r\n" + 
+				"import \"http://sadl.org/SpeedOfSound.sadl\".\r\n" + 
+				"target model \"http://sadl.org/SpeedOfSound.sadl\" alias sos.\r\n");
+		if (owlF.exists()) {
+			owlF.delete();
+			assertFalse(owlF.exists());
+		}
+		File sadlF = new File(getCodeExtractionKbRoot() + "\\ExtractedModels\\Turbo.java.owl.sadl");
+		if (sadlF.exists()) {
+			sadlF.delete();
+			assertFalse(sadlF.exists());
+		}
+		IConfigurationManagerForIDE cm = ConfigurationManagerForIdeFactory.getConfigurationManagerForIDE(getDomainProjectModelFolder(), null);
+		AnswerCurationManager acm = new AnswerCurationManager(getDomainProjectModelFolder(), cm, null, null);
+		acm.setOwlModelsFolder(getExtractionProjectModelFolder());
+		
+		IDialogAnswerProvider dapcft = new DialogAnswerProviderConsoleForTest();
+		cm.addPrivateKeyValuePair(DialogConstants.DIALOG_ANSWER_PROVIDER, dapcft);
+		
+		boolean includeSerialization = true;
+		
+		String defaultCodeModelPrefix = includeSerialization ? "TurboSz" : "Turbo";
+		String defaultCodeModelName = "http://com.ge.research.darpa.aske.ta1.explore/" + defaultCodeModelPrefix;
+		acm.getExtractionProcessor().getCodeExtractor().setCodeModelPrefix(defaultCodeModelPrefix);
+		acm.getExtractionProcessor().getCodeExtractor().setCodeModelName(defaultCodeModelName);
+		
+		String genFolder = new File(acm.getOwlModelsFolder()).getParent() + 
+				"/" + DialogConstants.EXTRACTED_MODELS_FOLDER_PATH_FRAGMENT;
+		new File(genFolder).mkdirs();
+//		String owlFileName = genFolder + "/" + defaultCodeModelPrefix + ".owl";
+
+		acm.getExtractionProcessor().getCodeExtractor().addCodeFile(codeFile);
+		acm.getExtractionProcessor().getCodeExtractor().setIncludeSerialization(includeSerialization);
+//		acm.processImports(SaveAsSadl.AskUserSaveAsSadl);
+		acm.processImports(SaveAsSadl.DoNotSaveAsSadl);
+		assertTrue(owlF.exists());
+		String sadlContent = acm.getExtractionProcessor().getGeneratedSadlContent();
+		dialogModelContent.append(sadlContent);
+		dialogModelContent.append("\nSave all.\n");
+		
+	    final Procedure3<OntModel, List<Issue>, IJenaBasedModelProcessor> _function2 = (OntModel ontModel, List<Issue> issues, IJenaBasedModelProcessor processor) -> {
+	        Assert.assertNotNull(ontModel);
+	        final Function1<Issue, Boolean> _function_1 = (Issue it) -> {
+	          Severity _severity = it.getSeverity();
+	          return Boolean.valueOf((_severity == Severity.ERROR));
+	        };
+	        final Iterable<Issue> errors = IterableExtensions.<Issue>filter(issues, _function_1);
+	        Assert.assertEquals(0, IterableExtensions.size(errors));      
+	        String modelName = null;
+			SaveContent sc = null;
+			try {
+				if (processor instanceof JenaBasedDialogModelProcessor) {
+					AnswerCurationManager acm2 = ((JenaBasedDialogModelProcessor)processor).getAnswerCurationManager();
+					acm2.setOwlModelsFolder(getExtractionProjectModelFolder());
+
+					IConfigurationManagerForIDE cm2 = acm2.getConfigurationManager();
+							
+					cm.addPrivateKeyValuePair(DialogConstants.DIALOG_ANSWER_PROVIDER, dapcft);
+					
+//					acm.processSaveRequest(((JenaBasedSadlModelProcessor)processor).getCurrentResource(), ontModel, modelName, sc);
+				}
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+	      };
+		this.assertValidatesTo(dialogModelContent, _function2);	
+	}
+	
+	@Test
+	public void test_10() throws IOException, ConfigurationException {
+		File sourceFile = new File(getCodeExtractionKbRoot() + "/ExtractedModels/Sources/TurboAnnotated.java");
+		assertTrue(sourceFile.exists());
+		
+		File owlF = new File(getCodeExtractionKbRoot() + "/ExtractedModels\\TurboAnnotated.java.owl");
+		
+		if (owlF.exists()) {
+			owlF.delete();
+			assertFalse(owlF.exists());
+		}
+		File sadlF = new File(getCodeExtractionKbRoot() + "\\ExtractedModels\\TurboAnnotated.java.owl.sadl");
+		if (sadlF.exists()) {
+			sadlF.delete();
+			assertFalse(sadlF.exists());
+		}
+
+		IConfigurationManagerForIDE cm = ConfigurationManagerForIdeFactory.getConfigurationManagerForIDE(getDomainProjectModelFolder(), null);
+		AnswerCurationManager acm = new AnswerCurationManager(getDomainProjectModelFolder(), cm, null, null);
+		acm.setOwlModelsFolder(getExtractionProjectModelFolder());
+		String defaultCodeModelPrefix = "TurboAnno";
+		String defaultCodeModelName = "http://com.ge.research.darpa.aske.ta1.explore/" + defaultCodeModelPrefix;
+		acm.getExtractionProcessor().getCodeExtractor().setCodeModelPrefix(defaultCodeModelPrefix);
+		acm.getExtractionProcessor().getCodeExtractor().setCodeModelName(defaultCodeModelName);
+		acm.getExtractionProcessor().getCodeExtractor().setIncludeSerialization(false);
+		String genFolder = new File(acm.getOwlModelsFolder()).getParent() + 
+				"/" + DialogConstants.EXTRACTED_MODELS_FOLDER_PATH_FRAGMENT;
+		new File(genFolder).mkdirs();
+//		String owlFileName = genFolder + "/" + defaultCodeModelPrefix + ".owl";
+
+		acm.getExtractionProcessor().getCodeExtractor().addCodeFile(sourceFile);
+//		acm.processImports(SaveAsSadl.AskUserSaveAsSadl);
+		acm.processImports(SaveAsSadl.DoNotSaveAsSadl);
+		assertTrue(owlF.exists());
+	}
+	
+	@Test
+	public void test_11() throws ConfigurationException, IOException {
+		String javaContent = 
+				"public class Test_11 {\r\n" + 
+				"    public double getAir(double mach, double gamma) {\r\n" + 
+				"    /* Utility to get the corrected airflow per area given the Mach number */\r\n" + 
+				"      double number,fac1,fac2;\r\n" + 
+				"      fac2 = (gamma+1.0)/(2.0*(gamma-1.0)) ;\r\n" + 
+				"      fac1 = Math.pow((1.0+.5*(gamma-1.0)*mach*mach),fac2);\r\n" + 
+				"      number =  .50161*Math.sqrt(gamma) * mach/ fac1 ;\r\n" + 
+				"      return(number) ;\r\n" + 
+				"    }\r\n}\r\n";
+		IConfigurationManagerForIDE cm = ConfigurationManagerForIdeFactory.getConfigurationManagerForIDE(getDomainProjectModelFolder(), null);
+		AnswerCurationManager acm = new AnswerCurationManager(getDomainProjectModelFolder(), cm, null, null);
+		acm.setOwlModelsFolder(getExtractionProjectModelFolder());
+		String defaultCodeModelPrefix = "getair";
+		String defaultCodeModelName = "http://com.ge.research.darpa.aske.ta1.explore/" + defaultCodeModelPrefix;
+		acm.getExtractionProcessor().getCodeExtractor().setCodeModelPrefix(defaultCodeModelPrefix);
+		acm.getExtractionProcessor().getCodeExtractor().setCodeModelName(defaultCodeModelName);
+		acm.getExtractionProcessor().getCodeExtractor().setIncludeSerialization(true);
+		String genFolder = new File(acm.getOwlModelsFolder()).getParent() + 
+				"/" + DialogConstants.EXTRACTED_MODELS_FOLDER_PATH_FRAGMENT;
+		new File(genFolder).mkdirs();
+		File aFile = new File("c:/tmp/test_11.java");
+		new SadlUtils().stringToFile(aFile, javaContent, false);
+		acm.getExtractionProcessor().getCodeExtractor().addCodeFile(aFile);
+
+		acm.processImports(SaveAsSadl.DoNotSaveAsSadl);
+		OntModel codeModel = acm.getExtractionProcessor().getCodeModel();
+		codeModel.write(System.out);
+	}
+
+	private CharSequence getContent(String path) throws IOException {
+		File f = new File(path);
+		assertTrue(f.exists());
+		SadlUtils su = new SadlUtils();
+		return su.fileToString(f);
 	}
 
 	String getCodeExtractionKbRoot() {
@@ -504,6 +676,26 @@ public class JavaImportJPTests {
 
 	private void setDomainProjectModelFolder(String outputProjectModelFolder) {
 		this.domainProjectModelFolder = outputProjectModelFolder;
+	}
+
+	private void setSpeedOfSoundPath(String path) {
+		this.speedOfSoundPath = path;	
+	}
+
+	private String getSpeedOfSoundPath() {
+		return speedOfSoundPath;
+	}
+
+	private void setScientificConcepts2(String path) {
+		this.setScientificConcepts2Path(path);
+	}
+
+	private String getScientificConcepts2Path() {
+		return scientificConcepts2Path;
+	}
+
+	private void setScientificConcepts2Path(String scientificConcepts2Path) {
+		this.scientificConcepts2Path = scientificConcepts2Path;
 	}
 
 }

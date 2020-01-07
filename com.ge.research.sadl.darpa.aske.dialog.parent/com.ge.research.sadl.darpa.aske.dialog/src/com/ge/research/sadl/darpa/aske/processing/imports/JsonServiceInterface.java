@@ -71,4 +71,17 @@ public class JsonServiceInterface {
 		return response;
 	}
 
+	/**
+	 * Method to rollup nested messages into a single message for display
+	 * @param t
+	 * @return
+	 */
+	public static String aggregateExceptionMessage(Throwable t) {
+		String msg = t.getMessage();
+		if (t.getCause() != null && !t.getCause().equals(t)) {
+			msg += " " + aggregateExceptionMessage(t.getCause());
+		}
+		return msg;
+		
+	}
 }

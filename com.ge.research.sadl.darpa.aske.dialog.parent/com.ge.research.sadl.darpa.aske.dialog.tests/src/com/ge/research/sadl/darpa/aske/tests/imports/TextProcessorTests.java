@@ -62,6 +62,7 @@ import com.ge.research.sadl.darpa.aske.curation.DialogAnswerProviderConsoleForTe
 import com.ge.research.sadl.darpa.aske.processing.DialogConstants;
 import com.ge.research.sadl.darpa.aske.processing.IDialogAnswerProvider;
 import com.ge.research.sadl.darpa.aske.processing.imports.TextProcessingServiceInterface.EquationVariableContextResponse;
+import com.ge.research.sadl.darpa.aske.processing.imports.TextProcessingServiceInterface.UnitExtractionResponse;
 import com.ge.research.sadl.darpa.aske.processing.imports.TextProcessor;
 import com.ge.research.sadl.reasoner.ConfigurationException;
 import com.ge.research.sadl.reasoner.InvalidNameException;
@@ -376,6 +377,187 @@ public class TextProcessorTests {
 					}
 				}
 			}
+		}
+	}
+	
+	@Test
+	public void test6() throws IOException, ConfigurationException, InvalidInputException {
+		File textFile = new File(getTextExtractionPrjFolder() + "/ExtractedModels/Sources/Sound.txt");
+		String javaContent = readFile(textFile);
+		TextProcessor tp = new TextProcessor(new AnswerCurationManager(getDomainProjectModelFolder(), 
+				ConfigurationManagerForIdeFactory.getConfigurationManagerForIDE(getDomainProjectModelFolder(), null), null, null), null);
+		tp.setTextModelPrefix("sos");
+		tp.setTextModelName("http://darpa.aske.ta1.ge/sostest");
+		String localityURI = "http://darpa.aske.ta1.ge/sostest";
+		tp.setTextModelName(localityURI);
+		String msg = tp.clearGraph(localityURI);
+		System.out.println("Clear graph response: " + msg);
+		int[] result = tp.processText(localityURI, javaContent, localityURI, "sos");
+		System.out.println("nc=" + result[0] + ", neq=" + result[1]);
+		List<UnitExtractionResponse> uresult = tp.unitExtraction("variable measurement degree Celsius", localityURI);
+		assertNotNull(uresult);
+		for (UnitExtractionResponse ur : uresult) {
+			System.out.println("result=" + ur.toString());
+			assertTrue(ur.getRelatedConceptName().equals("temperature"));
+			assertTrue(ur.getRelatedConceptURI().equals("http://purl.obolibrary.org/obo/UO_0000005"));
+			assertTrue(ur.getUnitName().equals("degree Celsius"));
+			assertTrue(ur.getUnitText().equals("degree Celsius"));
+			assertTrue(ur.getUnitURI().equals("http://purl.obolibrary.org/obo/UO_0000027"));
+		}
+	}
+
+	@Test
+	public void test7() throws ConfigurationException, IOException, InvalidNameException {
+		File textFile = new File(getTextExtractionPrjFolder() + "/ExtractedModels/Sources/Isentrop.txt");
+		IConfigurationManagerForIDE cm = ConfigurationManagerForIdeFactory.getConfigurationManagerForIDE(getDomainProjectModelFolder(), null);
+		AnswerCurationManager acm = new AnswerCurationManager(getDomainProjectModelFolder(), cm, null, null);
+		String domainModelName = "http://sadl.org/SpeedOfSound.sadl";
+		acm.setDomainModel(cm.loadOntModel(new SadlUtils().fileUrlToFileName(cm.getAltUrlFromPublicUri(domainModelName)), true));
+		
+		IDialogAnswerProvider dapcft = new DialogAnswerProviderConsoleForTest();
+		cm.addPrivateKeyValuePair(DialogConstants.DIALOG_ANSWER_PROVIDER, dapcft);
+		
+		String defaultTextModelPrefix = "Isentrop";
+		String defaultTextModelName = "http://com.ge.research.darpa.aske.ta1.explore/" + defaultTextModelPrefix;
+		acm.getExtractionProcessor().getTextProcessor().setTextModelPrefix(defaultTextModelPrefix);
+		acm.getExtractionProcessor().getTextProcessor().setTextModelName(defaultTextModelName);
+		
+		String genFolder = new File(acm.getOwlModelsFolder()).getParent() + 
+		"/" + DialogConstants.EXTRACTED_MODELS_FOLDER_PATH_FRAGMENT;
+		new File(genFolder).mkdirs();
+
+		acm.getExtractionProcessor().getTextProcessor().addFile(textFile);
+		SaveAsSadl sas = SaveAsSadl.DoNotSaveAsSadl;
+//		SaveAsSadl sas = SaveAsSadl.SaveAsSadl;
+//		SaveAsSadl sas = SaveAsSadl.AskUserSaveAsSadl;
+		String owlFileName = genFolder + "/" + textFile.getName() + ".owl";
+		String sadlFileName = owlFileName + ".sadl";
+		File sf = new File(sadlFileName);
+		if (sf.exists()) {
+			sf.delete();
+		}
+		String msg = acm.getExtractionProcessor().getTextProcessor().clearGraph(acm.getExtractionProcessor().getTextProcessor().getTextModelName());
+		System.out.println("Clear graph response: " + msg);
+		acm.processImports(sas); 
+		
+//		System.err.println("The extracted model:");
+//		acm.getExtractionProcessor().getTextModel().write(System.err, "N3");
+
+		if (!sas.equals(SaveAsSadl.DoNotSaveAsSadl)) {
+			if (sf.exists()) {
+				String sadlFileContent = readFile(new File(sadlFileName));
+				System.out.println(sadlFileContent);
+			}
+		}
+
+		String query = "select distinct ?eq ?lg ?sc where {?eq <rdf:type> <ExternalEquation> . ?eq <expression> ?scrbn . \r\n" + 
+				"		?scrbn <language> ?lg . ?scrbn <script> ?sc }";
+		List<String> equations = null;
+		try {
+			ResultSet rs =acm.getExtractionProcessor().getTextProcessor().executeSparqlQuery(query);
+			System.out.println("Equations in text extraction model: (" + (rs != null ? rs.getRowCount() : 0) + ")");
+			if (rs != null) {
+				equations = new ArrayList<String>();
+				rs.setShowNamespaces(false);
+				System.out.println(rs.toStringWithIndent(5));
+				for (int r = 0; r < rs.getRowCount(); r++) {
+					if (rs.getResultAt(r, 1).toString().equals("Python-TF")) {
+						equations.add(rs.getResultAt(r, 0).toString());
+					}
+				}
+			}
+			else {
+				System.out.println("   none");
+			}
+		} catch (ReasonerNotFoundException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (InvalidNameException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (QueryParseException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (QueryCancelledException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
+//		if (equations != null) {
+//			for (String anEquation : equations) {
+//				List<Object> params = new ArrayList<Object>();		// TODO change to parameterized query
+//				params.add(anEquation);
+//				List<EquationVariableContextResponse> evcrs = new ArrayList<EquationVariableContextResponse>();
+//				String query2 = "select ?arg ?argName ?argtyp where {<" + anEquation + "> <arguments>/<rdf:rest>*/<rdf:first> ?arg . ?arg <localDescriptorName> ?argName . OPTIONAL{?arg <dataType> ?argtyp}}";
+//				try {
+//					System.out.println("Equation arguments for " + anEquation + ":");
+//					ResultSet rs =acm.getExtractionProcessor().getTextProcessor().executeSparqlQuery(query2);
+//					if (rs != null) {
+//						rs.setShowNamespaces(false);
+//						System.out.println(rs.toStringWithIndent(5));
+//						for (int r = 0; r < rs.getRowCount(); r++) {
+//							String param = rs.getResultAt(r, 1).toString();
+//							EquationVariableContextResponse pnResults = acm.getExtractionProcessor().getTextProcessor().equationVariableContext(param, acm.getExtractionProcessor().getTextModelName());
+//							if (pnResults != null) {
+//								System.out.println(pnResults.getMessage());
+//								for (String[] use : pnResults.getResults()) {
+//									assertTrue(use!= null && use.length == 4);
+//								}
+//								System.out.println(pnResults);
+//								evcrs.add(pnResults);
+//							}
+//						}	
+//					}
+//					else {
+//						System.out.println("   none");
+//					}
+//				} catch (ReasonerNotFoundException e) {
+//					// TODO Auto-generated catch block
+//					e.printStackTrace();
+//				} catch (InvalidNameException e) {
+//					// TODO Auto-generated catch block
+//					e.printStackTrace();
+//				} catch (QueryParseException e) {
+//					// TODO Auto-generated catch block
+//					e.printStackTrace();
+//				} catch (QueryCancelledException e) {
+//					// TODO Auto-generated catch block
+//					e.printStackTrace();
+//				} catch (InvalidInputException e) {
+//					// TODO Auto-generated catch block
+//					e.printStackTrace();
+//				}
+//				
+//				Map<String, TextProcessor.MergedEquationVariableContext> mevcs = acm.getExtractionProcessor().getTextProcessor().unifyEquationVariableContentResponses(evcrs);
+//				if (mevcs != null) {
+//					Set<String> uris = mevcs.keySet();
+//					for (String uri : uris) {
+//						TextProcessor.MergedEquationVariableContext conceptMevc = mevcs.get(uri);
+//						System.out.println(conceptMevc);
+//					}
+//				}
+//			}
+//		}
+		
+		// now look for variable information
+		
+		try {
+			EquationVariableContextResponse evcr = acm.getTextProcessor().equationVariableContext("R", acm.getLocalityOfFileExtract(textFile.getCanonicalPath()));
+			if (evcr != null) {
+				System.out.println(evcr.toString());
+			}
+		} catch (InvalidInputException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		try {
+			EquationVariableContextResponse evcr = acm.getTextProcessor().equationVariableContext("T", acm.getLocalityOfFileExtract(textFile.getCanonicalPath()));
+			if (evcr != null) {
+				System.out.println(evcr.toString());
+			}
+		} catch (InvalidInputException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
 		}
 	}
 

@@ -6,6 +6,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.apache.log4j.Logger;
+import org.apache.log4j.TTCCLayout;
 import org.eclipse.jdt.core.compiler.InvalidInputException;
 
 import com.ge.research.sadl.reasoner.ConfigurationException;
@@ -79,6 +80,115 @@ public class TextProcessingServiceInterface extends JsonServiceInterface {
 				}
 			}
 			return sb.toString();
+		}
+	}
+	
+	public class UnitExtractionResponse {
+		private int start;
+		private int end;
+		private String relatedConceptName;
+		private String relatedConceptURI;
+		private String unitName;
+		private String unitText;
+		private String unitURI;
+		private EquationVariableContextResponse unitContext;
+		
+		public UnitExtractionResponse(int st, int nd, String cName, String cURI, String uName, String uText, String uURI, EquationVariableContextResponse evcr) {
+			setStart(st);
+			setEnd(nd);
+			setRelatedConceptName(cName);
+			setRelatedConceptURI(cURI);
+			setUnitName(uName);
+			setUnitText(uText);
+			setUnitURI(uURI);
+			setUnitContext(evcr);
+		}
+		
+		public UnitExtractionResponse() {
+			// TODO Auto-generated constructor stub
+		}
+
+		public String toString() {
+			StringBuilder sb = new StringBuilder();
+			sb.append("start: ");
+			sb.append(getStart());
+			sb.append("\nend: ");
+			sb.append(getEnd());
+			sb.append("\nrelatedConceptName: ");
+			sb.append(getRelatedConceptName());
+			sb.append("\nrelatedConceptURI: ");
+			sb.append(getRelatedConceptURI());
+			sb.append("\nunitName: ");
+			sb.append(getUnitName());
+			sb.append("\nunitText: ");
+			sb.append(getUnitText());
+			sb.append("\nunitURI: ");
+			sb.append(getUnitURI());
+			return sb.toString();
+		}
+
+		public int getStart() {
+			return start;
+		}
+
+		public void setStart(int start) {
+			this.start = start;
+		}
+
+		public int getEnd() {
+			return end;
+		}
+
+		public void setEnd(int end) {
+			this.end = end;
+		}
+
+		public String getRelatedConceptName() {
+			return relatedConceptName;
+		}
+
+		public void setRelatedConceptName(String relatedConceptName) {
+			this.relatedConceptName = relatedConceptName;
+		}
+
+		public String getRelatedConceptURI() {
+			return relatedConceptURI;
+		}
+
+		public void setRelatedConceptURI(String relatedConceptURI) {
+			this.relatedConceptURI = relatedConceptURI;
+		}
+
+		public String getUnitName() {
+			return unitName;
+		}
+
+		public void setUnitName(String unitName) {
+			this.unitName = unitName;
+		}
+
+		public String getUnitText() {
+			return unitText;
+		}
+
+		public void setUnitText(String unitText) {
+			this.unitText = unitText;
+		}
+
+		public String getUnitURI() {
+			return unitURI;
+		}
+
+		public void setUnitURI(String unitURI) {
+			this.unitURI = unitURI;
+		}
+
+		public EquationVariableContextResponse getUnitContext() {
+			return unitContext;
+		}
+
+		public void setUnitContext(EquationVariableContextResponse unitContext) {
+			this.unitContext = unitContext;
 		}
 	}
 	
@@ -182,22 +292,40 @@ public class TextProcessingServiceInterface extends JsonServiceInterface {
 		json.addProperty("localityURI", locality);
 		json.addProperty("text", text);
 		logger.debug(json.toString());
-		String response = makeConnectionAndGetResponse(serviceUrl, json);
-		logger.debug(response);
-		if (response != null && response.length() > 0) {
-			JsonElement je = new JsonParser().parse(response);
-			if (je.isJsonObject()) {
-				int nc = je.getAsJsonObject().get("numConceptsExtracted").getAsInt();
-				int neq = je.getAsJsonObject().get("numEquationsExtracted").getAsInt();
-				logger.debug("nc=" + nc + ", neq=" + neq);
-				int[] results = new int[2];
-				results[0] = nc;
-				results[1] = neq;
-				return results;
+		try {
+			String response = makeConnectionAndGetResponse(serviceUrl, json);
+			logger.debug(response);
+			if (response != null && response.length() > 0) {
+				if (logger.isDebugEnabled()) {
+					logger.debug(serviceUrl);
+					logger.debug(json);
+				}
+				System.out.println(response);
+				System.out.println(serviceUrl);
+				System.out.println(json);
+//				System.out.println(response);
+				System.out.println("\n");
+				System.out.flush();
+				JsonElement je = new JsonParser().parse(response);
+				if (je.isJsonObject()) {
+					int nc = je.getAsJsonObject().get("numConceptsExtracted").getAsInt();
+					int neq = je.getAsJsonObject().get("numEquationsExtracted").getAsInt();
+					logger.debug("nc=" + nc + ", neq=" + neq);
+					int[] results = new int[2];
+					results[0] = nc;
+					results[1] = neq;
+					return results;
+				}
+			}
+			else {
+				throw new IOException("No response received from service " + textToTripleServiceURL);
 			}
 		}
-		else {
-			throw new IOException("No response received from service " + textToTripleServiceURL);
+		catch (Throwable t) {
+			logger.error(serviceUrl);
+			logger.error(json);
+			logger.error(JsonServiceInterface.aggregateExceptionMessage(t));
+			logger.error("\n");
 		}
 		return null;
 	}
@@ -263,4 +391,41 @@ public class TextProcessingServiceInterface extends JsonServiceInterface {
 		return null;
 	}
 
+	public List<UnitExtractionResponse> unitExtraction(String text, String locality) throws IOException, InvalidInputException {
+		if (text == null) {
+			throw new InvalidInputException("Text cannot be null");
+		}
+		if (locality == null) {
+			throw new InvalidInputException("Locality cannot be null");
+		}
+		String unitExtractionServiceURL = getTextServiceURL() + "unitextraction";
+		URL serviceUrl = new URL(unitExtractionServiceURL);			
+		JsonObject json = new JsonObject();
+		json.addProperty("localityURI", locality);
+		json.addProperty("text", text);
+//		logger.debug(text);
+		String response = makeConnectionAndGetResponse(serviceUrl, json);
+//		logger.debug(response);
+		if (response != null && response.length() > 0) {
+			JsonElement je = new JsonParser().parse(response);
+			logger.debug(je.toString());
+			if (je.isJsonArray()) {
+				List<UnitExtractionResponse> results = new ArrayList<UnitExtractionResponse>();
+				for (JsonElement el : je.getAsJsonArray()) {
+					UnitExtractionResponse uer = new UnitExtractionResponse();
+					uer.setRelatedConceptName(el.getAsJsonObject().get("relatedConceptName").getAsString());
+					uer.setRelatedConceptURI(el.getAsJsonObject().get("relatedConceptURI").getAsString());
+					uer.setUnitName(el.getAsJsonObject().get("unitName").getAsString());
+					uer.setUnitText(el.getAsJsonObject().get("unitText").getAsString());
+					uer.setUnitURI(el.getAsJsonObject().get("unitURI").getAsString());
+					uer.setStart(Integer.parseInt(el.getAsJsonObject().get("start").getAsString().trim()));
+					uer.setEnd(Integer.parseInt(el.getAsJsonObject().get("end").getAsString().trim()));
+//	TODO			uer.setUnitContext(unitContext);
+					results.add(uer);
+				}
+				return results;
+			}
+		}
+		return null;
+	}
 }

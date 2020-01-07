@@ -4,35 +4,22 @@ import org.eclipse.emf.ecore.EObject;
 
 import com.ge.research.sadl.darpa.aske.curation.AnswerCurationManager.Agent;
 
+/**
+ * Class to encapsulate all necessary information to save a single equation model or all equation models
+ * @author 200005201
+ *
+ */
 public class SaveContent extends ExpectsAnswerContent {
-	private String targetModelUri;
-	private String targetModelActualUrl;
+	private boolean saveAll = false;
+	private String targetModelAlias;
 	private String sourceEquationUri; 
 
 	public SaveContent(EObject host) {
 		super(host);
-		// TODO Auto-generated constructor stub
 	}
 
 	public SaveContent(EObject host, Agent agnt) {
 		super(host, agnt);
-		// TODO Auto-generated constructor stub
-	}
-
-	public String getTargetModelUri() {
-		return targetModelUri;
-	}
-
-	public void setTargetModelUri(String targetModelUri) {
-		this.targetModelUri = targetModelUri;
-	}
-
-	public String getTargetModelActualUrl() {
-		return targetModelActualUrl;
-	}
-
-	public void setTargetModelActualUrl(String targetModelActualUrl) {
-		this.targetModelActualUrl = targetModelActualUrl;
 	}
 
 	public String getSourceEquationUri() {
@@ -41,6 +28,22 @@ public class SaveContent extends ExpectsAnswerContent {
 
 	public void setSourceEquationUri(String sourceEquationUri) {
 		this.sourceEquationUri = sourceEquationUri;
+	}
+
+	public boolean isSaveAll() {
+		return saveAll;
+	}
+
+	public void setSaveAll(boolean saveAll) {
+		this.saveAll = saveAll;
+	}
+
+	public String getTargetModelAlias() {
+		return targetModelAlias;
+	}
+
+	public void setTargetModelAlias(String targetModelAlias) {
+		this.targetModelAlias = targetModelAlias;
 	}
 
 }

@@ -52,7 +52,6 @@ class DialogImplicitModelFragmentProvider implements ISadlImplicitModelFragmentP
 		/****** The following content comes from the Dialog implicit model fragment provider ******/
 		dependsOn is a property.
 		UnittedQuantity has impliedProperty ^value.
-		definedBy (alias "rdfs:isDefinedBy") is a type of annotation.
 	''';
 
 	@Override

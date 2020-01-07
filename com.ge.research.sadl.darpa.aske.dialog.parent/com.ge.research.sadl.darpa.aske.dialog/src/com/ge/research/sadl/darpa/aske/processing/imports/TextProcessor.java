@@ -50,6 +50,7 @@ import com.ge.research.sadl.builder.IConfigurationManagerForIDE;
 import com.ge.research.sadl.darpa.aske.curation.AnswerCurationManager;
 import com.ge.research.sadl.darpa.aske.preferences.DialogPreferences;
 import com.ge.research.sadl.darpa.aske.processing.imports.TextProcessingServiceInterface.EquationVariableContextResponse;
+import com.ge.research.sadl.darpa.aske.processing.imports.TextProcessingServiceInterface.UnitExtractionResponse;
 import com.ge.research.sadl.processing.SadlConstants;
 import com.ge.research.sadl.reasoner.ConfigurationException;
 import com.ge.research.sadl.reasoner.IConfigurationManagerForEditing.Scope;
@@ -229,6 +230,19 @@ public class TextProcessor {
 		String serviceUri = getPreference(DialogPreferences.ANSWER_TEXT_SERVICE_BASE_URI.getId());
 		TextProcessingServiceInterface tpsi = new TextProcessingServiceInterface(serviceUri);
 		return tpsi.equationVariableContext(name, locality);
+	}
+	
+	public List<UnitExtractionResponse> unitExtraction(String text, String locality) throws IOException, InvalidInputException {
+		try {
+			String msg = "Searching for units in text '" + text + "' in locality '" + locality + "'.";
+			getCurationManager().notifyUser(getTextModelConfigMgr().getModelFolder(), msg, true);
+		} catch (ConfigurationException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		String serviceUri = getPreference(DialogPreferences.ANSWER_TEXT_SERVICE_BASE_URI.getId());
+		TextProcessingServiceInterface tpsi = new TextProcessingServiceInterface(serviceUri);
+		return tpsi.unitExtraction(text, locality);
 	}
 	
 	public void addTextModel(String key, OntModel textModel) {
