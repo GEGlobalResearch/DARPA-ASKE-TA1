@@ -359,7 +359,7 @@ public class AnswerExtractionProcessor {
 			}
 		}
 		catch (Exception e) {
-			return e.getMessage();
+			return JsonServiceInterface.aggregateExceptionMessage(e);
 		}
 		return null;
 	}

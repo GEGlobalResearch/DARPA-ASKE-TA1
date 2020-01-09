@@ -130,7 +130,9 @@ import com.ge.research.sadl.sADL.SadlAnnotation;
 import com.ge.research.sadl.sADL.SadlInstance;
 import com.ge.research.sadl.sADL.SadlModel;
 import com.ge.research.sadl.sADL.SadlModelElement;
+import com.ge.research.sadl.sADL.SadlParameterDeclaration;
 import com.ge.research.sadl.sADL.SadlResource;
+import com.ge.research.sadl.sADL.SadlReturnDeclaration;
 import com.ge.research.sadl.sADL.SadlSimpleTypeReference;
 import com.ge.research.sadl.sADL.SadlStatement;
 import com.ge.research.sadl.sADL.SadlTypeReference;
@@ -146,6 +148,7 @@ import com.hp.hpl.jena.rdf.model.Property;
 import com.hp.hpl.jena.rdf.model.RDFNode;
 import com.hp.hpl.jena.rdf.model.RDFWriter;
 import com.hp.hpl.jena.rdf.model.StmtIterator;
+import com.hp.hpl.jena.sparql.util.NodeUtils;
 import com.hp.hpl.jena.vocabulary.RDFS;
 
 public class JenaBasedDialogModelProcessor extends JenaBasedSadlModelProcessor {
@@ -490,15 +493,53 @@ public class JenaBasedDialogModelProcessor extends JenaBasedSadlModelProcessor {
 		}
 		else if (element instanceof ExternalEquationStatement) {
 			super.processStatement((ExternalEquationStatement)element);
+			List<Object> oc = OntModelProvider.getOtherContent(getCurrentResource());
+			String eqUri  = null;
+			if (oc != null && oc.size() > 0) {
+				Object obj = oc.get(oc.size() - 1);
+				if (obj instanceof Equation) {
+					Equation eq = (Equation)obj;
+					validateEquationAugmentedTypes((ExternalEquationStatement) element, eq);
+					eqUri = eq.getUri();
+				}
+			}
+			if (eqUri != null) {
+				getAnswerCurationManager().addEquationInformation(eqUri, NodeModelUtils.findActualNodeFor(element).getText());
+			}
+			else {
+				addError("Unable to find URI of External equation", element);
+			}
 			return null;
 		}
 		else if (element instanceof EquationStatement) {
 			super.processStatement((EquationStatement)element);
+			List<Object> oc = OntModelProvider.getOtherContent(getCurrentResource());
+			String eqUri  = null;
+			if (oc != null && oc.size() > 0) {
+				Object obj = oc.get(oc.size() - 1);
+				if (obj instanceof Equation) {
+					Equation eq = (Equation)obj;
+					validateEquationAugmentedTypes((EquationStatement) element, eq);
+					eqUri = eq.getUri();
+				}
+			}
+			if (eqUri != null) {
+				getAnswerCurationManager().addEquationInformation(eqUri, NodeModelUtils.findActualNodeFor(element).getText());
+			}
+			else {
+				addError("Unable to find URI of External equation", element);
+			}
 			return null;
 		}
 		else if (element instanceof SadlStatement) {
 			SadlStatementContent ssc = new SadlStatementContent(element, Agent.USER);
 			super.processModelElement((SadlStatement)element);
+			if (element instanceof SadlInstance) {
+				String srUri = getDeclarationExtensions().getConceptUri(sadlResourceFromSadlInstance((SadlInstance)element));
+				if (getAnswerCurationManager().getEquationInformation(srUri) != null) {
+					getAnswerCurationManager().addEquationInformation(srUri, NodeModelUtils.findActualNodeFor(element).getText());
+				}
+			}
 			return ssc;
 		}
 		else {
@@ -506,6 +547,40 @@ public class JenaBasedDialogModelProcessor extends JenaBasedSadlModelProcessor {
 		}	
 	}
 	
+	private void validateEquationAugmentedTypes(ExternalEquationStatement element, Equation eq) {
+		Iterator<SadlParameterDeclaration> spitr = element.getParameter().iterator();
+		while (spitr.hasNext()) {
+			SadlParameterDeclaration spd = spitr.next();
+			if (spd.getAugtype() == null) {
+				addWarning("Missing augmented type information", spd.getName());
+			}
+		}
+		Iterator<SadlReturnDeclaration> srtitr = element.getReturnType().iterator();
+		while (srtitr.hasNext()) {
+			SadlReturnDeclaration srd = srtitr.next();
+			if (srd.getAugtype() == null) {
+				addWarning("Missing augmented return type information", srd.getType());
+			}
+		}
+	}
+
+	private void validateEquationAugmentedTypes(EquationStatement element, Equation eq) {
+		Iterator<SadlParameterDeclaration> spitr = element.getParameter().iterator();
+		while (spitr.hasNext()) {
+			SadlParameterDeclaration spd = spitr.next();
+			if (spd.getAugtype() == null) {
+				addWarning("Missing augmented type information", spd.getName());
+			}
+		}
+		Iterator<SadlReturnDeclaration> srtitr = element.getReturnType().iterator();
+		while (srtitr.hasNext()) {
+			SadlReturnDeclaration srd = srtitr.next();
+			if (srd.getAugtype() == null) {
+				addWarning("Missing augmented return type information", srd.getType());
+			}
+		}
+	}
+
 	private StatementContent processStatement(MyNameIsStatement element) throws IOException {
 		getAnswerCurationManager().setUserName(element.getAnswer());
 		AnswerContent ac = new AnswerContent(element, Agent.USER);
@@ -992,19 +1067,23 @@ public class JenaBasedDialogModelProcessor extends JenaBasedSadlModelProcessor {
 				}
 			}
 			if (targetModelUri != null) {
-				String equationUri = getDeclarationExtensions().getConceptUri(equationSR);
-				Individual extractedModelInstance = getTheJenaModel().getIndividual(equationUri);
-				if (extractedModelInstance == null) {
-					addError("No equation with URI '" + equationUri + "' is found in current model.", equationSR);
-					return null;
-				}
-				else if (extractedModelInstance.getNameSpace().equals(targetModelAlias)) {
-					getAnswerCurationManager().notifyUser(getConfigMgr().getModelFolder(), "The equation with URI '" + equationUri + "' is already in the target model '" + targetModelAlias + "'", true);
-				}
 				SaveContent sc = new SaveContent(element, Agent.USER);
-				sc.setTargetModelUri(targetModelUrl);
-				sc.setTargetModelActualUrl(targetModelUrl);
-				sc.setSourceEquationUri(extractedModelInstance.getURI());
+				sc.setTargetModelAlias(targetModelAlias);
+				if (element.getAll() != null && element.getAll().equals("all")) {
+					sc.setSaveAll(true);
+				}
+				else {
+					String equationUri = getDeclarationExtensions().getConceptUri(equationSR);
+					Individual extractedModelInstance = getTheJenaModel().getIndividual(equationUri);
+					if (extractedModelInstance == null) {
+						addError("No equation with URI '" + equationUri + "' is found in current model.", equationSR);
+						return null;
+					}
+					else if (extractedModelInstance.getNameSpace().equals(targetModelAlias)) {
+						getAnswerCurationManager().notifyUser(getConfigMgr().getModelFolder(), "The equation with URI '" + equationUri + "' is already in the target model '" + targetModelAlias + "'", true);
+					}
+					sc.setSourceEquationUri(extractedModelInstance.getURI());
+				}
 				return sc;
 			}
 		}
@@ -1479,6 +1558,7 @@ public class JenaBasedDialogModelProcessor extends JenaBasedSadlModelProcessor {
 				"cmReturnTypes describes Method with a single value of type string List.\r\n" + 
 				"cmSemanticReturnTypes describes Method with a single value of type string List.\r\n" + 
 				"doesComputation describes Method with a single value of type boolean.\r\n" + 
+				"incompleteInformation describes Method with a single value of type boolean.\r\n" + 
 				"calls describes Method with values of type MethodCall.\r\n" + 
 				"ExternalMethod is a type of Method.\r\n" + 
 				"\r\n" + 
@@ -1523,8 +1603,9 @@ public class JenaBasedDialogModelProcessor extends JenaBasedSadlModelProcessor {
 				"	described by quantityKind (note \"this should be qudt:QuantityKind\") with a single value of type ScientificConcept,\r\n" + 
 				"	described by reference with values of type Reference.   \r\n" + 
 				"\r\n" + 
-				"{ClassField, MethodArgument, MethodVariable} are types of CodeVariable. 	\r\n" + 
-				"\r\n" + 
+				"{ClassField, MethodArgument, MethodVariable, ConstantVariable} are types of CodeVariable. 	\r\n" + 
+				"\r\n" +
+				"constantValue describes ConstantVariable with values of type UnittedQuantity.\r\n" + 
 				"//External findFirstLocation (CodeVariable cv) returns int: \"http://ToBeImplemented\".\r\n" + 
 				"\r\n" + 
 				"Rule Transitive  \r\n" + 
@@ -1554,7 +1635,7 @@ public class JenaBasedDialogModelProcessor extends JenaBasedSadlModelProcessor {
 				"   ref has firstRef true and\r\n" + 
 				"   ref has usage Used\r\n" + 
 				"   and cv has reference ref\r\n" + 
-				"   and ref has beginsAt loc\r\n" + 
+				"//   and ref has beginsAt loc\r\n" + 
 				"then input of ref is true and isImplicit of ref is true\r\n" + 
 				"//	and print(cb, cv, loc, \" implicit input\")\r\n" + 
 				".\r\n" + 
@@ -1566,10 +1647,22 @@ public class JenaBasedDialogModelProcessor extends JenaBasedSadlModelProcessor {
 				"   ref has usage Reassigned\r\n" + 
 				"   and cv has reference ref\r\n" + 
 				"   and noValue(cv, reference, ref2, ref2, codeBlock, cb, ref2, usage, Defined)\r\n" + 
-				"   and ref has beginsAt loc\r\n" + 
+				"//   and ref has beginsAt loc\r\n" + 
 				"then output of ref is true and isImplicit of ref is true\r\n" + 
 				"//	and print(cb, cv, loc, \" implicit output\")\r\n" + 
-				".";
+				"." + 
+				"\r\n" + 
+				"ClassesToIgnore is a type of Class.\r\n" + 
+				"{Canvas, CardLayout, Graphics, Insets, Panel, Image, cem:Event, Choice, Button,\r\n" + 
+				"	Viewer, GridLayout\r\n" + 
+				"} are types of ClassesToIgnore.\r\n" + 
+				"\r\n" + 
+				"Ask ImplicitMethodInputs: \"select distinct ?m ?cv ?vt ?vn where {?r <isImplicit> true . ?r <http://sadl.org/CodeExtractionModel.sadl#input> true . \r\n" + 
+				"	?r <codeBlock> ?m . ?cv <reference> ?r . ?cv <varType> ?vt . ?cv <varName> ?vn} order by ?m ?vn\".\r\n" + 
+				"Ask ImplicitMethodOutputs: \"select distinct ?m ?cv ?vt ?vn where {?r <isImplicit> true . ?r <http://sadl.org/CodeExtractionModel.sadl#output> true . \r\n" + 
+				"	?r <codeBlock> ?m . ?cv <reference> ?r . ?cv <varType> ?vt. ?cv <varName> ?vn} order by ?m ?vn\".\r\n" + 
+				"Ask MethodsDoingComputation: \"select ?m where {?m <doesComputation> true}\".\r\n" + 
+				"Ask MethodCalls: \"select ?m ?mcalled where {?m <calls> ?mc . ?mc <codeBlock> ?mcalled} order by ?m ?mcalled\".";
 		return content;
 	}
 

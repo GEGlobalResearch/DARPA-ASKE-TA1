@@ -81,7 +81,7 @@ YesNoAnswerStatement:
 ;
 
 SaveStatement:
-	{SaveStatement} ('Save' | 'save') target=SadlResource ('to' saveTarget=ID)?
+	{SaveStatement} ('Save' | 'save') (target=SadlResource | all='all') ('to' saveTarget=ID)?
 ;
 
 AnswerCMStatement:
