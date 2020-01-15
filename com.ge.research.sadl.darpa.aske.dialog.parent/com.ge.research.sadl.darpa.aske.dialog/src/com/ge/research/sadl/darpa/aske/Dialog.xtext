@@ -60,8 +60,18 @@ SadlModelElement returns sadl::SadlModelElement :
 	YesNoAnswerStatement EOS	|
 	MyNameIsStatement EOS		|
 	TargetModelName EOS			|
+	ExtractStatement EOS		|
+	CompareStatement EOS 	 	|
 	ExternalEquationStatement EOS	|
 	EquationStatement EOS
+;
+
+CompareStatement:
+	('Compare'|'compare') toCompare=Expression 'when' whenExpr=Expression
+;
+
+ExtractStatement:
+	('Extract'|'extract') 'from' sourceURIs+=STRING (',' sourceURIs+=STRING)*
 ;
 
 EvalStatement returns SadlEquationInvocation:

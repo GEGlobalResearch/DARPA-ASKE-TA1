@@ -186,7 +186,11 @@ public class AnswerExtractionProcessor {
 
 	public void addNewSadlContent(String newContent) {
 		if (getGeneratedSadlContent() != null) {
-			setSadlContent(getGeneratedSadlContent() + newContent);
+			String gc = getGeneratedSadlContent();
+			if (!gc.endsWith("\n")) {
+				gc = gc + "\n";
+			}
+			setSadlContent(gc + newContent);
 		}
 		else {
 			setSadlContent(newContent);

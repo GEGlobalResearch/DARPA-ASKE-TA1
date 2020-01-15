@@ -50,8 +50,18 @@ class DialogImplicitModelFragmentProvider implements ISadlImplicitModelFragmentP
 
 	public static val DIALOG_IMPLICIT_MODEL_FRAGMENT = '''
 		/****** The following content comes from the Dialog implicit model fragment provider ******/
-		dependsOn is a property.
+		dependsOn is a property with values of type class.
 		UnittedQuantity has impliedProperty ^value.
+		
+		IntializerMethod is a type of ExternalEquation,
+			described by initializes with values of type class.
+		initializerKeyword is a type of annotation.
+		IntializerMethod has initializerKeyword "load", has initializerKeyword "initize".	
+		
+		ImplicitDataDescriptor is a type of DataDescriptor,
+			described by declaration with values of type Script.
+		implicitInputs describes ^Equation with values of type ImplicitDataDescriptor.
+		implicitOutputs describes ^Equation with values of type ImplicitDataDescriptor.
 	''';
 
 	@Override

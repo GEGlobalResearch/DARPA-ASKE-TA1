@@ -71,6 +71,7 @@ import com.ge.research.sadl.reasoner.QueryParseException;
 import com.ge.research.sadl.reasoner.ReasonerNotFoundException;
 import com.ge.research.sadl.reasoner.ResultSet;
 import com.ge.research.sadl.reasoner.utils.SadlUtils;
+import com.hp.hpl.jena.ontology.OntModel;
 import com.hp.hpl.jena.rdf.model.Model;
 import com.hp.hpl.jena.rdf.model.ModelFactory;
 
@@ -174,7 +175,7 @@ public class TextProcessorTests {
 
 //	@Ignore
 	@Test
-	public void test4() throws ConfigurationException, IOException, InvalidNameException {
+	public void test4() throws ConfigurationException, IOException, InvalidNameException, ReasonerNotFoundException, QueryParseException, QueryCancelledException {
 		File textFile = new File(getTextExtractionPrjFolder() + "/ExtractedModels/Sources/Sound.txt");
 		IConfigurationManagerForIDE cm = ConfigurationManagerForIdeFactory.getConfigurationManagerForIDE(getDomainProjectModelFolder(), null);
 		AnswerCurationManager acm = new AnswerCurationManager(getDomainProjectModelFolder(), cm, null, null);
@@ -217,7 +218,7 @@ public class TextProcessorTests {
 			}
 		}
 
-		String query = "select distinct ?eq ?lg ?sc where {?eq <rdf:type> <ExternalEquation> . ?eq <expression> ?scrbn . \r\n" + 
+		String query = "select distinct ?eq ?lg ?sc where {?eq <rdf:type> <ExternalEquation> . ?eq <expression> ?scrbn . \n" + 
 				"		?scrbn <language> ?lg . ?scrbn <script> ?sc }";
 		List<String> equations = null;
 		try {
@@ -407,7 +408,7 @@ public class TextProcessorTests {
 	}
 
 	@Test
-	public void test7() throws ConfigurationException, IOException, InvalidNameException {
+	public void test7() throws ConfigurationException, IOException, InvalidNameException, ReasonerNotFoundException, QueryParseException, QueryCancelledException {
 		File textFile = new File(getTextExtractionPrjFolder() + "/ExtractedModels/Sources/Isentrop.txt");
 		IConfigurationManagerForIDE cm = ConfigurationManagerForIdeFactory.getConfigurationManagerForIDE(getDomainProjectModelFolder(), null);
 		AnswerCurationManager acm = new AnswerCurationManager(getDomainProjectModelFolder(), cm, null, null);
@@ -438,8 +439,13 @@ public class TextProcessorTests {
 		}
 		String msg = acm.getExtractionProcessor().getTextProcessor().clearGraph(acm.getExtractionProcessor().getTextProcessor().getTextModelName());
 		System.out.println("Clear graph response: " + msg);
-		acm.processImports(sas); 
+		acm.processImports(sas); 							// ***** this is where the work happens *****
+		OntModel tm = acm.getExtractionProcessor().getTextModel();
+		tm.write(System.out, "N3");
 		
+		String sadlContent = acm.getExtractionProcessor().getGeneratedSadlContent();
+		System.out.println("\n\n*****  New Dialog editor content *********");
+		System.out.println(sadlContent);
 //		System.err.println("The extracted model:");
 //		acm.getExtractionProcessor().getTextModel().write(System.err, "N3");
 
@@ -450,117 +456,175 @@ public class TextProcessorTests {
 			}
 		}
 
-		String query = "select distinct ?eq ?lg ?sc where {?eq <rdf:type> <ExternalEquation> . ?eq <expression> ?scrbn . \r\n" + 
-				"		?scrbn <language> ?lg . ?scrbn <script> ?sc }";
-		List<String> equations = null;
-		try {
-			ResultSet rs =acm.getExtractionProcessor().getTextProcessor().executeSparqlQuery(query);
-			System.out.println("Equations in text extraction model: (" + (rs != null ? rs.getRowCount() : 0) + ")");
-			if (rs != null) {
-				equations = new ArrayList<String>();
-				rs.setShowNamespaces(false);
-				System.out.println(rs.toStringWithIndent(5));
-				for (int r = 0; r < rs.getRowCount(); r++) {
-					if (rs.getResultAt(r, 1).toString().equals("Python-TF")) {
-						equations.add(rs.getResultAt(r, 0).toString());
-					}
-				}
-			}
-			else {
-				System.out.println("   none");
-			}
-		} catch (ReasonerNotFoundException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (InvalidNameException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (QueryParseException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (QueryCancelledException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-		
-//		if (equations != null) {
-//			for (String anEquation : equations) {
-//				List<Object> params = new ArrayList<Object>();		// TODO change to parameterized query
-//				params.add(anEquation);
-//				List<EquationVariableContextResponse> evcrs = new ArrayList<EquationVariableContextResponse>();
-//				String query2 = "select ?arg ?argName ?argtyp where {<" + anEquation + "> <arguments>/<rdf:rest>*/<rdf:first> ?arg . ?arg <localDescriptorName> ?argName . OPTIONAL{?arg <dataType> ?argtyp}}";
-//				try {
-//					System.out.println("Equation arguments for " + anEquation + ":");
-//					ResultSet rs =acm.getExtractionProcessor().getTextProcessor().executeSparqlQuery(query2);
-//					if (rs != null) {
-//						rs.setShowNamespaces(false);
-//						System.out.println(rs.toStringWithIndent(5));
-//						for (int r = 0; r < rs.getRowCount(); r++) {
-//							String param = rs.getResultAt(r, 1).toString();
-//							EquationVariableContextResponse pnResults = acm.getExtractionProcessor().getTextProcessor().equationVariableContext(param, acm.getExtractionProcessor().getTextModelName());
-//							if (pnResults != null) {
-//								System.out.println(pnResults.getMessage());
-//								for (String[] use : pnResults.getResults()) {
-//									assertTrue(use!= null && use.length == 4);
-//								}
-//								System.out.println(pnResults);
-//								evcrs.add(pnResults);
-//							}
-//						}	
-//					}
-//					else {
-//						System.out.println("   none");
-//					}
-//				} catch (ReasonerNotFoundException e) {
-//					// TODO Auto-generated catch block
-//					e.printStackTrace();
-//				} catch (InvalidNameException e) {
-//					// TODO Auto-generated catch block
-//					e.printStackTrace();
-//				} catch (QueryParseException e) {
-//					// TODO Auto-generated catch block
-//					e.printStackTrace();
-//				} catch (QueryCancelledException e) {
-//					// TODO Auto-generated catch block
-//					e.printStackTrace();
-//				} catch (InvalidInputException e) {
-//					// TODO Auto-generated catch block
-//					e.printStackTrace();
-//				}
-//				
-//				Map<String, TextProcessor.MergedEquationVariableContext> mevcs = acm.getExtractionProcessor().getTextProcessor().unifyEquationVariableContentResponses(evcrs);
-//				if (mevcs != null) {
-//					Set<String> uris = mevcs.keySet();
-//					for (String uri : uris) {
-//						TextProcessor.MergedEquationVariableContext conceptMevc = mevcs.get(uri);
-//						System.out.println(conceptMevc);
+//		String query = "select distinct ?eq ?lg ?sc where {?eq <rdf:type> <ExternalEquation> . ?eq <expression> ?scrbn . \n" + 
+//				"		?scrbn <language> ?lg . ?scrbn <script> ?sc }";
+//		List<String> equations = null;
+//		try {
+//			ResultSet rs =acm.getExtractionProcessor().getTextProcessor().executeSparqlQuery(query);
+//			System.out.println("Equations in text extraction model: (" + (rs != null ? rs.getRowCount() : 0) + ")");
+//			if (rs != null) {
+//				equations = new ArrayList<String>();
+//				rs.setShowNamespaces(false);
+//				System.out.println(rs.toStringWithIndent(5));
+//				for (int r = 0; r < rs.getRowCount(); r++) {
+//					if (rs.getResultAt(r, 1).toString().equals("Python-TF")) {
+//						equations.add(rs.getResultAt(r, 0).toString());
 //					}
 //				}
 //			}
+//			else {
+//				System.out.println("   none");
+//			}
+//		} catch (ReasonerNotFoundException e) {
+//			// TODO Auto-generated catch block
+//			e.printStackTrace();
+//		} catch (InvalidNameException e) {
+//			// TODO Auto-generated catch block
+//			e.printStackTrace();
+//		} catch (QueryParseException e) {
+//			// TODO Auto-generated catch block
+//			e.printStackTrace();
+//		} catch (QueryCancelledException e) {
+//			// TODO Auto-generated catch block
+//			e.printStackTrace();
 //		}
-		
-		// now look for variable information
-		
-		try {
-			EquationVariableContextResponse evcr = acm.getTextProcessor().equationVariableContext("R", acm.getLocalityOfFileExtract(textFile.getCanonicalPath()));
-			if (evcr != null) {
-				System.out.println(evcr.toString());
-			}
-		} catch (InvalidInputException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-		try {
-			EquationVariableContextResponse evcr = acm.getTextProcessor().equationVariableContext("T", acm.getLocalityOfFileExtract(textFile.getCanonicalPath()));
-			if (evcr != null) {
-				System.out.println(evcr.toString());
-			}
-		} catch (InvalidInputException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
 	}
 
+	@Test
+	public void testTextToTriples_01() throws ConfigurationException, IOException {
+		String content = 
+				"As a gas is forced through a tube, the gas molecules are deflectedby the \n" + 
+				"walls of the tube. If the speed of the gas is much less thanthe speed of \n" + 
+				"sound of the gas, thedensityof the gas remains constant and the velocity of \n" + 
+				"the flow increases.However, as the speed of the flow approaches thespeed of \n" + 
+				"soundwe must considercompressibility effectson the gas. The density of the \n" + 
+				"gas varies fromone location to the next.Considering flow through a tube, as \n" + 
+				"shown inthe figure, if the flow is very gradually compressed (area \n" + 
+				"decreases) and thengradually expanded (area increases), the flow conditions \n" + 
+				"return to theiroriginal values. We say that such a process is reversible\n" + 
+				".From a consideration of thesecond lawof thermodynamics,a reversible flow \n" + 
+				"maintains a constant value ofentropy.Engineers call this type of flow an \n" + 
+				"isentropic flow;a combination of the Greek word \"iso\" (same) and entropy.\n" + 
+				"\n" + 
+				"Isentropic flows occur when the change in flow variables is smalland \n" + 
+				"gradual, such as the ideal flow through thenozzleshown above.The generation \n" + 
+				"ofsound wavesis an isentropic process. Asupersonic flow thatis turned while \n" + 
+				"the flow area increases is also isentropic.We call this an isentropic\n" + 
+				"expansionbecause of the area increase.If a supersonic flow is \n" + 
+				"turnedabruptly and the flow area decreases,shock wavesare generated and the \n" + 
+				"flow is irreversible.The isentropic relations are no longervalid and the \n" + 
+				"flow isgoverned by the oblique or normalshock relations.\n" + 
+				"\n" + 
+				"On this slide we have collected many of the important equationswhich \n" + 
+				"describe an isentropic flow. We begin with the definitionof the Mach number \n" + 
+				"since thisparameterappearsin many of the isentropic flow equations.The Mach \n" + 
+				"number M isthe ratio of the speed of the flow v to the speed of sound a.\n" + 
+				"\n" + 
+				"Eq #1:\n" + 
+				"\n" + 
+				"M = v / a\n" + 
+				"\n" + 
+				"Thespeed of sound, in turn, depends on thedensity r, thepressure, p, the\n" + 
+				"temperature, T,and theratio of specific heats gam:\n" + 
+				"\n" + 
+				"Eq #2:\n" + 
+				"\n" + 
+				"a = sqrt(gam * p / r) = sqrt (gam * R * T)\n" + 
+				"\n" + 
+				"where R is the gas constant from theequations of state. If we begin with \n" + 
+				"theentropy equations for a gas, it can beshownthat the pressure and density \n" + 
+				"of an isentropic flow are related as follows:\n" + 
+				"\n" + 
+				"Eq #3:\n" + 
+				"\n" + 
+				"p / r^gam = constant\n" + 
+				"\n" + 
+				"We can determine thevalue of the constant by defining total conditions to \n" + 
+				"be thepressure and density when the flow is brought to rest \n" + 
+				"isentropically.The \"t\" subscript used in many of these equations stands for \n" + 
+				"\"totalconditions\". (You probably already have some idea of total \n" + 
+				"conditionsfrom experience with Bernoulli's equation).\n" + 
+				"\n" + 
+				"Eq #3:\n" + 
+				"\n" + 
+				"p / r^gam = constant = pt / rt^gam\n" + 
+				"\n" + 
+				"Using the equation of state, we can easilyderivethe following relations \n" + 
+				"from equation (3):\n" + 
+				"\n" + 
+				"Eq #4:\n" + 
+				"\n" + 
+				"p / pt = (r / rt)^gam = (T / Tt)^[gam/(gam-1)]\n" + 
+				"\n" + 
+				"The dynamic pressure q is defined to be:\n" + 
+				"\n" + 
+				"Eq #5:\n" + 
+				"\n" + 
+				"q = (r * v^2) / 2 = (gam * p * M^2) / 2\n" + 
+				"\n" + 
+				"Using the conservation ofmass,momentum, andenergyand the definition of\n" + 
+				"total enthalpyin the flow, we canderive the following relations:\n" + 
+				"\n" + 
+				"Eq #6:\n" + 
+				"\n" + 
+				"p / pt = [1 + M^2 * (gam-1)/2]^-[gam/(gam-1)]\n" + 
+				"\n" + 
+				"Eq #7:\n" + 
+				"\n" + 
+				"T / Tt = [1 + M^2 * (gam-1)/2]^-1\n" + 
+				"\n" + 
+				"Eq #8:\n" + 
+				"\n" + 
+				"r / rt = [1 + M^2 * (gam-1)/2]^-[1/(gam-1)]\n" + 
+				"\n" + 
+				"Then considering thecompressible mass flow equation.we can derive:\n" + 
+				"\n" + 
+				"Eq #9:\n" + 
+				"\n" + 
+				"A / A* = {[1 + M^2 * \n" + 
+				"(gam-1)/2]^[(gam+1)/(gam-1)/2]}*{[(gam+1)/2]^-[(gam+1)/(gam-1)/2]} / M\n" + 
+				"\n" + 
+				"The starred conditions occurwhen the flow is choked and the Mach number is \n" + 
+				"equal to one.Notice the important role that the Mach number plays in all \n" + 
+				"theequations on the right side of this slide. If the Mach number of theflow \n" + 
+				"is determined, all of the other flow relations can bedetermined. Similarly, \n" + 
+				"determining any flow relation (pressure ratiofor example) will fix the Mach \n" + 
+				"number and set all the other flowconditions.\n" + 
+				"\n" + 
+				"Here is a JavaScript program that solves the equations given on this slide.\n" + 
+				"\n" + 
+				"\n" + 
+				"You select an input variable by using the choice button labeled \n" + 
+				"InputVariable. Next to the selection, you then type in the valueof the \n" + 
+				"selected variable. When you hit the red COMPUTE button,the output values \n" + 
+				"change. Some of the variables (like the area ratio) are doublevalued. This \n" + 
+				"means that for the same area ratio, there is a subsonicand a supersonic \n" + 
+				"solution. The choice button at the right top selectsthe solution that is \n" + 
+				"presented.The variable \"Wcor/A\" is thecorrected airflow per unit area\n" + 
+				"function which can be derived from thecompressible mass flow.This variable \n" + 
+				"is only a function of the Mach number of the flow. TheMach angle and\n" + 
+				"Prandtl-Meyer angleare also functions of the Mach number.These additional \n" + 
+				"variables are used in the design of high speedinlets, nozzles and ducts.\n" + 
+				"\n" + 
+				"If you are an experienced user of this calculator, you can use asleek \n" + 
+				"versionof the program which loads faster on your computer and does not \n" + 
+				"include these instructions.You can also download your own copy of the \n" + 
+				"program to run off-line by clicking on this button:\n";
+		TextProcessor tp = new TextProcessor(new AnswerCurationManager(domainProjectModelFolder, 
+				ConfigurationManagerForIdeFactory.getConfigurationManagerForIDE(domainProjectModelFolder, null), null, null), null);
+		tp.setTextModelPrefix("sos");
+		String localityURI = "http://darpa.aske.ta1.ge/sostest";
+		tp.setTextModelName(localityURI);
+		String msg = tp.clearGraph(localityURI);
+		System.out.println("Clear graph response: " + msg);
+		int[] result = tp.processText(localityURI, content, localityURI, null);
+		assertNotNull(result);
+//		assertEquals(0, result[0]);
+//		assertEquals(1, result[1]);
+		System.out.println("nc=" + result[0] + ", neq=" + result[1]);
+
+	}
+	
 	@Test
 	public void testReadN3FromService() throws IOException {
 		File n3File = new File(getTextExtractionPrjFolder().getParent() + "/MiscFiles/SoundTxtExtract.n3");

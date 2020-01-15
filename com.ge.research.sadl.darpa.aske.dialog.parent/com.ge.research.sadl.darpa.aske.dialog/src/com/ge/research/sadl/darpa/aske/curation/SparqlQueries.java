@@ -9,7 +9,7 @@ public class SparqlQueries {
 			"			UNION {?m <rdf:type> <ExternalMethod>} } }";
 
 	public static final String ALL_CODE_EXTRACTED_METHODS =
-			"select ?m ?b ?e ?s where {?m <rdf:type> <Method> . OPTIONAL {?m <beginsAt> ?b . ?m <endsAt> ?e . OPTIONAL{?m <serialization> ?s}} .\r\n" + 
+			"select distinct ?m ?b ?e ?s where {?m <rdf:type> <Method> . OPTIONAL {?m <beginsAt> ?b . ?m <endsAt> ?e . OPTIONAL{?m <serialization> ?s}} .\r\n" + 
 			"		MINUS {\r\n" + 
 			"			{?ref <codeBlock> ?m . ?ref <isImplicit> true}\r\n" + 
 			"			UNION {?m <rdf:type> <ExternalMethod>} } }";
@@ -20,4 +20,8 @@ public class SparqlQueries {
 			+ "OPTIONAL { ?m <expression> ?exp . ?exp <language> <Text> . ?exp <script> ?ts} . "
 			+ "OPTIONAL {?m <expression> ?exp2 . ?exp2 <language> <Python> . ?exp2 <script> ?ps} . "
 			+ "OPTIONAL {?m <expression> ?exp3 . ?exp3 <language> <Python-TF> . ?exp3 <script> ?ptfs}}";
+	
+	public static final String ALL_EXTERNAL_EQUATIONS = 
+			"select ?eq ?lang ?expr where {?eq <rdf:type> <ExternalEquation> . ?eq <expression> ?script . ?script <script> ?expr . ?script <language> ?lang}";
+
 }
