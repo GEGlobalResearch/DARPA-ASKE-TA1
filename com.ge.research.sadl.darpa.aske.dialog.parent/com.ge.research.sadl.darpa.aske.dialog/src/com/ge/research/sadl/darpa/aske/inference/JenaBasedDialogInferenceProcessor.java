@@ -39,10 +39,13 @@ package com.ge.research.sadl.darpa.aske.inference;
 import java.io.BufferedReader;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.FilenameFilter;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.net.URISyntaxException;
 import java.nio.charset.Charset;
 import java.text.SimpleDateFormat;
@@ -2308,6 +2311,44 @@ private Map<String, String> getLabelClassMapping(String dbnJson) {
             }
         }
 		return dataContent;
+	}
+	
+	/** 
+	 * Gets a file from resourceDir
+	 * @param fileName
+	 * @return
+	 */
+	public String getFileContents(String fileName) throws Exception {
+	    String pathStr; // =  fileName;
+	    pathStr = "resources/" + fileName;
+
+	    System.out.println("Reading file: " + pathStr);
+		File f = new File(pathStr);
+		InputStream in = null;
+
+		if ( f.exists() ) {
+			in = new FileInputStream(f);
+		}else{
+			System.out.println("File does not exist, trying to load as resource from classpath ...");
+			in = this.getClass().getResourceAsStream(pathStr);
+		}
+
+		BufferedReader reader = new BufferedReader(new InputStreamReader(in));
+		
+		String         line = null;
+		StringBuilder  stringBuilder = new StringBuilder();
+		String         ls = System.getProperty("line.separator");
+
+		try {
+		    while((line = reader.readLine()) != null) {
+		        stringBuilder.append(line);
+		        stringBuilder.append(ls);
+		    }
+		
+		    return stringBuilder.toString();
+		} finally {
+		    reader.close();
+		}
 	}
 	
 }
