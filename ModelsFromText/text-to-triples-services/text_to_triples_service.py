@@ -213,7 +213,8 @@ class TextToTriples:
                     query_result = g.query(query_string)
                     for row in query_result:
                         print(row[0])
-                        tp.populate_augmented_type_triples(g, row[0], wikidata_uri=symbol["entity_uri"])
+                        # tp.populate_augmented_type_triples(g, row[0], wikidata_uri=symbol["entity_uri"])
+                        tp.populate_augmented_type_triples(g, row[0], wikidata_uri=symbol["text"])
 
     def get_graph(self, local_graph_uri):
         g = None
@@ -258,3 +259,67 @@ def pre_process(string):
         string = string.replace(char, "")
     return string.strip()
 
+
+# temp test method
+def get_equations(g: Graph):
+    # temp test call to print all equations
+    query_string = """
+    select ?x ?lang ?eqstring
+    where 
+    {
+    ?x rdf:type <http://sadl.org/sadlimplicitmodel#ExternalEquation> .
+    ?x <http://sadl.org/sadlimplicitmodel#expression> ?script .
+    ?script <http://sadl.org/sadlimplicitmodel#language> ?lang .
+    ?script <http://sadl.org/sadlimplicitmodel#script> ?eqstring .
+    }
+    """
+
+    eq_list = {}
+    query_result = g.query(query_string)
+    for row in query_result:
+        eq_uri = str(row[0])
+        lang = str(row[1])
+        lang = lang.replace("http://sadl.org/sadlimplicitmodel#", "")
+        eq_string = str(row[2])
+
+        if eq_uri not in eq_list.keys():
+            eq_table = {lang: eq_string}
+            eq_list[eq_uri] = eq_table
+        else:
+            eq_table = eq_list[eq_uri]
+            eq_table[lang] = eq_string
+            eq_list[eq_uri] = eq_table
+
+    response = []
+    for key in eq_list.keys():
+        response.append(eq_list[key])
+
+    print(eq_list)
+    return response
+
+
+# temp test method
+def run_queries(g: Graph):
+    query_string = """"
+    SELECT ?desc
+    WHERE
+    {
+        ?desc rdf:type <http://sadl.org/sadlimplicitmodel#DataDescriptor> .
+    }
+    """
+
+    query_string = """
+        select ?name
+        where 
+        {
+        ?desc rdf:type <http://sadl.org/sadlimplicitmodel#DataDescriptor> .
+        ?desc <http://sadl.org/sadlimplicitmodel#localDescriptorName> ?name .
+        }
+        """
+    vars_list = []
+    query_result = g.query(query_string)
+
+    for row in query_result:
+        vars_list.append(str(row[0]))
+
+    return vars_list
