@@ -110,6 +110,7 @@ import com.ge.research.sadl.model.gp.NamedNode.NodeType;
 import com.ge.research.sadl.model.gp.Node;
 import com.ge.research.sadl.model.gp.ProxyNode;
 import com.ge.research.sadl.model.gp.Query;
+import com.ge.research.sadl.model.gp.Rule;
 import com.ge.research.sadl.model.gp.TripleElement;
 import com.ge.research.sadl.model.gp.VariableNode;
 import com.ge.research.sadl.model.visualizer.GraphVizVisualizer;
@@ -2427,8 +2428,14 @@ public class AnswerCurationManager {
 	}
 	
 	private String processCompareRequest(org.eclipse.emf.ecore.resource.Resource resource2, OntModel theModel,
-			String modelName, CompareContent sc) {
-		return null;
+			String modelName, CompareContent sc) throws AnswerExtractionException {
+		if (sc != null && sc.getComparisonRules() != null) {
+			List<Rule> comparisonRules = sc.getComparisonRules();
+			for (Rule rule : comparisonRules) {
+				logger.debug("Comparison rule: " + rule.toDescriptiveString());
+			}
+		}
+		throw new AnswerExtractionException("Invalid comparison request inputs");
 	}
 
 	private String processExtractRequest(org.eclipse.emf.ecore.resource.Resource resource2, OntModel theModel,

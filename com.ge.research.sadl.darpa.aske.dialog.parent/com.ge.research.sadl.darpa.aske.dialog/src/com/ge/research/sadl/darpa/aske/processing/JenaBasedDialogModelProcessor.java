@@ -774,7 +774,7 @@ public class JenaBasedDialogModelProcessor extends JenaBasedSadlModelProcessor {
 			System.out.println(modifiedRule.toDescriptiveString());
 		}
 		
-		return new CompareContent(element, Agent.USER, comparisonObjects, whenObj);
+		return new CompareContent(element, Agent.USER, comparisonRules);
 	}
 
 	private List<GraphPatternElement> nodeToGPEList(Node node) {

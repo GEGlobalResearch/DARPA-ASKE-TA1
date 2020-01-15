@@ -5,11 +5,10 @@ import java.util.List;
 import org.eclipse.emf.ecore.EObject;
 
 import com.ge.research.sadl.darpa.aske.curation.AnswerCurationManager.Agent;
-import com.ge.research.sadl.model.gp.Node;
+import com.ge.research.sadl.model.gp.Rule;
 
 public class CompareContent extends ExpectsAnswerContent {
-	private List<Node> comparators;
-	private Node when;
+	private List<Rule> comparisonRules;
 
 	public CompareContent(EObject host) {
 		super(host);
@@ -17,31 +16,19 @@ public class CompareContent extends ExpectsAnswerContent {
 	
 	public CompareContent(EObject host, Agent agnt) {
 		super(host, agnt);
-		
 	}
 
-	public CompareContent(EObject host, Agent agnt,
-			List<Node> toCompare, Node condition) {
+	public CompareContent(EObject host, Agent agnt, List<Rule> toCompare) {
 		super(host, agnt);
-		setComparators(toCompare);
-		setWhen(condition);
+		setComparisonRules(toCompare);
 	}
 
-	public List<Node> getComparators() {
-		return comparators;
+	public List<Rule> getComparisonRules() {
+		return comparisonRules;
 	}
 
-	public void setComparators(List<Node> comparators) {
-		this.comparators = comparators;
+	public void setComparisonRules(List<Rule> comparisonRules) {
+		this.comparisonRules = comparisonRules;
 	}
 
-	public Node getWhen() {
-		return when;
-	}
-
-	public void setWhen(Node when) {
-		this.when = when;
-	}
-	
-	
 }
