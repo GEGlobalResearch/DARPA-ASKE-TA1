@@ -159,7 +159,7 @@ import com.hp.hpl.jena.vocabulary.RDF;
 import com.hp.hpl.jena.vocabulary.RDFS;
 import com.hp.hpl.jena.vocabulary.XSD;
 
-import net.htmlparser.jericho.Source;
+//import net.htmlparser.jericho.Source;
 
 public class AnswerCurationManager {
 	
@@ -2432,7 +2432,7 @@ public class AnswerCurationManager {
 	}
 
 	private String processExtractRequest(org.eclipse.emf.ecore.resource.Resource resource2, OntModel theModel,
-			String modelName, ExtractContent sc) throws MalformedURLException, IOException, ConfigurationException {
+			String modelName, ExtractContent sc) throws MalformedURLException, IOException, ConfigurationException, AnswerExtractionException {
 		String returnStatus = null;
 		String scheme = sc.getScheme();
 		String source = sc.getScheme();
@@ -2461,8 +2461,9 @@ public class AnswerCurationManager {
 		}
 		else {
 			if (sc.getUrl().endsWith(".html")) {
-				content = new Source(content).getRenderer().toString();
-				System.out.println(content);
+//				content = new Source(content).getRenderer().toString();
+//				System.out.println(content);
+				throw new AnswerExtractionException("HTML files not currently supported");
 			}
 			//text extraction
 			String outputOwlFileName = prefix + ".owl";
