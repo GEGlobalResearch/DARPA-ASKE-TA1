@@ -80,6 +80,10 @@ import com.ge.research.sadl.darpa.aske.preferences.DialogPreferences;
 import com.ge.research.sadl.darpa.aske.processing.DialogConstants;
 import com.ge.research.sadl.darpa.aske.processing.imports.AnswerExtractionProcessor;
 import com.ge.research.sadl.reasoner.ConfigurationException;
+import com.ge.research.sadl.reasoner.InvalidNameException;
+import com.ge.research.sadl.reasoner.QueryCancelledException;
+import com.ge.research.sadl.reasoner.QueryParseException;
+import com.ge.research.sadl.reasoner.ReasonerNotFoundException;
 import com.ge.research.sadl.utils.ResourceManager;
 import com.google.common.io.Files;
 import com.google.inject.Injector;
@@ -789,7 +793,7 @@ public class JavaImportOperation extends WorkspaceModifyOperation {
 		return destPath;
 	}
 
-	void importFiles(AnswerCurationManager acm) throws ConfigurationException, IOException {
+	void importFiles(AnswerCurationManager acm) throws ConfigurationException, IOException, InvalidNameException, ReasonerNotFoundException, QueryParseException, QueryCancelledException {
 		acm.processImports(SaveAsSadl.AskUserSaveAsSadl);
 //		
 		String newContent = acm.getExtractionProcessor().getGeneratedSadlContent();

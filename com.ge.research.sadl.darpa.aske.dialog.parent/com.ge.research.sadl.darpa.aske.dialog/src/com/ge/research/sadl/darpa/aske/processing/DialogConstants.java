@@ -51,6 +51,7 @@ public class DialogConstants {
 	public static final String SADL_IMPLICIT_MODEL_ANSWER_ELEMENT_URI = SadlConstants.SADL_IMPLICIT_MODEL_URI + "#AnswerElement";
 	public static final String SADL_IMPLICIT_MODEL_TEXT_PROPERY_URI = SadlConstants.SADL_IMPLICIT_MODEL_URI + "#text";
 	public static final String SADL_IMPLICIT_MODEL_HAS_ANSWER_PROPERY_URI = SadlConstants.SADL_IMPLICIT_MODEL_URI + "#dialogAnswer";
+	public static final String SADL_IMPLICIT_MODEL_DEPENDS_ON_PROPERTY_URI = SadlConstants.SADL_IMPLICIT_MODEL_URI + "#dependsOn";
 	
 	public static final String EXTRACTED_MODELS_FOLDER_PATH_FRAGMENT = "ExtractedModels";
 	public static final String CODE_EXTRACTION_MODEL_FILENAME = "CodeExtractionModel.sadl";

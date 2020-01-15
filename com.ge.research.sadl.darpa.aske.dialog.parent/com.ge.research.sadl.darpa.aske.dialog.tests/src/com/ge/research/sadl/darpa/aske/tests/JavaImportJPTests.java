@@ -258,24 +258,44 @@ public class JavaImportJPTests extends AbstractDialogTest {
 	}
 	
 	@Test
-	public void test_04() throws IOException, ConfigurationException {
+	public void test_04() throws IOException, ConfigurationException, InvalidNameException, ReasonerNotFoundException, QueryParseException, QueryCancelledException {
 		File sourceFile = new File(getCodeExtractionKbRoot() + "/ExtractedModels/Sources/Isentrop.java");
 		assertTrue(sourceFile.exists());
-		String javaContent = readFile(sourceFile);
 		IConfigurationManagerForIDE cm = ConfigurationManagerForIdeFactory.getConfigurationManagerForIDE(getDomainProjectModelFolder(), null);
 		AnswerCurationManager acm = new AnswerCurationManager(getDomainProjectModelFolder(), cm, null, null);
-		IModelFromCodeExtractor jme = new JavaModelExtractorJP(acm, null);
+//		IModelFromCodeExtractor jme = new JavaModelExtractorJP(acm, null);
 		acm.setOwlModelsFolder(getExtractionProjectModelFolder());
 		String defaultCodeModelPrefix = "Isentrop";
 		String defaultCodeModelName = "http://com.ge.research.darpa.aske.ta1.explore/" + defaultCodeModelPrefix;
-		jme.setCodeModelPrefix(defaultCodeModelPrefix);
-		jme.setCodeModelName(defaultCodeModelName);
-		jme.setIncludeSerialization(false);
-		assertTrue(jme.process("Isentrop.java", javaContent, defaultCodeModelName, defaultCodeModelPrefix));
+		acm.getCodeExtractor().setCodeModelPrefix(defaultCodeModelPrefix);
+		acm.getCodeExtractor().setCodeModelName(defaultCodeModelName);
+		acm.getCodeExtractor().setIncludeSerialization(false);
+		acm.getCodeExtractor().addCodeFile(sourceFile);
+		assertEquals(1, acm.processImports(SaveAsSadl.SaveAsSadl.DoNotSaveAsSadl));
+		System.out.println("\n\n\n*** SADL content generated for Dialog window: ***");
+		System.out.print(acm.getExtractionProcessor().getGeneratedSadlContent());
+		
+		try {
+			String comPuteQuery = "select ?p ?v where {<Isentrop.comPute> ?p ?v}";
+			ResultSet cqrs = acm.getCodeExtractor().executeSparqlQuery(comPuteQuery);
+			cqrs.setShowNamespaces(false);
+			System.out.println(cqrs.toString());
+		}
+		catch (Throwable t) {
+			
+		}
+		String allMethods = "select ?m where {?m <rdf:type> <Method>}";
+		ResultSet amrs = acm.getCodeExtractor().executeSparqlQuery(allMethods);
+		amrs.setShowNamespaces(false);
+		System.out.println(amrs.toString());
+		String containedInQ = "select ?x ?y where {?x <containedIn> ?y}";
+		ResultSet cirs = acm.getCodeExtractor().executeSparqlQuery(containedInQ);
+		cirs.setShowNamespaces(false);
+		System.out.println(cirs.toString());
 	}
 	
 	@Test
-	public void test_05() throws IOException, ConfigurationException, OwlImportException {
+	public void test_05() throws IOException, ConfigurationException, OwlImportException, InvalidNameException, ReasonerNotFoundException, QueryParseException, QueryCancelledException {
 		File codeFile = new File(getCodeExtractionKbRoot() + "/ExtractedModels/Sources/Mach.java");
 		assertTrue(codeFile.exists());
 		IConfigurationManagerForIDE cm = ConfigurationManagerForIdeFactory.getConfigurationManagerForIDE(getDomainProjectModelFolder(), null);
@@ -285,7 +305,7 @@ public class JavaImportJPTests extends AbstractDialogTest {
 		IDialogAnswerProvider dapcft = new DialogAnswerProviderConsoleForTest();
 		cm.addPrivateKeyValuePair(DialogConstants.DIALOG_ANSWER_PROVIDER, dapcft);
 		
-		boolean includeSerialization = true;
+		boolean includeSerialization = false;
 		
 		String defaultCodeModelPrefix = includeSerialization ? "MachSz" : "Mach";
 		String defaultCodeModelName = "http://com.ge.research.darpa.aske.ta1.explore/" + defaultCodeModelPrefix;
@@ -304,15 +324,22 @@ public class JavaImportJPTests extends AbstractDialogTest {
 //		acm.processImports(SaveAsSadl.AskUserSaveAsSadl);
 
 		// Test extraction of methods
-		String query = "select ?m ?b ?e ?s where {?m <rdf:type> <Method> . ?m <doesComputation> true . OPTIONAL {?m <beginsAt> ?b . ?m <endsAt> ?e . ?m <serialization> ?s} .\r\n" + 
-				"		MINUS {\r\n" + 
-				"			{?ref <codeBlock> ?m . ?ref <isImplicit> true}\r\n" + 
-				"			UNION {?m <rdf:type> <ExternalMethod>} } } order by ?m";
+//		String query = "select ?m ?b ?e ?s where {?m <rdf:type> <Method> . ?m <doesComputation> true . OPTIONAL {?m <beginsAt> ?b . ?m <endsAt> ?e . ?m <serialization> ?s} .\r\n" + 
+//				"		MINUS {\r\n" + 
+//				"			{?ref <codeBlock> ?m . ?ref <isImplicit> true}\r\n" + 
+//				"			UNION {?m <rdf:type> <ExternalMethod>} } } order by ?m";
+//		String query = "select ?m ?comp ?b ?e ?s where {?m <rdf:type> <Method> . ?m <doesComputation> ?comp . OPTIONAL {?m <beginsAt> ?b . ?m <endsAt> ?e . ?m <serialization> ?s} .\r\n" + 
+//				"		MINUS {\r\n" + 
+//				"			?m <rdf:type> <ExternalMethod>} } order by ?m";
+		String query = "select ?m ?comp ?b ?e ?s where {?m <rdf:type> <Method> . "
+				+ "OPTIONAL{?m <doesComputation> ?comp} . "
+				+ "OPTIONAL{?m <beginsAt> ?b . ?m <endsAt> ?e} . "
+				+ "OPTIONAL{?m <serialization> ?s} } order by ?m";
 		try {
 			ResultSet rs =acm.getCodeExtractor().executeSparqlQuery(query);			
 			System.out.println(rs.toStringWithIndent(5));
 			int rows = rs.getRowCount();
-			assertEquals(5, rows);
+			assertEquals(13, rows);
 			String firstMethod = rs.getResultAt(0, 0).toString();
 			assertTrue(firstMethod != null && firstMethod.equals("http://com.ge.research.sadl.darpa.aske.answer/Mach_java#Mach.CAL_GAM"));
 			Object script = rs.getResultAt(0, 3);
@@ -342,12 +369,12 @@ public class JavaImportJPTests extends AbstractDialogTest {
 			ResultSet crs = acm.getCodeExtractor().executeSparqlQuery(cQuery);
 			assertNotNull(crs);
 			System.out.println(crs.toString());
-			assertTrue(crs.getRowCount() == 4);
+			assertTrue(crs.getRowCount() == 9);
 			crs.setShowNamespaces(false);
 			assertTrue(crs.getResultAt(0, 0).toString().equals("Mach.Q"));
 			assertTrue(crs.getResultAt(1, 0).toString().equals("Mach.R"));
-			assertTrue(crs.getResultAt(2, 0).toString().equals("Mach.gama"));
-			assertTrue(crs.getResultAt(3, 0).toString().equals("Mach.rgas"));
+			assertTrue(crs.getResultAt(3, 0).toString().equals("Mach.gama"));
+			assertTrue(crs.getResultAt(6, 0).toString().equals("Mach.rgas"));
 		} catch (ReasonerNotFoundException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -365,7 +392,7 @@ public class JavaImportJPTests extends AbstractDialogTest {
 	}
 	
 	@Test
-	public void test_06() throws IOException, ConfigurationException, OwlImportException {
+	public void test_06() throws IOException, ConfigurationException, OwlImportException, InvalidNameException, ReasonerNotFoundException, QueryParseException, QueryCancelledException {
 		// remove OWL and SADL files
 		File owlF = new File(getCodeExtractionKbRoot() + "/ExtractedModels\\Mach.java.owl");
 		
@@ -434,7 +461,7 @@ public class JavaImportJPTests extends AbstractDialogTest {
 	}
 
 	@Test
-	public void test_08() throws IOException, ConfigurationException {
+	public void test_08() throws IOException, ConfigurationException, InvalidNameException, ReasonerNotFoundException, QueryParseException, QueryCancelledException {
 		File codeFile = new File(getCodeExtractionKbRoot() + "/ExtractedModels/Sources/Turbo.java");
 		assertTrue(codeFile.exists());
 		// remove OWL and SADL files
@@ -479,10 +506,14 @@ public class JavaImportJPTests extends AbstractDialogTest {
 		while (stmtItr.hasNext()) {
 			System.out.println(stmtItr.next().toString());
 		}
+		
+		String sadlContent = acm.getExtractionProcessor().getGeneratedSadlContent();
+		System.out.println("\n\n*****  New Dialog editor content *********");
+		System.out.println(sadlContent);
 	}
 
 	@Test
-	public void test_09() throws IOException, ConfigurationException {
+	public void test_09() throws IOException, ConfigurationException, InvalidNameException, ReasonerNotFoundException, QueryParseException, QueryCancelledException {
 	    this.sadl(getContent(getScientificConcepts2Path())); 
 	    this.sadl(getContent(getSpeedOfSoundPath()));
 
@@ -562,7 +593,7 @@ public class JavaImportJPTests extends AbstractDialogTest {
 	}
 	
 	@Test
-	public void test_10() throws IOException, ConfigurationException {
+	public void test_10() throws IOException, ConfigurationException, InvalidNameException, ReasonerNotFoundException, QueryParseException, QueryCancelledException {
 		File sourceFile = new File(getCodeExtractionKbRoot() + "/ExtractedModels/Sources/TurboAnnotated.java");
 		assertTrue(sourceFile.exists());
 		
@@ -598,7 +629,7 @@ public class JavaImportJPTests extends AbstractDialogTest {
 	}
 	
 	@Test
-	public void test_11() throws ConfigurationException, IOException {
+	public void test_11() throws ConfigurationException, IOException, InvalidNameException, ReasonerNotFoundException, QueryParseException, QueryCancelledException {
 		String javaContent = 
 				"public class Test_11 {\r\n" + 
 				"    public double getAir(double mach, double gamma) {\r\n" + 

@@ -39,11 +39,11 @@ package com.ge.research.sadl.darpa.aske.processing;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
+import java.net.MalformedURLException;
 import java.net.URISyntaxException;
 import java.nio.charset.Charset;
 import java.nio.file.Path;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
@@ -78,6 +78,8 @@ import org.slf4j.LoggerFactory;
 import com.ge.research.sadl.darpa.aske.curation.AnswerCurationManager;
 import com.ge.research.sadl.darpa.aske.curation.AnswerCurationManager.Agent;
 import com.ge.research.sadl.darpa.aske.dialog.AnswerCMStatement;
+import com.ge.research.sadl.darpa.aske.dialog.CompareStatement;
+import com.ge.research.sadl.darpa.aske.dialog.ExtractStatement;
 import com.ge.research.sadl.darpa.aske.dialog.HowManyValuesStatement;
 import com.ge.research.sadl.darpa.aske.dialog.ModifiedAskStatement;
 import com.ge.research.sadl.darpa.aske.dialog.MyNameIsStatement;
@@ -90,12 +92,14 @@ import com.ge.research.sadl.darpa.aske.dialog.WhatValuesStatement;
 import com.ge.research.sadl.darpa.aske.dialog.YesNoAnswerStatement;
 import com.ge.research.sadl.darpa.aske.preferences.DialogPreferences;
 import com.ge.research.sadl.errorgenerator.generator.SadlErrorMessages;
+import com.ge.research.sadl.jena.IntermediateFormTranslator;
 import com.ge.research.sadl.jena.JenaBasedSadlModelProcessor;
 import com.ge.research.sadl.jena.JenaProcessorException;
 import com.ge.research.sadl.jena.MetricsProcessor;
 import com.ge.research.sadl.jena.UtilsForJena;
 import com.ge.research.sadl.model.CircularDefinitionException;
 import com.ge.research.sadl.model.ModelError;
+import com.ge.research.sadl.model.PrefixNotFoundException;
 import com.ge.research.sadl.model.gp.Equation;
 import com.ge.research.sadl.model.gp.GraphPatternElement;
 import com.ge.research.sadl.model.gp.Junction;
@@ -141,14 +145,17 @@ import com.google.common.base.Preconditions;
 import com.google.common.collect.Iterables;
 import com.google.inject.Inject;
 import com.hp.hpl.jena.ontology.Individual;
+import com.hp.hpl.jena.ontology.ObjectProperty;
 import com.hp.hpl.jena.ontology.OntClass;
 import com.hp.hpl.jena.ontology.OntModel;
+import com.hp.hpl.jena.ontology.OntResource;
 import com.hp.hpl.jena.ontology.Ontology;
 import com.hp.hpl.jena.rdf.model.Property;
 import com.hp.hpl.jena.rdf.model.RDFNode;
 import com.hp.hpl.jena.rdf.model.RDFWriter;
 import com.hp.hpl.jena.rdf.model.StmtIterator;
-import com.hp.hpl.jena.sparql.util.NodeUtils;
+import com.hp.hpl.jena.util.iterator.ExtendedIterator;
+import com.hp.hpl.jena.vocabulary.RDF;
 import com.hp.hpl.jena.vocabulary.RDFS;
 
 public class JenaBasedDialogModelProcessor extends JenaBasedSadlModelProcessor {
@@ -390,6 +397,10 @@ public class JenaBasedDialogModelProcessor extends JenaBasedSadlModelProcessor {
 					// TODO Auto-generated catch block
 					e1.printStackTrace();
 				}
+				catch (PrefixNotFoundException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
 //				try {
 //					if (!(element instanceof AnswerCMStatement)) {
 //						// this is user input
@@ -462,10 +473,16 @@ public class JenaBasedDialogModelProcessor extends JenaBasedSadlModelProcessor {
 		}
 	}
 
-	private StatementContent processDialogModelElement(SadlModelElement element) throws JenaProcessorException, InvalidNameException, InvalidTypeException, TranslationException, IOException, ConfigurationException, QueryParseException, QueryCancelledException, ReasonerNotFoundException {
+	private StatementContent processDialogModelElement(SadlModelElement element) throws JenaProcessorException, InvalidNameException, InvalidTypeException, TranslationException, IOException, ConfigurationException, QueryParseException, QueryCancelledException, ReasonerNotFoundException, PrefixNotFoundException {
 		clearCruleVariables();
 		if (element instanceof AnswerCMStatement) {
 			return processAnswerCMStatement((AnswerCMStatement)element);
+		}
+		else if (element instanceof ExtractStatement) {
+			return processStatement((ExtractStatement)element);
+		}
+		else if (element instanceof CompareStatement) {
+			return processStatement((CompareStatement)element);
 		}
 		else if (element instanceof ModifiedAskStatement) {
 			return processStatement((ModifiedAskStatement)element);
@@ -579,6 +596,251 @@ public class JenaBasedDialogModelProcessor extends JenaBasedSadlModelProcessor {
 				addWarning("Missing augmented return type information", srd.getType());
 			}
 		}
+	}
+
+	private StatementContent processStatement(ExtractStatement element) {
+		EList<String> srcUris = element.getSourceURIs();
+		String str = projectHelper.toString();
+		for (String srcUri : srcUris) {
+			try {
+				String scheme = getUriScheme(srcUri);
+				String source;
+				if (scheme != null && scheme.equals("file")) {
+					SadlUtils su = new SadlUtils();
+					File srcFile = new File(su.fileUrlToFileName(srcUri));
+					if (!srcFile.exists()) {
+						addError("File '" + srcFile.getCanonicalPath() + "' does not exist.", element);
+					}
+					else if (!srcFile.isFile()) {
+						addError("'" + srcFile.getCanonicalPath() + "' is not a file.", element);
+					}
+					source = srcFile.getCanonicalPath();
+				}
+				else {
+					source = srcUri;
+				}
+				return new ExtractContent(element, Agent.USER, scheme, source, srcUri);
+			} catch (URISyntaxException e) {
+				addError("'" + srcUri + "' does not appear to be a valid URL: " + e.getMessage(), element);
+			} catch (MalformedURLException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+			if (!validURI(srcUri)) {
+				addError("'" + srcUri + "' does not appear to be a valid URL", element);
+			}
+		}
+		return null;
+	}
+
+	private StatementContent processStatement(CompareStatement element) throws InvalidNameException, InvalidTypeException, TranslationException, IOException, PrefixNotFoundException, ConfigurationException {
+		Expression comparison = element.getToCompare();
+		Object compareObj = processExpression(comparison);
+		List<Node> comparisonObjects = new ArrayList<Node>();
+		NamedNode specifiedPropertyNN = null;
+		if (compareObj instanceof Junction) {
+			List<Node> compareList = IntermediateFormTranslator.conjunctionToList((Junction)compareObj);
+			for (Node n : compareList) {
+				comparisonObjects.add(n);
+			}
+		}
+		else if (compareObj instanceof NamedNode) {
+			NamedNode nn = (NamedNode)compareObj;
+			if (isProperty(nn.getNodeType())) {
+				Property prop = getTheJenaModel().getProperty(nn.getURI());
+				if (prop == null) {
+					System.err.println("Unexpected error finding property '" + nn.getURI() + "'");
+					getTheJenaModel().write(System.err);
+					ExtendedIterator<OntModel> smitr = getTheJenaModel().listSubModels();
+					while (smitr.hasNext()) {
+						smitr.next().write(System.err);
+					}
+					return null;
+				}
+				else {
+					specifiedPropertyNN = nn;
+				}
+				StmtIterator stmtitr = getTheJenaModel().listStatements(prop, RDFS.domain, (RDFNode)null);
+				while (stmtitr.hasNext()) {
+					com.hp.hpl.jena.rdf.model.Resource dmn = stmtitr.nextStatement().getObject().asResource();
+					if (dmn.isURIResource()) {
+						nn = new NamedNode(dmn.getURI());
+						nn.setNodeType(NodeType.ClassNode);
+						nn.setContext(comparison);
+					}
+					else {
+						System.err.println("Blank node domain not yet handled");
+						return null;
+					}
+					if (stmtitr.hasNext()) {
+						System.err.println("Multiple domain classes not yet handled");
+						return null;
+					}
+				}
+			}
+			if (nn.getNodeType().equals(NodeType.ClassNode)) {
+				NodeType ntype = null;
+				boolean comparisonsFound = false;
+				OntClass theClass = getTheJenaModel().getOntClass(nn.getURI());
+				List<com.hp.hpl.jena.rdf.model.Resource> instances = new ArrayList<com.hp.hpl.jena.rdf.model.Resource>();
+				// look for at least two instances of the class 
+				instances = getInstancesOfClass(theClass, instances);
+				if (instances.size() > 1) {
+					comparisonsFound = true;
+					ntype = NodeType.InstanceNode;
+				}
+				if (!comparisonsFound) {
+					// if not resolved, look for leaf subclasses of the class, and create a variable of each leaf subclass type
+					instances = getLeafSubclasses(theClass, instances);
+					if (instances.size() > 1) {
+						ntype = NodeType.ClassNode;
+					}
+				}
+				if (instances.size() > 1) {
+					for (int i = 0; i < instances.size(); i++) {
+						Node compNode;
+						if (specifiedPropertyNN != null) {
+							Node subj;
+							if (ntype.equals(NodeType.ClassNode)) {
+								NamedNode varType = new NamedNode(instances.get(i).getURI());
+								varType.setNodeType(ntype);
+								varType.setContext(comparison);
+//								subj = createComparisonTypedVariable(varType, comparison);
+								subj = varType;	// don't create variable here--will be done in missing pattern processing
+							}
+							else {
+								NamedNode instNN = new NamedNode(instances.get(i).getURI());
+								instNN.setNodeType(ntype);
+								instNN.setContext(comparison);
+								subj = instNN;
+							}
+							compNode = nodeCheck(new TripleElement(subj, specifiedPropertyNN, null));
+						}
+						else {
+							NamedNode instNN = new NamedNode(instances.get(i).getURI());
+							instNN.setNodeType(ntype);
+							instNN.setContext(comparison);
+							compNode = instNN;
+						}
+						comparisonObjects.add(compNode);
+					}
+				}
+				else {
+					System.out.println("Unable to resolve comparisons");
+				}
+			}
+			else {
+				System.err.println("Failed to establish comparison objects");
+			}
+		}
+		DialogIntermediateFormTranslator dift = new DialogIntermediateFormTranslator(this, getTheJenaModel());
+
+//		for (int i = 0; i < comparisonObjects.size(); i++) {
+//			Node cobj = comparisonObjects.get(i);
+//			System.out.println(cobj.toDescriptiveString());
+//			if (cobj instanceof ProxyNode) {
+//				Node modified = nodeCheck(dift.addImpliedAndExpandedProperties(((ProxyNode)cobj).getProxyFor()));
+//				if (!modified.toFullyQualifiedString().equals(cobj.toFullyQualifiedString())) {
+//					System.out.println("Modified: " + modified.toDescriptiveString());
+//					comparisonObjects.set(i, modified);
+//				}
+//			}
+//		}
+		
+		Expression whenExpr = element.getWhenExpr();
+		Node whenObj = nodeCheck(processExpression(whenExpr));
+		dift.setStartingVariableNumber(getVariableNumber());
+		
+//		if (whenObj instanceof ProxyNode) {
+//			System.out.println("When: " + whenObj.toDescriptiveString());
+//			Node modified = nodeCheck(dift.addImpliedAndExpandedProperties(((ProxyNode)whenObj).getProxyFor()));
+//			if (!modified.toFullyQualifiedString().equals(whenObj.toFullyQualifiedString())) {
+//				System.out.println("Modified when: " + modified.toDescriptiveString());
+//				whenObj = modified;
+//			}
+//		}
+		List<Rule> comparisonRules = new ArrayList<Rule>();
+		for (int i = 0; i < comparisonObjects.size(); i++) {
+			Node cobj = comparisonObjects.get(i);
+			Node newWhen = dift.newCopyOfProxyNode(whenObj);
+			Rule pseudoRule = new Rule("ComparePseudoRule", null, nodeToGPEList(newWhen), nodeToGPEList(cobj));
+			dift.setTarget(pseudoRule);
+			Rule modifiedRule = dift.cook(pseudoRule);
+			comparisonRules.add(modifiedRule);
+			logger.debug(modifiedRule.toDescriptiveString());
+			System.out.println(modifiedRule.toDescriptiveString());
+		}
+		
+		return new CompareContent(element, Agent.USER, comparisonObjects, whenObj);
+	}
+
+	private List<GraphPatternElement> nodeToGPEList(Node node) {
+		List<GraphPatternElement> gpelist = new ArrayList<GraphPatternElement>();
+		if (node instanceof ProxyNode) {
+			GraphPatternElement gpe = ((ProxyNode)node).getProxyFor();
+			if (gpe instanceof Junction) {
+				List<Node> nodes = DialogIntermediateFormTranslator.conjunctionToList((Junction) gpe);
+				for (Node n : nodes) {
+					if (n instanceof ProxyNode) {
+						gpelist.add(((ProxyNode)n).getProxyFor());
+					}
+				}
+			}
+			else {
+				gpelist.add(gpe);
+			}
+		}
+		return gpelist;
+	}
+
+	private VariableNode createComparisonTypedVariable(NamedNode varType, EObject context) throws IOException, PrefixNotFoundException, InvalidNameException, InvalidTypeException, TranslationException, ConfigurationException {
+		String nvar = getNewVar(context);
+		VariableNode var = createVariable(getModelNamespace() +nvar, context);	
+		var.setType(varType);
+		return var;
+	}
+
+	/**
+	 * Method to find all of the instances of a given class
+	 * @param theClass
+	 * @param instances
+	 * @return
+	 */
+	private List<com.hp.hpl.jena.rdf.model.Resource> getInstancesOfClass(OntClass theClass, List<com.hp.hpl.jena.rdf.model.Resource> instances) {
+		StmtIterator stmtitr = getTheJenaModel().listStatements(null, RDF.type, theClass);
+		if (stmtitr.hasNext()) {
+			while (stmtitr.hasNext()) {
+				instances.add(stmtitr.nextStatement().getSubject());
+			}
+		}
+		ExtendedIterator<OntClass> scitr = theClass.listSubClasses();
+		while (scitr.hasNext()) {
+			instances = getInstancesOfClass(scitr.next(), instances);
+		}
+		return instances;
+	}
+
+	/**
+	 * Method to get all of the leaf subclasses of a given class
+	 * @param theClass
+	 * @param instances
+	 * @return
+	 */
+	private List<com.hp.hpl.jena.rdf.model.Resource> getLeafSubclasses(OntClass theClass,
+			List<com.hp.hpl.jena.rdf.model.Resource> instances) {
+		ExtendedIterator<OntClass> scitr = theClass.listSubClasses();
+		while (scitr.hasNext()) {
+			OntClass sc = scitr.next();
+			int cnt = instances.size();
+			instances = getLeafSubclasses(sc, instances);
+			if (instances.size() == cnt) {
+				instances.add(sc);
+			}
+		}
+		return instances;
 	}
 
 	private StatementContent processStatement(MyNameIsStatement element) throws IOException {
@@ -1007,7 +1269,7 @@ public class JenaBasedDialogModelProcessor extends JenaBasedSadlModelProcessor {
 //		return ce;
 //	}	
 	
-	private StatementContent  processAnswerCMStatement( AnswerCMStatement element) throws IOException, TranslationException, InvalidNameException, InvalidTypeException, ConfigurationException, JenaProcessorException, QueryParseException, QueryCancelledException, ReasonerNotFoundException {
+	private StatementContent  processAnswerCMStatement( AnswerCMStatement element) throws IOException, TranslationException, InvalidNameException, InvalidTypeException, ConfigurationException, JenaProcessorException, QueryParseException, QueryCancelledException, ReasonerNotFoundException, PrefixNotFoundException {
 		EObject stmt = element.getSstmt();
 		if (stmt != null) {
 			StatementContent sc = processDialogModelElement((SadlModelElement) stmt);
