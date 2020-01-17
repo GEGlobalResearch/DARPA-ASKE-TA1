@@ -669,7 +669,6 @@ public class JenaBasedDialogModelProcessor extends JenaBasedSadlModelProcessor {
 					if (dmn.isURIResource()) {
 						nn = new NamedNode(dmn.getURI());
 						nn.setNodeType(NodeType.ClassNode);
-						nn.setContext(comparison);
 					}
 					else {
 						System.err.println("Blank node domain not yet handled");
@@ -707,14 +706,11 @@ public class JenaBasedDialogModelProcessor extends JenaBasedSadlModelProcessor {
 							if (ntype.equals(NodeType.ClassNode)) {
 								NamedNode varType = new NamedNode(instances.get(i).getURI());
 								varType.setNodeType(ntype);
-								varType.setContext(comparison);
-//								subj = createComparisonTypedVariable(varType, comparison);
 								subj = varType;	// don't create variable here--will be done in missing pattern processing
 							}
 							else {
 								NamedNode instNN = new NamedNode(instances.get(i).getURI());
 								instNN.setNodeType(ntype);
-								instNN.setContext(comparison);
 								subj = instNN;
 							}
 							compNode = nodeCheck(new TripleElement(subj, specifiedPropertyNN, null));
@@ -722,7 +718,6 @@ public class JenaBasedDialogModelProcessor extends JenaBasedSadlModelProcessor {
 						else {
 							NamedNode instNN = new NamedNode(instances.get(i).getURI());
 							instNN.setNodeType(ntype);
-							instNN.setContext(comparison);
 							compNode = instNN;
 						}
 						comparisonObjects.add(compNode);

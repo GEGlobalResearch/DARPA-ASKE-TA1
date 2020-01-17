@@ -1424,7 +1424,7 @@ public class AnswerCurationManager {
 		}
 
 		sb.append("(");
-		clearCodeModelReasoner();
+//		clearCodeModelReasoner();
 
 		List<OntResource> articledClasses = new ArrayList<OntResource>();
 		logger.debug(inputResults != null ? inputResults.toStringWithIndent(5) : "no results");
@@ -1908,7 +1908,7 @@ public class AnswerCurationManager {
 				sb.append(argName);
 			}
 		}
-		sb.append(") returns ");
+		sb.append(")"); 
 		
 		String outputTypeQuery = "select ?rettyp where {<";
 		outputTypeQuery += methodName.toString().trim();
@@ -1917,6 +1917,7 @@ public class AnswerCurationManager {
 		ResultSet outputResults =  getInitializedCodeModelReasoner().ask(outputTypeQuery);
 		logger.debug(outputResults != null ? outputResults.toStringWithIndent(5) : "no results");
 		if (outputResults != null) {
+			sb.append(" returns ");
 			int numReturnValues = outputResults.getRowCount();
 			if (numReturnValues > 1) {
 				sb.append("[");
@@ -1939,10 +1940,10 @@ public class AnswerCurationManager {
 				sb.append("]");
 			}	
 		}
-		else {
-			// SADL doesn't currently support an equation that doesn't return anything
-			throw new AnswerExtractionException("Equations that do not return a value are not supported.");
-		}
+//		else {
+//			// SADL doesn't currently support an equation that doesn't return anything
+//			throw new AnswerExtractionException("Equations that do not return a value are not supported.");
+//		}
 		String eqUri = getExtractionProcessor().getCodeModelName() + "#" + methodName.toString().trim();
 		sb.append(" \"");
 		sb.append(eqUri);
@@ -1969,7 +1970,39 @@ public class AnswerCurationManager {
 		else {
 			String q = "select ?m ?dm where {?m <" + DialogConstants.SADL_IMPLICIT_MODEL_DEPENDS_ON_PROPERTY_URI + "> ?dm}";
 			ResultSet rsq = getInitializedCodeModelReasoner().ask(q);
+			if (rsq != null) {
+				int i = 0;
+			}
 		}
+		ResultSet impIn =getImplicitInputs(methodName);
+		if (impIn != null) {
+			for (int r = 0; r < impIn.getRowCount(); r++) {
+				if (r > 0) {
+					sb2.append(",\n");
+				}
+				sb2.append(" has implicitInput (an ImplicitDataDescriptor with localDescriptorName \"");
+				sb2.append(impIn.getResultAt(r, 0));
+				sb2.append("\", with dataType \"");
+				sb2.append(impIn.getResultAt(r, 1));
+				sb2.append(",\"");
+			}
+			sb2.append("\n");
+		}
+		ResultSet impOut = getImplicitOutputs(methodName);
+		if (impOut != null) {
+			for (int r = 0; r < impOut.getRowCount(); r++) {
+				if (r > 0) {
+					sb2.append(",\n");
+				}
+				sb2.append(" has implicitOutput (an ImplicitDataDescriptor with localDescriptorName \"");
+				sb2.append(impOut.getResultAt(r, 0));
+				sb2.append("\", with dataType \"");
+				sb2.append(impOut.getResultAt(r, 1));
+				sb2.append("\"");
+			}
+			sb2.append(",\n");
+		}
+		
 		if (lang1 != null && code1 != null) {
 			sb2.append(" has expression (a Script with language ");
 			sb2.append(lang1);
@@ -1989,6 +2022,28 @@ public class AnswerCurationManager {
 		return returnSadlStatements;
 	}
 
+	private ResultSet getImplicitInputs(String methodName) throws InvalidNameException, ConfigurationException,
+			ReasonerNotFoundException, QueryParseException, QueryCancelledException {
+		String q = "select ?ivn ?ivt where {?ref <codeBlock> <";
+		q += methodName.toString().trim();
+		q += "> . ?ref <isImplicit> true . ?ref <cem:input> true . ";
+		q += "?iv <reference> ?ref . ?iv <varName> ?ivn . ?iv <varType> ?ivt}";
+		q = getInitializedCodeModelReasoner().prepareQuery(q);
+		ResultSet qrs =  getInitializedCodeModelReasoner().ask(q);
+		return qrs;
+	}
+
+	private ResultSet getImplicitOutputs(String methodName) throws InvalidNameException, ConfigurationException,
+	ReasonerNotFoundException, QueryParseException, QueryCancelledException {
+		String q = "select ?ivn ?ivt where {?ref <codeBlock> <";
+		q += methodName.toString().trim();
+		q += "> . ?ref <isImplicit> true . ?ref <output> true . ";
+		q += "?iv <reference> ?ref . ?iv <varName> ?ivn . ?iv <varType> ?ivt}";
+		q = getInitializedCodeModelReasoner().prepareQuery(q);
+		ResultSet qrs =  getInitializedCodeModelReasoner().ask(q);
+		return qrs;
+	}
+	
 	/**
 	 * Method to find typeLocalName as a class in the current or some imported ontology
 	 * @param typeLocalName
@@ -2434,6 +2489,7 @@ public class AnswerCurationManager {
 			for (Rule rule : comparisonRules) {
 				logger.debug("Comparison rule: " + rule.toDescriptiveString());
 			}
+			return "success";
 		}
 		throw new AnswerExtractionException("Invalid comparison request inputs");
 	}

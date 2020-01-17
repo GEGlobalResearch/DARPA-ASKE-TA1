@@ -50,7 +50,9 @@ DialogModel returns sadl::SadlModel :
 
 @Override
 SadlModelElement returns sadl::SadlModelElement :
-	SadlStatement EOS			|
+	super::SadlStatement EOS			|
+	super::ExternalEquationStatement EOS	|
+	super::EquationStatement EOS	|
 	AnswerCMStatement EOS 		|
 	ModifiedAskStatement EOS	|
 	WhatStatement EOS			|
@@ -61,9 +63,7 @@ SadlModelElement returns sadl::SadlModelElement :
 	MyNameIsStatement EOS		|
 	TargetModelName EOS			|
 	ExtractStatement EOS		|
-	CompareStatement EOS 	 	|
-	ExternalEquationStatement EOS	|
-	EquationStatement EOS
+	CompareStatement EOS 	 	
 ;
 
 CompareStatement:

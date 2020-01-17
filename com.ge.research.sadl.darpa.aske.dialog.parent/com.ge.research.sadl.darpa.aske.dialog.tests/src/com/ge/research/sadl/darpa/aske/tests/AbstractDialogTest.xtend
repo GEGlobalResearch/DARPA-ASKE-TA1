@@ -44,4 +44,10 @@ abstract class AbstractDialogTest extends AbstractSadlTest {
 		return SadlTestAssertions.assertValidatesTo(code.dialog, assertions);
 	}
 
+	protected def Resource assertValidatesSadlTo(CharSequence code,
+		(OntModel, List<Rule>, List<SadlCommand>, List<Issue>, IJenaBasedModelProcessor)=>void assertions) {
+
+		return SadlTestAssertions.assertValidatesTo(code.sadl, assertions);
+	}
+
 }
