@@ -60,8 +60,8 @@ class DialogImplicitModelFragmentProvider implements ISadlImplicitModelFragmentP
 		
 		ImplicitDataDescriptor is a type of DataDescriptor,
 			described by declaration with values of type Script.
-		implicitInputs describes ^Equation with values of type ImplicitDataDescriptor.
-		implicitOutputs describes ^Equation with values of type ImplicitDataDescriptor.
+		implicitInput describes ^Equation with values of type ImplicitDataDescriptor.
+		implicitOutput describes ^Equation with values of type ImplicitDataDescriptor.
 	''';
 
 	@Override

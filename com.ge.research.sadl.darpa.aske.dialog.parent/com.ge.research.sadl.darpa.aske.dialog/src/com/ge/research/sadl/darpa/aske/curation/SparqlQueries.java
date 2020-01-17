@@ -24,4 +24,9 @@ public class SparqlQueries {
 	public static final String ALL_EXTERNAL_EQUATIONS = 
 			"select ?eq ?lang ?expr where {?eq <rdf:type> <ExternalEquation> . ?eq <expression> ?script . ?script <script> ?expr . ?script <language> ?lang}";
 
+	public static final String METHOD_IMPLICIT_INPUTS =
+			"";
+	
+	public static final String METHOD_IMPLICIT_OUTPUTS =
+			"";
 }

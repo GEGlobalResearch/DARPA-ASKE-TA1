@@ -2,6 +2,8 @@ package com.ge.research.sadl.darpa.aske.tests;
 
 import org.junit.Test
 
+import static org.junit.Assert.*
+
 class BasicMissingPatternsInCompareTest extends AbstractDialogTest {
 
 	@Test
@@ -16,7 +18,13 @@ class BasicMissingPatternsInCompareTest extends AbstractDialogTest {
 				{CF6, F100, RamJet} are types of AircraftEngine.
 				
 				Rule R1: if sfc is .35 then thrust is 2000.
-			'''.sadl
+			'''.assertValidatesSadlTo[ontModel, rules, cmds, issues, processor |
+				assertNotNull(ontModel)
+				assertNotNull(rules)
+				assertTrue(rules.size == 1)
+				val rtxt = rules.get(0).toDescriptiveString
+				println(rtxt)
+			]
 		val dialogModel = '''
 				 uri "http://sadl.org/MP1.dialog" alias MP1D.
 				 
