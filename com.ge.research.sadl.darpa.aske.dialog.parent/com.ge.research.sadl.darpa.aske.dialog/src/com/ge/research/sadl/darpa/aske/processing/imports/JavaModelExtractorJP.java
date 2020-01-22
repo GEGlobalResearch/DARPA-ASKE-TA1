@@ -154,7 +154,7 @@ public class JavaModelExtractorJP implements IModelFromCodeExtractor {
 																						// value is the calling method instance
 	private Map<Node,Individual> methodsFound = new HashMap<Node, Individual>();
 	private Individual methodWithBodyInProcess = null;
-	private boolean sendCommentsToTextService = true;	// change to true to send comments to text-to-triples service
+	private boolean sendCommentsToTextService = false;	// change to true to send comments to text-to-triples service
 	private Map<Individual, LiteralExpr> potentialConstants = new HashMap<Individual, LiteralExpr>();
 	private List<Individual> discountedPotentialConstants = new ArrayList<Individual>();
 	private List<String> classesToIgnore = new ArrayList<String>();
@@ -644,7 +644,7 @@ public class JavaModelExtractorJP implements IModelFromCodeExtractor {
 				processBlock(m, methInst);	// order matters--do this after parameters and before return
 				setMethodWithBodyInProcess(prior);
 				
-				if (rt != null) {
+				if (rt != null && !rt.equals("void")) {
 					List<Literal> rtypes = new ArrayList<Literal>();
 					rtypes.add(getCurrentCodeModel().createTypedLiteral(rt));
 					Individual returnTypes;
@@ -667,23 +667,23 @@ public class JavaModelExtractorJP implements IModelFromCodeExtractor {
 			MethodCallExpr mc = (MethodCallExpr)childNode;
 			if (!ignoreMethodCall(mc, containingInst)) {
 				addNodeToPostProcessingList(mc, containingInst);
-	        	NodeList<Expression> args = mc.getArguments();
-	        	Iterator<Expression> nlitr = args.iterator();
-	        	while (nlitr.hasNext()) {
-	        		Expression expr = nlitr.next();
-	        		if (expr instanceof NameExpr) {
-	        			try {
-							setSetterArgument(mc, (NameExpr)expr, containingInst);
-						} catch (AnswerExtractionException e) {
-							// TODO Auto-generated catch block
-							e.printStackTrace();
-						}
-	        		}
-	        		else {
-	           			processBlockChild(expr, containingInst, USAGE.Defined);        			
-	        		}
-	        	}
 			}
+        	NodeList<Expression> args = mc.getArguments();
+        	Iterator<Expression> nlitr = args.iterator();
+        	while (nlitr.hasNext()) {
+        		Expression expr = nlitr.next();
+        		if (expr instanceof NameExpr) {
+        			try {
+						setSetterArgument(mc, (NameExpr)expr, containingInst);
+					} catch (AnswerExtractionException e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					}
+        		}
+        		else {
+           			processBlockChild(expr, containingInst, USAGE.Defined);        			
+        		}
+ 			}
 		}
 		else if (childNode instanceof BlockStmt) {
 			processBlock(childNode, containingInst);
@@ -744,6 +744,7 @@ public class JavaModelExtractorJP implements IModelFromCodeExtractor {
 					}
 					else {
 						removePotentalConstant(varInst);
+//						processBlockChild(n1, containingInst, knownUsage);
 					}
 				}
 			}

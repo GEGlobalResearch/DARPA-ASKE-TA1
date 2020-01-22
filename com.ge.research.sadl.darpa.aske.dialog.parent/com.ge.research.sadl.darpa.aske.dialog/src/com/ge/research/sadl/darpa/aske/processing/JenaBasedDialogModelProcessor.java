@@ -100,6 +100,7 @@ import com.ge.research.sadl.jena.UtilsForJena;
 import com.ge.research.sadl.model.CircularDefinitionException;
 import com.ge.research.sadl.model.ModelError;
 import com.ge.research.sadl.model.PrefixNotFoundException;
+import com.ge.research.sadl.model.gp.BuiltinElement;
 import com.ge.research.sadl.model.gp.Equation;
 import com.ge.research.sadl.model.gp.GraphPatternElement;
 import com.ge.research.sadl.model.gp.Junction;
@@ -644,91 +645,108 @@ public class JenaBasedDialogModelProcessor extends JenaBasedSadlModelProcessor {
 		if (compareObj instanceof Junction) {
 			List<Node> compareList = IntermediateFormTranslator.conjunctionToList((Junction)compareObj);
 			for (Node n : compareList) {
-				comparisonObjects.add(n);
+				if (n instanceof VariableNode) {
+					comparisonObjects.add(((VariableNode)n).getType());
+				}
+				else {
+					comparisonObjects.add(n);
+				}
 			}
 		}
 		else if (compareObj instanceof NamedNode) {
-			NamedNode nn = (NamedNode)compareObj;
-			if (isProperty(nn.getNodeType())) {
-				Property prop = getTheJenaModel().getProperty(nn.getURI());
-				if (prop == null) {
-					System.err.println("Unexpected error finding property '" + nn.getURI() + "'");
-					getTheJenaModel().write(System.err);
-					ExtendedIterator<OntModel> smitr = getTheJenaModel().listSubModels();
-					while (smitr.hasNext()) {
-						smitr.next().write(System.err);
-					}
-					return null;
-				}
-				else {
-					specifiedPropertyNN = nn;
-				}
-				StmtIterator stmtitr = getTheJenaModel().listStatements(prop, RDFS.domain, (RDFNode)null);
-				while (stmtitr.hasNext()) {
-					com.hp.hpl.jena.rdf.model.Resource dmn = stmtitr.nextStatement().getObject().asResource();
-					if (dmn.isURIResource()) {
-						nn = new NamedNode(dmn.getURI());
-						nn.setNodeType(NodeType.ClassNode);
+			comparisonObjects.add((Node) compareObj);
+		}
+		List<Node> augmentedComparisonObjects = new ArrayList<Node>();
+		for (int idx = 0; idx < comparisonObjects.size(); idx++) {
+			Node cn = comparisonObjects.get(idx);
+			if (cn instanceof NamedNode) {
+				NamedNode nn = (NamedNode)cn;
+				if (isProperty(nn.getNodeType())) {
+					Property prop = getTheJenaModel().getProperty(nn.getURI());
+					if (prop == null) {
+						System.err.println("Unexpected error finding property '" + nn.getURI() + "'");
+						getTheJenaModel().write(System.err);
+						ExtendedIterator<OntModel> smitr = getTheJenaModel().listSubModels();
+						while (smitr.hasNext()) {
+							smitr.next().write(System.err);
+						}
+						return null;
 					}
 					else {
-						System.err.println("Blank node domain not yet handled");
-						return null;
+						specifiedPropertyNN = nn;
 					}
-					if (stmtitr.hasNext()) {
-						System.err.println("Multiple domain classes not yet handled");
-						return null;
+					StmtIterator stmtitr = getTheJenaModel().listStatements(prop, RDFS.domain, (RDFNode)null);
+					while (stmtitr.hasNext()) {
+						com.hp.hpl.jena.rdf.model.Resource dmn = stmtitr.nextStatement().getObject().asResource();
+						if (dmn.isURIResource()) {
+							nn = new NamedNode(dmn.getURI());
+							nn.setNodeType(NodeType.ClassNode);
+						}
+						else {
+							System.err.println("Blank node domain not yet handled");
+							return null;
+						}
+						if (stmtitr.hasNext()) {
+							System.err.println("Multiple domain classes not yet handled");
+							return null;
+						}
 					}
 				}
-			}
-			if (nn.getNodeType().equals(NodeType.ClassNode)) {
-				NodeType ntype = null;
-				boolean comparisonsFound = false;
-				OntClass theClass = getTheJenaModel().getOntClass(nn.getURI());
-				List<com.hp.hpl.jena.rdf.model.Resource> instances = new ArrayList<com.hp.hpl.jena.rdf.model.Resource>();
-				// look for at least two instances of the class 
-				instances = getInstancesOfClass(theClass, instances);
-				if (instances.size() > 1) {
-					comparisonsFound = true;
-					ntype = NodeType.InstanceNode;
-				}
-				if (!comparisonsFound) {
-					// if not resolved, look for leaf subclasses of the class, and create a variable of each leaf subclass type
-					instances = getLeafSubclasses(theClass, instances);
+				if (nn.getNodeType().equals(NodeType.ClassNode)) {
+					NodeType ntype = null;
+					boolean comparisonsFound = false;
+					OntClass theClass = getTheJenaModel().getOntClass(nn.getURI());
+					List<com.hp.hpl.jena.rdf.model.Resource> instances = new ArrayList<com.hp.hpl.jena.rdf.model.Resource>();
+					// look for at least two instances of the class 
+					instances = getInstancesOfClass(theClass, instances);
 					if (instances.size() > 1) {
-						ntype = NodeType.ClassNode;
+						comparisonsFound = true;
+						ntype = NodeType.InstanceNode;
 					}
-				}
-				if (instances.size() > 1) {
-					for (int i = 0; i < instances.size(); i++) {
-						Node compNode;
-						if (specifiedPropertyNN != null) {
-							Node subj;
-							if (ntype.equals(NodeType.ClassNode)) {
-								NamedNode varType = new NamedNode(instances.get(i).getURI());
-								varType.setNodeType(ntype);
-								subj = varType;	// don't create variable here--will be done in missing pattern processing
+					if (!comparisonsFound) {
+						// if not resolved, look for leaf subclasses of the class, and create a variable of each leaf subclass type
+						instances = getLeafSubclasses(theClass, instances);
+						if (instances.size() > 1) {
+							ntype = NodeType.ClassNode;
+						}
+					}
+					if (instances.size() > 1) {
+						for (int i = 0; i < instances.size(); i++) {
+							Node compNode;
+							if (specifiedPropertyNN != null) {
+								Node subj;
+								if (ntype.equals(NodeType.ClassNode)) {
+									NamedNode varType = new NamedNode(instances.get(i).getURI());
+									varType.setNodeType(ntype);
+									subj = varType;	// don't create variable here--will be done in missing pattern processing
+								}
+								else {
+									NamedNode instNN = new NamedNode(instances.get(i).getURI());
+									instNN.setNodeType(ntype);
+									subj = instNN;
+								}
+								compNode = nodeCheck(new TripleElement(subj, specifiedPropertyNN, null));
 							}
 							else {
 								NamedNode instNN = new NamedNode(instances.get(i).getURI());
 								instNN.setNodeType(ntype);
-								subj = instNN;
+								compNode = instNN;
 							}
-							compNode = nodeCheck(new TripleElement(subj, specifiedPropertyNN, null));
+							augmentedComparisonObjects.add(compNode);
 						}
-						else {
-							NamedNode instNN = new NamedNode(instances.get(i).getURI());
-							instNN.setNodeType(ntype);
-							compNode = instNN;
-						}
-						comparisonObjects.add(compNode);
+					}
+					else {
+						// need to find the important properties for the given subject class and create multiple triples, one for each property
+						augmentedComparisonObjects.add(new ProxyNode(new TripleElement(nn, specifiedPropertyNN, null)));
+						
 					}
 				}
 				else {
-					System.out.println("Unable to resolve comparisons");
+					System.err.println("Failed to establish comparison objects");
 				}
 			}
 			else {
-				System.err.println("Failed to establish comparison objects");
+				augmentedComparisonObjects.add(cn);
 			}
 		}
 		DialogIntermediateFormTranslator dift = new DialogIntermediateFormTranslator(this, getTheJenaModel());
@@ -758,18 +776,68 @@ public class JenaBasedDialogModelProcessor extends JenaBasedSadlModelProcessor {
 //			}
 //		}
 		List<Rule> comparisonRules = new ArrayList<Rule>();
-		for (int i = 0; i < comparisonObjects.size(); i++) {
-			Node cobj = comparisonObjects.get(i);
+		for (int i = 0; i < augmentedComparisonObjects.size(); i++) {
+			Node cobj = augmentedComparisonObjects.get(i);
 			Node newWhen = dift.newCopyOfProxyNode(whenObj);
 			Rule pseudoRule = new Rule("ComparePseudoRule", null, nodeToGPEList(newWhen), nodeToGPEList(cobj));
+			populateRuleVariables(pseudoRule);
 			dift.setTarget(pseudoRule);
 			Rule modifiedRule = dift.cook(pseudoRule);
 			comparisonRules.add(modifiedRule);
 			logger.debug(modifiedRule.toDescriptiveString());
-			System.out.println(modifiedRule.toDescriptiveString());
+			System.out.println(modifiedRule.toFullyQualifiedString());
 		}
 		
 		return new CompareContent(element, Agent.USER, comparisonRules);
+	}
+
+	private void populateRuleVariables(Rule rule) {
+		if (rule.getGivens() != null) {
+			for (GraphPatternElement gpe : rule.getGivens()) {
+				populateRuleVariables(rule, gpe);
+			}
+		}
+		if (rule.getIfs() != null) {
+			for (GraphPatternElement gpe : rule.getIfs()) {
+				populateRuleVariables(rule, gpe);
+			}
+		}
+		if (rule.getThens() != null) {
+			for (GraphPatternElement gpe : rule.getThens()) {
+				populateRuleVariables(rule, gpe);
+			}
+		}
+		
+	}
+
+	private void populateRuleVariables(Rule rule, GraphPatternElement gpe) {
+		if (gpe instanceof TripleElement) {
+			if (((TripleElement)gpe).getSubject() instanceof VariableNode) {
+				rule.addRuleVariable((VariableNode) ((TripleElement)gpe).getSubject());
+			}
+			if (((TripleElement)gpe).getPredicate() instanceof VariableNode) {
+				rule.addRuleVariable((VariableNode) ((TripleElement)gpe).getPredicate());
+			}
+			if (((TripleElement)gpe).getObject() instanceof VariableNode) {
+				rule.addRuleVariable((VariableNode) ((TripleElement)gpe).getObject());
+			}
+		}
+		else if (gpe instanceof BuiltinElement) {
+			if (((BuiltinElement)gpe).getArguments() != null) {
+				for (Node arg : ((BuiltinElement)gpe).getArguments()) {
+					if (arg instanceof VariableNode) {
+						rule.addRuleVariable((VariableNode)arg);
+					}
+					else if (arg instanceof ProxyNode) {
+						populateRuleVariables(rule, ((ProxyNode)arg).getProxyFor());
+					}
+				}
+			}
+		}
+		else if (gpe instanceof Junction) {
+			populateRuleVariables(rule, ((ProxyNode)((Junction)gpe).getLhs()).getProxyFor());
+			populateRuleVariables(rule, ((ProxyNode)((Junction)gpe).getRhs()).getProxyFor());
+		}
 	}
 
 	private List<GraphPatternElement> nodeToGPEList(Node node) {

@@ -101,7 +101,10 @@ import com.ge.research.sadl.darpa.aske.processing.imports.IModelFromCodeExtracto
 import com.ge.research.sadl.darpa.aske.processing.imports.KChainServiceInterface;
 import com.ge.research.sadl.darpa.aske.processing.imports.TextProcessingServiceInterface.EquationVariableContextResponse;
 import com.ge.research.sadl.darpa.aske.processing.imports.TextProcessor;
+import com.ge.research.sadl.jena.JenaBasedSadlModelProcessor;
+import com.ge.research.sadl.jena.JenaProcessorException;
 import com.ge.research.sadl.jena.inference.SadlJenaModelGetterPutter;
+import com.ge.research.sadl.jena.translator.JenaTranslatorPlugin;
 import com.ge.research.sadl.model.gp.GraphPatternElement;
 import com.ge.research.sadl.model.gp.Junction;
 import com.ge.research.sadl.model.gp.Junction.JunctionType;
@@ -159,6 +162,9 @@ import com.hp.hpl.jena.vocabulary.OWL;
 import com.hp.hpl.jena.vocabulary.RDF;
 import com.hp.hpl.jena.vocabulary.RDFS;
 import com.hp.hpl.jena.vocabulary.XSD;
+
+//import net.htmlparser.jericho.Renderer;
+//import net.htmlparser.jericho.Source;
 
 //import net.htmlparser.jericho.Source;
 
@@ -739,7 +745,7 @@ public class AnswerCurationManager {
 			throws ConfigurationException, IOException, ReasonerNotFoundException, InvalidNameException, QueryParseException, QueryCancelledException {
 		ResultSet results = null;
 		// clear reasoner from any previous model
-		clearCodeModelReasoner();
+//		clearCodeModelReasoner();
 		String codeModelFolder = getOwlModelsFolder();
 		if (getInitializedCodeModelReasoner() == null) {
 			// use domain model folder because that's the project we're working in
@@ -1940,6 +1946,9 @@ public class AnswerCurationManager {
 				sb.append("]");
 			}	
 		}
+		else {
+			sb.append(":");
+		}
 //		else {
 //			// SADL doesn't currently support an equation that doesn't return anything
 //			throw new AnswerExtractionException("Equations that do not return a value are not supported.");
@@ -1982,9 +1991,17 @@ public class AnswerCurationManager {
 				}
 				sb2.append(" has implicitInput (an ImplicitDataDescriptor with localDescriptorName \"");
 				sb2.append(impIn.getResultAt(r, 0));
-				sb2.append("\", with dataType \"");
-				sb2.append(impIn.getResultAt(r, 1));
-				sb2.append(",\"");
+				sb2.append("\", with dataType ");
+				String typ = nameToUri(impIn.getResultAt(r, 1).toString());
+				String resolved = nameToUri(typ);
+				sb2.append("\"");
+				if (resolved != null) {
+					sb2.append(resolved);
+				}
+				else {
+					sb2.append(typ);
+				}
+				sb2.append(",\")");
 			}
 			sb2.append("\n");
 		}
@@ -1996,9 +2013,17 @@ public class AnswerCurationManager {
 				}
 				sb2.append(" has implicitOutput (an ImplicitDataDescriptor with localDescriptorName \"");
 				sb2.append(impOut.getResultAt(r, 0));
-				sb2.append("\", with dataType \"");
-				sb2.append(impOut.getResultAt(r, 1));
+				sb2.append("\", with dataType ");
+				String typ = impOut.getResultAt(r, 1).toString();
+				String resolved = nameToUri(typ);
 				sb2.append("\"");
+				if (resolved != null) {
+					sb2.append(resolved);
+				}
+				else {
+					sb2.append(typ);
+				}
+				sb2.append("\")");
 			}
 			sb2.append(",\n");
 		}
@@ -2020,6 +2045,23 @@ public class AnswerCurationManager {
 		sb2.append(").\n");
 		returnSadlStatements.add(sb2.toString());
 		return returnSadlStatements;
+	}
+
+	private String nameToUri(String name) {
+		// try for primitive data type
+		try {
+			Resource pdrsrc = JenaBasedSadlModelProcessor.primitiveDataTypeLocalnameToJenaResource(name);
+			return pdrsrc.getURI();
+		} catch (JenaProcessorException e) {
+			// OK, not everything is primitive type
+		}
+		try {
+			OntModel om = getExtractionProcessor().getCodeModel();
+			return JenaTranslatorPlugin.findNameNs(om, name);
+		} catch (InvalidNameException e) {
+			// if inner class won't be found
+		}
+		return null;
 	}
 
 	private ResultSet getImplicitInputs(String methodName) throws InvalidNameException, ConfigurationException,
@@ -2524,6 +2566,12 @@ public class AnswerCurationManager {
 		}
 		else {
 			if (sc.getUrl().endsWith(".html")) {
+//				Source src = new Source(content);
+//				Renderer rndrr = src.getRenderer();
+//				rndrr.setNewLine("\n");
+//				rndrr.setIncludeHyperlinkURLs(false);
+//				rndrr.setConvertNonBreakingSpaces(true);
+//				content = rndrr.toString();
 //				content = new Source(content).getRenderer().toString();
 //				System.out.println(content);
 				throw new AnswerExtractionException("HTML files not currently supported");
