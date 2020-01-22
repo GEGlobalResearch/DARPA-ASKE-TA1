@@ -9,6 +9,7 @@ import static org.junit.Assert.assertNotNull
 import static org.junit.Assert.assertTrue
 import static org.junit.Assert.assertEquals
 import com.ge.research.sadl.darpa.aske.processing.JenaBasedDialogModelProcessor
+import com.ge.research.sadl.darpa.aske.processing.CompareContent
 
 class DialogTest extends AbstractDialogTest {
 
@@ -552,6 +553,10 @@ class DialogTest extends AbstractDialogTest {
 	
 	@Test
 	def void testCompareStatement_01() {
+			val grd = newArrayList(
+"Rule ComparePseudoRule:  if rdf(http://aske.ge.com/testdiag#v0, http://www.w3.org/1999/02/22-rdf-syntax-ns#type, http://sadl.org/Model.sadl#CF6) and rdf(http://aske.ge.com/testdiag#v0, http://sadl.org/Model.sadl#sfc, 0.35) then rdf(http://aske.ge.com/testdiag#v0, http://www.w3.org/1999/02/22-rdf-syntax-ns#type, http://sadl.org/Model.sadl#CF6) and rdf(http://aske.ge.com/testdiag#v0, http://sadl.org/Model.sadl#thrust, v2).",
+"Rule ComparePseudoRule:  if rdf(http://aske.ge.com/testdiag#v1, http://www.w3.org/1999/02/22-rdf-syntax-ns#type, http://sadl.org/Model.sadl#F100) and rdf(http://aske.ge.com/testdiag#v1, http://sadl.org/Model.sadl#sfc, 0.35) then rdf(http://aske.ge.com/testdiag#v1, http://www.w3.org/1999/02/22-rdf-syntax-ns#type, http://sadl.org/Model.sadl#F100) and rdf(http://aske.ge.com/testdiag#v1, http://sadl.org/Model.sadl#thrust, v3)."
+)
 		'''
 			uri "http://sadl.org/Model.sadl" alias mdl.
 			
@@ -576,11 +581,27 @@ class DialogTest extends AbstractDialogTest {
 //			}
 			val errors = issues.filter[severity === Severity.ERROR]
 			assertEquals(0, errors.size)
+			if (processor instanceof JenaBasedDialogModelProcessor) {
+				val conversation = (processor as JenaBasedDialogModelProcessor).answerCurationManager.conversation
+				assertNotNull(conversation)
+				assertNotNull(conversation.statements);
+				assertEquals(1, conversation.statements.size)
+				assertTrue(conversation.statements.get(0).statement instanceof CompareContent)
+				val cc = conversation.statements.get(0).statement as CompareContent
+				val rules = cc.comparisonRules
+				assertEquals(2, rules.size)
+				assertEquals(grd.get(0), rules.get(0).toFullyQualifiedString)
+				assertEquals(grd.get(1), rules.get(1).toFullyQualifiedString)
+			}
 		]
 	}
 
 	@Test
 	def void testCompareStatement_02() {
+			val grd = newArrayList(
+"Rule ComparePseudoRule:  if rdf(http://aske.ge.com/testdiag#v1, http://sadl.org/Model.sadl#sfc, 0.35) then rdf(http://aske.ge.com/testdiag#v1, http://sadl.org/Model.sadl#thrust, v0).",
+"Rule ComparePseudoRule:  if rdf(http://aske.ge.com/testdiag#v3, http://sadl.org/Model.sadl#sfc, 0.35) then rdf(http://aske.ge.com/testdiag#v3, http://sadl.org/Model.sadl#thrust, v2).",
+"Rule ComparePseudoRule:  if rdf(http://aske.ge.com/testdiag#v5, http://sadl.org/Model.sadl#sfc, 0.35) then rdf(http://aske.ge.com/testdiag#v5, http://sadl.org/Model.sadl#thrust, v4).")
 		'''
 			uri "http://sadl.org/Model.sadl" alias mdl.
 						
@@ -605,6 +626,19 @@ class DialogTest extends AbstractDialogTest {
 //			}
 			val errors = issues.filter[severity === Severity.ERROR]
 			assertEquals(0, errors.size)
+			if (processor instanceof JenaBasedDialogModelProcessor) {
+				val conversation = (processor as JenaBasedDialogModelProcessor).answerCurationManager.conversation
+				assertNotNull(conversation)
+				assertNotNull(conversation.statements);
+				assertEquals(1, conversation.statements.size)
+				assertTrue(conversation.statements.get(0).statement instanceof CompareContent)
+				val cc = conversation.statements.get(0).statement as CompareContent
+				val rules = cc.comparisonRules
+				assertEquals(3, rules.size)
+				assertEquals(grd.get(0), rules.get(0).toFullyQualifiedString)
+				assertEquals(grd.get(1), rules.get(1).toFullyQualifiedString)
+				assertEquals(grd.get(2), rules.get(2).toFullyQualifiedString)
+			}
 		]
 	}
 
@@ -689,6 +723,35 @@ class DialogTest extends AbstractDialogTest {
 			{CF6a, CF6b} are instances of CF6.
 			
 			Compare CF6 when sfc is .35.
+		'''.assertValidatesTo [ ontModel, issues, processor |
+			assertNotNull(ontModel)
+//			val stmtitr = ontModel.listStatements()
+//			while (stmtitr.hasNext) {
+//				println(stmtitr.nextStatement)
+//			}
+			val errors = issues.filter[severity === Severity.ERROR]
+			assertEquals(0, errors.size)
+		]
+	}
+
+	@Test
+	def void testCompareStatement_06() {
+		'''
+			uri "http://sadl.org/Model.sadl" alias mdl.
+			
+			AircraftEngine is a class,
+				described by sfc (alias "specific fuel consumption") with values of type float,
+				described by thrust with values of type float.
+			
+			{CF6, F100, RamJet} are types of AircraftEngine.
+		'''.sadl
+
+		'''
+			uri "http://aske.ge.com/testdiag" alias testdiag.
+			
+			import "http://sadl.org/Model.sadl".
+			
+			Compare a CF6 and an F100 and a RamJet when sfc is .36.
 		'''.assertValidatesTo [ ontModel, issues, processor |
 			assertNotNull(ontModel)
 //			val stmtitr = ontModel.listStatements()
@@ -1074,6 +1137,7 @@ class DialogTest extends AbstractDialogTest {
 		]
 	}
 
+	@Ignore
 	@Test
 	def void testExtractJavaFile() {
 		createCodeExtractionFile()

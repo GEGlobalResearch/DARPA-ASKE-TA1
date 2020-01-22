@@ -429,12 +429,12 @@ public class JavaImportJPTests extends AbstractDialogTest {
 		acm.getExtractionProcessor().getCodeExtractor().addCodeFile(codeFile);
 		acm.getExtractionProcessor().getCodeExtractor().setIncludeSerialization(includeSerialization);
 //		acm.processImports(SaveAsSadl.AskUserSaveAsSadl);
-		acm.processImports(SaveAsSadl.SaveAsSadl);
+//		acm.processImports(SaveAsSadl.SaveAsSadl);
+		acm.processImports(SaveAsSadl.DoNotSaveAsSadl);
 		assertTrue(owlF.exists() || sadlF.exists());
-		if (sadlF.exists()) {
-			String sadlContent = acm.getExtractionProcessor().getGeneratedSadlContent();
-			System.out.println(sadlContent);
-		}		
+		String sadlContent = acm.getExtractionProcessor().getGeneratedSadlContent();
+		System.out.println("\n\n*****  New Dialog editor content *********");
+		System.out.println(sadlContent);
 	}
 	
 	@Test

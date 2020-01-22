@@ -8,11 +8,15 @@ public class SparqlQueries {
 			"			{?ref <codeBlock> ?m . ?ref <isImplicit> true}\r\n" + 
 			"			UNION {?m <rdf:type> <ExternalMethod>} } }";
 
+//	public static final String ALL_CODE_EXTRACTED_METHODS =
+//			"select distinct ?m ?b ?e ?s where {?m <rdf:type> <Method> . OPTIONAL {?m <beginsAt> ?b . ?m <endsAt> ?e . OPTIONAL{?m <serialization> ?s}} .\r\n" + 
+//			"		MINUS {\r\n" + 
+//			"			{?ref <codeBlock> ?m . ?ref <isImplicit> true}\r\n" + 
+//			"			UNION {?m <rdf:type> <ExternalMethod>} } }";
+
 	public static final String ALL_CODE_EXTRACTED_METHODS =
 			"select distinct ?m ?b ?e ?s where {?m <rdf:type> <Method> . OPTIONAL {?m <beginsAt> ?b . ?m <endsAt> ?e . OPTIONAL{?m <serialization> ?s}} .\r\n" + 
-			"		MINUS {\r\n" + 
-			"			{?ref <codeBlock> ?m . ?ref <isImplicit> true}\r\n" + 
-			"			UNION {?m <rdf:type> <ExternalMethod>} } }";
+			"		MINUS {?m <rdf:type> <ExternalMethod>} }";
 
 	public static final String All_TEXT_EXTRACTED_METHODS = 
 			"select distinct ?m ?pm ?ts ?ps ?ptfs where {?m <rdf:type> <ExternalEquation> . "

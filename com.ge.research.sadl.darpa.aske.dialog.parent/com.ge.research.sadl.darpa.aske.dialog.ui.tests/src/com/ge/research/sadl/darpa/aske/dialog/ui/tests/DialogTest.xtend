@@ -87,6 +87,7 @@ class DialogTest extends AbstractDialogPlatformTest {
 		]
 	}
 	
+	@Ignore
 	@Test
 	def void testExtractHtml() {
 		var p = System.getProperties();
