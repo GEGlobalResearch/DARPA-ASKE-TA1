@@ -2,12 +2,13 @@ package com.ge.research.sadl.darpa.aske.dialog.ui.tests
 
 import com.ge.research.sadl.reasoner.ConfigurationManager
 import com.ge.research.sadl.reasoner.utils.SadlUtils
+import com.ge.research.sadl.ui.tests.AbstractSadlPlatformTest
 import java.io.File
 import org.eclipse.xtext.diagnostics.Severity
 import org.junit.Ignore
 import org.junit.Test
 
-class DialogTest extends AbstractDialogPlatformTest {
+class DialogTest extends AbstractSadlPlatformTest {
 	
 	/**
 	 * Constant for the {@code ${GIT_REPO_ROOT}/com.ge.research.sadl.darpa.aske.dialog.parent/com.ge.research.sadl.darpa.aske.dialog.tests/resources} file-system URL.
@@ -89,7 +90,7 @@ class DialogTest extends AbstractDialogPlatformTest {
 			Equation plusOne(int i) returns int: i+1.
 			
 			Evaluate plusOne(10).
-		''').resource.assertValidatesDialogTo[ontModel, rules, commands, issues, processor |
+		''').resource.assertValidatesTo[ontModel, rules, commands, issues, processor |
 			assertNotNull(ontModel)
 			assertTrue(issues.filter[severity === Severity.ERROR].empty)
 		]
@@ -139,7 +140,7 @@ class DialogTest extends AbstractDialogPlatformTest {
 			
 			Extract from "https://www.grc.nasa.gov/www/k-12/airplane/isentrop.html".
 			
-		''').resource.assertValidatesDialogTo[ontModel, rules, commands, issues, processor |
+		''').resource.assertValidatesTo[ontModel, rules, commands, issues, processor |
 			assertNotNull(ontModel)
 			assertTrue(issues.filter[severity === Severity.ERROR].empty)
 		]
@@ -179,9 +180,9 @@ class DialogTest extends AbstractDialogPlatformTest {
 			
 			target model "http://sadl.org/SaveTarget.sadl" alias tgt.
 			
-			Extract from "«TEST_RESOURCES_URL»/M5Snapshot/ExtractedModels/Sources/Isentrop.txt".
+			Extract from "«TEST_RESOURCES_URL»M5Snapshot/ExtractedModels/Sources/Isentrop.txt".
 			
-		''').resource.assertValidatesDialogTo[ontModel, rules, commands, issues, processor |
+		''').resource.assertValidatesTo[ontModel, rules, commands, issues, processor |
 			assertNotNull(ontModel)
 			assertTrue(issues.filter[severity === Severity.ERROR].empty)
 		]
@@ -223,9 +224,9 @@ class DialogTest extends AbstractDialogPlatformTest {
 			
 			target model "http://sadl.org/SaveTarget.sadl" alias tgt.
 			
-			Extract from "«TEST_RESOURCES_URL»/M5Snapshot/ExtractedModels/Sources/Turbo.java".
+			Extract from "«TEST_RESOURCES_URL»M5Snapshot/ExtractedModels/Sources/Turbo.java".
 			
-		''').resource.assertValidatesDialogTo[ontModel, rules, commands, issues, processor |
+		''').resource.assertValidatesTo[ontModel, rules, commands, issues, processor |
 			assertNotNull(ontModel)
 			assertTrue(issues.filter[severity === Severity.ERROR].empty)
 		]
