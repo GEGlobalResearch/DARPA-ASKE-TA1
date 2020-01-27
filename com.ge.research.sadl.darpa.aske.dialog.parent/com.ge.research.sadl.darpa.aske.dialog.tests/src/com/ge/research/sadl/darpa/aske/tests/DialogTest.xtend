@@ -1160,7 +1160,7 @@ class DialogTest extends AbstractDialogTest {
 			 Force is a type of UnittedQuantity.
 			 Speed is a type of UnittedQuantity.
 			 Acceleration is a type of UnittedQuantity.
-		'''.assertValidatesTo[jenaModel, rules, commands, issues, processor |
+		'''.assertValidatesSadlTo[jenaModel, rules, commands, issues, processor |
 			assertNotNull(jenaModel)
 			issues.map[message].forEach[println(it)];
 			assertEquals(0, issues.size)
@@ -1168,7 +1168,7 @@ class DialogTest extends AbstractDialogTest {
 
 		'''
 			uri "http://sadl.org/SaveTarget.sadl" alias svtgt.
-		'''.assertValidatesTo[jenaModel, rules, commands, issues, processor |
+		'''.assertValidatesSadlTo[jenaModel, rules, commands, issues, processor |
 			assertNotNull(jenaModel)
 			issues.map[message].forEach[println(it)];
 			assertEquals(0, issues.size)
@@ -1181,7 +1181,7 @@ class DialogTest extends AbstractDialogTest {
 			
 			target model "http://sadl.org/SaveTarget.sadl" alias tgt.
 			
-			Extract from "«TEST_RESOURCES_URL»/M5Snapshot/ExtractedModels/Sources/Turbo.java".
+			Extract from "«TEST_RESOURCES_URL»M5Snapshot/ExtractedModels/Sources/Turbo.java".
 			
 		'''.assertValidatesTo[ontModel, rules, commands, issues, processor |
 			assertNotNull(ontModel)
