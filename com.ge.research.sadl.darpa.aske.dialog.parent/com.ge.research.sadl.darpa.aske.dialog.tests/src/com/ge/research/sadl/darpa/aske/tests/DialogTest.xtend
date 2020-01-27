@@ -1,17 +1,25 @@
 package com.ge.research.sadl.darpa.aske.tests
 
+import com.ge.research.sadl.darpa.aske.processing.CompareContent
+import com.ge.research.sadl.darpa.aske.processing.JenaBasedDialogModelProcessor
 import com.ge.research.sadl.reasoner.ConfigurationManager
+import com.ge.research.sadl.reasoner.utils.SadlUtils
+import java.io.File
 import org.eclipse.xtext.diagnostics.Severity
 import org.junit.Ignore
 import org.junit.Test
 
+import static org.junit.Assert.assertEquals
 import static org.junit.Assert.assertNotNull
 import static org.junit.Assert.assertTrue
-import static org.junit.Assert.assertEquals
-import com.ge.research.sadl.darpa.aske.processing.JenaBasedDialogModelProcessor
-import com.ge.research.sadl.darpa.aske.processing.CompareContent
 
 class DialogTest extends AbstractDialogTest {
+
+	/**
+	 * Constant for the {@code ${GIT_REPO_ROOT}/com.ge.research.sadl.darpa.aske.dialog.parent/com.ge.research.sadl.darpa.aske.dialog.tests/resources} file-system URL.
+	 * @see https://github.com/GEGlobalResearch/DARPA-ASKE-TA1/issues/54#issuecomment-578642334
+	 */
+	public static val TEST_RESOURCES_URL = new SadlUtils().fileNameToFileUrl(new File('').absoluteFile.toPath.resolve('resources').toFile.absolutePath)
 
 	@Ignore
 	@Test
@@ -1173,7 +1181,7 @@ class DialogTest extends AbstractDialogTest {
 			
 			target model "http://sadl.org/SaveTarget.sadl" alias tgt.
 			
-			Extract from "file:/C:/Users/200005201/sadl3-master6/git/DARPA-ASKE-TA1/com.ge.research.sadl.darpa.aske.dialog.parent/com.ge.research.sadl.darpa.aske.dialog.tests/resources/M5Snapshot/ExtractedModels/Sources/Turbo.java".
+			Extract from "«TEST_RESOURCES_URL»/M5Snapshot/ExtractedModels/Sources/Turbo.java".
 			
 		'''.assertValidatesTo[ontModel, rules, commands, issues, processor |
 			assertNotNull(ontModel)
