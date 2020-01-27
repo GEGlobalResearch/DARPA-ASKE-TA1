@@ -84,6 +84,7 @@ import com.github.javaparser.ast.body.Parameter;
 import com.github.javaparser.ast.body.VariableDeclarator;
 import com.github.javaparser.ast.comments.BlockComment;
 import com.github.javaparser.ast.comments.Comment;
+import com.github.javaparser.ast.expr.ArrayAccessExpr;
 import com.github.javaparser.ast.expr.AssignExpr;
 import com.github.javaparser.ast.expr.BinaryExpr;
 import com.github.javaparser.ast.expr.BinaryExpr.Operator;
@@ -104,6 +105,7 @@ import com.github.javaparser.ast.stmt.ExpressionStmt;
 import com.github.javaparser.ast.stmt.IfStmt;
 import com.github.javaparser.ast.stmt.ReturnStmt;
 import com.github.javaparser.ast.type.ClassOrInterfaceType;
+import com.github.javaparser.ast.type.Type;
 import com.github.javaparser.symbolsolver.JavaSymbolSolver;
 import com.github.javaparser.symbolsolver.resolution.typesolvers.CombinedTypeSolver;
 import com.github.javaparser.symbolsolver.resolution.typesolvers.ReflectionTypeSolver;
@@ -150,7 +152,8 @@ public class JavaModelExtractorJP implements IModelFromCodeExtractor {
 	private boolean includeSerialization = true;
 	private String defaultCodeModelName = null;
 	private String defaultCodeModelPrefix = null;
-	private Map<Node, Individual> postProcessingList = new HashMap<Node, Individual>(); // key is the MethodCallExpr
+	private Map<Range, MethodCallMapping> postProcessingList = new HashMap<Range, MethodCallMapping>(); // key is the MethodCallExpr
+	Map<String, String> classNameMap = new HashMap<String, String>();
 																						// value is the calling method instance
 	private Map<Node,Individual> methodsFound = new HashMap<Node, Individual>();
 	private Individual methodWithBodyInProcess = null;
@@ -159,6 +162,37 @@ public class JavaModelExtractorJP implements IModelFromCodeExtractor {
 	private List<Individual> discountedPotentialConstants = new ArrayList<Individual>();
 	private List<String> classesToIgnore = new ArrayList<String>();
 	private List<String> primitiveTypesList = null;
+	
+	public class MethodCallMapping {
+		private Node methodCallNode;
+		private Individual callingInstance;
+		
+		public MethodCallMapping(Node n, Individual i) {
+			setMethodCallNode(n);
+			setCallingInstance(i);
+		}
+		
+		Node getMethodCallNode() {
+			return methodCallNode;
+		}
+		
+		void setMethodCallNode(Node methodCallNode) {
+			this.methodCallNode = methodCallNode;
+		}
+		
+		Individual getCallingInstance() {
+			return callingInstance;
+		}
+		
+		void setCallingInstance(Individual callingInstance) {
+			this.callingInstance = callingInstance;
+		}
+		
+		public String toString() {
+			return getCallingInstance().getLocalName() + " calls " + getMethodCallNode().toString();
+		}
+		
+	}
 	
 	public JavaModelExtractorJP(AnswerCurationManager acm, Map<String, String> preferences) {
 		setCurationMgr(acm);
@@ -285,10 +319,13 @@ public class JavaModelExtractorJP implements IModelFromCodeExtractor {
 	}
 
 	private void postProcess() {
-		Iterator<Node> nitr = postProcessingList.keySet().iterator();
+		Iterator<Range> nitr = postProcessingList.keySet().iterator();
+//		Iterator<Node> nitr = postProcessingList.keySet().iterator();
 		while (nitr.hasNext()) {
-			Node node = nitr.next();
-			Individual callingMethod = postProcessingList.get(node);
+			Range rng = nitr.next();
+			MethodCallMapping mcm = postProcessingList.get(rng);
+			Node node = mcm.getMethodCallNode();
+			Individual callingMethod = mcm.getCallingInstance();
 			if (node instanceof MethodCallExpr && ignoreMethodCall((MethodCallExpr) node, callingMethod)) {
 				continue;
 			}
@@ -585,6 +622,7 @@ public class JavaModelExtractorJP implements IModelFromCodeExtractor {
 			ClassOrInterfaceDeclaration cls = (ClassOrInterfaceDeclaration) childNode;
 			if (!ignoreClass(cls, containingInst)) {
 				Individual blkInst = getOrCreateClass(cls);
+				addClassUriToMap(cls.getName().asString(), blkInst.getURI());
 				if (containingInst != null) {
 					getCurrentCodeModel().add(blkInst, getContainedInProperty(), containingInst);
 				}
@@ -666,7 +704,7 @@ public class JavaModelExtractorJP implements IModelFromCodeExtractor {
 		else if (childNode instanceof MethodCallExpr) {
 			MethodCallExpr mc = (MethodCallExpr)childNode;
 			if (!ignoreMethodCall(mc, containingInst)) {
-				addNodeToPostProcessingList(mc, containingInst);
+				addNodeToPostProcessingList(mc.getRange().get(), mc, containingInst);
 			}
         	NodeList<Expression> args = mc.getArguments();
         	Iterator<Expression> nlitr = args.iterator();
@@ -770,6 +808,13 @@ public class JavaModelExtractorJP implements IModelFromCodeExtractor {
 		else if (childNode instanceof NameExpr) {
 			String nm = ((NameExpr)childNode).getNameAsString();
 			findCodeVariableAndAddReference(childNode, nm, containingInst, knownUsage, true, null, false);
+		}
+		else if (childNode instanceof ArrayAccessExpr) {
+			Expression nmexpr = ((ArrayAccessExpr)childNode).getName();
+			if (nmexpr instanceof NameExpr) {
+				String nm = ((NameExpr)nmexpr).getNameAsString();
+				findCodeVariableAndAddReference(childNode, nm, containingInst, knownUsage, true, null, false);
+			}
 		}
 		else if (childNode instanceof IfStmt) {
 			Expression cond = ((IfStmt)childNode).getCondition();
@@ -975,8 +1020,8 @@ public class JavaModelExtractorJP implements IModelFromCodeExtractor {
 	 * @param expr -- the MethodCallExpr
 	 * @param codeBlock -- the code block (method) in which the call occurs
 	 */
-	private void addNodeToPostProcessingList(Node expr, Individual codeBlock) {
-		postProcessingList.put(expr, codeBlock);
+	private void addNodeToPostProcessingList(Range rng, Node expr, Individual codeBlock) {
+		postProcessingList.put(rng, new MethodCallMapping(expr, codeBlock));
 	}
 
 	private void addSerialization(Individual blkInst, String code) {
@@ -1269,6 +1314,7 @@ public class JavaModelExtractorJP implements IModelFromCodeExtractor {
       			if (cvInst == null && codeVarClass != null) {
       				cvInst = getCurrentCodeModel().createIndividual(getCodeModelNamespace() + nnm, codeVarClass);
       	          	Individual ref = createReference(varNode, cvInst, containingInst, USAGE.Defined);
+      	          	addDeclarationScript(varNode, cvInst, containingInst);
       	          	setInputOutputIfKnown(ref, inputOutput);
       	          	cvInst.addProperty(getVarNameProperty(), getCurrentCodeModel().createTypedLiteral(origName));
       			}
@@ -1276,6 +1322,27 @@ public class JavaModelExtractorJP implements IModelFromCodeExtractor {
       		}
       	}
 		return cvInst;
+	}
+
+	private void addDeclarationScript(Node varNode, Individual cvInst, Individual containingInst) {
+		if (varNode instanceof VariableDeclarator) {
+			Type type = ((VariableDeclarator)varNode).getType();
+			Expression initializer = null;
+			if (((VariableDeclarator)varNode).getInitializer().isPresent()) {
+				initializer = ((VariableDeclarator)varNode).getInitializer().get();
+			}
+			if (type != null) {
+				StringBuilder javaScript = new StringBuilder(type.asString());
+				javaScript.append(" ");
+				javaScript.append(((VariableDeclarator) varNode).getNameAsString());
+				if (initializer != null) {
+					javaScript.append(" = ");
+					javaScript.append(initializer.toString());
+				}
+				javaScript.append(";");
+				cvInst.addLabel(javaScript.toString(), "Java");
+			}
+		}
 	}
 
 	private void setInputOutputIfKnown(Individual ref, InputOutput inputOutput) {
@@ -1911,6 +1978,22 @@ class Mach(object):
 			}
 		}
 		return indent;
+	}
+
+	private boolean addClassUriToMap(String simpleName, String uri) {
+		if (!classNameMap.containsKey(simpleName)) {
+			classNameMap.put(simpleName, uri);
+			return true;
+		}
+		return false;
+	}
+	
+	@Override
+	public String getClassUriFromSimpleName(String name) {
+		if (classNameMap.containsKey(name)) {
+			return classNameMap.get(name);
+		}
+		return null;
 	}
 
 }

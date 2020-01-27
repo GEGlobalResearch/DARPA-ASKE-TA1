@@ -36,7 +36,9 @@
  ***********************************************************************/
 package com.ge.research.sadl.darpa.aske.processing.imports;
 
+import java.io.BufferedReader;
 import java.io.IOException;
+import java.io.StringReader;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -237,7 +239,53 @@ public class AnswerExtractionProcessor {
 	public String translateMethodJavaToPython(String className, String methodCode) throws IOException {
 		String serviceBaseUrl = getCurationManager().getPreference(DialogPreferences.ANSWER_JAVA_TO_PYTHON_SERVICE_BASE_URI.getId());
 		JavaToPythonServiceInterface jtpsi = new JavaToPythonServiceInterface(serviceBaseUrl);
-		return jtpsi.translateMethodJavaToPython(className, methodCode);
+		String pyCodeWrapped = jtpsi.translateMethodJavaToPython(className, methodCode);
+		String pyCodeUnwrapped = unwrapPythonMethodInClass(pyCodeWrapped);
+		return pyCodeUnwrapped;
+	}
+
+	private String unwrapPythonMethodInClass(String pyCodeWrapped) {
+        StringBuilder sb = new StringBuilder();
+        try (BufferedReader reader = new BufferedReader(new StringReader(pyCodeWrapped))) {
+        	boolean foundClass = false;
+        	boolean foundMethod = false;
+        	int lineCntr = 0;
+            String line = reader.readLine();
+            while (line != null) {
+                if (line.startsWith("class ")) {
+                	foundClass = true;
+                }
+                if (foundClass && line.startsWith("    def ")) {
+                	foundMethod = true;
+                }
+            	if (foundMethod) {
+            		if (lineCntr++ > 0) {
+            			sb.append("\n");
+            		}
+            		if (line.length() >= 4) {
+            			sb.append(line.substring(4));
+            		}
+            	}
+                line = reader.readLine();
+            }
+        } catch (IOException exc) {
+            // quit
+        }
+        return sb.toString();
+	}
+
+	/**
+	 * Method to translate a Java expression into Python.
+	 * 
+	 * @param className -- the name of the class to use to wrap the code
+	 * @param exprCode -- the Java method method code 
+	 * @return -- the Python code
+	 * @throws IOException
+	 */
+	public String translateExpressionJavaToPython(String className, String methodName, String exprCode) throws IOException {
+		String serviceBaseUrl = getCurationManager().getPreference(DialogPreferences.ANSWER_JAVA_TO_PYTHON_SERVICE_BASE_URI.getId());
+		JavaToPythonServiceInterface jtpsi = new JavaToPythonServiceInterface(serviceBaseUrl);
+		return jtpsi.translateExpressionJavaToPython(className, methodName, exprCode);
 	}
 
 	public void reset() {

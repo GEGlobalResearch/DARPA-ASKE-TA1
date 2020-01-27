@@ -1137,7 +1137,7 @@ class DialogTest extends AbstractDialogTest {
 		]
 	}
 
-	@Ignore
+//	@Ignore
 	@Test
 	def void testExtractJavaFile() {
 		createCodeExtractionFile()

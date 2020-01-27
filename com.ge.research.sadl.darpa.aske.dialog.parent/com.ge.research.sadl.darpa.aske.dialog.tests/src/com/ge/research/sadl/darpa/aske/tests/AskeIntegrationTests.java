@@ -93,7 +93,7 @@ public class AskeIntegrationTests {
 		
 		// Identify interesting computation methods and generate OWL file containing these methods using SadlImplicitModel metamodel--this is the interestingMethodOntModel
 // TODO must get a valid OWL model containing method translated to OWL		
-		OntModel interestingMethodOntModel = null;
+		OntModel interestingMethodOntModel = acm.getExtractionProcessor().getCodeModel();
 		// now build CAL_SOS model in K-CHAIN
 		String modelUri = "CAL_SOS";
 		// add to KG: 

@@ -14,6 +14,10 @@ public class JavaToPythonServiceInterface extends JsonServiceInterface {
 
 	private String j2PServiceURL = null;
 
+	public JavaToPythonServiceInterface(String serviceBaseUri) {
+		setJ2PServiceURL(serviceBaseUri);
+	}
+	
 	public String translateMethodJavaToPython(String className, String methodCode) throws IOException {
 		String translateMethodServiceURL = getJ2PServiceUrl() + "translate/method/";
 		URL serviceUrl = new URL(translateMethodServiceURL);			
@@ -61,8 +65,52 @@ public class JavaToPythonServiceInterface extends JsonServiceInterface {
 		}
 	}
 	
-	public JavaToPythonServiceInterface(String serviceBaseUri) {
-		setJ2PServiceURL(serviceBaseUri);
+	public String translateExpressionJavaToPython(String className, String methodName, String exprCode) throws IOException {
+		String translateExpressionServiceURL = getJ2PServiceUrl() + "translate/expression/";
+		URL serviceUrl = new URL(translateExpressionServiceURL);			
+
+		JsonObject json = new JsonObject();
+		json.addProperty("className", className);
+		json.addProperty("methodName", methodName);
+		json.addProperty("exprCode", exprCode);
+		
+		logger.debug(json.toString());
+	
+		try {
+			String response = makeConnectionAndGetResponse(serviceUrl, json);
+			String pythonCode = null;
+			logger.debug(response);
+			if (response != null && response.length() > 0) {
+				JsonElement je = new JsonParser().parse(response);
+				if (je.isJsonObject()) {
+					JsonObject jobj = je.getAsJsonObject();
+					JsonElement status = jobj.get("status");
+					logger.debug("Status: " + status.getAsString());
+					if (!status.getAsString().equalsIgnoreCase("SUCCESS")) {
+						throw new IOException("Method translation failed: " + status.getAsString());
+					}
+					pythonCode = jobj.get("code").getAsString();
+					logger.debug(pythonCode);
+	
+				}
+				else if (je instanceof JsonPrimitive) {
+					String status = ((JsonPrimitive)je).getAsString();
+					logger.debug(status);
+				}
+				return pythonCode;
+			}
+			else {
+				throw new IOException("No response received from service " + translateExpressionServiceURL);
+			}
+		}
+		catch (IOException e) {
+			if (e.getCause() instanceof ConnectException) {
+				throw new IOException(e.getMessage() + "(URL=" + translateExpressionServiceURL + ")", e.getCause());
+			}
+			else {
+				throw e;
+			}
+		}
 	}
 	
 	private String getJ2PServiceUrl() {
