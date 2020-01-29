@@ -1,6 +1,7 @@
 package com.ge.research.sadl.darpa.aske.processing.imports;
 
 import java.io.IOException;
+import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
@@ -57,17 +58,9 @@ public class KChainServiceInterface extends JsonServiceInterface {
 		  "modelName": "string"
 		}
 		 */
-		//				String host = "3.39.122.224";
-		//				String host = "3.1.176.139";
-
-		String buildServiceURL = getKchainServiceURL() + "build";
-		URL serviceUrl = new URL(buildServiceURL);			
-
 		JsonObject json = generateRequestJson(modelUri, equationModel, dataLocation, inputs, outputs);
-		logger.debug(json.toString());
-		String jsonResponse = makeConnectionAndGetResponse(serviceUrl, json);
 
-		logger.debug(jsonResponse);
+		String jsonResponse = buildCGModel(json);
 
 		/*
 		{
@@ -91,6 +84,21 @@ public class KChainServiceInterface extends JsonServiceInterface {
 			throw new IOException("Unexpected response: " + je.toString());
 		}
 		return returnValues;
+	}
+
+	public String buildCGModel(JsonObject json) throws MalformedURLException, IOException {
+		logger.debug(json.toString());
+
+		//				String host = "3.39.122.224";
+		//				String host = "3.1.176.139";
+
+		String buildServiceURL = getKchainServiceURL() + "build";
+		URL serviceUrl = new URL(buildServiceURL);			
+
+		String jsonResponse = makeConnectionAndGetResponse(serviceUrl, json);
+
+		logger.debug(jsonResponse);
+		return jsonResponse;
 	}
 
 	private JsonObject generateRequestJson(String modelUri, String equationModel, String dataLocation,
@@ -155,16 +163,9 @@ public class KChainServiceInterface extends JsonServiceInterface {
 		  "modelName": "string"
 		}
 		 */
-
-		String evalServiceURL = getKchainServiceURL() + "evaluate";
-		URL serviceUrl = new URL(evalServiceURL);	
-		
 		JsonObject json = generateRequestJson(modelUri, null, null, inputs, outputs);
-		logger.debug(json.toString());
-		
-		String jsonResponse = makeConnectionAndGetResponse(serviceUrl, json);
-		
-		logger.debug(jsonResponse);
+
+		String jsonResponse = evalCGModel(json);
 		
 		/*
 		{
@@ -214,6 +215,18 @@ public class KChainServiceInterface extends JsonServiceInterface {
 			retLists.add(defaultValues);
 		}
 		return retLists;
+	}
+
+	public String evalCGModel(JsonObject json) throws MalformedURLException, IOException {
+		String evalServiceURL = getKchainServiceURL() + "evaluate";
+		URL serviceUrl = new URL(evalServiceURL);	
+		
+		logger.debug(json.toString());
+		
+		String jsonResponse = makeConnectionAndGetResponse(serviceUrl, json);
+		
+		logger.debug(jsonResponse);
+		return jsonResponse;
 	}
 	
 	private String getKchainServiceURL() {

@@ -256,6 +256,19 @@ public class AnswerExtractionProcessor {
                 	foundClass = true;
                 }
                 if (foundClass && line.startsWith("    def ")) {
+                	int stidx = 8;
+                	while (line.charAt(stidx) != '(') {
+                		stidx++;
+                	}
+                	String start = line.substring(0, ++stidx);
+                	String rest = line.substring(stidx);
+                	if (rest.startsWith("self")) {
+                		rest = rest.substring(4);
+                		if (rest.startsWith(",")) {
+                			rest = rest.substring(1);
+                		}
+                		line = start + rest;
+                	}
                 	foundMethod = true;
                 }
             	if (foundMethod) {

@@ -1158,6 +1158,12 @@ public class JenaBasedDialogInferenceProcessor extends JenaBasedSadlInferencePro
 		}
 		return null;
 	}
+	
+	@Override
+	public Object[] insertTriplesAndQuery(Resource resource, List<TripleElement[]> triples) throws SadlInferenceException {
+		//TODO
+		return null;
+	}
 
 	private ConfigurationManagerForIDE getConfigMgrForIDE(Resource resource) {
 		ConfigurationManagerForIDE cmgr = null;

@@ -4,8 +4,11 @@ import com.ge.research.sadl.reasoner.ConfigurationManager
 import org.eclipse.xtext.diagnostics.Severity
 import org.junit.Ignore
 import org.junit.Test
+import com.ge.research.sadl.preferences.SadlPreferences
+import org.eclipse.xtext.preferences.PreferenceKey
+import com.ge.research.sadl.darpa.aske.processing.JenaBasedDialogModelProcessor
 
-class DialogTest extends AbstractDialogPlatformTest {
+class DialogUITest extends AbstractDialogPlatformTest {
 
 //	@IgnoresecondLaw
 	@Test
@@ -139,6 +142,7 @@ class DialogTest extends AbstractDialogPlatformTest {
 
 	@Test
 	def void testExtractTxtFile() {
+		
 		createFile('Model.sadl', '''
 			 uri "http://sadl.org/Model.sadl" alias mdl.
 			 
@@ -181,6 +185,9 @@ class DialogTest extends AbstractDialogPlatformTest {
 	
 	@Test
 	def void testExtractJavaFile() {
+ 
+ 		updatePreferences(new PreferenceKey(SadlPreferences.TYPE_CHECKING_WARNING_ONLY.id, Boolean.TRUE.toString));
+		
 		createFile('Model.sadl', '''
 			 uri "http://sadl.org/Model.sadl" alias mdl.
 			 
@@ -220,9 +227,15 @@ class DialogTest extends AbstractDialogPlatformTest {
 		''').resource.assertValidatesDialogTo[ontModel, rules, commands, issues, processor |
 			assertNotNull(ontModel)
 			assertTrue(issues.filter[severity === Severity.ERROR].empty)
+			if (processor instanceof JenaBasedDialogModelProcessor) {
+				val jbdmp = (processor as JenaBasedDialogModelProcessor)
+				val acm = jbdmp.answerCurationManager
+				val sadlContent = acm.getExtractionProcessor().getGeneratedSadlContent()
+				println("\n\n*****  New Dialog editor content *********")
+				println(sadlContent)
+			}
 		]
 	}
-	
 	
 //	@Ignore
 //	@Test
