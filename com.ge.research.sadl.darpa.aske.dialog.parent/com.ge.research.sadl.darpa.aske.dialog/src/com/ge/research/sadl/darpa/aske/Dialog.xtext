@@ -63,7 +63,8 @@ SadlModelElement returns sadl::SadlModelElement :
 	MyNameIsStatement EOS		|
 	TargetModelName EOS			|
 	ExtractStatement EOS		|
-	CompareStatement EOS 	 	
+	CompareStatement EOS		|
+	SuitableStatement EOS
 ;
 
 CompareStatement:
@@ -84,6 +85,11 @@ TargetModelName:
 
 MyNameIsStatement:
 	('My'|'my') 'name' 'is' answer=ID
+;
+
+SuitableStatement:
+	(('Which' | 'which') which=Expression 'is' 'suitable' suitableConnective=('for' | 'with') suitableExpression=Expression) |
+	(('is' | 'Is') what=Expression 'suitable' suitableConnective=('for' | 'when') suitableExpression=Expression)
 ;
 
 YesNoAnswerStatement:
