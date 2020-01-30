@@ -161,7 +161,77 @@ public class JenaBasedDialogInferenceProcessor extends JenaBasedSadlInferencePro
 	public static final String METAMODEL_ASSUMPTIONSSATISFIED_PROP = METAMODEL_PREFIX + "assumptionsSatisfied";
 	public static final String METAMODEL_ASSUMPTIONUNSATISFIED_PROP = METAMODEL_PREFIX + "unsatisfiedAssumption";
 	
-	public static final String DEPENDENCY_GRAPH_INSERT = "prefix cg:<http://aske.ge.com/compgraphmodel#>\n" + 
+	
+	
+	public static final String GENERIC_IOs_INSERT = "prefix cg:<http://aske.ge.com/compgraphmodel#>\n" + 
+			"prefix imp:<http://sadl.org/sadlimplicitmodel#>\n" + 
+			"prefix sci:<http://aske.ge.com/sciknow#>\n" + 
+			"prefix rdfs:<http://www.w3.org/2000/01/rdf-schema#>\n" +
+			"prefix rdf:<http://www.w3.org/1999/02/22-rdf-syntax-ns#>\n" +
+			"prefix list:<http://sadl.org/sadllistmodel#>\n" + 
+			"\n" + 
+			"insert { ?EqCh imp:genericInput ?In. ?EqPa imp:genericOutput ?Out. }\n" + 
+			"where {\n" + 
+			" { ?EqPa a imp:Equation.\n" + 
+			"  ?EqPa imp:returnTypes ?AL1.\n" + 
+			"  ?AL1 list:rest*/list:first ?AO1.\n" + 
+			"  ?AO1 imp:augmentedType ?Type1.\n" + 
+			"  ?Type1 imp:constraints ?CL1.\n" + 
+			"  ?CL1 rdf:rest*/rdf:first ?C1.\n" + 
+			"  ?C1 imp:gpPredicate ?P.\n" + 
+			"  ?P rdfs:range ?Out. }\n" + 
+			" \n" + 
+			"  union {\n" + 
+			"    ?EqPa imp:implicitOutput/imp:augmentedType/imp:semType ?Out.\n" + 
+			"    filter not exists{?EqPa a imp:IntializerMethod} }\n" + 
+			"\n" + 
+			"  union{\n" + 
+			"   ?EqCh imp:arguments ?AL2.\n" + 
+			"   ?AL2 list:rest*/list:first ?AO2.\n" + 
+			"   ?AO2 imp:augmentedType ?Type2.\n" + 
+			"   ?Type2 imp:constraints ?CL2.\n" + 
+			"   ?CL2 rdf:rest*/rdf:first ?C2.\n" + 
+			"   ?C2 imp:gpPredicate ?P.\n" + 
+			"   ?P rdfs:range ?In.}\n" + 
+			"   \n" +
+			"  union {\n" + 
+			"    ?EqCh imp:arguments ?AL2.\n" + 
+			"    ?AL2 list:rest*/list:first ?AO2.\n" + 
+			"    ?AO2 imp:localDescriptorName ?In.}\n" +
+			"  union {?EqCh imp:implicitInput/imp:augmentedType/imp:semType ?In.\n" + 
+			"   filter not exists{?EqCh a imp:IntializerMethod} }\n" + 
+			"\n" + 
+			"  union {\n" + 
+			"   ?EqPa imp:implicitOutput/imp:localDescriptorName ?Out.\n" + 
+			"   filter not exists{?EqPa a imp:IntializerMethod} }\n" + 
+			"  union {\n" + 
+			"   ?EqCh imp:implicitInput/imp:localDescriptorName ?In.\n" + 
+			"   filter not exists{?EqCh a imp:IntializerMethod} }\n" + 
+			"}";
+	
+	public static final String DEPENDENCY_GRAPH_INSERT = "prefix cg:<http://aske.ge.com/compgraphmodel#>\n" +
+		    "prefix imp:<http://sadl.org/sadlimplicitmodel#>\n" +
+			"insert {?EqCh cg:parent ?EqPa}\n" +
+			"where {\n" + 
+			"{\n" + 
+			" ?EqCh imp:genericInput ?V.\n" + 
+			" ?EqPa imp:genericOutput ?V.\n" + 
+			"\n" + 
+			"  filter( ?EqPa != ?EqCh)}\n" + 
+			"  filter not exists {?EqCh imp:dependsOn ?EqPa}\n" + 
+			"  filter not exists {?EqPa imp:dependsOn ?EqCh}\n" + 
+			"  filter not exists {?EqCh imp:versionOf ?EqPa}\n" + 
+			"  filter not exists {?EqPa imp:versionOf ?EqCh}\n" + 
+			"\n" + 
+			"  filter not exists {\n" + 
+			"    ?EqCh imp:genericOutput ?V1.\n" + 
+			"    ?EqPa imp:genericInput ?V1.\n" + 
+			"    filter not exists {?EqPa imp:genericOutput ?V1.}\n" + 
+			"  }\n" + 
+			"}";
+			
+	
+	public static final String DEPENDENCY_GRAPH_INSERT_ORIG = "prefix cg:<http://aske.ge.com/compgraphmodel#>\n" + 
 			"prefix imp:<http://sadl.org/sadlimplicitmodel#>\n" +
 			"prefix sci:<http://aske.ge.com/sciknow#>\n" +
 			"prefix rdfs:<http://www.w3.org/2000/01/rdf-schema#>\n" +
@@ -811,6 +881,8 @@ public class JenaBasedDialogInferenceProcessor extends JenaBasedSadlInferencePro
 		
 			// Insert dependency graph
 			//String tmp = DEPENDENCY_GRAPH_INSERT
+			UpdateAction.parseExecute(GENERIC_IOs_INSERT , getTheJenaModel());
+
 			UpdateAction.parseExecute(DEPENDENCY_GRAPH_INSERT , getTheJenaModel());
 			
 			ResultSetRewindable depTest = queryKnowledgeGraph(CHECK_DEPENDENCY, getTheJenaModel());
