@@ -663,7 +663,14 @@ public class JenaBasedDialogModelProcessor extends JenaBasedSadlModelProcessor {
 	private List<Rule> whenAndThenToCookedRules(EObject whenExpr, EObject thenExpr)
 			throws InvalidNameException, InvalidTypeException, TranslationException {
 		Object thenObj = processExpression(thenExpr);
-		Node whenObj = nodeCheck(processExpression(whenExpr));
+		Object wh = processExpression(whenExpr);
+		if (wh instanceof Object[]) {
+			if (((Object[])wh).length == 2 && ((Object[])wh)[1] instanceof GraphPatternElement) {
+				// expected
+				wh = ((Object[])wh)[1];
+			}
+		}
+		Node whenObj = nodeCheck(wh);
 		List<Node> thenObjects = new ArrayList<Node>();
 		NamedNode specifiedPropertyNN = null;
 		if (thenObj instanceof Junction) {
@@ -806,7 +813,7 @@ public class JenaBasedDialogModelProcessor extends JenaBasedSadlModelProcessor {
 		for (int i = 0; i < augmentedComparisonObjects.size(); i++) {
 			Node cobj = augmentedComparisonObjects.get(i);
 			Node newWhen = dift.newCopyOfProxyNode(whenObj);
-			Rule pseudoRule = new Rule("ComparePseudoRule", null, nodeToGPEList(newWhen), nodeToGPEList(cobj));
+			Rule pseudoRule = new Rule("ComparePseudoRule" + i, null, nodeToGPEList(newWhen), nodeToGPEList(cobj));
 			populateRuleVariables(pseudoRule);
 			dift.setTarget(pseudoRule);
 			Rule modifiedRule = dift.cook(pseudoRule);
