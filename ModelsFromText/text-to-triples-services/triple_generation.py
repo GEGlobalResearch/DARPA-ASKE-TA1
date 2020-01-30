@@ -48,9 +48,28 @@ entity_uri_attributes_cache = {}
 def populate_graph_entity_triples(g: Graph, entity_uri: str, label: str, similarity_score: float,
                                   match_text: str) -> Graph:
     match_text = match_text.replace(".", "")
-    g.add((URIRef(entity_uri), RDFS.label, Literal(match_text)))
-    g.add((URIRef(entity_uri), RDFS.label, Literal(label)))
-    g = get_entity_attributes_graph(entity_uri, g)
+
+    # g.add((URIRef(entity_uri), RDFS.label, Literal(match_text)))
+    # g.add((URIRef(entity_uri), RDFS.label, Literal(label)))
+    # g = get_entity_attributes_graph(entity_uri, g)
+
+    # match_text rdfs:subclassof sadl:ScientificConcept
+    # need a method to convert "string" to valid URI
+    # infer if its a UnitedQuantity
+    # rdfs:label
+    # rdfs:seealso wikidata
+    # should we get more labels from wikidata?
+    # same concept appears twice? (capture the context where it appears)
+    # we need properties to capture the context
+
+    sadl_implicit_model: Namespace = Namespace("http://sadl.org/sadlimplicitmodel#")
+    match_text_uri_name = get_valid_uri(match_text)
+
+    g.add((URIRef(match_text_uri_name), RDFS.subClassOf, sadl_implicit_model.ScientificConcept))
+    g.add((URIRef(match_text_uri_name), RDFS.seeAlso, URIRef(entity_uri)))
+    g.add((URIRef(match_text_uri_name), RDFS.label, Literal(match_text)))
+    g.add((URIRef(match_text_uri_name), RDFS.label, Literal(label)))
+
     return g
 
 
@@ -60,33 +79,50 @@ def populate_graph_equation_triples(g: Graph, equation_string: str, parameters, 
 
     python_code = "NA"
     tf_code = "NA"
+    equation_type = ''
     inputs = []
     return_var = []
 
-    if "code" in parameters:
-        code_equation_parameters = parameters["code"]
-        if "pyCode" in code_equation_parameters:
-            python_code = code_equation_parameters["pyCode"]
-        if "tfCode" in code_equation_parameters:
-            tf_code = code_equation_parameters["tfCode"]
-        if "inputVars" in code_equation_parameters:
-            inputs = code_equation_parameters["inputVars"]
-        if "outputVars" in code_equation_parameters:
-            return_var = code_equation_parameters["outputVars"]
+    if "type" in parameters:
+        equation_type = parameters["type"]
 
     eq_num: int = get_equation_count(g) + 1
-    eq_uri = "equation_" + str(eq_num)
+    base_eq_uri = "equation_" + str(eq_num)
 
-    eq_uri = local_graph_uri + eq_uri
+    base_eq_uri = local_graph_uri + base_eq_uri
+    g.add((URIRef(base_eq_uri), RDF.type, sadl_implicit_model.ExternalEquation))
+    add_script_triples(g, sadl_implicit_model, base_eq_uri, "Text", equation_string)
 
-    g.add((URIRef(eq_uri), RDF.type, sadl_implicit_model.ExternalEquation))
+    if "code" in parameters:
+        codes = parameters["code"]
+        for code_equation_parameters in codes:
+            if "pyCode" in code_equation_parameters:
+                python_code = code_equation_parameters["pyCode"]
+            if "tfCode" in code_equation_parameters:
+                tf_code = code_equation_parameters["tfCode"]
+            if "inputVars" in code_equation_parameters:
+                inputs = code_equation_parameters["inputVars"]
+            if "outputVars" in code_equation_parameters:
+                return_var = code_equation_parameters["outputVars"]
 
-    add_script_triples(g, sadl_implicit_model, eq_uri, "Text", equation_string)
-    add_script_triples(g, sadl_implicit_model, eq_uri, "Python", python_code)
-    add_script_triples(g, sadl_implicit_model, eq_uri, "Python-TF", tf_code)
+            if equation_type == "lhs_has_operators":
+                eq_num: int = get_equation_count(g) + 1
+                eq_uri = "equation_" + str(eq_num)
+                eq_uri = local_graph_uri + eq_uri
+                g.add((URIRef(eq_uri), RDF.type, sadl_implicit_model.ExternalEquation))
+                # triple for connecting original equation with interpreted equation
+                g.add((URIRef(eq_uri), sadl_implicit_model.derivedFrom, URIRef(base_eq_uri)))
+            else:
+                eq_uri = base_eq_uri
 
-    add_variable_triple(g, eq_uri, inputs, sadl_implicit_model, "arguments")
-    add_variable_triple(g, eq_uri, return_var, sadl_implicit_model, "returnTypes")
+            # if type was set don't set Text triple
+            # add_script_triples(g, sadl_implicit_model, eq_uri, "Text", equation_string)
+
+            add_script_triples(g, sadl_implicit_model, eq_uri, "Python", python_code)
+            add_script_triples(g, sadl_implicit_model, eq_uri, "Python-TF", tf_code)
+
+            add_variable_triple(g, eq_uri, inputs, sadl_implicit_model, "arguments")
+            add_variable_triple(g, eq_uri, return_var, sadl_implicit_model, "returnTypes")
 
 
 def populate_augmented_type_triples(g: Graph, var_uri, wikidata_uri):
@@ -152,6 +188,17 @@ def get_equation_count(g: Graph):
 
     return num_equations
 
+
+def get_valid_uri(uri_name: str) -> str:
+    uri_name = uri_name.replace(' ', '_')
+    mod_uri_name = ''
+
+    for char in uri_name:
+        code = ord(char)
+        if 48 <= code <= 57 or 65 <= code <= 90 or 97 <= code <= 122:
+            mod_uri_name = mod_uri_name + char
+
+    return mod_uri_name
 
 # Backward compatible methods. To to be deprecated and removed #
 

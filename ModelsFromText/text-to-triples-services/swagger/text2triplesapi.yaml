@@ -16,10 +16,52 @@ tags:
   description: "services to support text extraction demo fom web UI"
 - name: "text2triples"
   description: "everything about text to triples"
+- name: "test"
+  description: "services to evaluate text to triple functionality"
 schemes:
 - "https"
 - "http"
 paths:
+  /runQueries:
+    post:
+      tags:
+      - "test"
+      operationId: "app_text_to_triples.run_queries"
+      consumes:
+      - application/json
+      produces:
+      - application/json
+      parameters:
+      - in: "body"
+        name: "body"
+        required: true
+        schema:
+          $ref: "#/definitions/Graph"
+      responses:
+        200:
+          description: "successful operation"
+        405:
+          description: "Invalid input"
+  /getEquations:
+    post:
+      tags:
+      - "test"
+      operationId: "app_text_to_triples.get_equations"
+      consumes:
+      - application/json
+      produces:
+      - application/json
+      parameters:
+      - in: "body"
+        name: "body"
+        required: true
+        schema:
+          $ref: "#/definitions/Graph"
+      responses:
+        200:
+          description: "successful operation"
+        405:
+          description: "Invalid input"
   /text2triplesWebDemo:
     post:
       tags:

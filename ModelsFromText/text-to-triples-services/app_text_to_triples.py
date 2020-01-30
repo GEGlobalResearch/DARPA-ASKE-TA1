@@ -92,6 +92,16 @@ def text_to_triples_backward_compatible(body):
     return t2tbcs.text_to_triples_backward_compatible(body, application.config['config_obj'])
 
 
+def get_equations(body):
+    g = t2t_obj.get_graph(body["localityURI"])
+    return t2t.get_equations(g)
+
+
+def run_queries(body):
+    g = t2t_obj.get_graph(body["localityURI"])
+    return t2t.run_queries(g)
+
+
 def process_example_doc(body):
 
     file_path = "demo/" + str(body["docId"]) + ".txt"

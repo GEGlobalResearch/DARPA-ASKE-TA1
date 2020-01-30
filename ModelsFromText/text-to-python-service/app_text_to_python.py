@@ -39,7 +39,6 @@ from flask import Flask, render_template, request
 import json
 import math
 import re
-
 import pdb
 
 
@@ -76,134 +75,251 @@ def isNumber(inputstr):
 		return False
 
 
-def getInputArgumentList(inputString1):
+def getTokenList(tokStr):
 	'''
-	Extract the input arguments for proper display
+	Extract the arguments for proper display.
+	Similar to the getInputArgumentList function but this one expects just a string with no = signs
+	and parses without any special consideration of / or * signs
 	'''
 
-	if 'gradients' in inputString1:
-		mitems = inputString1.split('tf.gradients')
-		trhs = mitems[1]
-		matchIndex = trhs.find('stop_gradients')
-		rhs = trhs[0:matchIndex]
-	else:
-		lhs, rhs = inputString1.split('=')
+	for i in ['=','+','-','*','/','(',')','[',']',',','^','\'']:
+		tokStr = tokStr.replace(i, ' ')
+	tmpList = tokStr.split()
 
-	### Ignore common operators since they are not input arguments
-	for i in rhs:
-		if i in ['=','+','-','*','/','(',')','[',']',',']:
-			rhs = rhs.replace(i, ' ')
-	rhstokens = rhs.split()
-
-	specialTokens = ['tf.math.pow','tf.math.exp']
+	specialTokens = ['tf.math.pow','tf.math.exp', 'tf.gradients', 'stop_gradients','name']
 	mtokens = []
-	for i in rhstokens:
-		if not isNumber(i) and i not in mtokens and i not in specialTokens:
+	for i in tmpList:
+		if not isNumber(i) and (i not in mtokens) and (i not in specialTokens):
 			mtokens.append(i)
 
 	return mtokens
 
 
-def modifyEquation(inputStr, inputStrLHS, inputStrRHS, modifExpr, gradients):
+def getRHSFromGradientStr(inStr):
+
+	mitems = inStr.split('tf.gradients')
+	trhs = mitems[1]
+	matchIndex = trhs.find('stop_gradients')
+	rhs = trhs[0:matchIndex]
+
+	return rhs
+
+
+def modifyEquation(inputStr, inputStrLHS, inputStrRHS, modifExpr, gradients, lhsRatio=0):
 
 	'''
 	Take an equation string and create a JSON object with the LHS and RHS components, etc.
 	The return value is this JSON object
 	'''
 
+	modifExpr = modifExpr.replace('"','')
 	if gradients == 1:
 		
 		### For equations containing tf.gradient, there are essentially two equations, joined by a newline
 		if '\n' in modifExpr:
 			eqn1, eqn2 = modifExpr.split('\n')
-			inputArgs1 = []
-			inputArgs2 = []
+			mArgs1 = []
+			mArgs2 = []
 			lhs1 = ""
 			rhs1 = ""
 			lhs2 = ""
 			rhs2 = ""
+
 			if 'gradients' in eqn1:
 				eqn1 = eqn1.replace('"','')
 				firstEqualSign = eqn1.find('=')
-				inputArgs1 = getInputArgumentList(eqn1)
+				gradRHS = getRHSFromGradientStr(eqn1)
+				mArgs1 = getTokenList(gradRHS)
 				lhs1 = eqn1[:firstEqualSign]
 				rhs1 = eqn1[firstEqualSign+1:]
 			if 'gradients' not in eqn2:
 				lhs2, rhs2 = eqn2.split('=')
 				eqn2 = eqn2.replace('"','')
-				inputArgs2 = getInputArgumentList(eqn2)
-			inputArgs = inputArgs1 + inputArgs2
+				mArgs2 = getTokenList(rhs2)
+
+			outputArgs = mArgs1 + mArgs2
+
+			### two equations on two lines; 4 space indent in front of the 2nd line
 			lhs = lhs1 + '\n' + '    ' + lhs2
 			rhs = rhs1 + '\n' + '    ' + rhs2
 		else:
 			lhs, rhs = modifExpr.split('=')
-			modifExpr = modifExpr.replace('"','')
-			inputArgs = getInputArgumentList(modifExpr)
-	else:
+			outputArgs = getTokenList(lhs)
+	elif lhsRatio == 0:
 		lhs, rhs = modifExpr.split('=')
-		modifExpr = modifExpr.replace('"','')
-		inputArgs = getInputArgumentList(modifExpr)
+		outputArgs = getTokenList(lhs)
+	elif lhsRatio == 1:
+		totalExpr = inputStrLHS + ' = ' + modifExpr
+		lhs, rhs = totalExpr.split('=')
+		outputArgs = getTokenList(inputStrLHS)
 
 	lhs = lhs.replace('"','').strip()
 	rhs = rhs.replace('"','').strip()
 
 	lhs = lhs.replace(' ','')
-	mitems = lhs.split('**')
 
-	### Create the JSON object which will be returned in the end
-	### It has three top-level variables. The 'text' and 'code
-	### variables are the ones that are important. The 'extras'
-	### variable is more for use in case of debugging
+	mitems = []
+	if '**' in lhs:
+		mitems = lhs.split('**')
+	elif '/' in lhs:
+		mitems = lhs.split('/')
+	### IMPORTANT: keep the check for '*' after '**' else it will not work properly
+	elif '*' in lhs:
+		mitems = lhs.split('*')
+	elif '^' in lhs:
+		mitems = lhs.split('^')
+	else:
+		mitems = lhs.split()
+
+	### Create the JSON object that will be returned in the end
+	### It has two top-level variables -  'text' and 'code
 	modifObj = dict()
 	modifObj['text'] = dict()
-	modifObj['code'] = dict()
-	modifObj['extras'] = dict()
+	modifObj['text']['type'] = []
+
+	modifObj['code'] = []
+
+	### This is for the case when there is only one interpretation of an equation
+	oneInterpretation = dict()
+
+	tokList = []
+	rhsStr = rhs
+	tokList = getTokenList(rhsStr)
 
 	modifObj['text']['inputString'] = inputStr
-	modifObj['text']['inputVars'] = inputArgs
-	modifObj['code']['inputVars'] = inputArgs
+	modifObj['text']['inputVars'] = tokList
+	modifObj['text']['outputVars'] = outputArgs
 
-	modifObj['extras']['modifiedLHS'] = lhs
-	modifObj['extras']['modifiedRHS'] = rhs
-	modifObj['extras']['codeEquation'] = lhs + ' = ' + rhs
+	tCodeEqn = lhs + ' = ' + rhs
+
+	gradString = 'gradient'
+	noGradString = 'no_gradients'
 
 	if gradients == 1:
 		lhs1, lhs2 = lhs.split('\n')
 		rhs1, rhs2 = rhs.split('\n')
-		modifObj['extras']['codeEquation'] = lhs1.strip(' ') + '=' + rhs1.strip(' ') + '\n    ' + lhs2.strip(' ') + '=' + rhs2.strip(' ')
-	modifObj['code']['outputVars'] = list(str(lhs).split())
-	modifObj['text']['outputVars'] = list(str(inputStrLHS).split())
-
-	if gradients == 1:
-		modifObj['text']['type'] = 'gradient'
-		modifObj['code']['type'] = 'gradient'
+		(modifObj['text']['type']).append(gradString)
 	else:
-		modifObj['text']['type'] = 'no_gradients'
-		modifObj['code']['type'] = 'no_gradients'
+		(modifObj['text']['type']).append(noGradString)
 
-	specialTokens = ['tf.math.pow','tf.math.exp']
+	inputArgs = getTokenList(inputStrRHS)
 
-	### Current assumption is that if lhs contains two arguments, it is a case of ^ operation
-	### This is the special case of a^2 on the LHS.
-	if len(mitems) == 2:
-		modifObj['code']['outputVars'] = mitems[0]
+	modifObj['text']['outputExpression'] = list(str(inputStrLHS).split())
 
-		modifObj['extras']['codeLHS'] = mitems[0]
-		modifObj['extras']['codeRHS'] = 'tf.math.pow(' + rhs + ', 1/' + str(mitems[1]) + ')'
-		modifObj['extras']['codeEquation'] = modifObj['extras']['codeLHS'] + ' = ' + modifObj['extras']['codeRHS']
-		modifObj['code']['tfCode'] = modifObj['extras']['codeLHS'] + ' = ' + modifObj['extras']['codeRHS']
-		modifObj['code']['pyCode'] = modifObj['extras']['codeLHS'] + ' = ' + modifObj['extras']['codeRHS']
+	# Are there 2 more variables on the LHS and an operator (**, /, *)
 
-		modifObj['extras']['TF operations'] = [x for x in specialTokens if x in modifObj['extras']['codeEquation']]
+	lhsOperStr = ''
+	tLHS = ''
+	tRHS = ''
 
-		modifObj['text']['type'] += ',lhs_has_power_(^)_operation'
-		modifObj['code']['type'] += ',lhs_has_power_(^)_operation'
+	listOutputVars = []
 
-	modifObj['code']['tfCode'] = modifObj['extras']['codeEquation']
-	modifObj['code']['pyCode'] = modifObj['extras']['codeEquation']
+	lhsOperFlag = 0
+	mulInterpretFlag = 0
 
-	if 'tf.' in modifObj['extras']['codeEquation']:
-		modifObj['code']['pyCode'] = modifObj['code']['tfCode'].replace('tf.','')
+	if (len(mitems) == 2) and ('^' in lhs):
+		lhsOperFlag = 1
+		lhsOperStr = 'lhs_has_power(^)_operation'
+
+		listOutputVars = list(str(mitems[0]).split())
+
+		tLHS = mitems[0]
+		tRHS = 'tf.math.pow(' + rhs + ', 1/' + str(mitems[1]) + ')'
+
+	elif (len(mitems) == 2) and ( ('/' in lhs) or ('*' in lhs)) :
+
+		lhsOperFlag = 1
+		mulInterpretFlag = 1
+		lhsOperStr = 'lhs_has_operators'
+	
+		divideFlag = 0
+		multiplyFlag = 0
+
+		if '/' in lhs:
+			divideFlag = 1
+		elif '*' in lhs:
+			multiplyFlag = 1
+
+		modifObj['code'] = []
+
+		### INTERPRETATION 1 ###
+
+		tLHS = mitems[0]
+
+		if divideFlag == 1:
+			tRHS = '(' + rhs + ')' + ' * ' + str(mitems[1])
+		elif multiplyFlag == 1:
+			tRHS = '(' + rhs + ')' + ' / ' + str(mitems[1])
+
+		totalExpr = tLHS + ' = ' + tRHS
+		inputArgs = getTokenList(tRHS)
+		interpretation1 = dict()
+		if lhsOperStr not in modifObj['text']['type']:
+			(modifObj['text']['type']).append(lhsOperStr)
+		interpretation1['inputVars'] = inputArgs
+
+		listOutputVars = list(str(mitems[0]).split())
+		interpretation1['outputVars'] = listOutputVars
+
+		tCodeEqn =  tLHS + ' = ' + tRHS
+
+		interpretation1['tfCode'] = tCodeEqn
+		interpretation1['pyCode'] = tCodeEqn
+		if 'tf.' in tCodeEqn:
+			interpretation1['pyCode'] = interpretation1['tfCode'].replace('tf.','')
+
+		modifObj['code'].append(interpretation1)
+
+		### INTERPRETATION 2 ###
+
+		tLHS = mitems[1]
+		if divideFlag == 1:
+			tRHS = str(mitems[0]) + ' / ' + '(' + rhs + ')' 
+		elif multiplyFlag == 1:
+			tRHS = '(' + rhs + ')' + ' / ' + str(mitems[0])
+
+		totalExpr = tLHS + ' = ' + tRHS
+		inputArgs = getTokenList(tRHS)
+		interpretation2 = dict()
+		if lhsOperStr not in modifObj['text']['type']:
+			(modifObj['text']['type']).append(lhsOperStr)
+		interpretation2['inputVars'] = inputArgs
+
+		tCodeEqn =  tLHS + ' = ' + tRHS
+
+		listOutputVars = list(str(mitems[1]).split())
+		interpretation2['outputVars'] = listOutputVars
+	
+		interpretation2['tfCode'] = tCodeEqn
+		interpretation2['pyCode'] = tCodeEqn
+		if 'tf.' in tCodeEqn:
+			interpretation2['pyCode'] = interpretation2['tfCode'].replace('tf.','')
+
+		modifObj['code'].append(interpretation2)
+
+
+	elif len(mitems) == 1:
+		listOutputVars.append(lhs)
+		oneInterpretation['outputVars'] = listOutputVars
+		oneInterpretation['inputVars'] = inputArgs
+
+
+	if lhsOperFlag == 1 and mulInterpretFlag == 0:
+		tCodeEqn =  tLHS + ' = ' + tRHS
+		(modifObj['text']['type']).append(lhsOperStr)
+
+	if mulInterpretFlag == 0 and gradients == 0:
+		oneInterpretation['tfCode'] = tCodeEqn
+		oneInterpretation['pyCode'] = tCodeEqn
+		modifObj['code'].append(oneInterpretation)
+		if 'tf.' in tCodeEqn:
+			oneInterpretation['pyCode'] = oneInterpretation['tfCode'].replace('tf.','')
+	if mulInterpretFlag == 0 and gradients == 1:
+		oneInterpretation['tfCode'] = modifExpr
+		oneInterpretation['pyCode'] = modifExpr
+		modifObj['code'].append(oneInterpretation)
+		if 'tf.' in tCodeEqn:
+			oneInterpretation['pyCode'] = oneInterpretation['tfCode'].replace('tf.','')
 
 
 	jsonObj = json.dumps(modifObj)
@@ -222,7 +338,11 @@ def extractExpression(inputStr, gradientFlag):
 		strLHS = ""
 		strRHS = ""
 	else:
-		strLHS, strRHS = currLine.split('=')
+		if '=' in currLine:
+			strLHS, strRHS = currLine.split('=')
+		else:
+			strLHS = ''
+			strRHS = ''
 
 	megaExpression = ""
 	startEquationFlag = 1
@@ -300,9 +420,31 @@ def extractExpression(inputStr, gradientFlag):
 						megaExpression = newExpr + tfPowExpr + subStr2 + ','
 						specialExpCheckFlag = 1
 				else:
+
+					while (currLine[k] != '('):
+						subStr += currLine[k]
+						k = k - 1
+						backCount += 1
+
+					subStr2 = subStr[::-1]
+
+					p = len(megaExpression) - 1
+
+					count=0
+					while megaExpression[p] != '(':
+						p = p - 1
+						count += 1
+					p = p - 1
+					newExpr = megaExpression[0:p]
+					if newExpr[-1] != '(':
+						tmpNewExpr = newExpr + '('
+						newExpr = tmpNewExpr
+					megaExpression = newExpr + tfPowExpr + subStr2 + ','
 					
-					if lhsProcessedFlag == 0:
-						megaExpression +=  " ** "
+					specialExpCheckFlag = 1
+
+					#if lhsProcessedFlag == 0:
+						#megaExpression +=  " ** "
 					
 
 			elif currChar == '_' and nextChar == '{':
@@ -371,9 +513,27 @@ def extractExpression(inputStr, gradientFlag):
 						megaExpression += " )) "
 					else:
 						megaExpression += " ) "
-					
 				else:
-					megaExpression += currChar
+					if specialExpCheckFlag == 1:
+						if isNumber(currChar):
+							megaExpression += currChar
+							i = i  + 1
+							currChar = currLine[i]
+							while isNumber(currChar) or (currChar == '.'):
+								megaExpression += currChar
+								i = i  + 1
+								currChar = currLine[i]
+							if currChar == '*':
+								megaExpression += ')' + currChar
+							elif currChar == ']':
+								megaExpression += ') ) '
+							else:
+								megaExpression += currChar + ')'
+						else:
+							megaExpression += currChar + ')'
+						specialExpCheckFlag = 0
+					else:
+						megaExpression += currChar
 			i = i+1
 				
 	return megaExpression, strLHS, strRHS
@@ -386,6 +546,8 @@ def convertToCode(inputStr):
 	currLine = inputStr.replace(' ','')
 
 	gradientFlag = 0
+	lhsRatio = 0
+
 	pattern = 'd\S+\/d\S+'
 	result = re.search(pattern, currLine)
 	if result:
@@ -420,9 +582,55 @@ def convertToCode(inputStr):
 
 	else:
 		gradientFlag = 0
-		(megaExpression, strLHS, strRHS) = extractExpression(inputStr, gradientFlag)
 
-	modifObj = modifyEquation(inputStr,strLHS,strRHS,megaExpression,gradientFlag)
+		lhsRatioPatternDiv = '.*\/.*='
+
+		result = re.search(lhsRatioPatternDiv, currLine)
+
+		if result:
+			# LHS has divide operation
+			lhsRatio = 1
+
+			endChar = result.end()
+			subExpr = currLine[endChar:]
+			(megaExpression, strLHS, strRHS) = extractExpression(subExpr, gradientFlag)
+			strLHS = currLine[:endChar-1]
+		else:
+			lhsRatioPatternMul = '.*\*.*='
+			result2 = re.search(lhsRatioPatternMul, currLine)
+
+			if result2:
+				# LHS has multiply operation
+				lhsRatio = 1
+
+				endChar = result2.end()
+				subExpr = currLine[endChar:]
+
+				(megaExpression, strLHS, strRHS) = extractExpression(subExpr, gradientFlag)
+				strLHS = currLine[:endChar-1]
+				strRHS = subExpr
+
+			else:
+
+				lhsRatioPatternPow = '.*\^.*='
+				result3 = re.search(lhsRatioPatternPow, currLine)
+
+				if result3:
+					# LHS has power operation
+					lhsRatio = 1
+
+					endChar = result3.end()
+					subExpr = currLine[endChar:]
+
+					(megaExpression, strLHS, strRHS) = extractExpression(subExpr, gradientFlag)
+					strLHS = currLine[:endChar-1]
+					strRHS = subExpr
+
+				else:
+
+					(megaExpression, strLHS, strRHS) = extractExpression(inputStr, gradientFlag)
+
+	modifObj = modifyEquation(inputStr,strLHS,strRHS,megaExpression,gradientFlag,lhsRatio)
 	#print('\n###################################\nModified Object JSON object =\n', json.dumps(json.loads(modifObj),indent=4))
 
 	return json.loads(modifObj)
