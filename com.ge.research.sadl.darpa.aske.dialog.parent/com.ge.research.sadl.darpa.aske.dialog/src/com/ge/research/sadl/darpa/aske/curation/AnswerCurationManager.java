@@ -2873,8 +2873,10 @@ public class AnswerCurationManager {
 								triplesList.add(tr);
 							}
 							TripleElement[] triples = triplesList.toArray(new TripleElement[triplesList.size()]);
-			                OntModelProvider.addPrivateKeyValuePair(resource, DialogConstants.LAST_DIALOG_COMMAND, triples);
-	                		Object[] rss = insertTriplesAndQuery(resource, triples);
+							List<TripleElement[]> listOfTriples = new ArrayList<TripleElement[]>();
+							listOfTriples.add(triples);
+			                OntModelProvider.addPrivateKeyValuePair(resource, DialogConstants.LAST_DIALOG_COMMAND, listOfTriples);
+	                		Object[] rss = insertTriplesAndQuery(resource, listOfTriples);
 	                		
 	            			String answer = getAnswerAndVisualize(sc, rss);
 
@@ -3003,9 +3005,9 @@ public class AnswerCurationManager {
 				if (allTripleElements((Object[])trgt)) {
 					//Object ctx = null;
 					TripleElement[] triples = flattenTriples((Object[])trgt);
-					//ctx = triples[0].getContext();
-					//StringBuilder answer = new StringBuilder();
-					Object[] rss = insertTriplesAndQuery(resource, triples);
+					List<TripleElement[]> listOfTriples = new ArrayList<TripleElement[]>();
+					listOfTriples.add(triples);
+					Object[] rss = insertTriplesAndQuery(resource, listOfTriples);
 					String resultStr = null;
 					if (rss != null) {
 						StringBuilder sb = new StringBuilder();
@@ -3061,8 +3063,9 @@ public class AnswerCurationManager {
 				}
 				TripleElement[] triples = new TripleElement[tripleLst.size()];
 				triples = tripleLst.toArray(triples);
-				
-				Object[] rss = insertTriplesAndQuery(resource, triples);
+				List<TripleElement[]> listOfTriples = new ArrayList<TripleElement[]>();
+				listOfTriples.add(triples);
+				Object[] rss = insertTriplesAndQuery(resource, listOfTriples);
 				String answer = getAnswerAndVisualize(sc, rss);
 				if (rss != null) {
 					retVal = retVal + (retVal.length() > 0 ? "\n" : "") + stringToQuotedeString(answer);
@@ -3688,11 +3691,11 @@ public class AnswerCurationManager {
 		return resultStr;
 	}
 
-	private Object[] insertTriplesAndQuery(org.eclipse.emf.ecore.resource.Resource resource, TripleElement[] triples) throws ExecutionException, SadlInferenceException {
-		getConfigurationManager().addPrivateKeyValuePair(DialogConstants.ANSWER_CURATION_MANAGER, this);
-		return getInferenceProcessor().insertTriplesAndQuery(resource, triples);
-	}
-
+//	private Object[] insertTriplesAndQuery(org.eclipse.emf.ecore.resource.Resource resource, TripleElement[] triples) throws ExecutionException, SadlInferenceException {
+//		getConfigurationManager().addPrivateKeyValuePair(DialogConstants.ANSWER_CURATION_MANAGER, this);
+//		return getInferenceProcessor().insertTriplesAndQuery(resource, triples);
+//	}
+//
 	private Object[] insertTriplesAndQuery(org.eclipse.emf.ecore.resource.Resource resource, List<TripleElement[]> triples) throws ExecutionException, SadlInferenceException {
 		getConfigurationManager().addPrivateKeyValuePair(DialogConstants.ANSWER_CURATION_MANAGER, this);
 		return getInferenceProcessor().insertTriplesAndQuery(resource, triples);

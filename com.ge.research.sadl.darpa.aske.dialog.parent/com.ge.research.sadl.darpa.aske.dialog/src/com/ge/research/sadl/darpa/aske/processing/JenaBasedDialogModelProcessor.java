@@ -687,6 +687,15 @@ public class JenaBasedDialogModelProcessor extends JenaBasedSadlModelProcessor {
 		else if (thenObj instanceof NamedNode) {
 			thenObjects.add((Node) thenObj);
 		}
+		else if (thenObj instanceof TripleElement) {
+			if (((TripleElement)thenObj).getSubject() instanceof VariableNode) {
+				((TripleElement)thenObj).setSubject(((VariableNode)((TripleElement)thenObj).getSubject()).getType());
+			}
+			thenObjects.add(nodeCheck(thenObj));
+		}
+		else if (thenObj instanceof BuiltinElement) {
+			addError("BuiltinElements not yet handled.", thenExpr);
+		}
 		List<Node> augmentedComparisonObjects = new ArrayList<Node>();
 		for (int idx = 0; idx < thenObjects.size(); idx++) {
 			Node cn = thenObjects.get(idx);

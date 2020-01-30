@@ -10,6 +10,7 @@ import static org.junit.Assert.assertTrue
 import static org.junit.Assert.assertEquals
 import com.ge.research.sadl.darpa.aske.processing.JenaBasedDialogModelProcessor
 import com.ge.research.sadl.darpa.aske.processing.CompareContent
+import com.ge.research.sadl.darpa.aske.processing.WhatIsContent
 
 class DialogTest extends AbstractDialogTest {
 
@@ -548,6 +549,53 @@ class DialogTest extends AbstractDialogTest {
 			assertTrue(issues.filter[severity === Severity.ERROR].empty)
 			val secondLaw250 = (processor as JenaBasedDialogModelProcessor).answerCurationManager.getAnswerToQuestion("evaluate secondLaw(10, 25).")
 			assertTrue(secondLaw250 !== null && secondLaw250.equals("[250.]"))
+		]
+	}
+
+	@Test
+	def void testWhatIsStatement_01() {
+			val grd = newArrayList(
+"Rule ComparePseudoRule0:  if rdf(http://sadl.org/Suitability.dialog#v2, http://www.w3.org/1999/02/22-rdf-syntax-ns#type, http://sadl.org/Suitability.sadl#CF6) and rdf(http://sadl.org/Suitability.dialog#v2, http://sadl.org/Suitability.sadl#altitude, 25000 \"ft\") and rdf(http://sadl.org/Suitability.dialog#v2, http://sadl.org/Suitability.sadl#speed, 600 \"mph\") then rdf(http://sadl.org/Suitability.dialog#v2, http://sadl.org/Suitability.sadl#thrust, v1)."
+)
+		'''
+			 uri "http://sadl.org/Suitability.sadl" alias stblt.
+			 
+			 AircraftEngine is a class.
+			 altitude describes AircraftEngine with values of type UnittedQuantity.
+			 thrust describes AircraftEngine with values of type UnittedQuantity.
+			 weight describes AircraftEngine with values of type UnittedQuantity.
+			 speed describes AircraftEngine with values of type UnittedQuantity.
+			 sfc describes AircraftEngine with values of type float.
+			  
+			 F100 is a type of AircraftEngine.
+			 CF6 is a type of AircraftEngine.
+		'''.sadl
+
+		'''
+			 uri "http://sadl.org/Suitability.dialog" alias stbltdlg.
+			 
+			 import "http://sadl.org/Suitability.sadl".
+			 
+			 What is the thrust of a CF6 when altitude is 25000 ft and speed is 600 mph?
+		'''.assertValidatesTo [ ontModel, issues, processor |
+			assertNotNull(ontModel)
+//			val stmtitr = ontModel.listStatements()
+//			while (stmtitr.hasNext) {
+//				println(stmtitr.nextStatement)
+//			}
+			val errors = issues.filter[severity === Severity.ERROR]
+			assertEquals(0, errors.size)
+			if (processor instanceof JenaBasedDialogModelProcessor) {
+				val conversation = (processor as JenaBasedDialogModelProcessor).answerCurationManager.conversation
+				assertNotNull(conversation)
+				assertNotNull(conversation.statements);
+				assertEquals(1, conversation.statements.size)
+				assertTrue(conversation.statements.get(0).statement instanceof WhatIsContent)
+				val cc = conversation.statements.get(0).statement as WhatIsContent
+				val rules = cc.comparisonRules
+				assertEquals(1, rules.size)
+				assertEquals(grd.get(0), rules.get(0).toFullyQualifiedString)
+			}
 		]
 	}
 	
