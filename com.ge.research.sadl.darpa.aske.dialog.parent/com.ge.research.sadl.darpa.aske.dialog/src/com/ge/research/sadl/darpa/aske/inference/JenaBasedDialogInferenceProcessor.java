@@ -160,6 +160,59 @@ public class JenaBasedDialogInferenceProcessor extends JenaBasedSadlInferencePro
 	public static final String METAMODEL_INPUTSENSITIVITY = METAMODEL_PREFIX + "InputSensitivity";
 	public static final String METAMODEL_ASSUMPTIONSSATISFIED_PROP = METAMODEL_PREFIX + "assumptionsSatisfied";
 	public static final String METAMODEL_ASSUMPTIONUNSATISFIED_PROP = METAMODEL_PREFIX + "unsatisfiedAssumption";
+
+	public static final String GENERICIOs = "prefix cg:<http://aske.ge.com/compgraphmodel#>\n" + 
+			"prefix imp:<http://sadl.org/sadlimplicitmodel#>\n" + 
+			"prefix sci:<http://aske.ge.com/sciknow#>\n" + 
+			"prefix list:<http://sadl.org/sadllistmodel#>\n" + 
+			"prefix rdf:<http://www.w3.org/1999/02/22-rdf-syntax-ns#>\n" +
+			"prefix rdfs:<http://www.w3.org/2000/01/rdf-schema#>\n" +
+			"\n" + 
+			"insert \n" + 
+			"{ ?Eq imp:genericInput ?In. ?Eq imp:genericOutput ?Out. }\n" + 
+			"where {\n" + 
+			"  \n" + 
+			" {?Eq imp:returnTypes ?AL1.\n" + 
+			"  ?AL1 list:rest*/list:first ?AO1.\n" + 
+			"  ?AO1 imp:augmentedType ?Type1.\n" + 
+			"  ?Type1 imp:constraints ?CL1.\n" + 
+			"  ?CL1 rdf:rest*/rdf:first ?C1.\n" + 
+			"  ?C1 imp:gpPredicate ?P.\n" + 
+			"  ?P rdfs:range ?Out. }\n" + 
+			"\n" + 
+			"  union {\n" + 
+			"    ?Eq imp:implicitOutput/imp:augmentedType/imp:semType ?Out.\n" + 
+			"    filter not exists{?Eq a imp:IntializerMethod} }\n" + 
+			"\n" + 
+			"  union{\n" + 
+			"   ?Eq imp:arguments ?AL2.\n" + 
+			"   ?AL2 list:rest*/list:first ?AO2.\n" + 
+			"   ?AO2 imp:augmentedType ?Type2.\n" + 
+			"   ?Type2 imp:constraints ?CL2.\n" + 
+			"   ?CL2 rdf:rest*/rdf:first ?C2.\n" + 
+			"   ?C2 imp:gpPredicate ?P.\n" + 
+			"   ?P rdfs:range ?In.}\n" + 
+			"\n" + 
+			"  union { #Explicit inputs w/o AT\n" + 
+			"    ?Eq imp:arguments ?AL2.\n" + 
+			"    ?AL2 list:rest*/list:first ?AO2.\n" + 
+			"    filter not exists {?AO2 imp:augmentedType []}\n" + 
+			"    ?AO2 imp:localDescriptorName ?In.}\n" + 
+			"\n" + 
+			"  union {?Eq imp:implicitInput/imp:augmentedType/imp:semType ?In.\n" + 
+			"   filter not exists{?Eq a imp:IntializerMethod} }\n" + 
+			"\n" + 
+			"  union {\n" + 
+			"   ?Eq imp:implicitOutput/imp:localDescriptorName ?Out.\n" + 
+			"   filter not exists{?Eq a imp:IntializerMethod} }\n" + 
+			"  union {\n" + 
+			"   ?Eq imp:implicitInput?IO.\n" + 
+			"   filter not exists {?IO imp:augmentedType [] }\n" + 
+			"   ?IO imp:localDescriptorName ?In.\n" + 
+			"   filter not exists{?Eq a imp:IntializerMethod} } \n" + 
+			"}";
+
+	public static final String CHECK_GENERICIOs = "select distinct ?Eq ?Out where { ?Eq <http://sadl.org/sadlimplicitmodel#genericOutput> ?Out}";
 	
 	
 	
@@ -239,24 +292,20 @@ public class JenaBasedDialogInferenceProcessor extends JenaBasedSadlInferencePro
 			"prefix list:<http://sadl.org/sadllistmodel#>\n" +
 			"insert {?EqCh cg:parent ?EqPa}\n" + 
 			"where {\n" +
-			//"  ?EqCh a imp:Equation.\n" + //to include External equations
-			" ?EqCh imp:arguments ?AL2.\n" + 
-			" ?AL2 list:rest*/list:first ?AO2.\n" + 
-			" ?AO2 imp:augmentedType ?Type2.\n" + 
-			" ?Type2 imp:constraints ?CL2.\n" + 
-			" ?CL2 rdf:rest*/rdf:first ?C2.\n" + 
-			" ?C2 imp:gpPredicate ?P.\n" + 
-			" filter (?P != <http://www.w3.org/1999/02/22-rdf-syntax-ns#type>)\n" + 
+			" ?EqCh imp:genericInput ?V.\n" + 
+			" ?EqPa imp:genericOutput ?V.\n" + 
 			"\n" + 
-			//" ?EqPa a imp:Equation.\n" + 
-			" ?EqPa imp:returnTypes ?AL1.\n" + 
-			" ?AL1 list:rest*/list:first ?AO1.\n" + 
-			" ?AO1 imp:augmentedType ?Type1.\n" + 
-			" ?Type1 imp:constraints ?CL1.\n" + 
-			" ?CL1 rdf:rest*/rdf:first ?C1.\n" + 
-			" ?C1 imp:gpPredicate ?P.\n" + 
-			" \n" + 
-			" filter( ?EqPa != ?EqCh) " + 
+			"  filter( ?EqPa != ?EqCh )\n" + 
+			"  filter not exists {?EqCh imp:dependsOn ?EqPa}\n" + 
+			"  filter not exists {?EqPa imp:dependsOn ?EqCh}\n" + 
+			"  filter not exists {?EqCh imp:versionOf ?EqPa}\n" + 
+			"  filter not exists {?EqPa imp:versionOf ?EqCh}\n" + 
+			"\n" + 
+			"  filter not exists {\n" + 
+			"    ?EqCh imp:genericOutput ?V1.\n" + 
+			"    ?EqPa imp:genericInput ?V1.\n" + 
+			"    filter not exists {?EqPa imp:genericOutput ?V1.}\n" + 
+			"  }\n" + 
 			"}";
 	
 	public static final String CHECK_DEPENDENCY = "select distinct ?EqCh ?EqPa where { ?EqCh <http://aske.ge.com/compgraphmodel#parent> ?EqPa}";
@@ -721,8 +770,9 @@ public class JenaBasedDialogInferenceProcessor extends JenaBasedSadlInferencePro
 		return "dialog".equals(fileExtension);
 	}
 
+//	public Object[] insertTriplesAndQuery(Resource resource, TripleElement[] triples) throws SadlInferenceException {
 	@Override
-	public Object[] insertTriplesAndQuery(Resource resource, TripleElement[] triples) throws SadlInferenceException {
+	public Object[] insertTriplesAndQuery(Resource resource, List<TripleElement[]> triples) throws SadlInferenceException {
 		Object[] results = null;
 		setCurrentResource(resource);
 		setModelFolderPath(getModelFolderPath(resource));
@@ -735,13 +785,24 @@ public class JenaBasedDialogInferenceProcessor extends JenaBasedSadlInferencePro
 //			Builtin service = iter.next();
 //			System.out.println(service.getClass().getCanonicalName());
 //		}
+		
+		
+//		try {
+//			System.out.println(System.getProperty("user.dir"));
+//			String q = getFileContents("genericIOs");
+//		} catch (Exception e1) {
+//			// TODO Auto-generated catch block
+//			e1.printStackTrace();
+//		}
 
+		
+		
 		String useDbnStr = getPreference(DialogPreferences.USE_DBN_CG_SERVICE.getId());
 		boolean useDbn = useDbnStr != null ? Boolean.parseBoolean(useDbnStr) : false;
 		String useKCStr = getPreference(DialogPreferences.USE_ANSWER_KCHAIN_CG_SERVICE.getId());
 		boolean useKC = useKCStr != null ? Boolean.parseBoolean(useKCStr) : false;
 		if (useKC) {
-			if (commonSubject(triples) && allPredicatesAreProperties(triples)) {
+			if (commonSubject(triples.get(0)) && allPredicatesAreProperties(triples.get(0))) {
 				Object[] jbsipResult = super.insertTriplesAndQuery(resource, triples);
 				results = jbsipResult;
 			}
@@ -797,20 +858,22 @@ public class JenaBasedDialogInferenceProcessor extends JenaBasedSadlInferencePro
 			List<TripleElement[]> inputPatterns = new ArrayList<TripleElement[]>();
 			List<TripleElement> outputPatterns = new ArrayList<TripleElement>();
 			List<TripleElement> docPatterns = new ArrayList<TripleElement>();
+			List<TripleElement> contextTriples = new ArrayList<TripleElement>();
+
 			
-			
-		
-			for (int i = 0; i < triples.length; i++) {
-				TripleElement tr = triples[i];
+			for (int i = 0; i < triples.get(0).length; i++) {
+				TripleElement tr = triples.get(0)[i];
 				if (tr.getSubject() instanceof NamedNode) {
 					
 					if (tr.getPredicate().getURI() != null) {
-						if (tr.getPredicate().getName().contains("value")) { //input value triple (v1, sadlimplicitmodel:value, 35000)
-							quantity = createUQtriplesArray(tr,triples);
+						if (tr.getObject() instanceof Literal) { //input value triple (v1, sadlimplicitmodel:value, 35000)
+							quantity = createUQtriplesArray(tr,triples.get(0));
 							inputPatterns.add(quantity);
 						}
-						else if (tr.getObject() == null) { //(v0, hypersonicsV2:staticTemperature, null)
-							// this is an output
+						else if (tr.getPredicate().toString().equals("rdf:type")){
+							contextTriples.add(tr);
+						}
+						else { //if (! (tr.getObject() instanceof Literal)) {
 							outputPatterns.add(tr);
 						}
 					}
@@ -819,6 +882,29 @@ public class JenaBasedDialogInferenceProcessor extends JenaBasedSadlInferencePro
 					}
 				}
 			}
+		
+//			for (int i = 0; i < triples.get(0).length; i++) {
+//				TripleElement tr = triples.get(0)[i];
+//				if (tr.getSubject() instanceof NamedNode) {
+//					
+//					if (tr.getPredicate().getURI() != null) {
+//						if (tr.getPredicate().getName().contains("value")) { //input value triple (v1, sadlimplicitmodel:value, 35000)
+//							quantity = createUQtriplesArray(tr,triples.get(0));
+//							inputPatterns.add(quantity);
+//						}
+//						else if (tr.getObject() == null) { //(v0, hypersonicsV2:staticTemperature, null)
+//							// this is an output
+//							outputPatterns.add(tr);
+//						}
+//						else if (! (tr.getObject() instanceof Literal)) {
+//							outputPatterns.add(tr);
+//						}
+//					}
+//					else {
+//						docPatterns.add(tr);
+//					}
+//				}
+//			}
 			
 		
 			String ss, sp, so, ns;
@@ -879,18 +965,15 @@ public class JenaBasedDialogInferenceProcessor extends JenaBasedSadlInferencePro
 			
 			//getTheJenaModel().write(System.out, "TTL" );
 		
+			
+			
+			
 			// Insert dependency graph
+			runInference(GENERICIOs, CHECK_GENERICIOs);
+			
 			//String tmp = DEPENDENCY_GRAPH_INSERT
-			UpdateAction.parseExecute(GENERIC_IOs_INSERT , getTheJenaModel());
-
-			UpdateAction.parseExecute(DEPENDENCY_GRAPH_INSERT , getTheJenaModel());
+			runInference(DEPENDENCY_GRAPH_INSERT,CHECK_DEPENDENCY);
 			
-			ResultSetRewindable depTest = queryKnowledgeGraph(CHECK_DEPENDENCY, getTheJenaModel());
-			
-			if (!depTest.hasNext()) {
-				throw new SadlInferenceException("Dependency inference failed");
-			}
-				
 			
 			//getTheJenaModel().write(System.out, "TTL" );
 	
@@ -1120,7 +1203,7 @@ public class JenaBasedDialogInferenceProcessor extends JenaBasedSadlInferencePro
 							nodesCSVString = retrieveCGforDBNSpec(listOfEqns, cgIns, RETRIEVE_NODES);
 							
 							
-							String docUri = triples[0].getSubject().getURI();
+							String docUri = triples.get(0)[0].getSubject().getURI();
 							
 							
 							cgJson = kgResultsToJson(nodesCSVString, modelsCSVString, "prognostic", getDataForHypothesisTesting(resource, docUri));
@@ -1230,6 +1313,22 @@ public class JenaBasedDialogInferenceProcessor extends JenaBasedSadlInferencePro
 		}
 		return null;
 	}
+
+private void runInference(String query, String testQuery) throws SadlInferenceException {
+	UpdateAction.parseExecute(query , getTheJenaModel());
+	
+	ResultSetRewindable insertTest = queryKnowledgeGraph(testQuery, getTheJenaModel());
+	
+	if (!insertTest.hasNext()) {
+		throw new SadlInferenceException("Inference execution failed for " + query);
+	}
+}
+	
+//	@Override
+//	public Object[] insertTriplesAndQuery(Resource resource, List<TripleElement[]> triples) throws SadlInferenceException {
+//		//TODO
+//		return null;
+//	}
 
 	private ConfigurationManagerForIDE getConfigMgrForIDE(Resource resource) {
 		ConfigurationManagerForIDE cmgr = null;
@@ -2393,7 +2492,8 @@ private Map<String, String> getLabelClassMapping(String dbnJson) {
 	public String getFileContents(String fileName) throws Exception {
 	    String pathStr; // =  fileName;
 	    pathStr = "resources/" + fileName;
-
+ 
+//	    Systme.out.println()
 	    System.out.println("Reading file: " + pathStr);
 		File f = new File(pathStr);
 		InputStream in = null;

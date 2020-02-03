@@ -102,6 +102,7 @@ import com.ge.research.sadl.darpa.aske.processing.imports.IModelFromCodeExtracto
 import com.ge.research.sadl.darpa.aske.processing.imports.KChainServiceInterface;
 import com.ge.research.sadl.darpa.aske.processing.imports.TextProcessingServiceInterface.EquationVariableContextResponse;
 import com.ge.research.sadl.darpa.aske.processing.imports.TextProcessor;
+import com.ge.research.sadl.jena.IntermediateFormTranslator;
 import com.ge.research.sadl.jena.JenaBasedSadlModelProcessor;
 import com.ge.research.sadl.jena.JenaProcessorException;
 import com.ge.research.sadl.jena.inference.SadlJenaModelGetterPutter;
@@ -142,6 +143,7 @@ import com.ge.research.sadl.reasoner.TranslationException;
 import com.ge.research.sadl.reasoner.utils.SadlUtils;
 import com.ge.research.sadl.utils.NetworkProxySettingsProvider;
 import com.ge.research.sadl.utils.ResourceManager;
+import com.hp.hpl.jena.ontology.HasValueRestriction;
 import com.hp.hpl.jena.ontology.Individual;
 import com.hp.hpl.jena.ontology.OntClass;
 import com.hp.hpl.jena.ontology.OntDocumentManager;
@@ -211,6 +213,7 @@ public class AnswerCurationManager {
 	private List<String> addedTypeDeclarations = new ArrayList<String>();
 	private Map<String,List<String>> equationInformation = null;
 	private Map<String, String> cachedEquationVariableContext = new HashMap<String, String>();
+	private Map<Individual, String> variableDeclarations = new HashMap<Individual, String>();
     
 	public AnswerCurationManager (String modelFolder, IConfigurationManagerForIDE configMgr, XtextResource resource, Map<String,String> prefs) {
 		setOwlModelsFolder(modelFolder);
@@ -565,6 +568,7 @@ public class AnswerCurationManager {
 //		results.setShowNamespaces(false);
 //		System.out.println(results.toString());
 		if (results != null && results.getRowCount() > 0) {
+			List<String> initializerKeywords = getInitializerKeywords();
 			results.setShowNamespaces(false);
 			String[] cns = ((ResultSet) results).getColumnNames();
 			if (cns[0].equals("m") && cns[1].equals("b") && cns[2].equals("e") && cns[3].equals("s")) {
@@ -629,7 +633,7 @@ public class AnswerCurationManager {
 							}
 						}
 						try {
-							List<String> sadlDeclaration = convertCodeExtractedMethodToExternalEquationInSadlSyntax(methodName, "Java", javaCode, "Python", pythoncode);
+							List<String> sadlDeclaration = convertCodeExtractedMethodToExternalEquationInSadlSyntax(initializerKeywords, methodName, "Java", javaCode, "Python", pythoncode);
 							for (String sd : sadlDeclaration) {
 //									logger.debug(sadlDeclaration);
 //									logger.debug("SADL equation:");
@@ -655,6 +659,22 @@ public class AnswerCurationManager {
 //		String importinfo = "To import this model for exploration in this window, add an import at the top of this window (after the 'uri' statement) for URI:\n   " + 
 //				getExtractionProcessor().getCodeModelName() + "\n.";
 //		notifyUser(codeModelFolder, importinfo);
+	}
+
+	private List<String> getInitializerKeywords() {
+		List<String> keywords = null;
+		OntClass im = getExtractionProcessor().getCodeModel().getOntClass(DialogConstants.SADL_IMPLICIT_MODEL_INITIALZERMETHOD_CLASS_URI);
+		if (im != null) {
+			NodeIterator nitr = im.listPropertyValues(getExtractionProcessor().getCodeModel().getProperty(DialogConstants.SADL_IMPLICIT_MODEL_INITIALIZERKEYWORD_PROPERTY_URI));
+			if (nitr.hasNext()) {
+				keywords = new ArrayList<String>();
+				while (nitr.hasNext()) {
+					RDFNode val = nitr.next();
+					keywords.add(val.isLiteral() ? ((Literal)val).getValue().toString() : val.asResource().toString());
+				}
+			}
+		}
+		return keywords;
 	}
 
 	private void equationsFromTextResultSetToSadlContent(ResultSet results, String textModelFolder, String locality)
@@ -746,7 +766,7 @@ public class AnswerCurationManager {
 			throws ConfigurationException, IOException, ReasonerNotFoundException, InvalidNameException, QueryParseException, QueryCancelledException {
 		ResultSet results = null;
 		// clear reasoner from any previous model
-//		clearCodeModelReasoner();
+		clearCodeModelReasoner();
 		String codeModelFolder = getOwlModelsFolder();
 		if (getInitializedCodeModelReasoner() == null) {
 			// use domain model folder because that's the project we're working in
@@ -1326,6 +1346,7 @@ public class AnswerCurationManager {
 	public boolean importCodeSnippetToComputationalGraph(Object rs, String userInput) throws InvalidNameException, ConfigurationException, ReasonerNotFoundException, QueryParseException, QueryCancelledException, AnswerExtractionException {
 		boolean success = false;
 		if (rs instanceof ResultSet) {
+			List<String> initializerKeywords = getInitializerKeywords();
 			boolean sns = ((ResultSet)rs).getShowNamespaces();
 			((ResultSet)rs).setShowNamespaces(false);
 			String[] cns = ((ResultSet) rs).getColumnNames();
@@ -1351,7 +1372,7 @@ public class AnswerCurationManager {
 							String pythoncode = null;
 							try {
 								pythoncode = ep.translateMethodJavaToPython(className, methScript);
-								List<String> sadlDeclaration = convertCodeExtractedMethodToExternalEquationInSadlSyntax(rsa.toString(), "Java", methScript, "Python-TF", pythoncode);
+								List<String> sadlDeclaration = convertCodeExtractedMethodToExternalEquationInSadlSyntax(initializerKeywords, rsa.toString(), "Java", methScript, "Python-TF", pythoncode);
 								for (String sd : sadlDeclaration) {
 									logger.debug("SADL equation:");
 									logger.debug(sd);
@@ -1871,6 +1892,7 @@ public class AnswerCurationManager {
 	/**
 	 * Method to convert a method extracted from code to an instance of SADL External. Note
 	 * that methods extracted from code use the CodeExtractionModel as the meta-model for representation.
+	 * @param initializerKeywords 
 	 * @param methodName -- should be the name of the method in the extracted code model
 	 * @param pythoncode 
 	 * @param methScript 
@@ -1882,13 +1904,13 @@ public class AnswerCurationManager {
 	 * @throws QueryCancelledException
 	 * @throws AnswerExtractionException 
 	 */
-	private List<String> convertCodeExtractedMethodToExternalEquationInSadlSyntax(String methodName, String lang1, String code1, String lang2, String code2) throws InvalidNameException, ConfigurationException,
+	private List<String> convertCodeExtractedMethodToExternalEquationInSadlSyntax(List<String> initializerKeywords, String methodName, String lang1, String code1, String lang2, String code2) throws InvalidNameException, ConfigurationException,
 			ReasonerNotFoundException, QueryParseException, QueryCancelledException, AnswerExtractionException {
 		List<String> returnSadlStatements = new ArrayList<String>();
 		StringBuilder sb = new StringBuilder("External ");
 		sb.append(methodName);
 		sb.append("(");
-		clearCodeModelReasoner();
+//		clearCodeModelReasoner();
 		int typeDeclarationIndex = 0;
 		// get inputs and outputs and identify semantic meaning thereof
 		String inputQuery = "select ?arg ?argName ?argtyp where {<";
@@ -1962,6 +1984,14 @@ public class AnswerCurationManager {
 				
 		// now add the scripts for lang1 and lang2
 		StringBuilder sb2 = new StringBuilder(methodName);
+		// is this an InitializerMethod?
+		String initializedClassName = getInitializedClassName(initializerKeywords, methodName);
+		if (initializedClassName != null) {
+			sb2.append(" is an IntializerMethod, initializes ");
+			sb2.append(initializedClassName);
+			sb2.append(",\n");
+		}
+		
 		// put in any dependencies
 //		SADL_IMPLICIT_MODEL_DEPENDS_ON_PROPERTY_URI
 		String dependencyQuery = "select distinct ?dm where {<";
@@ -1993,7 +2023,8 @@ public class AnswerCurationManager {
 				sb2.append(" has implicitInput (an ImplicitDataDescriptor with localDescriptorName \"");
 				sb2.append(impIn.getResultAt(r, 0));
 				sb2.append("\", with dataType ");
-				String typ = nameToUri(impIn.getResultAt(r, 1).toString());
+				String rat = impIn.getResultAt(r, 1).toString();
+				String typ = nameToUri(rat);
 				String resolved = nameToUri(typ);
 				sb2.append("\"");
 				if (resolved != null) {
@@ -2002,7 +2033,15 @@ public class AnswerCurationManager {
 				else {
 					sb2.append(typ);
 				}
-				sb2.append(",\")");
+				sb2.append("\", ");
+				if (impIn.getResultAt(r, 2) != null) {
+					String cvuri = impIn.getResultAt(r, 2).toString();
+					Individual cv = getExtractionProcessor().getCodeModel().getIndividual(cvuri);
+					if (cv != null) {
+						sb2.append(getCodeVariableDeclaration(methodName, cv));
+					}
+				}
+				sb2.append(")");
 			}
 			sb2.append("\n");
 		}
@@ -2024,7 +2063,18 @@ public class AnswerCurationManager {
 				else {
 					sb2.append(typ);
 				}
-				sb2.append("\")");
+				if (impOut.getResultAt(r, 2) != null) {
+					sb2.append("\", ");
+					String cvuri = impOut.getResultAt(r, 2).toString();
+					Individual cv = getExtractionProcessor().getCodeModel().getIndividual(cvuri);
+					if (cv != null) {
+						sb2.append(getCodeVariableDeclaration(methodName, cv));
+					}
+				}
+				else {
+					sb2.append("\"");
+				}
+				sb2.append(")");
 			}
 			sb2.append(",\n");
 		}
@@ -2048,26 +2098,107 @@ public class AnswerCurationManager {
 		return returnSadlStatements;
 	}
 
+	/**
+	 * Method to get the Java declaration of a code variable, translate it to Python, 
+	 * 	and add both as Script values of the declaration property to the code variable instance.
+	 * @param methodName
+	 * @param cv
+	 * @return
+	 */
+	private String getCodeVariableDeclaration(String methodName, Individual cv) {
+		StringBuilder sb = new StringBuilder(); 
+		String jlbl = cv.getLabel("Java");
+		if (jlbl != null) {
+			sb.append("\n   with declaration (a Script with script \"");
+			sb.append(jlbl);
+			sb.append("\", with language Java)");
+			// translate to Python and add script
+			try {
+				String pycode = getPyCode(cv);
+				if (pycode == null) {
+					pycode = getExtractionProcessor().translateExpressionJavaToPython("DummyClass", "DummyMethod", jlbl);
+					storePyCode(cv, pycode);
+				}
+				if (pycode != null) {
+					String commentBefore = "\"\"\" generated source for method DummyMethod \"\"\"";
+					int idx = pycode.indexOf(commentBefore);
+					if (idx > 0) {
+						pycode = pycode.substring(idx + commentBefore.length()).trim();
+					}
+					sb.append("\n   with declaration (a Script with script \"");
+					sb.append(pycode);
+					sb.append("\", with language Python)");
+				}
+			} catch (IOException cause) {
+				if (cause instanceof ConnectException || cause instanceof UnknownHostException) {
+					StringBuilder sbe = new StringBuilder(cause.getMessage());
+					sbe.append(" to translate Java method '" + methodName + "' to Python. ");
+					sbe.append(cause.getMessage());
+					sbe.append(".");
+					System.err.println(sbe.toString());
+				}
+				else {
+					StringBuilder sbe = new StringBuilder(cause.getMessage());
+					sbe.append(" to translate Java method '" + methodName + "' to Python. ");
+					System.err.println(sbe.toString());
+					cause.printStackTrace();
+				}
+			}
+		}
+		return sb.toString();
+	}
+
+	private void storePyCode(Individual cv, String pycode) {
+		if (!variableDeclarations.containsKey(cv)) {
+			variableDeclarations.put(cv, pycode);
+		}
+	}
+
+	private String getPyCode(Individual cv) {
+		if (variableDeclarations.containsKey(cv)) {
+			return variableDeclarations.get(cv);
+		}
+		return null;
+	}
+
+	private String getInitializedClassName(List<String> initializerKeywords, String methodName) {
+		for (String ikw : initializerKeywords) {
+			String lastSegment;
+			int lastDot = methodName.lastIndexOf('.');
+			if (lastDot > 0) {
+				lastSegment = methodName.substring(lastDot+ 1); 
+			}
+			else {
+				lastSegment = methodName;
+			}
+			if (lastSegment.startsWith(ikw)) {
+				String rest = lastSegment.substring(ikw.length());
+				// TODO if rest is the name of a domain class
+				return rest;
+			}
+		}
+		return null;
+	}
+
 	private String nameToUri(String name) {
 		// try for primitive data type
 		try {
+			if (name.endsWith("[]")) {
+				name = name.substring(0, name.length() - 2);
+			}
 			Resource pdrsrc = JenaBasedSadlModelProcessor.primitiveDataTypeLocalnameToJenaResource(name);
 			return pdrsrc.getURI();
 		} catch (JenaProcessorException e) {
 			// OK, not everything is primitive type
 		}
-		try {
-			OntModel om = getExtractionProcessor().getCodeModel();
-			return JenaTranslatorPlugin.findNameNs(om, name);
-		} catch (InvalidNameException e) {
-			// if inner class won't be found
-		}
-		return null;
+//		OntModel om = getExtractionProcessor().getCodeModel();
+		return getExtractionProcessor().getCodeExtractor().getClassUriFromSimpleName(name);
+//			return JenaTranslatorPlugin.findNameNs(om, name);
 	}
 
 	private ResultSet getImplicitInputs(String methodName) throws InvalidNameException, ConfigurationException,
 			ReasonerNotFoundException, QueryParseException, QueryCancelledException {
-		String q = "select ?ivn ?ivt where {?ref <codeBlock> <";
+		String q = "select ?ivn ?ivt ?iv where {?ref <codeBlock> <";
 		q += methodName.toString().trim();
 		q += "> . ?ref <isImplicit> true . ?ref <cem:input> true . ";
 		q += "?iv <reference> ?ref . ?iv <varName> ?ivn . ?iv <varType> ?ivt}";
@@ -2078,7 +2209,7 @@ public class AnswerCurationManager {
 
 	private ResultSet getImplicitOutputs(String methodName) throws InvalidNameException, ConfigurationException,
 	ReasonerNotFoundException, QueryParseException, QueryCancelledException {
-		String q = "select ?ivn ?ivt where {?ref <codeBlock> <";
+		String q = "select ?ivn ?ivt ?iv where {?ref <codeBlock> <";
 		q += methodName.toString().trim();
 		q += "> . ?ref <isImplicit> true . ?ref <output> true . ";
 		q += "?iv <reference> ?ref . ?iv <varName> ?ivn . ?iv <varType> ?ivt}";
@@ -2742,8 +2873,10 @@ public class AnswerCurationManager {
 								triplesList.add(tr);
 							}
 							TripleElement[] triples = triplesList.toArray(new TripleElement[triplesList.size()]);
-			                OntModelProvider.addPrivateKeyValuePair(resource, DialogConstants.LAST_DIALOG_COMMAND, triples);
-	                		Object[] rss = insertTriplesAndQuery(resource, triples);
+							List<TripleElement[]> listOfTriples = new ArrayList<TripleElement[]>();
+							listOfTriples.add(triples);
+			                OntModelProvider.addPrivateKeyValuePair(resource, DialogConstants.LAST_DIALOG_COMMAND, listOfTriples);
+	                		Object[] rss = insertTriplesAndQuery(resource, listOfTriples);
 	                		
 	            			String answer = getAnswerAndVisualize(sc, rss);
 
@@ -2851,88 +2984,98 @@ public class AnswerCurationManager {
 	private String processWhatIsContent(org.eclipse.emf.ecore.resource.Resource resource, OntModel theModel,
 			String modelName, WhatIsContent sc) throws ExecutionException, SadlInferenceException,
 			TranslationException, ConfigurationException, IOException {
-		String retVal = null;
-		Object trgt = ((WhatIsContent)sc).getTarget();
-		Object whn = ((WhatIsContent)sc).getWhen();
-		if (trgt instanceof NamedNode && whn == null) {
-			String answer;
-			try {
-				answer = whatIsNamedNode(resource, theModel, modelName, getOwlModelsFolder(), (NamedNode)trgt);
-			}
-			catch (Exception e) {
-				answer = e.getMessage();
-			}
-			if (answer != null) {
-				retVal = answer;
-			}
-		}
-		else if (trgt instanceof Object[] && whn == null) {
-			if (allTripleElements((Object[])trgt)) {
-				//Object ctx = null;
-				TripleElement[] triples = flattenTriples((Object[])trgt);
-				//ctx = triples[0].getContext();
-				//StringBuilder answer = new StringBuilder();
-				Object[] rss = insertTriplesAndQuery(resource, triples);
-				String resultStr = null;
-				if (rss != null) {
-					StringBuilder sb = new StringBuilder();
-					if (triples[0].getSubject() instanceof VariableNode && 
-							((VariableNode)triples[0].getSubject()).getType() instanceof NamedNode) {
-						sb.append("the ");
-						sb.append(((VariableNode)(triples[0].getSubject())).getType().getName());
-						sb.append(" has ");
-						sb.append(triples[0].getPredicate().getName());
-						sb.append(" ");
-						sb.append(((ResultSet) rss[0]).getResultAt(0, 0).toString());
-						resultStr = sb.toString();
-					}
-					else {
-		    			for (Object rs : rss) {
-		    				if (rs instanceof ResultSet) {
-		    					((ResultSet) rs).setShowNamespaces(true);
-		    					sb.append(rs.toString());
-		    				}
-		    				else {
-		    					throw new TranslationException("Expected ResultSet, got " + rs.getClass().getCanonicalName());
-		    				}
-		    			}
-						resultStr = stringToQuotedeString(sb.toString());
-					}
+		String retVal = "";
+		List<Rule> comparisonRules = ((WhatIsContent)sc).getComparisonRules();
+		for (Rule compRule : comparisonRules) {
+			Object trgt = compRule.getThens();
+			Object whn = compRule.getIfs();
+			if (trgt instanceof NamedNode && whn == null) {
+				String answer;
+				try {
+					answer = whatIsNamedNode(resource, theModel, modelName, getOwlModelsFolder(), (NamedNode)trgt);
 				}
-				String insertionText = (resultStr != null ? resultStr : "\"Failed to find results\"");
-				answerUser(getOwlModelsFolder(), insertionText, false, sc.getHostEObject());
-				retVal = insertionText;
+				catch (Exception e) {
+					answer = e.getMessage();
+				}
+				if (answer != null) {
+					retVal = retVal + (retVal.length() > 0 ? "\n" : "") + answer;
+				}
 			}
-		}
-		else {
-			// there is a when clause, and this is in a WhatIsConstruct
-			List<TripleElement> tripleLst = new ArrayList<TripleElement>();
-			if (trgt instanceof TripleElement) {
-				tripleLst.add((TripleElement)trgt);
-			}
-			else if (trgt instanceof Junction) {
-				tripleLst = addTriplesFromJunction((Junction) trgt, tripleLst);
-			}
-			if (whn instanceof TripleElement) {
-				// we have a when statement
-				tripleLst.add((TripleElement)whn);
-			}
-			else if (whn instanceof Junction) {
-				tripleLst = addTriplesFromJunction((Junction) whn, tripleLst);
-			}
-			TripleElement[] triples = new TripleElement[tripleLst.size()];
-			triples = tripleLst.toArray(triples);
-			
-			Object[] rss = insertTriplesAndQuery(resource, triples);
-			String answer = getAnswerAndVisualize(sc, rss);
-			if (rss != null) {
-				retVal = stringToQuotedeString(answer);
+			else if (trgt instanceof Object[] && whn == null) {
+				if (allTripleElements((Object[])trgt)) {
+					//Object ctx = null;
+					TripleElement[] triples = flattenTriples((Object[])trgt);
+					List<TripleElement[]> listOfTriples = new ArrayList<TripleElement[]>();
+					listOfTriples.add(triples);
+					Object[] rss = insertTriplesAndQuery(resource, listOfTriples);
+					String resultStr = null;
+					if (rss != null) {
+						StringBuilder sb = new StringBuilder();
+						if (triples[0].getSubject() instanceof VariableNode && 
+								((VariableNode)triples[0].getSubject()).getType() instanceof NamedNode) {
+							sb.append("the ");
+							sb.append(((VariableNode)(triples[0].getSubject())).getType().getName());
+							sb.append(" has ");
+							sb.append(triples[0].getPredicate().getName());
+							sb.append(" ");
+							sb.append(((ResultSet) rss[0]).getResultAt(0, 0).toString());
+							resultStr = sb.toString();
+						}
+						else {
+			    			for (Object rs : rss) {
+			    				if (rs instanceof ResultSet) {
+			    					((ResultSet) rs).setShowNamespaces(true);
+			    					sb.append(rs.toString());
+			    				}
+			    				else {
+			    					throw new TranslationException("Expected ResultSet, got " + rs.getClass().getCanonicalName());
+			    				}
+			    			}
+							resultStr = stringToQuotedeString(sb.toString());
+						}
+					}
+					String insertionText = (resultStr != null ? resultStr : "\"Failed to find results\"");
+					answerUser(getOwlModelsFolder(), insertionText, false, sc.getHostEObject());
+					retVal = retVal + (retVal.length() > 0 ? "\n" : "") + insertionText;
+				}
 			}
 			else {
-				retVal = "Failed to evaluate answer";
-			}
-			if (!retVal.equals(stringToQuotedeString(""))) {
-				answerUser(getOwlModelsFolder(), retVal, true, sc.getHostEObject());
+				// there is a when clause, and this is in a WhatIsConstruct
+				List<TripleElement> tripleLst = new ArrayList<TripleElement>();
+				if (trgt instanceof TripleElement) {
+					tripleLst.add((TripleElement)trgt);
+				}
+				else if (trgt instanceof Junction) {
+					tripleLst = addTriplesFromJunction((Junction) trgt, tripleLst);
+				}
+				else if (trgt instanceof List<?>) {
+					tripleLst.addAll((Collection<? extends TripleElement>)trgt);
+				}
+				if (whn instanceof TripleElement) {
+					// we have a when statement
+					tripleLst.add((TripleElement)whn);
+				}
+				else if (whn instanceof Junction) {
+					tripleLst = addTriplesFromJunction((Junction) whn, tripleLst);
+				}
+				else if (whn instanceof List<?>) {
+					tripleLst.addAll((Collection<? extends TripleElement>) whn);	
+				}
+				TripleElement[] triples = new TripleElement[tripleLst.size()];
+				triples = tripleLst.toArray(triples);
+				List<TripleElement[]> listOfTriples = new ArrayList<TripleElement[]>();
+				listOfTriples.add(triples);
+				Object[] rss = insertTriplesAndQuery(resource, listOfTriples);
+				String answer = getAnswerAndVisualize(sc, rss);
+				if (rss != null) {
+					retVal = retVal + (retVal.length() > 0 ? "\n" : "") + stringToQuotedeString(answer);
+				}
+				else {
+					retVal = retVal + (retVal.length() > 0 ? "\n" : "") + "Failed to evaluate answer";
+				}
+				if (!retVal.equals(stringToQuotedeString(""))) {
+					answerUser(getOwlModelsFolder(), retVal, true, sc.getHostEObject());
+				}
 			}
 		}
 		return retVal;
@@ -3548,11 +3691,16 @@ public class AnswerCurationManager {
 		return resultStr;
 	}
 
-	private Object[] insertTriplesAndQuery(org.eclipse.emf.ecore.resource.Resource resource, TripleElement[] triples) throws ExecutionException, SadlInferenceException {
+//	private Object[] insertTriplesAndQuery(org.eclipse.emf.ecore.resource.Resource resource, TripleElement[] triples) throws ExecutionException, SadlInferenceException {
+//		getConfigurationManager().addPrivateKeyValuePair(DialogConstants.ANSWER_CURATION_MANAGER, this);
+//		return getInferenceProcessor().insertTriplesAndQuery(resource, triples);
+//	}
+//
+	private Object[] insertTriplesAndQuery(org.eclipse.emf.ecore.resource.Resource resource, List<TripleElement[]> triples) throws ExecutionException, SadlInferenceException {
 		getConfigurationManager().addPrivateKeyValuePair(DialogConstants.ANSWER_CURATION_MANAGER, this);
 		return getInferenceProcessor().insertTriplesAndQuery(resource, triples);
 	}
-
+	
 	private List<TripleElement> addTriplesFromJunction(Junction jct, List<TripleElement> tripleLst) {
 		Object lhs = jct.getLhs();
 		if (lhs instanceof ProxyNode) {

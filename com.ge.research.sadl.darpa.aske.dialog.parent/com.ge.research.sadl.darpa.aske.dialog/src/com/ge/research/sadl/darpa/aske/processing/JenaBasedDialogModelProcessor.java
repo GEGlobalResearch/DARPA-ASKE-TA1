@@ -85,6 +85,7 @@ import com.ge.research.sadl.darpa.aske.dialog.ModifiedAskStatement;
 import com.ge.research.sadl.darpa.aske.dialog.MyNameIsStatement;
 import com.ge.research.sadl.darpa.aske.dialog.SadlEquationInvocation;
 import com.ge.research.sadl.darpa.aske.dialog.SaveStatement;
+import com.ge.research.sadl.darpa.aske.dialog.SuitabilityStatement;
 import com.ge.research.sadl.darpa.aske.dialog.TargetModelName;
 import com.ge.research.sadl.darpa.aske.dialog.WhatIsStatement;
 import com.ge.research.sadl.darpa.aske.dialog.WhatStatement;
@@ -145,6 +146,7 @@ import com.ge.research.sadl.utils.ResourceManager;
 import com.google.common.base.Preconditions;
 import com.google.common.collect.Iterables;
 import com.google.inject.Inject;
+import com.hp.hpl.jena.ontology.DatatypeProperty;
 import com.hp.hpl.jena.ontology.Individual;
 import com.hp.hpl.jena.ontology.ObjectProperty;
 import com.hp.hpl.jena.ontology.OntClass;
@@ -485,6 +487,9 @@ public class JenaBasedDialogModelProcessor extends JenaBasedSadlModelProcessor {
 		else if (element instanceof CompareStatement) {
 			return processStatement((CompareStatement)element);
 		}
+		else if (element instanceof SuitabilityStatement) {
+			return processStatement((SuitabilityStatement)element);
+		}
 		else if (element instanceof ModifiedAskStatement) {
 			return processStatement((ModifiedAskStatement)element);
 		}
@@ -638,33 +643,83 @@ public class JenaBasedDialogModelProcessor extends JenaBasedSadlModelProcessor {
 	}
 
 	private StatementContent processStatement(CompareStatement element) throws InvalidNameException, InvalidTypeException, TranslationException, IOException, PrefixNotFoundException, ConfigurationException {
-		Expression comparison = element.getToCompare();
-		Object compareObj = processExpression(comparison);
-		List<Node> comparisonObjects = new ArrayList<Node>();
+		Expression thenExpr = element.getToCompare();
+		Expression whenExpr = element.getWhenExpr();
+
+		List<Rule> comparisonRules = whenAndThenToCookedRules(whenExpr, thenExpr);
+		
+		return new CompareContent(element, Agent.USER, comparisonRules);
+	}
+
+	private StatementContent processStatement(SuitabilityStatement element) throws InvalidNameException, InvalidTypeException, TranslationException {
+		Expression whenExpr = element.getSuitableExpression();
+		Expression thenExpr = element.getWhat();
+		
+		List<Rule> comparisonRules = whenAndThenToCookedRules(whenExpr, thenExpr);
+
+		return new CompareContent(element, Agent.USER, comparisonRules);
+	}
+
+	private List<Rule> whenAndThenToCookedRules(EObject whenExpr, EObject thenExpr)
+			throws InvalidNameException, InvalidTypeException, TranslationException {
+		Object thenObj = processExpression(thenExpr);
+		Object wh = processExpression(whenExpr);
+		if (wh instanceof Object[]) {
+			if (((Object[])wh).length == 2 && ((Object[])wh)[1] instanceof GraphPatternElement) {
+				// expected
+				wh = ((Object[])wh)[1];
+			}
+		}
+		DialogIntermediateFormTranslator dift = new DialogIntermediateFormTranslator(this, getTheJenaModel());
+		dift.setStartingVariableNumber(getVariableNumber());
+		if (wh instanceof GraphPatternElement) {
+			wh = dift.addImpliedAndExpandedProperties((GraphPatternElement)wh);
+			setVariableNumber(dift.getVariableNumber());
+			List<GraphPatternElement> gpes = new ArrayList<GraphPatternElement>();
+			gpes = unitSpecialConsiderations(gpes, wh, thenExpr);
+			wh = dift.listToAnd(gpes);
+			if (wh instanceof List<?> && ((List<?>)wh).size() == 1) {
+				wh = ((List<?>)wh).get(0);
+			}
+			else {
+				throw new TranslationException("Unexpected array of size > 1");
+			}
+		}
+		Node whenObj = nodeCheck(wh);
+		List<Node> thenObjects = new ArrayList<Node>();
 		NamedNode specifiedPropertyNN = null;
-		if (compareObj instanceof Junction) {
-			List<Node> compareList = IntermediateFormTranslator.conjunctionToList((Junction)compareObj);
+		if (thenObj instanceof Junction) {
+			List<Node> compareList = IntermediateFormTranslator.conjunctionToList((Junction)thenObj);
 			for (Node n : compareList) {
 				if (n instanceof VariableNode) {
-					comparisonObjects.add(((VariableNode)n).getType());
+					thenObjects.add(((VariableNode)n).getType());
 				}
 				else {
-					comparisonObjects.add(n);
+					thenObjects.add(n);
 				}
 			}
 		}
-		else if (compareObj instanceof NamedNode) {
-			comparisonObjects.add((Node) compareObj);
+		else if (thenObj instanceof NamedNode) {
+			thenObjects.add((Node) thenObj);
+		}
+		else if (thenObj instanceof TripleElement) {
+			if (((TripleElement)thenObj).getSubject() instanceof VariableNode) {
+				((TripleElement)thenObj).setSubject(((VariableNode)((TripleElement)thenObj).getSubject()).getType());
+			}
+			thenObjects.add(nodeCheck(thenObj));
+		}
+		else if (thenObj instanceof BuiltinElement) {
+			addError("BuiltinElements not yet handled.", thenExpr);
 		}
 		List<Node> augmentedComparisonObjects = new ArrayList<Node>();
-		for (int idx = 0; idx < comparisonObjects.size(); idx++) {
-			Node cn = comparisonObjects.get(idx);
+		for (int idx = 0; idx < thenObjects.size(); idx++) {
+			Node cn = thenObjects.get(idx);
 			if (cn instanceof NamedNode) {
 				NamedNode nn = (NamedNode)cn;
 				if (isProperty(nn.getNodeType())) {
 					Property prop = getTheJenaModel().getProperty(nn.getURI());
 					if (prop == null) {
-						System.err.println("Unexpected error finding property '" + nn.getURI() + "'");
+						addError("Unexpected error finding property '" + nn.getURI() + "'", thenExpr);
 						getTheJenaModel().write(System.err);
 						ExtendedIterator<OntModel> smitr = getTheJenaModel().listSubModels();
 						while (smitr.hasNext()) {
@@ -683,13 +738,20 @@ public class JenaBasedDialogModelProcessor extends JenaBasedSadlModelProcessor {
 							nn.setNodeType(NodeType.ClassNode);
 						}
 						else {
-							System.err.println("Blank node domain not yet handled");
+							addError("Blank node domain not yet handled", thenExpr);
 							return null;
 						}
 						if (stmtitr.hasNext()) {
-							System.err.println("Multiple domain classes not yet handled");
+							addError("Multiple domain classes not yet handled", thenExpr);
 							return null;
 						}
+					}
+				}
+				if (nn instanceof VariableNode) {
+					// this will happen when there is an article in front of a class name (a Declaration)
+					Node tn = ((VariableNode)nn).getType();
+					if (tn instanceof NamedNode) {
+						nn = (NamedNode) tn;
 					}
 				}
 				if (nn.getNodeType().equals(NodeType.ClassNode)) {
@@ -726,13 +788,32 @@ public class JenaBasedDialogModelProcessor extends JenaBasedSadlModelProcessor {
 									subj = instNN;
 								}
 								compNode = nodeCheck(new TripleElement(subj, specifiedPropertyNN, null));
+								augmentedComparisonObjects.add(compNode);
 							}
 							else {
 								NamedNode instNN = new NamedNode(instances.get(i).getURI());
 								instNN.setNodeType(ntype);
-								compNode = instNN;
+								// we don't have any property specified so we need to generate a list of relevant properties
+								List<NamedNode> relevantProperties;
+								if (instNN.getNodeType().equals(NodeType.InstanceNode)) {
+									relevantProperties = getRelevantPropertiesOfClass(nn);									
+								}
+								else {
+									relevantProperties = getRelevantPropertiesOfClass(instNN);
+								}
+								if (relevantProperties != null) {
+									for (NamedNode prop : relevantProperties) {
+										if (!whensContainProperty(whenObj, prop)) {
+											compNode = nodeCheck(new TripleElement(instNN, prop, null));
+											augmentedComparisonObjects.add(compNode);
+										}
+									}
+								}
+								else {
+									addError("No properties found for target", thenExpr);
+									return null;
+								}
 							}
-							augmentedComparisonObjects.add(compNode);
 						}
 					}
 					else {
@@ -742,53 +823,102 @@ public class JenaBasedDialogModelProcessor extends JenaBasedSadlModelProcessor {
 					}
 				}
 				else {
-					System.err.println("Failed to establish comparison objects");
+					addError("Failed to establish an anchor node", thenExpr);
 				}
 			}
 			else {
 				augmentedComparisonObjects.add(cn);
 			}
 		}
-		DialogIntermediateFormTranslator dift = new DialogIntermediateFormTranslator(this, getTheJenaModel());
-
-//		for (int i = 0; i < comparisonObjects.size(); i++) {
-//			Node cobj = comparisonObjects.get(i);
-//			System.out.println(cobj.toDescriptiveString());
-//			if (cobj instanceof ProxyNode) {
-//				Node modified = nodeCheck(dift.addImpliedAndExpandedProperties(((ProxyNode)cobj).getProxyFor()));
-//				if (!modified.toFullyQualifiedString().equals(cobj.toFullyQualifiedString())) {
-//					System.out.println("Modified: " + modified.toDescriptiveString());
-//					comparisonObjects.set(i, modified);
-//				}
-//			}
-//		}
 		
-		Expression whenExpr = element.getWhenExpr();
-		Node whenObj = nodeCheck(processExpression(whenExpr));
 		dift.setStartingVariableNumber(getVariableNumber());
-		
-//		if (whenObj instanceof ProxyNode) {
-//			System.out.println("When: " + whenObj.toDescriptiveString());
-//			Node modified = nodeCheck(dift.addImpliedAndExpandedProperties(((ProxyNode)whenObj).getProxyFor()));
-//			if (!modified.toFullyQualifiedString().equals(whenObj.toFullyQualifiedString())) {
-//				System.out.println("Modified when: " + modified.toDescriptiveString());
-//				whenObj = modified;
-//			}
-//		}
 		List<Rule> comparisonRules = new ArrayList<Rule>();
 		for (int i = 0; i < augmentedComparisonObjects.size(); i++) {
 			Node cobj = augmentedComparisonObjects.get(i);
 			Node newWhen = dift.newCopyOfProxyNode(whenObj);
-			Rule pseudoRule = new Rule("ComparePseudoRule", null, nodeToGPEList(newWhen), nodeToGPEList(cobj));
+			Rule pseudoRule = new Rule("ComparePseudoRule" + i, null, nodeToGPEList(newWhen), nodeToGPEList(cobj));
 			populateRuleVariables(pseudoRule);
 			dift.setTarget(pseudoRule);
 			Rule modifiedRule = dift.cook(pseudoRule);
 			comparisonRules.add(modifiedRule);
 			logger.debug(modifiedRule.toDescriptiveString());
 			System.out.println(modifiedRule.toFullyQualifiedString());
+//			addInfo(modifiedRule.toFullyQualifiedString(), thenExpr.eContainer());
 		}
-		
-		return new CompareContent(element, Agent.USER, comparisonRules);
+		return comparisonRules;
+	}
+
+	private boolean whensContainProperty(Node whenObj, NamedNode prop) {
+		if (whenObj instanceof ProxyNode) {
+			GraphPatternElement gpe = ((ProxyNode)whenObj).getProxyFor();
+			return whensContainProperty(gpe, prop);
+		}
+		return false;
+	}
+
+	private boolean whensContainProperty(GraphPatternElement gpe, NamedNode prop) {
+		if (gpe instanceof Junction) {
+			if (whensContainProperty((Node) ((Junction)gpe).getLhs(), prop)) {
+				return true;
+			}
+			if (whensContainProperty((Node) ((Junction)gpe).getRhs(), prop)) {
+				return true;
+			}
+		}
+		else if (gpe instanceof BuiltinElement) {
+			for (Node arg : ((BuiltinElement)gpe).getArguments()) {
+				if (arg instanceof NamedNode && ((NamedNode)arg).getURI().equals(prop.getURI())) {
+					return true;
+				}
+				else if (arg instanceof ProxyNode) {
+					if (whensContainProperty((ProxyNode)arg, prop)) {
+						return true;
+					}
+				}
+			}
+		}
+		else if (gpe instanceof TripleElement) {
+			if (((TripleElement)gpe).getPredicate().equals(prop)) {
+				return true;
+			}
+		}
+		return false;
+	}
+
+	private List<NamedNode> getRelevantPropertiesOfClass(NamedNode clsNode) {
+		if (clsNode.getNodeType().equals(NodeType.ClassNode)) {
+			OntClass cls = getTheJenaModel().getOntClass(clsNode.getURI());
+			return getReleventPropertiesOfClass(cls);
+		}
+		return null;
+	}
+	
+	private List<NamedNode> getReleventPropertiesOfClass(OntClass cls) {
+		List<NamedNode> relevantProperties = new ArrayList<NamedNode>();
+		StmtIterator dmnitr = getTheJenaModel().listStatements(null, RDFS.domain, cls);
+		while (dmnitr.hasNext()) {
+			com.hp.hpl.jena.rdf.model.Resource propnode = dmnitr.nextStatement().getSubject();
+			if (propnode.isURIResource()) {
+				NamedNode objNN = new NamedNode(propnode.asResource().getURI());
+				if (objNN != null  ) {
+					if (propnode.canAs(Property.class)) {
+						objNN.setNodeType(NodeType.PropertyNode);
+						relevantProperties.add(objNN);
+					}
+				}
+			}
+		}
+		StmtIterator scitr = getTheJenaModel().listStatements(cls, RDFS.subClassOf, (RDFNode)null);
+		while (scitr.hasNext()) {
+			RDFNode sc = scitr.nextStatement().getObject();
+			if (sc.isResource() && sc.asResource().canAs(OntClass.class)) {
+				List<NamedNode> moreProps = getReleventPropertiesOfClass(sc.asResource().as(OntClass.class));
+				if (moreProps != null) {
+					relevantProperties.addAll(moreProps);
+				}
+			}
+		}
+		return relevantProperties;
 	}
 
 	private void populateRuleVariables(Rule rule) {
@@ -876,7 +1006,11 @@ public class JenaBasedDialogModelProcessor extends JenaBasedSadlModelProcessor {
 		StmtIterator stmtitr = getTheJenaModel().listStatements(null, RDF.type, theClass);
 		if (stmtitr.hasNext()) {
 			while (stmtitr.hasNext()) {
-				instances.add(stmtitr.nextStatement().getSubject());
+				com.hp.hpl.jena.rdf.model.Resource inst = stmtitr.nextStatement().getSubject();
+				if (inst.isURIResource()) {
+					// don't include unnamed instances, at least for the time being (awc 1/29/2020)
+					instances.add(inst);					
+				}
 			}
 		}
 		ExtendedIterator<OntClass> scitr = theClass.listSubClasses();
@@ -1474,85 +1608,93 @@ public class JenaBasedDialogModelProcessor extends JenaBasedSadlModelProcessor {
 	
 	private StatementContent processStatement(WhatIsStatement stmt) {
 		EObject whatIsTarget = stmt.getTarget();
+		EObject when = stmt.getWhen();
 		if (whatIsTarget == null) {
 			// this is a request for user name
 			
 		}
-		if (whatIsTarget instanceof Declaration) {
-			whatIsTarget = ((Declaration)whatIsTarget).getType();
-			if (whatIsTarget instanceof SadlSimpleTypeReference) {
-				whatIsTarget = ((SadlSimpleTypeReference)whatIsTarget).getType();
-			}
-		}
-		Object trgtObj;
+//		if (whatIsTarget instanceof Declaration) {
+//			whatIsTarget = ((Declaration)whatIsTarget).getType();
+//			if (whatIsTarget instanceof SadlSimpleTypeReference) {
+//				whatIsTarget = ((SadlSimpleTypeReference)whatIsTarget).getType();
+//			}
+//		}
+//		Object trgtObj;
+//		try {
+//			trgtObj = processExpression(whatIsTarget);
+////				System.out.println("WhatIsStatement target: " + trgtObj.toString());
+//			if (trgtObj instanceof NamedNode) {
+//				((NamedNode)trgtObj).setContext(stmt);
+//			}
+//			else if (trgtObj instanceof Junction) {
+//				if (stmt.eContainer() instanceof WhatIsStatement) {
+//					setGraphPatternContext((WhatStatement) stmt.eContainer(), whatIsTarget, trgtObj);
+//				}
+//			}
+//			else if (trgtObj instanceof TripleElement) {
+//				((TripleElement)trgtObj).setContext(stmt);
+//			}
+//			else if (trgtObj instanceof Object[]) {
+//				for (int i = 0; i < ((Object[])trgtObj).length; i++) {
+//					Object obj = ((Object[])trgtObj)[i];
+//					if (stmt.eContainer() instanceof WhatIsStatement) {
+//						setGraphPatternContext((WhatStatement) stmt, whatIsTarget, obj);
+//					}
+//				}
+//			}
+//			else {
+//				// TODO
+//				addInfo(trgtObj.getClass().getCanonicalName() + " not yet handled by dialog processor", whatIsTarget);
+//			}
+//			Object whenObj = when != null ? processExpression(when) : null;
+//			
+//			// apply implied/expanded properties
+//			DialogIntermediateFormTranslator dift = new DialogIntermediateFormTranslator(this, getTheJenaModel());
+//			if (trgtObj instanceof GraphPatternElement) {
+//				trgtObj = dift.addImpliedAndExpandedProperties((GraphPatternElement)trgtObj);
+//			}
+//			else if (trgtObj instanceof List<?>) {
+//				dift.addImpliedAndExpandedProperties((List<GraphPatternElement>) trgtObj);
+//			}
+//			if (whenObj instanceof GraphPatternElement) {
+//				whenObj = dift.addImpliedAndExpandedProperties((GraphPatternElement)whenObj);
+//				List<GraphPatternElement> gpes = new ArrayList<GraphPatternElement>();
+//				gpes = unitSpecialConsiderations(gpes, whenObj, whatIsTarget);
+//				Object temp = dift.cook(gpes, false);
+//				if (temp instanceof List<?>) {
+//					if (((List<?>)temp).size() == 1) {
+//						whenObj = ((List<?>)temp).get(0);
+//					}
+//					else {
+//						// ?
+//					}
+//				}
+//			}
+//			else if (whenObj instanceof List<?>) {
+//				dift.addImpliedAndExpandedProperties((List<GraphPatternElement>) whenObj);
+//				// does this ever happen? More to do...
+//			}
+		List<Rule> comparisonRules;
 		try {
-			trgtObj = processExpression(whatIsTarget);
-//				System.out.println("WhatIsStatement target: " + trgtObj.toString());
-			if (trgtObj instanceof NamedNode) {
-				((NamedNode)trgtObj).setContext(stmt);
+			comparisonRules = whenAndThenToCookedRules(when, whatIsTarget);
+			if (comparisonRules != null) {
+				WhatIsContent wic = new WhatIsContent(stmt.eContainer(), Agent.USER, comparisonRules);
+				return wic;
 			}
-			else if (trgtObj instanceof Junction) {
-				if (stmt.eContainer() instanceof WhatIsStatement) {
-					setGraphPatternContext((WhatStatement) stmt.eContainer(), whatIsTarget, trgtObj);
-				}
-			}
-			else if (trgtObj instanceof TripleElement) {
-				((TripleElement)trgtObj).setContext(stmt);
-			}
-			else if (trgtObj instanceof Object[]) {
-				for (int i = 0; i < ((Object[])trgtObj).length; i++) {
-					Object obj = ((Object[])trgtObj)[i];
-					if (stmt.eContainer() instanceof WhatIsStatement) {
-						setGraphPatternContext((WhatStatement) stmt, whatIsTarget, obj);
-					}
-				}
-			}
-			else {
-				// TODO
-				addInfo(trgtObj.getClass().getCanonicalName() + " not yet handled by dialog processor", whatIsTarget);
-			}
-			Expression when = stmt.getWhen();
-			Object whenObj = when != null ? processExpression(when) : null;
-			
-			// apply implied/expanded properties
-			DialogIntermediateFormTranslator dift = new DialogIntermediateFormTranslator(this, getTheJenaModel());
-			if (trgtObj instanceof GraphPatternElement) {
-				trgtObj = dift.addImpliedAndExpandedProperties((GraphPatternElement)trgtObj);
-			}
-			else if (trgtObj instanceof List<?>) {
-				dift.addImpliedAndExpandedProperties((List<GraphPatternElement>) trgtObj);
-			}
-			if (whenObj instanceof GraphPatternElement) {
-				whenObj = dift.addImpliedAndExpandedProperties((GraphPatternElement)whenObj);
-				List<GraphPatternElement> gpes = new ArrayList<GraphPatternElement>();
-				gpes = unitSpecialConsiderations(gpes, whenObj, whatIsTarget);
-				Object temp = dift.cook(gpes, false);
-				if (temp instanceof List<?>) {
-					if (((List<?>)temp).size() == 1) {
-						whenObj = ((List<?>)temp).get(0);
-					}
-					else {
-						// ?
-					}
-				}
-			}
-			else if (whenObj instanceof List<?>) {
-				dift.addImpliedAndExpandedProperties((List<GraphPatternElement>) whenObj);
-				// does this ever happen? More to do...
-			}
-			
-			WhatIsContent wic = new WhatIsContent(stmt.eContainer(), Agent.USER, trgtObj, whenObj);
-			return wic;
-		} catch (TranslationException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (InvalidNameException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (InvalidTypeException e) {
+		} catch (InvalidNameException | InvalidTypeException | TranslationException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
+//		} catch (TranslationException e) {
+//			// TODO Auto-generated catch block
+//			e.printStackTrace();
+//		} catch (InvalidNameException e) {
+//			// TODO Auto-generated catch block
+//			e.printStackTrace();
+//		} catch (InvalidTypeException e) {
+//			// TODO Auto-generated catch block
+//			e.printStackTrace();
+//		}
 		return null;
 	}
 

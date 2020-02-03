@@ -101,4 +101,6 @@ public interface IModelFromCodeExtractor {
 
 	String[] extractPythonEquationFromCodeExtractionModel(String pythonScript, String defaultMethodName);
 
+	String getClassUriFromSimpleName(String name);
+
 }

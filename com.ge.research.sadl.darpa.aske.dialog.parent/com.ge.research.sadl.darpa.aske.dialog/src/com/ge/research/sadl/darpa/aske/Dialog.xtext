@@ -63,11 +63,17 @@ SadlModelElement returns sadl::SadlModelElement :
 	MyNameIsStatement EOS		|
 	TargetModelName EOS			|
 	ExtractStatement EOS		|
-	CompareStatement EOS 	 	
+	CompareStatement EOS 	 	|
+	SuitabilityStatement EOS	
 ;
 
 CompareStatement:
-	('Compare'|'compare') toCompare=Expression 'when' whenExpr=Expression
+	('Compare'|'compare') toCompare=Expression compareConnective=('when' | 'for') whenExpr=Expression
+;
+
+SuitabilityStatement:
+	(('Which'|'which') what=Expression 'is' 'suitable' suitableConnective=('when'|'for') suitableExpression=Expression) |
+	(('Is'|'is') what=Expression 'suitable' suitableConnective=('when'|'for') suitableExpression=Expression)
 ;
 
 ExtractStatement:
@@ -95,7 +101,7 @@ SaveStatement:
 ;
 
 AnswerCMStatement:
-	'CM:' (sstmt = ((SadlStatement|ModifiedAskStatement|WhatStatement|YesNoAnswerStatement|ExternalEquationStatement|EquationStatement)) | str = STRING)
+	'CM:' (sstmt = ((SadlStatement|ModifiedAskStatement|WhatStatement|YesNoAnswerStatement|ExternalEquationStatement|EquationStatement)) | str = STRING annotations+=SadlAnnotation*)
 ;
 
 ModifiedAskStatement returns sadl::ExpressionScope:

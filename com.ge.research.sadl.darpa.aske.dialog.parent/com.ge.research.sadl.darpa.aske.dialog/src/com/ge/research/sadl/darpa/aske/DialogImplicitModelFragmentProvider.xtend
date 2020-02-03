@@ -56,7 +56,7 @@ class DialogImplicitModelFragmentProvider implements ISadlImplicitModelFragmentP
 		IntializerMethod is a type of ExternalEquation,
 			described by initializes with values of type class.
 		initializerKeyword is a type of annotation.
-		IntializerMethod has initializerKeyword "load", has initializerKeyword "initize".	
+		IntializerMethod has initializerKeyword "load", has initializerKeyword "initialize".	
 		
 		ImplicitDataDescriptor is a type of DataDescriptor,
 			described by declaration with values of type Script.

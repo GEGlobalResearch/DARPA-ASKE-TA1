@@ -10,6 +10,7 @@ import static org.junit.Assert.assertTrue
 import static org.junit.Assert.assertEquals
 import com.ge.research.sadl.darpa.aske.processing.JenaBasedDialogModelProcessor
 import com.ge.research.sadl.darpa.aske.processing.CompareContent
+import com.ge.research.sadl.darpa.aske.processing.WhatIsContent
 
 class DialogTest extends AbstractDialogTest {
 
@@ -550,6 +551,53 @@ class DialogTest extends AbstractDialogTest {
 			assertTrue(secondLaw250 !== null && secondLaw250.equals("[250.]"))
 		]
 	}
+
+	@Test
+	def void testWhatIsStatement_01() {
+			val grd = newArrayList(
+"Rule ComparePseudoRule0:  if rdf(http://sadl.org/Suitability.dialog#v2, http://www.w3.org/1999/02/22-rdf-syntax-ns#type, http://sadl.org/Suitability.sadl#CF6) and rdf(http://sadl.org/Suitability.dialog#v2, http://sadl.org/Suitability.sadl#altitude, 25000 \"ft\") and rdf(http://sadl.org/Suitability.dialog#v2, http://sadl.org/Suitability.sadl#speed, 600 \"mph\") then rdf(http://sadl.org/Suitability.dialog#v2, http://sadl.org/Suitability.sadl#thrust, v1)."
+)
+		'''
+			 uri "http://sadl.org/Suitability.sadl" alias stblt.
+			 
+			 AircraftEngine is a class.
+			 altitude describes AircraftEngine with values of type UnittedQuantity.
+			 thrust describes AircraftEngine with values of type UnittedQuantity.
+			 weight describes AircraftEngine with values of type UnittedQuantity.
+			 speed describes AircraftEngine with values of type UnittedQuantity.
+			 sfc describes AircraftEngine with values of type float.
+			  
+			 F100 is a type of AircraftEngine.
+			 CF6 is a type of AircraftEngine.
+		'''.sadl
+
+		'''
+			 uri "http://sadl.org/Suitability.dialog" alias stbltdlg.
+			 
+			 import "http://sadl.org/Suitability.sadl".
+			 
+			 What is the thrust of a CF6 when altitude is 25000 ft and speed is 600 mph?
+		'''.assertValidatesTo [ ontModel, issues, processor |
+			assertNotNull(ontModel)
+//			val stmtitr = ontModel.listStatements()
+//			while (stmtitr.hasNext) {
+//				println(stmtitr.nextStatement)
+//			}
+			val errors = issues.filter[severity === Severity.ERROR]
+			assertEquals(0, errors.size)
+			if (processor instanceof JenaBasedDialogModelProcessor) {
+				val conversation = (processor as JenaBasedDialogModelProcessor).answerCurationManager.conversation
+				assertNotNull(conversation)
+				assertNotNull(conversation.statements);
+				assertEquals(1, conversation.statements.size)
+				assertTrue(conversation.statements.get(0).statement instanceof WhatIsContent)
+				val cc = conversation.statements.get(0).statement as WhatIsContent
+				val rules = cc.comparisonRules
+				assertEquals(1, rules.size)
+				assertEquals(grd.get(0), rules.get(0).toFullyQualifiedString)
+			}
+		]
+	}
 	
 	@Test
 	def void testCompareStatement_01() {
@@ -644,6 +692,11 @@ class DialogTest extends AbstractDialogTest {
 
 	@Test
 	def void testCompareStatement_03() {
+			val grd = newArrayList(
+"Rule ComparePseudoRule:  if rdf(http://aske.ge.com/testdiag#v1, http://www.w3.org/1999/02/22-rdf-syntax-ns#type, http://sadl.org/Model.sadl#RamJet) and rdf(http://aske.ge.com/testdiag#v1, http://sadl.org/Model.sadl#sfc, 0.35) then rdf(http://aske.ge.com/testdiag#v1, http://sadl.org/Model.sadl#thrust, v0).",
+"Rule ComparePseudoRule:  if rdf(http://aske.ge.com/testdiag#v3, http://www.w3.org/1999/02/22-rdf-syntax-ns#type, http://sadl.org/Model.sadl#F100) and rdf(http://aske.ge.com/testdiag#v3, http://sadl.org/Model.sadl#sfc, 0.35) then rdf(http://aske.ge.com/testdiag#v3, http://sadl.org/Model.sadl#thrust, v2).",
+"Rule ComparePseudoRule:  if rdf(http://aske.ge.com/testdiag#v5, http://www.w3.org/1999/02/22-rdf-syntax-ns#type, http://sadl.org/Model.sadl#CF6) and rdf(http://aske.ge.com/testdiag#v5, http://sadl.org/Model.sadl#sfc, 0.35) then rdf(http://aske.ge.com/testdiag#v5, http://sadl.org/Model.sadl#thrust, v4)."
+)
 		'''
 			uri "http://sadl.org/Model.sadl" alias mdl.
 			
@@ -662,12 +715,21 @@ class DialogTest extends AbstractDialogTest {
 			Compare AircraftEngine when sfc is .35.
 		'''.assertValidatesTo [ ontModel, issues, processor |
 			assertNotNull(ontModel)
-//			val stmtitr = ontModel.listStatements()
-//			while (stmtitr.hasNext) {
-//				println(stmtitr.nextStatement)
-//			}
 			val errors = issues.filter[severity === Severity.ERROR]
 			assertEquals(0, errors.size)
+			if (processor instanceof JenaBasedDialogModelProcessor) {
+				val conversation = (processor as JenaBasedDialogModelProcessor).answerCurationManager.conversation
+				assertNotNull(conversation)
+				assertNotNull(conversation.statements);
+				assertEquals(1, conversation.statements.size)
+				assertTrue(conversation.statements.get(0).statement instanceof CompareContent)
+				val cc = conversation.statements.get(0).statement as CompareContent
+				val rules = cc.comparisonRules
+				assertEquals(3, rules.size)
+				assertEquals(grd.get(0), rules.get(0).toFullyQualifiedString)
+				assertEquals(grd.get(1), rules.get(1).toFullyQualifiedString)
+				assertEquals(grd.get(2), rules.get(2).toFullyQualifiedString)
+			}
 		]
 	}
 
@@ -752,6 +814,38 @@ class DialogTest extends AbstractDialogTest {
 			import "http://sadl.org/Model.sadl".
 			
 			Compare a CF6 and an F100 and a RamJet when sfc is .36.
+		'''.assertValidatesTo [ ontModel, issues, processor |
+			assertNotNull(ontModel)
+//			val stmtitr = ontModel.listStatements()
+//			while (stmtitr.hasNext) {
+//				println(stmtitr.nextStatement)
+//			}
+			val errors = issues.filter[severity === Severity.ERROR]
+			assertEquals(0, errors.size)
+		]
+	}
+	
+	@Test
+	def void testThinThread1() {
+		'''
+			uri "http://sadl.org/Model.sadl" alias mdl.
+			
+			AircraftEngine is a class,
+				described by mach with values of type float,
+				described by speed with values of type UnittedQuantity,
+				described by altitude with values of type UnittedQuantity,
+				described by sfc (alias "specific fuel consumption") with values of type float,
+				described by thrust with values of type float.
+			
+			{CF6, F100, J85, RamJet} are types of AircraftEngine.
+		'''.sadl
+
+		'''
+			uri "http://aske.ge.com/testdiag" alias testdiag.
+			
+			import "http://sadl.org/Model.sadl".
+			
+			What is mach when altitude is 25000 ft and speed is 800 mph?
 		'''.assertValidatesTo [ ontModel, issues, processor |
 			assertNotNull(ontModel)
 //			val stmtitr = ontModel.listStatements()
@@ -1137,44 +1231,57 @@ class DialogTest extends AbstractDialogTest {
 		]
 	}
 
-	@Ignore
+//	@Ignore
 	@Test
-	def void testExtractJavaFile() {
-		createCodeExtractionFile()
+	def void testSuitabilityStatement_01() {
 		'''
-			 uri "http://sadl.org/Model.sadl" alias mdl.
+			 uri "http://sadl.org/Suitability.sadl" alias stblt.
 			 
-			 Mass is a type of UnittedQuantity, 
-			 	described by force with values of type Force,
-			 	described by speed with values of type Speed,
-			 	described by acceleration with values of type Acceleration.
+			 Resource is a class.
+			 Equipment is a type of Resource.
+			 part describes Equipment with values of type Equipment.
+			 {Aircraft, AircraftEngine} are types of Equipment.
+			 part of Aircraft has at least 1 value of type AircraftEngine.
+			 altitude describes Aircraft with values of type UnittedQuantity.
 			 
-			 Force is a type of UnittedQuantity.
-			 Speed is a type of UnittedQuantity.
-			 Acceleration is a type of UnittedQuantity.
-		'''.assertValidatesTo[jenaModel, rules, commands, issues, processor |
-			assertNotNull(jenaModel)
-			issues.map[message].forEach[println(it)];
-			assertEquals(0, issues.size)
-		]
+			 thrust describes AircraftEngine with values of type UnittedQuantity.
+			 weight describes Equipment with values of type UnittedQuantity.
+			 speed describes Aircraft with values of type UnittedQuantity.
+			 sfc describes AircraftEngine with values of type float.
+			  
+			 Mission is a class, described by requires with values of type Resource.
+			 suitable describes Resource with values of type Mission.
+			 
+			// MissionX is a Mission, requires (an Aircraft with speed 1.0 mach, with altitude between 25000 ft and 260000 ft, with part
+			// 	(an AircraftEngine with thrust at least 25000 lb, with weight 3500 lb, with at most sfc 1.5 )
+			// ).
+			 
+			 MissionX is a Mission, requires (an Aircraft with speed 1.0 mach, with altitude 25000 ft, with part
+			 	(an AircraftEngine with thrust 25000 lb, with weight 3500 lb, with sfc 1.5 )
+			 ).
+			 
+			 F100 is a type of AircraftEngine.
+			 CF6 is a type of AircraftEngine.
+		'''.sadl
 
 		'''
-			uri "http://sadl.org/SaveTarget.sadl" alias svtgt.
-		'''.assertValidatesTo[jenaModel, rules, commands, issues, processor |
-			assertNotNull(jenaModel)
-			issues.map[message].forEach[println(it)];
-			assertEquals(0, issues.size)
-		]
-
-		'''
-			uri "http://darpa/aske/ge/ta1/testdlg2" alias tdlg2.
-			
-			import "http://sadl.org/Model.sadl".
-			
-			target model "http://sadl.org/SaveTarget.sadl" alias tgt.
-			
-			Extract from "file:/C:/Users/200005201/sadl3-master6/git/DARPA-ASKE-TA1/com.ge.research.sadl.darpa.aske.dialog.parent/com.ge.research.sadl.darpa.aske.dialog.tests/resources/M5Snapshot/ExtractedModels/Sources/Turbo.java".
-			
+			 uri "http://sadl.org/Suitability.dialog" alias stbltdlg.
+			 
+			 import "http://sadl.org/Suitability.sadl".
+			 
+«««			 Which AircraftEngine is suitable for MissionX?
+«««			 
+«««			 Is F100 suitable for MissionX? 
+«««			 Is a CF6 suitable when altitude is 25000 ft?
+			 
+			 Is an F100 suitable for (a Mission, requires (an Aircraft with speed 1.0 mach, with altitude 25000 ft, with part
+			 	(an AircraftEngine with thrust 25000 lb, with weight 3500 lb, with sfc 1.5 )))?
+			 
+«««			 Is a CF6 suitable when speed is 1.0 mach and 
+«««			 	altitude is 25000 ft and 
+«««			 	thrust is 55000 lb and 
+«««			 	weight is 3500 lb and 
+«««			 	sfc is 1.5 ?
 		'''.assertValidatesTo[ontModel, rules, commands, issues, processor |
 			assertNotNull(ontModel)
 			assertTrue(issues.filter[severity === Severity.ERROR].empty)

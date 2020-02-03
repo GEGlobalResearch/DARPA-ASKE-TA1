@@ -513,6 +513,58 @@ public class JavaImportJPTests extends AbstractDialogTest {
 	}
 
 	@Test
+	public void test_08_on_Turbo_modified() throws IOException, ConfigurationException, InvalidNameException, ReasonerNotFoundException, QueryParseException, QueryCancelledException {
+		File codeFile = new File(getCodeExtractionKbRoot() + "/ExtractedModels/Sources/TurboModified.java");
+		assertTrue(codeFile.exists());
+		// remove OWL and SADL files
+		File owlF = new File(getCodeExtractionKbRoot() + "/ExtractedModels\\TurboModified.java.owl");
+		
+		if (owlF.exists()) {
+			owlF.delete();
+			assertFalse(owlF.exists());
+		}
+		File sadlF = new File(getCodeExtractionKbRoot() + "\\ExtractedModels\\TurboModified.java.owl.sadl");
+		if (sadlF.exists()) {
+			sadlF.delete();
+			assertFalse(sadlF.exists());
+		}
+		
+		IConfigurationManagerForIDE cm = ConfigurationManagerForIdeFactory.getConfigurationManagerForIDE(getDomainProjectModelFolder(), null);
+		AnswerCurationManager acm = new AnswerCurationManager(getDomainProjectModelFolder(), cm, null, null);
+		acm.setOwlModelsFolder(getExtractionProjectModelFolder());
+		
+		IDialogAnswerProvider dapcft = new DialogAnswerProviderConsoleForTest();
+		cm.addPrivateKeyValuePair(DialogConstants.DIALOG_ANSWER_PROVIDER, dapcft);
+		
+		boolean includeSerialization = false; //true;
+		
+		String defaultCodeModelPrefix = includeSerialization ? "TurboSz" : "Turbo";
+		String defaultCodeModelName = "http://com.ge.research.darpa.aske.ta1.explore/" + defaultCodeModelPrefix;
+		acm.getExtractionProcessor().getCodeExtractor().setCodeModelPrefix(defaultCodeModelPrefix);
+		acm.getExtractionProcessor().getCodeExtractor().setCodeModelName(defaultCodeModelName);
+		
+		String genFolder = new File(acm.getOwlModelsFolder()).getParent() + 
+				"/" + DialogConstants.EXTRACTED_MODELS_FOLDER_PATH_FRAGMENT;
+		new File(genFolder).mkdirs();
+//		String owlFileName = genFolder + "/" + defaultCodeModelPrefix + ".owl";
+
+		acm.getExtractionProcessor().getCodeExtractor().addCodeFile(codeFile);
+		acm.getExtractionProcessor().getCodeExtractor().setIncludeSerialization(includeSerialization);
+//		acm.processImports(SaveAsSadl.AskUserSaveAsSadl);
+		acm.processImports(SaveAsSadl.DoNotSaveAsSadl);
+		assertTrue(owlF.exists());
+		OntModel om = acm.getCodeExtractor().getCurrentCodeModel();
+		StmtIterator stmtItr = om.listStatements(null, RDF.type, om.getOntClass(DialogConstants.CODE_EXTRACTION_MODEL_URI + "#Method"));
+		while (stmtItr.hasNext()) {
+			System.out.println(stmtItr.next().toString());
+		}
+		
+		String sadlContent = acm.getExtractionProcessor().getGeneratedSadlContent();
+		System.out.println("\n\n*****  New Dialog editor content *********");
+		System.out.println(sadlContent);
+	}
+
+	@Test
 	public void test_09() throws IOException, ConfigurationException, InvalidNameException, ReasonerNotFoundException, QueryParseException, QueryCancelledException {
 	    this.sadl(getContent(getScientificConcepts2Path())); 
 	    this.sadl(getContent(getSpeedOfSoundPath()));
