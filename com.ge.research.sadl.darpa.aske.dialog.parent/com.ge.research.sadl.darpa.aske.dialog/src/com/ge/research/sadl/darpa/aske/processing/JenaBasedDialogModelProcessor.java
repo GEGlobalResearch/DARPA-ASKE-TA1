@@ -670,6 +670,21 @@ public class JenaBasedDialogModelProcessor extends JenaBasedSadlModelProcessor {
 				wh = ((Object[])wh)[1];
 			}
 		}
+		DialogIntermediateFormTranslator dift = new DialogIntermediateFormTranslator(this, getTheJenaModel());
+		dift.setStartingVariableNumber(getVariableNumber());
+		if (wh instanceof GraphPatternElement) {
+			wh = dift.addImpliedAndExpandedProperties((GraphPatternElement)wh);
+			setVariableNumber(dift.getVariableNumber());
+			List<GraphPatternElement> gpes = new ArrayList<GraphPatternElement>();
+			gpes = unitSpecialConsiderations(gpes, wh, thenExpr);
+			wh = dift.listToAnd(gpes);
+			if (wh instanceof List<?> && ((List<?>)wh).size() == 1) {
+				wh = ((List<?>)wh).get(0);
+			}
+			else {
+				throw new TranslationException("Unexpected array of size > 1");
+			}
+		}
 		Node whenObj = nodeCheck(wh);
 		List<Node> thenObjects = new ArrayList<Node>();
 		NamedNode specifiedPropertyNN = null;
@@ -815,9 +830,8 @@ public class JenaBasedDialogModelProcessor extends JenaBasedSadlModelProcessor {
 				augmentedComparisonObjects.add(cn);
 			}
 		}
-		DialogIntermediateFormTranslator dift = new DialogIntermediateFormTranslator(this, getTheJenaModel());
-		dift.setStartingVariableNumber(getVariableNumber());
 		
+		dift.setStartingVariableNumber(getVariableNumber());
 		List<Rule> comparisonRules = new ArrayList<Rule>();
 		for (int i = 0; i < augmentedComparisonObjects.size(); i++) {
 			Node cobj = augmentedComparisonObjects.get(i);
