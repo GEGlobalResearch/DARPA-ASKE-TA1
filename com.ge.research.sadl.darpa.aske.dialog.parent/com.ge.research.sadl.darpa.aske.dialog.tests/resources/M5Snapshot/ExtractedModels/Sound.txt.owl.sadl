@@ -3,62 +3,8 @@ uri "http://com.ge.research.sadl.darpa.aske.answer/Sound_txt" alias Sound_txt
 
 
 
-// RDF Properties:
-ns2:P1687 is a property.
-
-
 // Individuals:
-equation_1 is a ns1:ExternalEquation,
-    has ns1:arguments [(a ns1:DataDescriptor
-    with ns1:dataType decimal,
-    with ns1:localDescriptorName "R"),(a ns1:DataDescriptor
-    with ns1:augmentedType (a ns1:SemanticType
-    with ns1:semType http://www.wikidata.org/entity/Q327408),
-    with ns1:dataType decimal,
-    with ns1:localDescriptorName "T"),(a ns1:DataDescriptor
-    with ns1:dataType decimal,
-    with ns1:localDescriptorName "gamma")],
-    has ns1:expression (a ns1:Script
-    with ns1:language ns1:Python,
-    with ns1:script "a = math.pow(R * T * gamma, 1/2)"),
-    has ns1:expression (a ns1:Script
-    with ns1:language ns1:Text,
-    with ns1:script "a^2 = R * T * gamma"),
-    has ns1:expression (a ns1:Script
-    with ns1:language ns1:Python-TF,
-    with ns1:script "a = tf.math.pow(R * T * gamma, 1/2)"),
-    has ns1:returnTypes [(a ns1:DataDescriptor
-    with ns1:dataType decimal,
-    with ns1:localDescriptorName "a")].
-equation_2 is a ns1:ExternalEquation,
-    has ns1:arguments [(a ns1:DataDescriptor
-    with ns1:dataType decimal,
-    with ns1:localDescriptorName "R"),(a ns1:DataDescriptor
-    with ns1:augmentedType (a ns1:SemanticType
-    with ns1:semType http://www.wikidata.org/entity/Q327408),
-    with ns1:dataType decimal,
-    with ns1:localDescriptorName "T"),(a ns1:DataDescriptor
-    with ns1:dataType decimal,
-    with ns1:localDescriptorName "gamma"),(a ns1:DataDescriptor
-    with ns1:dataType decimal,
-    with ns1:localDescriptorName "theta")],
-    has ns1:expression (a ns1:Script
-    with ns1:language ns1:Python-TF,
-    with ns1:script "a = tf.math.pow(R * T *  (  1 + ( gamma-1 ) / ( 1 + ( gamma-1 ) *  ( tf.math.pow( theta/T,2) *  tf.math.exp( theta/T ) /  tf.math.pow( tf.math.exp( theta/T ) - 1,2 ))  ) ), 1/2)"),
-    has ns1:expression (a ns1:Script
-    with ns1:language ns1:Python,
-    with ns1:script "a = math.pow(R * T *  (  1 + ( gamma-1 ) / ( 1 + ( gamma-1 ) *  ( math.pow( theta/T,2) *  math.exp( theta/T ) /  math.pow( math.exp( theta/T ) - 1,2 ))  ) ), 1/2)"),
-    has ns1:expression (a ns1:Script
-    with ns1:language ns1:Text,
-    with ns1:script "a^2 = R * T * {1 + (gamma - 1) / ( 1 + (gamma-1) * [(theta/T)^2 * e^(theta/T) /(e^(theta/T) -1)^2]) }"),
-    has ns1:returnTypes [(a ns1:DataDescriptor
-    with ns1:dataType decimal,
-    with ns1:localDescriptorName "a")].
-Q11423 (alias "mass") is a ,
-    has rdfs:subClassOf http://www.wikidata.org/entity/Q30337748,
-    has rdfs:subClassOf http://www.wikidata.org/entity/Q3386703,
-    has ns2:P1687 http://www.wikidata.org/entity/P2067 .
-Q124003 (alias "speed of", "speed of \"sound\"", "speed of sound", "speed of sound?") is a ,
-    has rdfs:subClassOf http://www.wikidata.org/entity/Q3711325,
-    has ns2:P1687 http://www.wikidata.org/entity/P2075 .
-Q28912099 (alias "Investigation of the mechanism of action of papain", "of") is a .
+External equation_1() returns : .
+equation_1 has expression (a Script with language Python, with script "a = math.pow(R * T * gamma, 1/2)").
+External equation_2() returns : .
+equation_2 has expression (a Script with language Text, with script "a^2 = R * T * {1 + (gamma - 1) / ( 1 + (gamma-1) * [(theta/T)^2 * e^(theta/T) /(e^(theta/T) -1)^2]) }").

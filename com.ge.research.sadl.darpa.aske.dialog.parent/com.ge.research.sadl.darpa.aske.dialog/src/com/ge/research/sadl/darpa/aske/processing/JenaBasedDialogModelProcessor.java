@@ -770,9 +770,14 @@ public class JenaBasedDialogModelProcessor extends JenaBasedSadlModelProcessor {
 						instances = getLeafSubclasses(theClass, instances);
 						if (instances.size() > 1) {
 							ntype = NodeType.ClassNode;
+							comparisonsFound = true;
 						}
 					}
-					if (instances.size() > 1) {
+					if (!comparisonsFound) {
+						instances.add(getTheJenaModel().getOntClass(nn.getURI()));
+						ntype = NodeType.ClassNode;
+					}
+					if (instances.size() > 0) {
 						for (int i = 0; i < instances.size(); i++) {
 							Node compNode;
 							if (specifiedPropertyNN != null) {
@@ -843,7 +848,7 @@ public class JenaBasedDialogModelProcessor extends JenaBasedSadlModelProcessor {
 			Rule modifiedRule = dift.cook(pseudoRule);
 			comparisonRules.add(modifiedRule);
 			logger.debug(modifiedRule.toDescriptiveString());
-			System.out.println(modifiedRule.toFullyQualifiedString());
+//			System.out.println(modifiedRule.toFullyQualifiedString());
 //			addInfo(modifiedRule.toFullyQualifiedString(), thenExpr.eContainer());
 		}
 		return comparisonRules;
@@ -1792,8 +1797,8 @@ public class JenaBasedDialogModelProcessor extends JenaBasedSadlModelProcessor {
 				TripleElement varTypeTriple = new TripleElement(var, new RDFTypeNode(), type);
 				TripleElement valueTriple = new TripleElement(var, 
 						new NamedNode(SadlConstants.SADL_IMPLICIT_MODEL_VALUE_URI), valueLiteral);
-				gpes.add((TripleElement)whenObj);
 				gpes.add(varTypeTriple);
+				gpes.add((TripleElement)whenObj);
 				gpes.add(valueTriple);
 				if (units != null) {
 					Literal unitsLiteral = new Literal();

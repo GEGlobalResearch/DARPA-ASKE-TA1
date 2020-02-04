@@ -62,6 +62,14 @@ CodeVariable  is a type of CodeElement,
 {ClassField, MethodArgument, MethodVariable, ConstantVariable} are types of CodeVariable.
 constantValue describes ConstantVariable with values of type UnittedQuantity.
 
+// Rule dummyRule
+//  if c is a CodeVariable and
+//   ref is reference of c and
+//   ref has codeBlock cb and
+//   l is beginsAt of ref and
+//   minLoc = min(c, reference, r, r, codeBlock, cb, r, beginsAt) 
+// then print(l, minLoc). 
+
 //External findFirstLocation (CodeVariable cv) returns int: "http://ToBeImplemented".
 
 Rule Transitive  
@@ -82,7 +90,7 @@ if c is a CodeVariable and
    minLoc = min(c, reference, r, r, codeBlock, cb, r, beginsAt) and
    l = minLoc
 then firstRef of ref is true
-//	and print(c, " at ", minLoc, " is first reference.")
+	and print(c, " at ", minLoc, " is first reference.") 
 .
 
 Rule ImplicitInput
@@ -93,7 +101,7 @@ if cb is a CodeBlock and
    and cv has reference ref
 //   and ref has beginsAt loc
 then cem:input of ref is true and isImplicit of ref is true
-//	and print(cb, cv, loc, " implicit input")
+	and print(cb, cv, loc, " implicit input")
 .
 
 Rule ImplicitOutput
@@ -102,10 +110,10 @@ if cb is a CodeBlock and
    ref has firstRef true and
    ref has usage Reassigned
    and cv has reference ref
-   and noValue(cv, reference, ref2, ref2, codeBlock, cb, ref2, usage, Defined)
+   and noValue(cv, reference, ref2, ref2, codeBlock, cb, ref2, usage, Defined) 
 //   and ref has beginsAt loc
 then output of ref is true and isImplicit of ref is true
-//	and print(cb, cv, loc, " implicit output")
+	and print(cb, cv, loc, " implicit output")
 .   
 
 //Rule SetNotFirstRef1

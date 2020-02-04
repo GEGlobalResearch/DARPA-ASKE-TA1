@@ -555,8 +555,7 @@ class DialogTest extends AbstractDialogTest {
 	@Test
 	def void testWhatIsStatement_01() {
 			val grd = newArrayList(
-"Rule ComparePseudoRule0:  if rdf(http://sadl.org/Suitability.dialog#v2, http://www.w3.org/1999/02/22-rdf-syntax-ns#type, http://sadl.org/Suitability.sadl#CF6) and rdf(http://sadl.org/Suitability.dialog#v2, http://sadl.org/Suitability.sadl#altitude, 25000 \"ft\") and rdf(http://sadl.org/Suitability.dialog#v2, http://sadl.org/Suitability.sadl#speed, 600 \"mph\") then rdf(http://sadl.org/Suitability.dialog#v2, http://sadl.org/Suitability.sadl#thrust, v1)."
-)
+"Rule ComparePseudoRule0:  if rdf(v1, http://www.w3.org/1999/02/22-rdf-syntax-ns#type, http://sadl.org/sadlimplicitmodel#UnittedQuantity) and rdf(v1, http://sadl.org/sadlimplicitmodel#value, 25000) and rdf(v1, http://sadl.org/sadlimplicitmodel#unit, \"ft\") and rdf(http://sadl.org/Suitability.dialog#v4, http://www.w3.org/1999/02/22-rdf-syntax-ns#type, http://sadl.org/Suitability.sadl#CF6) and rdf(http://sadl.org/Suitability.dialog#v4, http://sadl.org/Suitability.sadl#altitude, v1) and rdf(v2, http://www.w3.org/1999/02/22-rdf-syntax-ns#type, http://sadl.org/sadlimplicitmodel#UnittedQuantity) and rdf(v2, http://sadl.org/sadlimplicitmodel#value, 600) and rdf(v2, http://sadl.org/sadlimplicitmodel#unit, \"mph\") and rdf(http://sadl.org/Suitability.dialog#v4, http://sadl.org/Suitability.sadl#speed, v2) then rdf(http://sadl.org/Suitability.dialog#v4, http://sadl.org/Suitability.sadl#thrust, v3).")
 		'''
 			 uri "http://sadl.org/Suitability.sadl" alias stblt.
 			 
@@ -600,10 +599,83 @@ class DialogTest extends AbstractDialogTest {
 	}
 	
 	@Test
+	def void testWhatIsStatement_02() {
+			val grd = newArrayList(
+"Rule ComparePseudoRule0:  if rdf(v1, http://www.w3.org/1999/02/22-rdf-syntax-ns#type, http://sadl.org/sadlimplicitmodel#UnittedQuantity) and rdf(v1, http://sadl.org/sadlimplicitmodel#value, 300) and rdf(v1, http://sadl.org/sadlimplicitmodel#unit, \"mph\") and rdf(http://sadl.org/test4.dialog#v3, http://www.w3.org/1999/02/22-rdf-syntax-ns#type, http://aske.ge.com/hypersonicsV2#CF6) and rdf(http://sadl.org/test4.dialog#v3, http://aske.ge.com/hypersonicsV2#speed, v1) then rdf(http://sadl.org/test4.dialog#v3, http://aske.ge.com/hypersonicsV2#machSpeed, v2)."
+)
+		'''
+			 uri "http://aske.ge.com/hypersonicsV2" alias hv2.
+			 
+			 PhysicalThing is a class,
+			 	described by mass with values of type Mass
+			 	described by volume with values of type Volume
+			 	described by density with values of type Density
+			 	described by temperature with values of type Temperature
+			 	described by altitude with values of type Altitude
+			 	described by speed with values of type Speed.
+			 	
+			 Speed is a type of UnittedQuantity.
+			 Mass is a type of UnittedQuantity.
+			 Volume is a type of UnittedQuantity.
+			 Density is a type of UnittedQuantity.
+			 Length is a type of UnittedQuantity.
+			 Time is a type of UnittedQuantity.
+			 Temperature is a type of UnittedQuantity.
+			 Altitude is a type of UnittedQuantity.
+			 MachSpeed is a type of Speed.
+			 
+			 Gas is a type of PhysicalThing
+			 	described by pressure with values of type Pressure.
+			 Air is a type of Gas.
+			 machSpeed describes Air with values of type MachSpeed.
+			 
+			 SpecificNetThrust is a type of UnittedQuantity.
+			 SpecificFuelConsumption is a type of UnittedQuantity.
+			 
+			 AircraftEngine is a type of PhysicalThing
+			 	described by mach with values of type MachSpeed
+			 	described by sfc (alias "specific fuel consumption") with values of type SpecificFuelConsumption
+			 	described by thrust with values of type SpecificNetThrust.
+			                     
+			 {CF6, F100, J85, RamJet} are types of AircraftEngine.
+		'''.sadl
+
+		'''
+			 uri "http://sadl.org/test4.dialog" alias test4dialog.
+			 
+			 import "http://aske.ge.com/hypersonicsV2".
+			 
+			 what is the machSpeed of a CF6 when the speed is 300 mph?
+		'''.assertValidatesTo [ ontModel, issues, processor |
+			assertNotNull(ontModel)
+//			val stmtitr = ontModel.listStatements()
+//			while (stmtitr.hasNext) {
+//				println(stmtitr.nextStatement)
+//			}
+			val errors = issues.filter[severity === Severity.ERROR]
+			for (err : errors) {
+				println(err)
+			}
+			assertEquals(0, errors.size)
+			if (processor instanceof JenaBasedDialogModelProcessor) {
+				val conversation = (processor as JenaBasedDialogModelProcessor).answerCurationManager.conversation
+				assertNotNull(conversation)
+				assertNotNull(conversation.statements);
+				assertEquals(1, conversation.statements.size)
+				assertTrue(conversation.statements.get(0).statement instanceof WhatIsContent)
+				val cc = conversation.statements.get(0).statement as WhatIsContent
+				val rules = cc.comparisonRules
+				assertEquals(1, rules.size)
+				assertEquals(grd.get(0), rules.get(0).toFullyQualifiedString)
+			}
+		]
+	}
+	
+	@Test
 	def void testCompareStatement_01() {
 			val grd = newArrayList(
-"Rule ComparePseudoRule:  if rdf(http://aske.ge.com/testdiag#v0, http://www.w3.org/1999/02/22-rdf-syntax-ns#type, http://sadl.org/Model.sadl#CF6) and rdf(http://aske.ge.com/testdiag#v0, http://sadl.org/Model.sadl#sfc, 0.35) then rdf(http://aske.ge.com/testdiag#v0, http://www.w3.org/1999/02/22-rdf-syntax-ns#type, http://sadl.org/Model.sadl#CF6) and rdf(http://aske.ge.com/testdiag#v0, http://sadl.org/Model.sadl#thrust, v2).",
-"Rule ComparePseudoRule:  if rdf(http://aske.ge.com/testdiag#v1, http://www.w3.org/1999/02/22-rdf-syntax-ns#type, http://sadl.org/Model.sadl#F100) and rdf(http://aske.ge.com/testdiag#v1, http://sadl.org/Model.sadl#sfc, 0.35) then rdf(http://aske.ge.com/testdiag#v1, http://www.w3.org/1999/02/22-rdf-syntax-ns#type, http://sadl.org/Model.sadl#F100) and rdf(http://aske.ge.com/testdiag#v1, http://sadl.org/Model.sadl#thrust, v3)."
+"Rule ComparePseudoRule0:  if rdf(http://aske.ge.com/testdiag#v0, http://www.w3.org/1999/02/22-rdf-syntax-ns#type, http://sadl.org/Model.sadl#CF6) and rdf(http://aske.ge.com/testdiag#v0, http://sadl.org/Model.sadl#sfc, 0.35) then rdf(http://aske.ge.com/testdiag#v0, http://www.w3.org/1999/02/22-rdf-syntax-ns#type, http://sadl.org/Model.sadl#CF6) and rdf(http://aske.ge.com/testdiag#v0, http://sadl.org/Model.sadl#thrust, v2).",
+"Rule ComparePseudoRule1:  if rdf(http://aske.ge.com/testdiag#v1, http://www.w3.org/1999/02/22-rdf-syntax-ns#type, http://sadl.org/Model.sadl#F100) and rdf(http://aske.ge.com/testdiag#v1, http://sadl.org/Model.sadl#sfc, 0.35) then rdf(http://aske.ge.com/testdiag#v1, http://www.w3.org/1999/02/22-rdf-syntax-ns#type, http://sadl.org/Model.sadl#F100) and rdf(http://aske.ge.com/testdiag#v1, http://sadl.org/Model.sadl#thrust, v3)."
 )
 		'''
 			uri "http://sadl.org/Model.sadl" alias mdl.
@@ -647,9 +719,10 @@ class DialogTest extends AbstractDialogTest {
 	@Test
 	def void testCompareStatement_02() {
 			val grd = newArrayList(
-"Rule ComparePseudoRule:  if rdf(http://aske.ge.com/testdiag#v1, http://sadl.org/Model.sadl#sfc, 0.35) then rdf(http://aske.ge.com/testdiag#v1, http://sadl.org/Model.sadl#thrust, v0).",
-"Rule ComparePseudoRule:  if rdf(http://aske.ge.com/testdiag#v3, http://sadl.org/Model.sadl#sfc, 0.35) then rdf(http://aske.ge.com/testdiag#v3, http://sadl.org/Model.sadl#thrust, v2).",
-"Rule ComparePseudoRule:  if rdf(http://aske.ge.com/testdiag#v5, http://sadl.org/Model.sadl#sfc, 0.35) then rdf(http://aske.ge.com/testdiag#v5, http://sadl.org/Model.sadl#thrust, v4).")
+"Rule ComparePseudoRule0:  if rdf(http://aske.ge.com/testdiag#v1, http://www.w3.org/1999/02/22-rdf-syntax-ns#type, http://sadl.org/Model.sadl#RamJet) and rdf(http://aske.ge.com/testdiag#v1, http://sadl.org/Model.sadl#sfc, 0.35) then rdf(http://aske.ge.com/testdiag#v1, http://sadl.org/Model.sadl#thrust, v0).",
+"Rule ComparePseudoRule1:  if rdf(http://aske.ge.com/testdiag#v3, http://www.w3.org/1999/02/22-rdf-syntax-ns#type, http://sadl.org/Model.sadl#F100) and rdf(http://aske.ge.com/testdiag#v3, http://sadl.org/Model.sadl#sfc, 0.35) then rdf(http://aske.ge.com/testdiag#v3, http://sadl.org/Model.sadl#thrust, v2).",
+"Rule ComparePseudoRule2:  if rdf(http://aske.ge.com/testdiag#v5, http://www.w3.org/1999/02/22-rdf-syntax-ns#type, http://sadl.org/Model.sadl#CF6) and rdf(http://aske.ge.com/testdiag#v5, http://sadl.org/Model.sadl#sfc, 0.35) then rdf(http://aske.ge.com/testdiag#v5, http://sadl.org/Model.sadl#thrust, v4)."
+)
 		'''
 			uri "http://sadl.org/Model.sadl" alias mdl.
 						
@@ -693,9 +766,9 @@ class DialogTest extends AbstractDialogTest {
 	@Test
 	def void testCompareStatement_03() {
 			val grd = newArrayList(
-"Rule ComparePseudoRule:  if rdf(http://aske.ge.com/testdiag#v1, http://www.w3.org/1999/02/22-rdf-syntax-ns#type, http://sadl.org/Model.sadl#RamJet) and rdf(http://aske.ge.com/testdiag#v1, http://sadl.org/Model.sadl#sfc, 0.35) then rdf(http://aske.ge.com/testdiag#v1, http://sadl.org/Model.sadl#thrust, v0).",
-"Rule ComparePseudoRule:  if rdf(http://aske.ge.com/testdiag#v3, http://www.w3.org/1999/02/22-rdf-syntax-ns#type, http://sadl.org/Model.sadl#F100) and rdf(http://aske.ge.com/testdiag#v3, http://sadl.org/Model.sadl#sfc, 0.35) then rdf(http://aske.ge.com/testdiag#v3, http://sadl.org/Model.sadl#thrust, v2).",
-"Rule ComparePseudoRule:  if rdf(http://aske.ge.com/testdiag#v5, http://www.w3.org/1999/02/22-rdf-syntax-ns#type, http://sadl.org/Model.sadl#CF6) and rdf(http://aske.ge.com/testdiag#v5, http://sadl.org/Model.sadl#sfc, 0.35) then rdf(http://aske.ge.com/testdiag#v5, http://sadl.org/Model.sadl#thrust, v4)."
+"Rule ComparePseudoRule0:  if rdf(http://aske.ge.com/testdiag#v1, http://www.w3.org/1999/02/22-rdf-syntax-ns#type, http://sadl.org/Model.sadl#RamJet) and rdf(http://aske.ge.com/testdiag#v1, http://sadl.org/Model.sadl#sfc, 0.35) then rdf(http://aske.ge.com/testdiag#v1, http://sadl.org/Model.sadl#thrust, v0).",
+"Rule ComparePseudoRule1:  if rdf(http://aske.ge.com/testdiag#v3, http://www.w3.org/1999/02/22-rdf-syntax-ns#type, http://sadl.org/Model.sadl#F100) and rdf(http://aske.ge.com/testdiag#v3, http://sadl.org/Model.sadl#sfc, 0.35) then rdf(http://aske.ge.com/testdiag#v3, http://sadl.org/Model.sadl#thrust, v2).",
+"Rule ComparePseudoRule2:  if rdf(http://aske.ge.com/testdiag#v5, http://www.w3.org/1999/02/22-rdf-syntax-ns#type, http://sadl.org/Model.sadl#CF6) and rdf(http://aske.ge.com/testdiag#v5, http://sadl.org/Model.sadl#sfc, 0.35) then rdf(http://aske.ge.com/testdiag#v5, http://sadl.org/Model.sadl#thrust, v4)."
 )
 		'''
 			uri "http://sadl.org/Model.sadl" alias mdl.
@@ -735,6 +808,10 @@ class DialogTest extends AbstractDialogTest {
 
 	@Test
 	def void testCompareStatement_04() {
+			val grd = newArrayList(
+"Rule ComparePseudoRule0:  if rdf(http://aske.ge.com/testdiag#YourF100, http://sadl.org/Model.sadl#sfc, 0.35) then rdf(http://aske.ge.com/testdiag#YourF100, http://sadl.org/Model.sadl#thrust, v0).",
+"Rule ComparePseudoRule1:  if rdf(http://aske.ge.com/testdiag#MyCF6, http://sadl.org/Model.sadl#sfc, 0.35) then rdf(http://aske.ge.com/testdiag#MyCF6, http://sadl.org/Model.sadl#thrust, v1)."
+)
 		'''
 			uri "http://sadl.org/Model.sadl" alias mdl.
 			
@@ -756,17 +833,28 @@ class DialogTest extends AbstractDialogTest {
 			Compare AircraftEngine when sfc is .35.
 		'''.assertValidatesTo [ ontModel, issues, processor |
 			assertNotNull(ontModel)
-//			val stmtitr = ontModel.listStatements()
-//			while (stmtitr.hasNext) {
-//				println(stmtitr.nextStatement)
-//			}
 			val errors = issues.filter[severity === Severity.ERROR]
 			assertEquals(0, errors.size)
+			if (processor instanceof JenaBasedDialogModelProcessor) {
+				val conversation = (processor as JenaBasedDialogModelProcessor).answerCurationManager.conversation
+				assertNotNull(conversation)
+				assertNotNull(conversation.statements);
+				assertEquals(3, conversation.statements.size)
+				assertTrue(conversation.statements.get(2).statement instanceof CompareContent)
+				val cc = conversation.statements.get(2).statement as CompareContent
+				val rules = cc.comparisonRules
+				assertEquals(2, rules.size)
+				assertEquals(grd.get(0), rules.get(0).toFullyQualifiedString)
+				assertEquals(grd.get(1), rules.get(1).toFullyQualifiedString)
+			}
 		]
 	}
 
 	@Test
 	def void testCompareStatement_05() {
+			val grd = newArrayList(
+"Rule ComparePseudoRule0:  if rdf(http://aske.ge.com/testdiag#CF6b, http://sadl.org/Model.sadl#sfc, 0.35) then rdf(http://aske.ge.com/testdiag#CF6b, http://sadl.org/Model.sadl#thrust, v0).",
+"Rule ComparePseudoRule1:  if rdf(http://aske.ge.com/testdiag#CF6a, http://sadl.org/Model.sadl#sfc, 0.35) then rdf(http://aske.ge.com/testdiag#CF6a, http://sadl.org/Model.sadl#thrust, v1).")
 		'''
 			uri "http://sadl.org/Model.sadl" alias mdl.
 			
@@ -793,11 +881,31 @@ class DialogTest extends AbstractDialogTest {
 //			}
 			val errors = issues.filter[severity === Severity.ERROR]
 			assertEquals(0, errors.size)
+			if (processor instanceof JenaBasedDialogModelProcessor) {
+				val conversation = (processor as JenaBasedDialogModelProcessor).answerCurationManager.conversation
+				assertNotNull(conversation)
+				assertNotNull(conversation.statements);
+				assertEquals(2, conversation.statements.size)
+				assertTrue(conversation.statements.get(1).statement instanceof CompareContent)
+				val cc = conversation.statements.get(1).statement as CompareContent
+				val rules = cc.comparisonRules
+				for (r : rules) {
+					println(r.toFullyQualifiedString)
+				}
+				assertEquals(2, rules.size)
+				assertEquals(grd.get(0), rules.get(0).toFullyQualifiedString)
+				assertEquals(grd.get(1), rules.get(1).toFullyQualifiedString)
+			}
 		]
 	}
 
 	@Test
 	def void testCompareStatement_06() {
+			val grd = newArrayList(
+"Rule ComparePseudoRule0:  if rdf(http://aske.ge.com/testdiag#v4, http://www.w3.org/1999/02/22-rdf-syntax-ns#type, http://sadl.org/Model.sadl#CF6) and rdf(http://aske.ge.com/testdiag#v4, http://sadl.org/Model.sadl#sfc, 0.36) then rdf(http://aske.ge.com/testdiag#v4, http://sadl.org/Model.sadl#thrust, v3).",
+"Rule ComparePseudoRule1:  if rdf(http://aske.ge.com/testdiag#v6, http://www.w3.org/1999/02/22-rdf-syntax-ns#type, http://sadl.org/Model.sadl#F100) and rdf(http://aske.ge.com/testdiag#v6, http://sadl.org/Model.sadl#sfc, 0.36) then rdf(http://aske.ge.com/testdiag#v6, http://sadl.org/Model.sadl#thrust, v5).",
+"Rule ComparePseudoRule2:  if rdf(http://aske.ge.com/testdiag#v8, http://www.w3.org/1999/02/22-rdf-syntax-ns#type, http://sadl.org/Model.sadl#RamJet) and rdf(http://aske.ge.com/testdiag#v8, http://sadl.org/Model.sadl#sfc, 0.36) then rdf(http://aske.ge.com/testdiag#v8, http://sadl.org/Model.sadl#thrust, v7)."
+)
 		'''
 			uri "http://sadl.org/Model.sadl" alias mdl.
 			
@@ -822,11 +930,33 @@ class DialogTest extends AbstractDialogTest {
 //			}
 			val errors = issues.filter[severity === Severity.ERROR]
 			assertEquals(0, errors.size)
+			if (processor instanceof JenaBasedDialogModelProcessor) {
+				val conversation = (processor as JenaBasedDialogModelProcessor).answerCurationManager.conversation
+				assertNotNull(conversation)
+				assertNotNull(conversation.statements);
+				assertEquals(1, conversation.statements.size)
+				assertTrue(conversation.statements.get(0).statement instanceof CompareContent)
+				val cc = conversation.statements.get(0).statement as CompareContent
+				val rules = cc.comparisonRules
+				for (r : rules) {
+					println(r.toFullyQualifiedString)
+				}
+				assertEquals(3, rules.size)
+				assertEquals(grd.get(0), rules.get(0).toFullyQualifiedString)
+				assertEquals(grd.get(1), rules.get(1).toFullyQualifiedString)
+				assertEquals(grd.get(2), rules.get(2).toFullyQualifiedString)
+			}
 		]
 	}
 	
 	@Test
 	def void testThinThread1() {
+			val grd = newArrayList(
+"Rule ComparePseudoRule0:  if rdf(v0, http://www.w3.org/1999/02/22-rdf-syntax-ns#type, http://sadl.org/sadlimplicitmodel#UnittedQuantity) and rdf(v0, http://sadl.org/sadlimplicitmodel#value, 25000) and rdf(v0, http://sadl.org/sadlimplicitmodel#unit, \"ft\") and rdf(http://aske.ge.com/testdiag#v3, http://www.w3.org/1999/02/22-rdf-syntax-ns#type, http://sadl.org/Model.sadl#RamJet) and rdf(http://aske.ge.com/testdiag#v3, http://sadl.org/Model.sadl#altitude, v0) and rdf(v1, http://www.w3.org/1999/02/22-rdf-syntax-ns#type, http://sadl.org/sadlimplicitmodel#UnittedQuantity) and rdf(v1, http://sadl.org/sadlimplicitmodel#value, 800) and rdf(v1, http://sadl.org/sadlimplicitmodel#unit, \"mph\") and rdf(http://aske.ge.com/testdiag#v3, http://sadl.org/Model.sadl#speed, v1) then rdf(http://aske.ge.com/testdiag#v3, http://sadl.org/Model.sadl#mach, v2).",
+"Rule ComparePseudoRule1:  if rdf(v0, http://www.w3.org/1999/02/22-rdf-syntax-ns#type, http://sadl.org/sadlimplicitmodel#UnittedQuantity) and rdf(v0, http://sadl.org/sadlimplicitmodel#value, 25000) and rdf(v0, http://sadl.org/sadlimplicitmodel#unit, \"ft\") and rdf(http://aske.ge.com/testdiag#v5, http://www.w3.org/1999/02/22-rdf-syntax-ns#type, http://sadl.org/Model.sadl#J85) and rdf(http://aske.ge.com/testdiag#v5, http://sadl.org/Model.sadl#altitude, v0) and rdf(v1, http://www.w3.org/1999/02/22-rdf-syntax-ns#type, http://sadl.org/sadlimplicitmodel#UnittedQuantity) and rdf(v1, http://sadl.org/sadlimplicitmodel#value, 800) and rdf(v1, http://sadl.org/sadlimplicitmodel#unit, \"mph\") and rdf(http://aske.ge.com/testdiag#v5, http://sadl.org/Model.sadl#speed, v1) then rdf(http://aske.ge.com/testdiag#v5, http://sadl.org/Model.sadl#mach, v4).",
+"Rule ComparePseudoRule2:  if rdf(v0, http://www.w3.org/1999/02/22-rdf-syntax-ns#type, http://sadl.org/sadlimplicitmodel#UnittedQuantity) and rdf(v0, http://sadl.org/sadlimplicitmodel#value, 25000) and rdf(v0, http://sadl.org/sadlimplicitmodel#unit, \"ft\") and rdf(http://aske.ge.com/testdiag#v7, http://www.w3.org/1999/02/22-rdf-syntax-ns#type, http://sadl.org/Model.sadl#F100) and rdf(http://aske.ge.com/testdiag#v7, http://sadl.org/Model.sadl#altitude, v0) and rdf(v1, http://www.w3.org/1999/02/22-rdf-syntax-ns#type, http://sadl.org/sadlimplicitmodel#UnittedQuantity) and rdf(v1, http://sadl.org/sadlimplicitmodel#value, 800) and rdf(v1, http://sadl.org/sadlimplicitmodel#unit, \"mph\") and rdf(http://aske.ge.com/testdiag#v7, http://sadl.org/Model.sadl#speed, v1) then rdf(http://aske.ge.com/testdiag#v7, http://sadl.org/Model.sadl#mach, v6).",
+"Rule ComparePseudoRule3:  if rdf(v0, http://www.w3.org/1999/02/22-rdf-syntax-ns#type, http://sadl.org/sadlimplicitmodel#UnittedQuantity) and rdf(v0, http://sadl.org/sadlimplicitmodel#value, 25000) and rdf(v0, http://sadl.org/sadlimplicitmodel#unit, \"ft\") and rdf(http://aske.ge.com/testdiag#v9, http://www.w3.org/1999/02/22-rdf-syntax-ns#type, http://sadl.org/Model.sadl#CF6) and rdf(http://aske.ge.com/testdiag#v9, http://sadl.org/Model.sadl#altitude, v0) and rdf(v1, http://www.w3.org/1999/02/22-rdf-syntax-ns#type, http://sadl.org/sadlimplicitmodel#UnittedQuantity) and rdf(v1, http://sadl.org/sadlimplicitmodel#value, 800) and rdf(v1, http://sadl.org/sadlimplicitmodel#unit, \"mph\") and rdf(http://aske.ge.com/testdiag#v9, http://sadl.org/Model.sadl#speed, v1) then rdf(http://aske.ge.com/testdiag#v9, http://sadl.org/Model.sadl#mach, v8)."
+)
 		'''
 			uri "http://sadl.org/Model.sadl" alias mdl.
 			
@@ -854,6 +984,22 @@ class DialogTest extends AbstractDialogTest {
 //			}
 			val errors = issues.filter[severity === Severity.ERROR]
 			assertEquals(0, errors.size)
+			if (processor instanceof JenaBasedDialogModelProcessor) {
+				val conversation = (processor as JenaBasedDialogModelProcessor).answerCurationManager.conversation
+				assertNotNull(conversation)
+				assertNotNull(conversation.statements);
+				assertEquals(1, conversation.statements.size)
+				assertTrue(conversation.statements.get(0).statement instanceof WhatIsContent)
+				val cc = conversation.statements.get(0).statement as WhatIsContent
+				val rules = cc.comparisonRules
+				for (r : rules) {
+					println(r.toFullyQualifiedString)
+				}
+				assertEquals(4, rules.size)
+				for (var i = 0; i < 4; i++) {
+					assertEquals(grd.get(i), rules.get(i).toFullyQualifiedString)
+				}
+			}
 		]
 	}
 
@@ -1282,14 +1428,27 @@ class DialogTest extends AbstractDialogTest {
 «««			 	thrust is 55000 lb and 
 «««			 	weight is 3500 lb and 
 «««			 	sfc is 1.5 ?
-		'''.assertValidatesTo[ontModel, rules, commands, issues, processor |
+		'''.assertValidatesTo [ ontModel, issues, processor |
 			assertNotNull(ontModel)
 			assertTrue(issues.filter[severity === Severity.ERROR].empty)
+			if (processor instanceof JenaBasedDialogModelProcessor) {
+				val conversation = (processor as JenaBasedDialogModelProcessor).answerCurationManager.conversation
+				assertNotNull(conversation)
+				assertNotNull(conversation.statements);
+//				assertEquals(1, conversation.statements.size)
+//				assertTrue(conversation.statements.get(0).statement instanceof WhatICompareContentsContent)
+				val cc = conversation.statements.get(0).statement as CompareContent
+				val rules = cc.comparisonRules
+				for (r : rules) {
+					println(r.toFullyQualifiedString)
+				}
+//				assertEquals(1, rules.size)
+//				assertEquals(grd.get(0), rules.get(0).toFullyQualifiedString)
+			}
 		]
 	}
 	
 	
-	@Ignore
 	@Test
 	def void testGetTranslatorInstance() {
 		val cm = new ConfigurationManager

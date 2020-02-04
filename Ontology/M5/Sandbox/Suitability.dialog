@@ -1,0 +1,20 @@
+ uri "http://sadl.org/Suitability.dialog" alias stbltdlg.
+ 
+ import "http://sadl.org/Suitability.sadl".
+ 
+ Which AircraftEngine is suitable for MissionX?
+ 
+ Is F100 suitable for MissionX? 
+ Is a CF6 suitable when altitude is 25000 ft?
+ 
+ Is an F100 suitable for (a Mission, requires (an Aircraft with speed 1.0 mach, with altitude 25000 ft, with part
+ 	(an AircraftEngine with thrust 25000 lb, with weight 3500 lb, with sfc 1.5 )))?
+ 
+ Is a CF6 suitable when speed is 1.0 mach and 
+ 	altitude is 25000 ft and 
+ 	thrust is 55000 lb and 
+ 	weight is 3500 lb and 
+ 	sfc is 1.5 ?
+ 
+ What is the thrust of a CF6 when altitude is 25000 ft and speed is 600 mph?
+ 

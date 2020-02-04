@@ -1,0 +1,5 @@
+ uri "http://sadl.org/EngineOnly.dialog" alias EngineOnly.
+ 
+ import "http://sadl.org/EngineOnlyModel.sadl".
+ 
+  What is the thrust of a CF6 when altitude is 25000 ft and speed is 600 mph?

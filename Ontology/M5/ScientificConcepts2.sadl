@@ -41,7 +41,7 @@ Constant is a type of UnittedQuantity.
 UnitSystem is a class, must be one of {Metric, Imperial}.
   
 Derivative is a type of ScientificConcept, 
-	described by derivedFrom with a single value of type ScientificConcept,
+	described by derivativeOf with a single value of type ScientificConcept,
 	described by withRespectTo with a single value of type class.
 	
 Time is a type of UnittedQuantity.
@@ -78,12 +78,12 @@ Gas is a type of Substance.
 Air is a type of Gas.
 
 Velocity is a type of {UnittedQuantity and Derivative}.
-derivedFrom of Velocity only has values of type Position.
+derivativeOf of Velocity only has values of type Position.
 withRespectTo of Velocity only has values of type Time.
-velocity describes PhysicalObject with values of type Velocity.
+velocity (alias "speed") describes PhysicalObject with values of type Velocity.
 
 Acceleration is a type of {UnittedQuantity and Derivative}.
-derivedFrom of Acceleration only has values of type Velocity.
+derivativeOf of Acceleration only has values of type Velocity.
 withRespectTo of Acceleration  only has values of type Time.
 acceleration describes PhysicalObject with values of type Acceleration.
  
@@ -96,7 +96,7 @@ Rule momentumOfPhysicalThing:
  	then momentum of o is p.
 
 Force is a type of {UnittedQuantity and Derivative}.
-derivedFrom of Force only has values of type Momentum.
+derivativeOf of Force only has values of type Momentum.
 withRespectTo of Force only has values of type Time.
 force describes PhysicalObject with values of type Force.
 

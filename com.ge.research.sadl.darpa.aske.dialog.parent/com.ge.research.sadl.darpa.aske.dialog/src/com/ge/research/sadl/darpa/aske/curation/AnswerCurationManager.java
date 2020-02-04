@@ -293,8 +293,9 @@ public class AnswerCurationManager {
 	 * @throws QueryParseException 
 	 * @throws ReasonerNotFoundException 
 	 * @throws InvalidNameException 
+	 * @throws AnswerExtractionException 
 	 */
-	public int processImports(SaveAsSadl saveAsSadl) throws IOException, ConfigurationException, InvalidNameException, ReasonerNotFoundException, QueryParseException, QueryCancelledException {
+	public int processImports(SaveAsSadl saveAsSadl) throws IOException, ConfigurationException, InvalidNameException, ReasonerNotFoundException, QueryParseException, QueryCancelledException, AnswerExtractionException {
 		int numSuccessfullyProcessed = 0;
 		addedTypeDeclarations.clear();
 		Map<File, Boolean> outputOwlFilesBySourceType = new HashMap<File, Boolean>();	// Map of imports, value is true if code, false if text extraction
@@ -407,13 +408,16 @@ public class AnswerCurationManager {
 
 	private File extractFromTextAndSave(String outputModelName, String content, String inputIdentifier, String prefix,
 			String outputOwlFileName)
-			throws IOException, ConfigurationException {
+			throws IOException, ConfigurationException, AnswerExtractionException {
 		String localityURI = outputModelName;  // .replace('.', '/');
 		// clear any existing localityURI graph before processing text.
 // TODO this should eventually be a user choice?				
 		String clearMsg = getExtractionProcessor().getTextProcessor().clearGraph(localityURI);
 
 		int[] results = getTextProcessor().processText(inputIdentifier, content, localityURI, prefix);
+		if (results == null) {
+			throw new AnswerExtractionException("Text processing service returned no information");
+		}
 		int numConcepts = results[0];
 		int numEquations = results[1];
 		String msg = "Found " + numConcepts + " concepts and " + numEquations + " equations.";
