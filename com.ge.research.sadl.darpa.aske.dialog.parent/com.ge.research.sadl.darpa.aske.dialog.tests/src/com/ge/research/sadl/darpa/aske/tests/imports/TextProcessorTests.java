@@ -74,6 +74,9 @@ import com.ge.research.sadl.reasoner.utils.SadlUtils;
 import com.hp.hpl.jena.ontology.OntModel;
 import com.hp.hpl.jena.rdf.model.Model;
 import com.hp.hpl.jena.rdf.model.ModelFactory;
+import com.hp.hpl.jena.rdf.model.RDFNode;
+import com.hp.hpl.jena.rdf.model.StmtIterator;
+import com.hp.hpl.jena.vocabulary.RDFS;
 
 public class TextProcessorTests {
 
@@ -644,6 +647,29 @@ public class TextProcessorTests {
 			System.err.println("File '" + f.getCanonicalPath() + "' does not exist.");
 		}
 	    return null;
+	}
+
+	@Test
+	public void testSeeAlso_01() throws ConfigurationException, IOException {
+		String content = 
+				"The force f is defined as mass m divided by acceleration a. The equation is given as f = m*a.";
+		TextProcessor tp = new TextProcessor(new AnswerCurationManager(domainProjectModelFolder, 
+				ConfigurationManagerForIdeFactory.getConfigurationManagerForIDE(domainProjectModelFolder, null), null, null), null);
+		tp.setTextModelPrefix("sos");
+		String localityURI = "http://darpa.aske.ta1.ge/sostest";
+		tp.setTextModelName(localityURI);
+		String msg = tp.clearGraph(localityURI);
+		System.out.println("Clear graph response: " + msg);
+		int[] result = tp.processText(localityURI, content, localityURI, null);
+		assertNotNull(result);
+//		assertEquals(0, result[0]);
+//		assertEquals(1, result[1]);
+		System.out.println("nc=" + result[0] + ", neq=" + result[1]);
+		OntModel om = tp.getTextModel(localityURI);
+		StmtIterator stmtitr = om.listStatements(null, RDFS.seeAlso, (RDFNode)null);
+		while (stmtitr.hasNext()) {
+			System.out.println(stmtitr.next().toString());
+		}
 	}
 
 	private String readFile(File file) throws IOException {
