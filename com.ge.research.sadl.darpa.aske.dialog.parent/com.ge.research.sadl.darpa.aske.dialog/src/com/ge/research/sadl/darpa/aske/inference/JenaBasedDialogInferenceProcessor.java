@@ -860,29 +860,39 @@ public class JenaBasedDialogInferenceProcessor extends JenaBasedSadlInferencePro
 			List<TripleElement> docPatterns = new ArrayList<TripleElement>();
 			List<TripleElement> contextTriples = new ArrayList<TripleElement>();
 
+			List<Node> inputNodes = new ArrayList<Node>();
 			
 			for (int i = 0; i < triples.get(0).length; i++) {
 				TripleElement tr = triples.get(0)[i];
 				if (tr.getSubject() instanceof NamedNode) {
-					
-					if (tr.getPredicate().getURI() != null) {
-						if (tr.getObject() instanceof Literal) { //input value triple (v1, sadlimplicitmodel:value, 35000)
-							quantity = createUQtriplesArray(tr,triples.get(0));
-							inputPatterns.add(quantity);
-						}
-						else if (tr.getPredicate().toString().equals("rdf:type")){
-							contextTriples.add(tr);
-						}
-						else { //if (! (tr.getObject() instanceof Literal)) {
-							outputPatterns.add(tr);
-						}
+					if (tr.getPredicate().getURI() != null && tr.getPredicate().getName().contains("value")) { //input value triple (v1, sadlimplicitmodel:value, 35000)
+						quantity = createUQtriplesArray(tr,triples.get(0));
+						inputPatterns.add(quantity);
+						inputNodes.add(tr.getSubject());
 					}
-					else {
+				}
+			}
+
+			for (int i = 0; i < triples.get(0).length; i++) {
+				TripleElement tr = triples.get(0)[i];
+				if (tr.getSubject() instanceof NamedNode) {
+					if (tr.getPredicate().getURI() != null) {
+						if ( ! inputNodes.contains(tr.getSubject()) && ! inputNodes.contains(tr.getObject()) ) {
+							if (tr.getPredicate().toString().equals("rdf:type")){
+								contextTriples.add(tr);
+							}
+							else { //if (! (tr.getObject() instanceof Literal)) {
+								outputPatterns.add(tr);
+							}
+						}
+					} else { //property is null  
 						docPatterns.add(tr);
 					}
 				}
 			}
-		
+
+			
+			
 //			for (int i = 0; i < triples.get(0).length; i++) {
 //				TripleElement tr = triples.get(0)[i];
 //				if (tr.getSubject() instanceof NamedNode) {
@@ -894,9 +904,6 @@ public class JenaBasedDialogInferenceProcessor extends JenaBasedSadlInferencePro
 //						}
 //						else if (tr.getObject() == null) { //(v0, hypersonicsV2:staticTemperature, null)
 //							// this is an output
-//							outputPatterns.add(tr);
-//						}
-//						else if (! (tr.getObject() instanceof Literal)) {
 //							outputPatterns.add(tr);
 //						}
 //					}
@@ -919,11 +926,14 @@ public class JenaBasedDialogInferenceProcessor extends JenaBasedSadlInferencePro
 			if (inputPatterns != null) {
 				for (int i = 0; i < inputPatterns.size(); i++) {
 					
-					itr = inputPatterns.get(i)[0]; //e.g. itr = (v0 altitude v1)
-					sp = itr.getPredicate().getURI();
-					ssp = getTheJenaModel().getProperty(sp);
+					//itr = inputPatterns.get(i)[0]; //e.g. itr = (v0 altitude v1)
+					itr = inputPatterns.get(i)[3]; //e.g. itr = rdf(v1, rdf:type, hypersonicsV2:Speed)
+					//sp = itr.getPredicate().getURI();
+					//ssp = getTheJenaModel().getProperty(sp);
+					so = itr.getObject().getURI();
+					sso = getTheJenaModel().getResource(so);
 					// Add property to list of vars
-					inputsList.add(ssp);
+					inputsList.add(sso);
 				}
 			}
 			
@@ -935,8 +945,9 @@ public class JenaBasedDialogInferenceProcessor extends JenaBasedSadlInferencePro
 					itr = outputPatterns.get(i); //e.g. itr = (v0 altitude v1)
 					sp = itr.getPredicate().getURI();
 					ssp = getTheJenaModel().getProperty(sp);
+					OntResource rng = ssp.as(OntProperty.class).getRange();
 					// Add property to list of vars
-					outputsList.add(ssp);
+					outputsList.add(rng);
 				}
 			}
 				
