@@ -793,6 +793,7 @@ public class JenaBasedDialogModelProcessor extends JenaBasedSadlModelProcessor {
 							else {
 								NamedNode instNN = new NamedNode(instances.get(i).getURI());
 								instNN.setNodeType(ntype);
+								instNN.setLocalizedType(nn);
 								// we don't have any property specified so we need to generate a list of relevant properties
 								List<NamedNode> relevantProperties;
 								if (instNN.getNodeType().equals(NodeType.InstanceNode)) {
@@ -1710,6 +1711,45 @@ public class JenaBasedDialogModelProcessor extends JenaBasedSadlModelProcessor {
 				if (rhs instanceof ProxyNode && ((ProxyNode)rhs).getProxyFor() instanceof GraphPatternElement) {
 					gpes = unitSpecialConsiderations(gpes, ((ProxyNode) rhs).getProxyFor(), whatIsTarget);
 				}
+			}
+			else if (whenObj instanceof BuiltinElement) {
+				List<Node> args = ((BuiltinElement)whenObj).getArguments();
+				for (Node arg : args) {
+					if (arg instanceof Literal && ((Literal)arg).getUnits() != null) { 		// this operand to the || is for when the unit of a UnittedQuanity is given
+						OntClass unittedQuantitySubclass = getTheJenaModel().getOntClass(SadlConstants.SADL_IMPLICIT_MODEL_UNITTEDQUANTITY_URI);
+						VariableNode var = new VariableNode(getNewVar(whatIsTarget));
+						NamedNode type = new NamedNode(unittedQuantitySubclass.getURI());
+						type.setNodeType(NodeType.ClassNode);
+						var.setType(validateNode(type));
+						Literal valueLiteral = (Literal) arg;
+						int idx = args.indexOf(arg);
+						args.set(idx, var);
+						String units = valueLiteral.getUnits();
+						TripleElement varTypeTriple = new TripleElement(var, new RDFTypeNode(), type);
+						NamedNode valueProp = new NamedNode(SadlConstants.SADL_IMPLICIT_MODEL_VALUE_URI);
+						valueProp.setNodeType(NodeType.DataTypeProperty);
+						TripleElement valueTriple = new TripleElement(var, valueProp, valueLiteral);
+						gpes.add(varTypeTriple);
+						gpes.add(valueTriple);
+						if (units != null) {
+							Literal unitsLiteral = new Literal();
+							unitsLiteral.setValue(units);
+							valueLiteral.setUnits(null);
+							NamedNode unitProp = new NamedNode(SadlConstants.SADL_IMPLICIT_MODEL_UNIT_URI);
+							unitProp.setNodeType(NodeType.DataTypeProperty);
+							TripleElement unitTriple = new TripleElement(var, unitProp, unitsLiteral);
+							gpes.add(unitTriple);
+						}	
+					}
+					else if ((arg instanceof ProxyNode &&									// this operand to the || is for when no unit is given but there is an implied property and 
+							// value of the UnittedQuantity is given
+							((ProxyNode)arg).getProxyFor() instanceof TripleElement &&
+							((TripleElement)((ProxyNode)arg).getProxyFor()).getPredicate() instanceof NamedNode &&
+							((NamedNode)((TripleElement)((ProxyNode)arg).getProxyFor()).getPredicate()).getURI().equals(SadlConstants.SADL_IMPLICIT_MODEL_VALUE_URI))) {
+						
+					}
+				}
+				gpes.add((GraphPatternElement) whenObj);
 			}
 			else if (whenObj instanceof TripleElement && 
 				((((TripleElement)whenObj).getObject() instanceof Literal &&

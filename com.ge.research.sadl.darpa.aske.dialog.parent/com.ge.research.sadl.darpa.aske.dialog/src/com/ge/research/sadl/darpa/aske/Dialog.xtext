@@ -101,7 +101,7 @@ SaveStatement:
 ;
 
 AnswerCMStatement:
-	'CM:' (sstmt = ((SadlStatement|ModifiedAskStatement|WhatStatement|YesNoAnswerStatement|ExternalEquationStatement|EquationStatement)) | str = STRING annotations+=SadlAnnotation*)
+	'CM:' (sstmt = ((SadlStatement|ModifiedAskStatement|WhatStatement|YesNoAnswerStatement|ExternalEquationStatement|EquationStatement)) | str = STRING)
 ;
 
 ModifiedAskStatement returns sadl::ExpressionScope:
