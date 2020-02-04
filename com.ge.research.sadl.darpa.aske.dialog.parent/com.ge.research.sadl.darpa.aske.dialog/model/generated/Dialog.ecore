@@ -49,9 +49,6 @@
     <eStructuralFeatures xsi:type="ecore:EReference" name="sstmt" eType="ecore:EClass platform:/resource/com.ge.research.sadl/model/generated/SADL.ecore#//SadlModelElement"
         containment="true"/>
     <eStructuralFeatures xsi:type="ecore:EAttribute" name="str" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EString"/>
-    <eStructuralFeatures xsi:type="ecore:EReference" name="annotations" upperBound="-1"
-        eType="ecore:EClass platform:/resource/com.ge.research.sadl/model/generated/SADL.ecore#//SadlAnnotation"
-        containment="true"/>
   </eClassifiers>
   <eClassifiers xsi:type="ecore:EClass" name="WhatStatement" eSuperTypes="platform:/resource/com.ge.research.sadl/model/generated/SADL.ecore#//SadlModelElement">
     <eStructuralFeatures xsi:type="ecore:EReference" name="stmt" eType="ecore:EClass http://www.eclipse.org/emf/2002/Ecore#//EObject"

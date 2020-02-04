@@ -793,6 +793,7 @@ public class JenaBasedDialogModelProcessor extends JenaBasedSadlModelProcessor {
 							else {
 								NamedNode instNN = new NamedNode(instances.get(i).getURI());
 								instNN.setNodeType(ntype);
+								instNN.setLocalizedType(nn);
 								// we don't have any property specified so we need to generate a list of relevant properties
 								List<NamedNode> relevantProperties;
 								if (instNN.getNodeType().equals(NodeType.InstanceNode)) {
