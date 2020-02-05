@@ -318,45 +318,22 @@ public class JenaBasedDialogInferenceProcessor extends JenaBasedSadlInferencePro
 			"prefix cg:<http://aske.ge.com/compgraphmodel#>\n" + 
 			"prefix list:<http://sadl.org/sadllistmodel#>\n" +
 			"\n" + 
-			"select distinct ?DBN ?Out ?Eq where { \n" + 
-			"  {select distinct ?Eq where { \n" + 
-			//"     ?EqOut a imp:Equation. \n" + // to include External equation
-			"     ?EqOut imp:returnTypes ?EO1. \n" + 
-			"     ?EO1 list:rest*/list:first ?EO2.\n" + 
-			"     ?EO2 imp:augmentedType ?EO3. \n" + 
-			"     ?EO3 imp:constraints ?EO4.\n" + 
-			"     ?EO4 rdf:rest*/rdf:first ?EO5.\n" + 
-			"     ?EO5 imp:gpPredicate ?Op.\n" + 
+			"select distinct ?Eq ?Out where {\n" + 
+			"{select distinct ?EqOut ?EqIn ?Eq\n" + 
+			"where {\n" + 
+			"  ?EqOut imp:genericOutput ?Op.\n" + 
 			"     filter (?Op in ( LISTOFOUTPUTS )).\n" + 
 			"\n" + 
-			"     ?EqOut cg:parent* ?EqIn. \n" + 
-			"     ?EqIn imp:arguments ?EI1.\n" + 
-			"     ?EI1 list:rest*/list:first ?EI2.\n" + 
-			"     ?EI2 imp:augmentedType ?EI3. \n" + 
-			"     ?EI3 imp:constraints ?EI4.\n" + 
-			"     ?EI4 rdf:rest*/rdf:first ?EI5.\n" + 
-			"     ?EI5 imp:gpPredicate ?Ip.\n" + 
-			"     filter (?Ip in ( LISTOFINPUTS )). \n" + 
+			"   ?EqIn imp:genericInput ?In.\n" + 
+			"   filter (?In in ( LISTOFINPUTS )).\n" + 
 			"\n" + 
-			"     ?EqOut cg:parent* ?Eq. \n" + 
-			"     ?Eq cg:parent* ?EqIn. \n" + 
-			"  }} \n" + 
-			"\n" + 
-			"  ?Eq imp:returnTypes ?O1. \n" + 
-			"  ?O1 list:rest*/list:first ?O2.\n" + 
-			"  ?O2 imp:augmentedType ?O3. \n" + 
-			"  ?O3 imp:constraints ?O4.\n" + 
-			"  ?O4 rdf:rest*/rdf:first ?O5.\n" + 
-			"  ?O5 imp:gpPredicate ?Out.\n" + 
-			"  filter (?Out != <http://www.w3.org/1999/02/22-rdf-syntax-ns#type>) \n" + 
-			"\n" + 
-			"\n" + 
-			"  ?DBN rdfs:subClassOf ?EQR. \n" + 
-			"  ?EQR owl:onProperty cg:hasEquation.\n" + 
-			"  ?EQR owl:allValuesFrom ?EqClass.\n" + 
-			"  ?Eq a ?EqClass. \n" + 
+			"    ?EqOut cg:parent* ?Eq. \n" + 
+			"    ?Eq cg:parent* ?EqIn. \n" + 
+			"}}\n" + 
+			"  ?Eq imp:genericOutput ?Out. \n" + 
+			"  filter not exists {?Eq imp:implicitOutput/imp:localDescriptorName ?Out} \n" + 
 			"}";
-
+	
 	
 	public static final String RETRIEVE_MODELS = "prefix hyper:<http://aske.ge.com/hypersonicsV2#>\n" + 
 			"prefix imp:<http://sadl.org/sadlimplicitmodel#>\n" + 
@@ -367,44 +344,86 @@ public class JenaBasedDialogInferenceProcessor extends JenaBasedSadlInferencePro
 			"prefix rdf:<http://www.w3.org/1999/02/22-rdf-syntax-ns#>\n" + 
 			"prefix list:<http://sadl.org/sadllistmodel#>\n" +
 			"\n" + 
-			"select distinct ?Model ?Input (str(?EI2Label) as ?InputLabel) ?UniqueInputLabel ?Output (str(?expr) as ?ModelForm) (str(?Fun) as ?Function) where { \n" + 
-			"	  ?Model rdfs:subClassOf cg:DBN.\n" + 
-			"	  ?Model rdfs:subClassOf ?BN.\n" + 
-			"	  ?BN owl:onProperty cg:hasEquation.\n" + 
-			"	  ?BN owl:allValuesFrom ?EqClass. \n" + 
-			"	  ?Eq a ?EqClass. \n" + 
-			"	    filter (?Eq in ( EQNSLIST )) .\n" + 
+			"select distinct ?Model ?Input (str(?InLabel) as ?InputLabel) ?UniqueInputLabel \n" + 
+			"?Output \n" + 
+			"(str(?expr) as ?ModelForm) (str(?Fun) as ?Function) \n" + 
+			"(str(?ImpIn) as ?ImpInput) ?ImpInputAugType (str(?InpD) as ?InpDeclaration)\n" + 
+			"(str(?ImpOut) as ?ImpOutput) ?ImpOutputAugType (str(?OutpD) as?OutpDeclaration)\n" + 
+			"?Initializer ?Dependency\n" + 
+			"where { \n" + 
 			"\n" + 
-			"	  ?Eq imp:arguments ?EI1.\n" + 
-			"     ?EI1 list:rest*/list:first ?EI2.\n" + 
-			"     ?EI2 imp:localDescriptorName ?EI2Label.\n" + 
-			"     ?EI2 imp:descriptorVariable ?UniqueInputLabel.\n" + 
-			"     ?EI2 imp:augmentedType ?EI3. \n" + 
-			"     ?EI3 imp:constraints ?EI4.\n" + 
-			"     ?EI4 rdf:rest*/rdf:first ?EI5.\n" + 
-			"     ?EI5 imp:gpPredicate ?Input.\n" + 
-			"       filter (?Input != <http://www.w3.org/1999/02/22-rdf-syntax-ns#type>)\n" + 
-			"     ?EI5 imp:gpObject ?Label.\n" + 
+			"  {?RootModel a imp:ExternalEquation. #get dependencies of Externals, including self.\n" + 
+			"    filter (?RootModel in ( EQNSLIST )) . #EQNSLIST\n" + 
+			"    ?RootModel imp:dependsOn* ?Model.}\n" + 
+			"  union{ ?Model a imp:Equation.\n" + 
+			"         filter (?Model in ( EQNSLIST )) .} #EQNSLIST\n" + 
+			"   union {\n" + 
+			"      {select distinct ?Model ?Initializer ?Dependency\n" + 
+			"      where {\n" + 
+			"        {select ?Model ?Initializer where {\n" + 
+			"           ?Model imp:initializes ?Class.\n" + 
+			"           filter (?Class in ( CONTEXCLASSES )). #CONTEXCLASSES\n" + 
+			"           bind(bound(?Model) as ?Initializer).\n" + 
+			"       }}union\n" + 
+			"        {select ?Model ?Dependency where {\n" + 
+			"          ?Eq imp:dependsOn ?Model.\n" + 
+			"          filter (?Eq in ( EQNSLIST )). #EQNSLIST\n" + 
+			"          #bind(\"\" as ?Initializer)\n" + 
+			"          bind(bound(?Model) as ?Dependency)\n" + 
+			"       }}union\n" + 
+			"        {select distinct ?Model where {\n" + 
+			"         ?EqCh cg:parent ?Model.\n" + 
+			"         filter (?EqCh in (EQNSLIST)) #EQNSLIST\n" + 
+			"         ?Model imp:genericOutput ?Out.\n" + 
+			"         ?EqCh imp:genericInput ?Out.\n" + 
+			"         filter not exists {?Out rdfs:subClassOf* imp:UnittedQuantity}\n" + 
+			"      }}}}\n" + 
+			"   }\n" + 
+			"  \n" + 
+			"  optional{ #Explicit outputs. ?Output is a UQ or a label\n" + 
+			"   ?Model imp:genericOutput ?Output.\n" + 
+			"   filter not exists {?Model imp:implicitOutput/imp:localDescriptorName ?Output}\n" + 
+			"   filter not exists {?Model imp:implicitOutput/imp:augmentedType/imp:semType ?Output.}}\n" + 
 			"\n" + 
-			"	  ?Eq imp:returnTypes ?EO1. \n" + 
-			"     ?EO1 list:rest*/list:first ?EO2.\n" + 
-			"     ?EO2 imp:augmentedType ?EO3. \n" + 
-			"     ?EO3 imp:constraints ?EO4.\n" + 
-			"     ?EO4 rdf:rest*/rdf:first ?EO5.\n" + 
-			"     ?EO5 imp:gpPredicate ?Output.\n" + 
-			"       filter (?Output != <http://www.w3.org/1999/02/22-rdf-syntax-ns#type>)\n" + 
+			"  optional{ #Explicit inputs. ?Input is a UQ or a label\n" + 
+			"   ?Model imp:genericInput ?Input. #For explicit inputs w/o sem type, this is the label\n" + 
+			"   filter not exists {?Model imp:implicitInput/imp:localDescriptorName ?Input.}\n" + 
+			"   filter not exists {?Model imp:implicitInput/imp:augmentedType/imp:semType ?Input.}\n" + 
 			"\n" + 
-			"	  optional{\n" + 
-			"  	    ?Eq imp:expression ?Scr.\n" + 
-			"	    ?Scr imp:script ?expr.\n" + 
-			"       ?Scr imp:language ?lang.\n" + 
-			"          filter ( ?lang = <http://sadl.org/sadlimplicitmodel#Python> )\n" + 
-			"	  }\n" + 
-			"	  optional {\n" + 
-			"	    ?Eq imp:externalURI ?Fun.\n" + 
-			"	  }\n "+
-			"}\n" + 
-			"order by ?Model";
+			"   optional {?Input imp:localDescriptorName ?InLabel.} #only applies to SemanticInputs\n" + 
+			"   optional {?Input imp:descriptorVariable ?UniqueInputLabel.} \n" + 
+			"   # Get the uniquelabel if available\n" + 
+			"   #optional {?Model imp:arguments ?AL2.\n" + 
+			"   #         ?AL2 list:rest*/list:first ?AO2.\n" + 
+			"   #         ?AO2 imp:localDescriptorName ?Input.\n" + 
+			"   #         ?AO2 imp:descriptorVariable  ?UniqueInputLabel.} #are we using these?\n" + 
+			"   }\n" + 
+			"  \n" + 
+			"  optional{\n" + 
+			"    ?Model imp:expression ?Scr.\n" + 
+			"    ?Scr imp:script ?expr.\n" + 
+			"    ?Scr imp:language ?lang.\n" + 
+			"      filter ( ?lang = <http://sadl.org/sadlimplicitmodel#Python> )\n" + 
+			"  }\n" + 
+			"  optional {\n" + 
+			"    ?Model imp:externalURI ?Fun.\n" + 
+			"  }\n" + 
+			"\n" + 
+			"  #Get implicit IOs that have augmentedTypes\n" + 
+			"  optional{\n" + 
+			"   ?Model imp:implicitInput ?II.\n" + 
+			"   ?II imp:localDescriptorName ?ImpIn.\n" + 
+			"   #optional{?II imp:descriptorVariable  ?UniqueImpInputLabel.} #These are not being added to the extracted models\n" + 
+			"   optional{?II imp:augmentedType ?IT. ?IT imp:semType ?ImpInputAugType.}\n" + 
+			"   optional{?II imp:declaration ?ID. ?ID imp:language imp:Python. ?ID imp:script ?InpD}}\n" + 
+			"\n" + 
+			"  optional{\n" + 
+			"   ?Model imp:implicitOutput ?IO.\n" + 
+			"   ?IO imp:localDescriptorName ?ImpOut.\n" + 
+			"   optional{?IO imp:augmentedType ?OT. ?OT imp:semType ?ImpOutputAugType.}\n" + 
+			"   optional{?IO imp:declaration ?OD. ?OD imp:language imp:Python. ?OD imp:script ?OutpD}}\n" + 
+			"  \n" + 
+			"}order by ?Model";
 	
 	public static final String RETRIEVE_NODES = "prefix hyper:<http://aske.ge.com/hypersonicsV2#>\n" + 
 			"prefix imp:<http://sadl.org/sadlimplicitmodel#>\n" + 
@@ -773,7 +792,7 @@ public class JenaBasedDialogInferenceProcessor extends JenaBasedSadlInferencePro
 //	public Object[] insertTriplesAndQuery(Resource resource, TripleElement[] triples) throws SadlInferenceException {
 	@Override
 	public Object[] insertTriplesAndQuery(Resource resource, List<TripleElement[]> triples) throws SadlInferenceException {
-		Object[] results = null;
+ 		Object[] results = null;
 		setCurrentResource(resource);
 		setModelFolderPath(getModelFolderPath(resource));
 		setModelName(OntModelProvider.getModelName(resource));
@@ -801,18 +820,18 @@ public class JenaBasedDialogInferenceProcessor extends JenaBasedSadlInferencePro
 		boolean useDbn = useDbnStr != null ? Boolean.parseBoolean(useDbnStr) : false;
 		String useKCStr = getPreference(DialogPreferences.USE_ANSWER_KCHAIN_CG_SERVICE.getId());
 		boolean useKC = useKCStr != null ? Boolean.parseBoolean(useKCStr) : false;
-		if (useKC) {
-			if (commonSubject(triples.get(0)) && allPredicatesAreProperties(triples.get(0))) {
-				Object[] jbsipResult = super.insertTriplesAndQuery(resource, triples);
-				results = jbsipResult;
-			}
-			else {
-				results = new Object[1];
-				results[0] = "KChain requires that all triples have the same subject and that all predicates are properties";
-			}
-		}
+//		if (useKC) {
+//			if (commonSubject(triples.get(0)) && allPredicatesAreProperties(triples.get(0))) {
+//				Object[] jbsipResult = super.insertTriplesAndQuery(resource, triples);
+//				results = jbsipResult;
+//			}
+//			else {
+//				results = new Object[1];
+//				results[0] = "KChain requires that all triples have the same subject and that all predicates are properties";
+//			}
+//		}
 
-		if (useDbn) {
+		//if (useDbn) {
 			
 //			//Create a model for this query [don't need it?]
 //			OntModel queryModel;
@@ -825,417 +844,400 @@ public class JenaBasedDialogInferenceProcessor extends JenaBasedSadlInferencePro
 //			queryModel = ModelFactory.createOntologyModel(OntModelSpec.OWL_MEM);
 //			OntModelProvider.addPrivateKeyValuePair(resource, queryKey, queryModel);
 			
-			String kgsDirectory = new File(getModelFolderPath(resource)).getParent() + File.separator  + CGMODELS_FOLDER;
-			new File(kgsDirectory).mkdir();
-			
-			String queryModelFileName = "Q_" + System.currentTimeMillis();
-			String queryModelURI = "http://aske.ge.com/" + "Model_" + queryModelFileName;
-			String queryModelPrefix = queryModelURI + "#";
-			//String queryInstanceName = METAMODEL_PREFIX + queryModelFileName;
-			String queryInstanceName = queryModelPrefix + queryModelFileName;
-			String queryOwlFileWithPath = kgsDirectory + File.separator + queryModelFileName + ".owl";
-
-			
-			
-			//ConfigurationManagerForIDE cmgr = null;
-			//Object qhModelObj = OntModelProvider.getPrivateKeyValuePair(resource, queryHistoryKey);
-			
-			File f = new File(queryOwlFileWithPath);
-			if (f.exists() && !f.isDirectory()) {
-				throw new SadlInferenceException("Query model file already exists");
-			}
-			else {
-				queryModel = ModelFactory.createOntologyModel(OntModelSpec.OWL_MEM);
-			}
-			
-			OntModelProvider.addPrivateKeyValuePair(resource, queryModelFileName, queryModel);
+		String kgsDirectory = new File(getModelFolderPath(resource)).getParent() + File.separator  + CGMODELS_FOLDER;
+		new File(kgsDirectory).mkdir();
 		
+		String queryModelFileName = "Q_" + System.currentTimeMillis();
+		String queryModelURI = "http://aske.ge.com/" + "Model_" + queryModelFileName;
+		String queryModelPrefix = queryModelURI + "#";
+		//String queryInstanceName = METAMODEL_PREFIX + queryModelFileName;
+		String queryInstanceName = queryModelPrefix + queryModelFileName;
+		String queryOwlFileWithPath = kgsDirectory + File.separator + queryModelFileName + ".owl";
 
-			// Triples representing a quantity
-			// v0 altitude v1, v1 value 35000, v1 units "ft", v1 type Altitude
-			TripleElement[] quantity; // = new TripleElement[4];
+		
+		
+		//ConfigurationManagerForIDE cmgr = null;
+		//Object qhModelObj = OntModelProvider.getPrivateKeyValuePair(resource, queryHistoryKey);
+		
+		File f = new File(queryOwlFileWithPath);
+		if (f.exists() && !f.isDirectory()) {
+			throw new SadlInferenceException("Query model file already exists");
+		}
+		else {
+			queryModel = ModelFactory.createOntologyModel(OntModelSpec.OWL_MEM);
+		}
+		
+		OntModelProvider.addPrivateKeyValuePair(resource, queryModelFileName, queryModel);
+	
 
-			List<TripleElement[]> inputPatterns = new ArrayList<TripleElement[]>();
-			List<TripleElement> outputPatterns = new ArrayList<TripleElement>();
-			List<TripleElement> docPatterns = new ArrayList<TripleElement>();
-			List<TripleElement> contextTriples = new ArrayList<TripleElement>();
+		// Triples representing a quantity
+		// v0 altitude v1, v1 value 35000, v1 units "ft", v1 type Altitude
+//		TripleElement[] quantity; // = new TripleElement[4];
 
-			List<Node> inputNodes = new ArrayList<Node>();
-			
-			for (int i = 0; i < triples.get(0).length; i++) {
-				TripleElement tr = triples.get(0)[i];
-				if (tr.getSubject() instanceof NamedNode) {
-					if (tr.getPredicate().getURI() != null && tr.getPredicate().getName().contains("value")) { //input value triple (v1, sadlimplicitmodel:value, 35000)
-						quantity = createUQtriplesArray(tr,triples.get(0));
-						inputPatterns.add(quantity);
-						inputNodes.add(tr.getSubject());
-					}
-				}
-			}
+		List<TripleElement[]> inputPatterns = new ArrayList<TripleElement[]>();
+		List<TripleElement> outputPatterns = new ArrayList<TripleElement>();
+		List<TripleElement> docPatterns = new ArrayList<TripleElement>();
+		List<TripleElement> contextPatterns = new ArrayList<TripleElement>();
 
-			for (int i = 0; i < triples.get(0).length; i++) {
-				TripleElement tr = triples.get(0)[i];
-				if (tr.getSubject() instanceof NamedNode) {
-					if (tr.getPredicate().getURI() != null) {
-						if ( ! inputNodes.contains(tr.getSubject()) && ! inputNodes.contains(tr.getObject()) ) {
-							if (tr.getPredicate().toString().equals("rdf:type")){
-								contextTriples.add(tr);
-							}
-							else { //if (! (tr.getObject() instanceof Literal)) {
-								outputPatterns.add(tr);
-							}
+		List<Node> inputNodes = new ArrayList<Node>();
+		
+		
+		getInputPatterns(triples, inputPatterns, inputNodes);
+
+		//refactor this one too.
+		for (int i = 0; i < triples.get(0).length; i++) {
+			TripleElement tr = triples.get(0)[i];
+			if (tr.getSubject() instanceof NamedNode) {
+				if (tr.getPredicate().getURI() != null) {
+					if ( ! inputNodes.contains(tr.getSubject()) && ! inputNodes.contains(tr.getObject()) ) {
+						if (tr.getPredicate().toString().equals("rdf:type")){
+							contextPatterns.add(tr);
 						}
-					} else { //property is null  
-						docPatterns.add(tr);
+						else { //if (! (tr.getObject() instanceof Literal)) {
+							outputPatterns.add(tr);
+						}
 					}
+				} else { //property is null  
+					docPatterns.add(tr);
 				}
 			}
+		}
 
-			
-			
-//			for (int i = 0; i < triples.get(0).length; i++) {
-//				TripleElement tr = triples.get(0)[i];
-//				if (tr.getSubject() instanceof NamedNode) {
-//					
-//					if (tr.getPredicate().getURI() != null) {
-//						if (tr.getPredicate().getName().contains("value")) { //input value triple (v1, sadlimplicitmodel:value, 35000)
-//							quantity = createUQtriplesArray(tr,triples.get(0));
-//							inputPatterns.add(quantity);
-//						}
-//						else if (tr.getObject() == null) { //(v0, hypersonicsV2:staticTemperature, null)
-//							// this is an output
-//							outputPatterns.add(tr);
-//						}
-//					}
-//					else {
-//						docPatterns.add(tr);
-//					}
-//				}
-//			}
-			
+	
+		String ss, sp, so, ns;
+		com.hp.hpl.jena.rdf.model.Resource sss;
+		Property ssp;
+		RDFNode sso;
+		TripleElement itr;
+
 		
-			String ss, sp, so, ns;
-			com.hp.hpl.jena.rdf.model.Resource sss;
-			Property ssp;
-			RDFNode sso;
-			TripleElement itr;
-
+		List<RDFNode> inputsList = new ArrayList<RDFNode>();
 			
-			List<RDFNode> inputsList = new ArrayList<RDFNode>();
+		if (inputPatterns != null) {
+			for (int i = 0; i < inputPatterns.size(); i++) {
 				
-			if (inputPatterns != null) {
-				for (int i = 0; i < inputPatterns.size(); i++) {
-					
-					//itr = inputPatterns.get(i)[0]; //e.g. itr = (v0 altitude v1)
-					itr = inputPatterns.get(i)[3]; //e.g. itr = rdf(v1, rdf:type, hypersonicsV2:Speed)
-					//sp = itr.getPredicate().getURI();
-					//ssp = getTheJenaModel().getProperty(sp);
-					so = itr.getObject().getURI();
-					sso = getTheJenaModel().getResource(so);
-					// Add property to list of vars
-					inputsList.add(sso);
-				}
+				//itr = inputPatterns.get(i)[0]; //e.g. itr = (v0 altitude v1)
+				itr = inputPatterns.get(i)[3]; //e.g. itr = rdf(v1, rdf:type, hypersonicsV2:Speed)
+				//sp = itr.getPredicate().getURI();
+				//ssp = getTheJenaModel().getProperty(sp);
+				so = itr.getObject().getURI();
+				sso = getTheJenaModel().getResource(so);
+				// Add property to list of vars
+				inputsList.add(sso);
 			}
-			
-			List<RDFNode> outputsList = new ArrayList<RDFNode>();
+		}
+		
+		List<RDFNode> outputsList = new ArrayList<RDFNode>();
 
-			if (outputPatterns != null) {
-				for (int i = 0; i < outputPatterns.size(); i++) {
-					
-					itr = outputPatterns.get(i); //e.g. itr = (v0 altitude v1)
-					sp = itr.getPredicate().getURI();
-					ssp = getTheJenaModel().getProperty(sp);
-					OntResource rng = ssp.as(OntProperty.class).getRange();
-					// Add property to list of vars
-					outputsList.add(rng);
-				}
-			}
+		if (outputPatterns != null) {
+			for (int i = 0; i < outputPatterns.size(); i++) {
 				
-			// Create list of outputs from document patterns 
-			if (docPatterns != null) {
-				for (int i = 0; i < docPatterns.size(); i++) {
-					itr = docPatterns.get(i);
-					sp = itr.getObject().getURI(); // e.g. #altitude
-					ssp = getTheJenaModel().getProperty(sp);
-					outputsList.add(ssp);
-				}
+				itr = outputPatterns.get(i); //e.g. itr = (v0 altitude v1)
+				sp = itr.getPredicate().getURI();
+				ssp = getTheJenaModel().getProperty(sp);
+				OntResource rng = ssp.as(OntProperty.class).getRange();
+				// Add property to list of vars
+				outputsList.add(rng);
 			}
+		}
 			
-			
-			
-			
-			
-			// Query instance
-			//Individual cgq = createIndividualOfClass(queryModel, METAMODEL_QUERY_CLASS);
-			Individual cgq = queryModel.createIndividual(queryInstanceName, getModelClass(getTheJenaModel(), METAMODEL_QUERY_CLASS));
-			// This is how to add properties to the individual
-			//i.addProperty(RDFS.comment, "something");
-		    //i.addRDFType(OWL2.NamedIndividual);
-	
-			ingestInputValues(queryModelPrefix, inputPatterns, cgq);
-			
-			//getTheJenaModel().write(System.out, "TTL" );
+		// Create list of outputs from document patterns 
+		if (docPatterns != null) {
+			for (int i = 0; i < docPatterns.size(); i++) {
+				itr = docPatterns.get(i);
+				sp = itr.getObject().getURI(); // e.g. #altitude
+				ssp = getTheJenaModel().getProperty(sp);
+				outputsList.add(ssp);
+			}
+		}
 		
-			
-			
-			
-			// Insert dependency graph
-			runInference(GENERICIOs, CHECK_GENERICIOs);
-			
-			//String tmp = DEPENDENCY_GRAPH_INSERT
-			runInference(DEPENDENCY_GRAPH_INSERT,CHECK_DEPENDENCY);
-			
-			
-			//getTheJenaModel().write(System.out, "TTL" );
-	
-	
-			// Inputs/Outputs filter parameters
-			
-			com.hp.hpl.jena.query.ResultSetRewindable eqnsResults = null;
-			QueryExecution qexec = null;
-			OntResource qtype;
-			OntProperty qtypeprop = getTheJenaModel().getOntProperty(METAMODEL_QUERYTYPE_PROP);
-			String listOfEqns = "";
-			com.hp.hpl.jena.query.ResultSetRewindable models, nodes;
-			String modelsCSVString = "";
-			String nodesCSVString = "";
-			Individual cgIns = null;
-	
-			OntClass cexec;
-			Individual ce;
-			OntProperty execprop;
-			
-			Map<String,String> class2lbl, lbl2class;
-			Map<String,String[]> lbl2value;
-			
-			String cgJson, dbnJson, dbnResultsJson;
-			
-			String outputType;
-			Individual oinst; 
-			
-			Map<RDFNode, String[]> dbnEqns = new HashMap<RDFNode,String[]>();
-			Map<RDFNode, RDFNode> dbnOutput = new HashMap<RDFNode,RDFNode>();
-	
-			ResultSet[] dbnResults = null;
-			
-			try {
-			
-				if (outputsList.size() > 0 && docPatterns.size() <= 0) { 
+		List<String> contextClassList = new ArrayList<String>();
 		
-					//String listOfInputs = strUriList(inputsList);
-					//String listOfOutputs = strUriList(outputsList);
-					//ResultSet[] dbnResults = null;
+		if (contextPatterns != null) {
+			for (int i = 0; i < contextPatterns.size(); i++) {
+				itr = contextPatterns.get(i);
+				so = itr.getObject().getURI(); // e.g. #CF6
+				//ssp = getTheJenaModel().getProperty(sp);
+				contextClassList.add(so);
+			}
+		}
+		
+		
+		
+		// Query instance
+		//Individual cgq = createIndividualOfClass(queryModel, METAMODEL_QUERY_CLASS);
+		Individual cgq = queryModel.createIndividual(queryInstanceName, getModelClass(getTheJenaModel(), METAMODEL_QUERY_CLASS));
+		// This is how to add properties to the individual
+		//i.addProperty(RDFS.comment, "something");
+	    //i.addRDFType(OWL2.NamedIndividual);
 
-					ConfigurationManagerForIDE cmgr = getConfigMgrForIDE(resource);
+		ingestInputValues(queryModelPrefix, inputPatterns, cgq);
+		
+		//getTheJenaModel().write(System.out, "TTL" );
+	
+		
+		
+		
+		// Insert dependency graph
+		runInference(GENERICIOs, CHECK_GENERICIOs);
+		
+		//String tmp = DEPENDENCY_GRAPH_INSERT
+		runInference(DEPENDENCY_GRAPH_INSERT,CHECK_DEPENDENCY);
+		
+		
+		//getTheJenaModel().write(System.out, "TTL" );
 
+
+		// Inputs/Outputs filter parameters
+		
+		com.hp.hpl.jena.query.ResultSetRewindable eqnsResults = null;
+		QueryExecution qexec = null;
+		OntResource qtype;
+		OntProperty qtypeprop = getTheJenaModel().getOntProperty(METAMODEL_QUERYTYPE_PROP);
+		String listOfEqns = "";
+		com.hp.hpl.jena.query.ResultSetRewindable models, nodes;
+		String modelsCSVString = "";
+		String nodesCSVString = "";
+		Individual cgIns = null;
+
+		OntClass cexec;
+		Individual ce;
+		OntProperty execprop;
+		
+		Map<String,String> class2lbl, lbl2class;
+		Map<String,String[]> lbl2value;
+		
+		String cgJson, dbnJson, dbnResultsJson;
+		
+		String outputType;
+		Individual oinst; 
+		
+		Map<RDFNode, String[]> dbnEqns = new HashMap<RDFNode,String[]>();
+		Map<RDFNode, RDFNode> dbnOutput = new HashMap<RDFNode,RDFNode>();
+
+		ResultSet[] dbnResults = null;
+		
+		try {
+		
+			if (outputsList.size() > 0 && docPatterns.size() <= 0) { 
+	
+				//String listOfInputs = strUriList(inputsList);
+				//String listOfOutputs = strUriList(outputsList);
+				//ResultSet[] dbnResults = null;
+
+				ConfigurationManagerForIDE cmgr = getConfigMgrForIDE(resource);
+
+				
+				eqnsResults = retrieveCG(inputsList, outputsList);
+				
+				//dbnEqns = createDbnEqnMap(eqnsResults);
+				dbnEqns = createOutputEqnMap(eqnsResults);
+
+				//dbnOutput = createDbnOutputMap(eqnsResults); //don't need map from dbns to ouputs anymore
+				
+				int numOfModels = getNumberOfModels(dbnEqns);
+
+				if (numOfModels > 0) {
+					//dbnresults = new ResultSet[numOfModels*2]; 
+					dbnResults = new ResultSet[numOfModels]; 
+				} else {
+					//System.out.println("Unable to assemble a model with current knowledge");
+				}
+				
+				String[] modelEqnList = buildEqnsLists(numOfModels, dbnEqns);
+
+				
+				Boolean foundAModel = false;
+				List<Individual> modelCCGs = new ArrayList<Individual>();
+				
+				for(int i=0; i<numOfModels; i++) {
+					listOfEqns = modelEqnList[i];
+	
+					//Create execution instance with time
+					ce = createIndividualOfClass(queryModel, null, null, METAMODEL_CGEXEC_CLASS);
+					addTimePropertyToCE(ce, getModelProperty(getTheJenaModel(), METAMODEL_STARTTIME_PROP));
 					
-					eqnsResults = retrieveCG(inputsList, outputsList);
+					ingestKGTriple(cgq, getModelProperty(getTheJenaModel(), METAMODEL_EXEC_PROP), ce);
+
+					// Comp Graph instance
+					cgIns = queryModel.createIndividual(queryModelPrefix + "CG_" + System.currentTimeMillis(), getModelClass(getTheJenaModel(), METAMODEL_CCG));
+					//getTheJenaModel().add(cgIns, RDF.type, getTheJenaModel().getOntClass(METAMODEL_CCG));
+					ingestKGTriple(ce, getModelProperty(getTheJenaModel(), METAMODEL_COMPGRAPH_PROP), cgIns);
+					
+					modelCCGs.add(cgIns);
+					
+					//Retrieve eqns dependencies
+					
+					// Retrieve Models & Nodes
+					modelsCSVString = retrieveCGforDBNSpec(listOfEqns, contextClassList, cgIns, RETRIEVE_MODELS);
+					nodesCSVString = retrieveCGforDBNSpec(listOfEqns, null, cgIns, RETRIEVE_NODES);
+
+					// Generate DBN Json
+					cgJson 		= kgResultsToJson(nodesCSVString, modelsCSVString, "prognostic", "");
+					dbnJson 	= generateDBNjson(cgJson);
+					
+					//Save the label mapping
+					class2lbl 	= getClassLabelMapping(dbnJson);
+					
+					// Execute DBN
+		            dbnResultsJson = executeDBN(dbnJson);
+		            
+		            //get DBN execution outcome
+		            String resmsg = getDBNoutcome(dbnResultsJson);
+		            
+		            //TODO: if exec was unsuccessful, ingest CG anyway and do something further
+		            
+		            if(resmsg != null && resmsg.equals("Success")) {
+						AnswerCurationManager acm = (AnswerCurationManager) cmgr.getPrivateKeyValuePair(DialogConstants.ANSWER_CURATION_MANAGER);
+		            	foundAModel = true;
+			            lbl2value = getLabelToMeanStdMapping(dbnResultsJson);
+			            createCGsubgraphs(cgIns, dbnEqns, dbnOutput, listOfEqns, class2lbl, lbl2value, queryModelPrefix);
+			            
+						//Create output instances and link them to ce
+						//There may be multiple outputs, need to loop through them
+			            createCEoutputInstances(outputsList, ce, class2lbl, lbl2value);
+
+						saveMetaDataFile(resource,queryModelURI,queryModelFileName); //so we can query the the eqns in the CCG
+						
+						String assumpCheck = checkAssumptions(resource, queryModelURI, queryOwlFileWithPath, cgIns);
+						
+						// Get the CG info for diagram
+						dbnResults[i] = retrieveCompGraph(resource, cgIns);
+						
+						// convert to SADL to insert into dialog window
+						addResultsToDialog(resource, cgIns, acm);
+						
+						//If assumptions are satisfied, compute sensitivity
+						if ( assumpCheck.equals("satisfied") ) {
+				            //Send sensitivity request to DBN
+				            cgJson = kgResultsToJson(nodesCSVString, modelsCSVString, "sensitivity", "");
+				            dbnJson = generateDBNjson(cgJson);
+				            String dbnResultsJsonSensitivity = executeDBN(dbnJson);
+				            String sensitivitiyOutcome = getDBNoutcome(dbnResultsJsonSensitivity);
+				            
+				            if(sensitivitiyOutcome.equals("Success")) {
+					            lbl2class = getLabelClassMapping(dbnJson);
+					            ingestSensitivityResults(cgIns, lbl2class, dbnResultsJsonSensitivity, queryModelPrefix);
+					            
+				            } else {
+				            	System.err.println("Sensitivity computation failed");
+				            }
+
+				            saveMetaDataFile(resource,queryModelURI,queryModelFileName); //so we can query the the eqns in the CCG
+				            addSensitivityResultsToDialog(resource, cgIns, acm);
+						}//assumptions satisfied
+						
+						//saveMetaDataFile(resource,queryModelURI,queryModelFileName); //so we can query the the eqns in the CCG
+
+		            }
+		            else {
+		            	dbnResults[i] = null;
+		            	System.err.println("DBN execution failed. Message: " + dbnResultsJson.toString());
+		            }
+				}// end of models loop
+				
+				
+				//If there were some results, create Eclipse resource, refresh, add mapping to ont-policy.rdf, add import stmt to dialog
+				if(foundAModel) {
+					//saveMetaDataFile(resource,queryModelURI,queryModelFileName); //to include sensitivity results
+					addQueryModelAsResource(resource, queryModelFileName, queryModelURI, queryOwlFileWithPath, cmgr);
+				} else {
+					dbnResults = null;
+				}
+				
+				if (modelCCGs.size() > 0) {
+					//checkAssumptionGaps(resource, queryModelURI, queryOwlFileWithPath, cgq);
+					
+				}
+				
+				
+				
+			} else if (outputsList.size() > 0 && docPatterns.size() > 0) { //models from dataset
+				
+				ConfigurationManagerForIDE cmgr = getConfigMgrForIDE(resource);
+
+				List<ResultSet> resultsList = new ArrayList<ResultSet>();
+				
+				qtype = getTheJenaModel().getOntResource(METAMODEL_PREFIX + "explanation");
+				//qhmodel.add(cgq, qtypeprop, qtype);	// do we add it even if we don't know if there's a model yet?
+				ingestKGTriple(cgq, qtypeprop, qtype);
+				inputsList.addAll(outputsList);
+				
+				//results = new ResultSet[outputsList.size()*2]; 
+
+				int numOfModels = 0;
+				List<RDFNode> outpl = new ArrayList<RDFNode>();
+				List<RDFNode> inpl = new ArrayList<RDFNode>();
+				RDFNode oputType;
+
+				for(int i=0; i < outputsList.size(); i++) {
+	
+					oputType = outputsList.get(i);
+					outpl.add(oputType);
+					inpl.addAll(outputsList);
+					inpl.remove(i);
+					
+					//Individual oinst = createIndividualOfClass(qhmodel, oclass.getURI());
+					//outputInstance.put(oclass,oinst);
+					
+					eqnsResults = retrieveCG(inpl, outpl);
+					
+					//int ns = eqnsResults.size();
+					//boolean nn = eqnsResults.hasNext();
 					
 					dbnEqns = createDbnEqnMap(eqnsResults);
 					dbnOutput = createDbnOutputMap(eqnsResults);
-					
-					int numOfModels = getNumberOfModels(dbnEqns);
-	
-					if (numOfModels > 0) {
-						//dbnresults = new ResultSet[numOfModels*2]; 
-						dbnResults = new ResultSet[numOfModels]; 
-					} else {
-						//System.out.println("Unable to assemble a model with current knowledge");
-					}
-					
-					String[] modelEqnList = buildEqnsLists(numOfModels, dbnEqns);
-	
-					
-					Boolean foundAModel = false;
-					List<Individual> modelCCGs = new ArrayList<Individual>();
-					
-					for(int i=0; i<numOfModels; i++) {
-						listOfEqns = modelEqnList[i];
 		
+					int newModels = getNumberOfModels(dbnEqns);
+					
+					String[] modelEqnList = buildEqnsLists(newModels, dbnEqns);
+
+					//results = new ResultSet[outputsList.size()*numOfModels*2]; 
+					
+					//if (eqnsResults.size() > 0 ) {
+					for(int mod=0; mod<newModels; mod++) {
+						
+						listOfEqns = modelEqnList[mod]; //getEqnUrisFromResults(eqnsResults);
+			            eqnsResults.reset();
+			            
 						//Create execution instance with time
 						ce = createIndividualOfClass(queryModel, null, null, METAMODEL_CGEXEC_CLASS);
 						addTimePropertyToCE(ce, getModelProperty(getTheJenaModel(), METAMODEL_STARTTIME_PROP));
 						
-						ingestKGTriple(cgq, getModelProperty(getTheJenaModel(), METAMODEL_EXEC_PROP), ce);
-
-						// Comp Graph instance
-						cgIns = queryModel.createIndividual(queryModelPrefix + "CG_" + System.currentTimeMillis(), getModelClass(getTheJenaModel(), METAMODEL_CCG));
+						ingestKGTriple(cgq,getModelProperty(getTheJenaModel(), METAMODEL_EXEC_PROP), ce);
+					
+						cgIns = queryModel.createIndividual(queryModelPrefix + "CG_" + System.currentTimeMillis(), getTheJenaModel().getOntClass(METAMODEL_CCG));
 						//getTheJenaModel().add(cgIns, RDF.type, getTheJenaModel().getOntClass(METAMODEL_CCG));
+						//qhmodel.add(ce, getTheJenaModel().getOntProperty(METAMODEL_COMPGRAPH_PROP), cgIns);
 						ingestKGTriple(ce, getModelProperty(getTheJenaModel(), METAMODEL_COMPGRAPH_PROP), cgIns);
 						
-						modelCCGs.add(cgIns);
-						
-
 						// Retrieve Models & Nodes
-						modelsCSVString = retrieveCGforDBNSpec(listOfEqns, cgIns, RETRIEVE_MODELS);
-						nodesCSVString = retrieveCGforDBNSpec(listOfEqns, cgIns, RETRIEVE_NODES);
-
-						// Generate DBN Json
-						cgJson 		= kgResultsToJson(nodesCSVString, modelsCSVString, "prognostic", "");
-						dbnJson 	= generateDBNjson(cgJson);
+						modelsCSVString = retrieveCGforDBNSpec(listOfEqns, contextClassList, cgIns, RETRIEVE_MODELS);
+						nodesCSVString = retrieveCGforDBNSpec(listOfEqns, null, cgIns, RETRIEVE_NODES);
 						
-						//Save the label mapping
-						class2lbl 	= getClassLabelMapping(dbnJson);
 						
-						// Execute DBN
-			            dbnResultsJson = executeDBN(dbnJson);
-			            
-			            //get DBN execution outcome
+						String docUri = triples.get(0)[0].getSubject().getURI();
+						
+						
+						cgJson = kgResultsToJson(nodesCSVString, modelsCSVString, "prognostic", getDataForHypothesisTesting(resource, docUri));
+						dbnJson = generateDBNjson(cgJson);
+						class2lbl = getClassLabelMapping(dbnJson);
+	
+						// Run the model
+						dbnResultsJson = executeDBN(dbnJson);
 			            String resmsg = getDBNoutcome(dbnResultsJson);
-			            
-			            //TODO: if exec was unsuccessful, ingest CG anyway and do something further
+			            //boolean suc = resmsg.equals("Success");
 			            
 			            if(resmsg != null && resmsg.equals("Success")) {
+			            	
+			            	numOfModels ++;
+			            	
 							AnswerCurationManager acm = (AnswerCurationManager) cmgr.getPrivateKeyValuePair(DialogConstants.ANSWER_CURATION_MANAGER);
-			            	foundAModel = true;
-				            lbl2value = getLabelToMeanStdMapping(dbnResultsJson);
+
+							lbl2value = getLabelToMeanStdMapping(dbnResultsJson);
 				            createCGsubgraphs(cgIns, dbnEqns, dbnOutput, listOfEqns, class2lbl, lbl2value, queryModelPrefix);
-				            
-							//Create output instances and link them to ce
-							//There may be multiple outputs, need to loop through them
+			            	
 				            createCEoutputInstances(outputsList, ce, class2lbl, lbl2value);
-
-							saveMetaDataFile(resource,queryModelURI,queryModelFileName); //so we can query the the eqns in the CCG
-							
-							String assumpCheck = checkAssumptions(resource, queryModelURI, queryOwlFileWithPath, cgIns);
-							
-							// Get the CG info for diagram
-							dbnResults[i] = retrieveCompGraph(resource, cgIns);
-							
-							// convert to SADL to insert into dialog window
-							addResultsToDialog(resource, cgIns, acm);
-							
-							//If assumptions are satisfied, compute sensitivity
-							if ( assumpCheck.equals("satisfied") ) {
-					            //Send sensitivity request to DBN
-					            cgJson = kgResultsToJson(nodesCSVString, modelsCSVString, "sensitivity", "");
-					            dbnJson = generateDBNjson(cgJson);
-					            String dbnResultsJsonSensitivity = executeDBN(dbnJson);
-					            String sensitivitiyOutcome = getDBNoutcome(dbnResultsJsonSensitivity);
-					            
-					            if(sensitivitiyOutcome.equals("Success")) {
-						            lbl2class = getLabelClassMapping(dbnJson);
-						            ingestSensitivityResults(cgIns, lbl2class, dbnResultsJsonSensitivity, queryModelPrefix);
-						            
-					            } else {
-					            	System.err.println("Sensitivity computation failed");
-					            }
-
-					            saveMetaDataFile(resource,queryModelURI,queryModelFileName); //so we can query the the eqns in the CCG
-					            addSensitivityResultsToDialog(resource, cgIns, acm);
-							}//assumptions satisfied
-							
-							//saveMetaDataFile(resource,queryModelURI,queryModelFileName); //so we can query the the eqns in the CCG
-
-			            }
-			            else {
-			            	dbnResults[i] = null;
-			            	System.err.println("DBN execution failed. Message: " + dbnResultsJson.toString());
-			            }
-					}// end of models loop
-					
-					
-					//If there were some results, create Eclipse resource, refresh, add mapping to ont-policy.rdf, add import stmt to dialog
-					if(foundAModel) {
-						//saveMetaDataFile(resource,queryModelURI,queryModelFileName); //to include sensitivity results
-						addQueryModelAsResource(resource, queryModelFileName, queryModelURI, queryOwlFileWithPath, cmgr);
-					} else {
-						dbnResults = null;
-					}
-					
-					if (modelCCGs.size() > 0) {
-						//checkAssumptionGaps(resource, queryModelURI, queryOwlFileWithPath, cgq);
-						
-					}
-					
-					
-					
-				} else if (outputsList.size() > 0 && docPatterns.size() > 0) { //models from dataset
-					
-					ConfigurationManagerForIDE cmgr = getConfigMgrForIDE(resource);
-
-					List<ResultSet> resultsList = new ArrayList<ResultSet>();
-					
-					qtype = getTheJenaModel().getOntResource(METAMODEL_PREFIX + "explanation");
-					//qhmodel.add(cgq, qtypeprop, qtype);	// do we add it even if we don't know if there's a model yet?
-					ingestKGTriple(cgq, qtypeprop, qtype);
-					inputsList.addAll(outputsList);
-					
-					//results = new ResultSet[outputsList.size()*2]; 
-	
-					int numOfModels = 0;
-					List<RDFNode> outpl = new ArrayList<RDFNode>();
-					List<RDFNode> inpl = new ArrayList<RDFNode>();
-					RDFNode oputType;
-	
-					for(int i=0; i < outputsList.size(); i++) {
-		
-						oputType = outputsList.get(i);
-						outpl.add(oputType);
-						inpl.addAll(outputsList);
-						inpl.remove(i);
-						
-						//Individual oinst = createIndividualOfClass(qhmodel, oclass.getURI());
-						//outputInstance.put(oclass,oinst);
-						
-						eqnsResults = retrieveCG(inpl, outpl);
-						
-						//int ns = eqnsResults.size();
-						//boolean nn = eqnsResults.hasNext();
-						
-						dbnEqns = createDbnEqnMap(eqnsResults);
-						dbnOutput = createDbnOutputMap(eqnsResults);
-			
-						int newModels = getNumberOfModels(dbnEqns);
-						
-						String[] modelEqnList = buildEqnsLists(newModels, dbnEqns);
-	
-						//results = new ResultSet[outputsList.size()*numOfModels*2]; 
-						
-						//if (eqnsResults.size() > 0 ) {
-						for(int mod=0; mod<newModels; mod++) {
-							
-							listOfEqns = modelEqnList[mod]; //getEqnUrisFromResults(eqnsResults);
-				            eqnsResults.reset();
-				            
-							//Create execution instance with time
-							ce = createIndividualOfClass(queryModel, null, null, METAMODEL_CGEXEC_CLASS);
-							addTimePropertyToCE(ce, getModelProperty(getTheJenaModel(), METAMODEL_STARTTIME_PROP));
-							
-							ingestKGTriple(cgq,getModelProperty(getTheJenaModel(), METAMODEL_EXEC_PROP), ce);
-						
-							cgIns = queryModel.createIndividual(queryModelPrefix + "CG_" + System.currentTimeMillis(), getTheJenaModel().getOntClass(METAMODEL_CCG));
-							//getTheJenaModel().add(cgIns, RDF.type, getTheJenaModel().getOntClass(METAMODEL_CCG));
-							//qhmodel.add(ce, getTheJenaModel().getOntProperty(METAMODEL_COMPGRAPH_PROP), cgIns);
-							ingestKGTriple(ce, getModelProperty(getTheJenaModel(), METAMODEL_COMPGRAPH_PROP), cgIns);
-							
-							// Retrieve Models & Nodes
-							modelsCSVString = retrieveCGforDBNSpec(listOfEqns, cgIns, RETRIEVE_MODELS);
-							nodesCSVString = retrieveCGforDBNSpec(listOfEqns, cgIns, RETRIEVE_NODES);
-							
-							
-							String docUri = triples.get(0)[0].getSubject().getURI();
-							
-							
-							cgJson = kgResultsToJson(nodesCSVString, modelsCSVString, "prognostic", getDataForHypothesisTesting(resource, docUri));
-							dbnJson = generateDBNjson(cgJson);
-							class2lbl = getClassLabelMapping(dbnJson);
-		
-							// Run the model
-							dbnResultsJson = executeDBN(dbnJson);
-				            String resmsg = getDBNoutcome(dbnResultsJson);
-				            //boolean suc = resmsg.equals("Success");
-				            
-				            if(resmsg != null && resmsg.equals("Success")) {
-				            	
-				            	numOfModels ++;
-				            	
-								AnswerCurationManager acm = (AnswerCurationManager) cmgr.getPrivateKeyValuePair(DialogConstants.ANSWER_CURATION_MANAGER);
-
-								lbl2value = getLabelToMeanStdMapping(dbnResultsJson);
-					            createCGsubgraphs(cgIns, dbnEqns, dbnOutput, listOfEqns, class2lbl, lbl2value, queryModelPrefix);
-				            	
-					            createCEoutputInstances(outputsList, ce, class2lbl, lbl2value);
 
 //								
 //								//TODO: create output instances and link them to ce
@@ -1244,86 +1246,102 @@ public class JenaBasedDialogInferenceProcessor extends JenaBasedSadlInferencePro
 //								oinst = createIndividualOfClass(queryModel,null, null, outputType);
 //								OntProperty outputprop = getTheJenaModel().getOntProperty(METAMODEL_OUTPUT_PROP);
 //								ingestKGTriple(ce,outputprop,oinst);
-		
-				            	
-				            	//Ingest model error
-				            	String modelError = getModelError(dbnResultsJson);
-				            	queryModel.add(cgIns, getModelProperty(getTheJenaModel(), MODELERROR_PROP), modelError);
-				            	//getTheJenaModel().add(cgIns, errorProp, modelError);
-
-				            	saveMetaDataFile(resource,queryModelURI,queryModelFileName); //so we can query the the eqns in the CCG
-				            	String assumpCheck = checkAssumptions(resource, queryModelURI, queryOwlFileWithPath, cgIns);
-				            	
-				            	//We don't do anything with the result of assumpCheck (it is already ingested), we don't check sensitivity for hypothesis 
-				            	if ( assumpCheck.equals("satisfied") ) {
-				            		//Do nothing
-				            	}
-				            	
-				            	
-					            resultsList.add(numOfModels-1, retrieveCompGraph(resource, cgIns));
-					            
-					            addResultsToDialog(resource, cgIns, acm);
-					            
-					            //resultsList.add(numOfModels*2-1, retrieveValuesHypothesis(resource, cgIns));
-					            
-								// create ResultSet
-	//							results[i] = retrieveCompGraph(resource, cgIns);
-	//							results[i+1] = retrieveValuesHypothesis(resource, cgIns);
-				            } else {
-				            	System.err.println("DBN execution failed. Message: " + dbnResultsJson.toString());
-				            }
-						}
-					}
-					
-					if(numOfModels > 0) {
-						addQueryModelAsResource(resource, queryModelFileName, queryModelURI, queryOwlFileWithPath, cmgr);
-						dbnResults = new ResultSet[numOfModels];
-						dbnResults = resultsList.toArray(dbnResults);
-					} else {
-						dbnResults = null;
-					}
-					
-				}
-				
-			
-			    		
-	  		//qhmodel.write(System.out,"RDF/XML-ABBREV");
-	   		//qhmodel.write(System.out,"TTL");
-	    		
 	
-				
-				
-				// Save metadata owl file 
-				saveMetaDataFile(resource,queryModelURI, queryModelFileName);
-			
-	//			// create ResultSet
-				
-				if (results == null || results.length == 0) {
-					results = dbnResults;
-				}
-				else {
-					Object[] compositeResults = new Object[results.length + dbnResults.length];
-					int idx = 0;
-					for (Object result : results) {
-						compositeResults[idx++] = result;
-					}
-					for (Object result : dbnResults) {
-						compositeResults[idx++] = result;
-					}
-					results = compositeResults;
-				}
-				return results;
-					
-			} catch (Exception e) {
-				// Auto-generated catch block
-				//System.out.println(e.getMessage());
-				//TODO: reset model
-				e.printStackTrace();
-			}
+			            	
+			            	//Ingest model error
+			            	String modelError = getModelError(dbnResultsJson);
+			            	queryModel.add(cgIns, getModelProperty(getTheJenaModel(), MODELERROR_PROP), modelError);
+			            	//getTheJenaModel().add(cgIns, errorProp, modelError);
 
+			            	saveMetaDataFile(resource,queryModelURI,queryModelFileName); //so we can query the the eqns in the CCG
+			            	String assumpCheck = checkAssumptions(resource, queryModelURI, queryOwlFileWithPath, cgIns);
+			            	
+			            	//We don't do anything with the result of assumpCheck (it is already ingested), we don't check sensitivity for hypothesis 
+			            	if ( assumpCheck.equals("satisfied") ) {
+			            		//Do nothing
+			            	}
+			            	
+			            	
+				            resultsList.add(numOfModels-1, retrieveCompGraph(resource, cgIns));
+				            
+				            addResultsToDialog(resource, cgIns, acm);
+				            
+				            //resultsList.add(numOfModels*2-1, retrieveValuesHypothesis(resource, cgIns));
+				            
+							// create ResultSet
+//							results[i] = retrieveCompGraph(resource, cgIns);
+//							results[i+1] = retrieveValuesHypothesis(resource, cgIns);
+			            } else {
+			            	System.err.println("DBN execution failed. Message: " + dbnResultsJson.toString());
+			            }
+					}
+				}
+				
+				if(numOfModels > 0) {
+					addQueryModelAsResource(resource, queryModelFileName, queryModelURI, queryOwlFileWithPath, cmgr);
+					dbnResults = new ResultSet[numOfModels];
+					dbnResults = resultsList.toArray(dbnResults);
+				} else {
+					dbnResults = null;
+				}
+				
+			}
+			
+		
+		    		
+  		//qhmodel.write(System.out,"RDF/XML-ABBREV");
+   		//qhmodel.write(System.out,"TTL");
+    		
+
+			
+			
+			// Save metadata owl file 
+			saveMetaDataFile(resource,queryModelURI, queryModelFileName);
+		
+//			// create ResultSet
+			
+			//if (results == null || results.length == 0) {
+			if (useDbn) {
+				results = dbnResults;
+			}
+			if (useKC) {
+				Object[] compositeResults = new Object[results.length + dbnResults.length];
+				int idx = 0;
+				for (Object result : results) {
+					compositeResults[idx++] = result;
+				}
+				for (Object result : dbnResults) {
+					compositeResults[idx++] = result;
+				}
+				results = compositeResults;
+			}
+			
+			return results;
+				
+		} catch (Exception e) {
+			// Auto-generated catch block
+			//System.out.println(e.getMessage());
+			//TODO: reset model
+			e.printStackTrace();
 		}
+
+		//} //if (useDBN)
 		return null;
 	}
+
+private void getInputPatterns(List<TripleElement[]> triples, List<TripleElement[]> inputPatterns, List<Node> inputNodes) {
+	TripleElement[] quantity;
+	for (int i = 0; i < triples.get(0).length; i++) {
+		TripleElement tr = triples.get(0)[i];
+		if (tr.getSubject() instanceof NamedNode) {
+			if (tr.getPredicate().getURI() != null && tr.getPredicate().getName().contains("value")) { //input value triple (v1, sadlimplicitmodel:value, 35000)
+				quantity = createUQtriplesArray(tr,triples.get(0));
+				inputPatterns.add(quantity);
+				inputNodes.add(tr.getSubject());
+			}
+		}
+	}
+}
 
 private void runInference(String query, String testQuery) throws SadlInferenceException {
 	UpdateAction.parseExecute(query , getTheJenaModel());
@@ -1609,12 +1627,17 @@ private void runInference(String query, String testQuery) throws SadlInferenceEx
 		}
 	}
 
-	private String retrieveCGforDBNSpec(String listOfEqns, Individual cgIns, String queryTemplate) {
+	private String retrieveCGforDBNSpec(String listOfEqns, List<String> contextClassList, Individual cgIns, String queryTemplate) {
 		String queryStr;
 		com.hp.hpl.jena.query.ResultSetRewindable rset;
 		String csvString;
+		String contextClasses = "";
 		queryStr = queryTemplate.replaceAll("EQNSLIST", listOfEqns);
 		queryStr = queryStr.replaceAll("COMPGRAPH", "<" + cgIns.getURI() + ">");
+		for(int i=0; i<contextClassList.size(); i++) {
+			contextClasses += "<" + contextClassList.get(i) + ">";
+		}
+		queryStr = queryStr.replaceAll("CONTEXCLASSES", contextClasses);
 		rset = queryKnowledgeGraph(queryStr, getTheJenaModel().union(queryModel));
 		csvString = convertResultSetToString(rset);
 		if (debugMode) {System.out.println(csvString);}
@@ -1838,6 +1861,36 @@ private RDFNode getObjectAsLiteralOrResource(Node property, Node object) {
 	}
 
 
+	private Map<RDFNode, String[]> createOutputEqnMap(ResultSetRewindable eqnsResults) {
+		Map<RDFNode, String[]> map = new HashMap<RDFNode, String[]>();
+		eqnsResults.reset();
+		RDFNode outp;
+		QuerySolution row;
+		Map<RDFNode, Set<String>> mapSet = new HashMap<RDFNode, Set<String>>();
+		String eq;
+
+		while(eqnsResults.hasNext()) {
+			row = eqnsResults.nextSolution() ;
+			outp = row.get("?Out");
+			Set<String> eq_set = new HashSet<String>(); 
+			mapSet.put(outp, eq_set);
+		}
+		eqnsResults.reset();
+		while(eqnsResults.hasNext()) {
+			row = eqnsResults.nextSolution() ;
+			outp = row.get("?Out");
+			eq = row.get("?Eq").toString();
+			mapSet.get(outp).add(eq);
+		}
+		for(RDFNode n : mapSet.keySet()) {
+			String[] eqns = new String[mapSet.get(n).size()];
+			eqns = mapSet.get(n).toArray(eqns);
+			map.put(n, eqns );
+		}
+		return map;
+	}
+
+	
 	private Map<RDFNode, String[]> createDbnEqnMap(ResultSetRewindable eqnsResults) {
 		Map<RDFNode, String[]> map = new HashMap<RDFNode, String[]>();
 //		int dbnNum = eqnsResults.getRowNumber();
