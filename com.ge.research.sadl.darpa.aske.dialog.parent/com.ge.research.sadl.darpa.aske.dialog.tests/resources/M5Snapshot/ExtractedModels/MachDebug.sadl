@@ -1,0 +1,3660 @@
+uri "http://com.ge.research.sadl.darpa.aske.answer/Mach_java2" alias Mach_java
+    (note "This ontology was created by extraction from code by the ANSWER JavaModelExtractorJP.").
+
+import "http://sadl.org/CodeExtractionModel.sadl" as cem.
+
+
+// Individuals:
+Double.valueOf is a cem:ExternalMethod,
+    has cem:calls (a cem:MethodCall
+    with cem:endsAt 618,
+    with cem:beginsAt 618,
+    with cem:codeBlock Mach.In.Up.handleBut),
+    has cem:calls (a cem:MethodCall
+    with cem:endsAt 620,
+    with cem:beginsAt 620,
+    with cem:codeBlock Mach.In.Up.handleBut).
+Mach is a cem:Class,
+    has cem:comment (a cem:Comment
+    with cem:endsAt 47,
+    with cem:beginsAt 1,
+    with cem:commentContent "  
+                      Mach and Speed of Sound Calculator
+            Interactive Program to solve Standard Atmosphere Equations
+                     for mach and speed of sound
+                Calorically imperfect gas modeled for hypersonics
+
+                          A Java Applet
+
+                     Version 1.2b   - 5 Mar 12
+
+                            Written by 
+
+                             Tom Benson
+                            Chuck Trefny
+                            Charles Lamp
+                       NASA Glenn Research Center
+
+>                              NOTICE
+>This software is in the Public Domain.  It may be freely copied and used in
+>non-commercial products, assuming proper credit to the author is given.  IT
+>MAY NOT BE RESOLD.  If you want to use the software for commercial
+>products, contact the author.
+>No copyright is claimed in the United States under Title 17, U. S. Code.
+>This software is provided \"as is\" without any warranty of any kind, either
+>express, implied, or statutory, including, but not limited to, any warranty
+>that the software will conform to specifications, any implied warranties of
+>merchantability, fitness for a particular purpose, and freedom from
+>infringement, and any warranty that the documentation will conform to the
+>program, or any warranty that the software will be error free.
+>In no event shall NASA be liable for any damages, including, but not
+>limited to direct, indirect, special or consequential damages, arising out
+>of, resulting from, or in any way connected with this software, whether or
+>not based on warranty, contract, tort or otherwise, whether or not injury
+>was sustained by persons or property or otherwise, and whether or not loss
+>was sustained from, or arose out of the results of, or use of, the software
+>or services provided hereunder.
+
+      New Test :
+                * move the choice for units
+                * add compute button
+                * remove Mars model
+                * add calorically imperfect gas
+                  correct error at low Mach number
+
+                                                     TJB 5 Mar 12
+
+").
+Mach.A is a cem:ClassField,
+    has cem:reference (a cem:Reference
+    with cem:endsAt 283,
+    with cem:beginsAt 283,
+    with cem:usage cem:Used,
+    with cem:codeBlock Mach.computeMach),
+    has cem:reference (a cem:Reference
+    with cem:endsAt 269,
+    with cem:beginsAt 269,
+    with cem:usage cem:Used,
+    with cem:codeBlock Mach.computeMach),
+    has cem:reference (a cem:Reference
+    with cem:endsAt 250,
+    with cem:beginsAt 250,
+    with cem:usage cem:Used,
+    with cem:codeBlock Mach.computeMach),
+    has cem:reference (a cem:Reference
+    with cem:endsAt 245,
+    with cem:beginsAt 245,
+    with cem:usage cem:Reassigned,
+    with cem:codeBlock Mach.computeMach),
+    has cem:reference (a cem:Reference
+    with cem:setterArgument true,
+    with cem:output true,
+    with cem:endsAt 294,
+    with cem:beginsAt 294,
+    with cem:usage cem:Used,
+    with cem:codeBlock Mach.computeMach),
+    has cem:reference (a cem:Reference
+    with cem:endsAt 284,
+    with cem:beginsAt 284,
+    with cem:usage cem:Reassigned,
+    with cem:codeBlock Mach.computeMach),
+    has cem:reference (a cem:Reference
+    with cem:endsAt 89,
+    with cem:beginsAt 89,
+    with cem:usage cem:Reassigned,
+    with cem:codeBlock Mach.setDefaults),
+    has cem:reference (a cem:Reference
+    with cem:endsAt 268,
+    with cem:beginsAt 268,
+    with cem:usage cem:Reassigned,
+    with cem:codeBlock Mach.computeMach),
+    has cem:reference (a cem:Reference
+    with cem:endsAt 270,
+    with cem:beginsAt 270,
+    with cem:usage cem:Used,
+    with cem:codeBlock Mach.computeMach),
+    has cem:reference (a cem:Reference
+    with cem:endsAt 304,
+    with cem:beginsAt 304,
+    with cem:usage cem:Used,
+    with cem:codeBlock Mach.computeMach),
+    has cem:reference (a cem:Reference
+    with cem:endsAt 246,
+    with cem:beginsAt 246,
+    with cem:usage cem:Reassigned,
+    with cem:codeBlock Mach.computeMach),
+    has cem:varType "double",
+    has cem:varName "A",
+    has cem:reference (a cem:Reference
+    with cem:endsAt 254,
+    with cem:beginsAt 254,
+    with cem:usage cem:Used,
+    with cem:codeBlock Mach.computeMach),
+    has cem:reference (a cem:Reference
+    with cem:endsAt 56,
+    with cem:beginsAt 56,
+    with cem:usage cem:Defined,
+    with cem:codeBlock Mach),
+    has cem:reference (a cem:Reference
+    with cem:endsAt 246,
+    with cem:beginsAt 246,
+    with cem:usage cem:Used,
+    with cem:codeBlock Mach.computeMach),
+    has cem:reference (a cem:Reference
+    with cem:endsAt 281,
+    with cem:beginsAt 281,
+    with cem:usage cem:Reassigned,
+    with cem:codeBlock Mach.computeMach),
+    has cem:reference (a cem:Reference
+    with cem:endsAt 284,
+    with cem:beginsAt 284,
+    with cem:usage cem:Used,
+    with cem:codeBlock Mach.computeMach),
+    has cem:reference (a cem:Reference
+    with cem:endsAt 269,
+    with cem:beginsAt 269,
+    with cem:usage cem:Reassigned,
+    with cem:codeBlock Mach.computeMach).
+Mach.CAL_GAM is a cem:Method,
+    has cem:calls (a cem:MethodCall
+    with cem:endsAt 258,
+    with cem:beginsAt 258,
+    with cem:codeBlock Mach.computeMach),
+    has cem:cmReturnTypes ["double"],
+    has cem:doesComputation true,
+    has cem:endsAt 111,
+    has cem:beginsAt 108,
+    has cem:cmArguments [Mach.CAL_GAM.T,Mach.CAL_GAM.G,Mach.CAL_GAM.Q],
+    has cem:containedIn Mach.
+Mach.CAL_GAM.G is a cem:MethodArgument,
+    has cem:reference (a cem:Reference
+    with cem:endsAt 109,
+    with cem:beginsAt 109,
+    with cem:usage cem:Used,
+    with cem:codeBlock Mach.CAL_GAM),
+    has cem:reference (a cem:Reference
+    with cem:endsAt 109,
+    with cem:beginsAt 109,
+    with cem:usage cem:Used,
+    with cem:codeBlock Mach.CAL_GAM),
+    has cem:varType "double",
+    has cem:varName "G",
+    has cem:reference (a cem:Reference
+    with cem:input true,
+    with cem:endsAt 108,
+    with cem:beginsAt 108,
+    with cem:usage cem:Defined,
+    with cem:codeBlock Mach.CAL_GAM).
+Mach.CAL_GAM.Q is a cem:MethodArgument,
+    has cem:reference (a cem:Reference
+    with cem:endsAt 110,
+    with cem:beginsAt 110,
+    with cem:usage cem:Used,
+    with cem:codeBlock Mach.CAL_GAM),
+    has cem:reference (a cem:Reference
+    with cem:endsAt 110,
+    with cem:beginsAt 110,
+    with cem:usage cem:Used,
+    with cem:codeBlock Mach.CAL_GAM),
+    has cem:reference (a cem:Reference
+    with cem:endsAt 109,
+    with cem:beginsAt 109,
+    with cem:usage cem:Used,
+    with cem:codeBlock Mach.CAL_GAM),
+    has cem:varType "double",
+    has cem:varName "Q",
+    has cem:reference (a cem:Reference
+    with cem:input true,
+    with cem:endsAt 108,
+    with cem:beginsAt 108,
+    with cem:usage cem:Defined,
+    with cem:codeBlock Mach.CAL_GAM).
+Mach.CAL_GAM.T is a cem:MethodArgument,
+    has cem:reference (a cem:Reference
+    with cem:endsAt 110,
+    with cem:beginsAt 110,
+    with cem:usage cem:Used,
+    with cem:codeBlock Mach.CAL_GAM),
+    has cem:reference (a cem:Reference
+    with cem:endsAt 110,
+    with cem:beginsAt 110,
+    with cem:usage cem:Used,
+    with cem:codeBlock Mach.CAL_GAM),
+    has cem:reference (a cem:Reference
+    with cem:endsAt 109,
+    with cem:beginsAt 109,
+    with cem:usage cem:Used,
+    with cem:codeBlock Mach.CAL_GAM),
+    has cem:varType "double",
+    has cem:varName "T",
+    has cem:reference (a cem:Reference
+    with cem:input true,
+    with cem:endsAt 108,
+    with cem:beginsAt 108,
+    with cem:usage cem:Defined,
+    with cem:codeBlock Mach.CAL_GAM).
+Mach.CAL_SOS is a cem:Method,
+    has cem:calls (a cem:MethodCall
+    with cem:endsAt 245,
+    with cem:beginsAt 245,
+    with cem:codeBlock Mach.computeMach),
+    has cem:cmReturnTypes ["double"],
+    has cem:doesComputation true,
+    has cem:endsAt 102,
+    has cem:beginsAt 98,
+    has cem:cmArguments [Mach.CAL_SOS.T,Mach.CAL_SOS.G,Mach.CAL_SOS.R,Mach.CAL_SOS.Q],
+    has cem:containedIn Mach.
+Mach.CAL_SOS.G is a cem:MethodArgument,
+    has cem:varType "double",
+    has cem:varName "G",
+    has cem:reference (a cem:Reference
+    with cem:input true,
+    with cem:endsAt 98,
+    with cem:beginsAt 98,
+    with cem:usage cem:Defined,
+    with cem:codeBlock Mach.CAL_SOS).
+Mach.CAL_SOS.Q is a cem:MethodArgument,
+    has cem:varType "double",
+    has cem:varName "Q",
+    has cem:reference (a cem:Reference
+    with cem:input true,
+    with cem:endsAt 98,
+    with cem:beginsAt 98,
+    with cem:usage cem:Defined,
+    with cem:codeBlock Mach.CAL_SOS).
+Mach.CAL_SOS.R is a cem:MethodArgument,
+    has cem:reference (a cem:Reference
+    with cem:endsAt 101,
+    with cem:beginsAt 101,
+    with cem:usage cem:Used,
+    with cem:codeBlock Mach.CAL_SOS),
+    has cem:varType "double",
+    has cem:varName "R",
+    has cem:reference (a cem:Reference
+    with cem:input true,
+    with cem:endsAt 98,
+    with cem:beginsAt 98,
+    with cem:usage cem:Defined,
+    with cem:codeBlock Mach.CAL_SOS).
+Mach.CAL_SOS.T is a cem:MethodArgument,
+    has cem:reference (a cem:Reference
+    with cem:endsAt 101,
+    with cem:beginsAt 101,
+    with cem:usage cem:Used,
+    with cem:codeBlock Mach.CAL_SOS),
+    has cem:varType "double",
+    has cem:varName "T",
+    has cem:reference (a cem:Reference
+    with cem:input true,
+    with cem:endsAt 98,
+    with cem:beginsAt 98,
+    with cem:usage cem:Defined,
+    with cem:codeBlock Mach.CAL_SOS).
+Mach.CAL_SOS.WOW is a cem:MethodVariable,
+    has cem:reference (a cem:Reference
+    with cem:endsAt 101,
+    with cem:beginsAt 101,
+    with cem:usage cem:Used,
+    with cem:codeBlock Mach.CAL_SOS),
+    has cem:reference (a cem:Reference
+    with cem:endsAt 100,
+    with cem:beginsAt 99,
+    with cem:usage cem:Reassigned,
+    with cem:codeBlock Mach.CAL_SOS),
+    has cem:varType "double",
+    has cem:varName "WOW",
+    has cem:reference (a cem:Reference
+    with cem:endsAt 100,
+    with cem:beginsAt 99,
+    with cem:usage cem:Defined,
+    with cem:codeBlock Mach.CAL_SOS).
+Mach.CAL_T is a cem:Method,
+    has cem:calls (a cem:MethodCall
+    with cem:endsAt 267,
+    with cem:beginsAt 267,
+    with cem:codeBlock Mach.computeMach),
+    has cem:cmReturnTypes ["double"],
+    has cem:doesComputation true,
+    has cem:endsAt 182,
+    has cem:beginsAt 148,
+    has cem:cmArguments [Mach.CAL_T.TT,Mach.CAL_T.M,Mach.CAL_T.G,Mach.CAL_T.Q],
+    has cem:containedIn Mach.
+Mach.CAL_T.EPS is a cem:MethodVariable,
+    has cem:reference (a cem:Reference
+    with cem:endsAt 151,
+    with cem:beginsAt 151,
+    with cem:usage cem:Reassigned,
+    with cem:codeBlock Mach.CAL_T),
+    has cem:varType "double",
+    has cem:varName "EPS",
+    has cem:reference (a cem:Reference
+    with cem:endsAt 151,
+    with cem:beginsAt 151,
+    with cem:usage cem:Defined,
+    with cem:codeBlock Mach.CAL_T).
+Mach.CAL_T.G is a cem:MethodArgument,
+    has cem:varType "double",
+    has cem:varName "G",
+    has cem:reference (a cem:Reference
+    with cem:input true,
+    with cem:endsAt 148,
+    with cem:beginsAt 148,
+    with cem:usage cem:Defined,
+    with cem:codeBlock Mach.CAL_T).
+Mach.CAL_T.M is a cem:MethodArgument,
+    has cem:reference (a cem:Reference
+    with cem:endsAt 179,
+    with cem:beginsAt 179,
+    with cem:usage cem:Used,
+    with cem:codeBlock Mach.CAL_T),
+    has cem:varType "double",
+    has cem:varName "M",
+    has cem:reference (a cem:Reference
+    with cem:input true,
+    with cem:endsAt 148,
+    with cem:beginsAt 148,
+    with cem:usage cem:Defined,
+    with cem:codeBlock Mach.CAL_T).
+Mach.CAL_T.Q is a cem:MethodArgument,
+    has cem:varType "double",
+    has cem:varName "Q",
+    has cem:reference (a cem:Reference
+    with cem:input true,
+    with cem:endsAt 148,
+    with cem:beginsAt 148,
+    with cem:usage cem:Defined,
+    with cem:codeBlock Mach.CAL_T).
+Mach.CAL_T.T is a cem:MethodVariable,
+    has cem:reference (a cem:Reference
+    with cem:output true,
+    with cem:endsAt 181,
+    with cem:beginsAt 181,
+    with cem:usage cem:Used,
+    with cem:codeBlock Mach.CAL_T),
+    has cem:reference (a cem:Reference
+    with cem:endsAt 179,
+    with cem:beginsAt 179,
+    with cem:usage cem:Reassigned,
+    with cem:codeBlock Mach.CAL_T),
+    has cem:reference (a cem:Reference
+    with cem:endsAt 150,
+    with cem:beginsAt 150,
+    with cem:usage cem:Reassigned,
+    with cem:codeBlock Mach.CAL_T),
+    has cem:varType "double",
+    has cem:varName "T",
+    has cem:reference (a cem:Reference
+    with cem:endsAt 150,
+    with cem:beginsAt 150,
+    with cem:usage cem:Defined,
+    with cem:codeBlock Mach.CAL_T).
+Mach.CAL_T.T1 is a cem:MethodVariable,
+    has cem:varType "double",
+    has cem:varName "T1",
+    has cem:reference (a cem:Reference
+    with cem:endsAt 155,
+    with cem:beginsAt 155,
+    with cem:usage cem:Defined,
+    with cem:codeBlock Mach.CAL_T).
+Mach.CAL_T.T2 is a cem:MethodVariable,
+    has cem:reference (a cem:Reference
+    with cem:endsAt 154,
+    with cem:beginsAt 154,
+    with cem:usage cem:Reassigned,
+    with cem:codeBlock Mach.CAL_T),
+    has cem:varType "double",
+    has cem:varName "T2",
+    has cem:reference (a cem:Reference
+    with cem:endsAt 154,
+    with cem:beginsAt 154,
+    with cem:usage cem:Defined,
+    with cem:codeBlock Mach.CAL_T).
+Mach.CAL_T.TT is a cem:MethodArgument,
+    has cem:reference (a cem:Reference
+    with cem:endsAt 179,
+    with cem:beginsAt 179,
+    with cem:usage cem:Used,
+    with cem:codeBlock Mach.CAL_T),
+    has cem:varType "double",
+    has cem:varName "TT",
+    has cem:reference (a cem:Reference
+    with cem:input true,
+    with cem:endsAt 148,
+    with cem:beginsAt 148,
+    with cem:usage cem:Defined,
+    with cem:codeBlock Mach.CAL_T).
+Mach.CAL_T.Z is a cem:MethodVariable,
+    has cem:reference (a cem:Reference
+    with cem:endsAt 152,
+    with cem:beginsAt 152,
+    with cem:usage cem:Reassigned,
+    with cem:codeBlock Mach.CAL_T),
+    has cem:varType "double",
+    has cem:varName "Z",
+    has cem:reference (a cem:Reference
+    with cem:endsAt 152,
+    with cem:beginsAt 152,
+    with cem:usage cem:Defined,
+    with cem:codeBlock Mach.CAL_T).
+Mach.CAL_T.Z1 is a cem:MethodVariable,
+    has cem:varType "double",
+    has cem:varName "Z1",
+    has cem:reference (a cem:Reference
+    with cem:endsAt 156,
+    with cem:beginsAt 156,
+    with cem:usage cem:Defined,
+    with cem:codeBlock Mach.CAL_T).
+Mach.CAL_T.Z2 is a cem:MethodVariable,
+    has cem:reference (a cem:Reference
+    with cem:endsAt 153,
+    with cem:beginsAt 153,
+    with cem:usage cem:Reassigned,
+    with cem:codeBlock Mach.CAL_T),
+    has cem:varType "double",
+    has cem:varName "Z2",
+    has cem:reference (a cem:Reference
+    with cem:endsAt 153,
+    with cem:beginsAt 153,
+    with cem:usage cem:Defined,
+    with cem:codeBlock Mach.CAL_T).
+Mach.CAL_T.i is a cem:MethodVariable,
+    has cem:reference (a cem:Reference
+    with cem:endsAt 157,
+    with cem:beginsAt 157,
+    with cem:usage cem:Reassigned,
+    with cem:codeBlock Mach.CAL_T),
+    has cem:varType "double",
+    has cem:varName "i",
+    has cem:reference (a cem:Reference
+    with cem:endsAt 157,
+    with cem:beginsAt 157,
+    with cem:usage cem:Defined,
+    with cem:codeBlock Mach.CAL_T).
+Mach.CAL_TT is a cem:Method,
+    has cem:calls (a cem:MethodCall
+    with cem:endsAt 257,
+    with cem:beginsAt 257,
+    with cem:codeBlock Mach.computeMach),
+    has cem:cmReturnTypes ["double"],
+    has cem:doesComputation true,
+    has cem:endsAt 146,
+    has cem:beginsAt 113,
+    has cem:cmArguments [Mach.CAL_TT.T,Mach.CAL_TT.M,Mach.CAL_TT.G,Mach.CAL_TT.Q],
+    has cem:containedIn Mach.
+Mach.CAL_TT.EPS is a cem:MethodVariable,
+    has cem:reference (a cem:Reference
+    with cem:endsAt 115,
+    with cem:beginsAt 115,
+    with cem:usage cem:Reassigned,
+    with cem:codeBlock Mach.CAL_TT),
+    has cem:varType "double",
+    has cem:varName "EPS",
+    has cem:reference (a cem:Reference
+    with cem:endsAt 115,
+    with cem:beginsAt 115,
+    with cem:usage cem:Defined,
+    with cem:codeBlock Mach.CAL_TT).
+Mach.CAL_TT.G is a cem:MethodArgument,
+    has cem:varType "double",
+    has cem:varName "G",
+    has cem:reference (a cem:Reference
+    with cem:input true,
+    with cem:endsAt 113,
+    with cem:beginsAt 113,
+    with cem:usage cem:Defined,
+    with cem:codeBlock Mach.CAL_TT).
+Mach.CAL_TT.M is a cem:MethodArgument,
+    has cem:reference (a cem:Reference
+    with cem:endsAt 143,
+    with cem:beginsAt 143,
+    with cem:usage cem:Used,
+    with cem:codeBlock Mach.CAL_TT),
+    has cem:varType "double",
+    has cem:varName "M",
+    has cem:reference (a cem:Reference
+    with cem:input true,
+    with cem:endsAt 113,
+    with cem:beginsAt 113,
+    with cem:usage cem:Defined,
+    with cem:codeBlock Mach.CAL_TT).
+Mach.CAL_TT.Q is a cem:MethodArgument,
+    has cem:varType "double",
+    has cem:varName "Q",
+    has cem:reference (a cem:Reference
+    with cem:input true,
+    with cem:endsAt 113,
+    with cem:beginsAt 113,
+    with cem:usage cem:Defined,
+    with cem:codeBlock Mach.CAL_TT).
+Mach.CAL_TT.T is a cem:MethodArgument,
+    has cem:reference (a cem:Reference
+    with cem:endsAt 143,
+    with cem:beginsAt 143,
+    with cem:usage cem:Used,
+    with cem:codeBlock Mach.CAL_TT),
+    has cem:varType "double",
+    has cem:varName "T",
+    has cem:reference (a cem:Reference
+    with cem:input true,
+    with cem:endsAt 113,
+    with cem:beginsAt 113,
+    with cem:usage cem:Defined,
+    with cem:codeBlock Mach.CAL_TT).
+Mach.CAL_TT.TT is a cem:MethodVariable,
+    has cem:reference (a cem:Reference
+    with cem:output true,
+    with cem:endsAt 145,
+    with cem:beginsAt 145,
+    with cem:usage cem:Used,
+    with cem:codeBlock Mach.CAL_TT),
+    has cem:reference (a cem:Reference
+    with cem:endsAt 143,
+    with cem:beginsAt 143,
+    with cem:usage cem:Reassigned,
+    with cem:codeBlock Mach.CAL_TT),
+    has cem:reference (a cem:Reference
+    with cem:endsAt 114,
+    with cem:beginsAt 114,
+    with cem:usage cem:Reassigned,
+    with cem:codeBlock Mach.CAL_TT),
+    has cem:varType "double",
+    has cem:varName "TT",
+    has cem:reference (a cem:Reference
+    with cem:endsAt 114,
+    with cem:beginsAt 114,
+    with cem:usage cem:Defined,
+    with cem:codeBlock Mach.CAL_TT).
+Mach.CAL_TT.TT1 is a cem:MethodVariable,
+    has cem:varType "double",
+    has cem:varName "TT1",
+    has cem:reference (a cem:Reference
+    with cem:endsAt 119,
+    with cem:beginsAt 119,
+    with cem:usage cem:Defined,
+    with cem:codeBlock Mach.CAL_TT).
+Mach.CAL_TT.TT2 is a cem:MethodVariable,
+    has cem:reference (a cem:Reference
+    with cem:endsAt 118,
+    with cem:beginsAt 118,
+    with cem:usage cem:Reassigned,
+    with cem:codeBlock Mach.CAL_TT),
+    has cem:varType "double",
+    has cem:varName "TT2",
+    has cem:reference (a cem:Reference
+    with cem:endsAt 118,
+    with cem:beginsAt 118,
+    with cem:usage cem:Defined,
+    with cem:codeBlock Mach.CAL_TT).
+Mach.CAL_TT.Z is a cem:MethodVariable,
+    has cem:reference (a cem:Reference
+    with cem:endsAt 116,
+    with cem:beginsAt 116,
+    with cem:usage cem:Reassigned,
+    with cem:codeBlock Mach.CAL_TT),
+    has cem:varType "double",
+    has cem:varName "Z",
+    has cem:reference (a cem:Reference
+    with cem:endsAt 116,
+    with cem:beginsAt 116,
+    with cem:usage cem:Defined,
+    with cem:codeBlock Mach.CAL_TT).
+Mach.CAL_TT.Z1 is a cem:MethodVariable,
+    has cem:varType "double",
+    has cem:varName "Z1",
+    has cem:reference (a cem:Reference
+    with cem:endsAt 120,
+    with cem:beginsAt 120,
+    with cem:usage cem:Defined,
+    with cem:codeBlock Mach.CAL_TT).
+Mach.CAL_TT.Z2 is a cem:MethodVariable,
+    has cem:reference (a cem:Reference
+    with cem:endsAt 117,
+    with cem:beginsAt 117,
+    with cem:usage cem:Reassigned,
+    with cem:codeBlock Mach.CAL_TT),
+    has cem:varType "double",
+    has cem:varName "Z2",
+    has cem:reference (a cem:Reference
+    with cem:endsAt 117,
+    with cem:beginsAt 117,
+    with cem:usage cem:Defined,
+    with cem:codeBlock Mach.CAL_TT).
+Mach.CAL_TT.i is a cem:MethodVariable,
+    has cem:reference (a cem:Reference
+    with cem:endsAt 121,
+    with cem:beginsAt 121,
+    with cem:usage cem:Reassigned,
+    with cem:codeBlock Mach.CAL_TT),
+    has cem:varType "double",
+    has cem:varName "i",
+    has cem:reference (a cem:Reference
+    with cem:endsAt 121,
+    with cem:beginsAt 121,
+    with cem:usage cem:Defined,
+    with cem:codeBlock Mach.CAL_TT).
+Mach.CAL_TV is a cem:Method,
+    has cem:calls (a cem:MethodCall
+    with cem:endsAt 280,
+    with cem:beginsAt 280,
+    with cem:codeBlock Mach.computeMach),
+    has cem:cmReturnTypes ["double"],
+    has cem:doesComputation true,
+    has cem:endsAt 218,
+    has cem:beginsAt 184,
+    has cem:cmArguments [Mach.CAL_TV.TT,Mach.CAL_TV.V,Mach.CAL_TV.G,Mach.CAL_TV.Q],
+    has cem:containedIn Mach.
+Mach.CAL_TV.EPS is a cem:MethodVariable,
+    has cem:reference (a cem:Reference
+    with cem:endsAt 187,
+    with cem:beginsAt 187,
+    with cem:usage cem:Reassigned,
+    with cem:codeBlock Mach.CAL_TV),
+    has cem:varType "double",
+    has cem:varName "EPS",
+    has cem:reference (a cem:Reference
+    with cem:endsAt 187,
+    with cem:beginsAt 187,
+    with cem:usage cem:Defined,
+    with cem:codeBlock Mach.CAL_TV).
+Mach.CAL_TV.G is a cem:MethodArgument,
+    has cem:reference (a cem:Reference
+    with cem:endsAt 215,
+    with cem:beginsAt 215,
+    with cem:usage cem:Used,
+    with cem:codeBlock Mach.CAL_TV),
+    has cem:reference (a cem:Reference
+    with cem:endsAt 215,
+    with cem:beginsAt 215,
+    with cem:usage cem:Used,
+    with cem:codeBlock Mach.CAL_TV),
+    has cem:varType "double",
+    has cem:varName "G",
+    has cem:reference (a cem:Reference
+    with cem:input true,
+    with cem:endsAt 184,
+    with cem:beginsAt 184,
+    with cem:usage cem:Defined,
+    with cem:codeBlock Mach.CAL_TV).
+Mach.CAL_TV.Q is a cem:MethodArgument,
+    has cem:varType "double",
+    has cem:varName "Q",
+    has cem:reference (a cem:Reference
+    with cem:input true,
+    with cem:endsAt 184,
+    with cem:beginsAt 184,
+    with cem:usage cem:Defined,
+    with cem:codeBlock Mach.CAL_TV).
+Mach.CAL_TV.T is a cem:MethodVariable,
+    has cem:reference (a cem:Reference
+    with cem:output true,
+    with cem:endsAt 217,
+    with cem:beginsAt 217,
+    with cem:usage cem:Used,
+    with cem:codeBlock Mach.CAL_TV),
+    has cem:reference (a cem:Reference
+    with cem:endsAt 215,
+    with cem:beginsAt 215,
+    with cem:usage cem:Reassigned,
+    with cem:codeBlock Mach.CAL_TV),
+    has cem:reference (a cem:Reference
+    with cem:endsAt 186,
+    with cem:beginsAt 186,
+    with cem:usage cem:Reassigned,
+    with cem:codeBlock Mach.CAL_TV),
+    has cem:varType "double",
+    has cem:varName "T",
+    has cem:reference (a cem:Reference
+    with cem:endsAt 186,
+    with cem:beginsAt 186,
+    with cem:usage cem:Defined,
+    with cem:codeBlock Mach.CAL_TV).
+Mach.CAL_TV.T1 is a cem:MethodVariable,
+    has cem:varType "double",
+    has cem:varName "T1",
+    has cem:reference (a cem:Reference
+    with cem:endsAt 191,
+    with cem:beginsAt 191,
+    with cem:usage cem:Defined,
+    with cem:codeBlock Mach.CAL_TV).
+Mach.CAL_TV.T2 is a cem:MethodVariable,
+    has cem:reference (a cem:Reference
+    with cem:endsAt 190,
+    with cem:beginsAt 190,
+    with cem:usage cem:Reassigned,
+    with cem:codeBlock Mach.CAL_TV),
+    has cem:varType "double",
+    has cem:varName "T2",
+    has cem:reference (a cem:Reference
+    with cem:endsAt 190,
+    with cem:beginsAt 190,
+    with cem:usage cem:Defined,
+    with cem:codeBlock Mach.CAL_TV).
+Mach.CAL_TV.TT is a cem:MethodArgument,
+    has cem:reference (a cem:Reference
+    with cem:endsAt 215,
+    with cem:beginsAt 215,
+    with cem:usage cem:Used,
+    with cem:codeBlock Mach.CAL_TV),
+    has cem:varType "double",
+    has cem:varName "TT",
+    has cem:reference (a cem:Reference
+    with cem:input true,
+    with cem:endsAt 184,
+    with cem:beginsAt 184,
+    with cem:usage cem:Defined,
+    with cem:codeBlock Mach.CAL_TV).
+Mach.CAL_TV.V is a cem:MethodArgument,
+    has cem:reference (a cem:Reference
+    with cem:endsAt 215,
+    with cem:beginsAt 215,
+    with cem:usage cem:Used,
+    with cem:codeBlock Mach.CAL_TV),
+    has cem:reference (a cem:Reference
+    with cem:endsAt 215,
+    with cem:beginsAt 215,
+    with cem:usage cem:Used,
+    with cem:codeBlock Mach.CAL_TV),
+    has cem:reference (a cem:Reference
+    with cem:endsAt 215,
+    with cem:beginsAt 215,
+    with cem:usage cem:Used,
+    with cem:codeBlock Mach.CAL_TV),
+    has cem:varType "double",
+    has cem:varName "V",
+    has cem:reference (a cem:Reference
+    with cem:input true,
+    with cem:endsAt 184,
+    with cem:beginsAt 184,
+    with cem:usage cem:Defined,
+    with cem:codeBlock Mach.CAL_TV).
+Mach.CAL_TV.Z is a cem:MethodVariable,
+    has cem:reference (a cem:Reference
+    with cem:endsAt 188,
+    with cem:beginsAt 188,
+    with cem:usage cem:Reassigned,
+    with cem:codeBlock Mach.CAL_TV),
+    has cem:varType "double",
+    has cem:varName "Z",
+    has cem:reference (a cem:Reference
+    with cem:endsAt 188,
+    with cem:beginsAt 188,
+    with cem:usage cem:Defined,
+    with cem:codeBlock Mach.CAL_TV).
+Mach.CAL_TV.Z1 is a cem:MethodVariable,
+    has cem:varType "double",
+    has cem:varName "Z1",
+    has cem:reference (a cem:Reference
+    with cem:endsAt 192,
+    with cem:beginsAt 192,
+    with cem:usage cem:Defined,
+    with cem:codeBlock Mach.CAL_TV).
+Mach.CAL_TV.Z2 is a cem:MethodVariable,
+    has cem:reference (a cem:Reference
+    with cem:endsAt 189,
+    with cem:beginsAt 189,
+    with cem:usage cem:Reassigned,
+    with cem:codeBlock Mach.CAL_TV),
+    has cem:varType "double",
+    has cem:varName "Z2",
+    has cem:reference (a cem:Reference
+    with cem:endsAt 189,
+    with cem:beginsAt 189,
+    with cem:usage cem:Defined,
+    with cem:codeBlock Mach.CAL_TV).
+Mach.CAL_TV.i is a cem:MethodVariable,
+    has cem:reference (a cem:Reference
+    with cem:endsAt 193,
+    with cem:beginsAt 193,
+    with cem:usage cem:Reassigned,
+    with cem:codeBlock Mach.CAL_TV),
+    has cem:varType "double",
+    has cem:varName "i",
+    has cem:reference (a cem:Reference
+    with cem:endsAt 193,
+    with cem:beginsAt 193,
+    with cem:usage cem:Defined,
+    with cem:codeBlock Mach.CAL_TV).
+Mach.G is a cem:ClassField,
+    has cem:reference (a cem:Reference
+    with cem:endsAt 224,
+    with cem:beginsAt 224,
+    with cem:usage cem:Reassigned,
+    with cem:codeBlock Mach.computeMach),
+    has cem:varType "double",
+    has cem:varName "G",
+    has cem:reference (a cem:Reference
+    with cem:endsAt 56,
+    with cem:beginsAt 56,
+    with cem:usage cem:Defined,
+    with cem:codeBlock Mach).
+Mach.GAM is a cem:ClassField,
+    has cem:reference (a cem:Reference
+    with cem:setterArgument true,
+    with cem:output true,
+    with cem:endsAt 313,
+    with cem:beginsAt 313,
+    with cem:usage cem:Used,
+    with cem:codeBlock Mach.computeMach),
+    has cem:reference (a cem:Reference
+    with cem:endsAt 282,
+    with cem:beginsAt 282,
+    with cem:usage cem:Reassigned,
+    with cem:codeBlock Mach.computeMach),
+    has cem:reference (a cem:Reference
+    with cem:endsAt 271,
+    with cem:beginsAt 271,
+    with cem:usage cem:Reassigned,
+    with cem:codeBlock Mach.computeMach),
+    has cem:reference (a cem:Reference
+    with cem:endsAt 258,
+    with cem:beginsAt 258,
+    with cem:usage cem:Reassigned,
+    with cem:codeBlock Mach.computeMach),
+    has cem:varType "double",
+    has cem:varName "GAM",
+    has cem:reference (a cem:Reference
+    with cem:endsAt 56,
+    with cem:beginsAt 56,
+    with cem:usage cem:Defined,
+    with cem:codeBlock Mach).
+Mach.In is a cem:Class,
+    has cem:containedIn Mach.
+Mach.In.Dn is a cem:Class,
+    has cem:containedIn Mach.In.
+Mach.In.Dn.l3 is a cem:ClassField,
+    has cem:varType "Label",
+    has cem:varName "l3",
+    has cem:reference (a cem:Reference
+    with cem:endsAt 725,
+    with cem:beginsAt 725,
+    with cem:usage cem:Defined,
+    with cem:codeBlock Mach.In.Dn).
+Mach.In.Dn.l4 is a cem:ClassField,
+    has cem:varType "Label",
+    has cem:varName "l4",
+    has cem:reference (a cem:Reference
+    with cem:endsAt 725,
+    with cem:beginsAt 725,
+    with cem:usage cem:Defined,
+    with cem:codeBlock Mach.In.Dn).
+Mach.In.Dn.l5 is a cem:ClassField,
+    has cem:varType "Label",
+    has cem:varName "l5",
+    has cem:reference (a cem:Reference
+    with cem:endsAt 725,
+    with cem:beginsAt 725,
+    with cem:usage cem:Defined,
+    with cem:codeBlock Mach.In.Dn).
+Mach.In.Dn.l6 is a cem:ClassField,
+    has cem:varType "Label",
+    has cem:varName "l6",
+    has cem:reference (a cem:Reference
+    with cem:endsAt 725,
+    with cem:beginsAt 725,
+    with cem:usage cem:Defined,
+    with cem:codeBlock Mach.In.Dn).
+Mach.In.Dn.l7 is a cem:ClassField,
+    has cem:varType "Label",
+    has cem:varName "l7",
+    has cem:reference (a cem:Reference
+    with cem:endsAt 725,
+    with cem:beginsAt 725,
+    with cem:usage cem:Defined,
+    with cem:codeBlock Mach.In.Dn).
+Mach.In.Dn.l8 is a cem:ClassField,
+    has cem:varType "Label",
+    has cem:varName "l8",
+    has cem:reference (a cem:Reference
+    with cem:endsAt 725,
+    with cem:beginsAt 725,
+    with cem:usage cem:Defined,
+    with cem:codeBlock Mach.In.Dn).
+Mach.In.Dn.lb is a cem:ClassField,
+    has cem:varType "Label",
+    has cem:varName "lb",
+    has cem:reference (a cem:Reference
+    with cem:endsAt 726,
+    with cem:beginsAt 726,
+    with cem:usage cem:Defined,
+    with cem:codeBlock Mach.In.Dn).
+Mach.In.Dn.lc is a cem:ClassField,
+    has cem:varType "Label",
+    has cem:varName "lc",
+    has cem:reference (a cem:Reference
+    with cem:endsAt 726,
+    with cem:beginsAt 726,
+    with cem:usage cem:Defined,
+    with cem:codeBlock Mach.In.Dn).
+Mach.In.Dn.ld is a cem:ClassField,
+    has cem:varType "Label",
+    has cem:varName "ld",
+    has cem:reference (a cem:Reference
+    with cem:endsAt 726,
+    with cem:beginsAt 726,
+    with cem:usage cem:Defined,
+    with cem:codeBlock Mach.In.Dn).
+Mach.In.Dn.o3 is a cem:ClassField,
+    has cem:varType "TextField",
+    has cem:varName "o3",
+    has cem:reference (a cem:Reference
+    with cem:endsAt 723,
+    with cem:beginsAt 723,
+    with cem:usage cem:Defined,
+    with cem:codeBlock Mach.In.Dn).
+Mach.In.Dn.o3r is a cem:ClassField,
+    has cem:varType "TextField",
+    has cem:varName "o3r",
+    has cem:reference (a cem:Reference
+    with cem:endsAt 724,
+    with cem:beginsAt 724,
+    with cem:usage cem:Defined,
+    with cem:codeBlock Mach.In.Dn).
+Mach.In.Dn.o4 is a cem:ClassField,
+    has cem:varType "TextField",
+    has cem:varName "o4",
+    has cem:reference (a cem:Reference
+    with cem:endsAt 723,
+    with cem:beginsAt 723,
+    with cem:usage cem:Defined,
+    with cem:codeBlock Mach.In.Dn).
+Mach.In.Dn.o4r is a cem:ClassField,
+    has cem:varType "TextField",
+    has cem:varName "o4r",
+    has cem:reference (a cem:Reference
+    with cem:endsAt 724,
+    with cem:beginsAt 724,
+    with cem:usage cem:Defined,
+    with cem:codeBlock Mach.In.Dn).
+Mach.In.Dn.o5 is a cem:ClassField,
+    has cem:varType "TextField",
+    has cem:varName "o5",
+    has cem:reference (a cem:Reference
+    with cem:endsAt 723,
+    with cem:beginsAt 723,
+    with cem:usage cem:Defined,
+    with cem:codeBlock Mach.In.Dn).
+Mach.In.Dn.o5r is a cem:ClassField,
+    has cem:varType "TextField",
+    has cem:varName "o5r",
+    has cem:reference (a cem:Reference
+    with cem:endsAt 724,
+    with cem:beginsAt 724,
+    with cem:usage cem:Defined,
+    with cem:codeBlock Mach.In.Dn).
+Mach.In.Dn.o6 is a cem:ClassField,
+    has cem:varType "TextField",
+    has cem:varName "o6",
+    has cem:reference (a cem:Reference
+    with cem:endsAt 723,
+    with cem:beginsAt 723,
+    with cem:usage cem:Defined,
+    with cem:codeBlock Mach.In.Dn).
+Mach.In.Dn.o6r is a cem:ClassField,
+    has cem:varType "TextField",
+    has cem:varName "o6r",
+    has cem:reference (a cem:Reference
+    with cem:endsAt 724,
+    with cem:beginsAt 724,
+    with cem:usage cem:Defined,
+    with cem:codeBlock Mach.In.Dn).
+Mach.In.Dn.o7 is a cem:ClassField,
+    has cem:varType "TextField",
+    has cem:varName "o7",
+    has cem:reference (a cem:Reference
+    with cem:endsAt 723,
+    with cem:beginsAt 723,
+    with cem:usage cem:Defined,
+    with cem:codeBlock Mach.In.Dn).
+Mach.In.Dn.o7r is a cem:ClassField,
+    has cem:varType "TextField",
+    has cem:varName "o7r",
+    has cem:reference (a cem:Reference
+    with cem:endsAt 724,
+    with cem:beginsAt 724,
+    with cem:usage cem:Defined,
+    with cem:codeBlock Mach.In.Dn).
+Mach.In.Dn.o8 is a cem:ClassField,
+    has cem:varType "TextField",
+    has cem:varName "o8",
+    has cem:reference (a cem:Reference
+    with cem:endsAt 723,
+    with cem:beginsAt 723,
+    with cem:usage cem:Defined,
+    with cem:codeBlock Mach.In.Dn).
+Mach.In.Dn.o8r is a cem:ClassField,
+    has cem:varType "TextField",
+    has cem:varName "o8r",
+    has cem:reference (a cem:Reference
+    with cem:endsAt 724,
+    with cem:beginsAt 724,
+    with cem:usage cem:Defined,
+    with cem:codeBlock Mach.In.Dn).
+Mach.In.Dn.outerparent is a cem:ClassField,
+    has cem:varType "Mach",
+    has cem:varName "outerparent",
+    has cem:reference (a cem:Reference
+    with cem:endsAt 722,
+    with cem:beginsAt 722,
+    with cem:usage cem:Defined,
+    with cem:codeBlock Mach.In.Dn).
+Mach.In.Titl is a cem:Class,
+    has cem:containedIn Mach.In.
+Mach.In.Titl.In2 is a cem:Class,
+    has cem:containedIn Mach.In.Titl.
+Mach.In.Titl.In2.handleEvent is a cem:Method,
+    has cem:cmReturnTypes ["boolean"],
+    has cem:doesComputation true,
+    has cem:comment (a cem:Comment
+    with cem:endsAt 471,
+    with cem:beginsAt 471,
+    with cem:commentContent " Metric units labels"),
+    has cem:comment (a cem:Comment
+    with cem:endsAt 453,
+    with cem:beginsAt 453,
+    with cem:commentContent " English units labels"),
+    has cem:endsAt 494,
+    has cem:beginsAt 448,
+    has cem:cmArguments [Mach.In.Titl.In2.handleEvent.evt],
+    has cem:containedIn Mach.In.Titl.In2 .
+Mach.In.Titl.In2.handleEvent.evt is a cem:MethodArgument,
+    has cem:varType "Event",
+    has cem:varName "evt",
+    has cem:reference (a cem:Reference
+    with cem:input true,
+    with cem:endsAt 448,
+    with cem:beginsAt 448,
+    with cem:usage cem:Defined,
+    with cem:codeBlock Mach.In.Titl.In2.handleEvent).
+Mach.In.Titl.In2.lb is a cem:ClassField,
+    has cem:varType "Label",
+    has cem:varName "lb",
+    has cem:reference (a cem:Reference
+    with cem:endsAt 420,
+    with cem:beginsAt 420,
+    with cem:usage cem:Defined,
+    with cem:codeBlock Mach.In.Titl.In2).
+Mach.In.Titl.In2.lc is a cem:ClassField,
+    has cem:varType "Label",
+    has cem:varName "lc",
+    has cem:reference (a cem:Reference
+    with cem:endsAt 420,
+    with cem:beginsAt 420,
+    with cem:usage cem:Defined,
+    with cem:codeBlock Mach.In.Titl.In2).
+Mach.In.Titl.In2.plntch is a cem:ClassField,
+    has cem:varType "Choice",
+    has cem:varName "plntch",
+    has cem:reference (a cem:Reference
+    with cem:endsAt 421,
+    with cem:beginsAt 421,
+    with cem:usage cem:Defined,
+    with cem:codeBlock Mach.In.Titl.In2).
+Mach.In.Titl.In2.untch is a cem:ClassField,
+    has cem:varType "Choice",
+    has cem:varName "untch",
+    has cem:reference (a cem:Reference
+    with cem:endsAt 421,
+    with cem:beginsAt 421,
+    with cem:usage cem:Defined,
+    with cem:codeBlock Mach.In.Titl.In2).
+Mach.In.Titl.in2 is a cem:ClassField,
+    has cem:varType "In2",
+    has cem:varName "in2",
+    has cem:reference (a cem:Reference
+    with cem:endsAt 404,
+    with cem:beginsAt 404,
+    with cem:usage cem:Defined,
+    with cem:codeBlock Mach.In.Titl).
+Mach.In.Titl.la is a cem:ClassField,
+    has cem:varType "Label",
+    has cem:varName "la",
+    has cem:reference (a cem:Reference
+    with cem:endsAt 403,
+    with cem:beginsAt 403,
+    with cem:usage cem:Defined,
+    with cem:codeBlock Mach.In.Titl).
+Mach.In.Up is a cem:Class,
+    has cem:containedIn Mach.In.
+Mach.In.Up.action is a cem:Method,
+    has cem:cmReturnTypes ["boolean"],
+    has cem:endsAt 574,
+    has cem:beginsAt 562,
+    has cem:cmArguments [Mach.In.Up.action.evt,Mach.In.Up.action.arg],
+    has cem:containedIn Mach.In.Up.
+Mach.In.Up.action.arg is a cem:MethodArgument,
+    has cem:reference (a cem:Reference
+    with cem:endsAt 564,
+    with cem:beginsAt 564,
+    with cem:usage cem:Used,
+    with cem:codeBlock Mach.In.Up.action),
+    has cem:varType "Object",
+    has cem:varName "arg",
+    has cem:reference (a cem:Reference
+    with cem:input true,
+    with cem:endsAt 562,
+    with cem:beginsAt 562,
+    with cem:usage cem:Defined,
+    with cem:codeBlock Mach.In.Up.action).
+Mach.In.Up.action.evt is a cem:MethodArgument,
+    has cem:reference (a cem:Reference
+    with cem:endsAt 569,
+    with cem:beginsAt 569,
+    with cem:usage cem:Used,
+    with cem:codeBlock Mach.In.Up.action),
+    has cem:varType "Event",
+    has cem:varName "evt",
+    has cem:reference (a cem:Reference
+    with cem:input true,
+    with cem:endsAt 562,
+    with cem:beginsAt 562,
+    with cem:usage cem:Defined,
+    with cem:codeBlock Mach.In.Up.action).
+Mach.In.Up.bt1 is a cem:ClassField,
+    has cem:varType "Button",
+    has cem:varName "bt1",
+    has cem:reference (a cem:Reference
+    with cem:endsAt 501,
+    with cem:beginsAt 501,
+    with cem:usage cem:Defined,
+    with cem:codeBlock Mach.In.Up).
+Mach.In.Up.handleBut is a cem:Method,
+    has cem:cmReturnTypes ["void"],
+    has cem:doesComputation true,
+    has cem:endsAt 718,
+    has cem:beginsAt 614,
+    has cem:cmArguments [Mach.In.Up.handleBut.evt],
+    has cem:containedIn Mach.In.Up.
+Mach.In.Up.handleBut.V1 is a cem:MethodVariable,
+    has cem:reference (a cem:Reference
+    with cem:endsAt 618,
+    with cem:beginsAt 618,
+    with cem:usage cem:Reassigned,
+    with cem:codeBlock Mach.In.Up.handleBut),
+    has cem:varType "Double",
+    has cem:varName "V1",
+    has cem:reference (a cem:Reference
+    with cem:endsAt 615,
+    with cem:beginsAt 615,
+    with cem:usage cem:Defined,
+    with cem:codeBlock Mach.In.Up.handleBut).
+Mach.In.Up.handleBut.V2 is a cem:MethodVariable,
+    has cem:reference (a cem:Reference
+    with cem:endsAt 620,
+    with cem:beginsAt 620,
+    with cem:usage cem:Reassigned,
+    with cem:codeBlock Mach.In.Up.handleBut),
+    has cem:varType "Double",
+    has cem:varName "V2",
+    has cem:reference (a cem:Reference
+    with cem:endsAt 615,
+    with cem:beginsAt 615,
+    with cem:usage cem:Defined,
+    with cem:codeBlock Mach.In.Up.handleBut).
+Mach.In.Up.handleBut.evt is a cem:MethodArgument,
+    has cem:varType "Event",
+    has cem:varName "evt",
+    has cem:reference (a cem:Reference
+    with cem:input true,
+    with cem:endsAt 614,
+    with cem:beginsAt 614,
+    with cem:usage cem:Defined,
+    with cem:codeBlock Mach.In.Up.handleBut).
+Mach.In.Up.handleBut.v1 is a cem:MethodVariable,
+    has cem:reference (a cem:Reference
+    with cem:endsAt 651,
+    with cem:beginsAt 651,
+    with cem:usage cem:Used,
+    with cem:codeBlock Mach.In.Up.handleBut),
+    has cem:reference (a cem:Reference
+    with cem:setterArgument true,
+    with cem:output true,
+    with cem:endsAt 710,
+    with cem:beginsAt 710,
+    with cem:usage cem:Used,
+    with cem:codeBlock Mach.In.Up.handleBut),
+    has cem:reference (a cem:Reference
+    with cem:endsAt 701,
+    with cem:beginsAt 701,
+    with cem:usage cem:Used,
+    with cem:codeBlock Mach.In.Up.handleBut),
+    has cem:reference (a cem:Reference
+    with cem:setterArgument true,
+    with cem:output true,
+    with cem:endsAt 649,
+    with cem:beginsAt 649,
+    with cem:usage cem:Used,
+    with cem:codeBlock Mach.In.Up.handleBut),
+    has cem:reference (a cem:Reference
+    with cem:endsAt 666,
+    with cem:beginsAt 666,
+    with cem:usage cem:Used,
+    with cem:codeBlock Mach.In.Up.handleBut),
+    has cem:reference (a cem:Reference
+    with cem:endsAt 652,
+    with cem:beginsAt 652,
+    with cem:usage cem:Reassigned,
+    with cem:codeBlock Mach.In.Up.handleBut),
+    has cem:reference (a cem:Reference
+    with cem:setterArgument true,
+    with cem:output true,
+    with cem:endsAt 660,
+    with cem:beginsAt 660,
+    with cem:usage cem:Used,
+    with cem:codeBlock Mach.In.Up.handleBut),
+    has cem:reference (a cem:Reference
+    with cem:endsAt 647,
+    with cem:beginsAt 647,
+    with cem:usage cem:Used,
+    with cem:codeBlock Mach.In.Up.handleBut),
+    has cem:reference (a cem:Reference
+    with cem:setterArgument true,
+    with cem:output true,
+    with cem:endsAt 653,
+    with cem:beginsAt 653,
+    with cem:usage cem:Used,
+    with cem:codeBlock Mach.In.Up.handleBut),
+    has cem:reference (a cem:Reference
+    with cem:endsAt 662,
+    with cem:beginsAt 662,
+    with cem:usage cem:Used,
+    with cem:codeBlock Mach.In.Up.handleBut),
+    has cem:reference (a cem:Reference
+    with cem:endsAt 659,
+    with cem:beginsAt 659,
+    with cem:usage cem:Reassigned,
+    with cem:codeBlock Mach.In.Up.handleBut),
+    has cem:reference (a cem:Reference
+    with cem:setterArgument true,
+    with cem:output true,
+    with cem:endsAt 695,
+    with cem:beginsAt 695,
+    with cem:usage cem:Used,
+    with cem:codeBlock Mach.In.Up.handleBut),
+    has cem:reference (a cem:Reference
+    with cem:endsAt 658,
+    with cem:beginsAt 658,
+    with cem:usage cem:Used,
+    with cem:codeBlock Mach.In.Up.handleBut),
+    has cem:reference (a cem:Reference
+    with cem:endsAt 648,
+    with cem:beginsAt 648,
+    with cem:usage cem:Reassigned,
+    with cem:codeBlock Mach.In.Up.handleBut),
+    has cem:reference (a cem:Reference
+    with cem:endsAt 663,
+    with cem:beginsAt 663,
+    with cem:usage cem:Reassigned,
+    with cem:codeBlock Mach.In.Up.handleBut),
+    has cem:reference (a cem:Reference
+    with cem:endsAt 697,
+    with cem:beginsAt 697,
+    with cem:usage cem:Used,
+    with cem:codeBlock Mach.In.Up.handleBut),
+    has cem:reference (a cem:Reference
+    with cem:endsAt 712,
+    with cem:beginsAt 712,
+    with cem:usage cem:Used,
+    with cem:codeBlock Mach.In.Up.handleBut),
+    has cem:reference (a cem:Reference
+    with cem:endsAt 698,
+    with cem:beginsAt 698,
+    with cem:usage cem:Reassigned,
+    with cem:codeBlock Mach.In.Up.handleBut),
+    has cem:reference (a cem:Reference
+    with cem:endsAt 709,
+    with cem:beginsAt 709,
+    with cem:usage cem:Reassigned,
+    with cem:codeBlock Mach.In.Up.handleBut),
+    has cem:reference (a cem:Reference
+    with cem:endsAt 708,
+    with cem:beginsAt 708,
+    with cem:usage cem:Used,
+    with cem:codeBlock Mach.In.Up.handleBut),
+    has cem:reference (a cem:Reference
+    with cem:setterArgument true,
+    with cem:output true,
+    with cem:endsAt 706,
+    with cem:beginsAt 706,
+    with cem:usage cem:Used,
+    with cem:codeBlock Mach.In.Up.handleBut),
+    has cem:reference (a cem:Reference
+    with cem:setterArgument true,
+    with cem:output true,
+    with cem:endsAt 699,
+    with cem:beginsAt 699,
+    with cem:usage cem:Used,
+    with cem:codeBlock Mach.In.Up.handleBut),
+    has cem:reference (a cem:Reference
+    with cem:endsAt 693,
+    with cem:beginsAt 693,
+    with cem:usage cem:Used,
+    with cem:codeBlock Mach.In.Up.handleBut),
+    has cem:reference (a cem:Reference
+    with cem:endsAt 616,
+    with cem:beginsAt 616,
+    with cem:usage cem:Defined,
+    with cem:codeBlock Mach.In.Up.handleBut),
+    has cem:reference (a cem:Reference
+    with cem:endsAt 704,
+    with cem:beginsAt 704,
+    with cem:usage cem:Used,
+    with cem:codeBlock Mach.In.Up.handleBut),
+    has cem:reference (a cem:Reference
+    with cem:endsAt 655,
+    with cem:beginsAt 655,
+    with cem:usage cem:Used,
+    with cem:codeBlock Mach.In.Up.handleBut),
+    has cem:reference (a cem:Reference
+    with cem:endsAt 619,
+    with cem:beginsAt 619,
+    with cem:usage cem:Reassigned,
+    with cem:codeBlock Mach.In.Up.handleBut),
+    has cem:varName "v1",
+    has cem:reference (a cem:Reference
+    with cem:endsAt 705,
+    with cem:beginsAt 705,
+    with cem:usage cem:Reassigned,
+    with cem:codeBlock Mach.In.Up.handleBut),
+    has cem:reference (a cem:Reference
+    with cem:endsAt 694,
+    with cem:beginsAt 694,
+    with cem:usage cem:Reassigned,
+    with cem:codeBlock Mach.In.Up.handleBut),
+    has cem:varType "double",
+    has cem:reference (a cem:Reference
+    with cem:setterArgument true,
+    with cem:output true,
+    with cem:endsAt 664,
+    with cem:beginsAt 664,
+    with cem:usage cem:Used,
+    with cem:codeBlock Mach.In.Up.handleBut).
+Mach.In.Up.handleBut.v2 is a cem:MethodVariable,
+    has cem:reference (a cem:Reference
+    with cem:setterArgument true,
+    with cem:output true,
+    with cem:endsAt 642,
+    with cem:beginsAt 642,
+    with cem:usage cem:Used,
+    with cem:codeBlock Mach.In.Up.handleBut),
+    has cem:reference (a cem:Reference
+    with cem:endsAt 637,
+    with cem:beginsAt 637,
+    with cem:usage cem:Reassigned,
+    with cem:codeBlock Mach.In.Up.handleBut),
+    has cem:reference (a cem:Reference
+    with cem:endsAt 676,
+    with cem:beginsAt 676,
+    with cem:usage cem:Reassigned,
+    with cem:codeBlock Mach.In.Up.handleBut),
+    has cem:reference (a cem:Reference
+    with cem:setterArgument true,
+    with cem:output true,
+    with cem:endsAt 638,
+    with cem:beginsAt 638,
+    with cem:usage cem:Used,
+    with cem:codeBlock Mach.In.Up.handleBut),
+    has cem:reference (a cem:Reference
+    with cem:endsAt 616,
+    with cem:beginsAt 616,
+    with cem:usage cem:Defined,
+    with cem:codeBlock Mach.In.Up.handleBut),
+    has cem:varType "double",
+    has cem:reference (a cem:Reference
+    with cem:endsAt 679,
+    with cem:beginsAt 679,
+    with cem:usage cem:Used,
+    with cem:codeBlock Mach.In.Up.handleBut),
+    has cem:reference (a cem:Reference
+    with cem:endsAt 671,
+    with cem:beginsAt 671,
+    with cem:usage cem:Used,
+    with cem:codeBlock Mach.In.Up.handleBut),
+    has cem:reference (a cem:Reference
+    with cem:endsAt 686,
+    with cem:beginsAt 686,
+    with cem:usage cem:Used,
+    with cem:codeBlock Mach.In.Up.handleBut),
+    has cem:reference (a cem:Reference
+    with cem:endsAt 640,
+    with cem:beginsAt 640,
+    with cem:usage cem:Used,
+    with cem:codeBlock Mach.In.Up.handleBut),
+    has cem:reference (a cem:Reference
+    with cem:endsAt 690,
+    with cem:beginsAt 690,
+    with cem:usage cem:Used,
+    with cem:codeBlock Mach.In.Up.handleBut),
+    has cem:reference (a cem:Reference
+    with cem:endsAt 687,
+    with cem:beginsAt 687,
+    with cem:usage cem:Reassigned,
+    with cem:codeBlock Mach.In.Up.handleBut),
+    has cem:reference (a cem:Reference
+    with cem:endsAt 625,
+    with cem:beginsAt 625,
+    with cem:usage cem:Used,
+    with cem:codeBlock Mach.In.Up.handleBut),
+    has cem:varName "v2",
+    has cem:reference (a cem:Reference
+    with cem:endsAt 621,
+    with cem:beginsAt 621,
+    with cem:usage cem:Reassigned,
+    with cem:codeBlock Mach.In.Up.handleBut),
+    has cem:reference (a cem:Reference
+    with cem:endsAt 672,
+    with cem:beginsAt 672,
+    with cem:usage cem:Reassigned,
+    with cem:codeBlock Mach.In.Up.handleBut),
+    has cem:reference (a cem:Reference
+    with cem:endsAt 682,
+    with cem:beginsAt 682,
+    with cem:usage cem:Used,
+    with cem:codeBlock Mach.In.Up.handleBut),
+    has cem:reference (a cem:Reference
+    with cem:setterArgument true,
+    with cem:output true,
+    with cem:endsAt 627,
+    with cem:beginsAt 627,
+    with cem:usage cem:Used,
+    with cem:codeBlock Mach.In.Up.handleBut),
+    has cem:reference (a cem:Reference
+    with cem:endsAt 626,
+    with cem:beginsAt 626,
+    with cem:usage cem:Reassigned,
+    with cem:codeBlock Mach.In.Up.handleBut),
+    has cem:reference (a cem:Reference
+    with cem:endsAt 683,
+    with cem:beginsAt 683,
+    with cem:usage cem:Reassigned,
+    with cem:codeBlock Mach.In.Up.handleBut),
+    has cem:reference (a cem:Reference
+    with cem:setterArgument true,
+    with cem:output true,
+    with cem:endsAt 688,
+    with cem:beginsAt 688,
+    with cem:usage cem:Used,
+    with cem:codeBlock Mach.In.Up.handleBut),
+    has cem:reference (a cem:Reference
+    with cem:endsAt 644,
+    with cem:beginsAt 644,
+    with cem:usage cem:Used,
+    with cem:codeBlock Mach.In.Up.handleBut),
+    has cem:reference (a cem:Reference
+    with cem:endsAt 629,
+    with cem:beginsAt 629,
+    with cem:usage cem:Used,
+    with cem:codeBlock Mach.In.Up.handleBut),
+    has cem:reference (a cem:Reference
+    with cem:setterArgument true,
+    with cem:output true,
+    with cem:endsAt 673,
+    with cem:beginsAt 673,
+    with cem:usage cem:Used,
+    with cem:codeBlock Mach.In.Up.handleBut),
+    has cem:reference (a cem:Reference
+    with cem:endsAt 630,
+    with cem:beginsAt 630,
+    with cem:usage cem:Reassigned,
+    with cem:codeBlock Mach.In.Up.handleBut),
+    has cem:reference (a cem:Reference
+    with cem:setterArgument true,
+    with cem:output true,
+    with cem:endsAt 684,
+    with cem:beginsAt 684,
+    with cem:usage cem:Used,
+    with cem:codeBlock Mach.In.Up.handleBut),
+    has cem:reference (a cem:Reference
+    with cem:endsAt 633,
+    with cem:beginsAt 633,
+    with cem:usage cem:Used,
+    with cem:codeBlock Mach.In.Up.handleBut),
+    has cem:reference (a cem:Reference
+    with cem:setterArgument true,
+    with cem:output true,
+    with cem:endsAt 677,
+    with cem:beginsAt 677,
+    with cem:usage cem:Used,
+    with cem:codeBlock Mach.In.Up.handleBut),
+    has cem:reference (a cem:Reference
+    with cem:endsAt 641,
+    with cem:beginsAt 641,
+    with cem:usage cem:Reassigned,
+    with cem:codeBlock Mach.In.Up.handleBut),
+    has cem:reference (a cem:Reference
+    with cem:setterArgument true,
+    with cem:output true,
+    with cem:endsAt 631,
+    with cem:beginsAt 631,
+    with cem:usage cem:Used,
+    with cem:codeBlock Mach.In.Up.handleBut),
+    has cem:reference (a cem:Reference
+    with cem:endsAt 675,
+    with cem:beginsAt 675,
+    with cem:usage cem:Used,
+    with cem:codeBlock Mach.In.Up.handleBut),
+    has cem:reference (a cem:Reference
+    with cem:endsAt 636,
+    with cem:beginsAt 636,
+    with cem:usage cem:Used,
+    with cem:codeBlock Mach.In.Up.handleBut).
+Mach.In.Up.handleProb is a cem:Method,
+    has cem:cmReturnTypes ["void"],
+    has cem:doesComputation true,
+    has cem:comment (a cem:Comment
+    with cem:endsAt 598,
+    with cem:beginsAt 596,
+    with cem:commentContent " Metric units labels"),
+    has cem:comment (a cem:Comment
+    with cem:endsAt 584,
+    with cem:beginsAt 582,
+    with cem:commentContent " English units labels"),
+    has cem:endsAt 612,
+    has cem:beginsAt 576,
+    has cem:cmArguments [Mach.In.Up.handleProb.obj],
+    has cem:containedIn Mach.In.Up.
+Mach.In.Up.handleProb.obj is a cem:MethodArgument,
+    has cem:varType "Object",
+    has cem:varName "obj",
+    has cem:reference (a cem:Reference
+    with cem:input true,
+    with cem:endsAt 576,
+    with cem:beginsAt 576,
+    with cem:usage cem:Defined,
+    with cem:codeBlock Mach.In.Up.handleProb).
+Mach.In.Up.insets is a cem:Method,
+    has cem:cmReturnTypes ["Insets"],
+    has cem:endsAt 560,
+    has cem:beginsAt 558,
+    has cem:containedIn Mach.In.Up.
+Mach.In.Up.l1 is a cem:ClassField,
+    has cem:varType "Label",
+    has cem:varName "l1",
+    has cem:reference (a cem:Reference
+    with cem:endsAt 500,
+    with cem:beginsAt 500,
+    with cem:usage cem:Defined,
+    with cem:codeBlock Mach.In.Up).
+Mach.In.Up.l1u is a cem:ClassField,
+    has cem:reference (a cem:Reference
+    with cem:endsAt 606,
+    with cem:beginsAt 606,
+    with cem:usage cem:Used,
+    with cem:codeBlock Mach.In.Up.handleProb),
+    has cem:reference (a cem:Reference
+    with cem:endsAt 603,
+    with cem:beginsAt 603,
+    with cem:usage cem:Used,
+    with cem:codeBlock Mach.In.Up.handleProb),
+    has cem:reference (a cem:Reference
+    with cem:endsAt 592,
+    with cem:beginsAt 592,
+    with cem:usage cem:Used,
+    with cem:codeBlock Mach.In.Up.handleProb),
+    has cem:reference (a cem:Reference
+    with cem:endsAt 589,
+    with cem:beginsAt 589,
+    with cem:usage cem:Used,
+    with cem:codeBlock Mach.In.Up.handleProb),
+    has cem:varType "Label",
+    has cem:varName "l1u",
+    has cem:reference (a cem:Reference
+    with cem:endsAt 500,
+    with cem:beginsAt 500,
+    with cem:usage cem:Defined,
+    with cem:codeBlock Mach.In.Up).
+Mach.In.Up.l2u is a cem:ClassField,
+    has cem:reference (a cem:Reference
+    with cem:endsAt 600,
+    with cem:beginsAt 600,
+    with cem:usage cem:Used,
+    with cem:codeBlock Mach.In.Up.handleProb),
+    has cem:reference (a cem:Reference
+    with cem:endsAt 597,
+    with cem:beginsAt 597,
+    with cem:usage cem:Used,
+    with cem:codeBlock Mach.In.Up.handleProb),
+    has cem:reference (a cem:Reference
+    with cem:endsAt 586,
+    with cem:beginsAt 586,
+    with cem:usage cem:Used,
+    with cem:codeBlock Mach.In.Up.handleProb),
+    has cem:reference (a cem:Reference
+    with cem:endsAt 583,
+    with cem:beginsAt 583,
+    with cem:usage cem:Used,
+    with cem:codeBlock Mach.In.Up.handleProb),
+    has cem:varType "Label",
+    has cem:varName "l2u",
+    has cem:reference (a cem:Reference
+    with cem:endsAt 500,
+    with cem:beginsAt 500,
+    with cem:usage cem:Defined,
+    with cem:codeBlock Mach.In.Up).
+Mach.In.Up.la is a cem:ClassField,
+    has cem:varType "Label",
+    has cem:varName "la",
+    has cem:reference (a cem:Reference
+    with cem:endsAt 500,
+    with cem:beginsAt 500,
+    with cem:usage cem:Defined,
+    with cem:codeBlock Mach.In.Up).
+Mach.In.Up.o1 is a cem:ClassField,
+    has cem:reference (a cem:Reference
+    with cem:endsAt 499,
+    with cem:beginsAt 499,
+    with cem:usage cem:Defined,
+    with cem:codeBlock Mach.In.Up),
+    has cem:reference (a cem:Reference
+    with cem:endsAt 695,
+    with cem:beginsAt 695,
+    with cem:usage cem:Used,
+    with cem:codeBlock Mach.In.Up.handleBut),
+    has cem:varType "TextField",
+    has cem:reference (a cem:Reference
+    with cem:endsAt 660,
+    with cem:beginsAt 660,
+    with cem:usage cem:Used,
+    with cem:codeBlock Mach.In.Up.handleBut),
+    has cem:varName "o1",
+    has cem:reference (a cem:Reference
+    with cem:endsAt 710,
+    with cem:beginsAt 710,
+    with cem:usage cem:Used,
+    with cem:codeBlock Mach.In.Up.handleBut),
+    has cem:reference (a cem:Reference
+    with cem:endsAt 653,
+    with cem:beginsAt 653,
+    with cem:usage cem:Used,
+    with cem:codeBlock Mach.In.Up.handleBut),
+    has cem:reference (a cem:Reference
+    with cem:endsAt 706,
+    with cem:beginsAt 706,
+    with cem:usage cem:Used,
+    with cem:codeBlock Mach.In.Up.handleBut),
+    has cem:reference (a cem:Reference
+    with cem:endsAt 664,
+    with cem:beginsAt 664,
+    with cem:usage cem:Used,
+    with cem:codeBlock Mach.In.Up.handleBut),
+    has cem:reference (a cem:Reference
+    with cem:endsAt 699,
+    with cem:beginsAt 699,
+    with cem:usage cem:Used,
+    with cem:codeBlock Mach.In.Up.handleBut),
+    has cem:reference (a cem:Reference
+    with cem:endsAt 649,
+    with cem:beginsAt 649,
+    with cem:usage cem:Used,
+    with cem:codeBlock Mach.In.Up.handleBut).
+Mach.In.Up.o2 is a cem:ClassField,
+    has cem:reference (a cem:Reference
+    with cem:endsAt 631,
+    with cem:beginsAt 631,
+    with cem:usage cem:Used,
+    with cem:codeBlock Mach.In.Up.handleBut),
+    has cem:varType "TextField",
+    has cem:reference (a cem:Reference
+    with cem:endsAt 638,
+    with cem:beginsAt 638,
+    with cem:usage cem:Used,
+    with cem:codeBlock Mach.In.Up.handleBut),
+    has cem:reference (a cem:Reference
+    with cem:endsAt 499,
+    with cem:beginsAt 499,
+    with cem:usage cem:Defined,
+    with cem:codeBlock Mach.In.Up),
+    has cem:reference (a cem:Reference
+    with cem:endsAt 627,
+    with cem:beginsAt 627,
+    with cem:usage cem:Used,
+    with cem:codeBlock Mach.In.Up.handleBut),
+    has cem:reference (a cem:Reference
+    with cem:endsAt 673,
+    with cem:beginsAt 673,
+    with cem:usage cem:Used,
+    with cem:codeBlock Mach.In.Up.handleBut),
+    has cem:varName "o2",
+    has cem:reference (a cem:Reference
+    with cem:endsAt 684,
+    with cem:beginsAt 684,
+    with cem:usage cem:Used,
+    with cem:codeBlock Mach.In.Up.handleBut),
+    has cem:reference (a cem:Reference
+    with cem:endsAt 688,
+    with cem:beginsAt 688,
+    with cem:usage cem:Used,
+    with cem:codeBlock Mach.In.Up.handleBut),
+    has cem:reference (a cem:Reference
+    with cem:endsAt 642,
+    with cem:beginsAt 642,
+    with cem:usage cem:Used,
+    with cem:codeBlock Mach.In.Up.handleBut),
+    has cem:reference (a cem:Reference
+    with cem:endsAt 677,
+    with cem:beginsAt 677,
+    with cem:usage cem:Used,
+    with cem:codeBlock Mach.In.Up.handleBut).
+Mach.In.Up.tch is a cem:ClassField,
+    has cem:varType "Choice",
+    has cem:varName "tch",
+    has cem:reference (a cem:Reference
+    with cem:endsAt 502,
+    with cem:beginsAt 502,
+    with cem:usage cem:Defined,
+    with cem:codeBlock Mach.In.Up).
+Mach.In.Up.vch is a cem:ClassField,
+    has cem:varType "Choice",
+    has cem:varName "vch",
+    has cem:reference (a cem:Reference
+    with cem:endsAt 502,
+    with cem:beginsAt 502,
+    with cem:usage cem:Defined,
+    with cem:codeBlock Mach.In.Up).
+Mach.In.dn is a cem:ClassField,
+    has cem:varType "Dn",
+    has cem:varName "dn",
+    has cem:reference (a cem:Reference
+    with cem:endsAt 383,
+    with cem:beginsAt 383,
+    with cem:usage cem:Defined,
+    with cem:codeBlock Mach.In).
+Mach.In.insets is a cem:Method,
+    has cem:cmReturnTypes ["Insets"],
+    has cem:endsAt 400,
+    has cem:beginsAt 398,
+    has cem:containedIn Mach.In.
+Mach.In.outerparent is a cem:ClassField,
+    has cem:varType "Mach",
+    has cem:varName "outerparent",
+    has cem:reference (a cem:Reference
+    with cem:endsAt 380,
+    with cem:beginsAt 380,
+    with cem:usage cem:Defined,
+    with cem:codeBlock Mach.In).
+Mach.In.titl is a cem:ClassField,
+    has cem:varType "Titl",
+    has cem:varName "titl",
+    has cem:reference (a cem:Reference
+    with cem:endsAt 381,
+    with cem:beginsAt 381,
+    with cem:usage cem:Defined,
+    with cem:codeBlock Mach.In).
+Mach.In.up is a cem:ClassField,
+    has cem:varType "Up",
+    has cem:varName "up",
+    has cem:reference (a cem:Reference
+    with cem:endsAt 382,
+    with cem:beginsAt 382,
+    with cem:usage cem:Defined,
+    with cem:codeBlock Mach.In).
+Mach.M is a cem:ClassField,
+    has cem:reference (a cem:Reference
+    with cem:endsAt 690,
+    with cem:beginsAt 690,
+    with cem:usage cem:Reassigned,
+    with cem:codeBlock Mach.In.Up.handleBut),
+    has cem:reference (a cem:Reference
+    with cem:endsAt 644,
+    with cem:beginsAt 644,
+    with cem:usage cem:Reassigned,
+    with cem:codeBlock Mach.In.Up.handleBut),
+    has cem:reference (a cem:Reference
+    with cem:endsAt 250,
+    with cem:beginsAt 250,
+    with cem:usage cem:Reassigned,
+    with cem:codeBlock Mach.computeMach),
+    has cem:reference (a cem:Reference
+    with cem:endsAt 270,
+    with cem:beginsAt 270,
+    with cem:usage cem:Used,
+    with cem:codeBlock Mach.computeMach),
+    has cem:reference (a cem:Reference
+    with cem:endsAt 254,
+    with cem:beginsAt 254,
+    with cem:usage cem:Used,
+    with cem:codeBlock Mach.computeMach),
+    has cem:reference (a cem:Reference
+    with cem:endsAt 90,
+    with cem:beginsAt 90,
+    with cem:usage cem:Reassigned,
+    with cem:codeBlock Mach.setDefaults),
+    has cem:reference (a cem:Reference
+    with cem:endsAt 56,
+    with cem:beginsAt 56,
+    with cem:usage cem:Defined,
+    with cem:codeBlock Mach),
+    has cem:reference (a cem:Reference
+    with cem:endsAt 283,
+    with cem:beginsAt 283,
+    with cem:usage cem:Reassigned,
+    with cem:codeBlock Mach.computeMach),
+    has cem:varName "M",
+    has cem:varType "double",
+    has cem:reference (a cem:Reference
+    with cem:setterArgument true,
+    with cem:output true,
+    with cem:endsAt 312,
+    with cem:beginsAt 312,
+    with cem:usage cem:Used,
+    with cem:codeBlock Mach.computeMach).
+Mach.Q is a {cem:ConstantVariable and cem:ClassField},
+    has cem:constantValue (a sadlimplicitmodel:UnittedQuantity
+    with sadlimplicitmodel:^value 5500),
+    has cem:reference (a cem:Reference
+    with cem:endsAt 93,
+    with cem:beginsAt 93,
+    with cem:usage cem:Reassigned,
+    with cem:codeBlock Mach.setDefaults),
+    has cem:varType "double",
+    has cem:varName "Q",
+    has cem:reference (a cem:Reference
+    with cem:endsAt 56,
+    with cem:beginsAt 56,
+    with cem:usage cem:Defined,
+    with cem:codeBlock Mach).
+Mach.R is a {cem:ConstantVariable and cem:ClassField},
+    has cem:constantValue (a sadlimplicitmodel:UnittedQuantity
+    with sadlimplicitmodel:^value 53.3),
+    has cem:reference (a cem:Reference
+    with cem:endsAt 215,
+    with cem:beginsAt 215,
+    with cem:usage cem:Used,
+    with cem:codeBlock Mach.CAL_TV),
+    has cem:reference (a cem:Reference
+    with cem:endsAt 94,
+    with cem:beginsAt 94,
+    with cem:usage cem:Reassigned,
+    with cem:codeBlock Mach.setDefaults),
+    has cem:varType "double",
+    has cem:varName "R",
+    has cem:reference (a cem:Reference
+    with cem:endsAt 56,
+    with cem:beginsAt 56,
+    with cem:usage cem:Defined,
+    with cem:codeBlock Mach).
+Mach.T is a cem:ClassField,
+    has cem:reference (a cem:Reference
+    with cem:endsAt 237,
+    with cem:beginsAt 237,
+    with cem:usage cem:Reassigned,
+    with cem:codeBlock Mach.computeMach),
+    has cem:varName "T",
+    has cem:reference (a cem:Reference
+    with cem:endsAt 234,
+    with cem:beginsAt 234,
+    with cem:usage cem:Reassigned,
+    with cem:codeBlock Mach.computeMach),
+    has cem:reference (a cem:Reference
+    with cem:endsAt 56,
+    with cem:beginsAt 56,
+    with cem:usage cem:Defined,
+    with cem:codeBlock Mach),
+    has cem:reference (a cem:Reference
+    with cem:endsAt 280,
+    with cem:beginsAt 280,
+    with cem:usage cem:Reassigned,
+    with cem:codeBlock Mach.computeMach),
+    has cem:reference (a cem:Reference
+    with cem:endsAt 240,
+    with cem:beginsAt 240,
+    with cem:usage cem:Reassigned,
+    with cem:codeBlock Mach.computeMach),
+    has cem:reference (a cem:Reference
+    with cem:setterArgument true,
+    with cem:output true,
+    with cem:endsAt 296,
+    with cem:beginsAt 296,
+    with cem:usage cem:Used,
+    with cem:codeBlock Mach.computeMach),
+    has cem:reference (a cem:Reference
+    with cem:endsAt 306,
+    with cem:beginsAt 306,
+    with cem:usage cem:Used,
+    with cem:codeBlock Mach.computeMach),
+    has cem:reference (a cem:Reference
+    with cem:endsAt 228,
+    with cem:beginsAt 228,
+    with cem:usage cem:Reassigned,
+    with cem:codeBlock Mach.computeMach),
+    has cem:reference (a cem:Reference
+    with cem:endsAt 87,
+    with cem:beginsAt 87,
+    with cem:usage cem:Reassigned,
+    with cem:codeBlock Mach.setDefaults),
+    has cem:varType "double",
+    has cem:reference (a cem:Reference
+    with cem:endsAt 267,
+    with cem:beginsAt 267,
+    with cem:usage cem:Reassigned,
+    with cem:codeBlock Mach.computeMach),
+    has cem:reference (a cem:Reference
+    with cem:endsAt 231,
+    with cem:beginsAt 231,
+    with cem:usage cem:Reassigned,
+    with cem:codeBlock Mach.computeMach).
+Mach.TQTT is a cem:Method,
+    has cem:calls (a cem:MethodCall
+    with cem:endsAt 143,
+    with cem:beginsAt 143,
+    with cem:codeBlock Mach.CAL_T),
+    has cem:cmReturnTypes ["double"],
+    has cem:doesComputation true,
+    has cem:endsAt 106,
+    has cem:beginsAt 104,
+    has cem:cmArguments [Mach.TQTT.M,Mach.TQTT.G],
+    has cem:containedIn Mach.
+Mach.TQTT.G is a cem:MethodArgument,
+    has cem:reference (a cem:Reference
+    with cem:endsAt 105,
+    with cem:beginsAt 105,
+    with cem:usage cem:Used,
+    with cem:codeBlock Mach.TQTT),
+    has cem:varType "double",
+    has cem:varName "G",
+    has cem:reference (a cem:Reference
+    with cem:input true,
+    with cem:endsAt 104,
+    with cem:beginsAt 104,
+    with cem:usage cem:Defined,
+    with cem:codeBlock Mach.TQTT).
+Mach.TQTT.M is a cem:MethodArgument,
+    has cem:varType "double",
+    has cem:varName "M",
+    has cem:reference (a cem:Reference
+    with cem:input true,
+    with cem:endsAt 104,
+    with cem:beginsAt 104,
+    with cem:usage cem:Defined,
+    with cem:codeBlock Mach.TQTT).
+Mach.TT is a cem:ClassField,
+    has cem:reference (a cem:Reference
+    with cem:endsAt 712,
+    with cem:beginsAt 712,
+    with cem:usage cem:Reassigned,
+    with cem:codeBlock Mach.In.Up.handleBut),
+    has cem:reference (a cem:Reference
+    with cem:setterArgument true,
+    with cem:output true,
+    with cem:endsAt 297,
+    with cem:beginsAt 297,
+    with cem:usage cem:Used,
+    with cem:codeBlock Mach.computeMach),
+    has cem:reference (a cem:Reference
+    with cem:endsAt 91,
+    with cem:beginsAt 91,
+    with cem:usage cem:Reassigned,
+    with cem:codeBlock Mach.setDefaults),
+    has cem:reference (a cem:Reference
+    with cem:endsAt 666,
+    with cem:beginsAt 666,
+    with cem:usage cem:Reassigned,
+    with cem:codeBlock Mach.In.Up.handleBut),
+    has cem:reference (a cem:Reference
+    with cem:endsAt 56,
+    with cem:beginsAt 56,
+    with cem:usage cem:Defined,
+    with cem:codeBlock Mach),
+    has cem:reference (a cem:Reference
+    with cem:endsAt 257,
+    with cem:beginsAt 257,
+    with cem:usage cem:Reassigned,
+    with cem:codeBlock Mach.computeMach),
+    has cem:varType "double",
+    has cem:varName "TT",
+    has cem:reference (a cem:Reference
+    with cem:endsAt 307,
+    with cem:beginsAt 307,
+    with cem:usage cem:Used,
+    with cem:codeBlock Mach.computeMach).
+Mach.V is a cem:ClassField,
+    has cem:varName "V",
+    has cem:reference (a cem:Reference
+    with cem:endsAt 86,
+    with cem:beginsAt 86,
+    with cem:usage cem:Reassigned,
+    with cem:codeBlock Mach.setDefaults),
+    has cem:reference (a cem:Reference
+    with cem:endsAt 250,
+    with cem:beginsAt 250,
+    with cem:usage cem:Used,
+    with cem:codeBlock Mach.computeMach),
+    has cem:reference (a cem:Reference
+    with cem:endsAt 254,
+    with cem:beginsAt 254,
+    with cem:usage cem:Reassigned,
+    with cem:codeBlock Mach.computeMach),
+    has cem:varType "double",
+    has cem:reference (a cem:Reference
+    with cem:endsAt 56,
+    with cem:beginsAt 56,
+    with cem:usage cem:Defined,
+    with cem:codeBlock Mach),
+    has cem:reference (a cem:Reference
+    with cem:endsAt 270,
+    with cem:beginsAt 270,
+    with cem:usage cem:Reassigned,
+    with cem:codeBlock Mach.computeMach),
+    has cem:reference (a cem:Reference
+    with cem:endsAt 679,
+    with cem:beginsAt 679,
+    with cem:usage cem:Reassigned,
+    with cem:codeBlock Mach.In.Up.handleBut),
+    has cem:reference (a cem:Reference
+    with cem:endsAt 633,
+    with cem:beginsAt 633,
+    with cem:usage cem:Reassigned,
+    with cem:codeBlock Mach.In.Up.handleBut),
+    has cem:reference (a cem:Reference
+    with cem:endsAt 285,
+    with cem:beginsAt 285,
+    with cem:usage cem:Used,
+    with cem:codeBlock Mach.computeMach),
+    has cem:reference (a cem:Reference
+    with cem:endsAt 283,
+    with cem:beginsAt 283,
+    with cem:usage cem:Used,
+    with cem:codeBlock Mach.computeMach),
+    has cem:reference (a cem:Reference
+    with cem:setterArgument true,
+    with cem:output true,
+    with cem:endsAt 295,
+    with cem:beginsAt 295,
+    with cem:usage cem:Used,
+    with cem:codeBlock Mach.computeMach),
+    has cem:reference (a cem:Reference
+    with cem:endsAt 305,
+    with cem:beginsAt 305,
+    with cem:usage cem:Used,
+    with cem:codeBlock Mach.computeMach),
+    has cem:reference (a cem:Reference
+    with cem:endsAt 285,
+    with cem:beginsAt 285,
+    with cem:usage cem:Reassigned,
+    with cem:codeBlock Mach.computeMach),
+    has cem:reference (a cem:Reference
+    with cem:endsAt 274,
+    with cem:beginsAt 274,
+    with cem:usage cem:Reassigned,
+    with cem:codeBlock Mach.computeMach).
+Mach.a0 is a cem:ClassField,
+    has cem:reference (a cem:Reference
+    with cem:endsAt 90,
+    with cem:beginsAt 90,
+    with cem:usage cem:Used,
+    with cem:codeBlock Mach.setDefaults),
+    has cem:reference (a cem:Reference
+    with cem:endsAt 244,
+    with cem:beginsAt 244,
+    with cem:usage cem:Used,
+    with cem:codeBlock Mach.computeMach),
+    has cem:reference (a cem:Reference
+    with cem:endsAt 264,
+    with cem:beginsAt 264,
+    with cem:usage cem:Reassigned,
+    with cem:codeBlock Mach.computeMach),
+    has cem:reference (a cem:Reference
+    with cem:endsAt 278,
+    with cem:beginsAt 278,
+    with cem:usage cem:Reassigned,
+    with cem:codeBlock Mach.computeMach),
+    has cem:reference (a cem:Reference
+    with cem:endsAt 89,
+    with cem:beginsAt 89,
+    with cem:usage cem:Used,
+    with cem:codeBlock Mach.setDefaults),
+    has cem:reference (a cem:Reference
+    with cem:endsAt 249,
+    with cem:beginsAt 249,
+    with cem:usage cem:Used,
+    with cem:codeBlock Mach.computeMach),
+    has cem:reference (a cem:Reference
+    with cem:endsAt 55,
+    with cem:beginsAt 55,
+    with cem:usage cem:Defined,
+    with cem:codeBlock Mach),
+    has cem:reference (a cem:Reference
+    with cem:endsAt 89,
+    with cem:beginsAt 89,
+    with cem:usage cem:Reassigned,
+    with cem:codeBlock Mach.setDefaults),
+    has cem:reference (a cem:Reference
+    with cem:endsAt 277,
+    with cem:beginsAt 277,
+    with cem:usage cem:Used,
+    with cem:codeBlock Mach.computeMach),
+    has cem:reference (a cem:Reference
+    with cem:endsAt 276,
+    with cem:beginsAt 276,
+    with cem:usage cem:Reassigned,
+    with cem:codeBlock Mach.computeMach),
+    has cem:reference (a cem:Reference
+    with cem:endsAt 253,
+    with cem:beginsAt 253,
+    with cem:usage cem:Used,
+    with cem:codeBlock Mach.computeMach),
+    has cem:reference (a cem:Reference
+    with cem:endsAt 243,
+    with cem:beginsAt 243,
+    with cem:usage cem:Reassigned,
+    with cem:codeBlock Mach.computeMach),
+    has cem:reference (a cem:Reference
+    with cem:endsAt 244,
+    with cem:beginsAt 244,
+    with cem:usage cem:Reassigned,
+    with cem:codeBlock Mach.computeMach),
+    has cem:varType "double",
+    has cem:varName "a0",
+    has cem:reference (a cem:Reference
+    with cem:endsAt 278,
+    with cem:beginsAt 278,
+    with cem:usage cem:Used,
+    with cem:codeBlock Mach.computeMach),
+    has cem:reference (a cem:Reference
+    with cem:endsAt 265,
+    with cem:beginsAt 265,
+    with cem:usage cem:Used,
+    with cem:codeBlock Mach.computeMach),
+    has cem:reference (a cem:Reference
+    with cem:setterArgument true,
+    with cem:output true,
+    with cem:endsAt 290,
+    with cem:beginsAt 290,
+    with cem:usage cem:Used,
+    with cem:codeBlock Mach.computeMach),
+    has cem:reference (a cem:Reference
+    with cem:endsAt 300,
+    with cem:beginsAt 300,
+    with cem:usage cem:Used,
+    with cem:codeBlock Mach.computeMach),
+    has cem:reference (a cem:Reference
+    with cem:endsAt 88,
+    with cem:beginsAt 88,
+    with cem:usage cem:Reassigned,
+    with cem:codeBlock Mach.setDefaults),
+    has cem:reference (a cem:Reference
+    with cem:endsAt 265,
+    with cem:beginsAt 265,
+    with cem:usage cem:Reassigned,
+    with cem:codeBlock Mach.computeMach),
+    has cem:reference (a cem:Reference
+    with cem:endsAt 266,
+    with cem:beginsAt 266,
+    with cem:usage cem:Used,
+    with cem:codeBlock Mach.computeMach).
+Mach.alt is a cem:ClassField,
+    has cem:reference (a cem:Reference
+    with cem:endsAt 236,
+    with cem:beginsAt 236,
+    with cem:usage cem:Used,
+    with cem:codeBlock Mach.computeMach),
+    has cem:reference (a cem:Reference
+    with cem:endsAt 227,
+    with cem:beginsAt 227,
+    with cem:usage cem:Used,
+    with cem:codeBlock Mach.computeMach),
+    has cem:reference (a cem:Reference
+    with cem:endsAt 341,
+    with cem:beginsAt 341,
+    with cem:usage cem:Used,
+    with cem:codeBlock Mach.loadInpt),
+    has cem:reference (a cem:Reference
+    with cem:endsAt 234,
+    with cem:beginsAt 234,
+    with cem:usage cem:Used,
+    with cem:codeBlock Mach.computeMach),
+    has cem:varType "double",
+    has cem:reference (a cem:Reference
+    with cem:endsAt 87,
+    with cem:beginsAt 87,
+    with cem:usage cem:Used,
+    with cem:codeBlock Mach.setDefaults),
+    has cem:reference (a cem:Reference
+    with cem:endsAt 236,
+    with cem:beginsAt 236,
+    with cem:usage cem:Used,
+    with cem:codeBlock Mach.computeMach),
+    has cem:reference (a cem:Reference
+    with cem:endsAt 701,
+    with cem:beginsAt 701,
+    with cem:usage cem:Reassigned,
+    with cem:codeBlock Mach.In.Up.handleBut),
+    has cem:varName "alt",
+    has cem:reference (a cem:Reference
+    with cem:endsAt 54,
+    with cem:beginsAt 54,
+    with cem:usage cem:Defined,
+    with cem:codeBlock Mach),
+    has cem:reference (a cem:Reference
+    with cem:endsAt 85,
+    with cem:beginsAt 85,
+    with cem:usage cem:Reassigned,
+    with cem:codeBlock Mach.setDefaults),
+    has cem:reference (a cem:Reference
+    with cem:endsAt 655,
+    with cem:beginsAt 655,
+    with cem:usage cem:Reassigned,
+    with cem:codeBlock Mach.In.Up.handleBut),
+    has cem:reference (a cem:Reference
+    with cem:setterArgument true,
+    with cem:output true,
+    with cem:endsAt 327,
+    with cem:beginsAt 327,
+    with cem:usage cem:Used,
+    with cem:codeBlock Mach.loadInpt),
+    has cem:reference (a cem:Reference
+    with cem:endsAt 230,
+    with cem:beginsAt 230,
+    with cem:usage cem:Used,
+    with cem:codeBlock Mach.computeMach),
+    has cem:reference (a cem:Reference
+    with cem:endsAt 233,
+    with cem:beginsAt 233,
+    with cem:usage cem:Used,
+    with cem:codeBlock Mach.computeMach),
+    has cem:reference (a cem:Reference
+    with cem:endsAt 230,
+    with cem:beginsAt 230,
+    with cem:usage cem:Used,
+    with cem:codeBlock Mach.computeMach),
+    has cem:reference (a cem:Reference
+    with cem:endsAt 233,
+    with cem:beginsAt 233,
+    with cem:usage cem:Used,
+    with cem:codeBlock Mach.computeMach),
+    has cem:reference (a cem:Reference
+    with cem:endsAt 239,
+    with cem:beginsAt 239,
+    with cem:usage cem:Used,
+    with cem:codeBlock Mach.computeMach),
+    has cem:reference (a cem:Reference
+    with cem:endsAt 228,
+    with cem:beginsAt 228,
+    with cem:usage cem:Used,
+    with cem:codeBlock Mach.computeMach),
+    has cem:reference (a cem:Reference
+    with cem:endsAt 240,
+    with cem:beginsAt 240,
+    with cem:usage cem:Used,
+    with cem:codeBlock Mach.computeMach),
+    has cem:reference (a cem:Reference
+    with cem:endsAt 239,
+    with cem:beginsAt 239,
+    with cem:usage cem:Used,
+    with cem:codeBlock Mach.computeMach).
+Mach.computeMach is a cem:Method,
+    has cem:comment (a cem:Comment
+    with cem:endsAt 276,
+    with cem:beginsAt 276,
+    with cem:commentContent " feet /sec"),
+    has cem:comment (a cem:Comment
+    with cem:endsAt 228,
+    with cem:beginsAt 228,
+    with cem:commentContent " Troposphere"),
+    has cem:comment (a cem:Comment
+    with cem:endsAt 246,
+    with cem:beginsAt 246,
+    with cem:commentContent " mph"),
+    has cem:comment (a cem:Comment
+    with cem:endsAt 223,
+    with cem:beginsAt 223,
+    with cem:commentContent " Earth  standard day"),
+    has cem:containedIn Mach,
+    has cem:endsAt 316,
+    has cem:comment (a cem:Comment
+    with cem:endsAt 285,
+    with cem:beginsAt 285,
+    with cem:commentContent " v in mph"),
+    has cem:comment (a cem:Comment
+    with cem:endsAt 251,
+    with cem:beginsAt 248,
+    with cem:commentContent " compute either mach or velocity "),
+    has cem:comment (a cem:Comment
+    with cem:endsAt 224,
+    with cem:beginsAt 224,
+    with cem:commentContent " ft2/sec2 R "),
+    has cem:doesComputation true,
+    has cem:comment (a cem:Comment
+    with cem:endsAt 231,
+    with cem:beginsAt 231,
+    with cem:commentContent " Stratosphere"),
+    has cem:comment (a cem:Comment
+    with cem:endsAt 269,
+    with cem:beginsAt 269,
+    with cem:commentContent " mph"),
+    has cem:comment (a cem:Comment
+    with cem:endsAt 264,
+    with cem:beginsAt 264,
+    with cem:commentContent " feet /sec"),
+    has cem:comment (a cem:Comment
+    with cem:endsAt 279,
+    with cem:beginsAt 279,
+    with cem:commentContent " v in mph"),
+    has cem:comment (a cem:Comment
+    with cem:endsAt 265,
+    with cem:beginsAt 265,
+    with cem:commentContent " mph"),
+    has cem:beginsAt 220,
+    has cem:comment (a cem:Comment
+    with cem:endsAt 243,
+    with cem:beginsAt 243,
+    with cem:commentContent " feet /sec"),
+    has cem:comment (a cem:Comment
+    with cem:endsAt 274,
+    with cem:beginsAt 274,
+    with cem:commentContent " v in ft/sec"),
+    has cem:comment (a cem:Comment
+    with cem:endsAt 278,
+    with cem:beginsAt 278,
+    with cem:commentContent " mph"),
+    has cem:comment (a cem:Comment
+    with cem:endsAt 244,
+    with cem:beginsAt 244,
+    with cem:commentContent " mph"),
+    has cem:comment (a cem:Comment
+    with cem:endsAt 284,
+    with cem:beginsAt 284,
+    with cem:commentContent " mph"),
+    has cem:cmReturnTypes ["void"].
+Mach.filter0 is a cem:Method,
+    has cem:cmArguments [Mach.filter0.inumbr],
+    has cem:cmReturnTypes ["int"],
+    has cem:calls (a cem:MethodCall
+    with cem:endsAt 649,
+    with cem:beginsAt 649,
+    with cem:codeBlock Mach.In.Up.handleBut),
+    has cem:calls (a cem:MethodCall
+    with cem:endsAt 292,
+    with cem:beginsAt 292,
+    with cem:codeBlock Mach.computeMach),
+    has cem:calls (a cem:MethodCall
+    with cem:endsAt 300,
+    with cem:beginsAt 300,
+    with cem:codeBlock Mach.computeMach),
+    has cem:calls (a cem:MethodCall
+    with cem:endsAt 293,
+    with cem:beginsAt 293,
+    with cem:codeBlock Mach.loadInpt),
+    has cem:comment (a cem:Comment
+    with cem:endsAt 351,
+    with cem:beginsAt 351,
+    with cem:commentContent "  integer output"),
+    has cem:calls (a cem:MethodCall
+    with cem:endsAt 291,
+    with cem:beginsAt 291,
+    with cem:codeBlock Mach.loadInpt),
+    has cem:calls (a cem:MethodCall
+    with cem:endsAt 303,
+    with cem:beginsAt 303,
+    with cem:codeBlock Mach.loadInpt),
+    has cem:containedIn Mach,
+    has cem:calls (a cem:MethodCall
+    with cem:endsAt 304,
+    with cem:beginsAt 304,
+    with cem:codeBlock Mach.computeMach),
+    has cem:calls (a cem:MethodCall
+    with cem:endsAt 327,
+    with cem:beginsAt 327,
+    with cem:codeBlock Mach.loadInpt),
+    has cem:calls (a cem:MethodCall
+    with cem:endsAt 301,
+    with cem:beginsAt 301,
+    with cem:codeBlock Mach.loadInpt),
+    has cem:calls (a cem:MethodCall
+    with cem:endsAt 290,
+    with cem:beginsAt 290,
+    with cem:codeBlock Mach.computeMach),
+    has cem:calls (a cem:MethodCall
+    with cem:endsAt 294,
+    with cem:beginsAt 294,
+    with cem:codeBlock Mach.computeMach),
+    has cem:endsAt 357,
+    has cem:calls (a cem:MethodCall
+    with cem:endsAt 305,
+    with cem:beginsAt 305,
+    with cem:codeBlock Mach.computeMach),
+    has cem:calls (a cem:MethodCall
+    with cem:endsAt 302,
+    with cem:beginsAt 302,
+    with cem:codeBlock Mach.computeMach),
+    has cem:calls (a cem:MethodCall
+    with cem:endsAt 307,
+    with cem:beginsAt 307,
+    with cem:codeBlock Mach.computeMach),
+    has cem:calls (a cem:MethodCall
+    with cem:endsAt 306,
+    with cem:beginsAt 306,
+    with cem:codeBlock Mach.computeMach),
+    has cem:calls (a cem:MethodCall
+    with cem:endsAt 296,
+    with cem:beginsAt 296,
+    with cem:codeBlock Mach.computeMach),
+    has cem:calls (a cem:MethodCall
+    with cem:endsAt 297,
+    with cem:beginsAt 297,
+    with cem:codeBlock Mach.computeMach),
+    has cem:beginsAt 349,
+    has cem:calls (a cem:MethodCall
+    with cem:endsAt 295,
+    with cem:beginsAt 295,
+    with cem:codeBlock Mach.computeMach),
+    has cem:calls (a cem:MethodCall
+    with cem:endsAt 627,
+    with cem:beginsAt 627,
+    with cem:codeBlock Mach.In.Up.handleBut),
+    has cem:calls (a cem:MethodCall
+    with cem:endsAt 341,
+    with cem:beginsAt 341,
+    with cem:codeBlock Mach.loadInpt).
+Mach.filter0.intermed is a cem:MethodVariable,
+    has cem:reference (a cem:Reference
+    with cem:output true,
+    with cem:endsAt 356,
+    with cem:beginsAt 356,
+    with cem:usage cem:Used,
+    with cem:codeBlock Mach.filter0),
+    has cem:reference (a cem:Reference
+    with cem:endsAt 354,
+    with cem:beginsAt 354,
+    with cem:usage cem:Reassigned,
+    with cem:codeBlock Mach.filter0),
+    has cem:varType "int",
+    has cem:varName "intermed",
+    has cem:reference (a cem:Reference
+    with cem:endsAt 352,
+    with cem:beginsAt 352,
+    with cem:usage cem:Defined,
+    with cem:codeBlock Mach.filter0).
+Mach.filter0.inumbr is a cem:MethodArgument,
+    has cem:varType "double",
+    has cem:varName "inumbr",
+    has cem:reference (a cem:Reference
+    with cem:input true,
+    with cem:endsAt 349,
+    with cem:beginsAt 349,
+    with cem:usage cem:Defined,
+    with cem:codeBlock Mach.filter0).
+Mach.filter0.number is a cem:MethodVariable,
+    has cem:reference (a cem:Reference
+    with cem:endsAt 355,
+    with cem:beginsAt 355,
+    with cem:usage cem:Reassigned,
+    with cem:codeBlock Mach.filter0),
+    has cem:varType "float",
+    has cem:varName "number",
+    has cem:reference (a cem:Reference
+    with cem:endsAt 351,
+    with cem:beginsAt 351,
+    with cem:usage cem:Defined,
+    with cem:codeBlock Mach.filter0).
+Mach.filter3 is a cem:Method,
+    has cem:endsAt 367,
+    has cem:containedIn Mach,
+    has cem:beginsAt 359,
+    has cem:cmReturnTypes ["float"],
+    has cem:calls (a cem:MethodCall
+    with cem:endsAt 310,
+    with cem:beginsAt 310,
+    with cem:codeBlock Mach.loadInpt),
+    has cem:comment (a cem:Comment
+    with cem:endsAt 361,
+    with cem:beginsAt 361,
+    with cem:commentContent "  output only to .001"),
+    has cem:calls (a cem:MethodCall
+    with cem:endsAt 313,
+    with cem:beginsAt 313,
+    with cem:codeBlock Mach.computeMach),
+    has cem:calls (a cem:MethodCall
+    with cem:endsAt 312,
+    with cem:beginsAt 312,
+    with cem:codeBlock Mach.computeMach),
+    has cem:cmArguments [Mach.filter3.inumbr],
+    has cem:calls (a cem:MethodCall
+    with cem:endsAt 311,
+    with cem:beginsAt 311,
+    with cem:codeBlock Mach.computeMach).
+Mach.filter3.intermed is a cem:MethodVariable,
+    has cem:reference (a cem:Reference
+    with cem:endsAt 364,
+    with cem:beginsAt 364,
+    with cem:usage cem:Reassigned,
+    with cem:codeBlock Mach.filter3),
+    has cem:varType "int",
+    has cem:varName "intermed",
+    has cem:reference (a cem:Reference
+    with cem:endsAt 362,
+    with cem:beginsAt 362,
+    with cem:usage cem:Defined,
+    with cem:codeBlock Mach.filter3).
+Mach.filter3.inumbr is a cem:MethodArgument,
+    has cem:varType "double",
+    has cem:varName "inumbr",
+    has cem:reference (a cem:Reference
+    with cem:input true,
+    with cem:endsAt 359,
+    with cem:beginsAt 359,
+    with cem:usage cem:Defined,
+    with cem:codeBlock Mach.filter3).
+Mach.filter3.number is a cem:MethodVariable,
+    has cem:reference (a cem:Reference
+    with cem:output true,
+    with cem:endsAt 366,
+    with cem:beginsAt 366,
+    with cem:usage cem:Used,
+    with cem:codeBlock Mach.filter3),
+    has cem:reference (a cem:Reference
+    with cem:endsAt 365,
+    with cem:beginsAt 365,
+    with cem:usage cem:Reassigned,
+    with cem:codeBlock Mach.filter3),
+    has cem:varType "float",
+    has cem:varName "number",
+    has cem:reference (a cem:Reference
+    with cem:endsAt 361,
+    with cem:beginsAt 361,
+    with cem:usage cem:Defined,
+    with cem:codeBlock Mach.filter3).
+Mach.filter5 is a cem:Method,
+    has cem:cmReturnTypes ["float"],
+    has cem:comment (a cem:Comment
+    with cem:endsAt 371,
+    with cem:beginsAt 371,
+    with cem:commentContent "  output only to .00001"),
+    has cem:endsAt 377,
+    has cem:beginsAt 369,
+    has cem:cmArguments [Mach.filter5.inumbr],
+    has cem:containedIn Mach.
+Mach.filter5.intermed is a cem:MethodVariable,
+    has cem:reference (a cem:Reference
+    with cem:endsAt 374,
+    with cem:beginsAt 374,
+    with cem:usage cem:Reassigned,
+    with cem:codeBlock Mach.filter5),
+    has cem:varType "int",
+    has cem:varName "intermed",
+    has cem:reference (a cem:Reference
+    with cem:endsAt 372,
+    with cem:beginsAt 372,
+    with cem:usage cem:Defined,
+    with cem:codeBlock Mach.filter5).
+Mach.filter5.inumbr is a cem:MethodArgument,
+    has cem:varType "double",
+    has cem:varName "inumbr",
+    has cem:reference (a cem:Reference
+    with cem:input true,
+    with cem:endsAt 369,
+    with cem:beginsAt 369,
+    with cem:usage cem:Defined,
+    with cem:codeBlock Mach.filter5).
+Mach.filter5.number is a cem:MethodVariable,
+    has cem:reference (a cem:Reference
+    with cem:output true,
+    with cem:endsAt 376,
+    with cem:beginsAt 376,
+    with cem:usage cem:Used,
+    with cem:codeBlock Mach.filter5),
+    has cem:reference (a cem:Reference
+    with cem:endsAt 375,
+    with cem:beginsAt 375,
+    with cem:usage cem:Reassigned,
+    with cem:codeBlock Mach.filter5),
+    has cem:varType "float",
+    has cem:varName "number",
+    has cem:reference (a cem:Reference
+    with cem:endsAt 371,
+    with cem:beginsAt 371,
+    with cem:usage cem:Defined,
+    with cem:codeBlock Mach.filter5).
+Mach.gama is a {cem:ConstantVariable and cem:ClassField},
+    has cem:reference (a cem:Reference
+    with cem:setterArgument true,
+    with cem:output true,
+    with cem:endsAt 311,
+    with cem:beginsAt 311,
+    with cem:usage cem:Used,
+    with cem:codeBlock Mach.computeMach),
+    has cem:varType "double",
+    has cem:reference (a cem:Reference
+    with cem:endsAt 264,
+    with cem:beginsAt 264,
+    with cem:usage cem:Used,
+    with cem:codeBlock Mach.computeMach),
+    has cem:reference (a cem:Reference
+    with cem:endsAt 276,
+    with cem:beginsAt 276,
+    with cem:usage cem:Used,
+    with cem:codeBlock Mach.computeMach),
+    has cem:varName "gama",
+    has cem:reference (a cem:Reference
+    with cem:endsAt 243,
+    with cem:beginsAt 243,
+    with cem:usage cem:Used,
+    with cem:codeBlock Mach.computeMach),
+    has cem:reference (a cem:Reference
+    with cem:endsAt 275,
+    with cem:beginsAt 275,
+    with cem:usage cem:Used,
+    with cem:codeBlock Mach.computeMach),
+    has cem:reference (a cem:Reference
+    with cem:endsAt 263,
+    with cem:beginsAt 263,
+    with cem:usage cem:Used,
+    with cem:codeBlock Mach.computeMach),
+    has cem:reference (a cem:Reference
+    with cem:endsAt 275,
+    with cem:beginsAt 275,
+    with cem:usage cem:Used,
+    with cem:codeBlock Mach.computeMach),
+    has cem:reference (a cem:Reference
+    with cem:endsAt 88,
+    with cem:beginsAt 88,
+    with cem:usage cem:Used,
+    with cem:codeBlock Mach.setDefaults),
+    has cem:reference (a cem:Reference
+    with cem:endsAt 91,
+    with cem:beginsAt 91,
+    with cem:usage cem:Used,
+    with cem:codeBlock Mach.setDefaults),
+    has cem:reference (a cem:Reference
+    with cem:endsAt 256,
+    with cem:beginsAt 256,
+    with cem:usage cem:Used,
+    with cem:codeBlock Mach.computeMach),
+    has cem:reference (a cem:Reference
+    with cem:endsAt 54,
+    with cem:beginsAt 54,
+    with cem:usage cem:Defined,
+    with cem:codeBlock Mach),
+    has cem:constantValue (a sadlimplicitmodel:UnittedQuantity
+    with sadlimplicitmodel:^value 1.4),
+    has cem:reference (a cem:Reference
+    with cem:endsAt 224,
+    with cem:beginsAt 224,
+    with cem:usage cem:Reassigned,
+    with cem:codeBlock Mach.computeMach).
+Mach.in is a cem:ClassField,
+    has cem:reference (a cem:Reference
+    with cem:endsAt 70,
+    with cem:beginsAt 70,
+    with cem:usage cem:Used,
+    with cem:codeBlock Mach.init),
+    has cem:reference (a cem:Reference
+    with cem:endsAt 68,
+    with cem:beginsAt 68,
+    with cem:usage cem:Reassigned,
+    with cem:codeBlock Mach.init),
+    has cem:varType "In",
+    has cem:varName "in",
+    has cem:reference (a cem:Reference
+    with cem:endsAt 60,
+    with cem:beginsAt 60,
+    with cem:usage cem:Defined,
+    with cem:codeBlock Mach).
+Mach.init is a cem:Method,
+    has cem:cmReturnTypes ["void"],
+    has cem:endsAt 73,
+    has cem:beginsAt 62,
+    has cem:containedIn Mach.
+Mach.insets is a cem:Method,
+    has cem:cmReturnTypes ["Insets"],
+    has cem:endsAt 77,
+    has cem:beginsAt 75,
+    has cem:containedIn Mach.
+Mach.loadInpt is a cem:Method,
+    has cem:cmReturnTypes ["void"],
+    has cem:doesComputation true,
+    has cem:endsAt 347,
+    has cem:beginsAt 318,
+    has cem:containedIn Mach.
+Mach.lrat is a cem:ClassField,
+    has cem:varType "double",
+    has cem:varName "lrat",
+    has cem:reference (a cem:Reference
+    with cem:endsAt 55,
+    with cem:beginsAt 55,
+    with cem:usage cem:Defined,
+    with cem:codeBlock Mach).
+Mach.lunits is a cem:ClassField,
+    has cem:reference (a cem:Reference
+    with cem:endsAt 319,
+    with cem:beginsAt 319,
+    with cem:usage cem:Used,
+    with cem:codeBlock Mach.loadInpt),
+    has cem:reference (a cem:Reference
+    with cem:endsAt 623,
+    with cem:beginsAt 623,
+    with cem:usage cem:Used,
+    with cem:codeBlock Mach.In.Up.handleBut),
+    has cem:reference (a cem:Reference
+    with cem:endsAt 299,
+    with cem:beginsAt 299,
+    with cem:usage cem:Used,
+    with cem:codeBlock Mach.computeMach),
+    has cem:reference (a cem:Reference
+    with cem:endsAt 595,
+    with cem:beginsAt 595,
+    with cem:usage cem:Used,
+    with cem:codeBlock Mach.In.Up.handleProb),
+    has cem:varName "lunits",
+    has cem:reference (a cem:Reference
+    with cem:endsAt 581,
+    with cem:beginsAt 581,
+    with cem:usage cem:Used,
+    with cem:codeBlock Mach.In.Up.handleProb),
+    has cem:reference (a cem:Reference
+    with cem:endsAt 82,
+    with cem:beginsAt 82,
+    with cem:usage cem:Reassigned,
+    with cem:codeBlock Mach.setDefaults),
+    has cem:reference (a cem:Reference
+    with cem:endsAt 470,
+    with cem:beginsAt 470,
+    with cem:usage cem:Used,
+    with cem:codeBlock Mach.In.Titl.In2.handleEvent),
+    has cem:reference (a cem:Reference
+    with cem:endsAt 333,
+    with cem:beginsAt 333,
+    with cem:usage cem:Used,
+    with cem:codeBlock Mach.loadInpt),
+    has cem:reference (a cem:Reference
+    with cem:endsAt 57,
+    with cem:beginsAt 57,
+    with cem:usage cem:Defined,
+    with cem:codeBlock Mach),
+    has cem:reference (a cem:Reference
+    with cem:endsAt 450,
+    with cem:beginsAt 450,
+    with cem:usage cem:Reassigned,
+    with cem:codeBlock Mach.In.Titl.In2.handleEvent),
+    has cem:varType "int",
+    has cem:reference (a cem:Reference
+    with cem:endsAt 289,
+    with cem:beginsAt 289,
+    with cem:usage cem:Used,
+    with cem:codeBlock Mach.computeMach),
+    has cem:reference (a cem:Reference
+    with cem:endsAt 669,
+    with cem:beginsAt 669,
+    with cem:usage cem:Used,
+    with cem:codeBlock Mach.In.Up.handleBut),
+    has cem:reference (a cem:Reference
+    with cem:endsAt 452,
+    with cem:beginsAt 452,
+    with cem:usage cem:Used,
+    with cem:codeBlock Mach.In.Titl.In2.handleEvent).
+Mach.mach is a cem:ClassField,
+    has cem:reference (a cem:Reference
+    with cem:endsAt 90,
+    with cem:beginsAt 90,
+    with cem:usage cem:Reassigned,
+    with cem:codeBlock Mach.setDefaults),
+    has cem:reference (a cem:Reference
+    with cem:endsAt 256,
+    with cem:beginsAt 256,
+    with cem:usage cem:Used,
+    with cem:codeBlock Mach.computeMach),
+    has cem:reference (a cem:Reference
+    with cem:endsAt 249,
+    with cem:beginsAt 249,
+    with cem:usage cem:Reassigned,
+    with cem:codeBlock Mach.computeMach),
+    has cem:reference (a cem:Reference
+    with cem:setterArgument true,
+    with cem:output true,
+    with cem:endsAt 338,
+    with cem:beginsAt 338,
+    with cem:usage cem:Used,
+    with cem:codeBlock Mach.loadInpt),
+    has cem:reference (a cem:Reference
+    with cem:endsAt 253,
+    with cem:beginsAt 253,
+    with cem:usage cem:Used,
+    with cem:codeBlock Mach.computeMach),
+    has cem:reference (a cem:Reference
+    with cem:endsAt 263,
+    with cem:beginsAt 263,
+    with cem:usage cem:Used,
+    with cem:codeBlock Mach.computeMach),
+    has cem:varName "mach",
+    has cem:reference (a cem:Reference
+    with cem:endsAt 91,
+    with cem:beginsAt 91,
+    with cem:usage cem:Used,
+    with cem:codeBlock Mach.setDefaults),
+    has cem:reference (a cem:Reference
+    with cem:setterArgument true,
+    with cem:output true,
+    with cem:endsAt 310,
+    with cem:beginsAt 310,
+    with cem:usage cem:Used,
+    with cem:codeBlock Mach.computeMach),
+    has cem:reference (a cem:Reference
+    with cem:endsAt 690,
+    with cem:beginsAt 690,
+    with cem:usage cem:Reassigned,
+    with cem:codeBlock Mach.In.Up.handleBut),
+    has cem:reference (a cem:Reference
+    with cem:endsAt 91,
+    with cem:beginsAt 91,
+    with cem:usage cem:Used,
+    with cem:codeBlock Mach.setDefaults),
+    has cem:varType "double",
+    has cem:reference (a cem:Reference
+    with cem:endsAt 55,
+    with cem:beginsAt 55,
+    with cem:usage cem:Defined,
+    with cem:codeBlock Mach),
+    has cem:reference (a cem:Reference
+    with cem:endsAt 256,
+    with cem:beginsAt 256,
+    with cem:usage cem:Used,
+    with cem:codeBlock Mach.computeMach),
+    has cem:reference (a cem:Reference
+    with cem:endsAt 263,
+    with cem:beginsAt 263,
+    with cem:usage cem:Used,
+    with cem:codeBlock Mach.computeMach),
+    has cem:reference (a cem:Reference
+    with cem:endsAt 266,
+    with cem:beginsAt 266,
+    with cem:usage cem:Used,
+    with cem:codeBlock Mach.computeMach),
+    has cem:reference (a cem:Reference
+    with cem:endsAt 644,
+    with cem:beginsAt 644,
+    with cem:usage cem:Reassigned,
+    with cem:codeBlock Mach.In.Up.handleBut),
+    has cem:reference (a cem:Reference
+    with cem:endsAt 277,
+    with cem:beginsAt 277,
+    with cem:usage cem:Reassigned,
+    with cem:codeBlock Mach.computeMach),
+    has cem:reference (a cem:Reference
+    with cem:setterArgument true,
+    with cem:output true,
+    with cem:endsAt 324,
+    with cem:beginsAt 324,
+    with cem:usage cem:Used,
+    with cem:codeBlock Mach.loadInpt).
+Mach.mode is a cem:ClassField,
+    has cem:reference (a cem:Reference
+    with cem:endsAt 716,
+    with cem:beginsAt 716,
+    with cem:usage cem:Reassigned,
+    with cem:codeBlock Mach.In.Up.handleBut),
+    has cem:reference (a cem:Reference
+    with cem:endsAt 610,
+    with cem:beginsAt 610,
+    with cem:usage cem:Reassigned,
+    with cem:codeBlock Mach.In.Up.handleProb),
+    has cem:reference (a cem:Reference
+    with cem:endsAt 489,
+    with cem:beginsAt 489,
+    with cem:usage cem:Reassigned,
+    with cem:codeBlock Mach.In.Titl.In2.handleEvent),
+    has cem:reference (a cem:Reference
+    with cem:endsAt 315,
+    with cem:beginsAt 315,
+    with cem:usage cem:Used,
+    with cem:codeBlock Mach.computeMach),
+    has cem:reference (a cem:Reference
+    with cem:endsAt 83,
+    with cem:beginsAt 83,
+    with cem:usage cem:Reassigned,
+    with cem:codeBlock Mach.setDefaults),
+    has cem:varType "int",
+    has cem:varName "mode",
+    has cem:reference (a cem:Reference
+    with cem:endsAt 58,
+    with cem:beginsAt 58,
+    with cem:usage cem:Defined,
+    with cem:codeBlock Mach).
+Mach.planet is a cem:ClassField,
+    has cem:varType "int",
+    has cem:varName "planet",
+    has cem:reference (a cem:Reference
+    with cem:endsAt 57,
+    with cem:beginsAt 57,
+    with cem:usage cem:Defined,
+    with cem:codeBlock Mach).
+Mach.press is a cem:ClassField,
+    has cem:varType "double",
+    has cem:varName "press",
+    has cem:reference (a cem:Reference
+    with cem:endsAt 54,
+    with cem:beginsAt 54,
+    with cem:usage cem:Defined,
+    with cem:codeBlock Mach).
+Mach.prs is a cem:ClassField,
+    has cem:varType "int",
+    has cem:varName "prs",
+    has cem:reference (a cem:Reference
+    with cem:endsAt 57,
+    with cem:beginsAt 57,
+    with cem:usage cem:Defined,
+    with cem:codeBlock Mach).
+Mach.rgas is a {cem:ClassField and cem:ConstantVariable},
+    has cem:varType "double",
+    has cem:reference (a cem:Reference
+    with cem:endsAt 223,
+    with cem:beginsAt 223,
+    with cem:usage cem:Reassigned,
+    with cem:codeBlock Mach.computeMach),
+    has cem:reference (a cem:Reference
+    with cem:endsAt 276,
+    with cem:beginsAt 276,
+    with cem:usage cem:Used,
+    with cem:codeBlock Mach.computeMach),
+    has cem:reference (a cem:Reference
+    with cem:endsAt 88,
+    with cem:beginsAt 88,
+    with cem:usage cem:Used,
+    with cem:codeBlock Mach.setDefaults),
+    has cem:reference (a cem:Reference
+    with cem:endsAt 55,
+    with cem:beginsAt 55,
+    with cem:usage cem:Defined,
+    with cem:codeBlock Mach),
+    has cem:constantValue (a sadlimplicitmodel:UnittedQuantity
+    with sadlimplicitmodel:^value 1718.0),
+    has cem:reference (a cem:Reference
+    with cem:endsAt 264,
+    with cem:beginsAt 264,
+    with cem:usage cem:Used,
+    with cem:codeBlock Mach.computeMach),
+    has cem:reference (a cem:Reference
+    with cem:endsAt 275,
+    with cem:beginsAt 275,
+    with cem:usage cem:Used,
+    with cem:codeBlock Mach.computeMach),
+    has cem:reference (a cem:Reference
+    with cem:endsAt 243,
+    with cem:beginsAt 243,
+    with cem:usage cem:Used,
+    with cem:codeBlock Mach.computeMach),
+    has cem:varName "rgas".
+Mach.rho is a cem:ClassField,
+    has cem:varType "double",
+    has cem:varName "rho",
+    has cem:reference (a cem:Reference
+    with cem:endsAt 55,
+    with cem:beginsAt 55,
+    with cem:usage cem:Defined,
+    with cem:codeBlock Mach).
+Mach.rho0 is a cem:ClassField,
+    has cem:varType "double",
+    has cem:varName "rho0",
+    has cem:reference (a cem:Reference
+    with cem:endsAt 55,
+    with cem:beginsAt 55,
+    with cem:usage cem:Defined,
+    with cem:codeBlock Mach).
+Mach.setDefaults is a cem:Method,
+    has cem:cmReturnTypes ["void"],
+    has cem:doesComputation true,
+    has cem:comment (a cem:Comment
+    with cem:endsAt 89,
+    with cem:beginsAt 89,
+    with cem:commentContent " mph"),
+    has cem:comment (a cem:Comment
+    with cem:endsAt 88,
+    with cem:beginsAt 88,
+    with cem:commentContent " feet /sec"),
+    has cem:endsAt 96,
+    has cem:beginsAt 79,
+    has cem:containedIn Mach.
+Mach.temp is a cem:ClassField,
+    has cem:reference (a cem:Reference
+    with cem:endsAt 228,
+    with cem:beginsAt 228,
+    with cem:usage cem:Reassigned,
+    with cem:codeBlock Mach.computeMach),
+    has cem:reference (a cem:Reference
+    with cem:endsAt 275,
+    with cem:beginsAt 275,
+    with cem:usage cem:Reassigned,
+    with cem:codeBlock Mach.computeMach),
+    has cem:reference (a cem:Reference
+    with cem:endsAt 91,
+    with cem:beginsAt 91,
+    with cem:usage cem:Used,
+    with cem:codeBlock Mach.setDefaults),
+    has cem:reference (a cem:Reference
+    with cem:endsAt 243,
+    with cem:beginsAt 243,
+    with cem:usage cem:Used,
+    with cem:codeBlock Mach.computeMach),
+    has cem:reference (a cem:Reference
+    with cem:endsAt 88,
+    with cem:beginsAt 88,
+    with cem:usage cem:Used,
+    with cem:codeBlock Mach.setDefaults),
+    has cem:reference (a cem:Reference
+    with cem:endsAt 231,
+    with cem:beginsAt 231,
+    with cem:usage cem:Reassigned,
+    with cem:codeBlock Mach.computeMach),
+    has cem:reference (a cem:Reference
+    with cem:endsAt 240,
+    with cem:beginsAt 240,
+    with cem:usage cem:Reassigned,
+    with cem:codeBlock Mach.computeMach),
+    has cem:reference (a cem:Reference
+    with cem:endsAt 237,
+    with cem:beginsAt 237,
+    with cem:usage cem:Reassigned,
+    with cem:codeBlock Mach.computeMach),
+    has cem:reference (a cem:Reference
+    with cem:endsAt 87,
+    with cem:beginsAt 87,
+    with cem:usage cem:Reassigned,
+    with cem:codeBlock Mach.setDefaults),
+    has cem:reference (a cem:Reference
+    with cem:endsAt 276,
+    with cem:beginsAt 276,
+    with cem:usage cem:Used,
+    with cem:codeBlock Mach.computeMach),
+    has cem:reference (a cem:Reference
+    with cem:endsAt 256,
+    with cem:beginsAt 256,
+    with cem:usage cem:Used,
+    with cem:codeBlock Mach.computeMach),
+    has cem:reference (a cem:Reference
+    with cem:setterArgument true,
+    with cem:output true,
+    with cem:endsAt 292,
+    with cem:beginsAt 292,
+    with cem:usage cem:Used,
+    with cem:codeBlock Mach.computeMach),
+    has cem:varName "temp",
+    has cem:reference (a cem:Reference
+    with cem:endsAt 54,
+    with cem:beginsAt 54,
+    with cem:usage cem:Defined,
+    with cem:codeBlock Mach),
+    has cem:varType "double",
+    has cem:reference (a cem:Reference
+    with cem:endsAt 264,
+    with cem:beginsAt 264,
+    with cem:usage cem:Used,
+    with cem:codeBlock Mach.computeMach),
+    has cem:reference (a cem:Reference
+    with cem:endsAt 302,
+    with cem:beginsAt 302,
+    with cem:usage cem:Used,
+    with cem:codeBlock Mach.computeMach),
+    has cem:reference (a cem:Reference
+    with cem:endsAt 234,
+    with cem:beginsAt 234,
+    with cem:usage cem:Reassigned,
+    with cem:codeBlock Mach.computeMach),
+    has cem:reference (a cem:Reference
+    with cem:endsAt 263,
+    with cem:beginsAt 263,
+    with cem:usage cem:Reassigned,
+    with cem:codeBlock Mach.computeMach).
+Mach.ther is a cem:ClassField,
+    has cem:varType "int",
+    has cem:varName "ther",
+    has cem:reference (a cem:Reference
+    with cem:endsAt 57,
+    with cem:beginsAt 57,
+    with cem:usage cem:Defined,
+    with cem:codeBlock Mach).
+Mach.tparam is a cem:ClassField,
+    has cem:reference (a cem:Reference
+    with cem:endsAt 326,
+    with cem:beginsAt 326,
+    with cem:usage cem:Used,
+    with cem:codeBlock Mach.loadInpt),
+    has cem:reference (a cem:Reference
+    with cem:endsAt 343,
+    with cem:beginsAt 343,
+    with cem:usage cem:Used,
+    with cem:codeBlock Mach.loadInpt),
+    has cem:reference (a cem:Reference
+    with cem:endsAt 329,
+    with cem:beginsAt 329,
+    with cem:usage cem:Used,
+    with cem:codeBlock Mach.loadInpt),
+    has cem:varName "tparam",
+    has cem:reference (a cem:Reference
+    with cem:endsAt 463,
+    with cem:beginsAt 463,
+    with cem:usage cem:Used,
+    with cem:codeBlock Mach.In.Titl.In2.handleEvent),
+    has cem:reference (a cem:Reference
+    with cem:endsAt 692,
+    with cem:beginsAt 692,
+    with cem:usage cem:Used,
+    with cem:codeBlock Mach.In.Up.handleBut),
+    has cem:reference (a cem:Reference
+    with cem:endsAt 57,
+    with cem:beginsAt 57,
+    with cem:usage cem:Defined,
+    with cem:codeBlock Mach),
+    has cem:reference (a cem:Reference
+    with cem:endsAt 579,
+    with cem:beginsAt 579,
+    with cem:usage cem:Reassigned,
+    with cem:codeBlock Mach.In.Up.handleProb),
+    has cem:reference (a cem:Reference
+    with cem:endsAt 340,
+    with cem:beginsAt 340,
+    with cem:usage cem:Used,
+    with cem:codeBlock Mach.loadInpt),
+    has cem:reference (a cem:Reference
+    with cem:endsAt 602,
+    with cem:beginsAt 602,
+    with cem:usage cem:Used,
+    with cem:codeBlock Mach.In.Up.handleProb),
+    has cem:reference (a cem:Reference
+    with cem:endsAt 484,
+    with cem:beginsAt 484,
+    with cem:usage cem:Used,
+    with cem:codeBlock Mach.In.Titl.In2.handleEvent),
+    has cem:reference (a cem:Reference
+    with cem:endsAt 703,
+    with cem:beginsAt 703,
+    with cem:usage cem:Used,
+    with cem:codeBlock Mach.In.Up.handleBut),
+    has cem:reference (a cem:Reference
+    with cem:endsAt 226,
+    with cem:beginsAt 226,
+    with cem:usage cem:Used,
+    with cem:codeBlock Mach.computeMach),
+    has cem:reference (a cem:Reference
+    with cem:endsAt 481,
+    with cem:beginsAt 481,
+    with cem:usage cem:Used,
+    with cem:codeBlock Mach.In.Titl.In2.handleEvent),
+    has cem:reference (a cem:Reference
+    with cem:endsAt 261,
+    with cem:beginsAt 261,
+    with cem:usage cem:Used,
+    with cem:codeBlock Mach.computeMach),
+    has cem:reference (a cem:Reference
+    with cem:endsAt 605,
+    with cem:beginsAt 605,
+    with cem:usage cem:Used,
+    with cem:codeBlock Mach.In.Up.handleProb),
+    has cem:reference (a cem:Reference
+    with cem:endsAt 588,
+    with cem:beginsAt 588,
+    with cem:usage cem:Used,
+    with cem:codeBlock Mach.In.Up.handleProb),
+    has cem:reference (a cem:Reference
+    with cem:endsAt 81,
+    with cem:beginsAt 81,
+    with cem:usage cem:Reassigned,
+    with cem:codeBlock Mach.setDefaults),
+    has cem:reference (a cem:Reference
+    with cem:endsAt 657,
+    with cem:beginsAt 657,
+    with cem:usage cem:Used,
+    with cem:codeBlock Mach.In.Up.handleBut),
+    has cem:varType "int",
+    has cem:reference (a cem:Reference
+    with cem:endsAt 646,
+    with cem:beginsAt 646,
+    with cem:usage cem:Used,
+    with cem:codeBlock Mach.In.Up.handleBut),
+    has cem:reference (a cem:Reference
+    with cem:endsAt 466,
+    with cem:beginsAt 466,
+    with cem:usage cem:Used,
+    with cem:codeBlock Mach.In.Titl.In2.handleEvent),
+    has cem:reference (a cem:Reference
+    with cem:endsAt 591,
+    with cem:beginsAt 591,
+    with cem:usage cem:Used,
+    with cem:codeBlock Mach.In.Up.handleProb).
+Mach.ttot is a cem:ClassField,
+    has cem:reference (a cem:Reference
+    with cem:endsAt 54,
+    with cem:beginsAt 54,
+    with cem:usage cem:Defined,
+    with cem:codeBlock Mach),
+    has cem:reference (a cem:Reference
+    with cem:endsAt 666,
+    with cem:beginsAt 666,
+    with cem:usage cem:Reassigned,
+    with cem:codeBlock Mach.In.Up.handleBut),
+    has cem:reference (a cem:Reference
+    with cem:endsAt 275,
+    with cem:beginsAt 275,
+    with cem:usage cem:Used,
+    with cem:codeBlock Mach.computeMach),
+    has cem:reference (a cem:Reference
+    with cem:endsAt 712,
+    with cem:beginsAt 712,
+    with cem:usage cem:Reassigned,
+    with cem:codeBlock Mach.In.Up.handleBut),
+    has cem:reference (a cem:Reference
+    with cem:endsAt 263,
+    with cem:beginsAt 263,
+    with cem:usage cem:Used,
+    with cem:codeBlock Mach.computeMach),
+    has cem:varName "ttot",
+    has cem:reference (a cem:Reference
+    with cem:setterArgument true,
+    with cem:output true,
+    with cem:endsAt 330,
+    with cem:beginsAt 330,
+    with cem:usage cem:Used,
+    with cem:codeBlock Mach.loadInpt),
+    has cem:reference (a cem:Reference
+    with cem:setterArgument true,
+    with cem:output true,
+    with cem:endsAt 293,
+    with cem:beginsAt 293,
+    with cem:usage cem:Used,
+    with cem:codeBlock Mach.computeMach),
+    has cem:varType "double",
+    has cem:reference (a cem:Reference
+    with cem:endsAt 344,
+    with cem:beginsAt 344,
+    with cem:usage cem:Used,
+    with cem:codeBlock Mach.loadInpt),
+    has cem:reference (a cem:Reference
+    with cem:endsAt 91,
+    with cem:beginsAt 91,
+    with cem:usage cem:Reassigned,
+    with cem:codeBlock Mach.setDefaults),
+    has cem:reference (a cem:Reference
+    with cem:endsAt 256,
+    with cem:beginsAt 256,
+    with cem:usage cem:Reassigned,
+    with cem:codeBlock Mach.computeMach),
+    has cem:reference (a cem:Reference
+    with cem:endsAt 303,
+    with cem:beginsAt 303,
+    with cem:usage cem:Used,
+    with cem:codeBlock Mach.computeMach).
+Mach.vel is a cem:ClassField,
+    has cem:reference (a cem:Reference
+    with cem:endsAt 301,
+    with cem:beginsAt 301,
+    with cem:usage cem:Used,
+    with cem:codeBlock Mach.computeMach),
+    has cem:reference (a cem:Reference
+    with cem:setterArgument true,
+    with cem:output true,
+    with cem:endsAt 291,
+    with cem:beginsAt 291,
+    with cem:usage cem:Used,
+    with cem:codeBlock Mach.computeMach),
+    has cem:reference (a cem:Reference
+    with cem:endsAt 90,
+    with cem:beginsAt 90,
+    with cem:usage cem:Used,
+    with cem:codeBlock Mach.setDefaults),
+    has cem:varName "vel",
+    has cem:reference (a cem:Reference
+    with cem:endsAt 279,
+    with cem:beginsAt 279,
+    with cem:usage cem:Reassigned,
+    with cem:codeBlock Mach.computeMach),
+    has cem:reference (a cem:Reference
+    with cem:endsAt 633,
+    with cem:beginsAt 633,
+    with cem:usage cem:Reassigned,
+    with cem:codeBlock Mach.In.Up.handleBut),
+    has cem:reference (a cem:Reference
+    with cem:endsAt 279,
+    with cem:beginsAt 279,
+    with cem:usage cem:Used,
+    with cem:codeBlock Mach.computeMach),
+    has cem:reference (a cem:Reference
+    with cem:endsAt 266,
+    with cem:beginsAt 266,
+    with cem:usage cem:Reassigned,
+    with cem:codeBlock Mach.computeMach),
+    has cem:reference (a cem:Reference
+    with cem:endsAt 86,
+    with cem:beginsAt 86,
+    with cem:usage cem:Reassigned,
+    with cem:codeBlock Mach.setDefaults),
+    has cem:reference (a cem:Reference
+    with cem:setterArgument true,
+    with cem:output true,
+    with cem:endsAt 321,
+    with cem:beginsAt 321,
+    with cem:usage cem:Used,
+    with cem:codeBlock Mach.loadInpt),
+    has cem:reference (a cem:Reference
+    with cem:endsAt 679,
+    with cem:beginsAt 679,
+    with cem:usage cem:Reassigned,
+    with cem:codeBlock Mach.In.Up.handleBut),
+    has cem:reference (a cem:Reference
+    with cem:endsAt 275,
+    with cem:beginsAt 275,
+    with cem:usage cem:Used,
+    with cem:codeBlock Mach.computeMach),
+    has cem:reference (a cem:Reference
+    with cem:endsAt 275,
+    with cem:beginsAt 275,
+    with cem:usage cem:Used,
+    with cem:codeBlock Mach.computeMach),
+    has cem:reference (a cem:Reference
+    with cem:endsAt 249,
+    with cem:beginsAt 249,
+    with cem:usage cem:Used,
+    with cem:codeBlock Mach.computeMach),
+    has cem:reference (a cem:Reference
+    with cem:endsAt 277,
+    with cem:beginsAt 277,
+    with cem:usage cem:Used,
+    with cem:codeBlock Mach.computeMach),
+    has cem:reference (a cem:Reference
+    with cem:endsAt 274,
+    with cem:beginsAt 274,
+    with cem:usage cem:Reassigned,
+    with cem:codeBlock Mach.computeMach),
+    has cem:varType "double",
+    has cem:reference (a cem:Reference
+    with cem:endsAt 335,
+    with cem:beginsAt 335,
+    with cem:usage cem:Used,
+    with cem:codeBlock Mach.loadInpt),
+    has cem:reference (a cem:Reference
+    with cem:endsAt 274,
+    with cem:beginsAt 274,
+    with cem:usage cem:Used,
+    with cem:codeBlock Mach.computeMach),
+    has cem:reference (a cem:Reference
+    with cem:endsAt 253,
+    with cem:beginsAt 253,
+    with cem:usage cem:Reassigned,
+    with cem:codeBlock Mach.computeMach),
+    has cem:reference (a cem:Reference
+    with cem:endsAt 54,
+    with cem:beginsAt 54,
+    with cem:usage cem:Defined,
+    with cem:codeBlock Mach).
+Mach.vparam is a cem:ClassField,
+    has cem:reference (a cem:Reference
+    with cem:endsAt 670,
+    with cem:beginsAt 670,
+    with cem:usage cem:Used,
+    with cem:codeBlock Mach.In.Up.handleBut),
+    has cem:reference (a cem:Reference
+    with cem:endsAt 582,
+    with cem:beginsAt 582,
+    with cem:usage cem:Used,
+    with cem:codeBlock Mach.In.Up.handleProb),
+    has cem:varType "int",
+    has cem:reference (a cem:Reference
+    with cem:endsAt 599,
+    with cem:beginsAt 599,
+    with cem:usage cem:Used,
+    with cem:codeBlock Mach.In.Up.handleProb),
+    has cem:reference (a cem:Reference
+    with cem:endsAt 337,
+    with cem:beginsAt 337,
+    with cem:usage cem:Used,
+    with cem:codeBlock Mach.loadInpt),
+    has cem:reference (a cem:Reference
+    with cem:endsAt 585,
+    with cem:beginsAt 585,
+    with cem:usage cem:Used,
+    with cem:codeBlock Mach.In.Up.handleProb),
+    has cem:reference (a cem:Reference
+    with cem:endsAt 578,
+    with cem:beginsAt 578,
+    with cem:usage cem:Reassigned,
+    with cem:codeBlock Mach.In.Up.handleProb),
+    has cem:reference (a cem:Reference
+    with cem:endsAt 320,
+    with cem:beginsAt 320,
+    with cem:usage cem:Used,
+    with cem:codeBlock Mach.loadInpt),
+    has cem:reference (a cem:Reference
+    with cem:endsAt 334,
+    with cem:beginsAt 334,
+    with cem:usage cem:Used,
+    with cem:codeBlock Mach.loadInpt),
+    has cem:reference (a cem:Reference
+    with cem:endsAt 596,
+    with cem:beginsAt 596,
+    with cem:usage cem:Used,
+    with cem:codeBlock Mach.In.Up.handleProb),
+    has cem:reference (a cem:Reference
+    with cem:endsAt 248,
+    with cem:beginsAt 248,
+    with cem:usage cem:Used,
+    with cem:codeBlock Mach.computeMach),
+    has cem:reference (a cem:Reference
+    with cem:endsAt 478,
+    with cem:beginsAt 478,
+    with cem:usage cem:Used,
+    with cem:codeBlock Mach.In.Titl.In2.handleEvent),
+    has cem:reference (a cem:Reference
+    with cem:endsAt 323,
+    with cem:beginsAt 323,
+    with cem:usage cem:Used,
+    with cem:codeBlock Mach.loadInpt),
+    has cem:reference (a cem:Reference
+    with cem:endsAt 252,
+    with cem:beginsAt 252,
+    with cem:usage cem:Used,
+    with cem:codeBlock Mach.computeMach),
+    has cem:reference (a cem:Reference
+    with cem:endsAt 475,
+    with cem:beginsAt 475,
+    with cem:usage cem:Used,
+    with cem:codeBlock Mach.In.Titl.In2.handleEvent),
+    has cem:reference (a cem:Reference
+    with cem:endsAt 681,
+    with cem:beginsAt 681,
+    with cem:usage cem:Used,
+    with cem:codeBlock Mach.In.Up.handleBut),
+    has cem:reference (a cem:Reference
+    with cem:endsAt 624,
+    with cem:beginsAt 624,
+    with cem:usage cem:Used,
+    with cem:codeBlock Mach.In.Up.handleBut),
+    has cem:reference (a cem:Reference
+    with cem:endsAt 635,
+    with cem:beginsAt 635,
+    with cem:usage cem:Used,
+    with cem:codeBlock Mach.In.Up.handleBut),
+    has cem:reference (a cem:Reference
+    with cem:endsAt 460,
+    with cem:beginsAt 460,
+    with cem:usage cem:Used,
+    with cem:codeBlock Mach.In.Titl.In2.handleEvent),
+    has cem:reference (a cem:Reference
+    with cem:endsAt 273,
+    with cem:beginsAt 273,
+    with cem:usage cem:Used,
+    with cem:codeBlock Mach.computeMach),
+    has cem:reference (a cem:Reference
+    with cem:endsAt 57,
+    with cem:beginsAt 57,
+    with cem:usage cem:Defined,
+    with cem:codeBlock Mach),
+    has cem:varName "vparam",
+    has cem:reference (a cem:Reference
+    with cem:endsAt 262,
+    with cem:beginsAt 262,
+    with cem:usage cem:Used,
+    with cem:codeBlock Mach.computeMach),
+    has cem:reference (a cem:Reference
+    with cem:endsAt 457,
+    with cem:beginsAt 457,
+    with cem:usage cem:Used,
+    with cem:codeBlock Mach.In.Titl.In2.handleEvent),
+    has cem:reference (a cem:Reference
+    with cem:endsAt 80,
+    with cem:beginsAt 80,
+    with cem:usage cem:Reassigned,
+    with cem:codeBlock Mach.setDefaults).
+Math.exp is a cem:ExternalMethod,
+    has cem:calls (a cem:MethodCall
+    with cem:endsAt 110,
+    with cem:beginsAt 110,
+    with cem:codeBlock Mach.CAL_GAM).
+Math.pow is a cem:ExternalMethod,
+    has cem:calls (a cem:MethodCall
+    with cem:endsAt 105,
+    with cem:beginsAt 105,
+    with cem:codeBlock Mach.TQTT),
+    has cem:calls (a cem:MethodCall
+    with cem:endsAt 109,
+    with cem:beginsAt 109,
+    with cem:codeBlock Mach.CAL_GAM),
+    has cem:calls (a cem:MethodCall
+    with cem:endsAt 110,
+    with cem:beginsAt 110,
+    with cem:codeBlock Mach.CAL_GAM),
+    has cem:calls (a cem:MethodCall
+    with cem:endsAt 105,
+    with cem:beginsAt 105,
+    with cem:codeBlock Mach.TQTT).
+Math.sqrt is a cem:ExternalMethod,
+    has cem:calls (a cem:MethodCall
+    with cem:endsAt 88,
+    with cem:beginsAt 88,
+    with cem:codeBlock Mach.computeMach),
+    has cem:calls (a cem:MethodCall
+    with cem:endsAt 101,
+    with cem:beginsAt 101,
+    with cem:codeBlock Mach.CAL_SOS).
+String.valueOf is a cem:ExternalMethod,
+    has cem:calls (a cem:MethodCall
+    with cem:endsAt 294,
+    with cem:beginsAt 294,
+    with cem:codeBlock Mach.computeMach),
+    has cem:calls (a cem:MethodCall
+    with cem:endsAt 301,
+    with cem:beginsAt 301,
+    with cem:codeBlock Mach.loadInpt),
+    has cem:calls (a cem:MethodCall
+    with cem:endsAt 290,
+    with cem:beginsAt 290,
+    with cem:codeBlock Mach.computeMach),
+    has cem:calls (a cem:MethodCall
+    with cem:endsAt 304,
+    with cem:beginsAt 304,
+    with cem:codeBlock Mach.computeMach),
+    has cem:calls (a cem:MethodCall
+    with cem:endsAt 341,
+    with cem:beginsAt 341,
+    with cem:codeBlock Mach.loadInpt),
+    has cem:calls (a cem:MethodCall
+    with cem:endsAt 300,
+    with cem:beginsAt 300,
+    with cem:codeBlock Mach.computeMach),
+    has cem:calls (a cem:MethodCall
+    with cem:endsAt 302,
+    with cem:beginsAt 302,
+    with cem:codeBlock Mach.computeMach),
+    has cem:calls (a cem:MethodCall
+    with cem:endsAt 295,
+    with cem:beginsAt 295,
+    with cem:codeBlock Mach.computeMach),
+    has cem:calls (a cem:MethodCall
+    with cem:endsAt 305,
+    with cem:beginsAt 305,
+    with cem:codeBlock Mach.computeMach),
+    has cem:calls (a cem:MethodCall
+    with cem:endsAt 306,
+    with cem:beginsAt 306,
+    with cem:codeBlock Mach.computeMach),
+    has cem:calls (a cem:MethodCall
+    with cem:endsAt 307,
+    with cem:beginsAt 307,
+    with cem:codeBlock Mach.computeMach),
+    has cem:calls (a cem:MethodCall
+    with cem:endsAt 627,
+    with cem:beginsAt 627,
+    with cem:codeBlock Mach.In.Up.handleBut),
+    has cem:calls (a cem:MethodCall
+    with cem:endsAt 292,
+    with cem:beginsAt 292,
+    with cem:codeBlock Mach.computeMach),
+    has cem:calls (a cem:MethodCall
+    with cem:endsAt 313,
+    with cem:beginsAt 313,
+    with cem:codeBlock Mach.computeMach),
+    has cem:calls (a cem:MethodCall
+    with cem:endsAt 296,
+    with cem:beginsAt 296,
+    with cem:codeBlock Mach.computeMach),
+    has cem:calls (a cem:MethodCall
+    with cem:endsAt 312,
+    with cem:beginsAt 312,
+    with cem:codeBlock Mach.computeMach),
+    has cem:calls (a cem:MethodCall
+    with cem:endsAt 649,
+    with cem:beginsAt 649,
+    with cem:codeBlock Mach.In.Up.handleBut),
+    has cem:calls (a cem:MethodCall
+    with cem:endsAt 311,
+    with cem:beginsAt 311,
+    with cem:codeBlock Mach.computeMach),
+    has cem:calls (a cem:MethodCall
+    with cem:endsAt 310,
+    with cem:beginsAt 310,
+    with cem:codeBlock Mach.loadInpt),
+    has cem:calls (a cem:MethodCall
+    with cem:endsAt 291,
+    with cem:beginsAt 291,
+    with cem:codeBlock Mach.loadInpt),
+    has cem:calls (a cem:MethodCall
+    with cem:endsAt 293,
+    with cem:beginsAt 293,
+    with cem:codeBlock Mach.loadInpt),
+    has cem:calls (a cem:MethodCall
+    with cem:endsAt 327,
+    with cem:beginsAt 327,
+    with cem:codeBlock Mach.loadInpt),
+    has cem:calls (a cem:MethodCall
+    with cem:endsAt 297,
+    with cem:beginsAt 297,
+    with cem:codeBlock Mach.computeMach),
+    has cem:calls (a cem:MethodCall
+    with cem:endsAt 303,
+    with cem:beginsAt 303,
+    with cem:codeBlock Mach.loadInpt).
+V1.doubleValue is a cem:ExternalMethod,
+    has cem:calls (a cem:MethodCall
+    with cem:endsAt 619,
+    with cem:beginsAt 619,
+    with cem:codeBlock Mach.In.Up.handleBut).
+V2.doubleValue is a cem:ExternalMethod,
+    has cem:calls (a cem:MethodCall
+    with cem:endsAt 621,
+    with cem:beginsAt 621,
+    with cem:codeBlock Mach.In.Up.handleBut).
+o1.getText is a cem:ExternalMethod,
+    has cem:calls (a cem:MethodCall
+    with cem:endsAt 618,
+    with cem:beginsAt 618,
+    with cem:codeBlock Mach.In.Up.handleBut).
+o2.getText is a cem:ExternalMethod,
+    has cem:calls (a cem:MethodCall
+    with cem:endsAt 620,
+    with cem:beginsAt 620,
+    with cem:codeBlock Mach.In.Up.handleBut).
+tch.getSelectedIndex is a cem:ExternalMethod,
+    has cem:calls (a cem:MethodCall
+    with cem:endsAt 579,
+    with cem:beginsAt 579,
+    with cem:codeBlock Mach.In.Up.handleProb).
+untch.getSelectedIndex is a cem:ExternalMethod,
+    has cem:calls (a cem:MethodCall
+    with cem:endsAt 450,
+    with cem:beginsAt 450,
+    with cem:codeBlock Mach.In.Titl.In2.handleEvent).
+vch.getSelectedIndex is a cem:ExternalMethod,
+    has cem:calls (a cem:MethodCall
+    with cem:endsAt 578,
+    with cem:beginsAt 578,
+    with cem:codeBlock Mach.In.Up.handleProb).
+
+Ask: "select ?m ?b ?e ?s where {?m <rdf:type> <Method> . ?m <doesComputation> true . OPTIONAL {?m <beginsAt> ?b . ?m <endsAt> ?e . OPTIONAL{?m <serialization> ?s}} . 
+					MINUS {
+						{?ref <codeBlock> ?m . ?ref <isImplicit> true} 
+						UNION {?m <rdf:type> <ExternalMethod>} } }".    

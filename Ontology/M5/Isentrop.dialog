@@ -1,447 +1,699 @@
  uri "http://sadl.org/Isentrop.dialog" alias sntrp.
+
+ import "http://sadl.org/SpeedOfSound.sadl".
  
- CM: "Parsing code file 'C:/Users/200005201/sadl3-master6/git/DARPA-ASKE-TA1/Ontology/M5/ExtractedModels/Sources/Isentrop.java'".
-CM: "The following methods doing computation were found in the extraction:".
-CM: External Isentrop.CAL_GNU(double TT, double M, double G, double Q) returns double: "http://com.ge.research.sadl.darpa.aske.answer/Isentrop_java#Isentrop.CAL_GNU".
-CM: Isentrop.CAL_GNU has expression (a Script with language Java, with script 
-"double CAL_GNU(double TT, double M, double G, double Q) {
-    if (M <= 1) {
-        return 0;
-    }
-    double Pi = 4 * Math.atan(1);
-    double TSTAR = CAL_T(TT, 1, G, Q);
-    double TMIN = CAL_T(TT, M, G, Q);
-    double DELT = (TMIN - TSTAR) / 1000;
-    double PR1 = ((Math.exp(Q / TT) - 1) / (Math.exp(Q / TSTAR) - 1)) * Math.pow((TSTAR / TT), (G / (G - 1))) * Math.exp(Q / TSTAR * Math.exp(Q / TSTAR) / (Math.exp(Q / TSTAR) - 1) - Q / TT * Math.exp(Q / TT) / (Math.exp(Q / TT) - 1));
-    double ARG1 = 0;
-    double T = TSTAR + DELT;
-    double Sum = 0;
-    double GAM;
-    double PR;
-    double MACH;
-    double MU;
-    double ARG;
-    for (int i = 0; i < 999; ++i) {
-        GAM = CAL_GAM(T, G, Q);
-        PR = ((Math.exp(Q / TT) - 1) / (Math.exp(Q / T) - 1)) * Math.pow((T / TT), (G / (G - 1))) * Math.exp(Q / T * Math.exp(Q / T) / (Math.exp(Q / T) - 1) - Q / TT * Math.exp(Q / TT) / (Math.exp(Q / TT) - 1));
-        MACH = Math.sqrt(2 * TT / CAL_GAM(T, G, Q) / T * (G / (G - 1) * (1 - T / TT) + Q / TT * (1 / (Math.exp(Q / TT) - 1) - 1 / (Math.exp(Q / T) - 1))));
-        MU = Math.atan(Math.sqrt(1 / (Math.pow(MACH, 2) - 1)));
-        ARG = Math.sin(2 * MU) / 2 / GAM / PR;
-        // Trapezoidal integration
-        Sum = Sum - (ARG + ARG1) / 2 * (PR - PR1);
-        T = T + DELT;
-        PR1 = PR;
-        ARG1 = ARG;
-    }
-    double NU = Sum * 180 / Pi;
-    return NU;
-}"
-), has expression (a Script with language Python, with script 
-"#!/usr/bin/env python
-\"\"\" generated source for module inputfile \"\"\"
-class Isentrop(object):
-    \"\"\" generated source for class Isentrop \"\"\"
-    def CAL_GNU(self, TT, M, G, Q):
-        \"\"\" generated source for method CAL_GNU \"\"\"
-        if M <= 1:
-            return 0
-        Pi = 4 * Math.atan(1)
-        TSTAR = CAL_T(TT, 1, G, Q)
-        TMIN = CAL_T(TT, M, G, Q)
-        DELT = (TMIN - TSTAR) / 1000
-        PR1 = ((Math.exp(Q / TT) - 1) / (Math.exp(Q / TSTAR) - 1)) * Math.pow((TSTAR / TT), (G / (G - 1))) * Math.exp(Q / TSTAR * Math.exp(Q / TSTAR) / (Math.exp(Q / TSTAR) - 1) - Q / TT * Math.exp(Q / TT) / (Math.exp(Q / TT) - 1))
-        ARG1 = 0
-        T = TSTAR + DELT
-        Sum = 0
-        GAM = float()
-        PR = float()
-        MACH = float()
-        MU = float()
-        ARG = float()
-        i = 0
-        while i < 999:
-            GAM = CAL_GAM(T, G, Q)
-            PR = ((Math.exp(Q / TT) - 1) / (Math.exp(Q / T) - 1)) * Math.pow((T / TT), (G / (G - 1))) * Math.exp(Q / T * Math.exp(Q / T) / (Math.exp(Q / T) - 1) - Q / TT * Math.exp(Q / TT) / (Math.exp(Q / TT) - 1))
-            MACH = Math.sqrt(2 * TT / CAL_GAM(T, G, Q) / T * (G / (G - 1) * (1 - T / TT) + Q / TT * (1 / (Math.exp(Q / TT) - 1) - 1 / (Math.exp(Q / T) - 1))))
-            MU = Math.atan(Math.sqrt(1 / (Math.pow(MACH, 2) - 1)))
-            ARG = Math.sin(2 * MU) / 2 / GAM / PR
-            #  Trapezoidal integration
-            Sum = Sum - (ARG + ARG1) / 2 * (PR - PR1)
-            T = T + DELT
-            PR1 = PR
-            ARG1 = ARG
-            i += 1
-        # // Trapezoidal integration
-        NU = Sum * 180 / Pi
-        return NU
-
-").
-
-CM: External Isentrop.CAL_DQDT(double TT, double M, double G, double Q) returns double: "http://com.ge.research.sadl.darpa.aske.answer/Isentrop_java#Isentrop.CAL_DQDT".
-CM: Isentrop.CAL_DQDT has expression (a Script with language Java, with script 
-"double CAL_DQDT(double TT, double M, double G, double Q) {
-    double T = CAL_T(TT, M, G, Q);
-    return (((Math.exp(Q / TT) - 1) / (Math.exp(Q / T) - 1)) * Math.pow((T / TT), (1 / (G - 1))) * Math.exp(Q / T * Math.exp(Q / T) / (Math.exp(Q / T) - 1) - Q / TT * Math.exp(Q / TT) / (Math.exp(Q / TT) - 1)));
-}"
-), has expression (a Script with language Python, with script 
-"#!/usr/bin/env python
-\"\"\" generated source for module inputfile \"\"\"
-class Isentrop(object):
-    \"\"\" generated source for class Isentrop \"\"\"
-    def CAL_DQDT(self, TT, M, G, Q):
-        \"\"\" generated source for method CAL_DQDT \"\"\"
-        T = CAL_T(TT, M, G, Q)
-        return (((Math.exp(Q / TT) - 1) / (Math.exp(Q / T) - 1)) * Math.pow((T / TT), (1 / (G - 1))) * Math.exp(Q / T * Math.exp(Q / T) / (Math.exp(Q / T) - 1) - Q / TT * Math.exp(Q / TT) / (Math.exp(Q / TT) - 1)))
-
-").
-
-CM: External Isentrop.CAL_GAM(double T, double G, double Q) returns double: "http://com.ge.research.sadl.darpa.aske.answer/Isentrop_java#Isentrop.CAL_GAM".
-CM: Isentrop.CAL_GAM has expression (a Script with language Java, with script 
-"double CAL_GAM(double T, double G, double Q) {
-    return (1 + (G - 1) / (1 + (G - 1) * (Math.pow((Q / T), 2) * Math.exp(Q / T) / Math.pow((Math.exp(Q / T) - 1), 2))));
-}"
-), has expression (a Script with language Python, with script 
-"#!/usr/bin/env python
-\"\"\" generated source for module inputfile \"\"\"
-class Isentrop(object):
-    \"\"\" generated source for class Isentrop \"\"\"
-    def CAL_GAM(self, T, G, Q):
-        \"\"\" generated source for method CAL_GAM \"\"\"
-        return (1 + (G - 1) / (1 + (G - 1) * (Math.pow((Q / T), 2) * Math.exp(Q / T) / Math.pow((Math.exp(Q / T) - 1), 2))))
-
-").
-
-CM: External Isentrop.getMach(int sub, double corair) returns double: "http://com.ge.research.sadl.darpa.aske.answer/Isentrop_java#Isentrop.getMach".
-CM: Isentrop.getMach has expression (a Script with language Java, with script 
-"public double getMach(int sub, double corair) {
-    /* Utility to get the Mach number given the corrected airflow per area */
-    double number, chokair;
-    /* iterate for mach number */
-    double deriv, machn, macho, airo, airn;
-    int iter;
-    chokair = getAir(1.0);
-    if (corair > chokair) {
-        number = 1.0;
-        return (number);
-    } else {
-        airo = .25618;
-        /* initial guess */
-        if (sub == 2)
-            macho = 1.0;
-        else /* sonic */
-        {
-            if (sub == 0)
-                macho = 1.703;
-            else
-                /* supersonic */
-                macho = .5;
-            /* subsonic */
-            iter = 1;
-            machn = macho - .2;
-            while (Math.abs(corair - airo) > .0001 && iter < 20) {
-                airn = getAir(machn);
-                deriv = (airn - airo) / (machn - macho);
-                airo = airn;
-                macho = machn;
-                machn = macho + (corair - airo) / deriv;
-                ++iter;
-            }
+ External Turbo.getAir(double mach, double gamma) returns double: "http://com.ge.research.sadl.darpa.aske.answer/Turbo_java#Turbo.getAir".
+ External Turbo.getCp(double temp, int opt) returns double: "http://com.ge.research.sadl.darpa.aske.answer/Turbo_java#Turbo.getCp".
+ External Turbo.getRayleighLoss(double mach1, double ttrat, double tlow) returns double: "http://com.ge.research.sadl.darpa.aske.answer/Turbo_java#Turbo.getRayleighLoss".
+ External Turbo.getGama(double temp, int opt) returns double: "http://com.ge.research.sadl.darpa.aske.answer/Turbo_java#Turbo.getGama".
+ Turbo.getRayleighLoss has dependsOn Turbo.getAir, 
+  has dependsOn Turbo.getGama.
+ External Turbo.filter3(double inumbr) returns float: "http://com.ge.research.sadl.darpa.aske.answer/Turbo_java#Turbo.filter3".
+ External Turbo.getMach(int sub, double corair, double gamma) returns double: "http://com.ge.research.sadl.darpa.aske.answer/Turbo_java#Turbo.getMach".
+ Turbo.getMach has dependsOn Turbo.getAir.
+ 
+ External Turbo.Solver.getThermo() : "http://com.ge.research.sadl.darpa.aske.answer/Turbo_java#Turbo.Solver.getThermo".
+ Turbo.Solver.getThermo has dependsOn Turbo.getCp, 
+  has dependsOn Turbo.getRayleighLoss, 
+  has dependsOn Turbo.getGama, 
+  has dependsOn Turbo.getAir, 
+  has dependsOn Turbo.filter3, 
+  has dependsOn Turbo.getMach, 
+  has implicitInput (an ImplicitDataDescriptor with localDescriptorName "byprat", with dataType "double"),
+  has implicitInput (an ImplicitDataDescriptor with localDescriptorName "p3fp2d", with dataType "double"),
+  has implicitInput (an ImplicitDataDescriptor with localDescriptorName "afan", with dataType "double"),
+  has implicitInput (an ImplicitDataDescriptor with localDescriptorName "fsmach", with dataType "double"),
+  has implicitInput (an ImplicitDataDescriptor with localDescriptorName "entype", with dataType "int"),
+  has implicitInput (an ImplicitDataDescriptor with localDescriptorName "throtl", with dataType "double"),
+  has implicitInput (an ImplicitDataDescriptor with localDescriptorName "tt4", with dataType "double"),
+  has implicitInput (an ImplicitDataDescriptor with localDescriptorName "acore", with dataType "double"),
+  has implicitInput (an ImplicitDataDescriptor with localDescriptorName "pt2flag", with dataType "int"),
+  has implicitInput (an ImplicitDataDescriptor with localDescriptorName "a4", with dataType "double"),
+  has implicitInput (an ImplicitDataDescriptor with localDescriptorName "inflag", with dataType "int"),
+  has implicitInput (an ImplicitDataDescriptor with localDescriptorName "tt7", with dataType "double"),
+  has implicitInput (an ImplicitDataDescriptor with localDescriptorName "p3p2d", with dataType "double"),
+  has implicitInput (an ImplicitDataDescriptor with localDescriptorName "abflag", with dataType "int")
+  has implicitOutput (an ImplicitDataDescriptor with localDescriptorName "epr", with dataType "double"),
+  has implicitOutput (an ImplicitDataDescriptor with localDescriptorName "a4", with dataType "double"),
+  has implicitOutput (an ImplicitDataDescriptor with localDescriptorName "etr", with dataType "double"),
+  has expression (a Script with language Java, with script 
+"     public void getThermo() {
+       double dela,t5t4n,deriv,delan,m5;
+       double delhc,delhht,delhf,delhlt;
+       double deltc,deltht,deltf,deltlt;
+       int itcount,index ;
+       float fl1 ;
+       int i1 ;
+                                         /*   inlet recovery  */
+       if (pt2flag == 0) {                    /*     mil spec      */
+          if (fsmach > 1.0 ) {          /* supersonic */
+             prat[2] = 1.0 - .075*Math.pow(fsmach - 1.0, 1.35) ;
+          }
+          else {
+             prat[2] = 1.0 ;
+          }
+          eta[2] = prat[2] ;
+          fl1 = filter3(prat[2]) ;
+          in.inlet.left.f1.setText(String.valueOf(fl1)) ;
+          i1 = (int) (((prat[2] - etmin)/(etmax-etmin))*1000.) ;
+          in.inlet.right.s1.setValue(i1) ;
+       }
+       else {                       /* enter value */
+          prat[2] = eta[2] ;          
+       }
+                               /* protection for overwriting input */
+       if (eta[3] < .5) eta[3] = .5 ;
+       if (eta[5] < .5) eta[5] = .5 ;
+       trat[7] = 1.0 ;
+       prat[7] = 1.0 ;
+       tt[2] = tt[1] = tt[0] ;
+       pt[1] = pt[0] ;
+       gam[2] = getGama(tt[2],gamopt) ;
+       cp[2]  = getCp(tt[2],gamopt);
+       pt[2] = pt[1] * prat[2] ;
+        /* design - p3p2 specified - tt4 specified */
+       if(inflag == 0) {
+   
+        if (entype <= 1) {              /* turbojet */
+          prat[3] = p3p2d ;                      /* core compressor */
+          if (prat[3] < .5) prat[3] = .5 ;
+          delhc = (cp[2]*tt[2]/eta[3])*
+                (Math.pow(prat[3],(gam[2]-1.0)/gam[2])-1.0) ;
+          deltc = delhc / cp[2] ;
+          pt[3] = pt[2] * prat[3] ;
+          tt[3] = tt[2] + deltc ;
+          trat[3] = tt[3]/tt[2] ;
+          gam[3] = getGama(tt[3],gamopt) ;
+          cp[3]  = getCp(tt[3],gamopt);
+          tt[4] = tt4 * throtl/100.0 ;
+          gam[4] = getGama(tt[4],gamopt) ;
+          cp[4]  = getCp(tt[4],gamopt);
+          trat[4] = tt[4] / tt[3] ;
+          pt[4] = pt[3] * prat[4] ;
+          delhht = delhc ;
+          deltht = delhht / cp[4] ;
+          tt[5] = tt[4] - deltht ;
+          gam[5] = getGama(tt[5],gamopt) ;
+          cp[5]  = getCp(tt[5],gamopt);
+          trat[5] = tt[5]/tt[4] ;
+          prat[5] = Math.pow((1.0-delhht/cp[4]/tt[4]/eta[5]),
+                   (gam[4]/(gam[4]-1.0))) ;
+          pt[5] = pt[4] * prat[5] ;
+                                        /* fan conditions */
+          prat[13] = 1.0 ;
+          trat[13] = 1.0 ;
+          tt[13]   = tt[2] ;
+          pt[13]   = pt[2] ;
+          gam[13]  = gam[2] ;
+          cp[13]   = cp[2] ;
+          prat[15] = 1.0 ;
+          pt[15]   = pt[5] ;
+          trat[15] = 1.0 ;
+          tt[15]   = tt[5] ;
+          gam[15]  = gam[5] ;
+          cp[15]   = cp[5] ;
+       }
+   
+       if(entype == 2) {                         /* turbofan */
+          prat[13] = p3fp2d ;
+          if (prat[13] < .5) prat[13] = .5 ;
+          delhf = (cp[2]*tt[2]/eta[13])*
+                (Math.pow(prat[13],(gam[2]-1.0)/gam[2])-1.0) ;
+          deltf = delhf / cp[2] ;
+          tt[13] = tt[2] + deltf ;
+          pt[13] = pt[2] * prat[13] ;
+          trat[13] = tt[13]/tt[2] ;
+          gam[13] = getGama(tt[13],gamopt) ;
+          cp[13]  = getCp(tt[13],gamopt);
+          prat[3] = p3p2d ;                      /* core compressor */
+          if (prat[3] < .5) prat[3] = .5 ;
+          delhc = (cp[13]*tt[13]/eta[3])*
+                (Math.pow(prat[3],(gam[13]-1.0)/gam[13])-1.0) ;
+          deltc = delhc / cp[13] ;
+          tt[3] = tt[13] + deltc ;
+          pt[3] = pt[13] * prat[3] ;
+          trat[3] = tt[3]/tt[13] ;
+          gam[3] = getGama(tt[3],gamopt) ;
+          cp[3]  = getCp(tt[3],gamopt);
+          tt[4] = tt4 * throtl/100.0 ;
+          pt[4] = pt[3] * prat[4] ;
+          gam[4] = getGama(tt[4],gamopt) ;
+          cp[4]  = getCp(tt[4],gamopt);
+          trat[4] = tt[4]/tt[3] ;
+          delhht = delhc ;
+          deltht = delhht / cp[4] ;
+          tt[5] = tt[4] - deltht ;
+          gam[5] = getGama(tt[5],gamopt) ;
+          cp[5]  = getCp(tt[5],gamopt);
+          trat[5] = tt[5]/tt[4] ;
+          prat[5] = Math.pow((1.0-delhht/cp[4]/tt[4]/eta[5]),
+                      (gam[4]/(gam[4]-1.0))) ;
+          pt[5] = pt[4] * prat[5] ;
+          delhlt = (1.0 + byprat) * delhf ;
+          deltlt = delhlt / cp[5] ;
+          tt[15] = tt[5] - deltlt ;
+          gam[15] = getGama(tt[15],gamopt) ;
+          cp[15]  = getCp(tt[15],gamopt);
+          trat[15] = tt[15]/tt[5] ;
+          prat[15] = Math.pow((1.0-delhlt/cp[5]/tt[5]/eta[5]),
+                      (gam[5]/(gam[5]-1.0))) ;
+          pt[15] = pt[5] * prat[15] ;
         }
-        number = macho;
-    }
-    return (number);
-}"
-), has expression (a Script with language Python, with script 
+
+        if (entype == 3) {              /* ramjet */
+          prat[3] = 1.0 ;                      
+          pt[3] = pt[2] * prat[3] ;
+          tt[3] = tt[2] ;
+          trat[3] = 1.0 ;
+          gam[3] = getGama(tt[3],gamopt) ;
+          cp[3]  = getCp(tt[3],gamopt);
+          tt[4] = tt4 * throtl/100.0 ;
+          gam[4] = getGama(tt[4],gamopt) ;
+          cp[4]  = getCp(tt[4],gamopt);
+          trat[4] = tt[4] / tt[3] ;
+          pt[4] = pt[3] * prat[4] ;
+          tt[5] = tt[4] ;
+          gam[5] = getGama(tt[5],gamopt) ;
+          cp[5]  = getCp(tt[5],gamopt);
+          trat[5] = 1.0 ;
+          prat[5] = 1.0 ;
+          pt[5] = pt[4] ;
+                                        /* fan conditions */
+          prat[13] = 1.0 ;
+          trat[13] = 1.0 ;
+          tt[13]   = tt[2] ;
+          pt[13]   = pt[2] ;
+          gam[13]  = gam[2] ;
+          cp[13]   = cp[2] ;
+          prat[15] = 1.0 ;
+          pt[15]   = pt[5] ;
+          trat[15] = 1.0 ;
+          tt[15]   = tt[5] ;
+          gam[15]  = gam[5] ;
+          cp[15]   = cp[5] ;
+        }
+
+        tt[7] = tt7 ;
+      }
+             /* analysis -assume flow choked at both turbine entrances */
+                                  /* and nozzle throat ... then*/
+      else {
+        tt[4] = tt4 * throtl/100.0 ;
+        gam[4] = getGama(tt[4],gamopt) ;
+        cp[4]  = getCp(tt[4],gamopt);
+        if (a4 < .02) a4 = .02 ;
+   
+        if (entype <= 1) {              /* turbojet */
+           dela = .2 ;                           /* iterate to get t5t4 */
+           trat[5] = 1.0 ;
+           t5t4n = .5 ;
+           itcount = 0 ;
+           while(Math.abs(dela) > .001 && itcount < 20) {
+              ++ itcount ;
+              delan = a8d/a4 - Math.sqrt(t5t4n)*
+                   Math.pow((1.0-(1.0/eta[5])*(1.0-t5t4n)),
+                          -gam[4]/(gam[4]-1.0)) ;
+              deriv = (delan-dela)/(t5t4n-trat[5]) ;
+              dela = delan ;
+              trat[5] = t5t4n ;
+              t5t4n = trat[5] - dela/deriv ;
+           }
+           tt[5] = tt[4] * trat[5] ;
+           gam[5] = getGama(tt[5],gamopt) ;
+           cp[5]  = getCp(tt[5],gamopt);
+           deltht = tt[5]- tt[4] ;
+           delhht  = cp[4] * deltht ;
+           prat[5] = Math.pow((1.0-(1.0/eta[5])*(1.0-trat[5])),
+                        gam[4]/(gam[4]-1.0)) ;
+           delhc = delhht  ;           /* compressor work */
+           deltc = -delhc / cp[2] ;
+           tt[3] = tt[2] + deltc ;
+           gam[3] = getGama(tt[3],gamopt) ;
+           cp[3]  = getCp(tt[3],gamopt);
+           trat[3] = tt[3]/tt[2] ;
+           prat[3] = Math.pow((1.0+eta[3]*(trat[3]-1.0)),
+                        gam[2]/(gam[2]-1.0)) ;
+           trat[4] = tt[4]/tt[3] ;
+           pt[3]   = pt[2] * prat[3] ;
+           pt[4]   = pt[3] * prat[4] ;
+           pt[5]   = pt[4] * prat[5] ;
+                                        /* fan conditions */
+           prat[13] = 1.0 ;
+           trat[13] = 1.0 ;
+           tt[13]   = tt[2] ;
+           pt[13]   = pt[2] ;
+           gam[13]  = gam[2] ;
+           cp[13]   = cp[2] ;
+           prat[15] = 1.0 ;
+           pt[15]   = pt[5] ;
+           trat[15] = 1.0 ;
+           tt[15]   = tt[5] ;
+           gam[15]  = gam[5] ;
+           cp[15]   = cp[5] ;
+        }
+
+        if(entype == 2) {                        /*  turbofan */
+           dela = .2 ;                           /* iterate to get t5t4 */
+           trat[5] = 1.0 ;
+           t5t4n = .5 ;
+           itcount = 0 ;
+           while(Math.abs(dela) > .001 && itcount < 20) {
+              ++ itcount ;
+              delan = a4p/a4 - Math.sqrt(t5t4n)*
+                      Math.pow((1.0-(1.0/eta[5])*(1.0-t5t4n)),
+                          -gam[4]/(gam[4]-1.0)) ;
+              deriv = (delan-dela)/(t5t4n-trat[5]) ;
+              dela = delan ;
+              trat[5] = t5t4n ;
+              t5t4n = trat[5] - dela/deriv ;
+           }
+           tt[5] = tt[4] * trat[5] ;
+           gam[5] = getGama(tt[5],gamopt) ;
+           cp[5]  = getCp(tt[5],gamopt);
+           deltht = tt[5] - tt[4] ;
+           delhht  = cp[4] * deltht ;
+           prat[5] = Math.pow((1.0-(1.0/eta[5])*(1.0-trat[5])),
+                     gam[4]/(gam[4]-1.0)) ;
+                                       /* iterate to get t15t14 */
+           dela = .2 ;
+           trat[15] = 1.0 ;
+           t5t4n = .5 ;
+           itcount = 0 ;
+           while(Math.abs(dela) > .001 && itcount < 20) {
+               ++ itcount ;
+               delan = a8d/a4p - Math.sqrt(t5t4n)*
+                        Math.pow((1.0-(1.0/eta[5])*(1.0-t5t4n)),
+                          -gam[5]/(gam[5]-1.0)) ;
+               deriv = (delan-dela)/(t5t4n-trat[15]) ;
+               dela = delan ;
+               trat[15] = t5t4n ;
+               t5t4n = trat[15] - dela/deriv ;
+           }
+           tt[15] = tt[5] * trat[15] ;
+           gam[15] = getGama(tt[15],gamopt) ;
+           cp[15]  = getCp(tt[15],gamopt);
+           deltlt = tt[15] - tt[5] ;
+           delhlt = cp[5] * deltlt ;
+           prat[15] = Math.pow((1.0-(1.0/eta[5])*(1.0-trat[15])),
+                       gam[5]/(gam[5]-1.0)) ;
+           byprat =  afan / acore - 1.0  ;
+           delhf = delhlt / (1.0 + byprat) ;              /* fan work */
+           deltf =  - delhf / cp[2] ;
+           tt[13] = tt[2] + deltf ;
+           gam[13] = getGama(tt[13],gamopt) ;
+           cp[13]  = getCp(tt[13],gamopt);
+           trat[13] = tt[13]/tt[2] ;
+           prat[13] = Math.pow((1.0+eta[13]*(trat[13]-1.0)),
+                     gam[2]/(gam[2]-1.0)) ;
+           delhc = delhht  ;                         /* compressor work */
+           deltc = -delhc / cp[13] ;
+           tt[3] = tt[13] + deltc ;
+           gam[3] = getGama(tt[3],gamopt) ;
+           cp[3]  = getCp(tt[3],gamopt);
+           trat[3] = tt[3]/tt[13] ;
+           prat[3] = Math.pow((1.0+eta[3]*(trat[3]-1.0)),
+                        gam[13]/(gam[13]-1.0)) ;
+           trat[4] = tt[4]/tt[3] ;
+           pt[13]  = pt[2]  * prat[13] ;
+           pt[3]   = pt[13] * prat[3] ;
+           pt[4]   = pt[3]  * prat[4] ;
+           pt[5]   = pt[4]  * prat[5] ;
+           pt[15]  = pt[5]  * prat[15] ;
+         }
+
+         if (entype == 3) {              /* ramjet */
+           prat[3] = 1.0 ;                      
+           pt[3] = pt[2] * prat[3] ;
+           tt[3] = tt[2] ;
+           trat[3] = 1.0 ;
+           gam[3] = getGama(tt[3],gamopt) ;
+           cp[3]  = getCp(tt[3],gamopt);
+           tt[4] = tt4 * throtl/100.0  ;
+           trat[4] = tt[4] / tt[3] ;
+           pt[4] = pt[3] * prat[4] ;
+           tt[5] = tt[4] ;
+           gam[5] = getGama(tt[5],gamopt) ;
+           cp[5]  = getCp(tt[5],gamopt);
+           trat[5] = 1.0 ;
+           prat[5] = 1.0 ;
+           pt[5] = pt[4] ;
+                                         /* fan conditions */
+           prat[13] = 1.0 ;
+           trat[13] = 1.0 ;
+           tt[13]   = tt[2] ;
+           pt[13]   = pt[2] ;
+           gam[13]  = gam[2] ;
+           cp[13]   = cp[2] ;
+           prat[15] = 1.0 ;
+           pt[15]   = pt[5] ;
+           trat[15] = 1.0 ;
+           tt[15]   = tt[5] ;
+           gam[15]  = gam[5] ;
+           cp[15]   = cp[5] ;
+         }
+
+         if (abflag == 1) tt[7] = tt7 ;
+       }
+   
+       prat[6] = 1.0;
+       pt[6] = pt[15];
+       trat[6] = 1.0 ;
+       tt[6] = tt[15] ;
+       gam[6] = getGama(tt[6],gamopt) ;
+       cp[6]  = getCp(tt[6],gamopt);
+       if (abflag > 0) {                   /* afterburner */
+             trat[7] = tt[7] / tt[6] ;
+             m5 = getMach(0,getAir(1.0,gam[5])*a4/acore,gam[5]) ;
+             prat[7] = getRayleighLoss(m5,trat[7],tt[6]) ;
+       }
+       tt[7] = tt[6] * trat[7] ;
+       pt[7] = pt[6] * prat[7] ;
+       gam[7] = getGama(tt[7],gamopt) ;
+       cp[7]  = getCp(tt[7],gamopt);
+                 /* engine press ratio EPR*/
+       epr = prat[7]*prat[15]*prat[5]*prat[4]*prat[3]*prat[13];
+              /* engine temp ratio ETR */
+       etr = trat[7]*trat[15]*trat[5]*trat[4]*trat[3]*trat[13];
+       return;
+     }"
+),  
+has expression (a Script with language Python, with script 
 "#!/usr/bin/env python
 \"\"\" generated source for module inputfile \"\"\"
-class Isentrop(object):
-    \"\"\" generated source for class Isentrop \"\"\"
-    def getMach(self, sub, corair):
-        \"\"\" generated source for method getMach \"\"\"
-        #  Utility to get the Mach number given the corrected airflow per area 
-        number = float()
-        chokair = float()
-        # /* iterate for mach number */
-        deriv = float()
-        machn = float()
-        macho = float()
-        airo = float()
-        airn = float()
-        iter = int()
-        chokair = getAir(1.0)
-        if corair > chokair:
-            number = 1.0
-            return (number)
-        else:
-            airo = 0.25618
-            # /* initial guess */
-            if sub == 2:
-                macho = 1.0
+class Turbo(object):
+    \"\"\" generated source for class Turbo \"\"\"
+    def getThermo(self):
+        \"\"\" generated source for method getThermo \"\"\"
+        #    inlet recovery  
+        if pt2flag == 0:
+            # /*     mil spec      */
+            if fsmach > 1.0:
+                # /* supersonic */
+                prat[2] = 1.0 - 0.075 * Math.pow(fsmach - 1.0, 1.35)
             else:
-                # /* sonic */
-                if sub == 0:
-                    macho = 1.703
-                else:
-                    macho = 0.5
-                # /* subsonic */
-                iter = 1
-                machn = macho - 0.2
-                while Math.abs(corair - airo) > 0.0001 and iter < 20:
-                    airn = getAir(machn)
-                    deriv = (airn - airo) / (machn - macho)
-                    airo = airn
-                    macho = machn
-                    machn = macho + (corair - airo) / deriv
-                    iter += 1
-            number = macho
-        return (number)
-
+                prat[2] = 1.0
+            eta[2] = prat[2]
+            fl1 = filter3(prat[2])
+            in_.inlet.left.f1.setText(String.valueOf(fl1))
+            i1 = ((((prat[2] - etmin) / (etmax - etmin)) * 1000.))
+            in_.inlet.right.s1.setValue(i1)
+        else:
+            # /* enter value */
+            prat[2] = eta[2]
+        # /* protection for overwriting input */
+        if eta[3] < 0.5:
+            eta[3] = 0.5
+        if eta[5] < 0.5:
+            eta[5] = 0.5
+        trat[7] = 1.0
+        prat[7] = 1.0
+        tt[2] = tt[1] = tt[0]
+        pt[1] = pt[0]
+        gam[2] = getGama(tt[2], gamopt)
+        cp[2] = getCp(tt[2], gamopt)
+        pt[2] = pt[1] * prat[2]
+        # /* design - p3p2 specified - tt4 specified */
+        if inflag == 0:
+            if entype <= 1:
+                # /* turbojet */
+                prat[3] = p3p2d
+                # /* core compressor */
+                if prat[3] < 0.5:
+                    prat[3] = 0.5
+                delhc = (cp[2] * tt[2] / eta[3]) * (Math.pow(prat[3], (gam[2] - 1.0) / gam[2]) - 1.0)
+                deltc = delhc / cp[2]
+                pt[3] = pt[2] * prat[3]
+                tt[3] = tt[2] + deltc
+                trat[3] = tt[3] / tt[2]
+                gam[3] = getGama(tt[3], gamopt)
+                cp[3] = getCp(tt[3], gamopt)
+                tt[4] = tt4 * throtl / 100.0
+                gam[4] = getGama(tt[4], gamopt)
+                cp[4] = getCp(tt[4], gamopt)
+                trat[4] = tt[4] / tt[3]
+                pt[4] = pt[3] * prat[4]
+                delhht = delhc
+                deltht = delhht / cp[4]
+                tt[5] = tt[4] - deltht
+                gam[5] = getGama(tt[5], gamopt)
+                cp[5] = getCp(tt[5], gamopt)
+                trat[5] = tt[5] / tt[4]
+                prat[5] = Math.pow((1.0 - delhht / cp[4] / tt[4] / eta[5]), (gam[4] / (gam[4] - 1.0)))
+                pt[5] = pt[4] * prat[5]
+                # /* fan conditions */
+                prat[13] = 1.0
+                trat[13] = 1.0
+                tt[13] = tt[2]
+                pt[13] = pt[2]
+                gam[13] = gam[2]
+                cp[13] = cp[2]
+                prat[15] = 1.0
+                pt[15] = pt[5]
+                trat[15] = 1.0
+                tt[15] = tt[5]
+                gam[15] = gam[5]
+                cp[15] = cp[5]
+            if entype == 2:
+                # /* turbofan */
+                prat[13] = p3fp2d
+                if prat[13] < 0.5:
+                    prat[13] = 0.5
+                delhf = (cp[2] * tt[2] / eta[13]) * (Math.pow(prat[13], (gam[2] - 1.0) / gam[2]) - 1.0)
+                deltf = delhf / cp[2]
+                tt[13] = tt[2] + deltf
+                pt[13] = pt[2] * prat[13]
+                trat[13] = tt[13] / tt[2]
+                gam[13] = getGama(tt[13], gamopt)
+                cp[13] = getCp(tt[13], gamopt)
+                prat[3] = p3p2d
+                # /* core compressor */
+                if prat[3] < 0.5:
+                    prat[3] = 0.5
+                delhc = (cp[13] * tt[13] / eta[3]) * (Math.pow(prat[3], (gam[13] - 1.0) / gam[13]) - 1.0)
+                deltc = delhc / cp[13]
+                tt[3] = tt[13] + deltc
+                pt[3] = pt[13] * prat[3]
+                trat[3] = tt[3] / tt[13]
+                gam[3] = getGama(tt[3], gamopt)
+                cp[3] = getCp(tt[3], gamopt)
+                tt[4] = tt4 * throtl / 100.0
+                pt[4] = pt[3] * prat[4]
+                gam[4] = getGama(tt[4], gamopt)
+                cp[4] = getCp(tt[4], gamopt)
+                trat[4] = tt[4] / tt[3]
+                delhht = delhc
+                deltht = delhht / cp[4]
+                tt[5] = tt[4] - deltht
+                gam[5] = getGama(tt[5], gamopt)
+                cp[5] = getCp(tt[5], gamopt)
+                trat[5] = tt[5] / tt[4]
+                prat[5] = Math.pow((1.0 - delhht / cp[4] / tt[4] / eta[5]), (gam[4] / (gam[4] - 1.0)))
+                pt[5] = pt[4] * prat[5]
+                delhlt = (1.0 + byprat) * delhf
+                deltlt = delhlt / cp[5]
+                tt[15] = tt[5] - deltlt
+                gam[15] = getGama(tt[15], gamopt)
+                cp[15] = getCp(tt[15], gamopt)
+                trat[15] = tt[15] / tt[5]
+                prat[15] = Math.pow((1.0 - delhlt / cp[5] / tt[5] / eta[5]), (gam[5] / (gam[5] - 1.0)))
+                pt[15] = pt[5] * prat[15]
+            if entype == 3:
+                # /* ramjet */
+                prat[3] = 1.0
+                pt[3] = pt[2] * prat[3]
+                tt[3] = tt[2]
+                trat[3] = 1.0
+                gam[3] = getGama(tt[3], gamopt)
+                cp[3] = getCp(tt[3], gamopt)
+                tt[4] = tt4 * throtl / 100.0
+                gam[4] = getGama(tt[4], gamopt)
+                cp[4] = getCp(tt[4], gamopt)
+                trat[4] = tt[4] / tt[3]
+                pt[4] = pt[3] * prat[4]
+                tt[5] = tt[4]
+                gam[5] = getGama(tt[5], gamopt)
+                cp[5] = getCp(tt[5], gamopt)
+                trat[5] = 1.0
+                prat[5] = 1.0
+                pt[5] = pt[4]
+                # /* fan conditions */
+                prat[13] = 1.0
+                trat[13] = 1.0
+                tt[13] = tt[2]
+                pt[13] = pt[2]
+                gam[13] = gam[2]
+                cp[13] = cp[2]
+                prat[15] = 1.0
+                pt[15] = pt[5]
+                trat[15] = 1.0
+                tt[15] = tt[5]
+                gam[15] = gam[5]
+                cp[15] = cp[5]
+            tt[7] = tt7
+        else:
+            # /* analysis -assume flow choked at both turbine entrances */
+            # /* and nozzle throat ... then*/
+            tt[4] = tt4 * throtl / 100.0
+            gam[4] = getGama(tt[4], gamopt)
+            cp[4] = getCp(tt[4], gamopt)
+            if a4 < 0.02:
+                a4 = 0.02
+            if entype <= 1:
+                # /* turbojet */
+                dela = 0.2
+                # /* iterate to get t5t4 */
+                trat[5] = 1.0
+                t5t4n = 0.5
+                itcount = 0
+                while Math.abs(dela) > 0.001 and itcount < 20:
+                    itcount += 1
+                    delan = a8d / a4 - Math.sqrt(t5t4n) * Math.pow((1.0 - (1.0 / eta[5]) * (1.0 - t5t4n)), -gam[4] / (gam[4] - 1.0))
+                    deriv = (delan - dela) / (t5t4n - trat[5])
+                    dela = delan
+                    trat[5] = t5t4n
+                    t5t4n = trat[5] - dela / deriv
+                tt[5] = tt[4] * trat[5]
+                gam[5] = getGama(tt[5], gamopt)
+                cp[5] = getCp(tt[5], gamopt)
+                deltht = tt[5] - tt[4]
+                delhht = cp[4] * deltht
+                prat[5] = Math.pow((1.0 - (1.0 / eta[5]) * (1.0 - trat[5])), gam[4] / (gam[4] - 1.0))
+                delhc = delhht
+                # /* compressor work */
+                deltc = -delhc / cp[2]
+                tt[3] = tt[2] + deltc
+                gam[3] = getGama(tt[3], gamopt)
+                cp[3] = getCp(tt[3], gamopt)
+                trat[3] = tt[3] / tt[2]
+                prat[3] = Math.pow((1.0 + eta[3] * (trat[3] - 1.0)), gam[2] / (gam[2] - 1.0))
+                trat[4] = tt[4] / tt[3]
+                pt[3] = pt[2] * prat[3]
+                pt[4] = pt[3] * prat[4]
+                pt[5] = pt[4] * prat[5]
+                # /* fan conditions */
+                prat[13] = 1.0
+                trat[13] = 1.0
+                tt[13] = tt[2]
+                pt[13] = pt[2]
+                gam[13] = gam[2]
+                cp[13] = cp[2]
+                prat[15] = 1.0
+                pt[15] = pt[5]
+                trat[15] = 1.0
+                tt[15] = tt[5]
+                gam[15] = gam[5]
+                cp[15] = cp[5]
+            if entype == 2:
+                # /*  turbofan */
+                dela = 0.2
+                # /* iterate to get t5t4 */
+                trat[5] = 1.0
+                t5t4n = 0.5
+                itcount = 0
+                while Math.abs(dela) > 0.001 and itcount < 20:
+                    itcount += 1
+                    delan = a4p / a4 - Math.sqrt(t5t4n) * Math.pow((1.0 - (1.0 / eta[5]) * (1.0 - t5t4n)), -gam[4] / (gam[4] - 1.0))
+                    deriv = (delan - dela) / (t5t4n - trat[5])
+                    dela = delan
+                    trat[5] = t5t4n
+                    t5t4n = trat[5] - dela / deriv
+                tt[5] = tt[4] * trat[5]
+                gam[5] = getGama(tt[5], gamopt)
+                cp[5] = getCp(tt[5], gamopt)
+                deltht = tt[5] - tt[4]
+                delhht = cp[4] * deltht
+                prat[5] = Math.pow((1.0 - (1.0 / eta[5]) * (1.0 - trat[5])), gam[4] / (gam[4] - 1.0))
+                # /* iterate to get t15t14 */
+                dela = 0.2
+                trat[15] = 1.0
+                t5t4n = 0.5
+                itcount = 0
+                while Math.abs(dela) > 0.001 and itcount < 20:
+                    itcount += 1
+                    delan = a8d / a4p - Math.sqrt(t5t4n) * Math.pow((1.0 - (1.0 / eta[5]) * (1.0 - t5t4n)), -gam[5] / (gam[5] - 1.0))
+                    deriv = (delan - dela) / (t5t4n - trat[15])
+                    dela = delan
+                    trat[15] = t5t4n
+                    t5t4n = trat[15] - dela / deriv
+                tt[15] = tt[5] * trat[15]
+                gam[15] = getGama(tt[15], gamopt)
+                cp[15] = getCp(tt[15], gamopt)
+                deltlt = tt[15] - tt[5]
+                delhlt = cp[5] * deltlt
+                prat[15] = Math.pow((1.0 - (1.0 / eta[5]) * (1.0 - trat[15])), gam[5] / (gam[5] - 1.0))
+                byprat = afan / acore - 1.0
+                delhf = delhlt / (1.0 + byprat)
+                # /* fan work */
+                deltf = -delhf / cp[2]
+                tt[13] = tt[2] + deltf
+                gam[13] = getGama(tt[13], gamopt)
+                cp[13] = getCp(tt[13], gamopt)
+                trat[13] = tt[13] / tt[2]
+                prat[13] = Math.pow((1.0 + eta[13] * (trat[13] - 1.0)), gam[2] / (gam[2] - 1.0))
+                delhc = delhht
+                # /* compressor work */
+                deltc = -delhc / cp[13]
+                tt[3] = tt[13] + deltc
+                gam[3] = getGama(tt[3], gamopt)
+                cp[3] = getCp(tt[3], gamopt)
+                trat[3] = tt[3] / tt[13]
+                prat[3] = Math.pow((1.0 + eta[3] * (trat[3] - 1.0)), gam[13] / (gam[13] - 1.0))
+                trat[4] = tt[4] / tt[3]
+                pt[13] = pt[2] * prat[13]
+                pt[3] = pt[13] * prat[3]
+                pt[4] = pt[3] * prat[4]
+                pt[5] = pt[4] * prat[5]
+                pt[15] = pt[5] * prat[15]
+            if entype == 3:
+                # /* ramjet */
+                prat[3] = 1.0
+                pt[3] = pt[2] * prat[3]
+                tt[3] = tt[2]
+                trat[3] = 1.0
+                gam[3] = getGama(tt[3], gamopt)
+                cp[3] = getCp(tt[3], gamopt)
+                tt[4] = tt4 * throtl / 100.0
+                trat[4] = tt[4] / tt[3]
+                pt[4] = pt[3] * prat[4]
+                tt[5] = tt[4]
+                gam[5] = getGama(tt[5], gamopt)
+                cp[5] = getCp(tt[5], gamopt)
+                trat[5] = 1.0
+                prat[5] = 1.0
+                pt[5] = pt[4]
+                # /* fan conditions */
+                prat[13] = 1.0
+                trat[13] = 1.0
+                tt[13] = tt[2]
+                pt[13] = pt[2]
+                gam[13] = gam[2]
+                cp[13] = cp[2]
+                prat[15] = 1.0
+                pt[15] = pt[5]
+                trat[15] = 1.0
+                tt[15] = tt[5]
+                gam[15] = gam[5]
+                cp[15] = cp[5]
+            if abflag == 1:
+                tt[7] = tt7
+        prat[6] = 1.0
+        pt[6] = pt[15]
+        trat[6] = 1.0
+        tt[6] = tt[15]
+        gam[6] = getGama(tt[6], gamopt)
+        cp[6] = getCp(tt[6], gamopt)
+        if abflag > 0:
+            # /* afterburner */
+            trat[7] = tt[7] / tt[6]
+            m5 = getMach(0, getAir(1.0, gam[5]) * a4 / acore, gam[5])
+            prat[7] = getRayleighLoss(m5, trat[7], tt[6])
+        tt[7] = tt[6] * trat[7]
+        pt[7] = pt[6] * prat[7]
+        gam[7] = getGama(tt[7], gamopt)
+        cp[7] = getCp(tt[7], gamopt)
+        # /* engine press ratio EPR*/
+        epr = prat[7] * prat[15] * prat[5] * prat[4] * prat[3] * prat[13]
+        # /* engine temp ratio ETR */
+        etr = trat[7] * trat[15] * trat[5] * trat[4] * trat[3] * trat[13]
+        return
 ").
-
-CM: External Isentrop.CAL_MFGNU(double TT, double NU, double G, double Q) returns double: "http://com.ge.research.sadl.darpa.aske.answer/Isentrop_java#Isentrop.CAL_MFGNU".
-CM: Isentrop.CAL_MFGNU has expression (a Script with language Java, with script 
-"double CAL_MFGNU(double TT, double NU, double G, double Q) {
-    if (NU <= 0) {
-        return 1;
-    }
-    double Pi = 4 * Math.atan(1);
-    double M = 0.04 * NU + 1;
-    NU = NU * Pi / 180;
-    double TMIN = CAL_T(TT, M, G, Q);
-    double TSTAR = CAL_T(TT, 1, G, Q);
-    double DELT = (TMIN - TSTAR) / 1000;
-    double PR1 = ((Math.exp(Q / TT) - 1) / (Math.exp(Q / TSTAR) - 1)) * Math.pow((TSTAR / TT), (G / (G - 1))) * Math.exp(Q / TSTAR * Math.exp(Q / TSTAR) / (Math.exp(Q / TSTAR) - 1) - Q / TT * Math.exp(Q / TT) / (Math.exp(Q / TT) - 1));
-    double ARG1 = 0;
-    double MACH1 = 0;
-    double T = TSTAR + DELT;
-    double Sum = 0;
-    double GAM;
-    double PR;
-    double MACH = 0;
-    double MU;
-    double ARG;
-    double SUM1 = 0;
-    while (Sum < NU) {
-        GAM = CAL_GAM(T, G, Q);
-        PR = ((Math.exp(Q / TT) - 1) / (Math.exp(Q / T) - 1)) * Math.pow((T / TT), (G / (G - 1))) * Math.exp(Q / T * Math.exp(Q / T) / (Math.exp(Q / T) - 1) - Q / TT * Math.exp(Q / TT) / (Math.exp(Q / TT) - 1));
-        MACH = Math.sqrt(2 * TT / CAL_GAM(T, G, Q) / T * (G / (G - 1) * (1 - T / TT) + Q / TT * (1 / (Math.exp(Q / TT) - 1) - 1 / (Math.exp(Q / T) - 1))));
-        MU = Math.atan(Math.sqrt(1 / (Math.pow(MACH, 2) - 1)));
-        ARG = Math.sin(2 * MU) / 2 / GAM / PR;
-        Sum = Sum - (ARG + ARG1) / 2 * (PR - PR1);
-        if (Sum > NU) {
-            M = (NU - SUM1) / (Sum - SUM1) * (MACH - MACH1) + MACH1;
-            return M;
-        }
-        T = T + DELT;
-        PR1 = PR;
-        ARG1 = ARG;
-        MACH1 = MACH;
-        SUM1 = Sum;
-    }
-    M = (NU - SUM1) / (Sum - SUM1) * (MACH - MACH1) + MACH1;
-    return M;
-}"
-), has expression (a Script with language Python, with script 
-"#!/usr/bin/env python
-\"\"\" generated source for module inputfile \"\"\"
-class Isentrop(object):
-    \"\"\" generated source for class Isentrop \"\"\"
-    def CAL_MFGNU(self, TT, NU, G, Q):
-        \"\"\" generated source for method CAL_MFGNU \"\"\"
-        if NU <= 0:
-            return 1
-        Pi = 4 * Math.atan(1)
-        M = 0.04 * NU + 1
-        NU = NU * Pi / 180
-        TMIN = CAL_T(TT, M, G, Q)
-        TSTAR = CAL_T(TT, 1, G, Q)
-        DELT = (TMIN - TSTAR) / 1000
-        PR1 = ((Math.exp(Q / TT) - 1) / (Math.exp(Q / TSTAR) - 1)) * Math.pow((TSTAR / TT), (G / (G - 1))) * Math.exp(Q / TSTAR * Math.exp(Q / TSTAR) / (Math.exp(Q / TSTAR) - 1) - Q / TT * Math.exp(Q / TT) / (Math.exp(Q / TT) - 1))
-        ARG1 = 0
-        MACH1 = 0
-        T = TSTAR + DELT
-        Sum = 0
-        GAM = float()
-        PR = float()
-        MACH = 0
-        MU = float()
-        ARG = float()
-        SUM1 = 0
-        while Sum < NU:
-            GAM = CAL_GAM(T, G, Q)
-            PR = ((Math.exp(Q / TT) - 1) / (Math.exp(Q / T) - 1)) * Math.pow((T / TT), (G / (G - 1))) * Math.exp(Q / T * Math.exp(Q / T) / (Math.exp(Q / T) - 1) - Q / TT * Math.exp(Q / TT) / (Math.exp(Q / TT) - 1))
-            MACH = Math.sqrt(2 * TT / CAL_GAM(T, G, Q) / T * (G / (G - 1) * (1 - T / TT) + Q / TT * (1 / (Math.exp(Q / TT) - 1) - 1 / (Math.exp(Q / T) - 1))))
-            MU = Math.atan(Math.sqrt(1 / (Math.pow(MACH, 2) - 1)))
-            ARG = Math.sin(2 * MU) / 2 / GAM / PR
-            Sum = Sum - (ARG + ARG1) / 2 * (PR - PR1)
-            if Sum > NU:
-                M = (NU - SUM1) / (Sum - SUM1) * (MACH - MACH1) + MACH1
-                return M
-            T = T + DELT
-            PR1 = PR
-            ARG1 = ARG
-            MACH1 = MACH
-            SUM1 = Sum
-        M = (NU - SUM1) / (Sum - SUM1) * (MACH - MACH1) + MACH1
-        return M
-
-").
-
-CM: External Isentrop.CAL_SOS(double T, double G, double R, double Q) returns double: "http://com.ge.research.sadl.darpa.aske.answer/Isentrop_java#Isentrop.CAL_SOS".
-CM: Isentrop.CAL_SOS has expression (a Script with language Java, with script 
-"double CAL_SOS(double T, double G, double R, double Q) {
-    double WOW = 1 + (G - 1) / (1 + (G - 1) * Math.pow((Q / T), 2) * Math.exp(Q / T) / Math.pow((Math.exp(Q / T) - 1), 2));
-    return (Math.sqrt(32.174 * T * R * WOW));
-}"
-), has expression (a Script with language Python, with script 
-"#!/usr/bin/env python
-\"\"\" generated source for module inputfile \"\"\"
-class Isentrop(object):
-    \"\"\" generated source for class Isentrop \"\"\"
-    def CAL_SOS(self, T, G, R, Q):
-        \"\"\" generated source for method CAL_SOS \"\"\"
-        WOW = 1 + (G - 1) / (1 + (G - 1) * Math.pow((Q / T), 2) * Math.exp(Q / T) / Math.pow((Math.exp(Q / T) - 1), 2))
-        return (Math.sqrt(32.174 * T * R * WOW))
-
-").
-
-CM: External Isentrop.CAL_ASQA(double TT, double M, double G, double Q) returns double: "http://com.ge.research.sadl.darpa.aske.answer/Isentrop_java#Isentrop.CAL_ASQA".
-CM: Isentrop.CAL_ASQA has expression (a Script with language Java, with script 
-"double CAL_ASQA(double TT, double M, double G, double Q) {
-    double T = CAL_T(TT, M, G, Q);
-    double TSTAR = CAL_T(TT, 1, G, Q);
-    double SOSRAT = 1 + (G - 1) / (1 + (G - 1) * Math.pow((Q / T), 2) * Math.exp(Q / T) / Math.pow((Math.exp(Q / T) - 1), 2));
-    SOSRAT = SOSRAT / (1 + (G - 1) / (1 + (G - 1) * Math.pow((Q / TSTAR), 2) * Math.exp(Q / TSTAR) / Math.pow((Math.exp(Q / TSTAR) - 1), 2)));
-    SOSRAT = Math.sqrt(T / TSTAR * SOSRAT);
-    return (CAL_DQDT(TT, M, G, Q) * SOSRAT * M / CAL_DQDT(TT, 1, G, Q));
-}"
-), has expression (a Script with language Python, with script 
-"#!/usr/bin/env python
-\"\"\" generated source for module inputfile \"\"\"
-class Isentrop(object):
-    \"\"\" generated source for class Isentrop \"\"\"
-    def CAL_ASQA(self, TT, M, G, Q):
-        \"\"\" generated source for method CAL_ASQA \"\"\"
-        T = CAL_T(TT, M, G, Q)
-        TSTAR = CAL_T(TT, 1, G, Q)
-        SOSRAT = 1 + (G - 1) / (1 + (G - 1) * Math.pow((Q / T), 2) * Math.exp(Q / T) / Math.pow((Math.exp(Q / T) - 1), 2))
-        SOSRAT = SOSRAT / (1 + (G - 1) / (1 + (G - 1) * Math.pow((Q / TSTAR), 2) * Math.exp(Q / TSTAR) / Math.pow((Math.exp(Q / TSTAR) - 1), 2)))
-        SOSRAT = Math.sqrt(T / TSTAR * SOSRAT)
-        return (CAL_DQDT(TT, M, G, Q) * SOSRAT * M / CAL_DQDT(TT, 1, G, Q))
-
-").
-
-CM: External Isentrop.CAL_WCOR(double TT, double M, double G, double Q) returns double: "http://com.ge.research.sadl.darpa.aske.answer/Isentrop_java#Isentrop.CAL_WCOR".
-CM: Isentrop.CAL_WCOR has expression (a Script with language Java, with script 
-"double CAL_WCOR(double TT, double M, double G, double Q) {
-    double T = CAL_T(TT, M, G, Q);
-    double TRAT = T / TT;
-    double A = CAL_SOS(T, G, R, Q);
-    double PRAT = CAL_PQPT(TT, M, G, Q);
-    double wcortp = (PRAT * M * A * 2116) / (TRAT * Math.sqrt(TT) * Math.sqrt(518) * R);
-    return wcortp / 144;
-}"
-), has expression (a Script with language Python, with script 
-"#!/usr/bin/env python
-\"\"\" generated source for module inputfile \"\"\"
-class Isentrop(object):
-    \"\"\" generated source for class Isentrop \"\"\"
-    def CAL_WCOR(self, TT, M, G, Q):
-        \"\"\" generated source for method CAL_WCOR \"\"\"
-        T = CAL_T(TT, M, G, Q)
-        TRAT = T / TT
-        A = CAL_SOS(T, G, R, Q)
-        PRAT = CAL_PQPT(TT, M, G, Q)
-        wcortp = (PRAT * M * A * 2116) / (TRAT * Math.sqrt(TT) * Math.sqrt(518) * R)
-        return wcortp / 144
-
-").
-
-CM: External Isentrop.CAL_PQPT_LOOP(double TT, double prattp, double G, double Q) returns double: "http://com.ge.research.sadl.darpa.aske.answer/Isentrop_java#Isentrop.CAL_PQPT_LOOP".
-CM: Isentrop.CAL_PQPT_LOOP has expression (a Script with language Java, with script 
-"double CAL_PQPT_LOOP(double TT, double prattp, double G, double Q) {
-    double M = 10;
-    double ML = 0;
-    double MR = 20;
-    double EPS = 0;
-    if (prattp > .99997) {
-        EPS = 0.0001;
-    }
-    if (prattp <= .99997) {
-        EPS = .00000001;
-    }
-    double DIFF = prattp - CAL_PQPT(TT, M, G, Q);
-    while (Math.abs(DIFF) > EPS) {
-        if (DIFF > 0.0) {
-            MR = M;
-        }
-        if (DIFF < 0.0) {
-            ML = M;
-        }
-        M = (MR + ML) / 2;
-        DIFF = prattp - CAL_PQPT(TT, M, G, Q);
-    }
-    return M;
-}"
-), has expression (a Script with language Python, with script 
-"#!/usr/bin/env python
-\"\"\" generated source for module inputfile \"\"\"
-class Isentrop(object):
-    \"\"\" generated source for class Isentrop \"\"\"
-    def CAL_PQPT_LOOP(self, TT, prattp, G, Q):
-        \"\"\" generated source for method CAL_PQPT_LOOP \"\"\"
-        M = 10
-        ML = 0
-        MR = 20
-        EPS = 0
-        if prattp > 0.99997:
-            EPS = 0.0001
-        if prattp <= 0.99997:
-            EPS = 0.00000001
-        DIFF = prattp - CAL_PQPT(TT, M, G, Q)
-        while Math.abs(DIFF) > EPS:
-            if DIFF > 0.0:
-                MR = M
-            if DIFF < 0.0:
-                ML = M
-            M = (MR + ML) / 2
-            DIFF = prattp - CAL_PQPT(TT, M, G, Q)
-        return M
-
-").
-
-CM: External Isentrop.CAL_PQPT(double TT, double M, double G, double Q) returns double: "http://com.ge.research.sadl.darpa.aske.answer/Isentrop_java#Isentrop.CAL_PQPT".
-CM: Isentrop.CAL_PQPT has expression (a Script with language Java, with script 
-"double CAL_PQPT(double TT, double M, double G, double Q) {
-    double T = CAL_T(TT, M, G, Q);
-    return (((Math.exp(Q / TT) - 1) / (Math.exp(Q / T) - 1)) * Math.pow((T / TT), (G / (G - 1))) * Math.exp(Q / T * Math.exp(Q / T) / (Math.exp(Q / T) - 1) - Q / TT * Math.exp(Q / TT) / (Math.exp(Q / TT) - 1)));
-}"
-), has expression (a Script with language Python, with script 
-"#!/usr/bin/env python
-\"\"\" generated source for module inputfile \"\"\"
-class Isentrop(object):
-    \"\"\" generated source for class Isentrop \"\"\"
-    def CAL_PQPT(self, TT, M, G, Q):
-        \"\"\" generated source for method CAL_PQPT \"\"\"
-        T = CAL_T(TT, M, G, Q)
-        return (((Math.exp(Q / TT) - 1) / (Math.exp(Q / T) - 1)) * Math.pow((T / TT), (G / (G - 1))) * Math.exp(Q / T * Math.exp(Q / T) / (Math.exp(Q / T) - 1) - Q / TT * Math.exp(Q / TT) / (Math.exp(Q / TT) - 1)))
-
-").
-
-CM: External Isentrop.TQTT(double M, double G) returns double: "http://com.ge.research.sadl.darpa.aske.answer/Isentrop_java#Isentrop.TQTT".
-CM: Isentrop.TQTT has expression (a Script with language Java, with script 
-"double TQTT(double M, double G) {
-    return Math.pow((1 + (G - 1) / 2 * Math.pow(M, 2)), -1);
-}"
-), has expression (a Script with language Python, with script 
-"#!/usr/bin/env python
-\"\"\" generated source for module inputfile \"\"\"
-class Isentrop(object):
-    \"\"\" generated source for class Isentrop \"\"\"
-    def TQTT(self, M, G):
-        \"\"\" generated source for method TQTT \"\"\"
-        return Math.pow((1 + (G - 1) / 2 * Math.pow(M, 2)), -1)
-
-").
-
-CM: "Would you like to save the extracted model (Isentrop.java.owl) in SADL format"?

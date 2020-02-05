@@ -6,7 +6,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.apache.log4j.Logger;
-import org.apache.log4j.TTCCLayout;
 import org.eclipse.jdt.core.compiler.InvalidInputException;
 
 import com.ge.research.sadl.reasoner.ConfigurationException;
@@ -201,8 +200,8 @@ public class TextProcessingServiceInterface extends JsonServiceInterface {
 	}
 
 	private void setTextServiceURL(String baseUrl) {
-//		String host = "vesuvius-dev.crd.ge.com";	// default
-		String host = "vesuvius063.crd.ge.com";	// default
+		String host = "vesuvius-dev.crd.ge.com";	// default
+//		String host = "vesuvius063.crd.ge.com";	// default
 		int port = 4200;			// default
 		if (baseUrl != null) {
 			textServiceURL = baseUrl + DARPA_ASKE_TEXT_SERVICE_URL_FRAGMENT;

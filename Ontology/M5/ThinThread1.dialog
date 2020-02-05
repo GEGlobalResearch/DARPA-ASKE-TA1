@@ -1,0 +1,5 @@
+ uri "http://sadl.org/ThinThread1.dialog" alias ThinThread1.
+ 
+ import "http://sadl.org/SpeedOfSound.sadl".
+ 
+ What is mach when altitude is 25000 ft and velocity is 800 mph?
