@@ -258,7 +258,7 @@ public class JavaImportJPTests extends AbstractDialogTest {
 	}
 	
 	@Test
-	public void test_04() throws IOException, ConfigurationException, InvalidNameException, ReasonerNotFoundException, QueryParseException, QueryCancelledException {
+	public void test_04() throws IOException, ConfigurationException, InvalidNameException, ReasonerNotFoundException, QueryParseException, QueryCancelledException, AnswerExtractionException {
 		File sourceFile = new File(getCodeExtractionKbRoot() + "/ExtractedModels/Sources/Isentrop.java");
 		assertTrue(sourceFile.exists());
 		IConfigurationManagerForIDE cm = ConfigurationManagerForIdeFactory.getConfigurationManagerForIDE(getDomainProjectModelFolder(), null);
@@ -295,7 +295,7 @@ public class JavaImportJPTests extends AbstractDialogTest {
 	}
 	
 	@Test
-	public void test_05() throws IOException, ConfigurationException, OwlImportException, InvalidNameException, ReasonerNotFoundException, QueryParseException, QueryCancelledException {
+	public void test_05() throws IOException, ConfigurationException, OwlImportException, InvalidNameException, ReasonerNotFoundException, QueryParseException, QueryCancelledException, AnswerExtractionException {
 		File codeFile = new File(getCodeExtractionKbRoot() + "/ExtractedModels/Sources/Mach.java");
 		assertTrue(codeFile.exists());
 		IConfigurationManagerForIDE cm = ConfigurationManagerForIdeFactory.getConfigurationManagerForIDE(getDomainProjectModelFolder(), null);
@@ -392,7 +392,7 @@ public class JavaImportJPTests extends AbstractDialogTest {
 	}
 	
 	@Test
-	public void test_06() throws IOException, ConfigurationException, OwlImportException, InvalidNameException, ReasonerNotFoundException, QueryParseException, QueryCancelledException {
+	public void test_06() throws IOException, ConfigurationException, OwlImportException, InvalidNameException, ReasonerNotFoundException, QueryParseException, QueryCancelledException, AnswerExtractionException {
 		// remove OWL and SADL files
 		File owlF = new File(getCodeExtractionKbRoot() + "/ExtractedModels\\Mach.java.owl");
 		
@@ -461,7 +461,7 @@ public class JavaImportJPTests extends AbstractDialogTest {
 	}
 
 	@Test
-	public void test_08() throws IOException, ConfigurationException, InvalidNameException, ReasonerNotFoundException, QueryParseException, QueryCancelledException {
+	public void test_08() throws IOException, ConfigurationException, InvalidNameException, ReasonerNotFoundException, QueryParseException, QueryCancelledException, AnswerExtractionException {
 		File codeFile = new File(getCodeExtractionKbRoot() + "/ExtractedModels/Sources/Turbo.java");
 		assertTrue(codeFile.exists());
 		// remove OWL and SADL files
@@ -513,7 +513,7 @@ public class JavaImportJPTests extends AbstractDialogTest {
 	}
 
 	@Test
-	public void test_08_on_Turbo_modified() throws IOException, ConfigurationException, InvalidNameException, ReasonerNotFoundException, QueryParseException, QueryCancelledException {
+	public void test_08_on_Turbo_modified() throws IOException, ConfigurationException, InvalidNameException, ReasonerNotFoundException, QueryParseException, QueryCancelledException, AnswerExtractionException {
 		File codeFile = new File(getCodeExtractionKbRoot() + "/ExtractedModels/Sources/TurboModified.java");
 		assertTrue(codeFile.exists());
 		// remove OWL and SADL files
@@ -565,7 +565,7 @@ public class JavaImportJPTests extends AbstractDialogTest {
 	}
 
 	@Test
-	public void test_09() throws IOException, ConfigurationException, InvalidNameException, ReasonerNotFoundException, QueryParseException, QueryCancelledException {
+	public void test_09() throws IOException, ConfigurationException, InvalidNameException, ReasonerNotFoundException, QueryParseException, QueryCancelledException, AnswerExtractionException {
 	    this.sadl(getContent(getScientificConcepts2Path())); 
 	    this.sadl(getContent(getSpeedOfSoundPath()));
 
@@ -645,7 +645,7 @@ public class JavaImportJPTests extends AbstractDialogTest {
 	}
 	
 	@Test
-	public void test_10() throws IOException, ConfigurationException, InvalidNameException, ReasonerNotFoundException, QueryParseException, QueryCancelledException {
+	public void test_10() throws IOException, ConfigurationException, InvalidNameException, ReasonerNotFoundException, QueryParseException, QueryCancelledException, AnswerExtractionException {
 		File sourceFile = new File(getCodeExtractionKbRoot() + "/ExtractedModels/Sources/TurboAnnotated.java");
 		assertTrue(sourceFile.exists());
 		
@@ -681,7 +681,7 @@ public class JavaImportJPTests extends AbstractDialogTest {
 	}
 	
 	@Test
-	public void test_11() throws ConfigurationException, IOException, InvalidNameException, ReasonerNotFoundException, QueryParseException, QueryCancelledException {
+	public void test_11() throws ConfigurationException, IOException, InvalidNameException, ReasonerNotFoundException, QueryParseException, QueryCancelledException, AnswerExtractionException {
 		String javaContent = 
 				"public class Test_11 {\r\n" + 
 				"    public double getAir(double mach, double gamma) {\r\n" + 

@@ -61,6 +61,7 @@ import com.ge.research.sadl.darpa.aske.curation.AnswerCurationManager.SaveAsSadl
 import com.ge.research.sadl.darpa.aske.curation.DialogAnswerProviderConsoleForTest;
 import com.ge.research.sadl.darpa.aske.processing.DialogConstants;
 import com.ge.research.sadl.darpa.aske.processing.IDialogAnswerProvider;
+import com.ge.research.sadl.darpa.aske.processing.imports.AnswerExtractionException;
 import com.ge.research.sadl.darpa.aske.processing.imports.TextProcessingServiceInterface.EquationVariableContextResponse;
 import com.ge.research.sadl.darpa.aske.processing.imports.TextProcessingServiceInterface.UnitExtractionResponse;
 import com.ge.research.sadl.darpa.aske.processing.imports.TextProcessor;
@@ -178,7 +179,7 @@ public class TextProcessorTests {
 
 //	@Ignore
 	@Test
-	public void test4() throws ConfigurationException, IOException, InvalidNameException, ReasonerNotFoundException, QueryParseException, QueryCancelledException {
+	public void test4() throws ConfigurationException, IOException, InvalidNameException, ReasonerNotFoundException, QueryParseException, QueryCancelledException, AnswerExtractionException {
 		File textFile = new File(getTextExtractionPrjFolder() + "/ExtractedModels/Sources/Sound.txt");
 		IConfigurationManagerForIDE cm = ConfigurationManagerForIdeFactory.getConfigurationManagerForIDE(getDomainProjectModelFolder(), null);
 		AnswerCurationManager acm = new AnswerCurationManager(getDomainProjectModelFolder(), cm, null, null);
@@ -411,7 +412,7 @@ public class TextProcessorTests {
 	}
 
 	@Test
-	public void test7() throws ConfigurationException, IOException, InvalidNameException, ReasonerNotFoundException, QueryParseException, QueryCancelledException {
+	public void test7() throws ConfigurationException, IOException, InvalidNameException, ReasonerNotFoundException, QueryParseException, QueryCancelledException, AnswerExtractionException {
 		File textFile = new File(getTextExtractionPrjFolder() + "/ExtractedModels/Sources/Isentrop.txt");
 		IConfigurationManagerForIDE cm = ConfigurationManagerForIdeFactory.getConfigurationManagerForIDE(getDomainProjectModelFolder(), null);
 		AnswerCurationManager acm = new AnswerCurationManager(getDomainProjectModelFolder(), cm, null, null);
