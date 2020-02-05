@@ -39,6 +39,14 @@ class DialogParsingTest {
 			Evaluate CAL_SOS(1, 2).
 		'''.assertNoErrors
 	}
+	
+	@Test
+	def void evalStatement_2_paramsWithUnit() {
+		'''
+			uri "http://test".
+			Evaluate CAL_SOS(1 { "cm" }, 2).
+		'''.assertNoErrors
+	}
 
 	private def assertNoErrors(CharSequence s) {
 		val model = s.parse

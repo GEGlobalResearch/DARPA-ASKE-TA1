@@ -81,7 +81,7 @@ ExtractStatement:
 ;
 
 EvalStatement returns SadlEquationInvocation:
-	{SadlEquationInvocation} ('Evaluate'|'evaluate') name=SadlResource '(' (parameters+=UnitExpression<true, true> (',' parameters+=UnitExpression<true, true>)* )?')'
+	{SadlEquationInvocation} ('Evaluate'|'evaluate') name=SadlResource '(' (parameter+=ExpressionParameterized<false,true> ('{'units+=UNIT'}')? (',' parameter+=ExpressionParameterized<false,true> ('{'units+=UNIT'}')?)* )?')'
 ;
 
 TargetModelName:
