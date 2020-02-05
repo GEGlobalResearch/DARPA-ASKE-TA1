@@ -809,7 +809,7 @@ public class JenaBasedDialogModelProcessor extends JenaBasedSadlModelProcessor {
 								}
 								if (relevantProperties != null) {
 									for (NamedNode prop : relevantProperties) {
-										if (!whensContainProperty(whenObj, prop)) {
+										if (!whenContainsProperty(whenObj, prop)) {
 											compNode = nodeCheck(new TripleElement(instNN, prop, null));
 											augmentedComparisonObjects.add(compNode);
 										}
@@ -854,38 +854,40 @@ public class JenaBasedDialogModelProcessor extends JenaBasedSadlModelProcessor {
 		return comparisonRules;
 	}
 
-	private boolean whensContainProperty(Node whenObj, NamedNode prop) {
+	private boolean whenContainsProperty(Node whenObj, NamedNode prop) {
 		if (whenObj instanceof ProxyNode) {
 			GraphPatternElement gpe = ((ProxyNode)whenObj).getProxyFor();
-			return whensContainProperty(gpe, prop);
+			return whenGpeContainsProperty(gpe, prop);
 		}
 		return false;
 	}
 
-	private boolean whensContainProperty(GraphPatternElement gpe, NamedNode prop) {
-		if (gpe instanceof Junction) {
-			if (whensContainProperty((Node) ((Junction)gpe).getLhs(), prop)) {
-				return true;
-			}
-			if (whensContainProperty((Node) ((Junction)gpe).getRhs(), prop)) {
-				return true;
-			}
-		}
-		else if (gpe instanceof BuiltinElement) {
-			for (Node arg : ((BuiltinElement)gpe).getArguments()) {
-				if (arg instanceof NamedNode && ((NamedNode)arg).getURI().equals(prop.getURI())) {
+	private boolean whenGpeContainsProperty(GraphPatternElement gpe, NamedNode prop) {
+		if (prop != null) {
+			if (gpe instanceof Junction) {
+				if (whenContainsProperty((Node) ((Junction)gpe).getLhs(), prop)) {
 					return true;
 				}
-				else if (arg instanceof ProxyNode) {
-					if (whensContainProperty((ProxyNode)arg, prop)) {
+				if (whenContainsProperty((Node) ((Junction)gpe).getRhs(), prop)) {
+					return true;
+				}
+			}
+			else if (gpe instanceof BuiltinElement) {
+				for (Node arg : ((BuiltinElement)gpe).getArguments()) {
+					if (arg instanceof NamedNode && ((NamedNode)arg).getURI().equals(prop.getURI())) {
 						return true;
+					}
+					else if (arg instanceof ProxyNode) {
+						if (whenContainsProperty((ProxyNode)arg, prop)) {
+							return true;
+						}
 					}
 				}
 			}
-		}
-		else if (gpe instanceof TripleElement) {
-			if (((TripleElement)gpe).getPredicate().equals(prop)) {
-				return true;
+			else if (gpe instanceof TripleElement) {
+				if (((TripleElement)gpe).getPredicate().equals(prop)) {
+					return true;
+				}
 			}
 		}
 		return false;
@@ -1218,7 +1220,7 @@ public class JenaBasedDialogModelProcessor extends JenaBasedSadlModelProcessor {
 		EvalContent ec = new EvalContent(element, Agent.USER);
 		ec.setEquationName(srobj);
 		
-		EList<Expression> params = element.getParameter();
+		EList<Expression> params = element.getParameters();
 		if (! params.isEmpty()) {
 			List<Node> args = new ArrayList<Node>();
 			for (Expression param : params) {
