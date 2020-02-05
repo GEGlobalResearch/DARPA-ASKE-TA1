@@ -2661,13 +2661,11 @@ public class AnswerCurationManager {
 	}
 	
 	private String processCompareRequest(org.eclipse.emf.ecore.resource.Resource resource2, OntModel theModel,
-			String modelName, CompareContent sc) throws AnswerExtractionException {
+			String modelName, CompareContent sc) throws AnswerExtractionException, ExecutionException, SadlInferenceException, TranslationException, ConfigurationException {
 		if (sc != null && sc.getComparisonRules() != null) {
 			List<Rule> comparisonRules = sc.getComparisonRules();
-			for (Rule rule : comparisonRules) {
-				logger.debug("Comparison rule: " + rule.toDescriptiveString());
-			}
-			return "success";
+			Object[] rss = insertRulesAndQuery(resource, comparisonRules);
+			return processResultsOfInsertRulesAndQuery(sc, rss, comparisonRules);
 		}
 		throw new AnswerExtractionException("Invalid comparison request inputs");
 	}
@@ -2988,100 +2986,46 @@ public class AnswerCurationManager {
 	private String processWhatIsContent(org.eclipse.emf.ecore.resource.Resource resource, OntModel theModel,
 			String modelName, WhatIsContent sc) throws ExecutionException, SadlInferenceException,
 			TranslationException, ConfigurationException, IOException {
-		String retVal = "";
 		List<Rule> comparisonRules = ((WhatIsContent)sc).getComparisonRules();
-		for (Rule compRule : comparisonRules) {
-			Object trgt = compRule.getThens();
-			Object whn = compRule.getIfs();
-			if (trgt instanceof NamedNode && whn == null) {
-				String answer;
-				try {
-					answer = whatIsNamedNode(resource, theModel, modelName, getOwlModelsFolder(), (NamedNode)trgt);
-				}
-				catch (Exception e) {
-					answer = e.getMessage();
-				}
-				if (answer != null) {
-					retVal = retVal + (retVal.length() > 0 ? "\n" : "") + answer;
-				}
-			}
-			else if (trgt instanceof Object[] && whn == null) {
-				if (allTripleElements((Object[])trgt)) {
-					//Object ctx = null;
-					TripleElement[] triples = flattenTriples((Object[])trgt);
-					List<TripleElement[]> listOfTriples = new ArrayList<TripleElement[]>();
-					listOfTriples.add(triples);
-					Object[] rss = insertTriplesAndQuery(resource, listOfTriples);
-					String resultStr = null;
-					if (rss != null) {
-						StringBuilder sb = new StringBuilder();
-						if (triples[0].getSubject() instanceof VariableNode && 
-								((VariableNode)triples[0].getSubject()).getType() instanceof NamedNode) {
-							sb.append("the ");
-							sb.append(((VariableNode)(triples[0].getSubject())).getType().getName());
-							sb.append(" has ");
-							sb.append(triples[0].getPredicate().getName());
-							sb.append(" ");
-							sb.append(((ResultSet) rss[0]).getResultAt(0, 0).toString());
-							resultStr = sb.toString();
-						}
-						else {
-			    			for (Object rs : rss) {
-			    				if (rs instanceof ResultSet) {
-			    					((ResultSet) rs).setShowNamespaces(true);
-			    					sb.append(rs.toString());
-			    				}
-			    				else {
-			    					throw new TranslationException("Expected ResultSet, got " + rs.getClass().getCanonicalName());
-			    				}
-			    			}
-							resultStr = stringToQuotedeString(sb.toString());
-						}
-					}
-					String insertionText = (resultStr != null ? resultStr : "\"Failed to find results\"");
-					answerUser(getOwlModelsFolder(), insertionText, false, sc.getHostEObject());
-					retVal = retVal + (retVal.length() > 0 ? "\n" : "") + insertionText;
-				}
+		Object[] rss = insertRulesAndQuery(resource, comparisonRules);
+		return processResultsOfInsertRulesAndQuery(sc, rss, comparisonRules);
+	}
+
+	private String processResultsOfInsertRulesAndQuery(StatementContent sc, Object[] rss, List<Rule> comparisonRules)
+			throws TranslationException, ConfigurationException {
+		String retVal = "";
+		String resultStr = null;
+		if (rss != null) {
+			StringBuilder sb = new StringBuilder();
+			Rule firstRule = comparisonRules.get(0);
+			TripleElement firstTriple = firstRule.getGivens() != null && firstRule.getGivens().get(0) instanceof TripleElement ? (TripleElement) firstRule.getGivens().get(0) :
+				firstRule.getIfs() != null && firstRule.getIfs().get(0) instanceof TripleElement ? (TripleElement)firstRule.getIfs().get(0) : null;
+			if (firstTriple.getSubject() instanceof VariableNode && 
+					((VariableNode)firstTriple.getSubject()).getType() instanceof NamedNode) {
+				sb.append("the ");
+				sb.append(((VariableNode)(firstTriple.getSubject())).getType().getName());
+				sb.append(" has ");
+				sb.append(firstTriple.getPredicate().getName());
+				sb.append(" ");
+				sb.append(((ResultSet) rss[0]).getResultAt(0, 0).toString());
+				resultStr = sb.toString();
 			}
 			else {
-				// there is a when clause, and this is in a WhatIsConstruct
-				List<TripleElement> tripleLst = new ArrayList<TripleElement>();
-				if (trgt instanceof TripleElement) {
-					tripleLst.add((TripleElement)trgt);
-				}
-				else if (trgt instanceof Junction) {
-					tripleLst = addTriplesFromJunction((Junction) trgt, tripleLst);
-				}
-				else if (trgt instanceof List<?>) {
-					tripleLst.addAll((Collection<? extends TripleElement>)trgt);
-				}
-				if (whn instanceof TripleElement) {
-					// we have a when statement
-					tripleLst.add((TripleElement)whn);
-				}
-				else if (whn instanceof Junction) {
-					tripleLst = addTriplesFromJunction((Junction) whn, tripleLst);
-				}
-				else if (whn instanceof List<?>) {
-					tripleLst.addAll((Collection<? extends TripleElement>) whn);	
-				}
-				TripleElement[] triples = new TripleElement[tripleLst.size()];
-				triples = tripleLst.toArray(triples);
-				List<TripleElement[]> listOfTriples = new ArrayList<TripleElement[]>();
-				listOfTriples.add(triples);
-				Object[] rss = insertTriplesAndQuery(resource, listOfTriples);
-				String answer = getAnswerAndVisualize(sc, rss);
-				if (rss != null) {
-					retVal = retVal + (retVal.length() > 0 ? "\n" : "") + stringToQuotedeString(answer);
-				}
-				else {
-					retVal = retVal + (retVal.length() > 0 ? "\n" : "") + "Failed to evaluate answer";
-				}
-				if (!retVal.equals(stringToQuotedeString(""))) {
-					answerUser(getOwlModelsFolder(), retVal, true, sc.getHostEObject());
-				}
+    			for (Object rs : rss) {
+    				if (rs instanceof ResultSet) {
+    					((ResultSet) rs).setShowNamespaces(true);
+    					sb.append(rs.toString());
+    				}
+    				else {
+    					throw new TranslationException("Expected ResultSet, got " + rs.getClass().getCanonicalName());
+    				}
+    			}
+				resultStr = stringToQuotedeString(sb.toString());
 			}
 		}
+		String insertionText = (resultStr != null ? resultStr : "\"Failed to find results\"");
+		answerUser(getOwlModelsFolder(), insertionText, false, sc.getHostEObject());
+		retVal = retVal + (retVal.length() > 0 ? "\n" : "") + insertionText;
 		return retVal;
 	}
 
@@ -3695,11 +3639,11 @@ public class AnswerCurationManager {
 		return resultStr;
 	}
 
-//	private Object[] insertTriplesAndQuery(org.eclipse.emf.ecore.resource.Resource resource, TripleElement[] triples) throws ExecutionException, SadlInferenceException {
-//		getConfigurationManager().addPrivateKeyValuePair(DialogConstants.ANSWER_CURATION_MANAGER, this);
-//		return getInferenceProcessor().insertTriplesAndQuery(resource, triples);
-//	}
-//
+	private Object[] insertRulesAndQuery(org.eclipse.emf.ecore.resource.Resource resource, List<Rule> rules) throws ExecutionException, SadlInferenceException {
+		getConfigurationManager().addPrivateKeyValuePair(DialogConstants.ANSWER_CURATION_MANAGER, this);
+		return getInferenceProcessor().insertRulesAndQuery(resource, rules);
+	}
+
 	private Object[] insertTriplesAndQuery(org.eclipse.emf.ecore.resource.Resource resource, List<TripleElement[]> triples) throws ExecutionException, SadlInferenceException {
 		getConfigurationManager().addPrivateKeyValuePair(DialogConstants.ANSWER_CURATION_MANAGER, this);
 		return getInferenceProcessor().insertTriplesAndQuery(resource, triples);
