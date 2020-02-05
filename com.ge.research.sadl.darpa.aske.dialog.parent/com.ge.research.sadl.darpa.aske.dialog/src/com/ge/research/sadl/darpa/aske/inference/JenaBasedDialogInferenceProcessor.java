@@ -77,7 +77,6 @@ import com.ge.research.sadl.darpa.aske.curation.AnswerCurationManager;
 import com.ge.research.sadl.darpa.aske.curation.AnswerCurationManager.Agent;
 import com.ge.research.sadl.darpa.aske.preferences.DialogPreferences;
 import com.ge.research.sadl.darpa.aske.processing.DialogConstants;
-import com.ge.research.sadl.darpa.aske.processing.IDialogAnswerProvider;
 import com.ge.research.sadl.darpa.aske.processing.SadlStatementContent;
 import com.ge.research.sadl.jena.JenaBasedSadlInferenceProcessor;
 import com.ge.research.sadl.jena.JenaBasedSadlModelProcessor;
@@ -85,6 +84,7 @@ import com.ge.research.sadl.jena.UtilsForJena;
 import com.ge.research.sadl.model.gp.Literal;
 import com.ge.research.sadl.model.gp.NamedNode;
 import com.ge.research.sadl.model.gp.Node;
+import com.ge.research.sadl.model.gp.Rule;
 import com.ge.research.sadl.model.gp.TripleElement;
 import com.ge.research.sadl.processing.OntModelProvider;
 import com.ge.research.sadl.processing.SadlInferenceException;
@@ -98,7 +98,6 @@ import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
-import com.hp.hpl.jena.datatypes.xsd.XSDDateTime;
 import com.hp.hpl.jena.ontology.Individual;
 import com.hp.hpl.jena.ontology.OntClass;
 import com.hp.hpl.jena.ontology.OntModel;
@@ -109,14 +108,12 @@ import com.hp.hpl.jena.query.QueryExecution;
 import com.hp.hpl.jena.query.QueryExecutionFactory;
 import com.hp.hpl.jena.query.QueryFactory;
 import com.hp.hpl.jena.query.QuerySolution;
-import com.hp.hpl.jena.query.ResultSetFormatter;
 import com.hp.hpl.jena.query.ResultSetRewindable;
 import com.hp.hpl.jena.rdf.model.Model;
 import com.hp.hpl.jena.rdf.model.ModelFactory;
 import com.hp.hpl.jena.rdf.model.Property;
 import com.hp.hpl.jena.rdf.model.RDFNode;
 import com.hp.hpl.jena.update.UpdateAction;
-import com.hp.hpl.jena.vocabulary.RDF;
 
 public class JenaBasedDialogInferenceProcessor extends JenaBasedSadlInferenceProcessor {
 
@@ -752,8 +749,43 @@ public class JenaBasedDialogInferenceProcessor extends JenaBasedSadlInferencePro
 		return "dialog".equals(fileExtension);
 	}
 
-//	public Object[] insertTriplesAndQuery(Resource resource, TripleElement[] triples) throws SadlInferenceException {
 	@Override
+	public Object[] insertRulesAndQuery(Resource resource, List<Rule> rules) throws SadlInferenceException {
+		List<TripleElement[]> triples = new ArrayList<TripleElement[]>();
+		for (Rule rule : rules) {
+			int size = (rule.getGivens() != null ? rule.getGivens().size() : 0) +
+					(rule.getIfs() != null ? rule.getIfs().size() : 0) +
+							(rule.getThens() != null ? rule.getThens().size() : 0);
+			TripleElement[] thisRulesTriples = new TripleElement[size];
+			int idx = 0;
+			for (int i = 0; rule.getGivens() != null && i < rule.getGivens().size(); i++) {
+				if (rule.getGivens().get(i) instanceof TripleElement) {
+					thisRulesTriples[idx++] = (TripleElement) rule.getGivens().get(i);
+				}
+				else {
+					throw new SadlInferenceException("insertTriplesAndQuery only handles TripleElements currently");
+				}
+			}
+			for (int i = 0; rule.getIfs() != null && i < rule.getIfs().size(); i++) {
+				if (rule.getIfs().get(i) instanceof TripleElement) {
+					thisRulesTriples[idx++] = (TripleElement) rule.getIfs().get(i);
+				}
+				else {
+					throw new SadlInferenceException("insertTriplesAndQuery only handles TripleElements currently");
+				}
+			}
+			for (int i = 0; rule.getThens() != null && i < rule.getThens().size(); i++) {
+				if (rule.getThens().get(i) instanceof TripleElement) {
+					thisRulesTriples[idx++] = (TripleElement) rule.getThens().get(i);
+				}
+				else {
+					throw new SadlInferenceException("insertTriplesAndQuery only handles TripleElements currently");
+				}
+			}
+		}
+		return insertTriplesAndQuery(resource, triples);
+	}
+	
 	public Object[] insertTriplesAndQuery(Resource resource, List<TripleElement[]> triples) throws SadlInferenceException {
  		Object[] results = null;
 		setCurrentResource(resource);
@@ -840,7 +872,7 @@ public class JenaBasedDialogInferenceProcessor extends JenaBasedSadlInferencePro
 				queryModelPrefix, queryInstanceName, queryOwlFileWithPath);
 		
 		//} //if (useDBN)
-		return null;
+		return results;
 	}
 
 	private Object[] processSingleWhatWhenQuery(Resource resource, List<TripleElement[]> triples, boolean useDbn,
