@@ -32,6 +32,12 @@
   <owl:Class rdf:ID="Position">
     <rdfs:subClassOf rdf:resource="sadlimplicitmodel#UnittedQuantity"/>
   </owl:Class>
+  <owl:Class rdf:ID="Density">
+    <rdfs:subClassOf rdf:resource="sadlimplicitmodel#UnittedQuantity"/>
+  </owl:Class>
+  <owl:Class rdf:ID="Time">
+    <rdfs:subClassOf rdf:resource="sadlimplicitmodel#UnittedQuantity"/>
+  </owl:Class>
   <owl:Class rdf:nodeID="A0">
     <rdfs:subClassOf>
       <owl:Restriction>
@@ -46,12 +52,6 @@
       </owl:Restriction>
     </rdfs:subClassOf>
     <rdfs:subClassOf rdf:resource="sadllistmodel#List"/>
-  </owl:Class>
-  <owl:Class rdf:ID="Density">
-    <rdfs:subClassOf rdf:resource="sadlimplicitmodel#UnittedQuantity"/>
-  </owl:Class>
-  <owl:Class rdf:ID="Time">
-    <rdfs:subClassOf rdf:resource="sadlimplicitmodel#UnittedQuantity"/>
   </owl:Class>
   <owl:Class rdf:ID="Substance">
     <rdfs:subClassOf>

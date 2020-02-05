@@ -71,6 +71,7 @@ import com.ge.research.sadl.reasoner.QueryCancelledException;
 import com.ge.research.sadl.reasoner.QueryParseException;
 import com.ge.research.sadl.reasoner.ReasonerNotFoundException;
 import com.ge.research.sadl.reasoner.ResultSet;
+import com.ge.research.sadl.reasoner.IConfigurationManagerForEditing.Scope;
 import com.ge.research.sadl.reasoner.utils.SadlUtils;
 import com.hp.hpl.jena.ontology.OntModel;
 import com.hp.hpl.jena.rdf.model.Model;
@@ -667,10 +668,17 @@ public class TextProcessorTests {
 //		assertEquals(1, result[1]);
 		System.out.println("nc=" + result[0] + ", neq=" + result[1]);
 		OntModel om = tp.getTextModel(localityURI);
-		StmtIterator stmtitr = om.listStatements(null, RDFS.seeAlso, (RDFNode)null);
+		String[] grph = tp.retrieveGraph(localityURI);
+		assertTrue(grph.length == 3);
+		OntModel newModel = tp.getTextModelConfigMgr().getOntModel(localityURI, grph[2], Scope.INCLUDEIMPORTS, grph[1]);	
+		assertNotNull(newModel);
+		StmtIterator stmtitr = newModel.listStatements(null, RDFS.seeAlso, (RDFNode)null);
+		int cntr = 0;
 		while (stmtitr.hasNext()) {
 			System.out.println(stmtitr.next().toString());
+			cntr++;
 		}
+		assertEquals(3, cntr);
 	}
 
 	private String readFile(File file) throws IOException {

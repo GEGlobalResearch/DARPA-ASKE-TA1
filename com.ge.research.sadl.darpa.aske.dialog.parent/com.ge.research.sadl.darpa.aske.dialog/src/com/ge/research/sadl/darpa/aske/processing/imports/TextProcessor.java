@@ -300,6 +300,7 @@ public class TextProcessor {
 				}
 				setTextModelPrefix(modelPrefix);	// don't override a preset model name
 			}
+			addTextModel(modelName, getCurrentTextModel());
 			getCurrentTextModel().setNsPrefix(getTextModelPrefix(), getCurationManager().getExtractionProcessor().getNamespaceFromModelName(getTextModelName()));
 			Ontology modelOntology = getCurrentTextModel().createOntology(getTextModelName());
 			logger.debug("Ontology '" + getTextModelName() + "' created");

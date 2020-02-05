@@ -32,11 +32,14 @@ public class JavaToPythonTests {
 				"    def getAir(self, mach, gamma):\n" + 
 				"        \"\"\" generated source for method getAir \"\"\"\n" + 
 				"        #  Utility to get the corrected airflow per area given the Mach number \n" + 
+		        "        number = 0.0\n" +
+		        "        fac1 = 0.0\n" +
+		        "        fac2 = 0.0\n" +
 				"        fac2 = (gamma + 1.0) / (2.0 * (gamma - 1.0))\n" + 
 				"        fac1 = Math.pow((1.0 + 0.5 * (gamma - 1.0) * mach * mach), fac2)\n" + 
 				"        number = 0.50161 * Math.sqrt(gamma) * mach / fac1\n" + 
 				"        return (number)";
-		assertTrue(response.trim().equals(desiredPython));
+		assertEquals(desiredPython, response.trim());
 	}
 
 }

@@ -23,7 +23,7 @@
   <eClassifiers xsi:type="ecore:EClass" name="SadlEquationInvocation" eSuperTypes="platform:/resource/com.ge.research.sadl/model/generated/SADL.ecore#//SadlModelElement">
     <eStructuralFeatures xsi:type="ecore:EReference" name="name" eType="ecore:EClass platform:/resource/com.ge.research.sadl/model/generated/SADL.ecore#//SadlResource"
         containment="true"/>
-    <eStructuralFeatures xsi:type="ecore:EReference" name="parameter" upperBound="-1"
+    <eStructuralFeatures xsi:type="ecore:EReference" name="parameters" upperBound="-1"
         eType="ecore:EClass platform:/resource/com.ge.research.sadl/model/generated/SADL.ecore#//Expression"
         containment="true"/>
     <eStructuralFeatures xsi:type="ecore:EAttribute" name="units" unique="false" upperBound="-1"

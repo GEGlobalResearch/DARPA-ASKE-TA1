@@ -62,6 +62,16 @@
                     <cem:reference>
                       <cem:Reference>
                         <cem:endsAt rdf:datatype="http://www.w3.org/2001/XMLSchema#int"
+                        >6</cem:endsAt>
+                        <cem:beginsAt rdf:datatype="http://www.w3.org/2001/XMLSchema#int"
+                        >6</cem:beginsAt>
+                        <cem:usage rdf:resource="http://sadl.org/CodeExtractionModel.sadl#Used"/>
+                        <cem:codeBlock rdf:resource="http://com.ge.research.sadl.darpa.aske.answer/test_11_java#Test_11.getAir"/>
+                      </cem:Reference>
+                    </cem:reference>
+                    <cem:reference>
+                      <cem:Reference>
+                        <cem:endsAt rdf:datatype="http://www.w3.org/2001/XMLSchema#int"
                         >5</cem:endsAt>
                         <cem:beginsAt rdf:datatype="http://www.w3.org/2001/XMLSchema#int"
                         >5</cem:beginsAt>
@@ -111,6 +121,26 @@
                       <cem:codeBlock rdf:resource="http://com.ge.research.sadl.darpa.aske.answer/test_11_java#Test_11.getAir"/>
                     </cem:Reference>
                   </cem:reference>
+                  <cem:reference>
+                    <cem:Reference>
+                      <cem:endsAt rdf:datatype="http://www.w3.org/2001/XMLSchema#int"
+                      >6</cem:endsAt>
+                      <cem:beginsAt rdf:datatype="http://www.w3.org/2001/XMLSchema#int"
+                      >6</cem:beginsAt>
+                      <cem:usage rdf:resource="http://sadl.org/CodeExtractionModel.sadl#Used"/>
+                      <cem:codeBlock rdf:resource="http://com.ge.research.sadl.darpa.aske.answer/test_11_java#Test_11.getAir"/>
+                    </cem:Reference>
+                  </cem:reference>
+                  <cem:reference>
+                    <cem:Reference>
+                      <cem:endsAt rdf:datatype="http://www.w3.org/2001/XMLSchema#int"
+                      >6</cem:endsAt>
+                      <cem:beginsAt rdf:datatype="http://www.w3.org/2001/XMLSchema#int"
+                      >6</cem:beginsAt>
+                      <cem:usage rdf:resource="http://sadl.org/CodeExtractionModel.sadl#Used"/>
+                      <cem:codeBlock rdf:resource="http://com.ge.research.sadl.darpa.aske.answer/test_11_java#Test_11.getAir"/>
+                    </cem:Reference>
+                  </cem:reference>
                   <cem:varType rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
                   >double</cem:varType>
                   <cem:varName rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
@@ -155,6 +185,7 @@
     >double</cem:varType>
     <cem:varName rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
     >fac2</cem:varName>
+    <rdfs:label xml:lang="Java">double fac2;</rdfs:label>
     <cem:reference>
       <cem:Reference>
         <cem:endsAt rdf:datatype="http://www.w3.org/2001/XMLSchema#int"
@@ -193,6 +224,7 @@
     >double</cem:varType>
     <cem:varName rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
     >number</cem:varName>
+    <rdfs:label xml:lang="Java">double number;</rdfs:label>
     <cem:reference>
       <cem:Reference>
         <cem:endsAt rdf:datatype="http://www.w3.org/2001/XMLSchema#int"
@@ -229,6 +261,7 @@
     >double</cem:varType>
     <cem:varName rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
     >fac1</cem:varName>
+    <rdfs:label xml:lang="Java">double fac1;</rdfs:label>
     <cem:reference>
       <cem:Reference>
         <cem:endsAt rdf:datatype="http://www.w3.org/2001/XMLSchema#int"
