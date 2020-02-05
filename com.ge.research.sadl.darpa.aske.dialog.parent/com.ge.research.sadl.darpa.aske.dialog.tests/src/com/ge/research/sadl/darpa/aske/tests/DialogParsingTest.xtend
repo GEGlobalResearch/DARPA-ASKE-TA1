@@ -40,6 +40,31 @@ class DialogParsingTest {
 		'''.assertNoErrors
 	}
 
+	@Test
+	def void evalStatement_doubleNoUnits() {
+		'''
+			uri "http://test".
+			Evaluate CAL_SOS(245.6, 1.4, 8.314, 3056).
+		'''.assertNoErrors
+	}
+
+	@Test
+	def void evalStatement_doubleWithUnits() {
+		'''
+			uri "http://test".
+			Evaluate CAL_SOS(245.6 {cm}, 1.4 {cm}, 8.314 {cm}, 3056 {cm}).
+		'''.assertNoErrors
+	}
+
+	@Test
+	def void evalStatement_with() {
+		'''
+			uri "http://test".
+			MyRect is a Rectangle with ^length 5, with width 2.
+			Evaluate CAL_SOS(2, width of MyRect, ^length of MyRect, 3.14).
+		'''.assertNoErrors
+	}
+
 	private def assertNoErrors(CharSequence s) {
 		val model = s.parse
 		Assert.assertNotNull(model)
