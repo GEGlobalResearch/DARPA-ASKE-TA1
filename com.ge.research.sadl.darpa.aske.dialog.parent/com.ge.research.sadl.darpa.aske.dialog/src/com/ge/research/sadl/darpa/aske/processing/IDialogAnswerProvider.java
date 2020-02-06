@@ -40,7 +40,6 @@ import java.io.File;
 import java.util.List;
 import java.util.Map;
 
-import org.eclipse.emf.common.util.URI;
 import org.eclipse.emf.ecore.resource.Resource;
 
 import com.ge.research.sadl.darpa.aske.curation.AnswerCurationManager;
@@ -70,7 +69,7 @@ public interface IDialogAnswerProvider {
 
 	void updateProjectAndDisplaySadlFiles(String projectName, String modelsFolder, List<File> sadlFiles);
 
-	Map<String, String> getPreferences(URI uri);
+	Map<String, String> getPreferences(Resource resource);
 	
 	/**
 	 * Method to add import statements to the Dialog model either after the last existing import statement
