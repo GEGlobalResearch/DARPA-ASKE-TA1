@@ -11,6 +11,9 @@ import static org.junit.Assert.assertEquals
 import com.ge.research.sadl.darpa.aske.processing.JenaBasedDialogModelProcessor
 import com.ge.research.sadl.darpa.aske.processing.CompareContent
 import com.ge.research.sadl.darpa.aske.processing.WhatIsContent
+import java.io.File
+import com.ge.research.sadl.builder.ConfigurationManagerForIDE
+import com.ge.research.sadl.builder.ConfigurationManagerForIdeFactory
 
 class DialogTest extends AbstractDialogTest {
 
@@ -671,6 +674,81 @@ class DialogTest extends AbstractDialogTest {
 		]
 	}
 	
+	@Test
+	def void testCompareStatement_00() {
+		val grd = newArrayList(
+"Rule ComparePseudoRule0:  if rdf(v1, http://www.w3.org/1999/02/22-rdf-syntax-ns#type, http://sadl.org/sadlimplicitmodel#UnittedQuantity) and rdf(v1, http://sadl.org/sadlimplicitmodel#value, 300) and rdf(v1, http://sadl.org/sadlimplicitmodel#unit, \"mph\") and rdf(http://sadl.org/test4.dialog#v3, http://www.w3.org/1999/02/22-rdf-syntax-ns#type, http://aske.ge.com/hypersonicsV2#CF6) and rdf(http://sadl.org/test4.dialog#v3, http://aske.ge.com/hypersonicsV2#speed, v1) then rdf(http://sadl.org/test4.dialog#v3, http://aske.ge.com/hypersonicsV2#machSpeed, v2)."
+)
+		'''
+			 uri "http://aske.ge.com/hypersonicsV2" alias hv2.
+			 
+			 PhysicalThing is a class,
+			 	described by mass with values of type Mass
+			 	described by volume with values of type Volume
+			 	described by density with values of type Density
+			 	described by temperature with values of type Temperature
+			 	described by altitude with values of type Altitude
+			 	described by speed with values of type Speed.
+			 	
+			 Speed is a type of UnittedQuantity.
+			 Mass is a type of UnittedQuantity.
+			 Volume is a type of UnittedQuantity.
+			 Density is a type of UnittedQuantity.
+			 Length is a type of UnittedQuantity.
+			 Time is a type of UnittedQuantity.
+			 Temperature is a type of UnittedQuantity.
+			 Altitude is a type of UnittedQuantity.
+			 MachSpeed is a type of Speed.
+			 
+			 Gas is a type of PhysicalThing
+			 	described by pressure with values of type Pressure.
+			 Air is a type of Gas.
+			 machSpeed describes Air with values of type MachSpeed.
+			 
+			 SpecificNetThrust is a type of UnittedQuantity.
+			 SpecificFuelConsumption is a type of UnittedQuantity.
+			 
+			 AircraftEngine is a type of PhysicalThing
+			 	described by mach with values of type MachSpeed
+			 	described by sfc (alias "specific fuel consumption") with values of type SpecificFuelConsumption
+			 	described by thrust with values of type SpecificNetThrust.
+			                     
+			 {CF6, F100, J85, RamJet} are types of AircraftEngine.
+		'''.sadl
+
+		'''
+			 uri "http://sadl.org/test4.dialog" alias test4dialog.
+			 
+			 import "http://aske.ge.com/hypersonicsV2".
+			 
+			 compare machSpeed of a CF6 and machSpeed of a F100 when speed is 300 mph.
+		'''.assertValidatesTo [ ontModel, issues, processor |
+			assertNotNull(ontModel)
+//			val stmtitr = ontModel.listStatements()
+//			while (stmtitr.hasNext) {
+//				println(stmtitr.nextStatement)
+//			}
+			val errors = issues.filter[severity === Severity.ERROR]
+			for (err : errors) {
+				println(err)
+			}
+			assertEquals(0, errors.size)
+			if (processor instanceof JenaBasedDialogModelProcessor) {
+				val conversation = (processor as JenaBasedDialogModelProcessor).answerCurationManager.conversation
+				assertNotNull(conversation)
+				assertNotNull(conversation.statements);
+				assertEquals(1, conversation.statements.size)
+				assertTrue(conversation.statements.get(0).statement instanceof WhatIsContent)
+				val cc = conversation.statements.get(0).statement as WhatIsContent
+				val rules = cc.comparisonRules
+				for (r : rules) {
+					println(r.toFullyQualifiedString)
+				}
+				assertEquals(1, rules.size)
+//				assertEquals(grd.get(0), rules.get(0).toFullyQualifiedString)
+			}
+		]
+	}
 	@Test
 	def void testCompareStatement_01() {
 			val grd = newArrayList(

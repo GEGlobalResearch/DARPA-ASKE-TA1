@@ -94,6 +94,7 @@ import com.ge.research.sadl.reasoner.IReasoner;
 import com.ge.research.sadl.reasoner.ResultSet;
 import com.ge.research.sadl.reasoner.TranslationException;
 import com.ge.research.sadl.reasoner.utils.SadlUtils;
+import com.ge.research.sadl.utils.ResourceManager;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
@@ -782,8 +783,14 @@ public class JenaBasedDialogInferenceProcessor extends JenaBasedSadlInferencePro
 					throw new SadlInferenceException("insertTriplesAndQuery only handles TripleElements currently");
 				}
 			}
+			triples.add(thisRulesTriples);
 		}
-		return insertTriplesAndQuery(resource, triples);
+		try {
+			return insertTriplesAndQuery(resource, triples);
+		}
+		catch (Throwable t) {
+			throw new SadlInferenceException(t.getMessage(), t);
+		}
 	}
 	
 	@Override
@@ -839,8 +846,23 @@ public class JenaBasedDialogInferenceProcessor extends JenaBasedSadlInferencePro
 //			queryKey = cgq.getLocalName();
 //			queryModel = ModelFactory.createOntologyModel(OntModelSpec.OWL_MEM);
 //			OntModelProvider.addPrivateKeyValuePair(resource, queryKey, queryModel);
-			
-		String kgsDirectory = new File(getModelFolderPath(resource)).getParent() + File.separator  + CGMODELS_FOLDER;
+		
+		String kgsDirectory = null;
+		if (ResourceManager.isSyntheticUri(null,resource.getURI())) {
+			File projectRoot = new File("resources/ASKE_P2");
+			try {
+				kgsDirectory = projectRoot.getCanonicalPath() + File.separator + CGMODELS_FOLDER;
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		}
+		else {
+			kgsDirectory = new File(getModelFolderPath(resource)).getParent() + File.separator  + CGMODELS_FOLDER;
+		}
+		if (kgsDirectory == null) {
+			throw new SadlInferenceException("Unable to create folder for CG models");
+		}
 		new File(kgsDirectory).mkdir();
 		
 		String queryModelFileName = "Q_" + System.currentTimeMillis();
@@ -896,7 +918,7 @@ public class JenaBasedDialogInferenceProcessor extends JenaBasedSadlInferencePro
 		getInputPatterns(triples, inputPatterns, inputNodes);
 
 		//refactor this one too.
-		for (int i = 0; i < triples.get(0).length; i++) {
+		for (int i = 0; triples.size() > 0 && i < triples.get(0).length; i++) {
 			TripleElement tr = triples.get(0)[i];
 			if (tr.getSubject() instanceof NamedNode) {
 				if (tr.getPredicate().getURI() != null) {
@@ -1419,7 +1441,7 @@ private ResultSet[] processWhatWhenQuery(Resource resource, String queryModelFil
 
 private void getInputPatterns(List<TripleElement[]> triples, List<TripleElement[]> inputPatterns, List<Node> inputNodes) {
 	TripleElement[] quantity;
-	for (int i = 0; i < triples.get(0).length; i++) {
+	for (int i = 0; triples.size() > 0 && i < triples.get(0).length; i++) {
 		TripleElement tr = triples.get(0)[i];
 		if (tr.getSubject() instanceof NamedNode) {
 			if (tr.getPredicate().getURI() != null && tr.getPredicate().getName().contains("value")) { //input value triple (v1, sadlimplicitmodel:value, 35000)

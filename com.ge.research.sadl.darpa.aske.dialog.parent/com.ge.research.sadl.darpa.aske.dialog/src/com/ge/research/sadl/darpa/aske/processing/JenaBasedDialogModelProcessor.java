@@ -688,30 +688,40 @@ public class JenaBasedDialogModelProcessor extends JenaBasedSadlModelProcessor {
 			}
 		}
 		Node whenObj = nodeCheck(wh);
+		List<Object> originalThenObjects = new ArrayList<Object>();
 		List<Node> thenObjects = new ArrayList<Node>();
 		NamedNode specifiedPropertyNN = null;
 		if (thenObj instanceof Junction) {
 			List<Node> compareList = IntermediateFormTranslator.conjunctionToList((Junction)thenObj);
 			for (Node n : compareList) {
 				if (n instanceof VariableNode) {
-					thenObjects.add(((VariableNode)n).getType());
+					originalThenObjects.add(((VariableNode)n).getType());
+				}
+				else if (n instanceof ProxyNode) {
+					originalThenObjects.add(((ProxyNode)n).getProxyFor());
 				}
 				else {
-					thenObjects.add(n);
+					originalThenObjects.add(n);
 				}
 			}
 		}
-		else if (thenObj instanceof NamedNode) {
-			thenObjects.add((Node) thenObj);
+		else {
+			originalThenObjects.add(thenObj);
+
 		}
-		else if (thenObj instanceof TripleElement) {
-			if (((TripleElement)thenObj).getSubject() instanceof VariableNode) {
-				((TripleElement)thenObj).setSubject(((VariableNode)((TripleElement)thenObj).getSubject()).getType());
+		for (Object origThenObj : originalThenObjects) {
+			if (origThenObj instanceof NamedNode) {
+				thenObjects.add((Node) thenObj);
 			}
-			thenObjects.add(nodeCheck(thenObj));
-		}
-		else if (thenObj instanceof BuiltinElement) {
-			addError("BuiltinElements not yet handled.", thenExpr);
+			else if (origThenObj instanceof TripleElement) {
+				if (((TripleElement)origThenObj).getSubject() instanceof VariableNode) {
+					((TripleElement)origThenObj).setSubject(((VariableNode)((TripleElement)origThenObj).getSubject()).getType());
+				}
+				thenObjects.add(nodeCheck(origThenObj));
+			}
+			else if (origThenObj instanceof BuiltinElement) {
+				addError("BuiltinElements not yet handled.", thenExpr);
+			}
 		}
 		List<Node> augmentedComparisonObjects = new ArrayList<Node>();
 		for (int idx = 0; idx < thenObjects.size(); idx++) {

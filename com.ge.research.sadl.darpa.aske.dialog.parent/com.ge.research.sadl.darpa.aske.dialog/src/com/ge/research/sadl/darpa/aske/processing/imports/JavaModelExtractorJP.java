@@ -1933,7 +1933,7 @@ class Mach(object):
 				if (returnIdx >= 0) {
 					sb.append(methName);
 					sb.append(" = ");
-					sb.append(trimmedLine.substring(returnIdx + 7));
+					sb.append(trimmedLine.substring(returnIdx + 6));
 				}
 				else {
 					sb.append(trimmedLine);

@@ -927,34 +927,30 @@ public class AnswerCurationManager {
 			if (argStmt != null) {
 				com.hp.hpl.jena.rdf.model.Resource ddList = argStmt.getObject().asResource();
 				if (ddList instanceof Resource) {
-					ResultSet rs = getMethodArguments(ontModel, reasoner, extractedModelInstance);
-					logger.debug(rs != null ? rs.toString() : "no argument results");
-					ResultSet rs2 = getMethodReturns(ontModel, reasoner, extractedModelInstance);
-					try {
-						String[] scriptInfo = getMethodScript(ontModel, reasoner, extractedModelInstance);
-						retName = (scriptInfo != null && scriptInfo[0] != null) ? scriptInfo[0] : retName;
-						String script = scriptInfo != null ? scriptInfo[1] : null;
-						logger.debug(script != null ? script : "no Python script results");
-						if (script != null) {
-							returnValue = getExtractionProcessor().saveToComputationalGraph(extractedModelInstance, retName, rs, rs2, script, null);
-							logger.debug("saveToComputationalGraph returned '" + returnValue + "'");
-						}
-						else {
-							returnValue = "Failed to find a Python script for equation '" + extractedModelInstance.getURI() + "'.";
-						}
-					} catch (TranslationException e) {
-						returnValue = e.getMessage();
-					}
+					// there are method arguments
+					// TODO do what??
 				}
 			}
-			if (returnValue == null) {
-				returnValue = "Failed: Unable to find model '" + extractedModelInstance.getURI() + "' in code model.";
+			ResultSet rs = getMethodArguments(ontModel, reasoner, extractedModelInstance);
+			logger.debug(rs != null ? rs.toString() : "no argument results");
+			ResultSet rs2 = getMethodReturns(ontModel, reasoner, extractedModelInstance);
+			try {
+				String[] scriptInfo = getMethodScript(ontModel, reasoner, extractedModelInstance);
+				retName = (scriptInfo != null && scriptInfo[0] != null) ? scriptInfo[0] : retName;
+				String script = scriptInfo != null ? scriptInfo[1] : null;
+				logger.debug(script != null ? script : "no Python script results");
+				if (script != null) {
+					returnValue = getExtractionProcessor().saveToComputationalGraph(extractedModelInstance, retName, rs, rs2, script, null);
+					logger.debug("saveToComputationalGraph returned '" + returnValue + "'");
+				}
+				else {
+					returnValue = "Failed to find a Python script for equation '" + extractedModelInstance.getURI() + "'.";
+				}
+			} catch (TranslationException e) {
+				returnValue = e.getMessage();
 			}
 		}
-		else {
-			// this is something else to save
-			returnValue = "Saving '" + extractedModelInstance.getLocalName();
-		}
+		returnValue = "Saving '" + extractedModelInstance.getLocalName();
 		return returnValue;
 	}
 
@@ -2667,6 +2663,7 @@ public class AnswerCurationManager {
 			List<Rule> comparisonRules = sc.getComparisonRules();
 			Object[] rss = insertRulesAndQuery(resource, comparisonRules);
 			return processResultsOfInsertRulesAndQuery(sc, rss, comparisonRules);
+//			return "Processing of query disabled";
 		}
 		throw new AnswerExtractionException("Invalid comparison request inputs");
 	}
@@ -2986,10 +2983,14 @@ public class AnswerCurationManager {
 
 	private String processWhatIsContent(org.eclipse.emf.ecore.resource.Resource resource, OntModel theModel,
 			String modelName, WhatIsContent sc) throws ExecutionException, SadlInferenceException,
-			TranslationException, ConfigurationException, IOException {
-		List<Rule> comparisonRules = ((WhatIsContent)sc).getComparisonRules();
-		Object[] rss = insertRulesAndQuery(resource, comparisonRules);
-		return processResultsOfInsertRulesAndQuery(sc, rss, comparisonRules);
+			TranslationException, ConfigurationException, IOException, AnswerExtractionException {
+		if (sc != null && sc.getComparisonRules() != null) {
+			List<Rule> comparisonRules = ((WhatIsContent)sc).getComparisonRules();
+			Object[] rss = insertRulesAndQuery(resource, comparisonRules);
+			return processResultsOfInsertRulesAndQuery(sc, rss, comparisonRules);
+	//		return "Processing of query disabled";
+		}
+		throw new AnswerExtractionException("Invalid what is request inputs");
 	}
 
 	private String processResultsOfInsertRulesAndQuery(StatementContent sc, Object[] rss, List<Rule> comparisonRules)

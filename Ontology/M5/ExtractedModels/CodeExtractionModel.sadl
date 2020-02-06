@@ -1,5 +1,5 @@
 uri "http://sadl.org/CodeExtractionModel.sadl" alias cem.
- 
+
 // This is the code extraction meta-model
 CodeElement is a class described by beginsAt with a single value of type int,
 	described by endsAt with a single value of type int.
@@ -91,7 +91,7 @@ if c is a CodeVariable and
    l = minLoc
 then firstRef of ref is true
 	and print(c, " at ", minLoc, " is first reference.") 
-.
+. 
 
 Rule ImplicitInput
 if cb is a CodeBlock and
