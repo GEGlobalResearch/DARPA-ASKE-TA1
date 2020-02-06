@@ -83,6 +83,7 @@ import com.ge.research.sadl.darpa.aske.dialog.ExtractStatement;
 import com.ge.research.sadl.darpa.aske.dialog.HowManyValuesStatement;
 import com.ge.research.sadl.darpa.aske.dialog.ModifiedAskStatement;
 import com.ge.research.sadl.darpa.aske.dialog.MyNameIsStatement;
+import com.ge.research.sadl.darpa.aske.dialog.ParameterizedExpressionWithUnit;
 import com.ge.research.sadl.darpa.aske.dialog.SadlEquationInvocation;
 import com.ge.research.sadl.darpa.aske.dialog.SaveStatement;
 import com.ge.research.sadl.darpa.aske.dialog.SuitabilityStatement;
@@ -92,6 +93,7 @@ import com.ge.research.sadl.darpa.aske.dialog.WhatStatement;
 import com.ge.research.sadl.darpa.aske.dialog.WhatValuesStatement;
 import com.ge.research.sadl.darpa.aske.dialog.YesNoAnswerStatement;
 import com.ge.research.sadl.darpa.aske.preferences.DialogPreferences;
+import com.ge.research.sadl.darpa.aske.processing.EvalContent.UnittedParameter;
 import com.ge.research.sadl.errorgenerator.generator.SadlErrorMessages;
 import com.ge.research.sadl.jena.IntermediateFormTranslator;
 import com.ge.research.sadl.jena.JenaBasedSadlModelProcessor;
@@ -1220,22 +1222,25 @@ public class JenaBasedDialogModelProcessor extends JenaBasedSadlModelProcessor {
 		EvalContent ec = new EvalContent(element, Agent.USER);
 		ec.setEquationName(srobj);
 		
-		EList<Expression> params = element.getParameters();
+		EList<ParameterizedExpressionWithUnit> params = element.getParameters();
 		if (! params.isEmpty()) {
-			List<Node> args = new ArrayList<Node>();
-			for (Expression param : params) {
-				Object paramObj = processExpression(param);
-				args.add(nodeCheck(paramObj));
+			for (ParameterizedExpressionWithUnit param : params) {
+				Object paramObj = processExpression(param.getExpression());
+				if (!(paramObj instanceof Node)) {
+					if (paramObj instanceof GraphPatternElement) {
+						paramObj = nodeCheck(paramObj);
+					}
+					else if (paramObj instanceof List<?>) {
+						paramObj = nodeCheck(getIfTranslator().listToAnd((List<GraphPatternElement>) paramObj));
+					}
+					else {
+						throw new TranslationException("Parameter expression did not process to expected result");
+					}
+				}
+				String unit = param.getUnit();
+				UnittedParameter up = ec.new UnittedParameter((Node)paramObj, unit);
+				ec.addParameter(up);
 			}
-			ec.setParameters(args);
-		}
-		EList<String> units = element.getUnits();
-		if (!units.isEmpty()) {
-			List<String> untlst = new ArrayList<String>();
-			for (String unit : units) {
-				untlst.add(unit);
-			}
-			ec.setUnits(untlst);
 		}
 		return ec;
 	}
@@ -1295,7 +1300,7 @@ public class JenaBasedDialogModelProcessor extends JenaBasedSadlModelProcessor {
 				try {
 					IDialogAnswerProvider dap = getDialogAnswerProvider(resource);
 					if (dap != null) {
-						pmap = dap.getPreferences(resource.getURI());
+						pmap = dap.getPreferences(resource);
 					}
 				} catch (ConfigurationException e) {
 					// TODO Auto-generated catch block

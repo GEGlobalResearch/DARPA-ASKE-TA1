@@ -52,6 +52,7 @@ import java.util.Set;
 
 import org.eclipse.jdt.core.compiler.InvalidInputException;
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 
 import com.ge.research.sadl.builder.ConfigurationManagerForIdeFactory;
@@ -495,6 +496,7 @@ public class TextProcessorTests {
 //		}
 	}
 
+	@Ignore ("This has spaces missing and is known to cause issues in the service")
 	@Test
 	public void testTextToTriples_01() throws ConfigurationException, IOException {
 		String content = 
@@ -622,7 +624,7 @@ public class TextProcessorTests {
 		tp.setTextModelName(localityURI);
 		String msg = tp.clearGraph(localityURI);
 		System.out.println("Clear graph response: " + msg);
-		int[] result = tp.processText(localityURI, content, localityURI, null);
+		int[] result = tp.processText(localityURI, content, localityURI, "sos");
 		assertNotNull(result);
 //		assertEquals(0, result[0]);
 //		assertEquals(1, result[1]);
