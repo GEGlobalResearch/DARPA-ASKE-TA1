@@ -782,6 +782,7 @@ public class JenaBasedDialogInferenceProcessor extends JenaBasedSadlInferencePro
 					throw new SadlInferenceException("insertTriplesAndQuery only handles TripleElements currently");
 				}
 			}
+			triples.add(thisRulesTriples);
 		}
 		return insertTriplesAndQuery(resource, triples);
 	}
