@@ -41,24 +41,61 @@ import requests
 
 
 def text_to_python(string_expression):
-    equation_parameters = {}
+    text_equation_parameters = {}
+    code_equation_parameters = []
+    equation_type = ''
+
     URL = "http://localhost:5002/convertTextToCode"
     body = {"equation": string_expression}
     PARAMS = json.dumps(body)
     headers = {'content-type': 'application/json; charset=UTF-8'}
     r = requests.get(url=URL, data=PARAMS, headers=headers)
 
-    results = r.json()
+    results = None
 
-    if "inputVars" in results:
-        equation_parameters["inputVars"] = results["inputVars"]
-    if "returnVar" in results:
-        equation_parameters["returnVar"] = results["returnVar"]
-    elif "modifiedLHS" in results:
-        returnVar = []
-        returnVar.append(results["modifiedLHS"])
-        equation_parameters["returnVar"] = returnVar
-    if "codeEquation" in results:
-        equation_parameters["codeEquation"] = results["codeEquation"]
+    try:
+        results = r.json()
+        print("\n")
+        print(results)
+    except json.decoder.JSONDecodeError:
+        print("\n Failed conversion to Python ...\n")
+        print(string_expression)
+        print("\n")
 
-    return equation_parameters
+    # TODO: How to leverage "type" information (e.g. lhs_has_operators)
+    if results is not None:
+        if "text" in results:
+            text = results["text"]
+            if "inputVars" in text:
+                text_equation_parameters["inputVars"] = text["inputVars"]
+            if "outputVars" in text:
+                text_equation_parameters["outputVars"] = text["outputVars"]
+            if "outputExpression" in text:
+                text_equation_parameters["outputExpression"] = text["outputExpression"]
+            if "type" in text:
+                type_arr = text["type"]
+                if "lhs_has_operators" in type_arr:
+                    equation_type = "lhs_has_operators"
+
+        if "code" in results:
+            codes = results["code"]
+            # TODO: multiple interpretations. Need to keep track ...
+            # TODO: What happens to triple generation for multiple interpretations?
+            for code in codes:
+                code_equation_parameter = {}
+                if "pyCode" in code:
+                    code_equation_parameter["pyCode"] = code["pyCode"]
+                if "tfCode" in code:
+                    code_equation_parameter["tfCode"] = code["tfCode"]
+                if "inputVars" in code:
+                    code_equation_parameter["inputVars"] = code["inputVars"]
+                if "outputVars" in code:
+                    code_equation_parameter["outputVars"] = code["outputVars"]
+                code_equation_parameters.append(code_equation_parameter)
+
+    # if "codeEquation" in results:
+    #   equation_parameters["codeEquation"] = results["codeEquation"]
+
+    equation_results = {"text": text_equation_parameters, "code": code_equation_parameters, "type": equation_type}
+
+    return equation_results

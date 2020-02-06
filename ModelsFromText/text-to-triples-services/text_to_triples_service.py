@@ -36,14 +36,278 @@
 ***********************************************************************/
 '''
 
-import config
 import extract_concepts_equations as extract
 import entity_linking
 import triple_generation as tp
 import equation_context as context
 import text_to_python as t2p
+import nlp_services as nlp
 from segtok.segmenter import split_single
-import random
+from rdflib import Graph
+
+
+
+class TextToTriples:
+    model_file_path = ''
+    model = None
+    el = None
+    page_cache = {}
+    graphs_dictionary = {}
+    nlp_service_url = ''
+
+    def __init__(self, config):
+        self.model_file_path = config.NERModelFilePath
+
+        # Load the NER model in memory
+        self.model = extract.load_model(self.model_file_path)
+
+        # Initialize Entity Linking Object
+        self.el = entity_linking.EntityLinking(config)
+
+        # Get NLP services URL
+        self.nlp_service_url = config.NLPServiceURL
+
+        self.page_cache = {}
+
+        self.graphs_dictionary = {}
+
+    def text_to_triples(self, body):
+
+        concept_count = 0
+        equation_count = 0
+
+        # Break paragraphs into sentences
+        sentences = split_single(body["text"])
+        local_graph_uri = body["localityURI"]
+
+        g = None
+        if local_graph_uri in self.graphs_dictionary.keys():
+            g = self.graphs_dictionary[local_graph_uri]
+        else:
+            g = Graph()
+
+        line = 1
+        symbols = {}
+        equations = []
+        phrases = {}
+        print("Symbols\n")
+        print(symbols)
+
+        for sent in sentences:
+            sent = sent.replace("\n", " ")
+            sent = sent.strip()
+
+            entity_dict = {}
+            if sent is not '':
+
+                # get noun chunks
+                phrase_list = nlp.get_noun_chunks(self.nlp_service_url, sent)
+                phrases[line] = phrase_list
+
+                # extract entities and equations
+                entity_dict = extract.extract(self.model, sent)
+                entities = []
+
+                if len(entity_dict) > 0:
+                    entities = entity_dict["entities"]
+
+                for entity in entities:
+                    if entity["type"] == "CONCEPT":
+                        wikidata_entity = self.get_wikidata_alignment(entity)
+                        self.generate_scientific_concept_triples(g, entity, wikidata_entity)
+                        self.extract_equation_context(entity, wikidata_entity, sent, symbols, line)
+                        concept_count = concept_count + 1
+                    else:
+                        self.process_scientific_equation(g, entity, equations, local_graph_uri, line)
+                        equation_count = equation_count + 1
+                line = line + 1
+
+        # For every variable (argument and return type), attach augmented types wherever possible
+        # Augmented type links the variable to a wikidata concept, thereby semantically grounding it
+        self.add_augmented_types_to_graph(g, equations, symbols)
+        # self.add_augmented_types_phrase_based(g, equations, symbols, phrases)
+
+        # Update local graphs dictionary
+        self.graphs_dictionary[local_graph_uri] = g
+
+        self.save_graph(g)
+
+        # TODO: How to send error message
+        return {"numConceptsExtracted": concept_count, "numEquationsExtracted": equation_count}
+
+    def get_wikidata_alignment(self, entity):
+        # take label and call get_external_matching_entity
+        search_str = entity["text"]
+        search_str = pre_process(search_str)
+        top_match_entity = {}
+
+        if search_str.lower() in self.page_cache:
+            top_match_entity = self.page_cache[search_str.lower()]
+        else:
+            top_match_entity = self.el.get_external_matching_entity(search_str)
+            self.page_cache[search_str.lower()] = top_match_entity
+
+        return top_match_entity
+
+    @staticmethod
+    def generate_scientific_concept_triples(g: Graph, entity, wikidata_entity):
+        # triple generation
+        tp.populate_graph_entity_triples(g=g, entity_uri=wikidata_entity["uri"],
+                                         label=wikidata_entity["label"], similarity_score=wikidata_entity["score"],
+                                         match_text=entity["text"])
+
+    @staticmethod
+    def extract_equation_context(entity: object, wikidata_entity: object, sent: str, symbols, line: int):
+        # extract context for equation
+        symbol_dict = context.eq_context_from_concept(entity, sent, line)
+        if len(symbol_dict) > 0:
+            symbol_dict["entity_uri"] = wikidata_entity["uri"]
+            if line not in symbols:
+                symbol_list = [symbol_dict]
+                symbols[line] = symbol_list
+            else:
+                symbol_list = symbols[line]
+                symbol_list.append(symbol_dict)
+                symbols[line] = symbol_list
+
+    @staticmethod
+    def process_scientific_equation(g: Graph, entity, equations, local_graph_uri: str, line: str):
+        equation_string = entity["text"]
+        score = entity["confidence"]
+        equation_parameters = t2p.text_to_python(equation_string)
+        tp.populate_graph_equation_triples(g, equation_string, equation_parameters, local_graph_uri)
+
+        equations.append({"equation": entity["text"], "line": line, "uri": "NA",
+                          "parameters": equation_parameters})
+
+    @staticmethod
+    def add_augmented_types_phrase_based(g: Graph, equations, symbols, phrases):
+        # loop through the equations
+        # get the variables.
+        # get the lines and get respective chunks
+        # apply the filter method
+
+        for equation in equations:
+
+            eq_line = equation["line"]
+            start = eq_line - 2
+            end = eq_line + 2
+
+            phrase_list = []
+            for i in range(start, end):
+                if i in phrases:
+                    phrase_list.extend(phrases[i])
+
+            eq_variables = []
+            if "parameters" in equation:
+                # parameters = equation["parameters"]
+                if "text" in equation["parameters"]:
+                    text_parameters = equation["parameters"]["text"]
+                    if "inputVars" in text_parameters:
+                        eq_variables.extend((text_parameters["inputVars"]))
+                    if "outputVars" in text_parameters:
+                        eq_variables.extend((text_parameters["outputVars"]))
+
+            # apply the filter method
+            var_phrase_mapping = get_var_phrase_mapping(phrase_list, eq_variables)
+
+            # this list contains variable name and it's augmented type string.
+            # we need a mapping between augmented trype string and its wikidata URI
+
+            for var_phrase_tup in var_phrase_mapping:
+                eq_var = var_phrase_tup[0]
+                aug_type_text = var_phrase_tup[1]
+
+                query_string = "SELECT ?uri where { ?uri <http://sadl.org/sadlimplicitmodel#localDescriptorName> \"" \
+                               + eq_var + "\" }"
+
+                query_result = g.query(query_string)
+                for row in query_result:
+                    print(row[0])
+                    tp.populate_augmented_type_triples(g, row[0], wikidata_uri=aug_type_text)
+
+        return None
+
+    @staticmethod
+    def add_augmented_types_to_graph(g: Graph, equations, symbols):
+        # Loop through all equations
+        # For each equation, check symbols in a window of 2 lines before and after
+        # Get the augmented types
+        for equation in equations:
+            eq_line = equation["line"]
+            start = eq_line - 2
+            end = eq_line + 2
+
+            # Get all the symbol objects for relevant lines in a list
+            symbol_list = []
+            for line_idx in range(start, end):
+                if line_idx in symbols:
+                    symbol_list.extend(symbols[line_idx])
+
+            # Get all the variables (args and return types) in a single list
+            eq_variables = []
+            if "parameters" in equation:
+                # parameters = equation["parameters"]
+                if "text" in equation["parameters"]:
+                    text_parameters = equation["parameters"]["text"]
+                    if "inputVars" in text_parameters:
+                        eq_variables.extend((text_parameters["inputVars"]))
+                    if "outputVars" in text_parameters:
+                        eq_variables.extend((text_parameters["outputVars"]))
+
+            print("eq variables")
+            print(eq_variables)
+
+            print("symbols")
+            print(symbols)
+
+            # if eq_var is in symbols, get the data_desc_uri
+            # attach wikidata URI as augmented type
+            for symbol in symbol_list:
+                if str(symbol["symbol"]).strip() in eq_variables:
+
+                    # TODO (for future): Make this into a prepared query
+                    # TODO see: https://rdflib.readthedocs.io/en/stable/intro_to_sparql.html#prepared-queries
+                    query_string = "SELECT ?uri where { ?uri <http://sadl.org/sadlimplicitmodel#localDescriptorName> \"" \
+                                   + symbol["symbol"].strip() + "\" }"
+
+                    query_result = g.query(query_string)
+                    for row in query_result:
+                        print(row[0])
+                        # tp.populate_augmented_type_triples(g, row[0], wikidata_uri=symbol["entity_uri"])
+                        tp.populate_augmented_type_triples(g, row[0], wikidata_uri=symbol["text"])
+
+    def get_graph(self, local_graph_uri):
+        g = None
+        if local_graph_uri in self.graphs_dictionary.keys():
+            g = self.graphs_dictionary[local_graph_uri]
+        return g
+
+    @staticmethod
+    def save_graph(g: Graph):
+        # TODO: How to return the triples back to the user?
+        # TODO 1 Ans: Send the triples back as serialized string. Add a new API
+        # TODO: How to return the triples back to the standalone demo UI?
+
+        serialized_triples = "ERROR: Graph Not Found"
+        serialization_format = "ERROR"
+
+        if g is not None:
+            serialized_triples = str(g.serialize(format='n3'))
+            serialization_format = "n3"
+
+            print("\nTriples\n")
+            print(serialized_triples)
+            print("\n")
+
+        return {"triples": serialized_triples, "serializationFormat": serialization_format}
+
+    def clear_graph(self, local_graph_uri):
+        message = "Graph not found"
+        if local_graph_uri in self.graphs_dictionary.keys():
+            del self.graphs_dictionary[local_graph_uri]
+            message = "Graph cleared"
+        return {"message": message}
 
 
 def get_replace_chars():
@@ -57,167 +321,100 @@ def pre_process(string):
     return string.strip()
 
 
-def text_to_triples(body, config):
-    text_triples_arr = []
+def get_var_phrase_mapping(phrase_list, eq_var_list):
+    var_phrase_mapping = []
+    for var in eq_var_list:
+        var_tok = var.split(' ')
+        var_tok_len = len(var_tok)
 
-    # Run the NER and get extracted concepts
-    # Load the NER model in memory
-    # model_file_path = "../resources/taggers/ner-equations-01-23-2019/final-model.pt"
-    model_file_path = config.NERModelFilePath
-    model = extract.load_model(model_file_path)
+        for phrase in phrase_list:
+            phrase_mod = get_phrase_tokens(phrase, var_tok_len)
+            for p_mod in phrase_mod:
+                if var is p_mod and '=' not in phrase:
+                    print("mapping found\t" + var + "\t" + phrase)
+                    phrase_mod = phrase.replace(var, "")
+                    var_phrase_mapping.append((var, phrase_mod))
+    return var_phrase_mapping
 
-    # Intiliaze Entity Linking Object
-    el = entity_linking.EntityLinking(config)
 
-    line = 1
-    symbols = []
-    equations = []
-    text_triple_dict = {}
-    page_cache = {}
-
-    # Break paragraphs into setences
-    sentences = split_single(body["text"])
-    for sent in sentences:
-        sent = sent.replace("\n", " ")
-        sent = sent.strip()
-
-        entity_dict = {}
-
-        if sent != "":
-            entity_dict = extract.extract(model, sent)
-            # print(entity_dict, "\n")
-
-        # Entity Linking
-        entities = {}
-        concepts = []
-        triples = []
-
-        if len(entity_dict) > 0:
-            entities = entity_dict["entities"]
-
-        for entity in entities:
-
-            if entity["type"] == "CONCEPT":
-                # take label and call get_external_matching_entity
-
-                search_str = entity["text"]
-                search_str = pre_process(search_str)
-                top_match_entity = {}
-
-                if search_str.lower() in page_cache:
-                    top_match_entity = page_cache[search_str.lower()]
-                else:
-                    top_match_entity = el.get_external_matching_entity(search_str)
-                    page_cache[search_str.lower()] = top_match_entity
-
-                # print(top_match_entity, "\n")
-                entity_uri = ""
-                if len(top_match_entity) == 3:
-                    entity_uri = top_match_entity["uri"]
-                    triples = tp.generate_entity_triples(top_match_entity["uri"], top_match_entity["label"],
-                                                         top_match_entity["score"], entity["text"])
-
-                # extract context for equation
-                symbol_dict = context.eq_context_from_concept(entity, sent, line)
-                if len(symbol_dict) > 0:
-                    symbol_dict["entity_uri"] = entity_uri
-                    symbols.append(symbol_dict)
-
+def get_phrase_tokens(phrase: str, length: int):
+    phrase_tokens = phrase.split(' ')
+    phrases_mod = []
+    counter = 0
+    for i in range(0, len(phrase_tokens)):
+        phr = phrase_tokens[i]
+        counter = counter + 1
+        for j in range((i+1), len(phrase_tokens)):
+            if counter < length:
+                phr = phr + " " + phrase_tokens[j]
+                counter = counter + 1
             else:
-                equation_string = entity["text"]
-                score = entity["confidence"]
-                equation_parameters = t2p.text_to_python(equation_string)
-                triples = tp.generate_equation_triples(equation_string, equation_parameters)
-                equations.append({"equation": entity["text"], "line": line,"uri": "NA",
-                                  "parameters": equation_parameters})
-
-                # triples = tp.generate_equation_triples(equation_string)
-                # equation_info = tp.generate_equation_triples(equation_string)
-
-                # for context
-                # if len(equation_info) == 2:
-                #    equation_parameters = t2p.text_to_python(equation_string)
-                #   triples = equation_info["triples"]
-                #    equations.append({"equation": entity["text"], "line": line,
-                #                      "uri": equation_info["uri"], "parameters": equation_parameters})
-
-                # we will get the variable info here from Jobin's REST calls
-
-            # generate triples for the extracted entity
-            concept = {"string": entity["text"], "extractionConfScore": entity["confidence"],
-                       "start": entity["start_pos"],
-                       "end": entity["end_pos"], "type": entity["type"], "triples": triples}
-            concepts.append(concept)
-            # concept_dict = {"line": (line-1), "concept": concept}
-            # concepts.append(concept_dict)
-
-        # triple gen
-        # what triples do you want to gen.?
-        # rdfs:label, type (prop. v/s class), other properties availalble to query
-        if sent != "":
-            text_triples = {"text": sent, "concepts": concepts}
-            text_triple_dict[line] = text_triples
-            # text_triples_arr.append(text_triples)
-
-        line = line + 1
-
-    print("\n", equations, "\n")
-    for line in text_triple_dict:
-        text_triples = text_triple_dict[line]
-        for eq in equations:
-            if eq["line"] == line:
-                for symbol in symbols:
-                    diff = symbol["line"] - eq["line"]
-                    if abs(diff) <= 2 and (symbol["symbol"] in eq["equation"]):
-                        concepts = text_triples["concepts"]
-                        for concept in concepts:
-                            if concept["string"] == eq["equation"]:
-                                # to do the extension we need the data desc. URI
-                                data_desc_uri = context.get_data_descriptor_uri(symbol["symbol"], concept["triples"])
-                                if data_desc_uri != "NA":
-                                    concept["triples"].extend(
-                                        tp.get_equation_context_triples(data_desc_uri=data_desc_uri,
-                                                                wikidata_uri=symbol["entity_uri"], rand=random.random()))
-        text_triples_arr.append(text_triples)
+                counter = 0
+                break
+        phrases_mod.append(phr)
+    return phrases_mod
 
 
-    # print("\n", equations, "\n", symbols, "\n")
-    # sep. equation and concepts while looping?? (for appending togther in next for loop
-    # process speed of sound; upload; locality search URI
-    #for eq in equations:
-        #text_triples = text_triple_dict[eq["line"]]
-        #for symbol in symbols:
-        #    diff = symbol["line"] - eq["line"]
-        #    if abs(diff) <= 2:
-        #       if symbol["symbol"] in eq["equation"]:
-        #            # print('\n')
-        #           concepts = text_triples["concepts"]
-        #           for concept in concepts:
-        #               if concept["string"] == eq["equation"]:
-        #                   # print(eq, symbol)
-        #                   # concept["triples"].append({"subject": "hello", "predicate": "word", "object": symbol["entity_uri"]})
-        #                   concept["triples"].extend(
-        #                       tp.get_equation_context_triples(symbol["symbol"], symbol["entity_uri"],
-        #                                                       eq["uri"], eq["parameters"])
-        #                   )
-      #  text_triples_arr.append(text_triples)
+# temp test method
+def get_equations(g: Graph):
+    # temp test call to print all equations
+    query_string = """
+    select ?x ?lang ?eqstring
+    where 
+    {
+    ?x rdf:type <http://sadl.org/sadlimplicitmodel#ExternalEquation> .
+    ?x <http://sadl.org/sadlimplicitmodel#expression> ?script .
+    ?script <http://sadl.org/sadlimplicitmodel#language> ?lang .
+    ?script <http://sadl.org/sadlimplicitmodel#script> ?eqstring .
+    }
+    """
 
-    #for eq in equations:
-    #    text_triple_dict.pop(eq["line"])
+    eq_list = {}
+    query_result = g.query(query_string)
+    for row in query_result:
+        eq_uri = str(row[0])
+        lang = str(row[1])
+        lang = lang.replace("http://sadl.org/sadlimplicitmodel#", "")
+        eq_string = str(row[2])
 
-    #for line in text_triple_dict:
-    #   text_triples_arr.append(text_triple_dict[line])
+        if eq_uri not in eq_list.keys():
+            eq_table = {lang: eq_string}
+            eq_list[eq_uri] = eq_table
+        else:
+            eq_table = eq_list[eq_uri]
+            eq_table[lang] = eq_string
+            eq_list[eq_uri] = eq_table
 
-    with open('triples.nt', 'w') as f:
-        for tt in text_triples_arr:
-            concepts = tt["concepts"]
-            for concept in concepts:
-                triples = concept["triples"]
-                for triple in triples:
-                    obj_str = triple["object"]
-                    if (obj_str.startswith("<") == False) and (obj_str.startswith("_:") == False):
-                        obj_str = "\"" + obj_str + "\""
-                    line = triple["subject"] + " " + triple["predicate"] + " " + obj_str + " .\n"
-                    f.write(line)
+    response = []
+    for key in eq_list.keys():
+        response.append(eq_list[key])
 
-    return text_triples_arr
+    print(eq_list)
+    return response
+
+
+# temp test method
+def run_queries(g: Graph):
+    query_string = """"
+    SELECT ?desc
+    WHERE
+    {
+        ?desc rdf:type <http://sadl.org/sadlimplicitmodel#DataDescriptor> .
+    }
+    """
+
+    query_string = """
+        select ?name
+        where 
+        {
+        ?desc rdf:type <http://sadl.org/sadlimplicitmodel#DataDescriptor> .
+        ?desc <http://sadl.org/sadlimplicitmodel#localDescriptorName> ?name .
+        }
+        """
+    vars_list = []
+    query_result = g.query(query_string)
+
+    for row in query_result:
+        vars_list.append(str(row[0]))
+
+    return vars_list

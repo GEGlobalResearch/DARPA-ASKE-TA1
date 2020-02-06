@@ -36,28 +36,23 @@
 ***********************************************************************/
 '''
 
-import configparser
+import json
+import requests
 
 
-class Config:
-    ElasticSearchServer = ''
-    ElasticSearchIndex = ''
-    NERModelFilePath = ''
-    TripleStoreURL = ''
-    NLPServiceURL = ''
-    UnitsOntologyPath = ''
-    # synonyms will be provided as 'pipe' | separated values
-    UnitsSynonymURIList = ''
-    UnitsOntologyGraphURI = ''
+def get_noun_chunks(nlp_service_url: str, sent: str):
+    get_chunks_service_url = nlp_service_url + '/chunkSelPhraseTypePOST'
 
-    def __init__(self, config_file_path):
-        config = configparser.ConfigParser()
-        config.read(config_file_path)
-        self.ElasticSearchServer = config["DEFAULT"]["ElasticSearchServer"]
-        self.ElasticSearchIndex = config["DEFAULT"]["ElasticSearchIndex"]
-        self.NERModelFilePath = config["DEFAULT"]["NERModelFilePath"]
-        self.TripleStoreURL = config["DEFAULT"]["TripleStoreURL"]
-        self.NLPServiceURL = config["DEFAULT"]["NLPServiceURL"]
-        self.UnitsOntologyPath = config["DEFAULT"]["UnitsOntologyPath"]
-        self.UnitsSynonymURIList = config["DEFAULT"]["UnitsSynonymURIList"]
-        self.UnitsOntologyGraphURI = config["DEFAULT"]["UnitsOntologyGraphURI"]
+    input_info = {'phraseType': ['NP'], 'text': sent}
+
+    headers = {'Content-Type': 'application/json'}
+
+    input_info_json = (json.dumps(input_info))
+    r = requests.post(get_chunks_service_url, input_info_json, headers=headers)
+    # pprint.pprint(r.json())
+    response = r.json()
+    phrases = []
+    for chunk_obj in response:
+        if 'phrase' in chunk_obj:
+            phrases.append(chunk_obj['phrase'])
+    return phrases

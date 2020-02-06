@@ -44,7 +44,5 @@ kchain/log
 \#*\#
 
 
-
-
-
-*.NSK1212613144A
+ModelsFromText/text-to-triples-services/.idea/
+ModelsFromText/text-to-triples-services/__pycache__/
