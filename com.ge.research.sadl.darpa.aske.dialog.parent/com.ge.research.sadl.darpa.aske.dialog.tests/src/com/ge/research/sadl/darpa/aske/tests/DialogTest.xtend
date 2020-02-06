@@ -677,7 +677,8 @@ class DialogTest extends AbstractDialogTest {
 	@Test
 	def void testCompareStatement_00() {
 		val grd = newArrayList(
-"Rule ComparePseudoRule0:  if rdf(v1, http://www.w3.org/1999/02/22-rdf-syntax-ns#type, http://sadl.org/sadlimplicitmodel#UnittedQuantity) and rdf(v1, http://sadl.org/sadlimplicitmodel#value, 300) and rdf(v1, http://sadl.org/sadlimplicitmodel#unit, \"mph\") and rdf(http://sadl.org/test4.dialog#v3, http://www.w3.org/1999/02/22-rdf-syntax-ns#type, http://aske.ge.com/hypersonicsV2#CF6) and rdf(http://sadl.org/test4.dialog#v3, http://aske.ge.com/hypersonicsV2#speed, v1) then rdf(http://sadl.org/test4.dialog#v3, http://aske.ge.com/hypersonicsV2#machSpeed, v2)."
+"Rule ComparePseudoRule0:  if rdf(v2, http://www.w3.org/1999/02/22-rdf-syntax-ns#type, http://sadl.org/sadlimplicitmodel#UnittedQuantity) and rdf(v2, http://sadl.org/sadlimplicitmodel#value, 300) and rdf(v2, http://sadl.org/sadlimplicitmodel#unit, \"mph\") and rdf(http://sadl.org/test4.dialog#v4, http://www.w3.org/1999/02/22-rdf-syntax-ns#type, http://aske.ge.com/hypersonicsV2#CF6) and rdf(http://sadl.org/test4.dialog#v4, http://aske.ge.com/hypersonicsV2#speed, v2) then rdf(http://sadl.org/test4.dialog#v4, http://aske.ge.com/hypersonicsV2#machSpeed, v3).",
+"Rule ComparePseudoRule1:  if rdf(v2, http://www.w3.org/1999/02/22-rdf-syntax-ns#type, http://sadl.org/sadlimplicitmodel#UnittedQuantity) and rdf(v2, http://sadl.org/sadlimplicitmodel#value, 300) and rdf(v2, http://sadl.org/sadlimplicitmodel#unit, \"mph\") and rdf(http://sadl.org/test4.dialog#v6, http://www.w3.org/1999/02/22-rdf-syntax-ns#type, http://aske.ge.com/hypersonicsV2#F100) and rdf(http://sadl.org/test4.dialog#v6, http://aske.ge.com/hypersonicsV2#speed, v2) then rdf(http://sadl.org/test4.dialog#v6, http://aske.ge.com/hypersonicsV2#machSpeed, v5)."
 )
 		'''
 			 uri "http://aske.ge.com/hypersonicsV2" alias hv2.
@@ -738,14 +739,16 @@ class DialogTest extends AbstractDialogTest {
 				assertNotNull(conversation)
 				assertNotNull(conversation.statements);
 				assertEquals(1, conversation.statements.size)
-				assertTrue(conversation.statements.get(0).statement instanceof WhatIsContent)
-				val cc = conversation.statements.get(0).statement as WhatIsContent
+				assertTrue(conversation.statements.get(0).statement instanceof CompareContent)
+				val cc = conversation.statements.get(0).statement as CompareContent
 				val rules = cc.comparisonRules
 				for (r : rules) {
 					println(r.toFullyQualifiedString)
 				}
-				assertEquals(1, rules.size)
-//				assertEquals(grd.get(0), rules.get(0).toFullyQualifiedString)
+				assertEquals(2, rules.size)
+				for (var idx = 0; idx < rules.size; idx++) {
+					assertEquals(grd.get(idx), rules.get(idx).toFullyQualifiedString)					
+				}
 			}
 		]
 	}
