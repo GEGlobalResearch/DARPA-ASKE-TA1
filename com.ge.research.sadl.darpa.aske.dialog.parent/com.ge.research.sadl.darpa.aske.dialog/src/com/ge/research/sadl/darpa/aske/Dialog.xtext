@@ -85,7 +85,7 @@ EvalStatement returns SadlEquationInvocation:
 ;
 
 ParameterizedExpressionWithUnit:
-	expression=ExpressionParameterized<true,false> ('{'unit+=UNIT'}')?
+	expression=ExpressionParameterized<true,false> ('{'unit=UNIT'}')?
 ;
 
 TargetModelName:

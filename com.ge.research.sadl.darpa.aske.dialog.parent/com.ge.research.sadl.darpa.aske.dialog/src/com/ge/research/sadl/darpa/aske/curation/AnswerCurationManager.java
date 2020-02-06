@@ -82,6 +82,7 @@ import com.ge.research.sadl.darpa.aske.processing.ConversationElement;
 import com.ge.research.sadl.darpa.aske.processing.DialogConstants;
 import com.ge.research.sadl.darpa.aske.processing.DialogContent;
 import com.ge.research.sadl.darpa.aske.processing.EvalContent;
+import com.ge.research.sadl.darpa.aske.processing.EvalContent.UnittedParameter;
 import com.ge.research.sadl.darpa.aske.processing.ExpectsAnswerContent;
 import com.ge.research.sadl.darpa.aske.processing.ExtractContent;
 import com.ge.research.sadl.darpa.aske.processing.HowManyValuesContent;
@@ -1162,7 +1163,7 @@ public class AnswerCurationManager {
 			reasoner = getInitializedReasonerForConfiguration(configurationManager, modelName);
 		}
 		Node equationToEvaluate = sc.getEquationName();
-		List<Node> params = sc.getParameters();
+		List<UnittedParameter> params = sc.getParameters();
 		Individual modelInstance = ontModel.getIndividual(equationToEvaluate.getURI());
 		if (modelInstance == null) {
 			throw new EquationNotFoundException("Equation '" + equationToEvaluate.getURI() + "' not found.");
@@ -1198,7 +1199,7 @@ public class AnswerCurationManager {
 	 * @throws IOException
 	 */
 //	public String evaluateInComputationalGraph(String modelUri, String outputName, ResultSet rsInputs, ResultSet rsOutputs, String modifiedPythonScript, String dataLocation) throws IOException {
-	public String evaluateInComputationalGraph(Individual modelToEvaluate, ResultSet rsInputs, ResultSet rsOutputs, List<Node>params) throws IOException {
+	public String evaluateInComputationalGraph(Individual modelToEvaluate, ResultSet rsInputs, ResultSet rsOutputs, List<UnittedParameter> params) throws IOException {
 		// construct String inputs to the service
 		/*
 		 * Construct after this manner:
@@ -1277,7 +1278,7 @@ public class AnswerCurationManager {
 		int rs2ColCount = rsOutputs.getColumnCount();
 		int rs2RowCount = rsOutputs.getRowCount();
 		if (rs2RowCount != 1) {
-			throw new IOException("Only one output is currently handled by  saveToComputationalGraph");
+			throw new IOException("Only one output is currently handled by  evaluateInComputationalGraph");
 		}
 		for (int r = 0; r < rs2RowCount; r++) {
 			String[] output = new String[rs2ColCount];
