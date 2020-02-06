@@ -1,0 +1,170 @@
+<rdf:RDF
+    xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+    xmlns:ns2="http://www.wikidata.org/prop/direct/"
+    xmlns:j.0="http://www.wikidata.org/entity/"
+    xmlns:owl="http://www.w3.org/2002/07/owl#"
+    xmlns:sadlimplicitmodel="http://sadl.org/sadlimplicitmodel"
+    xmlns:ns1="http://sadl.org/sadlimplicitmodel#"
+    xmlns:rdfs="http://www.w3.org/2000/01/rdf-schema#"
+    xmlns="http://com.ge.research.sadl.darpa.aske.answer/boundlay_txt#"
+    xmlns:xsd="http://www.w3.org/2001/XMLSchema#"
+  xml:base="http://com.ge.research.sadl.darpa.aske.answer/boundlay_txt">
+  <owl:Ontology rdf:about="http://com.ge.research.sadl.darpa.aske.answer/boundlay_txt">
+    <owl:imports rdf:resource="http://sadl.org/sadlimplicitmodel"/>
+    <rdfs:comment xml:lang="en">This ontology was created by extraction from text by the ANSWER TextProcessor.</rdfs:comment>
+  </owl:Ontology>
+  <rdf:Description rdf:about="http://www.wikidata.org/entity/Q1256787">
+    <rdfs:label>rotational speed</rdfs:label>
+    <rdfs:label>speed</rdfs:label>
+    <rdfs:subClassOf>
+      <rdf:Description rdf:about="http://www.wikidata.org/entity/Q107715">
+        <rdfs:label>physical quantity</rdfs:label>
+      </rdf:Description>
+    </rdfs:subClassOf>
+  </rdf:Description>
+  <j.0:Q1924249 rdf:about="http://www.wikidata.org/entity/Q29539">
+    <rdf:type>
+      <rdf:Description rdf:about="http://www.wikidata.org/entity/Q3387041">
+        <rdfs:label>intensive quantity</rdfs:label>
+      </rdf:Description>
+    </rdf:type>
+    <rdf:type>
+      <rdf:Description rdf:about="http://www.wikidata.org/entity/Q5725005">
+        <rdfs:label>mechanical property of materials</rdfs:label>
+      </rdf:Description>
+    </rdf:type>
+    <rdfs:label>density</rdfs:label>
+    <rdfs:subClassOf rdf:resource="http://www.wikidata.org/entity/Q107715"/>
+    <ns2:P1687>
+      <rdf:Description rdf:about="http://www.wikidata.org/entity/P2054">
+        <rdfs:label>density</rdfs:label>
+      </rdf:Description>
+    </ns2:P1687>
+  </j.0:Q1924249>
+  <j.0:Q3386703 rdf:about="http://www.wikidata.org/entity/Q36253">
+    <rdfs:label>length</rdfs:label>
+    <rdfs:subClassOf rdf:resource="http://www.wikidata.org/entity/Q107715"/>
+    <rdfs:subClassOf>
+      <rdf:Description rdf:about="http://www.wikidata.org/entity/Q126017">
+        <rdfs:label>distance</rdfs:label>
+      </rdf:Description>
+    </rdfs:subClassOf>
+    <rdfs:subClassOf>
+      <rdf:Description rdf:about="http://www.wikidata.org/entity/Q28733284">
+        <rdfs:label>scalar magnitude</rdfs:label>
+      </rdf:Description>
+    </rdfs:subClassOf>
+    <rdfs:subClassOf>
+      <rdf:Description rdf:about="http://www.wikidata.org/entity/Q30337748">
+        <rdfs:label>ISQ base quantity</rdfs:label>
+      </rdf:Description>
+    </rdfs:subClassOf>
+    <ns2:P1687>
+      <rdf:Description rdf:about="http://www.wikidata.org/entity/P2043">
+        <rdfs:label>length</rdfs:label>
+      </rdf:Description>
+    </ns2:P1687>
+  </j.0:Q3386703>
+  <rdf:Description rdf:about="http://www.wikidata.org/entity/Q11471">
+    <rdfs:label>time</rdfs:label>
+    <rdfs:label>time)</rdfs:label>
+    <rdfs:subClassOf rdf:resource="http://www.wikidata.org/entity/Q107715"/>
+    <rdfs:subClassOf>
+      <rdf:Description rdf:about="http://www.wikidata.org/entity/Q181175">
+        <rdfs:label>scalar physical quantity</rdfs:label>
+      </rdf:Description>
+    </rdfs:subClassOf>
+    <rdfs:subClassOf>
+      <rdf:Description rdf:about="http://www.wikidata.org/entity/Q20937557">
+        <rdfs:label>series</rdfs:label>
+      </rdf:Description>
+    </rdfs:subClassOf>
+    <rdfs:subClassOf rdf:resource="http://www.wikidata.org/entity/Q30337748"/>
+    <ns2:P1687>
+      <rdf:Description rdf:about="http://www.wikidata.org/entity/P2911">
+        <rdfs:label>time gap</rdfs:label>
+      </rdf:Description>
+    </ns2:P1687>
+  </rdf:Description>
+  <j.0:Q28733284 rdf:about="http://www.wikidata.org/entity/Q11423">
+    <rdfs:label>mass</rdfs:label>
+    <rdfs:subClassOf rdf:resource="http://www.wikidata.org/entity/Q30337748"/>
+    <rdfs:subClassOf>
+      <rdf:Description rdf:about="http://www.wikidata.org/entity/Q3386703">
+        <rdfs:label>extensive quantity</rdfs:label>
+      </rdf:Description>
+    </rdfs:subClassOf>
+    <ns2:P1687>
+      <rdf:Description rdf:about="http://www.wikidata.org/entity/P2067">
+        <rdfs:label>mass</rdfs:label>
+      </rdf:Description>
+    </ns2:P1687>
+  </j.0:Q28733284>
+  <ns1:ExternalEquation rdf:ID="equation_1">
+    <ns1:arguments rdf:parseType="Resource">
+      <rdf:first>
+        <ns1:DataDescriptor>
+          <ns1:dataType rdf:resource="http://www.w3.org/2001/XMLSchema#decimal"/>
+          <ns1:localDescriptorName>V</ns1:localDescriptorName>
+        </ns1:DataDescriptor>
+      </rdf:first>
+      <rdf:rest rdf:parseType="Resource">
+        <rdf:first>
+          <ns1:DataDescriptor>
+            <ns1:dataType rdf:resource="http://www.w3.org/2001/XMLSchema#decimal"/>
+            <ns1:localDescriptorName>r</ns1:localDescriptorName>
+          </ns1:DataDescriptor>
+        </rdf:first>
+        <rdf:rest rdf:parseType="Resource">
+          <rdf:first>
+            <ns1:DataDescriptor>
+              <ns1:dataType rdf:resource="http://www.w3.org/2001/XMLSchema#decimal"/>
+              <ns1:localDescriptorName>l</ns1:localDescriptorName>
+            </ns1:DataDescriptor>
+          </rdf:first>
+          <rdf:rest rdf:parseType="Resource">
+            <rdf:first>
+              <ns1:DataDescriptor>
+                <ns1:dataType rdf:resource="http://www.w3.org/2001/XMLSchema#decimal"/>
+                <ns1:localDescriptorName>mu</ns1:localDescriptorName>
+              </ns1:DataDescriptor>
+            </rdf:first>
+            <rdf:rest rdf:parseType="Resource">
+            </rdf:rest>
+          </rdf:rest>
+        </rdf:rest>
+      </rdf:rest>
+    </ns1:arguments>
+    <ns1:expression>
+      <ns1:Script>
+        <ns1:language rdf:resource="http://sadl.org/sadlimplicitmodel#Python-TF"/>
+        <ns1:script>Re = V * r * l / mu</ns1:script>
+      </ns1:Script>
+    </ns1:expression>
+    <ns1:expression>
+      <ns1:Script>
+        <ns1:language rdf:resource="http://sadl.org/sadlimplicitmodel#Python"/>
+        <ns1:script>Re = V * r * l / mu</ns1:script>
+      </ns1:Script>
+    </ns1:expression>
+    <ns1:expression>
+      <ns1:Script>
+        <ns1:language rdf:resource="http://sadl.org/sadlimplicitmodel#Text"/>
+        <ns1:script>Re = V * r * l / mu</ns1:script>
+      </ns1:Script>
+    </ns1:expression>
+    <ns1:returnTypes rdf:parseType="Resource">
+      <rdf:first>
+        <ns1:DataDescriptor>
+          <ns1:dataType rdf:resource="http://www.w3.org/2001/XMLSchema#decimal"/>
+          <ns1:localDescriptorName>['Re']</ns1:localDescriptorName>
+        </ns1:DataDescriptor>
+      </rdf:first>
+      <rdf:rest rdf:parseType="Resource">
+      </rdf:rest>
+    </ns1:returnTypes>
+  </ns1:ExternalEquation>
+  <rdf:Description rdf:about="http://www.wikidata.org/entity/Q1924249">
+    <rdfs:label>measured quantity</rdfs:label>
+  </rdf:Description>
+</rdf:RDF>

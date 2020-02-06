@@ -1,12 +1,3 @@
-
-NASA Logo - Web Link to NASA.gov		
-+ Text Only Site
-+ Non-Flash Version
-+ Contact Glenn
-
-FIND IT @ NASA
-	Go
-ABOUT NASA	NEWS AND EVENTS	MULTIMEDIA	MISSIONS	MyNASA	WORK FOR NASA
 A graphic showing the equations which describe isentropic flow
   for a calorically perfect gas.
 As a gas is forced through a tube, the gas molecules are deflected by the walls of the tube. If the speed of the gas is much less than the speed of sound of the gas, the density of the gas remains constant and the velocity of the flow increases. However, as the speed of the flow approaches the speed of sound we must consider compressibility effects on the gas. The density of the gas varies from one location to the next. Considering flow through a tube, as shown in the figure, if the flow is very gradually compressed (area decreases) and then gradually expanded (area increases), the flow conditions return to their original values. We say that such a process is reversible. From a consideration of the second law of thermodynamics, a reversible flow maintains a constant value of entropy. Engineers call this type of flow an isentropic flow; a combination of the Greek word "iso" (same) and entropy.
@@ -102,32 +93,3 @@ Here is a Java program that solves the equations given on this page.
 
 You select an input variable by using the choice button labeled Input Variable. Next to the selection, you then type in the value of the selected variable. When you hit the red COMPUTE button, the output values change. Some of the variables (like the area ratio) are double valued. This means that for the same area ratio, there is a subsonic and a supersonic solution. The choice button at the right top selects the solution that is presented. The variable "Wcor/A" is the corrected airflow per unit area function which can be derived from the compressible mass flow. This variable is only a function of the Mach number of the flow. The Mach angle and Prandtl-Meyer angle are also functions of the Mach number. These additional variables are used in the design of high speed inlets, nozzles and ducts.
 If you are an experienced user of this calculator, you can use a sleek version of the program which loads faster on your computer and does not include these instructions. You can also download your own copy of the program to run off-line by clicking on this button:
-
-Button to Download a Copy of the Program
-
-Activities:
-Guided Tours
-
-Navigation ..
-
-Button to Display Hypersonic Aero Index Button to Display Hi Speed Aero Index Button to Display Aerodynamics Index
-Beginner's Guide Home Page
- 
-
-     First Gov Image	
-
-+ Inspector General Hotline
-+ Equal Employment Opportunity Data Posted Pursuant to the No Fear Act
-+ Budgets, Strategic Plans and Accountability Reports
-+ Freedom of Information Act
-+ The President's Management Agenda
-+ NASA Privacy Statement, Disclaimer,
-and Accessibility Certification
-
- 
-
-NASA Logo   	
-Editor: Tom Benson
-NASA Official: Tom Benson
-Last Updated: Jun 12 2014
-+ Contact Glenn

@@ -1,0 +1,30 @@
+ uri "http://sadl.org/Suitability.sadl" alias stblt.
+ 
+ Resource is a class.
+ Equipment is a type of Resource.
+ part describes Equipment with values of type Equipment.
+ {Aircraft, AircraftEngine} are types of Equipment.
+ part of Aircraft has at least 1 value of type AircraftEngine.
+ altitude describes Aircraft with values of type UnittedQuantity.
+ 
+ thrust describes AircraftEngine with values of type UnittedQuantity.
+ weight describes Equipment with values of type UnittedQuantity.
+ speed describes Aircraft with values of type UnittedQuantity.
+ sfc describes AircraftEngine with values of type float.
+  
+ Mission is a class, described by requires with values of type Resource.
+ suitable describes Resource with values of type Mission.
+ 
+// MissionX is a Mission, requires (an Aircraft with speed 1.0 mach, with altitude between 25000 ft and 260000 ft, with part
+// 	(an AircraftEngine with thrust at least 25000 lb, with weight 3500 lb, with at most sfc 1.5 )
+// ).
+ 
+ MissionX is a Mission, requires (an Aircraft with speed 1.0 mach, with altitude 25000 ft, with part
+ 	(an AircraftEngine with thrust 25000 lb, with weight 3500 lb, with sfc 1.5 )
+ ).
+
+ F100 is a type of AircraftEngine.
+ CF6 is a type of AircraftEngine.
+ 
+ Ask: "select ?sc where {?sc <rdfs:subClassOf> <AircraftEngine>}".
+  

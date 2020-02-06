@@ -7,6 +7,7 @@ import org.junit.Test
 import com.ge.research.sadl.preferences.SadlPreferences
 import org.eclipse.xtext.preferences.PreferenceKey
 import com.ge.research.sadl.darpa.aske.processing.JenaBasedDialogModelProcessor
+import com.ge.research.sadl.darpa.aske.preferences.DialogPreferences
 
 class DialogUITest extends AbstractDialogPlatformTest {
 
@@ -167,6 +168,9 @@ class DialogUITest extends AbstractDialogPlatformTest {
 			issues.map[message].forEach[println(it)];
 			assertEquals(0, issues.size)
 		]
+
+// TODO this setting of preference doesn't currently work.
+		updatePreferences(new PreferenceKey(DialogPreferences.ANSWER_TEXT_SERVICE_BASE_URI.id, "http://vesuvius-dev.crd.ge.com:4200"));
 
 		createFile('TestDlg2.dialog', '''
 			uri "http://darpa/aske/ge/ta1/testdlg2" alias tdlg2.

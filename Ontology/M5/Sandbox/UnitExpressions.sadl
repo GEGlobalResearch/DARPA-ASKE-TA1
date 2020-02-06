@@ -1,0 +1,7 @@
+ uri "http://sadl.org/UnitExpressions.sadl" alias uexpr.
+ 
+ import "http://sadl.org/Suitability.sadl".
+ 
+// Expr: an Aircraft with speed 1.0 mach.
+ Expr: an AircraftEngine with thrust 25000 lb, with weight 3500 lb, with sfc 1.5.
+ 
