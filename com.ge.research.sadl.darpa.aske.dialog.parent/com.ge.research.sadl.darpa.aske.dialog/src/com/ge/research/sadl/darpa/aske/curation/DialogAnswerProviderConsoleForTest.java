@@ -53,7 +53,6 @@ import org.eclipse.core.resources.IResource;
 import org.eclipse.core.resources.IncrementalProjectBuilder;
 import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.CoreException;
-import org.eclipse.emf.common.util.URI;
 import org.eclipse.emf.ecore.resource.Resource;
 
 import com.ge.research.sadl.darpa.aske.curation.AnswerCurationManager.Agent;
@@ -413,7 +412,7 @@ public class DialogAnswerProviderConsoleForTest extends BaseDialogAnswerProvider
 	}
 
 	@Override
-	public Map<String, String> getPreferences(URI uri) {
+	public Map<String, String> getPreferences(Resource resource) {
 		// TODO Auto-generated method stub
 		return null;
 	}

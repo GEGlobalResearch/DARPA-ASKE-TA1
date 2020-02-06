@@ -1295,7 +1295,7 @@ public class JenaBasedDialogModelProcessor extends JenaBasedSadlModelProcessor {
 				try {
 					IDialogAnswerProvider dap = getDialogAnswerProvider(resource);
 					if (dap != null) {
-						pmap = dap.getPreferences(resource.getURI());
+						pmap = dap.getPreferences(resource);
 					}
 				} catch (ConfigurationException e) {
 					// TODO Auto-generated catch block
