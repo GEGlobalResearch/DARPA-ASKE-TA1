@@ -113,24 +113,27 @@ public class KChainServiceInterface extends JsonServiceInterface {
 		}
 		JsonArray jarrin = new JsonArray();
 		json.add("inputVariables", jarrin);
-		
-		for (int i = 0; i < inputs.size(); i++) {
-			String[] input = inputs.get(i);
-			JsonObject inputj = new JsonObject();
-			inputj.addProperty("name", input[0]);
-			inputj.addProperty("type", input[1]);
-			if (input.length > 2) {
-				inputj.addProperty("value", input[2]);
+		if (inputs != null) {
+			for (int i = 0; i < inputs.size(); i++) {
+				String[] input = inputs.get(i);
+				JsonObject inputj = new JsonObject();
+				inputj.addProperty("name", input[0]);
+				inputj.addProperty("type", input[1]);
+				if (input.length > 2) {
+					inputj.addProperty("value", input[2]);
+				}
+				jarrin.add(inputj);
 			}
-			jarrin.add(inputj);
 		}
 		JsonArray jarrout = new JsonArray();
 		json.add("outputVariables", jarrout);
-		for (String[] output : outputs) {
-			JsonObject outputj = new JsonObject();
-			outputj.addProperty("name", output[0]);
-			outputj.addProperty("type", output[1]);
-			jarrout.add(outputj);
+		if (outputs != null) {
+			for (String[] output : outputs) {
+				JsonObject outputj = new JsonObject();
+				outputj.addProperty("name", output[0]);
+				outputj.addProperty("type", output[1]);
+				jarrout.add(outputj);
+			}
 		}
 		
 		logger.debug(json.toString());

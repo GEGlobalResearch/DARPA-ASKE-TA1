@@ -96,6 +96,7 @@ import com.ge.research.sadl.reasoner.IReasoner;
 import com.ge.research.sadl.reasoner.ResultSet;
 import com.ge.research.sadl.reasoner.TranslationException;
 import com.ge.research.sadl.reasoner.utils.SadlUtils;
+import com.ge.research.sadl.utils.ResourceManager;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
@@ -783,7 +784,12 @@ public class JenaBasedDialogInferenceProcessor extends JenaBasedSadlInferencePro
 			}
 			triples.add(thisRulesTriples);
 		}
-		return insertTriplesAndQuery(resource, triples);
+		try {
+			return insertTriplesAndQuery(resource, triples);
+		}
+		catch (Throwable t) {
+			throw new SadlInferenceException(t.getMessage(), t);
+		}
 	}
 	
 	@Override
@@ -840,8 +846,23 @@ public class JenaBasedDialogInferenceProcessor extends JenaBasedSadlInferencePro
 //			queryKey = cgq.getLocalName();
 //			queryModel = ModelFactory.createOntologyModel(OntModelSpec.OWL_MEM);
 //			OntModelProvider.addPrivateKeyValuePair(resource, queryKey, queryModel);
-			
-		String kgsDirectory = new File(getModelFolderPath(resource)).getParent() + File.separator  + CGMODELS_FOLDER;
+		
+		String kgsDirectory = null;
+		if (ResourceManager.isSyntheticUri(null,resource.getURI())) {
+			File projectRoot = new File("resources/ASKE_P2");
+			try {
+				kgsDirectory = projectRoot.getCanonicalPath() + File.separator + CGMODELS_FOLDER;
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		}
+		else {
+			kgsDirectory = new File(getModelFolderPath(resource)).getParent() + File.separator  + CGMODELS_FOLDER;
+		}
+		if (kgsDirectory == null) {
+			throw new SadlInferenceException("Unable to create folder for CG models");
+		}
 		new File(kgsDirectory).mkdir();
 		
 		String queryModelFileName = "Q_" + System.currentTimeMillis();

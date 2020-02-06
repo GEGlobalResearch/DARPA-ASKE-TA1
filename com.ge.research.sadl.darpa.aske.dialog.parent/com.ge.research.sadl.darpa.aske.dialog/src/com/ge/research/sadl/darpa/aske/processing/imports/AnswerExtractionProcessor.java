@@ -356,27 +356,31 @@ public class AnswerExtractionProcessor {
 			outputs.add(output1);
 
 		 */
-		rsInputs.setShowNamespaces(false);
-		rsOutputs.setShowNamespaces(false);
+		List<String[]> inputs = rsInputs != null ? new ArrayList<String[]>() : null;
+		List<String[]> outputs = rsOutputs != null ? new ArrayList<String[]>() : null;
+		if (rsInputs != null) {
+			rsInputs.setShowNamespaces(false);
+			String[] colNames = rsInputs.getColumnNames();    		// check to make sure columns are as expected for robustness
+			if (!colNames[0].equals("argName")) {
+				throw new IOException("The ResultSet for inputs to the equation does not have 'argName' in the first column");
+			}
+			if (!colNames[1].equals("argType")) {
+				throw new IOException("The ResultSet for inputs to the equation does not have 'argType' in the second column");
+			}
+			String[] colNamesRet = rsOutputs.getColumnNames();
+			if (!colNamesRet[0].equals("retName")) {
+				throw new IOException("The ResultSet for returns from the equation does not have 'retName' in the first column");
+			}
+			if (!colNamesRet[1].equals("retType")) {
+				throw new IOException("The ResultSet for returns from the equation does not have 'retType' in the second column");
+			}
+		}
+		if (rsOutputs != null) {
+			rsOutputs.setShowNamespaces(false);
+		}
 		
-		List<String[]> inputs = new ArrayList<String[]>();
-		List<String[]> outputs = new ArrayList<String[]>();
-		String[] colNames = rsInputs.getColumnNames();    		// check to make sure columns are as expected for robustness
-		if (!colNames[0].equals("argName")) {
-			throw new IOException("The ResultSet for inputs to the equation does not have 'argName' in the first column");
-		}
-		if (!colNames[1].equals("argType")) {
-			throw new IOException("The ResultSet for inputs to the equation does not have 'argType' in the second column");
-		}
-		String[] colNamesRet = rsOutputs.getColumnNames();
-		if (!colNamesRet[0].equals("retName")) {
-			throw new IOException("The ResultSet for returns from the equation does not have 'retName' in the first column");
-		}
-		if (!colNamesRet[1].equals("retType")) {
-			throw new IOException("The ResultSet for returns from the equation does not have 'retType' in the second column");
-		}
-		int rsColCount = rsInputs.getColumnCount();
-		int rsRowCount = rsInputs.getRowCount();
+		int rsColCount = rsInputs != null ? rsInputs.getColumnCount() : 0;
+		int rsRowCount = rsInputs != null ? rsInputs.getRowCount() : 0;
 		for (int r = 0; r < rsRowCount; r++) {
 			String[] input = new String[rsColCount];
 			for (int c = 0; c < rsColCount; c++) {
@@ -385,9 +389,9 @@ public class AnswerExtractionProcessor {
 			inputs.add(input);
 		}
 		
-		int rs2ColCount = rsOutputs.getColumnCount();
-		int rs2RowCount = rsOutputs.getRowCount();
-		if (rs2RowCount != 1) {
+		int rs2ColCount = rsOutputs != null ? rsOutputs.getColumnCount() : 0;
+		int rs2RowCount = rsOutputs != null ? rsOutputs.getRowCount() : 0;
+		if (rs2RowCount > 1) {
 			throw new IOException("Only one output is currently handled by  saveToComputationalGraph");
 		}
 		for (int r = 0; r < rs2RowCount; r++) {

@@ -297,7 +297,8 @@ public class DialogAnswerProvider extends BaseDialogAnswerProvider {
 			Object ctx, boolean quote, boolean prependAgent, boolean repositionCursor, boolean addLeadingSpaces) throws BadLocationException {
 		LOGGER.debug(content);
 //		System.err.println("addCMContent: " + content);
-		Display.getDefault().asyncExec(() -> {
+//		Display.getDefault().asyncExec(() -> {
+		Display.getDefault().syncExec(() -> {
 			try {
 				String modContent;
 				int loc;
