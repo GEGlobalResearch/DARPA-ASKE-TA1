@@ -439,7 +439,7 @@ public class JenaBasedDialogInferenceProcessor extends JenaBasedSadlInferencePro
 			"prefix rdf:<http://www.w3.org/1999/02/22-rdf-syntax-ns#>\n"+
 			"prefix list:<http://sadl.org/sadllistmodel#>\n" +
 			"\n" + 
-			"select distinct ?Node (str(?NUnits) as ?NodeOutputUnits) ?Child (str(?CUnits) as ?ChildInputUnits) ?Eq #?Distribution ?Lower ?Upper  ?Value\n" + 
+			"select distinct ?Node (str(?NUnits) as ?NodeOutputUnits) ?Child (str(?CUnits) as ?ChildInputUnits) ?Eq  ?Value #?Distribution ?Lower ?Upper \n" + 
 			"where {\n" + 
 			"{select distinct ?Node ?Child ?CUnits ?Eq \n" + 
 			"where { \n" + 
@@ -541,8 +541,7 @@ public class JenaBasedDialogInferenceProcessor extends JenaBasedSadlInferencePro
 			"   filter (?CG in (COMPGRAPH)).\n" + 
 			"  optional{\n" + 
 			"    ?Q mm:input ?Inp.\n" + 
-			"    ?Inp a ?IType.\n" + 
-			"    ?Node rdfs:range ?IType.\n" + 
+			"    ?Inp a ?Node.\n" + 
 			"    ?Inp imp:value ?Value.}  \n" + 
 			"} order by ?Node";
 
@@ -1187,6 +1186,8 @@ private ResultSet[] processWhatWhenQuery(Resource resource, String queryModelFil
 		
 		modelCCGs.add(cgIns);
 		
+		//saveMetaDataFile(resource,queryModelURI,queryModelFileName); 
+		
 		//Retrieve eqns dependencies
 		String resmsg = null;
 		// Retrieve Models & Nodes
@@ -1196,23 +1197,29 @@ private ResultSet[] processWhatWhenQuery(Resource resource, String queryModelFil
 		String nodesModelsJSONStr = "{ \"models\": " + modelsJSONString + ", \"nodes\": "  + nodesJSONString + " }";
 
 		// Generate DBN Json
-		cgJson 		= kgResultsToJson(nodesModelsJSONStr, "prognostic", "");
+		cgJson = kgResultsToJson(nodesModelsJSONStr, "prognostic", "");
 		
 		if (useDbn()) {
+		
 			dbnJson 	= generateDBNjson(cgJson);
 			
 			//Save the label mapping
 			class2lbl 	= getClassLabelMapping(dbnJson);
-			
+
 			// Execute DBN
-		    dbnResultsJson = executeDBN(dbnJson);
-		    
-		    //get DBN execution outcome
-		    resmsg = getDBNoutcome(dbnResultsJson);
+
+			dbnResultsJson = executeDBN(dbnJson);
+			
+				//get DBN execution outcome
+			resmsg = getDBNoutcome(dbnResultsJson);
 		}
+		
 // TODO should this be else if? code following does not handle multiple responses, would need to be refactored and called for each...		
 		if (useKChain()) {
-			kchainJson 	= generateKChainJson(cgJson);		// this is used for both build and eval
+			kchainJson 	= generateKChainJson(cgJson);
+			//Save the label mapping								??? Is this saved on build json or eval json?
+			class2lbl 	= getClassLabelMapping(kchainJson);
+
 			JsonObject kchainJsonObj = null;
 			try {
 				JsonParser jp = new JsonParser();
@@ -1223,13 +1230,15 @@ private ResultSet[] processWhatWhenQuery(Resource resource, String queryModelFil
 				throw new DialogInferenceException(t.getMessage(), t);
 			}
 			
-			if (kchainJsonObj != null) {
-				if (getBuildKChainOutcome(buildKChain(kchainJsonObj))) {
-					//Save the label mapping								??? Is this saved on build json or eval json?
-					class2lbl 	= getClassLabelMapping(kchainJson);
-					
+			JsonObject kchainJsonExecObj = createExecJson(kchainJsonObj);
+			
+			
+			if (kchainJsonExecObj != null) {
+				String buildResult = buildKChain(kchainJsonObj);
+				if ( getBuildKChainOutcome(buildResult) ) {
+			
 					// Execute DBN
-				    kchainResultsJson = executeKChain(kchainJsonObj);
+				    kchainResultsJson = executeKChain(kchainJsonExecObj);
 				    
 				    //get DBN execution outcome
 				    resmsg = getEvalKChainOutcome(kchainResultsJson);
@@ -1306,6 +1315,38 @@ private ResultSet[] processWhatWhenQuery(Resource resource, String queryModelFil
 	return dbnResults;
 }
 
+private JsonObject createExecJson(JsonObject kchainJsonObj) throws DialogInferenceException {
+	String keo = "{\n" + 
+			"    \"modelName\": \"getResponse\",\n" + 
+			"  \"outputVariables\": [\n" + 
+			"    {";
+	keo +=  " \"name\": \"fsmach\", \"type\": \"float\"";
+	
+	keo += "   }\n" + 
+			"  ],\n" + 
+			"  \"inputVariables\": [\n" + 
+			"    {";
+	keo += "      \"name\": \"u0d\",\n" + 
+			"      \"type\": \"float\",\n" + 
+			"        \"value\": \"300.0\" }, "+
+			"    {  \"name\": \"altd\",\n" + 
+			"      \"type\": \"float\",\n" + 
+			"        \"value\": \"20000.0\" ";
+	keo += "}]}";
+	
+	JsonObject keoJson = null;
+	try {
+		JsonParser jp = new JsonParser();
+		JsonElement je = jp.parse(keo);
+		keoJson = je.getAsJsonObject();
+	}
+	catch (Throwable t) {
+		throw new DialogInferenceException(t.getMessage(), t);
+	}
+	
+	return keoJson;
+}
+
 /**
  * Method to generate the JSON string needed to build and eval in K-CHAIN
  * @param cgJson -- input ??
@@ -1313,7 +1354,7 @@ private ResultSet[] processWhatWhenQuery(Resource resource, String queryModelFil
  */
 private String generateKChainJson(String cgJson) {
 	// TODO Auto-generated method stub
-	return null;
+	return generateDBNjson(cgJson);
 }
 
 /**
@@ -1364,8 +1405,20 @@ private String executeKChain(JsonObject kchainJsonObj) throws MalformedURLExcept
  * @return -- the processed response
  */
 private String getEvalKChainOutcome(String kchainResultsJson) {
-	// TODO Auto-generated method stub
-	return null;
+    JsonParser parser = new JsonParser();
+    String jres = null;
+    if (!kchainResultsJson.equals("")) {
+        JsonElement jsonTree = parser.parse(kchainResultsJson);
+        JsonObject jsonObject;
+        //String jres = null;
+
+        if (jsonTree.isJsonObject()) {
+            jsonObject = jsonTree.getAsJsonObject();
+            if (jsonObject.has("modelStatus")) 
+                jres = jsonObject.get("modelStatus").getAsString().trim();
+        }
+    }
+    return jres;
 }
 
 private ResultSet[] processModelsFromDataset(Resource resource, TripleElement[] triples, String queryModelFileName,
