@@ -505,7 +505,79 @@ public class KChainServiceTest {
 
 	//	@Ignore
 	@Test
-	public void testBuildJsonGetResponse() throws IOException {
+	public void testBuildJsonGetResponse_02() throws IOException {
+		/*
+{
+  "dataLocation": "../Datasets/Force_dataset.csv",
+  "inputVariables": [
+    {
+      "name": "Mass",
+      "type": "double",
+     },
+    {
+      "name": "Acceleration",
+      "type": "double",
+     }
+  ],
+  "modelName": "Newtons2ndLawModel",
+  "outputVariables": [
+    {
+      "name": "Force",
+      "type": "double"
+    }
+  ]
+}
+		 */
+		
+	File jsonFile = new File("resources/sample2.json");
+	assertTrue(jsonFile.exists());
+	SadlUtils su = new SadlUtils();
+	String json = su.fileToString(jsonFile);
+//		JsonObject jsonObject = JSON.parse(json);
+	JsonParser jp = new JsonParser();
+	JsonElement je = jp.parse(json);
+	JsonObject jsonCache = je.getAsJsonObject();
+//		JsonElement elt = jsonCache.get(key);
+//		JsonObject generatedObj = elt.getAsJsonObject();
+
+	// add to KG: 
+	try {
+		KChainServiceInterface kcsi = new KChainServiceInterface(kchainServiceBaseURL);
+		String bResults = kcsi.buildCGModel(jsonCache);
+		System.out.println(bResults);
+	}
+	catch (Throwable t) {
+		String msg = "Build failed with exception: " + JsonServiceInterface.aggregateExceptionMessage(t);
+		fail(msg);
+	}
+		/*
+{
+  "inputVariables": [
+    {						// if missing use default if provided
+      "name": "Mass",
+      "type": "double",
+      "value": "[1.0]"		
+    },
+    {
+      "name": "Acceleration",
+      "type": "double",
+      "value": "[0.5]"
+    }
+  ],
+  "modelName": "Newtons2ndLawModel",
+  "outputVariables": [
+    {
+      "name": "Force",
+      "type": "double"
+    }
+  ]
+}		 
+		 */
+	}
+
+	//	@Ignore
+	@Test
+	public void testBuildJsonGetResponse_01() throws IOException {
 		/*
 {
   "dataLocation": "../Datasets/Force_dataset.csv",
