@@ -1529,6 +1529,31 @@ class DialogTest extends AbstractDialogTest {
 		]
 	}
 	
+	@Test
+	def void testCMSeeAlso() {
+		'''
+			 uri "http://sadl.org/CMSeeAlso.dialog" alias cmsa.
+			 
+			 CM: "What's up doc?" (see also "http://google.com").
+		'''.assertValidatesTo [ ontModel, issues, processor |
+			assertNotNull(ontModel)
+			assertTrue(issues.filter[severity === Severity.ERROR].empty)
+			if (processor instanceof JenaBasedDialogModelProcessor) {
+				val conversation = (processor as JenaBasedDialogModelProcessor).answerCurationManager.conversation
+				assertNotNull(conversation)
+				assertNotNull(conversation.statements);
+//				assertEquals(1, conversation.statements.size)
+//				assertTrue(conversation.statements.get(0).statement instanceof WhatICompareContentsContent)
+				val cc = conversation.statements.get(0).statement as CompareContent
+				val rules = cc.comparisonRules
+				for (r : rules) {
+					println(r.toFullyQualifiedString)
+				}
+//				assertEquals(1, rules.size)
+//				assertEquals(grd.get(0), rules.get(0).toFullyQualifiedString)
+			}
+		]
+	}
 	
 	@Test
 	def void testGetTranslatorInstance() {

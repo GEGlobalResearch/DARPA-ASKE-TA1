@@ -135,6 +135,7 @@ import com.ge.research.sadl.sADL.ExternalEquationStatement;
 import com.ge.research.sadl.sADL.NamedStructureAnnotation;
 import com.ge.research.sadl.sADL.QueryStatement;
 import com.ge.research.sadl.sADL.SadlAnnotation;
+import com.ge.research.sadl.sADL.SadlAnnotationContent;
 import com.ge.research.sadl.sADL.SadlInstance;
 import com.ge.research.sadl.sADL.SadlModel;
 import com.ge.research.sadl.sADL.SadlModelElement;
@@ -1515,6 +1516,21 @@ public class JenaBasedDialogModelProcessor extends JenaBasedSadlModelProcessor {
 				}
 			}
 		}
+		EList<String> seeAlsoRefs = element.getSeeAlsoRefs();
+		if (logger.isDebugEnabled()) {
+			for (String sar : seeAlsoRefs) {
+				logger.debug("See also reference: " + sar);
+			}
+		}
+//		SadlAnnotationContent annContent = element.getAnn();
+//		if (annContent != null) {
+//			EList<String> seeAlsoRefs = annContent.getContents();
+//			if (logger.isDebugEnabled()) {
+//				for (String sar : seeAlsoRefs) {
+//					logger.debug("See also reference: " + sar);
+//				}
+//			}
+//		}
 		return null;
 	}
 

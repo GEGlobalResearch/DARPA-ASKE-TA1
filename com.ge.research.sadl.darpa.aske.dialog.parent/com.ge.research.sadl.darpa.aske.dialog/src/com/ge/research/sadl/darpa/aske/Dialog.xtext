@@ -106,6 +106,8 @@ SaveStatement:
 
 AnswerCMStatement:
 	'CM:' (sstmt = ((SadlStatement|ModifiedAskStatement|WhatStatement|YesNoAnswerStatement|ExternalEquationStatement|EquationStatement)) | str = STRING)
+	('(' ('see' 'also') seeAlsoRefs+=STRING (',' seeAlsoRefs+=STRING)* ')')?
+//	('(' ann=SadlAnnotationContent ')')?
 ;
 
 ModifiedAskStatement returns sadl::ExpressionScope:

@@ -1,0 +1,4 @@
+ uri "http://sadl.org/SeeAlso.dialog" alias sad (see "http://google.com").
+ 
+ CM: "Hello world" (see also "http://google.com").
+ 
