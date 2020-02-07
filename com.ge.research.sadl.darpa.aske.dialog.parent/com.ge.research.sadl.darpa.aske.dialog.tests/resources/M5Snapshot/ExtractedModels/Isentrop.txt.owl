@@ -82,14 +82,14 @@
     </ns1:derivedFrom>
     <ns1:expression>
       <ns1:Script>
-        <ns1:language rdf:resource="http://sadl.org/sadlimplicitmodel#Python-TF"/>
-        <ns1:script>p = ((  (  tf.math.exp( theta/Tt) - 1 ) / (  tf.math.exp( theta/T ) - 1 ) )  *  ( tf.math.pow( T/Tt,( gamma/( gamma-1)) ) )  * exp[( theta/T ) * (  tf.math.exp( theta/T ) / (  tf.math.exp( theta/T ) - 1 ) ) - ( theta/Tt) * (  tf.math.exp( theta/Tt) / (  tf.math.exp( theta/Tt) - 1 ) ) )) * pt</ns1:script>
+        <ns1:language rdf:resource="http://sadl.org/sadlimplicitmodel#Python"/>
+        <ns1:script>p = ((  (  math.exp( theta/Tt) - 1 ) / (  math.exp( theta/T ) - 1 ) )  *  ( math.pow( T/Tt,( gamma/( gamma-1)) ) )  * exp[( theta/T ) * (  math.exp( theta/T ) / (  math.exp( theta/T ) - 1 ) ) - ( theta/Tt) * (  math.exp( theta/Tt) / (  math.exp( theta/Tt) - 1 ) ) )) * pt</ns1:script>
       </ns1:Script>
     </ns1:expression>
     <ns1:expression>
       <ns1:Script>
-        <ns1:language rdf:resource="http://sadl.org/sadlimplicitmodel#Python"/>
-        <ns1:script>p = ((  (  math.exp( theta/Tt) - 1 ) / (  math.exp( theta/T ) - 1 ) )  *  ( math.pow( T/Tt,( gamma/( gamma-1)) ) )  * exp[( theta/T ) * (  math.exp( theta/T ) / (  math.exp( theta/T ) - 1 ) ) - ( theta/Tt) * (  math.exp( theta/Tt) / (  math.exp( theta/Tt) - 1 ) ) )) * pt</ns1:script>
+        <ns1:language rdf:resource="http://sadl.org/sadlimplicitmodel#Python-TF"/>
+        <ns1:script>p = ((  (  tf.math.exp( theta/Tt) - 1 ) / (  tf.math.exp( theta/T ) - 1 ) )  *  ( tf.math.pow( T/Tt,( gamma/( gamma-1)) ) )  * exp[( theta/T ) * (  tf.math.exp( theta/T ) / (  tf.math.exp( theta/T ) - 1 ) ) - ( theta/Tt) * (  tf.math.exp( theta/Tt) / (  tf.math.exp( theta/Tt) - 1 ) ) )) * pt</ns1:script>
       </ns1:Script>
     </ns1:expression>
     <ns1:returnTypes rdf:parseType="Resource">
@@ -170,14 +170,14 @@
     <ns1:derivedFrom rdf:resource="http://com.ge.research.sadl.darpa.aske.answer/Isentrop_txt#equation_19"/>
     <ns1:expression>
       <ns1:Script>
-        <ns1:language rdf:resource="http://sadl.org/sadlimplicitmodel#Python"/>
-        <ns1:script>pt = p / ((  (  math.exp( theta/Tt) - 1 ) / (  math.exp( theta/T ) - 1 ) )  *  ( math.pow( T/Tt,( gamma/( gamma-1)) ) )  * exp[( theta/T ) * (  math.exp( theta/T ) / (  math.exp( theta/T ) - 1 ) ) - ( theta/Tt) * (  math.exp( theta/Tt) / (  math.exp( theta/Tt) - 1 ) ) ))</ns1:script>
+        <ns1:language rdf:resource="http://sadl.org/sadlimplicitmodel#Python-TF"/>
+        <ns1:script>pt = p / ((  (  tf.math.exp( theta/Tt) - 1 ) / (  tf.math.exp( theta/T ) - 1 ) )  *  ( tf.math.pow( T/Tt,( gamma/( gamma-1)) ) )  * exp[( theta/T ) * (  tf.math.exp( theta/T ) / (  tf.math.exp( theta/T ) - 1 ) ) - ( theta/Tt) * (  tf.math.exp( theta/Tt) / (  tf.math.exp( theta/Tt) - 1 ) ) ))</ns1:script>
       </ns1:Script>
     </ns1:expression>
     <ns1:expression>
       <ns1:Script>
-        <ns1:language rdf:resource="http://sadl.org/sadlimplicitmodel#Python-TF"/>
-        <ns1:script>pt = p / ((  (  tf.math.exp( theta/Tt) - 1 ) / (  tf.math.exp( theta/T ) - 1 ) )  *  ( tf.math.pow( T/Tt,( gamma/( gamma-1)) ) )  * exp[( theta/T ) * (  tf.math.exp( theta/T ) / (  tf.math.exp( theta/T ) - 1 ) ) - ( theta/Tt) * (  tf.math.exp( theta/Tt) / (  tf.math.exp( theta/Tt) - 1 ) ) ))</ns1:script>
+        <ns1:language rdf:resource="http://sadl.org/sadlimplicitmodel#Python"/>
+        <ns1:script>pt = p / ((  (  math.exp( theta/Tt) - 1 ) / (  math.exp( theta/T ) - 1 ) )  *  ( math.pow( T/Tt,( gamma/( gamma-1)) ) )  * exp[( theta/T ) * (  math.exp( theta/T ) / (  math.exp( theta/T ) - 1 ) ) - ( theta/Tt) * (  math.exp( theta/Tt) / (  math.exp( theta/Tt) - 1 ) ) ))</ns1:script>
       </ns1:Script>
     </ns1:expression>
     <ns1:returnTypes rdf:parseType="Resource">
@@ -508,14 +508,14 @@
     <ns1:derivedFrom rdf:resource="http://com.ge.research.sadl.darpa.aske.answer/Isentrop_txt#equation_16"/>
     <ns1:expression>
       <ns1:Script>
-        <ns1:language rdf:resource="http://sadl.org/sadlimplicitmodel#Python-TF"/>
-        <ns1:script>rhot = rho / ((  (  tf.math.exp( theta/Tt) - 1 ) / (  tf.math.exp( theta/T ) - 1 ) )  *  ( tf.math.pow( T/Tt,( 1/)( gamma-1 ) ) )  * exp[( theta/T ) * (  tf.math.exp( theta/T ) / (  tf.math.exp( theta/T ) - 1 ) ) - ( theta/Tt) * (  tf.math.exp( theta/Tt) / (  tf.math.exp( theta/Tt) - 1 ) ) ))</ns1:script>
+        <ns1:language rdf:resource="http://sadl.org/sadlimplicitmodel#Python"/>
+        <ns1:script>rhot = rho / ((  (  math.exp( theta/Tt) - 1 ) / (  math.exp( theta/T ) - 1 ) )  *  ( math.pow( T/Tt,( 1/)( gamma-1 ) ) )  * exp[( theta/T ) * (  math.exp( theta/T ) / (  math.exp( theta/T ) - 1 ) ) - ( theta/Tt) * (  math.exp( theta/Tt) / (  math.exp( theta/Tt) - 1 ) ) ))</ns1:script>
       </ns1:Script>
     </ns1:expression>
     <ns1:expression>
       <ns1:Script>
-        <ns1:language rdf:resource="http://sadl.org/sadlimplicitmodel#Python"/>
-        <ns1:script>rhot = rho / ((  (  math.exp( theta/Tt) - 1 ) / (  math.exp( theta/T ) - 1 ) )  *  ( math.pow( T/Tt,( 1/)( gamma-1 ) ) )  * exp[( theta/T ) * (  math.exp( theta/T ) / (  math.exp( theta/T ) - 1 ) ) - ( theta/Tt) * (  math.exp( theta/Tt) / (  math.exp( theta/Tt) - 1 ) ) ))</ns1:script>
+        <ns1:language rdf:resource="http://sadl.org/sadlimplicitmodel#Python-TF"/>
+        <ns1:script>rhot = rho / ((  (  tf.math.exp( theta/Tt) - 1 ) / (  tf.math.exp( theta/T ) - 1 ) )  *  ( tf.math.pow( T/Tt,( 1/)( gamma-1 ) ) )  * exp[( theta/T ) * (  tf.math.exp( theta/T ) / (  tf.math.exp( theta/T ) - 1 ) ) - ( theta/Tt) * (  tf.math.exp( theta/Tt) / (  tf.math.exp( theta/Tt) - 1 ) ) ))</ns1:script>
       </ns1:Script>
     </ns1:expression>
     <ns1:returnTypes rdf:parseType="Resource">
@@ -657,14 +657,14 @@
     <ns1:derivedFrom rdf:resource="http://com.ge.research.sadl.darpa.aske.answer/Isentrop_txt#equation_22"/>
     <ns1:expression>
       <ns1:Script>
-        <ns1:language rdf:resource="http://sadl.org/sadlimplicitmodel#Python"/>
-        <ns1:script>p = q / (( gamma/( gamma-1 ) ) * ( Tt/T - 1 ) + ( theta/T ) *  (  1 / (  math.exp( theta/Tt) - 1 ) - 1 / (  math.exp( theta/T ) - 1 ) ))</ns1:script>
+        <ns1:language rdf:resource="http://sadl.org/sadlimplicitmodel#Python-TF"/>
+        <ns1:script>p = q / (( gamma/( gamma-1 ) ) * ( Tt/T - 1 ) + ( theta/T ) *  (  1 / (  tf.math.exp( theta/Tt) - 1 ) - 1 / (  tf.math.exp( theta/T ) - 1 ) ))</ns1:script>
       </ns1:Script>
     </ns1:expression>
     <ns1:expression>
       <ns1:Script>
-        <ns1:language rdf:resource="http://sadl.org/sadlimplicitmodel#Python-TF"/>
-        <ns1:script>p = q / (( gamma/( gamma-1 ) ) * ( Tt/T - 1 ) + ( theta/T ) *  (  1 / (  tf.math.exp( theta/Tt) - 1 ) - 1 / (  tf.math.exp( theta/T ) - 1 ) ))</ns1:script>
+        <ns1:language rdf:resource="http://sadl.org/sadlimplicitmodel#Python"/>
+        <ns1:script>p = q / (( gamma/( gamma-1 ) ) * ( Tt/T - 1 ) + ( theta/T ) *  (  1 / (  math.exp( theta/Tt) - 1 ) - 1 / (  math.exp( theta/T ) - 1 ) ))</ns1:script>
       </ns1:Script>
     </ns1:expression>
     <ns1:returnTypes rdf:parseType="Resource">
@@ -724,14 +724,14 @@
     <ns1:derivedFrom rdf:resource="http://com.ge.research.sadl.darpa.aske.answer/Isentrop_txt#equation_10"/>
     <ns1:expression>
       <ns1:Script>
-        <ns1:language rdf:resource="http://sadl.org/sadlimplicitmodel#Python"/>
-        <ns1:script>A = ((  ( math.pow( gam-1)/2]}/M{[1+M,2)( math.pow( gam-1)/2], (  ( gam+1)) / ( gam-1 ) / 2 )  )  *  (   ( ( math.pow( gam+1)/2], -  (  ( gam+1)) / ( gam-1 ) / 2 )  )  / M) * A*</ns1:script>
+        <ns1:language rdf:resource="http://sadl.org/sadlimplicitmodel#Python-TF"/>
+        <ns1:script>A = ((  ( tf.math.pow( gam-1)/2]}/M{[1+M,2)( tf.math.pow( gam-1)/2], (  ( gam+1)) / ( gam-1 ) / 2 )  )  *  (   ( ( tf.math.pow( gam+1)/2], -  (  ( gam+1)) / ( gam-1 ) / 2 )  )  / M) * A*</ns1:script>
       </ns1:Script>
     </ns1:expression>
     <ns1:expression>
       <ns1:Script>
-        <ns1:language rdf:resource="http://sadl.org/sadlimplicitmodel#Python-TF"/>
-        <ns1:script>A = ((  ( tf.math.pow( gam-1)/2]}/M{[1+M,2)( tf.math.pow( gam-1)/2], (  ( gam+1)) / ( gam-1 ) / 2 )  )  *  (   ( ( tf.math.pow( gam+1)/2], -  (  ( gam+1)) / ( gam-1 ) / 2 )  )  / M) * A*</ns1:script>
+        <ns1:language rdf:resource="http://sadl.org/sadlimplicitmodel#Python"/>
+        <ns1:script>A = ((  ( math.pow( gam-1)/2]}/M{[1+M,2)( math.pow( gam-1)/2], (  ( gam+1)) / ( gam-1 ) / 2 )  )  *  (   ( ( math.pow( gam+1)/2], -  (  ( gam+1)) / ( gam-1 ) / 2 )  )  / M) * A*</ns1:script>
       </ns1:Script>
     </ns1:expression>
     <ns1:returnTypes rdf:parseType="Resource">
@@ -804,12 +804,6 @@
     </ns1:arguments>
     <ns1:expression>
       <ns1:Script>
-        <ns1:language rdf:resource="http://sadl.org/sadlimplicitmodel#Text"/>
-        <ns1:script>M = v / a</ns1:script>
-      </ns1:Script>
-    </ns1:expression>
-    <ns1:expression>
-      <ns1:Script>
         <ns1:language rdf:resource="http://sadl.org/sadlimplicitmodel#Python-TF"/>
         <ns1:script>M = v / a</ns1:script>
       </ns1:Script>
@@ -817,6 +811,12 @@
     <ns1:expression>
       <ns1:Script>
         <ns1:language rdf:resource="http://sadl.org/sadlimplicitmodel#Python"/>
+        <ns1:script>M = v / a</ns1:script>
+      </ns1:Script>
+    </ns1:expression>
+    <ns1:expression>
+      <ns1:Script>
+        <ns1:language rdf:resource="http://sadl.org/sadlimplicitmodel#Text"/>
         <ns1:script>M = v / a</ns1:script>
       </ns1:Script>
     </ns1:expression>
@@ -892,6 +892,12 @@
     </ns1:arguments>
     <ns1:expression>
       <ns1:Script>
+        <ns1:language rdf:resource="http://sadl.org/sadlimplicitmodel#Python-TF"/>
+        <ns1:script>gam = 1 + ( gamma-1 ) / ( 1 + ( gamma-1 ) *  ( tf.math.pow( theta/T,2)* tf.math.exp( theta/T ) /  tf.math.pow( tf.math.exp( theta/T ) - 1,2) )  )</ns1:script>
+      </ns1:Script>
+    </ns1:expression>
+    <ns1:expression>
+      <ns1:Script>
         <ns1:language rdf:resource="http://sadl.org/sadlimplicitmodel#Text"/>
         <ns1:script>gam = 1 + (gamma - 1) / ( 1 + (gamma-1) * [(theta/T)^2 * e^(theta/T) /(e^(theta/T) -1)^2])</ns1:script>
       </ns1:Script>
@@ -900,12 +906,6 @@
       <ns1:Script>
         <ns1:language rdf:resource="http://sadl.org/sadlimplicitmodel#Python"/>
         <ns1:script>gam = 1 + ( gamma-1 ) / ( 1 + ( gamma-1 ) *  ( math.pow( theta/T,2)* math.exp( theta/T ) /  math.pow( math.exp( theta/T ) - 1,2) )  )</ns1:script>
-      </ns1:Script>
-    </ns1:expression>
-    <ns1:expression>
-      <ns1:Script>
-        <ns1:language rdf:resource="http://sadl.org/sadlimplicitmodel#Python-TF"/>
-        <ns1:script>gam = 1 + ( gamma-1 ) / ( 1 + ( gamma-1 ) *  ( tf.math.pow( theta/T,2)* tf.math.exp( theta/T ) /  tf.math.pow( tf.math.exp( theta/T ) - 1,2) )  )</ns1:script>
       </ns1:Script>
     </ns1:expression>
     <ns1:returnTypes rdf:parseType="Resource">

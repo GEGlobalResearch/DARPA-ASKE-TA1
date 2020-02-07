@@ -5,6 +5,6 @@ uri "http://com.ge.research.sadl.darpa.aske.answer/Sound_txt" alias Sound_txt
 
 // Individuals:
 External equation_1() returns : .
-equation_1 has expression (a Script with language Text, with script "a^2 = R * T * gamma").
+equation_1 has expression (a Script with language Python, with script "a = math.pow(R * T * gamma, 1/2)").
 External equation_2() returns : .
-equation_2 has expression (a Script with language Python-TF, with script "a = tf.math.pow(R * T *  (  1 + ( gamma-1 ) / ( 1 + ( gamma-1 ) *  ( tf.math.pow( theta/T,2)* tf.math.exp( theta/T ) /  tf.math.pow( tf.math.exp( theta/T ) - 1,2) )  ) ), 1/2)").
+equation_2 has expression (a Script with language Text, with script "a^2 = R * T * {1 + (gamma - 1) / ( 1 + (gamma-1) * [(theta/T)^2 * e^(theta/T) /(e^(theta/T) -1)^2]) }").

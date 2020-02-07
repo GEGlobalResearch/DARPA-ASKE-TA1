@@ -35,12 +35,11 @@
  ***********************************************************************/
 package com.ge.research.sadl.darpa.aske.tests.kchain;
 
-import java.io.BufferedReader;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
+
+import java.io.File;
 import java.io.IOException;
-import java.io.InputStreamReader;
-import java.io.OutputStream;
-import java.net.HttpURLConnection;
-import java.net.URL;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
@@ -53,7 +52,7 @@ import org.slf4j.LoggerFactory;
 
 import com.ge.research.sadl.darpa.aske.processing.imports.JsonServiceInterface;
 import com.ge.research.sadl.darpa.aske.processing.imports.KChainServiceInterface;
-import com.google.gson.JsonArray;
+import com.ge.research.sadl.reasoner.utils.SadlUtils;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
@@ -504,7 +503,79 @@ public class KChainServiceTest {
 		}
 	}
 
-	@Ignore
+	//	@Ignore
+	@Test
+	public void testBuildJsonGetResponse() throws IOException {
+		/*
+{
+  "dataLocation": "../Datasets/Force_dataset.csv",
+  "inputVariables": [
+    {
+      "name": "Mass",
+      "type": "double",
+     },
+    {
+      "name": "Acceleration",
+      "type": "double",
+     }
+  ],
+  "modelName": "Newtons2ndLawModel",
+  "outputVariables": [
+    {
+      "name": "Force",
+      "type": "double"
+    }
+  ]
+}
+		 */
+		
+	File jsonFile = new File("resources/sample.json");
+	assertTrue(jsonFile.exists());
+	SadlUtils su = new SadlUtils();
+	String json = su.fileToString(jsonFile);
+//		JsonObject jsonObject = JSON.parse(json);
+	JsonParser jp = new JsonParser();
+	JsonElement je = jp.parse(json);
+	JsonObject jsonCache = je.getAsJsonObject();
+//		JsonElement elt = jsonCache.get(key);
+//		JsonObject generatedObj = elt.getAsJsonObject();
+
+	// add to KG: 
+	try {
+		KChainServiceInterface kcsi = new KChainServiceInterface(kchainServiceBaseURL);
+		String bResults = kcsi.buildCGModel(jsonCache);
+		System.out.println(bResults);
+	}
+	catch (Throwable t) {
+		String msg = "Build failed with exception: " + JsonServiceInterface.aggregateExceptionMessage(t);
+		fail(msg);
+	}
+		/*
+{
+  "inputVariables": [
+    {						// if missing use default if provided
+      "name": "Mass",
+      "type": "double",
+      "value": "[1.0]"		
+    },
+    {
+      "name": "Acceleration",
+      "type": "double",
+      "value": "[0.5]"
+    }
+  ],
+  "modelName": "Newtons2ndLawModel",
+  "outputVariables": [
+    {
+      "name": "Force",
+      "type": "double"
+    }
+  ]
+}		 
+		 */
+	}
+
+@Ignore
 	@Test
 	public void testBuildEval_Turbo_getGama() throws IOException {
 		String modelUri = "Turbo_getGama";
