@@ -46,6 +46,7 @@ import java.io.FilenameFilter;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.net.MalformedURLException;
 import java.net.URISyntaxException;
 import java.nio.charset.Charset;
 import java.text.SimpleDateFormat;
@@ -80,6 +81,7 @@ import com.ge.research.sadl.darpa.aske.curation.AnswerCurationManager.Agent;
 import com.ge.research.sadl.darpa.aske.preferences.DialogPreferences;
 import com.ge.research.sadl.darpa.aske.processing.DialogConstants;
 import com.ge.research.sadl.darpa.aske.processing.SadlStatementContent;
+import com.ge.research.sadl.darpa.aske.processing.imports.KChainServiceInterface;
 import com.ge.research.sadl.jena.JenaBasedSadlInferenceProcessor;
 import com.ge.research.sadl.jena.JenaBasedSadlModelProcessor;
 import com.ge.research.sadl.jena.UtilsForJena;
@@ -118,6 +120,10 @@ import com.hp.hpl.jena.rdf.model.Property;
 import com.hp.hpl.jena.rdf.model.RDFNode;
 import com.hp.hpl.jena.update.UpdateAction;
 
+/**
+ * @author 200005201
+ *
+ */
 public class JenaBasedDialogInferenceProcessor extends JenaBasedSadlInferenceProcessor {
 
 	private OntModel queryModel;
@@ -819,10 +825,8 @@ public class JenaBasedDialogInferenceProcessor extends JenaBasedSadlInferencePro
 
 		
 		
-		String useDbnStr = getPreference(DialogPreferences.USE_DBN_CG_SERVICE.getId());
-		boolean useDbn = useDbnStr != null ? Boolean.parseBoolean(useDbnStr) : false;
-		String useKCStr = getPreference(DialogPreferences.USE_ANSWER_KCHAIN_CG_SERVICE.getId());
-		boolean useKC = useKCStr != null ? Boolean.parseBoolean(useKCStr) : false;
+		boolean useDbn = useDbn();
+		boolean useKC = useKChain();
 //		if (useKC) {
 //			if (commonSubject(triples.get(0)) && allPredicatesAreProperties(triples.get(0))) {
 //				Object[] jbsipResult = super.insertTriplesAndQuery(resource, triples);
@@ -899,6 +903,18 @@ public class JenaBasedDialogInferenceProcessor extends JenaBasedSadlInferencePro
 		
 		//} //if (useDBN)
 		return results;
+	}
+
+	private boolean useKChain() {
+		String useKCStr = getPreference(DialogPreferences.USE_ANSWER_KCHAIN_CG_SERVICE.getId());
+		boolean useKC = useKCStr != null ? Boolean.parseBoolean(useKCStr) : false;
+		return useKC;
+	}
+
+	private boolean useDbn() {
+		String useDbnStr = getPreference(DialogPreferences.USE_DBN_CG_SERVICE.getId());
+		boolean useDbn = useDbnStr != null ? Boolean.parseBoolean(useDbnStr) : false;
+		return useDbn;
 	}
 
 	
@@ -1113,10 +1129,11 @@ private ResultSet[] processWhatWhenQuery(Resource resource, String queryModelFil
 	Individual ce;
 	OntProperty execprop;
 	
-	Map<String,String> class2lbl, lbl2class;
+	Map<String,String> class2lbl = null, lbl2class;
 	Map<String,String[]> lbl2value;
 	
-	String cgJson, dbnJson, dbnResultsJson;
+	String cgJson, dbnJson, dbnResultsJson = null;
+	String kchainJson, kchainResultsJson;
 	
 	String outputType;
 	Individual oinst; 
@@ -1171,25 +1188,54 @@ private ResultSet[] processWhatWhenQuery(Resource resource, String queryModelFil
 		modelCCGs.add(cgIns);
 		
 		//Retrieve eqns dependencies
-		
+		String resmsg = null;
 		// Retrieve Models & Nodes
 		modelsJSONString = retrieveCGforDBNSpec(listOfEqns, contextClassList, cgIns, RETRIEVE_MODELS);
 		nodesJSONString = retrieveCGforDBNSpec(listOfEqns, null, cgIns, RETRIEVE_NODES);
 
 		String nodesModelsJSONStr = "{ \"models\": " + modelsJSONString + ", \"nodes\": "  + nodesJSONString + " }";
-		
+
 		// Generate DBN Json
 		cgJson 		= kgResultsToJson(nodesModelsJSONStr, "prognostic", "");
-		dbnJson 	= generateDBNjson(cgJson);
 		
-		//Save the label mapping
-		class2lbl 	= getClassLabelMapping(dbnJson);
-		
-		// Execute DBN
-	    dbnResultsJson = executeDBN(dbnJson);
-	    
-	    //get DBN execution outcome
-	    String resmsg = getDBNoutcome(dbnResultsJson);
+		if (useDbn()) {
+			dbnJson 	= generateDBNjson(cgJson);
+			
+			//Save the label mapping
+			class2lbl 	= getClassLabelMapping(dbnJson);
+			
+			// Execute DBN
+		    dbnResultsJson = executeDBN(dbnJson);
+		    
+		    //get DBN execution outcome
+		    resmsg = getDBNoutcome(dbnResultsJson);
+		}
+// TODO should this be else if? code following does not handle multiple responses, would need to be refactored and called for each...		
+		if (useKChain()) {
+			kchainJson 	= generateKChainJson(cgJson);		// this is used for both build and eval
+			JsonObject kchainJsonObj = null;
+			try {
+				JsonParser jp = new JsonParser();
+				JsonElement je = jp.parse(kchainJson);
+				kchainJsonObj = je.getAsJsonObject();
+			}
+			catch (Throwable t) {
+				throw new DialogInferenceException(t.getMessage(), t);
+			}
+			
+			if (kchainJsonObj != null) {
+				if (getBuildKChainOutcome(buildKChain(kchainJsonObj))) {
+					//Save the label mapping								??? Is this saved on build json or eval json?
+					class2lbl 	= getClassLabelMapping(kchainJson);
+					
+					// Execute DBN
+				    kchainResultsJson = executeKChain(kchainJsonObj);
+				    
+				    //get DBN execution outcome
+				    resmsg = getEvalKChainOutcome(kchainResultsJson);
+				}
+			}		
+		}
 	    
 	    //TODO: if exec was unsuccessful, ingest CG anyway and do something further
 	    
@@ -1260,12 +1306,67 @@ private ResultSet[] processWhatWhenQuery(Resource resource, String queryModelFil
 	return dbnResults;
 }
 
+/**
+ * Method to generate the JSON string needed to build and eval in K-CHAIN
+ * @param cgJson -- input ??
+ * @return -- the requested JSON as a String 
+ */
+private String generateKChainJson(String cgJson) {
+	// TODO Auto-generated method stub
+	return null;
+}
 
+/**
+ * Method to build a K-CHAIN model from the input JSON object
+ * @param kchainJsonObj -- the JsonObject created for the build service call
+ * @return -- the json response
+ */
+private String buildKChain(JsonObject kchainJsonObj) throws MalformedURLException, IOException, DialogInferenceException {
+try {
+		String serviceURL = getPreference(DialogPreferences.ANSWER_KCHAIN_CG_SERVICE_BASE_URI.getId());
+		KChainServiceInterface kcsi = new KChainServiceInterface(serviceURL);
+		return kcsi.buildCGModel(kchainJsonObj);
+	}
+	catch (Throwable t) {
+		throw new DialogInferenceException(t.getMessage(), t);
+	}
+}
 
+/**
+ * Method to process the K-CHAIN build service call
+ * @param kchainResultsJson -- the json response from a build call
+ * @return -- true if successful else false
+ */
+private boolean getBuildKChainOutcome(String kchainResultsJson) {
+	// TODO Auto-generated method stub
+	return true;
+}
 
+/**
+ * Method to execute an eval service call to the K-CHAIN computational graph
+ * @param kchainJsonObj -- the JsonObject created for the eval service call
+ * @return -- the json response from the service eval service call
+ */
+private String executeKChain(JsonObject kchainJsonObj) throws MalformedURLException, IOException, DialogInferenceException {
+	try {
+		String serviceURL = getPreference(DialogPreferences.ANSWER_KCHAIN_CG_SERVICE_BASE_URI.getId());
+		KChainServiceInterface kcsi = new KChainServiceInterface(serviceURL);
+		return kcsi.evalCGModel(kchainJsonObj);
+	}
+	catch (Throwable t) {
+		throw new DialogInferenceException(t.getMessage(), t);
+	}
+}
 
-
-
+/**
+ * Method to process the json response from the K-CHAIN eval service call
+ * @param kchainResultsJson -- the json response from the eval service call
+ * @return -- the processed response
+ */
+private String getEvalKChainOutcome(String kchainResultsJson) {
+	// TODO Auto-generated method stub
+	return null;
+}
 
 private ResultSet[] processModelsFromDataset(Resource resource, TripleElement[] triples, String queryModelFileName,
 	String queryModelURI, String queryModelPrefix, String queryOwlFileWithPath, List<RDFNode> inputsList,
