@@ -120,6 +120,7 @@ public class TextProcessorTests {
 		EquationVariableContextResponse results = tp.equationVariableContext("T", localityURI);
 		if (results != null) {
 			System.out.println(results.getMessage());
+			assertTrue(results.getResults().isEmpty());
 			for (String[] use : results.getResults()) {
 				assertTrue(use!= null && use.length == 4);
 				System.out.println("Parameter '" + use[1] + "' used in '" + use[0] + "'");
