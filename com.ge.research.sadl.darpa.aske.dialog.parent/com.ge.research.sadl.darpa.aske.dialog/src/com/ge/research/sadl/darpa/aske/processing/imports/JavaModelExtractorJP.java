@@ -1894,6 +1894,16 @@ public class JavaModelExtractorJP implements IModelFromCodeExtractor {
 
 	@Override
 	public String[] extractPythonTFEquationFromCodeExtractionModel(String pythonScript, String defaultMethodName) {
+		String modifiedScript = pythonToTensorFlowPython(pythonScript);		
+		return extractPythonEquationFromCodeExtractionModel(modifiedScript, defaultMethodName);
+	}
+	
+	/**
+	 * Method to convert regular Python to Tensor-Flow-compatible Python
+	 * @param pythonScript
+	 * @return
+	 */
+	public static String pythonToTensorFlowPython(String pythonScript) {
 		String modifiedScript;		
 		if (pythonScript.contains(" math.")) {
 			modifiedScript = pythonScript.replaceAll("math.", "tf.math.");
@@ -1901,7 +1911,7 @@ public class JavaModelExtractorJP implements IModelFromCodeExtractor {
 		else {
 			modifiedScript = pythonScript.replaceAll("Math.", "tf.math.");
 		}
-		return extractPythonEquationFromCodeExtractionModel(modifiedScript, defaultMethodName);
+		return modifiedScript;
 	}
 
 	@Override
