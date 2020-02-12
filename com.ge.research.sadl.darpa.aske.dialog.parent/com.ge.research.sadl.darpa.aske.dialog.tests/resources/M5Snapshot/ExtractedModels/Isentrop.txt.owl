@@ -11,6 +11,12 @@
     <owl:imports rdf:resource="http://sadl.org/sadlimplicitmodel"/>
     <rdfs:comment xml:lang="en">This ontology was created by extraction from text by the ANSWER TextProcessor.</rdfs:comment>
   </owl:Ontology>
+  <rdf:Description rdf:about="http://com.ge.research.sadl.darpa.aske.answer/speedofsound">
+    <rdfs:label>speed of sound</rdfs:label>
+    <rdfs:label>speed of sound,</rdfs:label>
+    <rdfs:seeAlso rdf:resource="http://www.wikidata.org/entity/Q124003"/>
+    <rdfs:subClassOf rdf:resource="http://sadl.org/sadlimplicitmodel#ScientificConcept"/>
+  </rdf:Description>
   <ns1:ExternalEquation rdf:ID="equation_6">
     <ns1:expression>
       <ns1:Script>
@@ -19,6 +25,11 @@
       </ns1:Script>
     </ns1:expression>
   </ns1:ExternalEquation>
+  <rdf:Description rdf:about="http://com.ge.research.sadl.darpa.aske.answer/enthalpy">
+    <rdfs:label>enthalpy</rdfs:label>
+    <rdfs:seeAlso rdf:resource="http://www.wikidata.org/entity/Q161064"/>
+    <rdfs:subClassOf rdf:resource="http://sadl.org/sadlimplicitmodel#ScientificConcept"/>
+  </rdf:Description>
   <ns1:ExternalEquation rdf:ID="equation_20">
     <ns1:arguments rdf:parseType="Resource">
       <rdf:first>
@@ -82,14 +93,14 @@
     </ns1:derivedFrom>
     <ns1:expression>
       <ns1:Script>
-        <ns1:language rdf:resource="http://sadl.org/sadlimplicitmodel#Python"/>
-        <ns1:script>p = ((  (  math.exp( theta/Tt) - 1 ) / (  math.exp( theta/T ) - 1 ) )  *  ( math.pow( T/Tt,( gamma/( gamma-1)) ) )  * exp[( theta/T ) * (  math.exp( theta/T ) / (  math.exp( theta/T ) - 1 ) ) - ( theta/Tt) * (  math.exp( theta/Tt) / (  math.exp( theta/Tt) - 1 ) ) )) * pt</ns1:script>
+        <ns1:language rdf:resource="http://sadl.org/sadlimplicitmodel#Python-TF"/>
+        <ns1:script>p = ((  (  tf.math.exp( theta/Tt) - 1 ) / (  tf.math.exp( theta/T ) - 1 ) )  *  ( tf.math.pow( T/Tt,( gamma/( gamma-1)) ) )  * exp[( theta/T ) * (  tf.math.exp( theta/T ) / (  tf.math.exp( theta/T ) - 1 ) ) - ( theta/Tt) * (  tf.math.exp( theta/Tt) / (  tf.math.exp( theta/Tt) - 1 ) ) )) * pt</ns1:script>
       </ns1:Script>
     </ns1:expression>
     <ns1:expression>
       <ns1:Script>
-        <ns1:language rdf:resource="http://sadl.org/sadlimplicitmodel#Python-TF"/>
-        <ns1:script>p = ((  (  tf.math.exp( theta/Tt) - 1 ) / (  tf.math.exp( theta/T ) - 1 ) )  *  ( tf.math.pow( T/Tt,( gamma/( gamma-1)) ) )  * exp[( theta/T ) * (  tf.math.exp( theta/T ) / (  tf.math.exp( theta/T ) - 1 ) ) - ( theta/Tt) * (  tf.math.exp( theta/Tt) / (  tf.math.exp( theta/Tt) - 1 ) ) )) * pt</ns1:script>
+        <ns1:language rdf:resource="http://sadl.org/sadlimplicitmodel#Python"/>
+        <ns1:script>p = ((  (  math.exp( theta/Tt) - 1 ) / (  math.exp( theta/T ) - 1 ) )  *  ( math.pow( T/Tt,( gamma/( gamma-1)) ) )  * exp[( theta/T ) * (  math.exp( theta/T ) / (  math.exp( theta/T ) - 1 ) ) - ( theta/Tt) * (  math.exp( theta/Tt) / (  math.exp( theta/Tt) - 1 ) ) )) * pt</ns1:script>
       </ns1:Script>
     </ns1:expression>
     <ns1:returnTypes rdf:parseType="Resource">
@@ -111,9 +122,10 @@
       </ns1:Script>
     </ns1:expression>
   </ns1:ExternalEquation>
-  <rdf:Description rdf:about="file:///C:/Users/200005201/sadl3-master6/git/DARPA-ASKE-TA1/com.ge.research.sadl.darpa.aske.dialog.parent/com.ge.research.sadl.darpa.aske.dialog.tests/enthalpy">
-    <rdfs:label>enthalpy</rdfs:label>
-    <rdfs:seeAlso rdf:resource="http://www.wikidata.org/entity/Q161064"/>
+  <rdf:Description rdf:about="http://com.ge.research.sadl.darpa.aske.answer/speed">
+    <rdfs:label>rotational speed</rdfs:label>
+    <rdfs:label>speed</rdfs:label>
+    <rdfs:seeAlso rdf:resource="http://www.wikidata.org/entity/Q1256787"/>
     <rdfs:subClassOf rdf:resource="http://sadl.org/sadlimplicitmodel#ScientificConcept"/>
   </rdf:Description>
   <ns1:ExternalEquation rdf:ID="equation_21">
@@ -170,14 +182,14 @@
     <ns1:derivedFrom rdf:resource="http://com.ge.research.sadl.darpa.aske.answer/Isentrop_txt#equation_19"/>
     <ns1:expression>
       <ns1:Script>
-        <ns1:language rdf:resource="http://sadl.org/sadlimplicitmodel#Python"/>
-        <ns1:script>pt = p / ((  (  math.exp( theta/Tt) - 1 ) / (  math.exp( theta/T ) - 1 ) )  *  ( math.pow( T/Tt,( gamma/( gamma-1)) ) )  * exp[( theta/T ) * (  math.exp( theta/T ) / (  math.exp( theta/T ) - 1 ) ) - ( theta/Tt) * (  math.exp( theta/Tt) / (  math.exp( theta/Tt) - 1 ) ) ))</ns1:script>
+        <ns1:language rdf:resource="http://sadl.org/sadlimplicitmodel#Python-TF"/>
+        <ns1:script>pt = p / ((  (  tf.math.exp( theta/Tt) - 1 ) / (  tf.math.exp( theta/T ) - 1 ) )  *  ( tf.math.pow( T/Tt,( gamma/( gamma-1)) ) )  * exp[( theta/T ) * (  tf.math.exp( theta/T ) / (  tf.math.exp( theta/T ) - 1 ) ) - ( theta/Tt) * (  tf.math.exp( theta/Tt) / (  tf.math.exp( theta/Tt) - 1 ) ) ))</ns1:script>
       </ns1:Script>
     </ns1:expression>
     <ns1:expression>
       <ns1:Script>
-        <ns1:language rdf:resource="http://sadl.org/sadlimplicitmodel#Python-TF"/>
-        <ns1:script>pt = p / ((  (  tf.math.exp( theta/Tt) - 1 ) / (  tf.math.exp( theta/T ) - 1 ) )  *  ( tf.math.pow( T/Tt,( gamma/( gamma-1)) ) )  * exp[( theta/T ) * (  tf.math.exp( theta/T ) / (  tf.math.exp( theta/T ) - 1 ) ) - ( theta/Tt) * (  tf.math.exp( theta/Tt) / (  tf.math.exp( theta/Tt) - 1 ) ) ))</ns1:script>
+        <ns1:language rdf:resource="http://sadl.org/sadlimplicitmodel#Python"/>
+        <ns1:script>pt = p / ((  (  math.exp( theta/Tt) - 1 ) / (  math.exp( theta/T ) - 1 ) )  *  ( math.pow( T/Tt,( gamma/( gamma-1)) ) )  * exp[( theta/T ) * (  math.exp( theta/T ) / (  math.exp( theta/T ) - 1 ) ) - ( theta/Tt) * (  math.exp( theta/Tt) / (  math.exp( theta/Tt) - 1 ) ) ))</ns1:script>
       </ns1:Script>
     </ns1:expression>
     <ns1:returnTypes rdf:parseType="Resource">
@@ -299,24 +311,6 @@
     <ns1:returnTypes rdf:parseType="Resource">
     </ns1:returnTypes>
   </ns1:ExternalEquation>
-  <rdf:Description rdf:about="file:///C:/Users/200005201/sadl3-master6/git/DARPA-ASKE-TA1/com.ge.research.sadl.darpa.aske.dialog.parent/com.ge.research.sadl.darpa.aske.dialog.tests/speed">
-    <rdfs:label>rotational speed</rdfs:label>
-    <rdfs:label>speed</rdfs:label>
-    <rdfs:seeAlso rdf:resource="http://www.wikidata.org/entity/Q1256787"/>
-    <rdfs:subClassOf rdf:resource="http://sadl.org/sadlimplicitmodel#ScientificConcept"/>
-  </rdf:Description>
-  <rdf:Description rdf:about="file:///C:/Users/200005201/sadl3-master6/git/DARPA-ASKE-TA1/com.ge.research.sadl.darpa.aske.dialog.parent/com.ge.research.sadl.darpa.aske.dialog.tests/speedofsound">
-    <rdfs:label>speed of sound</rdfs:label>
-    <rdfs:label>speed of sound,</rdfs:label>
-    <rdfs:seeAlso rdf:resource="http://www.wikidata.org/entity/Q124003"/>
-    <rdfs:subClassOf rdf:resource="http://sadl.org/sadlimplicitmodel#ScientificConcept"/>
-  </rdf:Description>
-  <rdf:Description rdf:about="file:///C:/Users/200005201/sadl3-master6/git/DARPA-ASKE-TA1/com.ge.research.sadl.darpa.aske.dialog.parent/com.ge.research.sadl.darpa.aske.dialog.tests/speedofsoundof">
-    <rdfs:label>speed of sound</rdfs:label>
-    <rdfs:label>speed of sound of</rdfs:label>
-    <rdfs:seeAlso rdf:resource="http://www.wikidata.org/entity/Q124003"/>
-    <rdfs:subClassOf rdf:resource="http://sadl.org/sadlimplicitmodel#ScientificConcept"/>
-  </rdf:Description>
   <ns1:ExternalEquation rdf:ID="equation_9">
     <ns1:expression>
       <ns1:Script>
@@ -325,13 +319,6 @@
       </ns1:Script>
     </ns1:expression>
   </ns1:ExternalEquation>
-  <rdf:Description rdf:about="file:///C:/Users/200005201/sadl3-master6/git/DARPA-ASKE-TA1/com.ge.research.sadl.darpa.aske.dialog.parent/com.ge.research.sadl.darpa.aske.dialog.tests/temperature">
-    <rdfs:label>color temperature</rdfs:label>
-    <rdfs:label>temperature</rdfs:label>
-    <rdfs:label>temperature,</rdfs:label>
-    <rdfs:seeAlso rdf:resource="http://www.wikidata.org/entity/Q327408"/>
-    <rdfs:subClassOf rdf:resource="http://sadl.org/sadlimplicitmodel#ScientificConcept"/>
-  </rdf:Description>
   <ns1:ExternalEquation rdf:ID="equation_8">
     <ns1:expression>
       <ns1:Script>
@@ -340,10 +327,26 @@
       </ns1:Script>
     </ns1:expression>
   </ns1:ExternalEquation>
-  <rdf:Description rdf:about="file:///C:/Users/200005201/sadl3-master6/git/DARPA-ASKE-TA1/com.ge.research.sadl.darpa.aske.dialog.parent/com.ge.research.sadl.darpa.aske.dialog.tests/speedof">
-    <rdfs:label>speed of</rdfs:label>
-    <rdfs:label>speed of sound</rdfs:label>
-    <rdfs:seeAlso rdf:resource="http://www.wikidata.org/entity/Q124003"/>
+  <rdf:Description rdf:about="http://com.ge.research.sadl.darpa.aske.answer/density">
+    <rdfs:label>density</rdfs:label>
+    <rdfs:seeAlso rdf:resource="http://www.wikidata.org/entity/Q29539"/>
+    <rdfs:subClassOf rdf:resource="http://sadl.org/sadlimplicitmodel#ScientificConcept"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://com.ge.research.sadl.darpa.aske.answer/momentum">
+    <rdfs:label>momentum indicator</rdfs:label>
+    <rdfs:label>momentum,</rdfs:label>
+    <rdfs:seeAlso rdf:resource="http://www.wikidata.org/entity/Q2230241"/>
+    <rdfs:subClassOf rdf:resource="http://sadl.org/sadlimplicitmodel#ScientificConcept"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://com.ge.research.sadl.darpa.aske.answer/mass">
+    <rdfs:label>mass</rdfs:label>
+    <rdfs:label>mass,</rdfs:label>
+    <rdfs:seeAlso rdf:resource="http://www.wikidata.org/entity/Q11423"/>
+    <rdfs:subClassOf rdf:resource="http://sadl.org/sadlimplicitmodel#ScientificConcept"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://com.ge.research.sadl.darpa.aske.answer/heatcapacity">
+    <rdfs:label>heat capacity</rdfs:label>
+    <rdfs:seeAlso rdf:resource="http://www.wikidata.org/entity/Q179388"/>
     <rdfs:subClassOf rdf:resource="http://sadl.org/sadlimplicitmodel#ScientificConcept"/>
   </rdf:Description>
   <ns1:ExternalEquation rdf:ID="equation_7">
@@ -354,11 +357,6 @@
       </ns1:Script>
     </ns1:expression>
   </ns1:ExternalEquation>
-  <rdf:Description rdf:about="file:///C:/Users/200005201/sadl3-master6/git/DARPA-ASKE-TA1/com.ge.research.sadl.darpa.aske.dialog.parent/com.ge.research.sadl.darpa.aske.dialog.tests/heatcapacity">
-    <rdfs:label>heat capacity</rdfs:label>
-    <rdfs:seeAlso rdf:resource="http://www.wikidata.org/entity/Q179388"/>
-    <rdfs:subClassOf rdf:resource="http://sadl.org/sadlimplicitmodel#ScientificConcept"/>
-  </rdf:Description>
   <ns1:ExternalEquation rdf:ID="equation_17">
     <ns1:arguments rdf:parseType="Resource">
       <rdf:first>
@@ -422,14 +420,14 @@
     </ns1:derivedFrom>
     <ns1:expression>
       <ns1:Script>
-        <ns1:language rdf:resource="http://sadl.org/sadlimplicitmodel#Python-TF"/>
-        <ns1:script>rho = ((  (  tf.math.exp( theta/Tt) - 1 ) / (  tf.math.exp( theta/T ) - 1 ) )  *  ( tf.math.pow( T/Tt,( 1/)( gamma-1 ) ) )  * exp[( theta/T ) * (  tf.math.exp( theta/T ) / (  tf.math.exp( theta/T ) - 1 ) ) - ( theta/Tt) * (  tf.math.exp( theta/Tt) / (  tf.math.exp( theta/Tt) - 1 ) ) )) * rhot</ns1:script>
+        <ns1:language rdf:resource="http://sadl.org/sadlimplicitmodel#Python"/>
+        <ns1:script>rho = ((  (  math.exp( theta/Tt) - 1 ) / (  math.exp( theta/T ) - 1 ) )  *  ( math.pow( T/Tt,( 1/)( gamma-1 ) ) )  * exp[( theta/T ) * (  math.exp( theta/T ) / (  math.exp( theta/T ) - 1 ) ) - ( theta/Tt) * (  math.exp( theta/Tt) / (  math.exp( theta/Tt) - 1 ) ) )) * rhot</ns1:script>
       </ns1:Script>
     </ns1:expression>
     <ns1:expression>
       <ns1:Script>
-        <ns1:language rdf:resource="http://sadl.org/sadlimplicitmodel#Python"/>
-        <ns1:script>rho = ((  (  math.exp( theta/Tt) - 1 ) / (  math.exp( theta/T ) - 1 ) )  *  ( math.pow( T/Tt,( 1/)( gamma-1 ) ) )  * exp[( theta/T ) * (  math.exp( theta/T ) / (  math.exp( theta/T ) - 1 ) ) - ( theta/Tt) * (  math.exp( theta/Tt) / (  math.exp( theta/Tt) - 1 ) ) )) * rhot</ns1:script>
+        <ns1:language rdf:resource="http://sadl.org/sadlimplicitmodel#Python-TF"/>
+        <ns1:script>rho = ((  (  tf.math.exp( theta/Tt) - 1 ) / (  tf.math.exp( theta/T ) - 1 ) )  *  ( tf.math.pow( T/Tt,( 1/)( gamma-1 ) ) )  * exp[( theta/T ) * (  tf.math.exp( theta/T ) / (  tf.math.exp( theta/T ) - 1 ) ) - ( theta/Tt) * (  tf.math.exp( theta/Tt) / (  tf.math.exp( theta/Tt) - 1 ) ) )) * rhot</ns1:script>
       </ns1:Script>
     </ns1:expression>
     <ns1:returnTypes rdf:parseType="Resource">
@@ -443,17 +441,6 @@
       </rdf:rest>
     </ns1:returnTypes>
   </ns1:ExternalEquation>
-  <rdf:Description rdf:about="file:///C:/Users/200005201/sadl3-master6/git/DARPA-ASKE-TA1/com.ge.research.sadl.darpa.aske.dialog.parent/com.ge.research.sadl.darpa.aske.dialog.tests/density">
-    <rdfs:label>density</rdfs:label>
-    <rdfs:seeAlso rdf:resource="http://www.wikidata.org/entity/Q29539"/>
-    <rdfs:subClassOf rdf:resource="http://sadl.org/sadlimplicitmodel#ScientificConcept"/>
-  </rdf:Description>
-  <rdf:Description rdf:about="file:///C:/Users/200005201/sadl3-master6/git/DARPA-ASKE-TA1/com.ge.research.sadl.darpa.aske.dialog.parent/com.ge.research.sadl.darpa.aske.dialog.tests/mass">
-    <rdfs:label>mass</rdfs:label>
-    <rdfs:label>mass,</rdfs:label>
-    <rdfs:seeAlso rdf:resource="http://www.wikidata.org/entity/Q11423"/>
-    <rdfs:subClassOf rdf:resource="http://sadl.org/sadlimplicitmodel#ScientificConcept"/>
-  </rdf:Description>
   <ns1:ExternalEquation rdf:ID="equation_18">
     <ns1:arguments rdf:parseType="Resource">
       <rdf:first>
@@ -508,14 +495,14 @@
     <ns1:derivedFrom rdf:resource="http://com.ge.research.sadl.darpa.aske.answer/Isentrop_txt#equation_16"/>
     <ns1:expression>
       <ns1:Script>
-        <ns1:language rdf:resource="http://sadl.org/sadlimplicitmodel#Python"/>
-        <ns1:script>rhot = rho / ((  (  math.exp( theta/Tt) - 1 ) / (  math.exp( theta/T ) - 1 ) )  *  ( math.pow( T/Tt,( 1/)( gamma-1 ) ) )  * exp[( theta/T ) * (  math.exp( theta/T ) / (  math.exp( theta/T ) - 1 ) ) - ( theta/Tt) * (  math.exp( theta/Tt) / (  math.exp( theta/Tt) - 1 ) ) ))</ns1:script>
+        <ns1:language rdf:resource="http://sadl.org/sadlimplicitmodel#Python-TF"/>
+        <ns1:script>rhot = rho / ((  (  tf.math.exp( theta/Tt) - 1 ) / (  tf.math.exp( theta/T ) - 1 ) )  *  ( tf.math.pow( T/Tt,( 1/)( gamma-1 ) ) )  * exp[( theta/T ) * (  tf.math.exp( theta/T ) / (  tf.math.exp( theta/T ) - 1 ) ) - ( theta/Tt) * (  tf.math.exp( theta/Tt) / (  tf.math.exp( theta/Tt) - 1 ) ) ))</ns1:script>
       </ns1:Script>
     </ns1:expression>
     <ns1:expression>
       <ns1:Script>
-        <ns1:language rdf:resource="http://sadl.org/sadlimplicitmodel#Python-TF"/>
-        <ns1:script>rhot = rho / ((  (  tf.math.exp( theta/Tt) - 1 ) / (  tf.math.exp( theta/T ) - 1 ) )  *  ( tf.math.pow( T/Tt,( 1/)( gamma-1 ) ) )  * exp[( theta/T ) * (  tf.math.exp( theta/T ) / (  tf.math.exp( theta/T ) - 1 ) ) - ( theta/Tt) * (  tf.math.exp( theta/Tt) / (  tf.math.exp( theta/Tt) - 1 ) ) ))</ns1:script>
+        <ns1:language rdf:resource="http://sadl.org/sadlimplicitmodel#Python"/>
+        <ns1:script>rhot = rho / ((  (  math.exp( theta/Tt) - 1 ) / (  math.exp( theta/T ) - 1 ) )  *  ( math.pow( T/Tt,( 1/)( gamma-1 ) ) )  * exp[( theta/T ) * (  math.exp( theta/T ) / (  math.exp( theta/T ) - 1 ) ) - ( theta/Tt) * (  math.exp( theta/Tt) / (  math.exp( theta/Tt) - 1 ) ) ))</ns1:script>
       </ns1:Script>
     </ns1:expression>
     <ns1:returnTypes rdf:parseType="Resource">
@@ -529,10 +516,29 @@
       </rdf:rest>
     </ns1:returnTypes>
   </ns1:ExternalEquation>
-  <rdf:Description rdf:about="file:///C:/Users/200005201/sadl3-master6/git/DARPA-ASKE-TA1/com.ge.research.sadl.darpa.aske.dialog.parent/com.ge.research.sadl.darpa.aske.dialog.tests/of">
+  <rdf:Description rdf:about="http://com.ge.research.sadl.darpa.aske.answer/temperature">
+    <rdfs:label>color temperature</rdfs:label>
+    <rdfs:label>temperature</rdfs:label>
+    <rdfs:label>temperature,</rdfs:label>
+    <rdfs:seeAlso rdf:resource="http://www.wikidata.org/entity/Q327408"/>
+    <rdfs:subClassOf rdf:resource="http://sadl.org/sadlimplicitmodel#ScientificConcept"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://com.ge.research.sadl.darpa.aske.answer/of">
     <rdfs:label>Investigation of the mechanism of action of papain</rdfs:label>
     <rdfs:label>of</rdfs:label>
     <rdfs:seeAlso rdf:resource="http://www.wikidata.org/entity/Q28912099"/>
+    <rdfs:subClassOf rdf:resource="http://sadl.org/sadlimplicitmodel#ScientificConcept"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://com.ge.research.sadl.darpa.aske.answer/speedofsoundof">
+    <rdfs:label>speed of sound</rdfs:label>
+    <rdfs:label>speed of sound of</rdfs:label>
+    <rdfs:seeAlso rdf:resource="http://www.wikidata.org/entity/Q124003"/>
+    <rdfs:subClassOf rdf:resource="http://sadl.org/sadlimplicitmodel#ScientificConcept"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://com.ge.research.sadl.darpa.aske.answer/speedof">
+    <rdfs:label>speed of</rdfs:label>
+    <rdfs:label>speed of sound</rdfs:label>
+    <rdfs:seeAlso rdf:resource="http://www.wikidata.org/entity/Q124003"/>
     <rdfs:subClassOf rdf:resource="http://sadl.org/sadlimplicitmodel#ScientificConcept"/>
   </rdf:Description>
   <ns1:ExternalEquation rdf:ID="equation_12">
@@ -590,14 +596,14 @@
     </ns1:derivedFrom>
     <ns1:expression>
       <ns1:Script>
-        <ns1:language rdf:resource="http://sadl.org/sadlimplicitmodel#Python"/>
-        <ns1:script>A* = A / ((  ( math.pow( gam-1)/2]}/M{[1+M,2)( math.pow( gam-1)/2], (  ( gam+1)) / ( gam-1 ) / 2 )  )  *  (   ( ( math.pow( gam+1)/2], -  (  ( gam+1)) / ( gam-1 ) / 2 )  )  / M)</ns1:script>
+        <ns1:language rdf:resource="http://sadl.org/sadlimplicitmodel#Python-TF"/>
+        <ns1:script>A* = A / ((  ( tf.math.pow( gam-1)/2]}/M{[1+M,2)( tf.math.pow( gam-1)/2], (  ( gam+1)) / ( gam-1 ) / 2 )  )  *  (   ( ( tf.math.pow( gam+1)/2], -  (  ( gam+1)) / ( gam-1 ) / 2 )  )  / M)</ns1:script>
       </ns1:Script>
     </ns1:expression>
     <ns1:expression>
       <ns1:Script>
-        <ns1:language rdf:resource="http://sadl.org/sadlimplicitmodel#Python-TF"/>
-        <ns1:script>A* = A / ((  ( tf.math.pow( gam-1)/2]}/M{[1+M,2)( tf.math.pow( gam-1)/2], (  ( gam+1)) / ( gam-1 ) / 2 )  )  *  (   ( ( tf.math.pow( gam+1)/2], -  (  ( gam+1)) / ( gam-1 ) / 2 )  )  / M)</ns1:script>
+        <ns1:language rdf:resource="http://sadl.org/sadlimplicitmodel#Python"/>
+        <ns1:script>A* = A / ((  ( math.pow( gam-1)/2]}/M{[1+M,2)( math.pow( gam-1)/2], (  ( gam+1)) / ( gam-1 ) / 2 )  )  *  (   ( ( math.pow( gam+1)/2], -  (  ( gam+1)) / ( gam-1 ) / 2 )  )  / M)</ns1:script>
       </ns1:Script>
     </ns1:expression>
     <ns1:returnTypes rdf:parseType="Resource">
@@ -758,6 +764,12 @@
     </ns1:arguments>
     <ns1:expression>
       <ns1:Script>
+        <ns1:language rdf:resource="http://sadl.org/sadlimplicitmodel#Python"/>
+        <ns1:script>a = math.pow(R * T *  (  1 + ( gamma-1 ) / ( 1 + ( gamma-1 ) *  ( math.pow( theta/T,2)* math.exp( theta/T ) /  math.pow( math.exp( theta/T ) - 1,2) )  ) ), 1/2)</ns1:script>
+      </ns1:Script>
+    </ns1:expression>
+    <ns1:expression>
+      <ns1:Script>
         <ns1:language rdf:resource="http://sadl.org/sadlimplicitmodel#Text"/>
         <ns1:script>a^2 = R * T * {1 + (gamma - 1) / ( 1 + (gamma-1) * [(theta/T)^2 * e^(theta/T) /(e^(theta/T) -1)^2]) }</ns1:script>
       </ns1:Script>
@@ -768,21 +780,9 @@
         <ns1:script>a = tf.math.pow(R * T *  (  1 + ( gamma-1 ) / ( 1 + ( gamma-1 ) *  ( tf.math.pow( theta/T,2)* tf.math.exp( theta/T ) /  tf.math.pow( tf.math.exp( theta/T ) - 1,2) )  ) ), 1/2)</ns1:script>
       </ns1:Script>
     </ns1:expression>
-    <ns1:expression>
-      <ns1:Script>
-        <ns1:language rdf:resource="http://sadl.org/sadlimplicitmodel#Python"/>
-        <ns1:script>a = math.pow(R * T *  (  1 + ( gamma-1 ) / ( 1 + ( gamma-1 ) *  ( math.pow( theta/T,2)* math.exp( theta/T ) /  math.pow( math.exp( theta/T ) - 1,2) )  ) ), 1/2)</ns1:script>
-      </ns1:Script>
-    </ns1:expression>
     <ns1:returnTypes rdf:parseType="Resource">
     </ns1:returnTypes>
   </ns1:ExternalEquation>
-  <rdf:Description rdf:about="file:///C:/Users/200005201/sadl3-master6/git/DARPA-ASKE-TA1/com.ge.research.sadl.darpa.aske.dialog.parent/com.ge.research.sadl.darpa.aske.dialog.tests/momentum">
-    <rdfs:label>momentum indicator</rdfs:label>
-    <rdfs:label>momentum,</rdfs:label>
-    <rdfs:seeAlso rdf:resource="http://www.wikidata.org/entity/Q2230241"/>
-    <rdfs:subClassOf rdf:resource="http://sadl.org/sadlimplicitmodel#ScientificConcept"/>
-  </rdf:Description>
   <ns1:ExternalEquation rdf:ID="equation_1">
     <ns1:arguments rdf:parseType="Resource">
       <rdf:first>
@@ -810,13 +810,13 @@
     </ns1:expression>
     <ns1:expression>
       <ns1:Script>
-        <ns1:language rdf:resource="http://sadl.org/sadlimplicitmodel#Python"/>
+        <ns1:language rdf:resource="http://sadl.org/sadlimplicitmodel#Python-TF"/>
         <ns1:script>M = v / a</ns1:script>
       </ns1:Script>
     </ns1:expression>
     <ns1:expression>
       <ns1:Script>
-        <ns1:language rdf:resource="http://sadl.org/sadlimplicitmodel#Python-TF"/>
+        <ns1:language rdf:resource="http://sadl.org/sadlimplicitmodel#Python"/>
         <ns1:script>M = v / a</ns1:script>
       </ns1:Script>
     </ns1:expression>
@@ -836,14 +836,14 @@
     </ns1:arguments>
     <ns1:expression>
       <ns1:Script>
-        <ns1:language rdf:resource="http://sadl.org/sadlimplicitmodel#Text"/>
-        <ns1:script>M^2 = (2 (Tt/T) / gam) * [(gamma/(gamma-1) * (1 - T/Tt) + (theta/Tt) * (1/(e^theta/Tt -1) - 1/(e^theta/T -1)]</ns1:script>
+        <ns1:language rdf:resource="http://sadl.org/sadlimplicitmodel#Python-TF"/>
+        <ns1:script>M = tf.math.pow(( 2 * ( Tt/T ) / gam) *  (  ( gamma/( gamma-1 ) * ( 1 - T / Tt) + ( theta/Tt) * ( 1 / (  tf.math.exptheta/Tt-1 ) - 1 / (  tf.math.exptheta/T - 1 ) ), 1/2)</ns1:script>
       </ns1:Script>
     </ns1:expression>
     <ns1:expression>
       <ns1:Script>
-        <ns1:language rdf:resource="http://sadl.org/sadlimplicitmodel#Python-TF"/>
-        <ns1:script>M = tf.math.pow(( 2 * ( Tt/T ) / gam) *  (  ( gamma/( gamma-1 ) * ( 1 - T / Tt) + ( theta/Tt) * ( 1 / (  tf.math.exptheta/Tt-1 ) - 1 / (  tf.math.exptheta/T - 1 ) ), 1/2)</ns1:script>
+        <ns1:language rdf:resource="http://sadl.org/sadlimplicitmodel#Text"/>
+        <ns1:script>M^2 = (2 (Tt/T) / gam) * [(gamma/(gamma-1) * (1 - T/Tt) + (theta/Tt) * (1/(e^theta/Tt -1) - 1/(e^theta/T -1)]</ns1:script>
       </ns1:Script>
     </ns1:expression>
     <ns1:expression>

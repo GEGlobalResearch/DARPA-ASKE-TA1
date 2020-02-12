@@ -64,7 +64,12 @@ SadlModelElement returns sadl::SadlModelElement :
 	TargetModelName EOS			|
 	ExtractStatement EOS		|
 	CompareStatement EOS 	 	|
-	SuitabilityStatement EOS	
+	SuitabilityStatement EOS	|
+	SeeParentheticalLink
+;
+
+SeeParentheticalLink:
+	'(' 'See' linkUri=STRING EOS ')'
 ;
 
 CompareStatement:

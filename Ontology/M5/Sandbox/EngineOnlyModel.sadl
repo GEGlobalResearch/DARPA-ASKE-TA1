@@ -1,12 +1,14 @@
  uri "http://sadl.org/EngineOnlyModel.sadl" alias EngineOnlyModel.
  
- AircraftEngine is a class.
-  altitude describes AircraftEngine with values of type UnittedQuantity.
+ import "http://sadl.org/DeeperKnowledge.sadl".
  
- thrust describes AircraftEngine with values of type UnittedQuantity.
+ AircraftEngine is a class.
+ altitude describes AircraftEngine with values of type UnittedQuantity.
+ 
+ thrust describes AircraftEngine with values of type Thrust.
  weight describes AircraftEngine with values of type UnittedQuantity.
- speed describes AircraftEngine with values of type UnittedQuantity.
- sfc describes AircraftEngine with values of type float.
+ speed describes AircraftEngine with values of type Speed.
+ sfc describes AircraftEngine with values of type SFC.
   
  F100 is a type of AircraftEngine.
  CF6 is a type of AircraftEngine.

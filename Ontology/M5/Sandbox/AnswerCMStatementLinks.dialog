@@ -1,0 +1,15 @@
+ uri "http://sadl.org/AnswerCMStatementLinks.dialog" alias AnswerCMStatementLinks.
+ 
+ CM: Fruit is a class. (See "https://www.wikidata.org/wiki/Q3314483".)
+ 
+ CM: Graph "select ?x ?y ?z where {?x ?y ?z}". (See "file:///C:/Users/200005201/sadl3-master2/runtime-New_configuration/TestSadl3Ide/Graphs/GeorgeAndMartha.owlBirthch.svg".)
+ 
+// CM: What is temperature? (See "https://www.wikidata.org/wiki/Q11466".)
+ 
+ CM: Yes. (See "https://www.wikidata.org/wiki/Q11466".)
+ 
+ CM: External getGamma(float T) returns float: "http://science.org/gamma". (See "https://www.wikidata.org/wiki/Q503869".)
+ 
+ CM: "Just to let you know, the back-end agent is named 'CM'". (See "https://github.com/GEGlobalResearch/DARPA-ASKE-TA1/wiki".)
+ 
+ 

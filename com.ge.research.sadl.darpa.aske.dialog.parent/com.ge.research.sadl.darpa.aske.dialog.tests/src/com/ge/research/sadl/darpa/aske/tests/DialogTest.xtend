@@ -755,8 +755,8 @@ class DialogTest extends AbstractDialogTest {
 	@Test
 	def void testCompareStatement_01() {
 			val grd = newArrayList(
-"Rule ComparePseudoRule0:  if rdf(http://aske.ge.com/testdiag#v0, http://www.w3.org/1999/02/22-rdf-syntax-ns#type, http://sadl.org/Model.sadl#CF6) and rdf(http://aske.ge.com/testdiag#v0, http://sadl.org/Model.sadl#sfc, 0.35) then rdf(http://aske.ge.com/testdiag#v0, http://www.w3.org/1999/02/22-rdf-syntax-ns#type, http://sadl.org/Model.sadl#CF6) and rdf(http://aske.ge.com/testdiag#v0, http://sadl.org/Model.sadl#thrust, v2).",
-"Rule ComparePseudoRule1:  if rdf(http://aske.ge.com/testdiag#v1, http://www.w3.org/1999/02/22-rdf-syntax-ns#type, http://sadl.org/Model.sadl#F100) and rdf(http://aske.ge.com/testdiag#v1, http://sadl.org/Model.sadl#sfc, 0.35) then rdf(http://aske.ge.com/testdiag#v1, http://www.w3.org/1999/02/22-rdf-syntax-ns#type, http://sadl.org/Model.sadl#F100) and rdf(http://aske.ge.com/testdiag#v1, http://sadl.org/Model.sadl#thrust, v3)."
+"Rule ComparePseudoRule0:  if rdf(http://aske.ge.com/testdiag#v3, http://www.w3.org/1999/02/22-rdf-syntax-ns#type, http://sadl.org/Model.sadl#CF6) and rdf(http://aske.ge.com/testdiag#v3, http://sadl.org/Model.sadl#sfc, 0.35) then rdf(http://aske.ge.com/testdiag#v3, http://sadl.org/Model.sadl#thrust, v2).",
+"Rule ComparePseudoRule1:  if rdf(http://aske.ge.com/testdiag#v5, http://www.w3.org/1999/02/22-rdf-syntax-ns#type, http://sadl.org/Model.sadl#F100) and rdf(http://aske.ge.com/testdiag#v5, http://sadl.org/Model.sadl#sfc, 0.35) then rdf(http://aske.ge.com/testdiag#v5, http://sadl.org/Model.sadl#thrust, v4)."
 )
 		'''
 			uri "http://sadl.org/Model.sadl" alias mdl.
