@@ -47,7 +47,6 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.Scanner;
 
-import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
 
 import com.ge.research.sadl.builder.ConfigurationManagerForIdeFactory;
@@ -126,10 +125,8 @@ import com.hp.hpl.jena.rdf.model.Resource;
 import com.hp.hpl.jena.rdf.model.Statement;
 import com.hp.hpl.jena.rdf.model.StmtIterator;
 import com.hp.hpl.jena.util.iterator.ExtendedIterator;
-import com.hp.hpl.jena.vocabulary.RDF;
 import com.hp.hpl.jena.vocabulary.RDFS;
 import com.hp.hpl.jena.vocabulary.XSD;
-import com.ibm.icu.text.PluralRules.Operand;
 
 public class JavaModelExtractorJP implements IModelFromCodeExtractor {
     private static final Logger logger = Logger.getLogger (JavaModelExtractorJP.class) ;
@@ -1887,33 +1884,17 @@ public class JavaModelExtractorJP implements IModelFromCodeExtractor {
 		return members;
 	}
 	
-	@Override
-	public String[] extractPythonTFEquationFromCodeExtractionModel(String pythonScript) {
-		return extractPythonTFEquationFromCodeExtractionModel(pythonScript, null);
-	}
-
-	@Override
-	public String[] extractPythonTFEquationFromCodeExtractionModel(String pythonScript, String defaultMethodName) {
-		String modifiedScript = pythonToTensorFlowPython(pythonScript);		
-		return extractPythonEquationFromCodeExtractionModel(modifiedScript, defaultMethodName);
-	}
-	
-	/**
-	 * Method to convert regular Python to Tensor-Flow-compatible Python
-	 * @param pythonScript
-	 * @return
-	 */
-	public static String pythonToTensorFlowPython(String pythonScript) {
-		String modifiedScript;		
-		if (pythonScript.contains(" math.")) {
-			modifiedScript = pythonScript.replaceAll("math.", "tf.math.");
-		}
-		else {
-			modifiedScript = pythonScript.replaceAll("Math.", "tf.math.");
-		}
-		return modifiedScript;
-	}
-
+//	@Override
+//	public String[] extractPythonTFEquationFromCodeExtractionModel(String pythonScript) {
+//		return extractPythonTFEquationFromCodeExtractionModel(pythonScript, null);
+//	}
+//
+//	@Override
+//	public String[] extractPythonTFEquationFromCodeExtractionModel(String pythonScript, String defaultMethodName) {
+//		String modifiedScript = pythonToTensorFlowPython(pythonScript);		
+//		return extractPythonEquationFromCodeExtractionModel(modifiedScript, defaultMethodName);
+//	}
+//	
 	@Override
 	public String[] extractPythonEquationFromCodeExtractionModel(String pythonScript) {
 		return extractPythonEquationFromCodeExtractionModel(pythonScript, null);

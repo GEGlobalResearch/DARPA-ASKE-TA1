@@ -67,6 +67,9 @@ public class DialogConstants {
 	public static final String CODE_EXTRACTION_MODEL_PREFIX = "cem";
 	public static final String CODE_EXTRACTION_MODEL_SERIALIZATION_PROPERTY_URI = CODE_EXTRACTION_MODEL_URI + "#serialization";
 	
+	public static final String PYTHON_LANGUAGE = "Python";
+	public static final String TF_PYTHON_LANGUAGE = "Python-TF";
+	
 	// query to get the argument names and types for an equation, parameterized by equation URI
 	public static final String ARGUMENTS_BY_EQUATION_URI_QUERY = "select ?argName ?argType where { ? <" + 
 			SadlConstants.SADL_IMPLICIT_MODEL_ARGUMENTS_PROPERTY_URI + 

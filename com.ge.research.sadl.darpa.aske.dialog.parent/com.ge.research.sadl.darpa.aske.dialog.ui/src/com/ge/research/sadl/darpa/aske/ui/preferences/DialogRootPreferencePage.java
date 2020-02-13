@@ -36,8 +36,6 @@
  ***********************************************************************/
 package com.ge.research.sadl.darpa.aske.ui.preferences;
 
-import static com.ge.research.sadl.preferences.SadlPreferences.GRAPH_IMPLICIT_ELEMENTS;
-
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -136,8 +134,13 @@ public class DialogRootPreferencePage extends LanguageRootPreferencePage {
 
 	@Override
 	protected void createFieldEditors() {
-		// General SADL Settings
+		// General Dialog Settings
 		Composite generalSettings = createSettingsGroup(getFieldEditorParent(), SWT.NONE, "Dialog Settings");
+		// Graph Settings
+		Composite scriptsToSaveSetting = createSettingsGroup(generalSettings, SWT.NONE, "Scripts to Extract");
+		addField(new BooleanFieldEditorExt(DialogPreferences.ORIGINAL_LANGUAGE.getId(), "Original language", scriptsToSaveSetting));
+		addField(new BooleanFieldEditorExt(DialogPreferences.PYTHON_LANGUAGE.getId(), "Python", scriptsToSaveSetting));
+		addField(new BooleanFieldEditorExt(DialogPreferences.TF_PYTHON_LANGUAGE.getId(), "TensorFlow Python", scriptsToSaveSetting));
 		addField(new StringFieldEditorExt(DialogPreferences.ANSWER_TEXT_SERVICE_BASE_URI.getId(), "Text to Triples Host and Port:", generalSettings));
 		addField(new StringFieldEditorExt(DialogPreferences.ANSWER_JAVA_TO_PYTHON_SERVICE_BASE_URI.getId(), "Java to Python Translation Service Host and Port:", generalSettings));
 		Composite computationalGraphSettings = createSettingsGroup(generalSettings, SWT.NONE, "Computational Graph Settings");
@@ -159,6 +162,9 @@ public class DialogRootPreferencePage extends LanguageRootPreferencePage {
 		IPreferenceStore store = this.getPreferenceStore();
 
 		//General Settings
+		store.setDefault(DialogPreferences.ORIGINAL_LANGUAGE.getId(), DialogPreferences.ORIGINAL_LANGUAGE.getDefaultValue());
+		store.setDefault(DialogPreferences.PYTHON_LANGUAGE.getId(), DialogPreferences.PYTHON_LANGUAGE.getDefaultValue());
+		store.setDefault(DialogPreferences.TF_PYTHON_LANGUAGE.getId(), DialogPreferences.TF_PYTHON_LANGUAGE.getDefaultValue());
 		store.setDefault(DialogPreferences.ANSWER_TEXT_SERVICE_BASE_URI.getId(), DialogPreferences.ANSWER_TEXT_SERVICE_BASE_URI.getDefaultValue());
 		store.setDefault(DialogPreferences.ANSWER_KCHAIN_CG_SERVICE_BASE_URI.getId(), DialogPreferences.ANSWER_KCHAIN_CG_SERVICE_BASE_URI.getDefaultValue());
 		store.setDefault(DialogPreferences.USE_ANSWER_KCHAIN_CG_SERVICE.getId(), DialogPreferences.USE_ANSWER_KCHAIN_CG_SERVICE.getDefaultValue());

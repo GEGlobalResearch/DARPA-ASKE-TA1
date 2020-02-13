@@ -43,6 +43,9 @@ import org.eclipse.xtext.preferences.PreferenceKey;
 
 @SuppressWarnings("restriction")
 public class DialogPreferences {
+	public static final PreferenceKey ORIGINAL_LANGUAGE = new PreferenceKey("saveOriginalScript", String.valueOf(true));
+	public static final PreferenceKey PYTHON_LANGUAGE = new PreferenceKey("savePythonScript", String.valueOf(true));
+	public static final PreferenceKey TF_PYTHON_LANGUAGE = new PreferenceKey("savePytonTFScript", String.valueOf(true));
 	public static final PreferenceKey ANSWER_TEXT_SERVICE_BASE_URI = new PreferenceKey("textServiceBaseUri", "http://localhost:4200");
 	public static final PreferenceKey ANSWER_JAVA_TO_PYTHON_SERVICE_BASE_URI = new PreferenceKey("java2pythonServiceBaseUri", "http://localhost:19092");
 	public static final PreferenceKey USE_ANSWER_KCHAIN_CG_SERVICE = new PreferenceKey("useKChainCgService", String.valueOf(false));
@@ -53,6 +56,9 @@ public class DialogPreferences {
 	public static final PreferenceKey ANSWER_CODE_EXTRACTION_KBASE_ROOT = new PreferenceKey("codeExtractionKbaseRoot", "resources/CodeModel");
 	
 	private static final PreferenceKey[] allKeys = {
+			ORIGINAL_LANGUAGE,
+			PYTHON_LANGUAGE,
+			TF_PYTHON_LANGUAGE,
 			ANSWER_TEXT_SERVICE_BASE_URI,
 			ANSWER_JAVA_TO_PYTHON_SERVICE_BASE_URI,
 			USE_ANSWER_KCHAIN_CG_SERVICE,

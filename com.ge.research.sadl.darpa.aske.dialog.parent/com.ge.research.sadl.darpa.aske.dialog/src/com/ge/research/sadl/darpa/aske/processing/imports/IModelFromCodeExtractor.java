@@ -95,10 +95,10 @@ public interface IModelFromCodeExtractor {
 
 	String[] extractPythonEquationFromCodeExtractionModel(String pythonScript);
 
-	String[] extractPythonTFEquationFromCodeExtractionModel(String pythonScript);
-
-	String[] extractPythonTFEquationFromCodeExtractionModel(String pythonScript, String defaultMethodName);
-
+//	String[] extractPythonTFEquationFromCodeExtractionModel(String pythonScript);
+//
+//	String[] extractPythonTFEquationFromCodeExtractionModel(String pythonScript, String defaultMethodName);
+//
 	String[] extractPythonEquationFromCodeExtractionModel(String pythonScript, String defaultMethodName);
 
 	String getClassUriFromSimpleName(String name);

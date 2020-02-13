@@ -133,6 +133,7 @@ import com.ge.research.sadl.sADL.Declaration;
 import com.ge.research.sadl.sADL.EquationStatement;
 import com.ge.research.sadl.sADL.Expression;
 import com.ge.research.sadl.sADL.ExternalEquationStatement;
+import com.ge.research.sadl.sADL.Name;
 import com.ge.research.sadl.sADL.NamedStructureAnnotation;
 import com.ge.research.sadl.sADL.QueryStatement;
 import com.ge.research.sadl.sADL.SadlAnnotation;
@@ -174,9 +175,15 @@ public class JenaBasedDialogModelProcessor extends JenaBasedSadlModelProcessor {
 	private boolean useDbn = true;
 	private String kchainCgServiceUrl = null;
 	private boolean useKchain = false;
+	private boolean savePythonTF = true;
+	private boolean savePython = true;
+	private boolean saveOriginal = true;
+
 	private AnswerCurationManager answerCurationManager = null;
 
 	@Inject IPreferenceValuesProvider preferenceProvider;
+	private boolean savePhthonTF;
+	private boolean savePhthon;
 
 	@Override
 	public void onValidate(Resource resource, ValidationAcceptor issueAcceptor, CheckMode mode, ProcessorContext context) {
@@ -679,6 +686,9 @@ public class JenaBasedDialogModelProcessor extends JenaBasedSadlModelProcessor {
 
 	private List<Rule> whenAndThenToCookedRules(EObject whenExpr, EObject thenExpr)
 			throws InvalidNameException, InvalidTypeException, TranslationException {
+		if (whenExpr == null && (thenExpr instanceof Declaration || thenExpr instanceof Name)) {
+			// this is a simple query of the ontology, not a 
+		}
 		Object thenObj = processExpression(thenExpr);
 		Object wh = processExpression(whenExpr);
 		if (wh instanceof Object[]) {
@@ -901,7 +911,7 @@ public class JenaBasedDialogModelProcessor extends JenaBasedSadlModelProcessor {
 			}
 			else if (gpe instanceof BuiltinElement) {
 				for (Node arg : ((BuiltinElement)gpe).getArguments()) {
-					if (arg instanceof NamedNode && ((NamedNode)arg).getURI().equals(prop.getURI())) {
+					if (arg instanceof NamedNode && ((NamedNode)arg).getURI() != null && ((NamedNode)arg).getURI().equals(prop.getURI())) {
 						return true;
 					}
 					else if (arg instanceof ProxyNode) {
@@ -1651,88 +1661,120 @@ public class JenaBasedDialogModelProcessor extends JenaBasedSadlModelProcessor {
 			// this is a request for user name
 			
 		}
-//		if (whatIsTarget instanceof Declaration) {
-//			whatIsTarget = ((Declaration)whatIsTarget).getType();
-//			if (whatIsTarget instanceof SadlSimpleTypeReference) {
-//				whatIsTarget = ((SadlSimpleTypeReference)whatIsTarget).getType();
-//			}
-//		}
-//		Object trgtObj;
-//		try {
-//			trgtObj = processExpression(whatIsTarget);
-////				System.out.println("WhatIsStatement target: " + trgtObj.toString());
-//			if (trgtObj instanceof NamedNode) {
-//				((NamedNode)trgtObj).setContext(stmt);
-//			}
-//			else if (trgtObj instanceof Junction) {
-//				if (stmt.eContainer() instanceof WhatIsStatement) {
-//					setGraphPatternContext((WhatStatement) stmt.eContainer(), whatIsTarget, trgtObj);
-//				}
-//			}
-//			else if (trgtObj instanceof TripleElement) {
-//				((TripleElement)trgtObj).setContext(stmt);
-//			}
-//			else if (trgtObj instanceof Object[]) {
-//				for (int i = 0; i < ((Object[])trgtObj).length; i++) {
-//					Object obj = ((Object[])trgtObj)[i];
-//					if (stmt.eContainer() instanceof WhatIsStatement) {
-//						setGraphPatternContext((WhatStatement) stmt, whatIsTarget, obj);
-//					}
-//				}
-//			}
-//			else {
-//				// TODO
-//				addInfo(trgtObj.getClass().getCanonicalName() + " not yet handled by dialog processor", whatIsTarget);
-//			}
-//			Object whenObj = when != null ? processExpression(when) : null;
-//			
-//			// apply implied/expanded properties
-//			DialogIntermediateFormTranslator dift = new DialogIntermediateFormTranslator(this, getTheJenaModel());
-//			if (trgtObj instanceof GraphPatternElement) {
-//				trgtObj = dift.addImpliedAndExpandedProperties((GraphPatternElement)trgtObj);
-//			}
-//			else if (trgtObj instanceof List<?>) {
-//				dift.addImpliedAndExpandedProperties((List<GraphPatternElement>) trgtObj);
-//			}
-//			if (whenObj instanceof GraphPatternElement) {
-//				whenObj = dift.addImpliedAndExpandedProperties((GraphPatternElement)whenObj);
-//				List<GraphPatternElement> gpes = new ArrayList<GraphPatternElement>();
-//				gpes = unitSpecialConsiderations(gpes, whenObj, whatIsTarget);
-//				Object temp = dift.cook(gpes, false);
-//				if (temp instanceof List<?>) {
-//					if (((List<?>)temp).size() == 1) {
-//						whenObj = ((List<?>)temp).get(0);
-//					}
-//					else {
-//						// ?
-//					}
-//				}
-//			}
-//			else if (whenObj instanceof List<?>) {
-//				dift.addImpliedAndExpandedProperties((List<GraphPatternElement>) whenObj);
-//				// does this ever happen? More to do...
-//			}
-		List<Rule> comparisonRules;
-		try {
-			comparisonRules = whenAndThenToCookedRules(when, whatIsTarget);
-			if (comparisonRules != null) {
-				WhatIsContent wic = new WhatIsContent(stmt.eContainer(), Agent.USER, comparisonRules);
+		boolean generateComparisonRulesForCG = true;
+		
+		if (whatIsTarget instanceof Declaration) {
+			whatIsTarget = ((Declaration)whatIsTarget).getType();
+			if (whatIsTarget instanceof SadlSimpleTypeReference) {
+				whatIsTarget = ((SadlSimpleTypeReference)whatIsTarget).getType();
+				if (when == null) {
+					generateComparisonRulesForCG = false;
+				}
+			}
+		}
+		else if (whatIsTarget instanceof Name) {
+			if (when == null) {
+				generateComparisonRulesForCG = false;
+			}
+		}
+		Object trgtObj;
+		if (!generateComparisonRulesForCG) {
+			try {
+				trgtObj = processExpression(whatIsTarget);
+//				System.out.println("WhatIsStatement target: " + trgtObj.toString());
+				if (trgtObj instanceof NamedNode) {
+					((NamedNode)trgtObj).setContext(stmt);
+				}
+				else if (trgtObj instanceof Junction) {
+					if (stmt.eContainer() instanceof WhatIsStatement) {
+						setGraphPatternContext((WhatStatement) stmt.eContainer(), whatIsTarget, trgtObj);
+					}
+				}
+				else if (trgtObj instanceof TripleElement) {
+					((TripleElement)trgtObj).setContext(stmt);
+				}
+				else if (trgtObj instanceof Object[]) {
+					for (int i = 0; i < ((Object[])trgtObj).length; i++) {
+						Object obj = ((Object[])trgtObj)[i];
+						if (stmt.eContainer() instanceof WhatIsStatement) {
+							setGraphPatternContext((WhatStatement) stmt, whatIsTarget, obj);
+						}
+					}
+				}
+				else {
+					// TODO
+					if (trgtObj != null) {
+						addInfo(trgtObj.getClass().getCanonicalName() + " not yet handled by dialog processor", whatIsTarget);
+					}
+					else {
+						addError("Target object not resolved", trgtObj != null ? whatIsTarget : stmt);
+					}
+				}
+				Object whenObj = when != null ? processExpression(when) : null;
+			
+				// apply implied/expanded properties
+				DialogIntermediateFormTranslator dift = new DialogIntermediateFormTranslator(this, getTheJenaModel());
+				if (trgtObj instanceof GraphPatternElement) {
+					trgtObj = dift.addImpliedAndExpandedProperties((GraphPatternElement)trgtObj);
+				}
+				else if (trgtObj instanceof List<?>) {
+					dift.addImpliedAndExpandedProperties((List<GraphPatternElement>) trgtObj);
+				}
+				if (whenObj instanceof GraphPatternElement) {
+					whenObj = dift.addImpliedAndExpandedProperties((GraphPatternElement)whenObj);
+					List<GraphPatternElement> gpes = new ArrayList<GraphPatternElement>();
+					gpes = unitSpecialConsiderations(gpes, whenObj, whatIsTarget);
+					Object temp = dift.cook(gpes, false);
+					if (temp instanceof List<?>) {
+						if (((List<?>)temp).size() == 1) {
+							whenObj = ((List<?>)temp).get(0);
+						}
+						else {
+							// ?
+						}
+					}
+				}
+				else if (whenObj instanceof List<?>) {
+					dift.addImpliedAndExpandedProperties((List<GraphPatternElement>) whenObj);
+					// does this ever happen? More to do...
+				}
+				WhatIsContent wic = new WhatIsContent(stmt.eContainer(), Agent.USER, trgtObj, whenObj);
 				return wic;
 			}
-		} catch (InvalidNameException | InvalidTypeException | TranslationException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			catch (TranslationException e) {
+				
+			} catch (InvalidNameException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			} catch (InvalidTypeException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
 		}
-//		} catch (TranslationException e) {
-//			// TODO Auto-generated catch block
-//			e.printStackTrace();
-//		} catch (InvalidNameException e) {
-//			// TODO Auto-generated catch block
-//			e.printStackTrace();
-//		} catch (InvalidTypeException e) {
-//			// TODO Auto-generated catch block
-//			e.printStackTrace();
-//		}
+		else {
+			// compute answer using computational graph
+			List<Rule> comparisonRules;
+			try {
+				comparisonRules = whenAndThenToCookedRules(when, whatIsTarget);
+				if (comparisonRules != null) {
+					WhatIsContent wic = new WhatIsContent(stmt.eContainer(), Agent.USER, comparisonRules);
+					return wic;
+				}
+			} catch (InvalidNameException | InvalidTypeException | TranslationException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+	//		} catch (TranslationException e) {
+	//			// TODO Auto-generated catch block
+	//			e.printStackTrace();
+	//		} catch (InvalidNameException e) {
+	//			// TODO Auto-generated catch block
+	//			e.printStackTrace();
+	//		} catch (InvalidTypeException e) {
+	//			// TODO Auto-generated catch block
+	//			e.printStackTrace();
+	//		}
+		}
 		return null;
 	}
 
@@ -1979,6 +2021,20 @@ public class JenaBasedDialogModelProcessor extends JenaBasedSadlModelProcessor {
 		setTypeCheckingWarningsOnly(true);
 		setUseArticlesInValidation(true);
 		setIncludeImpliedPropertiesInTranslation(true);
+		
+		String saveOriginal = context.getPreferenceValues().getPreference(DialogPreferences.ORIGINAL_LANGUAGE);
+		if (saveOriginal != null) {
+			setSaveOriginal(Boolean.parseBoolean(saveOriginal.trim()));
+		}
+		String savePython = context.getPreferenceValues().getPreference(DialogPreferences.PYTHON_LANGUAGE);
+		if (savePython != null) {
+			setSavePython(Boolean.parseBoolean(savePython.trim()));
+		}
+		String savePythonTF = context.getPreferenceValues().getPreference(DialogPreferences.TF_PYTHON_LANGUAGE);
+		if (savePythonTF != null) {
+			setSavePythonTF(Boolean.parseBoolean(savePythonTF.trim()));
+		}
+
 		String textServiceUrl = context.getPreferenceValues().getPreference(DialogPreferences.ANSWER_TEXT_SERVICE_BASE_URI);
 		if (textServiceUrl != null) {
 			setTextServiceUrl(textServiceUrl);
@@ -2217,13 +2273,38 @@ public class JenaBasedDialogModelProcessor extends JenaBasedSadlModelProcessor {
 	private void setUseDbn(boolean useDbn) {
 		this.useDbn = useDbn;
 	}
-
+	
 	private boolean isUseKchain() {
 		return useKchain;
 	}
 
 	private void setUseKchain(boolean useKchain) {
 		this.useKchain = useKchain;
+	}
+
+	private void setSavePythonTF(boolean savePythonTF) {
+		this.savePythonTF = savePythonTF;
+	}
+
+	private boolean isSavePhthonTF() {
+		return savePhthonTF;
+	}
+
+	private void setSavePython(boolean savePython) {
+		this.savePython = savePython;
+	}
+
+	private boolean isSavePhthon() {
+		return savePhthon;
+	}
+
+	private void setSaveOriginal(boolean saveOriginal) {
+		this.saveOriginal = saveOriginal;
+		
+	}
+
+	private boolean isSaveOriginal() {
+		return saveOriginal;
 	}
 
 }

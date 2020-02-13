@@ -609,36 +609,8 @@ public class AnswerCurationManager {
 						}
 					}
 					if (methodName != null && javaCode != null) {
-						AnswerExtractionProcessor ep = getExtractionProcessor();
-						String className;
-						if (methodName.indexOf('.') > 0) {
-							int endOfClassName = methodName.indexOf('.');
-							className = methodName.substring(0, endOfClassName);
-						}
-						else {
-							className = "UnidentifiedClass";
-						}
-						String pythoncode = null;
 						try {
-							pythoncode = ep.translateMethodJavaToPython(className, javaCode);
-						} catch (IOException e) {
-							Throwable cause = e.getCause();
-							if (cause instanceof ConnectException || cause instanceof UnknownHostException) {
-								StringBuilder sb = new StringBuilder(e.getMessage());
-								sb.append(" to translate Java method '" + methodName + "' to Python. ");
-								sb.append(cause.getMessage());
-								sb.append(".");
-								System.err.println(sb.toString());
-							}
-							else {
-								StringBuilder sb = new StringBuilder(e.getMessage());
-								sb.append(" to translate Java method '" + methodName + "' to Python. ");
-								System.err.println(sb.toString());
-								e.printStackTrace();
-							}
-						}
-						try {
-							List<String> sadlDeclaration = convertCodeExtractedMethodToExternalEquationInSadlSyntax(initializerKeywords, methodName, "Java", javaCode, "Python", pythoncode);
+							List<String> sadlDeclaration = convertCodeExtractedMethodToExternalEquationInSadlSyntax(initializerKeywords, methodName, "Java", javaCode);
 							for (String sd : sadlDeclaration) {
 //									logger.debug(sadlDeclaration);
 //									logger.debug("SADL equation:");
@@ -696,11 +668,9 @@ public class AnswerCurationManager {
 				String txtscript = results.getResultAt(r, 2) != null ? results.getResultAt(r, 2).toString() : null;
 				String pyscript = results.getResultAt(r, 3) != null ? results.getResultAt(r, 3).toString() : null;
 				String pytfscript = results.getResultAt(r, 4) != null ? results.getResultAt(r, 4).toString() : null;
-				String pyscriptToUse = useKCHAIN() ? pytfscript : pyscript;
-				String lang = useKCHAIN() ? "Python-TF" : "Python";
 				if (methodName != null) {	//&& txtscript != null && pyscriptToUse != null
 					try {
-						List<String> sadlDeclaration = convertTextExtractedMethodToExternalEquationInSadlSyntax(methodName, derivedFromMethodName, "Text", txtscript, lang, pyscriptToUse, locality);
+						List<String> sadlDeclaration = convertTextExtractedMethodToExternalEquationInSadlSyntax(methodName, derivedFromMethodName, "Text", txtscript, "Python", pyscript, "Python-TF", pytfscript, locality);
 						List<String> unmatchedConceptStatements = getUnmatchedConceptDeclarationStatements();
 						if (unmatchedConceptStatements != null) {
 							if (unmatchedStatementsAlreadyProcessed == null) unmatchedStatementsAlreadyProcessed = new ArrayList<String>();
@@ -746,6 +716,33 @@ public class AnswerCurationManager {
 			useKCHAIN = true;
 		}
 		return useKCHAIN;
+	}
+
+	private boolean savePythonScript() {
+		boolean pythonScript = true;
+		String pyscstr = getPreference(DialogPreferences.PYTHON_LANGUAGE.getId());
+		if (pyscstr != null) {
+			pythonScript = Boolean.parseBoolean(pyscstr);
+		}
+		return pythonScript;
+	}
+
+	private boolean savePythonTFScript() {
+		boolean pythonTFScript = true;
+		String tfpyscstr = getPreference(DialogPreferences.TF_PYTHON_LANGUAGE.getId());
+		if (tfpyscstr != null) {
+			pythonTFScript = Boolean.parseBoolean(tfpyscstr);
+		}
+		return pythonTFScript;
+	}
+
+	private boolean saveOriginalScript() {
+		boolean originalScript = true;
+		String str = getPreference(DialogPreferences.ORIGINAL_LANGUAGE.getId());
+		if (str != null) {
+			originalScript = Boolean.parseBoolean(str);
+		}
+		return originalScript;
 	}
 
 	private IReasoner getInitializedTextModelReasoner() throws ConfigurationException, ReasonerNotFoundException {
@@ -957,79 +954,79 @@ public class AnswerCurationManager {
 	private String[] getMethodScript(OntModel ontModel, IReasoner reasoner, Individual extractedModelInstance)
 			throws QueryParseException, QueryCancelledException, IOException, TranslationException {
 		String[] scriptInfo = null;
-		String pythonScriptQuery = "select ?pyScript where {<" + extractedModelInstance.getURI() + "> <" + 
-				SadlConstants.SADL_IMPLICIT_MODEL_EXPRESSTION_PROPERTY_URI +
-				"> ?sc . ?sc <" + SadlConstants.SADL_IMPLICIT_MODEL_LANGUAGE_PROPERTY_URI + "> <" + 
-				(useKCHAIN() ? SadlConstants.SADL_IMPLICIT_MODEL_PYTHON_TF_LANGUAGE_INST_URI : SadlConstants.SADL_IMPLICIT_MODEL_PYTHON_LANGUAGE_INST_URI) +
-				"> . ?sc <" + SadlConstants.SADL_IMPLICIT_MODEL_SCRIPT_PROPERTY_URI + "> ?pyScript}";				// query to get the Python script for the equation
-		ResultSet rs3 = reasoner.ask(pythonScriptQuery);
-		if (rs3 != null) {
-			if (rs3.getRowCount() != 1) {
-				throw new TranslationException("There appears to be more than one Python script associated with the equation. Unable to save.");
-			}
-			String pythonScript = rs3.getResultAt(0, 0).toString();
-			CodeLanguage language = CodeLanguage.JAVA;																	// only code we extract from currently (what about from text?)
-			if (language.equals(CodeLanguage.JAVA)) {
-				String[] returns;
-				if (useKCHAIN()) {
-					returns = getExtractionProcessor().getCodeExtractor(CodeLanguage.JAVA).extractPythonTFEquationFromCodeExtractionModel(pythonScript, extractedModelInstance.getLocalName());
-				}
-				else {
-					returns = getExtractionProcessor().getCodeExtractor(CodeLanguage.JAVA).extractPythonEquationFromCodeExtractionModel(pythonScript, extractedModelInstance.getLocalName());
-				}
-				if (returns.length != 2) {
-					throw new IOException("Invalid return from extractPythonEquationFromCodeExtractionModel; expected String[] of size 2");
-				}
-				scriptInfo = returns;
-			}
-		}
-		else {
-			String pythonScript = null;
-			String pythonTFScript = null;
-			NodeIterator expritr = extractedModelInstance.listPropertyValues(ontModel.getProperty(SadlConstants.SADL_IMPLICIT_MODEL_EXPRESSTION_PROPERTY_URI));
-			while (expritr.hasNext()) {
-				RDFNode exp = expritr.next();
-				if (exp.isResource()) {
-					RDFNode lang = exp.asResource().getProperty(ontModel.getProperty(SadlConstants.SADL_IMPLICIT_MODEL_LANGUAGE_PROPERTY_URI)).getObject();
-					String langStr = null;
-					if (lang instanceof Resource) {
-						langStr = lang.asResource().toString();
-					}
-					else if (lang instanceof Literal) {
-						langStr = ((Literal)lang).getValue().toString();
-					}
-					boolean thisOne = false;
-					if (langStr != null &&langStr.equals(SadlConstants.SADL_IMPLICIT_MODEL_PYTHON_TF_LANGUAGE_INST_URI)) {
-						Statement scprtstmt = exp.asResource().getProperty(ontModel.getProperty(SadlConstants.SADL_IMPLICIT_MODEL_SCRIPT_PROPERTY_URI));
-						if (scprtstmt != null) {
-							pythonTFScript = scprtstmt.getObject().asLiteral().getValue().toString();
-						}
-						if (useKCHAIN()) {
-							scriptInfo = new String[2];
-							scriptInfo[0] = null;
-							scriptInfo[1] = pythonTFScript;
-							thisOne = true;
-						}
-					}
-					else if (langStr != null && langStr.equals(SadlConstants.SADL_IMPLICIT_MODEL_PYTHON_LANGUAGE_INST_URI)) {
-						Statement scprtstmt = exp.asResource().getProperty(ontModel.getProperty(SadlConstants.SADL_IMPLICIT_MODEL_SCRIPT_PROPERTY_URI));
-						if (scprtstmt != null) {
-							pythonScript = scprtstmt.getObject().asLiteral().getValue().toString();
-						}
-					}
-					if (thisOne) {
-						break;
-					}
-				}
-			}
-			if (scriptInfo == null) {
-				if (useKCHAIN() && pythonScript != null) {
-					String[] returns = getExtractionProcessor().getCodeExtractor(CodeLanguage.JAVA).extractPythonTFEquationFromCodeExtractionModel(pythonScript, extractedModelInstance.getLocalName());
-					scriptInfo = returns;
-				}
-			}
-		}
-		
+//		String pythonScriptQuery = "select ?pyScript where {<" + extractedModelInstance.getURI() + "> <" + 
+//				SadlConstants.SADL_IMPLICIT_MODEL_EXPRESSTION_PROPERTY_URI +
+//				"> ?sc . ?sc <" + SadlConstants.SADL_IMPLICIT_MODEL_LANGUAGE_PROPERTY_URI + "> <" + 
+//				(useKCHAIN() ? SadlConstants.SADL_IMPLICIT_MODEL_PYTHON_TF_LANGUAGE_INST_URI : SadlConstants.SADL_IMPLICIT_MODEL_PYTHON_LANGUAGE_INST_URI) +
+//				"> . ?sc <" + SadlConstants.SADL_IMPLICIT_MODEL_SCRIPT_PROPERTY_URI + "> ?pyScript}";				// query to get the Python script for the equation
+//		ResultSet rs3 = reasoner.ask(pythonScriptQuery);
+//		if (rs3 != null) {
+//			if (rs3.getRowCount() != 1) {
+//				throw new TranslationException("There appears to be more than one Python script associated with the equation. Unable to save.");
+//			}
+//			String pythonScript = rs3.getResultAt(0, 0).toString();
+//			CodeLanguage language = CodeLanguage.JAVA;																	// only code we extract from currently (what about from text?)
+//			if (language.equals(CodeLanguage.JAVA)) {
+//				String[] returns;
+//				if (useKCHAIN()) {
+//					returns = getExtractionProcessor().getCodeExtractor(CodeLanguage.JAVA).extractPythonTFEquationFromCodeExtractionModel(pythonScript, extractedModelInstance.getLocalName());
+//				}
+//				else {
+//					returns = getExtractionProcessor().getCodeExtractor(CodeLanguage.JAVA).extractPythonEquationFromCodeExtractionModel(pythonScript, extractedModelInstance.getLocalName());
+//				}
+//				if (returns.length != 2) {
+//					throw new IOException("Invalid return from extractPythonEquationFromCodeExtractionModel; expected String[] of size 2");
+//				}
+//				scriptInfo = returns;
+//			}
+//		}
+//		else {
+//			String pythonScript = null;
+//			String pythonTFScript = null;
+//			NodeIterator expritr = extractedModelInstance.listPropertyValues(ontModel.getProperty(SadlConstants.SADL_IMPLICIT_MODEL_EXPRESSTION_PROPERTY_URI));
+//			while (expritr.hasNext()) {
+//				RDFNode exp = expritr.next();
+//				if (exp.isResource()) {
+//					RDFNode lang = exp.asResource().getProperty(ontModel.getProperty(SadlConstants.SADL_IMPLICIT_MODEL_LANGUAGE_PROPERTY_URI)).getObject();
+//					String langStr = null;
+//					if (lang instanceof Resource) {
+//						langStr = lang.asResource().toString();
+//					}
+//					else if (lang instanceof Literal) {
+//						langStr = ((Literal)lang).getValue().toString();
+//					}
+//					boolean thisOne = false;
+//					if (langStr != null &&langStr.equals(SadlConstants.SADL_IMPLICIT_MODEL_PYTHON_TF_LANGUAGE_INST_URI)) {
+//						Statement scprtstmt = exp.asResource().getProperty(ontModel.getProperty(SadlConstants.SADL_IMPLICIT_MODEL_SCRIPT_PROPERTY_URI));
+//						if (scprtstmt != null) {
+//							pythonTFScript = scprtstmt.getObject().asLiteral().getValue().toString();
+//						}
+//						if (useKCHAIN()) {
+//							scriptInfo = new String[2];
+//							scriptInfo[0] = null;
+//							scriptInfo[1] = pythonTFScript;
+//							thisOne = true;
+//						}
+//					}
+//					else if (langStr != null && langStr.equals(SadlConstants.SADL_IMPLICIT_MODEL_PYTHON_LANGUAGE_INST_URI)) {
+//						Statement scprtstmt = exp.asResource().getProperty(ontModel.getProperty(SadlConstants.SADL_IMPLICIT_MODEL_SCRIPT_PROPERTY_URI));
+//						if (scprtstmt != null) {
+//							pythonScript = scprtstmt.getObject().asLiteral().getValue().toString();
+//						}
+//					}
+//					if (thisOne) {
+//						break;
+//					}
+//				}
+//			}
+//			if (scriptInfo == null) {
+//				if (useKCHAIN() && pythonScript != null) {
+//					String[] returns = getExtractionProcessor().getCodeExtractor(CodeLanguage.JAVA).extractPythonTFEquationFromCodeExtractionModel(pythonScript, extractedModelInstance.getLocalName());
+//					scriptInfo = returns;
+//				}
+//			}
+//		}
+//		
 		return scriptInfo;
 	}
 
@@ -1361,28 +1358,12 @@ public class AnswerCurationManager {
 							String methScript = ((ResultSet)rs).getResultAt(r, 3).toString();
 							logger.debug("Ready to build CG with method '" + rsa.toString() + "':");
 							logger.debug(methScript);
-							AnswerExtractionProcessor ep = getExtractionProcessor();
-							String className;
-							if (userInput.indexOf('.') > 0) {
-								int endOfClassName = userInput.indexOf('.');
-								className = userInput.substring(0, endOfClassName);
+							List<String> sadlDeclaration = convertCodeExtractedMethodToExternalEquationInSadlSyntax(initializerKeywords, rsa.toString(), "Java", methScript);
+							for (String sd : sadlDeclaration) {
+								logger.debug("SADL equation:");
+								logger.debug(sd);
 							}
-							else {
-								className = "UnidentifiedClass";
-							}
-							String pythoncode = null;
-							try {
-								pythoncode = ep.translateMethodJavaToPython(className, methScript);
-								List<String> sadlDeclaration = convertCodeExtractedMethodToExternalEquationInSadlSyntax(initializerKeywords, rsa.toString(), "Java", methScript, "Python-TF", pythoncode);
-								for (String sd : sadlDeclaration) {
-									logger.debug("SADL equation:");
-									logger.debug(sd);
-								}
-								success = true;
-							} catch (IOException e) {
-//								throw new AnswerExtractionException("Method '" + )
-								e.printStackTrace();
-							}
+							success = true;
 						}
 						else {
 							throw new AnswerExtractionException("No method script found");
@@ -1405,6 +1386,8 @@ public class AnswerCurationManager {
 	 * appear to be quite the same as the OWL created from a SADL model.
 	 * @param methodName -- should be the name of the method in the extracted code model
 	 * @param locality 
+	 * @param locality2 
+	 * @param pytfscript 
 	 * @param pythoncode 
 	 * @param methScript 
 	 * @return -- the serialization of the new instance of External in SADL syntax
@@ -1417,29 +1400,19 @@ public class AnswerCurationManager {
 	 * @throws IOException 
 	 * @throws InvalidInputException 
 	 */
-	private List<String> convertTextExtractedMethodToExternalEquationInSadlSyntax(String methodName, String derivedFromMethodUri, String lang1, String code1, String lang2, String code2, String locality) throws InvalidNameException, ConfigurationException,
+	private List<String> convertTextExtractedMethodToExternalEquationInSadlSyntax(String methodName, String derivedFromMethodUri, String origLanguage, String origScript, 
+			String pyLang, String pyScript, String pyTfLang, String pytfscript, String locality) throws InvalidNameException, ConfigurationException,
 			ReasonerNotFoundException, QueryParseException, QueryCancelledException, AnswerExtractionException, InvalidInputException, IOException {
 		List<String> returnSadlStatements = new ArrayList<String>();
 		StringBuilder sb = new StringBuilder("External ");
 		sb.append(methodName);
 		
-		if (derivedFromMethodUri != null) {
-			sb.append(" (derivedFrom ");
-			sb.append(derivedFromMethodUri);
-			sb.append(")");
-		}
-
-		// get inputs and outputs and identify semantic meaning thereof
-		String inputQuery = "select ?arg ?argName ?argtyp where {<";
-		inputQuery += methodName.toString().trim();
-		inputQuery += "> <arguments>/<rdf:rest>*/<rdf:first> ?arg . ?arg <localDescriptorName> ?argName . OPTIONAL{?arg <dataType> ?argtyp}}";
 		IReasoner reasoner = getConfigurationManager().getReasoner();
 		if (!reasoner.isInitialized()) {
 			reasoner.setConfigurationManager(getConfigurationManager());
 			reasoner.initializeReasoner(getOwlModelsFolder(), getExtractionProcessor().getTextModelName(), null);
 		}
-		inputQuery = reasoner.prepareQuery(inputQuery);
-		ResultSet inputResults =  reasoner.ask(inputQuery);
+
 		String outputTypeQuery = "select ?retname ?rettyp ?alias where {<";
 		outputTypeQuery += methodName.toString().trim();
 		outputTypeQuery += "> <returnTypes>/<rdf:rest>*/<rdf:first> ?rt . OPTIONAL{?rt <localDescriptorName> ?retname} . ?rt <dataType> ?rettyp}";
@@ -1451,6 +1424,19 @@ public class AnswerCurationManager {
 			sb.append(retName);
 			sb.append("\") ");
 		}
+
+		if (derivedFromMethodUri != null) {
+			sb.append(" (derivedFrom ");
+			sb.append(derivedFromMethodUri);
+			sb.append(")");
+		}
+
+		// get inputs and outputs and identify semantic meaning thereof
+		String inputQuery = "select ?arg ?argName ?argtyp where {<";
+		inputQuery += methodName.toString().trim();
+		inputQuery += "> <arguments>/<rdf:rest>*/<rdf:first> ?arg . ?arg <localDescriptorName> ?argName . OPTIONAL{?arg <dataType> ?argtyp}}";
+		inputQuery = reasoner.prepareQuery(inputQuery);
+		ResultSet inputResults =  reasoner.ask(inputQuery);
 
 		sb.append("(");
 //		clearCodeModelReasoner();
@@ -1467,10 +1453,12 @@ public class AnswerCurationManager {
 				}
 				sb.append(argType);
 				sb.append(" ");
-				sb.append(argName);
-				String augtype = getAugmentedTypeFromLocalitySearch(argName, code1, locality, articledClasses);
+				sb.append(checkForKeyword(argName));
+				String augtype = getAugmentedTypeFromLocalitySearch(argName, origScript, locality, articledClasses);
 				if (augtype != null) {
+					sb.append("(");
 					sb.append(augtype);
+					sb.append(")");
 				}
 			}
 		}
@@ -1493,7 +1481,7 @@ public class AnswerCurationManager {
 					sb.append(retType);
 					String rn = outputResults.getResultAt(r, 0).toString();
 					if (rn != null) {
-						String augtype = getAugmentedTypeFromLocalitySearch(rn, code1, locality, articledClasses);
+						String augtype = getAugmentedTypeFromLocalitySearch(rn, origScript, locality, articledClasses);
 						if (augtype != null) {
 							sb.append(augtype);
 						}
@@ -1518,21 +1506,37 @@ public class AnswerCurationManager {
 		
 		// now add the scripts for lang1 and lang2
 		StringBuilder sb2 = new StringBuilder(methodName);
-		if (lang1 != null && code1 != null) {
+		boolean hasPriorTriple = false;
+		if (saveOriginalScript() && origLanguage != null && origScript != null) {
 			sb2.append(" has expression (a Script with language ");
-			sb2.append(lang1);
+			sb2.append(origLanguage);
 			sb2.append(", with script \n\"");
-			sb2.append(escapeDoubleQuotes(code1));
-			sb2.append("\"");
+			sb2.append(escapeDoubleQuotes(origScript));
+			sb2.append("\")");
+			hasPriorTriple = true; 
 		}
-		if (lang2 != null && code2 != null) {
-			sb2.append("\n), has expression (a Script with language ");
-			sb2.append(lang2);
+		if (savePythonScript() && pyLang != null && pyScript != null) {
+			if (hasPriorTriple) {
+				sb2.append(",\n");
+			}
+			sb2.append(" has expression (a Script with language ");
+			sb2.append(pyLang);
 			sb2.append(", with script \n\"");
-			sb2.append(escapeDoubleQuotes(code2));
-			sb2.append("\"");
+			sb2.append(escapeDoubleQuotes(pyScript));
+			sb2.append("\")");
+			hasPriorTriple = true; 
 		}
-		sb2.append(").\n");
+		if (savePythonTFScript() && pyTfLang != null && pytfscript != null) {
+			if (hasPriorTriple) {
+				sb2.append(",\n");
+			}
+			sb2.append(" has expression (a Script with language ");
+			sb2.append(pyTfLang);
+			sb2.append(", with script \n\"");
+			sb2.append(escapeDoubleQuotes(pytfscript));
+			sb2.append("\")");
+		}
+		sb2.append(".\n");
 		returnSadlStatements.add(sb2.toString());
 		return returnSadlStatements;
 	}
@@ -1576,7 +1580,7 @@ public class AnswerCurationManager {
 												if (subj.canAs(OntClass.class)) {
 													stmtItr.close();
 													cacheEquationVariableContext(name, locality, subj.getLocalName());
-													return " (" + subj.getLocalName() + ")";
+													return " (" + checkForKeyword(subj.getLocalName()) + ")";
 												}
 											}
 										}
@@ -1594,7 +1598,7 @@ public class AnswerCurationManager {
 							String matchingRsrcQN = findOntModelResourceWithMatchingLocalname(conceptName, name, articledClasses);
 							if (matchingRsrcQN != null) {
 								cacheEquationVariableContext(name, locality, matchingRsrcQN);
-								return " (" + matchingRsrcQN + ")";
+								return " (" + checkForKeyword(matchingRsrcQN) + ")";
 							}
 						}
 					}
@@ -1623,7 +1627,7 @@ public class AnswerCurationManager {
 			String matchingRsrcQN = findOntModelResourceWithMatchingLocalname(name, name, articledClasses);
 			if (matchingRsrcQN != null) {
 				cacheEquationVariableContext(name, locality, matchingRsrcQN);
-				return " (" + matchingRsrcQN + ")";
+				return " (" + checkForKeyword(matchingRsrcQN) + ")";
 			}
 		}
 		if (evcr != null) {
@@ -1668,7 +1672,7 @@ public class AnswerCurationManager {
 					if (getUnmatchedUrisAndLabels().containsKey(thisUri)) {
 						if (sb == null) sb = new StringBuilder(" (");
 						if (cntr > 0) sb.append(" or ");
-						sb.append(getLocalNameFromUri(thisUri));
+						sb.append(checkForKeyword(getLocalNameFromUri(thisUri)));
 					}
 				}
 				if (sb != null) sb.append(") ");
@@ -1905,8 +1909,42 @@ public class AnswerCurationManager {
 	 * @throws QueryCancelledException
 	 * @throws AnswerExtractionException 
 	 */
-	private List<String> convertCodeExtractedMethodToExternalEquationInSadlSyntax(List<String> initializerKeywords, String methodName, String lang1, String code1, String lang2, String code2) throws InvalidNameException, ConfigurationException,
+	private List<String> convertCodeExtractedMethodToExternalEquationInSadlSyntax(List<String> initializerKeywords, String methodName, String originalLanguage, String originalScript) throws InvalidNameException, ConfigurationException,
 			ReasonerNotFoundException, QueryParseException, QueryCancelledException, AnswerExtractionException {
+		String pythoncode = null;
+		String tfPythonCode = null;
+		try {
+			String className;
+			if (methodName.indexOf('.') > 0) {
+				int endOfClassName = methodName.indexOf('.');
+				className = methodName.substring(0, endOfClassName);
+			}
+			else {
+				className = "UnidentifiedClass";
+			}
+			if (savePythonScript() || savePythonTFScript()) {
+				AnswerExtractionProcessor ep = getExtractionProcessor();
+				pythoncode = ep.translateMethodJavaToPython(className, originalScript);
+				if (savePythonTFScript()) {
+					tfPythonCode = pythonToTensorFlowPython(pythoncode);
+				}
+			}
+		} catch (IOException e) {
+			Throwable cause = e.getCause();
+			if (cause instanceof ConnectException || cause instanceof UnknownHostException) {
+				StringBuilder sb = new StringBuilder(e.getMessage());
+				sb.append(" to translate Java method '" + methodName + "' to Python. ");
+				sb.append(cause.getMessage());
+				sb.append(".");
+				System.err.println(sb.toString());
+			}
+			else {
+				StringBuilder sb = new StringBuilder(e.getMessage());
+				sb.append(" to translate Java method '" + methodName + "' to Python. ");
+				System.err.println(sb.toString());
+				e.printStackTrace();
+			}
+		}
 		List<String> returnSadlStatements = new ArrayList<String>();
 		StringBuilder sb = new StringBuilder("External ");
 		sb.append(methodName);
@@ -1985,12 +2023,13 @@ public class AnswerCurationManager {
 				
 		// now add the scripts for lang1 and lang2
 		StringBuilder sb2 = new StringBuilder(methodName);
+		boolean hasPriorTriple = false;
 		// is this an InitializerMethod?
 		String initializedClassName = getInitializedClassName(initializerKeywords, methodName);
 		if (initializedClassName != null) {
 			sb2.append(" is an IntializerMethod, initializes ");
 			sb2.append(initializedClassName);
-			sb2.append(",\n");
+			hasPriorTriple = true;
 		}
 		
 		// put in any dependencies
@@ -2003,9 +2042,12 @@ public class AnswerCurationManager {
 		if (dependencyRs != null && dependencyRs.hasNext()) {
 			dependencyRs.setShowNamespaces(false);
 			for (int r = 0; r < dependencyRs.getRowCount(); r++) {
+				if (hasPriorTriple) {
+					sb2.append(",\n");
+				}
 				sb2.append(" has dependsOn ");
 				sb2.append(dependencyRs.getResultAt(r, 0));
-				sb2.append(", \n");
+				hasPriorTriple = true;
 			}
 		}
 		else {
@@ -2018,7 +2060,7 @@ public class AnswerCurationManager {
 		ResultSet impIn =getImplicitInputs(methodName);
 		if (impIn != null) {
 			for (int r = 0; r < impIn.getRowCount(); r++) {
-				if (r > 0) {
+				if (hasPriorTriple) {
 					sb2.append(",\n");
 				}
 				sb2.append(" has implicitInput (an ImplicitDataDescriptor with localDescriptorName \"");
@@ -2043,13 +2085,14 @@ public class AnswerCurationManager {
 					}
 				}
 				sb2.append(")");
+				hasPriorTriple = true;
 			}
 			sb2.append("\n");
 		}
 		ResultSet impOut = getImplicitOutputs(methodName);
 		if (impOut != null) {
 			for (int r = 0; r < impOut.getRowCount(); r++) {
-				if (r > 0) {
+				if (hasPriorTriple) {
 					sb2.append(",\n");
 				}
 				sb2.append(" has implicitOutput (an ImplicitDataDescriptor with localDescriptorName \"");
@@ -2076,23 +2119,41 @@ public class AnswerCurationManager {
 					sb2.append("\"");
 				}
 				sb2.append(")");
+				hasPriorTriple = true;
 			}
-			sb2.append(",\n");
 		}
 		
-		if (lang1 != null && code1 != null) {
+		if (saveOriginalScript() && originalLanguage != null && originalScript != null) {
+			if (hasPriorTriple) {
+				sb2.append(",\n");
+			}
 			sb2.append(" has expression (a Script with language ");
-			sb2.append(lang1);
+			sb2.append(originalLanguage);
 			sb2.append(", with script \n\"");
-			sb2.append(escapeDoubleQuotes(code1));
-			sb2.append("\"");
+			sb2.append(escapeDoubleQuotes(originalScript));
+			sb2.append("\")");
+			hasPriorTriple = true;
 		}
-		if (lang2 != null && code2 != null) {
-			sb2.append("\n), has expression (a Script with language ");
-			sb2.append(lang2);
+		if (savePythonScript() && pythoncode != null) {
+			if (hasPriorTriple) {
+				sb2.append(",\n");
+			}
+			sb2.append(" has expression (a Script with language ");
+			sb2.append(DialogConstants.PYTHON_LANGUAGE);
 			sb2.append(", with script \n\"");
-			sb2.append(escapeDoubleQuotes(code2));
-			sb2.append("\"");
+			sb2.append(escapeDoubleQuotes(pythoncode));
+			sb2.append("\")");
+			hasPriorTriple = true;
+		}
+		if (savePythonTFScript() && tfPythonCode != null) {
+			if (hasPriorTriple) {
+				sb2.append(",\n");
+			}
+			sb2.append(" has expression (a Script with language ");
+			sb2.append(DialogConstants.TF_PYTHON_LANGUAGE);
+			sb2.append(", with script \n\"");
+			sb2.append(escapeDoubleQuotes(tfPythonCode));
+			sb2.append("\")");
 		}
 		sb2.append(").\n");
 		returnSadlStatements.add(sb2.toString());
@@ -2984,10 +3045,100 @@ public class AnswerCurationManager {
 	private String processWhatIsContent(org.eclipse.emf.ecore.resource.Resource resource, OntModel theModel,
 			String modelName, WhatIsContent sc) throws ExecutionException, SadlInferenceException,
 			TranslationException, ConfigurationException, IOException, AnswerExtractionException {
-		if (sc != null && sc.getComparisonRules() != null) {
-			List<Rule> comparisonRules = ((WhatIsContent)sc).getComparisonRules();
-			Object[] rss = insertRulesAndQuery(resource, comparisonRules);
-			return processResultsOfInsertRulesAndQuery(sc, rss, comparisonRules);
+		if (sc != null) {
+			if (sc.getComputationalGraphRules() != null) {
+				List<Rule> comparisonRules = ((WhatIsContent)sc).getComputationalGraphRules();
+				Object[] rss = insertRulesAndQuery(resource, comparisonRules);
+				return processResultsOfInsertRulesAndQuery(sc, rss, comparisonRules);
+			}
+			else {
+				// this is a normal query
+				String retVal = null;
+				Object trgt = ((WhatIsContent)sc).getTarget();
+				Object whn = ((WhatIsContent)sc).getWhen();
+				if (trgt instanceof NamedNode && whn == null) {
+					String answer;
+					try {
+						answer = whatIsNamedNode(resource, theModel, modelName, getOwlModelsFolder(), (NamedNode)trgt);
+					}
+					catch (Exception e) {
+						answer = e.getMessage();
+					}
+					if (answer != null) {
+						retVal = answer;
+					}
+				}
+				else if (trgt instanceof Object[] && whn == null) {
+					if (allTripleElements((Object[])trgt)) {
+						//Object ctx = null;
+						TripleElement[] triples = flattenTriples((Object[])trgt);
+						//ctx = triples[0].getContext();
+						//StringBuilder answer = new StringBuilder();
+						Object[] rss = insertTriplesAndQuery(resource, triples);
+						String resultStr = null;
+						if (rss != null) {
+							StringBuilder sb = new StringBuilder();
+							if (triples[0].getSubject() instanceof VariableNode && 
+									((VariableNode)triples[0].getSubject()).getType() instanceof NamedNode) {
+								sb.append("the ");
+								sb.append(((VariableNode)(triples[0].getSubject())).getType().getName());
+								sb.append(" has ");
+								sb.append(triples[0].getPredicate().getName());
+								sb.append(" ");
+								sb.append(((ResultSet) rss[0]).getResultAt(0, 0).toString());
+								resultStr = sb.toString();
+							}
+							else {
+				    			for (Object rs : rss) {
+				    				if (rs instanceof ResultSet) {
+				    					((ResultSet) rs).setShowNamespaces(true);
+				    					sb.append(rs.toString());
+				    				}
+				    				else {
+				    					throw new TranslationException("Expected ResultSet, got " + rs.getClass().getCanonicalName());
+				    				}
+				    			}
+								resultStr = stringToQuotedeString(sb.toString());
+							}
+						}
+						String insertionText = (resultStr != null ? resultStr : "\"Failed to find results\"");
+						answerUser(getOwlModelsFolder(), insertionText, false, sc.getHostEObject());
+						retVal = insertionText;
+					}
+				}
+				else {
+					// there is a when clause, and this is in a WhatIsConstruct
+					List<TripleElement> tripleLst = new ArrayList<TripleElement>();
+					if (trgt instanceof TripleElement) {
+						tripleLst.add((TripleElement)trgt);
+					}
+					else if (trgt instanceof Junction) {
+						tripleLst = addTriplesFromJunction((Junction) trgt, tripleLst);
+					}
+					if (whn instanceof TripleElement) {
+						// we have a when statement
+						tripleLst.add((TripleElement)whn);
+					}
+					else if (whn instanceof Junction) {
+						tripleLst = addTriplesFromJunction((Junction) whn, tripleLst);
+					}
+					TripleElement[] triples = new TripleElement[tripleLst.size()];
+					triples = tripleLst.toArray(triples);
+					
+					Object[] rss = insertTriplesAndQuery(resource, triples);
+					String answer = getAnswerAndVisualize(sc, rss);
+					if (rss != null) {
+						retVal = stringToQuotedeString(answer);
+					}
+					else {
+						retVal = "Failed to evaluate answer";
+					}
+					if (!retVal.equals(stringToQuotedeString(""))) {
+						answerUser(getOwlModelsFolder(), retVal, true, sc.getHostEObject());
+					}
+				}
+				return retVal;
+			}
 	//		return "Processing of query disabled";
 		}
 		throw new AnswerExtractionException("Invalid what is request inputs");
@@ -3181,6 +3332,9 @@ public class AnswerCurationManager {
 			String[] sds = getOwlToSadl(theModel, modelName).equationToSadl(nn.getURI(), false, getConfigurationManager());
 			for (int i = sds.length - 1; i >= 0; i--) { // do in reverse order as they will be inserted at the same location
 				String sd = sds[i];
+				if (i < sds.length - 1) {
+					answer.append("\n");
+				}
 				answer.append(sd);
 				Object ctx = ((NamedNode)lastcmd).getContext();
 				answerUser(modelFolder, sd, false, (EObject) ctx);
@@ -3651,6 +3805,11 @@ public class AnswerCurationManager {
 		return getInferenceProcessor().insertTriplesAndQuery(resource, triples);
 	}
 	
+	private Object[] insertTriplesAndQuery(org.eclipse.emf.ecore.resource.Resource resource2, TripleElement[] triples) throws SadlInferenceException {
+		getConfigurationManager().addPrivateKeyValuePair(DialogConstants.ANSWER_CURATION_MANAGER, this);
+		return getInferenceProcessor().insertTriplesAndQuery(resource, triples);
+	}
+
 	private List<TripleElement> addTriplesFromJunction(Junction jct, List<TripleElement> tripleLst) {
 		Object lhs = jct.getLhs();
 		if (lhs instanceof ProxyNode) {
@@ -4263,4 +4422,21 @@ public class AnswerCurationManager {
 		}
 		return null;
 	}
+
+	/**
+	 * Method to convert regular Python to Tensor-Flow-compatible Python
+	 * @param pythonScript
+	 * @return
+	 */
+	public String pythonToTensorFlowPython(String pythonScript) {
+		String modifiedScript;		
+		if (pythonScript.contains(" math.")) {
+			modifiedScript = pythonScript.replaceAll("math.", "tf.math.");
+		}
+		else {
+			modifiedScript = pythonScript.replaceAll("Math.", "tf.math.");
+		}
+		return modifiedScript;
+	}
+
 }

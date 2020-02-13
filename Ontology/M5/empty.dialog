@@ -2,4 +2,6 @@
  
  import "http://sadl.org/SpeedOfSound.sadl".
  
+External CAL_SOS(double T, double G, double R, double Q, string us) returns double: "http://com.ge.research.darpa.aske.kchain.CAL_SOS".
+CAL_SOS has expression (a Script with language Text, with script "xsd:double CAL_SOS(double T,double G,double R,double Q,string us): uri(\"http://com.ge.research.darpa.aske.kchain.CAL_SOS\")").
  
