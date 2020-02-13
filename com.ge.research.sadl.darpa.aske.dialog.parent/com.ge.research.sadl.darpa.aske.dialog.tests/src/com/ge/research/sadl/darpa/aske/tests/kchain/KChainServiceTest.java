@@ -35,6 +35,7 @@
  ***********************************************************************/
 package com.ge.research.sadl.darpa.aske.tests.kchain;
 
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
@@ -70,7 +71,7 @@ public class KChainServiceTest {
 		kchainServiceBaseURL = "http://" + host + ":" + port;
 	}
 
-	//	@Ignore
+//	@Ignore
 	@Test
 	public void testBuildEval_01() throws IOException {
 		/*
@@ -647,23 +648,23 @@ public class KChainServiceTest {
 		 */
 	}
 
-@Ignore
+//	@Ignore
 	@Test
 	public void testBuildEval_Turbo_getGama() throws IOException {
 		String modelUri = "Turbo_getGama";
 		List<String[]> inputs = new ArrayList<String[]>();
 		String[] input1 = new String[2];
 		input1[0] = "temp";
-		input1[1] = "double";
+		input1[1] = "float";
 		inputs.add(input1);
 		String[] input2 = new String[2];
 		input2[0] = "opt";
-		input2[1] = "int";
+		input2[1] = "integer";
 		inputs.add(input2);
 		List<String[]> outputs = new ArrayList<String[]>();
 		String[] output1 = new String[2];
 		output1[0] = "Turbo_getGama";
-		output1[1] = "double";
+		output1[1] = "float";
 		outputs.add(output1);
 
 		String dataLocation = null;
@@ -690,7 +691,7 @@ public class KChainServiceTest {
 		List<String[]> evalInputs = new ArrayList<String[]>();
 		String[] evalInput1 = new String[3];
 		evalInput1[0] = "temp";
-		evalInput1[1] = "double";
+		evalInput1[1] = "float";
 		evalInput1[2] = "508.788";
 		evalInputs.add(evalInput1);
 		String[] evalInput2 = new String[3];
@@ -701,7 +702,7 @@ public class KChainServiceTest {
 		List<String[]> evalOutputs = new ArrayList<String[]>();
 		String[] evalOutput1 = new String[2];
 		evalOutput1[0] = "Turbo_getGama";
-		evalOutput1[1] = "double";
+		evalOutput1[1] = "float";
 		evalOutputs.add(evalOutput1);
 
 		List<List<String[]>> evalResults = kcsi.evalCGModel(modelUri, evalInputs, evalOutputs);
@@ -713,11 +714,15 @@ public class KChainServiceTest {
 			while (resultItr.hasNext()) {
 				String[] resultArr = resultItr.next();
 				logger.debug(resultArr[1] + " " + resultArr[0] + " " + resultArr[2]);
+				System.out.println(resultArr[1] + " " + resultArr[0] + " " + resultArr[2]);
+				assertEquals("Turbo_getGama", resultArr[0]);
+				assertEquals("float", resultArr[1]);
+				assertEquals("[1.4]", resultArr[2]);
 			}
 		}
 	}
 
-	@Ignore
+//	@Ignore
 	@Test
 	public void testBuildEval_Turbo_getGama2() throws IOException {
 		String modelUri = "getGama";
@@ -750,36 +755,46 @@ public class KChainServiceTest {
 		int port = 12345;
 		String kchainServiceURL = "http://" + host + ":" + port;
 		KChainServiceInterface kcsi = new KChainServiceInterface(kchainServiceURL);
-		Object[] buildResults = kcsi.buildCGModel(modelUri, equationModel, dataLocation, inputs, outputs);
-		
-		
-		List<String[]> evalInputs = new ArrayList<String[]>();
-		String[] evalInput1 = new String[3];
-		evalInput1[0] = "temp";
-		evalInput1[1] = "double";
-		evalInput1[2] = "508.788";
-		evalInputs.add(evalInput1);
-		String[] evalInput2 = new String[3];
-		evalInput2[0] = "opt";
-		evalInput2[1] = "integer";
-		evalInput2[2] = "0";
-		evalInputs.add(evalInput2);
-		List<String[]> evalOutputs = new ArrayList<String[]>();
-		String[] evalOutput1 = new String[2];
-		evalOutput1[0] = "Turbo_getGama";
-		evalOutput1[1] = "double";
-		evalOutputs.add(evalOutput1);
-
-		List<List<String[]>> evalResults = kcsi.evalCGModel(modelUri, evalInputs, evalOutputs);
-		Iterator<List<String[]>> resultsItr = evalResults.iterator();
-		while (resultsItr.hasNext()) {
-			List<String[]> result = resultsItr.next();
-			Iterator<String[]> resultItr = result.iterator();
-
-			while (resultItr.hasNext()) {
-				String[] resultArr = resultItr.next();
-				logger.debug(resultArr[1] + " " + resultArr[0] + " " + resultArr[2]);
+		try {
+			Object[] buildResults = kcsi.buildCGModel(modelUri, equationModel, dataLocation, inputs, outputs);
+			
+			fail();
+			
+			List<String[]> evalInputs = new ArrayList<String[]>();
+			String[] evalInput1 = new String[3];
+			evalInput1[0] = "temp";
+			evalInput1[1] = "double";
+			evalInput1[2] = "508.788";
+			evalInputs.add(evalInput1);
+			String[] evalInput2 = new String[3];
+			evalInput2[0] = "opt";
+			evalInput2[1] = "integer";
+			evalInput2[2] = "0";
+			evalInputs.add(evalInput2);
+			List<String[]> evalOutputs = new ArrayList<String[]>();
+			String[] evalOutput1 = new String[2];
+			evalOutput1[0] = "Turbo_getGama";
+			evalOutput1[1] = "double";
+			evalOutputs.add(evalOutput1);
+	
+			List<List<String[]>> evalResults = kcsi.evalCGModel(modelUri, evalInputs, evalOutputs);
+			Iterator<List<String[]>> resultsItr = evalResults.iterator();
+			while (resultsItr.hasNext()) {
+				List<String[]> result = resultsItr.next();
+				Iterator<String[]> resultItr = result.iterator();
+	
+				while (resultItr.hasNext()) {
+					String[] resultArr = resultItr.next();
+					logger.debug(resultArr[1] + " " + resultArr[0] + " " + resultArr[2]);
+					System.out.println(resultArr[1] + " " + resultArr[0] + " " + resultArr[2]);
+					assertEquals("Turbo_getGama", resultArr[0]);
+					assertEquals("double", resultArr[1]);
+					assertEquals("[1.4]", resultArr[2]);
+				}
 			}
+		}
+		catch (IOException e) {
+			assertEquals("Service call failed", e.getMessage());
 		}
 	}
 

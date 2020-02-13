@@ -102,8 +102,10 @@ import com.github.javaparser.ast.expr.ObjectCreationExpr;
 import com.github.javaparser.ast.expr.VariableDeclarationExpr;
 import com.github.javaparser.ast.stmt.BlockStmt;
 import com.github.javaparser.ast.stmt.ExpressionStmt;
+import com.github.javaparser.ast.stmt.ForStmt;
 import com.github.javaparser.ast.stmt.IfStmt;
 import com.github.javaparser.ast.stmt.ReturnStmt;
+import com.github.javaparser.ast.stmt.WhileStmt;
 import com.github.javaparser.ast.type.ClassOrInterfaceType;
 import com.github.javaparser.ast.type.Type;
 import com.github.javaparser.symbolsolver.JavaSymbolSolver;
@@ -719,7 +721,8 @@ public class JavaModelExtractorJP implements IModelFromCodeExtractor {
 					}
         		}
         		else {
-           			processBlockChild(expr, containingInst, USAGE.Defined);        			
+//           			processBlockChild(expr, containingInst, USAGE.Defined);   
+        			processBlockChild(expr, containingInst, USAGE.Used);	// how could a method argument be Defined? awc 2/7/2020
         		}
  			}
 		}
@@ -822,6 +825,18 @@ public class JavaModelExtractorJP implements IModelFromCodeExtractor {
 			List<Node> condChildren = ((IfStmt)childNode).getChildNodes();
 			for (int j = 1; j < condChildren.size(); j++) {
 				processBlockChild(condChildren.get(j), containingInst, null);
+			}
+		}
+		else if (childNode instanceof ForStmt) {
+			List<Node> children = ((ForStmt)childNode).getChildNodes();
+			for (int j = 0; j < children.size(); j++) {
+				processBlockChild(children.get(j), containingInst, null);
+			}
+		}
+		else if (childNode instanceof WhileStmt) {
+			List<Node> children = ((WhileStmt)childNode).getChildNodes();
+			for (int j = 0; j < children.size(); j++) {
+				processBlockChild(children.get(j), containingInst, null);
 			}
 		}
 		else if (childNode instanceof ReturnStmt) {
@@ -1879,6 +1894,16 @@ public class JavaModelExtractorJP implements IModelFromCodeExtractor {
 
 	@Override
 	public String[] extractPythonTFEquationFromCodeExtractionModel(String pythonScript, String defaultMethodName) {
+		String modifiedScript = pythonToTensorFlowPython(pythonScript);		
+		return extractPythonEquationFromCodeExtractionModel(modifiedScript, defaultMethodName);
+	}
+	
+	/**
+	 * Method to convert regular Python to Tensor-Flow-compatible Python
+	 * @param pythonScript
+	 * @return
+	 */
+	public static String pythonToTensorFlowPython(String pythonScript) {
 		String modifiedScript;		
 		if (pythonScript.contains(" math.")) {
 			modifiedScript = pythonScript.replaceAll("math.", "tf.math.");
@@ -1886,7 +1911,7 @@ public class JavaModelExtractorJP implements IModelFromCodeExtractor {
 		else {
 			modifiedScript = pythonScript.replaceAll("Math.", "tf.math.");
 		}
-		return extractPythonEquationFromCodeExtractionModel(modifiedScript, defaultMethodName);
+		return modifiedScript;
 	}
 
 	@Override

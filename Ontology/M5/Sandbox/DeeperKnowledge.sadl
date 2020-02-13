@@ -1,0 +1,29 @@
+uri "http://sadl.org/DeeperKnowledge.sadl" alias DeeperKnowledge.
+ 
+Parameter is a type of UnittedQuantity,
+ 	described by validRange with values of type ValidRange,
+ 	described by utility with values of type Utility.
+ 	
+ValidRange is a class described by minimum with values of type UnittedQuantity,
+ 	described by maximum with values of type UnittedQuantity.
+ 	
+Utility is a class.
+{Increasing, Decreasing} are instances of Utility.
+SpecifiedTarget is a type of Utility, described by target with values of type UnittedQuantity.
+  	 	 
+Thrust is a type of Parameter.
+utility of Thrust always has value Increasing.
+ 
+Weight is a type of Parameter.
+utility of Weight always has value Decreasing.
+
+Speed is a type of Parameter.
+RamjetSpeed is a type of Speed.
+validRange of RamjetSpeed always has value (a ValidRange with maximum 4500 "ft/sec").
+TurbofanSpeed is a type of Speed.
+validRange of TurbofanSpeed always has value (a ValidRange with maximum 1500 "ft/sec").
+
+SFC is a type of Parameter.
+unit of SFC always has value "Normalized".
+utility of SFC always has value Decreasing.
+ 

@@ -46,6 +46,7 @@ import java.io.FileInputStream;
 import java.io.FileReader;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -119,6 +120,7 @@ public class TextProcessorTests {
 		EquationVariableContextResponse results = tp.equationVariableContext("T", localityURI);
 		if (results != null) {
 			System.out.println(results.getMessage());
+			assertTrue(results.getResults().isEmpty());
 			for (String[] use : results.getResults()) {
 				assertTrue(use!= null && use.length == 4);
 				System.out.println("Parameter '" + use[1] + "' used in '" + use[0] + "'");
@@ -660,7 +662,7 @@ public class TextProcessorTests {
 		TextProcessor tp = new TextProcessor(new AnswerCurationManager(domainProjectModelFolder, 
 				ConfigurationManagerForIdeFactory.getConfigurationManagerForIDE(domainProjectModelFolder, null), null, null), null);
 		tp.setTextModelPrefix("sos");
-		String localityURI = "http://darpa.aske.ta1.ge/sostest";
+		String localityURI = "http://darpa.aske.ta1.ge/sostest/";
 		tp.setTextModelName(localityURI);
 		String msg = tp.clearGraph(localityURI);
 		System.out.println("Clear graph response: " + msg);
@@ -676,11 +678,18 @@ public class TextProcessorTests {
 		assertNotNull(newModel);
 		StmtIterator stmtitr = newModel.listStatements(null, RDFS.seeAlso, (RDFNode)null);
 		int cntr = 0;
+		List<String> stmtList = new ArrayList<String>();
 		while (stmtitr.hasNext()) {
-			System.out.println(stmtitr.next().toString());
+			String stmt = stmtitr.next().toString();
+			stmtList.add(stmt);
+			System.out.println(stmt);
 			cntr++;
 		}
 		assertEquals(3, cntr);
+		Collections.sort(stmtList); 
+		assertEquals("[http://darpa.aske.ta1.ge/sostest/acceleration, http://www.w3.org/2000/01/rdf-schema#seeAlso, http://www.wikidata.org/entity/Q11376]", stmtList.get(0));
+		assertEquals("[http://darpa.aske.ta1.ge/sostest/force, http://www.w3.org/2000/01/rdf-schema#seeAlso, http://www.wikidata.org/entity/Q11402]", stmtList.get(1));
+		assertEquals("[http://darpa.aske.ta1.ge/sostest/mass, http://www.w3.org/2000/01/rdf-schema#seeAlso, http://www.wikidata.org/entity/Q11423]", stmtList.get(2));
 	}
 
 	private String readFile(File file) throws IOException {

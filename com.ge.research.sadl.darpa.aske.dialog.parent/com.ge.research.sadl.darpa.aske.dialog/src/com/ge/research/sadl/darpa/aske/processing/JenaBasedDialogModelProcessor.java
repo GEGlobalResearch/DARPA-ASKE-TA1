@@ -86,6 +86,7 @@ import com.ge.research.sadl.darpa.aske.dialog.MyNameIsStatement;
 import com.ge.research.sadl.darpa.aske.dialog.ParameterizedExpressionWithUnit;
 import com.ge.research.sadl.darpa.aske.dialog.SadlEquationInvocation;
 import com.ge.research.sadl.darpa.aske.dialog.SaveStatement;
+import com.ge.research.sadl.darpa.aske.dialog.SeeParentheticalLink;
 import com.ge.research.sadl.darpa.aske.dialog.SuitabilityStatement;
 import com.ge.research.sadl.darpa.aske.dialog.TargetModelName;
 import com.ge.research.sadl.darpa.aske.dialog.WhatIsStatement;
@@ -567,6 +568,20 @@ public class JenaBasedDialogModelProcessor extends JenaBasedSadlModelProcessor {
 			}
 			return ssc;
 		}
+		else if (element instanceof SeeParentheticalLink) {
+			String link = ((SeeParentheticalLink)element).getLinkUri();
+			if (validURI(link)) {
+				// currently there is nothing in the model to which we can add this to
+				//	for statements that make it into the model as a triple we would need to do reification to add
+				// 	for other statements we would need to represent the statement in the model.
+//				modelOntology.addSeeAlso(getTheJenaModel().getResource(link));
+				return null;
+			}
+			else {
+				addWarning("Link is not a valid URL.", element);
+				return null;
+			}
+		}
 		else {
 			throw new TranslationException("Model element of type '" + element.getClass().getCanonicalName() + "' not handled.");
 		}	
@@ -711,7 +726,7 @@ public class JenaBasedDialogModelProcessor extends JenaBasedSadlModelProcessor {
 		}
 		for (Object origThenObj : originalThenObjects) {
 			if (origThenObj instanceof NamedNode) {
-				thenObjects.add((Node) thenObj);
+				thenObjects.add((Node) origThenObj);
 			}
 			else if (origThenObj instanceof TripleElement) {
 				if (((TripleElement)origThenObj).getSubject() instanceof VariableNode) {

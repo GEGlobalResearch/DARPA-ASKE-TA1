@@ -1,0 +1,42 @@
+External equation_21 (derivedFrom equation_19) (alias "pt") (decimal p, decimal theta (Theta), decimal Tt, decimal T, decimal gamma (sos:gamma of a Gas), decimal exp) returns decimal: "http://com.ge.research.sadl.darpa.aske.answer/Isentrop_txt#equation_21".
+equation_21
+), has expression (a Script with language Python-TF, with script 
+"pt = p / ((  (  tf.math.exp( theta/Tt) - 1 ) / (  tf.math.exp( theta/T ) - 1 ) )  *  ( tf.math.pow( T/Tt,( gamma/( gamma-1)) ) )  * exp[( theta/T ) * (  tf.math.exp( theta/T ) / (  tf.math.exp( theta/T ) - 1 ) ) - ( theta/Tt) * (  tf.math.exp( theta/Tt) / (  tf.math.exp( theta/Tt) - 1 ) ) ))").
+External equation_11 (derivedFrom equation_10) (alias "A") (decimal gam, decimal }, decimal M{, decimal M, decimal A) returns decimal: "http://com.ge.research.sadl.darpa.aske.answer/Isentrop_txt#equation_11".
+equation_11
+), has expression (a Script with language Python-TF, with script 
+"A = ((  ( tf.math.pow( gam-1)/2]}/M{[1+M,2)( tf.math.pow( gam-1)/2], (  ( gam+1)) / ( gam-1 ) / 2 )  )  *  (   ( ( tf.math.pow( gam+1)/2], -  (  ( gam+1)) / ( gam-1 ) / 2 )  )  / M) * A*").
+External equation_12 (derivedFrom equation_10) (alias "A*") (decimal A, decimal gam, decimal }, decimal M{, decimal M) returns decimal: "http://com.ge.research.sadl.darpa.aske.answer/Isentrop_txt#equation_12".
+equation_12
+), has expression (a Script with language Python-TF, with script 
+"A* = A / ((  ( tf.math.pow( gam-1)/2]}/M{[1+M,2)( tf.math.pow( gam-1)/2], (  ( gam+1)) / ( gam-1 ) / 2 )  )  *  (   ( ( tf.math.pow( gam+1)/2], -  (  ( gam+1)) / ( gam-1 ) / 2 )  )  / M)").
+External equation_1 (alias "M") (decimal v, decimal a) returns decimal: "http://com.ge.research.sadl.darpa.aske.answer/Isentrop_txt#equation_1".
+equation_1 has expression (a Script with language Text, with script 
+"M = v / a"
+), has expression (a Script with language Python-TF, with script 
+"M = v / a").
+External equation_24 (derivedFrom equation_22) (alias "p") (decimal q, decimal gammasos:gamma of a Gas, decimal Tt, decimal T, decimal thetaTheta) returns decimal: "http://com.ge.research.sadl.darpa.aske.answer/Isentrop_txt#equation_24".
+equation_24
+), has expression (a Script with language Python-TF, with script 
+"p = q / (( gamma/( gamma-1 ) ) * ( Tt/T - 1 ) + ( theta/T ) *  (  1 / (  tf.math.exp( theta/Tt) - 1 ) - 1 / (  tf.math.exp( theta/T ) - 1 ) ))").
+External equation_17 (derivedFrom equation_16) (alias "rho") (decimal thetaTheta, decimal Tt, decimal T, decimal gammasos:gamma of a Gas, decimal exp, decimal rhot) returns decimal: "http://com.ge.research.sadl.darpa.aske.answer/Isentrop_txt#equation_17".
+equation_17
+), has expression (a Script with language Python-TF, with script 
+"rho = ((  (  tf.math.exp( theta/Tt) - 1 ) / (  tf.math.exp( theta/T ) - 1 ) )  *  ( tf.math.pow( T/Tt,( 1/)( gamma-1 ) ) )  * exp[( theta/T ) * (  tf.math.exp( theta/T ) / (  tf.math.exp( theta/T ) - 1 ) ) - ( theta/Tt) * (  tf.math.exp( theta/Tt) / (  tf.math.exp( theta/Tt) - 1 ) ) )) * rhot").
+External equation_20 (derivedFrom equation_19) (alias "p") (decimal thetaTheta, decimal Tt, decimal T, decimal gammasos:gamma of a Gas, decimal exp, decimal pt) returns decimal: "http://com.ge.research.sadl.darpa.aske.answer/Isentrop_txt#equation_20".
+equation_20
+), has expression (a Script with language Python-TF, with script 
+"p = ((  (  tf.math.exp( theta/Tt) - 1 ) / (  tf.math.exp( theta/T ) - 1 ) )  *  ( tf.math.pow( T/Tt,( gamma/( gamma-1)) ) )  * exp[( theta/T ) * (  tf.math.exp( theta/T ) / (  tf.math.exp( theta/T ) - 1 ) ) - ( theta/Tt) * (  tf.math.exp( theta/Tt) / (  tf.math.exp( theta/Tt) - 1 ) ) )) * pt").
+External equation_18 (derivedFrom equation_16) (alias "rhot") (decimal rho, decimal thetaTheta, decimal Tt, decimal T, decimal gammasos:gamma of a Gas, decimal exp) returns decimal: "http://com.ge.research.sadl.darpa.aske.answer/Isentrop_txt#equation_18".
+equation_18
+), has expression (a Script with language Python-TF, with script 
+"rhot = rho / ((  (  tf.math.exp( theta/Tt) - 1 ) / (  tf.math.exp( theta/T ) - 1 ) )  *  ( tf.math.pow( T/Tt,( 1/)( gamma-1 ) ) )  * exp[( theta/T ) * (  tf.math.exp( theta/T ) / (  tf.math.exp( theta/T ) - 1 ) ) - ( theta/Tt) * (  tf.math.exp( theta/Tt) / (  tf.math.exp( theta/Tt) - 1 ) ) ))").
+External equation_23 (derivedFrom equation_22) (alias "q") (decimal gammasos:gamma of a Gas, decimal Tt, decimal T, decimal thetaTheta, decimal p) returns decimal: "http://com.ge.research.sadl.darpa.aske.answer/Isentrop_txt#equation_23".
+equation_23
+), has expression (a Script with language Python-TF, with script 
+"q = (( gamma/( gamma-1 ) ) * ( Tt/T - 1 ) + ( theta/T ) *  (  1 / (  tf.math.exp( theta/Tt) - 1 ) - 1 / (  tf.math.exp( theta/T ) - 1 ) )) * p").
+External equation_15 (alias "gam") (decimal gammasos:gamma of a Gas, decimal thetaTheta, decimal T, decimal e) returns decimal: "http://com.ge.research.sadl.darpa.aske.answer/Isentrop_txt#equation_15".
+equation_15 has expression (a Script with language Text, with script 
+"gam = 1 + (gamma - 1) / ( 1 + (gamma-1) * [(theta/T)^2 * e^(theta/T) /(e^(theta/T) -1)^2])"
+), has expression (a Script with language Python-TF, with script 
+"gam = 1 + ( gamma-1 ) / ( 1 + ( gamma-1 ) *  ( tf.math.pow( theta/T,2)* tf.math.exp( theta/T ) /  tf.math.pow( tf.math.exp( theta/T ) - 1,2) )  )").

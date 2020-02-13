@@ -514,16 +514,16 @@ public class JavaImportJPTests extends AbstractDialogTest {
 
 	@Test
 	public void test_08_on_Turbo_modified() throws IOException, ConfigurationException, InvalidNameException, ReasonerNotFoundException, QueryParseException, QueryCancelledException, AnswerExtractionException {
-		File codeFile = new File(getCodeExtractionKbRoot() + "/ExtractedModels/Sources/TurboModified.java");
+		File codeFile = new File(getCodeExtractionKbRoot() + "/ExtractedModels/Sources/TurboModified2.java");
 		assertTrue(codeFile.exists());
 		// remove OWL and SADL files
-		File owlF = new File(getCodeExtractionKbRoot() + "/ExtractedModels\\TurboModified.java.owl");
+		File owlF = new File(getCodeExtractionKbRoot() + "/ExtractedModels\\TurboModified2.java.owl");
 		
 		if (owlF.exists()) {
 			owlF.delete();
 			assertFalse(owlF.exists());
 		}
-		File sadlF = new File(getCodeExtractionKbRoot() + "\\ExtractedModels\\TurboModified.java.owl.sadl");
+		File sadlF = new File(getCodeExtractionKbRoot() + "\\ExtractedModels\\TurboModified2.java.owl.sadl");
 		if (sadlF.exists()) {
 			sadlF.delete();
 			assertFalse(sadlF.exists());
