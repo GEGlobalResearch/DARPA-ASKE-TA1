@@ -311,7 +311,7 @@ public class DialogAnswerProvider extends BaseDialogAnswerProvider {
 					else {
 						modContent = content;
 					}
-					if (!modContent.trim().endsWith(".") && !modContent.trim().endsWith("?")) {
+					if (!modContent.trim().endsWith(".") && !modContent.trim().endsWith("?") && !modContent.trim().endsWith(")")) {
 						modContent += ".";
 					}
 				}
