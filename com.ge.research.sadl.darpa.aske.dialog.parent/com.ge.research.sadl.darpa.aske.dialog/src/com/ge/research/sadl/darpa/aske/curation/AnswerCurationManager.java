@@ -72,6 +72,7 @@ import org.slf4j.LoggerFactory;
 
 import com.ge.research.sadl.builder.ConfigurationManagerForIdeFactory;
 import com.ge.research.sadl.builder.IConfigurationManagerForIDE;
+import com.ge.research.sadl.darpa.aske.curation.AnswerCurationManager.Agent;
 import com.ge.research.sadl.darpa.aske.dialog.AnswerCMStatement;
 import com.ge.research.sadl.darpa.aske.inference.JenaBasedDialogInferenceProcessor;
 import com.ge.research.sadl.darpa.aske.preferences.DialogPreferences;
@@ -2982,8 +2983,7 @@ public class AnswerCurationManager {
 	}
 
 	private String processWhatIsContent(org.eclipse.emf.ecore.resource.Resource resource, OntModel theModel,
-			String modelName, WhatIsContent sc) throws ExecutionException, SadlInferenceException,
-			TranslationException, ConfigurationException, IOException, AnswerExtractionException {
+			String modelName, WhatIsContent sc) throws AnswerExtractionException, ExecutionException, SadlInferenceException, TranslationException, ConfigurationException {
 		if (sc != null && sc.getComparisonRules() != null) {
 			List<Rule> comparisonRules = ((WhatIsContent)sc).getComparisonRules();
 			Object[] rss = insertRulesAndQuery(resource, comparisonRules);
@@ -2993,36 +2993,41 @@ public class AnswerCurationManager {
 		throw new AnswerExtractionException("Invalid what is request inputs");
 	}
 
-	private String processResultsOfInsertRulesAndQuery(StatementContent sc, Object[] rss, List<Rule> comparisonRules)
-			throws TranslationException, ConfigurationException {
+	private String processResultsOfInsertRulesAndQuery(ExpectsAnswerContent sc, Object[] rss, List<Rule> comparisonRules) throws TranslationException, ConfigurationException {
 		String retVal = "";
 		String resultStr = null;
 		if (rss != null) {
-			StringBuilder sb = new StringBuilder();
-			Rule firstRule = comparisonRules.get(0);
-			TripleElement firstTriple = firstRule.getGivens() != null && firstRule.getGivens().get(0) instanceof TripleElement ? (TripleElement) firstRule.getGivens().get(0) :
-				firstRule.getIfs() != null && firstRule.getIfs().get(0) instanceof TripleElement ? (TripleElement)firstRule.getIfs().get(0) : null;
-			if (firstTriple.getSubject() instanceof VariableNode && 
-					((VariableNode)firstTriple.getSubject()).getType() instanceof NamedNode) {
-				sb.append("the ");
-				sb.append(((VariableNode)(firstTriple.getSubject())).getType().getName());
-				sb.append(" has ");
-				sb.append(firstTriple.getPredicate().getName());
-				sb.append(" ");
-				sb.append(((ResultSet) rss[0]).getResultAt(0, 0).toString());
-				resultStr = sb.toString();
-			}
-			else {
-    			for (Object rs : rss) {
-    				if (rs instanceof ResultSet) {
-    					((ResultSet) rs).setShowNamespaces(true);
-    					sb.append(rs.toString());
-    				}
-    				else {
-    					throw new TranslationException("Expected ResultSet, got " + rs.getClass().getCanonicalName());
-    				}
-    			}
-				resultStr = stringToQuotedeString(sb.toString());
+			boolean cgr = true;
+			if (!cgr) {
+				StringBuilder sb = new StringBuilder();
+				Rule firstRule = comparisonRules.get(0);
+				TripleElement firstTriple = firstRule.getGivens() != null && firstRule.getGivens().get(0) instanceof TripleElement ? (TripleElement) firstRule.getGivens().get(0) :
+					firstRule.getIfs() != null && firstRule.getIfs().get(0) instanceof TripleElement ? (TripleElement)firstRule.getIfs().get(0) : null;
+				if (firstTriple.getSubject() instanceof VariableNode && 
+						((VariableNode)firstTriple.getSubject()).getType() instanceof NamedNode) {
+					sb.append("the ");
+					sb.append(((VariableNode)(firstTriple.getSubject())).getType().getName());
+					sb.append(" has ");
+					sb.append(firstTriple.getPredicate().getName());
+					sb.append(" ");
+					sb.append(((ResultSet) rss[0]).getResultAt(0, 0).toString());
+					resultStr = sb.toString();
+				}
+				else {
+	    			for (Object rs : rss) {
+	    				if (rs instanceof ResultSet) {
+	    					((ResultSet) rs).setShowNamespaces(true);
+	    					sb.append(rs.toString());
+	    				}
+	    				else {
+	    					throw new TranslationException("Expected ResultSet, got " + rs.getClass().getCanonicalName());
+	    				}
+	    			}
+					resultStr = stringToQuotedeString(sb.toString());
+				}
+			} else {
+				resultStr = getAnswerAndVisualize(sc, rss);
+				
 			}
 		}
 		String insertionText = (resultStr != null ? resultStr : "\"Failed to find results\"");
@@ -3031,8 +3036,11 @@ public class AnswerCurationManager {
 		return retVal;
 	}
 
-	private String getAnswerAndVisualize(ExpectsAnswerContent sc, Object[] rss) throws ConfigurationException {
+	private String getAnswerAndVisualize(ExpectsAnswerContent sc, Object[] rss) throws ConfigurationException  {
 		StringBuilder answer = new StringBuilder();
+		String graphsDirectory = new File(getOwlModelsFolder()).getParent() + "/Graphs";
+		String baseFileName = "";
+		
 		if (rss != null) {
 			int cntr = 0;
 			for (Object rs : rss) {
@@ -3044,9 +3052,9 @@ public class AnswerCurationManager {
 
 						IGraphVisualizer visualizer = new GraphVizVisualizer();
 						if (visualizer != null) {
-							String graphsDirectory = new File(getOwlModelsFolder()).getParent() + "/Graphs";
+							//String graphsDirectory = new File(getOwlModelsFolder()).getParent() + "/Graphs";
 							new File(graphsDirectory).mkdir();
-							String baseFileName = "QueryMetadata_" + ((ResultSet)rs).getResultAt(0, 0).toString();
+							baseFileName = "QueryMetadata_" + ((ResultSet)rs).getResultAt(0, 0).toString();
 							visualizer.initialize(
 				                    graphsDirectory,
 				                    baseFileName,
@@ -3070,8 +3078,15 @@ public class AnswerCurationManager {
 					else {
 		    			if(cntr > 0)
 		    				answer.append(",\n");
-		    			((ResultSet) rs).setShowNamespaces(true);
-						answer.append(((ResultSet) rs).toString());
+		    			//((ResultSet) rs).setShowNamespaces(true);
+						//answer.append(((ResultSet) rs).toString());
+						//TODO: generate sadl string
+						
+						String sadlAnswer = addResultsToDialog((ResultSet) rs);
+						//TODO: 
+						String graphicURL = "file://" + graphsDirectory + "/" + baseFileName; //file url
+						sadlAnswer += " (See \"" + graphicURL + "\".)";
+						answer.append(sadlAnswer);
 						cntr++;
 					}
 				}
@@ -3088,6 +3103,31 @@ public class AnswerCurationManager {
 	}
 
 
+	private String addResultsToDialog(ResultSet rs) {
+		StringBuilder sb = new StringBuilder();
+		if (rs.getRowCount() > 0) {
+			sb.append("The CGExecution with compGraph ");
+			sb.append(rs.getResultAt(0, 0).toString());
+			sb.append("\n");
+			for (int row = 0; row < rs.getRowCount(); row++) {
+				//StringBuilder sb = new StringBuilder("The CGExecution ");
+				sb.append("    has output (a ");
+				sb.append(rs.getResultAt(row, 1).toString());
+				sb.append(" with ^value ");
+				sb.append(rs.getResultAt(row, 2));
+				if (rs.getResultAt(row, 3) != null) {
+					sb.append(", with stddev ");
+					sb.append(rs.getResultAt(row, 3));
+				}
+				sb.append(")\n");
+			}
+			//sb.append(".\n");
+		}							
+		return sb.toString();
+	}
+	
+	
+	
 /**
  * 	invoke DialogAnswerProvider method displayGraph
  * @param visualizer
