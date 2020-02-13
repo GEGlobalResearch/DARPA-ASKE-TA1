@@ -3127,8 +3127,8 @@ public class AnswerCurationManager {
 					triples = tripleLst.toArray(triples);
 					
 					Object[] rss = insertTriplesAndQuery(resource, triples);
-					String answer = getAnswerAndVisualize(sc, rss);
 					if (rss != null) {
+						String answer = getAnswerAndVisualize(sc, rss);
 						retVal = stringToQuotedeString(answer);
 					}
 					else {
