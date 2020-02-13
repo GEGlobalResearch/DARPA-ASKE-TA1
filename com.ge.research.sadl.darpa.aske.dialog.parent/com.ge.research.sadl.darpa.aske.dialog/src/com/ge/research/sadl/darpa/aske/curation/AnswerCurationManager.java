@@ -3084,7 +3084,7 @@ public class AnswerCurationManager {
 						
 						String sadlAnswer = addResultsToDialog((ResultSet) rs);
 						//TODO: 
-						String graphicURL = "file://" + graphsDirectory + "/" + baseFileName; //file url
+						String graphicURL = "file://" + graphsDirectory + "/" + baseFileName + ".svg"; //file url
 						sadlAnswer += " (See \"" + graphicURL + "\".)";
 						answer.append(sadlAnswer);
 						cntr++;
@@ -3096,7 +3096,7 @@ public class AnswerCurationManager {
 				
 			}
 			if (cntr > 0) {
-				answer.append(".\n");
+				//answer.append(".\n");
 			}
 		}
 		return answer.toString();
@@ -3121,7 +3121,7 @@ public class AnswerCurationManager {
 				}
 				sb.append(")\n");
 			}
-			//sb.append(".\n");
+			sb.append(".\n");
 		}							
 		return sb.toString();
 	}
