@@ -14,8 +14,83 @@ import com.ge.research.sadl.darpa.aske.processing.WhatIsContent
 import java.io.File
 import com.ge.research.sadl.builder.ConfigurationManagerForIDE
 import com.ge.research.sadl.builder.ConfigurationManagerForIdeFactory
+import org.junit.Before
+import java.io.IOException
+import com.ge.research.sadl.reasoner.utils.SadlUtils
+import com.ge.research.sadl.darpa.aske.processing.ModifiedAskContent
+import com.ge.research.sadl.darpa.aske.processing.WhatValuesContent
 
 class DialogTest extends AbstractDialogTest {
+
+	private String codeExtractionProjectModelFolder;
+	private String domainProjectModelFolder;
+	private String codeExtractionKbRoot;
+
+	private String speedOfSoundPath;
+	private String scientificConcepts2Path;
+
+	@Before
+	def void setUp() throws Exception {
+		val projectRoot = new File("resources/M5Snapshot");
+		setCodeExtractionKbRoot(projectRoot.getCanonicalPath());
+		val codeExtractionPrjFolder = new File(getCodeExtractionKbRoot());
+		assertTrue(codeExtractionPrjFolder.exists());
+		setExtractionProjectModelFolder(getCodeExtractionKbRoot() + "/OwlModels");
+		setScientificConcepts2(getCodeExtractionKbRoot() + "/ScientificConcepts2.sadl");
+		setSpeedOfSoundPath(getCodeExtractionKbRoot() + "/SpeedOfSound.sadl");
+		setDomainProjectModelFolder(getExtractionProjectModelFolder());
+	}
+
+	def String getExtractionProjectModelFolder() {
+		return codeExtractionProjectModelFolder;
+	}
+
+	def void setExtractionProjectModelFolder(String extractionProjectModelFolder) {
+		this.codeExtractionProjectModelFolder = extractionProjectModelFolder;
+	}
+
+	def String getDomainProjectModelFolder() {
+		return domainProjectModelFolder;
+	}
+
+	def void setDomainProjectModelFolder(String outputProjectModelFolder) {
+		this.domainProjectModelFolder = outputProjectModelFolder;
+	}
+
+	def void setSpeedOfSoundPath(String path) {
+		this.speedOfSoundPath = path;	
+	}
+
+	def String getSpeedOfSoundPath() {
+		return speedOfSoundPath;
+	}
+
+	def void setScientificConcepts2(String path) {
+		this.setScientificConcepts2Path(path);
+	}
+
+	def String getScientificConcepts2Path() {
+		return scientificConcepts2Path;
+	}
+
+	def void setScientificConcepts2Path(String scientificConcepts2Path) {
+		this.scientificConcepts2Path = scientificConcepts2Path;
+	}
+	
+	def String getCodeExtractionKbRoot() {
+		return codeExtractionKbRoot;
+	}
+
+	def void setCodeExtractionKbRoot(String codeExtractionKbRoot) {
+		this.codeExtractionKbRoot = codeExtractionKbRoot;
+	}
+
+	def CharSequence getContent(String path) throws IOException {
+		val f = new File(path);
+		assertTrue(f.exists());
+		val su = new SadlUtils();
+		return su.fileToString(f);
+	}
 
 	@Ignore
 	@Test
@@ -594,7 +669,7 @@ class DialogTest extends AbstractDialogTest {
 				assertEquals(1, conversation.statements.size)
 				assertTrue(conversation.statements.get(0).statement instanceof WhatIsContent)
 				val cc = conversation.statements.get(0).statement as WhatIsContent
-				val rules = cc.comparisonRules
+				val rules = cc.getComputationalGraphRules
 				assertEquals(1, rules.size)
 				assertEquals(grd.get(0), rules.get(0).toFullyQualifiedString)
 			}
@@ -667,9 +742,229 @@ class DialogTest extends AbstractDialogTest {
 				assertEquals(1, conversation.statements.size)
 				assertTrue(conversation.statements.get(0).statement instanceof WhatIsContent)
 				val cc = conversation.statements.get(0).statement as WhatIsContent
-				val rules = cc.comparisonRules
+				val rules = cc.getComputationalGraphRules
 				assertEquals(1, rules.size)
 				assertEquals(grd.get(0), rules.get(0).toFullyQualifiedString)
+			}
+		]
+	}
+	
+	@Test
+	def void testWhatIsStatement_03() {
+		val actualAnswer = "AircraftEngine is a class,
+    described by altitude with values of type UnittedQuantity,
+    described by sfc with values of type float,
+    described by speed with values of type UnittedQuantity,
+    described by thrust with values of type UnittedQuantity,
+    described by weight with values of type UnittedQuantity."
+		'''
+			 uri "http://sadl.org/Suitability.sadl" alias stblt.
+			 
+			 AircraftEngine is a class.
+			 altitude describes AircraftEngine with values of type UnittedQuantity.
+			 thrust describes AircraftEngine with values of type UnittedQuantity.
+			 weight describes AircraftEngine with values of type UnittedQuantity.
+			 speed describes AircraftEngine with values of type UnittedQuantity.
+			 sfc describes AircraftEngine with values of type float.
+			  
+			 F100 is a type of AircraftEngine.
+			 CF6 is a type of AircraftEngine.
+		'''.sadl
+
+		'''
+			 uri "http://sadl.org/Suitability.dialog" alias stbltdlg.
+			 
+			 import "http://sadl.org/Suitability.sadl".
+			 
+			 What is an AircraftEngine?
+		'''.assertValidatesTo [ ontModel, issues, processor |
+			assertNotNull(ontModel)
+//			val stmtitr = ontModel.listStatements()
+//			while (stmtitr.hasNext) {
+//				println(stmtitr.nextStatement)
+//			}
+			val errors = issues.filter[severity === Severity.ERROR]
+			assertEquals(0, errors.size)
+			if (processor instanceof JenaBasedDialogModelProcessor) {
+				val acm = (processor as JenaBasedDialogModelProcessor).answerCurationManager
+				val conversation = acm.conversation
+				assertNotNull(conversation)
+				assertNotNull(conversation.statements);
+				assertEquals(1, conversation.statements.size)
+				assertTrue(conversation.statements.get(0).statement instanceof WhatIsContent)
+				val cc = conversation.statements.get(0).statement as WhatIsContent
+				val rules = cc.getComputationalGraphRules
+				assertTrue(rules === null)	
+				val question = cc.getText().trim();
+				val answer = acm.getAnswerToQuestion(question)
+				assertTrue(processor.compareTranslations(actualAnswer, answer))	
+			}
+		]
+	}
+	
+	@Test
+	def void testWhatIsStatement_04() {
+		val actualAnswer = "Failed to evaluate answer"
+	    this.sadl(getContent(getScientificConcepts2Path())); 
+	    this.sadl(getContent(getSpeedOfSoundPath()));
+
+		'''
+			 uri "http://sadl.org/Suitability.dialog" alias stbltdlg.
+			 
+			 import "http://sadl.org/SpeedOfSound.sadl".
+			 
+			 What is an AircraftEngine?
+		'''.assertValidatesTo [ ontModel, issues, processor |
+			assertNotNull(ontModel)
+//			val stmtitr = ontModel.listStatements()
+//			while (stmtitr.hasNext) {
+//				println(stmtitr.nextStatement)
+//			}
+			val errors = issues.filter[severity === Severity.ERROR]
+			if (errors.size > 0) {
+				for (err : errors) {
+					println(err.toString)
+				}
+			}
+			assertEquals(2, errors.size)
+			if (processor instanceof JenaBasedDialogModelProcessor) {
+				val acm = (processor as JenaBasedDialogModelProcessor).answerCurationManager
+				val conversation = acm.conversation
+				assertNotNull(conversation)
+				assertNotNull(conversation.statements);
+				assertEquals(1, conversation.statements.size)
+				assertTrue(conversation.statements.get(0).statement instanceof WhatIsContent)
+				val cc = conversation.statements.get(0).statement as WhatIsContent
+				val rules = cc.getComputationalGraphRules
+				assertTrue(rules === null)	
+				val question = cc.getText().trim();
+				val answer = acm.getAnswerToQuestion(question)
+				println(answer)
+				assertTrue(processor.compareTranslations(actualAnswer, answer))	
+			}
+		]
+	}
+	
+	@Test
+	def void testWhatIsStatement_05() {
+		val actualAnswer = "CAL_SOS has expression (a Script with language Text, with script \"xsd:double CAL_SOS(double T,double G,double R,double Q,string us): uri(\\\"http://com.ge.research.darpa.aske.kchain.CAL_SOS\\\")\").
+External CAL_SOS(double T, double G, double R, double Q, string us) returns double: \"http://com.ge.research.darpa.aske.kchain.CAL_SOS\"."
+	    this.sadl(getContent(getScientificConcepts2Path())); 
+	    this.sadl(getContent(getSpeedOfSoundPath()));
+		'''
+			 uri "http://sadl.org/Suitability.sadl" alias stblt.
+			 
+			 AircraftEngine is a class.
+			 altitude describes AircraftEngine with values of type UnittedQuantity.
+			 thrust describes AircraftEngine with values of type UnittedQuantity.
+			 weight describes AircraftEngine with values of type UnittedQuantity.
+			 speed describes AircraftEngine with values of type UnittedQuantity.
+			 sfc describes AircraftEngine with values of type float.
+			  
+			 F100 is a type of AircraftEngine.
+			 CF6 is a type of AircraftEngine.
+		'''.sadl
+
+		'''
+			 uri "http://sadl.org/Suitability.dialog" alias stbltdlg.
+			 import "http://sadl.org/SpeedOfSound.sadl".
+			 import "http://sadl.org/Suitability.sadl".
+			 
+			 What is CAL_SOS?
+		'''.assertValidatesTo [ ontModel, issues, processor |
+			assertNotNull(ontModel)
+//			val stmtitr = ontModel.listStatements()
+//			while (stmtitr.hasNext) {
+//				println(stmtitr.nextStatement)
+//			}
+			val errors = issues.filter[severity === Severity.ERROR]
+			assertEquals(0, errors.size)
+			if (processor instanceof JenaBasedDialogModelProcessor) {
+				val acm = (processor as JenaBasedDialogModelProcessor).answerCurationManager
+				val conversation = acm.conversation
+				assertNotNull(conversation)
+				assertNotNull(conversation.statements);
+				assertEquals(1, conversation.statements.size)
+				assertTrue(conversation.statements.get(0).statement instanceof WhatIsContent)
+				val cc = conversation.statements.get(0).statement as WhatIsContent
+				val rules = cc.getComputationalGraphRules
+				assertTrue(rules === null)	
+				val question = cc.getText().trim();
+				val answer = acm.getAnswerToQuestion(question)
+				println(answer)
+				assertTrue(processor.compareTranslations(actualAnswer, answer))	
+			}
+		]
+	}
+	
+	@Test
+	def void testWhatIsStatement_06() {
+		val actualAnswer = "lbs"
+	    this.sadl(getContent(getScientificConcepts2Path())); 
+	    this.sadl(getContent(getSpeedOfSoundPath()));
+
+		'''
+			 uri "http://sadl.org/Suitability.dialog" alias stbltdlg.
+			 
+			 import "http://sadl.org/SpeedOfSound.sadl".
+			 
+			 MyHulk is a Mass with ^value 280, with unit "lbs".
+			 
+			 Ask unit of MyHulk?
+		'''.assertValidatesTo [ ontModel, issues, processor |
+			assertNotNull(ontModel)
+//			val stmtitr = ontModel.listStatements()
+//			while (stmtitr.hasNext) {
+//				println(stmtitr.nextStatement)
+//			}
+			val errors = issues.filter[severity === Severity.ERROR]
+			assertEquals(0, errors.size)
+			if (processor instanceof JenaBasedDialogModelProcessor) {
+				val acm = (processor as JenaBasedDialogModelProcessor).answerCurationManager
+				val conversation = acm.conversation
+				assertNotNull(conversation)
+				assertNotNull(conversation.statements);
+				assertEquals(2, conversation.statements.size)
+				assertTrue(conversation.statements.get(1).statement instanceof ModifiedAskContent)
+				val cc = conversation.statements.get(1).statement as ModifiedAskContent
+				val question = cc.getText().trim();
+				val answer = acm.getAnswerToQuestion(question)
+				assertTrue(processor.compareTranslations(actualAnswer, answer))	
+			}
+		]
+	}
+	
+	@Test
+	def void testWhatIsStatement_07() {
+		val actualAnswer = "Acceleration"
+	    this.sadl(getContent(getScientificConcepts2Path())); 
+	    this.sadl(getContent(getSpeedOfSoundPath()));
+
+		'''
+			 uri "http://sadl.org/Suitability.dialog" alias stbltdlg.
+			 
+			 import "http://sadl.org/SpeedOfSound.sadl".
+			 
+			 What type of values can acceleration of Mass have?
+		'''.assertValidatesTo [ ontModel, issues, processor |
+			assertNotNull(ontModel)
+//			val stmtitr = ontModel.listStatements()
+//			while (stmtitr.hasNext) {
+//				println(stmtitr.nextStatement)
+//			}
+			val errors = issues.filter[severity === Severity.ERROR]
+			assertEquals(0, errors.size)
+			if (processor instanceof JenaBasedDialogModelProcessor) {
+				val acm = (processor as JenaBasedDialogModelProcessor).answerCurationManager
+				val conversation = acm.conversation
+				assertNotNull(conversation)
+				assertNotNull(conversation.statements);
+				assertEquals(1, conversation.statements.size)
+				assertTrue(conversation.statements.get(0).statement instanceof WhatValuesContent)
+				val cc = conversation.statements.get(0).statement as WhatValuesContent
+				val question = cc.getText().trim();
+				val answer = acm.getAnswerToQuestion(question)
+				assertTrue(processor.compareTranslations(actualAnswer, answer))	
 			}
 		]
 	}
@@ -1072,7 +1367,7 @@ class DialogTest extends AbstractDialogTest {
 				assertEquals(1, conversation.statements.size)
 				assertTrue(conversation.statements.get(0).statement instanceof WhatIsContent)
 				val cc = conversation.statements.get(0).statement as WhatIsContent
-				val rules = cc.comparisonRules
+				val rules = cc.getComputationalGraphRules
 				for (r : rules) {
 					println(r.toFullyQualifiedString)
 				}

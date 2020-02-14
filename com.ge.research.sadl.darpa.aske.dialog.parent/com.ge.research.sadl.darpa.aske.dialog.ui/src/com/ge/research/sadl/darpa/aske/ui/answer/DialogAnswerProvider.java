@@ -751,6 +751,18 @@ public class DialogAnswerProvider extends BaseDialogAnswerProvider {
 			if (usedbn != null) {
 				map.put(DialogPreferences.USE_DBN_CG_SERVICE.getId(), usedbn);
 			}
+			String saveOriginal = preferenceValues.getPreference(DialogPreferences.ORIGINAL_LANGUAGE);
+			if (saveOriginal != null) {
+				map.put(DialogPreferences.USE_DBN_CG_SERVICE.getId(), saveOriginal);
+			}
+			String savePython = preferenceValues.getPreference(DialogPreferences.PYTHON_LANGUAGE);
+			if (savePython != null) {
+				map.put(DialogPreferences.PYTHON_LANGUAGE.getId(), savePython);
+			}
+			String savePythonTF = preferenceValues.getPreference(DialogPreferences.TF_PYTHON_LANGUAGE);
+			if (savePythonTF != null) {
+				map.put(DialogPreferences.TF_PYTHON_LANGUAGE.getId(), savePythonTF);
+			}
 			return map;
 		}
 		return null;
