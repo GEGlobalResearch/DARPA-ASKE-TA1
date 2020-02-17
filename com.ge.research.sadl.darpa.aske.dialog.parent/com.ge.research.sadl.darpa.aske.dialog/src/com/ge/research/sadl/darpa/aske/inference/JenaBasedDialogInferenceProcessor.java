@@ -133,7 +133,7 @@ public class JenaBasedDialogInferenceProcessor extends JenaBasedSadlInferencePro
 //	public static final String qhModelName = "http://aske.ge.com/MetaData";
 //	public static final String qhOwlFileName = "MetaData.owl";
 
-	public static final boolean debugMode = true;
+	public static final boolean debugMode = false;
 	
 	
 	public static final String CGMODELS_FOLDER = "ComputationalGraphModels";
@@ -323,6 +323,92 @@ public class JenaBasedDialogInferenceProcessor extends JenaBasedSadlInferencePro
 			"\n" + 
 			"}\n" + 
 			"order by ?Model";
+	public static final String RETRIEVE_MODELS_WEXP = "prefix hyper:<http://aske.ge.com/hypersonicsV2#>\n" + 
+			"prefix imp:<http://sadl.org/sadlimplicitmodel#>\n" + 
+			"prefix sci:<http://aske.ge.com/sciknow#> \n" + 
+			"prefix owl:<http://www.w3.org/2002/07/owl#> \n" + 
+			"prefix cg:<http://aske.ge.com/compgraphmodel#>\n" + 
+			"prefix rdfs:<http://www.w3.org/2000/01/rdf-schema#>\n" + 
+			"prefix rdf:<http://www.w3.org/1999/02/22-rdf-syntax-ns#>\n" + 
+			"prefix list:<http://sadl.org/sadllistmodel#>\n" +
+			"\n" + 
+			"select distinct ?Model ?Input (str(?InLabel) as ?InputLabel) ?UniqueInputLabel \n" + 
+			"?Output \n" + 
+			"(str(?expr) as ?ModelForm) (str(?Fun) as ?Function) \n" + 
+			"(str(?ImpIn) as ?ImpInput) ?ImpInputAugType (str(?InpD) as ?InpDeclaration)\n" + 
+			"(str(?ImpOut) as ?ImpOutput) ?ImpOutputAugType (str(?OutpD) as?OutpDeclaration)\n" + 
+			"?Initializer ?Dependency\n" + 
+			"where { \n" + 
+			"\n" + 
+			"  { ?Model a imp:ExternalEquation.\n" + 
+			"         filter (?Model in ( EQNSLIST )) #EQNSLIST\n" + 
+			"  }union \n" + 
+			"      {select distinct ?Model ?Initializer ?Dependency\n" + 
+			"      where {\n" + 
+			"        {select ?Model ?Initializer where {\n" + 
+			"           ?Model imp:initializes ?Class.\n" + 
+			"           filter (?Class in ( CONTEXCLASSES )). #CONTEXCLASSES\n" + 
+			"           bind(bound(?Model) as ?Initializer).\n" + 
+			"       }}union\n" + 
+			"        {select ?Model ?Dependency where {\n" + 
+			"          ?Eq imp:dependsOn ?Model.\n" + 
+			"          filter (?Eq in ( EQNSLIST )). #EQNSLIST\n" + 
+			"          #bind(\"\" as ?Initializer)\n" + 
+			"          bind(bound(?Model) as ?Dependency)\n" + 
+			"       }}union\n" + 
+			"        {select distinct ?Model where {\n" + 
+			"         ?EqCh cg:parent ?Model.\n" + 
+			"         filter (?EqCh in (EQNSLIST)) #EQNSLIST\n" + 
+			"         ?Model imp:genericOutput ?Out.\n" + 
+			"         ?EqCh imp:genericInput ?Out.\n" + 
+			"         filter not exists {?Out rdfs:subClassOf* imp:UnittedQuantity}\n" + 
+			"      }}}\n" + 
+			"   }\n" + 
+			"  \n" + 
+			"  optional{ #Explicit outputs. ?Output is a UQ or a label\n" + 
+			"   ?Model imp:genericOutput ?Output.\n" + 
+			"   filter not exists {?Model imp:implicitOutput/imp:localDescriptorName ?Output}\n" + 
+			"   filter not exists {?Model imp:implicitOutput/imp:augmentedType/imp:semType ?Output.}}\n" + 
+			"\n" + 
+			"  optional{ #Explicit inputs. ?Input is a UQ or a label\n" + 
+			"   ?Model imp:genericInput ?Input. #For explicit inputs w/o sem type, this is the label\n" + 
+			"   filter not exists {?Model imp:implicitInput/imp:localDescriptorName ?Input.}\n" + 
+			"   filter not exists {?Model imp:implicitInput/imp:augmentedType/imp:semType ?Input.}\n" + 
+			"\n" + 
+			"   optional {?Input imp:localDescriptorName ?InLabel.} #only applies to SemanticInputs\n" + 
+			"   optional {?Input imp:descriptorVariable ?UniqueInputLabel.} \n" + 
+			"   # Get the uniquelabel if available\n" + 
+			"   #optional {?Model imp:arguments ?AL2.\n" + 
+			"   #         ?AL2 list:rest*/list:first ?AO2.\n" + 
+			"   #         ?AO2 imp:localDescriptorName ?Input.\n" + 
+			"   #         ?AO2 imp:descriptorVariable  ?UniqueInputLabel.} #are we using these?\n" + 
+			"   }\n" + 
+			"  \n" + 
+			"  optional{\n" + 
+			"    ?Model imp:expression ?Scr.\n" + 
+			"    ?Scr imp:script ?expr.\n" + 
+			"    ?Scr imp:language ?lang.\n" + 
+			"      filter ( ?lang = <http://sadl.org/sadlimplicitmodel#Python> )\n" + 
+			"  }\n" + 
+			"  optional {\n" + 
+			"    ?Model imp:externalURI ?Fun.\n" + 
+			"  }\n" + 
+			"\n" + 
+			"  #Get implicit IOs that have augmentedTypes\n" + 
+			"  optional{\n" + 
+			"   ?Model imp:implicitInput ?II.\n" + 
+			"   ?II imp:localDescriptorName ?ImpIn.\n" + 
+			"   #optional{?II imp:descriptorVariable  ?UniqueImpInputLabel.} #These are not being added to the extracted models\n" + 
+			"   optional{?II imp:augmentedType ?IT. ?IT imp:semType ?ImpInputAugType.}\n" + 
+			"   optional{?II imp:declaration ?ID. ?ID imp:language imp:Python. ?ID imp:script ?InpD}}\n" + 
+			"\n" + 
+			"  optional{\n" + 
+			"   ?Model imp:implicitOutput ?IO.\n" + 
+			"   ?IO imp:localDescriptorName ?ImpOut.\n" + 
+			"   optional{?IO imp:augmentedType ?OT. ?OT imp:semType ?ImpOutputAugType.}\n" + 
+			"   optional{?IO imp:declaration ?OD. ?OD imp:language imp:Python. ?OD imp:script ?OutpD}}\n" + 
+			"  \n" + 
+			"}order by ?Model";
 	
 	public static final String RETRIEVE_MODELS = "prefix hyper:<http://aske.ge.com/hypersonicsV2#>\n" + 
 			"prefix imp:<http://sadl.org/sadlimplicitmodel#>\n" + 
@@ -720,7 +806,7 @@ public class JenaBasedDialogInferenceProcessor extends JenaBasedSadlInferencePro
 			" } ";
 
 	boolean useDbn;
-	boolean useKC;
+	boolean useKC; 
 
 	@Override
 	public boolean isSupported(String fileExtension) {
@@ -784,7 +870,8 @@ public class JenaBasedDialogInferenceProcessor extends JenaBasedSadlInferencePro
 		System.out.println("InsertTriplesAndQuery " + time);
 		long startTime = System.currentTimeMillis();
 
-		useDbn = useDbn();
+		useDbn = useKC = false;
+		//useDbn = useDbn();
 		useKC = useKChain();
 
 		//		System.out.println(" >> Builtin classes discovered by the service loader:");
@@ -1072,9 +1159,8 @@ private ResultSet[] processWhatWhenQuery(Resource resource, String queryModelFil
 		
 		startTime = System.currentTimeMillis();
 		cgJson = kgResultsToJson(nodesModelsJSONStr, "prognostic", "");
-		cgJson = generateDBNjson(cgJson);
 		endTime = System.currentTimeMillis();
-		System.out.println("Translate models-nodes into json: " + (endTime - startTime) );
+		System.out.println("Translate KG results into json: " + (endTime - startTime) + "  Payload size: " + cgJson.length());
 		
 		if (useDbn) {
 		
@@ -1095,9 +1181,11 @@ private ResultSet[] processWhatWhenQuery(Resource resource, String queryModelFil
 		if (useKC) {
 			
 			startTime = System.currentTimeMillis();
-			kchainBuildJson = generateKChainBuildJson(cgJson);
+			cgJson = generateDBNjson(cgJson);
 			endTime = System.currentTimeMillis();
-			System.out.println("Generate build json: " + (endTime - startTime) + "  Payload size: " + cgJson.length());
+			System.out.println("Translate KG json into KC json: " + (endTime - startTime) + "  Payload size: " + cgJson.length());
+
+			kchainBuildJson = generateKChainBuildJson(cgJson);
 			
 			if (kchainBuildJson != null) {
 				startTime = System.currentTimeMillis();
@@ -1212,10 +1300,7 @@ private String buildAndExecuteKChain(String cgJson)
 	String kchainResultsJson;
 	long startTime;
 	long endTime;
-	startTime = System.currentTimeMillis();
 	kchainEvalJson = createExecJson(cgJson); //To be changed when service ready
-	endTime = System.currentTimeMillis();
-	System.out.println("Generate eval json: " + (endTime - startTime) + "   Payload size: " + cgJson.length());
 
 	startTime = System.currentTimeMillis();
 	kchainResultsJson = executeKChain(kchainEvalJson);
@@ -1231,13 +1316,15 @@ private String retrieveModelsAndNodes(String listOfEqns, Individual cgIns, List<
 	String nodesJSONString = "";
 	String expressionsJSONString = "";
 	startTime = System.currentTimeMillis();
-	modelsJSONString = retrieveCGforDBNSpec(listOfEqns, contextClassList, cgIns, RETRIEVE_MODELS);
+	modelsJSONString = retrieveCGforDBNSpec(listOfEqns, contextClassList, cgIns, RETRIEVE_MODELS_WEXP);
+//	modelsJSONString = retrieveCGforDBNSpec(listOfEqns, contextClassList, cgIns, RETRIEVE_MODELS);
 	nodesJSONString = retrieveCGforDBNSpec(listOfEqns, null, cgIns, RETRIEVE_NODES);
-	expressionsJSONString = retrieveCGforDBNSpec(listOfEqns, contextClassList, cgIns, RETRIEVE_MODEL_EXPRESSIONS);
+//	expressionsJSONString = retrieveCGforDBNSpec(listOfEqns, contextClassList, cgIns, RETRIEVE_MODEL_EXPRESSIONS);
 	endTime = System.currentTimeMillis();
 	System.out.println("Retrieve model and nodes: " + (endTime - startTime) );
 
-	String nodesModelsJSONStr = "{ \"models\": " + modelsJSONString + ", \"nodes\": "  + nodesJSONString + ", \"expressions\": " + expressionsJSONString + " }";
+//	String nodesModelsJSONStr = "{ \"models\": " + modelsJSONString + ", \"nodes\": "  + nodesJSONString + ", \"expressions\": " + expressionsJSONString + " }";
+	String nodesModelsJSONStr = "{ \"models\": " + modelsJSONString + ", \"nodes\": "  + nodesJSONString + " }";
 	if (debugMode) {System.out.println(nodesModelsJSONStr);}
 	return nodesModelsJSONStr;
 }
