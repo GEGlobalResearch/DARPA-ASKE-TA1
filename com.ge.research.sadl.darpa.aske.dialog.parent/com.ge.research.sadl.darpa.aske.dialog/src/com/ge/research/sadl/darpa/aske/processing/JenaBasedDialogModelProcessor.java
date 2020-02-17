@@ -594,6 +594,27 @@ public class JenaBasedDialogModelProcessor extends JenaBasedSadlModelProcessor {
 		}	
 	}
 	
+	@Override
+	public boolean validURI(String s) {	
+		String uri = s;
+		// is there a quoted string inside this string?
+		int innerUriIdx = s.trim().indexOf('\'');
+		if (innerUriIdx > 0) {
+			if (s.trim().endsWith("'")) {
+				uri = s.trim().substring(innerUriIdx + 1, s.trim().length() - 1);
+			}
+		}
+		else  {
+			innerUriIdx = s.trim().indexOf('"');
+			if (innerUriIdx > 0) {
+				if (s.trim().endsWith("\"")) {
+					uri = s.trim().substring(innerUriIdx + 1, s.trim().length() - 1);
+				}
+			}
+		}
+		return super.validURI(uri);
+	}
+	
 	private void validateEquationAugmentedTypes(ExternalEquationStatement element, Equation eq) {
 		Iterator<SadlParameterDeclaration> spitr = element.getParameter().iterator();
 		while (spitr.hasNext()) {
