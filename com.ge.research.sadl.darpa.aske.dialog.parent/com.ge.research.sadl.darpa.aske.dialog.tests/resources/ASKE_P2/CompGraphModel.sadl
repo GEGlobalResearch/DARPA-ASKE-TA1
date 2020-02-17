@@ -40,17 +40,20 @@ Thing is a class
 	described by description with values of type string
 	.
 
-ComputationalGraph is a class.
+ComputationalGraph is a class
+	described by node with a single value of type UnittedQuantity
+	described by hasEquation with a single value of type ^Equation
+.
 
 KChain is a type of ComputationalGraph.
 
 DBN is a type of ComputationalGraph
 	//described by input with values of type UnittedQuantity
-	described by node with a single value of type DataDescriptor //was Argument
+//	described by node with a single value of type UnittedQuantity  // DataDescriptor //was Argument
 	// 'script' is a string containing python code for the computation
 	//described by script with values of type string
-	described by hasEquation with a single value of type ^Equation
-	described by hasModel with a single value of type ^ExternalEquation
+//	described by hasEquation with a single value of type ^Equation
+//	described by hasModel with a single value of type ^ExternalEquation
 	// DBN info
 	described by ^type with values of type NodeType
 	described by distribution with a single value of type Distribution	

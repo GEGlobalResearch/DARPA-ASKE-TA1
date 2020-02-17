@@ -3182,7 +3182,7 @@ public class AnswerCurationManager {
 				
 			}
 		}
-		String insertionText = (resultStr != null ? resultStr : "\"Failed to find results\"");
+		String insertionText = (resultStr != null && resultStr.length() > 0 ? resultStr : "\"Failed to find results\"");
 		answerUser(getOwlModelsFolder(), insertionText, false, sc.getHostEObject());
 		retVal = retVal + (retVal.length() > 0 ? "\n" : "") + insertionText;
 		return retVal;
@@ -4103,6 +4103,9 @@ public class AnswerCurationManager {
 	 */
 	private void resetForConversationProcessing() {
 		this.owl2sadl = null;
+		if (getDialogAnswerProvider() != null) {
+			getDialogAnswerProvider().clearCumulatifeOffset();
+		}
 	}
 
 	private boolean applyAnswerToUnansweredQuestion(StatementContent question, StatementContent sc) {

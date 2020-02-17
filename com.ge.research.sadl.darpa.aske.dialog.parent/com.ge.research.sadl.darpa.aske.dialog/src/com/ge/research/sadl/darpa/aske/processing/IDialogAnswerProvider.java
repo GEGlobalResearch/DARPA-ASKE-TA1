@@ -78,5 +78,9 @@ public interface IDialogAnswerProvider {
 	 * @return true if successful else false if error, e.g., import already exists.
 	 */
 	boolean addImports(List<String> importStatements);
+	
+	void addToCumulativeOffset(int addition);
+	
+	void clearCumulatifeOffset();
 
 }

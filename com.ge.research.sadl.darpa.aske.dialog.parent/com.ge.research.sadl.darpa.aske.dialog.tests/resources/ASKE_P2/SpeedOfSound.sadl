@@ -1,0 +1,208 @@
+/********************************************************************** 
+ * Note: This license has also been called the "New BSD License" or 
+ * "Modified BSD License". See also the 2-clause BSD License.
+ *
+ * Copyright � 2018-2019 - General Electric Company, All Rights Reserved
+ * 
+ * Project: ANSWER, developed with the support of the Defense Advanced 
+ * Research Projects Agency (DARPA) under Agreement  No.  HR00111990006. 
+ *
+ * Redistribution and use in source and binary forms, with or without 
+ * modification, are permitted provided that the following conditions are met:
+ * 1. Redistributions of source code must retain the above copyright notice, 
+ *    this list of conditions and the following disclaimer.
+ *
+ * 2. Redistributions in binary form must reproduce the above copyright notice, 
+ *    this list of conditions and the following disclaimer in the documentation 
+ *    and/or other materials provided with the distribution.
+ *
+ * 3. Neither the name of the copyright holder nor the names of its 
+ *    contributors may be used to endorse or promote products derived 
+ *    from this software without specific prior written permission.
+ *
+ * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" 
+ * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE 
+ * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE 
+ * ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE 
+ * LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR 
+ * CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF 
+ * SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS 
+ * INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN 
+ * CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) 
+ * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF 
+ * THE POSSIBILITY OF SUCH DAMAGE.
+ *
+ ***********************************************************************/
+ uri "http://sadl.org/SpeedOfSound.sadl" alias sos.
+ 
+ import "http://sadl.org/ScientificConcepts2.sadl".
+  
+// speedOfSound describes Gas with values of type Velocity.
+// altitude describes Air with values of type Length.
+// movesIn describes PhysicalObject with values of type Gas.
+// mach describes PhysicalObject with a single value of type decimal.
+// 
+// Gamma (alias "gamma") is a type of UnittedQuantity.
+// gamma (note "treated as a calorically perfect gas") describes Gas with values of type Gamma.
+// gammaCal (note "treated as a calorically imperfect gas") describes Gas with values of type Gamma.
+//
+// Theta is a type of Constant.
+// ThetaISU is a Theta with ^value 3056, with unit "Kelvin".
+// ThetaImperial is a Theta with ^value 5500, with unit "Rankine".
+// 
+// GasConstant is a type of UnittedQuantity.
+// gasConstant (alias "R") describes Gas with values of type GasConstant.
+// UniversalGasConstant is a type of Constant.
+// UniversalGasConstantISU is a UniversalGasConstant with ^value 8.314, with unit "J/mole-Kelvin".
+// GasConstantAirISU is a UniversalGasConstant with ^value 0.286, with unit "kJ/kg/degK".
+// SpecificGasConstant is a type of GasConstant.
+// MolarMass is a type of UnittedQuantity.
+// molarMass describes Substance with values of type MolarMass.
+// molarMass of Air always has value (a MolarMass MolarMassAirISU with ^value 28.96, with unit "g/mole").
+// molarMass of Air always has value (a MolarMass MolarMassAirImpoerial with ^value 28.96, with unit "lbm/lbmole").
+// 
+//  External machCalc(decimal sos (speedOfSound of some Air), // and sos < 10), 
+// 				   decimal sov (velocity of (a PhysicalObject movesIn the Air)))
+// 				   returns decimal (mach of the PhysicalObject): "http://com.ge.research.darpa.aske.kchain.machcalc".
+// 
+// External specificGasConstantEq(decimal Ru (UniversalGasConstant {"J/mole-Kelvin"}),
+// 								decimal M (molarMass of a Gas {"g/mole"}))
+// 								returns decimal (gasConstant of the Gas {"J/g-Kelvin"}):
+// 								"http://com.ge.research.darpa.aske.kchain.specificGasConstantEq".
+// 
+// External CAL_SOS(double T (temperature of a Gas {Kelvin, Rankine}),
+// 				  double G (gamma of the Gas), 
+// 				  double R (gasConstant of the Gas {"g/mole", "lbm/lbmole"}), 
+// 				  double Q (Theta {Kelvin, Rankine}),
+// 				  string us (UnitSystem {Metric, Imperial})) 
+// 				  returns double (speedOfSound of the Gas {"m/sec", "ft/sec"}): "http://com.ge.research.darpa.aske.kchain.CAL_SOS".
+// 				  
+// External CAL_SOS_Imperial(double T (temperature of a Gas {Rankine}),
+// 				  double G (gamma of the Gas), 
+// 				  double R (gasConstant of the Gas {"lbm/lbmole"}), 
+// 				  double Q (Theta {Rankine})) 
+// 				  returns double (speedOfSound of the Gas {"ft/sec"}): "http://com.ge.research.darpa.aske.kchain.CAL_SOS".
+// 				  
+// External CAL_GAM(double T (temperature of a Gas {Kelvin, Rankine}), 
+// 				  double G (gamma of the Gas), 
+// 				  double Q (Theta {Kelvin, Rankine}),
+// 				  string us (UnitSystem {Metric, Imperial})) 
+// 				  returns double (gammaCal of the Gas): 
+// 				  "http://com.ge.research.darpa.aske.kchain.CAL_GAM".  
+// 				  
+// External tempFromAltitude (double alt (altitude of some Air {ft}))
+// 							returns double (temperature of the Air {Rankine}):
+//  				  			"http://com.ge.research.darpa.aske.kchain.tempFromAltitude".  
+//
+//// External computeMach(double alt (altitude of a PhysicalObject and the PhysicalObject movesIn some Air and alt < 35000 {ft, m}), 
+////External computeMach(double alt (altitude of a PhysicalObject and the PhysicalObject movesIn some Air and lessThan(alt, 35000) {ft, m}), 
+// External computeMach(double alt (altitude of a PhysicalObject and the PhysicalObject movesIn some Air {ft, m}), 
+// 					  double R (gasConstant of the Air {"lbm/lbmole", "g/mole"}),
+// 					  double G (gamma of the Air),
+// 					  double Q (Theta {Kelvin, Rankine}),
+// 					  double vel (velocity of the PhysicalObject {"mph", "km/hr"}),
+// 				  	  string us (UnitSystem {Metric, Imperial})) 
+// 					  returns double (mach of the PhysicalObject):
+// 					  "http://com.ge.research.darpa.aske.kchain.computeMach". 
+// 					  
+// Equation compMach(double sv (velocity of a PhysicalObject and the PhysicalObject movesIn some Air {"ft/sec", mph, "m/sec", "km/hr"}), 
+// 				   double sos (speedOfSound of the Air {"ft/sec", mph, "m/sec", "km/hr"})
+// 				  ) returns double (mach of the PhysicalObject): return sv/sos. 
+// 				
+// compMach has expression (a Script with script "a+b", with language Java).
+//
+// AirGammaDefault is a Gamma.
+// AirGammaDefault has ^value 1.4. 					  
+// gamma of Air has default AirGammaDefault.
+//  
+//// gamma of Air has default 1.4.
+///*
+//      <j.0:Argument>
+//        <j.0:argType>http://www.w3.org/2001/XMLSchema#double</j.0:argType>
+//        <j.0:argName>alt</j.0:argName>
+//        <j.0:augmentedType rdf:parseType="Colleciton">
+//          <j.0:typeURI>http://wikidata/Q1234</j.0:typeURI>
+//		  <j.0:triple>   
+//		    <j.0:subject>X</j.0:subject>
+//		    <j.0:predicate>rdf:type</j.0:predicate>
+//		    <j.0:object>PhysicalObject</j.0:object>      
+//		  </j.0:triple>
+//		  <j.0:triple>   
+//		    <j.0:subject>X</j.0:subject>
+//		    <j.0:predicate>altitude</j.0:predicate>
+//		    <j.0:object>alt</j.0:object>      
+//		  </j.0:triple>
+//		  <j.0:triple>   
+//		    <j.0:subject>X</j.0:subject>
+//		    <j.0:predicate>movesIn</j.0:predicate>
+//		    <j.0:object>Y</j.0:object>      
+//		  </j.0:triple>
+//		  <j.0:triple>   
+//		    <j.0:subject>Y</j.0:subject>
+//		    <j.0:predicate>rdf:type</j.0:predicate>
+//		    <j.0:object>Air</j.0:object>      
+//		  </j.0:triple>
+//		  <j.0:builtin ref:"com.ge.research.sadl.jena.reasoner.builtin#lessThan">
+//		  	<arg> alt</arg>
+//		  	<arg 35000/>
+//		  </j.0:builtin>
+//        </j.0:augmentedType>
+//      </j.0:Argument>
+// 
+// */
+//// <X, rdf:type, PhysicalObject>, <X, altitude, alt>, <X, movesIn, Y>, <Y, rdf:type, Air>
+//
+////Doc3 is a table [double alt (altitude of a PhysicalObject and the PhysicalObject movesIn some Air {ft}), 
+////				   double vel (velocity of the PhysicalObject {mph}), 
+////				   double tt (temperature of the Air {R})]
+////				   with data {[1,2,3],[4,5,6]}.
+////Doc43 is a table [double alt (altitude of a PhysicalObject and the PhysicalObject movesIn some Air {ft}), 
+////				   double vel (velocity of the PhysicalObject {mph}), 
+////				   double tt (temperature of the Air {R})]
+////				   with data located at "http://someurl".
+////MachTable is a type of table [double alt (altitude of a PhysicalObject and the PhysicalObject movesIn some Air {ft}), 
+////				   double vel (velocity of a PhysicalObject {mph}), 
+////				   double tt (temperature of the Air {R})]
+////				    with data {[1,2,3],[4,5,6]}.	// this should be an validation error 
+////MachTable2 is a class.
+//////Doc4 is a MachTable2 with data {[1,2,3],[4,5,6]}.			   
+// 				   
+// External sosfromtemp(decimal t) returns decimal: "http://com.ge.research.darpa.aske.kchain.sosairfromtemp".
+// External sosfromtemp2(decimal t (temperature of some Air {"Kelvin", Rankine})) 
+// 	returns decimal (speedOfSound of the Air {"m/sec","ft/sec"}): 
+// 	"http://com.ge.research.darpa.aske.kchain.sosairfromtemp". 
+// 	
+// External sosfromalt(decimal alt) returns decimal: "http://com.ge.research.darpa.aske.kchain.sosairfromalt".
+// // with implied properties made explicit
+// External sosfromalt2(decimal alt (^value of altitude of some Air)) 
+// 	returns decimal (^value of speedOfSound of the Air): "http://com.ge.research.darpa.aske.kchain.sosairfromalt".
+// 
+//// External machCalc(decimal sos (speedOfSound of some Air and sos < 10 and lessThan(sos, gasConstant of the Air)), 
+//// 				   decimal sov (velocity of (a PhysicalObject movesIn the Air))) 
+//// 				   returns decimal (mach of the PhysicalObject): "http://com.ge.research.darpa.aske.kchain.machcalc".
+//  
+// Rule SpeedOfSoundInAirGivenTemperature:
+//   if air is some Air and t is temperature of air and
+//   sosair is  cgSC(sosfromtemp, t)
+//   then speedOfSound of air is sosair.
+// 
+// Rule SpeedOfSoundInAirGivenTemperatureK:
+//   if air is some Air and t is temperature of air and
+//   unit of t is "Kelvin" and
+//   sosair is  cg(sosfromtemp, t)
+//   then there exists (a Velocity with ^value sosair, with unit "m/sec") and
+//   speedOfSound of air is the Velocity.
+// 
+// Rule SpeedOfSoundInAirGivenAltitude:
+//   if air is some Air and alt is altitude of air and
+//   lunit is unit of alt and
+//   vunit is strConcat(lunit, "/sec") and 
+//   sosair is  cg(sosfromalt, alt)
+//   then there exists (a Velocity with ^value sosair, with unit vunit) and
+//   speedOfSound of air is the Velocity.
+// 
+// Equation specificGasConstantEq2(decimal Ru (UniversalGasConstant {"J/mole-Kelvin"}),
+// 								decimal M (molarMass of a Gas {"g/mole"}))
+// 								returns decimal (gasConstant of the Gas {"J/g-Kelvin"}):
+// 								^value of Ru/M.
+ 
