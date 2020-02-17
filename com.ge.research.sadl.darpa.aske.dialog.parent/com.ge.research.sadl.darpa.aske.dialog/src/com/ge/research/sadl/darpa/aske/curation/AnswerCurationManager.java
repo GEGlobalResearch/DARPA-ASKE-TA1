@@ -36,6 +36,8 @@
  ***********************************************************************/
 package com.ge.research.sadl.darpa.aske.curation;
 
+import static org.junit.Assert.assertEquals;
+
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
@@ -3237,7 +3239,7 @@ public class AnswerCurationManager {
 						String sadlAnswer = addResultsToDialog((ResultSet) rs);
 						//TODO: 
 						String graphicURL = "file://" + graphsDirectory + "/" + baseFileName + ".svg"; //file url
-						sadlAnswer += " (See \"" + graphicURL + "\".)";
+						sadlAnswer += "(See \"model diagram: \'" + graphicURL + "\'\".)";
 						answer.append(sadlAnswer);
 						cntr++;
 					}
@@ -3258,20 +3260,21 @@ public class AnswerCurationManager {
 	private String addResultsToDialog(ResultSet rs) {
 		StringBuilder sb = new StringBuilder();
 		if (rs.getRowCount() > 0) {
-			sb.append("The CGExecution with compGraph ");
-			sb.append(rs.getResultAt(0, 0).toString());
-			sb.append("\n");
+//			sb.append("The CGExecution with compGraph ");
+//			sb.append(rs.getResultAt(0, 0).toString());
 			for (int row = 0; row < rs.getRowCount(); row++) {
-				//StringBuilder sb = new StringBuilder("The CGExecution ");
-				sb.append("    has output (a ");
+//				sb.append("    has output (a ");
+				sb.append(" a ");
 				sb.append(rs.getResultAt(row, 1).toString());
 				sb.append(" with ^value ");
-				sb.append(rs.getResultAt(row, 2));
+//				sb.append(rs.getResultAt(row, 2));
+				String value = SadlUtils.formatNumber(rs.getResultAt(row, 2).toString(), 3);
+				sb.append(value);
 				if (rs.getResultAt(row, 3) != null) {
 					sb.append(", with stddev ");
 					sb.append(rs.getResultAt(row, 3));
 				}
-				sb.append(")\n");
+//				sb.append(")\n");
 			}
 			sb.append(".\n");
 		}							
