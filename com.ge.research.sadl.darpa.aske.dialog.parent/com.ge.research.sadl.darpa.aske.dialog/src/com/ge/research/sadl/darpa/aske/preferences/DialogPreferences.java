@@ -50,7 +50,7 @@ public class DialogPreferences {
 	public static final PreferenceKey ANSWER_JAVA_TO_PYTHON_SERVICE_BASE_URI = new PreferenceKey("java2pythonServiceBaseUri", "http://localhost:19092");
 	public static final PreferenceKey USE_ANSWER_KCHAIN_CG_SERVICE = new PreferenceKey("useKChainCgService", String.valueOf(false));
 	public static final PreferenceKey ANSWER_KCHAIN_CG_SERVICE_BASE_URI = new PreferenceKey("kChainCgServiceBaseUri", "http://localhost:12345");
-	public static final PreferenceKey USE_DBN_CG_SERVICE = new PreferenceKey("useDbnCgService", String.valueOf(true));
+	public static final PreferenceKey USE_DBN_CG_SERVICE = new PreferenceKey("useDbnCgService", String.valueOf(false));
 	public static final PreferenceKey ANSWER_DBN_CG_SERVICE_BASE_URI = new PreferenceKey("dbnCgServiceBaseUri", "http://localhost:5000");
 	public static final PreferenceKey DBN_INPUT_JSON_GENERATION_SERVICE_BASE_URI = new PreferenceKey("DbnInputJsonGenerationServiceBaseUri", "http://localhost:46000");
 	public static final PreferenceKey ANSWER_CODE_EXTRACTION_KBASE_ROOT = new PreferenceKey("codeExtractionKbaseRoot", "resources/CodeModel");
