@@ -2158,7 +2158,7 @@ public class AnswerCurationManager {
 			sb2.append(escapeDoubleQuotes(tfPythonCode));
 			sb2.append("\")");
 		}
-		sb2.append(").\n");
+		sb2.append(".\n");
 		returnSadlStatements.add(sb2.toString());
 		return returnSadlStatements;
 	}

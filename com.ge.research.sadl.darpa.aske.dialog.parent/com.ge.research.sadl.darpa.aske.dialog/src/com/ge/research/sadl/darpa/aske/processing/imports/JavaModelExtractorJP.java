@@ -712,6 +712,7 @@ public class JavaModelExtractorJP implements IModelFromCodeExtractor {
         		if (expr instanceof NameExpr) {
         			try {
 						setSetterArgument(mc, (NameExpr)expr, containingInst);
+						processBlockChild(expr, containingInst, USAGE.Used);
 					} catch (AnswerExtractionException e) {
 						// TODO Auto-generated catch block
 						e.printStackTrace();
@@ -1147,7 +1148,7 @@ public class JavaModelExtractorJP implements IModelFromCodeExtractor {
 			}
 		}
 		else {
-			logger.debug("NameExpr (" + nnm + ") not found; it should already exist!");
+			logger.debug("NameExpr (" + nnm + ") not found; it must have been ignored.");
 		}
 		return varInst;
 	}

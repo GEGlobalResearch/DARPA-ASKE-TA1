@@ -422,4 +422,16 @@ public class DialogAnswerProviderConsoleForTest extends BaseDialogAnswerProvider
 		// TODO Auto-generated method stub
 		return false;
 	}
+
+	@Override
+	public void addToCumulativeOffset(int addition) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void clearCumulatifeOffset() {
+		// TODO Auto-generated method stub
+		
+	}
 }
