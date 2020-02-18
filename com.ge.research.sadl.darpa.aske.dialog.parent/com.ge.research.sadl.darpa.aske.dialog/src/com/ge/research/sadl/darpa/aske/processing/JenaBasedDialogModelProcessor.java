@@ -96,11 +96,13 @@ import com.ge.research.sadl.darpa.aske.dialog.YesNoAnswerStatement;
 import com.ge.research.sadl.darpa.aske.preferences.DialogPreferences;
 import com.ge.research.sadl.darpa.aske.processing.EvalContent.UnittedParameter;
 import com.ge.research.sadl.errorgenerator.generator.SadlErrorMessages;
+import com.ge.research.sadl.jena.DontTypeCheckException;
 import com.ge.research.sadl.jena.IntermediateFormTranslator;
 import com.ge.research.sadl.jena.JenaBasedSadlModelProcessor;
 import com.ge.research.sadl.jena.JenaProcessorException;
 import com.ge.research.sadl.jena.MetricsProcessor;
 import com.ge.research.sadl.jena.UtilsForJena;
+import com.ge.research.sadl.jena.JenaBasedSadlModelValidator.TypeCheckInfo;
 import com.ge.research.sadl.model.CircularDefinitionException;
 import com.ge.research.sadl.model.ModelError;
 import com.ge.research.sadl.model.PrefixNotFoundException;
@@ -118,9 +120,11 @@ import com.ge.research.sadl.model.gp.RDFTypeNode;
 import com.ge.research.sadl.model.gp.Rule;
 import com.ge.research.sadl.model.gp.TripleElement;
 import com.ge.research.sadl.model.gp.VariableNode;
+import com.ge.research.sadl.model.gp.BuiltinElement.BuiltinType;
 import com.ge.research.sadl.processing.OntModelProvider;
 import com.ge.research.sadl.processing.SadlConstants;
 import com.ge.research.sadl.processing.ValidationAcceptor;
+import com.ge.research.sadl.reasoner.CircularDependencyException;
 import com.ge.research.sadl.reasoner.ConfigurationException;
 import com.ge.research.sadl.reasoner.InvalidNameException;
 import com.ge.research.sadl.reasoner.InvalidTypeException;
@@ -701,7 +705,6 @@ public class JenaBasedDialogModelProcessor extends JenaBasedSadlModelProcessor {
 		Expression thenExpr = element.getWhat();
 		
 		List<Rule> comparisonRules = whenAndThenToCookedRules(whenExpr, thenExpr);
-
 		return new CompareContent(element, Agent.USER, comparisonRules);
 	}
 
@@ -909,6 +912,15 @@ public class JenaBasedDialogModelProcessor extends JenaBasedSadlModelProcessor {
 //			System.out.println(modifiedRule.toFullyQualifiedString());
 //			addInfo(modifiedRule.toFullyQualifiedString(), thenExpr.eContainer());
 		}
+		if (comparisonRules != null && comparisonRules.size() > 0) {
+			StringBuilder sb = new StringBuilder();
+			for (Rule r : comparisonRules) {
+				sb.append(r.toString());
+				sb.append("\n");
+			}
+			addInfo(sb.toString(), thenExpr.eContainer());
+		}
+
 		return comparisonRules;
 	}
 
@@ -1814,9 +1826,20 @@ public class JenaBasedDialogModelProcessor extends JenaBasedSadlModelProcessor {
 			}
 			else if (whenObj instanceof BuiltinElement) {
 				List<Node> args = ((BuiltinElement)whenObj).getArguments();
+				OntClass expectedUnittedQuantityClass = null;
 				for (Node arg : args) {
 					if (arg instanceof Literal && ((Literal)arg).getUnits() != null) { 		// this operand to the || is for when the unit of a UnittedQuanity is given
 						OntClass unittedQuantitySubclass = getTheJenaModel().getOntClass(SadlConstants.SADL_IMPLICIT_MODEL_UNITTEDQUANTITY_URI);
+						if (expectedUnittedQuantityClass != null) {
+							try {
+								if (SadlUtils.classIsSubclassOf(expectedUnittedQuantityClass, unittedQuantitySubclass, true, null)) {
+									unittedQuantitySubclass = expectedUnittedQuantityClass;
+								}
+							} catch (CircularDependencyException e) {
+								// TODO Auto-generated catch block
+								e.printStackTrace();
+							}
+						}
 						VariableNode var = new VariableNode(getNewVar(whatIsTarget));
 						NamedNode type = new NamedNode(unittedQuantitySubclass.getURI());
 						type.setNodeType(NodeType.ClassNode);
@@ -1848,6 +1871,12 @@ public class JenaBasedDialogModelProcessor extends JenaBasedSadlModelProcessor {
 							((NamedNode)((TripleElement)((ProxyNode)arg).getProxyFor()).getPredicate()).getURI().equals(SadlConstants.SADL_IMPLICIT_MODEL_VALUE_URI))) {
 						
 					}
+					else if (arg instanceof NamedNode && isProperty(((NamedNode)arg).getNodeType())) {
+						if (((BuiltinElement)whenObj).getFuncType().equals(BuiltinType.Equal)) {
+							// find the range--that's the expected type of the next argument
+							expectedUnittedQuantityClass = getPropertyRange(((NamedNode)arg).getURI());
+						}
+					}
 				}
 				gpes.add((GraphPatternElement) whenObj);
 			}
@@ -1861,21 +1890,7 @@ public class JenaBasedDialogModelProcessor extends JenaBasedSadlModelProcessor {
 				((NamedNode)((TripleElement)((ProxyNode)((TripleElement)whenObj).getObject()).getProxyFor()).getPredicate()).getURI().equals(SadlConstants.SADL_IMPLICIT_MODEL_VALUE_URI)))) {
 				String propUri = ((TripleElement)whenObj).getPredicate().getURI();
 				// create a typed variable for the UnittedQuantity blank node, actual type range of prop
-				Property prop = getTheJenaModel().getProperty(propUri);
-				StmtIterator rngItr = getTheJenaModel().listStatements(prop.asResource(), RDFS.range, (RDFNode)null);
-				OntClass unittedQuantitySubclass = null;
-				if (rngItr.hasNext()) {
-					RDFNode rng = rngItr.nextStatement().getObject();
-					if (!rngItr.hasNext()) {
-						if (rng.isURIResource() && rng.canAs(OntClass.class)) {
-							unittedQuantitySubclass = rng.as(OntClass.class);
-						}
-					}
-					if (unittedQuantitySubclass == null) {
-						// apparently has more than 1 range, use UnittedQuantity
-						unittedQuantitySubclass = getTheJenaModel().getOntClass(SadlConstants.SADL_IMPLICIT_MODEL_UNITTEDQUANTITY_URI);
-					}
-				}
+				OntClass unittedQuantitySubclass = getPropertyRange(propUri);
 				VariableNode var = new VariableNode(getNewVar(whatIsTarget));
 				NamedNode type = new NamedNode(unittedQuantitySubclass.getURI());
 				type.setNodeType(NodeType.ClassNode);
@@ -1928,6 +1943,25 @@ public class JenaBasedDialogModelProcessor extends JenaBasedSadlModelProcessor {
 			gpes.add((GraphPatternElement) whenObj);
 		}
 		return gpes;
+	}
+
+	private OntClass getPropertyRange(String propUri) {
+		Property prop = getTheJenaModel().getProperty(propUri);
+		StmtIterator rngItr = getTheJenaModel().listStatements(prop.asResource(), RDFS.range, (RDFNode)null);
+		OntClass unittedQuantitySubclass = null;
+		if (rngItr.hasNext()) {
+			RDFNode rng = rngItr.nextStatement().getObject();
+			if (!rngItr.hasNext()) {
+				if (rng.isURIResource() && rng.canAs(OntClass.class)) {
+					unittedQuantitySubclass = rng.as(OntClass.class);
+				}
+			}
+			if (unittedQuantitySubclass == null) {
+				// apparently has more than 1 range, use UnittedQuantity
+				unittedQuantitySubclass = getTheJenaModel().getOntClass(SadlConstants.SADL_IMPLICIT_MODEL_UNITTEDQUANTITY_URI);
+			}
+		}
+		return unittedQuantitySubclass;
 	}
 	
 	private StatementContent processStatement(WhatValuesStatement stmt) {
