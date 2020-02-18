@@ -807,7 +807,7 @@ public class JenaBasedDialogInferenceProcessor extends JenaBasedSadlInferencePro
 
 	private static final String DEPENDENCY_GRAPH = "prefix imp:<http://sadl.org/sadlimplicitmodel#>\n" + 
 			"\n" + 
-			"select distinct ?EqPa ?V ?EqCh ('oval' as ?EqPa_shape) ('oval' as ?EqCh_shape) \n" + 
+			"select distinct ?EqPa ?V ?EqCh ('oval' as ?EqPa_shape) ('oval' as ?EqCh_shape) \n" + // 
 			"where {\n" + 
 //			"{select distinct ?EqPa  ?EqCh ?V where {\n" + 
 //			" ?EqCh imp:genericInput ?V.\n" + 
@@ -827,14 +827,14 @@ public class JenaBasedDialogInferenceProcessor extends JenaBasedSadlInferencePro
 ////			"} group by ?EqPa ?EqCh ?V \n" + 
 //			"} having (count(distinct ?V)<5)\n" + 
 //			"} union\n" + 
-			"{select distinct ?EqPa ?EqCh (sample(?Var) as ?V)\n" + 
+			"{select distinct ?EqPa ?EqCh  \n" + //(sample(?Var) as ?V) 
 			"where {\n" + 
 			" ?EqCh imp:genericInput ?Var.\n" + 
 			" ?EqPa imp:genericOutput ?Var.\n" + 
 			"\n" + 
 			"  filter( ?EqPa != ?EqCh)\n" + 
-			"  filter not exists {?EqCh imp:dependsOn ?EqPa}\n" + 
-			"  filter not exists {?EqPa imp:dependsOn ?EqCh}\n" + 
+//			"  filter not exists {?EqCh imp:dependsOn ?EqPa}\n" + 
+//			"  filter not exists {?EqPa imp:dependsOn ?EqCh}\n" + 
 			"  filter not exists {?EqCh imp:versionOf ?EqPa}\n" + 
 			"  filter not exists {?EqPa imp:versionOf ?EqCh}\n" + 
 			"\n" + 
@@ -843,7 +843,11 @@ public class JenaBasedDialogInferenceProcessor extends JenaBasedSadlInferencePro
 			"    ?EqPa imp:genericInput ?V1.\n" + 
 			"    filter not exists {?EqPa imp:genericOutput ?V1.}\n" + 
 			"  }\n" + 
-			"}}\n" + 
+			" }group by ?EqPa ?EqCh \n" +
+			" }union \n" + 
+			" { select ?EqCh ?EqPa where{\n" + 
+			"  ?EqCh imp:dependsOn ?EqPa.\n" + 
+			" }}\n " + 
 			"}";
 	
 	boolean useDbn;
@@ -1306,7 +1310,6 @@ private ResultSet[] processWhatWhenQuery(Resource resource, String queryModelFil
 		//saveMetaDataFile(resource,queryModelURI,queryModelFileName); //to include sensitivity results
 		addQueryModelAsResource(resource, queryModelFileName, queryModelURI, queryOwlFileWithPath, cmgr);
 		dbnResults[0] = runReasonerQuery(resource, DEPENDENCY_GRAPH);
- 
 
 	} else {
 		dbnResults = null;

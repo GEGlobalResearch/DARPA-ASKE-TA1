@@ -3262,7 +3262,7 @@ public class AnswerCurationManager {
 						cntr++;
 					}
 				}
-				else {
+				else if (rs != null){
 					answerUser(getOwlModelsFolder(), stringToQuotedeString(rs.toString()), true, sc.getHostEObject());
 				}
 				
@@ -3277,7 +3277,7 @@ public class AnswerCurationManager {
 
 	private String addResultsToDialog(ResultSet rs) {
 		StringBuilder sb = new StringBuilder();
-		if (rs.getRowCount() > 0) {
+		if (rs != null && rs.getRowCount() > 0) {
 //			sb.append("The CGExecution with compGraph ");
 //			sb.append(rs.getResultAt(0, 0).toString());
 			for (int row = 0; row < rs.getRowCount(); row++) {
