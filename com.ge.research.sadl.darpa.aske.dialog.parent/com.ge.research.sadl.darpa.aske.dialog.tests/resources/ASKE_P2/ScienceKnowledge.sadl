@@ -35,27 +35,30 @@
 ***********************************************************************/
 uri "http://aske.ge.com/sciknow" alias sciknow .
 
-Temperature is a type of UnittedQuantity.
-Pressure is a type of UnittedQuantity.
-
-Speed is a type of UnittedQuantity.
-Mass is a type of UnittedQuantity.
-Volume is a type of UnittedQuantity.
-Density is a type of UnittedQuantity.
-Length is a type of UnittedQuantity.
-Time is a type of UnittedQuantity.
-
-	
-PhysicalThing is a class,
-	described by mass with values of type Mass
-	described by volume with values of type Volume
-	described by density with values of type Density
-	described by temperature with values of type Temperature
-   .
-
-Gas is a type of PhysicalThing
-	described by pressure with values of type Pressure.
-Air is a type of Gas.
+//Temperature is a type of UnittedQuantity.
+//Pressure is a type of UnittedQuantity.
+//
+//Speed is a type of UnittedQuantity.
+//Mass is a type of UnittedQuantity.
+//Volume is a type of UnittedQuantity.
+//Density is a type of UnittedQuantity.
+//Length is a type of UnittedQuantity.
+//Time is a type of UnittedQuantity.
+//
+//Altitude is a type of UnittedQuantity.
+//	
+//PhysicalThing is a class,
+//	described by mass with values of type Mass
+//	described by volume with values of type Volume
+//	described by density with values of type Density
+//	described by temperature with values of type Temperature
+//	described by altitude with values of type Altitude
+//	described by speed with values of type Speed
+//   .
+//
+//Gas is a type of PhysicalThing
+//	described by pressure with values of type Pressure.
+//Air is a type of Gas.
 
 
    

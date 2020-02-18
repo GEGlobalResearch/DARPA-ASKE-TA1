@@ -114,6 +114,8 @@ public class DialogAnswerProvider extends BaseDialogAnswerProvider {
 	private IConfigurationManagerForIDE configManager;
 	private IXtextModelListener modelListener;
 	private URI uri;
+	
+	private int cumulativeOffset = 0;
 
 	public void configure(IXtextDocument document) {
 		Preconditions.checkState(this.document == null, "Already initialized.");
@@ -334,7 +336,11 @@ public class DialogAnswerProvider extends BaseDialogAnswerProvider {
 					if (!test.startsWith("\r\n")) {
 						modContent += "\r\n";
 					}
-					document.replace(start + length + 1, 0, modContent);
+					if (!srcinfo[0].toString().endsWith(System.lineSeparator())) {
+						modContent = System.lineSeparator() + modContent;
+					}
+					document.replace(start + length + getCumulativeOffset() + 1, 0, modContent);
+					addToCumulativeOffset(modContent.length());
 					loc = start + length + 1;
 					if (repositionCursor && document instanceof XtextDocument && ctx instanceof EObject) {
 						final int caretOffset = loc + modContent.length();
@@ -771,6 +777,24 @@ public class DialogAnswerProvider extends BaseDialogAnswerProvider {
 	public Resource getResource() {
 		Preconditions.checkState(this.document != null, "Not initialized yet.");
 		return this.document.readOnly(resource -> resource);
+	}
+
+	@Override
+	public void addToCumulativeOffset(int addition) {
+		setCumulativeOffset(getCumulativeOffset() + addition);
+	}
+
+	@Override
+	public void clearCumulatifeOffset() {
+		cumulativeOffset = 0;
+	}
+
+	private int getCumulativeOffset() {
+		return cumulativeOffset;
+	}
+
+	private void setCumulativeOffset(int cumulativeOffset) {
+		this.cumulativeOffset = cumulativeOffset;
 	}
 
 }

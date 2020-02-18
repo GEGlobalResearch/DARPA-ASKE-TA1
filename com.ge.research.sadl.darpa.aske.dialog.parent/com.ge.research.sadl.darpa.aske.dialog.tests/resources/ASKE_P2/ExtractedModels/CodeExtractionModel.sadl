@@ -14,6 +14,9 @@ CodeBlock is a type of CodeElement,
 cmArguments describes Method with a single value of type CodeVariable List.
 cmReturnTypes describes Method with a single value of type string List.
 cmSemanticReturnTypes describes Method with a single value of type string List.
+doesComputation describes Method with a single value of type boolean.
+calls describes Method with values of type MethodCall.
+ExternalMethod is a type of Method.
 
 // The reference to a CodeVariable can be its definition (Defined),
 //	an assignment or reassignment (Reassigned), or just a reference
@@ -21,10 +24,11 @@ cmSemanticReturnTypes describes Method with a single value of type string List.
 Usage is a class, must be one of {Defined, Used, Reassigned}.
 
 Reference  is a type of CodeElement
-	described by firstRef with a single value of type boolean
+	described by firstRef (note "first reference in this CodeBlock") 
+		with a single value of type boolean
 	described by codeBlock with a single value of type CodeBlock
 	described by usage with values of type Usage
- 	described by input (note "CodeVariable is an input to codeBlock CodeBlock") 
+ 	described by cem:input (note "CodeVariable is an input to codeBlock CodeBlock") 
  		with a single value of type boolean
  	described by output (note "CodeVariable is an output of codeBlock CodeBlock") 
  		with a single value of type boolean
@@ -32,6 +36,15 @@ Reference  is a type of CodeElement
  		with a single value of type boolean
  	described by setterArgument (note "is this variable input to a setter?") with a single value of type boolean
  	described by comment with values of type Comment.
+ 	
+MethodCall is a type of CodeElement
+	described by codeBlock with a single value of type CodeBlock
+	described by inputMapping with values of type InputMapping,
+	described by returnedMapping with values of type OutputMapping.
+MethodCallMapping is a class,
+	described by callingVariable with a single value of type CodeVariable,
+	described by calledVariable with a single value of type CodeVariable.
+{InputMapping, OutputMapping} are types of MethodCallMapping.		
 	
 Comment (note "CodeBlock and Reference can have a Comment") is a type of CodeElement
  	described by commentContent with a single value of type string.	
@@ -55,55 +68,41 @@ if inst is a cls and
    cls is a type of CodeVariable
 then inst is a CodeVariable. 
 
-Rule SetNotFirstRef1
+Rule Transitive2  
+if inst is a cls and 
+   cls is a type of CodeBlock
+then inst is a CodeBlock. 
+
+Rule FindFirstRef
 if c is a CodeVariable and
    ref is reference of c and
-   oneOf(usage of ref, Used, Reassigned) and  
-   ref2 is reference of c and
-   ref != ref2 and
-   cb is codeBlock of ref and   
-   cb2 is codeBlock of ref2 and
-   cb = cb2 and
-   l1 is beginsAt of ref and
-   l2 is beginsAt of ref2 and
-   l2 > l1   // so ref2 is at an earlier location that ref
-then firstRef of ref2 is false.   
+   ref has codeBlock cb and
+   l is beginsAt of ref and
+   minLoc = min(c, reference, r, r, codeBlock, cb, r, beginsAt) and
+   l = minLoc
+then firstRef of ref is true
+//	and print(c, " at ", minLoc, " is first reference.")
+.
 
-// first reference is of type "Used" or all earlier refs are of type "Used"	
-// this does not cover when no ref2 with l2 < l1 exists
-Rule SetAsInput1
-if c is CodeVariable and
-   ref is reference of c and
-   input of ref is not known and 
-   usage of ref is Used and
-   ref2 is reference of c and
-   ref != ref2 and
-   cb is codeBlock of ref and   
-   cb2 is codeBlock of ref2 and
-   cb = cb2 and   
-   l1 is beginsAt of ref and
-   l2 is beginsAt of ref2 and
-   l2 < l1 and  // so ref2 is at an earlier location that ref
-   noValue(ref2, usage, Reassigned) // no earlier reassignment of c exists
-then input of ref is true and isImplicit of ref is true. 
+Rule ImplicitInput
+if cb is a CodeBlock and
+   ref has codeBlock cb and
+   ref has firstRef true and
+   ref has usage Used
+   and cv has reference ref
+   and ref has beginsAt loc
+then input of ref is true and isImplicit of ref is true
+//	and print(cb, cv, loc, " implicit input")
+.
 
-// if there is no l2 as specified in the previous rules, then the following covers that case
-// do I need to consider codeBlock?????
-Rule SetAsInput2
-if c is a CodeVariable and
-   ref is reference of c and
-   input of ref is not known and
-   usage of ref is Used and 
-   noValue(ref, firstRef)
-then input of ref is true and isImplicit of ref is true. 
-
-// "it is an output if it is computed and is argument to a setter"
-// or I could try to use the notion of a constant
-Rule SetAsOutput
-if c is a CodeVariable and
-   setterArgument of c is true and
-   ref is a reference of c and
-   output of ref is not known and
-   usage of ref is Defined //check this?
-then
-	output of ref is true and isImplicit of ref is true.      	 
+Rule ImplicitOutput
+if cb is a CodeBlock and
+   ref has codeBlock cb and
+   ref has firstRef true and
+   ref has usage Reassigned
+   and cv has reference ref
+   and noValue(cv, reference, ref2, ref2, codeBlock, cb, ref2, usage, Defined)
+   and ref has beginsAt loc
+then output of ref is true and isImplicit of ref is true
+//	and print(cb, cv, loc, " implicit output")
+.

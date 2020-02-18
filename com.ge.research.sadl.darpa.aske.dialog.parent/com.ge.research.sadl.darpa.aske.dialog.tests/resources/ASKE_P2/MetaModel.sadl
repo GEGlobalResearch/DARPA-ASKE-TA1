@@ -37,14 +37,20 @@ uri "http://aske.ge.com/metamodel" alias mm.
  
 import "http://aske.ge.com/compgraphmodel".
 
+
+
+
 //Composite CG
 CCG is a type of ComputationalGraph
     described by subgraph with values of type SubGraph //Multiple subgraphs
     //described by modelError with values of type decimal
+    described by assumptionsSatisfied with values of type boolean
+    described by unsatisfiedAssumption with values of type string 
+ 	described by sensitivity with values of type Sensitivity
  	.
  
 SubGraph is a class
- 	described by cgraph with a single value of type ComputationalGraph
+ 	described by cgraph with a single value of type ComputationalGraph //a DBN in our case
  	described by output with values of type UnittedQuantity
  	.
 
@@ -60,10 +66,21 @@ CGQuery is a class
 CGExecution is a class
  	described by startTime with a single value of type dateTime
  	described by endTime with a single value of type dateTime
- 	described by compGraph with a single value of type CCG //A DBN in our case.
+ 	described by compGraph with a single value of type CCG //this would be a named instance CG_... Can be used as "model ID"
  	described by output with values of type UnittedQuantity
  	described by accuracy with a single value of type decimal
 	.
+
+Sensitivity is a class
+    described by output with a single value of type UnittedQuantity
+    described by inputSensitivity with values of type InputSensitivity
+    .
+Sensitivity has impliedProperty inputSensitivity.    
+    
+InputSensitivity is a class
+	described by input with a single value of type UnittedQuantity
+	described by sensitivityValue with a single value of type decimal
+.
 
 Dataset is a type of Thing
 	described by creator with a single value of type string //Person

@@ -1,4 +1,4 @@
-altitude,airSpeed,totalTemperature
+alt,u0,tt
 10000,500,492
 15000,500,475
 20000,600,461

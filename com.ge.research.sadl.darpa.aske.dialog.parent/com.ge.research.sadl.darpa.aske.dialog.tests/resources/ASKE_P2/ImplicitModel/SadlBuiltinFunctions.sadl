@@ -78,71 +78,41 @@ External uriConcat(string X, string X) returns string:
 External unbound(string X) returns string:
 "com.hp.hpl.jena.reasoner.rulesys.builtins#unbound".
 
-External oneOf(--) returns --:
-"com.ge.research.sadl.jena.reasoner.builtin#oneOf".
+External abs(decimal X) returns decimal:
+"com.ge.research.sadl.jena.reasoner.builtin#abs".
 
-External assign(--) returns --:
-"com.ge.research.sadl.jena.reasoner.builtin#assign".
-
-External print(string X, ...) returns --:
-"com.ge.research.sadl.jena.reasoner.builtin#print".
-
-External max(decimal X, decimal X, ...) returns decimal:
-"com.ge.research.sadl.jena.reasoner.builtin#max".
+External acos(decimal X) returns decimal:
+"com.ge.research.sadl.jena.reasoner.builtin#acos".
 
 External asin(--) returns --:
 "com.ge.research.sadl.jena.reasoner.builtin#asin".
 
+External assign(--) returns --:
+"com.ge.research.sadl.jena.reasoner.builtin#assign".
+
+External atan(--) returns --:
+"com.ge.research.sadl.jena.reasoner.builtin#atan".
+
+External average(--) returns --:
+"com.ge.research.sadl.jena.reasoner.builtin#average".
+
+External ceiling(--) returns --:
+"com.ge.research.sadl.jena.reasoner.builtin#ceiling".
+
 External cos(--) returns --:
 "com.ge.research.sadl.jena.reasoner.builtin#cos".
-
-External noUnknownValues(--) returns --:
-"com.ge.research.sadl.jena.reasoner.builtin#noUnknownValues".
-
-External countUniqueMatches(--) returns --:
-"com.ge.research.sadl.jena.reasoner.builtin#countUniqueMatches".
-
-External getClassFromConstraint(--) returns --:
-"com.ge.research.sadl.jena.reasoner.builtin#getClassFromConstraint".
-
-External subtractDates(--) returns --:
-"com.ge.research.sadl.jena.reasoner.builtin#subtractDates".
-
-External listConcat(--) returns --:
-"com.ge.research.sadl.jena.reasoner.builtin#listConcat".
-
-External noValuesOtherThan(--) returns --:
-"com.ge.research.sadl.jena.reasoner.builtin#noValuesOtherThan".
-
-External tan(--) returns --:
-"com.ge.research.sadl.jena.reasoner.builtin#tan".
-
-External mod(--) returns --:
-"com.ge.research.sadl.jena.reasoner.builtin#mod".
-
-External listToString(--) returns --:
-"com.ge.research.sadl.jena.reasoner.builtin#listToString".
-
-External ^unique(--) returns --:
-"com.ge.research.sadl.jena.reasoner.builtin#unique".
-
-External listSubtract(--) returns --:
-"com.ge.research.sadl.jena.reasoner.builtin#listSubtract".
-
-External noSubjectsOtherThan(--) returns --:
-"com.ge.research.sadl.jena.reasoner.builtin#noSubjectsOtherThan".
 
 External countMatches(...) returns int:
 "com.ge.research.sadl.jena.reasoner.builtin#countMatches".
 
-External noValue(--) returns --:
-"com.ge.research.sadl.jena.reasoner.builtin#noValue".
+External countUniqueMatches(--) returns --:
+"com.ge.research.sadl.jena.reasoner.builtin#countUniqueMatches".
 
-External sum(--) returns --:
-"com.ge.research.sadl.jena.reasoner.builtin#sum".
+External floor(--) returns --:
+"com.ge.research.sadl.jena.reasoner.builtin#floor".
 
-External list(--) returns --:
-"com.ge.research.sadl.jena.reasoner.builtin#list".
+External getClassFromConstraint(--) returns --:
+"com.ge.research.sadl.jena.reasoner.builtin#getClassFromConstraint".
 
 External getInstance(--) returns --:
 "com.ge.research.sadl.jena.reasoner.builtin#getInstance".
@@ -150,47 +120,77 @@ External getInstance(--) returns --:
 External greaterThan(--) returns --:
 "com.ge.research.sadl.jena.reasoner.builtin#greaterThan".
 
-External acos(decimal X) returns decimal:
-"com.ge.research.sadl.jena.reasoner.builtin#acos".
-
-External sin(--) returns --:
-"com.ge.research.sadl.jena.reasoner.builtin#sin".
-
-External product(--) returns --:
-"com.ge.research.sadl.jena.reasoner.builtin#product".
-
-External average(--) returns --:
-"com.ge.research.sadl.jena.reasoner.builtin#average".
-
-External pow(--) returns --:
-"com.ge.research.sadl.jena.reasoner.builtin#pow".
-
-External notOnlyValue(--) returns --:
-"com.ge.research.sadl.jena.reasoner.builtin#notOnlyValue".
-
-External ceiling(--) returns --:
-"com.ge.research.sadl.jena.reasoner.builtin#ceiling".
-
-External abs(decimal X) returns decimal:
-"com.ge.research.sadl.jena.reasoner.builtin#abs".
-
-External atan(--) returns --:
-"com.ge.research.sadl.jena.reasoner.builtin#atan".
-
-External min(decimal X, decimal X, ...) returns decimal:
-"com.ge.research.sadl.jena.reasoner.builtin#min".
-
 External lessThan(--) returns --:
 "com.ge.research.sadl.jena.reasoner.builtin#lessThan".
+
+External list(--) returns --:
+"com.ge.research.sadl.jena.reasoner.builtin#list".
+
+External listConcat(--) returns --:
+"com.ge.research.sadl.jena.reasoner.builtin#listConcat".
+
+External listSubtract(--) returns --:
+"com.ge.research.sadl.jena.reasoner.builtin#listSubtract".
+
+External listToString(--) returns --:
+"com.ge.research.sadl.jena.reasoner.builtin#listToString".
 
 External localname(--) returns --:
 "com.ge.research.sadl.jena.reasoner.builtin#localname".
 
-External floor(--) returns --:
-"com.ge.research.sadl.jena.reasoner.builtin#floor".
+External max(decimal X, decimal X, ...) returns decimal:
+"com.ge.research.sadl.jena.reasoner.builtin#max".
+
+External min(decimal X, decimal X, ...) returns decimal:
+"com.ge.research.sadl.jena.reasoner.builtin#min".
+
+External mod(--) returns --:
+"com.ge.research.sadl.jena.reasoner.builtin#mod".
+
+External noSubjectsOtherThan(--) returns --:
+"com.ge.research.sadl.jena.reasoner.builtin#noSubjectsOtherThan".
+
+External notOnlyValue(--) returns --:
+"com.ge.research.sadl.jena.reasoner.builtin#notOnlyValue".
+
+External noUnknownValues(--) returns --:
+"com.ge.research.sadl.jena.reasoner.builtin#noUnknownValues".
+
+External noValue(--) returns --:
+"com.ge.research.sadl.jena.reasoner.builtin#noValue".
+
+External noValuesOtherThan(--) returns --:
+"com.ge.research.sadl.jena.reasoner.builtin#noValuesOtherThan".
+
+External oneOf(--) returns --:
+"com.ge.research.sadl.jena.reasoner.builtin#oneOf".
+
+External pow(--) returns --:
+"com.ge.research.sadl.jena.reasoner.builtin#pow".
+
+External print(string X, ...) returns --:
+"com.ge.research.sadl.jena.reasoner.builtin#print".
+
+External product(--) returns --:
+"com.ge.research.sadl.jena.reasoner.builtin#product".
+
+External sin(--) returns --:
+"com.ge.research.sadl.jena.reasoner.builtin#sin".
 
 External sqrt(--) returns --:
 "com.ge.research.sadl.jena.reasoner.builtin#sqrt".
+
+External subtractDates(--) returns --:
+"com.ge.research.sadl.jena.reasoner.builtin#subtractDates".
+
+External sum(--) returns --:
+"com.ge.research.sadl.jena.reasoner.builtin#sum".
+
+External tan(--) returns --:
+"com.ge.research.sadl.jena.reasoner.builtin#tan".
+
+External ^unique(--) returns --:
+"com.ge.research.sadl.jena.reasoner.builtin#unique".
 
 External ^table(--) returns --:
 "com.hp.hpl.jena.reasoner.rulesys.builtins#table".
