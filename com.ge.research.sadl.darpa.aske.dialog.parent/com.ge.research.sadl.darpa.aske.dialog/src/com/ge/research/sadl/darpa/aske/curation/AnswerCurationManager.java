@@ -3201,21 +3201,38 @@ public class AnswerCurationManager {
 				if (rs instanceof ResultSet) {
 		 			String[] colnames = ((ResultSet) rs).getColumnNames();
 					String cols = String.join(" ",colnames);
-					if ( cols.contains("_style") ) {
+					if ( cols.contains("_style") || cols.contains("_shape") ) {
 						ResultSet rstemp = ((ResultSet)rs).deleteResultSetColumn("Model");
 
 						IGraphVisualizer visualizer = new GraphVizVisualizer();
 						if (visualizer != null) {
 							//String graphsDirectory = new File(getOwlModelsFolder()).getParent() + "/Graphs";
 							new File(graphsDirectory).mkdir();
-							baseFileName = "QueryMetadata_" + ((ResultSet)rs).getResultAt(0, 0).toString();
-							visualizer.initialize(
-				                    graphsDirectory,
-				                    baseFileName,
-				                    baseFileName,
-				                    null,
-				                    IGraphVisualizer.Orientation.TD,
-				                    "Composed Model " + ((ResultSet)rs).getResultAt(0, 0).toString());
+							if(cntr == 0) {
+								baseFileName = "EquationDependencyGraph";
+
+								visualizer.initialize(
+										graphsDirectory,
+										baseFileName,
+										baseFileName,
+										null,
+										IGraphVisualizer.Orientation.TD,
+										"Equation Dependency Graph"
+										);
+								cntr++;
+							}
+							else {
+								baseFileName = "QueryMetadata_" + ((ResultSet)rs).getResultAt(0, 0).toString();
+
+								visualizer.initialize(
+										graphsDirectory,
+										baseFileName,
+										baseFileName,
+										null,
+										IGraphVisualizer.Orientation.TD,
+										"Composed Model " + ((ResultSet)rs).getResultAt(0, 0).toString()
+										);
+							}
 							((ResultSet) rstemp).setShowNamespaces(false);
 							try {
 								visualizer.graphResultSetData(rstemp);	
@@ -3224,20 +3241,21 @@ public class AnswerCurationManager {
 								e.printStackTrace();
 							}
 				        }
-						String errorMsg = displayGraph(visualizer);
-						if (errorMsg != null) {
-							notifyUser(getOwlModelsFolder(), errorMsg, true);
-						}
+						//Don't pop up model diagram. User can choose to click on a link to see.
+//						String errorMsg = null; //displayGraph(visualizer); 
+//						if (errorMsg != null) {
+//							notifyUser(getOwlModelsFolder(), errorMsg, true);
+//						}
 					}
 					else {
-		    			if(cntr > 0)
+		    			if(cntr > 1)
 		    				answer.append(",\n");
-		    			//((ResultSet) rs).setShowNamespaces(true);
-						//answer.append(((ResultSet) rs).toString());
-						//TODO: generate sadl string
 						
 						String sadlAnswer = addResultsToDialog((ResultSet) rs);
-						//TODO: 
+						if(cntr <= 1) {
+//							String graphicURL = "file://" + graphsDirectory + "/" + "EquationDependencyGraph.svg"; //file url
+//							sadlAnswer += "(See \"Equation dependency diagram: \'" + graphicURL + "\'\".)\n";
+						}
 						String graphicURL = "file://" + graphsDirectory + "/" + baseFileName + ".svg"; //file url
 						sadlAnswer += "(See \"model diagram: \'" + graphicURL + "\'\".)";
 						answer.append(sadlAnswer);
@@ -3268,7 +3286,7 @@ public class AnswerCurationManager {
 				sb.append(rs.getResultAt(row, 1).toString());
 				sb.append(" with ^value ");
 //				sb.append(rs.getResultAt(row, 2));
-				String value = SadlUtils.formatNumber(rs.getResultAt(row, 2).toString(), 3);
+				String value = SadlUtils.formatNumberList(rs.getResultAt(row, 2).toString(), 3);
 				sb.append(value);
 				if (rs.getResultAt(row, 3) != null) {
 					sb.append(", with stddev ");
@@ -3276,7 +3294,7 @@ public class AnswerCurationManager {
 				}
 //				sb.append(")\n");
 			}
-			sb.append(".\n");
+			sb.append(" .\n");
 		}							
 		return sb.toString();
 	}

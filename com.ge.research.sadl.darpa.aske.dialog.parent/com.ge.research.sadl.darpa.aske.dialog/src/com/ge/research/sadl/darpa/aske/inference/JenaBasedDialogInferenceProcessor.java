@@ -725,7 +725,7 @@ public class JenaBasedDialogInferenceProcessor extends JenaBasedSadlInferencePro
 			"    bind('filled' as ?X_style)\n" + 
 			"    bind('yellow' as ?X_color)\n" + 
 			"}}union\n" + 
-			" {select ?CCG (?Output as ?X) ?Y (concat(concat(strbefore(?Value,'.'),'.'),substr(strafter(?Value,'.'),1,4)) as ?Z) ?X_style ?X_color ('oval' as ?Z_shape) ('output value' as ?Z_tooltip)\n" + 
+			" {select ?CCG (?Output as ?X) ?Y (concat(concat(strbefore(strafter(?Value,'['),'.'),'.'),substr(strafter(?Value,'.'),1,3)) as ?Z) ?X_style ?X_color ('oval' as ?Z_shape) ('output value' as ?Z_tooltip)\n" + 
 			"  where {\n" + 
 			"    ?CCG mm:subgraph ?SG.\n" + 
 			"    filter (?CCG in (COMPGRAPH)).\n" + 
@@ -805,6 +805,47 @@ public class JenaBasedDialogInferenceProcessor extends JenaBasedSadlInferencePro
 			" ?Sy mm:sensitivityValue ?Sensitivity\n" + 
 			" } ";
 
+	private static final String DEPENDENCY_GRAPH = "prefix imp:<http://sadl.org/sadlimplicitmodel#>\n" + 
+			"\n" + 
+			"select distinct ?EqPa ?V ?EqCh ('oval' as ?EqPa_shape) ('oval' as ?EqCh_shape) \n" + 
+			"where {\n" + 
+//			"{select distinct ?EqPa  ?EqCh ?V where {\n" + 
+//			" ?EqCh imp:genericInput ?V.\n" + 
+//			" ?EqPa imp:genericOutput ?V.\n" + 
+//			"\n" + 
+//			"  filter( ?EqPa != ?EqCh)\n" + 
+//			"  filter not exists {?EqCh imp:dependsOn ?EqPa}\n" + 
+//			"  filter not exists {?EqPa imp:dependsOn ?EqCh}\n" + 
+//			"  filter not exists {?EqCh imp:versionOf ?EqPa}\n" + 
+//			"  filter not exists {?EqPa imp:versionOf ?EqCh}\n" + 
+//			"\n" + 
+//			"  filter not exists {\n" + 
+//			"    ?EqCh imp:genericOutput ?V1.\n" + 
+//			"    ?EqPa imp:genericInput ?V1.\n" + 
+//			"    filter not exists {?EqPa imp:genericOutput ?V1.}\n" + 
+//			"  }\n" + 
+////			"} group by ?EqPa ?EqCh ?V \n" + 
+//			"} having (count(distinct ?V)<5)\n" + 
+//			"} union\n" + 
+			"{select distinct ?EqPa ?EqCh (sample(?Var) as ?V)\n" + 
+			"where {\n" + 
+			" ?EqCh imp:genericInput ?Var.\n" + 
+			" ?EqPa imp:genericOutput ?Var.\n" + 
+			"\n" + 
+			"  filter( ?EqPa != ?EqCh)\n" + 
+			"  filter not exists {?EqCh imp:dependsOn ?EqPa}\n" + 
+			"  filter not exists {?EqPa imp:dependsOn ?EqCh}\n" + 
+			"  filter not exists {?EqCh imp:versionOf ?EqPa}\n" + 
+			"  filter not exists {?EqPa imp:versionOf ?EqCh}\n" + 
+			"\n" + 
+			"  filter not exists {\n" + 
+			"    ?EqCh imp:genericOutput ?V1.\n" + 
+			"    ?EqPa imp:genericInput ?V1.\n" + 
+			"    filter not exists {?EqPa imp:genericOutput ?V1.}\n" + 
+			"  }\n" + 
+			"}}\n" + 
+			"}";
+	
 	boolean useDbn;
 	boolean useKC; 
 
@@ -1036,7 +1077,7 @@ public class JenaBasedDialogInferenceProcessor extends JenaBasedSadlInferencePro
 		List<String> contextClassList = getContextClassList(contextPatterns);
 		
 	
-		infereDependencyGraph();
+//		infereDependencyGraph();
 	
 		try {
 
@@ -1113,6 +1154,12 @@ private ResultSet[] processWhatWhenQuery(Resource resource, String queryModelFil
 	ResultSet[] dbnResults = null;
 
 	ConfigurationManagerForIDE cmgr = getConfigMgrForIDE(resource);
+	
+	
+	infereDependencyGraph(resource);
+	
+//	ResultSet depG = runReasonerQuery(resource, DEPENDENCY_GRAPH);
+
 
 	long startTime = System.currentTimeMillis();
 	eqnsResults = retrieveCG(inputsList, outputsList);
@@ -1128,7 +1175,7 @@ private ResultSet[] processWhatWhenQuery(Resource resource, String queryModelFil
 	int numOfModels = getNumberOfModels(dbnEqnMap);
 
 	if (numOfModels > 0) {
-		dbnResults = new ResultSet[numOfModels*2]; 
+		dbnResults = new ResultSet[numOfModels*2+1]; //+1 to accommodate dependency graph 
 		//dbnResults = new ResultSet[numOfModels]; 
 	} else {
 //		System.out.println("Unable to assemble a model with current knowledge");
@@ -1139,6 +1186,8 @@ private ResultSet[] processWhatWhenQuery(Resource resource, String queryModelFil
 	
 	Boolean foundAModel = false;
 	List<Individual> modelCCGs = new ArrayList<Individual>();
+	
+	
 	
 	for(int i=0; i<numOfModels; i++) {
 		listOfEqns = modelEqnList[i];
@@ -1228,9 +1277,10 @@ private ResultSet[] processWhatWhenQuery(Resource resource, String queryModelFil
 			
 			
 			// Get the CG info for diagram
-			dbnResults[i] = retrieveCompGraph(resource, cgIns);
 			
-			dbnResults[i+1] = retrieveValues(resource, cgIns);;
+			dbnResults[i+1] = retrieveCompGraph(resource, cgIns); //+1 to accomodate dependency graph
+			
+			dbnResults[i+1+1] = retrieveValues(resource, cgIns);;
 
 //Temporarily commented out assumption check
 //			String assumpCheck = checkAssumptions(resource, queryModelURI, queryOwlFileWithPath, cgIns);
@@ -1245,7 +1295,7 @@ private ResultSet[] processWhatWhenQuery(Resource resource, String queryModelFil
 
 	    }
 	    else {
-	    	dbnResults[i] = null;
+	    	dbnResults[i+1] = null;
 	    	System.err.println("DBN execution failed. Message: " + dbnResultsJson.toString());
 	    }
 	}// end of models loop
@@ -1255,6 +1305,9 @@ private ResultSet[] processWhatWhenQuery(Resource resource, String queryModelFil
 	if(foundAModel) {
 		//saveMetaDataFile(resource,queryModelURI,queryModelFileName); //to include sensitivity results
 		addQueryModelAsResource(resource, queryModelFileName, queryModelURI, queryOwlFileWithPath, cmgr);
+		dbnResults[0] = runReasonerQuery(resource, DEPENDENCY_GRAPH);
+ 
+
 	} else {
 		dbnResults = null;
 	}
@@ -1265,6 +1318,8 @@ private ResultSet[] processWhatWhenQuery(Resource resource, String queryModelFil
 	
 	return dbnResults;
 }
+
+
 
 private void computeSensitivityAndAddToDialog(Resource resource, ConfigurationManagerForIDE cmgr,
 		String queryModelFileName, String queryModelURI, String queryModelPrefix, Individual cgIns,
@@ -1316,15 +1371,14 @@ private String retrieveModelsAndNodes(String listOfEqns, Individual cgIns, List<
 	String nodesJSONString = "";
 	String expressionsJSONString = "";
 	startTime = System.currentTimeMillis();
-	modelsJSONString = retrieveCGforDBNSpec(listOfEqns, contextClassList, cgIns, RETRIEVE_MODELS_WEXP);
-//	modelsJSONString = retrieveCGforDBNSpec(listOfEqns, contextClassList, cgIns, RETRIEVE_MODELS);
+//	modelsJSONString = retrieveCGforDBNSpec(listOfEqns, contextClassList, cgIns, RETRIEVE_MODELS_WEXP);
+	modelsJSONString = retrieveCGforDBNSpec(listOfEqns, contextClassList, cgIns, RETRIEVE_MODELS);
 	nodesJSONString = retrieveCGforDBNSpec(listOfEqns, null, cgIns, RETRIEVE_NODES);
-//	expressionsJSONString = retrieveCGforDBNSpec(listOfEqns, contextClassList, cgIns, RETRIEVE_MODEL_EXPRESSIONS);
+	expressionsJSONString = retrieveCGforDBNSpec(listOfEqns, contextClassList, cgIns, RETRIEVE_MODEL_EXPRESSIONS);
 	endTime = System.currentTimeMillis();
 	System.out.println("Retrieve model and nodes: " + (endTime - startTime) );
 
-//	String nodesModelsJSONStr = "{ \"models\": " + modelsJSONString + ", \"nodes\": "  + nodesJSONString + ", \"expressions\": " + expressionsJSONString + " }";
-	String nodesModelsJSONStr = "{ \"models\": " + modelsJSONString + ", \"nodes\": "  + nodesJSONString + " }";
+	String nodesModelsJSONStr = "{ \"models\": " + modelsJSONString + ", \"nodes\": "  + nodesJSONString + ", \"expressions\": " + expressionsJSONString + " }";
 	if (debugMode) {System.out.println(nodesModelsJSONStr);}
 	return nodesModelsJSONStr;
 }
@@ -1458,13 +1512,13 @@ private void getOutputDocContextPatterns(TripleElement[] triples, List<Node> inp
 	}
 }
 
-private void infereDependencyGraph() throws SadlInferenceException {
+private void infereDependencyGraph(Resource resource) throws Exception {
 	long startTime = System.currentTimeMillis();
 	// Insert dependency graph
-	runInference(GENERICIOs, CHECK_GENERICIOs);
+	runInference(resource, GENERICIOs, CHECK_GENERICIOs);
 	
 	//String tmp = DEPENDENCY_GRAPH_INSERT
-	runInference(DEPENDENCY_GRAPH_INSERT,CHECK_DEPENDENCY);
+	runInference(resource, DEPENDENCY_GRAPH_INSERT,CHECK_DEPENDENCY);
 	long endTime = System.currentTimeMillis();
 	System.out.println("Generate dependency graph: " + (endTime - startTime) );
 }
@@ -1779,10 +1833,12 @@ private void getInputPatterns(TripleElement[] triples, List<TripleElement[]> inp
 	}
 }
 
-private void runInference(String query, String testQuery) throws SadlInferenceException {
+private void runInference(Resource resource, String query, String testQuery) throws Exception {
 	UpdateAction.parseExecute(query , getTheJenaModel());
+
+	runReasonerQuery(resource, query);
 	
-//	ResultSetRewindable insertTest = queryKnowledgeGraph(testQuery, getTheJenaModel());
+//	ResultSet insertTest = runReasonerQuery(resource, testQuery);
 //	if (!insertTest.hasNext()) {
 //		throw new SadlInferenceException("Inference execution failed for " + query);
 //	}
@@ -2506,7 +2562,8 @@ private RDFNode getObjectAsLiteralOrResource(Node property, Node object) {
 			//String modelName = configMgr.getPublicUriFromActualUrl(new SadlUtils().fileNameToFileUrl(modelFolderUri + File.separator + owlFileName));
 			//model name something like http://aske.ge.com/metamodel
 			//String mname = getModelName();
-			reasoner.initializeReasoner(modelFolderUri, getModelName(), format); 
+//			reasoner.initializeReasoner(modelFolderUri, getModelName(), format); 
+			reasoner.initializeReasoner(getTheJenaModel(), getModelName(), null, null); 
 			//reasoner.loadInstanceData(qhmodel);
 			//System.out.print("reasoner is not initialized");
 			//return null;
@@ -2902,7 +2959,9 @@ private Map<String, String> getClassLabelMappingFromModelsJson(String json) {
         return class2lbl;
 	}
 
-
+	
+	
+	
 	private ResultSetRewindable queryKnowledgeGraph(String queryStr, Model model) {
 		//System.out.println(queryStr);
 		com.hp.hpl.jena.query.Query qm = QueryFactory.create(queryStr);
@@ -2999,7 +3058,7 @@ private Map<String, String> getClassLabelMappingFromModelsJson(String json) {
 	}
 
 
-    private String kgResultsToJson(String nodesAndModelsJSONString, String mode, String obsData) throws Exception {
+    private String kgResultsToJson(String nodesAndModelsJSONString, String mode, String obsData) throws IOException  {
     	CloseableHttpClient httpclient = HttpClientBuilder.create().build();
 //    HttpPost httppost = new HttpPost("http://vesuvius063.crd.ge.com:46000/dbn/SADLResultSetToJson");
 //    HttpPost httppost = new HttpPost("http://mazama6.crd.ge.com:46000/dbn/SADLResultSetToJson");
@@ -3070,6 +3129,7 @@ private Map<String, String> getClassLabelMappingFromModelsJson(String json) {
 		com.hp.hpl.jena.query.ResultSetFormatter.outputAsJSON(baos, results);
 		return new String(baos.toByteArray(), Charset.defaultCharset()).replace(System.getProperty("line.separator"), "\n");		
 	}
+
 	
 	private String getDataForHypothesisTesting(Resource resource, String docUri) throws FileNotFoundException {//String dataFile, 
 		String dataContent = "";
