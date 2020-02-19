@@ -3194,7 +3194,8 @@ public class AnswerCurationManager {
 		StringBuilder answer = new StringBuilder();
 		String graphsDirectory = new File(getOwlModelsFolder()).getParent() + "/Graphs";
 		String baseFileName = "";
-		
+		List<String> diagrams = new ArrayList<String>();
+
 		if (rss != null) {
 			int cntr = 0;
 			for (Object rs : rss) {
@@ -3208,20 +3209,20 @@ public class AnswerCurationManager {
 						if (visualizer != null) {
 							//String graphsDirectory = new File(getOwlModelsFolder()).getParent() + "/Graphs";
 							new File(graphsDirectory).mkdir();
-							if(cntr == 0) {
-								baseFileName = "EquationDependencyGraph";
-
-								visualizer.initialize(
-										graphsDirectory,
-										baseFileName,
-										baseFileName,
-										null,
-										IGraphVisualizer.Orientation.TD,
-										"Equation Dependency Graph"
-										);
-								cntr++;
-							}
-							else {
+//							if(cntr == 0) {
+//								baseFileName = "EquationDependencyGraph";
+//
+//								visualizer.initialize(
+//										graphsDirectory,
+//										baseFileName,
+//										baseFileName,
+//										null,
+//										IGraphVisualizer.Orientation.TD,
+//										"Equation Dependency Graph"
+//										);
+//								cntr++;
+//							}
+//							else {
 								baseFileName = "QueryMetadata_" + ((ResultSet)rs).getResultAt(0, 0).toString();
 
 								visualizer.initialize(
@@ -3232,7 +3233,7 @@ public class AnswerCurationManager {
 										IGraphVisualizer.Orientation.TD,
 										"Composed Model " + ((ResultSet)rs).getResultAt(0, 0).toString()
 										);
-							}
+//							}
 							((ResultSet) rstemp).setShowNamespaces(false);
 							try {
 								visualizer.graphResultSetData(rstemp);	
@@ -3256,8 +3257,12 @@ public class AnswerCurationManager {
 //							String graphicURL = "file://" + graphsDirectory + "/" + "EquationDependencyGraph.svg"; //file url
 //							sadlAnswer += "(See \"Equation dependency diagram: \'" + graphicURL + "\'\".)\n";
 						}
+						
+											
 						String graphicURL = "file://" + graphsDirectory + "/" + baseFileName + ".svg"; //file url
-						sadlAnswer += "(See \"model diagram: \'" + graphicURL + "\'\".)";
+						//sadlAnswer += 
+						String seeStmt = "(See \"model diagram: \'" + graphicURL + "\'\".)\n";
+						diagrams.add(seeStmt);
 						answer.append(sadlAnswer);
 						cntr++;
 					}
@@ -3271,6 +3276,11 @@ public class AnswerCurationManager {
 				//answer.append(".\n");
 			}
 		}
+		
+		for(String seeStmt : diagrams) {
+			answer.append(seeStmt);
+		}
+		
 		return answer.toString();
 	}
 
@@ -3286,7 +3296,7 @@ public class AnswerCurationManager {
 				sb.append(rs.getResultAt(row, 1).toString());
 				sb.append(" with ^value ");
 //				sb.append(rs.getResultAt(row, 2));
-				String value = SadlUtils.formatNumberList(rs.getResultAt(row, 2).toString(), 3);
+				String value = SadlUtils.formatNumberList(rs.getResultAt(row, 2).toString(), 5);
 				sb.append(value);
 				if (rs.getResultAt(row, 3) != null) {
 					sb.append(", with stddev ");
