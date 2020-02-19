@@ -3192,7 +3192,7 @@ public class AnswerCurationManager {
 
 	private String getAnswerAndVisualize(ExpectsAnswerContent sc, Object[] rss) throws ConfigurationException  {
 		StringBuilder answer = new StringBuilder();
-		String graphsDirectory = new File(getOwlModelsFolder()).getParent() + "/Graphs";
+		String graphsDirectory = new File(getOwlModelsFolder()).getParent().replace('\\', '/') + "/Graphs";
 		String baseFileName = "";
 		
 		if (rss != null) {
@@ -3257,7 +3257,7 @@ public class AnswerCurationManager {
 //							sadlAnswer += "(See \"Equation dependency diagram: \'" + graphicURL + "\'\".)\n";
 						}
 						String graphicURL = "file://" + graphsDirectory + "/" + baseFileName + ".svg"; //file url
-						sadlAnswer += "(See \"model diagram: \'" + graphicURL + "\'\".)";
+						sadlAnswer += "  (See \"model diagram: \'" + graphicURL + "\'\".)";
 						answer.append(sadlAnswer);
 						cntr++;
 					}
@@ -4447,7 +4447,9 @@ public class AnswerCurationManager {
 		if (delayedImportAdditions == null) {
 			delayedImportAdditions = new ArrayList<String>();
 		}
-		delayedImportAdditions.add(delayedImportAddition);
+		delayedImportAdditions.add(delayedImportAddition + "\n");
+		getDialogAnswerProvider().addImports(delayedImportAdditions);
+		delayedImportAdditions.clear();
 	}
 
 	public OntModel getDomainModel() {
