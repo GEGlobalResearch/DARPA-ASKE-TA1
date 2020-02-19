@@ -95,6 +95,10 @@ import com.ge.research.sadl.processing.SadlInferenceException;
 import com.ge.research.sadl.reasoner.ConfigurationException;
 import com.ge.research.sadl.reasoner.ConfigurationManager;
 import com.ge.research.sadl.reasoner.IReasoner;
+import com.ge.research.sadl.reasoner.InvalidNameException;
+import com.ge.research.sadl.reasoner.QueryCancelledException;
+import com.ge.research.sadl.reasoner.QueryParseException;
+import com.ge.research.sadl.reasoner.ReasonerNotFoundException;
 import com.ge.research.sadl.reasoner.ResultSet;
 import com.ge.research.sadl.reasoner.TranslationException;
 import com.ge.research.sadl.reasoner.utils.SadlUtils;
@@ -962,7 +966,15 @@ public class JenaBasedDialogInferenceProcessor extends JenaBasedSadlInferencePro
 //			queryKey = cgq.getLocalName();
 //			queryModel = ModelFactory.createOntologyModel(OntModelSpec.OWL_MEM);
 //			OntModelProvider.addPrivateKeyValuePair(resource, queryKey, queryModel);
-		
+
+//		String queryModelFileName;
+//		String queryModelURI ;
+//		String queryModelPrefix ;
+//		String queryInstanceName ;
+//		String queryOwlFileWithPath ;
+//
+//		
+//		
 		String kgsDirectory = null;
 		if (ResourceManager.isSyntheticUri(null,resource.getURI())) {
 			File projectRoot = new File("resources/ASKE_P2");
@@ -979,36 +991,44 @@ public class JenaBasedDialogInferenceProcessor extends JenaBasedSadlInferencePro
 			throw new SadlInferenceException("Unable to create folder for CG models");
 		}
 		new File(kgsDirectory).mkdir();
+//		
+//		 queryModelFileName = "Q_" + System.currentTimeMillis();
+//		 queryModelURI = "http://aske.ge.com/" + "Model_" + queryModelFileName;
+//		 queryModelPrefix = queryModelURI + "#";
+//		//String queryInstanceName = METAMODEL_PREFIX + queryModelFileName;
+//		 queryInstanceName = queryModelPrefix + queryModelFileName;
+//		 queryOwlFileWithPath = kgsDirectory + File.separator + queryModelFileName + ".owl";
+//
+//		
+//		
+//		//ConfigurationManagerForIDE cmgr = null;
+//		//Object qhModelObj = OntModelProvider.getPrivateKeyValuePair(resource, queryHistoryKey);
+//		
+//		File f = new File(queryOwlFileWithPath);
+//		if (f.exists() && !f.isDirectory()) {
+//			throw new SadlInferenceException("Query model file already exists");
+//		}
+//		else {
+//			queryModel = ModelFactory.createOntologyModel(OntModelSpec.OWL_MEM);
+//		}
+//		
+//		OntModelProvider.addPrivateKeyValuePair(resource, queryModelFileName, queryModel);
 		
-		String queryModelFileName = "Q_" + System.currentTimeMillis();
-		String queryModelURI = "http://aske.ge.com/" + "Model_" + queryModelFileName;
-		String queryModelPrefix = queryModelURI + "#";
-		//String queryInstanceName = METAMODEL_PREFIX + queryModelFileName;
-		String queryInstanceName = queryModelPrefix + queryModelFileName;
-		String queryOwlFileWithPath = kgsDirectory + File.separator + queryModelFileName + ".owl";
+		try {
+			infereDependencyGraph(resource);
+		}catch (Exception e) {
+			// TODO: handle exception
+		}
 
 		
-		
-		//ConfigurationManagerForIDE cmgr = null;
-		//Object qhModelObj = OntModelProvider.getPrivateKeyValuePair(resource, queryHistoryKey);
-		
-		File f = new File(queryOwlFileWithPath);
-		if (f.exists() && !f.isDirectory()) {
-			throw new SadlInferenceException("Query model file already exists");
-		}
-		else {
-			queryModel = ModelFactory.createOntologyModel(OntModelSpec.OWL_MEM);
-		}
-		
-		OntModelProvider.addPrivateKeyValuePair(resource, queryModelFileName, queryModel);
-		
 		for (int i=0 ; i<triples.size(); i++) {
-			results = processSingleWhatWhenQuery(resource, triples.get(i), useDbn, useKC, queryModelFileName, queryModelURI,queryModelPrefix, queryInstanceName, queryOwlFileWithPath);
+//			results = processSingleWhatWhenQuery(resource, triples.get(i), useDbn, useKC, queryModelFileName, queryModelURI,queryModelPrefix, queryInstanceName, queryOwlFileWithPath);
+			results = processSingleWhatWhenQuery(resource, triples.get(i), kgsDirectory);
 			combinedResults.add(results);
 		}
 		
 		if (triples.size() > 1) {
-			generateCompareResults(combinedResults,queryInstanceName);
+			results = generateCompareResults(combinedResults);
 		}
 		
 		
@@ -1038,14 +1058,26 @@ public class JenaBasedDialogInferenceProcessor extends JenaBasedSadlInferencePro
 	
 	
 	
-	private void generateCompareResults(List<Object[]> combinedResults, String queryInstanceName) {
-		// TODO Auto-generated method stub
+	private Object[] generateCompareResults(List<Object[]> combinedResults) {
+		List<Object> res = new ArrayList<Object>(); 
 		
+		for(int i=0; i<combinedResults.size(); i++) {
+			Object[] cr = combinedResults.get(i);
+			for(int j=0; j<cr.length; j++) {
+				res.add(cr[j]);
+			}
+		}
+		
+		
+		return res.toArray();
 	}
 
-	private Object[] processSingleWhatWhenQuery(Resource resource, TripleElement[] triples, boolean useDbn,
-			boolean useKC, String queryModelFileName, String queryModelURI, String queryModelPrefix,
-			String queryInstanceName, String queryOwlFileWithPath) throws SadlInferenceException {
+
+//	private Object[] processSingleWhatWhenQuery(Resource resource, TripleElement[] triples, boolean useDbn,
+//			boolean useKC, String queryModelFileName, String queryModelURI, String queryModelPrefix,
+//			String queryInstanceName, String queryOwlFileWithPath) throws SadlInferenceException {
+
+	private Object[] processSingleWhatWhenQuery(Resource resource, TripleElement[] triples, String kgsDirectory) throws SadlInferenceException {
 
 		Object[] dbnResults = null;
 		Object[] kcResults = null;
@@ -1059,6 +1091,31 @@ public class JenaBasedDialogInferenceProcessor extends JenaBasedSadlInferencePro
 
 		//getTheJenaModel().write(System.out, "TTL" );
   		//qhmodel.write(System.out,"RDF/XML-ABBREV");
+
+		String queryModelFileName;
+		String queryModelURI ;
+		String queryModelPrefix ;
+		String queryInstanceName ;
+		String queryOwlFileWithPath ;
+
+		
+
+
+		queryModelFileName = "Q_" + System.currentTimeMillis();
+		queryModelURI = "http://aske.ge.com/" + "Model_" + queryModelFileName;
+		queryModelPrefix = queryModelURI + "#";
+		//String queryInstanceName = METAMODEL_PREFIX + queryModelFileName;
+		queryInstanceName = queryModelPrefix + queryModelFileName;
+		queryOwlFileWithPath = kgsDirectory + File.separator + queryModelFileName + ".owl";
+
+		
+		
+		//ConfigurationManagerForIDE cmgr = null;
+		//Object qhModelObj = OntModelProvider.getPrivateKeyValuePair(resource, queryHistoryKey);
+		
+		registerQueryModel(resource, queryModelFileName, queryOwlFileWithPath);
+		
+		
 		
 		// Query instance
 		Individual cgq = queryModel.createIndividual(queryInstanceName, getModelClass(getTheJenaModel(), METAMODEL_QUERY_CLASS));
@@ -1123,6 +1180,19 @@ public class JenaBasedDialogInferenceProcessor extends JenaBasedSadlInferencePro
 		return results;
 	}
 
+	private void registerQueryModel(Resource resource, String queryModelFileName, String queryOwlFileWithPath)
+			throws SadlInferenceException {
+		File f = new File(queryOwlFileWithPath);
+		if (f.exists() && !f.isDirectory()) {
+			throw new SadlInferenceException("Query model file already exists");
+		}
+		else {
+			queryModel = ModelFactory.createOntologyModel(OntModelSpec.OWL_MEM);
+		}
+		
+		OntModelProvider.addPrivateKeyValuePair(resource, queryModelFileName, queryModel);
+	}
+
 
 	
 
@@ -1160,9 +1230,8 @@ private ResultSet[] processWhatWhenQuery(Resource resource, String queryModelFil
 	ConfigurationManagerForIDE cmgr = getConfigMgrForIDE(resource);
 	
 	
-	infereDependencyGraph(resource);
+//	infereDependencyGraph(resource);
 	
-//	ResultSet depG = runReasonerQuery(resource, DEPENDENCY_GRAPH);
 
 
 	long startTime = System.currentTimeMillis();
@@ -1179,7 +1248,7 @@ private ResultSet[] processWhatWhenQuery(Resource resource, String queryModelFil
 	int numOfModels = getNumberOfModels(dbnEqnMap);
 
 	if (numOfModels > 0) {
-		dbnResults = new ResultSet[numOfModels*2+1]; //+1 to accommodate dependency graph 
+		dbnResults = new ResultSet[numOfModels*2]; //+1 to accommodate dependency graph 
 		//dbnResults = new ResultSet[numOfModels]; 
 	} else {
 //		System.out.println("Unable to assemble a model with current knowledge");
@@ -1282,9 +1351,9 @@ private ResultSet[] processWhatWhenQuery(Resource resource, String queryModelFil
 			
 			// Get the CG info for diagram
 			
-			dbnResults[i+1] = retrieveCompGraph(resource, cgIns); //+1 to accomodate dependency graph
+			dbnResults[i] = retrieveCompGraph(resource, cgIns); //+1 to accomodate dependency graph
 			
-			dbnResults[i+1+1] = retrieveValues(resource, cgIns);;
+			dbnResults[i+1] = retrieveValues(resource, cgIns);;
 
 //Temporarily commented out assumption check
 //			String assumpCheck = checkAssumptions(resource, queryModelURI, queryOwlFileWithPath, cgIns);
@@ -1299,7 +1368,7 @@ private ResultSet[] processWhatWhenQuery(Resource resource, String queryModelFil
 
 	    }
 	    else {
-	    	dbnResults[i+1] = null;
+	    	dbnResults[i] = null;
 	    	System.err.println("DBN execution failed. Message: " + dbnResultsJson.toString());
 	    }
 	}// end of models loop
@@ -1309,7 +1378,7 @@ private ResultSet[] processWhatWhenQuery(Resource resource, String queryModelFil
 	if(foundAModel) {
 		//saveMetaDataFile(resource,queryModelURI,queryModelFileName); //to include sensitivity results
 		addQueryModelAsResource(resource, queryModelFileName, queryModelURI, queryOwlFileWithPath, cmgr);
-		dbnResults[0] = runReasonerQuery(resource, DEPENDENCY_GRAPH);
+//		dbnResults[0] = runReasonerQuery(resource, DEPENDENCY_GRAPH);
 
 	} else {
 		dbnResults = null;
@@ -1515,7 +1584,7 @@ private void getOutputDocContextPatterns(TripleElement[] triples, List<Node> inp
 	}
 }
 
-private void infereDependencyGraph(Resource resource) throws Exception {
+private void infereDependencyGraph(Resource resource) throws SadlInferenceException, ConfigurationException, ReasonerNotFoundException, InvalidNameException, QueryParseException, QueryCancelledException {
 	long startTime = System.currentTimeMillis();
 	// Insert dependency graph
 	runInference(resource, GENERICIOs, CHECK_GENERICIOs);
@@ -1836,7 +1905,7 @@ private void getInputPatterns(TripleElement[] triples, List<TripleElement[]> inp
 	}
 }
 
-private void runInference(Resource resource, String query, String testQuery) throws Exception {
+private void runInference(Resource resource, String query, String testQuery) throws SadlInferenceException, ConfigurationException, ReasonerNotFoundException, InvalidNameException, QueryParseException, QueryCancelledException {
 	UpdateAction.parseExecute(query , getTheJenaModel());
 
 	runReasonerQuery(resource, query);
@@ -1847,11 +1916,7 @@ private void runInference(Resource resource, String query, String testQuery) thr
 //	}
 }
 	
-//	@Override
-//	public Object[] insertTriplesAndQuery(Resource resource, List<TripleElement[]> triples) throws SadlInferenceException {
-//		//TODO
-//		return null;
-//	}
+
 
 	private ConfigurationManagerForIDE getConfigMgrForIDE(Resource resource) {
 		ConfigurationManagerForIDE cmgr = null;
@@ -2550,7 +2615,7 @@ private RDFNode getObjectAsLiteralOrResource(Node property, Node object) {
 		return rulefn;
 	}
 
-	private ResultSet runReasonerQuery(Resource resource, String query) throws Exception {
+	private ResultSet runReasonerQuery(Resource resource, String query) throws SadlInferenceException, ConfigurationException, ReasonerNotFoundException, InvalidNameException, QueryParseException, QueryCancelledException {
 		String modelFolderUri = getModelFolderPath(resource); //getOwlModelsFolderPath(path).toString(); 
 		final String format = ConfigurationManager.RDF_XML_ABBREV_FORMAT;
 		IConfigurationManagerForIDE configMgr;
@@ -2772,11 +2837,14 @@ private RDFNode getObjectAsLiteralOrResource(Node property, Node object) {
 			
 			String varLabel = class2lbl.get(otype.toString());
 			String[] ms = lbl2value.get(varLabel);  //class2lbl.get(o.toString()));
-			queryModel.add(outpIns, getTheJenaModel().getProperty(VALUE_PROP), ms[0] );
-			if (ms[1] != null) 
-				queryModel.add(outpIns, getTheJenaModel().getProperty(STDDEV_PROP), ms[1] );
-			if(ms[2] != null)
-				queryModel.add(outpIns, getTheJenaModel().getProperty(VARERROR_PROP), ms[2] );
+			if (ms != null) {
+				if (ms[0] != null) // DBN returns values for intermediate nodes, but KChain does not.
+					queryModel.add(outpIns, getTheJenaModel().getProperty(VALUE_PROP), ms[0] );
+				if (ms[1] != null) 
+					queryModel.add(outpIns, getTheJenaModel().getProperty(STDDEV_PROP), ms[1] );
+				if(ms[2] != null)
+					queryModel.add(outpIns, getTheJenaModel().getProperty(VARERROR_PROP), ms[2] );
+			}
 		}
 	}
 
