@@ -742,6 +742,21 @@ public class JenaBasedDialogModelProcessor extends JenaBasedSadlModelProcessor {
 		NamedNode specifiedPropertyNN = null;
 		if (thenObj instanceof Junction) {
 			List<Node> compareList = IntermediateFormTranslator.conjunctionToList((Junction)thenObj);
+			if (compareList != null && compareList.size() > 1) {
+				if (compareList.get(0) instanceof ProxyNode && 
+						((ProxyNode)compareList.get(0)).getProxyFor() instanceof TripleElement &&
+						((TripleElement)((ProxyNode)compareList.get(0)).getProxyFor()).getSubject() instanceof VariableNode) {
+					TripleElement firstTriple = (TripleElement)((ProxyNode)compareList.get(0)).getProxyFor();
+					for (int i = 1; i < compareList.size(); i++) {
+						Node nextNode = compareList.get(i);
+						if (nextNode instanceof VariableNode) {
+							Node replacement = nodeCheck(new TripleElement(nextNode, firstTriple.getPredicate(), firstTriple.getObject()));
+							compareList.set(i, replacement);
+						}
+					}
+					
+				}
+			}
 			for (Node n : compareList) {
 				if (n instanceof VariableNode) {
 					originalThenObjects.add(((VariableNode)n).getType());
@@ -1905,8 +1920,9 @@ public class JenaBasedDialogModelProcessor extends JenaBasedSadlModelProcessor {
 				((TripleElement)whenObj).setObject(var);
 				String units = valueLiteral.getUnits();
 				TripleElement varTypeTriple = new TripleElement(var, new RDFTypeNode(), type);
-				TripleElement valueTriple = new TripleElement(var, 
-						new NamedNode(SadlConstants.SADL_IMPLICIT_MODEL_VALUE_URI), valueLiteral);
+				NamedNode predNode = new NamedNode(SadlConstants.SADL_IMPLICIT_MODEL_VALUE_URI);
+				predNode.setNodeType(NodeType.DataTypeProperty);
+				TripleElement valueTriple = new TripleElement(var, predNode, valueLiteral);
 				gpes.add(varTypeTriple);
 				gpes.add((TripleElement)whenObj);
 				gpes.add(valueTriple);
@@ -1914,8 +1930,9 @@ public class JenaBasedDialogModelProcessor extends JenaBasedSadlModelProcessor {
 					Literal unitsLiteral = new Literal();
 					unitsLiteral.setValue(units);
 					valueLiteral.setUnits(null);
-					TripleElement unitTriple = new TripleElement(var, 
-							new NamedNode(SadlConstants.SADL_IMPLICIT_MODEL_UNIT_URI), unitsLiteral);
+					NamedNode unitPred = new NamedNode(SadlConstants.SADL_IMPLICIT_MODEL_UNIT_URI);
+					unitPred.setNodeType(NodeType.DataTypeProperty);
+					TripleElement unitTriple = new TripleElement(var, unitPred, unitsLiteral);
 					gpes.add(unitTriple);
 				}
 			}

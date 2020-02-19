@@ -2158,7 +2158,7 @@ public class AnswerCurationManager {
 			sb2.append(escapeDoubleQuotes(tfPythonCode));
 			sb2.append("\")");
 		}
-		sb2.append(").\n");
+		sb2.append(".\n");
 		returnSadlStatements.add(sb2.toString());
 		return returnSadlStatements;
 	}
@@ -3192,7 +3192,7 @@ public class AnswerCurationManager {
 
 	private String getAnswerAndVisualize(ExpectsAnswerContent sc, Object[] rss) throws ConfigurationException  {
 		StringBuilder answer = new StringBuilder();
-		String graphsDirectory = new File(getOwlModelsFolder()).getParent() + "/Graphs";
+		String graphsDirectory = new File(getOwlModelsFolder()).getParent().replace('\\', '/') + "/Graphs";
 		String baseFileName = "";
 		List<String> diagrams = new ArrayList<String>();
 
@@ -4457,7 +4457,9 @@ public class AnswerCurationManager {
 		if (delayedImportAdditions == null) {
 			delayedImportAdditions = new ArrayList<String>();
 		}
-		delayedImportAdditions.add(delayedImportAddition);
+		delayedImportAdditions.add(delayedImportAddition + "\n");
+		getDialogAnswerProvider().addImports(delayedImportAdditions);
+		delayedImportAdditions.clear();
 	}
 
 	public OntModel getDomainModel() {
