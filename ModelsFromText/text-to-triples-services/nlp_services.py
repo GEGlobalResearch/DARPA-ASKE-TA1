@@ -54,5 +54,16 @@ def get_noun_chunks(nlp_service_url: str, sent: str):
     phrases = []
     for chunk_obj in response:
         if 'phrase' in chunk_obj:
-            phrases.append(chunk_obj['phrase'])
+            phrase_str = chunk_obj['phrase']
+            phrase_tokens = phrase_str.split('and')
+            for p_str in phrase_tokens:
+                phrases.append(p_str)
     return phrases
+
+def get_phrase_tokens(phrase_str: str):
+    split_terms = get_split_terms()
+    for term in split_terms
+    phrase_tokens = phrase_str.split('and')
+
+def get_split_terms():
+    return ['times', 'and']

@@ -66,9 +66,11 @@ def populate_graph_entity_triples(g: Graph, entity_uri: str, label: str, similar
     match_text_uri_name = get_valid_uri(match_text)
 
     g.add((URIRef(match_text_uri_name), RDFS.subClassOf, sadl_implicit_model.ScientificConcept))
-    g.add((URIRef(match_text_uri_name), RDFS.seeAlso, URIRef(entity_uri)))
     g.add((URIRef(match_text_uri_name), RDFS.label, Literal(match_text)))
     g.add((URIRef(match_text_uri_name), RDFS.label, Literal(label)))
+
+    if entity_uri is not None:
+        g.add((URIRef(match_text_uri_name), RDFS.seeAlso, URIRef(entity_uri)))
 
     return g
 
