@@ -87,6 +87,10 @@ def clear_graph(body):
     return t2t_obj.clear_graph(body["localityURI"])
 
 
+def upload_domain_ontology(body):
+    return t2t_obj.upload_domain_ontology(body["localityURI"], body["ontologyAsString"])
+
+
 # TODO: Backward compatible method. Need to retire. Do not use.
 def text_to_triples_backward_compatible(body):
     return t2tbcs.text_to_triples_backward_compatible(body, application.config['config_obj'])

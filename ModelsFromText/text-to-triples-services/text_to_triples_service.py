@@ -46,13 +46,13 @@ from segtok.segmenter import split_single
 from rdflib import Graph
 
 
-
 class TextToTriples:
     model_file_path = ''
     model = None
     el = None
     page_cache = {}
     graphs_dictionary = {}
+    domain_ontologies_dictionary = {}
     nlp_service_url = ''
 
     def __init__(self, config):
@@ -100,9 +100,8 @@ class TextToTriples:
             entity_dict = {}
             if sent is not '':
 
-                # get noun chunks
-                phrase_list = nlp.get_noun_chunks(self.nlp_service_url, sent)
-                phrases[line] = phrase_list
+                # for noun chunk extraction
+                mod_sent = sent
 
                 # extract entities and equations
                 entity_dict = extract.extract(self.model, sent)
@@ -118,14 +117,24 @@ class TextToTriples:
                         self.extract_equation_context(entity, wikidata_entity, sent, symbols, line)
                         concept_count = concept_count + 1
                     else:
+                        equation_string = entity["text"]
+                        mod_sent = mod_sent.replace(equation_string, '')
                         self.process_scientific_equation(g, entity, equations, local_graph_uri, line)
                         equation_count = equation_count + 1
+
+                # get noun chunks
+                print("printing mod sentence ...\n")
+                if mod_sent.strip() is not '':
+                    print(mod_sent)
+                    phrase_list = nlp.get_noun_chunks(self.nlp_service_url, mod_sent)
+                    phrases[line] = phrase_list
+
                 line = line + 1
 
         # For every variable (argument and return type), attach augmented types wherever possible
         # Augmented type links the variable to a wikidata concept, thereby semantically grounding it
-        self.add_augmented_types_to_graph(g, equations, symbols)
-        # self.add_augmented_types_phrase_based(g, equations, symbols, phrases)
+        # self.add_augmented_types_to_graph(g, equations, symbols)
+        self.add_augmented_types_phrase_based(g, equations, symbols, phrases)
 
         # Update local graphs dictionary
         self.graphs_dictionary[local_graph_uri] = g
@@ -187,6 +196,10 @@ class TextToTriples:
         # get the lines and get respective chunks
         # apply the filter method
 
+        print("phrases\n")
+        print(phrases)
+        print()
+
         for equation in equations:
 
             eq_line = equation["line"]
@@ -215,6 +228,11 @@ class TextToTriples:
             # we need a mapping between augmented trype string and its wikidata URI
 
             for var_phrase_tup in var_phrase_mapping:
+
+                print("query for tup\n")
+                print(var_phrase_tup)
+                print()
+
                 eq_var = var_phrase_tup[0]
                 aug_type_text = var_phrase_tup[1]
 
@@ -224,9 +242,8 @@ class TextToTriples:
                 query_result = g.query(query_string)
                 for row in query_result:
                     print(row[0])
+                    tp.populate_graph_entity_triples(g, None, aug_type_text, 0, aug_type_text)
                     tp.populate_augmented_type_triples(g, row[0], wikidata_uri=aug_type_text)
-
-        return None
 
     @staticmethod
     def add_augmented_types_to_graph(g: Graph, equations, symbols):
@@ -309,6 +326,17 @@ class TextToTriples:
             message = "Graph cleared"
         return {"message": message}
 
+    def upload_domain_ontology(self, locality_uri: str, domain_ontology_str: str):
+        message = 'ontology successfully uploaded'
+        dg = Graph()
+        dg.parse(data=domain_ontology_str, format="application/rdf+xml")
+
+        # TODO: Error handling if the graph can't be parsed
+
+        self.domain_ontologies_dictionary[locality_uri] = {"domain_ontology_string": domain_ontology_str,
+                                                           "graph": dg}
+        return message
+
 
 def get_replace_chars():
     return ['.', '[', ']', '(', ')', ',', ';', ':', '!', "?", "\""]
@@ -321,6 +349,16 @@ def pre_process(string):
     return string.strip()
 
 
+def remove_symbols(string):
+    string = pre_process(string)
+    mod = ''
+
+    for char in string:
+        if not (33 <= ord(char) <= 64):
+            mod = mod + char
+    return mod.strip()
+
+
 def get_var_phrase_mapping(phrase_list, eq_var_list):
     var_phrase_mapping = []
     for var in eq_var_list:
@@ -328,13 +366,29 @@ def get_var_phrase_mapping(phrase_list, eq_var_list):
         var_tok_len = len(var_tok)
 
         for phrase in phrase_list:
+            phrase = pre_process(phrase)
             phrase_mod = get_phrase_tokens(phrase, var_tok_len)
             for p_mod in phrase_mod:
                 if var is p_mod and '=' not in phrase:
                     print("mapping found\t" + var + "\t" + phrase)
-                    phrase_mod = phrase.replace(var, "")
-                    var_phrase_mapping.append((var, phrase_mod))
+                    # phrase_mod = phrase.replace(var, "")
+                    phrase = remove_symbols(phrase)
+                    if phrase_mod is not '':
+                        phrase = get_phrase_concept_name(phrase, var)
+                        print("tup saved \t" + var + "\t" + phrase)
+                        var_phrase_mapping.append((var, phrase))
     return var_phrase_mapping
+
+
+def get_phrase_concept_name(phrase: str, var: str):
+    concept_name = ''
+    phrase_tokens = phrase.split(' ')
+
+    for phrase in phrase_tokens:
+        if phrase is not var:
+            concept_name = concept_name + phrase
+
+    return concept_name
 
 
 def get_phrase_tokens(phrase: str, length: int):
