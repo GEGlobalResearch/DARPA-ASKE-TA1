@@ -65,7 +65,12 @@ SadlModelElement returns sadl::SadlModelElement :
 	ExtractStatement EOS		|
 	CompareStatement EOS 	 	|
 	SuitabilityStatement EOS	|
-	SeeParentheticalLink
+	SeeParentheticalLink 		|
+	ComparisonTableStatement EOS
+;
+
+ComparisonTableStatement:
+	comparisonTable = ValueTable
 ;
 
 SeeParentheticalLink:
@@ -110,7 +115,7 @@ SaveStatement:
 ;
 
 AnswerCMStatement:
-	'CM:' (sstmt = ((SadlStatement|ModifiedAskStatement|WhatStatement|YesNoAnswerStatement|ExternalEquationStatement|EquationStatement)) | str = STRING)
+	'CM:' (sstmt = ((SadlStatement|ModifiedAskStatement|WhatStatement|YesNoAnswerStatement|ExternalEquationStatement|EquationStatement|ComparisonTableStatement)) | str = STRING)
 ;
 
 ModifiedAskStatement returns sadl::ExpressionScope:
