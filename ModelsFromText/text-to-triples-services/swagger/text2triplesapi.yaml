@@ -220,7 +220,28 @@ paths:
         200:
           description: OK
           schema:
-            $ref: "#/definitions/ClearGraph"
+            $ref: "#/definitions/Message"
+  /uploadDomainOntology:
+    post:
+      tags:
+      - "text2triples"
+      operationId: "app_text_to_triples.upload_domain_ontology"
+      consumes:
+      - application/json
+      produces:
+      - application/json
+      parameters:
+      - in: "body"
+        name: "body"
+        required: true
+        schema:
+          $ref: '#/definitions/DomainOntology'
+      responses:
+        200:
+          description: OK
+          schema:
+            $ref: "#/definitions/Message"
+
 
 
 definitions:
@@ -365,10 +386,21 @@ definitions:
       serializationFormat:
         type: "string"
 
-  ClearGraph:
+  Message:
     type: "object"
     properties:
       message:
+        type: "string"
+
+  DomainOntology:
+    type: "object"
+    required:
+    - "localityURI"
+    - "ontologyAsString"
+    properties:
+      localityURI:
+        type: "string"
+      ontologyAsString:
         type: "string"
 
 
