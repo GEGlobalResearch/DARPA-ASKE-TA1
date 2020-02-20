@@ -1,0 +1,26 @@
+{
+  "inputVariables": [
+    {
+      "name": "mach",
+      "type": "float",
+      "value": "0.9",
+      "minValue": "0.0",
+      "maxValue": "3.0"
+    },
+    {
+      "name": "gamma",
+      "type": "float",
+      "value": "1.4",
+      "minValue": "1.01",
+      "maxValue": "2.0"
+    }
+  ],
+  "outputVariables": [
+    {
+      "name": "aflow",
+      "type": "float"
+    }
+  ],
+  "modelName": "getAir",
+  "plotType": "1"
+}
