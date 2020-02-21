@@ -122,7 +122,9 @@ import com.hp.hpl.jena.rdf.model.Model;
 import com.hp.hpl.jena.rdf.model.ModelFactory;
 import com.hp.hpl.jena.rdf.model.Property;
 import com.hp.hpl.jena.rdf.model.RDFNode;
+import com.hp.hpl.jena.rdf.model.Statement;
 import com.hp.hpl.jena.update.UpdateAction;
+import com.hp.hpl.jena.vocabulary.RDF;
 
 /**
  * @author 212438865
@@ -744,8 +746,9 @@ public class JenaBasedDialogInferenceProcessor extends JenaBasedSadlInferencePro
 
 	public static final String RESULTSQUERY = "prefix imp:<http://sadl.org/sadlimplicitmodel#>\n" + 
 			"prefix mm:<http://aske.ge.com/metamodel#>\n" +
-			"prefix sci:<http://aske.ge.com/sciknow#>\n" + 
-			"select distinct (strafter(str(?CCG),'#') as ?Model) (strafter(str(?Var),'#') as ?Variable) ?Mean ?StdDev\n" + 
+			"prefix sci:<http://aske.ge.com/sciknow#>\n"
+			+ "prefix rdf:<http://www.w3.org/1999/02/22-rdf-syntax-ns#>\n" + 
+			"select distinct (strafter(str(?CCG),'#') as ?Model) (strafter(str(?C),'#') as ?Class) (strafter(str(?Var),'#') as ?Variable) ?Mean ?StdDev\n" + 
 			"where {\n" + 
 			"   {?CCG mm:subgraph ?SG.\n" + 
 			"    filter (?CCG in (COMPGRAPH)).\n" +
@@ -760,7 +763,12 @@ public class JenaBasedDialogInferenceProcessor extends JenaBasedSadlInferencePro
 			"   ?Vinst a ?Var.\n" + 
 			"   ?Vinst imp:value ?Mean.\n" +
 			"   optional{?Vinst imp:stddev ?StdDev.}\n" +
-			"}\n" +
+			"  }\n" +
+			"   ?CGQ mm:execution/mm:compGraph ?CCG.\n" + 
+			"   ?CGQ mm:input ?IVar.\n" + 
+			"   ?Obj ?prop ?IVar.\n" + 
+			"   filter (?prop not in (mm:input))\n" + 
+			"   ?Obj rdf:type ?C.\n" +
 			"}";
 	public static final String RESULTSQUERYHYPO = "prefix imp:<http://sadl.org/sadlimplicitmodel#>\n" + 
 			"prefix mm:<http://aske.ge.com/metamodel#>\n" +
@@ -967,14 +975,7 @@ public class JenaBasedDialogInferenceProcessor extends JenaBasedSadlInferencePro
 //			queryModel = ModelFactory.createOntologyModel(OntModelSpec.OWL_MEM);
 //			OntModelProvider.addPrivateKeyValuePair(resource, queryKey, queryModel);
 
-//		String queryModelFileName;
-//		String queryModelURI ;
-//		String queryModelPrefix ;
-//		String queryInstanceName ;
-//		String queryOwlFileWithPath ;
-//
-//		
-//		
+
 		String kgsDirectory = null;
 		if (ResourceManager.isSyntheticUri(null,resource.getURI())) {
 			File projectRoot = new File("resources/ASKE_P2");
@@ -1042,19 +1043,6 @@ public class JenaBasedDialogInferenceProcessor extends JenaBasedSadlInferencePro
 		return results;
 	}
 
-	private boolean useKChain() {
-		String useKCStr = getPreference(DialogPreferences.USE_ANSWER_KCHAIN_CG_SERVICE.getId());
-		boolean useKC = useKCStr != null ? Boolean.parseBoolean(useKCStr) : false;
-		return useKC;
-	}
-
-	private boolean useDbn() {
-		String useDbnStr = getPreference(DialogPreferences.USE_DBN_CG_SERVICE.getId());
-		boolean useDbn = useDbnStr != null ? Boolean.parseBoolean(useDbnStr) : false;
-		return useDbn;
-	}
-
-	
 	
 	
 	
@@ -1126,10 +1114,10 @@ public class JenaBasedDialogInferenceProcessor extends JenaBasedSadlInferencePro
 		
 		getInputPatterns(triples, inputPatterns, inputNodes);
 
-		ingestInputValues(queryModelPrefix, inputPatterns, cgq);
-		
-
 		getOutputDocContextPatterns(triples, inputNodes, outputPatterns, docPatterns, contextPatterns);
+		
+		ingestInputValues(queryModelPrefix, inputPatterns, contextPatterns, cgq);
+		
 
 		List<RDFNode> inputsList = getRDFInputsList(inputPatterns);
 		
@@ -1571,10 +1559,10 @@ private void getOutputDocContextPatterns(TripleElement[] triples, List<Node> inp
 			if (tr.getPredicate().getURI() != null) {
 				if ( ! inputNodes.contains(tr.getSubject()) && ! inputNodes.contains(tr.getObject()) ) {
 					if (tr.getPredicate().toString().equals("rdf:type")){
-						contextPatterns.add(tr);
+						contextPatterns.add(tr); //rdf(v16, rdf:type, hypersonicsV2:CF6)
 					}
 					else { //if (! (tr.getObject() instanceof Literal)) {
-						outputPatterns.add(tr);
+						outputPatterns.add(tr); //[rdf(v16, hypersonicsV2:machSpeed, v15)]
 					}
 				}
 			} else { //property is null  
@@ -1930,14 +1918,15 @@ private void runInference(Resource resource, String query, String testQuery) thr
 		return cmgr;
 	}
 
-	private void ingestInputValues(String queryModelPrefix, List<TripleElement[]> inputPatterns, Individual cgq) {
+	private void ingestInputValues(String queryModelPrefix, List<TripleElement[]> inputPatterns, List<TripleElement> contextPatterns, Individual cgq) {
 		String ss;
 		String sp;
 		String so;
 		String ns;
-		com.hp.hpl.jena.rdf.model.Resource sss;
+		com.hp.hpl.jena.rdf.model.Resource sss, ssc;
 		Property ssp;
 		RDFNode sso;
+		Statement jtr;
 		TripleElement itr;
 		// ingest input values
 		if (inputPatterns != null && inputPatterns.size() > 0) {
@@ -1958,12 +1947,15 @@ private void runInference(Resource resource, String query, String testQuery) thr
 				ssp = getTheJenaModel().getProperty(sp);
 				sso = getTheJenaModel().getResource(ns+so);
 
+				ssc = getInputClass(ss, contextPatterns);
+				
 				//com.hp.hpl.jena.rdf.model.Resource foo = qhmodel.getResource(ns+so+cgq.ge);
 				
 				// Add property to list of inputs
 //				inputsList.add(ssp);
 				
 				ingestKGTriple(sss, ssp, sso); //(:v0 :altitude :v1)
+				ingestKGTriple(sss, RDF.type, ssc); //v0 rdf:type :CF6)
 				
 				// create triple: cgq, mm:input, inputVar
 				OntProperty inputprop = getModelProperty(getTheJenaModel(), METAMODEL_INPUT_PROP); // getTheJenaModel().getOntProperty(METAMODEL_INPUT_PROP);
@@ -2010,6 +2002,25 @@ private void runInference(Resource resource, String query, String testQuery) thr
 
 
 	
+	/**
+	 * 
+	 * @param ss
+	 * @param contextPatterns
+	 * @param queryModelPrefix 
+	 * @return
+	 */
+	private com.hp.hpl.jena.rdf.model.Resource getInputClass(String ss, List<TripleElement> contextPatterns) {
+		com.hp.hpl.jena.rdf.model.Resource c=null;
+		Node n=null;
+		for(int i=0; i<contextPatterns.size(); i++) {
+			n = contextPatterns.get(i).getSubject();
+			if(n.toString().equals(ss)) {
+				c = getTheJenaModel().getResource(contextPatterns.get(i).getObject().getURI());
+			}
+		}
+		return c;
+	}
+
 	private void addTimePropertyToCE(Individual execInstance, OntProperty timeProperty) throws TranslationException {
 		String DATE_FORMAT_NOW = "yyyy-MM-dd HH:mm:ss";
 		Calendar cal = Calendar.getInstance();
@@ -3244,6 +3255,22 @@ private Map<String, String> getClassLabelMappingFromModelsJson(String json) {
         }
 		return dataContent;
 	}
+
+	private boolean useKChain() {
+		String useKCStr = getPreference(DialogPreferences.USE_ANSWER_KCHAIN_CG_SERVICE.getId());
+		boolean useKC = useKCStr != null ? Boolean.parseBoolean(useKCStr) : false;
+		return useKC;
+	}
+
+	private boolean useDbn() {
+		String useDbnStr = getPreference(DialogPreferences.USE_DBN_CG_SERVICE.getId());
+		boolean useDbn = useDbnStr != null ? Boolean.parseBoolean(useDbnStr) : false;
+		return useDbn;
+	}
+
+	
+
+	
 	
 	/** 
 	 * Gets a file from resourceDir
