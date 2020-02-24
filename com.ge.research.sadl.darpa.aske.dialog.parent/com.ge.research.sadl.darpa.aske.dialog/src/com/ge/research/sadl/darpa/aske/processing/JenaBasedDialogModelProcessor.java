@@ -79,6 +79,7 @@ import com.ge.research.sadl.darpa.aske.curation.AnswerCurationManager;
 import com.ge.research.sadl.darpa.aske.curation.AnswerCurationManager.Agent;
 import com.ge.research.sadl.darpa.aske.dialog.AnswerCMStatement;
 import com.ge.research.sadl.darpa.aske.dialog.CompareStatement;
+import com.ge.research.sadl.darpa.aske.dialog.ComparisonTableStatement;
 import com.ge.research.sadl.darpa.aske.dialog.ExtractStatement;
 import com.ge.research.sadl.darpa.aske.dialog.HowManyValuesStatement;
 import com.ge.research.sadl.darpa.aske.dialog.ModifiedAskStatement;
@@ -150,6 +151,7 @@ import com.ge.research.sadl.sADL.SadlReturnDeclaration;
 import com.ge.research.sadl.sADL.SadlSimpleTypeReference;
 import com.ge.research.sadl.sADL.SadlStatement;
 import com.ge.research.sadl.sADL.SadlTypeReference;
+import com.ge.research.sadl.sADL.ValueTable;
 import com.ge.research.sadl.utils.ResourceManager;
 import com.google.common.base.Preconditions;
 import com.google.common.collect.Iterables;
@@ -501,6 +503,9 @@ public class JenaBasedDialogModelProcessor extends JenaBasedSadlModelProcessor {
 		else if (element instanceof CompareStatement) {
 			return processStatement((CompareStatement)element);
 		}
+		else if (element instanceof ComparisonTableStatement) {
+			return processStatement((ComparisonTableStatement)element);
+		}
 		else if (element instanceof SuitabilityStatement) {
 			return processStatement((SuitabilityStatement)element);
 		}
@@ -699,7 +704,7 @@ public class JenaBasedDialogModelProcessor extends JenaBasedSadlModelProcessor {
 		
 		return new CompareContent(element, Agent.USER, comparisonRules);
 	}
-
+	
 	private StatementContent processStatement(SuitabilityStatement element) throws InvalidNameException, InvalidTypeException, TranslationException {
 		Expression whenExpr = element.getSuitableExpression();
 		Expression thenExpr = element.getWhat();
@@ -1587,6 +1592,17 @@ public class JenaBasedDialogModelProcessor extends JenaBasedSadlModelProcessor {
 					throw new IOException("Statement has unexpected ending character.");
 				}
 			}
+		}
+		return null;
+	}
+	
+	private StatementContent processStatement(ComparisonTableStatement element) {
+		ValueTable ct = element.getComparisonTable();
+		if (ct != null) {
+			AnswerContent ac = new AnswerContent(element, Agent.CM);
+			ac.setOtherResults(ct);
+			ac.setAnswer(ct.toString());
+			return ac;
 		}
 		return null;
 	}

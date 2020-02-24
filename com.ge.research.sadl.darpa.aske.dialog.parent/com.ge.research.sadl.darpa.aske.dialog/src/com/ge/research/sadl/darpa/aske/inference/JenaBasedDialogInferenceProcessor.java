@@ -927,8 +927,8 @@ public class JenaBasedDialogInferenceProcessor extends JenaBasedSadlInferencePro
 		System.out.println("InsertTriplesAndQuery " + time);
 		long startTime = System.currentTimeMillis();
 
+		useDbn = useDbn();
 		useDbn = useKC = false;
-		//useDbn = useDbn();
 		useKC = useKChain();
 
 		//		System.out.println(" >> Builtin classes discovered by the service loader:");

@@ -322,14 +322,55 @@ public class DialogAnswerProvider extends BaseDialogAnswerProvider {
 				if (quote) {
 					modContent = generateDoubleQuotedContentForDialog(content);
 				} else {
+					int numSpacesBeforeEachLine = 0;
 					if (prependAgent) {
-						modContent = content.startsWith("CM:") ? content : ("CM: " + content);
+						if (content.startsWith("CM:")) {
+							modContent = content;
+						}
+						else {
+							modContent = "CM: " + content;
+							numSpacesBeforeEachLine += 4;
+						}
 					}
 					else {
 						modContent = content;
 					}
 					if (!modContent.trim().endsWith(".") && !modContent.trim().endsWith("?") && !modContent.trim().endsWith(")")) {
 						modContent += ".";
+					}
+					if (ctx instanceof EObject && getSourceText((EObject) ctx) != null) {
+						Object[] srcinfo = getSourceText((EObject) ctx);
+						// String srctext = (String) srcinfo[0];
+						int start = (int) srcinfo[1];
+						int length = (int) srcinfo[2];
+						// find location of this in document
+						if (addLeadingSpaces && !srcinfo[0].toString().endsWith(" ")) {
+							modContent = " " + modContent;
+							numSpacesBeforeEachLine++;
+						}
+						loc = start + length + 1;
+						int docLen = document.getLength();
+						int testLen = Math.min(5, docLen - loc);
+						String test = document.get(loc, testLen);
+						if (addLeadingSpaces && !test.startsWith(" ")) {
+							modContent = " " + modContent;
+							numSpacesBeforeEachLine++;
+						}
+					}
+					if (numSpacesBeforeEachLine > 0) {
+						String lines[] = modContent.split("\\r?\\n");
+						StringBuilder sb = new StringBuilder(lines[0]);
+						sb.append("\n");
+						for (int i = 1; i < lines.length; i++) {
+							for (int j = 0; j < numSpacesBeforeEachLine; j++) {
+								sb.append(" ");
+							}
+							sb.append(lines[i]);
+							if (i < lines.length - 1) {
+								sb.append("\n");
+							}
+						}
+						modContent = sb.toString();
 					}
 				}
 				if (ctx instanceof EObject && getSourceText((EObject) ctx) != null) {
@@ -338,23 +379,18 @@ public class DialogAnswerProvider extends BaseDialogAnswerProvider {
 					int start = (int) srcinfo[1];
 					int length = (int) srcinfo[2];
 					// find location of this in document
-					if (addLeadingSpaces && !srcinfo[0].toString().endsWith(" ")) {
-						modContent = " " + modContent;
-					}
 					loc = start + length + 1;
 					int docLen = document.getLength();
 					int testLen = Math.min(5, docLen - loc);
 					String test = document.get(loc, testLen);
-					if (addLeadingSpaces && !test.startsWith(" ")) {
-						modContent = " " + modContent;
-					}
 					if (!test.startsWith("\r\n")) {
 						modContent += "\r\n";
 					}
 					if (!srcinfo[0].toString().endsWith(System.lineSeparator())) {
 						modContent = System.lineSeparator() + modContent;
 					}
-					document.replace(start + length + getCumulativeOffset() + 1, 0, modContent);
+					int loc2 = Math.min(docLen, start + length + getCumulativeOffset() + 1);
+					document.replace(loc2, 0, modContent);
 					addToCumulativeOffset(modContent.length());
 					loc = start + length + 1;
 					if (repositionCursor && document instanceof XtextDocument && ctx instanceof EObject) {

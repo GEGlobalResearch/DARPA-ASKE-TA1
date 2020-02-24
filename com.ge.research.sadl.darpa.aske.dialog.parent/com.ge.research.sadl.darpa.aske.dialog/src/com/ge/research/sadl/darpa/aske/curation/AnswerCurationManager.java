@@ -44,6 +44,8 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.StringReader;
+import java.io.StringWriter;
+import java.io.Writer;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.net.ConnectException;
@@ -105,6 +107,7 @@ import com.ge.research.sadl.darpa.aske.processing.imports.AnswerExtractionProces
 import com.ge.research.sadl.darpa.aske.processing.imports.IModelFromCodeExtractor;
 import com.ge.research.sadl.darpa.aske.processing.imports.KChainServiceInterface;
 import com.ge.research.sadl.darpa.aske.processing.imports.TextProcessingServiceInterface.EquationVariableContextResponse;
+import com.ge.research.sadl.external.XMLHelper;
 import com.ge.research.sadl.darpa.aske.processing.imports.TextProcessor;
 import com.ge.research.sadl.jena.IntermediateFormTranslator;
 import com.ge.research.sadl.jena.JenaBasedSadlModelProcessor;
@@ -147,6 +150,7 @@ import com.ge.research.sadl.reasoner.TranslationException;
 import com.ge.research.sadl.reasoner.utils.SadlUtils;
 import com.ge.research.sadl.utils.NetworkProxySettingsProvider;
 import com.ge.research.sadl.utils.ResourceManager;
+import com.google.common.base.Optional;
 import com.hp.hpl.jena.ontology.HasValueRestriction;
 import com.hp.hpl.jena.ontology.Individual;
 import com.hp.hpl.jena.ontology.OntClass;
@@ -417,7 +421,10 @@ public class AnswerCurationManager {
 		// clear any existing localityURI graph before processing text.
 // TODO this should eventually be a user choice?				
 		String clearMsg = getExtractionProcessor().getTextProcessor().clearGraph(localityURI);
-
+		
+		String domainModel = getTextExtractionDomainModel();
+		System.out.println(domainModel);
+		
 		int[] results = getTextProcessor().processText(inputIdentifier, content, localityURI, prefix);
 		if (results == null) {
 			throw new AnswerExtractionException("Text processing service returned no information");
@@ -454,6 +461,28 @@ public class AnswerCurationManager {
 		}
 		File of = saveTextOwlFile(outputOwlFileName);
 		return of;
+	}
+
+	private String getTextExtractionDomainModel() {
+		OntModel domainModel = getDomainModel();
+		ExtendedIterator<Ontology> exOntItr = domainModel.listOntologies();
+		while (exOntItr.hasNext()) {
+			System.out.println(exOntItr.next().getURI());
+		}
+		String uri;
+		try {
+			Writer writer = new StringWriter();
+			domainModel.write(writer, "RDF/XML");
+			Optional<String> xmlbaseuri = new XMLHelper().tryReadBaseUri(writer.toString());
+			if (xmlbaseuri.isPresent()) {
+				uri = xmlbaseuri.get();
+			}
+			return writer.toString();
+		}
+		catch (Exception e) {
+			e.printStackTrace();
+		}
+		return null;
 	}
 
 	private void addToFileLocalityMap(String canonicalPath, String locality) {
@@ -3281,7 +3310,7 @@ public class AnswerCurationManager {
 											
 						String graphicURL = "file://" + graphsDirectory + "/" + baseFileName + ".svg"; //file url
 						//sadlAnswer += 
-						String seeStmt = "(See \"model diagram: \'" + graphicURL + "\'\".)\n";
+						String seeStmt = "\"" + graphicURL + "\"";
 						diagrams.add(seeStmt);
 //						answer.append(sadlAnswer);
 						cntr++;
@@ -3295,11 +3324,8 @@ public class AnswerCurationManager {
 			
 			if (cntr > 0) {
 				if(isTable) {
-					answer.append(generateSadlTable(table));
-				}
-
-				for(String seeStmt : diagrams) {
-					answer.append(seeStmt);
+					diagrams.add(0, "\'References: see model diagram\'");
+					answer.append(generateSadlTable(table, diagrams));
 				}
 			}
 		}
@@ -3311,24 +3337,86 @@ public class AnswerCurationManager {
 	/**
 	 * Generate a sadl table from results table
 	 * @param table
+	 * @param diagrams 
 	 * @return sadl string
 	 */
-	private Object generateSadlTable(HashMap<String, HashMap<String, String>> table) {
-		StringBuilder sb = new StringBuilder();
-		sb.append("{[' '\t ");
-		
+	private Object generateSadlTable(HashMap<String, HashMap<String, String>> table, List<String> diagrams) {
+		// first column for comparanda
+		String firstColHeader = "'Options'";
+		List<Integer> colWidths = new ArrayList<Integer>();
+		colWidths.add(firstColHeader.length());
+
+		// next columns for properties to be compared
 		String someC = (String) table.keySet().toArray()[0];
-		
 		for(String prop : table.get(someC).keySet()) {
-			sb.append(", " + prop + "\t");
+			colWidths.add(prop.length());	
 		}
+		
+		// last column for links
+		int maxLinkLen = 0;
+		for(String seeStmt : diagrams) {
+			int linkLen = seeStmt.length();
+			if (linkLen > maxLinkLen) {
+				maxLinkLen = linkLen;
+			}
+		}
+		colWidths.add(maxLinkLen);
+		
+		// now look for any elements larger than header
+		for(String c : table.keySet()) {
+			if (c.length() > colWidths.get(0)) {
+				colWidths.set(0, c.length());
+			}
+			int idx = 1;
+			for(String v : table.get(c).keySet()) {
+				String val = table.get(c).get(v);
+				if (val.length() > colWidths.get(idx)) {
+					colWidths.set(idx, val.length());
+				}
+				idx++;
+			}
+		}
+
+		// now output the header row
+		String formatStr = "%" + colWidths.get(0) + "s";
+//		for (int i = 1; i < colWidths.size(); i++) {
+//			formatStr = formatStr + ",%s-" + colWidths.get(i);
+//		}
+		
+		StringBuilder sb = new StringBuilder();
+//		sb.append("{[' '\t ");
+		sb.append("{[");
+		sb.append(String.format(formatStr, firstColHeader));
+		
+		int idx = 1;	
+		for(String prop : table.get(someC).keySet()) {
+//			sb.append(", " + prop + "\t");
+			sb.append(", ");
+			formatStr = "%-" + colWidths.get(idx++) + "s";
+			sb.append(String.format(formatStr, prop));
+		}
+		formatStr = "%-" + colWidths.get(idx) + "s";
+		sb.append(", ");
+		sb.append(String.format(formatStr, diagrams.get(0)));
 		sb.append("],\n");
 		
+		// now output the value rows
+		int rowNum = 0;
 		for(String c : table.keySet()) {
-			sb.append("     [" + c + "\t ");
+//			sb.append("     [" + c + "\t ");
+			idx = 0;
+			sb.append(" [");
+			formatStr = "%-" + colWidths.get(idx++) + "s";
+			sb.append(String.format(formatStr, c));
 			for(String v : table.get(c).keySet()) {
-				sb.append(", " + table.get(c).get(v));
+//				sb.append(", " + table.get(c).get(v));
+				sb.append(", ");
+				formatStr = "%-" + colWidths.get(idx++) + "s";
+				sb.append(String.format(formatStr, table.get(c).get(v)));
 			}
+			formatStr = "%-" + colWidths.get(idx) + "s";
+			sb.append(", ");
+			sb.append(String.format(formatStr, diagrams.get(++rowNum)));
 			sb.append("],\n");
 		}
 		sb.deleteCharAt(sb.length()-2); //delete last comma

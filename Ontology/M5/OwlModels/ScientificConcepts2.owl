@@ -198,6 +198,12 @@
       </owl:Class>
     </rdfs:subClassOf>
   </owl:Class>
+  <owl:Class rdf:ID="Mass">
+    <rdfs:subClassOf rdf:resource="sadlimplicitmodel#UnittedQuantity"/>
+  </owl:Class>
+  <owl:Class rdf:ID="Air">
+    <rdfs:subClassOf rdf:resource="#Gas"/>
+  </owl:Class>
   <owl:Class rdf:nodeID="A0">
     <rdfs:subClassOf>
       <owl:Restriction>
@@ -212,12 +218,6 @@
       </owl:Restriction>
     </rdfs:subClassOf>
     <rdfs:subClassOf rdf:resource="sadllistmodel#List"/>
-  </owl:Class>
-  <owl:Class rdf:ID="Mass">
-    <rdfs:subClassOf rdf:resource="sadlimplicitmodel#UnittedQuantity"/>
-  </owl:Class>
-  <owl:Class rdf:ID="Air">
-    <rdfs:subClassOf rdf:resource="#Gas"/>
   </owl:Class>
   <owl:ObjectProperty rdf:ID="time">
     <rdfs:domain rdf:resource="#Position"/>
