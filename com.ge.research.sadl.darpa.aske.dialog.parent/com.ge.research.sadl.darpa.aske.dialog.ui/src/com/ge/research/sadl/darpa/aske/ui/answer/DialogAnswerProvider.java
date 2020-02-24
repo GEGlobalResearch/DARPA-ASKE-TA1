@@ -43,6 +43,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.ExecutionException;
 
 import org.eclipse.core.filesystem.EFS;
 import org.eclipse.core.filesystem.IFileStore;
@@ -62,9 +63,13 @@ import org.eclipse.emf.ecore.resource.Resource;
 import org.eclipse.jface.text.BadLocationException;
 import org.eclipse.jface.text.IDocument;
 import org.eclipse.jface.text.IRegion;
+import org.eclipse.swt.SWT;
+import org.eclipse.swt.custom.BusyIndicator;
 import org.eclipse.swt.custom.StyledText;
+import org.eclipse.swt.graphics.Cursor;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Display;
+import org.eclipse.swt.widgets.Shell;
 import org.eclipse.ui.IWorkbench;
 import org.eclipse.ui.IWorkbenchPage;
 import org.eclipse.ui.IWorkbenchPart;
@@ -92,19 +97,29 @@ import com.ge.research.sadl.builder.ConfigurationManagerForIdeFactory;
 import com.ge.research.sadl.builder.IConfigurationManagerForIDE;
 import com.ge.research.sadl.darpa.aske.curation.AnswerCurationManager;
 import com.ge.research.sadl.darpa.aske.curation.BaseDialogAnswerProvider;
+import com.ge.research.sadl.darpa.aske.curation.EquationNotFoundException;
 import com.ge.research.sadl.darpa.aske.preferences.DialogPreferences;
 import com.ge.research.sadl.darpa.aske.processing.DialogConstants;
+import com.ge.research.sadl.darpa.aske.processing.ExpectsAnswerContent;
 import com.ge.research.sadl.darpa.aske.processing.QuestionWithCallbackContent;
 import com.ge.research.sadl.darpa.aske.processing.StatementContent;
+import com.ge.research.sadl.darpa.aske.processing.imports.AnswerExtractionException;
 import com.ge.research.sadl.darpa.aske.ui.editor.DialogEditors;
 import com.ge.research.sadl.darpa.aske.ui.editor.DialogEditors.Options;
 import com.ge.research.sadl.model.visualizer.IGraphVisualizer;
+import com.ge.research.sadl.processing.SadlInferenceException;
 import com.ge.research.sadl.reasoner.ConfigurationException;
+import com.ge.research.sadl.reasoner.InvalidNameException;
+import com.ge.research.sadl.reasoner.QueryCancelledException;
+import com.ge.research.sadl.reasoner.QueryParseException;
+import com.ge.research.sadl.reasoner.ReasonerNotFoundException;
+import com.ge.research.sadl.reasoner.TranslationException;
 import com.ge.research.sadl.reasoner.utils.SadlUtils;
 import com.ge.research.sadl.sADL.SadlImport;
 import com.ge.research.sadl.sADL.SadlModel;
 import com.ge.research.sadl.ui.handlers.SadlActionHandler;
 import com.google.common.base.Preconditions;
+import com.hp.hpl.jena.ontology.OntModel;
 
 public class DialogAnswerProvider extends BaseDialogAnswerProvider {
 
@@ -797,4 +812,67 @@ public class DialogAnswerProvider extends BaseDialogAnswerProvider {
 		this.cumulativeOffset = cumulativeOffset;
 	}
 
+	private String retvalue = null;
+	
+	@Override
+	public String processUserQueryNewThreadWithBusyIndicator(Resource resource, OntModel theModel, String modelName, ExpectsAnswerContent sc) {
+		Display display = PlatformUI.getWorkbench().getDisplay();
+	 	BusyIndicator.showWhile(display, new Runnable() {				
+	 		@Override
+	 		public void run() {
+	 			long time1 = System.currentTimeMillis();				
+	 			try {		
+	 				String retstr = getAnswerConfigurationManager().processUserRequest(resource, theModel, modelName, sc);
+	 				setRetvalue(retstr);
+	 			} catch (ConfigurationException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				} catch (ExecutionException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				} catch (IOException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				} catch (TranslationException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				} catch (InvalidNameException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				} catch (ReasonerNotFoundException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				} catch (QueryParseException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				} catch (QueryCancelledException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				} catch (SadlInferenceException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				} catch (EquationNotFoundException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				} catch (AnswerExtractionException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				} finally {
+	 				long time2 = System.currentTimeMillis();
+	 				long delay = time2 - time1;
+	 				LOGGER.debug("Time to process user query: " + delay + " ms");
+	 			}
+	 		}
+	 	});
+		return getRetvalue();
+	}
+
+	public String getRetvalue() {
+		return retvalue;
+	}
+
+	public void setRetvalue(String retvalue) {
+		this.retvalue = retvalue;
+	}
+	
 }

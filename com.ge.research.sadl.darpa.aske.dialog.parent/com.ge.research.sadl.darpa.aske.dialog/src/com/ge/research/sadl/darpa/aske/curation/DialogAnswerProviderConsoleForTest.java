@@ -57,6 +57,7 @@ import org.eclipse.emf.ecore.resource.Resource;
 
 import com.ge.research.sadl.darpa.aske.curation.AnswerCurationManager.Agent;
 import com.ge.research.sadl.darpa.aske.processing.AnswerContent;
+import com.ge.research.sadl.darpa.aske.processing.ExpectsAnswerContent;
 import com.ge.research.sadl.darpa.aske.processing.InformationContent;
 import com.ge.research.sadl.darpa.aske.processing.MixedInitiativeElement;
 import com.ge.research.sadl.darpa.aske.processing.MixedInitiativeTextualResponse;
@@ -65,6 +66,7 @@ import com.ge.research.sadl.darpa.aske.processing.StatementContent;
 import com.ge.research.sadl.reasoner.ConfigurationException;
 import com.ge.research.sadl.reasoner.IConfigurationManager;
 import com.ge.research.sadl.reasoner.utils.SadlUtils;
+import com.hp.hpl.jena.ontology.OntModel;
 
 public class DialogAnswerProviderConsoleForTest extends BaseDialogAnswerProvider {
 
@@ -434,4 +436,12 @@ public class DialogAnswerProviderConsoleForTest extends BaseDialogAnswerProvider
 		// TODO Auto-generated method stub
 		
 	}
+
+	@Override
+	public String processUserQueryNewThreadWithBusyIndicator(Resource resource, OntModel theModel, String modelName,
+			ExpectsAnswerContent sc) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
 }

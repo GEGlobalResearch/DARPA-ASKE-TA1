@@ -4031,6 +4031,7 @@ public class AnswerCurationManager {
 				else if (sc instanceof ExpectsAnswerContent) {
 					try {
 						String answer = processUserRequest(resource, ontModel, modelName, (ExpectsAnswerContent)sc);
+//						String answer = getDialogAnswerProvider().processUserQueryNewThreadWithBusyIndicator(resource, ontModel, modelName, (ExpectsAnswerContent) sc);
 						if (answer != null) {
 							addQuestionAndAnswer(sc.getText().trim(), answer.trim());
 							AnswerPendingContent pending = new AnswerPendingContent(null, Agent.CM, (ExpectsAnswerContent) sc);

@@ -43,6 +43,7 @@ import java.util.Map;
 import org.eclipse.emf.ecore.resource.Resource;
 
 import com.ge.research.sadl.darpa.aske.curation.AnswerCurationManager;
+import com.hp.hpl.jena.ontology.OntModel;
 
 public interface IDialogAnswerProvider {
 
@@ -82,5 +83,13 @@ public interface IDialogAnswerProvider {
 	void addToCumulativeOffset(int addition);
 	
 	void clearCumulatifeOffset();
+
+	/**
+	 * Method to process a user query on a new thread with a busy cursor
+	 * 
+	 * @return
+	 */
+	String processUserQueryNewThreadWithBusyIndicator(Resource resource, OntModel theModel, String modelName,
+			ExpectsAnswerContent sc);
 
 }
