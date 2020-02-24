@@ -921,11 +921,14 @@ public class JenaBasedDialogInferenceProcessor extends JenaBasedSadlInferencePro
 		setModelFolderPath(getModelFolderPath(resource));
 		setModelName(OntModelProvider.getModelName(resource));
 		setTheJenaModel(OntModelProvider.find(resource));
+		long startTime;
 		
-		SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-		String time = sdf.format(Calendar.getInstance().getTime());
-		System.out.println("InsertTriplesAndQuery " + time);
-		long startTime = System.currentTimeMillis();
+		if(debugMode) {
+			SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+			String time = sdf.format(Calendar.getInstance().getTime());
+			System.out.println("InsertTriplesAndQuery " + time);
+			startTime = System.currentTimeMillis();
+		}
 
 		useDbn = useDbn();
 		useDbn = useKC = false;
@@ -1035,11 +1038,13 @@ public class JenaBasedDialogInferenceProcessor extends JenaBasedSadlInferencePro
 		
 		//} //if (useDBN)
 		
-		long endTime = System.currentTimeMillis();
-		System.out.println("InsertTriplesAndQuery: " + (endTime - startTime) );
-		sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-		time = sdf.format(Calendar.getInstance().getTime());
-		System.out.println("InsertTriplesAndQuery returned " + time);
+		if(debugMode) {
+			long endTime = System.currentTimeMillis();
+			System.out.println("InsertTriplesAndQuery: " + (endTime - startTime) );
+			SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+			String time = sdf.format(Calendar.getInstance().getTime());
+			System.out.println("InsertTriplesAndQuery returned " + time);
+		}
 		return results;
 	}
 
@@ -1221,11 +1226,11 @@ private ResultSet[] processWhatWhenQuery(Resource resource, String queryModelFil
 //	infereDependencyGraph(resource);
 	
 
-
+	System.out.print("Retrieving composite model eqns: ");
 	long startTime = System.currentTimeMillis();
 	eqnsResults = retrieveCG(inputsList, outputsList);
 	long endTime = System.currentTimeMillis();
-	System.out.println("Retrieve composite model eqns: " + (endTime - startTime) );
+	System.out.println(endTime - startTime);
 	
 	//dbnEqns = createDbnEqnMap(eqnsResults);
 	dbnEqnMap = createOutputEqnMap(eqnsResults);
@@ -1267,10 +1272,11 @@ private ResultSet[] processWhatWhenQuery(Resource resource, String queryModelFil
 
 		class2lbl 	= getClassLabelMappingFromModelsJson(nodesModelsJSONStr);
 		
+		System.out.print("Translating KG results into json: ");
 		startTime = System.currentTimeMillis();
 		cgJson = kgResultsToJson(nodesModelsJSONStr, "prognostic", "");
 		endTime = System.currentTimeMillis();
-		System.out.println("Translate KG results into json: " + (endTime - startTime) + "  Payload size: " + cgJson.length());
+		System.out.println((endTime - startTime)); // + "  Payload size: " + cgJson.length());
 		
 		if (useDbn) {
 		
@@ -1290,18 +1296,20 @@ private ResultSet[] processWhatWhenQuery(Resource resource, String queryModelFil
 // TODO should this be else if? code following does not handle multiple responses, would need to be refactored and called for each...		
 		if (useKC) {
 			
+			System.out.print("Translating KG json into KC json: ");
 			startTime = System.currentTimeMillis();
 			cgJson = generateDBNjson(cgJson);
 			endTime = System.currentTimeMillis();
-			System.out.println("Translate KG json into KC json: " + (endTime - startTime) + "  Payload size: " + cgJson.length());
+			System.out.println((endTime - startTime)); // + "  Payload size: " + cgJson.length());
 
 			kchainBuildJson = generateKChainBuildJson(cgJson);
 			
 			if (kchainBuildJson != null) {
+				System.out.print("Building KChain: ");
 				startTime = System.currentTimeMillis();
 				String buildResult = buildKChain(kchainBuildJson);
 				endTime = System.currentTimeMillis();
-				System.out.println("Build KChain: " + (endTime - startTime) + "  Payload size: " + kchainBuildJson.toString().length());
+				System.out.println((endTime - startTime)); // + "  Payload size: " + kchainBuildJson.toString().length());
 
 				if ( getBuildKChainOutcome(buildResult) ) {
 			
@@ -1417,10 +1425,11 @@ private String buildAndExecuteKChain(String cgJson)
 	long endTime;
 	kchainEvalJson = createExecJson(cgJson); //To be changed when service ready
 
+	System.out.print("Executing KChain: ");
 	startTime = System.currentTimeMillis();
 	kchainResultsJson = executeKChain(kchainEvalJson);
 	endTime = System.currentTimeMillis();
-	System.out.println("Eval KChain: " + (endTime - startTime) + "   Payload size: " + kchainEvalJson.toString().length());
+	System.out.println((endTime - startTime)); // + "   Payload size: " + kchainEvalJson.toString().length());
 	return kchainResultsJson;
 }
 
@@ -1430,13 +1439,14 @@ private String retrieveModelsAndNodes(String listOfEqns, Individual cgIns, List<
 	String modelsJSONString = "";
 	String nodesJSONString = "";
 	String expressionsJSONString = "";
+	System.out.print("Retrieving model info from KG: ");
 	startTime = System.currentTimeMillis();
 //	modelsJSONString = retrieveCGforDBNSpec(listOfEqns, contextClassList, cgIns, RETRIEVE_MODELS_WEXP);
 	modelsJSONString = retrieveCGforDBNSpec(listOfEqns, contextClassList, cgIns, RETRIEVE_MODELS);
 	nodesJSONString = retrieveCGforDBNSpec(listOfEqns, null, cgIns, RETRIEVE_NODES);
 	expressionsJSONString = retrieveCGforDBNSpec(listOfEqns, contextClassList, cgIns, RETRIEVE_MODEL_EXPRESSIONS);
 	endTime = System.currentTimeMillis();
-	System.out.println("Retrieve model and nodes: " + (endTime - startTime) );
+	System.out.println((endTime - startTime));
 
 	String nodesModelsJSONStr = "{ \"models\": " + modelsJSONString + ", \"nodes\": "  + nodesJSONString + ", \"expressions\": " + expressionsJSONString + " }";
 	if (debugMode) {System.out.println(nodesModelsJSONStr);}
@@ -1573,6 +1583,7 @@ private void getOutputDocContextPatterns(TripleElement[] triples, List<Node> inp
 }
 
 private void infereDependencyGraph(Resource resource) throws SadlInferenceException, ConfigurationException, ReasonerNotFoundException, InvalidNameException, QueryParseException, QueryCancelledException {
+	System.out.print("Dependency graph inference: ");
 	long startTime = System.currentTimeMillis();
 	// Insert dependency graph
 	runInference(resource, GENERICIOs, CHECK_GENERICIOs);
@@ -1580,7 +1591,7 @@ private void infereDependencyGraph(Resource resource) throws SadlInferenceExcept
 	//String tmp = DEPENDENCY_GRAPH_INSERT
 	runInference(resource, DEPENDENCY_GRAPH_INSERT,CHECK_DEPENDENCY);
 	long endTime = System.currentTimeMillis();
-	System.out.println("Generate dependency graph: " + (endTime - startTime) );
+	System.out.println((endTime - startTime) );
 }
 
 
