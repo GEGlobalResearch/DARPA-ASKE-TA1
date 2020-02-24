@@ -3194,9 +3194,16 @@ public class AnswerCurationManager {
 		StringBuilder answer = new StringBuilder();
 		String graphsDirectory = new File(getOwlModelsFolder()).getParent().replace('\\', '/') + "/Graphs";
 		String baseFileName = "";
+		List<String> diagrams = new ArrayList<String>();
+		HashMap<String,HashMap<String,String>> table = new HashMap<String,HashMap<String,String>>();
+		
+		boolean isTable = false;
 		
 		if (rss != null) {
 			int cntr = 0;
+			if (rss.length > 2){
+				isTable = true;
+			}
 			for (Object rs : rss) {
 				if (rs instanceof ResultSet) {
 		 			String[] colnames = ((ResultSet) rs).getColumnNames();
@@ -3208,20 +3215,20 @@ public class AnswerCurationManager {
 						if (visualizer != null) {
 							//String graphsDirectory = new File(getOwlModelsFolder()).getParent() + "/Graphs";
 							new File(graphsDirectory).mkdir();
-							if(cntr == 0) {
-								baseFileName = "EquationDependencyGraph";
-
-								visualizer.initialize(
-										graphsDirectory,
-										baseFileName,
-										baseFileName,
-										null,
-										IGraphVisualizer.Orientation.TD,
-										"Equation Dependency Graph"
-										);
-								cntr++;
-							}
-							else {
+//							if(cntr == 0) {
+//								baseFileName = "EquationDependencyGraph";
+//
+//								visualizer.initialize(
+//										graphsDirectory,
+//										baseFileName,
+//										baseFileName,
+//										null,
+//										IGraphVisualizer.Orientation.TD,
+//										"Equation Dependency Graph"
+//										);
+//								cntr++;
+//							}
+//							else {
 								baseFileName = "QueryMetadata_" + ((ResultSet)rs).getResultAt(0, 0).toString();
 
 								visualizer.initialize(
@@ -3232,7 +3239,7 @@ public class AnswerCurationManager {
 										IGraphVisualizer.Orientation.TD,
 										"Composed Model " + ((ResultSet)rs).getResultAt(0, 0).toString()
 										);
-							}
+//							}
 							((ResultSet) rstemp).setShowNamespaces(false);
 							try {
 								visualizer.graphResultSetData(rstemp);	
@@ -3251,14 +3258,32 @@ public class AnswerCurationManager {
 		    			if(cntr > 1)
 		    				answer.append(",\n");
 						
-						String sadlAnswer = addResultsToDialog((ResultSet) rs);
+//						String sadlAnswer = addResultsToDialog((ResultSet) rs, isTable);
 						if(cntr <= 1) {
 //							String graphicURL = "file://" + graphsDirectory + "/" + "EquationDependencyGraph.svg"; //file url
 //							sadlAnswer += "(See \"Equation dependency diagram: \'" + graphicURL + "\'\".)\n";
 						}
+						
+						ResultSet rset = (ResultSet) rs;
+						rset.setShowNamespaces(false);
+						
+						if (isTable) {
+							for(int i=0; i< rset.getRowCount(); i++) {
+								HashMap<String,String> varVal = new HashMap<String,String>();
+								varVal.put(rset.getResultAt(i, 2).toString(), SadlUtils.formatNumberList(rset.getResultAt(i, 3).toString(), 5));
+								table.put(rset.getResultAt(i, 1).toString(),  varVal); 
+							}
+						}
+						else {
+							answer.append(addResultsToDialog((ResultSet) rs));
+
+						}
+											
 						String graphicURL = "file://" + graphsDirectory + "/" + baseFileName + ".svg"; //file url
-						sadlAnswer += "  (See \"model diagram: \'" + graphicURL + "\'\".)";
-						answer.append(sadlAnswer);
+						//sadlAnswer += 
+						String seeStmt = "(See \"model diagram: \'" + graphicURL + "\'\".)\n";
+						diagrams.add(seeStmt);
+//						answer.append(sadlAnswer);
 						cntr++;
 					}
 				}
@@ -3267,35 +3292,72 @@ public class AnswerCurationManager {
 				}
 				
 			}
+			
 			if (cntr > 0) {
-				//answer.append(".\n");
+				if(isTable) {
+					answer.append(generateSadlTable(table));
+				}
+
+				for(String seeStmt : diagrams) {
+					answer.append(seeStmt);
+				}
 			}
 		}
+		
 		return answer.toString();
 	}
 
 
+	/**
+	 * Generate a sadl table from results table
+	 * @param table
+	 * @return sadl string
+	 */
+	private Object generateSadlTable(HashMap<String, HashMap<String, String>> table) {
+		StringBuilder sb = new StringBuilder();
+		sb.append("{[' '\t ");
+		
+		String someC = (String) table.keySet().toArray()[0];
+		
+		for(String prop : table.get(someC).keySet()) {
+			sb.append(", " + prop + "\t");
+		}
+		sb.append("],\n");
+		
+		for(String c : table.keySet()) {
+			sb.append("     [" + c + "\t ");
+			for(String v : table.get(c).keySet()) {
+				sb.append(", " + table.get(c).get(v));
+			}
+			sb.append("],\n");
+		}
+		sb.deleteCharAt(sb.length()-2); //delete last comma
+		sb.append("}.\n");
+		
+		return sb.toString();
+	}
+
 	private String addResultsToDialog(ResultSet rs) {
 		StringBuilder sb = new StringBuilder();
 		if (rs != null && rs.getRowCount() > 0) {
-//			sb.append("The CGExecution with compGraph ");
-//			sb.append(rs.getResultAt(0, 0).toString());
+			//			sb.append("The CGExecution with compGraph ");
+			//			sb.append(rs.getResultAt(0, 0).toString());
 			for (int row = 0; row < rs.getRowCount(); row++) {
-//				sb.append("    has output (a ");
+				//				sb.append("    has output (a ");
 				sb.append(" a ");
-				sb.append(rs.getResultAt(row, 1).toString());
+				sb.append(rs.getResultAt(row, 2).toString());
 				sb.append(" with ^value ");
-//				sb.append(rs.getResultAt(row, 2));
-				String value = SadlUtils.formatNumberList(rs.getResultAt(row, 2).toString(), 3);
+				//				sb.append(rs.getResultAt(row, 2));
+				String value = SadlUtils.formatNumberList(rs.getResultAt(row, 3).toString(), 5);
 				sb.append(value);
-				if (rs.getResultAt(row, 3) != null) {
+				if (rs.getResultAt(row, 4) != null) {
 					sb.append(", with stddev ");
-					sb.append(rs.getResultAt(row, 3));
+					sb.append(rs.getResultAt(row, 4));
 				}
-//				sb.append(")\n");
+				//				sb.append(")\n");
 			}
 			sb.append(" .\n");
-		}							
+		}
 		return sb.toString();
 	}
 	
