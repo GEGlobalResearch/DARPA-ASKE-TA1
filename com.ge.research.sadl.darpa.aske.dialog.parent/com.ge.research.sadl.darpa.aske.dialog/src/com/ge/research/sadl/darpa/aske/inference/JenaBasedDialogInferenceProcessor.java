@@ -2252,8 +2252,10 @@ private void runInference(Resource resource, String query, String testQuery) thr
 				ingestKGTriple(ce, outputprop, outpIns);
 				
 				String cls = class2lbl.get(outType.toString());
-				String unit = class2units.get(outType.toString());
-				queryModel.add(outpIns, getTheJenaModel().getProperty(UNIT_PROP), unit);
+				if(class2units.containsKey(outType.toString())) {
+					String unit = class2units.get(outType.toString());
+					queryModel.add(outpIns, getTheJenaModel().getProperty(UNIT_PROP), unit);
+				}
 				String[] ms = lbl2value.get(cls);  //class2lbl.get(o.toString()));
 				queryModel.add(outpIns, getTheJenaModel().getProperty(VALUE_PROP), ms[0] );
 				if(ms[1] != null)
