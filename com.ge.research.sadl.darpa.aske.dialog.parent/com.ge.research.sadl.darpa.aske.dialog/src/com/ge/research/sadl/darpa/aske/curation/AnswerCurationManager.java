@@ -2761,7 +2761,11 @@ public class AnswerCurationManager {
 	
 	private String processCompareRequest(org.eclipse.emf.ecore.resource.Resource resource2, OntModel theModel,
 			String modelName, CompareContent sc) throws AnswerExtractionException, ExecutionException, SadlInferenceException, TranslationException, ConfigurationException {
-		if (sc != null && sc.getComparisonRules() != null) {
+		if (ResourceManager.isSyntheticUri(null, resource2.getURI())) {
+			notifyUser(null, "Can't process comparison request with a synthetic resource", true);
+			return null;
+		}
+		else if (sc != null && sc.getComparisonRules() != null) {
 			List<Rule> comparisonRules = sc.getComparisonRules();
 			Object[] rss = insertRulesAndQuery(resource, comparisonRules);
 			return processResultsOfInsertRulesAndQuery(sc, rss, comparisonRules);

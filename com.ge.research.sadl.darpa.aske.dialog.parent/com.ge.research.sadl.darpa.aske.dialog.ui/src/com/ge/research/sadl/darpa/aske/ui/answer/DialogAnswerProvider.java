@@ -304,8 +304,8 @@ public class DialogAnswerProvider extends BaseDialogAnswerProvider {
 				ret[2] = length;
 				return ret;
 			} catch (BadLocationException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
+				// This happens sometimes but doesn't usually have dire consequences....
+//				e.printStackTrace();
 			} 
 		}
 		return null;
@@ -414,7 +414,8 @@ public class DialogAnswerProvider extends BaseDialogAnswerProvider {
 				LOGGER.debug("Adding to Dialog editor: " + modContent);
 				textAtLocation(document, modContent, loc);
 			} catch (BadLocationException e) {
-				Exceptions.throwUncheckedException(e);
+				// This happens sometimes but doesn't usually have dire consequences....
+//				Exceptions.throwUncheckedException(e);
 			}
 		});
 		return true;
@@ -461,8 +462,8 @@ public class DialogAnswerProvider extends BaseDialogAnswerProvider {
 				try {
 					return addCurationManagerContentToDialog(document, null, sb.toString(), precedingObj, false, false, false, false);
 				} catch (BadLocationException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
+					// This happens sometimes but doesn't usually have dire consequences....
+//					e.printStackTrace();
 				}
 			}
 			return true;
@@ -482,8 +483,8 @@ public class DialogAnswerProvider extends BaseDialogAnswerProvider {
 				String ofInterest = getTheDocument().get(start, extendedLen);
 				System.out.println(ofInterest + ": " + start + ", " + length + ", " + extendedLen);
 			} catch (BadLocationException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
+				// This happens sometimes but doesn't usually have dire consequences....
+//				e.printStackTrace();
 			}
 		}
 	}
@@ -521,7 +522,8 @@ public class DialogAnswerProvider extends BaseDialogAnswerProvider {
 					return true;
 				}
 			} catch (BadLocationException e) {
-				e.printStackTrace();
+				// This happens sometimes but doesn't usually have dire consequences....
+//				e.printStackTrace();
 			}
 		}
 		return false;
@@ -532,8 +534,8 @@ public class DialogAnswerProvider extends BaseDialogAnswerProvider {
 		try {
 			addCurationManagerContentToDialog(getTheDocument(), null, sc.getText(), null, false);
 		} catch (BadLocationException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			// This happens sometimes but doesn't usually have dire consequences....
+//			e.printStackTrace();
 		}
 		return null;
 	}
@@ -544,7 +546,8 @@ public class DialogAnswerProvider extends BaseDialogAnswerProvider {
 		try {
 			return addCurationManagerContentToDialog(document, null, content, ctx, false);
 		} catch (BadLocationException e) {
-			e.printStackTrace();
+			// This happens sometimes but doesn't usually have dire consequences....
+//			e.printStackTrace();
 		}
 		return false;
 	}
@@ -557,7 +560,8 @@ public class DialogAnswerProvider extends BaseDialogAnswerProvider {
 				boolean quote = isContentQuoted(content);
 				addCurationManagerContentToDialog(document, null, content, null, quote);
 			} catch (BadLocationException e) {
-				e.printStackTrace();
+				// This happens sometimes but doesn't usually have dire consequences....
+//				e.printStackTrace();
 			}
 		}
 		return null;
