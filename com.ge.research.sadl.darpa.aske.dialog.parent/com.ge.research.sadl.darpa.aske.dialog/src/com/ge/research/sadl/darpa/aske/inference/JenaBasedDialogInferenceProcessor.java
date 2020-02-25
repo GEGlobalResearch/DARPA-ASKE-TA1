@@ -748,22 +748,20 @@ public class JenaBasedDialogInferenceProcessor extends JenaBasedSadlInferencePro
 			"prefix mm:<http://aske.ge.com/metamodel#>\n" +
 			"prefix sci:<http://aske.ge.com/sciknow#>\n"
 			+ "prefix rdf:<http://www.w3.org/1999/02/22-rdf-syntax-ns#>\n" + 
-			"select distinct (strafter(str(?CCG),'#') as ?Model) (strafter(str(?C),'#') as ?Class) (strafter(str(?Var),'#') as ?Variable) ?Mean ?StdDev\n" + 
+			"select distinct (strafter(str(?CCG),'#') as ?Model) (strafter(str(?C),'#') as ?Class) (strafter(str(?Var),'#') as ?Variable) ?Mean ?StdDev ?Units\n" + 
 			"where {\n" + 
-			"   {?CCG mm:subgraph ?SG.\n" + 
-			"    filter (?CCG in (COMPGRAPH)).\n" +
-			"    ?SG mm:output ?Oinst.\n" + 
+//			"   {?CCG mm:subgraph ?SG.\n" + 
+//			"    filter (?CCG in (COMPGRAPH)).\n" +
+//			"    ?SG mm:output ?Oinst.\n" + 
+//			"  } union {\n" +
+			"   filter (?CCG in (COMPGRAPH)).\n" +
+			"   ?CE mm:compGraph ?CCG.\n" + 
+			"   ?CE mm:output ?Oinst.\n" + 
+//			"  }\n" +
 			"    ?Oinst a ?Var.\n" + 
 			"    ?Oinst imp:value ?Mean.\n" + 
 			"    optional{?Oinst imp:stddev ?StdDev.}\n" +
-			"  } union {\n" +
-			"   filter (?CCG in (COMPGRAPH)).\n" +
-			"   ?CE mm:compGraph ?CCG.\n" + 
-			"   ?CE mm:output ?Vinst.\n" + 
-			"   ?Vinst a ?Var.\n" + 
-			"   ?Vinst imp:value ?Mean.\n" +
-			"   optional{?Vinst imp:stddev ?StdDev.}\n" +
-			"  }\n" +
+			"    optional{?Oinst imp:unit ?Units}" +
 			"   ?CGQ mm:execution/mm:compGraph ?CCG.\n" + 
 			"   ?CGQ mm:input ?IVar.\n" + 
 			"   ?Obj ?prop ?IVar.\n" + 
@@ -1208,6 +1206,7 @@ private ResultSet[] processWhatWhenQuery(Resource resource, String queryModelFil
 	Map<String,String> class2lbl = null;
 //	Map<String,String> lbl2class;
 	Map<String,String[]> lbl2value = null;
+	Map<String,String> class2units = null;
 	
 	String cgJson, dbnJson, dbnResultsJson = null;
 	JsonObject kchainBuildJson = null;
@@ -1271,6 +1270,8 @@ private ResultSet[] processWhatWhenQuery(Resource resource, String queryModelFil
 		
 
 		class2lbl 	= getClassLabelMappingFromModelsJson(nodesModelsJSONStr);
+		
+		class2units = getClassUnitsMappingFromModelsJson(nodesModelsJSONStr);
 		
 		System.out.print("Translating KG results into json: ");
 		startTime = System.currentTimeMillis();
@@ -1351,7 +1352,7 @@ private ResultSet[] processWhatWhenQuery(Resource resource, String queryModelFil
 	        
 			//Create output instances and link them to ce
 			//There may be multiple outputs, need to loop through them
-	        createCEoutputInstances(outputsList, ce, class2lbl, lbl2value);
+	        createCEoutputInstances(outputsList, ce, class2lbl, lbl2value, class2units);
 
 			saveMetaDataFile(resource,queryModelURI,queryModelFileName); //so we can query the the eqns in the CCG
 			
@@ -1776,6 +1777,7 @@ private ResultSet[] processModelsFromDataset(Resource resource, TripleElement[] 
 
 	Map<String,String> class2lbl, lbl2class;
 	Map<String,String[]> lbl2value;
+	Map<String,String> class2units;
 
 	String cgJson, dbnJson, dbnResultsJson;
 
@@ -1856,6 +1858,10 @@ private ResultSet[] processModelsFromDataset(Resource resource, TripleElement[] 
 			dbnJson = generateDBNjson(cgJson);
 			class2lbl = getClassLabelMapping(dbnJson);
 
+			
+			class2units = getClassUnitsMappingFromModelsJson(nodesModelsJSONStr);
+
+			
 			// Run the model
 			dbnResultsJson = executeDBN(dbnJson);
 			String resmsg = getDBNoutcome(dbnResultsJson);
@@ -1870,7 +1876,7 @@ private ResultSet[] processModelsFromDataset(Resource resource, TripleElement[] 
 				lbl2value = getLabelToMeanStdMapping(dbnResultsJson);
 				createCGsubgraphs(cgIns, dbnEqnMap, dbnOutput, listOfEqns, class2lbl, lbl2value, queryModelPrefix);
 
-				createCEoutputInstances(outputsList, ce, class2lbl, lbl2value);
+				createCEoutputInstances(outputsList, ce, class2lbl, lbl2value, class2units);
 
 				//							
 				//							//TODO: create output instances and link them to ce
@@ -2232,7 +2238,7 @@ private void runInference(Resource resource, String query, String testQuery) thr
 		return numOfModels;
 	}
 
-	private void createCEoutputInstances(List<RDFNode> outputsList, Individual ce, Map<String, String> class2lbl, Map<String, String[]> lbl2value) {
+	private void createCEoutputInstances(List<RDFNode> outputsList, Individual ce, Map<String, String> class2lbl, Map<String, String[]> lbl2value, Map<String, String> class2units) {
 		
 		OntProperty outputprop = getTheJenaModel().getOntProperty(METAMODEL_OUTPUT_PROP);
 
@@ -2246,6 +2252,8 @@ private void runInference(Resource resource, String query, String testQuery) thr
 				ingestKGTriple(ce, outputprop, outpIns);
 				
 				String cls = class2lbl.get(outType.toString());
+				String unit = class2units.get(outType.toString());
+				queryModel.add(outpIns, getTheJenaModel().getProperty(UNIT_PROP), unit);
 				String[] ms = lbl2value.get(cls);  //class2lbl.get(o.toString()));
 				queryModel.add(outpIns, getTheJenaModel().getProperty(VALUE_PROP), ms[0] );
 				if(ms[1] != null)
@@ -3070,6 +3078,31 @@ private Map<String, String> getClassLabelMappingFromModelsJson(String json) {
     return class2lbl;	
 	
 }
+
+private Map<String, String> getClassUnitsMappingFromModelsJson(String json) {
+    JsonParser parser = new JsonParser();
+    JsonElement jsonTree = parser.parse(json);
+    Map<String,String> class2units = new HashMap<String, String>();
+    JsonObject jsonObject;
+    JsonObject jres;
+    Set<Entry<String, JsonElement>> keys;
+    
+    if (jsonTree.isJsonObject()) {
+        jsonObject = jsonTree.getAsJsonObject();
+        
+        JsonArray jbindings = (JsonArray) jsonObject.getAsJsonObject("nodes").getAsJsonObject("results").get("bindings");
+        
+        for(int i=0; i < jbindings.size(); i++) {
+        	JsonObject jo = (JsonObject)jbindings.get(i);
+        	if (jo.has("Node") && jo.has("NodeOutputUnits")) {
+        		class2units.put(jo.getAsJsonObject("Node").get("value").getAsString(), jo.getAsJsonObject("NodeOutputUnits").get("value").getAsString() );
+        	}
+        }
+    }
+    return class2units;	
+}
+
+
 
 	private Map<String, String> getClassLabelMapping(String dbnJson) {
         JsonParser parser = new JsonParser();
