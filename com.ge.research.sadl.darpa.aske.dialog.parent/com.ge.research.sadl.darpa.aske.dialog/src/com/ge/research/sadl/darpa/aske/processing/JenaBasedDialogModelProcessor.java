@@ -84,6 +84,7 @@ import com.ge.research.sadl.darpa.aske.dialog.ExtractStatement;
 import com.ge.research.sadl.darpa.aske.dialog.HowManyValuesStatement;
 import com.ge.research.sadl.darpa.aske.dialog.ModifiedAskStatement;
 import com.ge.research.sadl.darpa.aske.dialog.MyNameIsStatement;
+import com.ge.research.sadl.darpa.aske.dialog.PLink;
 import com.ge.research.sadl.darpa.aske.dialog.ParameterizedExpressionWithUnit;
 import com.ge.research.sadl.darpa.aske.dialog.SadlEquationInvocation;
 import com.ge.research.sadl.darpa.aske.dialog.SaveStatement;
@@ -585,18 +586,20 @@ public class JenaBasedDialogModelProcessor extends JenaBasedSadlModelProcessor {
 			return ssc;
 		}
 		else if (element instanceof SeeParentheticalLink) {
-			String link = ((SeeParentheticalLink)element).getLinkUri();
-			if (validURI(link)) {
-				// currently there is nothing in the model to which we can add this to
-				//	for statements that make it into the model as a triple we would need to do reification to add
-				// 	for other statements we would need to represent the statement in the model.
-//				modelOntology.addSeeAlso(getTheJenaModel().getResource(link));
-				return null;
+			EList<PLink> links = ((SeeParentheticalLink)element).getLinkUris();
+			for (PLink plink : links) {
+				String link = plink.getLinkUri();
+				if (validURI(link)) {
+					// currently there is nothing in the model to which we can add this to
+					//	for statements that make it into the model as a triple we would need to do reification to add
+					// 	for other statements we would need to represent the statement in the model.
+	//				modelOntology.addSeeAlso(getTheJenaModel().getResource(link));
+				}
+				else {
+					addWarning("Link is not a valid URL.", plink);
+				}
 			}
-			else {
-				addWarning("Link is not a valid URL.", element);
-				return null;
-			}
+			return null;
 		}
 		else {
 			throw new TranslationException("Model element of type '" + element.getClass().getCanonicalName() + "' not handled.");
@@ -1596,12 +1599,13 @@ public class JenaBasedDialogModelProcessor extends JenaBasedSadlModelProcessor {
 		return null;
 	}
 	
-	private StatementContent processStatement(ComparisonTableStatement element) {
+	private StatementContent processStatement(ComparisonTableStatement element) throws InvalidNameException, InvalidTypeException, TranslationException {
 		ValueTable ct = element.getComparisonTable();
 		if (ct != null) {
 			AnswerContent ac = new AnswerContent(element, Agent.CM);
-			ac.setOtherResults(ct);
-			ac.setAnswer(ct.toString());
+			Object ctObj = processExpression(ct);
+			ac.setOtherResults(ctObj);
+			ac.setAnswer(ctObj.toString());
 			return ac;
 		}
 		return null;

@@ -929,7 +929,6 @@ public class JenaBasedDialogInferenceProcessor extends JenaBasedSadlInferencePro
 		}
 
 		useDbn = useDbn();
-		useDbn = useKC = false;
 		useKC = useKChain();
 
 		//		System.out.println(" >> Builtin classes discovered by the service loader:");
@@ -2152,7 +2151,7 @@ private void runInference(Resource resource, String query, String testQuery) thr
 		if (rs.getRowCount() > 0) {
 			StringBuilder sb = new StringBuilder("The CGExecution with compGraph ");
 			sb.append(rs.getResultAt(0, 0).toString());
-			sb.append("\n");
+			sb.append(System.lineSeparator());
 			for (int row = 0; row < rs.getRowCount(); row++) {
 				//StringBuilder sb = new StringBuilder("The CGExecution ");
 				sb.append("    has output (a ");
@@ -2163,9 +2162,11 @@ private void runInference(Resource resource, String query, String testQuery) thr
 					sb.append(", with stddev ");
 					sb.append(rs.getResultAt(row, 3));
 				}
-				sb.append(")\n");
+				sb.append(")");
+				sb.append(System.lineSeparator());
 			}
-			sb.append(".\n");
+			sb.append(".");
+			sb.append(System.lineSeparator());
 			sadlDeclaration.add(sb.toString());
 		}							
 		for (String sd : sadlDeclaration) {

@@ -74,7 +74,11 @@ ComparisonTableStatement:
 ;
 
 SeeParentheticalLink:
-	'(' 'See' linkUri=STRING EOS ')'
+	'(' 'See' linkUris+=PLink (',' linkUris+=PLink)* EOS ')'
+;
+
+PLink:
+	linkUri=STRING
 ;
 
 CompareStatement:
