@@ -41,16 +41,16 @@ import connexion
 from invizin import invizin
 import os
 from multiprocessing import Process, active_children
+import flask
+from urllib import parse
 
 #for visualization
 import dash
-import dash_core_components as dcc
-import dash_html_components as html
 
 #URL to interact with evaluate service
 url_evaluate = 'http://localhost:12345/darpa/aske/kchain/evaluate'
-# this is the host and port where the graphs will be shown
-HOSTNAME = 'http://localhost:' 
+
+# this is the port where the graphs will be shown
 GRAPH_PORT = 1177
 
 #setting up the REST service
@@ -60,15 +60,15 @@ dashApp = dash.Dash('dashApp',
                     meta_tags=[{"name": "viewport", 
                                 "content": "width=device-width"}])
 
+if __name__ == '__main__':   
+    os.environ["WERKZEUG_RUN_MAIN"] = 'true'
+    app.add_api('invizin_app.yaml')    
+    app.run(port=12309)
 
-def _deployDash(body, fig):
+def _deployDash(layout):
     global dashApp
     
-    if body['plotType'] == '1':
-        dashApp = _layout1(dashApp, fig)
-    else:
-        dashApp = _layout2(dashApp, fig)
-    
+    dashApp.layout = layout
     dashApp.run_server(port=GRAPH_PORT,debug=False, use_reloader=False)
 
     
@@ -89,50 +89,35 @@ def visualize(body):
     print(body)
     inviz = invizin(url_evaluate)
     
-    fig = inviz.createSensitivityGraphOAT(body)
     
+    figs = []
+    labels = []
+    fig, label = inviz.createSensitivityGraphOAT(body)
+    figs.append(fig)
+    labels.append(label)
+    if body['plotType'] == '1':
+        layout = inviz.getSimpleLayout(figs)
+    else:
+        fig, label = inviz.createRelativeSensitivityGraphOAT(body)
+        figs.append(fig)
+        labels.append(label)
+        fig, label = inviz.createLocalSensitivityGraph(body)
+        figs.append(fig)
+        labels.append(label)
+        layout = inviz.getTabLayout(figs, labels)
+    
+    print(labels)
     p = Process(name = 'deployDash', target=_deployDash, 
-                kwargs={"body":body, "fig":fig})
+                kwargs={"layout": layout})
     p.start()
     print("successfully started serving graphs at URL")
+       
+    ur = parse.urlparse(flask.request.url)
     
-    URL = HOSTNAME + str(GRAPH_PORT)
+    URL = ur.scheme + '://' + ur.hostname + ':' + str(GRAPH_PORT)
     
     outputPacket = {}
     outputPacket['url'] = URL
     return outputPacket
 
 
-def _layout1(dashApp, fig):
-    dashApp.layout = dcc.Graph(figure=fig)
-    return dashApp
-
-
-def _layout2(dashApp, fig):
-    dashApp.layout = html.Div([
-        dcc.Tabs([ #https://dash.plot.ly/dash-core-components/tabs
-            dcc.Tab(label='OAT parametric', children=[
-                dcc.Graph(figure=fig)
-            ]),
-            dcc.Tab(label='Local Gradient-based', children=[
-                dcc.Graph(figure={ #https://plot.ly/python/bar-charts/#basic-bar-chart-with-plotlygraphobjects
-                    'data': [
-                        {'x': ['mach', 'gamma'], 'y': [2, 1],
-                            'type': 'bar', 'name': 'aflow'},
-                        {'x': ['mach', 'gamma'], 'y': [5, 4],
-                         'type': 'bar', 'name': 'fac1'},
-                        {'x': ['mach', 'gamma'], 'y': [0, 2],
-                         'type': 'bar', 'name': 'fac2'},
-                    ]
-                })
-            ]),
-        ])
-    ])
-    return dashApp  
-
-if __name__ == '__main__':   
-    os.environ["WERKZEUG_RUN_MAIN"] = 'true'
-    app.add_api('invizin_app.yaml')
-    terminateDeploy()
-    
-    app.run(port=12309)
