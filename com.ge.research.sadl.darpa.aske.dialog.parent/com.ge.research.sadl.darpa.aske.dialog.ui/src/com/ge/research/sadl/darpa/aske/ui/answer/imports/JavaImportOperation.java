@@ -1335,6 +1335,10 @@ public class JavaImportOperation extends WorkspaceModifyOperation {
 			if (usedbn != null) {
 				map.put(DialogPreferences.USE_DBN_CG_SERVICE.getId(), usedbn);
 			}
+			String shortgraphlink = preferenceValues.getPreference(DialogPreferences.SHORT_GRAPH_LINK);
+			if (shortgraphlink != null) {
+				map.put(DialogPreferences.SHORT_GRAPH_LINK.getId(), shortgraphlink.trim());
+			}
 			return map;
 		}
 		return null;

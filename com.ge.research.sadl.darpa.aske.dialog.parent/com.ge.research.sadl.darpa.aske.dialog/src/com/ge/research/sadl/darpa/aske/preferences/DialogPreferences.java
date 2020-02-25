@@ -54,6 +54,7 @@ public class DialogPreferences {
 	public static final PreferenceKey ANSWER_DBN_CG_SERVICE_BASE_URI = new PreferenceKey("dbnCgServiceBaseUri", "http://localhost:5000");
 	public static final PreferenceKey DBN_INPUT_JSON_GENERATION_SERVICE_BASE_URI = new PreferenceKey("DbnInputJsonGenerationServiceBaseUri", "http://localhost:46000");
 	public static final PreferenceKey ANSWER_CODE_EXTRACTION_KBASE_ROOT = new PreferenceKey("codeExtractionKbaseRoot", "resources/CodeModel");
+	public static final PreferenceKey SHORT_GRAPH_LINK = new PreferenceKey("shortGraphLink", "");
 	
 	private static final PreferenceKey[] allKeys = {
 			ORIGINAL_LANGUAGE,
@@ -66,7 +67,8 @@ public class DialogPreferences {
 			USE_DBN_CG_SERVICE,
 			ANSWER_DBN_CG_SERVICE_BASE_URI,
 			DBN_INPUT_JSON_GENERATION_SERVICE_BASE_URI,
-			ANSWER_CODE_EXTRACTION_KBASE_ROOT
+			ANSWER_CODE_EXTRACTION_KBASE_ROOT,
+			SHORT_GRAPH_LINK
 	};
 
 	public static final List<PreferenceKey> preferences() {

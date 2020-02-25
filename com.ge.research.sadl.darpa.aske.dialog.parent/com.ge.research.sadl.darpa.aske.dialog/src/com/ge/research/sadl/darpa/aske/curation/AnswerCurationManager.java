@@ -151,6 +151,8 @@ import com.ge.research.sadl.reasoner.utils.SadlUtils;
 import com.ge.research.sadl.utils.NetworkProxySettingsProvider;
 import com.ge.research.sadl.utils.ResourceManager;
 import com.google.common.base.Optional;
+import com.google.common.io.Files;
+import com.hp.hpl.jena.graph.impl.GraphBase;
 import com.hp.hpl.jena.ontology.HasValueRestriction;
 import com.hp.hpl.jena.ontology.Individual;
 import com.hp.hpl.jena.ontology.OntClass;
@@ -3322,10 +3324,30 @@ public class AnswerCurationManager {
 							answer.append(addResultsToDialog((ResultSet) rs));
 
 						}
-											
-						String graphicURL = "file://" + graphsDirectory + "/" + baseFileName + ".svg"; //file url
+						String graphicUrl;
+						String sglink = getPreference(DialogPreferences.SHORT_GRAPH_LINK.getId());
+						String graphFileName = baseFileName + ".svg";
+						String sourceName = graphsDirectory + "/" + graphFileName;
+						if (sglink != null && sglink.length() > 0) {
+							String targetName = sglink + "/" + baseFileName;
+							File srcFile = new File(sourceName);
+							if (srcFile.exists()) {
+								File trgtFile = new File(targetName);
+								try {
+									Files.copy(srcFile, trgtFile);
+								} catch (IOException e) {
+									// TODO Auto-generated catch block
+									e.printStackTrace();
+									graphicUrl = "file://" + sourceName; //file url
+								}
+							}
+							graphicUrl = "file://" + targetName;
+						}
+						else {
+							graphicUrl = "file://" + sourceName; //file url
+						}
 						//sadlAnswer += 
-						String seeStmt = "\"" + graphicURL + "\"";
+						String seeStmt = "\"" + graphicUrl + "\"";
 						diagrams.add(seeStmt);
 //						answer.append(sadlAnswer);
 						cntr++;
@@ -3341,6 +3363,11 @@ public class AnswerCurationManager {
 				if(isTable) {
 					diagrams.add(0, "\'References: see model diagram\'");
 					answer.append(generateSadlTable(table, diagrams));
+				}
+				else {
+					String sadlAnswer = "  (See \'model diagram: " + diagrams.get(0) + "\'.)";
+					answer.append(System.lineSeparator());
+					answer.append(sadlAnswer);
 				}
 			}
 		}
@@ -3459,7 +3486,8 @@ public class AnswerCurationManager {
 				}
 				//				sb.append(")\n");
 			}
-			sb.append(" .\n");
+			sb.append(" .");
+			sb.append(System.lineSeparator());
 		}
 		return sb.toString();
 	}

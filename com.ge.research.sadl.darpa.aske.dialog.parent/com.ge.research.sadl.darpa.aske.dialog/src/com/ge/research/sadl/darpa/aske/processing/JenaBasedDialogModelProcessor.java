@@ -42,7 +42,9 @@ import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URISyntaxException;
 import java.nio.charset.Charset;
+import java.nio.file.Files;
 import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
@@ -185,6 +187,7 @@ public class JenaBasedDialogModelProcessor extends JenaBasedSadlModelProcessor {
 	private boolean savePythonTF = true;
 	private boolean savePython = true;
 	private boolean saveOriginal = true;
+	private String shortGraphLink = null;
 
 	private AnswerCurationManager answerCurationManager = null;
 
@@ -2151,6 +2154,41 @@ public class JenaBasedDialogModelProcessor extends JenaBasedSadlModelProcessor {
 		if (useKchain != null) {
 			setUseKchain(Boolean.parseBoolean(useKchain.trim()));
 		}
+		String shortgraphlink = context.getPreferenceValues().getPreference(DialogPreferences.SHORT_GRAPH_LINK);
+		if (shortgraphlink != null) {
+//			Path dir;
+//			try {
+//				dir = Paths.get(shortgraphlink);
+//				File sglFile = new File(shortgraphlink);
+//				if (!sglFile.exists()) {
+//					File modelFolder = getConfigMgr().getModelFolderPath();
+//					Path trgt = Paths.get(modelFolder.getParentFile().getCanonicalPath() + "/Graphs");
+//					Path link = Files.createLink(dir, trgt);
+//				}
+//				else {
+//					if (Files.isSymbolicLink(dir)) {
+//						Path existingLink = Files.readSymbolicLink(dir);
+//						if (existingLink.compareTo(dir) != 0) {
+//							System.err.println("Short graph path '" + shortgraphlink + "' already exists as a link with a different target. Please use a project-specific preference.");
+//						}
+//					}
+//					else {
+//						System.err.println("Short graph path '" + shortgraphlink + "' already exists and is not a link.");
+//					}
+//				}
+//			} catch (IOException e1) {
+//				// TODO Auto-generated catch block
+//				e1.printStackTrace();
+//			}
+			File sgl = new File(shortgraphlink.trim());
+			if (!sgl.exists()) {
+				sgl.mkdirs();
+			}
+			else if (!sgl.isDirectory()) {
+				System.err.println("Short graph path '" + shortgraphlink + "' already exists and is not a folder.");
+			}
+			setShortGraphLink(shortgraphlink.trim());
+		}
 //		System.out.println(textserviceurl);
 //		System.out.println(cgserviceurl);
 	}
@@ -2397,6 +2435,14 @@ public class JenaBasedDialogModelProcessor extends JenaBasedSadlModelProcessor {
 
 	private boolean isSaveOriginal() {
 		return saveOriginal;
+	}
+
+	private String getShortGraphLink() {
+		return shortGraphLink;
+	}
+
+	private void setShortGraphLink(String shortGraphLink) {
+		this.shortGraphLink = shortGraphLink;
 	}
 
 }

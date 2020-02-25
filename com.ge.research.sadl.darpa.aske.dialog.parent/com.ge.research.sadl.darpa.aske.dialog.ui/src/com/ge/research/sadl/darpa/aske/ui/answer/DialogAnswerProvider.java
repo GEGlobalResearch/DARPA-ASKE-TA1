@@ -297,7 +297,7 @@ public class DialogAnswerProvider extends BaseDialogAnswerProvider {
 			int length = NodeModelUtils.getNode(object).getTotalLength();
 			String txt;
 			try {
-				txt = getTheDocument().get(start, length); //NodeModelUtils.getTokenText(node);
+				txt = getTheDocument().get(start + getCumulativeOffset(), length); //NodeModelUtils.getTokenText(node);
 				Object[] ret = new Object[3];
 				ret[0] = txt; // txt.trim();
 				ret[1] = start;
@@ -349,7 +349,7 @@ public class DialogAnswerProvider extends BaseDialogAnswerProvider {
 						modContent += ".";
 					}
 					if (ctx instanceof EObject) {
-//						showEObjectTextInfo((EObject) ctx);
+						showEObjectTextInfo((EObject) ctx);
 						srcinfo = getSourceText((EObject) ctx);
 						// String srctext = (String) srcinfo[0];
 						int start = (int) srcinfo[1];
@@ -852,6 +852,10 @@ public class DialogAnswerProvider extends BaseDialogAnswerProvider {
 			String codeextractionkbaseroot = preferenceValues.getPreference(DialogPreferences.ANSWER_CODE_EXTRACTION_KBASE_ROOT);
 			if (codeextractionkbaseroot != null) {
 				map.put(DialogPreferences.ANSWER_CODE_EXTRACTION_KBASE_ROOT.getId(), codeextractionkbaseroot);
+			}
+			String shortgraphlink = preferenceValues.getPreference(DialogPreferences.SHORT_GRAPH_LINK);
+			if (shortgraphlink != null) {
+				map.put(DialogPreferences.SHORT_GRAPH_LINK.getId(), shortgraphlink);
 			}
 			return map;
 		}
