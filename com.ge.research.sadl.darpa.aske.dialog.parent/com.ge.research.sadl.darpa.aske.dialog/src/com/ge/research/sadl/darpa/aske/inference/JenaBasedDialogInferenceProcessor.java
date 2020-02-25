@@ -139,7 +139,7 @@ public class JenaBasedDialogInferenceProcessor extends JenaBasedSadlInferencePro
 //	public static final String qhModelName = "http://aske.ge.com/MetaData";
 //	public static final String qhOwlFileName = "MetaData.owl";
 
-	public static final boolean debugMode = false;
+	public static final boolean debugMode = true;
 	
 	
 	public static final String CGMODELS_FOLDER = "ComputationalGraphModels";
@@ -513,7 +513,7 @@ public class JenaBasedDialogInferenceProcessor extends JenaBasedSadlInferencePro
 			"prefix rdf:<http://www.w3.org/1999/02/22-rdf-syntax-ns#>\n"+
 			"prefix list:<http://sadl.org/sadllistmodel#>\n" +
 			"\n" + 
-			"select distinct ?Node (str(?NUnits) as ?NodeOutputUnits) ?Child (str(?CUnits) as ?ChildInputUnits) ?Eq  ?Value #?Distribution ?Lower ?Upper \n" + 
+			"select distinct ?Node (str(?NUnits) as ?NodeOutputUnits) ?Child (str(?CUnits) as ?ChildInputUnits) ?Eq  ?Value #?Lower ?Upper #?Distribution \n" + 
 			"where {\n" + 
 			"{select distinct ?Node ?Child ?CUnits ?Eq \n" + 
 			"where { \n" + 
@@ -1200,7 +1200,8 @@ private ResultSet[] processWhatWhenQuery(Resource resource, String queryModelFil
 
 	Individual cgIns = null;
 	String resmsg = null;
-
+	String sensitivityURL = null;
+	
 //	OntClass cexec;
 	Individual ce;
 	
@@ -1211,7 +1212,7 @@ private ResultSet[] processWhatWhenQuery(Resource resource, String queryModelFil
 	String cgJson, dbnJson, dbnResultsJson = null;
 	JsonObject kchainBuildJson = null;
 	String kchainResultsJson = null;
-	
+	JsonObject kchainEvalJson;
 
 	
 	Map<RDFNode, String[]> dbnEqnMap = new HashMap<RDFNode,String[]>();
@@ -1312,9 +1313,20 @@ private ResultSet[] processWhatWhenQuery(Resource resource, String queryModelFil
 
 				if ( getBuildKChainOutcome(buildResult) ) {
 			
-					kchainResultsJson = buildAndExecuteKChain(cgJson);
-
+					kchainEvalJson = createExecJson(cgJson);
+					
+					System.out.print("Executing KChain: ");
+					startTime = System.currentTimeMillis();
+					kchainResultsJson = executeKChain(kchainEvalJson);
+					endTime = System.currentTimeMillis();
+					System.out.println((endTime - startTime));
+				    
 				    resmsg = getEvalKChainOutcome(kchainResultsJson);
+				    
+				    kchainResultsJson = executeKChain(kchainEvalJson); //call sensitivity service instead
+				    
+				    //sensitivityURL = getKChainSensitivityURL(kchainResultsJson);
+				    sensitivityURL = "http://localhost:1177";
 				    
 //				    if (isMac()) {
 //				    	String[] cmd = {"/usr/bin/python", "-m", "dashserve", "/path/to/myapp.dash"};
@@ -1348,7 +1360,10 @@ private ResultSet[] processWhatWhenQuery(Resource resource, String queryModelFil
 			
 			dbnResults[i] = retrieveCompGraph(resource, cgIns); //+1 to accomodate dependency graph
 			
-			dbnResults[i+1] = retrieveValues(resource, cgIns);;
+			ResultSet rvalues = retrieveValues(resource, cgIns);
+			
+			dbnResults[i+1] = addSensitivityURLtoResults(rvalues, sensitivityURL);
+//			dbnResults[i+1] = retrieveValues(resource, cgIns);
 
 //Temporarily commented out assumption check
 //			String assumpCheck = checkAssumptions(resource, queryModelURI, queryOwlFileWithPath, cgIns);
@@ -1388,6 +1403,32 @@ private ResultSet[] processWhatWhenQuery(Resource resource, String queryModelFil
 
 
 
+/**
+ * 
+ * @param rvalues
+ * @param sensitivityURL
+ * @return
+ */
+private ResultSet addSensitivityURLtoResults(ResultSet rvalues, String sensitivityURL) {
+	String[] cols = new String[rvalues.getColumnCount()+1];
+	for(int i=0; i<rvalues.getColumnCount(); i++)
+		cols[i] = rvalues.getColumnNames()[i];
+	cols[rvalues.getColumnCount()] = "SensitivityURL";
+
+	Object[][] newData = new Object[rvalues.getRowCount()][rvalues.getColumnCount()+1];
+	Object[][] data = rvalues.getData();
+
+	for(int i=0; i<rvalues.getRowCount(); i++)
+		for(int j=0; j<rvalues.getColumnCount(); j++)
+			newData[i][j] = data[i][j];
+
+	newData[0][rvalues.getColumnCount()] = sensitivityURL;
+	
+	ResultSet res = new ResultSet(cols, newData);
+	
+	return res;
+}
+
 private void computeSensitivityAndAddToDialog(Resource resource, ConfigurationManagerForIDE cmgr,
 		String queryModelFileName, String queryModelURI, String queryModelPrefix, Individual cgIns,
 		String nodesModelsJSONStr) throws Exception {
@@ -1414,22 +1455,6 @@ private void computeSensitivityAndAddToDialog(Resource resource, ConfigurationMa
 		addSensitivityResultsToDialog(resource, cgIns, acm);
 
 	}//assumptions satisfied
-}
-
-private String buildAndExecuteKChain(String cgJson)
-		throws DialogInferenceException, MalformedURLException, IOException {
-	JsonObject kchainEvalJson;
-	String kchainResultsJson;
-	long startTime;
-	long endTime;
-	kchainEvalJson = createExecJson(cgJson); //To be changed when service ready
-
-	System.out.print("Executing KChain: ");
-	startTime = System.currentTimeMillis();
-	kchainResultsJson = executeKChain(kchainEvalJson);
-	endTime = System.currentTimeMillis();
-	System.out.println((endTime - startTime)); // + "   Payload size: " + kchainEvalJson.toString().length());
-	return kchainResultsJson;
 }
 
 private String retrieveModelsAndNodes(String listOfEqns, Individual cgIns, List<String> contextClassList) {
@@ -1621,6 +1646,7 @@ private JsonObject createExecJson(String cgJson) throws DialogInferenceException
 		JsonElement je = jp.parse(cgJson);
 		keoJson = je.getAsJsonObject();
 		jo = keoJson.get("eval").getAsJsonObject();
+		jo.addProperty("plotType",2);
 	}
 	catch (Throwable t) {
 		throw new DialogInferenceException(t.getMessage(), t);
@@ -1708,6 +1734,22 @@ private String getEvalKChainOutcome(String kchainResultsJson) {
             jsonObject = jsonTree.getAsJsonObject();
             if (jsonObject.has("outputVariables")) 
                 jres = "Success"; //jsonObject.get("outputVariables").getAsString().trim();
+        }
+    }
+    return jres;
+}
+private String getKChainSensitivityURL(String kchainResultsJson) {
+    JsonParser parser = new JsonParser();
+    String jres = null;
+    if (!kchainResultsJson.equals("")) {
+        JsonElement jsonTree = parser.parse(kchainResultsJson);
+        JsonObject jsonObject;
+        //String jres = null;
+
+        if (jsonTree.isJsonObject()) {
+            jsonObject = jsonTree.getAsJsonObject();
+            if (jsonObject.has("url")) 
+                jres = jsonObject.get("url").getAsString().trim();
         }
     }
     return jres;
