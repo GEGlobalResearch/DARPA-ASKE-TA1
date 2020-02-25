@@ -188,6 +188,7 @@ public class TextProcessorTests {
 		IConfigurationManagerForIDE cm = ConfigurationManagerForIdeFactory.getConfigurationManagerForIDE(getDomainProjectModelFolder(), null);
 		AnswerCurationManager acm = new AnswerCurationManager(getDomainProjectModelFolder(), cm, null, null);
 		String domainModelName = "http://sadl.org/SpeedOfSound.sadl";
+		acm.setDomainModelName(domainModelName);
 		acm.setDomainModel(cm.loadOntModel(new SadlUtils().fileUrlToFileName(cm.getAltUrlFromPublicUri(domainModelName)), true));
 		
 		IDialogAnswerProvider dapcft = new DialogAnswerProviderConsoleForTest();
@@ -421,6 +422,7 @@ public class TextProcessorTests {
 		IConfigurationManagerForIDE cm = ConfigurationManagerForIdeFactory.getConfigurationManagerForIDE(getDomainProjectModelFolder(), null);
 		AnswerCurationManager acm = new AnswerCurationManager(getDomainProjectModelFolder(), cm, null, null);
 		String domainModelName = "http://sadl.org/SpeedOfSound.sadl";
+		acm.setDomainModelName(domainModelName);
 		acm.setDomainModel(cm.loadOntModel(new SadlUtils().fileUrlToFileName(cm.getAltUrlFromPublicUri(domainModelName)), true));
 		
 		IDialogAnswerProvider dapcft = new DialogAnswerProviderConsoleForTest();

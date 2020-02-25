@@ -214,6 +214,7 @@ public class AnswerCurationManager {
 	private Map<String, OntModel> extractionModelMap = new HashMap<String, OntModel>();
 	private Map<String, String> fileLocalityMap = new HashMap<String, String>();
 	private OntModel domainModel = null;
+	private String domainModelName = null;
 	private boolean lookForSubclassInArticledClasses = true;	// should a domain of a property be replaced with a subclass
 																// that has appeared in other arguments augmented types
 	private Map<String, List<String>> unmatchedUrisAndLabels = null;	// Map of concept URIs and labels that were not matched in the domain ontology
@@ -422,8 +423,16 @@ public class AnswerCurationManager {
 // TODO this should eventually be a user choice?				
 		String clearMsg = getExtractionProcessor().getTextProcessor().clearGraph(localityURI);
 		
-		String domainModel = getTextExtractionDomainModel();
-		System.out.println(domainModel);
+		if (getDomainModelName() == null || getDomainModel() == null) {
+			Object dap = getConfigurationManager().getPrivateKeyValuePair(DialogConstants.DIALOG_ANSWER_PROVIDER);
+			if (dap instanceof IDialogAnswerProvider) {
+				String domainModelName = OntModelProvider.getModelName(((IDialogAnswerProvider)dap).getResource());
+				setDomainModelName(domainModelName);
+				OntModel domainModel = OntModelProvider.find(((IDialogAnswerProvider)dap).getResource());
+				setDomainModel(domainModel);
+//				System.out.println(domainModel);
+			}
+		}
 		
 		int[] results = getTextProcessor().processText(inputIdentifier, content, localityURI, prefix);
 		if (results == null) {
@@ -630,7 +639,7 @@ public class AnswerCurationManager {
 								if (ln >= b - 1) {
 									sb.append(line);
 									if (ln < e - 1) {
-										sb.append("\n");
+										sb.append(System.lineSeparator());
 									}
 								}
 							}
@@ -857,7 +866,7 @@ public class AnswerCurationManager {
 						if (stripNamespaceDelimiter(subj.getNameSpace()).equals(modelName)) {
 							if (subj.canAs(Individual.class)) {
 								sb.append(saveEquationInstanceToComputationalGraph(ontModel, reasoner, subj.as(Individual.class)));
-								sb.append("\n");
+								sb.append(System.lineSeparator());
 							}
 							else {
 								sb.append("Unexpected error saving all. An equation cannot be seen as an instance.\n");
@@ -1362,7 +1371,7 @@ public class AnswerCurationManager {
             while (line != null) {
     			if (saveLine || line.trim().startsWith("def ")) {
     				methodCode.append(line);
-    				methodCode.append("\n");
+    				methodCode.append(System.lineSeparator());
     				saveLine = true;
     			}
                 line = reader.readLine();
@@ -2119,7 +2128,7 @@ public class AnswerCurationManager {
 				sb2.append(")");
 				hasPriorTriple = true;
 			}
-			sb2.append("\n");
+			sb2.append(System.lineSeparator());
 		}
 		ResultSet impOut = getImplicitOutputs(methodName);
 		if (impOut != null) {
@@ -2793,7 +2802,7 @@ public class AnswerCurationManager {
 			if (sc.getUrl().endsWith(".html")) {
 //				Source src = new Source(content);
 //				Renderer rndrr = src.getRenderer();
-//				rndrr.setNewLine("\n");
+//				rndrr.setNewLine(System.lineSeparator());
 //				rndrr.setIncludeHyperlinkURLs(false);
 //				rndrr.setConvertNonBreakingSpaces(true);
 //				content = rndrr.toString();
@@ -3215,7 +3224,7 @@ public class AnswerCurationManager {
 		}
 		String insertionText = (resultStr != null && resultStr.length() > 0 ? resultStr : "\"Failed to find results\"");
 		answerUser(getOwlModelsFolder(), insertionText, false, sc.getHostEObject());
-		retVal = retVal + (retVal.length() > 0 ? "\n" : "") + insertionText;
+		retVal = retVal + (retVal.length() > 0 ? System.lineSeparator() : "") + insertionText;
 		return retVal;
 	}
 
@@ -3284,8 +3293,10 @@ public class AnswerCurationManager {
 //						}
 					}
 					else {
-		    			if(cntr > 1)
-		    				answer.append(",\n");
+		    			if(cntr > 1) {
+		    				answer.append(",");
+		    				answer.append(System.lineSeparator());
+		    			}
 						
 //						String sadlAnswer = addResultsToDialog((ResultSet) rs, isTable);
 						if(cntr <= 1) {
@@ -3545,7 +3556,7 @@ public class AnswerCurationManager {
 			for (int i = sds.length - 1; i >= 0; i--) { // do in reverse order as they will be inserted at the same location
 				String sd = sds[i];
 				if (i < sds.length - 1) {
-					answer.append("\n");
+					answer.append(System.lineSeparator());
 				}
 				answer.append(sd);
 				Object ctx = ((NamedNode)lastcmd).getContext();
@@ -3834,7 +3845,7 @@ public class AnswerCurationManager {
 			OntClass spcls = spritr.next();
 			getDomainAndRangeOfClass(m, spcls, answer);
 		}
-//		answer.append("\n");
+//		answer.append(System.lineSeparator());
 		return isFirstProperty;
 	}
 
@@ -4598,7 +4609,7 @@ public class AnswerCurationManager {
 		if (delayedImportAdditions == null) {
 			delayedImportAdditions = new ArrayList<String>();
 		}
-		delayedImportAdditions.add(delayedImportAddition + "\n");
+		delayedImportAdditions.add(delayedImportAddition + System.lineSeparator());
 		getDialogAnswerProvider().addImports(delayedImportAdditions);
 		delayedImportAdditions.clear();
 	}
@@ -4612,6 +4623,14 @@ public class AnswerCurationManager {
 
 	public void setDomainModel(OntModel domainModel) {
 		this.domainModel = domainModel;
+	}
+
+	public void setDomainModelName(String domainModelName) {
+		this.domainModelName = domainModelName;
+	}
+	
+	public String getDomainModelName() {
+		return this.domainModelName = null;
 	}
 
 	public Map<String, List<String>> getUnmatchedUrisAndLabels() {

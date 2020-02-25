@@ -293,14 +293,20 @@ public class DialogAnswerProvider extends BaseDialogAnswerProvider {
 	private Object[] getSourceText(EObject object) {
 		INode node = NodeModelUtils.findActualNodeFor(object);
 		if (node != null) {
-			String txt = NodeModelUtils.getTokenText(node);
 			int start = NodeModelUtils.getNode(object).getTotalOffset();
 			int length = NodeModelUtils.getNode(object).getTotalLength();
-			Object[] ret = new Object[3];
-			ret[0] = txt.trim();
-			ret[1] = start;
-			ret[2] = length;
-			return ret;
+			String txt;
+			try {
+				txt = getTheDocument().get(start, length); //NodeModelUtils.getTokenText(node);
+				Object[] ret = new Object[3];
+				ret[0] = txt; // txt.trim();
+				ret[1] = start;
+				ret[2] = length;
+				return ret;
+			} catch (BadLocationException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			} 
 		}
 		return null;
 	}
@@ -319,6 +325,10 @@ public class DialogAnswerProvider extends BaseDialogAnswerProvider {
 			try {
 				String modContent;
 				int loc;
+				Object[] srcinfo = null;
+				String test = null;
+				String lineSep = System.lineSeparator();
+				int moveForward = lineSep.length();
 				if (quote) {
 					modContent = generateDoubleQuotedContentForDialog(content);
 				} else {
@@ -338,8 +348,9 @@ public class DialogAnswerProvider extends BaseDialogAnswerProvider {
 					if (!modContent.trim().endsWith(".") && !modContent.trim().endsWith("?") && !modContent.trim().endsWith(")")) {
 						modContent += ".";
 					}
-					if (ctx instanceof EObject && getSourceText((EObject) ctx) != null) {
-						Object[] srcinfo = getSourceText((EObject) ctx);
+					if (ctx instanceof EObject) {
+//						showEObjectTextInfo((EObject) ctx);
+						srcinfo = getSourceText((EObject) ctx);
 						// String srctext = (String) srcinfo[0];
 						int start = (int) srcinfo[1];
 						int length = (int) srcinfo[2];
@@ -348,48 +359,44 @@ public class DialogAnswerProvider extends BaseDialogAnswerProvider {
 							modContent = " " + modContent;
 							numSpacesBeforeEachLine++;
 						}
-						loc = start + length + 1;
+						int testloc = start + length + getCumulativeOffset();
 						int docLen = document.getLength();
-						int testLen = Math.min(5, docLen - loc);
-						String test = document.get(loc, testLen);
+						int testLen = Math.min(5, docLen - testloc);
+						test = document.get(testloc, testLen);
 						if (addLeadingSpaces && !test.startsWith(" ")) {
 							modContent = " " + modContent;
 							numSpacesBeforeEachLine++;
 						}
 					}
 					if (numSpacesBeforeEachLine > 0) {
-						String lines[] = modContent.split("\\r?\\n");
+						String lines[] = modContent.split(lineSep);
 						StringBuilder sb = new StringBuilder(lines[0]);
-						sb.append("\n");
+						sb.append(lineSep);
 						for (int i = 1; i < lines.length; i++) {
 							for (int j = 0; j < numSpacesBeforeEachLine; j++) {
 								sb.append(" ");
 							}
 							sb.append(lines[i]);
 							if (i < lines.length - 1) {
-								sb.append("\n");
+								sb.append(lineSep);
 							}
 						}
 						modContent = sb.toString();
 					}
 				}
-				if (ctx instanceof EObject && getSourceText((EObject) ctx) != null) {
-					Object[] srcinfo = getSourceText((EObject) ctx);
-					// String srctext = (String) srcinfo[0];
+				if (ctx instanceof EObject && srcinfo != null) {
 					int start = (int) srcinfo[1];
 					int length = (int) srcinfo[2];
 					// find location of this in document
-					loc = start + length + 1;
+					loc = start + length + moveForward;
 					int docLen = document.getLength();
-					int testLen = Math.min(5, docLen - loc);
-					String test = document.get(loc, testLen);
-					if (!test.startsWith("\r\n")) {
-						modContent += "\r\n";
+					if (!test.startsWith(lineSep)) {
+//						modContent += lineSep;
+//					}
+//					if (!srcinfo[0].toString().endsWith(lineSep)) {
+						modContent = lineSep + modContent;
 					}
-					if (!srcinfo[0].toString().endsWith(System.lineSeparator())) {
-						modContent = System.lineSeparator() + modContent;
-					}
-					int loc2 = Math.min(docLen, start + length + getCumulativeOffset() + 1);
+					int loc2 = Math.min(docLen, start + length + getCumulativeOffset() + moveForward);
 					document.replace(loc2, 0, modContent);
 					addToCumulativeOffset(modContent.length());
 					loc = start + length + 1;
@@ -399,7 +406,7 @@ public class DialogAnswerProvider extends BaseDialogAnswerProvider {
 					}
 				} else {
 					loc = document.getLength();
-					document.set(document.get() + "\n" + modContent);
+					document.set(document.get() + lineSep + modContent);
 					if (repositionCursor) {
 						setCaretOffsetInEditor(uri, document.get().length() - 1);
 					}
@@ -434,7 +441,7 @@ public class DialogAnswerProvider extends BaseDialogAnswerProvider {
 				}
 				// add after last import
 				precedingObj = lastImport;
-				
+//				showEObjectTextInfo(precedingObj);
 			}
 			else {
 				// add before elements
@@ -446,7 +453,7 @@ public class DialogAnswerProvider extends BaseDialogAnswerProvider {
 					String importStatement = importStatements.get(i);
 					LOGGER.debug(importStatement);
 					if (i > 0) {
-						sb.append("\n");
+						sb.append(System.lineSeparator());
 					}
 					sb.append(importStatement);
 				}
@@ -461,6 +468,24 @@ public class DialogAnswerProvider extends BaseDialogAnswerProvider {
 			return true;
 		}
 		return false;
+	}
+
+	public void showEObjectTextInfo(EObject precedingObj) {
+		Object[] precedingObjSource = getSourceText(precedingObj);
+		int start = (int) precedingObjSource[1];
+		int length = (int) precedingObjSource[2];
+		int doclen = getTheDocument().getLength();
+		int endOfLastImport = start + length;
+		if (endOfLastImport < doclen) {
+			int extendedLen = Math.min(length + 5, doclen - start);
+			try {
+				String ofInterest = getTheDocument().get(start, extendedLen);
+				System.out.println(ofInterest + ": " + start + ", " + length + ", " + extendedLen);
+			} catch (BadLocationException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		}
 	}
 
 	private void setCaretOffsetInEditor(URI uri, int caretOffset) {
@@ -780,6 +805,18 @@ public class DialogAnswerProvider extends BaseDialogAnswerProvider {
 		IPreferenceValues preferenceValues = pvp.getPreferenceValues(resource);
 		if (preferenceValues != null) {
 			Map<String, String> map = new HashMap<String, String>();
+			String saveOriginal = preferenceValues.getPreference(DialogPreferences.ORIGINAL_LANGUAGE);
+			if (saveOriginal != null) {
+				map.put(DialogPreferences.ORIGINAL_LANGUAGE.getId(), saveOriginal);
+			}
+			String savePython = preferenceValues.getPreference(DialogPreferences.PYTHON_LANGUAGE);
+			if (savePython != null) {
+				map.put(DialogPreferences.PYTHON_LANGUAGE.getId(), savePython);
+			}
+			String savePythonTF = preferenceValues.getPreference(DialogPreferences.TF_PYTHON_LANGUAGE);
+			if (savePythonTF != null) {
+				map.put(DialogPreferences.TF_PYTHON_LANGUAGE.getId(), savePythonTF);
+			}
 			String tsburl = preferenceValues.getPreference(DialogPreferences.ANSWER_TEXT_SERVICE_BASE_URI);
 			if (tsburl != null) {
 				map.put(DialogPreferences.ANSWER_TEXT_SERVICE_BASE_URI.getId(), tsburl);
@@ -796,6 +833,10 @@ public class DialogAnswerProvider extends BaseDialogAnswerProvider {
 			if (kchaincgsburl != null) {
 				map.put(DialogPreferences.ANSWER_KCHAIN_CG_SERVICE_BASE_URI.getId(), kchaincgsburl);
 			}
+			String usedbn = preferenceValues.getPreference(DialogPreferences.USE_DBN_CG_SERVICE);
+			if (usedbn != null) {
+				map.put(DialogPreferences.USE_DBN_CG_SERVICE.getId(), usedbn);
+			}
 			String dbncgsburl = preferenceValues.getPreference(DialogPreferences.ANSWER_DBN_CG_SERVICE_BASE_URI);
 			if (dbncgsburl != null) {
 				map.put(DialogPreferences.ANSWER_DBN_CG_SERVICE_BASE_URI.getId(), dbncgsburl);
@@ -804,21 +845,9 @@ public class DialogAnswerProvider extends BaseDialogAnswerProvider {
 			if (dbnjsongensburl != null) {
 				map.put(DialogPreferences.DBN_INPUT_JSON_GENERATION_SERVICE_BASE_URI.getId(), dbnjsongensburl);
 			}
-			String usedbn = preferenceValues.getPreference(DialogPreferences.USE_DBN_CG_SERVICE);
-			if (usedbn != null) {
-				map.put(DialogPreferences.USE_DBN_CG_SERVICE.getId(), usedbn);
-			}
-			String saveOriginal = preferenceValues.getPreference(DialogPreferences.ORIGINAL_LANGUAGE);
-			if (saveOriginal != null) {
-				map.put(DialogPreferences.USE_DBN_CG_SERVICE.getId(), saveOriginal);
-			}
-			String savePython = preferenceValues.getPreference(DialogPreferences.PYTHON_LANGUAGE);
-			if (savePython != null) {
-				map.put(DialogPreferences.PYTHON_LANGUAGE.getId(), savePython);
-			}
-			String savePythonTF = preferenceValues.getPreference(DialogPreferences.TF_PYTHON_LANGUAGE);
-			if (savePythonTF != null) {
-				map.put(DialogPreferences.TF_PYTHON_LANGUAGE.getId(), savePythonTF);
+			String codeextractionkbaseroot = preferenceValues.getPreference(DialogPreferences.ANSWER_CODE_EXTRACTION_KBASE_ROOT);
+			if (codeextractionkbaseroot != null) {
+				map.put(DialogPreferences.ANSWER_CODE_EXTRACTION_KBASE_ROOT.getId(), codeextractionkbaseroot);
 			}
 			return map;
 		}

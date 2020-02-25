@@ -1596,12 +1596,13 @@ public class JenaBasedDialogModelProcessor extends JenaBasedSadlModelProcessor {
 		return null;
 	}
 	
-	private StatementContent processStatement(ComparisonTableStatement element) {
+	private StatementContent processStatement(ComparisonTableStatement element) throws InvalidNameException, InvalidTypeException, TranslationException {
 		ValueTable ct = element.getComparisonTable();
 		if (ct != null) {
 			AnswerContent ac = new AnswerContent(element, Agent.CM);
-			ac.setOtherResults(ct);
-			ac.setAnswer(ct.toString());
+			Object ctObj = processExpression(ct);
+			ac.setOtherResults(ctObj);
+			ac.setAnswer(ctObj.toString());
 			return ac;
 		}
 		return null;
