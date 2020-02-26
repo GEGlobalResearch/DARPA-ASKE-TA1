@@ -323,103 +323,161 @@ public class DialogAnswerProvider extends BaseDialogAnswerProvider {
 //		Display.getDefault().asyncExec(() -> {
 		Display.getDefault().syncExec(() -> {
 			try {
-				String modContent;
-				int loc;
-				Object[] srcinfo = null;
-				String test = null;
-				String lineSep = System.lineSeparator();
-				int moveForward = lineSep.length();
-				if (quote) {
-					modContent = generateDoubleQuotedContentForDialog(content);
-				} else {
-					int numSpacesBeforeEachLine = 0;
-					if (prependAgent) {
-						if (content.startsWith("CM:")) {
-							modContent = content;
-						}
-						else {
-							modContent = "CM: " + content;
-							numSpacesBeforeEachLine += 4;
-						}
-					}
-					else {
-						modContent = content;
-					}
-					if (!modContent.trim().endsWith(".") && !modContent.trim().endsWith("?") && !modContent.trim().endsWith(")")) {
-						modContent += ".";
-					}
-					if (ctx instanceof EObject) {
-						showEObjectTextInfo((EObject) ctx);
-						srcinfo = getSourceText((EObject) ctx);
-						// String srctext = (String) srcinfo[0];
-						int start = (int) srcinfo[1];
-						int length = (int) srcinfo[2];
-						// find location of this in document
-						if (addLeadingSpaces && !srcinfo[0].toString().endsWith(" ")) {
-							modContent = " " + modContent;
-							numSpacesBeforeEachLine++;
-						}
-						int testloc = start + length + getCumulativeOffset();
-						int docLen = document.getLength();
-						int testLen = Math.min(5, docLen - testloc);
-						test = document.get(testloc, testLen);
-						if (addLeadingSpaces && !test.startsWith(" ")) {
-							modContent = " " + modContent;
-							numSpacesBeforeEachLine++;
-						}
-					}
-					if (numSpacesBeforeEachLine > 0) {
-						String lines[] = modContent.split(lineSep);
-						StringBuilder sb = new StringBuilder(lines[0]);
-						sb.append(lineSep);
-						for (int i = 1; i < lines.length; i++) {
-							for (int j = 0; j < numSpacesBeforeEachLine; j++) {
-								sb.append(" ");
-							}
-							sb.append(lines[i]);
-							if (i < lines.length - 1) {
-								sb.append(lineSep);
-							}
-						}
-						modContent = sb.toString();
-					}
-				}
-				if (ctx instanceof EObject && srcinfo != null) {
-					int start = (int) srcinfo[1];
-					int length = (int) srcinfo[2];
-					// find location of this in document
-					loc = start + length + moveForward;
-					int docLen = document.getLength();
-					if (!test.startsWith(lineSep) && !test.startsWith("\r")) {
-//						modContent += lineSep;
-//					}
-//					if (!srcinfo[0].toString().endsWith(lineSep)) {
-						modContent = lineSep + modContent;
-					}
-					int loc2 = Math.min(docLen, start + length + getCumulativeOffset() + moveForward);
-					document.replace(loc2, 0, modContent);
+				String modContent = generateModifiedContent(ctx, quote, prependAgent, content);;
+				int loc = generateInsertionLocation(ctx, modContent);
+				
+				if (loc >= 0) {
+					document.replace(loc, 0, modContent);
 					addToCumulativeOffset(modContent.length());
-					docLen = document.getLength();
-					loc = loc2;
 					if (repositionCursor && document instanceof XtextDocument && ctx instanceof EObject) {
 						final int caretOffset = loc + modContent.length();
 						setCaretOffsetInEditor(uri, caretOffset);
 					}
 				} else {
 					loc = document.getLength();
-					document.set(document.get() + lineSep + modContent);
+					document.set(document.get() + System.lineSeparator() + modContent);
 					if (repositionCursor) {
 						setCaretOffsetInEditor(uri, document.get().length() - 1);
 					}
 				}
-				LOGGER.debug("Adding to Dialog editor: " + modContent);
-				textAtLocation(document, modContent, loc);
+//				Object[] srcinfo = null;
+//				String test = null;
+//				String lineSep = System.lineSeparator();
+//				int moveForward = lineSep.length();
+//				if (quote) {
+//					modContent = generateDoubleQuotedContentForDialog(content);
+//				} else {
+//					int numSpacesBeforeEachLine = 0;
+//					if (prependAgent) {
+//						if (content.startsWith("CM:")) {
+//							modContent = content;
+//						}
+//						else {
+//							modContent = "CM: " + content;
+//							numSpacesBeforeEachLine += 4;
+//						}
+//					}
+//					else {
+//						modContent = content;
+//					}
+//					if (!modContent.trim().endsWith(".") && !modContent.trim().endsWith("?") && !modContent.trim().endsWith(")")) {
+//						modContent += ".";
+//					}
+//					if (ctx instanceof EObject) {
+//						showEObjectTextInfo((EObject) ctx);
+//						srcinfo = getSourceText((EObject) ctx);
+//						// String srctext = (String) srcinfo[0];
+//						int start = (int) srcinfo[1];
+//						int length = (int) srcinfo[2];
+//						// find location of this in document
+//						if (addLeadingSpaces && !srcinfo[0].toString().endsWith(" ")) {
+//							modContent = " " + modContent;
+//							numSpacesBeforeEachLine++;
+//						}
+//						int testloc = start + length + getCumulativeOffset();
+//						int docLen = document.getLength();
+//						int testLen = Math.min(5, docLen - testloc);
+//						test = document.get(testloc, testLen);
+//						if (addLeadingSpaces && !test.startsWith(" ")) {
+//							modContent = " " + modContent;
+//							numSpacesBeforeEachLine++;
+//						}
+//					}
+//					if (numSpacesBeforeEachLine > 0) {
+//						String lines[] = modContent.split(lineSep);
+//						StringBuilder sb = new StringBuilder(lines[0]);
+//						sb.append(lineSep);
+//						for (int i = 1; i < lines.length; i++) {
+//							for (int j = 0; j < numSpacesBeforeEachLine; j++) {
+//								sb.append(" ");
+//							}
+//							sb.append(lines[i]);
+//							if (i < lines.length - 1) {
+//								sb.append(lineSep);
+//							}
+//						}
+//						modContent = sb.toString();
+//					}
+//				}
+//				if (ctx instanceof EObject && srcinfo != null) {
+//					int start = (int) srcinfo[1];
+//					int length = (int) srcinfo[2];
+//					// find location of this in document
+//					loc = start + length + moveForward;		// + getCumulativeOffset()? maybe only add moveForward if test starts with \r\n and modContent does not
+//					int docLen = document.getLength();
+//					if (!test.startsWith(lineSep) && !test.startsWith("\r")) {
+////						modContent += lineSep;
+////					}
+////					if (!srcinfo[0].toString().endsWith(lineSep)) {
+//						modContent = lineSep + modContent;
+//					}
+//					int loc2 = Math.min(docLen, start + length + getCumulativeOffset() + moveForward);
+//					document.replace(loc2, 0, modContent);
+//					addToCumulativeOffset(modContent.length());
+//					docLen = document.getLength();
+//					loc = loc2;
+//					if (repositionCursor && document instanceof XtextDocument && ctx instanceof EObject) {
+//						final int caretOffset = loc + modContent.length();
+//						setCaretOffsetInEditor(uri, caretOffset);
+//					}
+//				} else {
+//					loc = document.getLength();
+//					document.set(document.get() + lineSep + modContent);
+//					if (repositionCursor) {
+//						setCaretOffsetInEditor(uri, document.get().length() - 1);
+//					}
+//				}
+//				LOGGER.debug("Adding to Dialog editor: " + modContent);
+//				textAtLocation(document, modContent, loc);
 			} catch (BadLocationException e) {
 				// This happens sometimes but doesn't usually have dire consequences....
 //				Exceptions.throwUncheckedException(e);
 			}
 		});
 		return true;
+	}
+
+	private int generateInsertionLocation(Object ctx, String modContent) {
+		Object elementInfos = getConfigMgr().getPrivateKeyValuePair("ElementInfo");
+		return 0;
+	}
+
+	private String generateModifiedContent(Object ctx, boolean quote, boolean prependAgent, String content) {
+		String response;
+		if (quote) {
+			response = generateDoubleQuotedContentForDialog(content);
+		}
+		else {
+			response = content;
+		}
+		int numSpacesBeforeEachLine = 0;
+		if (prependAgent) {
+			if (!content.startsWith("CM:")) {
+				response = "CM: " + response;
+				numSpacesBeforeEachLine += 4;
+			}
+		}
+		if (!response.trim().endsWith(".") && !response.trim().endsWith("?") && !response.trim().endsWith(")")) {
+			response += ".";
+		}
+		if (numSpacesBeforeEachLine > 0) {
+			String lines[] = response.split(System.lineSeparator());
+			StringBuilder sb = new StringBuilder(lines[0]);
+			sb.append(System.lineSeparator());
+			for (int i = 1; i < lines.length; i++) {
+				for (int j = 0; j < numSpacesBeforeEachLine; j++) {
+					sb.append(" ");
+				}
+				sb.append(lines[i]);
+				if (i < lines.length - 1) {
+					sb.append(System.lineSeparator());
+				}
+			}
+			response = sb.toString();
+		}
+		// should there be a newline before?
+		
+		return response;
 	}
 
 	@Override
@@ -851,6 +909,10 @@ public class DialogAnswerProvider extends BaseDialogAnswerProvider {
 			String dbnjsongensburl = preferenceValues.getPreference(DialogPreferences.DBN_INPUT_JSON_GENERATION_SERVICE_BASE_URI);
 			if (dbnjsongensburl != null) {
 				map.put(DialogPreferences.DBN_INPUT_JSON_GENERATION_SERVICE_BASE_URI.getId(), dbnjsongensburl);
+			}
+			String invizinserviceurl = preferenceValues.getPreference(DialogPreferences.ANSWER_INVIZIN_SERVICE_BASE_URI);
+			if (invizinserviceurl != null) {
+				map.put(DialogPreferences.ANSWER_INVIZIN_SERVICE_BASE_URI.getId(), invizinserviceurl);
 			}
 			String codeextractionkbaseroot = preferenceValues.getPreference(DialogPreferences.ANSWER_CODE_EXTRACTION_KBASE_ROOT);
 			if (codeextractionkbaseroot != null) {

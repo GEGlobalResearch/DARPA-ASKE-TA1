@@ -181,6 +181,7 @@ public class JenaBasedDialogModelProcessor extends JenaBasedSadlModelProcessor {
 	private String textServiceUrl = null;
 	private String dbnCgServiceUrl = null;
 	private String dbninputjsongenerationserviceurl = null;
+	private String invizinserviceurl = null;
 	private boolean useDbn = true;
 	private String kchainCgServiceUrl = null;
 	private boolean useKchain = false;
@@ -373,6 +374,7 @@ public class JenaBasedDialogModelProcessor extends JenaBasedSadlModelProcessor {
 					throw new OperationCanceledException();
 				}
 				SadlModelElement element = elitr.next();
+				storeOriginalElementInfo(element);
 				boolean stmtComplete = statementIsComplete(element);
 				String eos = getEos(element);
         		if (eos != null && (!(eos.endsWith(".") || eos.endsWith("?")))) {	// I don't think this is needed anymore awc 9/4/19
@@ -493,6 +495,83 @@ public class JenaBasedDialogModelProcessor extends JenaBasedSadlModelProcessor {
 			}
 			
 
+		}
+	}
+	
+	class ModelElementInfo {
+		private EObject object;
+		private String txt;
+		private int start;
+		private int length;
+		private int end;
+		private boolean inserted;	// it's true for inserted, false for original
+		
+		public ModelElementInfo(EObject obj, String t, int s, int l, int e, boolean i) {
+			setObject(obj);
+			setTxt(t);
+			setStart(s);
+			setLength(l);
+			setEnd(e);
+			setInserted(i);
+		}
+		
+		public String getTxt() {
+			return txt;
+		}
+		public void setTxt(String txt) {
+			this.txt = txt;
+		}
+		public int getStart() {
+			return start;
+		}
+		public void setStart(int start) {
+			this.start = start;
+		}
+		public int getLength() {
+			return length;
+		}
+		public void setLength(int length) {
+			this.length = length;
+		}
+		public int getEnd() {
+			return end;
+		}
+		public void setEnd(int end) {
+			this.end = end;
+		}
+
+		public boolean isInserted() {
+			return inserted;
+		}
+
+		public void setInserted(boolean inserted) {
+			this.inserted = inserted;
+		}
+
+		public EObject getObject() {
+			return object;
+		}
+
+		public void setObject(EObject object) {
+			this.object = object;
+		}
+		
+	}
+	
+	List<ModelElementInfo> modelElements = null;
+
+	private void storeOriginalElementInfo(SadlModelElement element) {
+		if (modelElements == null) {
+			modelElements = new ArrayList<ModelElementInfo>();
+			getConfigMgr().addPrivateKeyValuePair("ElementInfo", modelElements);
+		}
+		INode node = NodeModelUtils.findActualNodeFor(element);
+		if (node != null) {
+			String txt = node.getText();
+			int start = node.getTotalOffset();
+			int length = node.getTotalLength();
+			int end = node.getTotalEndOffset();
+			modelElements.add(new ModelElementInfo(element, txt, start, length, end, false));
 		}
 	}
 
@@ -2146,6 +2225,10 @@ public class JenaBasedDialogModelProcessor extends JenaBasedSadlModelProcessor {
 		if (dbninputjsongenerationserviceurl != null) {
 			setDbnInputJsonGenerationServiceUrl(dbninputjsongenerationserviceurl);
 		}
+		String invizinserviceurl = context.getPreferenceValues().getPreference(DialogPreferences.ANSWER_INVIZIN_SERVICE_BASE_URI);
+		if (invizinserviceurl != null) {
+			setInvizinserviceurl(invizinserviceurl);
+		}
 		String kchaincgserviceurl = context.getPreferenceValues().getPreference(DialogPreferences.ANSWER_KCHAIN_CG_SERVICE_BASE_URI);
 		if (kchaincgserviceurl != null) {
 			setKchainCgServiceUrl(kchaincgserviceurl);
@@ -2211,7 +2294,6 @@ public class JenaBasedDialogModelProcessor extends JenaBasedSadlModelProcessor {
 
 	private void setDbnInputJsonGenerationServiceUrl(String dbninputjsongenerationserviceurl) {
 		this.dbninputjsongenerationserviceurl = dbninputjsongenerationserviceurl;
-		
 	}
 	
 	public String getDbnInputJsonGenerationServiceUrl() {
@@ -2443,6 +2525,14 @@ public class JenaBasedDialogModelProcessor extends JenaBasedSadlModelProcessor {
 
 	private void setShortGraphLink(String shortGraphLink) {
 		this.shortGraphLink = shortGraphLink;
+	}
+
+	private String getInvizinserviceurl() {
+		return invizinserviceurl;
+	}
+
+	private void setInvizinserviceurl(String invizinserviceurl) {
+		this.invizinserviceurl = invizinserviceurl;
 	}
 
 }
