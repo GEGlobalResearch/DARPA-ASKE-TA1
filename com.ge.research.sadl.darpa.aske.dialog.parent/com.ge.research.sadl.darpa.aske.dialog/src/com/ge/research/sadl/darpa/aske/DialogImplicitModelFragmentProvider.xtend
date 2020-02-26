@@ -58,6 +58,9 @@ class DialogImplicitModelFragmentProvider implements ISadlImplicitModelFragmentP
 		initializerKeyword is a type of annotation.
 		IntializerMethod has initializerKeyword "load", has initializerKeyword "initialize".	
 		
+		minValue describes DataDescriptor. 
+		maxValue describes DataDescriptor. 
+		
 		ImplicitDataDescriptor is a type of DataDescriptor,
 			described by declaration with values of type Script.
 		implicitInput describes ^Equation with values of type ImplicitDataDescriptor.
