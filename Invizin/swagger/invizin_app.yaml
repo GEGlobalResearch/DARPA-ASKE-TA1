@@ -85,6 +85,8 @@ definitions:
         type: "string"
       unit:
         type: "string"
+      alias:
+        type: "string"
   
   dvariable:
     type: "object"
@@ -99,4 +101,6 @@ definitions:
       value:
         type: "string"
       unit:
+        type: "string"
+      alias:
         type: "string"

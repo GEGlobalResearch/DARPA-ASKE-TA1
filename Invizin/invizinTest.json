@@ -2,6 +2,7 @@
   "inputVariables": [
     {
       "name": "mach",
+      "alias": "MachNumber",
       "type": "float",
       "value": "0.9",
       "minValue": "0.0",
@@ -18,9 +19,11 @@
   "outputVariables": [
     {
       "name": "aflow",
-      "type": "float"
+      "alias": "Airflow",
+      "type": "float",
+      "unit": "lbs/ft^2"
     }
   ],
   "modelName": "getAir",
-  "plotType": "1"
+  "plotType": "2"
 }
