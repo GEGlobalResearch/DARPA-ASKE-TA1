@@ -3316,7 +3316,13 @@ public class AnswerCurationManager {
 						if (isTable) {
 							for(int i=0; i< rset.getRowCount(); i++) {
 								HashMap<String,String> varVal = new HashMap<String,String>();
-								varVal.put(rset.getResultAt(i, 2).toString(), SadlUtils.formatNumberList(rset.getResultAt(i, 3).toString(), 5));
+								String value = SadlUtils.formatNumberList(rset.getResultAt(i, 3).toString(), 5);
+								Object unitObj = rset.getResultAt(i, 5);
+								if (unitObj != null) {
+									String unit = quoteUnitIfNecessary(unitObj.toString());
+									value = value + " " + unit;
+								}
+								varVal.put(rset.getResultAt(i, 2).toString(), value);
 								table.put(rset.getResultAt(i, 1).toString(),  varVal); 
 							}
 						}
@@ -3440,7 +3446,8 @@ public class AnswerCurationManager {
 		formatStr = "%-" + colWidths.get(idx) + "s";
 		sb.append(", ");
 		sb.append(String.format(formatStr, diagrams.get(0)));
-		sb.append("],\n");
+		sb.append("],");
+		sb.append(System.lineSeparator());
 		
 		// now output the value rows
 		int rowNum = 0;
@@ -3459,10 +3466,12 @@ public class AnswerCurationManager {
 			formatStr = "%-" + colWidths.get(idx) + "s";
 			sb.append(", ");
 			sb.append(String.format(formatStr, diagrams.get(++rowNum)));
-			sb.append("],\n");
+			sb.append("],");
+			sb.append(System.lineSeparator());
 		}
 		sb.deleteCharAt(sb.length()-2); //delete last comma
-		sb.append("}.\n");
+		sb.append("}.");
+		sb.append(System.lineSeparator());
 		
 		return sb.toString();
 	}
@@ -3479,6 +3488,11 @@ public class AnswerCurationManager {
 				sb.append(" with ^value ");
 				//				sb.append(rs.getResultAt(row, 2));
 				String value = SadlUtils.formatNumberList(rs.getResultAt(row, 3).toString(), 5);
+				Object unitObj = rs.getResultAt(row, 5);
+				if (unitObj != null) {
+					String unit = quoteUnitIfNecessary(unitObj.toString());
+					value = value + " " + unit;
+				}
 				sb.append(value);
 				if (rs.getResultAt(row, 4) != null) {
 					sb.append(", with stddev ");
@@ -3487,13 +3501,33 @@ public class AnswerCurationManager {
 				//				sb.append(")\n");
 			}
 			sb.append(" .");
-			sb.append(System.lineSeparator());
+//			sb.append(System.lineSeparator());
 		}
 		return sb.toString();
 	}
 	
 	
-	
+	/**
+	 * Method to quote the unit string if needed
+	 * @param string
+	 * @return
+	 */
+	private String quoteUnitIfNecessary(String string) {
+		boolean quote = false;
+		char[] charArray = string.toCharArray();
+	    for(char c:charArray)
+	    {
+	        if (!Character.isLetterOrDigit(c)) {
+	            quote = true;
+	            break;
+	        }
+	    }
+	    if (quote) {
+			return "\"" + string + "\"";
+		}
+		return string;
+	}
+
 /**
  * 	invoke DialogAnswerProvider method displayGraph
  * @param visualizer

@@ -390,7 +390,7 @@ public class DialogAnswerProvider extends BaseDialogAnswerProvider {
 					// find location of this in document
 					loc = start + length + moveForward;
 					int docLen = document.getLength();
-					if (!test.startsWith(lineSep)) {
+					if (!test.startsWith(lineSep) && !test.startsWith("\r")) {
 //						modContent += lineSep;
 //					}
 //					if (!srcinfo[0].toString().endsWith(lineSep)) {
@@ -399,7 +399,8 @@ public class DialogAnswerProvider extends BaseDialogAnswerProvider {
 					int loc2 = Math.min(docLen, start + length + getCumulativeOffset() + moveForward);
 					document.replace(loc2, 0, modContent);
 					addToCumulativeOffset(modContent.length());
-					loc = start + length + 1;
+					docLen = document.getLength();
+					loc = loc2;
 					if (repositionCursor && document instanceof XtextDocument && ctx instanceof EObject) {
 						final int caretOffset = loc + modContent.length();
 						setCaretOffsetInEditor(uri, caretOffset);
@@ -474,6 +475,7 @@ public class DialogAnswerProvider extends BaseDialogAnswerProvider {
 	public void showEObjectTextInfo(EObject precedingObj) {
 		Object[] precedingObjSource = getSourceText(precedingObj);
 		int start = (int) precedingObjSource[1];
+		start = start +  + getCumulativeOffset();
 		int length = (int) precedingObjSource[2];
 		int doclen = getTheDocument().getLength();
 		int endOfLastImport = start + length;
@@ -481,6 +483,7 @@ public class DialogAnswerProvider extends BaseDialogAnswerProvider {
 			int extendedLen = Math.min(length + 5, doclen - start);
 			try {
 				String ofInterest = getTheDocument().get(start, extendedLen);
+				
 				System.out.println(ofInterest + ": " + start + ", " + length + ", " + extendedLen);
 			} catch (BadLocationException e) {
 				// This happens sometimes but doesn't usually have dire consequences....
