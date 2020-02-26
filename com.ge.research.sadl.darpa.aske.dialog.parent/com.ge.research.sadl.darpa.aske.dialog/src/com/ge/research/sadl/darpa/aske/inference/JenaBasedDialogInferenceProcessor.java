@@ -1348,7 +1348,7 @@ private ResultSet[] processWhatWhenQuery(Resource resource, String queryModelFil
 	    	else if (useKC) {
 	    		lbl2value = getLabelToValueMapping(kchainResultsJson);
 	    	}
-	        createCGsubgraphs(cgIns, dbnEqnMap, dbnOutput, listOfEqns, class2lbl, lbl2value, queryModelPrefix);
+	        createCGsubgraphs(cgIns, dbnEqnMap, dbnOutput, listOfEqns, class2lbl, lbl2value, class2units, queryModelPrefix);
 	        
 			//Create output instances and link them to ce
 			//There may be multiple outputs, need to loop through them
@@ -1361,7 +1361,7 @@ private ResultSet[] processWhatWhenQuery(Resource resource, String queryModelFil
 			
 			dbnResults[i] = retrieveCompGraph(resource, cgIns); //+1 to accomodate dependency graph
 			
-			ResultSet rvalues = retrieveValues(resource, cgIns);
+			ResultSet rvalues = retrieveValues(resource, cgIns); //outputsList
 			
 			dbnResults[i+1] = addSensitivityURLtoResults(rvalues, sensitivityURL);
 //			dbnResults[i+1] = retrieveValues(resource, cgIns);
@@ -1874,7 +1874,7 @@ private ResultSet[] processModelsFromDataset(Resource resource, TripleElement[] 
 				AnswerCurationManager acm = (AnswerCurationManager) cmgr.getPrivateKeyValuePair(DialogConstants.ANSWER_CURATION_MANAGER);
 
 				lbl2value = getLabelToMeanStdMapping(dbnResultsJson);
-				createCGsubgraphs(cgIns, dbnEqnMap, dbnOutput, listOfEqns, class2lbl, lbl2value, queryModelPrefix);
+				createCGsubgraphs(cgIns, dbnEqnMap, dbnOutput, listOfEqns, class2lbl, lbl2value, class2units, queryModelPrefix);
 
 				createCEoutputInstances(outputsList, ce, class2lbl, lbl2value, class2units);
 
@@ -2851,10 +2851,11 @@ private RDFNode getObjectAsLiteralOrResource(Node property, Node object) {
 		 * @param listOfEqns equations in the model
 		 * @param class2lbl  
 		 * @param lbl2value
+		 * @param class2units 
 		 * @param prefix
 		 */
 		private void createCGsubgraphs(Individual cgIns, Map<RDFNode, String[]> dbnEqnMap, Map<RDFNode, RDFNode> dbnOutput,
-				String listOfEqns, Map<String, String> class2lbl, Map<String, String[]> lbl2value, String prefix) //, Map<OntClass, Individual> outputInstance)
+				String listOfEqns, Map<String, String> class2lbl, Map<String, String[]> lbl2value, Map<String, String> class2units, String prefix) //, Map<OntClass, Individual> outputInstance)
 		{
 
 		OntProperty subgraphprop = 	getTheJenaModel().getOntProperty(METAMODEL_SUBG_PROP);
@@ -2909,7 +2910,10 @@ private RDFNode getObjectAsLiteralOrResource(Node property, Node object) {
 			
 			outpIns = createIndividualOfClass(queryModel, null, null, rng); //e.g. instance of :Altitude
 			ingestKGTriple(sgIns, outputprop, outpIns);
-			
+			if(class2units.containsKey(otype.toString())) {
+				String unit = class2units.get(otype.toString());
+				queryModel.add(outpIns, getTheJenaModel().getProperty(UNIT_PROP), unit);
+			}
 			String varLabel = class2lbl.get(otype.toString());
 			String[] ms = lbl2value.get(varLabel);  //class2lbl.get(o.toString()));
 			if (ms != null) {
