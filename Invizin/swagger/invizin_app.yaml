@@ -1,0 +1,106 @@
+swagger: "2.0"
+info:
+  description: "Create Interactive Visualizations of Inferences"
+  version: "1.0.0"
+  title: "InVizIn Services"
+host: "localhost:12309"
+basePath: "/darpa/aske"
+tags:
+- name: "InVizIn Services"
+  externalDocs:
+    description: "Part of GE DARPA ASKE program"
+    url: "https://github.com/GEGlobalResearch/DARPA-ASKE-TA1"
+
+paths:
+  /invizin/visualize:
+    post:
+      tags:
+      - "InVizIn"
+      summary: "Builds visualization from an existing model for given input and output variables "
+      operationId: "invizin_app.visualize"
+      consumes:
+      - application/json
+      produces:
+      - application/json
+      parameters:
+      - in: "body"
+        name: "body"
+        required: true
+        schema:
+          $ref: "#/definitions/visualize_in"
+      responses:
+        200:
+          description: "success"
+          schema:
+            $ref: "#/definitions/visualize_out"
+  
+definitions:
+  visualize_in:
+    type: "object"
+    required:
+    - "inputVariables" 
+    - "outputVariables"
+    - "modelName"
+    properties:
+      inputVariables:
+        type: "array"
+        items: 
+          $ref: "#/definitions/variable"
+      outputVariables:
+        type: "array"
+        items: 
+          $ref: "#/definitions/variable"
+      modelName:
+        type: "string"
+      plotType:
+        type: "string"
+  
+  visualize_out:
+    type: "object"
+    required:
+    - "url"
+    properties:
+      defaultsUsed:
+        type: "array"
+        items: 
+          $ref: "#/definitions/dvariable"
+      url:
+        type: "string"
+        
+  variable:
+    type: "object"
+    required:
+    - "name"
+    - "type"
+    properties:
+      name:
+        type: "string"
+      type:
+        type: "string"
+      value:
+        type: "string"
+      minValue:
+        type: "string"
+      maxValue:
+        type: "string"
+      unit:
+        type: "string"
+      alias:
+        type: "string"
+  
+  dvariable:
+    type: "object"
+    required:
+    - "name"
+    - "value"
+    properties:
+      name:
+        type: "string"
+      type:
+        type: "string"
+      value:
+        type: "string"
+      unit:
+        type: "string"
+      alias:
+        type: "string"

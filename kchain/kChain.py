@@ -995,8 +995,8 @@ class kChainModel(object):
                     print(eqStr)
                     print(invars)
                 
-                if len(outputVars)>1:
-                    assert len(output)==len(outputVars),"Number of outputs do not match."
+                #if len(outputVars)>1:
+                #    assert len(output)==len(outputVars),"Number of outputs do not match."
                 
                 for ii in range(len(outputVars)):
                     #tfType = tf.double
