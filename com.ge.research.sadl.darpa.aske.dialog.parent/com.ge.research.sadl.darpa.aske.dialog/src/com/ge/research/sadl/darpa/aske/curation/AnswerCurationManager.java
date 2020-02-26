@@ -3313,6 +3313,7 @@ public class AnswerCurationManager {
 						ResultSet rset = (ResultSet) rs;
 						rset.setShowNamespaces(false);
 						
+						String className = rset.getResultAt(0, 1).toString();
 						if (isTable) {
 							for(int i=0; i< rset.getRowCount(); i++) {
 								HashMap<String,String> varVal = new HashMap<String,String>();
@@ -3335,7 +3336,7 @@ public class AnswerCurationManager {
 						String graphFileName = baseFileName + ".svg";
 						String sourceName = graphsDirectory + "/" + graphFileName;
 						if (sglink != null && sglink.length() > 0) {
-							String targetName = sglink + "/" + baseFileName;
+							String targetName = sglink + "/" + className + baseFileName.substring(13);
 							File srcFile = new File(sourceName);
 							if (srcFile.exists()) {
 								File trgtFile = new File(targetName);
