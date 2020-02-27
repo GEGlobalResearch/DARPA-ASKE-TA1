@@ -3439,8 +3439,9 @@ public class AnswerCurationManager {
 		int linkColIdx = 0;
 		for(List<String> rowLinks : diagrams) {		// ranges over rows
 			int maxLinkLen = 0;
-			if (linkColIdx++ == 0) {
+			if (linkColIdx == 0) {
 				maxLinkLen = firstLinkColHdr.length();
+				linkColIdx++;
 			}
 			else if (linkColIdx == 1) {
 				maxLinkLen = secondLinkColHdr.length();
