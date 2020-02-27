@@ -81,6 +81,7 @@ import com.ge.research.sadl.darpa.aske.curation.AnswerCurationManager.Agent;
 import com.ge.research.sadl.darpa.aske.preferences.DialogPreferences;
 import com.ge.research.sadl.darpa.aske.processing.DialogConstants;
 import com.ge.research.sadl.darpa.aske.processing.SadlStatementContent;
+import com.ge.research.sadl.darpa.aske.processing.imports.InvizinServiceInterface;
 import com.ge.research.sadl.darpa.aske.processing.imports.KChainServiceInterface;
 import com.ge.research.sadl.jena.JenaBasedSadlInferenceProcessor;
 import com.ge.research.sadl.jena.JenaBasedSadlModelProcessor;
@@ -142,6 +143,8 @@ public class JenaBasedDialogInferenceProcessor extends JenaBasedSadlInferencePro
 	public static final boolean debugMode = true;
 	
 	
+    private static final String KCHAIN_SERVICE_URL_FRAGMENT = "/darpa/aske/kchain/";
+
 	public static final String CGMODELS_FOLDER = "ComputationalGraphModels";
 	
 	
@@ -513,9 +516,9 @@ public class JenaBasedDialogInferenceProcessor extends JenaBasedSadlInferencePro
 			"prefix rdf:<http://www.w3.org/1999/02/22-rdf-syntax-ns#>\n"+
 			"prefix list:<http://sadl.org/sadllistmodel#>\n" +
 			"\n" + 
-			"select distinct ?Node (str(?NUnits) as ?NodeOutputUnits) ?Child (str(?CUnits) as ?ChildInputUnits) ?Eq  ?Value #?Lower ?Upper #?Distribution \n" + 
+			"select distinct ?Node (str(?NUnits) as ?NodeOutputUnits) ?Child (str(?CUnits) as ?ChildInputUnits) ?Eq  ?Value ?Lower ?Upper #?Distribution \n" + 
 			"where {\n" + 
-			"{select distinct ?Node ?Child ?CUnits ?Eq \n" + 
+			"{select distinct ?Node ?Child ?CUnits ?Eq ?Lower ?Upper \n" + 
 			"where { \n" + 
 			"   {?Eq imp:genericInput ?Node.\n" + 
 			"     filter not exists {?Model imp:implicitInput/imp:localDescriptorName ?Node.}\n" + 
@@ -527,7 +530,9 @@ public class JenaBasedDialogInferenceProcessor extends JenaBasedSadlInferencePro
 			"   }union {\n" + 
 			"    ?Eq imp:implicitInput ?II. \n" + 
 			"    ?II imp:augmentedType/imp:semType ?Node.\n" + 
-			"    optional {?II imp:specifiedUnits/list:first ?CUnits.}\n" + 
+			"    optional {?II imp:specifiedUnits/list:first ?CUnits.}\n" +
+			"    optional {?II imp:minValue ?Lower}\n" + 
+			"    optional {?II imp:maxValue ?Upper}\n" +
 			"   }\n" + 
 			"     \n" + 
 			"     # This is an input node, it's units come from the query\n" + 
@@ -552,7 +557,7 @@ public class JenaBasedDialogInferenceProcessor extends JenaBasedSadlInferencePro
 			"\n" + 
 			"  }} \n" + 
 			"  union {\n" + 
-			"  select distinct ?Node  ?Child ?CUnits ?Eq #?NUnits\n" + 
+			"  select distinct ?Node  ?Child ?CUnits ?Eq ?Lower ?Upper #?NUnits\n" + 
 			"where { \n" + 
 			"   {?Eq imp:genericInput ?Node.\n" + 
 			"     filter not exists {?Model imp:implicitInput/imp:localDescriptorName ?Node.}\n" + 
@@ -565,7 +570,8 @@ public class JenaBasedDialogInferenceProcessor extends JenaBasedSadlInferencePro
 			"    ?Eq imp:implicitInput ?II. \n" + 
 			"    ?II imp:augmentedType/imp:semType ?Node.\n" + 
 			"    optional {?II imp:specifiedUnits/list:first ?CUnits.}\n" + 
-			"   }\n" + 
+			"    optional {?II imp:minValue ?Lower}\n" + 
+			"    optional {?II imp:maxValue ?Upper}\n" +			"   }\n" + 
 			"     \n" + 
 			"   \n" + 
 			"   {?Eq imp:genericOutput ?Child.\n" + 
@@ -1170,22 +1176,6 @@ public class JenaBasedDialogInferenceProcessor extends JenaBasedSadlInferencePro
 		return results;
 	}
 
-	private void registerQueryModel(Resource resource, String queryModelFileName, String queryOwlFileWithPath)
-			throws SadlInferenceException {
-		File f = new File(queryOwlFileWithPath);
-		if (f.exists() && !f.isDirectory()) {
-			throw new SadlInferenceException("Query model file already exists");
-		}
-		else {
-			queryModel = ModelFactory.createOntologyModel(OntModelSpec.OWL_MEM);
-		}
-		
-		OntModelProvider.addPrivateKeyValuePair(resource, queryModelFileName, queryModel);
-	}
-
-
-	
-
 
 private ResultSet[] processWhatWhenQuery(Resource resource, String queryModelFileName, String queryModelURI,
 		String queryModelPrefix, String queryOwlFileWithPath, List<RDFNode> inputsList, List<RDFNode> outputsList,
@@ -1326,8 +1316,14 @@ private ResultSet[] processWhatWhenQuery(Resource resource, String queryModelFil
 				    
 				    kchainResultsJson = executeKChain(kchainEvalJson); //call sensitivity service instead
 				    
-				    //sensitivityURL = getKChainSensitivityURL(kchainResultsJson);
-				    sensitivityURL = "http://localhost:1177";
+				    kchainEvalJson = addKCserviceURL(kchainEvalJson);
+				    
+					System.out.print("Sensitivity analysis: ");
+					startTime = System.currentTimeMillis();
+				    sensitivityURL = getKChainSensitivityURL(kchainEvalJson);
+					endTime = System.currentTimeMillis();
+					System.out.println((endTime - startTime));
+				    //sensitivityURL = "http://localhost:1177";
 				    
 //				    if (isMac()) {
 //				    	String[] cmd = {"/usr/bin/python", "-m", "dashserve", "/path/to/myapp.dash"};
@@ -1403,6 +1399,34 @@ private ResultSet[] processWhatWhenQuery(Resource resource, String queryModelFil
 }
 
 
+private void registerQueryModel(Resource resource, String queryModelFileName, String queryOwlFileWithPath)
+		throws SadlInferenceException {
+	File f = new File(queryOwlFileWithPath);
+	if (f.exists() && !f.isDirectory()) {
+		throw new SadlInferenceException("Query model file already exists");
+	}
+	else {
+		queryModel = ModelFactory.createOntologyModel(OntModelSpec.OWL_MEM);
+	}
+	
+	OntModelProvider.addPrivateKeyValuePair(resource, queryModelFileName, queryModel);
+}
+
+
+
+
+
+/**
+ * 
+ * @param kchainEvalJson
+ * @return
+ */
+private JsonObject addKCserviceURL(JsonObject kchainEvalJson) {
+	String kcServiceURL = getPreference(DialogPreferences.ANSWER_KCHAIN_CG_SERVICE_BASE_URI.getId()) + KCHAIN_SERVICE_URL_FRAGMENT + "evaluate";
+	kchainEvalJson.addProperty("url", kcServiceURL);
+	
+	return kchainEvalJson;
+}
 
 /**
  * 
@@ -1640,6 +1664,8 @@ private JsonObject createExecJson(String cgJson) throws DialogInferenceException
 			"        \"value\": \"20000.0\" ";
 	keo += "}]}";
 	
+//	String mach = "{\"modelName\":\"getResponse\",\"outputVariables\":[{\"unit\":\"\",\"name\":\"fsmach\",\"alias\":\"MachSpeed\",\"type\":\"float\"}],\"inputVariables\":[{\"name\":\"altd\",\"alias\":\"Altitude\",\"type\":\"float\",\"value\":\"30000\",\"minValue\":\"0\",\"maxValue\":\"60000\"},{\"name\":\"u0d\",\"alias\":\"Speed\",\"type\":\"float\",\"value\":\"500\",\"minValue\":\"0\",\"maxValue\":\"1500\"}],\"plotType\":\"2\"}";
+	
 	JsonObject jo;
 	JsonObject keoJson = null;
 	try {
@@ -1647,11 +1673,15 @@ private JsonObject createExecJson(String cgJson) throws DialogInferenceException
 		JsonElement je = jp.parse(cgJson);
 		keoJson = je.getAsJsonObject();
 		jo = keoJson.get("eval").getAsJsonObject();
-		jo.addProperty("plotType",2);
+		jo.addProperty("plotType","2");
+
+//		jo = jp.parse(mach).getAsJsonObject();
 	}
 	catch (Throwable t) {
 		throw new DialogInferenceException(t.getMessage(), t);
 	}
+
+	
 	return jo;
 }
 
@@ -1718,6 +1748,18 @@ private String executeKChain(JsonObject kchainJsonObj) throws MalformedURLExcept
 	}
 }
 
+private String getKChainSensitivityURL(JsonObject kchainJsonObj) throws MalformedURLException, IOException, DialogInferenceException {
+	try {
+		String serviceURL = getPreference(DialogPreferences.ANSWER_INVIZIN_SERVICE_BASE_URI.getId());
+		InvizinServiceInterface insi = new InvizinServiceInterface(serviceURL);
+		return insi.visualize(kchainJsonObj);
+	}
+	catch (Throwable t) {
+		throw new DialogInferenceException(t.getMessage(), t);
+	}
+}
+
+
 /**
  * Method to process the json response from the K-CHAIN eval service call
  * @param kchainResultsJson -- the json response from the eval service call
@@ -1735,22 +1777,6 @@ private String getEvalKChainOutcome(String kchainResultsJson) {
             jsonObject = jsonTree.getAsJsonObject();
             if (jsonObject.has("outputVariables")) 
                 jres = "Success"; //jsonObject.get("outputVariables").getAsString().trim();
-        }
-    }
-    return jres;
-}
-private String getKChainSensitivityURL(String kchainResultsJson) {
-    JsonParser parser = new JsonParser();
-    String jres = null;
-    if (!kchainResultsJson.equals("")) {
-        JsonElement jsonTree = parser.parse(kchainResultsJson);
-        JsonObject jsonObject;
-        //String jres = null;
-
-        if (jsonTree.isJsonObject()) {
-            jsonObject = jsonTree.getAsJsonObject();
-            if (jsonObject.has("url")) 
-                jres = jsonObject.get("url").getAsString().trim();
         }
     }
     return jres;
