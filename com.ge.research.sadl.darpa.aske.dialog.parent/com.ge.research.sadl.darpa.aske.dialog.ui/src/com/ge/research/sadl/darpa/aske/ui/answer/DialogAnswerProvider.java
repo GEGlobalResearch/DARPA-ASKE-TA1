@@ -292,27 +292,6 @@ public class DialogAnswerProvider extends BaseDialogAnswerProvider {
 		this.document = theDocument;
 	}
 
-//	private Object[] getSourceText(EObject object) {
-//		INode node = NodeModelUtils.findActualNodeFor(object);
-//		if (node != null) {
-//			int start = NodeModelUtils.getNode(object).getTotalOffset();
-//			int length = NodeModelUtils.getNode(object).getTotalLength();
-//			String txt;
-//			try {
-//				txt = getTheDocument().get(start + getCumulativeOffset(), length); //NodeModelUtils.getTokenText(node);
-//				Object[] ret = new Object[3];
-//				ret[0] = txt; // txt.trim();
-//				ret[1] = start;
-//				ret[2] = length;
-//				return ret;
-//			} catch (BadLocationException e) {
-//				// This happens sometimes but doesn't usually have dire consequences....
-////				e.printStackTrace();
-//			} 
-//		}
-//		return null;
-//	}
-
 	private synchronized boolean addCurationManagerContentToDialog(IXtextDocument document, IRegion reg, String content,
 			Object ctx, boolean quote) throws BadLocationException {
 		return addCurationManagerContentToDialog(document, reg, content, ctx, quote, true, true, true);
