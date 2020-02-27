@@ -330,6 +330,8 @@ public class DialogAnswerProvider extends BaseDialogAnswerProvider {
 
 	private int generateInsertionLocation(IXtextDocument document, Object ctx, String modContent) {
 		int loc = 0;
+		String lineSep = System.lineSeparator();
+		int lineSepLen = lineSep.length();
 		Object elementInfos = getConfigMgr().getPrivateKeyValuePair("ElementInfo");
 		String docText = document.get();
 		int docLength = document.getLength();
@@ -373,10 +375,10 @@ public class DialogAnswerProvider extends BaseDialogAnswerProvider {
 									}
 								}
 								loc = expectedEndLoc + priorInsertionsOffset;
-								if (docLength - loc >= 2) {
-									String rightAfter = document.get(loc,2);
-									if (rightAfter.equals(System.lineSeparator())) {
-										loc += System.lineSeparator().length();
+								if (docLength - loc >= lineSepLen) {
+									String rightAfter = document.get(loc,lineSepLen);
+									if (rightAfter.equals(lineSep)) {
+										loc += lineSep.length();
 									}
 								}
 							}
