@@ -114,20 +114,6 @@ public class DialogAnswerProviderConsoleForTest extends BaseDialogAnswerProvider
 		return true;
 	}
 
-	//	public String initiateMixedInitiativeInteraction(MixedInitiativeElement element) {
-		//String output = element.getContent().toString();
-		//System.out.println("CM: " + output);
-		//String answer = null;
-		//if (output.trim().endsWith("?")) {
-////			System.out.println("?");
-//			//read(System.in, 100000, element);
-//			answer = getUserInput();
-//			element.addArgument(answer);
-//			provideResponse(element);
-//		}
-//		return answer;
-//	}
-
 	@Override
 	@SuppressWarnings("deprecation")
 	public void dispose() {
@@ -423,18 +409,6 @@ public class DialogAnswerProviderConsoleForTest extends BaseDialogAnswerProvider
 	public boolean addImports(List<String> importStatements) {
 		// TODO Auto-generated method stub
 		return false;
-	}
-
-	@Override
-	public void addToCumulativeOffset(int addition) {
-		// TODO Auto-generated method stub
-		
-	}
-
-	@Override
-	public void clearCumulatifeOffset() {
-		// TODO Auto-generated method stub
-		
 	}
 
 	@Override

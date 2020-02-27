@@ -3470,7 +3470,7 @@ public class AnswerCurationManager {
 			sb.append("],");
 			sb.append(System.lineSeparator());
 		}
-		sb.deleteCharAt(sb.length()-2); //delete last comma
+		sb.deleteCharAt(sb.length()-(System.lineSeparator().length() + 1)); //delete last comma
 		sb.append("}.");
 		sb.append(System.lineSeparator());
 		
@@ -4353,9 +4353,9 @@ public class AnswerCurationManager {
 	 */
 	private void resetForConversationProcessing() {
 		this.owl2sadl = null;
-		if (getDialogAnswerProvider() != null) {
-			getDialogAnswerProvider().clearCumulatifeOffset();
-		}
+//		if (getDialogAnswerProvider() != null) {
+//			getDialogAnswerProvider().clearCumulatifeOffset();
+//		}
 	}
 
 	private boolean applyAnswerToUnansweredQuestion(StatementContent question, StatementContent sc) {

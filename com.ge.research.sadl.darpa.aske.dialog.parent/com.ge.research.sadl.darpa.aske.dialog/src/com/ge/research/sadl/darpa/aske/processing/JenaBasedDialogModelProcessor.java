@@ -42,9 +42,7 @@ import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URISyntaxException;
 import java.nio.charset.Charset;
-import java.nio.file.Files;
 import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
@@ -100,17 +98,16 @@ import com.ge.research.sadl.darpa.aske.dialog.YesNoAnswerStatement;
 import com.ge.research.sadl.darpa.aske.preferences.DialogPreferences;
 import com.ge.research.sadl.darpa.aske.processing.EvalContent.UnittedParameter;
 import com.ge.research.sadl.errorgenerator.generator.SadlErrorMessages;
-import com.ge.research.sadl.jena.DontTypeCheckException;
 import com.ge.research.sadl.jena.IntermediateFormTranslator;
 import com.ge.research.sadl.jena.JenaBasedSadlModelProcessor;
 import com.ge.research.sadl.jena.JenaProcessorException;
 import com.ge.research.sadl.jena.MetricsProcessor;
 import com.ge.research.sadl.jena.UtilsForJena;
-import com.ge.research.sadl.jena.JenaBasedSadlModelValidator.TypeCheckInfo;
 import com.ge.research.sadl.model.CircularDefinitionException;
 import com.ge.research.sadl.model.ModelError;
 import com.ge.research.sadl.model.PrefixNotFoundException;
 import com.ge.research.sadl.model.gp.BuiltinElement;
+import com.ge.research.sadl.model.gp.BuiltinElement.BuiltinType;
 import com.ge.research.sadl.model.gp.Equation;
 import com.ge.research.sadl.model.gp.GraphPatternElement;
 import com.ge.research.sadl.model.gp.Junction;
@@ -124,7 +121,6 @@ import com.ge.research.sadl.model.gp.RDFTypeNode;
 import com.ge.research.sadl.model.gp.Rule;
 import com.ge.research.sadl.model.gp.TripleElement;
 import com.ge.research.sadl.model.gp.VariableNode;
-import com.ge.research.sadl.model.gp.BuiltinElement.BuiltinType;
 import com.ge.research.sadl.processing.OntModelProvider;
 import com.ge.research.sadl.processing.SadlConstants;
 import com.ge.research.sadl.processing.ValidationAcceptor;
@@ -145,6 +141,7 @@ import com.ge.research.sadl.sADL.Name;
 import com.ge.research.sadl.sADL.NamedStructureAnnotation;
 import com.ge.research.sadl.sADL.QueryStatement;
 import com.ge.research.sadl.sADL.SadlAnnotation;
+import com.ge.research.sadl.sADL.SadlImport;
 import com.ge.research.sadl.sADL.SadlInstance;
 import com.ge.research.sadl.sADL.SadlModel;
 import com.ge.research.sadl.sADL.SadlModelElement;
@@ -159,12 +156,9 @@ import com.ge.research.sadl.utils.ResourceManager;
 import com.google.common.base.Preconditions;
 import com.google.common.collect.Iterables;
 import com.google.inject.Inject;
-import com.hp.hpl.jena.ontology.DatatypeProperty;
 import com.hp.hpl.jena.ontology.Individual;
-import com.hp.hpl.jena.ontology.ObjectProperty;
 import com.hp.hpl.jena.ontology.OntClass;
 import com.hp.hpl.jena.ontology.OntModel;
-import com.hp.hpl.jena.ontology.OntResource;
 import com.hp.hpl.jena.ontology.Ontology;
 import com.hp.hpl.jena.rdf.model.Property;
 import com.hp.hpl.jena.rdf.model.RDFNode;
@@ -313,6 +307,11 @@ public class JenaBasedDialogModelProcessor extends JenaBasedSadlModelProcessor {
 
 		if(!processModelImports(modelOntology, resource.getURI(), model)) {
 			return;
+		}
+		EList<SadlImport> implist = model.getImports();
+		Iterator<SadlImport> impitr = implist.iterator();
+		while (impitr.hasNext()) {
+			storeOriginalElementInfo(impitr.next());
 		}
 
 		boolean enableMetricsCollection = true; // no longer a preference
@@ -498,69 +497,9 @@ public class JenaBasedDialogModelProcessor extends JenaBasedSadlModelProcessor {
 		}
 	}
 	
-	class ModelElementInfo {
-		private EObject object;
-		private String txt;
-		private int start;
-		private int length;
-		private int end;
-		private boolean inserted;	// it's true for inserted, false for original
-		
-		public ModelElementInfo(EObject obj, String t, int s, int l, int e, boolean i) {
-			setObject(obj);
-			setTxt(t);
-			setStart(s);
-			setLength(l);
-			setEnd(e);
-			setInserted(i);
-		}
-		
-		public String getTxt() {
-			return txt;
-		}
-		public void setTxt(String txt) {
-			this.txt = txt;
-		}
-		public int getStart() {
-			return start;
-		}
-		public void setStart(int start) {
-			this.start = start;
-		}
-		public int getLength() {
-			return length;
-		}
-		public void setLength(int length) {
-			this.length = length;
-		}
-		public int getEnd() {
-			return end;
-		}
-		public void setEnd(int end) {
-			this.end = end;
-		}
-
-		public boolean isInserted() {
-			return inserted;
-		}
-
-		public void setInserted(boolean inserted) {
-			this.inserted = inserted;
-		}
-
-		public EObject getObject() {
-			return object;
-		}
-
-		public void setObject(EObject object) {
-			this.object = object;
-		}
-		
-	}
-	
 	List<ModelElementInfo> modelElements = null;
 
-	private void storeOriginalElementInfo(SadlModelElement element) {
+	private void storeOriginalElementInfo(EObject element) {
 		if (modelElements == null) {
 			modelElements = new ArrayList<ModelElementInfo>();
 			getConfigMgr().addPrivateKeyValuePair("ElementInfo", modelElements);

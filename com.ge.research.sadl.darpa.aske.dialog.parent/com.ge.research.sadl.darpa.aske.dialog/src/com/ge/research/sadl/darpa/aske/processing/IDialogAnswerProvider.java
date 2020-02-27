@@ -80,10 +80,6 @@ public interface IDialogAnswerProvider {
 	 */
 	boolean addImports(List<String> importStatements);
 	
-	void addToCumulativeOffset(int addition);
-	
-	void clearCumulatifeOffset();
-
 	/**
 	 * Method to process a user query on a new thread with a busy cursor
 	 * 
