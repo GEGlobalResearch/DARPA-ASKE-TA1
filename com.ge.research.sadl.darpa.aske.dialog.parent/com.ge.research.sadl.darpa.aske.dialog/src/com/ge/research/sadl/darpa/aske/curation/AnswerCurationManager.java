@@ -84,6 +84,7 @@ import com.ge.research.sadl.darpa.aske.processing.AnswerContent;
 import com.ge.research.sadl.darpa.aske.processing.AnswerPendingContent;
 import com.ge.research.sadl.darpa.aske.processing.CompareContent;
 import com.ge.research.sadl.darpa.aske.processing.ConversationElement;
+import com.ge.research.sadl.darpa.aske.processing.ConversationException;
 import com.ge.research.sadl.darpa.aske.processing.DialogConstants;
 import com.ge.research.sadl.darpa.aske.processing.DialogContent;
 import com.ge.research.sadl.darpa.aske.processing.EvalContent;
@@ -93,6 +94,7 @@ import com.ge.research.sadl.darpa.aske.processing.ExtractContent;
 import com.ge.research.sadl.darpa.aske.processing.HowManyValuesContent;
 import com.ge.research.sadl.darpa.aske.processing.IDialogAnswerProvider;
 import com.ge.research.sadl.darpa.aske.processing.InformationContent;
+import com.ge.research.sadl.darpa.aske.processing.LongTaskContent;
 import com.ge.research.sadl.darpa.aske.processing.ModifiedAskContent;
 import com.ge.research.sadl.darpa.aske.processing.QuestionContent;
 import com.ge.research.sadl.darpa.aske.processing.QuestionWithCallbackContent;
@@ -2754,6 +2756,24 @@ public class AnswerCurationManager {
 		else if (sc instanceof CompareContent) {
 			retVal = processCompareRequest(resource, theModel, modelName, (CompareContent)sc);
 		}
+		else if (sc instanceof LongTaskContent) {
+			// first action: this will last a long time so do something to notify user that it is in progress
+			int t = ((LongTaskContent)sc).getTime();
+			int telapsed = 0;
+			while (telapsed < t) {
+				try {
+					System.out.println("sleeping for 500 ms");
+					Thread.sleep(500);
+				}
+				catch (InterruptedException e) {
+					System.out.println(e);
+				}
+				telapsed += 500;
+			}
+			retVal = "Task took " + telapsed + " ms";
+			answerUser(getOwlModelsFolder(), retVal, true, sc.getHostEObject());	
+			// last action: task is complete so remove user notification (cancel effect of first action)
+		}
 		else {
 			logger.debug("Need to add '" + sc.getClass().getCanonicalName() + "' to processUserRequest");
 			retVal = "Not yet implemented";
@@ -3238,7 +3258,7 @@ public class AnswerCurationManager {
 		StringBuilder answer = new StringBuilder();
 		String graphsDirectory = new File(getOwlModelsFolder()).getParent().replace('\\', '/') + "/Graphs";
 		String baseFileName = "";
-		List<String> diagrams = new ArrayList<String>();
+		List<List<String>> diagrams = new ArrayList<List<String>>();
 		HashMap<String,HashMap<String,String>> table = new HashMap<String,HashMap<String,String>>();
 		
 		boolean isTable = false;
@@ -3355,7 +3375,13 @@ public class AnswerCurationManager {
 						}
 						//sadlAnswer += 
 						String seeStmt = "\"" + graphicUrl + "\"";
-						diagrams.add(seeStmt);
+						List<String> rowUrls = new ArrayList<String>();
+						rowUrls.add(seeStmt);
+						if (rset.getResultAt(0, 6) != null) {
+							String sensitivityUrl = rset.getResultAt(0, 6).toString();
+							rowUrls.add("\"" + sensitivityUrl + "\"");
+						}
+						diagrams.add(rowUrls);
 //						answer.append(sadlAnswer);
 						cntr++;
 					}
@@ -3368,11 +3394,16 @@ public class AnswerCurationManager {
 			
 			if (cntr > 0) {
 				if(isTable) {
-					diagrams.add(0, "\'References: see model diagram\'");
 					answer.append(generateSadlTable(table, diagrams));
 				}
 				else {
-					String sadlAnswer = "  (See \'model diagram: " + diagrams.get(0) + "\'.)";
+					StringBuilder sadlAnswer = new StringBuilder();
+					sadlAnswer.append("  (See \'model diagram: " + diagrams.get(0).get(0) +  "\'");
+					if (diagrams.get(0).size()> 1) {
+						sadlAnswer.append(", \'sensitivity plot: " + diagrams.get(0).get(1));
+						sadlAnswer.append("\'");
+					}
+					sadlAnswer.append(".)");
 					answer.append(System.lineSeparator());
 					answer.append(sadlAnswer);
 				}
@@ -3386,10 +3417,13 @@ public class AnswerCurationManager {
 	/**
 	 * Generate a sadl table from results table
 	 * @param table
-	 * @param diagrams 
+	 * @param diagrams-- list of list of URL. Outer list ranges over rows, inner list is link columns in row.
 	 * @return sadl string
 	 */
-	private Object generateSadlTable(HashMap<String, HashMap<String, String>> table, List<String> diagrams) {
+	private Object generateSadlTable(HashMap<String, HashMap<String, String>> table, List<List<String>> diagrams) {
+		String firstLinkColHdr = "\'Model diagram\'";
+		String secondLinkColHdr = "\'Sensitivity plot\'";
+
 		// first column for comparanda
 		String firstColHeader = "'Options'";
 		List<Integer> colWidths = new ArrayList<Integer>();
@@ -3401,15 +3435,28 @@ public class AnswerCurationManager {
 			colWidths.add(prop.length());	
 		}
 		
-		// last column for links
-		int maxLinkLen = 0;
-		for(String seeStmt : diagrams) {
-			int linkLen = seeStmt.length();
-			if (linkLen > maxLinkLen) {
-				maxLinkLen = linkLen;
+		// column for first links
+		int linkColIdx = 0;
+		for(List<String> rowLinks : diagrams) {		// ranges over rows
+			int maxLinkLen = 0;
+			if (linkColIdx++ == 0) {
+				maxLinkLen = firstLinkColHdr.length();
 			}
+			else if (linkColIdx == 1) {
+				maxLinkLen = secondLinkColHdr.length();
+			}
+			else {
+				System.err.println("Not expecting more than 2 link columns in table");
+			}
+
+			for (String seeStmt : rowLinks) {
+				int linkLen = seeStmt.length();
+				if (linkLen > maxLinkLen) {
+					maxLinkLen = linkLen;
+				}
+			}
+			colWidths.add(maxLinkLen);
 		}
-		colWidths.add(maxLinkLen);
 		
 		// now look for any elements larger than header
 		for(String c : table.keySet()) {
@@ -3450,7 +3497,7 @@ public class AnswerCurationManager {
 		sb.append("],");
 		sb.append(System.lineSeparator());
 		
-		// now output the value rows
+		// now output the table rows
 		int rowNum = 0;
 		for(String c : table.keySet()) {
 //			sb.append("     [" + c + "\t ");
@@ -3464,13 +3511,22 @@ public class AnswerCurationManager {
 				formatStr = "%-" + colWidths.get(idx++) + "s";
 				sb.append(String.format(formatStr, table.get(c).get(v)));
 			}
-			formatStr = "%-" + colWidths.get(idx) + "s";
+			formatStr = "%-" + colWidths.get(idx++) + "s";
 			sb.append(", ");
-			sb.append(String.format(formatStr, diagrams.get(++rowNum)));
+			sb.append(String.format(formatStr, diagrams.get(rowNum).get(0)));
+			sb.append(", ");
+			formatStr = "%-" + colWidths.get(idx++) + "s";
+			if (diagrams.get(rowNum).size() > 1) {
+				sb.append(String.format(formatStr, diagrams.get(rowNum).get(1)));
+			}
+			else {
+				sb.append(String.format(formatStr, " "));
+			}
 			sb.append("],");
 			sb.append(System.lineSeparator());
+			rowNum++;
 		}
-		sb.deleteCharAt(sb.length()-2); //delete last comma
+		sb.deleteCharAt(sb.length()-(System.lineSeparator().length() + 1)); //delete last comma
 		sb.append("}.");
 		sb.append(System.lineSeparator());
 		
@@ -4353,9 +4409,9 @@ public class AnswerCurationManager {
 	 */
 	private void resetForConversationProcessing() {
 		this.owl2sadl = null;
-		if (getDialogAnswerProvider() != null) {
-			getDialogAnswerProvider().clearCumulatifeOffset();
-		}
+//		if (getDialogAnswerProvider() != null) {
+//			getDialogAnswerProvider().clearCumulatifeOffset();
+//		}
 	}
 
 	private boolean applyAnswerToUnansweredQuestion(StatementContent question, StatementContent sc) {

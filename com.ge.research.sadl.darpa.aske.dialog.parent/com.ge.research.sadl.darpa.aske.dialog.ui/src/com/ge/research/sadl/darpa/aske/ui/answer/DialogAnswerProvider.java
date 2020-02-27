@@ -101,6 +101,8 @@ import com.ge.research.sadl.darpa.aske.curation.EquationNotFoundException;
 import com.ge.research.sadl.darpa.aske.preferences.DialogPreferences;
 import com.ge.research.sadl.darpa.aske.processing.DialogConstants;
 import com.ge.research.sadl.darpa.aske.processing.ExpectsAnswerContent;
+import com.ge.research.sadl.darpa.aske.processing.JenaBasedDialogModelProcessor;
+import com.ge.research.sadl.darpa.aske.processing.ModelElementInfo;
 import com.ge.research.sadl.darpa.aske.processing.QuestionWithCallbackContent;
 import com.ge.research.sadl.darpa.aske.processing.StatementContent;
 import com.ge.research.sadl.darpa.aske.processing.imports.AnswerExtractionException;
@@ -130,7 +132,7 @@ public class DialogAnswerProvider extends BaseDialogAnswerProvider {
 	private IXtextModelListener modelListener;
 	private URI uri;
 	
-	private int cumulativeOffset = 0;
+//	private int cumulativeOffset = 0;
 
 	public void configure(IXtextDocument document) {
 		Preconditions.checkState(this.document == null, "Already initialized.");
@@ -290,27 +292,6 @@ public class DialogAnswerProvider extends BaseDialogAnswerProvider {
 		this.document = theDocument;
 	}
 
-	private Object[] getSourceText(EObject object) {
-		INode node = NodeModelUtils.findActualNodeFor(object);
-		if (node != null) {
-			int start = NodeModelUtils.getNode(object).getTotalOffset();
-			int length = NodeModelUtils.getNode(object).getTotalLength();
-			String txt;
-			try {
-				txt = getTheDocument().get(start + getCumulativeOffset(), length); //NodeModelUtils.getTokenText(node);
-				Object[] ret = new Object[3];
-				ret[0] = txt; // txt.trim();
-				ret[1] = start;
-				ret[2] = length;
-				return ret;
-			} catch (BadLocationException e) {
-				// This happens sometimes but doesn't usually have dire consequences....
-//				e.printStackTrace();
-			} 
-		}
-		return null;
-	}
-
 	private synchronized boolean addCurationManagerContentToDialog(IXtextDocument document, IRegion reg, String content,
 			Object ctx, boolean quote) throws BadLocationException {
 		return addCurationManagerContentToDialog(document, reg, content, ctx, quote, true, true, true);
@@ -320,15 +301,14 @@ public class DialogAnswerProvider extends BaseDialogAnswerProvider {
 			Object ctx, boolean quote, boolean prependAgent, boolean repositionCursor, boolean addLeadingSpaces) throws BadLocationException {
 		LOGGER.debug(content);
 //		System.err.println("addCMContent: " + content);
-//		Display.getDefault().asyncExec(() -> {
-		Display.getDefault().syncExec(() -> {
+		Display.getDefault().asyncExec(() -> {
+//		Display.getDefault().syncExec(() -> {
 			try {
-				String modContent = generateModifiedContent(ctx, quote, prependAgent, content);;
-				int loc = generateInsertionLocation(ctx, modContent);
+				String modContent = generateModifiedContent(document, ctx, quote, prependAgent, content);;
+				int loc = generateInsertionLocation(document, ctx, modContent);
 				
 				if (loc >= 0) {
 					document.replace(loc, 0, modContent);
-					addToCumulativeOffset(modContent.length());
 					if (repositionCursor && document instanceof XtextDocument && ctx instanceof EObject) {
 						final int caretOffset = loc + modContent.length();
 						setCaretOffsetInEditor(uri, caretOffset);
@@ -340,95 +320,6 @@ public class DialogAnswerProvider extends BaseDialogAnswerProvider {
 						setCaretOffsetInEditor(uri, document.get().length() - 1);
 					}
 				}
-//				Object[] srcinfo = null;
-//				String test = null;
-//				String lineSep = System.lineSeparator();
-//				int moveForward = lineSep.length();
-//				if (quote) {
-//					modContent = generateDoubleQuotedContentForDialog(content);
-//				} else {
-//					int numSpacesBeforeEachLine = 0;
-//					if (prependAgent) {
-//						if (content.startsWith("CM:")) {
-//							modContent = content;
-//						}
-//						else {
-//							modContent = "CM: " + content;
-//							numSpacesBeforeEachLine += 4;
-//						}
-//					}
-//					else {
-//						modContent = content;
-//					}
-//					if (!modContent.trim().endsWith(".") && !modContent.trim().endsWith("?") && !modContent.trim().endsWith(")")) {
-//						modContent += ".";
-//					}
-//					if (ctx instanceof EObject) {
-//						showEObjectTextInfo((EObject) ctx);
-//						srcinfo = getSourceText((EObject) ctx);
-//						// String srctext = (String) srcinfo[0];
-//						int start = (int) srcinfo[1];
-//						int length = (int) srcinfo[2];
-//						// find location of this in document
-//						if (addLeadingSpaces && !srcinfo[0].toString().endsWith(" ")) {
-//							modContent = " " + modContent;
-//							numSpacesBeforeEachLine++;
-//						}
-//						int testloc = start + length + getCumulativeOffset();
-//						int docLen = document.getLength();
-//						int testLen = Math.min(5, docLen - testloc);
-//						test = document.get(testloc, testLen);
-//						if (addLeadingSpaces && !test.startsWith(" ")) {
-//							modContent = " " + modContent;
-//							numSpacesBeforeEachLine++;
-//						}
-//					}
-//					if (numSpacesBeforeEachLine > 0) {
-//						String lines[] = modContent.split(lineSep);
-//						StringBuilder sb = new StringBuilder(lines[0]);
-//						sb.append(lineSep);
-//						for (int i = 1; i < lines.length; i++) {
-//							for (int j = 0; j < numSpacesBeforeEachLine; j++) {
-//								sb.append(" ");
-//							}
-//							sb.append(lines[i]);
-//							if (i < lines.length - 1) {
-//								sb.append(lineSep);
-//							}
-//						}
-//						modContent = sb.toString();
-//					}
-//				}
-//				if (ctx instanceof EObject && srcinfo != null) {
-//					int start = (int) srcinfo[1];
-//					int length = (int) srcinfo[2];
-//					// find location of this in document
-//					loc = start + length + moveForward;		// + getCumulativeOffset()? maybe only add moveForward if test starts with \r\n and modContent does not
-//					int docLen = document.getLength();
-//					if (!test.startsWith(lineSep) && !test.startsWith("\r")) {
-////						modContent += lineSep;
-////					}
-////					if (!srcinfo[0].toString().endsWith(lineSep)) {
-//						modContent = lineSep + modContent;
-//					}
-//					int loc2 = Math.min(docLen, start + length + getCumulativeOffset() + moveForward);
-//					document.replace(loc2, 0, modContent);
-//					addToCumulativeOffset(modContent.length());
-//					docLen = document.getLength();
-//					loc = loc2;
-//					if (repositionCursor && document instanceof XtextDocument && ctx instanceof EObject) {
-//						final int caretOffset = loc + modContent.length();
-//						setCaretOffsetInEditor(uri, caretOffset);
-//					}
-//				} else {
-//					loc = document.getLength();
-//					document.set(document.get() + lineSep + modContent);
-//					if (repositionCursor) {
-//						setCaretOffsetInEditor(uri, document.get().length() - 1);
-//					}
-//				}
-//				LOGGER.debug("Adding to Dialog editor: " + modContent);
-//				textAtLocation(document, modContent, loc);
 			} catch (BadLocationException e) {
 				// This happens sometimes but doesn't usually have dire consequences....
 //				Exceptions.throwUncheckedException(e);
@@ -437,12 +328,83 @@ public class DialogAnswerProvider extends BaseDialogAnswerProvider {
 		return true;
 	}
 
-	private int generateInsertionLocation(Object ctx, String modContent) {
+	private int generateInsertionLocation(IXtextDocument document, Object ctx, String modContent) {
+		int loc = 0;
 		Object elementInfos = getConfigMgr().getPrivateKeyValuePair("ElementInfo");
-		return 0;
+		String docText = document.get();
+		int docLength = document.getLength();
+		if (elementInfos instanceof List<?>) {
+			int idx = 0;
+			int cumulativeOffset = 0;
+			for (Object einfo : ((List<?>)elementInfos)) {
+				if (einfo instanceof ModelElementInfo) {
+					ModelElementInfo mei = (ModelElementInfo) einfo;
+					if (mei.isInserted()) {
+						cumulativeOffset += mei.getLength();
+					}
+					else if (mei.getObject().equals(ctx)) {
+						try {
+							String origTxt = mei.getTxt();
+							int len = mei.getLength();									// length of original element
+							int currentStart = docText.indexOf(origTxt);				// start of element text in current document
+							String currentTxt = document.get(currentStart, len);
+							if (!currentTxt.equals(origTxt)) {
+								System.err.println("Error in Dialog text");
+								System.err.println("  currentTxt: " + currentTxt);
+								System.err.println("  origTxt: " + origTxt);
+							}
+							int currentEndLoc = currentStart+ origTxt.length();			// end of element text in current document
+							int expectedEndLoc = mei.getEnd() + cumulativeOffset;		// expected end of element text in current document
+							if (currentEndLoc != expectedEndLoc) {
+								System.err.println("currentLoc=" + currentEndLoc + ", expectedLoc=" + expectedEndLoc);
+							}
+							else {
+								// this is the original object after which the insertion is to occur
+								// but there could be other insertions before this, so roll forward through
+								// any follow-on insertions to get the actual point of insertion
+								int priorInsertionsOffset = 0;
+								for (int insertionIdx = idx + 1; insertionIdx < ((List<?>)elementInfos).size(); insertionIdx++) {
+									ModelElementInfo nextMei = ((List<ModelElementInfo>)elementInfos).get(insertionIdx);
+									if (nextMei.isInserted()) {
+										priorInsertionsOffset += nextMei.getLength();
+									}
+									else {
+										break;
+									}
+								}
+								loc = expectedEndLoc + priorInsertionsOffset;
+								if (docLength - loc >= 2) {
+									String rightAfter = document.get(loc,2);
+									if (rightAfter.equals(System.lineSeparator())) {
+										loc += System.lineSeparator().length();
+									}
+								}
+							}
+						} catch (BadLocationException e) {
+							// TODO Auto-generated catch block
+							e.printStackTrace();
+						}
+						ModelElementInfo newMei = new ModelElementInfo(null, modContent, loc, modContent.length(), loc+modContent.length(), true);
+						if (idx + 1 < ((List<ModelElementInfo>)elementInfos).size()) {
+							((List<ModelElementInfo>)elementInfos).add(idx + 1, newMei);
+						}
+						else {
+							((List<ModelElementInfo>)elementInfos).add(newMei);
+						}
+						break;
+					}
+				}
+				idx++;
+			}
+		}
+		if (loc == 0) {
+			System.err.println("Context EObject not found in list of ModelElementInfos!");
+			loc = docLength;
+		}
+		return loc;
 	}
 
-	private String generateModifiedContent(Object ctx, boolean quote, boolean prependAgent, String content) {
+	private String generateModifiedContent(IXtextDocument document, Object ctx, boolean quote, boolean prependAgent, String content) {
 		String response;
 		if (quote) {
 			response = generateDoubleQuotedContentForDialog(content);
@@ -530,26 +492,6 @@ public class DialogAnswerProvider extends BaseDialogAnswerProvider {
 		return false;
 	}
 
-	public void showEObjectTextInfo(EObject precedingObj) {
-		Object[] precedingObjSource = getSourceText(precedingObj);
-		int start = (int) precedingObjSource[1];
-		start = start +  + getCumulativeOffset();
-		int length = (int) precedingObjSource[2];
-		int doclen = getTheDocument().getLength();
-		int endOfLastImport = start + length;
-		if (endOfLastImport < doclen) {
-			int extendedLen = Math.min(length + 5, doclen - start);
-			try {
-				String ofInterest = getTheDocument().get(start, extendedLen);
-				
-				System.out.println(ofInterest + ": " + start + ", " + length + ", " + extendedLen);
-			} catch (BadLocationException e) {
-				// This happens sometimes but doesn't usually have dire consequences....
-//				e.printStackTrace();
-			}
-		}
-	}
-
 	private void setCaretOffsetInEditor(URI uri, int caretOffset) {
 		Options options = new DialogEditors.Options(uri);
 		options.setActivate(true);
@@ -563,31 +505,6 @@ public class DialogAnswerProvider extends BaseDialogAnswerProvider {
 				}
 			}
 		});
-	}
-
-	/**
-	 * Method to check to see if the content was added successfully
-	 * 
-	 * @param document
-	 * @param content
-	 * @param loc
-	 * @return
-	 */
-	private boolean textAtLocation(IDocument document, String content, int loc) {
-		int doclen = document.getLength();
-		if (content != null && loc < doclen) {
-			String test;
-			try {
-				test = document.get(loc, content.length());
-				if (test.trim().equals(content.trim())) {
-					return true;
-				}
-			} catch (BadLocationException e) {
-				// This happens sometimes but doesn't usually have dire consequences....
-//				e.printStackTrace();
-			}
-		}
-		return false;
 	}
 
 	@Override
@@ -930,24 +847,6 @@ public class DialogAnswerProvider extends BaseDialogAnswerProvider {
 	public Resource getResource() {
 		Preconditions.checkState(this.document != null, "Not initialized yet.");
 		return this.document.readOnly(resource -> resource);
-	}
-
-	@Override
-	public void addToCumulativeOffset(int addition) {
-		setCumulativeOffset(getCumulativeOffset() + addition);
-	}
-
-	@Override
-	public void clearCumulatifeOffset() {
-		cumulativeOffset = 0;
-	}
-
-	private int getCumulativeOffset() {
-		return cumulativeOffset;
-	}
-
-	private void setCumulativeOffset(int cumulativeOffset) {
-		this.cumulativeOffset = cumulativeOffset;
 	}
 
 	private String retvalue = null;

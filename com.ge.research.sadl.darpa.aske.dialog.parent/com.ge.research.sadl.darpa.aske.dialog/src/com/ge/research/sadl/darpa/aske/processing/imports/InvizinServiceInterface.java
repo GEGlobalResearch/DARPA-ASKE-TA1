@@ -62,6 +62,8 @@ public class InvizinServiceInterface extends JsonServiceInterface {
 	private String getInvizinServiceURL() {
 		return invizinServiceURL;
 	}
+	
+	
 
 	private void setInvizinServiceURL(String baseUrl) {
 		String host = "vesuvius-dev.crd.ge.com";	// default
