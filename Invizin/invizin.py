@@ -37,7 +37,7 @@ class invizin(object):
         rj = r.json()
         assert r.status_code == 200
         #eval successful
-
+        
         outVals = []
         for ii in range(len(rj['outputVariables'])):
             outVals.append(float(rj['outputVariables'][ii]['value'][1:-1]))
@@ -193,6 +193,7 @@ class invizin(object):
         return fig, label
     
     def createLocalSensitivityGraph(self, evalPacket):
+        #TODO: update with gradient computation
         fig = { #https://plot.ly/python/bar-charts/#basic-bar-chart-with-plotlygraphobjects
                 'data': [
                     {'x': ['mach', 'gamma'], 'y': [2, 1],

@@ -48,7 +48,7 @@ from urllib import parse
 import dash
 
 #URL to interact with evaluate service
-url_evaluate = 'http://localhost:12345/darpa/aske/kchain/evaluate'
+URL_EVALUATE = 'http://localhost:12345/darpa/aske/kchain/evaluate'
 
 # this is the port where the graphs will be shown
 GRAPH_PORT = 1177
@@ -64,13 +64,13 @@ if __name__ == '__main__':
     os.environ["WERKZEUG_RUN_MAIN"] = 'true'
     app.add_api('invizin_app.yaml')    
     app.run(port=12309)
-
+    
+    
 def _deployDash(layout):
     global dashApp
-    
     dashApp.layout = layout
+    print('deploying dash now')
     dashApp.run_server(port=GRAPH_PORT,debug=False, use_reloader=False)
-
     
 def terminateDeploy():
     m = active_children()
@@ -87,11 +87,18 @@ def visualize(body):
     terminateDeploy()
         
     print(body)
-    inviz = invizin(url_evaluate)
     
+    if 'url_evaluate' in body.keys():
+        print("assigned url")
+        url_evaluate = body['url_evaluate']    
+    else:
+        url_evaluate = URL_EVALUATE
+        
+    inviz = invizin(url_evaluate)
     
     figs = []
     labels = []
+
     fig, label = inviz.createSensitivityGraphOAT(body)
     figs.append(fig)
     labels.append(label)
@@ -101,23 +108,27 @@ def visualize(body):
         fig, label = inviz.createRelativeSensitivityGraphOAT(body)
         figs.append(fig)
         labels.append(label)
-        fig, label = inviz.createLocalSensitivityGraph(body)
-        figs.append(fig)
-        labels.append(label)
+        # fig, label = inviz.createLocalSensitivityGraph(body)
+        # figs.append(fig)
+        # labels.append(label)
         layout = inviz.getTabLayout(figs, labels)
-    
+
     print(labels)
-    p = Process(name = 'deployDash', target=_deployDash, 
-                kwargs={"layout": layout})
+    
+    p = Process(name = 'deployDash', target=_deployDash, kwargs={"layout": layout})
     p.start()
-    print("successfully started serving graphs at URL")
-       
+          
     ur = parse.urlparse(flask.request.url)
     
     URL = ur.scheme + '://' + ur.hostname + ':' + str(GRAPH_PORT)
     
+    m = active_children()
+    for pr in m:
+        if pr.name == 'deployDash':
+            print(pr)
+            print("Successfully started serving graphs at " + URL)
+            
     outputPacket = {}
     outputPacket['url'] = URL
     return outputPacket
-
 
