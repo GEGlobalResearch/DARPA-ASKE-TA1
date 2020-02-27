@@ -91,6 +91,7 @@ import com.ge.research.sadl.darpa.aske.dialog.SaveStatement;
 import com.ge.research.sadl.darpa.aske.dialog.SeeParentheticalLink;
 import com.ge.research.sadl.darpa.aske.dialog.SuitabilityStatement;
 import com.ge.research.sadl.darpa.aske.dialog.TargetModelName;
+import com.ge.research.sadl.darpa.aske.dialog.TestLongrunningTask;
 import com.ge.research.sadl.darpa.aske.dialog.WhatIsStatement;
 import com.ge.research.sadl.darpa.aske.dialog.WhatStatement;
 import com.ge.research.sadl.darpa.aske.dialog.WhatValuesStatement;
@@ -542,6 +543,10 @@ public class JenaBasedDialogModelProcessor extends JenaBasedSadlModelProcessor {
 		}
 		else if (element instanceof SaveStatement) {
 			return processStatement((SaveStatement)element);
+		}
+		else if (element instanceof TestLongrunningTask) {
+			int t = ((TestLongrunningTask)element).getTime();
+			return new LongTaskContent(element, Agent.USER, t);
 		}
 		else if (element instanceof SadlEquationInvocation) {
 			return processStatement((SadlEquationInvocation)element);

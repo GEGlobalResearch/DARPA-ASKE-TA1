@@ -66,7 +66,12 @@ SadlModelElement returns sadl::SadlModelElement :
 	CompareStatement EOS 	 	|
 	SuitabilityStatement EOS	|
 	SeeParentheticalLink 		|
+	TestLongrunningTask EOS		|
 	ComparisonTableStatement EOS
+;
+
+TestLongrunningTask:
+	'Long' 'task' time=NUMBER
 ;
 
 ComparisonTableStatement:

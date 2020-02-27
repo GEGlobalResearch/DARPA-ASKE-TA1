@@ -93,6 +93,7 @@ import com.ge.research.sadl.darpa.aske.processing.ExtractContent;
 import com.ge.research.sadl.darpa.aske.processing.HowManyValuesContent;
 import com.ge.research.sadl.darpa.aske.processing.IDialogAnswerProvider;
 import com.ge.research.sadl.darpa.aske.processing.InformationContent;
+import com.ge.research.sadl.darpa.aske.processing.LongTaskContent;
 import com.ge.research.sadl.darpa.aske.processing.ModifiedAskContent;
 import com.ge.research.sadl.darpa.aske.processing.QuestionContent;
 import com.ge.research.sadl.darpa.aske.processing.QuestionWithCallbackContent;
@@ -2753,6 +2754,24 @@ public class AnswerCurationManager {
 		}
 		else if (sc instanceof CompareContent) {
 			retVal = processCompareRequest(resource, theModel, modelName, (CompareContent)sc);
+		}
+		else if (sc instanceof LongTaskContent) {
+			// first action: this will last a long time so do something to notify user that it is in progress
+			int t = ((LongTaskContent)sc).getTime();
+			int telapsed = 0;
+			while (telapsed < t) {
+				try {
+					System.out.println("sleeping for 500 ms");
+					Thread.sleep(500);
+				}
+				catch (InterruptedException e) {
+					System.out.println(e);
+				}
+				telapsed += 500;
+			}
+			retVal = "Task took " + telapsed + " ms";
+			answerUser(getOwlModelsFolder(), retVal, true, sc.getHostEObject());	
+			// last action: task is complete so remove user notification (cancel effect of first action)
 		}
 		else {
 			logger.debug("Need to add '" + sc.getClass().getCanonicalName() + "' to processUserRequest");
