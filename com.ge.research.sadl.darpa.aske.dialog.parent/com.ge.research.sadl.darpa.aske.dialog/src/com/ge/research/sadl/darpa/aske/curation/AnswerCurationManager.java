@@ -3494,7 +3494,10 @@ public class AnswerCurationManager {
 		}
 		formatStr = "%-" + colWidths.get(idx) + "s";
 		sb.append(", ");
-		sb.append(String.format(formatStr, diagrams.get(0)));
+//		sb.append(String.format(formatStr, diagrams.get(0)));
+		sb.append(String.format(formatStr, firstLinkColHdr));
+		sb.append(", ");
+		sb.append(String.format(formatStr, secondLinkColHdr));
 		sb.append("],");
 		sb.append(System.lineSeparator());
 		
