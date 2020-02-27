@@ -69,6 +69,8 @@ if __name__ == '__main__':
 def _deployDash(layout):
     global dashApp
     dashApp.layout = layout
+    dashApp.scripts.config.serve_locally = True
+    dashApp.css.config.serve_locally = True
     print('deploying dash now')
     dashApp.run_server(port=GRAPH_PORT,debug=False, use_reloader=False)
     
