@@ -3439,8 +3439,9 @@ public class AnswerCurationManager {
 		int linkColIdx = 0;
 		for(List<String> rowLinks : diagrams) {		// ranges over rows
 			int maxLinkLen = 0;
-			if (linkColIdx++ == 0) {
+			if (linkColIdx == 0) {
 				maxLinkLen = firstLinkColHdr.length();
+				linkColIdx++;
 			}
 			else if (linkColIdx == 1) {
 				maxLinkLen = secondLinkColHdr.length();
@@ -3493,7 +3494,10 @@ public class AnswerCurationManager {
 		}
 		formatStr = "%-" + colWidths.get(idx) + "s";
 		sb.append(", ");
-		sb.append(String.format(formatStr, diagrams.get(0)));
+//		sb.append(String.format(formatStr, diagrams.get(0)));
+		sb.append(String.format(formatStr, firstLinkColHdr));
+		sb.append(", ");
+		sb.append(String.format(formatStr, secondLinkColHdr));
 		sb.append("],");
 		sb.append(System.lineSeparator());
 		

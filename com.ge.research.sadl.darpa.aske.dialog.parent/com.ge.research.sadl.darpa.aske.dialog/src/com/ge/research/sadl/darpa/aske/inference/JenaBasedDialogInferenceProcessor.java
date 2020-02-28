@@ -140,7 +140,7 @@ public class JenaBasedDialogInferenceProcessor extends JenaBasedSadlInferencePro
 //	public static final String qhModelName = "http://aske.ge.com/MetaData";
 //	public static final String qhOwlFileName = "MetaData.owl";
 
-	public static final boolean debugMode = true;
+	public static final boolean debugMode = false;
 	
 	
     private static final String KCHAIN_SERVICE_URL_FRAGMENT = "/darpa/aske/kchain/";
@@ -949,7 +949,6 @@ public class JenaBasedDialogInferenceProcessor extends JenaBasedSadlInferencePro
 //			System.out.println(System.getProperty("user.dir"));
 //			String q = getFileContents("genericIOs");
 //		} catch (Exception e1) {
-//			// TODO Auto-generated catch block
 //			e1.printStackTrace();
 //		}
 
@@ -1371,7 +1370,7 @@ private ResultSet[] processWhatWhenQuery(Resource resource, String queryModelFil
 //				computeSensitivityAndAddToDialog(resource, cmgr, queryModelFileName, queryModelURI, queryModelPrefix,cgIns, nodesModelsJSONStr);
 //			}
 			
-			//saveMetaDataFile(resource,queryModelURI,queryModelFileName); //so we can query the the eqns in the CCG
+			//saveMetaDataFile(resource,queryModelURI,queryModelFileName); //so we can query the eqns in the CCG
 
 	    }
 	    else {
