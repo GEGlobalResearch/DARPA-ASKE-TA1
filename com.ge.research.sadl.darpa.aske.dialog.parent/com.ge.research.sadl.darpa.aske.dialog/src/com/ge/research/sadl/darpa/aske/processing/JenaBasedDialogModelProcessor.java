@@ -173,6 +173,8 @@ public class JenaBasedDialogModelProcessor extends JenaBasedSadlModelProcessor {
 	private static final Logger logger = LoggerFactory.getLogger(JenaBasedDialogModelProcessor.class);
 	private boolean modelChanged;
 	
+	List<ModelElementInfo> modelElements = null;
+	
 	private String textServiceUrl = null;
 	private String dbnCgServiceUrl = null;
 	private String dbninputjsongenerationserviceurl = null;
@@ -260,6 +262,15 @@ public class JenaBasedDialogModelProcessor extends JenaBasedSadlModelProcessor {
 			if (eqs.size() > 0) {
 				oc.removeAll(eqs);
 			}
+		}
+		try {
+			initializeDialogContent();
+		} catch (ConversationException e1) {
+			// TODO Auto-generated catch block
+			e1.printStackTrace();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
 		}
 
 		try {
@@ -353,15 +364,6 @@ public class JenaBasedDialogModelProcessor extends JenaBasedSadlModelProcessor {
 		initializeModelValidator();
 		initializeAllImpliedPropertyClasses();
 		initializeAllExpandedPropertyClasses();
-		try {
-			initializeDialogContent();
-		} catch (ConversationException e1) {
-			// TODO Auto-generated catch block
-			e1.printStackTrace();
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
 		
 		// process rest of parse tree
 		List<SadlModelElement> elements = model.getElements();
@@ -498,13 +500,7 @@ public class JenaBasedDialogModelProcessor extends JenaBasedSadlModelProcessor {
 		}
 	}
 	
-	List<ModelElementInfo> modelElements = null;
-
 	private void storeOriginalElementInfo(EObject element) {
-		if (modelElements == null) {
-			modelElements = new ArrayList<ModelElementInfo>();
-			getConfigMgr().addPrivateKeyValuePair("ElementInfo", modelElements);
-		}
 		INode node = NodeModelUtils.findActualNodeFor(element);
 		if (node != null) {
 			String txt = node.getText();
@@ -1401,6 +1397,13 @@ public class JenaBasedDialogModelProcessor extends JenaBasedSadlModelProcessor {
 		AnswerCurationManager cm = getAnswerCurationManager();
 		DialogContent dc = new DialogContent(resource, cm);
 		cm.setConversation(dc);
+		if (modelElements == null) {
+			modelElements = new ArrayList<ModelElementInfo>();
+			getConfigMgr().addPrivateKeyValuePair("ElementInfo", modelElements);
+		}
+		else {
+			modelElements.clear();
+		}
 	}
 
 	public AnswerCurationManager getAnswerCurationManager() throws IOException {
