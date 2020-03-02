@@ -64,6 +64,7 @@ import com.ge.research.sadl.darpa.aske.curation.DialogAnswerProviderConsoleForTe
 import com.ge.research.sadl.darpa.aske.processing.DialogConstants;
 import com.ge.research.sadl.darpa.aske.processing.IDialogAnswerProvider;
 import com.ge.research.sadl.darpa.aske.processing.imports.AnswerExtractionException;
+import com.ge.research.sadl.darpa.aske.processing.imports.TextProcessingServiceInterface;
 import com.ge.research.sadl.darpa.aske.processing.imports.TextProcessingServiceInterface.EquationVariableContextResponse;
 import com.ge.research.sadl.darpa.aske.processing.imports.TextProcessingServiceInterface.UnitExtractionResponse;
 import com.ge.research.sadl.darpa.aske.processing.imports.TextProcessor;
@@ -636,6 +637,62 @@ public class TextProcessorTests {
 
 	}
 	
+	@Test
+	public void testUploadDomainOntologyToService() throws IOException {
+		String baseServiceUri = "http://vesuvius063.crd.ge.com:4200";
+		String baseUri = "http://sadl.org/ScientificConcepts2.sadl";
+		String localityUri = "http://darpa.aske.ta1.ge/sc2";
+		File sourceFile = new File(new File(".").getAbsolutePath() + "/resources/");
+		File domainProjectFolder = new File(sourceFile + "/M5Snapshot");
+		File domainModelFolder = new File(domainProjectFolder.getAbsoluteFile() + "/OwlModels");
+		File domainOntologyPath = new File(domainModelFolder.getCanonicalPath() + "/ScientificConcepts2.owl");
+		assertTrue(domainOntologyPath.exists());
+		SadlUtils su = new SadlUtils();
+		String ontologyAsString = su.fileToString(domainOntologyPath);
+		TextProcessingServiceInterface tpsi = new TextProcessingServiceInterface(baseServiceUri);
+		String response = tpsi.uploadDomainOntology(localityUri, baseUri, ontologyAsString);
+		System.out.println(response);
+	}
+	
+	@Test
+	public void test6WithDomainOntology() throws IOException, ConfigurationException, InvalidInputException {
+		String baseServiceUri = "http://vesuvius063.crd.ge.com:4200";
+		String localityURI = "http://darpa.aske.ta1.ge/sostest";
+		TextProcessingServiceInterface tpsi = new TextProcessingServiceInterface(baseServiceUri);
+		String msg = tpsi.clearGraph(localityURI);
+		System.out.println("Clear graph response: " + msg);
+
+		String baseUri = "http://sadl.org/ScientificConcepts2.sadl";
+		File sourceFile = new File(new File(".").getAbsolutePath() + "/resources/");
+		File domainProjectFolder = new File(sourceFile + "/M5Snapshot");
+		File domainModelFolder = new File(domainProjectFolder.getAbsoluteFile() + "/OwlModels");
+		File domainOntologyPath = new File(domainModelFolder.getCanonicalPath() + "/ScientificConcepts2.owl");
+		assertTrue(domainOntologyPath.exists());
+		SadlUtils su = new SadlUtils();
+		String ontologyAsString = su.fileToString(domainOntologyPath);
+		String response = tpsi.uploadDomainOntology(localityURI, baseUri, ontologyAsString);
+		System.out.println("Upload domain ontology response: " + response);
+		
+		File textFile = new File(getTextExtractionPrjFolder() + "/ExtractedModels/Sources/Sound.txt");
+		String textContent = readFile(textFile);
+
+		int[] result = tpsi.processText(localityURI, textContent, localityURI);
+		if (result != null) {
+			System.out.println("nc=" + result[0] + ", neq=" + result[1]);
+		}
+		
+		List<UnitExtractionResponse> uresult = tpsi.unitExtraction("variable measurement degree Celsius", localityURI);
+		assertNotNull(uresult);
+		for (UnitExtractionResponse ur : uresult) {
+			System.out.println("result=" + ur.toString());
+			assertTrue(ur.getRelatedConceptName().equals("temperature"));
+			assertTrue(ur.getRelatedConceptURI().equals("http://purl.obolibrary.org/obo/UO_0000005"));
+			assertTrue(ur.getUnitName().equals("degree Celsius"));
+			assertTrue(ur.getUnitText().equals("degree Celsius"));
+			assertTrue(ur.getUnitURI().equals("http://purl.obolibrary.org/obo/UO_0000027"));
+		}
+	}
+
 	@Test
 	public void testReadN3FromService() throws IOException {
 		File n3File = new File(getTextExtractionPrjFolder().getParent() + "/MiscFiles/SoundTxtExtract.n3");
