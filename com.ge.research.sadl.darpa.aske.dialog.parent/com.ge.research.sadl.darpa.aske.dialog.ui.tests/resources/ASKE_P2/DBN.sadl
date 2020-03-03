@@ -1,0 +1,148 @@
+/**********************************************************************
+* Note: This license has also been called the "New BSD License" or
+* "Modified BSD License". See also the 2-clause BSD License.
+*
+* Copyright © 2018-2019 - General Electric Company, All Rights Reserved
+*
+* Project: KApEESH, developed with the support of the Defense Advanced
+* Research Projects Agency (DARPA) under Agreement  No.  HR00111990007.
+*
+* Redistribution and use in source and binary forms, with or without
+* modification, are permitted provided that the following conditions are met:
+* 1. Redistributions of source code must retain the above copyright notice,
+*    this list of conditions and the following disclaimer.
+*
+* 2. Redistributions in binary form must reproduce the above copyright notice,
+*    this list of conditions and the following disclaimer in the documentation
+*    and/or other materials provided with the distribution.
+*
+* 3. Neither the name of the copyright holder nor the names of its
+*    contributors may be used to endorse or promote products derived
+*    from this software without specific prior written permission.
+*
+* THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
+* AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+* IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
+* ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE
+* LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR
+* CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF
+* SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS
+* INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN
+* CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
+* ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF
+* THE POSSIBILITY OF SUCH DAMAGE.
+*
+***********************************************************************/
+uri "http://aske.ge.com/dbnnodes" alias dbnnodes .
+
+import "http://aske.ge.com/compgraphmodel".
+import "http://aske.ge.com/hypersonicsV2". 
+
+// Hypersonics domain DBNs. The general DBN definitions are in CompGraphModel.sadl
+
+
+//Note: need implicitModel to have semType with value of type UnittedQuantity.
+
+BurnerTemperatureDBN is a type of DBN.
+node of BurnerTemperatureDBN always has value (a BurnerTemperature with unit "degF").
+distribution of BurnerTemperatureDBN always has value uniform.
+range of BurnerTemperatureDBN always has value (a Range lower 2500 upper 6000).
+
+RgasDBN is a type of DBN.
+node of RgasDBN always has value (a RgasConstant).
+distribution of RgasDBN always has value uniform.
+range of RgasDBN always has value (a Range lower 1718 upper 1718).
+
+GammaDBN is a type of DBN. //Actually has an equation. Add it?
+node of GammaDBN always has value (a GammaConstant).
+distribution of GammaDBN always has value uniform.
+range of GammaDBN always has value (a Range lower 1.4 upper 1.4).
+//hasEquation of GammaDBN only has values of type GammaConstEquation.
+
+RgasDBN is a type of DBN.
+node of RgasDBN always has value (a RgasConstant).
+distribution of RgasDBN always has value uniform.
+range of RgasDBN always has value (a Range lower 1718 upper 1718).
+		
+AltitudeDBN is a type of DBN.
+node of AltitudeDBN always has value (a Altitude with unit "ft").
+distribution of AltitudeDBN always has value uniform.
+range of AltitudeDBN always has value (a Range lower 0 upper 100000).
+
+AirSpeedDBN is a type of DBN.
+node of AirSpeedDBN always has value (a AirSpeed with unit "ft/sec").
+distribution of AirSpeedDBN always has value uniform.
+range of AirSpeedDBN always has value (a Range lower 0 upper 3000).
+
+
+StaticTempDBN is a type of DBN.
+node of StaticTempDBN always has value (a StaticTemperature with unit "degF").
+hasEquation of StaticTempDBN only has values of type StaticTemperatureEquation. //StaticTempEq. //or StaticTempEq2) .
+//hasEquation of StaticTempDBN has at most one value of type StaticTempEq2. // {StaticTempEq or StaticTempEq2} .
+range of StaticTempDBN always has value (a Range with lower -200 with upper 300).
+distribution of StaticTempDBN always has value uniform. //should be default value
+
+
+StaticPressureDBN is a type of DBN.
+node of StaticPressureDBN always has value (a StaticPressure with unit "force_pound/ft**2").
+hasEquation of  StaticPressureDBN only has values of type StaticPressureEquation.
+range of StaticPressureDBN always has value (a Range with lower 0 with upper 2200). //100 ft -> 2110, 100000ft -> 23
+distribution of StaticPressureDBN always has value uniform.
+
+SpeedOfSoundDBN is a type of DBN.
+node of SpeedOfSoundDBN always has value (a SpeedOfSound with unit "ft/sec").
+hasEquation of  SpeedOfSoundDBN only has values of type SpeedOfSoundEquation.
+range of SpeedOfSoundDBN always has value (a Range with lower 950 with upper 1200).
+distribution of SpeedOfSoundDBN always has value uniform.
+
+MachSpeedDBN is a type of DBN.
+node of MachSpeedDBN always has value (a MachSpeed).
+hasEquation of  MachSpeedDBN only has values of type MachSpeedEquation.
+range of MachSpeedDBN always has value (a Range with lower 0 with upper 10).
+distribution of MachSpeedDBN always has value uniform.
+
+
+TotalTemperatureDBN is a type of DBN.
+node of TotalTemperatureDBN always has value (a TotalTemperature with unit "degF").
+hasEquation of  TotalTemperatureDBN only has values of type TotalTemperatureEquation.
+range of TotalTemperatureDBN always has value (a Range with lower -200 with upper 1500).
+distribution of TotalTemperatureDBN always has value uniform.
+
+TotalPressureDBN is a type of DBN.
+node of TotalPressureDBN always has value (a TotalPressure with unit "force_pound/ft**2").
+hasEquation of  TotalPressureDBN only has values of type TotalPressureEquation.
+range of TotalPressureDBN always has value (a Range with lower 0 with upper 20000).
+distribution of TotalPressureDBN always has value uniform.
+
+EngineTemperatureRatioDBN is a type of DBN.
+node of EngineTemperatureRatioDBN always has value (a EngineTemperatureRatio).
+hasEquation of EngineTemperatureRatioDBN only has values of type EngineTemperatureRatioEquation.
+range of EngineTemperatureRatioDBN always has value (a Range with lower 1 with upper 10).
+distribution of EngineTemperatureRatioDBN always has value uniform.
+
+EnginePressureRatioDBN is a type of DBN.
+node of EnginePressureRatioDBN always has value (a EnginePressureRatio).
+hasEquation of EnginePressureRatioDBN only has values of type EnginePressureRatioEquation.
+range of EnginePressureRatioDBN always has value (a Range with lower 1 with upper 10).
+distribution of EnginePressureRatioDBN always has value uniform.
+
+RayleighflowEquationDBN is a type of DBN.
+node of RayleighflowEquationDBN always has value (a Rayleighflow).
+hasEquation of RayleighflowEquationDBN only has values of type RayleighflowEquation.
+range of RayleighflowEquationDBN always has value (a Range with lower 0 with upper 10).
+distribution of RayleighflowEquationDBN always has value uniform.
+
+
+// Temp commented out because "assumption" property has been removed
+//Ask ShowEquationsReturningType (note "takes 1 parameter, the Semantic type of the return value"): 
+//"select distinct (?eq as ?eqID) ?InputTypes (?script as ?expression) ?Assumptions
+// where {
+//  ?eq <sciknow:output> ?output .
+//  ?output <rdf:type> ? .
+//  ?eq <expression> ?expr .
+//  ?expr <script> ?script.
+//  ?eq <sciknow:input> ?inObj.
+//  ?inObj <argType> ?InputTypes.
+//  optional{?eq <assumption> ?Assumptions.}
+//}".
+

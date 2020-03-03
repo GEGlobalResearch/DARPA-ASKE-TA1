@@ -1,0 +1,133 @@
+/**********************************************************************
+* Note: This license has also been called the "New BSD License" or
+* "Modified BSD License". See also the 2-clause BSD License.
+*
+* Copyright © 2018-2019 - General Electric Company, All Rights Reserved
+*
+* Project: KApEESH, developed with the support of the Defense Advanced
+* Research Projects Agency (DARPA) under Agreement  No.  HR00111990007.
+*
+* Redistribution and use in source and binary forms, with or without
+* modification, are permitted provided that the following conditions are met:
+* 1. Redistributions of source code must retain the above copyright notice,
+*    this list of conditions and the following disclaimer.
+*
+* 2. Redistributions in binary form must reproduce the above copyright notice,
+*    this list of conditions and the following disclaimer in the documentation
+*    and/or other materials provided with the distribution.
+*
+* 3. Neither the name of the copyright holder nor the names of its
+*    contributors may be used to endorse or promote products derived
+*    from this software without specific prior written permission.
+*
+* THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
+* AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+* IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
+* ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE
+* LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR
+* CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF
+* SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS
+* INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN
+* CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
+* ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF
+* THE POSSIBILITY OF SUCH DAMAGE.
+*
+***********************************************************************/
+uri "http://aske.ge.com/compgraphmodel" alias compgraphmodel .
+
+Thing is a class
+	described by name with values of type string
+	described by description with values of type string
+	.
+
+ComputationalGraph is a class
+	described by node with a single value of type UnittedQuantity
+	described by hasEquation with a single value of type ^Equation
+.
+
+KChain is a type of ComputationalGraph.
+
+DBN is a type of ComputationalGraph
+	//described by input with values of type UnittedQuantity
+//	described by node with a single value of type UnittedQuantity  // DataDescriptor //was Argument
+	// 'script' is a string containing python code for the computation
+	//described by script with values of type string
+//	described by hasEquation with a single value of type ^Equation
+//	described by hasModel with a single value of type ^ExternalEquation
+	// DBN info
+	described by ^type with values of type NodeType
+	described by distribution with a single value of type Distribution	
+	described by range with values of type Range 
+	.
+// Definition of a DBN
+//DBN is a type of Thing
+//	//described by element with values of type DBN_Node
+//	//described by assumption with values of type Assumption
+//	
+//	// All following attributes are part of the query?
+//	described by trackingBatchNumbers with a single value of type int //query?
+//	described by plotFlag with a single value of type boolean // query?
+//	//described by particleFilterOptions with a single value of type ParticleFilterOptions //Query parameteres->moved to Query
+//	described by numberOfSamples with a single value of type int // query?
+//	described by graphFlag with a single value of type boolean //query?
+//	described by trackingTimeSteps with a single value of type int //query?
+//	//described by taskType with a single value of type TaskType // "Prognosis". //the query type?
+//	described by batchIndexName with a single value of type string
+//	.
+
+
+
+
+TaskType is a class, must be one of {prognosis,counterfactual,sensitivityAnalysis,riskAssessment,optimization}.
+
+
+NodeType is a class, must be one of {equation,discrete,continuous,constant,deterministic,stochastic_transient,stochastic} .
+
+Distribution is a class, must be one of {uniform,discrete_custom} .
+
+PTable is a type of Thing.
+       //described by 
+
+Range is a class
+	described by lower with a single value of type float
+	described by upper with a single value of type float
+	.
+
+//************* Model Execution Run ****************//
+
+//ModelRun is a class // Model here is a DBN, not a node model.
+//	 described by dbn with a single value of type DBN
+//	 described by  with a single value of type 
+//	 described by  with a single value of type 
+//	 described by  with a single value of type 
+//	 described by  with a single value of type 
+//	 described by  with a single value of type 
+//	 described by  with a single value of type 
+
+
+
+//************ Query ******************************//
+//Query is a class
+//	 described by output with values of type DBN_Node
+//	 described by observedInput with values of type ObservedInput
+//	 described by sampledInput with values of type DBN_Node //??
+//	 described by queryType with values of type QueryType
+//	 .
+
+//ObservedInput is a class
+//	 described by input with values of type DBN_Node
+//	 described by data with values of type DataSource
+//	 .
+	 
+//QueryType is a class, must be one of {Prognostic, Counterfactual, }.
+
+//ParticleFilterOptions is a class
+//	described by nodeNamesNotRecorded with a single value of type Boolean //null
+//	described by backendKeepVectors with a single value of type Boolean
+//	described by backendFname": "./Results/"
+//	described by backendKeepScalars with a single value of type Boolean
+//	described by parallelProcesses with a single value of type int
+//	described by resampleThreshold with a single value of type float 
+//	described by parallel with a single value of type Boolean
+//	described by backend with a single value of type string
+//	.

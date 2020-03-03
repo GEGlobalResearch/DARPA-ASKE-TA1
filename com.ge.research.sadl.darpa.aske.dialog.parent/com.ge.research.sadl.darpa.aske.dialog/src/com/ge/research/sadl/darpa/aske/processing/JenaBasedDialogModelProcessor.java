@@ -760,11 +760,11 @@ public class JenaBasedDialogModelProcessor extends JenaBasedSadlModelProcessor {
 		}
 
 		DialogIntermediateFormTranslator dift = new DialogIntermediateFormTranslator(this, getTheJenaModel());
-		dift.setStartingVariableNumber(getVariableNumber());
 
 		List<Node> whenObjects = new ArrayList<Node>();
 		for (EObject whenExpr : whenLst) {
 			Object wh = processExpression(whenExpr);
+			dift.setStartingVariableNumber(getVariableNumber());
 			if (wh instanceof Object[]) {
 				if (((Object[])wh).length == 2 && ((Object[])wh)[1] instanceof GraphPatternElement) {
 					// expected
@@ -841,6 +841,7 @@ public class JenaBasedDialogModelProcessor extends JenaBasedSadlModelProcessor {
 		}
 		
 		Map<Node, List<Node>> augmentedComparisonObjects = new HashMap<Node, List<Node>>();
+		int whenObjIdx = 0;
 		for (Node whenObj : whenObjects) {
 			List<Node> comparisonObjects = new ArrayList<Node>();
 			augmentedComparisonObjects.put(whenObj, comparisonObjects);
@@ -925,7 +926,7 @@ public class JenaBasedDialogModelProcessor extends JenaBasedSadlModelProcessor {
 										subj = instNN;
 									}
 									compNode = nodeCheck(new TripleElement(subj, specifiedPropertyNN, null));
-									comparisonObjects.add(compNode);
+									comparisonObjects.add(whenObjIdx++ == 0 ? compNode : dift.newCopyOfProxyNode(compNode));
 								}
 								else {
 									NamedNode instNN = new NamedNode(instances.get(i).getURI());
@@ -943,7 +944,7 @@ public class JenaBasedDialogModelProcessor extends JenaBasedSadlModelProcessor {
 										for (NamedNode prop : relevantProperties) {
 											if (!whenContainsProperty(whenObj, prop)) {
 												compNode = nodeCheck(new TripleElement(instNN, prop, null));
-												comparisonObjects.add(compNode);
+												comparisonObjects.add(whenObjIdx++ == 0 ? compNode : dift.newCopyOfProxyNode(compNode));
 											}
 										}
 									}
@@ -965,7 +966,7 @@ public class JenaBasedDialogModelProcessor extends JenaBasedSadlModelProcessor {
 					}
 				}
 				else {
-					comparisonObjects.add(cn);
+					comparisonObjects.add(whenObjIdx++ == 0 ? cn : dift.newCopyOfProxyNode(cn));
 				}
 			}
 		}

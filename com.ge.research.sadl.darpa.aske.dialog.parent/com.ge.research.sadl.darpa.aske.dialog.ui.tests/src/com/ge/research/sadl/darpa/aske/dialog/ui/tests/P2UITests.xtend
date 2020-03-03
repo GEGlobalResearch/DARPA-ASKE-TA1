@@ -1,22 +1,18 @@
-package com.ge.research.sadl.darpa.aske.tests;
+package com.ge.research.sadl.darpa.aske.dialog.ui.tests;
 
-import static org.junit.Assert.*;
-
-import org.junit.Before;
-import org.junit.BeforeClass;
-import org.junit.Test;
-import java.io.File
-import com.ge.research.sadl.reasoner.ConfigurationManagerFactory
-import org.eclipse.xtext.diagnostics.Severity
 import com.ge.research.sadl.darpa.aske.processing.JenaBasedDialogModelProcessor
 import com.ge.research.sadl.darpa.aske.processing.WhatIsContent
-import com.ge.research.sadl.builder.ConfigurationManagerForIdeFactory
-import java.io.IOException
+import com.ge.research.sadl.preferences.SadlPreferences
 import java.io.BufferedReader
+import java.io.File
 import java.io.FileReader
-import org.junit.Ignore
+import java.io.IOException
+import org.eclipse.xtext.diagnostics.Severity
+import org.eclipse.xtext.preferences.PreferenceKey
+import org.junit.Before
+import org.junit.Test
 
-public class P2Tests extends AbstractDialogTest {
+public class P2UITests extends AbstractDialogPlatformTest {
 	private String kbRoot;	
 	private String projectModelFolder;
 
@@ -46,9 +42,11 @@ public class P2Tests extends AbstractDialogTest {
 		this.projectModelFolder = projectModelFolder;
 	}
 
-	@Ignore
 	@Test
 	def void test() {
+		updatePreferences(new PreferenceKey(SadlPreferences.TYPE_CHECKING_WARNING_ONLY.id, Boolean.TRUE.toString));
+		updatePreferences(new PreferenceKey(SadlPreferences.P_USE_ARTICLES_IN_VALIDATION.id, Boolean.FALSE.toString));
+		
 		reusableScienceKnowledge
 		reusableCompGraphModel
 		reusableModelMeta
@@ -56,19 +54,19 @@ public class P2Tests extends AbstractDialogTest {
 		reusableDBN
 		reusableTableAndEquation
 		reusableTurbo
-		'''
-		uri "http://sadl.org/test4.dialog" alias test4dialog.
-		 
-		import "http://aske.ge.com/metamodel".
-		import "http://aske.ge.com/hypersonicsV2".
-		import "http://aske.ge.com/dbnnodes".
-		import "http://sadl.org/TableAndEquation.sadl".
-		import "http://aske.ge.com/turbo".
-		
-		what is the machSpeed of a CF6 when the speed of the CF6 is 400 mph and the altitude of the CF6 is 20000 ft?
-		
-		what is the machSpeed of a CF6 when the speed is 400 mph and the altitude is 20000 ft?
-		'''.assertValidatesTo [ ontModel, issues, processor |
+		createFile("test4.dialog",'''
+			uri "http://sadl.org/test4.dialog" alias test4dialog.
+			 
+			import "http://aske.ge.com/metamodel".
+			import "http://aske.ge.com/hypersonicsV2".
+			import "http://aske.ge.com/dbnnodes".
+			import "http://sadl.org/TableAndEquation.sadl".
+			import "http://aske.ge.com/turbo".
+			
+			what is the machSpeed of a CF6 when the speed of the CF6 is 400 mph and the altitude of the CF6 is 20000 ft?
+			
+			what is the machSpeed of a CF6 when the speed is 400 mph and the altitude is 20000 ft?
+		''').resource.assertValidatesDialogTo[ontModel, rules, commands, issues, processor |
 			assertNotNull(ontModel)
 //			val stmtitr = ontModel.listStatements()
 //			while (stmtitr.hasNext) {
@@ -110,50 +108,73 @@ public class P2Tests extends AbstractDialogTest {
 	def reusableModelMeta() {
 		val filepath = getKbRoot + "/MetaModel.sadl"
 		val modelcontent = readFile(new File(filepath))
-		val model = modelcontent.sadl
-		model.assertNoErrors
+		createFile("MetaModel.sadl", modelcontent).resource.assertValidatesTo[jenaModel, rules, commands, issues, processor |
+			assertNotNull(jenaModel)
+			issues.map[message].forEach[println(it)];
+			assertEquals(0, issues.size)
+		]
 	}
 	
 	def reusableHypersonics_v2() {
 		val filepath = getKbRoot + "/Hypersonics_v2.sadl"
 		val modelcontent = readFile(new File(filepath))
-		val model = modelcontent.sadl
-		model.assertNoErrors
+		createFile("Hypersonics_v2.sadl", modelcontent).resource.assertValidatesTo[jenaModel, rules, commands, issues, processor |
+			assertNotNull(jenaModel)
+			issues.map[message].forEach[println(it)];
+			assertEquals(0, issues.size)
+		]
 	}
 	
 	def reusableDBN() {
 		val filepath = getKbRoot + "/DBN.sadl"
 		val modelcontent = readFile(new File(filepath))
-		val model = modelcontent.sadl
-		model.assertNoErrors
+		createFile("DBN.sadl", modelcontent).resource.assertValidatesTo[jenaModel, rules, commands, issues, processor |
+			assertNotNull(jenaModel)
+			issues.map[message].forEach[println(it)];
+			assertEquals(0, issues.size)
+		]
 	}
 	
 	def reusableTableAndEquation() {
 		val filepath = getKbRoot + "/TableAndEquation.sadl"
 		val modelcontent = readFile(new File(filepath))
-		val model = modelcontent.sadl
-		model.assertNoErrors
+		createFile("TableAndEquation.sadl", modelcontent).resource.assertValidatesTo[jenaModel, rules, commands, issues, processor |
+			assertNotNull(jenaModel)
+			issues.map[message].forEach[println(it)];
+			assertEquals(0, issues.size)
+		]
 	}
 	
 	def reusableTurbo() {
+		updatePreferences(new PreferenceKey(SadlPreferences.TYPE_CHECKING_WARNING_ONLY.id, Boolean.TRUE.toString));
+		updatePreferences(new PreferenceKey(SadlPreferences.P_USE_ARTICLES_IN_VALIDATION.id, Boolean.FALSE.toString));
 		val filepath = getKbRoot + "/Turbo.sadl"
 		val modelcontent = readFile(new File(filepath))
-		val model = modelcontent.sadl
-//		model.assertNoErrors
+		createFile("Turbo.sadl", modelcontent).resource.assertValidatesTo[jenaModel, rules, commands, issues, processor |
+			assertNotNull(jenaModel)
+			issues.map[message].forEach[println(it)];
+			assertEquals(0, issues.size)
+		]
 	}
 	
 	def reusableCompGraphModel() {
 		val filepath = getKbRoot + "/CompGraphModel.sadl"
 		val modelcontent = readFile(new File(filepath))
-		val model = modelcontent.sadl
-		model.assertNoErrors
+		createFile("CompGraphModel.sadl", modelcontent).resource.assertValidatesTo[jenaModel, rules, commands, issues, processor |
+			assertNotNull(jenaModel)
+			issues.map[message].forEach[println(it)];
+			assertEquals(0, issues.size)
+		]
 	}
 
 	def reusableScienceKnowledge() {
 		val filepath = getKbRoot + "/ScienceKnowledge.sadl"
 		val modelcontent = readFile(new File(filepath))
-		val model = modelcontent.sadl
-		model.assertNoErrors
+		createFile("ScienceKnowledge.sadl", modelcontent).resource.assertValidatesTo[jenaModel, rules, commands, issues, processor |
+			assertNotNull(jenaModel)
+			issues.map[message].forEach[println(it)];
+			assertEquals(0, issues.size)
+		]
 	}
 
 	def String readFile(File file) throws IOException {
