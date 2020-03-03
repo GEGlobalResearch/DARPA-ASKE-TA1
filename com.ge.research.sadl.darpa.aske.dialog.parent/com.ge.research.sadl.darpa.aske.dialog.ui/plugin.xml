@@ -443,4 +443,10 @@
 			type="text">
 		</fileTypes>
 	</extension>
+	 <extension
+	       point="org.eclipse.ui.startup">
+	    <startup
+	          class="com.ge.research.sadl.darpa.aske.ui.DialogEarlyStartup">
+	    </startup>
+	 </extension>
 </plugin>

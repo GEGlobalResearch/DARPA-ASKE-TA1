@@ -2183,7 +2183,7 @@ public class JenaBasedDialogModelProcessor extends JenaBasedSadlModelProcessor {
 		if (savePython != null) {
 			setSavePython(Boolean.parseBoolean(savePython.trim()));
 		}
-		String savePythonTF = context.getPreferenceValues().getPreference(DialogPreferences.TF_PYTHON_LANGUAGE);
+		String savePythonTF = context.getPreferenceValues().getPreference(DialogPreferences.OTHER_PYTHON_LANGUAGE);
 		if (savePythonTF != null) {
 			setSavePythonTF(Boolean.parseBoolean(savePythonTF.trim()));
 		}

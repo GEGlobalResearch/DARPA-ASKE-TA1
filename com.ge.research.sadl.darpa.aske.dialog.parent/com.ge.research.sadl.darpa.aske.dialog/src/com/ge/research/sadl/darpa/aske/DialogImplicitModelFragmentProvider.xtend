@@ -65,6 +65,8 @@ class DialogImplicitModelFragmentProvider implements ISadlImplicitModelFragmentP
 			described by declaration with values of type Script.
 		implicitInput describes ^Equation with values of type ImplicitDataDescriptor.
 		implicitOutput describes ^Equation with values of type ImplicitDataDescriptor.
+		
+		{Python-TF, Python-NumPy} are instances of Language.
 	''';
 
 	@Override

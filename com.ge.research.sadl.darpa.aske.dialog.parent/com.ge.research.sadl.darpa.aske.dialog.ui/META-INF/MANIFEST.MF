@@ -26,7 +26,8 @@ Require-Bundle: com.ge.research.sadl.darpa.aske.dialog,
  org.eclipse.jdt;bundle-version="3.9.1",
  org.eclipse.jdt.core;bundle-version="3.9.2",
  org.apache.log4j,
- com.ge.research.sadl.jena
+ com.ge.research.sadl.jena,
+ com.ge.research.sadl.errorgenerator
 Import-Package: org.apache.log4j
 Bundle-RequiredExecutionEnvironment: JavaSE-1.8
 Export-Package: com.ge.research.sadl.darpa.aske.dialog.ui.internal,

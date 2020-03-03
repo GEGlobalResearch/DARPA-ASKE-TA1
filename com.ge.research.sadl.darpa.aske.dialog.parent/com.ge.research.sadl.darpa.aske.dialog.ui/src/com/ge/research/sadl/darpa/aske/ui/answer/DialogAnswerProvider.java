@@ -832,9 +832,9 @@ public class DialogAnswerProvider extends BaseDialogAnswerProvider {
 			if (savePython != null) {
 				map.put(DialogPreferences.PYTHON_LANGUAGE.getId(), savePython);
 			}
-			String savePythonTF = preferenceValues.getPreference(DialogPreferences.TF_PYTHON_LANGUAGE);
+			String savePythonTF = preferenceValues.getPreference(DialogPreferences.OTHER_PYTHON_LANGUAGE);
 			if (savePythonTF != null) {
-				map.put(DialogPreferences.TF_PYTHON_LANGUAGE.getId(), savePythonTF);
+				map.put(DialogPreferences.OTHER_PYTHON_LANGUAGE.getId(), savePythonTF);
 			}
 			String tsburl = preferenceValues.getPreference(DialogPreferences.ANSWER_TEXT_SERVICE_BASE_URI);
 			if (tsburl != null) {

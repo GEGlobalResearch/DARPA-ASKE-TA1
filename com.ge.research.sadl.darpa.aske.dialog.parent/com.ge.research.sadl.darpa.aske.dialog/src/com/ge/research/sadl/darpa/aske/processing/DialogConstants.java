@@ -60,6 +60,8 @@ public class DialogConstants {
 	public static final String SADL_IMPLICIT_MODEL_INITIALZERMETHOD_CLASS_URI = SadlConstants.SADL_IMPLICIT_MODEL_URI + "#IntializerMethod";
 	public static final String SADL_IMPLICIT_MODEL_INITIALIZES_PROPERTY_URI = SadlConstants.SADL_IMPLICIT_MODEL_URI + "#initializes";
 	public static final String SADL_IMPLICIT_MODEL_INITIALIZERKEYWORD_PROPERTY_URI = SadlConstants.SADL_IMPLICIT_MODEL_URI + "#initializerKeyword";
+	public static final String SADL_IMPLICIT_MODEL_PYTHON_TF_LANGUAGE_INST_URI = SadlConstants.SADL_IMPLICIT_MODEL_URI + "#Python-TF";
+	public static final String SADL_IMPLICIT_MODEL_PYTHON_NUMPY_LANGUAGE_INST_URI = SadlConstants.SADL_IMPLICIT_MODEL_URI + "#Python-NumPy";
 
 	public static final String EXTRACTED_MODELS_FOLDER_PATH_FRAGMENT = "ExtractedModels";
 	public static final String CODE_EXTRACTION_MODEL_FILENAME = "CodeExtractionModel.sadl";
@@ -69,6 +71,7 @@ public class DialogConstants {
 	
 	public static final String PYTHON_LANGUAGE = "Python";
 	public static final String TF_PYTHON_LANGUAGE = "Python-TF";
+	public static final String NUMPY_PYTHON_LANGUAGE = "Python-NumPy";
 	
 	// query to get the argument names and types for an equation, parameterized by equation URI
 	public static final String ARGUMENTS_BY_EQUATION_URI_QUERY = "select ?argName ?argType where { ? <" + 

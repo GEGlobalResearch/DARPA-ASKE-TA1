@@ -239,7 +239,7 @@ public class TextProcessorTests {
 				rs.setShowNamespaces(false);
 				System.out.println(rs.toStringWithIndent(5));
 				for (int r = 0; r < rs.getRowCount(); r++) {
-					if (rs.getResultAt(r, 1).toString().equals("Python-TF")) {
+					if (rs.getResultAt(r, 1).toString().equals(DialogConstants.TF_PYTHON_LANGUAGE)) {
 						equations.add(rs.getResultAt(r, 0).toString());
 					}
 				}
@@ -478,7 +478,7 @@ public class TextProcessorTests {
 //				rs.setShowNamespaces(false);
 //				System.out.println(rs.toStringWithIndent(5));
 //				for (int r = 0; r < rs.getRowCount(); r++) {
-//					if (rs.getResultAt(r, 1).toString().equals("Python-TF")) {
+//					if (rs.getResultAt(r, 1).toString().equals(DialogConstants.TF_PYTHON_LANGUAGE)) {
 //						equations.add(rs.getResultAt(r, 0).toString());
 //					}
 //				}

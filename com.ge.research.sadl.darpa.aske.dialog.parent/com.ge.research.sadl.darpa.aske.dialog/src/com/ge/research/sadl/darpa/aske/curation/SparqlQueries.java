@@ -23,7 +23,8 @@ public class SparqlQueries {
 			+ "OPTIONAL {?m <http://sadl.org/sadlimplicitmodel#derivedFrom> ?pm} . "
 			+ "OPTIONAL { ?m <expression> ?exp . ?exp <language> <Text> . ?exp <script> ?ts} . "
 			+ "OPTIONAL {?m <expression> ?exp2 . ?exp2 <language> <Python> . ?exp2 <script> ?ps} . "
-			+ "OPTIONAL {?m <expression> ?exp3 . ?exp3 <language> <Python-TF> . ?exp3 <script> ?ptfs}}";
+			+ "OPTIONAL {?m <expression> ?exp2 . ?exp3 <language> <Python-TF> . ?exp3 <script> ?ps} . "
+			+ "OPTIONAL {?m <expression> ?exp3 . ?exp4 <language> <Python-NumPy> . ?exp4 <script> ?ptfs}}";
 	
 	public static final String ALL_EXTERNAL_EQUATIONS = 
 			"select ?eq ?lang ?expr where {?eq <rdf:type> <ExternalEquation> . ?eq <expression> ?script . ?script <script> ?expr . ?script <language> ?lang}";
