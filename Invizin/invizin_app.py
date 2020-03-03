@@ -98,6 +98,8 @@ def visualize(body):
         
     inviz = invizin(url_evaluate)
     
+    OATSensitivityData = inviz.getOATSensitivityData(body)
+    
     figs = []
     labels = []
 
@@ -132,5 +134,6 @@ def visualize(body):
             
     outputPacket = {}
     outputPacket['url'] = URL
+    outputPacket['sensitivityData'] = OATSensitivityData
     return outputPacket
 

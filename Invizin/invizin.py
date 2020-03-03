@@ -28,6 +28,7 @@ class invizin(object):
         """
         self.debug = debug
         self.url_evaluate = url_evaluate
+        self.sensitivityData = []
         
     
     def _getOutputValue(self, evalPacket, inputVal, index):
@@ -58,12 +59,12 @@ class invizin(object):
     
     def _getMinMax(self, pck, index, plotType = ''):
         frac = 0.1
-        if 'minValue' in pck['inputVariables'][index].keys() and plotType is not 'Relative':
+        if 'minValue' in pck['inputVariables'][index].keys() and plotType != 'Relative':
             MIN = float(pck['inputVariables'][index]['minValue'])
         else:
             MIN = float(pck['inputVariables'][index]['value'])*(1 - frac)
             
-        if 'maxValue' in pck['inputVariables'][index].keys() and plotType is not 'Relative':
+        if 'maxValue' in pck['inputVariables'][index].keys() and plotType != 'Relative':
             MAX = float(pck['inputVariables'][index]['maxValue'])
         else:
             MAX = float(pck['inputVariables'][index]['value'])*(1 + frac)
@@ -79,19 +80,68 @@ class invizin(object):
     
     def _getVarUnit(self, var):
         if 'unit' in var.keys():
-            varUnit = ' (' + var['unit'] + ')'
+            if var['unit'] != '':
+                varUnit = '(' + var['unit'] + ')'
+            else: 
+                varUnit = ''
         else:
             varUnit = ''
         return varUnit
     
-    def createSensitivityGraphOAT(self, evalPacket):
+    def _getWrappedText(self, strText, w=14):
+        split_text = []
+        for i in range(0, len(strText), w):
+            split_text.append(strText[i:i + w])
+        strText = '<br>'.join(split_text)
+        return strText
+    
+    def getOATSensitivityData(self, evalPacket):
         pck = copy.deepcopy(evalPacket)
         NUM = 20
+        sensitivityData = []
+        
+        for ii, inputVariable in enumerate(pck['inputVariables']):
+            #only one input is changed while others stay at base
+            d = dict()
+            d['name'] = inputVariable['name']
+            d['type'] = inputVariable['type']
+            d['value'] = inputVariable['value']
+            
+            MIN, MAX = self._getMinMax(pck, ii)
+            MIN_RS, MAX_RS = self._getMinMax(pck, ii, plotType = 'Relative')
+            
+            if MIN != MIN_RS or MAX != MAX_RS:
+                X = np.linspace(MIN, MAX, num=NUM)
+                df = self._getOutputDataframe(copy.deepcopy(pck), X, index = ii)
+                d['OATMatrix'] = df.to_dict(orient='list')
+                X = np.linspace(MIN_RS, MAX_RS, num=NUM)
+                df = self._getOutputDataframe(copy.deepcopy(pck), X, index = ii)
+                d['OATRSMatrix'] = df.to_dict(orient='list')
+            else:
+                X = np.linspace(MIN, MAX, num=NUM)
+                df = self._getOutputDataframe(copy.deepcopy(pck), X, index = ii)
+                d['OATMatrix'] = df.to_dict(orient='list')
+                d['OATRSMatrix'] = df.to_dict(orient='list')
+                
+            sensitivityData.append(d)    
+        
+        self.sensitivityData = sensitivityData
+        return sensitivityData
+        
     
+    def createSensitivityGraphOAT(self, evalPacket):
+        pck = copy.deepcopy(evalPacket)
+    
+        if self.sensitivityData == []:
+            #error condition
+            print('Missing sensitivity data')
+        else:
+            sensitivityData = self.sensitivityData
+            
         refDat = {}
         for inputVariable in pck['inputVariables']:
             inVal = float(inputVariable['value'])
-            refDat[inputVariable['name']]=inVal
+            refDat[inputVariable['name']] = inVal
     
         outVals = self._getOutputValue(evalPacket, inputVal=None, index=None)
         for ix, outVal in enumerate(outVals):
@@ -106,15 +156,17 @@ class invizin(object):
             #only one input is changed while others stay at base
             inName = self._getVarName(inputVariable)
             inUnit = self._getVarUnit(inputVariable)
+            inText = self._getWrappedText(inName)+'<br>'+inUnit
             
-            MIN, MAX = self._getMinMax(pck, ii)
-            X = np.linspace(MIN, MAX, num=NUM)
-            df = self._getOutputDataframe(copy.deepcopy(pck), X, index = ii)
+            X = sensitivityData[ii]['OATMatrix'][inputVariable['name']]
+            
+            df = sensitivityData[ii]['OATMatrix']
             for jj, outputVariable in enumerate(pck['outputVariables']):
                 outName = self._getVarName(outputVariable)
                 outUnit = self._getVarUnit(outputVariable)
+                outText = self._getWrappedText(outName)+'<br>'+outUnit
                 
-                fig.add_trace(go.Scatter(x = X, y=df[outputVariable['name']], 
+                fig.add_trace(go.Scatter(x = X, y = df[outputVariable['name']], 
                                          mode="lines",name = inName,
                                          marker = {"size": 10},
                                          hoverinfo = "x+y"),
@@ -126,21 +178,26 @@ class invizin(object):
                                          hoverinfo = "x+y"),
                               row=jj+1, col=ii+1)
                 if ii == 0:
-                    fig.update_yaxes(title_text=outName + outUnit, row=jj+1, col=ii+1, hoverformat=".3f")
+                    fig.update_yaxes(title_text=outText, row=jj+1, col=ii+1, hoverformat=".3f")
                 else:
                     fig.update_yaxes(row=jj+1, col=ii+1, hoverformat=".3f")
                 if jj == len(pck['outputVariables'])-1:
-                    fig.update_xaxes(title_text=inName + inUnit, row=jj+1, col=ii+1, hoverformat=".3f")
+                    fig.update_xaxes(title_text=inText, row=jj+1, col=ii+1, hoverformat=".3f")
                 else:
                     fig.update_xaxes(row=jj+1, col=ii+1, hoverformat=".3f")
     
-        fig.update_layout(title='Sensitivity: One-at-a-time Parametric Analysis', showlegend=False, hovermode='x')
+        fig.update_layout(title='One-at-a-time Parametric Analysis', showlegend=False, hovermode='x')
         label = 'OAT Sensitivity Analysis'
         return fig, label
     
     def createRelativeSensitivityGraphOAT(self, evalPacket):
         pck = copy.deepcopy(evalPacket)
-        NUM = 20
+        
+        if self.sensitivityData == []:
+            #error condition
+            print('Missing sensitivity data')
+        else:
+            sensitivityData = self.sensitivityData
     
         refDat = {}
         for inputVariable in pck['inputVariables']:
@@ -160,17 +217,19 @@ class invizin(object):
             #only one input is changed while others stay at base
             inName = self._getVarName(inputVariable)
             inUnit = self._getVarUnit(inputVariable)
+            inText = self._getWrappedText(inName)+'<br>'+inUnit
             
-            MIN, MAX = self._getMinMax(pck, ii, plotType = 'Relative')
-            X = np.linspace(MIN, MAX, num=NUM)
-            df = self._getOutputDataframe(copy.deepcopy(pck), X, index = ii)
-            Xd = (X - refDat[inputVariable['name']])*100.0/refDat[inputVariable['name']]
+            X = sensitivityData[ii]['OATRSMatrix'][inputVariable['name']]
+            df = sensitivityData[ii]['OATRSMatrix']
+            
+            Xd = (np.asarray(X) - refDat[inputVariable['name']])*100.0/refDat[inputVariable['name']]
             for jj, outputVariable in enumerate(pck['outputVariables']):
                 outName = self._getVarName(outputVariable)
                 outUnit = self._getVarUnit(outputVariable)
+                outText = self._getWrappedText(outName)+'<br>'+outUnit
                 
                 fig.add_trace(go.Scatter(x = Xd, y=df[outputVariable['name']], 
-                                         mode="lines",name = inName + inUnit,
+                                         mode="lines",name = inText,
                                          marker = {"size": 10},
                                          hoverinfo = "x+y"),
                               row=jj+1, col=1)
@@ -181,14 +240,14 @@ class invizin(object):
                                              marker = {"symbol":"diamond-open","size": 10, "color": "black"},
                                              hoverinfo = "x+y"),
                                   row=jj+1, col=1)
-                    fig.update_yaxes(title_text=outName + outUnit, row=jj+1, col=1, hoverformat=".3f")
+                    fig.update_yaxes(title_text=outText, row=jj+1, col=1, hoverformat=".3f")
 
                 if jj == len(pck['outputVariables'])-1:
                     fig.update_xaxes(title_text='relative change in input (%)', row=jj+1, col=1, hoverformat=".3f")
                 else:
                     fig.update_xaxes(row=jj+1, col=1, hoverformat=".3f")
     
-        fig.update_layout(title='Sensitivity: One-at-a-time Parametric Analysis', showlegend=True, hovermode='x')
+        fig.update_layout(title='One-at-a-time Parametric Analysis', showlegend=True, hovermode='x')
         label = 'Relative Sensitivity Analysis'
         return fig, label
     
