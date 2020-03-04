@@ -931,7 +931,7 @@ public class JenaBasedDialogInferenceProcessor extends JenaBasedSadlInferencePro
 			triples.add(thisRulesTriples);
 		}
 		try {
-			return insertTriplesAndQuery(resource, triples);
+			return insertTriplesAndQuery(resource, rules, triples);
 		}
 		catch (Throwable t) {
 			throw new SadlInferenceException(t.getMessage(), t);
@@ -945,8 +945,9 @@ public class JenaBasedDialogInferenceProcessor extends JenaBasedSadlInferencePro
 	 * 3) triples corresponding to increasing/decreasing trend insights
 	 */
 	
-	@Override
-	public Object[] insertTriplesAndQuery(Resource resource, List<TripleElement[]> triples) throws SadlInferenceException {
+//	@Override
+//	public Object[] insertTriplesAndQuery(Resource resource, List<TripleElement[]> triples) throws SadlInferenceException {
+	public Object[] insertTriplesAndQuery(Resource resource, List<Rule> rules, List<TripleElement[]> triples) throws SadlInferenceException {
  		List<Object[]> combinedResults = new ArrayList<Object[]>(triples.size());
  		Object[] results = null;
 	    JsonArray sensitivityJsonList = new JsonArray();

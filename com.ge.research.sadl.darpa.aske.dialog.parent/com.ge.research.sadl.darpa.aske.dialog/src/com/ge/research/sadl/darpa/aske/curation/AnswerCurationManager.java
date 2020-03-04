@@ -2806,7 +2806,7 @@ public class AnswerCurationManager {
 		}
 		else if (sc != null && sc.getComparisonRules() != null) {
 			List<Rule> comparisonRules = sc.getComparisonRules();
-			Object[] rss = insertRulesAndQuery(resource, comparisonRules);
+			Object[] rss = insertRulesAndQuery(resource2, comparisonRules);
 			return processResultsOfInsertRulesAndQuery(sc, rss, comparisonRules);
 //			return "Processing of query disabled";
 		}
@@ -3023,7 +3023,7 @@ public class AnswerCurationManager {
 			                OntModelProvider.addPrivateKeyValuePair(resource, DialogConstants.LAST_DIALOG_COMMAND, listOfTriples);
 	                		Object[] rss = insertTriplesAndQuery(resource, listOfTriples);
 	                		
-	            			String answer = getAnswerAndVisualize(sc, rss);
+	            			String answer = getAnswerAndVisualize(sc, null, rss);
 
 	            			if (rss != null) {
 	            				retVal = stringToQuotedeString(answer);
@@ -3211,7 +3211,7 @@ public class AnswerCurationManager {
 					
 					Object[] rss = insertTriplesAndQuery(resource, triples);
 					if (rss != null) {
-						String answer = getAnswerAndVisualize(sc, rss);
+						String answer = getAnswerAndVisualize(sc, null, rss);
 						retVal = stringToQuotedeString(answer);
 					}
 					else {
@@ -3261,7 +3261,7 @@ public class AnswerCurationManager {
 					resultStr = stringToQuotedeString(sb.toString());
 				}
 			} else {
-				resultStr = getAnswerAndVisualize(sc, rss);
+				resultStr = getAnswerAndVisualize(sc, comparisonRules, rss);
 				
 			}
 		}
@@ -3271,12 +3271,29 @@ public class AnswerCurationManager {
 		return retVal;
 	}
 
-	private String getAnswerAndVisualize(ExpectsAnswerContent sc, Object[] rss) throws ConfigurationException  {
+	/**
+	 * Method to generate 
+	 * @param sc
+	 * @param comparisonRules
+	 * @param rss
+	 * @return
+	 * @throws ConfigurationException
+	 */
+	private String getAnswerAndVisualize(ExpectsAnswerContent sc, List<Rule> comparisonRules, Object[] rss) throws ConfigurationException  {
 		StringBuilder answer = new StringBuilder();
 		String graphsDirectory = new File(getOwlModelsFolder()).getParent().replace('\\', '/') + "/Graphs";
 		String baseFileName = "";
 		List<List<String>> diagrams = new ArrayList<List<String>>();
+			// diagrams is a List of Lists
+			// The elements of the outer list are the rows in the table--there should be one for each key in table (below).
+			// Each inner list is list of links, each one of which will be put in a row
+		
 		HashMap<String,HashMap<String,String>> table = new HashMap<String,HashMap<String,String>>();
+			// table is a map of maps. 
+			// The key to the outer map is the comparator, e.g., CF6. For tabular output, 
+			//	this is the value in the first column, headed "Options".
+			// The inner map contains the additional columns to be displayed. The key is the column header, 
+			//	the type of the thing in that column, and the value is the value to be displayed in that column.
 		
 		boolean isTable = false;
 		String insights = null;
@@ -3355,10 +3372,24 @@ public class AnswerCurationManager {
 						ResultSet rset = (ResultSet) rs;
 						rset.setShowNamespaces(false);
 						
-						String className = rset.getResultAt(0, 1).toString();
+						String className = rset.getResultAt(0, 1).toString();	// Used to name the link to the model graph 
 						if (isTable) {
+							// are there different conditions in the comparisonRules?
+							// Note: the assumption is made there that the sets of results in rss are in the same
+							//	order as the rules in comparisonRules, allowing us to get the conditions on which
+							//	the answer depends from the rule conditions.
+							
 							for(int i=0; i< rset.getRowCount(); i++) {
 								HashMap<String,String> varVal = new HashMap<String,String>();
+								String comparand = rset.getResultAt(i, 1).toString();
+								table.put(comparand,  varVal); 
+								// see if there are any conditions to be added
+								HashMap<String, String> conditionVals = getTableRowConditions(comparisonRules.get(i));
+								if (conditionVals != null) {
+									varVal.putAll(conditionVals);
+								}
+								
+								// now add the output of the computation
 								String value = SadlUtils.formatNumberList(rset.getResultAt(i, 3).toString(), 5);
 								Object unitObj = rset.getResultAt(i, 5);
 								if (unitObj != null) {
@@ -3366,7 +3397,6 @@ public class AnswerCurationManager {
 									value = value + " " + unit;
 								}
 								varVal.put(rset.getResultAt(i, 2).toString(), value);
-								table.put(rset.getResultAt(i, 1).toString(),  varVal); 
 							}
 						}
 						else {
@@ -3436,6 +3466,30 @@ public class AnswerCurationManager {
 		return answer.toString();
 	}
 
+	/**
+	 * Method to extract conditions from the rule
+	 * @param rule
+	 * @return
+	 */
+	private HashMap<String, String> getTableRowConditions(Rule rule) {
+		HashMap<String, String> conditions = new HashMap<String, String>();
+		List<GraphPatternElement> ifs = rule.getIfs();
+		for (int i = 0; i < ifs.size(); i++) {
+			GraphPatternElement gpe = ifs.get(i);
+			if (gpe instanceof TripleElement) {
+				if (((TripleElement)gpe).getSubject() instanceof VariableNode && ((TripleElement)gpe).getPredicate().equals(RDF.type)) {
+					// this might be a condition variable
+					if (i < ifs.size()-2 && ifs.get(i+1) instanceof TripleElement && ((TripleElement)ifs.get(i+1)).getPredicate().getURI().equals(SadlConstants.SADL_IMPLICIT_MODEL_VALUE_URI) &&
+							ifs.get(i+2) instanceof TripleElement && ((TripleElement)ifs.get(i+2)).getPredicate().getURI().equals(SadlConstants.SADL_IMPLICIT_MODEL_UNIT_URI)) {
+						String colHeader = ((TripleElement)gpe).getObject().getName();
+						String condValue = ((TripleElement)ifs.get(i+1)).getObject().toString() + " " + ((TripleElement)ifs.get(i+2)).getObject().toString();
+						conditions.put(colHeader, condValue);
+					}
+				}
+			}
+		}
+		return conditions;
+	}
 
 	/**
 	 * Generate sadl insight statements. For example: increasing Altitude increases Thrust 
@@ -3912,7 +3966,7 @@ public class AnswerCurationManager {
 		String query = "select ?t ?p ?v where {<" + subjNN.getURI() + "> <" + pobjURI + "> ?bn . ?bn ?p ?v }";
 		Query q = new Query();
 		q.setSparqlQueryString(query);
-		ResultSet rs = runQuery(resource, q);
+		ResultSet rs = runQuery(resource2, q);
 		if (rs != null) {
 //			rs.setShowNamespaces(false);
 			for (int r = 0; r < rs.getRowCount(); r++) {
@@ -4231,7 +4285,7 @@ public class AnswerCurationManager {
 	
 	private Object[] insertTriplesAndQuery(org.eclipse.emf.ecore.resource.Resource resource2, TripleElement[] triples) throws SadlInferenceException {
 		getConfigurationManager().addPrivateKeyValuePair(DialogConstants.ANSWER_CURATION_MANAGER, this);
-		return getInferenceProcessor().insertTriplesAndQuery(resource, triples);
+		return getInferenceProcessor().insertTriplesAndQuery(resource2, triples);
 	}
 
 	private List<TripleElement> addTriplesFromJunction(Junction jct, List<TripleElement> tripleLst) {
