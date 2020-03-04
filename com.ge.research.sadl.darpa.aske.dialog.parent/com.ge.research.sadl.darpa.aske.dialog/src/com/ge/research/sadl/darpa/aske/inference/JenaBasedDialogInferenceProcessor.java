@@ -938,6 +938,13 @@ public class JenaBasedDialogInferenceProcessor extends JenaBasedSadlInferencePro
 		}
 	}
 	
+	/**
+	 * Returns a ResultSet containing one answer for each simple query. Each answer consists of three ResultSet subsets appearing in sequence:
+	 * 1) data for the model diagram
+	 * 2) the actual numeric answer + the sensitivity URL
+	 * 3) triples corresponding to increasing/decreasing trend insights
+	 */
+	
 	@Override
 	public Object[] insertTriplesAndQuery(Resource resource, List<TripleElement[]> triples) throws SadlInferenceException {
  		List<Object[]> combinedResults = new ArrayList<Object[]>(triples.size());
