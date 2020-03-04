@@ -761,6 +761,8 @@ public class JenaBasedDialogModelProcessor extends JenaBasedSadlModelProcessor {
 
 		DialogIntermediateFormTranslator dift = new DialogIntermediateFormTranslator(this, getTheJenaModel());
 
+		Object thenObj = processExpression(thenExpr);	// do this first for article checking conformance
+
 		List<Node> whenObjects = new ArrayList<Node>();
 		for (EObject whenExpr : whenLst) {
 			Object wh = processExpression(whenExpr);
@@ -788,7 +790,6 @@ public class JenaBasedDialogModelProcessor extends JenaBasedSadlModelProcessor {
 			whenObjects.add(whenObj);
 		}
 		
-		Object thenObj = processExpression(thenExpr);
 		List<Object> originalThenObjects = new ArrayList<Object>();
 		List<Node> thenObjects = new ArrayList<Node>();
 		NamedNode specifiedPropertyNN = null;

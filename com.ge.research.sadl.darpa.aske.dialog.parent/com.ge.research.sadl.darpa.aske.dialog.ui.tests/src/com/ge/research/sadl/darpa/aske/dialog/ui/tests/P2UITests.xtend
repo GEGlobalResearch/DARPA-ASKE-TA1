@@ -46,6 +46,7 @@ public class P2UITests extends AbstractDialogPlatformTest {
 	def void test() {
 		updatePreferences(new PreferenceKey(SadlPreferences.TYPE_CHECKING_WARNING_ONLY.id, Boolean.TRUE.toString));
 		updatePreferences(new PreferenceKey(SadlPreferences.P_USE_ARTICLES_IN_VALIDATION.id, Boolean.FALSE.toString));
+		updatePreferences(new PreferenceKey(SadlPreferences.TYPE_CHECKING_RANGE_REQUIRED.id, Boolean.FALSE.toString));
 		
 		reusableScienceKnowledge
 		reusableCompGraphModel
@@ -146,9 +147,9 @@ public class P2UITests extends AbstractDialogPlatformTest {
 	}
 	
 	def reusableTurbo() {
-		updatePreferences(new PreferenceKey(SadlPreferences.TYPE_CHECKING_WARNING_ONLY.id, Boolean.TRUE.toString));
-		updatePreferences(new PreferenceKey(SadlPreferences.P_USE_ARTICLES_IN_VALIDATION.id, Boolean.FALSE.toString));
-		updatePreferences(new PreferenceKey(SadlPreferences.TYPE_CHECKING_RANGE_REQUIRED.id, Boolean.FALSE.toString));
+//		updatePreferences(new PreferenceKey(SadlPreferences.TYPE_CHECKING_WARNING_ONLY.id, Boolean.TRUE.toString));
+//		updatePreferences(new PreferenceKey(SadlPreferences.P_USE_ARTICLES_IN_VALIDATION.id, Boolean.FALSE.toString));
+//		updatePreferences(new PreferenceKey(SadlPreferences.TYPE_CHECKING_RANGE_REQUIRED.id, Boolean.FALSE.toString));
 		val filepath = getKbRoot + "/Turbo.sadl"
 		val modelcontent = readFile(new File(filepath))
 		createFile("Turbo.sadl", modelcontent).resource.assertValidatesTo[jenaModel, rules, commands, issues, processor |
