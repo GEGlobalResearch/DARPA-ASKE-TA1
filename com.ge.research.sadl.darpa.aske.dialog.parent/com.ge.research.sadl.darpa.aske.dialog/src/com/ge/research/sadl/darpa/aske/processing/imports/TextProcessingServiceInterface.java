@@ -276,6 +276,32 @@ public class TextProcessingServiceInterface extends JsonServiceInterface {
 	}
 
 	/**
+	 * Method to upload a domain ontology to the text service.
+	 * @return -- ?
+	 * @throws IOException
+	 */
+	public String uploadDomainOntology(String localityUri, String domainBaseUri, String ontologyAsString) throws IOException {
+		logger.debug("Uploading domain ontology '" + domainBaseUri + "' for locality '" + localityUri + "'");
+		String uploadDomainOntologyServiceURL = getTextServiceURL() + "uploadDomainOntology";
+		URL serviceUrl = new URL(uploadDomainOntologyServiceURL);			
+		JsonObject json = new JsonObject();
+		json.addProperty("localityURI", localityUri);
+		json.addProperty("baseURI", domainBaseUri);
+		json.addProperty("ontologyAsString", ontologyAsString);
+		String response = makeConnectionAndGetResponse(serviceUrl, json);
+//		logger.debug(response);
+		if (response != null && response.length() > 0) {
+//			OntModel theModel = getCurationManager().getExtractionProcessor().getTextModel();
+			JsonElement je = new JsonParser().parse(response);
+			if (je.isJsonObject()) {
+				String msg = je.getAsJsonObject().get("message").getAsString();
+				return msg;
+			}
+		}
+		return null;
+	}
+
+	/**
 	 * Method to process a block of text via the textToTriples service to find equations and concepts
 	 * @param inputIdentifier -- the identifier, normally a model URI, of the source text
 	 * @param text --  the source text to be processed

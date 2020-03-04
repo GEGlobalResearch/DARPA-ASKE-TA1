@@ -10,6 +10,11 @@ import com.ge.research.sadl.reasoner.ConfigurationManagerFactory
 import org.eclipse.xtext.diagnostics.Severity
 import com.ge.research.sadl.darpa.aske.processing.JenaBasedDialogModelProcessor
 import com.ge.research.sadl.darpa.aske.processing.WhatIsContent
+import com.ge.research.sadl.builder.ConfigurationManagerForIdeFactory
+import java.io.IOException
+import java.io.BufferedReader
+import java.io.FileReader
+import org.junit.Ignore
 
 public class P2Tests extends AbstractDialogTest {
 	private String kbRoot;	
@@ -41,9 +46,16 @@ public class P2Tests extends AbstractDialogTest {
 		this.projectModelFolder = projectModelFolder;
 	}
 
+	@Ignore
 	@Test
 	def void test() {
-		val configMgr = ConfigurationManagerFactory.getConfigurationManager(getProjectModelFolder(),null)
+		reusableScienceKnowledge
+		reusableCompGraphModel
+		reusableModelMeta
+		reusableHypersonics_v2
+		reusableDBN
+		reusableTableAndEquation
+		reusableTurbo
 		'''
 		uri "http://sadl.org/test4.dialog" alias test4dialog.
 		 
@@ -93,6 +105,74 @@ public class P2Tests extends AbstractDialogTest {
 			}
 		]
 
+	}
+
+	def reusableModelMeta() {
+		val filepath = getKbRoot + "/MetaModel.sadl"
+		val modelcontent = readFile(new File(filepath))
+		val model = modelcontent.sadl
+		model.assertNoErrors
+	}
+	
+	def reusableHypersonics_v2() {
+		val filepath = getKbRoot + "/Hypersonics_v2.sadl"
+		val modelcontent = readFile(new File(filepath))
+		val model = modelcontent.sadl
+		model.assertNoErrors
+	}
+	
+	def reusableDBN() {
+		val filepath = getKbRoot + "/DBN.sadl"
+		val modelcontent = readFile(new File(filepath))
+		val model = modelcontent.sadl
+		model.assertNoErrors
+	}
+	
+	def reusableTableAndEquation() {
+		val filepath = getKbRoot + "/TableAndEquation.sadl"
+		val modelcontent = readFile(new File(filepath))
+		val model = modelcontent.sadl
+		model.assertNoErrors
+	}
+	
+	def reusableTurbo() {
+		val filepath = getKbRoot + "/Turbo.sadl"
+		val modelcontent = readFile(new File(filepath))
+		val model = modelcontent.sadl
+//		model.assertNoErrors
+	}
+	
+	def reusableCompGraphModel() {
+		val filepath = getKbRoot + "/CompGraphModel.sadl"
+		val modelcontent = readFile(new File(filepath))
+		val model = modelcontent.sadl
+		model.assertNoErrors
+	}
+
+	def reusableScienceKnowledge() {
+		val filepath = getKbRoot + "/ScienceKnowledge.sadl"
+		val modelcontent = readFile(new File(filepath))
+		val model = modelcontent.sadl
+		model.assertNoErrors
+	}
+
+	def String readFile(File file) throws IOException {
+	    val reader = new BufferedReader(new FileReader (file));
+	    var         line = reader.readLine;
+	    val  stringBuilder = new StringBuilder();
+	    val         ls = System.getProperty("line.separator");
+
+	    try {
+	        while(line !== null) {
+	            stringBuilder.append(line);
+	            stringBuilder.append(ls);
+	            line = reader.readLine
+	        }
+
+	        return stringBuilder.toString();
+	    } finally {
+	        reader.close();
+	    }
 	}
 
 }

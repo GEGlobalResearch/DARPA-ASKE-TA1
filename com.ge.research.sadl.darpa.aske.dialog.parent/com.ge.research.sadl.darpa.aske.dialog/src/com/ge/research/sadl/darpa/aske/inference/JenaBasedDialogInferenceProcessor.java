@@ -947,6 +947,10 @@ public class JenaBasedDialogInferenceProcessor extends JenaBasedSadlInferencePro
 
 		useDbn = useDbn();
 		useKC = useKChain();
+		if (!useDbn && !useKC) {
+			System.out.println("Query answering disabled as no Computational Graph is selected in preferences.");
+			return null;
+		}
 
 		//		System.out.println(" >> Builtin classes discovered by the service loader:");
 //		Iterator<Builtin> iter = ServiceLoader.load(Builtin.class).iterator();

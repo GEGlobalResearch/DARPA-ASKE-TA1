@@ -1,0 +1,3 @@
+uri "http://com.ge.research.sadl.darpa.aske.answer/Sound" alias Sound_txt
+    (note "This ontology was created by extraction from text by the ANSWER TextProcessor.").
+

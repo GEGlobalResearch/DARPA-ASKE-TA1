@@ -87,12 +87,17 @@ PLink:
 ;
 
 CompareStatement:
-	('Compare'|'compare') toCompare=Expression compareConnective=('when' | 'for') whenExpr=Expression
+//	('Compare'|'compare') toCompare=Expression compareConnective=('when' | 'for') whenExpr=Expression
+	('Compare'|'compare') toCompare=Expression (compareWhens+=CompareWhen ('and' compareWhens+=CompareWhen)*)?
+;
+
+CompareWhen:	
+	('when' | 'for') whenExpr=Expression
 ;
 
 SuitabilityStatement:
-	(('Which'|'which') what=Expression 'is' 'suitable' suitableConnective=('when'|'for') suitableExpression=Expression) |
-	(('Is'|'is') what=Expression 'suitable' suitableConnective=('when'|'for') suitableExpression=Expression)
+	(('Which'|'which') what=Expression 'is' 'suitable' suitableWhens+=CompareWhen) |
+	(('Is'|'is') what=Expression 'suitable' suitableWhens+=CompareWhen)
 ;
 
 ExtractStatement:

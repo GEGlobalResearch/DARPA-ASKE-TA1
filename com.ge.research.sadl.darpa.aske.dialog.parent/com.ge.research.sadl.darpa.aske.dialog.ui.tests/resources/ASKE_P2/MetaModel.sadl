@@ -1,0 +1,129 @@
+/**********************************************************************
+* Note: This license has also been called the "New BSD License" or
+* "Modified BSD License". See also the 2-clause BSD License.
+*
+* Copyright © 2018-2019 - General Electric Company, All Rights Reserved
+*
+* Project: KApEESH, developed with the support of the Defense Advanced
+* Research Projects Agency (DARPA) under Agreement  No.  HR00111990007.
+*
+* Redistribution and use in source and binary forms, with or without
+* modification, are permitted provided that the following conditions are met:
+* 1. Redistributions of source code must retain the above copyright notice,
+*    this list of conditions and the following disclaimer.
+*
+* 2. Redistributions in binary form must reproduce the above copyright notice,
+*    this list of conditions and the following disclaimer in the documentation
+*    and/or other materials provided with the distribution.
+*
+* 3. Neither the name of the copyright holder nor the names of its
+*    contributors may be used to endorse or promote products derived
+*    from this software without specific prior written permission.
+*
+* THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
+* AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+* IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
+* ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE
+* LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR
+* CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF
+* SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS
+* INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN
+* CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
+* ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF
+* THE POSSIBILITY OF SUCH DAMAGE.
+*
+***********************************************************************/
+uri "http://aske.ge.com/metamodel" alias mm.
+ 
+import "http://aske.ge.com/compgraphmodel".
+
+
+
+
+//Composite CG
+CCG is a type of ComputationalGraph
+    described by subgraph with values of type SubGraph //Multiple subgraphs
+    //described by modelError with values of type decimal
+    described by assumptionsSatisfied with values of type boolean
+    described by unsatisfiedAssumption with values of type string 
+ 	described by sensitivity with values of type Sensitivity
+ 	.
+ 
+SubGraph is a class
+ 	described by cgraph with a single value of type ComputationalGraph //a DBN in our case
+ 	described by output with values of type UnittedQuantity
+ 	.
+
+QueryType is a class must be one of {prognostic,calibration,explanation,sensitivity}.
+ 
+CGQuery is a class
+	described by queryType with a single value of type QueryType
+ 	described by mm.input with values of type UnittedQuantity
+ 	described by machineGenerated with a single value of type boolean
+ 	described by execution with values of type CGExecution //A query can result in multiple models and executions
+ 	.
+ 	
+CGExecution is a class
+ 	described by startTime with a single value of type dateTime
+ 	described by endTime with a single value of type dateTime
+ 	described by compGraph with a single value of type CCG //this would be a named instance CG_... Can be used as "model ID"
+ 	described by output with values of type UnittedQuantity
+ 	described by accuracy with a single value of type decimal
+	.
+
+Sensitivity is a class
+    described by output with a single value of type UnittedQuantity
+    described by inputSensitivity with values of type InputSensitivity
+    .
+Sensitivity has impliedProperty inputSensitivity.    
+    
+InputSensitivity is a class
+	described by mm.input with a single value of type UnittedQuantity
+	described by sensitivityValue with a single value of type decimal
+.
+
+Dataset is a type of Thing
+	described by creator with a single value of type string //Person
+//	described by location with a single value of type string
+	.
+
+CSVDataset is a type of Dataset
+	described by column with values of type CSVColumn 
+	.
+	
+CSVColumn is a type of Thing
+	described by header with values of type string
+	described by colType with values of type string
+	described by variable with values of type UnittedQuantity //Variable
+	described by percentMissingValues with values of type float
+	. 
+
+parent describes ^Equation with values of type ^Equation.
+
+// Temp commented out because "assumption" property has been removed
+//Ask ShowModelEquations: 
+//"select distinct  (?eq as ?Equation) ?Assumptions
+// where {
+//  ?CG a <CCG>.
+//  values ?I { ? }.
+//  filter (regex(str(?CG), strafter(str(?I),'#') )).
+//  ?CG <subgraph> ?SG.
+//  ?SG <cgraph> ?DBN.
+//  ?DBN <hasEquation> ?eq. 
+//  ?eq <expression> ?expr .
+//  optional{?eq <assumption> ?Assumptions.}
+// }".
+
+//  ?CG <subgraph> ?SG.
+//  ?SG <cgraph> ?DBN.
+//  ?DBN <hasEquation> ?eq. 
+//  ?eq <expression> ?expr .
+//  ?expr <script> ?script.
+//  optional{?eq <assumption> ?Assumptions.}
+
+
+	//(?eq as ?eqID)
+//Rule DependencyGraph
+//	if ?Eq is a rdfs:subClassOf ^Equation and
+//	   ?Eq is a rdfs:subClassOf ?IB and 
+//	then ?Eq parent

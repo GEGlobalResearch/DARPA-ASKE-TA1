@@ -1,0 +1,44 @@
+uri "http://sadl.org/test4.dialog" alias test4dialog.
+ 
+import "http://aske.ge.com/metamodel".
+import "http://aske.ge.com/hypersonicsV2".
+import "http://aske.ge.com/dbnnodes".
+import "http://sadl.org/TableAndEquation.sadl".
+import "http://aske.ge.com/turbo".
+
+
+//what is the altitude of some Air when the staticTemperature of the Air is 412 degR?
+//what is the altitude of some Air when the staticTemperature of the Air is -48 degF?
+// needs conversion of degF to degR
+//what is the speedOfSound of some Air when the staticTemperature of the Air is -65 degF? 
+//what is the staticPressure of some Air when the altitude of the Air is 30000 ft?
+//what is the staticTemperature of some Air when the altitude of the Air is 10000 m?
+//what is the altitude of some Air when the staticTemperature of the Air is -50 degF?
+//what is the altitude of some Air when the staticTemperature of the Air is 400 degR?
+//what is the speedOfSound of some Air when the staticTemperature of the Air is -65 degF?
+//Find a ^model for Doc4.
+//what is the totalTemperature of some Air when the altitude of the Air is 30000 ft?
+//what is the speedOfSound of some Air when the altitude of the Air is 50000 ft?
+//what is the staticTemperature of some Air when the speedOfSound of the Air is 1000 "ft/sec"?
+
+
+//what is the staticTemperature of some Air when the altitude of the Air is 40000 ft? 
+
+//what is the machSpeed of some Air when the staticTemperature of the Air is -70 degF and the totalTemperature of the Air is -204 degF?
+
+//compare machSpeed of a CF6 and machSpeed of a F100 when speed is 300 mph.
+
+//what is the machSpeed of a CF6 when the speed of the CF6 is 400 mph and the altitude of the CF6 is 20000 ft? 
+//CM: CG_1581617902330 output machSpeed of 0.56.  ///has output (a MachSpeed with ^value [0.56]) .
+//machSpeed of CF6 
+//what is sensitivity of CG_1581617902330.
+
+//CM: a MachSpeed with ^value 0.5655459 . 
+//CM: a Altitude with ^value 10000 .
+//CM: the CF6 with speed 400 mph with altitude 20000 ft has machSpeed 0.56 'mach' .
+
+//what is the machSpeed of a CF6 when the speed is 400 mph and the altitude is 20000 ft? CM: .
+
+// what is the thrust of a CF6 when the speed of the CF6 is 300 mph and the altitude of the CF6 is 20000 ft?  
+//what is the machSpeed of a CF6 when the speed of the CF6 is 400 mph and the altitude of the CF6 is 20000 ft? 
+ 

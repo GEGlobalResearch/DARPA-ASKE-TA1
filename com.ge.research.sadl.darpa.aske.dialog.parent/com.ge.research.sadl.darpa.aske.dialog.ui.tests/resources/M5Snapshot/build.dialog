@@ -1,0 +1,484 @@
+/********************************************************************** 
+ * Note: This license has also been called the "New BSD License" or 
+ * "Modified BSD License". See also the 2-clause BSD License.
+ *
+ * Copyright © 2018-2019 - General Electric Company, All Rights Reserved
+ * 
+ * Project: ANSWER, developed with the support of the Defense Advanced 
+ * Research Projects Agency (DARPA) under Agreement  No.  HR00111990006. 
+ *
+ * Redistribution and use in source and binary forms, with or without 
+ * modification, are permitted provided that the following conditions are met:
+ * 1. Redistributions of source code must retain the above copyright notice, 
+ *    this list of conditions and the following disclaimer.
+ *
+ * 2. Redistributions in binary form must reproduce the above copyright notice, 
+ *    this list of conditions and the following disclaimer in the documentation 
+ *    and/or other materials provided with the distribution.
+ *
+ * 3. Neither the name of the copyright holder nor the names of its 
+ *    contributors may be used to endorse or promote products derived 
+ *    from this software without specific prior written permission.
+ *
+ * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" 
+ * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE 
+ * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE 
+ * ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE 
+ * LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR 
+ * CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF 
+ * SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS 
+ * INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN 
+ * CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) 
+ * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF 
+ * THE POSSIBILITY OF SUCH DAMAGE.
+ *
+ ***********************************************************************/
+uri "http://answer/build.dialog" alias bldlg.
+
+import "http://sadl.org/SpeedOfSound.sadl".
+
+CM: "Parsing code file 'C:/Users/200005201/sadl3-master6/git/DARPA-ASKE-TA1/Ontology/M5/ExtractedModels/Sources/Isentrop.java'".
+CM: "The following methods doing computation were found in the extraction:".
+CM: External Isentrop.CAL_GNU(double TT, double M, double G, double Q) returns double: "http://com.ge.research.sadl.darpa.aske.answer/Isentrop_java#Isentrop.CAL_GNU".
+CM: Isentrop.CAL_GNU has expression (a Script with language Java, with script 
+"double CAL_GNU(double TT, double M, double G, double Q) {
+    if (M <= 1) {
+        return 0;
+    }
+    double Pi = 4 * Math.atan(1);
+    double TSTAR = CAL_T(TT, 1, G, Q);
+    double TMIN = CAL_T(TT, M, G, Q);
+    double DELT = (TMIN - TSTAR) / 1000;
+    double PR1 = ((Math.exp(Q / TT) - 1) / (Math.exp(Q / TSTAR) - 1)) * Math.pow((TSTAR / TT), (G / (G - 1))) * Math.exp(Q / TSTAR * Math.exp(Q / TSTAR) / (Math.exp(Q / TSTAR) - 1) - Q / TT * Math.exp(Q / TT) / (Math.exp(Q / TT) - 1));
+    double ARG1 = 0;
+    double T = TSTAR + DELT;
+    double Sum = 0;
+    double GAM;
+    double PR;
+    double MACH;
+    double MU;
+    double ARG;
+    for (int i = 0; i < 999; ++i) {
+        GAM = CAL_GAM(T, G, Q);
+        PR = ((Math.exp(Q / TT) - 1) / (Math.exp(Q / T) - 1)) * Math.pow((T / TT), (G / (G - 1))) * Math.exp(Q / T * Math.exp(Q / T) / (Math.exp(Q / T) - 1) - Q / TT * Math.exp(Q / TT) / (Math.exp(Q / TT) - 1));
+        MACH = Math.sqrt(2 * TT / CAL_GAM(T, G, Q) / T * (G / (G - 1) * (1 - T / TT) + Q / TT * (1 / (Math.exp(Q / TT) - 1) - 1 / (Math.exp(Q / T) - 1))));
+        MU = Math.atan(Math.sqrt(1 / (Math.pow(MACH, 2) - 1)));
+        ARG = Math.sin(2 * MU) / 2 / GAM / PR;
+        // Trapezoidal integration
+        Sum = Sum - (ARG + ARG1) / 2 * (PR - PR1);
+        T = T + DELT;
+        PR1 = PR;
+        ARG1 = ARG;
+    }
+    double NU = Sum * 180 / Pi;
+    return NU;
+}"
+), has expression (a Script with language Python, with script 
+"#!/usr/bin/env python
+\"\"\" generated source for module inputfile \"\"\"
+class Isentrop(object):
+    \"\"\" generated source for class Isentrop \"\"\"
+    def CAL_GNU(self, TT, M, G, Q):
+        \"\"\" generated source for method CAL_GNU \"\"\"
+        if M <= 1:
+            return 0
+        Pi = 4 * Math.atan(1)
+        TSTAR = CAL_T(TT, 1, G, Q)
+        TMIN = CAL_T(TT, M, G, Q)
+        DELT = (TMIN - TSTAR) / 1000
+        PR1 = ((Math.exp(Q / TT) - 1) / (Math.exp(Q / TSTAR) - 1)) * Math.pow((TSTAR / TT), (G / (G - 1))) * Math.exp(Q / TSTAR * Math.exp(Q / TSTAR) / (Math.exp(Q / TSTAR) - 1) - Q / TT * Math.exp(Q / TT) / (Math.exp(Q / TT) - 1))
+        ARG1 = 0
+        T = TSTAR + DELT
+        Sum = 0
+        GAM = float()
+        PR = float()
+        MACH = float()
+        MU = float()
+        ARG = float()
+        i = 0
+        while i < 999:
+            GAM = CAL_GAM(T, G, Q)
+            PR = ((Math.exp(Q / TT) - 1) / (Math.exp(Q / T) - 1)) * Math.pow((T / TT), (G / (G - 1))) * Math.exp(Q / T * Math.exp(Q / T) / (Math.exp(Q / T) - 1) - Q / TT * Math.exp(Q / TT) / (Math.exp(Q / TT) - 1))
+            MACH = Math.sqrt(2 * TT / CAL_GAM(T, G, Q) / T * (G / (G - 1) * (1 - T / TT) + Q / TT * (1 / (Math.exp(Q / TT) - 1) - 1 / (Math.exp(Q / T) - 1))))
+            MU = Math.atan(Math.sqrt(1 / (Math.pow(MACH, 2) - 1)))
+            ARG = Math.sin(2 * MU) / 2 / GAM / PR
+            #  Trapezoidal integration
+            Sum = Sum - (ARG + ARG1) / 2 * (PR - PR1)
+            T = T + DELT
+            PR1 = PR
+            ARG1 = ARG
+            i += 1
+        # // Trapezoidal integration
+        NU = Sum * 180 / Pi
+        return NU
+
+").
+
+CM: External Isentrop.CAL_DQDT(double TT, double M, double G, double Q) returns double: "http://com.ge.research.sadl.darpa.aske.answer/Isentrop_java#Isentrop.CAL_DQDT".
+CM: Isentrop.CAL_DQDT has expression (a Script with language Java, with script 
+"double CAL_DQDT(double TT, double M, double G, double Q) {
+    double T = CAL_T(TT, M, G, Q);
+    return (((Math.exp(Q / TT) - 1) / (Math.exp(Q / T) - 1)) * Math.pow((T / TT), (1 / (G - 1))) * Math.exp(Q / T * Math.exp(Q / T) / (Math.exp(Q / T) - 1) - Q / TT * Math.exp(Q / TT) / (Math.exp(Q / TT) - 1)));
+}"
+), has expression (a Script with language Python, with script 
+"#!/usr/bin/env python
+\"\"\" generated source for module inputfile \"\"\"
+class Isentrop(object):
+    \"\"\" generated source for class Isentrop \"\"\"
+    def CAL_DQDT(self, TT, M, G, Q):
+        \"\"\" generated source for method CAL_DQDT \"\"\"
+        T = CAL_T(TT, M, G, Q)
+        return (((Math.exp(Q / TT) - 1) / (Math.exp(Q / T) - 1)) * Math.pow((T / TT), (1 / (G - 1))) * Math.exp(Q / T * Math.exp(Q / T) / (Math.exp(Q / T) - 1) - Q / TT * Math.exp(Q / TT) / (Math.exp(Q / TT) - 1)))
+
+").
+
+CM: External Isentrop.CAL_GAM(double T, double G, double Q) returns double: "http://com.ge.research.sadl.darpa.aske.answer/Isentrop_java#Isentrop.CAL_GAM".
+CM: Isentrop.CAL_GAM has expression (a Script with language Java, with script 
+"double CAL_GAM(double T, double G, double Q) {
+    return (1 + (G - 1) / (1 + (G - 1) * (Math.pow((Q / T), 2) * Math.exp(Q / T) / Math.pow((Math.exp(Q / T) - 1), 2))));
+}"
+), has expression (a Script with language Python, with script 
+"#!/usr/bin/env python
+\"\"\" generated source for module inputfile \"\"\"
+class Isentrop(object):
+    \"\"\" generated source for class Isentrop \"\"\"
+    def CAL_GAM(self, T, G, Q):
+        \"\"\" generated source for method CAL_GAM \"\"\"
+        return (1 + (G - 1) / (1 + (G - 1) * (Math.pow((Q / T), 2) * Math.exp(Q / T) / Math.pow((Math.exp(Q / T) - 1), 2))))
+
+").
+
+CM: External Isentrop.getMach(int sub, double corair) returns double: "http://com.ge.research.sadl.darpa.aske.answer/Isentrop_java#Isentrop.getMach".
+CM: Isentrop.getMach has expression (a Script with language Java, with script 
+"public double getMach(int sub, double corair) {
+    /* Utility to get the Mach number given the corrected airflow per area */
+    double number, chokair;
+    /* iterate for mach number */
+    double deriv, machn, macho, airo, airn;
+    int iter;
+    chokair = getAir(1.0);
+    if (corair > chokair) {
+        number = 1.0;
+        return (number);
+    } else {
+        airo = .25618;
+        /* initial guess */
+        if (sub == 2)
+            macho = 1.0;
+        else /* sonic */
+        {
+            if (sub == 0)
+                macho = 1.703;
+            else
+                /* supersonic */
+                macho = .5;
+            /* subsonic */
+            iter = 1;
+            machn = macho - .2;
+            while (Math.abs(corair - airo) > .0001 && iter < 20) {
+                airn = getAir(machn);
+                deriv = (airn - airo) / (machn - macho);
+                airo = airn;
+                macho = machn;
+                machn = macho + (corair - airo) / deriv;
+                ++iter;
+            }
+        }
+        number = macho;
+    }
+    return (number);
+}"
+), has expression (a Script with language Python, with script 
+"#!/usr/bin/env python
+\"\"\" generated source for module inputfile \"\"\"
+class Isentrop(object):
+    \"\"\" generated source for class Isentrop \"\"\"
+    def getMach(self, sub, corair):
+        \"\"\" generated source for method getMach \"\"\"
+        #  Utility to get the Mach number given the corrected airflow per area 
+        number = float()
+        chokair = float()
+        # /* iterate for mach number */
+        deriv = float()
+        machn = float()
+        macho = float()
+        airo = float()
+        airn = float()
+        iter = int()
+        chokair = getAir(1.0)
+        if corair > chokair:
+            number = 1.0
+            return (number)
+        else:
+            airo = 0.25618
+            # /* initial guess */
+            if sub == 2:
+                macho = 1.0
+            else:
+                # /* sonic */
+                if sub == 0:
+                    macho = 1.703
+                else:
+                    macho = 0.5
+                # /* subsonic */
+                iter = 1
+                machn = macho - 0.2
+                while Math.abs(corair - airo) > 0.0001 and iter < 20:
+                    airn = getAir(machn)
+                    deriv = (airn - airo) / (machn - macho)
+                    airo = airn
+                    macho = machn
+                    machn = macho + (corair - airo) / deriv
+                    iter += 1
+            number = macho
+        return (number)
+
+").
+
+CM: External Isentrop.CAL_MFGNU(double TT, double NU, double G, double Q) returns double: "http://com.ge.research.sadl.darpa.aske.answer/Isentrop_java#Isentrop.CAL_MFGNU".
+CM: Isentrop.CAL_MFGNU has expression (a Script with language Java, with script 
+"double CAL_MFGNU(double TT, double NU, double G, double Q) {
+    if (NU <= 0) {
+        return 1;
+    }
+    double Pi = 4 * Math.atan(1);
+    double M = 0.04 * NU + 1;
+    NU = NU * Pi / 180;
+    double TMIN = CAL_T(TT, M, G, Q);
+    double TSTAR = CAL_T(TT, 1, G, Q);
+    double DELT = (TMIN - TSTAR) / 1000;
+    double PR1 = ((Math.exp(Q / TT) - 1) / (Math.exp(Q / TSTAR) - 1)) * Math.pow((TSTAR / TT), (G / (G - 1))) * Math.exp(Q / TSTAR * Math.exp(Q / TSTAR) / (Math.exp(Q / TSTAR) - 1) - Q / TT * Math.exp(Q / TT) / (Math.exp(Q / TT) - 1));
+    double ARG1 = 0;
+    double MACH1 = 0;
+    double T = TSTAR + DELT;
+    double Sum = 0;
+    double GAM;
+    double PR;
+    double MACH = 0;
+    double MU;
+    double ARG;
+    double SUM1 = 0;
+    while (Sum < NU) {
+        GAM = CAL_GAM(T, G, Q);
+        PR = ((Math.exp(Q / TT) - 1) / (Math.exp(Q / T) - 1)) * Math.pow((T / TT), (G / (G - 1))) * Math.exp(Q / T * Math.exp(Q / T) / (Math.exp(Q / T) - 1) - Q / TT * Math.exp(Q / TT) / (Math.exp(Q / TT) - 1));
+        MACH = Math.sqrt(2 * TT / CAL_GAM(T, G, Q) / T * (G / (G - 1) * (1 - T / TT) + Q / TT * (1 / (Math.exp(Q / TT) - 1) - 1 / (Math.exp(Q / T) - 1))));
+        MU = Math.atan(Math.sqrt(1 / (Math.pow(MACH, 2) - 1)));
+        ARG = Math.sin(2 * MU) / 2 / GAM / PR;
+        Sum = Sum - (ARG + ARG1) / 2 * (PR - PR1);
+        if (Sum > NU) {
+            M = (NU - SUM1) / (Sum - SUM1) * (MACH - MACH1) + MACH1;
+            return M;
+        }
+        T = T + DELT;
+        PR1 = PR;
+        ARG1 = ARG;
+        MACH1 = MACH;
+        SUM1 = Sum;
+    }
+    M = (NU - SUM1) / (Sum - SUM1) * (MACH - MACH1) + MACH1;
+    return M;
+}"
+), has expression (a Script with language Python, with script 
+"#!/usr/bin/env python
+\"\"\" generated source for module inputfile \"\"\"
+class Isentrop(object):
+    \"\"\" generated source for class Isentrop \"\"\"
+    def CAL_MFGNU(self, TT, NU, G, Q):
+        \"\"\" generated source for method CAL_MFGNU \"\"\"
+        if NU <= 0:
+            return 1
+        Pi = 4 * Math.atan(1)
+        M = 0.04 * NU + 1
+        NU = NU * Pi / 180
+        TMIN = CAL_T(TT, M, G, Q)
+        TSTAR = CAL_T(TT, 1, G, Q)
+        DELT = (TMIN - TSTAR) / 1000
+        PR1 = ((Math.exp(Q / TT) - 1) / (Math.exp(Q / TSTAR) - 1)) * Math.pow((TSTAR / TT), (G / (G - 1))) * Math.exp(Q / TSTAR * Math.exp(Q / TSTAR) / (Math.exp(Q / TSTAR) - 1) - Q / TT * Math.exp(Q / TT) / (Math.exp(Q / TT) - 1))
+        ARG1 = 0
+        MACH1 = 0
+        T = TSTAR + DELT
+        Sum = 0
+        GAM = float()
+        PR = float()
+        MACH = 0
+        MU = float()
+        ARG = float()
+        SUM1 = 0
+        while Sum < NU:
+            GAM = CAL_GAM(T, G, Q)
+            PR = ((Math.exp(Q / TT) - 1) / (Math.exp(Q / T) - 1)) * Math.pow((T / TT), (G / (G - 1))) * Math.exp(Q / T * Math.exp(Q / T) / (Math.exp(Q / T) - 1) - Q / TT * Math.exp(Q / TT) / (Math.exp(Q / TT) - 1))
+            MACH = Math.sqrt(2 * TT / CAL_GAM(T, G, Q) / T * (G / (G - 1) * (1 - T / TT) + Q / TT * (1 / (Math.exp(Q / TT) - 1) - 1 / (Math.exp(Q / T) - 1))))
+            MU = Math.atan(Math.sqrt(1 / (Math.pow(MACH, 2) - 1)))
+            ARG = Math.sin(2 * MU) / 2 / GAM / PR
+            Sum = Sum - (ARG + ARG1) / 2 * (PR - PR1)
+            if Sum > NU:
+                M = (NU - SUM1) / (Sum - SUM1) * (MACH - MACH1) + MACH1
+                return M
+            T = T + DELT
+            PR1 = PR
+            ARG1 = ARG
+            MACH1 = MACH
+            SUM1 = Sum
+        M = (NU - SUM1) / (Sum - SUM1) * (MACH - MACH1) + MACH1
+        return M
+
+").
+
+CM: External Isentrop.CAL_SOS(double T, double G, double R, double Q) returns double: "http://com.ge.research.sadl.darpa.aske.answer/Isentrop_java#Isentrop.CAL_SOS".
+CM: Isentrop.CAL_SOS has expression (a Script with language Java, with script 
+"double CAL_SOS(double T, double G, double R, double Q) {
+    double WOW = 1 + (G - 1) / (1 + (G - 1) * Math.pow((Q / T), 2) * Math.exp(Q / T) / Math.pow((Math.exp(Q / T) - 1), 2));
+    return (Math.sqrt(32.174 * T * R * WOW));
+}"
+), has expression (a Script with language Python, with script 
+"#!/usr/bin/env python
+\"\"\" generated source for module inputfile \"\"\"
+class Isentrop(object):
+    \"\"\" generated source for class Isentrop \"\"\"
+    def CAL_SOS(self, T, G, R, Q):
+        \"\"\" generated source for method CAL_SOS \"\"\"
+        WOW = 1 + (G - 1) / (1 + (G - 1) * Math.pow((Q / T), 2) * Math.exp(Q / T) / Math.pow((Math.exp(Q / T) - 1), 2))
+        return (Math.sqrt(32.174 * T * R * WOW))
+
+").
+
+CM: External Isentrop.CAL_ASQA(double TT, double M, double G, double Q) returns double: "http://com.ge.research.sadl.darpa.aske.answer/Isentrop_java#Isentrop.CAL_ASQA".
+CM: Isentrop.CAL_ASQA has expression (a Script with language Java, with script 
+"double CAL_ASQA(double TT, double M, double G, double Q) {
+    double T = CAL_T(TT, M, G, Q);
+    double TSTAR = CAL_T(TT, 1, G, Q);
+    double SOSRAT = 1 + (G - 1) / (1 + (G - 1) * Math.pow((Q / T), 2) * Math.exp(Q / T) / Math.pow((Math.exp(Q / T) - 1), 2));
+    SOSRAT = SOSRAT / (1 + (G - 1) / (1 + (G - 1) * Math.pow((Q / TSTAR), 2) * Math.exp(Q / TSTAR) / Math.pow((Math.exp(Q / TSTAR) - 1), 2)));
+    SOSRAT = Math.sqrt(T / TSTAR * SOSRAT);
+    return (CAL_DQDT(TT, M, G, Q) * SOSRAT * M / CAL_DQDT(TT, 1, G, Q));
+}"
+), has expression (a Script with language Python, with script 
+"#!/usr/bin/env python
+\"\"\" generated source for module inputfile \"\"\"
+class Isentrop(object):
+    \"\"\" generated source for class Isentrop \"\"\"
+    def CAL_ASQA(self, TT, M, G, Q):
+        \"\"\" generated source for method CAL_ASQA \"\"\"
+        T = CAL_T(TT, M, G, Q)
+        TSTAR = CAL_T(TT, 1, G, Q)
+        SOSRAT = 1 + (G - 1) / (1 + (G - 1) * Math.pow((Q / T), 2) * Math.exp(Q / T) / Math.pow((Math.exp(Q / T) - 1), 2))
+        SOSRAT = SOSRAT / (1 + (G - 1) / (1 + (G - 1) * Math.pow((Q / TSTAR), 2) * Math.exp(Q / TSTAR) / Math.pow((Math.exp(Q / TSTAR) - 1), 2)))
+        SOSRAT = Math.sqrt(T / TSTAR * SOSRAT)
+        return (CAL_DQDT(TT, M, G, Q) * SOSRAT * M / CAL_DQDT(TT, 1, G, Q))
+
+").
+
+CM: External Isentrop.CAL_WCOR(double TT, double M, double G, double Q) returns double: "http://com.ge.research.sadl.darpa.aske.answer/Isentrop_java#Isentrop.CAL_WCOR".
+CM: Isentrop.CAL_WCOR has expression (a Script with language Java, with script 
+"double CAL_WCOR(double TT, double M, double G, double Q) {
+    double T = CAL_T(TT, M, G, Q);
+    double TRAT = T / TT;
+    double A = CAL_SOS(T, G, R, Q);
+    double PRAT = CAL_PQPT(TT, M, G, Q);
+    double wcortp = (PRAT * M * A * 2116) / (TRAT * Math.sqrt(TT) * Math.sqrt(518) * R);
+    return wcortp / 144;
+}"
+), has expression (a Script with language Python, with script 
+"#!/usr/bin/env python
+\"\"\" generated source for module inputfile \"\"\"
+class Isentrop(object):
+    \"\"\" generated source for class Isentrop \"\"\"
+    def CAL_WCOR(self, TT, M, G, Q):
+        \"\"\" generated source for method CAL_WCOR \"\"\"
+        T = CAL_T(TT, M, G, Q)
+        TRAT = T / TT
+        A = CAL_SOS(T, G, R, Q)
+        PRAT = CAL_PQPT(TT, M, G, Q)
+        wcortp = (PRAT * M * A * 2116) / (TRAT * Math.sqrt(TT) * Math.sqrt(518) * R)
+        return wcortp / 144
+
+").
+
+CM: External Isentrop.CAL_PQPT_LOOP(double TT, double prattp, double G, double Q) returns double: "http://com.ge.research.sadl.darpa.aske.answer/Isentrop_java#Isentrop.CAL_PQPT_LOOP".
+CM: Isentrop.CAL_PQPT_LOOP has expression (a Script with language Java, with script 
+"double CAL_PQPT_LOOP(double TT, double prattp, double G, double Q) {
+    double M = 10;
+    double ML = 0;
+    double MR = 20;
+    double EPS = 0;
+    if (prattp > .99997) {
+        EPS = 0.0001;
+    }
+    if (prattp <= .99997) {
+        EPS = .00000001;
+    }
+    double DIFF = prattp - CAL_PQPT(TT, M, G, Q);
+    while (Math.abs(DIFF) > EPS) {
+        if (DIFF > 0.0) {
+            MR = M;
+        }
+        if (DIFF < 0.0) {
+            ML = M;
+        }
+        M = (MR + ML) / 2;
+        DIFF = prattp - CAL_PQPT(TT, M, G, Q);
+    }
+    return M;
+}"
+), has expression (a Script with language Python, with script 
+"#!/usr/bin/env python
+\"\"\" generated source for module inputfile \"\"\"
+class Isentrop(object):
+    \"\"\" generated source for class Isentrop \"\"\"
+    def CAL_PQPT_LOOP(self, TT, prattp, G, Q):
+        \"\"\" generated source for method CAL_PQPT_LOOP \"\"\"
+        M = 10
+        ML = 0
+        MR = 20
+        EPS = 0
+        if prattp > 0.99997:
+            EPS = 0.0001
+        if prattp <= 0.99997:
+            EPS = 0.00000001
+        DIFF = prattp - CAL_PQPT(TT, M, G, Q)
+        while Math.abs(DIFF) > EPS:
+            if DIFF > 0.0:
+                MR = M
+            if DIFF < 0.0:
+                ML = M
+            M = (MR + ML) / 2
+            DIFF = prattp - CAL_PQPT(TT, M, G, Q)
+        return M
+
+").
+
+CM: External Isentrop.CAL_PQPT(double TT, double M, double G, double Q) returns double: "http://com.ge.research.sadl.darpa.aske.answer/Isentrop_java#Isentrop.CAL_PQPT".
+CM: Isentrop.CAL_PQPT has expression (a Script with language Java, with script 
+"double CAL_PQPT(double TT, double M, double G, double Q) {
+    double T = CAL_T(TT, M, G, Q);
+    return (((Math.exp(Q / TT) - 1) / (Math.exp(Q / T) - 1)) * Math.pow((T / TT), (G / (G - 1))) * Math.exp(Q / T * Math.exp(Q / T) / (Math.exp(Q / T) - 1) - Q / TT * Math.exp(Q / TT) / (Math.exp(Q / TT) - 1)));
+}"
+), has expression (a Script with language Python, with script 
+"#!/usr/bin/env python
+\"\"\" generated source for module inputfile \"\"\"
+class Isentrop(object):
+    \"\"\" generated source for class Isentrop \"\"\"
+    def CAL_PQPT(self, TT, M, G, Q):
+        \"\"\" generated source for method CAL_PQPT \"\"\"
+        T = CAL_T(TT, M, G, Q)
+        return (((Math.exp(Q / TT) - 1) / (Math.exp(Q / T) - 1)) * Math.pow((T / TT), (G / (G - 1))) * Math.exp(Q / T * Math.exp(Q / T) / (Math.exp(Q / T) - 1) - Q / TT * Math.exp(Q / TT) / (Math.exp(Q / TT) - 1)))
+
+").
+
+CM: External Isentrop.TQTT(double M, double G) returns double: "http://com.ge.research.sadl.darpa.aske.answer/Isentrop_java#Isentrop.TQTT".
+CM: Isentrop.TQTT has expression (a Script with language Java, with script 
+"double TQTT(double M, double G) {
+    return Math.pow((1 + (G - 1) / 2 * Math.pow(M, 2)), -1);
+}"
+), has expression (a Script with language Python, with script 
+"#!/usr/bin/env python
+\"\"\" generated source for module inputfile \"\"\"
+class Isentrop(object):
+    \"\"\" generated source for class Isentrop \"\"\"
+    def TQTT(self, M, G):
+        \"\"\" generated source for method TQTT \"\"\"
+        return Math.pow((1 + (G - 1) / 2 * Math.pow(M, 2)), -1)
+
+").
+
+CM: "Would you like to save the extracted model (Isentrop.java.owl) in SADL format"?

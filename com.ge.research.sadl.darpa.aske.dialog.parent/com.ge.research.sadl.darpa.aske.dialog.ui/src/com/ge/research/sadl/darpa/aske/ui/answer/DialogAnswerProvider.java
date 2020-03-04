@@ -304,7 +304,7 @@ public class DialogAnswerProvider extends BaseDialogAnswerProvider {
 		Display.getDefault().asyncExec(() -> {
 //		Display.getDefault().syncExec(() -> {
 			try {
-				String modContent = generateModifiedContent(document, ctx, quote, prependAgent, content);;
+				String modContent = generateModifiedContent(document, ctx, quote, prependAgent, content);
 				int loc = generateInsertionLocation(document, ctx, modContent);
 				
 				if (loc >= 0) {
@@ -328,6 +328,40 @@ public class DialogAnswerProvider extends BaseDialogAnswerProvider {
 		return true;
 	}
 
+	private String checkForAdditionalNewlines(IXtextDocument document, String modContent, int loc) {
+		String lineSep = System.lineSeparator();
+		int lineSepLen = lineSep.length();
+		int docLen = document.getLength();
+		if (!modContent.startsWith(lineSep) && loc > lineSepLen) {
+			try {
+				String before = document.get(loc - lineSepLen, lineSepLen);
+				if (!before.equals(lineSep)) {
+					modContent = lineSep + modContent;
+				}
+			} catch (BadLocationException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		}
+		if (!modContent.endsWith(lineSep)) {
+			if (loc < docLen - lineSepLen) {
+				try {
+					String after = document.get(loc, lineSepLen);
+					if (!after.equals(lineSep)) {
+						modContent += lineSep;
+					}
+				} catch (BadLocationException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+			}
+			else {
+				modContent += lineSep;
+			}
+		}
+		return modContent;
+	}
+
 	private int generateInsertionLocation(IXtextDocument document, Object ctx, String modContent) {
 		int loc = 0;
 		String lineSep = System.lineSeparator();
@@ -335,8 +369,8 @@ public class DialogAnswerProvider extends BaseDialogAnswerProvider {
 		Object elementInfos = getConfigMgr().getPrivateKeyValuePair("ElementInfo");
 		String docText = document.get();
 		int docLength = document.getLength();
+		int idx = 0;
 		if (elementInfos instanceof List<?>) {
-			int idx = 0;
 			int cumulativeOffset = 0;
 			for (Object einfo : ((List<?>)elementInfos)) {
 				if (einfo instanceof ModelElementInfo) {
@@ -386,13 +420,6 @@ public class DialogAnswerProvider extends BaseDialogAnswerProvider {
 							// TODO Auto-generated catch block
 							e.printStackTrace();
 						}
-						ModelElementInfo newMei = new ModelElementInfo(null, modContent, loc, modContent.length(), loc+modContent.length(), true);
-						if (idx + 1 < ((List<ModelElementInfo>)elementInfos).size()) {
-							((List<ModelElementInfo>)elementInfos).add(idx + 1, newMei);
-						}
-						else {
-							((List<ModelElementInfo>)elementInfos).add(newMei);
-						}
 						break;
 					}
 				}
@@ -402,6 +429,16 @@ public class DialogAnswerProvider extends BaseDialogAnswerProvider {
 		if (loc == 0) {
 			System.err.println("Context EObject not found in list of ModelElementInfos!");
 			loc = docLength;
+		}
+		// should there be a newline at the beginning or a newline at the end of modContent?
+		modContent = checkForAdditionalNewlines(document, modContent, loc);
+
+		ModelElementInfo newMei = new ModelElementInfo(null, modContent, loc, modContent.length(), loc+modContent.length(), true);
+		if (idx + 1 < ((List<ModelElementInfo>)elementInfos).size()) {
+			((List<ModelElementInfo>)elementInfos).add(idx + 1, newMei);
+		}
+		else {
+			((List<ModelElementInfo>)elementInfos).add(newMei);
 		}
 		return loc;
 	}
@@ -439,8 +476,6 @@ public class DialogAnswerProvider extends BaseDialogAnswerProvider {
 			}
 			response = sb.toString();
 		}
-		// should there be a newline before?
-		
 		return response;
 	}
 
@@ -797,9 +832,9 @@ public class DialogAnswerProvider extends BaseDialogAnswerProvider {
 			if (savePython != null) {
 				map.put(DialogPreferences.PYTHON_LANGUAGE.getId(), savePython);
 			}
-			String savePythonTF = preferenceValues.getPreference(DialogPreferences.TF_PYTHON_LANGUAGE);
+			String savePythonTF = preferenceValues.getPreference(DialogPreferences.OTHER_PYTHON_LANGUAGE);
 			if (savePythonTF != null) {
-				map.put(DialogPreferences.TF_PYTHON_LANGUAGE.getId(), savePythonTF);
+				map.put(DialogPreferences.OTHER_PYTHON_LANGUAGE.getId(), savePythonTF);
 			}
 			String tsburl = preferenceValues.getPreference(DialogPreferences.ANSWER_TEXT_SERVICE_BASE_URI);
 			if (tsburl != null) {

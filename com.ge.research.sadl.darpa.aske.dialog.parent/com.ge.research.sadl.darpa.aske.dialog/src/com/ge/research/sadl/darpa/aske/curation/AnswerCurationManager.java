@@ -715,7 +715,8 @@ public class AnswerCurationManager {
 				String pytfscript = results.getResultAt(r, 4) != null ? results.getResultAt(r, 4).toString() : null;
 				if (methodName != null) {	//&& txtscript != null && pyscriptToUse != null
 					try {
-						List<String> sadlDeclaration = convertTextExtractedMethodToExternalEquationInSadlSyntax(methodName, derivedFromMethodName, "Text", txtscript, "Python", pyscript, "Python-TF", pytfscript, locality);
+						List<String> sadlDeclaration = convertTextExtractedMethodToExternalEquationInSadlSyntax(methodName, derivedFromMethodName, "Text", txtscript, 
+								DialogConstants.PYTHON_LANGUAGE, pyscript, DialogConstants.TF_PYTHON_LANGUAGE, pytfscript, locality);
 						List<String> unmatchedConceptStatements = getUnmatchedConceptDeclarationStatements();
 						if (unmatchedConceptStatements != null) {
 							if (unmatchedStatementsAlreadyProcessed == null) unmatchedStatementsAlreadyProcessed = new ArrayList<String>();
@@ -772,9 +773,9 @@ public class AnswerCurationManager {
 		return pythonScript;
 	}
 
-	private boolean savePythonTFScript() {
+	private boolean saveOtherPythonScripts() {
 		boolean pythonTFScript = true;
-		String tfpyscstr = getPreference(DialogPreferences.TF_PYTHON_LANGUAGE.getId());
+		String tfpyscstr = getPreference(DialogPreferences.OTHER_PYTHON_LANGUAGE.getId());
 		if (tfpyscstr != null) {
 			pythonTFScript = Boolean.parseBoolean(tfpyscstr);
 		}
@@ -1571,7 +1572,7 @@ public class AnswerCurationManager {
 			sb2.append("\")");
 			hasPriorTriple = true; 
 		}
-		if (savePythonTFScript() && pyTfLang != null && pytfscript != null) {
+		if (saveOtherPythonScripts() && pyTfLang != null && pytfscript != null) {
 			if (hasPriorTriple) {
 				sb2.append(",\n");
 			}
@@ -1958,6 +1959,7 @@ public class AnswerCurationManager {
 			ReasonerNotFoundException, QueryParseException, QueryCancelledException, AnswerExtractionException {
 		String pythoncode = null;
 		String tfPythonCode = null;
+		String npPythonCode = null;
 		try {
 			String className;
 			if (methodName.indexOf('.') > 0) {
@@ -1967,11 +1969,12 @@ public class AnswerCurationManager {
 			else {
 				className = "UnidentifiedClass";
 			}
-			if (savePythonScript() || savePythonTFScript()) {
+			if (savePythonScript() || saveOtherPythonScripts()) {
 				AnswerExtractionProcessor ep = getExtractionProcessor();
 				pythoncode = ep.translateMethodJavaToPython(className, originalScript);
-				if (savePythonTFScript()) {
+				if (saveOtherPythonScripts()) {
 					tfPythonCode = pythonToTensorFlowPython(pythoncode);
+					npPythonCode = pythonToNumPyPython(pythoncode);
 				}
 			}
 		} catch (IOException e) {
@@ -2190,15 +2193,29 @@ public class AnswerCurationManager {
 			sb2.append("\")");
 			hasPriorTriple = true;
 		}
-		if (savePythonTFScript() && tfPythonCode != null) {
-			if (hasPriorTriple) {
-				sb2.append(",\n");
+		if (saveOtherPythonScripts()) {
+			if (tfPythonCode != null) {
+				if (hasPriorTriple) {
+					sb2.append(",\n");
+				}
+				sb2.append(" has expression (a Script with language ");
+				sb2.append(DialogConstants.TF_PYTHON_LANGUAGE);
+				sb2.append(", with script \n\"");
+				sb2.append(escapeDoubleQuotes(tfPythonCode));
+				sb2.append("\")");
+				hasPriorTriple = true;
 			}
-			sb2.append(" has expression (a Script with language ");
-			sb2.append(DialogConstants.TF_PYTHON_LANGUAGE);
-			sb2.append(", with script \n\"");
-			sb2.append(escapeDoubleQuotes(tfPythonCode));
-			sb2.append("\")");
+			if (npPythonCode != null) {
+				if (hasPriorTriple) {
+					sb2.append(",\n");
+				}
+				sb2.append(" has expression (a Script with language ");
+				sb2.append(DialogConstants.NUMPY_PYTHON_LANGUAGE);
+				sb2.append(", with script \n\"");
+				sb2.append(escapeDoubleQuotes(npPythonCode));
+				sb2.append("\")");
+				hasPriorTriple = true;
+			}
 		}
 		sb2.append(".\n");
 		returnSadlStatements.add(sb2.toString());
@@ -4803,4 +4820,21 @@ public class AnswerCurationManager {
 		return modifiedScript;
 	}
 
+	/**
+	 * Method to convert regular Python to NumPy-compatible Python
+	 * @param pythonScript
+	 * @return
+	 */
+	public String pythonToNumPyPython(String pythonScript) {
+		String modifiedScript;		
+		if (pythonScript.contains("math.")) {
+			modifiedScript = pythonScript.replaceAll("math.", "np.math.");
+		}
+		else {
+			modifiedScript = pythonScript.replaceAll("Math.", "np.math.");
+		}
+		modifiedScript = modifiedScript.replaceAll("np.math.", "np.");
+		modifiedScript = modifiedScript.replaceAll("np.pow", "np.power");
+		return modifiedScript;
+	}
 }

@@ -38,6 +38,21 @@
   <owl:Class rdf:ID="Time">
     <rdfs:subClassOf rdf:resource="sadlimplicitmodel#UnittedQuantity"/>
   </owl:Class>
+  <owl:Class rdf:nodeID="A0">
+    <rdfs:subClassOf>
+      <owl:Restriction>
+        <owl:allValuesFrom rdf:nodeID="A0"/>
+        <owl:onProperty rdf:resource="sadllistmodel#rest"/>
+      </owl:Restriction>
+    </rdfs:subClassOf>
+    <rdfs:subClassOf>
+      <owl:Restriction>
+        <owl:allValuesFrom rdf:resource="sadlimplicitmodel#DataDescriptor"/>
+        <owl:onProperty rdf:resource="sadllistmodel#first"/>
+      </owl:Restriction>
+    </rdfs:subClassOf>
+    <rdfs:subClassOf rdf:resource="sadllistmodel#List"/>
+  </owl:Class>
   <owl:Class rdf:ID="Substance">
     <rdfs:subClassOf>
       <owl:Class rdf:ID="PhysicalThing"/>
@@ -203,21 +218,6 @@
   </owl:Class>
   <owl:Class rdf:ID="Air">
     <rdfs:subClassOf rdf:resource="#Gas"/>
-  </owl:Class>
-  <owl:Class rdf:nodeID="A0">
-    <rdfs:subClassOf>
-      <owl:Restriction>
-        <owl:allValuesFrom rdf:nodeID="A0"/>
-        <owl:onProperty rdf:resource="sadllistmodel#rest"/>
-      </owl:Restriction>
-    </rdfs:subClassOf>
-    <rdfs:subClassOf>
-      <owl:Restriction>
-        <owl:allValuesFrom rdf:resource="sadlimplicitmodel#DataDescriptor"/>
-        <owl:onProperty rdf:resource="sadllistmodel#first"/>
-      </owl:Restriction>
-    </rdfs:subClassOf>
-    <rdfs:subClassOf rdf:resource="sadllistmodel#List"/>
   </owl:Class>
   <owl:ObjectProperty rdf:ID="time">
     <rdfs:domain rdf:resource="#Position"/>
