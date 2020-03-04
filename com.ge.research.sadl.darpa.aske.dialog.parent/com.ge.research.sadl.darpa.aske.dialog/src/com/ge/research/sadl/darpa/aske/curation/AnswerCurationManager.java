@@ -3503,28 +3503,28 @@ public class AnswerCurationManager {
 			sb.append(System.lineSeparator());
 			for (int row = 0; row < rs.getRowCount(); row++) {
 				if(rs.getResultAt(row, 1).equals("increasingIncreases")) {
-					sb.append("increasing ");
+					sb.append("Increasing ");
 					sb.append(rs.getResultAt(row, 0).toString());
 					sb.append(" increases ");
 					sb.append(rs.getResultAt(row, 2).toString());
 					sb.append(" .");
 				} 
 				else if(rs.getResultAt(row, 1).equals("increasingDecreases")) {
-					sb.append("increasing ");
+					sb.append("Increasing ");
 					sb.append(rs.getResultAt(row, 0).toString());
 					sb.append(" decreases ");
 					sb.append(rs.getResultAt(row, 2).toString());
 					sb.append(" .");
 				} 
 				else if(rs.getResultAt(row, 1).equals("decreasingIncreases")) {
-					sb.append("decreasing ");
+					sb.append("Decreasing ");
 					sb.append(rs.getResultAt(row, 0).toString());
 					sb.append(" increases ");
 					sb.append(rs.getResultAt(row, 2).toString());
 					sb.append(" .");
 				} 
 				else if(rs.getResultAt(row, 1).equals("decreasingDecreases")) {
-					sb.append("decreasing ");
+					sb.append("Decreasing ");
 					sb.append(rs.getResultAt(row, 0).toString());
 					sb.append(" decreases ");
 					sb.append(rs.getResultAt(row, 2).toString());
