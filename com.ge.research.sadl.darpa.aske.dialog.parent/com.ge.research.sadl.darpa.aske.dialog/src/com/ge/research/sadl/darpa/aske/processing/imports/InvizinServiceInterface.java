@@ -36,15 +36,17 @@ public class InvizinServiceInterface extends JsonServiceInterface {
 
 		String jsonResponse = visualize2(json);
 
-		JsonElement je = new JsonParser().parse(jsonResponse);
-		if (je.isJsonObject()) {
-			JsonObject jobj = je.getAsJsonObject();
-			String visualizationUrl = jobj.get("url").getAsString();
-			return visualizationUrl;
-		}
-		else {
-			throw new IOException("Unexpected response: " + je.toString());
-		}
+//		JsonElement je = new JsonParser().parse(jsonResponse);
+//		if (je.isJsonObject()) {
+//			JsonObject jobj = je.getAsJsonObject();
+//			String visualizationUrl = jobj.get("url").getAsString();
+//			return visualizationUrl;
+//		}
+//		else {
+//			throw new IOException("Unexpected response: " + je.toString());
+//		}
+
+	return jsonResponse;
 	}
 
 	public String visualize2(JsonObject json) throws MalformedURLException, IOException {

@@ -54,6 +54,7 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -140,7 +141,7 @@ public class JenaBasedDialogInferenceProcessor extends JenaBasedSadlInferencePro
 //	public static final String qhModelName = "http://aske.ge.com/MetaData";
 //	public static final String qhOwlFileName = "MetaData.owl";
 
-	public static final boolean debugMode = false;
+	public static final boolean debugMode = true;
 	
 	
     private static final String KCHAIN_SERVICE_URL_FRAGMENT = "/darpa/aske/kchain/";
@@ -150,7 +151,7 @@ public class JenaBasedDialogInferenceProcessor extends JenaBasedSadlInferencePro
 	
 	public static final String METAMODEL_PREFIX = "http://aske.ge.com/metamodel#";
 	public static final String METAMODEL_QUERY_CLASS = METAMODEL_PREFIX + "CGQuery";
-	public static final String METAMODEL_INPUT_PROP = METAMODEL_PREFIX + "input";
+	public static final String METAMODEL_INPUT_PROP = METAMODEL_PREFIX + "cgInput";
 	public static final String METAMODEL_OUTPUT_PROP = METAMODEL_PREFIX + "output";
 	public static final String METAMODEL_CCG = METAMODEL_PREFIX + "CCG";
 	public static final String METAMODEL_SUBGRAPH = METAMODEL_PREFIX + "SubGraph";
@@ -175,9 +176,17 @@ public class JenaBasedDialogInferenceProcessor extends JenaBasedSadlInferencePro
 	public static final String METAMODEL_SENSVALUE_PROP = METAMODEL_PREFIX + "sensitivityValue";
 	public static final String METAMODEL_SENSITIVITY = METAMODEL_PREFIX + "Sensitivity";
 	public static final String METAMODEL_INPUTSENSITIVITY = METAMODEL_PREFIX + "InputSensitivity";
+	public static final String METAMODEL_SENS_TRENDEFFECT_PROP = METAMODEL_PREFIX + "trendEffect";
+	public static final String METAMODEL_SENS_OUTPUTTREND = METAMODEL_PREFIX + "OutputTrend";
+	public static final String METAMODEL_SENS_TREND_PROP = METAMODEL_PREFIX + "trend";
+	private static final String METAMODEL_TREND_INCRINCR = METAMODEL_PREFIX + "increasingIncreases";
+	private static final String METAMODEL_TREND_INCRDECR = METAMODEL_PREFIX + "increasingDecreases";
+	private static final String METAMODEL_TREND_DECRINCR = METAMODEL_PREFIX + "decreasingIncreases";
+	private static final String METAMODEL_TREND_DECRDECR = METAMODEL_PREFIX + "decreasingDecreases";
+	private static final String METAMODEL_TREND_INDEPENDENT = METAMODEL_PREFIX + "independent";
 	public static final String METAMODEL_ASSUMPTIONSSATISFIED_PROP = METAMODEL_PREFIX + "assumptionsSatisfied";
 	public static final String METAMODEL_ASSUMPTIONUNSATISFIED_PROP = METAMODEL_PREFIX + "unsatisfiedAssumption";
-	private static final String CGMODEL_CG_CLASS = "http://aske.ge.com/compgraphmodel#ComputationalGraph";
+	public static final String CGMODEL_CG_CLASS = "http://aske.ge.com/compgraphmodel#ComputationalGraph";
 
 	public static final String GENERICIOs = "prefix cg:<http://aske.ge.com/compgraphmodel#>\n" + 
 			"prefix imp:<http://sadl.org/sadlimplicitmodel#>\n" + 
@@ -540,7 +549,7 @@ public class JenaBasedDialogInferenceProcessor extends JenaBasedSadlInferencePro
 			"    #?Q mm:execution/mm:compGraph ?CG. \n" + 
 			"    #filter (?CG in (COMPGRAPH)).\n" + 
 			"    #optional{\n" + 
-			"    #   ?Q mm:input ?UQNode.\n" + 
+			"    #   ?Q mm:cgInput ?UQNode.\n" + 
 			"    #   ?Var ?Node ?UQNode.\n" + 
 			"    #   ?UQNode imp:unit ?InputUnitsQuery.\n" + 
 			"    #}\n" + 
@@ -620,7 +629,7 @@ public class JenaBasedDialogInferenceProcessor extends JenaBasedSadlInferencePro
 			"   ?Q mm:execution/mm:compGraph ?CG.\n" + 
 			"   filter (?CG in (COMPGRAPH)).\n" + 
 			"  optional{\n" + 
-			"    ?Q mm:input ?Inp.\n" + 
+			"    ?Q mm:cgInput ?Inp.\n" + 
 			"    ?Inp a ?Node.\n" + 
 			"    ?Inp imp:value ?Value.}  \n" + 
 			"} order by ?Node";
@@ -769,9 +778,9 @@ public class JenaBasedDialogInferenceProcessor extends JenaBasedSadlInferencePro
 			"    optional{?Oinst imp:stddev ?StdDev.}\n" +
 			"    optional{?Oinst imp:unit ?Units}" +
 			"   ?CGQ mm:execution/mm:compGraph ?CCG.\n" + 
-			"   ?CGQ mm:input ?IVar.\n" + 
+			"   ?CGQ mm:cgInput ?IVar.\n" + 
 			"   ?Obj ?prop ?IVar.\n" + 
-			"   filter (?prop not in (mm:input))\n" + 
+			"   filter (?prop not in (mm:cgInput))\n" + 
 			"   ?Obj rdf:type ?C.\n" +
 			"}";
 	public static final String RESULTSQUERYHYPO = "prefix imp:<http://sadl.org/sadlimplicitmodel#>\n" + 
@@ -817,7 +826,7 @@ public class JenaBasedDialogInferenceProcessor extends JenaBasedSadlInferencePro
 			"     filter (?CG in ( COMPGRAPH )) \n" + 
 			" ?SS mm:output ?O.\n" + 
 			" ?SS mm:inputSensitivity ?Sy.\n" + 
-			" ?Sy mm:input ?I.\n" + 
+			" ?Sy mm:cgInput ?I.\n" + 
 			" ?Sy mm:sensitivityValue ?Sensitivity\n" + 
 			" } ";
 
@@ -921,6 +930,8 @@ public class JenaBasedDialogInferenceProcessor extends JenaBasedSadlInferencePro
 	public Object[] insertTriplesAndQuery(Resource resource, List<TripleElement[]> triples) throws SadlInferenceException {
  		List<Object[]> combinedResults = new ArrayList<Object[]>(triples.size());
  		Object[] results = null;
+	    JsonArray sensitivityJsonList = new JsonArray();
+
  		setCurrentResource(resource);
 		setModelFolderPath(getModelFolderPath(resource));
 		setModelName(OntModelProvider.getModelName(resource));
@@ -1033,12 +1044,14 @@ public class JenaBasedDialogInferenceProcessor extends JenaBasedSadlInferencePro
 		
 		for (int i=0 ; i<triples.size(); i++) {
 //			results = processSingleWhatWhenQuery(resource, triples.get(i), useDbn, useKC, queryModelFileName, queryModelURI,queryModelPrefix, queryInstanceName, queryOwlFileWithPath);
-			results = processSingleWhatWhenQuery(resource, triples.get(i), kgsDirectory);
+			results = processSingleWhatWhenQuery(resource, triples.get(i), kgsDirectory, sensitivityJsonList);
 			combinedResults.add(results);
+			
 		}
 		
 		if (triples.size() > 1) {
 			results = generateCompareResults(combinedResults);
+			//run sensitivity
 		}
 		
 		
@@ -1076,7 +1089,7 @@ public class JenaBasedDialogInferenceProcessor extends JenaBasedSadlInferencePro
 //			boolean useKC, String queryModelFileName, String queryModelURI, String queryModelPrefix,
 //			String queryInstanceName, String queryOwlFileWithPath) throws SadlInferenceException {
 
-	private Object[] processSingleWhatWhenQuery(Resource resource, TripleElement[] triples, String kgsDirectory) throws SadlInferenceException {
+	private Object[] processSingleWhatWhenQuery(Resource resource, TripleElement[] triples, String kgsDirectory, JsonArray sensitivityJsonList) throws SadlInferenceException {
 
 		Object[] dbnResults = null;
 		Object[] kcResults = null;
@@ -1145,7 +1158,7 @@ public class JenaBasedDialogInferenceProcessor extends JenaBasedSadlInferencePro
 
 				if (outputsList.size() > 0 && docPatterns.size() <= 0) { 
 					dbnResults = processWhatWhenQuery(resource, queryModelFileName, queryModelURI, queryModelPrefix,
-							queryOwlFileWithPath, inputsList, outputsList, contextClassList, cgq);
+							queryOwlFileWithPath, inputsList, outputsList, contextClassList, cgq, sensitivityJsonList);
 
 
 
@@ -1159,7 +1172,7 @@ public class JenaBasedDialogInferenceProcessor extends JenaBasedSadlInferencePro
 			
 			if (useKC) {
 				kcResults = processWhatWhenQuery(resource, queryModelFileName, queryModelURI, queryModelPrefix,
-						queryOwlFileWithPath, inputsList, outputsList, contextClassList, cgq);
+						queryOwlFileWithPath, inputsList, outputsList, contextClassList, cgq, sensitivityJsonList);
 				
 			}
 		
@@ -1182,7 +1195,7 @@ public class JenaBasedDialogInferenceProcessor extends JenaBasedSadlInferencePro
 
 private ResultSet[] processWhatWhenQuery(Resource resource, String queryModelFileName, String queryModelURI,
 		String queryModelPrefix, String queryOwlFileWithPath, List<RDFNode> inputsList, List<RDFNode> outputsList,
-		List<String> contextClassList, Individual cgq)
+		List<String> contextClassList, Individual cgq, JsonArray sensitivityJsonList)
 		throws TranslationException, Exception, IOException, URISyntaxException, ConfigurationException {
 	
 	com.hp.hpl.jena.query.ResultSetRewindable eqnsResults = null;
@@ -1192,12 +1205,12 @@ private ResultSet[] processWhatWhenQuery(Resource resource, String queryModelFil
 	Individual cgIns = null;
 	String resmsg = null;
 	String sensitivityURL = null;
-	
+	String sensitivityResult = null;
 //	OntClass cexec;
 	Individual ce;
 	
 	Map<String,String> class2lbl = null;
-//	Map<String,String> lbl2class;
+	Map<String,String> lbl2class;
 	Map<String,String[]> lbl2value = null;
 	Map<String,String> class2units = null;
 	
@@ -1263,6 +1276,8 @@ private ResultSet[] processWhatWhenQuery(Resource resource, String queryModelFil
 		
 
 		class2lbl 	= getClassLabelMappingFromModelsJson(nodesModelsJSONStr);
+
+		lbl2class = getInverseMap(class2lbl);
 		
 		class2units = getClassUnitsMappingFromModelsJson(nodesModelsJSONStr);
 		
@@ -1307,7 +1322,7 @@ private ResultSet[] processWhatWhenQuery(Resource resource, String queryModelFil
 
 				if ( getBuildKChainOutcome(buildResult) ) {
 			
-					kchainEvalJson = createExecJson(cgJson);
+					kchainEvalJson = generateKChainExecJson(cgJson);
 					
 					System.out.print("Executing KChain: ");
 					startTime = System.currentTimeMillis();
@@ -1319,11 +1334,15 @@ private ResultSet[] processWhatWhenQuery(Resource resource, String queryModelFil
 				    
 				    kchainResultsJson = executeKChain(kchainEvalJson); //call sensitivity service instead
 				    
-				    kchainEvalJson = addKCserviceURL(kchainEvalJson);
+				    JsonObject sensitivityJson = generateKChainSensitivityJson(cgJson);
+					sensitivityJsonList .add(sensitivityJson);
+				    
+				    kchainEvalJson = addKCserviceURL(sensitivityJson); //Add kchain eval service URL for invizin
 				    
 					System.out.print("Sensitivity analysis: ");
 					startTime = System.currentTimeMillis();
-				    sensitivityURL = getKChainSensitivityURL(kchainEvalJson);
+					sensitivityResult = execKChainSensitivity(kchainEvalJson);
+				    sensitivityURL = getVisualizationURL(sensitivityResult);
 					endTime = System.currentTimeMillis();
 					System.out.println((endTime - startTime));
 				    //sensitivityURL = "http://localhost:1177";
@@ -1353,7 +1372,11 @@ private ResultSet[] processWhatWhenQuery(Resource resource, String queryModelFil
 			//There may be multiple outputs, need to loop through them
 	        createCEoutputInstances(outputsList, ce, class2lbl, lbl2value, class2units);
 
-			saveMetaDataFile(resource,queryModelURI,queryModelFileName); //so we can query the the eqns in the CCG
+
+			analyzeSensitivityResults(sensitivityResult, cgIns, lbl2class, queryModelPrefix);			
+
+	        
+	        saveMetaDataFile(resource,queryModelURI,queryModelFileName); //so we can query the the eqns in the CCG
 			
 			
 			// Get the CG info for diagram
@@ -1362,6 +1385,8 @@ private ResultSet[] processWhatWhenQuery(Resource resource, String queryModelFil
 			
 			ResultSet rvalues = retrieveValues(resource, cgIns); //outputsList
 			
+			//ResultSet svalues = 
+		
 			dbnResults[i+1] = addSensitivityURLtoResults(rvalues, sensitivityURL);
 //			dbnResults[i+1] = retrieveValues(resource, cgIns);
 
@@ -1402,8 +1427,172 @@ private ResultSet[] processWhatWhenQuery(Resource resource, String queryModelFil
 }
 
 
-private void registerQueryModel(Resource resource, String queryModelFileName, String queryOwlFileWithPath)
-		throws SadlInferenceException {
+
+
+
+
+/**
+ * 
+ * @param map
+ * @return
+ */
+private Map<String, String> getInverseMap(Map<String, String> map) {
+	Map<String, String> imap = new HashMap<String, String>();
+	for(Entry<String, String> entry : map.entrySet()) {
+		imap.put(entry.getValue(), entry.getKey());
+	}
+	return imap;
+}
+
+/**
+ * 
+ * @param sensitivityResult
+ * @param queryModelPrefix 
+ * @param class2lbl 
+ * @param cgIns 
+ * @throws IOException 
+ */
+private void analyzeSensitivityResults(String sensitivityResult, Individual cgIns, Map<String, String> lbl2class, String queryModelPrefix) throws IOException {
+	sensitivityResult = "{\"sensitivityData\":[{\"OATMatrix\":{\"fsmach\":[0,0.09232463,0.1766437,0.2464482,0.29775146,0.32939076,0.34265238,0.3404852,0.3266189,0.30482608,0.2784374,0.25010738,0.22177133,0.194718,0.1697141,0.14713784,0.12709871,0.10953298,0.09427574,0.08111054],\"altd\":[0,0.15789473684210525,0.3157894736842105,0.47368421052631576,0.631578947368421,0.7894736842105263,0.9473684210526315,1.1052631578947367,1.263157894736842,1.4210526315789473,1.5789473684210527,1.7368421052631577,1.894736842105263,2.052631578947368,2.2105263157894735,2.3684210526315788,2.526315789473684,2.6842105263157894,2.8421052631578947,3]},\"OATRSMatrix\":{\"fsmach\":[0.33210394,0.3332521,0.33433527,0.33535418,0.33630925,0.33720127,0.33803058,0.3387981,0.3395045,0.34015036,0.3407363,0.34126318,0.34173167,0.3421426,0.34249645,0.3427943,0.34303662,0.34322447,0.34335843,0.34343934],\"altd\":[0.81,0.8194736842105264,0.8289473684210527,0.838421052631579,0.8478947368421054,0.8573684210526317,0.866842105263158,0.8763157894736843,0.8857894736842106,0.8952631578947369,0.9047368421052633,0.9142105263157896,0.9236842105263159,0.9331578947368422,0.9426315789473685,0.9521052631578948,0.9615789473684211,0.9710526315789475,0.9805263157894738,0.9900000000000001]},\"name\":\"altd\",\"type\":\"float\",\"value\":\"0.9\"},{\"OATMatrix\":{\"fsmach\":[0.30224335,0.30802384,0.3135674,0.3188915,0.32401192,0.32894263,0.33369592,0.33828318,0.34271488,0.34699997,0.35114703,0.355164,0.35905787,0.36283517,0.36650208,0.3700641,0.37352648,0.37689403,0.38017118,0.3833621],\"u0d\":[1.01,1.0621052631578947,1.1142105263157895,1.1663157894736842,1.2184210526315788,1.2705263157894737,1.3226315789473684,1.3747368421052633,1.426842105263158,1.4789473684210526,1.5310526315789474,1.583157894736842,1.635263157894737,1.6873684210526316,1.7394736842105263,1.791578947368421,1.8436842105263158,1.8957894736842107,1.9478947368421053,2]},\"OATRSMatrix\":{\"fsmach\":[0.32796124,0.32933322,0.33069092,0.33203492,0.3333654,0.33468255,0.33598652,0.33727765,0.33855626,0.3398223,0.34107617,0.34231815,0.34354833,0.34476686,0.34597406,0.34717005,0.34835514,0.34952927,0.3506928,0.35184592],\"u0d\":[1.26,1.2747368421052632,1.2894736842105263,1.3042105263157895,1.3189473684210526,1.3336842105263158,1.348421052631579,1.3631578947368421,1.3778947368421053,1.3926315789473684,1.4073684210526316,1.4221052631578948,1.436842105263158,1.451578947368421,1.4663157894736842,1.4810526315789474,1.4957894736842106,1.5105263157894737,1.5252631578947369,1.54]},\"name\":\"u0d\",\"type\":\"float\",\"value\":\"1.4\"}],\"url\":\"http://localhost:1177\"}";
+	
+	JsonElement je = new JsonParser().parse(sensitivityResult);
+	if (je.isJsonObject()) {
+		JsonObject jobj = je.getAsJsonObject();
+		if (jobj.has("sensitivityData")) {
+			JsonArray ja = jobj.getAsJsonArray("sensitivityData");
+			for(int i=0; i<ja.size(); i++) {
+				extractVarInfluence(ja.get(i).getAsJsonObject(), cgIns, lbl2class, queryModelPrefix);
+			}
+		}
+		else {
+			throw new IOException("Sensitivity returned no data: " + je.toString());
+		}
+//		String  = jobj.get("url").getAsString();
+	}
+	else {
+		throw new IOException("Unexpected response from sensitivity: " + je.toString());
+	}
+	
+	
+	//	return null;
+}
+
+/**
+ * 
+ * @param asJsonObject
+ */
+private void extractVarInfluence(JsonObject sensitivityResult, Individual cgIns, Map<String, String> lbl2class, String queryModelPrefix) {
+	String input = sensitivityResult.get("name").getAsString();
+	String output = null;
+	String vstr = sensitivityResult.get("value").getAsString();
+	double value = new Double(vstr);
+	JsonArray inputArray = null;
+	JsonArray outputArray = null;
+	double prevIn, prevOut, min, max, ip, op;
+	boolean increasingIncreases;
+	boolean increasingDecreases;
+	boolean decreasingIncreases;
+	boolean decreasingDecreases;
+	boolean independent = increasingIncreases = increasingDecreases = decreasingIncreases = decreasingDecreases = false;
+	
+	Iterator<Entry<String, JsonElement>> mtxitr = sensitivityResult.get("OATMatrix").getAsJsonObject().entrySet().iterator();
+	
+	while(mtxitr.hasNext()) {
+		Entry<String, JsonElement> mtxe = mtxitr.next();
+		if(mtxe.getKey().equals(input)) {
+			inputArray = sensitivityResult.get("OATMatrix").getAsJsonObject().get(input).getAsJsonArray();
+		} else {
+			output = mtxe.getKey();
+			outputArray = sensitivityResult.get("OATMatrix").getAsJsonObject().get(output).getAsJsonArray();
+		}
+	}	
+
+	prevOut = min = max = outputArray.get(0).getAsDouble();
+	prevIn = inputArray.get(0).getAsDouble();
+	
+	int size = outputArray.size();
+	for(int i=1; i<size; i++) {
+		ip = inputArray.get(i).getAsDouble();
+		op = outputArray.get(i).getAsDouble();
+		if (op < min)
+			min = op;
+		if (op > max)
+			max = op;
+		if(prevIn < ip && prevOut < op)
+			increasingIncreases = true;
+		if(prevIn < ip && prevOut > op)
+			increasingDecreases = true;
+		if(prevIn > ip && prevOut < op)
+			decreasingIncreases = true;
+		if(prevIn > ip && prevOut > op)
+			decreasingDecreases = true;
+
+		prevIn = ip;
+		prevOut = op;
+	}
+
+	if(min == max)
+		independent = true;
+	
+	ingestTrend(input, output, increasingIncreases, increasingDecreases, decreasingIncreases, decreasingDecreases, independent, cgIns, lbl2class);
+	
+	
+}
+
+/**
+ * 
+ * @param input
+ * @param output
+ * @param increasing
+ * @param decreasing
+ * @param independent 
+ * @param independent2 
+ * @param decreasingDecreases 
+ * @param cgIns
+ * @param class2lbl
+ */
+private void ingestTrend(String input, String output, boolean increasingIncreases, boolean increasingDecreases, boolean decreasingIncreases, boolean decreasingDecreases, boolean independent, Individual cgIns, Map<String, String> lbl2class) {
+	String inputType = lbl2class.get(input);
+	String outputType = lbl2class.get(output);
+	
+	//cgIns sensitivity sensIns
+	Individual sensIns = createIndividualOfClass(queryModel, null, null, METAMODEL_SENSITIVITY);
+	ingestKGTriple(cgIns, getModelProperty(getTheJenaModel(), METAMODEL_SENS_PROP), sensIns);
+	
+	//sensins output MachSpeed
+	ingestKGTriple(sensIns, getModelProperty(getTheJenaModel(), METAMODEL_OUTPUT_PROP), getTheJenaModel().getResource(outputType)) ;
+	
+	//sensIns trendEffect outputTrendIns
+	Individual outputTrendIns = createIndividualOfClass(queryModel, null, null, METAMODEL_SENS_OUTPUTTREND);
+	ingestKGTriple(sensIns, getModelProperty(getTheJenaModel(), METAMODEL_SENS_TRENDEFFECT_PROP), outputTrendIns);
+	//outputTrendIns input Altitude
+	ingestKGTriple(outputTrendIns, getModelProperty(getTheJenaModel(), METAMODEL_INPUT_PROP), getTheJenaModel().getResource(inputType));
+	
+	if(increasingIncreases) {
+		//outputTrednIns trend :increasing
+		ingestKGTriple(outputTrendIns, getModelProperty(getTheJenaModel(), METAMODEL_INPUT_PROP), getTheJenaModel().getResource(METAMODEL_TREND_INCRINCR));
+	} 
+	if(increasingDecreases) {
+		//outputTrednIns trend :decreasing
+		ingestKGTriple(outputTrendIns, getModelProperty(getTheJenaModel(), METAMODEL_INPUT_PROP), getTheJenaModel().getResource(METAMODEL_TREND_INCRDECR));
+	}
+	if(decreasingIncreases) {
+		//outputTrednIns trend :decreasing
+		ingestKGTriple(outputTrendIns, getModelProperty(getTheJenaModel(), METAMODEL_INPUT_PROP), getTheJenaModel().getResource(METAMODEL_TREND_DECRINCR));
+	}
+	if(decreasingDecreases) {
+		//outputTrednIns trend :decreasing
+		ingestKGTriple(outputTrendIns, getModelProperty(getTheJenaModel(), METAMODEL_INPUT_PROP), getTheJenaModel().getResource(METAMODEL_TREND_DECRDECR));
+	}
+	if (independent) {
+		//outputTrednIns trend :independent
+		ingestKGTriple(outputTrendIns, getModelProperty(getTheJenaModel(), METAMODEL_INPUT_PROP), getTheJenaModel().getResource(METAMODEL_TREND_INDEPENDENT));
+	}
+	
+	
+}
+
+private void registerQueryModel(Resource resource, String queryModelFileName, String queryOwlFileWithPath) throws SadlInferenceException {
 	File f = new File(queryOwlFileWithPath);
 	if (f.exists() && !f.isDirectory()) {
 		throw new SadlInferenceException("Query model file already exists");
@@ -1411,7 +1600,6 @@ private void registerQueryModel(Resource resource, String queryModelFileName, St
 	else {
 		queryModel = ModelFactory.createOntologyModel(OntModelSpec.OWL_MEM);
 	}
-	
 	OntModelProvider.addPrivateKeyValuePair(resource, queryModelFileName, queryModel);
 }
 
@@ -1500,7 +1688,14 @@ private String retrieveModelsAndNodes(String listOfEqns, Individual cgIns, List<
 	endTime = System.currentTimeMillis();
 	System.out.println((endTime - startTime));
 
-	String nodesModelsJSONStr = "{ \"models\": " + modelsJSONString + ", \"nodes\": "  + nodesJSONString + ", \"expressions\": " + expressionsJSONString + " }";
+	StringBuilder ctxtBldr = new StringBuilder();
+	for(String c : contextClassList) {
+		ctxtBldr.append(c.split("#")[1]);
+	}
+	
+    String context = ctxtBldr.toString();
+    
+	String nodesModelsJSONStr = "{ \"models\": " + modelsJSONString + ", \"nodes\": "  + nodesJSONString + ", \"expressions\": " + expressionsJSONString + ", \"context\": \"" + context + "\" }";
 	if (debugMode) {System.out.println(nodesModelsJSONStr);}
 	return nodesModelsJSONStr;
 }
@@ -1646,9 +1841,35 @@ private void infereDependencyGraph(Resource resource) throws SadlInferenceExcept
 	System.out.println((endTime - startTime) );
 }
 
+/**
+ * 
+ * @param cgJson
+ * @return
+ * @throws DialogInferenceException 
+ */
+private JsonObject generateKChainSensitivityJson(String cgJson) throws DialogInferenceException {
+	JsonObject jo;
+	JsonObject keoJson = null;
+	try {
+		JsonParser jp = new JsonParser();
+		JsonElement je = jp.parse(cgJson);
+		keoJson = je.getAsJsonObject();
+		jo = keoJson.get("visualize").getAsJsonObject();
+		jo.remove("plotType");
+		jo.addProperty("plotType","2");
 
 
-private JsonObject createExecJson(String cgJson) throws DialogInferenceException {
+//		jo = jp.parse(mach).getAsJsonObject();
+	}
+	catch (Throwable t) {
+		throw new DialogInferenceException(t.getMessage(), t);
+	}
+
+	
+	return jo;
+}
+
+private JsonObject generateKChainExecJson(String cgJson) throws DialogInferenceException {
 	String keo = "{\n" + 
 			"    \"modelName\": \"getResponse\",\n" + 
 			"  \"outputVariables\": [\n" + 
@@ -1687,6 +1908,7 @@ private JsonObject createExecJson(String cgJson) throws DialogInferenceException
 	
 	return jo;
 }
+
 
 /**
  * Method to generate the JSON string needed to build in K-CHAIN
@@ -1751,7 +1973,7 @@ private String executeKChain(JsonObject kchainJsonObj) throws MalformedURLExcept
 	}
 }
 
-private String getKChainSensitivityURL(JsonObject kchainJsonObj) throws MalformedURLException, IOException, DialogInferenceException {
+private String execKChainSensitivity(JsonObject kchainJsonObj) throws MalformedURLException, IOException, DialogInferenceException {
 	try {
 		String serviceURL = getPreference(DialogPreferences.ANSWER_INVIZIN_SERVICE_BASE_URI.getId());
 		InvizinServiceInterface insi = new InvizinServiceInterface(serviceURL);
@@ -1784,6 +2006,26 @@ private String getEvalKChainOutcome(String kchainResultsJson) {
     }
     return jres;
 }
+
+/**
+ * 
+ * @param sensitivityResult
+ * @return
+ * @throws IOException 
+ */
+private String getVisualizationURL(String sensitivityResult) throws IOException {
+	JsonElement je = new JsonParser().parse(sensitivityResult);
+	if (je.isJsonObject()) {
+		JsonObject jobj = je.getAsJsonObject();
+		String visualizationUrl = jobj.get("url").getAsString();
+		return visualizationUrl;
+	}
+	else {
+		throw new IOException("Unexpected response: " + je.toString());
+	}
+}
+
+
 
 private ResultSet[] processModelsFromDataset(Resource resource, TripleElement[] triples, String queryModelFileName,
 	String queryModelURI, String queryModelPrefix, String queryOwlFileWithPath, List<RDFNode> inputsList,
@@ -2027,7 +2269,7 @@ private void runInference(Resource resource, String query, String testQuery) thr
 				sp = itr.getPredicate().getURI();
 				so = itr.getObject().getName();
 				
-				ns = getModelName() + "#";
+				//ns = getModelName() + "#";
 				ns = queryModelPrefix;
 				
 				sss = getTheJenaModel().getResource(ns+ss);
