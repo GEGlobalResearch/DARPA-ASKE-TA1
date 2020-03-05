@@ -3355,7 +3355,7 @@ public class AnswerCurationManager {
 						
 					}
 					else {
-		    			if(cntr > 1) {
+		    			if(cntr > 1 && answer.length() > 0) {
 		    				answer.append(",");
 		    				answer.append(System.lineSeparator());
 		    			}

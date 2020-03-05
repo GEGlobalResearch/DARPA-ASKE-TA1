@@ -12,6 +12,7 @@ import org.eclipse.xtext.preferences.PreferenceKey
 import org.junit.Before
 import org.junit.Test
 import com.ge.research.sadl.darpa.aske.preferences.DialogPreferences
+import com.ge.research.sadl.darpa.aske.processing.CompareContent
 
 public class P2UITests extends AbstractDialogPlatformTest {
 	private String kbRoot;	
@@ -202,7 +203,7 @@ public class P2UITests extends AbstractDialogPlatformTest {
 			import "http://sadl.org/TableAndEquation.sadl".
 			import "http://aske.ge.com/turbo".
 			
-			// compare thrust of a CF6 and an F100 when the speed is 400 mph and the altitude is 20000 ft?
+			compare thrust of a CF6 and an F100 when the speed is 400 mph and the altitude is 20000 ft?
 			
 			Compare thrust of a CF6 when the speed is 400 mph and the altitude is 20000 ft and when the speed is 600 mph and the altitude is 30000 ft?
 		''').resource.assertValidatesDialogTo[ontModel, rules, commands, issues, processor |
@@ -218,21 +219,22 @@ public class P2UITests extends AbstractDialogPlatformTest {
 				assertNotNull(conversation)
 				assertNotNull(conversation.statements);
 				assertEquals(2, conversation.statements.size)
-				assertTrue(conversation.statements.get(0).statement instanceof WhatIsContent)
-				assertTrue(conversation.statements.get(1).statement instanceof WhatIsContent)
-				val cc1 = conversation.statements.get(0).statement as WhatIsContent
-				val cc2 = conversation.statements.get(1).statement as WhatIsContent
+				assertTrue(conversation.statements.get(0).statement instanceof CompareContent)
+				assertTrue(conversation.statements.get(1).statement instanceof CompareContent)
+				val cc1 = conversation.statements.get(0).statement as CompareContent
+				val cc2 = conversation.statements.get(1).statement as CompareContent
 				assertNotNull(cc1)
 				assertNotNull(cc2)
-				val rules1 = cc1.getComputationalGraphRules
-				val rules2 = cc2.getComputationalGraphRules
+				val rules1 = cc1.getComparisonRules
+				val rules2 = cc2.getComparisonRules
 				assertNotNull(rules1)
 				assertNotNull(rules2)
-				assertEquals(rules1.size, rules2.size)
 				for (var i = 0 ; i < rules1.size; i++) {
 					val r1 = rules1.get(i)
-					val r2 = rules2.get(i)
 					println(r1.toFullyQualifiedString)
+				}
+				for (var i = 0 ; i < rules2.size; i++) {
+					val r2 = rules2.get(i)
 					println(r2.toFullyQualifiedString)
 				}
 //				assertEquals(4, rules.size)
@@ -284,23 +286,15 @@ public class P2UITests extends AbstractDialogPlatformTest {
 				val conversation = (processor as JenaBasedDialogModelProcessor).answerCurationManager.conversation
 				assertNotNull(conversation)
 				assertNotNull(conversation.statements);
-				assertEquals(2, conversation.statements.size)
-				assertTrue(conversation.statements.get(0).statement instanceof WhatIsContent)
-				assertTrue(conversation.statements.get(1).statement instanceof WhatIsContent)
-				val cc1 = conversation.statements.get(0).statement as WhatIsContent
-				val cc2 = conversation.statements.get(1).statement as WhatIsContent
+				assertEquals(1, conversation.statements.size)
+				assertTrue(conversation.statements.get(0).statement instanceof CompareContent)
+				val cc1 = conversation.statements.get(0).statement as CompareContent
 				assertNotNull(cc1)
-				assertNotNull(cc2)
-				val rules1 = cc1.getComputationalGraphRules
-				val rules2 = cc2.getComputationalGraphRules
+				val rules1 = cc1.comparisonRules
 				assertNotNull(rules1)
-				assertNotNull(rules2)
-				assertEquals(rules1.size, rules2.size)
 				for (var i = 0 ; i < rules1.size; i++) {
 					val r1 = rules1.get(i)
-					val r2 = rules2.get(i)
 					println(r1.toFullyQualifiedString)
-					println(r2.toFullyQualifiedString)
 				}
 //				assertEquals(4, rules.size)
 //				for (var i = 0; i < 4; i++) {
