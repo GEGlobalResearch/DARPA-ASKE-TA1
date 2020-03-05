@@ -3484,7 +3484,7 @@ public class AnswerCurationManager {
 							((TripleElement)ifs.get(i+2)).getSubject().equals(((TripleElement)gpe).getSubject()) && 
 							((TripleElement)ifs.get(i+2)).getPredicate().getURI().equals(SadlConstants.SADL_IMPLICIT_MODEL_UNIT_URI)) {
 						HashMap<String, String> condition = new HashMap<String, String>();
-						String colHeader = ((TripleElement)gpe).getObject().getName();
+						String colHeader = "'" + ((TripleElement)gpe).getObject().getName() + "'";
 						String condValue = ((TripleElement)ifs.get(i+1)).getObject().toString() + " " + ((TripleElement)ifs.get(i+2)).getObject().toString();
 						condition.put(colHeader, condValue);
 						conditions.add(condition);
@@ -3571,11 +3571,11 @@ public class AnswerCurationManager {
 				for (String k : m.keySet()) {
 					colWidth = Math.max(k.length(), m.get(k).toString().length());
 				}
-				if (i >= colWidths.size()) {
+				if (i+1 >= colWidths.size()) {
 					colWidths.add(colWidth);	
 				}
-				else if (colWidth > colWidths.get(i)) {
-					colWidths.set(i, colWidth);
+				else if (colWidth > colWidths.get(i+1)) {
+					colWidths.set(i+1, colWidth);
 				}
 			}
 		}
@@ -3661,7 +3661,7 @@ public class AnswerCurationManager {
 //				sb.append(", " + table.get(c).get(v));
 				sb.append(", ");
 				formatStr = "%-" + colWidths.get(idx++) + "s";
-				sb.append(String.format(formatStr, v));
+				sb.append(String.format(formatStr, m.get(v)));
 			}
 			formatStr = "%-" + colWidths.get(idx++) + "s";
 			sb.append(", ");
