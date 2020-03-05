@@ -3586,33 +3586,33 @@ public class AnswerCurationManager {
 			}
 			
 			// column for first links
-			int linkColIdx = 0;
 			for(List<String> rowLinks : diagrams) {		// ranges over rows
-				int maxLinkLen = 0;
-				if (linkColIdx == 0) {
-					maxLinkLen = firstLinkColHdr.length();
-				}
-				else if (linkColIdx == 1) {
-					maxLinkLen = secondLinkColHdr.length();
-				}
-				else {
-					System.err.println("Not expecting more than 2 link columns in table");
-				}
-	
-				String rowLink = rowLinks.get(linkColIdx);
-				int linkLen = rowLink.length();
-				if (linkLen > maxLinkLen) {
-					maxLinkLen = linkLen;
-				}
-				if (colIdx + linkColIdx >= colWidths.size()) {
-					colWidths.add(maxLinkLen);
-				}
-				else {
-					if (maxLinkLen > colWidths.get(colIdx + linkColIdx)) {
-						colWidths.set(colIdx + linkColIdx, maxLinkLen);
+				for (int linkColIdx = 0; linkColIdx < rowLinks.size(); linkColIdx++) {
+					int maxLinkLen = 0;
+					if (linkColIdx == 0) {
+						maxLinkLen = firstLinkColHdr.length();
+					}
+					else if (linkColIdx == 1) {
+						maxLinkLen = secondLinkColHdr.length();
+					}
+					else {
+						System.err.println("Not expecting more than 2 link columns in table");
+					}
+		
+					String rowLink = rowLinks.get(linkColIdx);
+					int linkLen = rowLink.length();
+					if (linkLen > maxLinkLen) {
+						maxLinkLen = linkLen;
+					}
+					if (colIdx + linkColIdx >= colWidths.size()) {
+						colWidths.add(maxLinkLen);
+					}
+					else {
+						if (maxLinkLen > colWidths.get(colIdx + linkColIdx)) {
+							colWidths.set(colIdx + linkColIdx, maxLinkLen);
+						}
 					}
 				}
-				linkColIdx++;
 			}
 		}
 	
