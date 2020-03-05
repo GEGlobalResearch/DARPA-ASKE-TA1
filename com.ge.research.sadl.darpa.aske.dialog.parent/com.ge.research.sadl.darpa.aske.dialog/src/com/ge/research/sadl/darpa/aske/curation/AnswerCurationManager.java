@@ -3486,7 +3486,7 @@ public class AnswerCurationManager {
 							((TripleElement)ifs.get(i+2)).getSubject().equals(((TripleElement)gpe).getSubject()) && 
 							((TripleElement)ifs.get(i+2)).getPredicate().getURI().equals(SadlConstants.SADL_IMPLICIT_MODEL_UNIT_URI)) {
 						HashMap<String, String> condition = new HashMap<String, String>();
-						String colHeader = "'" + ((TripleElement)gpe).getObject().getName() + "'";
+						String colHeader = ((TripleElement)gpe).getObject().getName();
 						String condValue = ((TripleElement)ifs.get(i+1)).getObject().toString() + " " + ((TripleElement)ifs.get(i+2)).getObject().toString();
 						condition.put(colHeader, condValue);
 						conditions.add(condition);
