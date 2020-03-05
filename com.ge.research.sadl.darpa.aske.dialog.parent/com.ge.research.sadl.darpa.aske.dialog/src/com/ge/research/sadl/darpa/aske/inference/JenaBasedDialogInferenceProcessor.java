@@ -878,6 +878,7 @@ public class JenaBasedDialogInferenceProcessor extends JenaBasedSadlInferencePro
 	
 	
 	private static final String TRENDSQUERY = "prefix mm:<http://aske.ge.com/metamodel#>\n" + 
+			"prefix rdf:<http://www.w3.org/1999/02/22-rdf-syntax-ns#>\n" + 
 			"select distinct (strafter(str(?SIn),'#') as ?Input) (strafter(str(?Trnd),'#') as ?Trend) (strafter(str(?SOut),'#') as ?Output)\n" + 
 			"where {\n" + 
 			"   filter (?CCG in (COMPGRAPH)). #<http://aske.ge.com/Model_Q_1583352078126#CG_1583352078156>\n" +  
@@ -885,7 +886,12 @@ public class JenaBasedDialogInferenceProcessor extends JenaBasedSadlInferencePro
 			"  ?SS mm:trendEffect ?TE.\n" + 
 			"  ?TE mm:cgInput ?SIn.\n" + 
 			"  ?TE mm:trend ?Trnd.\n" + 
-			"  ?SS mm:output ?SOut.\n" + 
+			"  ?SS mm:output ?SOut.\n\n" + 
+			"  ?CGQ mm:execution/mm:compGraph ?CCG.\n" + 
+			"  ?CGQ mm:cgInput ?IVar.\n" + 
+			"  ?Obj ?prop ?IVar.\n" + 
+			"  filter (?prop not in (mm:cgInput))\n" + 
+			"  ?Obj rdf:type ?C.\n" + 
 			"} order by ?Input";
 	
 	boolean useDbn;
@@ -1220,6 +1226,7 @@ private ResultSet[] processWhatWhenQuery(Resource resource, String queryModelFil
 		throws TranslationException, Exception, IOException, URISyntaxException, ConfigurationException {
 	
 	com.hp.hpl.jena.query.ResultSetRewindable eqnsResults = null;
+	ResultSet eqnsResults1 = null;
 //	QueryExecution qexec = null;
 	String listOfEqns = "";
 
@@ -1254,12 +1261,14 @@ private ResultSet[] processWhatWhenQuery(Resource resource, String queryModelFil
 
 	System.out.print("Retrieving composite model eqns: ");
 	long startTime = System.currentTimeMillis();
-	eqnsResults = retrieveCG(inputsList, outputsList);
+//	eqnsResults = retrieveCG(resource, inputsList, outputsList);
+	eqnsResults1 = retrieveCG1(resource, inputsList, outputsList);
 	long endTime = System.currentTimeMillis();
 	System.out.println((endTime - startTime)/1000 + " secs");
 	
 	//dbnEqns = createDbnEqnMap(eqnsResults);
-	dbnEqnMap = createOutputEqnMap(eqnsResults);
+//	dbnEqnMap = createOutputEqnMap(eqnsResults1);
+	dbnEqnMap = createOutputEqnMap1(eqnsResults1);
 
 	//dbnOutput = createDbnOutputMap(eqnsResults); //don't need map from dbns to ouputs anymore
 	dbnOutput = null;
@@ -2178,7 +2187,7 @@ private ResultSet[] processModelsFromDataset(Resource resource, TripleElement[] 
 		//Individual oinst = createIndividualOfClass(qhmodel, oclass.getURI());
 		//outputInstance.put(oclass,oinst);
 
-		eqnsResults = retrieveCG(inpl, outpl);
+		eqnsResults = retrieveCG(resource, inpl, outpl);
 
 		//int ns = eqnsResults.size();
 		//boolean nn = eqnsResults.hasNext();
@@ -2316,7 +2325,7 @@ private void getInputPatterns(TripleElement[] triples, List<TripleElement[]> inp
 
 private void runInference(Resource resource, String query, String testQuery) throws SadlInferenceException, ConfigurationException, ReasonerNotFoundException, InvalidNameException, QueryParseException, QueryCancelledException {
 
-	//UpdateAction.parseExecute(query , getTheJenaModel());
+//	UpdateAction.parseExecute(query , getTheJenaModel());
 
 	runReasonerQuery(resource, query);
 	
@@ -2739,21 +2748,26 @@ private RDFNode getObjectAsLiteralOrResource(Node property, Node object) {
 //		return null;
 //	}
 
-	private com.hp.hpl.jena.query.ResultSetRewindable retrieveCG(List<RDFNode> inputsList, List<RDFNode> outputsList) {
+	private com.hp.hpl.jena.query.ResultSetRewindable retrieveCG(Resource resource, List<RDFNode> inputsList, List<RDFNode> outputsList) throws SadlInferenceException, ConfigurationException, ReasonerNotFoundException, InvalidNameException, QueryParseException, QueryCancelledException {
 		com.hp.hpl.jena.query.ResultSet eqns;
-		com.hp.hpl.jena.query.ResultSet eqnsRes;
+		com.hp.hpl.jena.query.ResultSet eqnsRes = null;
 		List<Object[]> eqnsRes1 = new ArrayList<Object[]>();
 		
 		String queryStr, inpStr, outpStr;
 		com.hp.hpl.jena.query.Query qinv;
 		QueryExecution qexec;
+
+		ResultSet equations = null;
+		ResultSet equationsRes = null;
 		
-		//This is a roundabout way to initialize eqnsRes. There must be a better way?
-		queryStr = BUILD_COMP_GRAPH.replaceAll("LISTOFOUTPUTS", "").replaceAll("LISTOFINPUTS", "");
-		//qinv = QueryFactory.create(queryStr);
-		//qexec = QueryExecutionFactory.create(qinv, getTheJenaModel());
-		//eqnsRes = qexec.execSelect() ;
-		eqnsRes = queryKnowledgeGraph(queryStr, getTheJenaModel());
+		
+//		//This is a roundabout way to initialize eqnsRes. There must be a better way?
+//		queryStr = BUILD_COMP_GRAPH.replaceAll("LISTOFOUTPUTS", "").replaceAll("LISTOFINPUTS", "");
+//		//qinv = QueryFactory.create(queryStr);
+//		//qexec = QueryExecutionFactory.create(qinv, getTheJenaModel());
+//		//eqnsRes = qexec.execSelect() ;
+//		eqnsRes = queryKnowledgeGraph(queryStr, getTheJenaModel());
+		
 		
 		for(RDFNode ic : inputsList) 
 			for(RDFNode oc : outputsList) {
@@ -2766,6 +2780,8 @@ private RDFNode getObjectAsLiteralOrResource(Node property, Node object) {
 				//eqns = qexec.execSelect() ;
 				
 				eqns = queryKnowledgeGraph(queryStr, getTheJenaModel());
+
+				equations = runReasonerQuery(resource, queryStr);
 				
 				//boolean r = eqns.hasNext();
 				//System.out.println(r);
@@ -2776,14 +2792,108 @@ private RDFNode getObjectAsLiteralOrResource(Node property, Node object) {
 					eqns = qexec.execSelect() ;
 				}
 				if (eqns.hasNext() ) {
-					eqnsRes = com.hp.hpl.jena.sparql.util.ResultSetUtils.union(eqnsRes, eqns);
-				}		
+					if(eqnsRes == null) {
+						eqnsRes = eqns;
+					}
+					else {
+						eqnsRes = com.hp.hpl.jena.sparql.util.ResultSetUtils.union(eqnsRes, eqns);
+					}
+				}
+
+				if (!equations.hasNext()) {
+					queryStr = BUILD_COMP_GRAPH.replaceAll("LISTOFOUTPUTS", inpStr).replaceAll("LISTOFINPUTS", outpStr);
+					equations = runReasonerQuery(resource, queryStr);
+				}
+
+				if (equations.hasNext() ) {
+					if(equationsRes == null) {
+						equationsRes = equations;
+					}
+					else {
+						String[] headers = equationsRes.getColumnNames();
+						Object[][] data1 = equationsRes.getData();
+						Object[][] data2 = equations.getData();
+						
+						int coln = headers.length;
+						int len1 = equationsRes.getRowCount();
+						int len2 = equations.getRowCount();
+						Object[][] data = new Object[len1 + len2][coln]; 
+
+						for(int i=0; i<len1 ; i++) {
+							for(int j=0; j<coln; j++) {
+								data[i][j] = data1[i][j];
+							}
+						}
+						for(int i=0; i<len2 ; i++) {
+							for(int j=0; j<coln; j++) {
+								data[i+len1][j] = data2[i][j];
+							}
+						}
+						equationsRes = new ResultSet(headers, data);
+					}
+				}
+				
+				
 		}			
 		
 		
 		return com.hp.hpl.jena.query.ResultSetFactory.makeRewindable(eqnsRes);
 	}
 
+	private ResultSet retrieveCG1(Resource resource, List<RDFNode> inputsList, List<RDFNode> outputsList) throws SadlInferenceException, ConfigurationException, ReasonerNotFoundException, InvalidNameException, QueryParseException, QueryCancelledException {
+		String queryStr, inpStr, outpStr;
+
+		ResultSet equations = null;
+		ResultSet equationsRes = null;
+				
+		
+		for(RDFNode ic : inputsList) 
+			for(RDFNode oc : outputsList) {
+				inpStr = "<" + ic.toString() + ">";
+				outpStr = "<" + oc.toString() + ">";
+				queryStr = BUILD_COMP_GRAPH.replaceAll("LISTOFOUTPUTS", outpStr).replaceAll("LISTOFINPUTS", inpStr);
+
+				equations = runReasonerQuery(resource, queryStr);
+				
+				if (!equations.hasNext()) {
+					queryStr = BUILD_COMP_GRAPH.replaceAll("LISTOFOUTPUTS", inpStr).replaceAll("LISTOFINPUTS", outpStr);
+					equations = runReasonerQuery(resource, queryStr);
+				}
+
+				if (equations.hasNext() ) {
+					if(equationsRes == null) {
+						equationsRes = equations;
+					}
+					else {
+						String[] headers = equationsRes.getColumnNames();
+						Object[][] data1 = equationsRes.getData();
+						Object[][] data2 = equations.getData();
+						
+						int coln = headers.length;
+						int len1 = equationsRes.getRowCount();
+						int len2 = equations.getRowCount();
+						Object[][] data = new Object[len1 + len2][coln]; 
+
+						for(int i=0; i<len1 ; i++) {
+							for(int j=0; j<coln; j++) {
+								data[i][j] = data1[i][j];
+							}
+						}
+						for(int i=0; i<len2 ; i++) {
+							for(int j=0; j<coln; j++) {
+								data[i+len1][j] = data2[i][j];
+							}
+						}
+						equationsRes = new ResultSet(headers, data);
+					}
+				}
+		}
+		return equationsRes;
+	}
+
+	
+	
+	
 	private void ingestKGTriple(com.hp.hpl.jena.rdf.model.Resource s, Property pred, RDFNode o) {
 		queryModel.add(s,pred,o);
 		//getTheJenaModel().add(s,pred,o);
@@ -2900,6 +3010,36 @@ private RDFNode getObjectAsLiteralOrResource(Node property, Node object) {
 			row = eqnsResults.nextSolution() ;
 			outp = row.get("?Out");
 			eq = row.get("?Eq").toString();
+			mapSet.get(outp).add(eq);
+		}
+		for(RDFNode n : mapSet.keySet()) {
+			String[] eqns = new String[mapSet.get(n).size()];
+			eqns = mapSet.get(n).toArray(eqns);
+			map.put(n, eqns );
+		}
+		return map;
+	}
+
+	private Map<RDFNode, String[]> createOutputEqnMap1(ResultSet eqnsResults) {
+		Map<RDFNode, String[]> map = new HashMap<RDFNode, String[]>();
+		RDFNode outp;
+		Map<RDFNode, Set<String>> mapSet = new HashMap<RDFNode, Set<String>>();
+		String eq;
+
+		int OutColIdx = eqnsResults.getColumnPosition("Out");
+		int EqColIdx = eqnsResults.getColumnPosition("Eq");
+		
+		for(int i=0; i<eqnsResults.getRowCount(); i++) {
+			String outpStr = eqnsResults.getResultAt(i, OutColIdx).toString();
+			outp = (RDFNode) getTheJenaModel().getResource(outpStr); 
+			Set<String> eq_set = new HashSet<String>(); 
+			mapSet.put(outp, eq_set);
+		}
+
+		for(int i=0; i<eqnsResults.getRowCount(); i++) {
+			String outpStr = eqnsResults.getResultAt(i, OutColIdx).toString();
+			outp = (RDFNode) getTheJenaModel().getResource(outpStr); 
+			eq = eqnsResults.getResultAt(i, EqColIdx).toString();
 			mapSet.get(outp).add(eq);
 		}
 		for(RDFNode n : mapSet.keySet()) {
