@@ -184,6 +184,7 @@ public class P2UITests extends AbstractDialogPlatformTest {
 		updatePreferences(new PreferenceKey(DialogPreferences.ANSWER_KCHAIN_CG_SERVICE_BASE_URI.id, "http://vesuvius-dev.crd.ge.com:12345"));
 		updatePreferences(new PreferenceKey(DialogPreferences.DBN_INPUT_JSON_GENERATION_SERVICE_BASE_URI.id, "http://vesuvius063.crd.ge.com:46000"));
 		updatePreferences(new PreferenceKey(DialogPreferences.ANSWER_INVIZIN_SERVICE_BASE_URI.id, "http://vesuvius-dev.crd.ge.com:12309"));
+		updatePreferences(new PreferenceKey(DialogPreferences.SHORT_GRAPH_LINK.id, "c:/graphs"));
 		
 		reusableScienceKnowledge
 		reusableCompGraphModel
@@ -201,7 +202,7 @@ public class P2UITests extends AbstractDialogPlatformTest {
 			import "http://sadl.org/TableAndEquation.sadl".
 			import "http://aske.ge.com/turbo".
 			
-			compare thrust of a CF6 and an F100 when the speed is 400 mph and the altitude is 20000 ft?
+			// compare thrust of a CF6 and an F100 when the speed is 400 mph and the altitude is 20000 ft?
 			
 			Compare thrust of a CF6 when the speed is 400 mph and the altitude is 20000 ft and when the speed is 600 mph and the altitude is 30000 ft?
 		''').resource.assertValidatesDialogTo[ontModel, rules, commands, issues, processor |

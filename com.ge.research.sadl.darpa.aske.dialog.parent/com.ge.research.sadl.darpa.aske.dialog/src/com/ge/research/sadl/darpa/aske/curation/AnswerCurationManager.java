@@ -3284,8 +3284,8 @@ public class AnswerCurationManager {
 			// The elements of the outer list are the rows in the table--there should be one for each key in table (below).
 			// Each inner list is list of links, each one of which will be put in a row
 		
-		HashMap<String,List<HashMap<String,String>>> table = new HashMap<String, List<HashMap<String,String>>>();
-			// table is a map of lists of maps. 
+		List<HashMap<String, List<HashMap<String, String>>>> table = new ArrayList<>();
+			// table is a List of Maps of lists of maps. Each member of the List is the data for a row in the table
 			// The key to the outer map is the comparator, e.g., CF6. For tabular output, 
 			//	this is the value in the first column, headed "Options".
 			// The inner list is an ordered set of maps contains the additional columns to be displayed. For each map, 
@@ -3370,7 +3370,9 @@ public class AnswerCurationManager {
 						rset.setShowNamespaces(false);
 						
 						String className = rset.getResultAt(0, 1).toString();	// Used to name the link to the model graph 
-						if (isTable) {
+						if (isTable) {					
+							HashMap<String,List<HashMap<String,String>>> tableRow = new HashMap<String, List<HashMap<String,String>>>();
+							table.add(tableRow);
 							// are there different conditions in the comparisonRules?
 							// Note: the assumption is made there that the sets of results in rss are in the same
 							//	order as the rules in comparisonRules, allowing us to get the conditions on which
@@ -3379,9 +3381,9 @@ public class AnswerCurationManager {
 							for(int i=0; i< rset.getRowCount(); i++) {
 								List<HashMap<String, String>> varVal = new ArrayList<HashMap<String,String>>();
 								String comparand = rset.getResultAt(i, 1).toString();
-								table.put(comparand,  varVal); 
+								tableRow.put(comparand,  varVal); 
 								// see if there are any conditions to be added
-								List<HashMap<String, String>> conditionVals = getTableRowConditions(comparisonRules.get(i));
+								List<HashMap<String, String>> conditionVals = getTableRowConditions(comparisonRules.get(cntr));
 								if (conditionVals != null) {
 									varVal.addAll(conditionVals);
 								}
@@ -3553,7 +3555,7 @@ public class AnswerCurationManager {
 	 * @param diagrams-- list of list of URL. Outer list ranges over rows, inner list is link columns in row.
 	 * @return sadl string
 	 */
-	private Object generateSadlTable(HashMap<String, List<HashMap<String, String>>> table, List<List<String>> diagrams) {
+	private Object generateSadlTable(List<HashMap<String, List<HashMap<String, String>>>> table, List<List<String>> diagrams) {
 		String firstLinkColHdr = "\'Model diagram\'";
 		String secondLinkColHdr = "\'Sensitivity plot\'";
 
@@ -3563,120 +3565,111 @@ public class AnswerCurationManager {
 		colWidths.add(firstColHeader.length());
 
 		// next columns for properties to be compared
-		for(String c : table.keySet()) {
-			List<HashMap<String, String>> colList = table.get(c);
-			for (int i = 0; i < colList.size(); i++) {
-				HashMap<String, String> m = colList.get(i);
-				int colWidth = 0;
-				for (String k : m.keySet()) {
-					colWidth = Math.max(k.length(), m.get(k).toString().length());
+		for (HashMap<String, List<HashMap<String, String>>> tableRow : table) {
+			int colIdx = 1;
+			for(String c : tableRow.keySet()) {
+				List<HashMap<String, String>> colList = tableRow.get(c);
+				for (int i = 0; i < colList.size(); i++) {
+					HashMap<String, String> m = colList.get(i);
+					int colWidth = 0;
+					for (String k : m.keySet()) {
+						colWidth = Math.max(k.length(), m.get(k).toString().length());
+					}
+					if (i+1 >= colWidths.size()) {
+						colWidths.add(colWidth);	
+					}
+					else if (colWidth > colWidths.get(i+1)) {
+						colWidths.set(i+1, colWidth);
+					}
+					colIdx++;
 				}
-				if (i+1 >= colWidths.size()) {
-					colWidths.add(colWidth);	
+			}
+			
+			// column for first links
+			int linkColIdx = 0;
+			for(List<String> rowLinks : diagrams) {		// ranges over rows
+				int maxLinkLen = 0;
+				if (linkColIdx == 0) {
+					maxLinkLen = firstLinkColHdr.length();
 				}
-				else if (colWidth > colWidths.get(i+1)) {
-					colWidths.set(i+1, colWidth);
+				else if (linkColIdx == 1) {
+					maxLinkLen = secondLinkColHdr.length();
 				}
-			}
-		}
-		
-		// column for first links
-		int linkColIdx = 0;
-		for(List<String> rowLinks : diagrams) {		// ranges over rows
-			int maxLinkLen = 0;
-			if (linkColIdx == 0) {
-				maxLinkLen = firstLinkColHdr.length();
-				linkColIdx++;
-			}
-			else if (linkColIdx == 1) {
-				maxLinkLen = secondLinkColHdr.length();
-			}
-			else {
-				System.err.println("Not expecting more than 2 link columns in table");
-			}
-
-			for (String seeStmt : rowLinks) {
-				int linkLen = seeStmt.length();
+				else {
+					System.err.println("Not expecting more than 2 link columns in table");
+				}
+	
+				String rowLink = rowLinks.get(linkColIdx);
+				int linkLen = rowLink.length();
 				if (linkLen > maxLinkLen) {
 					maxLinkLen = linkLen;
 				}
+				if (colIdx + linkColIdx >= colWidths.size()) {
+					colWidths.add(maxLinkLen);
+				}
+				else {
+					if (maxLinkLen > colWidths.get(colIdx + linkColIdx)) {
+						colWidths.set(colIdx + linkColIdx, maxLinkLen);
+					}
+				}
+				linkColIdx++;
 			}
-			colWidths.add(maxLinkLen);
 		}
-		
-//		// now look for any elements larger than header
-//		for(String c : table.keySet()) {
-//			if (c.length() > colWidths.get(0)) {
-//				colWidths.set(0, c.length());
-//			}
-//			int idx = 1;
-//			for(String v : table.get(c).keySet()) {
-//				String val = table.get(c).get(v);
-//				if (val.length() > colWidths.get(idx)) {
-//					colWidths.set(idx, val.length());
-//				}
-//				idx++;
-//			}
-//		}
-
+	
+		StringBuilder sb = new StringBuilder("{");
 		// now output the header row
+		HashMap<String, List<HashMap<String, String>>> tableRow0 = table.get(0);
 		String formatStr = "%" + colWidths.get(0) + "s";
-//		for (int i = 1; i < colWidths.size(); i++) {
-//			formatStr = formatStr + ",%s-" + colWidths.get(i);
-//		}
-		
-		StringBuilder sb = new StringBuilder();
-//		sb.append("{[' '\t ");
-		sb.append("{[");
+		sb.append("[");
 		sb.append(String.format(formatStr, firstColHeader));
 		
-		String someC = (String) table.keySet().toArray()[0];
+		String someC = (String) tableRow0.keySet().toArray()[0];
 		int idx = 1;
-		List<HashMap<String, String>> headerRowList = table.get(someC);
+		List<HashMap<String, String>> headerRowList = tableRow0.get(someC);
 		for (HashMap<String, String> map : headerRowList) {
 			sb.append(", ");
 			formatStr = "%-" + colWidths.get(idx++) + "s";
 			sb.append(String.format(formatStr, map.keySet().toArray()[0]));
 		}
-		formatStr = "%-" + colWidths.get(idx) + "s";
+		formatStr = "%-" + colWidths.get(idx++) + "s";
 		sb.append(", ");
-//		sb.append(String.format(formatStr, diagrams.get(0)));
 		sb.append(String.format(formatStr, firstLinkColHdr));
 		sb.append(", ");
+		formatStr = "%-" + colWidths.get(idx++) + "s";
 		sb.append(String.format(formatStr, secondLinkColHdr));
 		sb.append("],");
 		sb.append(System.lineSeparator());
-		
-		// now output the table rows
-		int rowNum = 0;
-		for(String c : table.keySet()) {
-//			sb.append("     [" + c + "\t ");
-			idx = 0;
-			sb.append(" [");
-			formatStr = "%-" + colWidths.get(idx++) + "s";
-			sb.append(String.format(formatStr, c));
-			List<HashMap<String, String>> tblelement = table.get(c);
-			for (Map<String, String> m : tblelement) {
-				String v = m.keySet().toArray()[0].toString();
-//				sb.append(", " + table.get(c).get(v));
+		for (HashMap<String, List<HashMap<String, String>>> tableRow : table) {			
+			// now output the table rows
+			int rowNum = 0;
+			for(String c : tableRow.keySet()) {
+	//			sb.append("     [" + c + "\t ");
+				idx = 0;
+				sb.append(" [");
+				formatStr = "%-" + colWidths.get(idx++) + "s";
+				sb.append(String.format(formatStr, c));
+				List<HashMap<String, String>> tblelement = tableRow.get(c);
+				for (Map<String, String> m : tblelement) {
+					String v = m.keySet().toArray()[0].toString();
+					sb.append(", ");
+					formatStr = "%-" + colWidths.get(idx++) + "s";
+					sb.append(String.format(formatStr, m.get(v)));
+				}
+				formatStr = "%-" + colWidths.get(idx++) + "s";
+				sb.append(", ");
+				sb.append(String.format(formatStr, diagrams.get(rowNum).get(0)));
 				sb.append(", ");
 				formatStr = "%-" + colWidths.get(idx++) + "s";
-				sb.append(String.format(formatStr, m.get(v)));
+				if (diagrams.get(rowNum).size() > 1) {
+					sb.append(String.format(formatStr, diagrams.get(rowNum).get(1)));
+				}
+				else {
+					sb.append(String.format(formatStr, " "));
+				}
+				sb.append("],");
+				sb.append(System.lineSeparator());
+				rowNum++;
 			}
-			formatStr = "%-" + colWidths.get(idx++) + "s";
-			sb.append(", ");
-			sb.append(String.format(formatStr, diagrams.get(rowNum).get(0)));
-			sb.append(", ");
-			formatStr = "%-" + colWidths.get(idx++) + "s";
-			if (diagrams.get(rowNum).size() > 1) {
-				sb.append(String.format(formatStr, diagrams.get(rowNum).get(1)));
-			}
-			else {
-				sb.append(String.format(formatStr, " "));
-			}
-			sb.append("],");
-			sb.append(System.lineSeparator());
-			rowNum++;
 		}
 		sb.deleteCharAt(sb.length()-(System.lineSeparator().length() + 1)); //delete last comma
 		sb.append("}.");
