@@ -1531,6 +1531,12 @@ private void extractVarInfluence(JsonObject sensitivityResult, Individual cgIns,
 	boolean decreasingDecreases;
 	boolean independent = increasingIncreases = increasingDecreases = decreasingIncreases = decreasingDecreases = false;
 	
+	boolean localmin;
+	boolean localmax = localmin = false;
+	boolean incr;
+	boolean decr = incr = false;
+	
+	
 	Iterator<Entry<String, JsonElement>> mtxitr = sensitivityResult.get("OATMatrix").getAsJsonObject().entrySet().iterator();
 	
 	while(mtxitr.hasNext()) {
@@ -1546,6 +1552,15 @@ private void extractVarInfluence(JsonObject sensitivityResult, Individual cgIns,
 	prevOut = min = max = outputArray.get(0).getAsDouble();
 	prevIn = inputArray.get(0).getAsDouble();
 	
+	
+	/**
+	 *  Only results can be:
+	 *  1) decreasingDecreases
+	 *  2) decreasingIncreases
+	 *  3) decreasingDecreases & increasingDecreases
+	 *  4) decreasingIncreases & increasingIncreases
+	 */
+		
 	int size = outputArray.size();
 	for(int i=1; i<size; i++) {
 		ip = inputArray.get(i).getAsDouble();
@@ -1554,19 +1569,48 @@ private void extractVarInfluence(JsonObject sensitivityResult, Individual cgIns,
 			min = op;
 		if (op > max)
 			max = op;
-		if(prevIn < ip && prevOut < op)
-			increasingIncreases = true;
-		if(prevIn < ip && prevOut > op)
-			increasingDecreases = true;
-		if(prevIn > ip && prevOut < op)
-			decreasingIncreases = true;
-		if(prevIn > ip && prevOut > op)
+		if(prevOut < op && !decreasingIncreases)
 			decreasingDecreases = true;
+		if(prevOut > op && !decreasingDecreases)
+			decreasingIncreases = true;
+		if(prevOut > op && decreasingDecreases) //found local max
+			increasingDecreases = true;
+		if(prevOut < op && decreasingIncreases) //found local min
+			increasingIncreases = true;
+
+//		if(prevIn < ip && prevOut < op)
+//			increasingIncreases = true;
+//		if(prevIn < ip && prevOut > op)
+//			increasingDecreases = true;
+//		if(prevIn > ip && prevOut < op)
+//			decreasingIncreases = true;
+//		if(prevIn > ip && prevOut > op)
+//			decreasingDecreases = true;
 
 		prevIn = ip;
 		prevOut = op;
 	}
 
+	
+//	
+//	prevOut = outputArray.get(0).getAsDouble();
+//	for(int i=1; i<size; i++) {
+//		op = outputArray.get(i).getAsDouble();
+//		if(incr && prevOut > op)
+//			localmax = true;
+//		if(decr && prevOut < op)
+//			localmin = true;
+//		if(prevOut < op) {
+//			incr = true;
+//			decr = false;
+//		}
+//		if( prevOut > op) {
+//			incr = false;
+//			decr = true;
+//		}
+//	}
+	
+	
 	if(min == max)
 		independent = true;
 	
@@ -1604,24 +1648,35 @@ private void ingestTrend(String input, String output, boolean increasingIncrease
 	//outputTrendIns input Altitude
 	ingestKGTriple(outputTrendIns, getModelProperty(getTheJenaModel(), METAMODEL_INPUT_PROP), getTheJenaModel().getResource(inputType));
 	
-	if(increasingIncreases) {
-		//outputTrednIns trend :increasing
-		ingestKGTriple(outputTrendIns, getModelProperty(getTheJenaModel(), METAMODEL_SENS_TREND_PROP), getTheJenaModel().getResource(METAMODEL_TREND_INCRINCR));
-	} 
-	if(increasingDecreases) {
-		//outputTrednIns trend :decreasing
-		ingestKGTriple(outputTrendIns, getModelProperty(getTheJenaModel(), METAMODEL_SENS_TREND_PROP), getTheJenaModel().getResource(METAMODEL_TREND_INCRDECR));
-	}
-	if(decreasingIncreases) {
-		//outputTrednIns trend :decreasing
-		ingestKGTriple(outputTrendIns, getModelProperty(getTheJenaModel(), METAMODEL_SENS_TREND_PROP), getTheJenaModel().getResource(METAMODEL_TREND_DECRINCR));
-	}
+	/**
+	 *  Only results can be:
+	 *  1) decreasingDecreases
+	 *  2) decreasingIncreases
+	 *  3) decreasingDecreases & increasingDecreases
+	 *  4) decreasingIncreases & increasingIncreases
+	 */
+
+	//outputTrednIns trend :increasing
+
 	if(decreasingDecreases) {
-		//outputTrednIns trend :decreasing
-		ingestKGTriple(outputTrendIns, getModelProperty(getTheJenaModel(), METAMODEL_SENS_TREND_PROP), getTheJenaModel().getResource(METAMODEL_TREND_DECRDECR));
+		if(increasingDecreases) {
+			ingestKGTriple(outputTrendIns, getModelProperty(getTheJenaModel(), METAMODEL_SENS_TREND_PROP), getTheJenaModel().getResource(METAMODEL_TREND_DECRDECR));
+			ingestKGTriple(outputTrendIns, getModelProperty(getTheJenaModel(), METAMODEL_SENS_TREND_PROP), getTheJenaModel().getResource(METAMODEL_TREND_INCRDECR));
+		}
+		else {
+			ingestKGTriple(outputTrendIns, getModelProperty(getTheJenaModel(), METAMODEL_SENS_TREND_PROP), getTheJenaModel().getResource(METAMODEL_TREND_INCRINCR));
+		}
+	} 
+	if(decreasingIncreases) {
+		if(increasingIncreases) {
+			ingestKGTriple(outputTrendIns, getModelProperty(getTheJenaModel(), METAMODEL_SENS_TREND_PROP), getTheJenaModel().getResource(METAMODEL_TREND_DECRINCR));
+			ingestKGTriple(outputTrendIns, getModelProperty(getTheJenaModel(), METAMODEL_SENS_TREND_PROP), getTheJenaModel().getResource(METAMODEL_TREND_INCRINCR));
+		}
+		else {
+			ingestKGTriple(outputTrendIns, getModelProperty(getTheJenaModel(), METAMODEL_SENS_TREND_PROP), getTheJenaModel().getResource(METAMODEL_TREND_INCRDECR));
+		}
 	}
 	if (independent) {
-		//outputTrednIns trend :independent
 		ingestKGTriple(outputTrendIns, getModelProperty(getTheJenaModel(), METAMODEL_SENS_TREND_PROP), getTheJenaModel().getResource(METAMODEL_TREND_INDEPENDENT));
 	}
 	
@@ -2259,7 +2314,8 @@ private void getInputPatterns(TripleElement[] triples, List<TripleElement[]> inp
 }
 
 private void runInference(Resource resource, String query, String testQuery) throws SadlInferenceException, ConfigurationException, ReasonerNotFoundException, InvalidNameException, QueryParseException, QueryCancelledException {
-	UpdateAction.parseExecute(query , getTheJenaModel());
+
+	//UpdateAction.parseExecute(query , getTheJenaModel());
 
 	runReasonerQuery(resource, query);
 	
