@@ -879,7 +879,7 @@ public class JenaBasedDialogInferenceProcessor extends JenaBasedSadlInferencePro
 	
 	private static final String TRENDSQUERY = "prefix mm:<http://aske.ge.com/metamodel#>\n" + 
 			"prefix rdf:<http://www.w3.org/1999/02/22-rdf-syntax-ns#>\n" + 
-			"select distinct (strafter(str(?SIn),'#') as ?Input) (strafter(str(?Trnd),'#') as ?Trend) (strafter(str(?SOut),'#') as ?Output)\n" + 
+			"select distinct (strafter(str(?C),'#') as ?Class) (strafter(str(?SIn),'#') as ?Input) (strafter(str(?Trnd),'#') as ?Trend) (strafter(str(?SOut),'#') as ?Output)\n" + 
 			"where {\n" + 
 			"   filter (?CCG in (COMPGRAPH)). #<http://aske.ge.com/Model_Q_1583352078126#CG_1583352078156>\n" +  
 			"  ?CCG mm:sensitivity ?SS.\n" + 
@@ -1365,7 +1365,7 @@ private ResultSet[] processWhatWhenQuery(Resource resource, String queryModelFil
 				    kchainResultsJson = executeKChain(kchainEvalJson); //call sensitivity service instead
 				    
 				    JsonObject sensitivityJson = generateKChainSensitivityJson(cgJson);
-					sensitivityJsonList .add(sensitivityJson);
+					sensitivityJsonList.add(sensitivityJson);
 				    
 				    kchainEvalJson = addKCserviceURL(sensitivityJson); //Add kchain eval service URL for invizin
 				    
@@ -2325,14 +2325,16 @@ private void getInputPatterns(TripleElement[] triples, List<TripleElement[]> inp
 
 private void runInference(Resource resource, String query, String testQuery) throws SadlInferenceException, ConfigurationException, ReasonerNotFoundException, InvalidNameException, QueryParseException, QueryCancelledException {
 
-//	UpdateAction.parseExecute(query , getTheJenaModel());
+//	UpdateAction.parseExecute(query , getTheJenaModel()); // use runReasonerQuery instead
 
 	runReasonerQuery(resource, query);
 	
-//	ResultSet insertTest = runReasonerQuery(resource, testQuery);
-//	if (!insertTest.hasNext()) {
-//		throw new SadlInferenceException("Inference execution failed for " + query);
-//	}
+	if(debugMode) {
+		ResultSet insertTest = runReasonerQuery(resource, testQuery);
+		if (!insertTest.hasNext()) {
+			throw new SadlInferenceException("Inference execution failed for " + query);
+		}
+	}
 }
 	
 
