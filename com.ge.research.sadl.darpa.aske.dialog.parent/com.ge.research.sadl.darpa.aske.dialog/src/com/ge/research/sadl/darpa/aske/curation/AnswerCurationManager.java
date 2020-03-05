@@ -3507,40 +3507,43 @@ public class AnswerCurationManager {
 		StringBuilder sb = new StringBuilder();
 		if (rs != null && rs.getRowCount() > 0) {
 			sb.append(System.lineSeparator());
-			sb.append(System.lineSeparator());
+			int classIdx = rs.getColumnPosition("Class");
+			int inputIdx = rs.getColumnPosition("Input");
+			int trendIdx = rs.getColumnPosition("Trend");
+			int ouputIdx = rs.getColumnPosition("Output");
 			for (int row = 0; row < rs.getRowCount(); row++) {
-				if(rs.getResultAt(row, 1).equals("increasingIncreases")) {
+				if(rs.getResultAt(row, trendIdx).equals("increasingIncreases")) {
 					sb.append("Increasing ");
-					sb.append(rs.getResultAt(row, 0).toString());
+					sb.append(rs.getResultAt(row, inputIdx).toString());
 					sb.append(" increases ");
-					sb.append(rs.getResultAt(row, 2).toString());
+					sb.append(rs.getResultAt(row, ouputIdx).toString());
 					sb.append(" .");
 				} 
-				else if(rs.getResultAt(row, 1).equals("increasingDecreases")) {
+				else if(rs.getResultAt(row, trendIdx).equals("increasingDecreases")) {
 					sb.append("Increasing ");
-					sb.append(rs.getResultAt(row, 0).toString());
+					sb.append(rs.getResultAt(row, inputIdx).toString());
 					sb.append(" decreases ");
-					sb.append(rs.getResultAt(row, 2).toString());
+					sb.append(rs.getResultAt(row, ouputIdx).toString());
 					sb.append(" .");
 				} 
-				else if(rs.getResultAt(row, 1).equals("decreasingIncreases")) {
+				else if(rs.getResultAt(row, trendIdx).equals("decreasingIncreases")) {
 					sb.append("Decreasing ");
-					sb.append(rs.getResultAt(row, 0).toString());
+					sb.append(rs.getResultAt(row, inputIdx).toString());
 					sb.append(" increases ");
-					sb.append(rs.getResultAt(row, 2).toString());
+					sb.append(rs.getResultAt(row, ouputIdx).toString());
 					sb.append(" .");
 				} 
-				else if(rs.getResultAt(row, 1).equals("decreasingDecreases")) {
+				else if(rs.getResultAt(row, trendIdx).equals("decreasingDecreases")) {
 					sb.append("Decreasing ");
-					sb.append(rs.getResultAt(row, 0).toString());
+					sb.append(rs.getResultAt(row, inputIdx).toString());
 					sb.append(" decreases ");
-					sb.append(rs.getResultAt(row, 2).toString());
+					sb.append(rs.getResultAt(row, ouputIdx).toString());
 					sb.append(" .");
 				} 
-				else if(rs.getResultAt(row, 1).equals("independent")) {
-					sb.append(rs.getResultAt(row, 0).toString());
+				else if(rs.getResultAt(row, trendIdx).equals("independent")) {
+					sb.append(rs.getResultAt(row, inputIdx).toString());
 					sb.append(" does not affect ");
-					sb.append(rs.getResultAt(row, 2).toString());
+					sb.append(rs.getResultAt(row, ouputIdx).toString());
 					sb.append(" .");
 				}
 				sb.append(System.lineSeparator());
