@@ -3293,10 +3293,11 @@ public class AnswerCurationManager {
 			//	and the value is the value to be displayed in that column.
 		
 		boolean isTable = false;
+		String insights = null;
 		
 		if (rss != null) {
 			int cntr = 0;
-			if (rss.length > 2){
+			if (rss.length > 3){
 				isTable = true;
 			}
 			for (Object rs : rss) {
@@ -3348,6 +3349,10 @@ public class AnswerCurationManager {
 //						if (errorMsg != null) {
 //							notifyUser(getOwlModelsFolder(), errorMsg, true);
 //						}
+					}
+					else if(cols.contains("Trend")) {//the "insights" section
+						insights = generateInsightsSADL((ResultSet)rs);
+						
 					}
 					else {
 		    			if(cntr > 1) {
@@ -3453,6 +3458,7 @@ public class AnswerCurationManager {
 					answer.append(System.lineSeparator());
 					answer.append(sadlAnswer);
 				}
+				answer.append(insights);
 			}
 		}
 		
@@ -3488,6 +3494,57 @@ public class AnswerCurationManager {
 			}
 		}
 		return conditions;
+	}
+
+	/**
+	 * Generate sadl insight statements. For example: increasing Altitude increases Thrust 
+	 * @param rs
+	 * @return
+	 */
+	private String generateInsightsSADL(ResultSet rs) {
+		StringBuilder sb = new StringBuilder();
+		if (rs != null && rs.getRowCount() > 0) {
+			sb.append(System.lineSeparator());
+			sb.append(System.lineSeparator());
+			for (int row = 0; row < rs.getRowCount(); row++) {
+				if(rs.getResultAt(row, 1).equals("increasingIncreases")) {
+					sb.append("Increasing ");
+					sb.append(rs.getResultAt(row, 0).toString());
+					sb.append(" increases ");
+					sb.append(rs.getResultAt(row, 2).toString());
+					sb.append(" .");
+				} 
+				else if(rs.getResultAt(row, 1).equals("increasingDecreases")) {
+					sb.append("Increasing ");
+					sb.append(rs.getResultAt(row, 0).toString());
+					sb.append(" decreases ");
+					sb.append(rs.getResultAt(row, 2).toString());
+					sb.append(" .");
+				} 
+				else if(rs.getResultAt(row, 1).equals("decreasingIncreases")) {
+					sb.append("Decreasing ");
+					sb.append(rs.getResultAt(row, 0).toString());
+					sb.append(" increases ");
+					sb.append(rs.getResultAt(row, 2).toString());
+					sb.append(" .");
+				} 
+				else if(rs.getResultAt(row, 1).equals("decreasingDecreases")) {
+					sb.append("Decreasing ");
+					sb.append(rs.getResultAt(row, 0).toString());
+					sb.append(" decreases ");
+					sb.append(rs.getResultAt(row, 2).toString());
+					sb.append(" .");
+				} 
+				else if(rs.getResultAt(row, 1).equals("independent")) {
+					sb.append(rs.getResultAt(row, 0).toString());
+					sb.append(" does not affect ");
+					sb.append(rs.getResultAt(row, 2).toString());
+					sb.append(" .");
+				}
+				sb.append(System.lineSeparator());
+			}
+		}
+		return sb.toString();
 	}
 
 	/**

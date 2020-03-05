@@ -77,7 +77,7 @@ InsightStatement:
 ;
 
 RelationshipDescriptor1:
-	relDesc='Increasing'|{RelationshipDescriptor1} 'increasing'|{RelationshipDescriptor1} 'decreasing'
+	relDesc='Increasing' | {RelationshipDescriptor1} 'increasing' | {RelationshipDescriptor1} 'Decreasing' | {RelationshipDescriptor1} 'decreasing'
 ;
 
 RelationshipDescriptor2:

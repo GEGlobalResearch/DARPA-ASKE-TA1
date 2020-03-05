@@ -142,7 +142,7 @@ public class JenaBasedDialogInferenceProcessor extends JenaBasedSadlInferencePro
 //	public static final String qhModelName = "http://aske.ge.com/MetaData";
 //	public static final String qhOwlFileName = "MetaData.owl";
 
-	public static final boolean debugMode = true;
+	public static final boolean debugMode = false;
 	
 	
     private static final String KCHAIN_SERVICE_URL_FRAGMENT = "/darpa/aske/kchain/";
@@ -777,7 +777,7 @@ public class JenaBasedDialogInferenceProcessor extends JenaBasedSadlInferencePro
 			"    ?Oinst a ?Var.\n" + 
 			"    ?Oinst imp:value ?Mean.\n" + 
 			"    optional{?Oinst imp:stddev ?StdDev.}\n" +
-			"    optional{?Oinst imp:unit ?Units}" +
+			"    optional{?Oinst imp:unit ?Units}\n" +
 			"   ?CGQ mm:execution/mm:compGraph ?CCG.\n" + 
 			"   ?CGQ mm:cgInput ?IVar.\n" + 
 			"   ?Obj ?prop ?IVar.\n" + 
@@ -876,6 +876,18 @@ public class JenaBasedDialogInferenceProcessor extends JenaBasedSadlInferencePro
 			" }}\n " + 
 			"}";
 	
+	
+	private static final String TRENDSQUERY = "prefix mm:<http://aske.ge.com/metamodel#>\n" + 
+			"select distinct (strafter(str(?SIn),'#') as ?Input) (strafter(str(?Trnd),'#') as ?Trend) (strafter(str(?SOut),'#') as ?Output)\n" + 
+			"where {\n" + 
+			"   filter (?CCG in (COMPGRAPH)). #<http://aske.ge.com/Model_Q_1583352078126#CG_1583352078156>\n" +  
+			"  ?CCG mm:sensitivity ?SS.\n" + 
+			"  ?SS mm:trendEffect ?TE.\n" + 
+			"  ?TE mm:cgInput ?SIn.\n" + 
+			"  ?TE mm:trend ?Trnd.\n" + 
+			"  ?SS mm:output ?SOut.\n" + 
+			"} order by ?Input";
+	
 	boolean useDbn;
 	boolean useKC; 
 
@@ -927,6 +939,15 @@ public class JenaBasedDialogInferenceProcessor extends JenaBasedSadlInferencePro
 		}
 	}
 	
+	/**
+	 * Returns a ResultSet containing one answer for each simple query. Each answer consists of three ResultSet subsets appearing in sequence:
+	 * 1) data for the model diagram
+	 * 2) the actual numeric answer + the sensitivity URL
+	 * 3) triples corresponding to increasing/decreasing trend insights
+	 */
+	
+//	@Override
+//	public Object[] insertTriplesAndQuery(Resource resource, List<TripleElement[]> triples) throws SadlInferenceException {
 	public Object[] insertTriplesAndQuery(Resource resource, List<Rule> rules, List<TripleElement[]> triples) throws SadlInferenceException {
  		List<Object[]> combinedResults = new ArrayList<Object[]>(triples.size());
  		Object[] results = null;
@@ -1059,7 +1080,7 @@ public class JenaBasedDialogInferenceProcessor extends JenaBasedSadlInferencePro
 		
 		if(debugMode) {
 			long endTime = System.currentTimeMillis();
-			System.out.println("InsertTriplesAndQuery: " + (endTime - startTime) );
+			System.out.println("InsertTriplesAndQuery: " + (endTime - startTime)/1000 + " secs" );
 			SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 			String time = sdf.format(Calendar.getInstance().getTime());
 			System.out.println("InsertTriplesAndQuery returned " + time);
@@ -1235,7 +1256,7 @@ private ResultSet[] processWhatWhenQuery(Resource resource, String queryModelFil
 	long startTime = System.currentTimeMillis();
 	eqnsResults = retrieveCG(inputsList, outputsList);
 	long endTime = System.currentTimeMillis();
-	System.out.println(endTime - startTime);
+	System.out.println((endTime - startTime)/1000 + " secs");
 	
 	//dbnEqns = createDbnEqnMap(eqnsResults);
 	dbnEqnMap = createOutputEqnMap(eqnsResults);
@@ -1246,7 +1267,7 @@ private ResultSet[] processWhatWhenQuery(Resource resource, String queryModelFil
 	int numOfModels = getNumberOfModels(dbnEqnMap);
 
 	if (numOfModels > 0) {
-		dbnResults = new ResultSet[numOfModels*2]; //+1 to accommodate dependency graph 
+		dbnResults = new ResultSet[numOfModels*3]; //+1 to accommodate dependency graph 
 		//dbnResults = new ResultSet[numOfModels]; 
 	} else {
 //		System.out.println("Unable to assemble a model with current knowledge");
@@ -1285,7 +1306,7 @@ private ResultSet[] processWhatWhenQuery(Resource resource, String queryModelFil
 		startTime = System.currentTimeMillis();
 		cgJson = kgResultsToJson(nodesModelsJSONStr, "prognostic", "");
 		endTime = System.currentTimeMillis();
-		System.out.println((endTime - startTime)); // + "  Payload size: " + cgJson.length());
+		System.out.println((endTime - startTime)/1000 + " secs"); // + "  Payload size: " + cgJson.length());
 		
 		if (useDbn) {
 		
@@ -1309,7 +1330,7 @@ private ResultSet[] processWhatWhenQuery(Resource resource, String queryModelFil
 			startTime = System.currentTimeMillis();
 			cgJson = generateDBNjson(cgJson);
 			endTime = System.currentTimeMillis();
-			System.out.println((endTime - startTime)); // + "  Payload size: " + cgJson.length());
+			System.out.println((endTime - startTime)/1000 + " secs"); // + "  Payload size: " + cgJson.length());
 
 			kchainBuildJson = generateKChainBuildJson(cgJson);
 			
@@ -1318,7 +1339,7 @@ private ResultSet[] processWhatWhenQuery(Resource resource, String queryModelFil
 				startTime = System.currentTimeMillis();
 				String buildResult = buildKChain(kchainBuildJson);
 				endTime = System.currentTimeMillis();
-				System.out.println((endTime - startTime)); // + "  Payload size: " + kchainBuildJson.toString().length());
+				System.out.println((endTime - startTime)/1000 + " secs"); // + "  Payload size: " + kchainBuildJson.toString().length());
 
 				if ( getBuildKChainOutcome(buildResult) ) {
 			
@@ -1328,7 +1349,7 @@ private ResultSet[] processWhatWhenQuery(Resource resource, String queryModelFil
 					startTime = System.currentTimeMillis();
 					kchainResultsJson = executeKChain(kchainEvalJson);
 					endTime = System.currentTimeMillis();
-					System.out.println((endTime - startTime));
+					System.out.println((endTime - startTime)/1000 + " secs");
 				    
 				    resmsg = getEvalKChainOutcome(kchainResultsJson);
 				    
@@ -1344,7 +1365,7 @@ private ResultSet[] processWhatWhenQuery(Resource resource, String queryModelFil
 					sensitivityResult = execKChainSensitivity(kchainEvalJson);
 				    sensitivityURL = getVisualizationURL(sensitivityResult);
 					endTime = System.currentTimeMillis();
-					System.out.println((endTime - startTime));
+					System.out.println((endTime - startTime)/1000 + " secs");
 				    //sensitivityURL = "http://localhost:1177";
 				    
 //				    if (isMac()) {
@@ -1389,6 +1410,10 @@ private ResultSet[] processWhatWhenQuery(Resource resource, String queryModelFil
 		
 			dbnResults[i+1] = addSensitivityURLtoResults(rvalues, sensitivityURL);
 //			dbnResults[i+1] = retrieveValues(resource, cgIns);
+			
+			ResultSet insights = retrieveInsights(resource, cgIns);
+			
+			dbnResults[i+2] = insights;
 
 //Temporarily commented out assumption check
 //			String assumpCheck = checkAssumptions(resource, queryModelURI, queryOwlFileWithPath, cgIns);
@@ -1430,6 +1455,18 @@ private ResultSet[] processWhatWhenQuery(Resource resource, String queryModelFil
 
 
 
+
+/**
+ * 
+ * @param resource
+ * @param cgIns
+ * @return
+ */
+private ResultSet retrieveInsights(Resource resource, Individual cgIns) throws Exception {
+	String query = TRENDSQUERY.replaceAll("COMPGRAPH", "<" + cgIns.getURI() + ">");
+	ResultSet res = runReasonerQuery(resource, query);
+	return res;
+}
 
 /**
  * 
@@ -1495,6 +1532,12 @@ private void extractVarInfluence(JsonObject sensitivityResult, Individual cgIns,
 	boolean decreasingDecreases;
 	boolean independent = increasingIncreases = increasingDecreases = decreasingIncreases = decreasingDecreases = false;
 	
+	boolean localmin;
+	boolean localmax = localmin = false;
+	boolean incr;
+	boolean decr = incr = false;
+	
+	
 	Iterator<Entry<String, JsonElement>> mtxitr = sensitivityResult.get("OATMatrix").getAsJsonObject().entrySet().iterator();
 	
 	while(mtxitr.hasNext()) {
@@ -1510,6 +1553,15 @@ private void extractVarInfluence(JsonObject sensitivityResult, Individual cgIns,
 	prevOut = min = max = outputArray.get(0).getAsDouble();
 	prevIn = inputArray.get(0).getAsDouble();
 	
+	
+	/**
+	 *  Only results can be:
+	 *  1) decreasingDecreases
+	 *  2) decreasingIncreases
+	 *  3) decreasingDecreases & increasingDecreases
+	 *  4) decreasingIncreases & increasingIncreases
+	 */
+		
 	int size = outputArray.size();
 	for(int i=1; i<size; i++) {
 		ip = inputArray.get(i).getAsDouble();
@@ -1518,19 +1570,48 @@ private void extractVarInfluence(JsonObject sensitivityResult, Individual cgIns,
 			min = op;
 		if (op > max)
 			max = op;
-		if(prevIn < ip && prevOut < op)
-			increasingIncreases = true;
-		if(prevIn < ip && prevOut > op)
-			increasingDecreases = true;
-		if(prevIn > ip && prevOut < op)
-			decreasingIncreases = true;
-		if(prevIn > ip && prevOut > op)
+		if(prevOut < op && !decreasingIncreases)
 			decreasingDecreases = true;
+		if(prevOut > op && !decreasingDecreases)
+			decreasingIncreases = true;
+		if(prevOut > op && decreasingDecreases) //found local max
+			increasingDecreases = true;
+		if(prevOut < op && decreasingIncreases) //found local min
+			increasingIncreases = true;
+
+//		if(prevIn < ip && prevOut < op)
+//			increasingIncreases = true;
+//		if(prevIn < ip && prevOut > op)
+//			increasingDecreases = true;
+//		if(prevIn > ip && prevOut < op)
+//			decreasingIncreases = true;
+//		if(prevIn > ip && prevOut > op)
+//			decreasingDecreases = true;
 
 		prevIn = ip;
 		prevOut = op;
 	}
 
+	
+//	
+//	prevOut = outputArray.get(0).getAsDouble();
+//	for(int i=1; i<size; i++) {
+//		op = outputArray.get(i).getAsDouble();
+//		if(incr && prevOut > op)
+//			localmax = true;
+//		if(decr && prevOut < op)
+//			localmin = true;
+//		if(prevOut < op) {
+//			incr = true;
+//			decr = false;
+//		}
+//		if( prevOut > op) {
+//			incr = false;
+//			decr = true;
+//		}
+//	}
+	
+	
 	if(min == max)
 		independent = true;
 	
@@ -1568,25 +1649,36 @@ private void ingestTrend(String input, String output, boolean increasingIncrease
 	//outputTrendIns input Altitude
 	ingestKGTriple(outputTrendIns, getModelProperty(getTheJenaModel(), METAMODEL_INPUT_PROP), getTheJenaModel().getResource(inputType));
 	
-	if(increasingIncreases) {
-		//outputTrednIns trend :increasing
-		ingestKGTriple(outputTrendIns, getModelProperty(getTheJenaModel(), METAMODEL_INPUT_PROP), getTheJenaModel().getResource(METAMODEL_TREND_INCRINCR));
-	} 
-	if(increasingDecreases) {
-		//outputTrednIns trend :decreasing
-		ingestKGTriple(outputTrendIns, getModelProperty(getTheJenaModel(), METAMODEL_INPUT_PROP), getTheJenaModel().getResource(METAMODEL_TREND_INCRDECR));
-	}
-	if(decreasingIncreases) {
-		//outputTrednIns trend :decreasing
-		ingestKGTriple(outputTrendIns, getModelProperty(getTheJenaModel(), METAMODEL_INPUT_PROP), getTheJenaModel().getResource(METAMODEL_TREND_DECRINCR));
-	}
+	/**
+	 *  Only results can be:
+	 *  1) decreasingDecreases
+	 *  2) decreasingIncreases
+	 *  3) decreasingDecreases & increasingDecreases
+	 *  4) decreasingIncreases & increasingIncreases
+	 */
+
+	//outputTrednIns trend :increasing
+
 	if(decreasingDecreases) {
-		//outputTrednIns trend :decreasing
-		ingestKGTriple(outputTrendIns, getModelProperty(getTheJenaModel(), METAMODEL_INPUT_PROP), getTheJenaModel().getResource(METAMODEL_TREND_DECRDECR));
+		if(increasingDecreases) {
+			ingestKGTriple(outputTrendIns, getModelProperty(getTheJenaModel(), METAMODEL_SENS_TREND_PROP), getTheJenaModel().getResource(METAMODEL_TREND_DECRDECR));
+			ingestKGTriple(outputTrendIns, getModelProperty(getTheJenaModel(), METAMODEL_SENS_TREND_PROP), getTheJenaModel().getResource(METAMODEL_TREND_INCRDECR));
+		}
+		else {
+			ingestKGTriple(outputTrendIns, getModelProperty(getTheJenaModel(), METAMODEL_SENS_TREND_PROP), getTheJenaModel().getResource(METAMODEL_TREND_INCRINCR));
+		}
+	} 
+	if(decreasingIncreases) {
+		if(increasingIncreases) {
+			ingestKGTriple(outputTrendIns, getModelProperty(getTheJenaModel(), METAMODEL_SENS_TREND_PROP), getTheJenaModel().getResource(METAMODEL_TREND_DECRINCR));
+			ingestKGTriple(outputTrendIns, getModelProperty(getTheJenaModel(), METAMODEL_SENS_TREND_PROP), getTheJenaModel().getResource(METAMODEL_TREND_INCRINCR));
+		}
+		else {
+			ingestKGTriple(outputTrendIns, getModelProperty(getTheJenaModel(), METAMODEL_SENS_TREND_PROP), getTheJenaModel().getResource(METAMODEL_TREND_INCRDECR));
+		}
 	}
 	if (independent) {
-		//outputTrednIns trend :independent
-		ingestKGTriple(outputTrendIns, getModelProperty(getTheJenaModel(), METAMODEL_INPUT_PROP), getTheJenaModel().getResource(METAMODEL_TREND_INDEPENDENT));
+		ingestKGTriple(outputTrendIns, getModelProperty(getTheJenaModel(), METAMODEL_SENS_TREND_PROP), getTheJenaModel().getResource(METAMODEL_TREND_INDEPENDENT));
 	}
 	
 	
@@ -1686,7 +1778,7 @@ private String retrieveModelsAndNodes(String listOfEqns, Individual cgIns, List<
 	nodesJSONString = retrieveCGforDBNSpec(listOfEqns, null, cgIns, RETRIEVE_NODES);
 	expressionsJSONString = retrieveCGforDBNSpec(listOfEqns, contextClassList, cgIns, RETRIEVE_MODEL_EXPRESSIONS);
 	endTime = System.currentTimeMillis();
-	System.out.println((endTime - startTime));
+	System.out.println((endTime - startTime)/1000 + " secs");
 
 	StringBuilder ctxtBldr = new StringBuilder();
 	for(String c : contextClassList) {
@@ -1838,7 +1930,7 @@ private void infereDependencyGraph(Resource resource) throws SadlInferenceExcept
 	//String tmp = DEPENDENCY_GRAPH_INSERT
 	runInference(resource, DEPENDENCY_GRAPH_INSERT,CHECK_DEPENDENCY);
 	long endTime = System.currentTimeMillis();
-	System.out.println((endTime - startTime) );
+	System.out.println((endTime - startTime)/1000 + " secs" );
 }
 
 /**
@@ -2223,7 +2315,8 @@ private void getInputPatterns(TripleElement[] triples, List<TripleElement[]> inp
 }
 
 private void runInference(Resource resource, String query, String testQuery) throws SadlInferenceException, ConfigurationException, ReasonerNotFoundException, InvalidNameException, QueryParseException, QueryCancelledException {
-	UpdateAction.parseExecute(query , getTheJenaModel());
+
+	//UpdateAction.parseExecute(query , getTheJenaModel());
 
 	runReasonerQuery(resource, query);
 	
