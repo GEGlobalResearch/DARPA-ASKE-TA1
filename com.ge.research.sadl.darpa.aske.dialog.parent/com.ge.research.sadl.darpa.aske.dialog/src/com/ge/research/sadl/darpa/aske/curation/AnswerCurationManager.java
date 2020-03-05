@@ -3486,7 +3486,7 @@ public class AnswerCurationManager {
 							((TripleElement)ifs.get(i+2)).getSubject().equals(((TripleElement)gpe).getSubject()) && 
 							((TripleElement)ifs.get(i+2)).getPredicate().getURI().equals(SadlConstants.SADL_IMPLICIT_MODEL_UNIT_URI)) {
 						HashMap<String, String> condition = new HashMap<String, String>();
-						String colHeader = "'" + ((TripleElement)gpe).getObject().getName() + "'";
+						String colHeader = ((TripleElement)gpe).getObject().getName();
 						String condValue = ((TripleElement)ifs.get(i+1)).getObject().toString() + " " + ((TripleElement)ifs.get(i+2)).getObject().toString();
 						condition.put(colHeader, condValue);
 						conditions.add(condition);
@@ -3586,33 +3586,33 @@ public class AnswerCurationManager {
 			}
 			
 			// column for first links
-			int linkColIdx = 0;
 			for(List<String> rowLinks : diagrams) {		// ranges over rows
-				int maxLinkLen = 0;
-				if (linkColIdx == 0) {
-					maxLinkLen = firstLinkColHdr.length();
-				}
-				else if (linkColIdx == 1) {
-					maxLinkLen = secondLinkColHdr.length();
-				}
-				else {
-					System.err.println("Not expecting more than 2 link columns in table");
-				}
-	
-				String rowLink = rowLinks.get(linkColIdx);
-				int linkLen = rowLink.length();
-				if (linkLen > maxLinkLen) {
-					maxLinkLen = linkLen;
-				}
-				if (colIdx + linkColIdx >= colWidths.size()) {
-					colWidths.add(maxLinkLen);
-				}
-				else {
-					if (maxLinkLen > colWidths.get(colIdx + linkColIdx)) {
-						colWidths.set(colIdx + linkColIdx, maxLinkLen);
+				for (int linkColIdx = 0; linkColIdx < rowLinks.size(); linkColIdx++) {
+					int maxLinkLen = 0;
+					if (linkColIdx == 0) {
+						maxLinkLen = firstLinkColHdr.length();
+					}
+					else if (linkColIdx == 1) {
+						maxLinkLen = secondLinkColHdr.length();
+					}
+					else {
+						System.err.println("Not expecting more than 2 link columns in table");
+					}
+		
+					String rowLink = rowLinks.get(linkColIdx);
+					int linkLen = rowLink.length();
+					if (linkLen > maxLinkLen) {
+						maxLinkLen = linkLen;
+					}
+					if (colIdx + linkColIdx >= colWidths.size()) {
+						colWidths.add(maxLinkLen);
+					}
+					else {
+						if (maxLinkLen > colWidths.get(colIdx + linkColIdx)) {
+							colWidths.set(colIdx + linkColIdx, maxLinkLen);
+						}
 					}
 				}
-				linkColIdx++;
 			}
 		}
 	
