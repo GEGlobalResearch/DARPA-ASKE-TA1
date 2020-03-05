@@ -818,69 +818,6 @@ public class DialogAnswerProvider extends BaseDialogAnswerProvider {
 		}
 	}
 
-	@Override
-	public Map<String, String> getPreferences(Resource resource) {
-		IPreferenceValuesProvider pvp = ((XtextResource)resource).getResourceServiceProvider().get(IPreferenceValuesProvider.class);
-		IPreferenceValues preferenceValues = pvp.getPreferenceValues(resource);
-		if (preferenceValues != null) {
-			Map<String, String> map = new HashMap<String, String>();
-			String saveOriginal = preferenceValues.getPreference(DialogPreferences.ORIGINAL_LANGUAGE);
-			if (saveOriginal != null) {
-				map.put(DialogPreferences.ORIGINAL_LANGUAGE.getId(), saveOriginal);
-			}
-			String savePython = preferenceValues.getPreference(DialogPreferences.PYTHON_LANGUAGE);
-			if (savePython != null) {
-				map.put(DialogPreferences.PYTHON_LANGUAGE.getId(), savePython);
-			}
-			String savePythonTF = preferenceValues.getPreference(DialogPreferences.OTHER_PYTHON_LANGUAGE);
-			if (savePythonTF != null) {
-				map.put(DialogPreferences.OTHER_PYTHON_LANGUAGE.getId(), savePythonTF);
-			}
-			String tsburl = preferenceValues.getPreference(DialogPreferences.ANSWER_TEXT_SERVICE_BASE_URI);
-			if (tsburl != null) {
-				map.put(DialogPreferences.ANSWER_TEXT_SERVICE_BASE_URI.getId(), tsburl);
-			}
-			String j2psburl = preferenceValues.getPreference(DialogPreferences.ANSWER_JAVA_TO_PYTHON_SERVICE_BASE_URI);
-			if (j2psburl != null) {
-				map.put(DialogPreferences.ANSWER_JAVA_TO_PYTHON_SERVICE_BASE_URI.getId(), j2psburl);
-			}
-			String usekchain = preferenceValues.getPreference(DialogPreferences.USE_ANSWER_KCHAIN_CG_SERVICE);
-			if (usekchain != null) {
-				map.put(DialogPreferences.USE_ANSWER_KCHAIN_CG_SERVICE.getId(), usekchain);
-			}
-			String kchaincgsburl = preferenceValues.getPreference(DialogPreferences.ANSWER_KCHAIN_CG_SERVICE_BASE_URI);
-			if (kchaincgsburl != null) {
-				map.put(DialogPreferences.ANSWER_KCHAIN_CG_SERVICE_BASE_URI.getId(), kchaincgsburl);
-			}
-			String usedbn = preferenceValues.getPreference(DialogPreferences.USE_DBN_CG_SERVICE);
-			if (usedbn != null) {
-				map.put(DialogPreferences.USE_DBN_CG_SERVICE.getId(), usedbn);
-			}
-			String dbncgsburl = preferenceValues.getPreference(DialogPreferences.ANSWER_DBN_CG_SERVICE_BASE_URI);
-			if (dbncgsburl != null) {
-				map.put(DialogPreferences.ANSWER_DBN_CG_SERVICE_BASE_URI.getId(), dbncgsburl);
-			}
-			String dbnjsongensburl = preferenceValues.getPreference(DialogPreferences.DBN_INPUT_JSON_GENERATION_SERVICE_BASE_URI);
-			if (dbnjsongensburl != null) {
-				map.put(DialogPreferences.DBN_INPUT_JSON_GENERATION_SERVICE_BASE_URI.getId(), dbnjsongensburl);
-			}
-			String invizinserviceurl = preferenceValues.getPreference(DialogPreferences.ANSWER_INVIZIN_SERVICE_BASE_URI);
-			if (invizinserviceurl != null) {
-				map.put(DialogPreferences.ANSWER_INVIZIN_SERVICE_BASE_URI.getId(), invizinserviceurl);
-			}
-			String codeextractionkbaseroot = preferenceValues.getPreference(DialogPreferences.ANSWER_CODE_EXTRACTION_KBASE_ROOT);
-			if (codeextractionkbaseroot != null) {
-				map.put(DialogPreferences.ANSWER_CODE_EXTRACTION_KBASE_ROOT.getId(), codeextractionkbaseroot);
-			}
-			String shortgraphlink = preferenceValues.getPreference(DialogPreferences.SHORT_GRAPH_LINK);
-			if (shortgraphlink != null) {
-				map.put(DialogPreferences.SHORT_GRAPH_LINK.getId(), shortgraphlink);
-			}
-			return map;
-		}
-		return null;
-	}
-
 	public Resource getResource() {
 		Preconditions.checkState(this.document != null, "Not initialized yet.");
 		return this.document.readOnly(resource -> resource);

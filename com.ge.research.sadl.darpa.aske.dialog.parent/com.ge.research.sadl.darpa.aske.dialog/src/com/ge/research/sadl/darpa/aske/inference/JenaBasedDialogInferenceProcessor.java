@@ -93,6 +93,7 @@ import com.ge.research.sadl.model.gp.Node;
 import com.ge.research.sadl.model.gp.Rule;
 import com.ge.research.sadl.model.gp.TripleElement;
 import com.ge.research.sadl.processing.OntModelProvider;
+import com.ge.research.sadl.processing.SadlConstants;
 import com.ge.research.sadl.processing.SadlInferenceException;
 import com.ge.research.sadl.reasoner.ConfigurationException;
 import com.ge.research.sadl.reasoner.ConfigurationManager;
@@ -2212,7 +2213,7 @@ private void getInputPatterns(TripleElement[] triples, List<TripleElement[]> inp
 	for (int i = 0; i < triples.length; i++) {
 		TripleElement tr = triples[i];
 		if (tr.getSubject() instanceof NamedNode) {
-			if (tr.getPredicate().getURI() != null && tr.getPredicate().getName().contains("value")) { //input value triple (v1, sadlimplicitmodel:value, 35000)
+			if (tr.getPredicate().getURI() != null && tr.getPredicate().getURI().equals(SadlConstants.SADL_IMPLICIT_MODEL_VALUE_URI)) { //input value triple (v1, sadlimplicitmodel:value, 35000)
 				quantity = createUQtriplesArray(tr,triples);
 				inputPatterns.add(quantity);
 				inputNodes.add(tr.getSubject());

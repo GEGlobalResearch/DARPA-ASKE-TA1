@@ -37,7 +37,7 @@ import "http://aske.ge.com/turbo".
 //CM: a Altitude with ^value 10000 .
 //CM: the CF6 with speed 400 mph with altitude 20000 ft has machSpeed 0.56 'mach' .
 
-//what is the machSpeed of a CF6 when the speed is 400 mph and the altitude is 20000 ft? CM: .
+//what is the machSpeed of a CF6 when the speed is 400 mph and the altitude is 20000 ft?
 
 // what is the thrust of a CF6 when the speed of the CF6 is 300 mph and the altitude of the CF6 is 20000 ft?  
 //what is the machSpeed of a CF6 when the speed of the CF6 is 400 mph and the altitude of the CF6 is 20000 ft? 

@@ -124,6 +124,7 @@ import com.ge.research.sadl.model.gp.NamedNode.NodeType;
 import com.ge.research.sadl.model.gp.Node;
 import com.ge.research.sadl.model.gp.ProxyNode;
 import com.ge.research.sadl.model.gp.Query;
+import com.ge.research.sadl.model.gp.RDFTypeNode;
 import com.ge.research.sadl.model.gp.Rule;
 import com.ge.research.sadl.model.gp.TripleElement;
 import com.ge.research.sadl.model.gp.VariableNode;
@@ -253,11 +254,6 @@ public class AnswerCurationManager {
 	}
 
 	private Map<String, String> getPreferences() {
-		if (preferences == null) {
-			if (getDialogAnswerProvider() != null && getResource() != null) {
-				preferences = getDialogAnswerProvider().getPreferences(getResource());
-			}
-		}
 		return preferences;
 	}
 
@@ -3288,12 +3284,13 @@ public class AnswerCurationManager {
 			// The elements of the outer list are the rows in the table--there should be one for each key in table (below).
 			// Each inner list is list of links, each one of which will be put in a row
 		
-		HashMap<String,HashMap<String,String>> table = new HashMap<String,HashMap<String,String>>();
-			// table is a map of maps. 
+		HashMap<String,List<HashMap<String,String>>> table = new HashMap<String, List<HashMap<String,String>>>();
+			// table is a map of lists of maps. 
 			// The key to the outer map is the comparator, e.g., CF6. For tabular output, 
 			//	this is the value in the first column, headed "Options".
-			// The inner map contains the additional columns to be displayed. The key is the column header, 
-			//	the type of the thing in that column, and the value is the value to be displayed in that column.
+			// The inner list is an ordered set of maps contains the additional columns to be displayed. For each map, 
+			//	the key is the column header, the type of the thing in that column, 
+			//	and the value is the value to be displayed in that column.
 		
 		boolean isTable = false;
 		
@@ -3375,13 +3372,13 @@ public class AnswerCurationManager {
 							//	the answer depends from the rule conditions.
 							
 							for(int i=0; i< rset.getRowCount(); i++) {
-								HashMap<String,String> varVal = new HashMap<String,String>();
+								List<HashMap<String, String>> varVal = new ArrayList<HashMap<String,String>>();
 								String comparand = rset.getResultAt(i, 1).toString();
 								table.put(comparand,  varVal); 
 								// see if there are any conditions to be added
-								HashMap<String, String> conditionVals = getTableRowConditions(comparisonRules.get(i));
+								List<HashMap<String, String>> conditionVals = getTableRowConditions(comparisonRules.get(i));
 								if (conditionVals != null) {
-									varVal.putAll(conditionVals);
+									varVal.addAll(conditionVals);
 								}
 								
 								// now add the output of the computation
@@ -3391,7 +3388,9 @@ public class AnswerCurationManager {
 									String unit = quoteUnitIfNecessary(unitObj.toString());
 									value = value + " " + unit;
 								}
-								varVal.put(rset.getResultAt(i, 2).toString(), value);
+								HashMap<String, String> valmap = new HashMap<String, String>();
+								valmap.put(rset.getResultAt(i, 2).toString(), value);
+								varVal.add(valmap);
 							}
 						}
 						else {
@@ -3465,19 +3464,25 @@ public class AnswerCurationManager {
 	 * @param rule
 	 * @return
 	 */
-	private HashMap<String, String> getTableRowConditions(Rule rule) {
-		HashMap<String, String> conditions = new HashMap<String, String>();
+	private List<HashMap<String, String>> getTableRowConditions(Rule rule) {
+		List<HashMap<String, String>> conditions = new ArrayList<HashMap<String, String>>();
 		List<GraphPatternElement> ifs = rule.getIfs();
 		for (int i = 0; i < ifs.size(); i++) {
 			GraphPatternElement gpe = ifs.get(i);
 			if (gpe instanceof TripleElement) {
-				if (((TripleElement)gpe).getSubject() instanceof VariableNode && ((TripleElement)gpe).getPredicate().equals(RDF.type)) {
+				if (((TripleElement)gpe).getSubject() instanceof VariableNode && ((TripleElement)gpe).getPredicate() instanceof RDFTypeNode) {
 					// this might be a condition variable
-					if (i < ifs.size()-2 && ifs.get(i+1) instanceof TripleElement && ((TripleElement)ifs.get(i+1)).getPredicate().getURI().equals(SadlConstants.SADL_IMPLICIT_MODEL_VALUE_URI) &&
-							ifs.get(i+2) instanceof TripleElement && ((TripleElement)ifs.get(i+2)).getPredicate().getURI().equals(SadlConstants.SADL_IMPLICIT_MODEL_UNIT_URI)) {
+					if (i < ifs.size()-2 && ifs.get(i+1) instanceof TripleElement && ifs.get(i+2) instanceof TripleElement && 
+							((TripleElement)ifs.get(i+1)).getSubject().equals(((TripleElement)gpe).getSubject()) && 
+							((TripleElement)ifs.get(i+1)).getPredicate().getURI().equals(SadlConstants.SADL_IMPLICIT_MODEL_VALUE_URI) &&
+							((TripleElement)ifs.get(i+2)).getSubject().equals(((TripleElement)gpe).getSubject()) && 
+							((TripleElement)ifs.get(i+2)).getPredicate().getURI().equals(SadlConstants.SADL_IMPLICIT_MODEL_UNIT_URI)) {
+						HashMap<String, String> condition = new HashMap<String, String>();
 						String colHeader = ((TripleElement)gpe).getObject().getName();
 						String condValue = ((TripleElement)ifs.get(i+1)).getObject().toString() + " " + ((TripleElement)ifs.get(i+2)).getObject().toString();
-						conditions.put(colHeader, condValue);
+						condition.put(colHeader, condValue);
+						conditions.add(condition);
+						i = i + 2;
 					}
 				}
 			}
@@ -3491,7 +3496,7 @@ public class AnswerCurationManager {
 	 * @param diagrams-- list of list of URL. Outer list ranges over rows, inner list is link columns in row.
 	 * @return sadl string
 	 */
-	private Object generateSadlTable(HashMap<String, HashMap<String, String>> table, List<List<String>> diagrams) {
+	private Object generateSadlTable(HashMap<String, List<HashMap<String, String>>> table, List<List<String>> diagrams) {
 		String firstLinkColHdr = "\'Model diagram\'";
 		String secondLinkColHdr = "\'Sensitivity plot\'";
 
@@ -3501,9 +3506,21 @@ public class AnswerCurationManager {
 		colWidths.add(firstColHeader.length());
 
 		// next columns for properties to be compared
-		String someC = (String) table.keySet().toArray()[0];
-		for(String prop : table.get(someC).keySet()) {
-			colWidths.add(prop.length());	
+		for(String c : table.keySet()) {
+			List<HashMap<String, String>> colList = table.get(c);
+			for (int i = 0; i < colList.size(); i++) {
+				HashMap<String, String> m = colList.get(i);
+				int colWidth = 0;
+				for (String k : m.keySet()) {
+					colWidth = Math.max(k.length(), m.get(k).toString().length());
+				}
+				if (i >= colWidths.size()) {
+					colWidths.add(colWidth);	
+				}
+				else if (colWidth > colWidths.get(i)) {
+					colWidths.set(i, colWidth);
+				}
+			}
 		}
 		
 		// column for first links
@@ -3530,20 +3547,20 @@ public class AnswerCurationManager {
 			colWidths.add(maxLinkLen);
 		}
 		
-		// now look for any elements larger than header
-		for(String c : table.keySet()) {
-			if (c.length() > colWidths.get(0)) {
-				colWidths.set(0, c.length());
-			}
-			int idx = 1;
-			for(String v : table.get(c).keySet()) {
-				String val = table.get(c).get(v);
-				if (val.length() > colWidths.get(idx)) {
-					colWidths.set(idx, val.length());
-				}
-				idx++;
-			}
-		}
+//		// now look for any elements larger than header
+//		for(String c : table.keySet()) {
+//			if (c.length() > colWidths.get(0)) {
+//				colWidths.set(0, c.length());
+//			}
+//			int idx = 1;
+//			for(String v : table.get(c).keySet()) {
+//				String val = table.get(c).get(v);
+//				if (val.length() > colWidths.get(idx)) {
+//					colWidths.set(idx, val.length());
+//				}
+//				idx++;
+//			}
+//		}
 
 		// now output the header row
 		String formatStr = "%" + colWidths.get(0) + "s";
@@ -3556,12 +3573,13 @@ public class AnswerCurationManager {
 		sb.append("{[");
 		sb.append(String.format(formatStr, firstColHeader));
 		
-		int idx = 1;	
-		for(String prop : table.get(someC).keySet()) {
-//			sb.append(", " + prop + "\t");
+		String someC = (String) table.keySet().toArray()[0];
+		int idx = 1;
+		List<HashMap<String, String>> headerRowList = table.get(someC);
+		for (HashMap<String, String> map : headerRowList) {
 			sb.append(", ");
 			formatStr = "%-" + colWidths.get(idx++) + "s";
-			sb.append(String.format(formatStr, prop));
+			sb.append(String.format(formatStr, map.keySet().toArray()[0]));
 		}
 		formatStr = "%-" + colWidths.get(idx) + "s";
 		sb.append(", ");
@@ -3580,11 +3598,13 @@ public class AnswerCurationManager {
 			sb.append(" [");
 			formatStr = "%-" + colWidths.get(idx++) + "s";
 			sb.append(String.format(formatStr, c));
-			for(String v : table.get(c).keySet()) {
+			List<HashMap<String, String>> tblelement = table.get(c);
+			for (Map<String, String> m : tblelement) {
+				String v = m.keySet().toArray()[0].toString();
 //				sb.append(", " + table.get(c).get(v));
 				sb.append(", ");
 				formatStr = "%-" + colWidths.get(idx++) + "s";
-				sb.append(String.format(formatStr, table.get(c).get(v)));
+				sb.append(String.format(formatStr, v));
 			}
 			formatStr = "%-" + colWidths.get(idx++) + "s";
 			sb.append(", ");

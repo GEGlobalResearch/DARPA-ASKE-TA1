@@ -70,8 +70,6 @@ public interface IDialogAnswerProvider {
 
 	void updateProjectAndDisplaySadlFiles(String projectName, String modelsFolder, List<File> sadlFiles);
 
-	Map<String, String> getPreferences(Resource resource);
-	
 	/**
 	 * Method to add import statements to the Dialog model either after the last existing import statement
 	 * or, if none, after the model "uri" statement.

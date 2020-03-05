@@ -67,6 +67,7 @@ import org.eclipse.xtext.generator.IFileSystemAccess2;
 import org.eclipse.xtext.nodemodel.ICompositeNode;
 import org.eclipse.xtext.nodemodel.INode;
 import org.eclipse.xtext.nodemodel.util.NodeModelUtils;
+import org.eclipse.xtext.preferences.IPreferenceValues;
 import org.eclipse.xtext.preferences.IPreferenceValuesProvider;
 import org.eclipse.xtext.resource.XtextResource;
 import org.eclipse.xtext.resource.XtextSyntaxDiagnostic;
@@ -194,7 +195,6 @@ public class JenaBasedDialogModelProcessor extends JenaBasedSadlModelProcessor {
 	@Inject IPreferenceValuesProvider preferenceProvider;
 	private boolean savePhthonTF;
 	private boolean savePhthon;
-
 	@Override
 	public void onValidate(Resource resource, ValidationAcceptor issueAcceptor, CheckMode mode, ProcessorContext context) {
 		if (!isSupported(resource)) {
@@ -1450,15 +1450,7 @@ public class JenaBasedDialogModelProcessor extends JenaBasedSadlModelProcessor {
 			else {
 				Map<String, String> pmap = null;
 				Resource resource = Preconditions.checkNotNull(getCurrentResource(), "resource");
-				try {
-					IDialogAnswerProvider dap = getDialogAnswerProvider(resource);
-					if (dap != null) {
-						pmap = dap.getPreferences(resource);
-					}
-				} catch (ConfigurationException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				}
+				pmap = getPreferences(resource);
 				answerCurationManager = new AnswerCurationManager(getConfigMgr().getModelFolder(), getConfigMgr(),
 						(XtextResource) resource, pmap);
 				getConfigMgr().addPrivateKeyValuePair(DialogConstants.ANSWER_CURATION_MANAGER, answerCurationManager);
@@ -1467,6 +1459,82 @@ public class JenaBasedDialogModelProcessor extends JenaBasedSadlModelProcessor {
 		return answerCurationManager;
 	}
 	
+	@Override
+	public Map<String, String> getPreferences(Resource resource) {
+		if (modelProcessorPreferenceMap != null) {
+			return modelProcessorPreferenceMap;
+		}
+		// TODO this is a kludge to get SADL preferences, should be fixed
+		EList<Resource> rsrcs = resource.getResourceSet().getResources();
+		for (Resource rsr : rsrcs) {
+			if (rsr.getURI().lastSegment().endsWith(".sadl")) {
+				modelProcessorPreferenceMap = super.getPreferences(rsr);
+				break;
+			}
+		}
+		IPreferenceValuesProvider pvp = ((XtextResource)resource).getResourceServiceProvider().get(IPreferenceValuesProvider.class);
+		IPreferenceValues preferenceValues = pvp.getPreferenceValues(resource);
+		if (preferenceValues != null) {
+			if (modelProcessorPreferenceMap == null) {
+				modelProcessorPreferenceMap = new HashMap<String, String>();
+			}
+			String saveOriginal = preferenceValues.getPreference(DialogPreferences.ORIGINAL_LANGUAGE);
+			if (saveOriginal != null) {
+				modelProcessorPreferenceMap.put(DialogPreferences.ORIGINAL_LANGUAGE.getId(), saveOriginal);
+			}
+			String savePython = preferenceValues.getPreference(DialogPreferences.PYTHON_LANGUAGE);
+			if (savePython != null) {
+				modelProcessorPreferenceMap.put(DialogPreferences.PYTHON_LANGUAGE.getId(), savePython);
+			}
+			String savePythonTF = preferenceValues.getPreference(DialogPreferences.OTHER_PYTHON_LANGUAGE);
+			if (savePythonTF != null) {
+				modelProcessorPreferenceMap.put(DialogPreferences.OTHER_PYTHON_LANGUAGE.getId(), savePythonTF);
+			}
+			String tsburl = preferenceValues.getPreference(DialogPreferences.ANSWER_TEXT_SERVICE_BASE_URI);
+			if (tsburl != null) {
+				modelProcessorPreferenceMap.put(DialogPreferences.ANSWER_TEXT_SERVICE_BASE_URI.getId(), tsburl);
+			}
+			String j2psburl = preferenceValues.getPreference(DialogPreferences.ANSWER_JAVA_TO_PYTHON_SERVICE_BASE_URI);
+			if (j2psburl != null) {
+				modelProcessorPreferenceMap.put(DialogPreferences.ANSWER_JAVA_TO_PYTHON_SERVICE_BASE_URI.getId(), j2psburl);
+			}
+			String usekchain = preferenceValues.getPreference(DialogPreferences.USE_ANSWER_KCHAIN_CG_SERVICE);
+			if (usekchain != null) {
+				modelProcessorPreferenceMap.put(DialogPreferences.USE_ANSWER_KCHAIN_CG_SERVICE.getId(), usekchain);
+			}
+			String kchaincgsburl = preferenceValues.getPreference(DialogPreferences.ANSWER_KCHAIN_CG_SERVICE_BASE_URI);
+			if (kchaincgsburl != null) {
+				modelProcessorPreferenceMap.put(DialogPreferences.ANSWER_KCHAIN_CG_SERVICE_BASE_URI.getId(), kchaincgsburl);
+			}
+			String usedbn = preferenceValues.getPreference(DialogPreferences.USE_DBN_CG_SERVICE);
+			if (usedbn != null) {
+				modelProcessorPreferenceMap.put(DialogPreferences.USE_DBN_CG_SERVICE.getId(), usedbn);
+			}
+			String dbncgsburl = preferenceValues.getPreference(DialogPreferences.ANSWER_DBN_CG_SERVICE_BASE_URI);
+			if (dbncgsburl != null) {
+				modelProcessorPreferenceMap.put(DialogPreferences.ANSWER_DBN_CG_SERVICE_BASE_URI.getId(), dbncgsburl);
+			}
+			String dbnjsongensburl = preferenceValues.getPreference(DialogPreferences.DBN_INPUT_JSON_GENERATION_SERVICE_BASE_URI);
+			if (dbnjsongensburl != null) {
+				modelProcessorPreferenceMap.put(DialogPreferences.DBN_INPUT_JSON_GENERATION_SERVICE_BASE_URI.getId(), dbnjsongensburl);
+			}
+			String invizinserviceurl = preferenceValues.getPreference(DialogPreferences.ANSWER_INVIZIN_SERVICE_BASE_URI);
+			if (invizinserviceurl != null) {
+				modelProcessorPreferenceMap.put(DialogPreferences.ANSWER_INVIZIN_SERVICE_BASE_URI.getId(), invizinserviceurl);
+			}
+			String codeextractionkbaseroot = preferenceValues.getPreference(DialogPreferences.ANSWER_CODE_EXTRACTION_KBASE_ROOT);
+			if (codeextractionkbaseroot != null) {
+				modelProcessorPreferenceMap.put(DialogPreferences.ANSWER_CODE_EXTRACTION_KBASE_ROOT.getId(), codeextractionkbaseroot);
+			}
+			String shortgraphlink = preferenceValues.getPreference(DialogPreferences.SHORT_GRAPH_LINK);
+			if (shortgraphlink != null) {
+				modelProcessorPreferenceMap.put(DialogPreferences.SHORT_GRAPH_LINK.getId(), shortgraphlink);
+			}
+			return modelProcessorPreferenceMap;
+		}
+		return null;
+	}
+
 	private String getResponseFromSadlStatement(EObject stmt) {
 		// TODO Auto-generated method stub
 		String ans = "no";
@@ -1910,7 +1978,7 @@ public class JenaBasedDialogModelProcessor extends JenaBasedSadlModelProcessor {
 
 	private List<GraphPatternElement> unitSpecialConsiderations(List<GraphPatternElement> gpes, Object whenObj, EObject whatIsTarget)
 			throws TranslationException, InvalidNameException {
-		if (!ignoreUnittedQuantities) {
+		if (!isIgnoreUnittedQuantities()) {
 			if (whenObj instanceof Junction) {
 				Object lhs = ((Junction)whenObj).getLhs();
 				if (lhs instanceof ProxyNode && ((ProxyNode)lhs).getProxyFor() instanceof GraphPatternElement) {

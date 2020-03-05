@@ -1,0 +1,127 @@
+<rdf:RDF
+    xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+    xmlns="http://aske.ge.com/Model_Q_1583350596729#"
+    xmlns:owl="http://www.w3.org/2002/07/owl#"
+    xmlns:j.0="http://sadl.org/sadlimplicitmodel#"
+    xmlns:j.1="http://aske.ge.com/hypersonicsV2#"
+    xmlns:rdfs="http://www.w3.org/2000/01/rdf-schema#"
+    xmlns:j.2="http://aske.ge.com/compgraphmodel#"
+    xmlns:j.3="http://aske.ge.com/metamodel#"
+    xmlns:xsd="http://www.w3.org/2001/XMLSchema#"
+  xml:base="http://aske.ge.com/Model_Q_1583350596729">
+  <j.3:CGQuery rdf:ID="Q_1583350596729">
+    <j.3:execution>
+      <j.3:CGExecution>
+        <j.3:output>
+          <j.1:SpecificNetThrust>
+            <j.0:value>[126.072426]</j.0:value>
+            <j.0:unit>lbf/lbm/sec</j.0:unit>
+          </j.1:SpecificNetThrust>
+        </j.3:output>
+        <j.3:compGraph>
+          <j.3:CCG rdf:ID="CG_1583350596848">
+            <j.3:sensitivity>
+              <j.3:Sensitivity>
+                <j.3:trendEffect>
+                  <j.3:OutputTrend>
+                    <j.3:cgInput rdf:resource="http://aske.ge.com/metamodel#increasingIncreases"/>
+                    <j.3:cgInput rdf:resource="http://aske.ge.com/hypersonicsV2#Speed"/>
+                  </j.3:OutputTrend>
+                </j.3:trendEffect>
+                <j.3:output rdf:resource="http://aske.ge.com/hypersonicsV2#MachSpeed"/>
+              </j.3:Sensitivity>
+            </j.3:sensitivity>
+            <j.3:sensitivity>
+              <j.3:Sensitivity>
+                <j.3:trendEffect>
+                  <j.3:OutputTrend>
+                    <j.3:cgInput rdf:resource="http://aske.ge.com/metamodel#increasingDecreases"/>
+                    <j.3:cgInput rdf:resource="http://aske.ge.com/metamodel#increasingIncreases"/>
+                    <j.3:cgInput rdf:resource="http://aske.ge.com/hypersonicsV2#Altitude"/>
+                  </j.3:OutputTrend>
+                </j.3:trendEffect>
+                <j.3:output rdf:resource="http://aske.ge.com/hypersonicsV2#MachSpeed"/>
+              </j.3:Sensitivity>
+            </j.3:sensitivity>
+            <j.3:subgraph>
+              <j.3:SubGraph>
+                <j.3:output>
+                  <j.1:SpecificFuelConsumption>
+                    <j.0:value>[0.47516865]</j.0:value>
+                    <j.0:unit>lbm/sec/lbf</j.0:unit>
+                  </j.1:SpecificFuelConsumption>
+                </j.3:output>
+                <j.3:cgraph>
+                  <j.2:ComputationalGraph>
+                    <j.2:hasEquation rdf:resource="http://aske.ge.com/turbo#Turbo.Solver.getPerform"/>
+                  </j.2:ComputationalGraph>
+                </j.3:cgraph>
+              </j.3:SubGraph>
+            </j.3:subgraph>
+            <j.3:subgraph>
+              <j.3:SubGraph>
+                <j.3:output>
+                  <j.1:MachSpeed/>
+                </j.3:output>
+                <j.3:cgraph>
+                  <j.2:ComputationalGraph>
+                    <j.2:hasEquation rdf:resource="http://aske.ge.com/turbo#Turbo.Solver.getFreeStream0"/>
+                  </j.2:ComputationalGraph>
+                </j.3:cgraph>
+              </j.3:SubGraph>
+            </j.3:subgraph>
+            <j.3:subgraph>
+              <j.3:SubGraph>
+                <j.3:output>
+                  <j.1:SpecificNetThrust>
+                    <j.0:value>[126.072426]</j.0:value>
+                    <j.0:unit>lbf/lbm/sec</j.0:unit>
+                  </j.1:SpecificNetThrust>
+                </j.3:output>
+                <j.3:cgraph>
+                  <j.2:ComputationalGraph>
+                    <j.2:hasEquation rdf:resource="http://aske.ge.com/turbo#Turbo.Solver.getPerform"/>
+                  </j.2:ComputationalGraph>
+                </j.3:cgraph>
+              </j.3:SubGraph>
+            </j.3:subgraph>
+            <j.3:subgraph>
+              <j.3:SubGraph>
+                <j.3:output>
+                  <j.1:EngineTemperatureRatio/>
+                </j.3:output>
+                <j.3:cgraph>
+                  <j.2:ComputationalGraph>
+                    <j.2:hasEquation rdf:resource="http://aske.ge.com/turbo#Turbo.Solver.getThermo"/>
+                  </j.2:ComputationalGraph>
+                </j.3:cgraph>
+              </j.3:SubGraph>
+            </j.3:subgraph>
+          </j.3:CCG>
+        </j.3:compGraph>
+        <j.3:startTime rdf:datatype="http://www.w3.org/2001/XMLSchema#dateTime"
+        >2020-03-04T14:36:36-05:00</j.3:startTime>
+      </j.3:CGExecution>
+    </j.3:execution>
+    <j.3:cgInput>
+      <j.1:Altitude rdf:ID="v3">
+        <j.0:unit rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+        >ft</j.0:unit>
+        <j.0:value rdf:datatype="http://www.w3.org/2001/XMLSchema#decimal"
+        >20000</j.0:value>
+      </j.1:Altitude>
+    </j.3:cgInput>
+    <j.3:cgInput>
+      <j.1:Speed rdf:ID="v2">
+        <j.0:unit rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+        >mph</j.0:unit>
+        <j.0:value rdf:datatype="http://www.w3.org/2001/XMLSchema#decimal"
+        >400</j.0:value>
+      </j.1:Speed>
+    </j.3:cgInput>
+  </j.3:CGQuery>
+  <j.1:CF6 rdf:ID="v5">
+    <j.1:altitude rdf:resource="http://aske.ge.com/Model_Q_1583350596729#v3"/>
+    <j.1:speed rdf:resource="http://aske.ge.com/Model_Q_1583350596729#v2"/>
+  </j.1:CF6>
+</rdf:RDF>

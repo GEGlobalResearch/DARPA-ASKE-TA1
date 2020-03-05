@@ -400,12 +400,6 @@ public class DialogAnswerProviderConsoleForTest extends BaseDialogAnswerProvider
 	}
 
 	@Override
-	public Map<String, String> getPreferences(Resource resource) {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
 	public boolean addImports(List<String> importStatements) {
 		// TODO Auto-generated method stub
 		return false;
