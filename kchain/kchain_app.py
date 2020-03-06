@@ -61,19 +61,33 @@ def build(body):
     if not 'equationModel' in body.keys():
         body['equationModel'] = None
         
-    #call K-CHAIN build function with necessary general inputs
-    ko.append(mdlName = None,
-             inputVars = body['inputVariables'], 
-             outputVars = body['outputVariables'], 
-             subMdlName = body['modelName'], 
-             eqMdl = body['equationModel'],
-             dataLoc = body['dataLocation'])
-
-#        ko.build(inputVar = body['inputVariables'], 
-#             outputVar = body['outputVariables'], 
-#             mdlName = body['modelName'], 
-#             dataLoc = body['dataLocation'],
-#             eqMdl = body['equationModel'])
+    #call K-CHAIN build function with necessary general inputs    
+    if 'CGType' in body.keys():
+        if body['CGType'] == 'python':
+            ko.buildPy(inputVars = body['inputVariables'],
+                       outputVars = body['outputVariables'], 
+                       mdlName = body['modelName'], 
+                       eqMdl = body['equationModel'])
+        else:
+            ko.append(mdlName = None,
+                  inputVars = body['inputVariables'], 
+                  outputVars = body['outputVariables'], 
+                  subMdlName = body['modelName'], 
+                  eqMdl = body['equationModel'],
+                  dataLoc = body['dataLocation'])
+    else:
+        ko.append(mdlName = None,
+                  inputVars = body['inputVariables'], 
+                  outputVars = body['outputVariables'], 
+                  subMdlName = body['modelName'], 
+                  eqMdl = body['equationModel'],
+                  dataLoc = body['dataLocation'])
+            
+    # ko.build(inputVar = body['inputVariables'], 
+    #     outputVar = body['outputVariables'], 
+    #     mdlName = body['modelName'], 
+    #     dataLoc = body['dataLocation'],
+    #     eqMdl = body['equationModel'])
     
     #construct output packet
     outputPacket = {"modelType" : ko.modelType,
@@ -142,9 +156,19 @@ def evaluate(body):
         outputPacket["error"] = str(fx_opt)
     else:
         #call K-CHAIN evaluate function with necessary general inputs
-        outputVar, defaultValuesUsed, missingVar = ko.evaluate(inputVar = body['inputVariables'], 
-                                                               outputVar = body['outputVariables'], 
-                                                               mdlName = body['modelName'])
+        if 'CGType' in body.keys():
+            if body['CGType'] == 'python':
+                outputVar, defaultValuesUsed, missingVar = ko.evaluatePy(inputVars = body['inputVariables'], 
+                                                                         outputVars = body['outputVariables'], 
+                                                                         mdlName = body['modelName'])
+            else:
+                outputVar, defaultValuesUsed, missingVar = ko.evaluate(inputVars = body['inputVariables'], 
+                                                                       outputVars = body['outputVariables'], 
+                                                                       mdlName = body['modelName'])
+        else:
+            outputVar, defaultValuesUsed, missingVar = ko.evaluate(inputVars = body['inputVariables'], 
+                                                                   outputVars = body['outputVariables'], 
+                                                                   mdlName = body['modelName'])
         inputVar = body['inputVariables']
         outputPacket["error"] = ''
         
