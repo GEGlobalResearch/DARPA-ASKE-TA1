@@ -211,7 +211,7 @@ class kChainModel(object):
         
         return mdl, metagraphLoc
     
-    def _makePyFuncScript(self, inputVar, outputVar, mdlName, eqMdl):
+    def _makePyFuncScript(self, inputVar, outputVar, mdlName, eqMdl, prefix = 'import tensorflow as tf'):
         """
         Create formatted TensorFlow-compatible python code from equation strings
         
@@ -224,6 +224,8 @@ class kChainModel(object):
                 Name to assign to the final model (E.g.: 'Newtons2ndLaw')
             eqMdl (string):
                 Equation relating inputs to output (E.g.: "F = m * a")
+            prefix (string):
+                import statements for code to compile
         
         Returns:
             (string):
@@ -262,14 +264,14 @@ class kChainModel(object):
             
             #4 spaces is ideal for indentation
             #construct the python function around the python snippet
-            stringfun = 'import tensorflow as tf'\
+            stringfun = prefix\
             +'\ndef '+mdlName+'('+inStr+'):'\
             +'\n    '+ eqMdl\
             +'\n    return '+ outStr + '\n\n'
         else:
             #implies that str consists of a method
             print('Got method(s) to ingest')
-            stringfun = 'import tensorflow as tf'\
+            stringfun = prefix\
             +'\n' + eqMdl + '\n\n'
         
         if self.debug:
@@ -318,7 +320,7 @@ class kChainModel(object):
         
         return pyFunc
         
-    def _makePyFile(self, stringfun):
+    def _makePyFile(self, stringfun, loc = 0):
         """
         Write the formatted code into a python module for conversion to tensorflow graph
         
@@ -326,7 +328,12 @@ class kChainModel(object):
             stringfun (string):
                 formatted python code as string to be written in python file
         """
-        tempPath = 'eqnModels/__init__.py'
+        if loc == 0:
+            tempPath = 'eqnModels/__init__.py'
+        else:
+            #TODO: add path
+            tempPath = 'eqnModels/__init__.py'
+            
         with open(tempPath, 'w+') as f:
             f.write(stringfun)
     
@@ -499,14 +506,14 @@ class kChainModel(object):
     
             return metagraphLoc
         
-    def evaluate(self, inputVar, outputVar, mdlName):
+    def evaluate(self, inputVars, outputVars, mdlName):
         """
         Evaluates a model with given inputs to compute output values
         
         Arguments:
-            inputVar (JSON array):
+            inputVars (JSON array):
                 array of JSON variable objects with name, type, value, and unit fields
-            outputVar (JSON array):
+            outputVars (JSON array):
                 array of JSON variable objects with name, type, value, and unit fields
             mdlName (string):
                 Name to model to use (E.g.: 'Newtons2ndLaw')
@@ -540,7 +547,7 @@ class kChainModel(object):
                 
             #recollect output and input vars from original graph
             output = list()
-            for node in outputVar:
+            for node in outputVars:
                 if self.debug:
                     print('In eval now: \n')
                     print(nodeDict)
@@ -551,17 +558,19 @@ class kChainModel(object):
             
             #setup feed dictionary for task at hand
             fd = {}
+            vals = {}
+            
             #assign values to nodes
-            for node in inputVar:
+            for node in inputVars:
                 if '[' in node['value'] and ']' in node['value']:
                     tstr = node['value'][1:-1]
-                    fd[new_graph.get_tensor_by_name(nodeDict[node['name']]['graphRef'])] = np.fromstring(tstr, 
-                   sep = ',').reshape(-1,1)
+                    vals[node['name']] = np.fromstring(tstr, sep = ',')
+                    fd[new_graph.get_tensor_by_name(nodeDict[node['name']]['graphRef'])] = vals[node['name']][0]
                 else:
                     tstr = node['value']
-                    fd[new_graph.get_tensor_by_name(nodeDict[node['name']]['graphRef'])] = float(tstr)
+                    vals[node['name']] = np.fromstring(tstr, sep = ',')
+                    fd[new_graph.get_tensor_by_name(nodeDict[node['name']]['graphRef'])] = vals[node['name']][0]
                 
-            
             print("Feed Dictionary:")
             print(fd)
         
@@ -570,23 +579,34 @@ class kChainModel(object):
             defaultValues = self._getDefaultValues(metagraphLoc)
             
             defaultValuesUsed = []
-            outval, defaultValuesUsed, missingVar, fd = self._runSessionWithDefaults(sess, new_graph, inputVar,
+            outval, defaultValuesUsed, missingVar, fd = self._runSessionWithDefaults(sess, new_graph, inputVars,
                                                                      output, fd, defaultValues, 
                                                                      defaultValuesUsed, nodeDict)
             print('outputs:')
             print(outval)
+            
+            #TODO
+            #if outval is not none
+            #feed in next value from vals in fd
+            #if defaultvaluesused is empty
+            #then run session
+            #if defaults not empty
+            #add defaults used in feed dictionary to avoid search for defaults again
+            #then run sess
+            
+            
             # Close the session
             sess.close()
         
         if outval is not None:
-            for ii in range(len(outputVar)):
-                outputVar[ii]['value'] = np.array2string(outval[ii].reshape(-1,),
+            for ii in range(len(outputVars)):
+                outputVars[ii]['value'] = np.array2string(outval[ii].reshape(-1,),
                                                          separator = ',')
         else:
-            for ii in range(len(outputVar)):
-                outputVar[ii]['value'] = None
+            for ii in range(len(outputVars)):
+                outputVars[ii]['value'] = None
                 
-        return outputVar, defaultValuesUsed, missingVar
+        return outputVars, defaultValuesUsed, missingVar
     
     def _runSessionWithDefaults(self, sess, mdl, inputVar, output, fd, defaultValues, defaultValuesUsed, nodeDict):
         """
@@ -675,14 +695,14 @@ class kChainModel(object):
                 
         return aval, defaultValuesUsed, missingVar, fd
         
-    def evaluateInverse(self, inputVar, outputVar, mdlName):
+    def evaluateInverse(self, inputVars, outputVars, mdlName):
         """
         Evaluates a model with given inputs to compute output values
         
         Arguments:
-            inputVar (JSON array):
+            inputVars (JSON array):
                 array of JSON variable objects with name, type, value, and unit fields
-            outputVar (JSON array):
+            outputVars (JSON array):
                 array of JSON variable objects with name, type, value, and unit fields
             mdlName (string):
                 Name to model to use (E.g.: 'Newtons2ndLaw')
@@ -697,7 +717,7 @@ class kChainModel(object):
         #Setup domain and context from known values
         domain = []
         context = {}
-        for node in inputVar:
+        for node in inputVars:
             d1 = {'name': node['name'], 'type': 'continuous', 'domain': (float(node['minValue']),float(node['maxValue']))}
             domain.append(d1)
             if 'value' in node.keys():
@@ -709,9 +729,9 @@ class kChainModel(object):
         
         targetValue = []
         targetIndex = []
-        for ii in range(len(outputVar)):
-            if "value" in outputVar[ii].keys():
-                targetValue.append(float(outputVar[ii]['value']))
+        for ii in range(len(outputVars)):
+            if "value" in outputVars[ii].keys():
+                targetValue.append(float(outputVars[ii]['value']))
                 targetIndex.append(ii)
         
         #test evaluate on a feasible design point
@@ -719,18 +739,18 @@ class kChainModel(object):
         feasible_region = Design_space(space = domain, constraints = constraints)
         x0 = experiment_design.initial_design('random', feasible_region, 1)
         
-        for ii in range(len(inputVar)):
-            inputVar[ii]['value'] = str(x0[0][ii])
+        for ii in range(len(inputVars)):
+            inputVars[ii]['value'] = str(x0[0][ii])
             
-        outputVar, defaultValuesUsed, missingVar = self.evaluate(inputVar = inputVar, 
-                                                                 outputVar = outputVar,
+        outputVars, defaultValuesUsed, missingVar = self.evaluate(inputVars = inputVars, 
+                                                                 outputVars = outputVars,
                                                                  mdlName = mdlName)
         
-        if outputVar[0]['value'] is not None:
+        if outputVars[0]['value'] is not None:
             #Call evaluate with TF model within obj function
             fx = lambda x : self.errC(x[0], tv = targetValue, ti = targetIndex,
-                                      mdlName = mdlName, inputVar = inputVar,
-                                      outputVar = outputVar)
+                                      mdlName = mdlName, inputVars = inputVars,
+                                      outputVars = outputVars)
             
             #introduce stopping condition 
             MAXITER = 35
@@ -747,35 +767,35 @@ class kChainModel(object):
                 print(x_opt)
                 print(fx_opt)
             
-            for ii in range(len(inputVar)):
-                inputVar[ii]['value'] = str(x_opt[ii])
+            for ii in range(len(inputVars)):
+                inputVars[ii]['value'] = str(x_opt[ii])
             
-            outputVar, defaultValuesUsed, missingVar = self.evaluate(inputVar = inputVar, 
-                                                                     outputVar = outputVar, 
+            outputVars, defaultValuesUsed, missingVar = self.evaluate(inputVars = inputVars, 
+                                                                     outputVars = outputVars, 
                                                                      mdlName = mdlName)
             
         else:
             x_opt = None
             fx_opt = None
             
-            for ii in range(len(inputVar)):
-                inputVar[ii]['value'] = None
+            for ii in range(len(inputVars)):
+                inputVars[ii]['value'] = None
             
-        return x_opt, fx_opt, inputVar, outputVar, defaultValuesUsed, missingVar
+        return x_opt, fx_opt, inputVars, outputVars, defaultValuesUsed, missingVar
         
 
-    def errC(self, x, tv, ti, mdlName, inputVar, outputVar):
+    def errC(self, x, tv, ti, mdlName, inputVars, outputVars):
         
-        for ii in range(len(inputVar)):
-            inputVar[ii]['value'] = str(x[ii])
+        for ii in range(len(inputVars)):
+            inputVars[ii]['value'] = str(x[ii])
             
-        outputVar,_,_ = self.evaluate(inputVar = inputVar, 
-             outputVar = outputVar, 
+        outputVars,_,_ = self.evaluate(inputVars = inputVars, 
+             outputVars = outputVars, 
              mdlName = mdlName)
         
         errval = []
         for ii in range(len(ti)):
-            errval.append(np.abs(float(outputVar[ti[ii]]['value'][1:-1]) - tv[ii]))
+            errval.append(np.abs(float(outputVars[ti[ii]]['value'][1:-1]) - tv[ii]))
         
         return np.sum(errval)        
         
@@ -1108,3 +1128,109 @@ class kChainModel(object):
         """
         with open(metagraphLoc+'_defaultValues.txt', 'w+') as outfile:  
             json.dump(defValues, outfile, indent=4)
+
+    def buildPy(self, inputVars, outputVars, mdlName, eqMdl):
+        """
+
+        Arguments:
+            inputVar (JSON array):
+                array of JSON variable objects with name (as in dataset), type, and value fields
+            outputVar (JSON array):
+                array of JSON variable objects with name (as in dataset), type, and value fields
+            mdlName (string):
+                Name to assign to the final model (E.g.: 'Newtons2ndLaw')
+            eqMdl (string): 
+                python numpy autograd-compatible code (e.g: "c = a * b" or "a = np.sqrt(x*y)") 
+                
+        """
+        prefix = 'import autograd.numpy as np'
+        
+        #create python function script using the equation script      
+        stringfun = self._makePyFuncScript(inputVars, outputVars, mdlName, eqMdl, prefix)
+        
+        #write the python code into a file where AutoGraph can read it
+        self._makePyFile(stringfun)
+        
+        self.modelType = 'Physics'
+        self.trainedState = 0
+        self.meta_graph_loc = 'eqnModels/__init__.py'
+        
+    
+    def evaluatePy(self, inputVars, outputVars, mdlName):
+        """
+        Evaluates a model with given inputs to compute output values
+        
+        Arguments:
+            inputVars (JSON array):
+                array of JSON variable objects with name, type, value, and unit fields
+            outputVars (JSON array):
+                array of JSON variable objects with name, type, value, and unit fields
+            mdlName (string):
+                Name to model to use (E.g.: 'Newtons2ndLaw')
+        
+        Returns:
+            (Output JSON array, Default JSON array, string):
+                * Output JSON array : array of output variable JSON objects with name, type, and value fields. The resulting output of the computation is assigned to the value field of the JSON object.
+                * Default JSON array : array of default variable JSON objects with name and value fields. 
+                * string : Name of missing variable, which is needed for inference
+            
+        """
+        
+        #reload the eqnModels package as a method was newly added
+        imp.reload(eqnModels)
+        
+        
+        #get the method created by the code
+        pyFunc = getattr(eqnModels, mdlName)
+        
+        if self.debug:
+            print(pyFunc)
+        
+        inputs = {}
+        
+        listOfInputs = []
+        
+        for node in inputVars:
+            if '[' in node['value'] and ']' in node['value']:
+                tstr = node['value'][1:-1]
+            else:
+                tstr = node['value']
+                
+            listOfInputs.append(np.fromstring(tstr, sep = ','))
+        
+        alignedList = np.broadcast(*listOfInputs)
+        
+        #prepare output list
+        values = {}
+        for outputVar in outputVars:
+            values[outputVar['name']] = []
+        
+        #evaluate output for each tuple
+        for inpNum, singleInput in enumerate(alignedList):
+            #assign values to nodes
+            for index, node in enumerate(inputVars):
+                inputs[node['name']] = singleInput[index]
+            
+            print(inputs)
+            
+            #evaluate
+            y = pyFunc(**inputs)
+            
+            #assign outputs
+            if len(outputVars) > 1:
+                for index, outputVar in enumerate(outputVars):
+                    values[outputVar['name']].append(y[index])
+            else:
+                values[outputVars[0]['name']].append(y)
+        
+        #stringify outputs
+        for index, outputVar in enumerate(outputVars):
+            outputVar['value'] = str(values[outputVar['name']])
+ 
+                
+        defaultValuesUsed = []
+        missingVar = ''
+        
+        return outputVars, defaultValuesUsed, missingVar
+            
+        

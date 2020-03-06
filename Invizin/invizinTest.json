@@ -24,6 +24,8 @@
       "unit": "lbs/ft^2"
     }
   ],
-  "modelName": "getAir",
-  "plotType": "2"
+  "modelName": "getAirPy",
+  "plotType": "2",
+  "url_evaluate": "http://localhost:12345/darpa/aske/kchain/evaluate",
+  "CGType": "python"
 }
