@@ -41,19 +41,39 @@ class invizin(object):
         
         outVals = []
         for ii in range(len(rj['outputVariables'])):
-            outVals.append(float(rj['outputVariables'][ii]['value'][1:-1]))
+            if '[' in rj['outputVariables'][ii]['value']:
+                outVals.append(float(rj['outputVariables'][ii]['value'][1:-1]))
+            else: 
+                outVals.append(float(rj['outputVariables'][ii]['value']))
     
         return outVals
     
     def _getOutputDataframe(self, evalPacket, X, index):
         df = pd.DataFrame()
-        for inputVal in X:
-            outVals = self._getOutputValue(evalPacket, inputVal, index)
-            dat = {}
-            dat[evalPacket['inputVariables'][index]['name']] = inputVal #X
-            for ix, outVal in enumerate(outVals):
-                dat[evalPacket['outputVariables'][ix]['name']] = outVal
-            df = df.append(dat, ignore_index=True)
+        
+        if evalPacket['CGType'] != "python":
+            for inputVal in X:
+                outVals = self._getOutputValue(evalPacket, inputVal, index)
+                dat = {}
+                dat[evalPacket['inputVariables'][index]['name']] = inputVal #X
+                for ix, outVal in enumerate(outVals):
+                    dat[evalPacket['outputVariables'][ix]['name']] = outVal
+                df = df.append(dat, ignore_index=True)
+        else:
+            evalPacket['inputVariables'][index]['value'] = str(X.tolist())
+            r = requests.post(self.url_evaluate, json=evalPacket)
+            rj = r.json()
+            assert r.status_code == 200
+            #eval successful
+            for outputVariable in rj['outputVariables']:
+                if '[' in outputVariable['value'] and ']' in outputVariable['value']:
+                    tstr = outputVariable['value'][1:-1]
+                else:
+                    tstr = outputVariable['value']
+                
+                df[outputVariable['name']] = pd.Series(np.fromstring(tstr, sep = ','))
+            
+            df[evalPacket['inputVariables'][index]['name']] = pd.Series(X)
             
         return df
     

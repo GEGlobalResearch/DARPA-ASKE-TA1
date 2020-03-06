@@ -558,17 +558,19 @@ class kChainModel(object):
             
             #setup feed dictionary for task at hand
             fd = {}
+            vals = {}
+            
             #assign values to nodes
             for node in inputVars:
                 if '[' in node['value'] and ']' in node['value']:
                     tstr = node['value'][1:-1]
-                    fd[new_graph.get_tensor_by_name(nodeDict[node['name']]['graphRef'])] = np.fromstring(tstr, 
-                   sep = ',').reshape(-1,1)
+                    vals[node['name']] = np.fromstring(tstr, sep = ',')
+                    fd[new_graph.get_tensor_by_name(nodeDict[node['name']]['graphRef'])] = vals[node['name']][0]
                 else:
                     tstr = node['value']
-                    fd[new_graph.get_tensor_by_name(nodeDict[node['name']]['graphRef'])] = float(tstr)
+                    vals[node['name']] = np.fromstring(tstr, sep = ',')
+                    fd[new_graph.get_tensor_by_name(nodeDict[node['name']]['graphRef'])] = vals[node['name']][0]
                 
-            
             print("Feed Dictionary:")
             print(fd)
         
@@ -582,6 +584,17 @@ class kChainModel(object):
                                                                      defaultValuesUsed, nodeDict)
             print('outputs:')
             print(outval)
+            
+            #TODO
+            #if outval is not none
+            #feed in next value from vals in fd
+            #if defaultvaluesused is empty
+            #then run session
+            #if defaults not empty
+            #add defaults used in feed dictionary to avoid search for defaults again
+            #then run sess
+            
+            
             # Close the session
             sess.close()
         
@@ -1175,25 +1188,46 @@ class kChainModel(object):
         
         inputs = {}
         
-        #assign values to nodes
+        listOfInputs = []
+        
         for node in inputVars:
             if '[' in node['value'] and ']' in node['value']:
                 tstr = node['value'][1:-1]
-                inputs[node['name']] = np.fromstring(tstr, sep = ',')#.reshape(-1,1)
             else:
                 tstr = node['value']
-                inputs[node['name']] = float(tstr)
+                
+            listOfInputs.append(np.fromstring(tstr, sep = ','))
         
-        print(inputs)
+        alignedList = np.broadcast(*listOfInputs)
+        
+        #prepare output list
+        values = {}
+        for outputVar in outputVars:
+            values[outputVar['name']] = []
+        
+        #evaluate output for each tuple
+        for inpNum, singleInput in enumerate(alignedList):
+            #assign values to nodes
+            for index, node in enumerate(inputVars):
+                inputs[node['name']] = singleInput[index]
             
-        y = pyFunc(**inputs)
+            print(inputs)
+            
+            #evaluate
+            y = pyFunc(**inputs)
+            
+            #assign outputs
+            if len(outputVars) > 1:
+                for index, outputVar in enumerate(outputVars):
+                    values[outputVar['name']].append(y[index])
+            else:
+                values[outputVars[0]['name']].append(y)
         
-        if len(outputVars) > 1:
-            for index, outputVar in enumerate(outputVars):
-                outputVar['value'] = float(y[index])
-        else:
-            outputVars[0]['value'] = float(y)
-        
+        #stringify outputs
+        for index, outputVar in enumerate(outputVars):
+            outputVar['value'] = str(values[outputVar['name']])
+ 
+                
         defaultValuesUsed = []
         missingVar = ''
         
