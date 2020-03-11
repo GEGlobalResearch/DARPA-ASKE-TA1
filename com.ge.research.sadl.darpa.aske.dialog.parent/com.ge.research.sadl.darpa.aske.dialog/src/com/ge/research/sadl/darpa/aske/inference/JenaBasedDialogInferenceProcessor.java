@@ -142,7 +142,7 @@ public class JenaBasedDialogInferenceProcessor extends JenaBasedSadlInferencePro
 //	public static final String qhModelName = "http://aske.ge.com/MetaData";
 //	public static final String qhOwlFileName = "MetaData.owl";
 
-	public static final boolean debugMode = false;
+	public static final boolean debugMode = true;
 	
 	
     private static final String KCHAIN_SERVICE_URL_FRAGMENT = "/darpa/aske/kchain/";
@@ -305,6 +305,9 @@ public class JenaBasedDialogInferenceProcessor extends JenaBasedSadlInferencePro
 			"?Initializer ?Dependency\n" + 
 			"where { \n" + 
 			"\n" + 
+			"  { ?Model a imp:Equation.\n" + 
+			"         filter (?Model in ( EQNSLIST )) #EQNSLIST\n" + 
+			"  }union \n" +
 			"  {?Model a imp:ExternalEquation.\n" + 
 			"         filter (?Model in ( EQNSLIST )) #EQNSLIST\n" + 
 			"  } union \n" + 
@@ -334,7 +337,7 @@ public class JenaBasedDialogInferenceProcessor extends JenaBasedSadlInferencePro
 			"    ?Model imp:expression ?Scr.\n" + 
 			"    ?Scr imp:script ?expr.\n" + 
 			"    ?Scr imp:language ?lang.\n" + 
-			"      filter ( ?lang = <http://sadl.org/sadlimplicitmodel#Python> )\n" + 
+			"      filter ( ?lang = <SCRIPTLANGUAGE> )\n" + //http://sadl.org/sadlimplicitmodel#Python-NumPy
 			"  }\n" + 
 			"  optional {\n" + 
 			"    ?Model imp:externalURI ?Fun.\n" + 
@@ -407,7 +410,7 @@ public class JenaBasedDialogInferenceProcessor extends JenaBasedSadlInferencePro
 			"    ?Model imp:expression ?Scr.\n" + 
 			"    ?Scr imp:script ?expr.\n" + 
 			"    ?Scr imp:language ?lang.\n" + 
-			"      filter ( ?lang = <http://sadl.org/sadlimplicitmodel#Python> )\n" + 
+			"      filter ( ?lang = <http://sadl.org/sadlimplicitmodel#Python-NumPy> )\n" + 
 			"  }\n" + 
 			"  optional {\n" + 
 			"    ?Model imp:externalURI ?Fun.\n" + 
@@ -446,6 +449,9 @@ public class JenaBasedDialogInferenceProcessor extends JenaBasedSadlInferencePro
 			"?Initializer ?Dependency\n" + 
 			"where { \n" + 
 			"\n" + 
+			"  { ?Model a imp:Equation.\n" + 
+			"         filter (?Model in ( EQNSLIST )) #EQNSLIST\n" + 
+			"  }union \n" + 
 			"  { ?Model a imp:ExternalEquation.\n" + 
 			"         filter (?Model in ( EQNSLIST )) #EQNSLIST\n" + 
 			"  }union \n" + 
@@ -484,22 +490,12 @@ public class JenaBasedDialogInferenceProcessor extends JenaBasedSadlInferencePro
 			"   optional {?Input imp:localDescriptorName ?InLabel.} #only applies to SemanticInputs\n" + 
 			"   optional {?Input imp:descriptorVariable ?UniqueInputLabel.} \n" + 
 			"   # Get the uniquelabel if available\n" + 
-			"   #optional {?Model imp:arguments ?AL2.\n" + 
-			"   #         ?AL2 list:rest*/list:first ?AO2.\n" + 
-			"   #         ?AO2 imp:localDescriptorName ?Input.\n" + 
-			"   #         ?AO2 imp:descriptorVariable  ?UniqueInputLabel.} #are we using these?\n" + 
+			"   optional {?Model imp:arguments ?AL2.\n" + 
+			"            ?AL2 list:rest*/list:first ?AO2.\n" + 
+			"            ?AO2 imp:localDescriptorName ?Input.\n" + 
+			"            ?AO2 imp:descriptorVariable  ?UniqueInputLabel.} #are we using these?\n" + 
 			"   }\n" + 
 			"  \n" + 
-//			"  optional{\n" + 
-//			"    ?Model imp:expression ?Scr.\n" + 
-//			"    ?Scr imp:script ?expr.\n" + 
-//			"    ?Scr imp:language ?lang.\n" + 
-//			"      filter ( ?lang = <http://sadl.org/sadlimplicitmodel#Python> )\n" + 
-//			"  }\n" + 
-//			"  optional {\n" + 
-//			"    ?Model imp:externalURI ?Fun.\n" + 
-//			"  }\n" + 
-//			"\n" + 
 			"  #Get implicit IOs that have augmentedTypes\n" + 
 			"  optional{\n" + 
 			"   ?Model imp:implicitInput ?II.\n" + 
@@ -1063,7 +1059,7 @@ public class JenaBasedDialogInferenceProcessor extends JenaBasedSadlInferencePro
 //		OntModelProvider.addPrivateKeyValuePair(resource, queryModelFileName, queryModel);
 		
 		try {
-			infereDependencyGraph(resource);
+			inferDependencyGraph(resource);
 		}catch (Exception e) {
 			// TODO: handle exception
 		}
@@ -1301,7 +1297,10 @@ private ResultSet[] processWhatWhenQuery(Resource resource, String queryModelFil
 		
 		//saveMetaDataFile(resource,queryModelURI,queryModelFileName); 
 		
-		String nodesModelsJSONStr = retrieveModelsAndNodes(listOfEqns, cgIns, contextClassList);
+		String scriptLanguage = "http://sadl.org/sadlimplicitmodel#Python-NumPy";
+//		String scriptLanguage = "http://sadl.org/sadlimplicitmodel#Python";
+		
+		String nodesModelsJSONStr = retrieveModelsAndNodes(resource, listOfEqns, cgIns, contextClassList, scriptLanguage);
 		
 		
 
@@ -1371,7 +1370,7 @@ private ResultSet[] processWhatWhenQuery(Resource resource, String queryModelFil
 				    
 					System.out.print("Sensitivity analysis: ");
 					startTime = System.currentTimeMillis();
-					sensitivityResult = execKChainSensitivity(kchainEvalJson);
+					sensitivityResult = execKChainSensitivity(sensitivityJson);
 				    sensitivityURL = getVisualizationURL(sensitivityResult);
 					endTime = System.currentTimeMillis();
 					System.out.println((endTime - startTime)/1000 + " secs");
@@ -1499,7 +1498,7 @@ private Map<String, String> getInverseMap(Map<String, String> map) {
  * @throws IOException 
  */
 private void analyzeSensitivityResults(String sensitivityResult, Individual cgIns, Map<String, String> lbl2class, String queryModelPrefix) throws IOException {
-	sensitivityResult = "{\"sensitivityData\":[{\"OATMatrix\":{\"fsmach\":[0,0.09232463,0.1766437,0.2464482,0.29775146,0.32939076,0.34265238,0.3404852,0.3266189,0.30482608,0.2784374,0.25010738,0.22177133,0.194718,0.1697141,0.14713784,0.12709871,0.10953298,0.09427574,0.08111054],\"altd\":[0,0.15789473684210525,0.3157894736842105,0.47368421052631576,0.631578947368421,0.7894736842105263,0.9473684210526315,1.1052631578947367,1.263157894736842,1.4210526315789473,1.5789473684210527,1.7368421052631577,1.894736842105263,2.052631578947368,2.2105263157894735,2.3684210526315788,2.526315789473684,2.6842105263157894,2.8421052631578947,3]},\"OATRSMatrix\":{\"fsmach\":[0.33210394,0.3332521,0.33433527,0.33535418,0.33630925,0.33720127,0.33803058,0.3387981,0.3395045,0.34015036,0.3407363,0.34126318,0.34173167,0.3421426,0.34249645,0.3427943,0.34303662,0.34322447,0.34335843,0.34343934],\"altd\":[0.81,0.8194736842105264,0.8289473684210527,0.838421052631579,0.8478947368421054,0.8573684210526317,0.866842105263158,0.8763157894736843,0.8857894736842106,0.8952631578947369,0.9047368421052633,0.9142105263157896,0.9236842105263159,0.9331578947368422,0.9426315789473685,0.9521052631578948,0.9615789473684211,0.9710526315789475,0.9805263157894738,0.9900000000000001]},\"name\":\"altd\",\"type\":\"float\",\"value\":\"0.9\"},{\"OATMatrix\":{\"fsmach\":[0.30224335,0.30802384,0.3135674,0.3188915,0.32401192,0.32894263,0.33369592,0.33828318,0.34271488,0.34699997,0.35114703,0.355164,0.35905787,0.36283517,0.36650208,0.3700641,0.37352648,0.37689403,0.38017118,0.3833621],\"u0d\":[1.01,1.0621052631578947,1.1142105263157895,1.1663157894736842,1.2184210526315788,1.2705263157894737,1.3226315789473684,1.3747368421052633,1.426842105263158,1.4789473684210526,1.5310526315789474,1.583157894736842,1.635263157894737,1.6873684210526316,1.7394736842105263,1.791578947368421,1.8436842105263158,1.8957894736842107,1.9478947368421053,2]},\"OATRSMatrix\":{\"fsmach\":[0.32796124,0.32933322,0.33069092,0.33203492,0.3333654,0.33468255,0.33598652,0.33727765,0.33855626,0.3398223,0.34107617,0.34231815,0.34354833,0.34476686,0.34597406,0.34717005,0.34835514,0.34952927,0.3506928,0.35184592],\"u0d\":[1.26,1.2747368421052632,1.2894736842105263,1.3042105263157895,1.3189473684210526,1.3336842105263158,1.348421052631579,1.3631578947368421,1.3778947368421053,1.3926315789473684,1.4073684210526316,1.4221052631578948,1.436842105263158,1.451578947368421,1.4663157894736842,1.4810526315789474,1.4957894736842106,1.5105263157894737,1.5252631578947369,1.54]},\"name\":\"u0d\",\"type\":\"float\",\"value\":\"1.4\"}],\"url\":\"http://localhost:1177\"}";
+//	sensitivityResult = "{\"sensitivityData\":[{\"OATMatrix\":{\"fsmach\":[0,0.09232463,0.1766437,0.2464482,0.29775146,0.32939076,0.34265238,0.3404852,0.3266189,0.30482608,0.2784374,0.25010738,0.22177133,0.194718,0.1697141,0.14713784,0.12709871,0.10953298,0.09427574,0.08111054],\"altd\":[0,0.15789473684210525,0.3157894736842105,0.47368421052631576,0.631578947368421,0.7894736842105263,0.9473684210526315,1.1052631578947367,1.263157894736842,1.4210526315789473,1.5789473684210527,1.7368421052631577,1.894736842105263,2.052631578947368,2.2105263157894735,2.3684210526315788,2.526315789473684,2.6842105263157894,2.8421052631578947,3]},\"OATRSMatrix\":{\"fsmach\":[0.33210394,0.3332521,0.33433527,0.33535418,0.33630925,0.33720127,0.33803058,0.3387981,0.3395045,0.34015036,0.3407363,0.34126318,0.34173167,0.3421426,0.34249645,0.3427943,0.34303662,0.34322447,0.34335843,0.34343934],\"altd\":[0.81,0.8194736842105264,0.8289473684210527,0.838421052631579,0.8478947368421054,0.8573684210526317,0.866842105263158,0.8763157894736843,0.8857894736842106,0.8952631578947369,0.9047368421052633,0.9142105263157896,0.9236842105263159,0.9331578947368422,0.9426315789473685,0.9521052631578948,0.9615789473684211,0.9710526315789475,0.9805263157894738,0.9900000000000001]},\"name\":\"altd\",\"type\":\"float\",\"value\":\"0.9\"},{\"OATMatrix\":{\"fsmach\":[0.30224335,0.30802384,0.3135674,0.3188915,0.32401192,0.32894263,0.33369592,0.33828318,0.34271488,0.34699997,0.35114703,0.355164,0.35905787,0.36283517,0.36650208,0.3700641,0.37352648,0.37689403,0.38017118,0.3833621],\"u0d\":[1.01,1.0621052631578947,1.1142105263157895,1.1663157894736842,1.2184210526315788,1.2705263157894737,1.3226315789473684,1.3747368421052633,1.426842105263158,1.4789473684210526,1.5310526315789474,1.583157894736842,1.635263157894737,1.6873684210526316,1.7394736842105263,1.791578947368421,1.8436842105263158,1.8957894736842107,1.9478947368421053,2]},\"OATRSMatrix\":{\"fsmach\":[0.32796124,0.32933322,0.33069092,0.33203492,0.3333654,0.33468255,0.33598652,0.33727765,0.33855626,0.3398223,0.34107617,0.34231815,0.34354833,0.34476686,0.34597406,0.34717005,0.34835514,0.34952927,0.3506928,0.35184592],\"u0d\":[1.26,1.2747368421052632,1.2894736842105263,1.3042105263157895,1.3189473684210526,1.3336842105263158,1.348421052631579,1.3631578947368421,1.3778947368421053,1.3926315789473684,1.4073684210526316,1.4221052631578948,1.436842105263158,1.451578947368421,1.4663157894736842,1.4810526315789474,1.4957894736842106,1.5105263157894737,1.5252631578947369,1.54]},\"name\":\"u0d\",\"type\":\"float\",\"value\":\"1.4\"}],\"url\":\"http://localhost:1177\"}";
 	
 	JsonElement je = new JsonParser().parse(sensitivityResult);
 	if (je.isJsonObject()) {
@@ -1547,15 +1546,15 @@ private void extractVarInfluence(JsonObject sensitivityResult, Individual cgIns,
 	boolean decr = incr = false;
 	
 	
-	Iterator<Entry<String, JsonElement>> mtxitr = sensitivityResult.get("OATMatrix").getAsJsonObject().entrySet().iterator();
+	Iterator<Entry<String, JsonElement>> mtxitr = sensitivityResult.get("OATRSMatrix").getAsJsonObject().entrySet().iterator();
 	
 	while(mtxitr.hasNext()) {
 		Entry<String, JsonElement> mtxe = mtxitr.next();
 		if(mtxe.getKey().equals(input)) {
-			inputArray = sensitivityResult.get("OATMatrix").getAsJsonObject().get(input).getAsJsonArray();
+			inputArray = sensitivityResult.get("OATRSMatrix").getAsJsonObject().get(input).getAsJsonArray();
 		} else {
 			output = mtxe.getKey();
-			outputArray = sensitivityResult.get("OATMatrix").getAsJsonObject().get(output).getAsJsonArray();
+			outputArray = sensitivityResult.get("OATRSMatrix").getAsJsonObject().get(output).getAsJsonArray();
 		}
 	}	
 
@@ -1624,7 +1623,7 @@ private void extractVarInfluence(JsonObject sensitivityResult, Individual cgIns,
 	if(min == max)
 		independent = true;
 	
-	ingestTrend(input, output, increasingIncreases, increasingDecreases, decreasingIncreases, decreasingDecreases, independent, cgIns, lbl2class);
+	ingestTrend(input.replace("_val", ""), output, increasingIncreases, increasingDecreases, decreasingIncreases, decreasingDecreases, independent, cgIns, lbl2class);
 	
 	
 }
@@ -1774,7 +1773,7 @@ private void computeSensitivityAndAddToDialog(Resource resource, ConfigurationMa
 	}//assumptions satisfied
 }
 
-private String retrieveModelsAndNodes(String listOfEqns, Individual cgIns, List<String> contextClassList) {
+private String retrieveModelsAndNodes(Resource resource, String listOfEqns, Individual cgIns, List<String> contextClassList, String scriptLanguage) throws SadlInferenceException, ConfigurationException, ReasonerNotFoundException, InvalidNameException, QueryParseException, QueryCancelledException {
 	long startTime;
 	long endTime;
 	String modelsJSONString = "";
@@ -1783,9 +1782,9 @@ private String retrieveModelsAndNodes(String listOfEqns, Individual cgIns, List<
 	System.out.print("Retrieving model info from KG: ");
 	startTime = System.currentTimeMillis();
 //	modelsJSONString = retrieveCGforDBNSpec(listOfEqns, contextClassList, cgIns, RETRIEVE_MODELS_WEXP);
-	modelsJSONString = retrieveCGforDBNSpec(listOfEqns, contextClassList, cgIns, RETRIEVE_MODELS);
-	nodesJSONString = retrieveCGforDBNSpec(listOfEqns, null, cgIns, RETRIEVE_NODES);
-	expressionsJSONString = retrieveCGforDBNSpec(listOfEqns, contextClassList, cgIns, RETRIEVE_MODEL_EXPRESSIONS);
+	modelsJSONString = retrieveCGforDBNSpec(resource, listOfEqns, contextClassList, cgIns, RETRIEVE_MODELS);
+	nodesJSONString = retrieveCGforDBNSpec(resource, listOfEqns, null, cgIns, RETRIEVE_NODES);
+	expressionsJSONString = retrieveCGforDBNSpec(resource, listOfEqns, contextClassList, cgIns, RETRIEVE_MODEL_EXPRESSIONS.replaceAll("SCRIPTLANGUAGE", scriptLanguage));
 	endTime = System.currentTimeMillis();
 	System.out.println((endTime - startTime)/1000 + " secs");
 
@@ -1930,7 +1929,7 @@ private void getOutputDocContextPatterns(TripleElement[] triples, List<Node> inp
 	}
 }
 
-private void infereDependencyGraph(Resource resource) throws SadlInferenceException, ConfigurationException, ReasonerNotFoundException, InvalidNameException, QueryParseException, QueryCancelledException {
+private void inferDependencyGraph(Resource resource) throws SadlInferenceException, ConfigurationException, ReasonerNotFoundException, InvalidNameException, QueryParseException, QueryCancelledException {
 	System.out.print("Dependency graph inference: ");
 	long startTime = System.currentTimeMillis();
 	// Insert dependency graph
@@ -2215,8 +2214,8 @@ private ResultSet[] processModelsFromDataset(Resource resource, TripleElement[] 
 			ingestKGTriple(ce, getModelProperty(getTheJenaModel(), METAMODEL_COMPGRAPH_PROP), cgIns);
 
 			// Retrieve Models & Nodes
-			modelsJSONString = retrieveCGforDBNSpec(listOfEqns, contextClassList, cgIns, RETRIEVE_MODELS);
-			nodesJSONString = retrieveCGforDBNSpec(listOfEqns, null, cgIns, RETRIEVE_NODES);
+			modelsJSONString = retrieveCGforDBNSpec(resource, listOfEqns, contextClassList, cgIns, RETRIEVE_MODELS);
+			nodesJSONString = retrieveCGforDBNSpec(resource, listOfEqns, null, cgIns, RETRIEVE_NODES);
 
 
 
@@ -2325,16 +2324,16 @@ private void getInputPatterns(TripleElement[] triples, List<TripleElement[]> inp
 
 private void runInference(Resource resource, String query, String testQuery) throws SadlInferenceException, ConfigurationException, ReasonerNotFoundException, InvalidNameException, QueryParseException, QueryCancelledException {
 
-//	UpdateAction.parseExecute(query , getTheJenaModel()); // use runReasonerQuery instead
+	UpdateAction.parseExecute(query , getTheJenaModel()); // use runReasonerQuery instead
 
 	runReasonerQuery(resource, query);
 	
-	if(debugMode) {
-		ResultSet insertTest = runReasonerQuery(resource, testQuery);
-		if (!insertTest.hasNext()) {
-			throw new SadlInferenceException("Inference execution failed for " + query);
-		}
-	}
+//	if(debugMode) {
+//		ResultSet insertTest = runReasonerQuery(resource, testQuery);
+//		if (!insertTest.hasNext()) {
+//			throw new SadlInferenceException("Inference execution failed for " + query);
+//		}
+//	}
 }
 	
 
@@ -2641,9 +2640,10 @@ private void runInference(Resource resource, String query, String testQuery) thr
 		}
 	}
 
-	private String retrieveCGforDBNSpec(String listOfEqns, List<String> contextClassList, Individual cgIns, String queryTemplate) {
+	private String retrieveCGforDBNSpec(Resource resource, String listOfEqns, List<String> contextClassList, Individual cgIns, String queryTemplate) throws SadlInferenceException, ConfigurationException, ReasonerNotFoundException, InvalidNameException, QueryParseException, QueryCancelledException {
 		String queryStr;
 		com.hp.hpl.jena.query.ResultSetRewindable rset;
+		ResultSet resultSet;
 		//Object[] abridgedRes = new Object[rset.size()];
 		String resStr;
 		String contextClasses = "";
@@ -2656,6 +2656,9 @@ private void runInference(Resource resource, String query, String testQuery) thr
 		}
 		queryStr = queryStr.replaceAll("CONTEXCLASSES", contextClasses);
 		rset = queryKnowledgeGraph(queryStr, getTheJenaModel().union(queryModel));
+		
+		resultSet = runReasonerQuery(resource, queryStr);
+		
 //		QuerySolution res;
 //		RDFNode model = null;
 //		int i=0;
@@ -2671,6 +2674,9 @@ private void runInference(Resource resource, String query, String testQuery) thr
 		
 		resStr = convertResultSetToString(rset);
 //		if (debugMode) {System.out.println(resStr);}
+		
+//		resStr = resultSet.toString();
+		
 		return resStr;
 	}
 
@@ -2753,38 +2759,30 @@ private RDFNode getObjectAsLiteralOrResource(Node property, Node object) {
 	private com.hp.hpl.jena.query.ResultSetRewindable retrieveCG(Resource resource, List<RDFNode> inputsList, List<RDFNode> outputsList) throws SadlInferenceException, ConfigurationException, ReasonerNotFoundException, InvalidNameException, QueryParseException, QueryCancelledException {
 		com.hp.hpl.jena.query.ResultSet eqns;
 		com.hp.hpl.jena.query.ResultSet eqnsRes = null;
-		List<Object[]> eqnsRes1 = new ArrayList<Object[]>();
-		
 		String queryStr, inpStr, outpStr;
 		com.hp.hpl.jena.query.Query qinv;
 		QueryExecution qexec;
-
-		ResultSet equations = null;
-		ResultSet equationsRes = null;
-		
-		
-//		//This is a roundabout way to initialize eqnsRes. There must be a better way?
-//		queryStr = BUILD_COMP_GRAPH.replaceAll("LISTOFOUTPUTS", "").replaceAll("LISTOFINPUTS", "");
-//		//qinv = QueryFactory.create(queryStr);
-//		//qexec = QueryExecutionFactory.create(qinv, getTheJenaModel());
-//		//eqnsRes = qexec.execSelect() ;
-//		eqnsRes = queryKnowledgeGraph(queryStr, getTheJenaModel());
-		
-		
-		for(RDFNode ic : inputsList) 
+	
+		//		//This is a roundabout way to initialize eqnsRes. There must be a better way?
+		//		queryStr = BUILD_COMP_GRAPH.replaceAll("LISTOFOUTPUTS", "").replaceAll("LISTOFINPUTS", "");
+		//		//qinv = QueryFactory.create(queryStr);
+		//		//qexec = QueryExecutionFactory.create(qinv, getTheJenaModel());
+		//		//eqnsRes = qexec.execSelect() ;
+		//		eqnsRes = queryKnowledgeGraph(queryStr, getTheJenaModel());
+	
+	
+		for(RDFNode ic : inputsList) {
 			for(RDFNode oc : outputsList) {
 				inpStr = "<" + ic.toString() + ">";
 				outpStr = "<" + oc.toString() + ">";
 				queryStr = BUILD_COMP_GRAPH.replaceAll("LISTOFOUTPUTS", outpStr).replaceAll("LISTOFINPUTS", inpStr);
-
+	
 				//qinv = QueryFactory.create(queryStr);
 				//qexec = QueryExecutionFactory.create(qinv, getTheJenaModel()); 
 				//eqns = qexec.execSelect() ;
-				
+	
 				eqns = queryKnowledgeGraph(queryStr, getTheJenaModel());
-
-				equations = runReasonerQuery(resource, queryStr);
-				
+	
 				//boolean r = eqns.hasNext();
 				//System.out.println(r);
 				if (!eqns.hasNext()) {
@@ -2801,67 +2799,31 @@ private RDFNode getObjectAsLiteralOrResource(Node property, Node object) {
 						eqnsRes = com.hp.hpl.jena.sparql.util.ResultSetUtils.union(eqnsRes, eqns);
 					}
 				}
-
-				if (!equations.hasNext()) {
-					queryStr = BUILD_COMP_GRAPH.replaceAll("LISTOFOUTPUTS", inpStr).replaceAll("LISTOFINPUTS", outpStr);
-					equations = runReasonerQuery(resource, queryStr);
-				}
-
-				if (equations.hasNext() ) {
-					if(equationsRes == null) {
-						equationsRes = equations;
-					}
-					else {
-						String[] headers = equationsRes.getColumnNames();
-						Object[][] data1 = equationsRes.getData();
-						Object[][] data2 = equations.getData();
-						
-						int coln = headers.length;
-						int len1 = equationsRes.getRowCount();
-						int len2 = equations.getRowCount();
-						Object[][] data = new Object[len1 + len2][coln]; 
-
-						for(int i=0; i<len1 ; i++) {
-							for(int j=0; j<coln; j++) {
-								data[i][j] = data1[i][j];
-							}
-						}
-						for(int i=0; i<len2 ; i++) {
-							for(int j=0; j<coln; j++) {
-								data[i+len1][j] = data2[i][j];
-							}
-						}
-						equationsRes = new ResultSet(headers, data);
-					}
-				}
-				
-				
-		}			
-		
-		
+			}
+		}
 		return com.hp.hpl.jena.query.ResultSetFactory.makeRewindable(eqnsRes);
 	}
 
 	private ResultSet retrieveCG1(Resource resource, List<RDFNode> inputsList, List<RDFNode> outputsList) throws SadlInferenceException, ConfigurationException, ReasonerNotFoundException, InvalidNameException, QueryParseException, QueryCancelledException {
 		String queryStr, inpStr, outpStr;
-
+	
 		ResultSet equations = null;
 		ResultSet equationsRes = null;
-				
-		
-		for(RDFNode ic : inputsList) 
+	
+	
+		for(RDFNode ic : inputsList) {
 			for(RDFNode oc : outputsList) {
 				inpStr = "<" + ic.toString() + ">";
 				outpStr = "<" + oc.toString() + ">";
 				queryStr = BUILD_COMP_GRAPH.replaceAll("LISTOFOUTPUTS", outpStr).replaceAll("LISTOFINPUTS", inpStr);
-
+	
 				equations = runReasonerQuery(resource, queryStr);
-				
+	
 				if (!equations.hasNext()) {
 					queryStr = BUILD_COMP_GRAPH.replaceAll("LISTOFOUTPUTS", inpStr).replaceAll("LISTOFINPUTS", outpStr);
 					equations = runReasonerQuery(resource, queryStr);
 				}
-
+	
 				if (equations.hasNext() ) {
 					if(equationsRes == null) {
 						equationsRes = equations;
@@ -2870,12 +2832,12 @@ private RDFNode getObjectAsLiteralOrResource(Node property, Node object) {
 						String[] headers = equationsRes.getColumnNames();
 						Object[][] data1 = equationsRes.getData();
 						Object[][] data2 = equations.getData();
-						
+	
 						int coln = headers.length;
 						int len1 = equationsRes.getRowCount();
 						int len2 = equations.getRowCount();
 						Object[][] data = new Object[len1 + len2][coln]; 
-
+	
 						for(int i=0; i<len1 ; i++) {
 							for(int j=0; j<coln; j++) {
 								data[i][j] = data1[i][j];
@@ -2889,6 +2851,7 @@ private RDFNode getObjectAsLiteralOrResource(Node property, Node object) {
 						equationsRes = new ResultSet(headers, data);
 					}
 				}
+			}
 		}
 		return equationsRes;
 	}

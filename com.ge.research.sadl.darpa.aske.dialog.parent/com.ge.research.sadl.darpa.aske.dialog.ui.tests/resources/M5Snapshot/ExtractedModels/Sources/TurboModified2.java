@@ -395,6 +395,8 @@ final double convdr = 3.14515926/180.;
      public void setDefaults() {
         int i ;
     
+        numeng = 1; 
+        fireflag = 0; 
         move = 0;
         inptype = 0 ;
         siztype = 0 ;
@@ -496,6 +498,35 @@ final double convdr = 3.14515926/180.;
         mnozl = 3; dnozl = 515.2 ; tnozl = 2500. ;
         mnozr = 5; dnozr = 515.2 ; tnozr = 4500. ;
         ncflag = 0 ; ntflag = 0 ;
+        
+        ncomp = (int) (1.0 + p3p2d / 1.5); 
+        if (ncomp > 15) { 
+        	ncomp = 15 
+        }
+        hblade = tf.math.sqrt(2.0/3.1415926);
+        lburn = hblade;
+
+        sblade = .02;
+        hblade = tf.math.sqrt(2.0/3.1415926);
+        tblade = .2*hblade;
+
+        xcomp = ncomp*(tblade+sblade);
+        lcomp = xcomp;
+
+        lnoz = lburn; 
+        if (entype == 1) {
+        	lnoz = 3.0 * lburn
+        }
+        if (entype == 3) {
+        	lnoz = 3.0 * lburn 
+        }
+        if (ntflag == 0) {
+        	nturb = 1 + ncomp/4 
+        	if (entype == 2) {
+        		nturb = nturb + 1
+        	}
+        }
+        lturb = nturb*(tblade+sblade);
         return ;
      }
 
@@ -967,9 +998,9 @@ final double convdr = 3.14515926/180.;
           }
           eta[2] = prat[2] ;
           fl1 = filter3(prat[2]) ;
-          in.inlet.left.f1.setText(String.valueOf(fl1)) ;
+//          in.inlet.left.f1.setText(String.valueOf(fl1)) ;
           i1 = (int) (((prat[2] - etmin)/(etmax-etmin))*1000.) ;
-          in.inlet.right.s1.setValue(i1) ;
+//          in.inlet.right.s1.setValue(i1) ;
        }
        else {                       /* enter value */
           prat[2] = eta[2] ;          
@@ -1452,60 +1483,60 @@ final double convdr = 3.14515926/180.;
           }
        }
      // check for temp limits
-       out.vars.to1.setForeground(Color.yellow) ;
-       out.vars.to2.setForeground(Color.yellow) ;
-       out.vars.to3.setForeground(Color.yellow) ;
-       out.vars.to4.setForeground(Color.yellow) ;
-       out.vars.to5.setForeground(Color.yellow) ;
-       out.vars.to6.setForeground(Color.yellow) ;
-       out.vars.to7.setForeground(Color.yellow) ;
+//       out.vars.to1.setForeground(Color.yellow) ;
+//       out.vars.to2.setForeground(Color.yellow) ;
+//       out.vars.to3.setForeground(Color.yellow) ;
+//       out.vars.to4.setForeground(Color.yellow) ;
+//       out.vars.to5.setForeground(Color.yellow) ;
+//       out.vars.to6.setForeground(Color.yellow) ;
+//       out.vars.to7.setForeground(Color.yellow) ;
        if (entype < 3) {
           if (tt[2] > tinlt) {
              fireflag =1 ;      
-             out.vars.to1.setForeground(Color.red) ;
-             out.vars.to2.setForeground(Color.red) ;
+//             out.vars.to1.setForeground(Color.red) ;
+//             out.vars.to2.setForeground(Color.red) ;
           }
           if (tt[13] > tfan) {
              fireflag =1 ;      
-             out.vars.to2.setForeground(Color.red) ;
+//             out.vars.to2.setForeground(Color.red) ;
           }
           if (tt[3] > tcomp) {
              fireflag =1 ;      
-             out.vars.to3.setForeground(Color.red) ;
+//             out.vars.to3.setForeground(Color.red) ;
           }
           if (tt[4] > tburner) {
              fireflag =1 ;      
-             out.vars.to4.setForeground(Color.red) ;
+//             out.vars.to4.setForeground(Color.red) ;
           }
           if (tt[5] > tturbin) {
              fireflag =1 ;      
-             out.vars.to5.setForeground(Color.red) ;
+//             out.vars.to5.setForeground(Color.red) ;
           }
           if (tt[7] > tnozl) {
              fireflag =1 ;      
-             out.vars.to6.setForeground(Color.red) ;
-             out.vars.to7.setForeground(Color.red) ;
+//             out.vars.to6.setForeground(Color.red) ;
+//             out.vars.to7.setForeground(Color.red) ;
           }
        }
        if (entype == 3) {
           if (tt[3] > tinlt) {
              fireflag =1 ;      
-             out.vars.to1.setForeground(Color.red) ;
-             out.vars.to2.setForeground(Color.red) ;
-             out.vars.to3.setForeground(Color.red) ;
+//             out.vars.to1.setForeground(Color.red) ;
+//             out.vars.to2.setForeground(Color.red) ;
+//             out.vars.to3.setForeground(Color.red) ;
           }
           if (tt[4] > tburner) {
              fireflag =1 ;
-             out.vars.to4.setForeground(Color.red) ;
+//             out.vars.to4.setForeground(Color.red) ;
           }
           if (tt[7] > tnozr) {
              fireflag =1 ;      
-             out.vars.to5.setForeground(Color.red) ;
-             out.vars.to6.setForeground(Color.red) ;
-             out.vars.to7.setForeground(Color.red) ;
+//             out.vars.to5.setForeground(Color.red) ;
+//             out.vars.to6.setForeground(Color.red) ;
+//             out.vars.to7.setForeground(Color.red) ;
           }
        }
-       if (fireflag == 1) view.start() ;
+//       if (fireflag == 1) view.start() ;
      }
  
      public void getGeo () {
@@ -1523,24 +1554,24 @@ final double convdr = 3.14515926/180.;
            a8rat = a8max ;
            if (lunits <= 1) {
                fl1 = filter3(a8rat) ;
-               in.nozl.left.f3.setText(String.valueOf(fl1)) ;
+//               in.nozl.left.f3.setText(String.valueOf(fl1)) ;
                i1 = (int) (((a8rat - a8min)/(a8max-a8min))*1000.) ;
-               in.nozl.right.s3.setValue(i1) ;
+//               in.nozl.right.s3.setValue(i1) ;
            }
            if (lunits == 2) {
                fl1 = filter3(100.*(a8rat - a8ref)/a8ref) ;
-               in.nozl.left.f3.setText(String.valueOf(fl1)) ;
+//               in.nozl.left.f3.setText(String.valueOf(fl1)) ;
                i1 = (int) ((((100.*(a8rat - a8ref)/a8ref) +10.0)/20.0)*1000.) ;
-               in.nozl.right.s3.setValue(i1) ;
+//               in.nozl.right.s3.setValue(i1) ;
            }
           }
               /*    dumb down limit - a8 schedule */
           if (arsched == 0) {
            a8rat = a8max ;
            fl1 = filter3(a8rat) ;
-           in.nozl.left.f3.setText(String.valueOf(fl1)) ;
+//           in.nozl.left.f3.setText(String.valueOf(fl1)) ;
            i1 = (int) (((a8rat - a8min)/(a8max-a8min))*1000.) ;
-           in.nozl.right.s3.setValue(i1) ;
+//           in.nozl.right.s3.setValue(i1) ;
           }
           a8 = a8rat * acore ;
           a8d = a8 * prat[7] / Math.sqrt(trat[7]) ;
@@ -1559,9 +1590,9 @@ final double convdr = 3.14515926/180.;
              if (arthd < arthmn) arthd = arthmn ;
              if (arthd > arthmx) arthd = arthmx ;
              fl1 = filter3(arthd) ;
-             in.nozr.left.f3.setText(String.valueOf(fl1)) ;
+//             in.nozr.left.f3.setText(String.valueOf(fl1)) ;
              i1 = (int) (((arthd - arthmn)/(arthmx-arthmn))*1000.) ;
-             in.nozr.right.s3.setValue(i1) ;
+//             in.nozr.right.s3.setValue(i1) ;
           }
           if (aexsched == 0) {   // scheduled exit area
              mexit = Math.sqrt((2.0/(game-1.0))*((1.0+.5*(gama-1.0)*fsmach*fsmach)
@@ -1570,9 +1601,9 @@ final double convdr = 3.14515926/180.;
              if (arexitd < arexmn) arexitd = arexmn ;
              if (arexitd > arexmx) arexitd = arexmx ;
              fl1 = filter3(arexitd) ;
-             in.nozr.left.f4.setText(String.valueOf(fl1)) ;
+//             in.nozr.left.f4.setText(String.valueOf(fl1)) ;
              i1 = (int) (((arexitd - arexmn)/(arexmx-arexmn))*1000.) ;
-             in.nozr.right.s4.setValue(i1) ;
+//             in.nozr.right.s4.setValue(i1) ;
           }
         }
      }
