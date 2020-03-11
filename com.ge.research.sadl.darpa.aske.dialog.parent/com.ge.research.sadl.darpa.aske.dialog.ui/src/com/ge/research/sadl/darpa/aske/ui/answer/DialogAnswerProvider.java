@@ -98,6 +98,7 @@ import com.ge.research.sadl.builder.IConfigurationManagerForIDE;
 import com.ge.research.sadl.darpa.aske.curation.AnswerCurationManager;
 import com.ge.research.sadl.darpa.aske.curation.BaseDialogAnswerProvider;
 import com.ge.research.sadl.darpa.aske.curation.EquationNotFoundException;
+import com.ge.research.sadl.darpa.aske.dialog.ExtractStatement;
 import com.ge.research.sadl.darpa.aske.preferences.DialogPreferences;
 import com.ge.research.sadl.darpa.aske.processing.DialogConstants;
 import com.ge.research.sadl.darpa.aske.processing.ExpectsAnswerContent;
@@ -301,12 +302,13 @@ public class DialogAnswerProvider extends BaseDialogAnswerProvider {
 			Object ctx, boolean quote, boolean prependAgent, boolean repositionCursor, boolean addLeadingSpaces) throws BadLocationException {
 		LOGGER.debug(content);
 //		System.err.println("addCMContent: " + content);
-		Display.getDefault().asyncExec(() -> {
-//		Display.getDefault().syncExec(() -> {
+//		Display.getDefault().asyncExec(() -> {
+		Display.getDefault().syncExec(() -> {
 			try {
 				String modContent = generateModifiedContent(document, ctx, quote, prependAgent, content);
-				int loc = generateInsertionLocation(document, ctx, modContent);
-				
+				Object[] insertionInfo = generateInsertionLocation(document, ctx, modContent);
+				modContent = (String) insertionInfo[0];
+				int loc = (int) insertionInfo[1];
 				if (loc >= 0) {
 					document.replace(loc, 0, modContent);
 					if (repositionCursor && document instanceof XtextDocument && ctx instanceof EObject) {
@@ -325,6 +327,18 @@ public class DialogAnswerProvider extends BaseDialogAnswerProvider {
 //				Exceptions.throwUncheckedException(e);
 			}
 		});
+		if (ctx instanceof ExtractStatement) {
+			try {
+				String mf = SadlActionHandler.getModelFolderFromResource(((ExtractStatement) ctx).eResource());
+				File mff = new File(mf);
+				String prjname = mff.getParentFile().getName();
+				IProject prj = ResourcesPlugin.getWorkspace().getRoot().getProject(prjname);
+				prj.refreshLocal(IResource.DEPTH_INFINITE, null);
+			} catch (CoreException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		}
 		return true;
 	}
 
@@ -362,7 +376,7 @@ public class DialogAnswerProvider extends BaseDialogAnswerProvider {
 		return modContent;
 	}
 
-	private int generateInsertionLocation(IXtextDocument document, Object ctx, String modContent) {
+	private Object[] generateInsertionLocation(IXtextDocument document, Object ctx, String modContent) {
 		int loc = 0;
 		String lineSep = System.lineSeparator();
 		int lineSepLen = lineSep.length();
@@ -440,7 +454,10 @@ public class DialogAnswerProvider extends BaseDialogAnswerProvider {
 		else {
 			((List<ModelElementInfo>)elementInfos).add(newMei);
 		}
-		return loc;
+		Object[] returnvals = new Object[2];
+		returnvals[0] = modContent;
+		returnvals[1] = loc;
+		return returnvals;
 	}
 
 	private String generateModifiedContent(IXtextDocument document, Object ctx, boolean quote, boolean prependAgent, String content) {

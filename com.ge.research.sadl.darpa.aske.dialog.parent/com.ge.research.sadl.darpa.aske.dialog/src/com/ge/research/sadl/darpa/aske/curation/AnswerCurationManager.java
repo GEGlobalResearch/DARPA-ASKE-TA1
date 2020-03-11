@@ -66,6 +66,9 @@ import java.util.Properties;
 import java.util.Set;
 import java.util.concurrent.ExecutionException;
 
+import org.eclipse.core.resources.IFile;
+import org.eclipse.core.resources.IResource;
+import org.eclipse.core.runtime.IPath;
 import org.eclipse.emf.common.EMFPlugin;
 import org.eclipse.emf.common.util.URI;
 import org.eclipse.emf.ecore.EObject;
@@ -96,6 +99,7 @@ import com.ge.research.sadl.darpa.aske.processing.IDialogAnswerProvider;
 import com.ge.research.sadl.darpa.aske.processing.InformationContent;
 import com.ge.research.sadl.darpa.aske.processing.LongTaskContent;
 import com.ge.research.sadl.darpa.aske.processing.ModifiedAskContent;
+import com.ge.research.sadl.darpa.aske.processing.NewOrModifiedEquationContent;
 import com.ge.research.sadl.darpa.aske.processing.QuestionContent;
 import com.ge.research.sadl.darpa.aske.processing.QuestionWithCallbackContent;
 import com.ge.research.sadl.darpa.aske.processing.SadlStatementContent;
@@ -151,6 +155,7 @@ import com.ge.research.sadl.reasoner.ResultSet;
 import com.ge.research.sadl.reasoner.SadlCommandResult;
 import com.ge.research.sadl.reasoner.TranslationException;
 import com.ge.research.sadl.reasoner.utils.SadlUtils;
+import com.ge.research.sadl.sADL.SadlModel;
 import com.ge.research.sadl.utils.NetworkProxySettingsProvider;
 import com.ge.research.sadl.utils.ResourceManager;
 import com.google.common.base.Optional;
@@ -228,6 +233,8 @@ public class AnswerCurationManager {
 	private Map<String,List<String>> equationInformation = null;
 	private Map<String, String> cachedEquationVariableContext = new HashMap<String, String>();
 	private Map<Individual, String> variableDeclarations = new HashMap<Individual, String>();
+	
+	private ExtractContent extractionContext = null;
     
 	public AnswerCurationManager (String modelFolder, IConfigurationManagerForIDE configMgr, XtextResource resource, Map<String,String> prefs) {
 		setOwlModelsFolder(modelFolder);
@@ -2455,11 +2462,16 @@ public class AnswerCurationManager {
 	}
 	
 	public void notifyUser(String modelFolder, String msg, boolean quote) throws ConfigurationException {
-		if (quote) {
-			msg = doubleQuoteContent(msg);
+		if (getExtractionContext() != null) {
+			answerUser(modelFolder, msg, quote, getExtractionContext().getHostEObject());
 		}
-		InformationContent ic = new InformationContent(null, Agent.CM, msg);
-		notifyUser(modelFolder, ic, quote);
+		else {
+			if (quote) {
+				msg = doubleQuoteContent(msg);
+			}
+			InformationContent ic = new InformationContent(null, Agent.CM, msg);
+			notifyUser(modelFolder, ic, quote);
+		}
 	}
 	
 	/**
@@ -2787,6 +2799,11 @@ public class AnswerCurationManager {
 			answerUser(getOwlModelsFolder(), retVal, true, sc.getHostEObject());	
 			// last action: task is complete so remove user notification (cancel effect of first action)
 		}
+		else if (sc instanceof NewOrModifiedEquationContent) {
+			String eqStr = ((NewOrModifiedEquationContent)sc).getSadlEqStr();
+			answerUser(getOwlModelsFolder(), eqStr, ((NewOrModifiedEquationContent)sc).isQuoteResult(), sc.getHostEObject());
+			retVal = eqStr;
+		}
 		else {
 			logger.debug("Need to add '" + sc.getClass().getCanonicalName() + "' to processUserRequest");
 			retVal = "Not yet implemented";
@@ -2824,18 +2841,51 @@ public class AnswerCurationManager {
 			content =su.fileToString(f);
 			outputModelName = getModelNameFromInputFile(f);
 			prefix = getModelPrefixFromInputFile(f);
+			
+			String destPath = (new File(getOwlModelsFolder()).getParent() + "/" + DialogConstants.EXTRACTED_MODELS_FOLDER_PATH_FRAGMENT + "/Sources/" + f.getName());
+			File dest = new File(destPath);
+			if (dest.exists()) {
+				dest.delete();
+			}
+			if (!dest.exists()) {
+				dest.getParentFile().mkdirs();
+				Files.copy(f, dest);
+//				file.createLink(location, IResource.NONE, null);
+			}
 		}
 		else {
 			content = downloadURL(sc.getUrl());
 			outputModelName = getModelNameFromInputUrl(sc.getUrl());
 			prefix = getModelPrefixFromInputUrl(sc.getUrl());
 		}
-		System.out.println(content);			
+//		System.out.println(content);	
+		setExtractionContext(sc);
 
 		if (sc.getUrl().endsWith(".java")) {
 			// code extraction
 			String outputOwlFileName = prefix + ".owl";
-			File of = extractFromCodeAndSave(modelName, content, sc.getUrl(), prefix, outputOwlFileName);
+			try {
+				File of = extractFromCodeAndSave(modelName, content, sc.getUrl(), prefix, outputOwlFileName);
+				if (of != null) {
+					boolean useAllCodeExtractedMethods = true;
+					SaveAsSadl saveAsSadl = SaveAsSadl.DoNotSaveAsSadl;
+					
+					outputOwlFileName = of.getCanonicalPath();
+					// run inference on the model, interact with user to refine results
+					String queryString = useAllCodeExtractedMethods ? SparqlQueries.ALL_CODE_EXTRACTED_METHODS : SparqlQueries.INTERESTING_METHODS_DOING_COMPUTATION;	//?m ?b ?e ?s
+					ResultSet results = runInferenceFindInterestingCodeModelResults(outputOwlFileName, queryString, saveAsSadl, content);
+					if (results == null || results.getRowCount() == 0) {
+						notifyUser(getOwlModelsFolder(), "No equations were found in this extraction from code.", true);
+					}
+					else {
+						equationsFromCodeResultSetToSadlContent(results, getOwlModelsFolder(), content);
+					}
+				}
+				returnStatus = "Extracted from '" + sc.getUrl() + "' to OWL file '" + of.getCanonicalPath() + "'";
+			}
+			catch (Throwable t) {
+				t.printStackTrace();
+			}
 		}
 		else {
 			if (sc.getUrl().endsWith(".html")) {
@@ -2861,6 +2911,7 @@ public class AnswerCurationManager {
 			}
 
 		}
+		clearExtractionContext();
 		return returnStatus;
 	}
 
@@ -3835,11 +3886,31 @@ public class AnswerCurationManager {
 			}
 			return answer.toString();
 		}
+		else if (typ.equals(NodeType.VariableNode)) {
+			String response = "Concept " + nn.getName() + " is not defined; please define or do extraction.";
+			answerUser(modelFolder, response, false, getConversationHostObject((EObject)((VariableNode) nn).getHostObject()));
+			return response;
+		}
 		else {
 			answer.append("Type " + typ.getClass().getCanonicalName() + " not handled yet.");
 			logger.debug(answer.toString());
 			return answer.toString();
 		}
+	}
+
+	/**
+	 * Method to find the EObject which will be associated with the conversation element in the Dialog window.
+	 * @param eobj	-- the starting EObject
+	 * @return -- the conversation-level EObject
+	 */
+	private EObject getConversationHostObject(EObject eobj) {
+		if (eobj.eContainer() != null) {
+			if (eobj.eContainer() instanceof SadlModel) {
+				return eobj;
+			}
+			return getConversationHostObject(eobj.eContainer());
+		}
+		return eobj;
 	}
 
 	private OwlToSadl getOwlToSadl(OntModel theModel, String modelName) {
@@ -4440,15 +4511,25 @@ public class AnswerCurationManager {
 					String ans = getQuestionsAndAnswers().get(question);
 //					logger.debug(ans + " ? " + ((AnswerContent)statementAfter).getAnswer().toString().trim());
 					if (statementAfter != null && statementAfter instanceof AnswerContent) {
-						
-						String val = ((AnswerContent)statementAfter).getAnswer().toString().trim();
-						val = SadlUtils.stripQuotes(val);
-						ans = SadlUtils.stripQuotes(ans);
-						if (val.equals(ans)) {
-							// this statement has already been answered		
-							((ExpectsAnswerContent) sc).setAnswer((AnswerContent) statementAfter);
-							continue;
+						Object ansObj = ((AnswerContent)statementAfter).getAnswer();
+						if (ansObj != null) {
+							String val = ansObj.toString().trim();
+							val = SadlUtils.stripQuotes(val);
+							ans = SadlUtils.stripQuotes(ans);
+							if (val.equals(ans)) {
+								// this statement has already been answered		
+								((ExpectsAnswerContent) sc).setAnswer((AnswerContent) statementAfter);
+								continue;
+							}
 						}
+					}
+					else {
+						try {
+							answerUser(getOwlModelsFolder(), ans, false, sc.getHostEObject());
+						} catch (ConfigurationException e) {
+							// TODO Auto-generated catch block
+							e.printStackTrace();
+						}	
 					}
 				}
 				else if (sc instanceof QuestionWithCallbackContent) {
@@ -4963,5 +5044,17 @@ public class AnswerCurationManager {
 		modifiedScript = modifiedScript.replaceAll("np.math.", "np.");
 		modifiedScript = modifiedScript.replaceAll("np.pow", "np.power");
 		return modifiedScript;
+	}
+
+	private void clearExtractionContext() {
+		extractionContext = null;
+	}
+
+	private void setExtractionContext(ExtractContent extractionContext) {
+		this.extractionContext = extractionContext;
+	}
+	
+	private ExtractContent getExtractionContext() {
+		return extractionContext;
 	}
 }

@@ -38,21 +38,6 @@
   <owl:Class rdf:ID="Time">
     <rdfs:subClassOf rdf:resource="sadlimplicitmodel#UnittedQuantity"/>
   </owl:Class>
-  <owl:Class rdf:nodeID="A0">
-    <rdfs:subClassOf>
-      <owl:Restriction>
-        <owl:allValuesFrom rdf:nodeID="A0"/>
-        <owl:onProperty rdf:resource="sadllistmodel#rest"/>
-      </owl:Restriction>
-    </rdfs:subClassOf>
-    <rdfs:subClassOf>
-      <owl:Restriction>
-        <owl:allValuesFrom rdf:resource="sadlimplicitmodel#DataDescriptor"/>
-        <owl:onProperty rdf:resource="sadllistmodel#first"/>
-      </owl:Restriction>
-    </rdfs:subClassOf>
-    <rdfs:subClassOf rdf:resource="sadllistmodel#List"/>
-  </owl:Class>
   <owl:Class rdf:ID="Substance">
     <rdfs:subClassOf>
       <owl:Class rdf:ID="PhysicalThing"/>
@@ -212,6 +197,21 @@
         </owl:intersectionOf>
       </owl:Class>
     </rdfs:subClassOf>
+  </owl:Class>
+  <owl:Class rdf:nodeID="A0">
+    <rdfs:subClassOf>
+      <owl:Restriction>
+        <owl:allValuesFrom rdf:nodeID="A0"/>
+        <owl:onProperty rdf:resource="sadllistmodel#rest"/>
+      </owl:Restriction>
+    </rdfs:subClassOf>
+    <rdfs:subClassOf>
+      <owl:Restriction>
+        <owl:allValuesFrom rdf:resource="sadlimplicitmodel#DataDescriptor"/>
+        <owl:onProperty rdf:resource="sadllistmodel#first"/>
+      </owl:Restriction>
+    </rdfs:subClassOf>
+    <rdfs:subClassOf rdf:resource="sadllistmodel#List"/>
   </owl:Class>
   <owl:Class rdf:ID="Mass">
     <rdfs:subClassOf rdf:resource="sadlimplicitmodel#UnittedQuantity"/>
@@ -384,23 +384,18 @@
             <j.1:SemanticConstraint>
               <j.1:constraints rdf:parseType="Collection">
                 <j.1:TriplePattern>
-                  <j.1:gpObject rdf:resource="#PhysicalThing"/>
+                  <j.1:gpObject rdf:resource="#Density"/>
                   <j.1:gpPredicate rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#type"/>
                   <j.1:gpSubject>
                     <j.1:GPVariable rdf:ID="densityEq_v2"/>
                   </j.1:gpSubject>
                 </j.1:TriplePattern>
                 <j.1:TriplePattern>
-                  <j.1:gpObject rdf:resource="#Density"/>
-                  <j.1:gpPredicate rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#type"/>
-                  <j.1:gpSubject>
-                    <j.1:GPVariable rdf:ID="densityEq_v4"/>
-                  </j.1:gpSubject>
-                </j.1:TriplePattern>
-                <j.1:TriplePattern>
-                  <j.1:gpObject rdf:resource="#densityEq_v4"/>
+                  <j.1:gpObject rdf:resource="#densityEq_v2"/>
                   <j.1:gpPredicate rdf:resource="#density"/>
-                  <j.1:gpSubject rdf:resource="#densityEq_v2"/>
+                  <j.1:gpSubject>
+                    <j.1:GPVariable rdf:ID="densityEq_v0"/>
+                  </j.1:gpSubject>
                 </j.1:TriplePattern>
               </j.1:constraints>
             </j.1:SemanticConstraint>
@@ -418,18 +413,11 @@
               <j.1:SemanticConstraint>
                 <j.1:constraints rdf:parseType="Collection">
                   <j.1:TriplePattern>
-                    <j.1:gpObject rdf:resource="#PhysicalThing"/>
-                    <j.1:gpPredicate rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#type"/>
-                    <j.1:gpSubject>
-                      <j.1:GPVariable rdf:ID="densityEq_v1"/>
-                    </j.1:gpSubject>
-                  </j.1:TriplePattern>
-                  <j.1:TriplePattern>
                     <j.1:gpObject>
                       <j.1:GPVariable rdf:ID="densityEq_v"/>
                     </j.1:gpObject>
                     <j.1:gpPredicate rdf:resource="#volume"/>
-                    <j.1:gpSubject rdf:resource="#densityEq_v1"/>
+                    <j.1:gpSubject rdf:resource="#densityEq_v0"/>
                   </j.1:TriplePattern>
                 </j.1:constraints>
               </j.1:SemanticConstraint>
@@ -449,9 +437,7 @@
                 <j.1:TriplePattern>
                   <j.1:gpObject rdf:resource="#PhysicalThing"/>
                   <j.1:gpPredicate rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#type"/>
-                  <j.1:gpSubject>
-                    <j.1:GPVariable rdf:ID="densityEq_v0"/>
-                  </j.1:gpSubject>
+                  <j.1:gpSubject rdf:resource="#densityEq_v0"/>
                 </j.1:TriplePattern>
                 <j.1:TriplePattern>
                   <j.1:gpObject>

@@ -16,6 +16,10 @@ public abstract class ExpectsAnswerContent extends StatementContent {
 		super(host, agnt);
 	}
 
+	public ExpectsAnswerContent(EObject host, Agent agnt, String uptxt) {
+		super(host, agnt, uptxt);
+	}
+
 	public AnswerContent getAnswer() {
 		return answer;
 	}

@@ -485,20 +485,50 @@ public class JavaModelExtractorJP implements IModelFromCodeExtractor {
 	}
 
 	private String derivePrefixFromPackage(String pkg) {
-		if (pkg.contains(".")) {
-			StringBuilder sb = new StringBuilder();
-			int lastStart = 0;
-			int dotLoc = pkg.indexOf('.');
-			while (dotLoc > 0) {
+		StringBuilder sb = new StringBuilder();
+		int lastStart = 0;
+		String locpkg = pkg;
+		while (locpkg.contains(".") || locpkg.contains("/") || locpkg.contains(":")) {
+			int charLoc = Math.max(Math.max(locpkg.indexOf('.'), locpkg.indexOf('/')), locpkg.indexOf(':'));
+			if (charLoc > 0) {
 				sb.append(pkg.substring(lastStart, lastStart + 1));
-				lastStart = dotLoc + 1;
-				dotLoc = pkg.indexOf('.', dotLoc + 1);
+				lastStart = lastStart + charLoc + 1;
 			}
-			return sb.toString();
+			else {
+				lastStart++;
+			}
+			locpkg = pkg.substring(lastStart);
 		}
-		else {
-			return pkg;
+		sb.append(locpkg);
+		if (sb.length() < 1) {
+			sb.append(pkg);
 		}
+		return sb.toString();
+//		if (pkg.contains(".")) {
+//			StringBuilder sb = new StringBuilder();
+//			int lastStart = 0;
+//			int dotLoc = pkg.indexOf('.');
+//			while (dotLoc > 0) {
+//				sb.append(pkg.substring(lastStart, lastStart + 1));
+//				lastStart = dotLoc + 1;
+//				dotLoc = pkg.indexOf('.', dotLoc + 1);
+//			}
+//			return sb.toString();
+//		}
+//		else if (pkg.contains("/")) {
+//			StringBuilder sb = new StringBuilder();
+//			int lastStart = 0;
+//			int dotLoc = pkg.lastIndexOf('/');
+//			while (dotLoc > 0) {
+//				sb.append(pkg.substring(lastStart, lastStart + 1));
+//				lastStart = dotLoc + 1;
+//				dotLoc = pkg.indexOf('.', dotLoc + 1);
+//			}
+//			return sb.toString();
+//		}
+//		else {
+//			return pkg;
+//		}
 	}
 
 	private void initializeCodeModel(String extractionMetaModelModelFolder) throws ConfigurationException, IOException {
