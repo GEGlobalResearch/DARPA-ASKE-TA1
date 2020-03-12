@@ -36,8 +36,6 @@
  ***********************************************************************/
 package com.ge.research.sadl.darpa.aske.curation;
 
-import static org.junit.Assert.assertEquals;
-
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
@@ -66,9 +64,6 @@ import java.util.Properties;
 import java.util.Set;
 import java.util.concurrent.ExecutionException;
 
-import org.eclipse.core.resources.IFile;
-import org.eclipse.core.resources.IResource;
-import org.eclipse.core.runtime.IPath;
 import org.eclipse.emf.common.EMFPlugin;
 import org.eclipse.emf.common.util.URI;
 import org.eclipse.emf.ecore.EObject;
@@ -79,17 +74,18 @@ import org.slf4j.LoggerFactory;
 
 import com.ge.research.sadl.builder.ConfigurationManagerForIdeFactory;
 import com.ge.research.sadl.builder.IConfigurationManagerForIDE;
-import com.ge.research.sadl.darpa.aske.curation.AnswerCurationManager.Agent;
 import com.ge.research.sadl.darpa.aske.dialog.AnswerCMStatement;
 import com.ge.research.sadl.darpa.aske.inference.JenaBasedDialogInferenceProcessor;
 import com.ge.research.sadl.darpa.aske.preferences.DialogPreferences;
+import com.ge.research.sadl.darpa.aske.processing.AddAugmentedTypeInfoContent;
+import com.ge.research.sadl.darpa.aske.processing.AddEquationContent;
 import com.ge.research.sadl.darpa.aske.processing.AnswerContent;
 import com.ge.research.sadl.darpa.aske.processing.AnswerPendingContent;
 import com.ge.research.sadl.darpa.aske.processing.CompareContent;
 import com.ge.research.sadl.darpa.aske.processing.ConversationElement;
-import com.ge.research.sadl.darpa.aske.processing.ConversationException;
 import com.ge.research.sadl.darpa.aske.processing.DialogConstants;
 import com.ge.research.sadl.darpa.aske.processing.DialogContent;
+import com.ge.research.sadl.darpa.aske.processing.EquationStatementContent;
 import com.ge.research.sadl.darpa.aske.processing.EvalContent;
 import com.ge.research.sadl.darpa.aske.processing.EvalContent.UnittedParameter;
 import com.ge.research.sadl.darpa.aske.processing.ExpectsAnswerContent;
@@ -99,27 +95,25 @@ import com.ge.research.sadl.darpa.aske.processing.IDialogAnswerProvider;
 import com.ge.research.sadl.darpa.aske.processing.InformationContent;
 import com.ge.research.sadl.darpa.aske.processing.LongTaskContent;
 import com.ge.research.sadl.darpa.aske.processing.ModifiedAskContent;
-import com.ge.research.sadl.darpa.aske.processing.NewOrModifiedEquationContent;
-import com.ge.research.sadl.darpa.aske.processing.QuestionContent;
 import com.ge.research.sadl.darpa.aske.processing.QuestionWithCallbackContent;
+import com.ge.research.sadl.darpa.aske.processing.RequestArgumentAugmentedTypeContent;
+import com.ge.research.sadl.darpa.aske.processing.RequestReturnAugmentedTypeContent;
 import com.ge.research.sadl.darpa.aske.processing.SadlStatementContent;
 import com.ge.research.sadl.darpa.aske.processing.SaveContent;
 import com.ge.research.sadl.darpa.aske.processing.StatementContent;
+import com.ge.research.sadl.darpa.aske.processing.UndefinedConceptStatementContent;
 import com.ge.research.sadl.darpa.aske.processing.WhatIsContent;
 import com.ge.research.sadl.darpa.aske.processing.WhatValuesContent;
 import com.ge.research.sadl.darpa.aske.processing.imports.AnswerExtractionException;
 import com.ge.research.sadl.darpa.aske.processing.imports.AnswerExtractionProcessor;
-import com.ge.research.sadl.darpa.aske.processing.imports.AnswerExtractionProcessor.CodeLanguage;
 import com.ge.research.sadl.darpa.aske.processing.imports.IModelFromCodeExtractor;
 import com.ge.research.sadl.darpa.aske.processing.imports.KChainServiceInterface;
 import com.ge.research.sadl.darpa.aske.processing.imports.TextProcessingServiceInterface.EquationVariableContextResponse;
-import com.ge.research.sadl.external.XMLHelper;
 import com.ge.research.sadl.darpa.aske.processing.imports.TextProcessor;
-import com.ge.research.sadl.jena.IntermediateFormTranslator;
+import com.ge.research.sadl.external.XMLHelper;
 import com.ge.research.sadl.jena.JenaBasedSadlModelProcessor;
 import com.ge.research.sadl.jena.JenaProcessorException;
 import com.ge.research.sadl.jena.inference.SadlJenaModelGetterPutter;
-import com.ge.research.sadl.jena.translator.JenaTranslatorPlugin;
 import com.ge.research.sadl.model.gp.GraphPatternElement;
 import com.ge.research.sadl.model.gp.Junction;
 import com.ge.research.sadl.model.gp.Junction.JunctionType;
@@ -160,8 +154,6 @@ import com.ge.research.sadl.utils.NetworkProxySettingsProvider;
 import com.ge.research.sadl.utils.ResourceManager;
 import com.google.common.base.Optional;
 import com.google.common.io.Files;
-import com.hp.hpl.jena.graph.impl.GraphBase;
-import com.hp.hpl.jena.ontology.HasValueRestriction;
 import com.hp.hpl.jena.ontology.Individual;
 import com.hp.hpl.jena.ontology.OntClass;
 import com.hp.hpl.jena.ontology.OntDocumentManager;
@@ -2510,7 +2502,66 @@ public class AnswerCurationManager {
 			}
 		}
 	}
+	
+	/**
+	 * Method to call the DialogAnserProvider and replace the first text with the second text in the context of the EObject
+	 * @param equationEObject
+	 * @param eqTxt
+	 * @param replacementTxt
+	 */
+	private void replaceDialogText(EObject eObject, String originalTxt, String replacementTxt) {
+		if (getDialogAnswerProvider() != null) {
+			// talk to the user via the Dialog editor
+			Method acmic = null;
+			try {
+				acmic = getDialogAnswerProvider().getClass().getMethod("replaceDialogText", AnswerCurationManager.class, EObject.class, String.class, String.class);
+			} catch (NoSuchMethodException e1) {
+				// TODO Auto-generated catch block
+				e1.printStackTrace();
+			} catch (SecurityException e1) {
+				// TODO Auto-generated catch block
+				e1.printStackTrace();
+			}
+			if (acmic != null) {
+				acmic.setAccessible(true);
+				try {
+					acmic.invoke(getDialogAnswerProvider(), this, getConversationHostObject(eObject), originalTxt, replacementTxt);
+				} catch (IllegalAccessException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				} catch (IllegalArgumentException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				} catch (InvocationTargetException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+			}
+		}
+	}
 
+	/**
+	 * Method to ask the user a question. (Not clear yet if it is different from ansewrUser.)
+	 * @param modelFolder
+	 * @param question
+	 * @param quote
+	 * @param ctx
+	 * @return
+	 * @throws ConfigurationException 
+	 */
+	public String askUser(String modelFolder, String question, boolean quote, EObject ctx) throws ConfigurationException {
+		return answerUser(modelFolder, question, quote, ctx);
+	}
+
+	/**
+	 * Method to answer a user question by displaying a statement, which may be quoted. Requires the EObject with which it is associated
+	 * @param modelFolder
+	 * @param msg
+	 * @param quote
+	 * @param ctx
+	 * @return
+	 * @throws ConfigurationException
+	 */
 	public String answerUser(String modelFolder, String msg, boolean quote, EObject ctx) throws ConfigurationException {
 		if (quote) {
 			msg = doubleQuoteContent(msg);
@@ -2541,7 +2592,7 @@ public class AnswerCurationManager {
 			if (acmic != null) {
 				acmic.setAccessible(true);
 				try {
-					Object retval = acmic.invoke(getDialogAnswerProvider(), this, msg, ctx);
+					Object retval = acmic.invoke(getDialogAnswerProvider(), this, msg, getConversationHostObject(ctx));
 					if (retval != null) {
 						return retval.toString();
 					}
@@ -2613,9 +2664,12 @@ public class AnswerCurationManager {
 
 	protected IDialogAnswerProvider getDialogAnswerProvider() {
 		if (dialogAnswerProvider == null) {
-			setDialogAnswerProvider((IDialogAnswerProvider) getConfigurationManager().getPrivateKeyValuePair(DialogConstants.DIALOG_ANSWER_PROVIDER));
-			if (dialogAnswerProvider == null) {
-				setDialogAnswerProvider(new DialogAnswerProviderConsoleForTest());
+			IDialogAnswerProvider dapFound = (IDialogAnswerProvider) getConfigurationManager().getPrivateKeyValuePair(DialogConstants.DIALOG_ANSWER_PROVIDER);
+			if (dapFound.getResource().equals(getResource())) {
+				setDialogAnswerProvider(dapFound);
+				if (dialogAnswerProvider == null) {
+					setDialogAnswerProvider(new DialogAnswerProviderConsoleForTest());
+				}
 			}
 		} else if (dialogAnswerProvider instanceof DialogAnswerProviderConsoleForTest) {
 			IDialogAnswerProvider provider = (IDialogAnswerProvider) getConfigurationManager().getPrivateKeyValuePair(DialogConstants.DIALOG_ANSWER_PROVIDER);
@@ -2799,10 +2853,18 @@ public class AnswerCurationManager {
 			answerUser(getOwlModelsFolder(), retVal, true, sc.getHostEObject());	
 			// last action: task is complete so remove user notification (cancel effect of first action)
 		}
-		else if (sc instanceof NewOrModifiedEquationContent) {
-			String eqStr = ((NewOrModifiedEquationContent)sc).getSadlEqStr();
-			answerUser(getOwlModelsFolder(), eqStr, ((NewOrModifiedEquationContent)sc).isQuoteResult(), sc.getHostEObject());
+		else if (sc instanceof AddEquationContent) {
+			String eqStr = ((AddEquationContent)sc).getSadlEqStr();
+			answerUser(getOwlModelsFolder(), eqStr, ((StatementContent)sc).isQuoteResult(), sc.getHostEObject());
 			retVal = eqStr;
+		}
+		else if (sc instanceof AddAugmentedTypeInfoContent) {
+			String argName = ((AddAugmentedTypeInfoContent)sc).getArgName();
+			String semTypeUri = ((AddAugmentedTypeInfoContent)sc).getAddedTypeUri();
+			String question = "What type is " + argName;
+			List<ConversationElement> dialogStmts = getConversation().getStatements();
+			int conversationIdx = dialogStmts.indexOf(sc);
+			retVal = addAugmentedTypeToEquation(dialogStmts, conversationIdx, question, semTypeUri);
 		}
 		else {
 			logger.debug("Need to add '" + sc.getClass().getCanonicalName() + "' to processUserRequest");
@@ -3139,19 +3201,22 @@ public class AnswerCurationManager {
 		StringBuilder sb = new StringBuilder();
 		Node cls = sc.getCls();
 		String article = sc.getArticle();
+		Node typ = sc.getTyp();
 		Node prop = sc.getProp();
 		
-		OntClass theClass = theModel.getOntClass(cls.getURI());
+		OntClass theClass = cls != null ? theModel.getOntClass(cls.getURI()) : null;
 		OntProperty theProp = theModel.getOntProperty(prop.toFullyQualifiedString());
-		ExtendedIterator<OntClass> scitr = theClass.listSuperClasses();
 		boolean restrictionFound = false;
-		while (scitr.hasNext()) {
-			OntClass scnxt = scitr.next();
-			if (scnxt.isRestriction()) {
-				Restriction restrict = scnxt.asRestriction();
-				OntProperty rprop = restrict.getOnProperty();
-				if (rprop.equals(theProp)) {
-					restrictionFound = true;
+		if (theClass != null) {
+			ExtendedIterator<OntClass> scitr = theClass.listSuperClasses();
+			while (scitr.hasNext()) {
+				OntClass scnxt = scitr.next();
+				if (scnxt.isRestriction()) {
+					Restriction restrict = scnxt.asRestriction();
+					OntProperty rprop = restrict.getOnProperty();
+					if (rprop.equals(theProp)) {
+						restrictionFound = true;
+					}
 				}
 			}
 		}
@@ -3275,7 +3340,7 @@ public class AnswerCurationManager {
 		throw new AnswerExtractionException("Invalid what is request inputs");
 	}
 
-	private String processResultsOfInsertRulesAndQuery(ExpectsAnswerContent sc, Object[] rss, List<Rule> comparisonRules) throws TranslationException, ConfigurationException {
+	private String processResultsOfInsertRulesAndQuery(StatementContent sc, Object[] rss, List<Rule> comparisonRules) throws TranslationException, ConfigurationException {
 		String retVal = "";
 		String resultStr = null;
 		if (rss != null) {
@@ -3326,7 +3391,7 @@ public class AnswerCurationManager {
 	 * @return
 	 * @throws ConfigurationException
 	 */
-	private String getAnswerAndVisualize(ExpectsAnswerContent sc, List<Rule> comparisonRules, Object[] rss) throws ConfigurationException  {
+	private String getAnswerAndVisualize(StatementContent sc, List<Rule> comparisonRules, Object[] rss) throws ConfigurationException  {
 		StringBuilder answer = new StringBuilder();
 		String graphsDirectory = new File(getOwlModelsFolder()).getParent().replace('\\', '/') + "/Graphs";
 		String baseFileName = "";
@@ -3849,7 +3914,7 @@ public class AnswerCurationManager {
 			answer.append(getOwlToSadl(theModel, modelName).classToSadl(nn.getURI()));
 //			isFirstProperty = addDomainAndRange(resource, nn, isFirstProperty, answer);
 //			addQualifiedCardinalityRestriction(resource, nn, isFirstProperty, answer);		
-			Object ctx = ((NamedNode)lastcmd).getContext();
+			Object ctx = (EObject) ((NamedNode)lastcmd).getContext();
 			answerUser(modelFolder, answer.toString(), false, (EObject) ctx);
 			return answer.toString();
 		}
@@ -3888,7 +3953,7 @@ public class AnswerCurationManager {
 		}
 		else if (typ.equals(NodeType.VariableNode)) {
 			String response = "Concept " + nn.getName() + " is not defined; please define or do extraction.";
-			answerUser(modelFolder, response, false, getConversationHostObject((EObject)((VariableNode) nn).getHostObject()));
+			answerUser(modelFolder, response, false, (EObject)((VariableNode) nn).getHostObject());
 			return response;
 		}
 		else {
@@ -4483,6 +4548,10 @@ public class AnswerCurationManager {
 	 * @param modelName 
 	 */
 	public void processConversation(org.eclipse.emf.ecore.resource.Resource resource, OntModel ontModel, String modelName) {
+		if (!resource.equals(getDialogAnswerProvider().getResource())) {
+			// this isn't the Resource for which this AnswerCurationManager is intended
+			return;
+		}
 		// ConversationElements are processed in order (must process a save before an evaluate, for example),
 		//	but the actual insertion of new responses into the Dialog occurs in reverse order so that the locations
 		//	are less complicated to determine
@@ -4497,98 +4566,45 @@ public class AnswerCurationManager {
 			int idx = dialogStmts.indexOf(ce);
 			StatementContent statementAfter = idx < dialogStmts.size() - 1 ? dialogStmts.get(idx + 1).getStatement() : null;
 			StatementContent sc = ce.getStatement();
-			if (sc instanceof AnswerContent) {
-				if (lastStatement != null) {
-					if (applyAnswerToUnansweredQuestion(lastStatement, sc)) {
+			if (sc instanceof SadlStatementContent) {
+				if (sc instanceof EquationStatementContent) {
+					// look for missing AugmentedType questions and if there are, and **they haven't already been displayed**,
+					//	display the questions.
+					processMissingEquationContent((EquationStatementContent) sc, dialogStmts);
+				}
+				// otherwise this might be the answer to a question from CM provided by the user
+				if (lastStatement instanceof WhatIsContent && lastStatement.getAgent().equals(Agent.CM)) {
+					Object trgt = ((WhatIsContent)lastStatement).getTarget();
+					if (trgt instanceof NamedNode) {
+						processSadlStatementContentInContextOfPreceedingWhatIs((SadlStatementContent)sc, (WhatIsContent)lastStatement, trgt, dialogStmts, idx);
 					}
 				}
-				lastStatement = null;
+			}
+			else if (sc instanceof AnswerContent) {
+				if (sc instanceof AddEquationContent) {
+					// Insert new equation **unless it's already been inserted**. Response is an insertion into the 
+					//	Dialog window which, when parsed, will create an EquationStatementContent
+					processAddEquationContent(resource, ontModel, modelName, dc, additionMap, additions, currentQuestions, ce, statementAfter, (AddEquationContent)sc);
+				}
+				else if (sc instanceof AddAugmentedTypeInfoContent) {
+					// Modify equation with new AugmentedType info **unless it has already been modified**. Response is to
+					//	modify the existing equation in the Dialog window which, when parsed, will create a modified EquationStatementContent
+					processAddAugmentedTypeInfoContent((AddAugmentedTypeInfoContent)sc);
+				}
 			}
 			else if (sc instanceof ExpectsAnswerContent) {
-				String question = sc.getText().trim();
-				currentQuestions.add(question);
-				if (getQuestionsAndAnswers().containsKey(question)) {
-					String ans = getQuestionsAndAnswers().get(question);
-//					logger.debug(ans + " ? " + ((AnswerContent)statementAfter).getAnswer().toString().trim());
-					if (statementAfter != null && statementAfter instanceof AnswerContent) {
-						Object ansObj = ((AnswerContent)statementAfter).getAnswer();
-						if (ansObj != null) {
-							String val = ansObj.toString().trim();
-							val = SadlUtils.stripQuotes(val);
-							ans = SadlUtils.stripQuotes(ans);
-							if (val.equals(ans)) {
-								// this statement has already been answered		
-								((ExpectsAnswerContent) sc).setAnswer((AnswerContent) statementAfter);
-								continue;
-							}
-						}
-					}
-					else {
-						try {
-							answerUser(getOwlModelsFolder(), ans, false, sc.getHostEObject());
-						} catch (ConfigurationException e) {
-							// TODO Auto-generated catch block
-							e.printStackTrace();
-						}	
-					}
-				}
-				else if (sc instanceof QuestionWithCallbackContent) {
-					String key = getUnansweredQuestionKey((QuestionWithCallbackContent)sc);
-					if (key != null) {
-						replaceUnansweredQuestionStatementContent(key, (QuestionWithCallbackContent)sc);
-						lastStatement = sc;
-					}
-				}
+				// Subclasses CompareContent, EvalContent, ExtractContent, HowManyValueContent, ModifiedAskContent, WhatIsContent, WhatValuesContent can 
+				//	come only from Agent.USER and will result in an insertion into the DialogWindow, **unless it has already been inserted**. If already
+				//	answered, there will be the resulting InformationContent already later in the conversation.
+				
+				// Subclasses RequestArgumentAugmentedTypeContent, RequestReturnAugmentedTypeContent come from Agent.CM and may or may not be
+				//	followed by an AddAugmentedTypeInfoContent.
 
-				// this statement needs an answer
-				else if (sc instanceof ExpectsAnswerContent) {
-					try {
-						String answer = processUserRequest(resource, ontModel, modelName, (ExpectsAnswerContent)sc);
-//						String answer = getDialogAnswerProvider().processUserQueryNewThreadWithBusyIndicator(resource, ontModel, modelName, (ExpectsAnswerContent) sc);
-						if (answer != null) {
-							addQuestionAndAnswer(sc.getText().trim(), answer.trim());
-							AnswerPendingContent pending = new AnswerPendingContent(null, Agent.CM, (ExpectsAnswerContent) sc);
-							ConversationElement cep = new ConversationElement(dc, pending, Agent.CM);
-							additions.add(cep);
-							additionMap.put(cep, ce);
-							((ExpectsAnswerContent)sc).setAnswer(pending);
-						}
-					} catch (ConfigurationException e) {
-						// TODO Auto-generated catch block
-						e.printStackTrace();
-					} catch (ExecutionException e) {
-						// TODO Auto-generated catch block
-						e.printStackTrace();
-					} catch (IOException e) {
-						// TODO Auto-generated catch block
-						e.printStackTrace();
-					} catch (TranslationException e) {
-						// TODO Auto-generated catch block
-						e.printStackTrace();
-					} catch (InvalidNameException e) {
-						// TODO Auto-generated catch block
-						e.printStackTrace();
-					} catch (ReasonerNotFoundException e) {
-						// TODO Auto-generated catch block
-						e.printStackTrace();
-					} catch (QueryParseException e) {
-						// TODO Auto-generated catch block
-						e.printStackTrace();
-					} catch (QueryCancelledException e) {
-						// TODO Auto-generated catch block
-						e.printStackTrace();
-					} catch (SadlInferenceException e) {
-						// TODO Auto-generated catch block
-						e.printStackTrace();
-					} catch (EquationNotFoundException e) {
-						// TODO Auto-generated catch block
-						e.printStackTrace();
-					} catch (AnswerExtractionException e) {
-						// TODO Auto-generated catch block
-						e.printStackTrace();
-					}
+				if (sc.getAgent().equals(Agent.USER)) {
+					processExpectsAnswerContent(resource, ontModel, modelName, dc, additionMap, additions, currentQuestions, ce, statementAfter, (ExpectsAnswerContent) sc);
 				}
 			}
+			lastStatement = sc;
 		}
 		if (!additions.isEmpty()) {
 			for (int i = additions.size() - 1; i >= 0; i--) {
@@ -4631,6 +4647,289 @@ public class AnswerCurationManager {
 			// there are no questions, clear qna
 			qna.clear();
 		}
+	}
+
+	private void processSadlStatementContentInContextOfPreceedingWhatIs(SadlStatementContent sc,
+			WhatIsContent lastStatement, Object trgt, List<ConversationElement> dialogStmts, int conversationIdx) {
+		// need the equation to modify
+		String question = lastStatement.getText();
+		String semTypeUri = sc.getConceptUri();
+
+		addAugmentedTypeToEquation(dialogStmts, conversationIdx, question, semTypeUri);
+	}
+
+	private String addAugmentedTypeToEquation(List<ConversationElement> dialogStmts, int conversationIdx, String question,
+			String semTypeUri) {
+		for (int i = conversationIdx - 1; i >= 0; i--) {
+			ConversationElement priorCe = dialogStmts.get(i);
+			if (priorCe.getStatement() instanceof EquationStatementContent) {
+				EquationStatementContent eqsc = (EquationStatementContent)priorCe.getStatement();
+				List<StatementContent> questions = eqsc.getQuestionsForUser();
+				if (questions != null) {
+					for (StatementContent qsc : questions) {
+						String qscQuestion = null;
+						EObject equationEObject = null;
+						String argNameToUpdate = null;
+						if (qsc instanceof RequestArgumentAugmentedTypeContent) {
+							qscQuestion = stripEOS(((RequestArgumentAugmentedTypeContent)qsc).getQuestion());
+							equationEObject = ((RequestArgumentAugmentedTypeContent)qsc).getHostEObject();
+							argNameToUpdate = ((RequestArgumentAugmentedTypeContent)qsc).getArgumentName();
+						}
+						else if (qsc instanceof RequestReturnAugmentedTypeContent) {
+							qscQuestion = stripEOS(((RequestReturnAugmentedTypeContent)qsc).getQuestion());
+							equationEObject = ((RequestReturnAugmentedTypeContent)qsc).getHostEObject();
+						}
+						if (qscQuestion != null && qscQuestion.equals(question)) {
+							// we have the equation and the question
+							OntClass cls = getDomainModel().getOntClass(semTypeUri);
+							if (cls != null) {
+								addAugmentedTypeToEquation(eqsc, equationEObject, argNameToUpdate, cls);
+								return "Added augmented type '" + cls.getURI() + "' to " + eqsc.getEquationName();
+							}
+							else {
+								// error
+							}
+						}
+					}
+				}
+			}
+		}
+		return "failure";
+	}
+
+	private void addAugmentedTypeToEquation(EquationStatementContent eqsc, EObject equationEObject,
+			String argNameToUpdate, OntClass cls) {
+		if (argNameToUpdate != null) {
+			// update argument with semantic type
+			String eqTxt = eqsc.getText();
+			int sigStart = eqTxt.indexOf("(");
+			int argStart = eqTxt.indexOf(argNameToUpdate, sigStart);
+			int insertLoc = argStart + argNameToUpdate.length();
+			StringBuilder newEqTxt = new StringBuilder(eqTxt.subSequence(0, insertLoc));
+			newEqTxt.append(" (");
+			newEqTxt.append(cls.getLocalName());
+			newEqTxt.append(")");
+			newEqTxt.append(eqTxt.substring(insertLoc));
+			String replacementTxt = newEqTxt.toString();
+			System.out.println(replacementTxt);
+			replaceDialogText(equationEObject, eqTxt, replacementTxt);
+			return;
+		}
+		else {
+			// update return statement with semantic type
+			String eqTxt = eqsc.getText();
+			int sigEnd = eqTxt.indexOf("returns");
+			int insertLoc = eqTxt.indexOf(":", sigEnd);
+			StringBuilder newEqTxt = new StringBuilder(eqTxt.subSequence(0, insertLoc));
+			newEqTxt.append(" (");
+			newEqTxt.append(cls.getLocalName());
+			newEqTxt.append(")");
+			newEqTxt.append(eqTxt.substring(insertLoc));
+			String replacementTxt = newEqTxt.toString();
+			System.out.println(replacementTxt);
+			replaceDialogText(equationEObject, eqTxt, replacementTxt);
+			return;
+		}
+	}
+
+	private void processAddAugmentedTypeInfoContent(AddAugmentedTypeInfoContent sc) {
+		// TODO Auto-generated method stub
+		int i = 0;
+	}
+
+	private void processAddEquationContent(org.eclipse.emf.ecore.resource.Resource resource2, OntModel ontModel, String modelName, DialogContent dc, Map<ConversationElement, ConversationElement> additionMap, List<ConversationElement> additions, List<String> currentQuestions, ConversationElement ce, StatementContent statementAfter, AddEquationContent sc) {
+		processExpectsAnswerContent(resource, ontModel, modelName, dc, additionMap, additions, currentQuestions, ce, statementAfter, sc);
+	}
+
+	private void processExpectsAnswerContent(org.eclipse.emf.ecore.resource.Resource resource, OntModel ontModel,
+			String modelName, DialogContent dc, Map<ConversationElement, ConversationElement> additionMap,
+			List<ConversationElement> additions, List<String> currentQuestions, ConversationElement ce,
+			StatementContent statementAfter, ExpectsAnswerContent sc) {
+		StatementContent lastStatement;
+		String question = sc.getText().trim();
+		currentQuestions.add(question);
+		if (getQuestionsAndAnswers().containsKey(question)) {
+			String ans = getQuestionsAndAnswers().get(question);
+//					logger.debug(ans + " ? " + ((AnswerContent)statementAfter).getAnswer().toString().trim());
+			if (statementAfter != null && statementAfter != null) {
+				String val = statementAfter.toString().trim();
+				val = stripEOS(SadlUtils.stripQuotes(val));
+				ans = stripEOS(SadlUtils.stripQuotes(ans));
+				if (val.equals(ans)) {
+					// this statement has already been answered		
+					((ExpectsAnswerContent) sc).setAnswer(statementAfter);
+//								continue;
+				}
+			}
+			else {
+				try {
+					answerUser(getOwlModelsFolder(), ans, sc.isQuoteResult(), sc.getHostEObject());
+				} catch (ConfigurationException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}	
+			}
+		}
+		else if (sc instanceof QuestionWithCallbackContent) {
+			String key = getUnansweredQuestionKey((QuestionWithCallbackContent)sc);
+			if (key != null) {
+				replaceUnansweredQuestionStatementContent(key, (QuestionWithCallbackContent)sc);
+				lastStatement = sc;
+			}
+		}
+
+		// this statement needs an answer
+		else {
+			processExpectsAnswerContent(resource, ontModel, modelName, dc, additionMap, additions, ce, sc);
+		}
+	}
+
+	private String stripEOS(String stmt) {
+		if (stmt.endsWith(".") || stmt.endsWith("?")) {
+			stmt = stmt.substring(0, stmt.length() - 1);
+		}
+		return stmt;
+	}
+
+	private void processExpectsAnswerContent(org.eclipse.emf.ecore.resource.Resource resource, OntModel ontModel,
+			String modelName, DialogContent dc, Map<ConversationElement, ConversationElement> additionMap,
+			List<ConversationElement> additions, ConversationElement ce, ExpectsAnswerContent sc) {
+		try {
+			String answer = processUserRequest(resource, ontModel, modelName, sc);
+//						String answer = getDialogAnswerProvider().processUserQueryNewThreadWithBusyIndicator(resource, ontModel, modelName, (ExpectsAnswerContent) sc);
+			if (answer != null) {
+				addQuestionAndAnswer(sc.getText().trim(), answer.trim());
+				AnswerPendingContent pending = new AnswerPendingContent(null, Agent.CM, (StatementContent) sc);
+				ConversationElement cep = new ConversationElement(dc, pending, Agent.CM);
+				additions.add(cep);
+				additionMap.put(cep, ce);
+				((ExpectsAnswerContent)sc).setAnswer(pending);
+			}
+		} catch (ConfigurationException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (ExecutionException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (TranslationException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (InvalidNameException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (ReasonerNotFoundException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (QueryParseException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (QueryCancelledException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (SadlInferenceException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (EquationNotFoundException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (AnswerExtractionException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+	}
+
+	private void processQuestionUserContent(StatementContent sc) {
+		String question = null;
+		if (sc instanceof UndefinedConceptStatementContent) {
+			question = ((UndefinedConceptStatementContent)sc).getText();
+		}
+		if (question != null) {
+			try {
+				askUser(getOwlModelsFolder(), question, false, sc.getHostEObject());
+			} catch (ConfigurationException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		}
+	}
+		
+	private void processMissingEquationContent(EquationStatementContent eqsc, List<ConversationElement> dialogStmts) {
+		List<StatementContent> questions = eqsc.getQuestionsForUser();
+		if (questions != null) {
+			for (StatementContent sc : questions) {
+				if (!questionHasBeenAsked(dialogStmts, eqsc, sc)) {
+					String question = null;
+					if (sc instanceof RequestArgumentAugmentedTypeContent) {
+						question = ((RequestArgumentAugmentedTypeContent)sc).getQuestion();
+					}
+					else if (sc instanceof RequestReturnAugmentedTypeContent) {
+						question = ((RequestReturnAugmentedTypeContent)sc).getQuestion();
+					}
+					if (question != null) {
+						try {
+							askUser(getOwlModelsFolder(), question, false, sc.getHostEObject());
+						} catch (ConfigurationException e) {
+							// TODO Auto-generated catch block
+							e.printStackTrace();
+						}
+					}
+				}
+			}
+		}
+	}
+
+	private boolean questionHasBeenAsked(List<ConversationElement> dialogStmts, EquationStatementContent equationSc,
+			StatementContent questionSc) {
+		String eqName = equationSc.getEquationName();
+		int cntr = 0;
+		int eqIdx = -1;
+		for (ConversationElement ce :dialogStmts) {
+			StatementContent cesc = ce.getStatement();
+			if (eqIdx < 0 && cesc.equals(equationSc)) {
+				// found the equation
+				eqIdx = cntr;
+			}
+			if (eqIdx >= 0 && cntr > eqIdx) {
+				// look for this question until we see another EquationStatementContent
+				if (cesc instanceof EquationStatementContent) {
+					return false;
+				}
+				
+				boolean sameArgName = false;
+				boolean sameQuestion = false;
+				if (cesc instanceof WhatIsContent) {
+					Object trgtObj = ((WhatIsContent)cesc).getTarget();
+					String cescTarget = trgtObj instanceof NamedNode ? ((NamedNode)trgtObj).getName() : trgtObj.toString();
+					String cescQuestion = cesc.getText();
+					if (questionSc instanceof RequestArgumentAugmentedTypeContent) {
+						if (((RequestArgumentAugmentedTypeContent)questionSc).getArgumentName().equals(cescTarget)) {
+							sameArgName = true;
+						}
+						String qscQuestion = stripEOS(((RequestArgumentAugmentedTypeContent)questionSc).getQuestion());
+						if (qscQuestion.equals(cescQuestion)) {
+							sameQuestion = true;
+						}
+					}
+					else if (questionSc instanceof RequestReturnAugmentedTypeContent) {
+						if (((RequestReturnAugmentedTypeContent)questionSc).getEquationName().equals(cescTarget)) {
+							sameArgName = true;
+						}
+						String qscQuestion = stripEOS(((RequestReturnAugmentedTypeContent)questionSc).getQuestion());
+						if (qscQuestion.equals(cescQuestion)) {
+							sameQuestion = true;
+						}
+					}
+					if (sameArgName && sameQuestion) {
+						return true;
+					}
+				}
+			}
+			cntr++;
+		}
+		return false;
 	}
 
 	/**
@@ -4785,14 +5084,8 @@ public class AnswerCurationManager {
 	private String getUnansweredQuestionKey(QuestionWithCallbackContent sc) {
 		String txt2 = sc.getTheQuestion();
 		for (String uaq : getUnansweredQuestions().keySet()) {
-			String trimmed = uaq;
-			if (trimmed.endsWith("?")) {
-				trimmed = trimmed.substring(0, trimmed.length() - 1);
-			}
-			trimmed = SadlUtils.stripQuotes(trimmed.trim());
-			if (trimmed.endsWith("?")) {
-				trimmed = trimmed.substring(0, trimmed.length() - 1);
-			}
+			String trimmed = stripEOS(uaq);
+			trimmed = stripEOS(SadlUtils.stripQuotes(trimmed.trim()));
 			if (trimmed.equals(txt2)) {
 				return uaq;
 			}

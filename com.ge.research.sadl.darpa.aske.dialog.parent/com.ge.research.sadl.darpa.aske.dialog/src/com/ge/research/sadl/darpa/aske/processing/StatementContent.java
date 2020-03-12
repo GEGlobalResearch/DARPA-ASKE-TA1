@@ -14,6 +14,7 @@ public abstract class StatementContent {
 	private EObject hostEObject;
 	private Agent agent;
 	private String unParsedText = null;
+	private boolean quoteResult = false;
 	
 	public StatementContent(EObject host) {
 		setHostEObject(host);
@@ -24,10 +25,10 @@ public abstract class StatementContent {
 		setAgent(agnt);
 	}
 
-	public StatementContent(EObject host, Agent agnt, String text) {
+	public StatementContent(EObject host, Agent agnt, String uptxt) {
 		setHostEObject(host);
 		setAgent(agnt);
-		setUnParsedText(text);
+		setUnParsedText(uptxt);
 	}
 
 	public EObject getHostEObject() {
@@ -87,12 +88,20 @@ public abstract class StatementContent {
 		return text;
 	}
 
-	private String getUnParsedText() {
+	public String getUnParsedText() {
 		return unParsedText;
 	}
 
-	private void setUnParsedText(String unParsedText) {
+	public void setUnParsedText(String unParsedText) {
 		this.unParsedText = unParsedText;
+	}
+
+	public boolean isQuoteResult() {
+		return quoteResult;
+	}
+
+	public void setQuoteResult(boolean quoteResult) {
+		this.quoteResult = quoteResult;
 	}
 
 

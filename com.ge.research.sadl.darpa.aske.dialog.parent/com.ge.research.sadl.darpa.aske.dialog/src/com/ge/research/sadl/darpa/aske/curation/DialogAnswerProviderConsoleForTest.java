@@ -266,7 +266,7 @@ public class DialogAnswerProviderConsoleForTest extends BaseDialogAnswerProvider
 	@Override
 	public void provideResponse(QuestionWithCallbackContent question) {
 //		System.out.println("Response: " + response.toString());
-		AnswerContent answer = question.getAnswer();
+		StatementContent answer = question.getAnswer();
 //		if (response.getCurationManager() != null) {
 //			setCurationManager(response.getCurationManager());
 			String methodToCall = question.getMethodToCall();
@@ -353,7 +353,9 @@ public class DialogAnswerProviderConsoleForTest extends BaseDialogAnswerProvider
 												}
 											}
 										}
-										answer.setOtherResults(sadlFiles);
+										if (answer instanceof AnswerContent) {
+											((AnswerContent) answer).setOtherResults(sadlFiles);
+										}
 										if (projectName != null) {	// only not null if doing SADL conversion
 											try {
 												IProject project = ResourcesPlugin.getWorkspace().getRoot().getProject(projectName);

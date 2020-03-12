@@ -12,6 +12,7 @@ import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IResource;
 import org.eclipse.core.resources.IncrementalProjectBuilder;
 import org.eclipse.core.resources.ResourcesPlugin;
+import org.eclipse.emf.ecore.EObject;
 
 import com.ge.research.sadl.darpa.aske.processing.IDialogAnswerProvider;
 import com.ge.research.sadl.darpa.aske.processing.MixedInitiativeElement;
@@ -43,6 +44,18 @@ public abstract class BaseDialogAnswerProvider implements IDialogAnswerProvider 
 //		Consumer<MixedInitiativeElement> respond = a -> this.provideResponse(a);
 		MixedInitiativeTextualResponse question = new MixedInitiativeTextualResponse(content);
 //		MixedInitiativeElement questionElement = new MixedInitiativeElement(question, respond, acm, methodToCall, args);
+//		addMixedInitiativeElement(content, questionElement);
+//		initiateMixedInitiativeInteraction(questionElement);
+		return "success";
+	}
+
+	@Override
+	public String replaceDialogText(AnswerCurationManager acm, EObject eObject, String originalTxt,
+			String replacementTxt) {
+		answerConfigurationManager = acm;
+//		Consumer<MixedInitiativeElement> respond = a -> this.provideResponse(a);
+		MixedInitiativeTextualResponse question = new MixedInitiativeTextualResponse(replacementTxt);
+//		MixedInitiativeElement questionElement = new MixedInitiativeElement(question, respond);
 //		addMixedInitiativeElement(content, questionElement);
 //		initiateMixedInitiativeInteraction(questionElement);
 		return "success";

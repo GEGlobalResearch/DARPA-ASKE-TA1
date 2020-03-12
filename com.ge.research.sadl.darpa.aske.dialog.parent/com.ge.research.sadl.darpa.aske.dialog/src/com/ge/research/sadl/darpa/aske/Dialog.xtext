@@ -181,7 +181,7 @@ WhatIsStatement:
 ;
 
 WhatTypeStatement:
-	{WhatTypeStatement} 'type' ('is' target=Expression | 'does' equation=SadlResource 'return')
+	{WhatTypeStatement} 'semantic'?'type' ('is' target=Expression | 'does' equation=SadlResource 'return')
 ;
 
 fragment WhenPart returns WithWhenPart:
@@ -189,11 +189,12 @@ fragment WhenPart returns WithWhenPart:
 ;
 
 WhatValuesStatement:
-	{WhatValuesStatement} (typof='type' 'of')? ('value'|'values') typ=('can'|'must') prop=SadlResource 'of' article=AnArticle? cls=SadlPrimaryTypeReference 'have'
+	{WhatValuesStatement} (typof='type' 'of')? ('value'|'values') typ=('can'|'must') prop=SadlResource ('of' article=AnArticle? cls=SadlPrimaryTypeReference)? 'have'
 ;
 
 HowManyValuesStatement:
-	{HowManyValuesStatement} ('How'|'how') 'many' 'values' 'of' prop=SadlResource ('of' 'type' typ=SadlPrimaryTypeReference)? 'can' article=AnArticle? cls=SadlPrimaryTypeReference 'have'
+//	{HowManyValuesStatement} ('How'|'how') 'many' 'values' 'of' prop=SadlResource ('of' 'type' typ=SadlPrimaryTypeReference)? 'can' article=AnArticle? cls=SadlPrimaryTypeReference 'have'
+	{HowManyValuesStatement} ('How'|'how') 'many' 'values' ('of' 'type' typ=SadlPrimaryTypeReference)? 'can' prop=SadlResource ('of' article=AnArticle? cls=SadlPrimaryTypeReference)? 'have'
 ;
 
 @Override

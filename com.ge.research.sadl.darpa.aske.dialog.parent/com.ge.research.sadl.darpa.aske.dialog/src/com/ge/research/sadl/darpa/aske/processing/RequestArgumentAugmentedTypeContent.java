@@ -4,23 +4,24 @@ import org.eclipse.emf.ecore.EObject;
 
 import com.ge.research.sadl.darpa.aske.curation.AnswerCurationManager.Agent;
 
-public class RequestArgumentAugmentedTypeContent extends QuestionUserContent {
+public class RequestArgumentAugmentedTypeContent extends QuestionContent {
+	private String equationName;
 	private String argumentName;
 	private String question;
 	
 	public RequestArgumentAugmentedTypeContent(EObject host, Agent agnt) {
 		super(host, agnt);
-		// TODO Auto-generated constructor stub
 	}
 
-	public RequestArgumentAugmentedTypeContent(EObject host, Agent agnt, String text) {
-		super(host, agnt, text);
+	public RequestArgumentAugmentedTypeContent(EObject host, Agent agnt, String uptxt) {
+		super(host, agnt, uptxt);
 	}
 
-	public RequestArgumentAugmentedTypeContent(EObject host, Agent agnt, String text, String arg, String q) {
+	public RequestArgumentAugmentedTypeContent(EObject host, Agent agnt, String text, String arg, String eqName, String q) {
 		super(host, agnt, text);
 		setArgumentName(arg);
 		setQuestion(q);
+		setEquationName(eqName);
 	}
 	
 	public String getArgumentName() {
@@ -37,6 +38,14 @@ public class RequestArgumentAugmentedTypeContent extends QuestionUserContent {
 
 	public void setQuestion(String question) {
 		this.question = question;
+	}
+
+	public String getEquationName() {
+		return equationName;
+	}
+
+	public void setEquationName(String eqName) {
+		this.equationName = eqName;
 	}
 
 }

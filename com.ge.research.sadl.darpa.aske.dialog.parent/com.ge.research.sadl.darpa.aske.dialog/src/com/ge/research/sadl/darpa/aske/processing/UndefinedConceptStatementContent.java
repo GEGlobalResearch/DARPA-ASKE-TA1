@@ -5,7 +5,7 @@ import org.eclipse.emf.ecore.EObject;
 import com.ge.research.sadl.darpa.aske.curation.AnswerCurationManager.Agent;
 import com.ge.research.sadl.sADL.SadlResource;
 
-public class UndefinedConceptStatementContent extends QuestionUserContent {
+public class UndefinedConceptStatementContent extends InformationContent {
 	private SadlResource undefinedSadlResource;
 
 	public UndefinedConceptStatementContent(EObject host, Agent agnt, SadlResource ucsr) {

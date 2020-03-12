@@ -2,618 +2,546 @@
     xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
     xmlns:j.0="http://jena.hpl.hp.com/schemas/2003/03/ont-manager#">
   <j.0:OntologySpec>
-    <j.0:createdBy>DialogInference</j.0:createdBy>
-    <j.0:language rdf:resource="http://www.w3.org/2002/07/owl"/>
-    <j.0:altURL rdf:resource="file:/C:/Users/200005201/sadl3-master6/git/DARPA-ASKE-TA1/Ontology/M5/ComputationalGraphModels/Q_1580417482564.owl"/>
-    <j.0:publicURI rdf:resource="http://aske.ge.com/Model_Q_1580417482564"/>
-  </j.0:OntologySpec>
-  <j.0:OntologySpec>
-    <j.0:createdBy>DialogInference</j.0:createdBy>
-    <j.0:language rdf:resource="http://www.w3.org/2002/07/owl"/>
-    <j.0:altURL rdf:resource="file:/C:/Users/200005201/sadl3-master6/git/DARPA-ASKE-TA1/Ontology/M5/ComputationalGraphModels/Q_1581008340909.owl"/>
-    <j.0:publicURI rdf:resource="http://aske.ge.com/Model_Q_1581008340909"/>
-  </j.0:OntologySpec>
-  <j.0:OntologySpec>
-    <j.0:createdBy>DialogInference</j.0:createdBy>
-    <j.0:language rdf:resource="http://www.w3.org/2002/07/owl"/>
-    <j.0:altURL rdf:resource="file:/C:/Users/200005201/sadl3-master6/git/DARPA-ASKE-TA1/Ontology/M5/ComputationalGraphModels/Q_1581008734842.owl"/>
-    <j.0:publicURI rdf:resource="http://aske.ge.com/Model_Q_1581008734842"/>
-  </j.0:OntologySpec>
-  <j.0:OntologySpec>
     <j.0:prefix rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
-    >stbltdlg</j.0:prefix>
-    <j.0:createdBy>Dialog</j.0:createdBy>
+    >QueryTurbo</j.0:prefix>
+    <j.0:createdBy>SADL</j.0:createdBy>
     <j.0:language rdf:resource="http://www.w3.org/2002/07/owl"/>
-    <j.0:altURL rdf:resource="file:/C:/Users/200005201/sadl3-master6/git/DARPA-ASKE-TA1/Ontology/M5/OwlModels/Suitability.dialog.owl"/>
-    <j.0:publicURI rdf:resource="http://sadl.org/Suitability.dialog"/>
+    <j.0:altURL rdf:resource="file:/C:/Users/200005201/sadl3-master6/git/DARPA-ASKE-TA1/Ontology/M5/OwlModels/QueryTurbo.owl"/>
+    <j.0:publicURI rdf:resource="http://sadl.org/QueryTurbo.sadl"/>
   </j.0:OntologySpec>
   <j.0:OntologySpec>
-    <j.0:prefix rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
-    >sntrp</j.0:prefix>
-    <j.0:createdBy>Dialog</j.0:createdBy>
+    <j.0:publicURI rdf:resource="http://aske.ge.com/Model_Q_1581368679503"/>
+    <j.0:altURL rdf:resource="file:/C:/Users/200005201/sadl3-master6/git/DARPA-ASKE-TA1/Ontology/M5/ComputationalGraphModels/Q_1581368679503.owl"/>
     <j.0:language rdf:resource="http://www.w3.org/2002/07/owl"/>
-    <j.0:altURL rdf:resource="file:/C:/Users/200005201/sadl3-master6/git/DARPA-ASKE-TA1/Ontology/M5/OwlModels/Isentrop.dialog.owl"/>
-    <j.0:publicURI rdf:resource="http://sadl.org/Isentrop.dialog"/>
-  </j.0:OntologySpec>
-  <j.0:OntologySpec>
     <j.0:createdBy>DialogInference</j.0:createdBy>
-    <j.0:language rdf:resource="http://www.w3.org/2002/07/owl"/>
-    <j.0:altURL rdf:resource="file:/C:/Users/200005201/sadl3-master6/git/DARPA-ASKE-TA1/Ontology/M5/ComputationalGraphModels/Q_1581007997569.owl"/>
-    <j.0:publicURI rdf:resource="http://aske.ge.com/Model_Q_1581007997569"/>
   </j.0:OntologySpec>
   <j.0:OntologySpec>
-    <j.0:createdBy>SRL_Metrics</j.0:createdBy>
+    <j.0:publicURI rdf:resource="http://sadl.org/AnswerCMStatementLinks.dialog"/>
+    <j.0:altURL rdf:resource="file:/C:/Users/200005201/sadl3-master6/git/DARPA-ASKE-TA1/Ontology/M5/OwlModels/AnswerCMStatementLinks.dialog.owl"/>
     <j.0:language rdf:resource="http://www.w3.org/2002/07/owl"/>
-    <j.0:altURL rdf:resource="file:/C:/Users/200005201/sadl3-master6/git/DARPA-ASKE-TA1/Ontology/M5/OwlModels/CodeExtractionModel.sadl.metrics.owl"/>
-    <j.0:publicURI rdf:resource="http://sadl.org/CodeExtractionModel.sadl.metrics"/>
+    <j.0:createdBy>Dialog</j.0:createdBy>
+    <j.0:prefix rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >AnswerCMStatementLinks</j.0:prefix>
   </j.0:OntologySpec>
   <j.0:OntologySpec>
+    <j.0:publicURI rdf:resource="http://sadl.org/DeeperKnowledge.sadl"/>
+    <j.0:altURL rdf:resource="file:/C:/Users/200005201/sadl3-master6/git/DARPA-ASKE-TA1/Ontology/M5/OwlModels/DeeperKnowledge.owl"/>
+    <j.0:language rdf:resource="http://www.w3.org/2002/07/owl"/>
+    <j.0:createdBy>SADL</j.0:createdBy>
     <j.0:prefix rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
     >DeeperKnowledge</j.0:prefix>
+  </j.0:OntologySpec>
+  <j.0:OntologySpec>
+    <j.0:publicURI rdf:resource="http://sadl.org/TestBuiltinConstraint.sadl.metrics"/>
+    <j.0:altURL rdf:resource="file:/C:/Users/200005201/sadl3-master6/git/DARPA-ASKE-TA1/Ontology/M5/OwlModels/TestBuiltinConstraint.sadl.metrics.owl"/>
+    <j.0:language rdf:resource="http://www.w3.org/2002/07/owl"/>
+    <j.0:createdBy>SRL_Metrics</j.0:createdBy>
+  </j.0:OntologySpec>
+  <j.0:OntologySpec>
+    <j.0:createdBy>SRL_Metrics</j.0:createdBy>
+    <j.0:language rdf:resource="http://www.w3.org/2002/07/owl"/>
+    <j.0:altURL rdf:resource="file:/C:/Users/200005201/sadl3-master6/git/DARPA-ASKE-TA1/Ontology/M5/OwlModels/UnitExpressions.sadl.metrics.owl"/>
+    <j.0:publicURI rdf:resource="http://sadl.org/UnitExpressions.sadl.metrics"/>
+  </j.0:OntologySpec>
+  <j.0:OntologySpec>
+    <j.0:publicURI rdf:resource="http://aske.ge.com/Model_Q_1581372027600"/>
+    <j.0:altURL rdf:resource="file:/C:/Users/200005201/sadl3-master6/git/DARPA-ASKE-TA1/Ontology/M5/ComputationalGraphModels/Q_1581372027600.owl"/>
+    <j.0:language rdf:resource="http://www.w3.org/2002/07/owl"/>
+    <j.0:createdBy>DialogInference</j.0:createdBy>
+  </j.0:OntologySpec>
+  <j.0:OntologySpec>
+    <j.0:publicURI rdf:resource="http://baseUri2"/>
+    <j.0:altURL rdf:resource="file:/C:/Users/200005201/sadl3-master6/git/DARPA-ASKE-TA1/Ontology/M5/OwlModels/test2.dialog.owl"/>
+    <j.0:language rdf:resource="http://www.w3.org/2002/07/owl"/>
+    <j.0:createdBy>Dialog</j.0:createdBy>
+    <j.0:prefix rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    ></j.0:prefix>
+  </j.0:OntologySpec>
+  <j.0:OntologySpec>
+    <j.0:createdBy>DialogInference</j.0:createdBy>
+    <j.0:language rdf:resource="http://www.w3.org/2002/07/owl"/>
+    <j.0:altURL rdf:resource="file:/C:/Users/200005201/sadl3-master6/git/DARPA-ASKE-TA1/Ontology/M5/ComputationalGraphModels/Q_1580392698016.owl"/>
+    <j.0:publicURI rdf:resource="http://aske.ge.com/Model_Q_1580392698016"/>
+  </j.0:OntologySpec>
+  <j.0:OntologySpec>
+    <j.0:publicURI rdf:resource="http://com.ge.research.sadl.darpa.aske.answer/Mach_java"/>
+    <j.0:altURL rdf:resource="file:/C:/Users/200005201/sadl3-master6/git/DARPA-ASKE-TA1/Ontology/M5/ExtractedModels/Mach.java.owl"/>
+    <j.0:language rdf:resource="http://www.w3.org/2002/07/owl"/>
+    <j.0:createdBy>AnswerCurationManager</j.0:createdBy>
+    <j.0:prefix rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >Mach_java</j.0:prefix>
+  </j.0:OntologySpec>
+  <j.0:OntologySpec>
+    <j.0:createdBy>DialogInference</j.0:createdBy>
+    <j.0:language rdf:resource="http://www.w3.org/2002/07/owl"/>
+    <j.0:altURL rdf:resource="file:/C:/Users/200005201/sadl3-master6/git/DARPA-ASKE-TA1/Ontology/M5/ComputationalGraphModels/Q_1580231995967.owl"/>
+    <j.0:publicURI rdf:resource="http://aske.ge.com/Model_Q_1580231995967"/>
+  </j.0:OntologySpec>
+  <j.0:OntologySpec>
+    <j.0:createdBy>DialogInference</j.0:createdBy>
+    <j.0:language rdf:resource="http://www.w3.org/2002/07/owl"/>
+    <j.0:altURL rdf:resource="file:/C:/Users/200005201/sadl3-master6/git/DARPA-ASKE-TA1/Ontology/M5/ComputationalGraphModels/Q_1580413507054.owl"/>
+    <j.0:publicURI rdf:resource="http://aske.ge.com/Model_Q_1580413507054"/>
+  </j.0:OntologySpec>
+  <j.0:OntologySpec>
+    <j.0:publicURI rdf:resource="http://com.ge.research/darpa/aske/usd"/>
+    <j.0:altURL rdf:resource="file:/C:/Users/200005201/sadl3-master6/git/DARPA-ASKE-TA1/Ontology/M5/OwlModels/UserStatements.dialog.owl"/>
+    <j.0:language rdf:resource="http://www.w3.org/2002/07/owl"/>
+    <j.0:createdBy>Dialog</j.0:createdBy>
+    <j.0:prefix rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >usd</j.0:prefix>
+  </j.0:OntologySpec>
+  <j.0:OntologySpec>
+    <j.0:createdBy>DialogInference</j.0:createdBy>
+    <j.0:language rdf:resource="http://www.w3.org/2002/07/owl"/>
+    <j.0:altURL rdf:resource="file:/C:/Users/200005201/sadl3-master6/git/DARPA-ASKE-TA1/Ontology/M5/ComputationalGraphModels/Q_1581084423544.owl"/>
+    <j.0:publicURI rdf:resource="http://aske.ge.com/Model_Q_1581084423544"/>
+  </j.0:OntologySpec>
+  <j.0:OntologySpec>
+    <j.0:publicURI rdf:resource="http://sadl.org/sandbox.sadl"/>
+    <j.0:altURL rdf:resource="file:/C:/Users/200005201/sadl3-master6/git/DARPA-ASKE-TA1/Ontology/M5/OwlModels/sandbox.owl"/>
+    <j.0:language rdf:resource="http://www.w3.org/2002/07/owl"/>
     <j.0:createdBy>SADL</j.0:createdBy>
+    <j.0:prefix rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >sandbox</j.0:prefix>
+  </j.0:OntologySpec>
+  <j.0:OntologySpec>
+    <j.0:publicURI rdf:resource="http://sadl.org/TestCEonMach.sadl.metrics"/>
+    <j.0:altURL rdf:resource="file:/C:/Users/200005201/sadl3-master6/git/DARPA-ASKE-TA1/Ontology/M5/OwlModels/TestCEonMach.sadl.metrics.owl"/>
     <j.0:language rdf:resource="http://www.w3.org/2002/07/owl"/>
-    <j.0:altURL rdf:resource="file:/C:/Users/200005201/sadl3-master6/git/DARPA-ASKE-TA1/Ontology/M5/OwlModels/DeeperKnowledge.owl"/>
-    <j.0:publicURI rdf:resource="http://sadl.org/DeeperKnowledge.sadl"/>
+    <j.0:createdBy>SRL_Metrics</j.0:createdBy>
+  </j.0:OntologySpec>
+  <j.0:OntologySpec>
+    <j.0:publicURI rdf:resource="http://sadl.org/sadlimplicitmodel"/>
+    <j.0:altURL rdf:resource="file:/C:/Users/200005201/sadl3-master6/git/DARPA-ASKE-TA1/Ontology/M5/OwlModels/SadlImplicitModel.owl"/>
+    <j.0:language rdf:resource="http://www.w3.org/2002/07/owl"/>
+    <j.0:createdBy>SADL</j.0:createdBy>
+    <j.0:prefix rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >sadlimplicitmodel</j.0:prefix>
+  </j.0:OntologySpec>
+  <j.0:OntologySpec>
+    <j.0:publicURI rdf:resource="http://sadl.org/TestCEonMach.sadl"/>
+    <j.0:altURL rdf:resource="file:/C:/Users/200005201/sadl3-master6/git/DARPA-ASKE-TA1/Ontology/M5/OwlModels/TestCEonMach.owl"/>
+    <j.0:language rdf:resource="http://www.w3.org/2002/07/owl"/>
+    <j.0:createdBy>SADL</j.0:createdBy>
+    <j.0:prefix rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >TestCEonMach</j.0:prefix>
+  </j.0:OntologySpec>
+  <j.0:OntologySpec>
+    <j.0:createdBy>SRL_Metrics</j.0:createdBy>
+    <j.0:language rdf:resource="http://www.w3.org/2002/07/owl"/>
+    <j.0:altURL rdf:resource="file:/C:/Users/200005201/sadl3-master6/git/DARPA-ASKE-TA1/Ontology/M5/OwlModels/EngineOnlyModel.sadl.metrics.owl"/>
+    <j.0:publicURI rdf:resource="http://sadl.org/EngineOnlyModel.sadl.metrics"/>
+  </j.0:OntologySpec>
+  <j.0:OntologySpec>
+    <j.0:publicURI rdf:resource="http://sadl.org/Suitability.sadl"/>
+    <j.0:altURL rdf:resource="file:/C:/Users/200005201/sadl3-master6/git/DARPA-ASKE-TA1/Ontology/M5/OwlModels/Suitability.owl"/>
+    <j.0:language rdf:resource="http://www.w3.org/2002/07/owl"/>
+    <j.0:createdBy>SADL</j.0:createdBy>
+    <j.0:prefix rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >stblt</j.0:prefix>
   </j.0:OntologySpec>
   <j.0:OntologySpec>
     <j.0:createdBy>DialogInference</j.0:createdBy>
     <j.0:language rdf:resource="http://www.w3.org/2002/07/owl"/>
-    <j.0:altURL rdf:resource="file:/C:/Users/200005201/sadl3-master6/git/DARPA-ASKE-TA1/Ontology/M5/ComputationalGraphModels/Q_1581010097516.owl"/>
-    <j.0:publicURI rdf:resource="http://aske.ge.com/Model_Q_1581010097516"/>
-  </j.0:OntologySpec>
-  <j.0:OntologySpec>
-    <j.0:createdBy>DialogInference</j.0:createdBy>
-    <j.0:language rdf:resource="http://www.w3.org/2002/07/owl"/>
-    <j.0:altURL rdf:resource="file:/C:/Users/200005201/sadl3-master6/git/DARPA-ASKE-TA1/Ontology/M5/ComputationalGraphModels/Q_1581369118006.owl"/>
-    <j.0:publicURI rdf:resource="http://aske.ge.com/Model_Q_1581369118006"/>
+    <j.0:altURL rdf:resource="file:/C:/Users/200005201/sadl3-master6/git/DARPA-ASKE-TA1/Ontology/M5/ComputationalGraphModels/Q_1580392354484.owl"/>
+    <j.0:publicURI rdf:resource="http://aske.ge.com/Model_Q_1580392354484"/>
   </j.0:OntologySpec>
   <j.0:OntologySpec>
     <j.0:prefix rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
-    >ExampleDataTable</j.0:prefix>
+    >EngineOnlyModel</j.0:prefix>
     <j.0:createdBy>SADL</j.0:createdBy>
     <j.0:language rdf:resource="http://www.w3.org/2002/07/owl"/>
-    <j.0:altURL rdf:resource="file:/C:/Users/200005201/sadl3-master6/git/DARPA-ASKE-TA1/Ontology/M5/OwlModels/ExampleDataTable.owl"/>
-    <j.0:publicURI rdf:resource="http://sadl.org/ExampleDataTable.sadl"/>
+    <j.0:altURL rdf:resource="file:/C:/Users/200005201/sadl3-master6/git/DARPA-ASKE-TA1/Ontology/M5/OwlModels/EngineOnlyModel.owl"/>
+    <j.0:publicURI rdf:resource="http://sadl.org/EngineOnlyModel.sadl"/>
+  </j.0:OntologySpec>
+  <j.0:OntologySpec>
+    <j.0:prefix rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >Sound_txt</j.0:prefix>
+    <j.0:createdBy>AnswerCurationManager</j.0:createdBy>
+    <j.0:language rdf:resource="http://www.w3.org/2002/07/owl"/>
+    <j.0:altURL rdf:resource="file:/C:/Users/200005201/sadl3-master6/git/DARPA-ASKE-TA1/Ontology/M5/ExtractedModels/Sound.txt.owl"/>
+    <j.0:publicURI rdf:resource="http://com.ge.research.sadl.darpa.aske.answer/Sound_txt"/>
+  </j.0:OntologySpec>
+  <j.0:OntologySpec>
+    <j.0:publicURI rdf:resource="http://aske.ge.com/Model_Q_1581369269254"/>
+    <j.0:altURL rdf:resource="file:/C:/Users/200005201/sadl3-master6/git/DARPA-ASKE-TA1/Ontology/M5/ComputationalGraphModels/Q_1581369269254.owl"/>
+    <j.0:language rdf:resource="http://www.w3.org/2002/07/owl"/>
+    <j.0:createdBy>DialogInference</j.0:createdBy>
   </j.0:OntologySpec>
   <j.0:OntologySpec>
     <j.0:createdBy>DialogInference</j.0:createdBy>
     <j.0:language rdf:resource="http://www.w3.org/2002/07/owl"/>
-    <j.0:altURL rdf:resource="file:/C:/Users/200005201/sadl3-master6/git/DARPA-ASKE-TA1/Ontology/M5/ComputationalGraphModels/Q_1581007888854.owl"/>
-    <j.0:publicURI rdf:resource="http://aske.ge.com/Model_Q_1581007888854"/>
+    <j.0:altURL rdf:resource="file:/C:/Users/200005201/sadl3-master6/git/DARPA-ASKE-TA1/Ontology/M5/ComputationalGraphModels/Q_1580231962707.owl"/>
+    <j.0:publicURI rdf:resource="http://aske.ge.com/Model_Q_1580231962707"/>
   </j.0:OntologySpec>
   <j.0:OntologySpec>
+    <j.0:publicURI rdf:resource="http://aske.ge.com/Model_Q_1580417482564"/>
+    <j.0:altURL rdf:resource="file:/C:/Users/200005201/sadl3-master6/git/DARPA-ASKE-TA1/Ontology/M5/ComputationalGraphModels/Q_1580417482564.owl"/>
+    <j.0:language rdf:resource="http://www.w3.org/2002/07/owl"/>
+    <j.0:createdBy>DialogInference</j.0:createdBy>
+  </j.0:OntologySpec>
+  <j.0:OntologySpec>
+    <j.0:publicURI rdf:resource="http://sadl.org/AugmentedTable.sadl"/>
+    <j.0:altURL rdf:resource="file:/C:/Users/200005201/sadl3-master6/git/DARPA-ASKE-TA1/Ontology/M5/OwlModels/AugmentedTable.owl"/>
+    <j.0:language rdf:resource="http://www.w3.org/2002/07/owl"/>
+    <j.0:createdBy>SADL</j.0:createdBy>
+    <j.0:prefix rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >augtab</j.0:prefix>
+  </j.0:OntologySpec>
+  <j.0:OntologySpec>
+    <j.0:publicURI rdf:resource="http://sadl.org/AugmentedTable.sadl.metrics"/>
+    <j.0:altURL rdf:resource="file:/C:/Users/200005201/sadl3-master6/git/DARPA-ASKE-TA1/Ontology/M5/OwlModels/AugmentedTable.sadl.metrics.owl"/>
+    <j.0:language rdf:resource="http://www.w3.org/2002/07/owl"/>
+    <j.0:createdBy>SRL_Metrics</j.0:createdBy>
+  </j.0:OntologySpec>
+  <j.0:OntologySpec>
+    <j.0:publicURI rdf:resource="http://baseUri"/>
+    <j.0:altURL rdf:resource="file:/C:/Users/200005201/sadl3-master6/git/DARPA-ASKE-TA1/Ontology/M5/OwlModels/test.dialog.owl"/>
+    <j.0:language rdf:resource="http://www.w3.org/2002/07/owl"/>
+    <j.0:createdBy>Dialog</j.0:createdBy>
+    <j.0:prefix rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    ></j.0:prefix>
+  </j.0:OntologySpec>
+  <j.0:OntologySpec>
+    <j.0:prefix rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >EngineOnly</j.0:prefix>
+    <j.0:createdBy>Dialog</j.0:createdBy>
+    <j.0:language rdf:resource="http://www.w3.org/2002/07/owl"/>
+    <j.0:altURL rdf:resource="file:/C:/Users/200005201/sadl3-master6/git/DARPA-ASKE-TA1/Ontology/M5/OwlModels/EngineOnly.dialog.owl"/>
+    <j.0:publicURI rdf:resource="http://sadl.org/EngineOnly.dialog"/>
+  </j.0:OntologySpec>
+  <j.0:OntologySpec>
+    <j.0:publicURI rdf:resource="http://sadl.org/CodeExtractionModel.sadl"/>
+    <j.0:altURL rdf:resource="file:/C:/Users/200005201/sadl3-master6/git/DARPA-ASKE-TA1/Ontology/M5/OwlModels/CodeExtractionModel.owl"/>
+    <j.0:language rdf:resource="http://www.w3.org/2002/07/owl"/>
+    <j.0:createdBy>SADL</j.0:createdBy>
+    <j.0:prefix rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >cem</j.0:prefix>
+  </j.0:OntologySpec>
+  <j.0:OntologySpec>
+    <j.0:prefix rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >Turbo_java</j.0:prefix>
+    <j.0:createdBy>AnswerCurationManager</j.0:createdBy>
+    <j.0:language rdf:resource="http://www.w3.org/2002/07/owl"/>
+    <j.0:altURL rdf:resource="file:/C:/Users/200005201/sadl3-master6/git/DARPA-ASKE-TA1/Ontology/M5/ExtractedModels/Turbo.java.owl"/>
+    <j.0:publicURI rdf:resource="http://com.ge.research.sadl.darpa.aske.answer/Turbo_java"/>
+  </j.0:OntologySpec>
+  <j.0:OntologySpec>
+    <j.0:publicURI rdf:resource="http://sadl.org/empty.dialog"/>
+    <j.0:altURL rdf:resource="file:/C:/Users/200005201/sadl3-master6/git/DARPA-ASKE-TA1/Ontology/M5/OwlModels/empty.dialog.owl"/>
+    <j.0:language rdf:resource="http://www.w3.org/2002/07/owl"/>
+    <j.0:createdBy>Dialog</j.0:createdBy>
+    <j.0:prefix rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >empty</j.0:prefix>
+  </j.0:OntologySpec>
+  <j.0:OntologySpec>
+    <j.0:publicURI rdf:resource="http://sadl.org/Suitability.dialog"/>
+    <j.0:altURL rdf:resource="file:/C:/Users/200005201/sadl3-master6/git/DARPA-ASKE-TA1/Ontology/M5/OwlModels/Suitability.dialog.owl"/>
+    <j.0:language rdf:resource="http://www.w3.org/2002/07/owl"/>
+    <j.0:createdBy>Dialog</j.0:createdBy>
+    <j.0:prefix rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >stbltdlg</j.0:prefix>
+  </j.0:OntologySpec>
+  <j.0:OntologySpec>
+    <j.0:publicURI rdf:resource="http://sadl.org/Suitability.sadl.metrics"/>
+    <j.0:altURL rdf:resource="file:/C:/Users/200005201/sadl3-master6/git/DARPA-ASKE-TA1/Ontology/M5/OwlModels/Suitability.sadl.metrics.owl"/>
+    <j.0:language rdf:resource="http://www.w3.org/2002/07/owl"/>
+    <j.0:createdBy>SRL_Metrics</j.0:createdBy>
+  </j.0:OntologySpec>
+  <j.0:OntologySpec>
+    <j.0:publicURI rdf:resource="http://aske.ge.com/Model_Q_1581369118006"/>
+    <j.0:altURL rdf:resource="file:/C:/Users/200005201/sadl3-master6/git/DARPA-ASKE-TA1/Ontology/M5/ComputationalGraphModels/Q_1581369118006.owl"/>
+    <j.0:language rdf:resource="http://www.w3.org/2002/07/owl"/>
+    <j.0:createdBy>DialogInference</j.0:createdBy>
+  </j.0:OntologySpec>
+  <j.0:OntologySpec>
+    <j.0:prefix rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >uexpr</j.0:prefix>
+    <j.0:createdBy>SADL</j.0:createdBy>
+    <j.0:language rdf:resource="http://www.w3.org/2002/07/owl"/>
+    <j.0:altURL rdf:resource="file:/C:/Users/200005201/sadl3-master6/git/DARPA-ASKE-TA1/Ontology/M5/OwlModels/UnitExpressions.owl"/>
+    <j.0:publicURI rdf:resource="http://sadl.org/UnitExpressions.sadl"/>
+  </j.0:OntologySpec>
+  <j.0:OntologySpec>
+    <j.0:publicURI rdf:resource="http://sadl.org/Isentrop.dialog"/>
+    <j.0:altURL rdf:resource="file:/C:/Users/200005201/sadl3-master6/git/DARPA-ASKE-TA1/Ontology/M5/OwlModels/Isentrop.dialog.owl"/>
+    <j.0:language rdf:resource="http://www.w3.org/2002/07/owl"/>
+    <j.0:createdBy>Dialog</j.0:createdBy>
+    <j.0:prefix rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >sntrp</j.0:prefix>
+  </j.0:OntologySpec>
+  <j.0:OntologySpec>
+    <j.0:publicURI rdf:resource="http://answer/build.dialog"/>
+    <j.0:altURL rdf:resource="file:/C:/Users/200005201/sadl3-master6/git/DARPA-ASKE-TA1/Ontology/M5/OwlModels/build.dialog.owl"/>
+    <j.0:language rdf:resource="http://www.w3.org/2002/07/owl"/>
+    <j.0:createdBy>Dialog</j.0:createdBy>
+    <j.0:prefix rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >bldlg</j.0:prefix>
+  </j.0:OntologySpec>
+  <j.0:OntologySpec>
+    <j.0:publicURI rdf:resource="http://sadl.org/ScientificConcepts2.sadl"/>
+    <j.0:altURL rdf:resource="file:/C:/Users/200005201/sadl3-master6/git/DARPA-ASKE-TA1/Ontology/M5/OwlModels/ScientificConcepts2.owl"/>
+    <j.0:language rdf:resource="http://www.w3.org/2002/07/owl"/>
+    <j.0:createdBy>SADL</j.0:createdBy>
+    <j.0:prefix rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >scicncpts2</j.0:prefix>
+  </j.0:OntologySpec>
+  <j.0:OntologySpec>
+    <j.0:publicURI rdf:resource="http://sadl.org/SpeedOfSound.sadl"/>
+    <j.0:altURL rdf:resource="file:/C:/Users/200005201/sadl3-master6/git/DARPA-ASKE-TA1/Ontology/M5/OwlModels/SpeedOfSound.owl"/>
+    <j.0:language rdf:resource="http://www.w3.org/2002/07/owl"/>
+    <j.0:createdBy>SADL</j.0:createdBy>
     <j.0:prefix rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
     >sos</j.0:prefix>
-    <j.0:createdBy>SADL</j.0:createdBy>
-    <j.0:language rdf:resource="http://www.w3.org/2002/07/owl"/>
-    <j.0:altURL rdf:resource="file:/C:/Users/200005201/sadl3-master6/git/DARPA-ASKE-TA1/Ontology/M5/OwlModels/SpeedOfSound.owl"/>
-    <j.0:publicURI rdf:resource="http://sadl.org/SpeedOfSound.sadl"/>
   </j.0:OntologySpec>
   <j.0:OntologySpec>
-    <j.0:createdBy>DialogInference</j.0:createdBy>
+    <j.0:publicURI rdf:resource="http://sadl.org/CodeExtractionModel.sadl.metrics"/>
+    <j.0:altURL rdf:resource="file:/C:/Users/200005201/sadl3-master6/git/DARPA-ASKE-TA1/Ontology/M5/OwlModels/CodeExtractionModel.sadl.metrics.owl"/>
     <j.0:language rdf:resource="http://www.w3.org/2002/07/owl"/>
-    <j.0:altURL rdf:resource="file:/C:/Users/200005201/sadl3-master6/git/DARPA-ASKE-TA1/Ontology/M5/ComputationalGraphModels/Q_1580314222945.owl"/>
-    <j.0:publicURI rdf:resource="http://aske.ge.com/Model_Q_1580314222945"/>
-  </j.0:OntologySpec>
-  <j.0:OntologySpec>
-    <j.0:prefix rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
-    >builtinfunctions</j.0:prefix>
-    <j.0:createdBy>SADL</j.0:createdBy>
-    <j.0:language rdf:resource="http://www.w3.org/2002/07/owl"/>
-    <j.0:altURL rdf:resource="file:/C:/Users/200005201/sadl3-master6/git/DARPA-ASKE-TA1/Ontology/M5/OwlModels/SadlBuiltinFunctions.owl"/>
-    <j.0:publicURI rdf:resource="http://sadl.org/builtinfunctions"/>
-  </j.0:OntologySpec>
-  <j.0:OntologySpec>
     <j.0:createdBy>SRL_Metrics</j.0:createdBy>
-    <j.0:language rdf:resource="http://www.w3.org/2002/07/owl"/>
-    <j.0:altURL rdf:resource="file:/C:/Users/200005201/sadl3-master6/git/DARPA-ASKE-TA1/Ontology/M5/OwlModels/Suitability.sadl.metrics.owl"/>
-    <j.0:publicURI rdf:resource="http://sadl.org/Suitability.sadl.metrics"/>
-  </j.0:OntologySpec>
-  <j.0:OntologySpec>
-    <j.0:createdBy>SRL_Metrics</j.0:createdBy>
-    <j.0:language rdf:resource="http://www.w3.org/2002/07/owl"/>
-    <j.0:altURL rdf:resource="file:/C:/Users/200005201/sadl3-master6/git/DARPA-ASKE-TA1/Ontology/M5/OwlModels/ExampleDataTable.sadl.metrics.owl"/>
-    <j.0:publicURI rdf:resource="http://sadl.org/ExampleDataTable.sadl.metrics"/>
   </j.0:OntologySpec>
   <j.0:OntologySpec/>
   <j.0:OntologySpec>
-    <j.0:publicURI rdf:resource="http://sadl.org/Mach.dialog"/>
-    <j.0:altURL rdf:resource="file:/C:/Users/200005201/sadl3-master6/git/DARPA-ASKE-TA1/Ontology/M5/OwlModels/Mach.dialog.owl"/>
+    <j.0:publicURI rdf:resource="http://aske.ge.com/Model_Q_1581368680390"/>
+    <j.0:altURL rdf:resource="file:/C:/Users/200005201/sadl3-master6/git/DARPA-ASKE-TA1/Ontology/M5/ComputationalGraphModels/Q_1581368680390.owl"/>
     <j.0:language rdf:resource="http://www.w3.org/2002/07/owl"/>
-    <j.0:createdBy>Dialog</j.0:createdBy>
-    <j.0:prefix rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
-    >MachCM</j.0:prefix>
+    <j.0:createdBy>DialogInference</j.0:createdBy>
   </j.0:OntologySpec>
   <j.0:OntologySpec>
+    <j.0:publicURI rdf:resource="http://sadl.org/TestBuiltinConstraint.sadl"/>
+    <j.0:altURL rdf:resource="file:/C:/Users/200005201/sadl3-master6/git/DARPA-ASKE-TA1/Ontology/M5/OwlModels/TestBuiltinConstraint.owl"/>
+    <j.0:language rdf:resource="http://www.w3.org/2002/07/owl"/>
+    <j.0:createdBy>SADL</j.0:createdBy>
     <j.0:prefix rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
     >TestBuiltinConstraint</j.0:prefix>
-    <j.0:createdBy>SADL</j.0:createdBy>
-    <j.0:language rdf:resource="http://www.w3.org/2002/07/owl"/>
-    <j.0:altURL rdf:resource="file:/C:/Users/200005201/sadl3-master6/git/DARPA-ASKE-TA1/Ontology/M5/OwlModels/TestBuiltinConstraint.owl"/>
-    <j.0:publicURI rdf:resource="http://sadl.org/TestBuiltinConstraint.sadl"/>
   </j.0:OntologySpec>
   <j.0:OntologySpec>
-    <j.0:publicURI rdf:resource="http://sadl.org/EngineOnlyModel.sadl.metrics"/>
-    <j.0:altURL rdf:resource="file:/C:/Users/200005201/sadl3-master6/git/DARPA-ASKE-TA1/Ontology/M5/OwlModels/EngineOnlyModel.sadl.metrics.owl"/>
-    <j.0:language rdf:resource="http://www.w3.org/2002/07/owl"/>
-    <j.0:createdBy>SRL_Metrics</j.0:createdBy>
-  </j.0:OntologySpec>
-  <j.0:OntologySpec>
-    <j.0:createdBy>DialogInference</j.0:createdBy>
-    <j.0:language rdf:resource="http://www.w3.org/2002/07/owl"/>
-    <j.0:altURL rdf:resource="file:/C:/Users/200005201/sadl3-master6/git/DARPA-ASKE-TA1/Ontology/M5/ComputationalGraphModels/Q_1581368679503.owl"/>
-    <j.0:publicURI rdf:resource="http://aske.ge.com/Model_Q_1581368679503"/>
-  </j.0:OntologySpec>
-  <j.0:OntologySpec>
-    <j.0:publicURI rdf:resource="http://com.ge.research.sadl.darpa.aske.answer/Turbo_java"/>
-    <j.0:altURL rdf:resource="file:/C:/Users/200005201/sadl3-master6/git/DARPA-ASKE-TA1/Ontology/M5/ExtractedModels/Turbo.java.owl"/>
-    <j.0:language rdf:resource="http://www.w3.org/2002/07/owl"/>
-    <j.0:createdBy>AnswerCurationManager</j.0:createdBy>
-    <j.0:prefix rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
-    >Turbo_java</j.0:prefix>
-  </j.0:OntologySpec>
-  <j.0:OntologySpec>
-    <j.0:prefix rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
-    >scicncpts2</j.0:prefix>
-    <j.0:createdBy>SADL</j.0:createdBy>
-    <j.0:language rdf:resource="http://www.w3.org/2002/07/owl"/>
-    <j.0:altURL rdf:resource="file:/C:/Users/200005201/sadl3-master6/git/DARPA-ASKE-TA1/Ontology/M5/OwlModels/ScientificConcepts2.owl"/>
-    <j.0:publicURI rdf:resource="http://sadl.org/ScientificConcepts2.sadl"/>
-  </j.0:OntologySpec>
-  <j.0:OntologySpec>
-    <j.0:prefix rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
-    ></j.0:prefix>
-    <j.0:createdBy>Dialog</j.0:createdBy>
-    <j.0:language rdf:resource="http://www.w3.org/2002/07/owl"/>
-    <j.0:altURL rdf:resource="file:/C:/Users/200005201/sadl3-master6/git/DARPA-ASKE-TA1/Ontology/M5/OwlModels/test.dialog.owl"/>
-    <j.0:publicURI rdf:resource="http://baseUri"/>
-  </j.0:OntologySpec>
-  <j.0:OntologySpec>
-    <j.0:prefix rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
-    >stblt</j.0:prefix>
-    <j.0:createdBy>SADL</j.0:createdBy>
-    <j.0:language rdf:resource="http://www.w3.org/2002/07/owl"/>
-    <j.0:altURL rdf:resource="file:/C:/Users/200005201/sadl3-master6/git/DARPA-ASKE-TA1/Ontology/M5/OwlModels/Suitability.owl"/>
-    <j.0:publicURI rdf:resource="http://sadl.org/Suitability.sadl"/>
-  </j.0:OntologySpec>
-  <j.0:OntologySpec>
-    <j.0:createdBy>DialogInference</j.0:createdBy>
-    <j.0:language rdf:resource="http://www.w3.org/2002/07/owl"/>
-    <j.0:altURL rdf:resource="file:/C:/Users/200005201/sadl3-master6/git/DARPA-ASKE-TA1/Ontology/M5/ComputationalGraphModels/Q_1581010097607.owl"/>
-    <j.0:publicURI rdf:resource="http://aske.ge.com/Model_Q_1581010097607"/>
-  </j.0:OntologySpec>
-  <j.0:OntologySpec>
-    <j.0:prefix rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
-    >TestCEonMach</j.0:prefix>
-    <j.0:createdBy>SADL</j.0:createdBy>
-    <j.0:language rdf:resource="http://www.w3.org/2002/07/owl"/>
-    <j.0:altURL rdf:resource="file:/C:/Users/200005201/sadl3-master6/git/DARPA-ASKE-TA1/Ontology/M5/OwlModels/TestCEonMach.owl"/>
-    <j.0:publicURI rdf:resource="http://sadl.org/TestCEonMach.sadl"/>
-  </j.0:OntologySpec>
-  <j.0:OntologySpec>
-    <j.0:publicURI rdf:resource="http://com.ge.research.sadl.darpa.aske.answer/boundlay_txt"/>
-    <j.0:altURL rdf:resource="file:/C:/Users/200005201/sadl3-master6/git/DARPA-ASKE-TA1/Ontology/M5/ExtractedModels/boundlay.txt.owl"/>
-    <j.0:language rdf:resource="http://www.w3.org/2002/07/owl"/>
-    <j.0:createdBy>AnswerCurationManager</j.0:createdBy>
-    <j.0:prefix rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
-    >boundlay_txt</j.0:prefix>
-  </j.0:OntologySpec>
-  <j.0:OntologySpec>
-    <j.0:createdBy>DialogInference</j.0:createdBy>
-    <j.0:language rdf:resource="http://www.w3.org/2002/07/owl"/>
-    <j.0:altURL rdf:resource="file:/C:/Users/200005201/sadl3-master6/git/DARPA-ASKE-TA1/Ontology/M5/ComputationalGraphModels/Q_1581007785881.owl"/>
-    <j.0:publicURI rdf:resource="http://aske.ge.com/Model_Q_1581007785881"/>
-  </j.0:OntologySpec>
-  <j.0:OntologySpec>
-    <j.0:createdBy>DialogInference</j.0:createdBy>
-    <j.0:language rdf:resource="http://www.w3.org/2002/07/owl"/>
-    <j.0:altURL rdf:resource="file:/C:/Users/200005201/sadl3-master6/git/DARPA-ASKE-TA1/Ontology/M5/ComputationalGraphModels/Q_1581010044999.owl"/>
-    <j.0:publicURI rdf:resource="http://aske.ge.com/Model_Q_1581010044999"/>
-  </j.0:OntologySpec>
-  <j.0:OntologySpec>
-    <j.0:prefix rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
-    >AnswerCMStatementLinks</j.0:prefix>
-    <j.0:createdBy>Dialog</j.0:createdBy>
-    <j.0:language rdf:resource="http://www.w3.org/2002/07/owl"/>
-    <j.0:altURL rdf:resource="file:/C:/Users/200005201/sadl3-master6/git/DARPA-ASKE-TA1/Ontology/M5/OwlModels/AnswerCMStatementLinks.dialog.owl"/>
-    <j.0:publicURI rdf:resource="http://sadl.org/AnswerCMStatementLinks.dialog"/>
-  </j.0:OntologySpec>
-  <j.0:OntologySpec>
-    <j.0:publicURI rdf:resource="http://sadl.org/UnitExpressions.sadl.metrics"/>
-    <j.0:altURL rdf:resource="file:/C:/Users/200005201/sadl3-master6/git/DARPA-ASKE-TA1/Ontology/M5/OwlModels/UnitExpressions.sadl.metrics.owl"/>
-    <j.0:language rdf:resource="http://www.w3.org/2002/07/owl"/>
-    <j.0:createdBy>SRL_Metrics</j.0:createdBy>
-  </j.0:OntologySpec>
-  <j.0:OntologySpec>
-    <j.0:prefix rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
-    >empty</j.0:prefix>
-    <j.0:createdBy>Dialog</j.0:createdBy>
-    <j.0:language rdf:resource="http://www.w3.org/2002/07/owl"/>
-    <j.0:altURL rdf:resource="file:/C:/Users/200005201/sadl3-master6/git/DARPA-ASKE-TA1/Ontology/M5/OwlModels/empty.dialog.owl"/>
-    <j.0:publicURI rdf:resource="http://sadl.org/empty.dialog"/>
-  </j.0:OntologySpec>
-  <j.0:OntologySpec>
-    <j.0:createdBy>SRL_Metrics</j.0:createdBy>
-    <j.0:language rdf:resource="http://www.w3.org/2002/07/owl"/>
-    <j.0:altURL rdf:resource="file:/C:/Users/200005201/sadl3-master6/git/DARPA-ASKE-TA1/Ontology/M5/OwlModels/DeeperKnowledge.sadl.metrics.owl"/>
-    <j.0:publicURI rdf:resource="http://sadl.org/DeeperKnowledge.sadl.metrics"/>
-  </j.0:OntologySpec>
-  <j.0:OntologySpec>
-    <j.0:createdBy>DialogInference</j.0:createdBy>
-    <j.0:language rdf:resource="http://www.w3.org/2002/07/owl"/>
-    <j.0:altURL rdf:resource="file:/C:/Users/200005201/sadl3-master6/git/DARPA-ASKE-TA1/Ontology/M5/ComputationalGraphModels/Q_1581368680390.owl"/>
-    <j.0:publicURI rdf:resource="http://aske.ge.com/Model_Q_1581368680390"/>
-  </j.0:OntologySpec>
-  <j.0:OntologySpec>
-    <j.0:publicURI rdf:resource="http://sadl.org/EngineOnlyModel.sadl"/>
-    <j.0:altURL rdf:resource="file:/C:/Users/200005201/sadl3-master6/git/DARPA-ASKE-TA1/Ontology/M5/OwlModels/EngineOnlyModel.owl"/>
-    <j.0:language rdf:resource="http://www.w3.org/2002/07/owl"/>
-    <j.0:createdBy>SADL</j.0:createdBy>
-    <j.0:prefix rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
-    >EngineOnlyModel</j.0:prefix>
-  </j.0:OntologySpec>
-  <j.0:OntologySpec>
-    <j.0:publicURI rdf:resource="http://aske.ge.com/Model_Q_1580392698016"/>
-    <j.0:altURL rdf:resource="file:/C:/Users/200005201/sadl3-master6/git/DARPA-ASKE-TA1/Ontology/M5/ComputationalGraphModels/Q_1580392698016.owl"/>
-    <j.0:language rdf:resource="http://www.w3.org/2002/07/owl"/>
-    <j.0:createdBy>DialogInference</j.0:createdBy>
-  </j.0:OntologySpec>
-  <j.0:OntologySpec>
-    <j.0:createdBy>SRL_Metrics</j.0:createdBy>
-    <j.0:language rdf:resource="http://www.w3.org/2002/07/owl"/>
-    <j.0:altURL rdf:resource="file:/C:/Users/200005201/sadl3-master6/git/DARPA-ASKE-TA1/Ontology/M5/OwlModels/AugTabModel.sadl.metrics.owl"/>
-    <j.0:publicURI rdf:resource="http://sadl.org/AugTabModel.sadl.metrics"/>
-  </j.0:OntologySpec>
-  <j.0:OntologySpec>
-    <j.0:createdBy>SRL_Metrics</j.0:createdBy>
-    <j.0:language rdf:resource="http://www.w3.org/2002/07/owl"/>
-    <j.0:altURL rdf:resource="file:/C:/Users/200005201/sadl3-master6/git/DARPA-ASKE-TA1/Ontology/M5/OwlModels/test.sadl.metrics.owl"/>
-    <j.0:publicURI rdf:resource="http://sadl.org/Test.sadl.metrics"/>
-  </j.0:OntologySpec>
-  <j.0:OntologySpec>
-    <j.0:createdBy>DialogInference</j.0:createdBy>
-    <j.0:language rdf:resource="http://www.w3.org/2002/07/owl"/>
-    <j.0:altURL rdf:resource="file:/C:/Users/200005201/sadl3-master6/git/DARPA-ASKE-TA1/Ontology/M5/ComputationalGraphModels/Q_1581007997495.owl"/>
-    <j.0:publicURI rdf:resource="http://aske.ge.com/Model_Q_1581007997495"/>
-  </j.0:OntologySpec>
-  <j.0:OntologySpec>
-    <j.0:publicURI rdf:resource="http://aske.ge.com/Model_Q_1580392354484"/>
-    <j.0:altURL rdf:resource="file:/C:/Users/200005201/sadl3-master6/git/DARPA-ASKE-TA1/Ontology/M5/ComputationalGraphModels/Q_1580392354484.owl"/>
-    <j.0:language rdf:resource="http://www.w3.org/2002/07/owl"/>
-    <j.0:createdBy>DialogInference</j.0:createdBy>
-  </j.0:OntologySpec>
-  <j.0:OntologySpec>
-    <j.0:prefix rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
-    >Sound_txt</j.0:prefix>
-    <j.0:createdBy>SADL</j.0:createdBy>
-    <j.0:language rdf:resource="http://www.w3.org/2002/07/owl"/>
-    <j.0:altURL rdf:resource="file:/C:/Users/200005201/sadl3-master6/git/DARPA-ASKE-TA1/Ontology/M5/OwlModels/Sound.txt.owl.owl"/>
-    <j.0:publicURI rdf:resource="http://com.ge.research.sadl.darpa.aske.answer/Sound"/>
-  </j.0:OntologySpec>
-  <j.0:OntologySpec>
-    <j.0:publicURI rdf:resource="http://sadl.org/QueryTurbo.sadl"/>
-    <j.0:altURL rdf:resource="file:/C:/Users/200005201/sadl3-master6/git/DARPA-ASKE-TA1/Ontology/M5/OwlModels/QueryTurbo.owl"/>
-    <j.0:language rdf:resource="http://www.w3.org/2002/07/owl"/>
-    <j.0:createdBy>SADL</j.0:createdBy>
-    <j.0:prefix rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
-    >QueryTurbo</j.0:prefix>
-  </j.0:OntologySpec>
-  <j.0:OntologySpec>
-    <j.0:publicURI rdf:resource="http://aske.ge.com/Model_Q_1581009945831"/>
-    <j.0:altURL rdf:resource="file:/C:/Users/200005201/sadl3-master6/git/DARPA-ASKE-TA1/Ontology/M5/ComputationalGraphModels/Q_1581009945831.owl"/>
-    <j.0:language rdf:resource="http://www.w3.org/2002/07/owl"/>
-    <j.0:createdBy>DialogInference</j.0:createdBy>
-  </j.0:OntologySpec>
-  <j.0:OntologySpec>
-    <j.0:publicURI rdf:resource="http://aske.ge.com/Model_Q_1580231962707"/>
-    <j.0:altURL rdf:resource="file:/C:/Users/200005201/sadl3-master6/git/DARPA-ASKE-TA1/Ontology/M5/ComputationalGraphModels/Q_1580231962707.owl"/>
-    <j.0:language rdf:resource="http://www.w3.org/2002/07/owl"/>
-    <j.0:createdBy>DialogInference</j.0:createdBy>
-  </j.0:OntologySpec>
-  <j.0:OntologySpec>
-    <j.0:createdBy>DialogInference</j.0:createdBy>
-    <j.0:language rdf:resource="http://www.w3.org/2002/07/owl"/>
-    <j.0:altURL rdf:resource="file:/C:/Users/200005201/sadl3-master6/git/DARPA-ASKE-TA1/Ontology/M5/ComputationalGraphModels/Q_1581009837927.owl"/>
-    <j.0:publicURI rdf:resource="http://aske.ge.com/Model_Q_1581009837927"/>
-  </j.0:OntologySpec>
-  <j.0:OntologySpec>
-    <j.0:publicURI rdf:resource="http://aske.ge.com/Model_Q_1580231955939"/>
-    <j.0:altURL rdf:resource="file:/C:/Users/200005201/sadl3-master6/git/DARPA-ASKE-TA1/Ontology/M5/ComputationalGraphModels/Q_1580231955939.owl"/>
-    <j.0:language rdf:resource="http://www.w3.org/2002/07/owl"/>
-    <j.0:createdBy>DialogInference</j.0:createdBy>
-  </j.0:OntologySpec>
-  <j.0:OntologySpec>
-    <j.0:publicURI rdf:resource="http://com.ge.research.answer.java/TemperatureConversion.metrics"/>
-    <j.0:altURL rdf:resource="file:/C:/Users/200005201/sadl3-master6/git/DARPA-ASKE-TA1/Ontology/M5/OwlModels/TemperatureConversion.java.owl.sadl.metrics.owl"/>
-    <j.0:language rdf:resource="http://www.w3.org/2002/07/owl"/>
-    <j.0:createdBy>SRL_Metrics</j.0:createdBy>
-  </j.0:OntologySpec>
-  <j.0:OntologySpec>
-    <j.0:publicURI rdf:resource="http://com.ge.research.sadl.darpa.aske.answer/Mach_java2"/>
-    <j.0:altURL rdf:resource="file:/C:/Users/200005201/sadl3-master6/git/DARPA-ASKE-TA1/Ontology/M5/OwlModels/MachDebug.owl"/>
-    <j.0:language rdf:resource="http://www.w3.org/2002/07/owl"/>
-    <j.0:createdBy>SADL</j.0:createdBy>
-    <j.0:prefix rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
-    >Mach_java</j.0:prefix>
-  </j.0:OntologySpec>
-  <j.0:OntologySpec>
-    <j.0:prefix rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
-    >atmos_txt</j.0:prefix>
-    <j.0:createdBy>AnswerCurationManager</j.0:createdBy>
-    <j.0:language rdf:resource="http://www.w3.org/2002/07/owl"/>
-    <j.0:altURL rdf:resource="file:/C:/Users/200005201/sadl3-master6/git/DARPA-ASKE-TA1/Ontology/M5/ExtractedModels/atmos.txt.owl"/>
-    <j.0:publicURI rdf:resource="http://com.ge.research.sadl.darpa.aske.answer/atmos_txt"/>
-  </j.0:OntologySpec>
-  <j.0:OntologySpec>
-    <j.0:createdBy>SRL_Metrics</j.0:createdBy>
-    <j.0:language rdf:resource="http://www.w3.org/2002/07/owl"/>
-    <j.0:altURL rdf:resource="file:/C:/Users/200005201/sadl3-master6/git/DARPA-ASKE-TA1/Ontology/M5/OwlModels/MachDebug.sadl.metrics.owl"/>
-    <j.0:publicURI rdf:resource="http://com.ge.research.sadl.darpa.aske.answer/Mach_java2.metrics"/>
-  </j.0:OntologySpec>
-  <j.0:OntologySpec>
-    <j.0:createdBy>DialogInference</j.0:createdBy>
-    <j.0:language rdf:resource="http://www.w3.org/2002/07/owl"/>
-    <j.0:altURL rdf:resource="file:/C:/Users/200005201/sadl3-master6/git/DARPA-ASKE-TA1/Ontology/M5/ComputationalGraphModels/Q_1581010390574.owl"/>
-    <j.0:publicURI rdf:resource="http://aske.ge.com/Model_Q_1581010390574"/>
-  </j.0:OntologySpec>
-  <j.0:OntologySpec>
-    <j.0:prefix rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
-    >usd</j.0:prefix>
-    <j.0:createdBy>Dialog</j.0:createdBy>
-    <j.0:language rdf:resource="http://www.w3.org/2002/07/owl"/>
-    <j.0:altURL rdf:resource="file:/C:/Users/200005201/sadl3-master6/git/DARPA-ASKE-TA1/Ontology/M5/OwlModels/UserStatements.dialog.owl"/>
-    <j.0:publicURI rdf:resource="http://com.ge.research/darpa/aske/usd"/>
-  </j.0:OntologySpec>
-  <j.0:OntologySpec>
-    <j.0:createdBy>SRL_Metrics</j.0:createdBy>
-    <j.0:language rdf:resource="http://www.w3.org/2002/07/owl"/>
-    <j.0:altURL rdf:resource="file:/C:/Users/200005201/sadl3-master6/git/DARPA-ASKE-TA1/Ontology/M5/OwlModels/TestBuiltinConstraint.sadl.metrics.owl"/>
-    <j.0:publicURI rdf:resource="http://sadl.org/TestBuiltinConstraint.sadl.metrics"/>
-  </j.0:OntologySpec>
-  <j.0:OntologySpec>
-    <j.0:createdBy>DialogInference</j.0:createdBy>
-    <j.0:language rdf:resource="http://www.w3.org/2002/07/owl"/>
-    <j.0:altURL rdf:resource="file:/C:/Users/200005201/sadl3-master6/git/DARPA-ASKE-TA1/Ontology/M5/ComputationalGraphModels/Q_1581369627474.owl"/>
     <j.0:publicURI rdf:resource="http://aske.ge.com/Model_Q_1581369627474"/>
-  </j.0:OntologySpec>
-  <j.0:OntologySpec>
+    <j.0:altURL rdf:resource="file:/C:/Users/200005201/sadl3-master6/git/DARPA-ASKE-TA1/Ontology/M5/ComputationalGraphModels/Q_1581369627474.owl"/>
+    <j.0:language rdf:resource="http://www.w3.org/2002/07/owl"/>
     <j.0:createdBy>DialogInference</j.0:createdBy>
-    <j.0:language rdf:resource="http://www.w3.org/2002/07/owl"/>
-    <j.0:altURL rdf:resource="file:/C:/Users/200005201/sadl3-master6/git/DARPA-ASKE-TA1/Ontology/M5/ComputationalGraphModels/Q_1581009837829.owl"/>
-    <j.0:publicURI rdf:resource="http://aske.ge.com/Model_Q_1581009837829"/>
-  </j.0:OntologySpec>
-  <j.0:OntologySpec>
-    <j.0:prefix rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
-    >augtab</j.0:prefix>
-    <j.0:createdBy>SADL</j.0:createdBy>
-    <j.0:language rdf:resource="http://www.w3.org/2002/07/owl"/>
-    <j.0:altURL rdf:resource="file:/C:/Users/200005201/sadl3-master6/git/DARPA-ASKE-TA1/Ontology/M5/OwlModels/AugmentedTable.owl"/>
-    <j.0:publicURI rdf:resource="http://sadl.org/AugmentedTable.sadl"/>
-  </j.0:OntologySpec>
-  <j.0:OntologySpec>
-    <j.0:createdBy>DialogInference</j.0:createdBy>
-    <j.0:language rdf:resource="http://www.w3.org/2002/07/owl"/>
-    <j.0:altURL rdf:resource="file:/C:/Users/200005201/sadl3-master6/git/DARPA-ASKE-TA1/Ontology/M5/ComputationalGraphModels/Q_1581008697019.owl"/>
-    <j.0:publicURI rdf:resource="http://aske.ge.com/Model_Q_1581008697019"/>
-  </j.0:OntologySpec>
-  <j.0:OntologySpec>
-    <j.0:publicURI rdf:resource="http://com.ge.research.sadl.darpa.aske.answer/Sound_txt"/>
-    <j.0:altURL rdf:resource="file:/C:/Users/200005201/sadl3-master6/git/DARPA-ASKE-TA1/Ontology/M5/ExtractedModels/Sound.txt.owl"/>
-    <j.0:language rdf:resource="http://www.w3.org/2002/07/owl"/>
-    <j.0:createdBy>AnswerCurationManager</j.0:createdBy>
-    <j.0:prefix rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
-    >Sound_txt</j.0:prefix>
-  </j.0:OntologySpec>
-  <j.0:OntologySpec>
-    <j.0:prefix rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
-    ></j.0:prefix>
-    <j.0:createdBy>Dialog</j.0:createdBy>
-    <j.0:language rdf:resource="http://www.w3.org/2002/07/owl"/>
-    <j.0:altURL rdf:resource="file:/C:/Users/200005201/sadl3-master6/git/DARPA-ASKE-TA1/Ontology/M5/OwlModels/test2.dialog.owl"/>
-    <j.0:publicURI rdf:resource="http://baseUri2"/>
-  </j.0:OntologySpec>
-  <j.0:OntologySpec>
-    <j.0:createdBy>DialogInference</j.0:createdBy>
-    <j.0:language rdf:resource="http://www.w3.org/2002/07/owl"/>
-    <j.0:altURL rdf:resource="file:/C:/Users/200005201/sadl3-master6/git/DARPA-ASKE-TA1/Ontology/M5/ComputationalGraphModels/Q_1581010393624.owl"/>
-    <j.0:publicURI rdf:resource="http://aske.ge.com/Model_Q_1581010393624"/>
   </j.0:OntologySpec>
   <j.0:OntologySpec>
     <j.0:createdBy>SRL_Metrics</j.0:createdBy>
     <j.0:language rdf:resource="http://www.w3.org/2002/07/owl"/>
-    <j.0:altURL rdf:resource="file:/C:/Users/200005201/sadl3-master6/git/DARPA-ASKE-TA1/Ontology/M5/OwlModels/SpeedOfSound.sadl.metrics.owl"/>
-    <j.0:publicURI rdf:resource="http://sadl.org/SpeedOfSound.sadl.metrics"/>
+    <j.0:altURL rdf:resource="file:/C:/Users/200005201/sadl3-master6/git/DARPA-ASKE-TA1/Ontology/M5/OwlModels/demo2.sadl.metrics.owl"/>
+    <j.0:publicURI rdf:resource="http://sadl.org/demo2.sadl.metrics"/>
   </j.0:OntologySpec>
   <j.0:OntologySpec>
-    <j.0:publicURI rdf:resource="http://aske.ge.com/Model_Q_1580231995967"/>
-    <j.0:altURL rdf:resource="file:/C:/Users/200005201/sadl3-master6/git/DARPA-ASKE-TA1/Ontology/M5/ComputationalGraphModels/Q_1580231995967.owl"/>
+    <j.0:publicURI rdf:resource="http://aske.ge.com/Model_Q_1580400058685"/>
+    <j.0:altURL rdf:resource="file:/C:/Users/200005201/sadl3-master6/git/DARPA-ASKE-TA1/Ontology/M5/ComputationalGraphModels/Q_1580400058685.owl"/>
     <j.0:language rdf:resource="http://www.w3.org/2002/07/owl"/>
     <j.0:createdBy>DialogInference</j.0:createdBy>
   </j.0:OntologySpec>
   <j.0:OntologySpec>
+    <j.0:publicURI rdf:resource="http://sadl.org/AugTabModel.sadl"/>
+    <j.0:altURL rdf:resource="file:/C:/Users/200005201/sadl3-master6/git/DARPA-ASKE-TA1/Ontology/M5/OwlModels/AugTabModel.owl"/>
+    <j.0:language rdf:resource="http://www.w3.org/2002/07/owl"/>
+    <j.0:createdBy>SADL</j.0:createdBy>
     <j.0:prefix rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
     >augtabmdl</j.0:prefix>
-    <j.0:createdBy>SADL</j.0:createdBy>
-    <j.0:language rdf:resource="http://www.w3.org/2002/07/owl"/>
-    <j.0:altURL rdf:resource="file:/C:/Users/200005201/sadl3-master6/git/DARPA-ASKE-TA1/Ontology/M5/OwlModels/AugTabModel.owl"/>
-    <j.0:publicURI rdf:resource="http://sadl.org/AugTabModel.sadl"/>
   </j.0:OntologySpec>
   <j.0:OntologySpec>
-    <j.0:createdBy>DialogInference</j.0:createdBy>
-    <j.0:language rdf:resource="http://www.w3.org/2002/07/owl"/>
-    <j.0:altURL rdf:resource="file:/C:/Users/200005201/sadl3-master6/git/DARPA-ASKE-TA1/Ontology/M5/ComputationalGraphModels/Q_1581010044753.owl"/>
-    <j.0:publicURI rdf:resource="http://aske.ge.com/Model_Q_1581010044753"/>
-  </j.0:OntologySpec>
-  <j.0:OntologySpec>
-    <j.0:prefix rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
-    >sadllistmodel</j.0:prefix>
-    <j.0:createdBy>SADL</j.0:createdBy>
-    <j.0:language rdf:resource="http://www.w3.org/2002/07/owl"/>
-    <j.0:altURL rdf:resource="file:/C:/Users/200005201/sadl3-master6/git/DARPA-ASKE-TA1/Ontology/M5/OwlModels/SadlListModel.owl"/>
-    <j.0:publicURI rdf:resource="http://sadl.org/sadllistmodel"/>
-  </j.0:OntologySpec>
-  <j.0:OntologySpec>
-    <j.0:publicURI rdf:resource="http://aske.ge.com/Model_Q_1581009946071"/>
-    <j.0:altURL rdf:resource="file:/C:/Users/200005201/sadl3-master6/git/DARPA-ASKE-TA1/Ontology/M5/ComputationalGraphModels/Q_1581009946071.owl"/>
-    <j.0:language rdf:resource="http://www.w3.org/2002/07/owl"/>
-    <j.0:createdBy>DialogInference</j.0:createdBy>
-  </j.0:OntologySpec>
-  <j.0:OntologySpec>
-    <j.0:createdBy>DialogInference</j.0:createdBy>
-    <j.0:language rdf:resource="http://www.w3.org/2002/07/owl"/>
-    <j.0:altURL rdf:resource="file:/C:/Users/200005201/sadl3-master6/git/DARPA-ASKE-TA1/Ontology/M5/ComputationalGraphModels/Q_1580400058685.owl"/>
-    <j.0:publicURI rdf:resource="http://aske.ge.com/Model_Q_1580400058685"/>
-  </j.0:OntologySpec>
-  <j.0:OntologySpec>
-    <j.0:publicURI rdf:resource="http://aske.ge.com/Model_Q_1580231988967"/>
-    <j.0:altURL rdf:resource="file:/C:/Users/200005201/sadl3-master6/git/DARPA-ASKE-TA1/Ontology/M5/ComputationalGraphModels/Q_1580231988967.owl"/>
-    <j.0:language rdf:resource="http://www.w3.org/2002/07/owl"/>
-    <j.0:createdBy>DialogInference</j.0:createdBy>
-  </j.0:OntologySpec>
-  <j.0:OntologySpec>
-    <j.0:publicURI rdf:resource="http://aske.ge.com/Model_Q_1580413507054"/>
-    <j.0:altURL rdf:resource="file:/C:/Users/200005201/sadl3-master6/git/DARPA-ASKE-TA1/Ontology/M5/ComputationalGraphModels/Q_1580413507054.owl"/>
-    <j.0:language rdf:resource="http://www.w3.org/2002/07/owl"/>
-    <j.0:createdBy>DialogInference</j.0:createdBy>
-  </j.0:OntologySpec>
-  <j.0:OntologySpec>
-    <j.0:createdBy>SRL_Metrics</j.0:createdBy>
-    <j.0:language rdf:resource="http://www.w3.org/2002/07/owl"/>
-    <j.0:altURL rdf:resource="file:/C:/Users/200005201/sadl3-master6/git/DARPA-ASKE-TA1/Ontology/M5/OwlModels/Sound.txt.owl.sadl.metrics.owl"/>
-    <j.0:publicURI rdf:resource="http://com.ge.research.sadl.darpa.aske.answer/Sound.metrics"/>
-  </j.0:OntologySpec>
-  <j.0:OntologySpec>
-    <j.0:prefix rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
-    >sadlimplicitmodel</j.0:prefix>
-    <j.0:createdBy>SADL</j.0:createdBy>
-    <j.0:language rdf:resource="http://www.w3.org/2002/07/owl"/>
-    <j.0:altURL rdf:resource="file:/C:/Users/200005201/sadl3-master6/git/DARPA-ASKE-TA1/Ontology/M5/OwlModels/SadlImplicitModel.owl"/>
-    <j.0:publicURI rdf:resource="http://sadl.org/sadlimplicitmodel"/>
-  </j.0:OntologySpec>
-  <j.0:OntologySpec>
-    <j.0:createdBy>SRL_Metrics</j.0:createdBy>
-    <j.0:language rdf:resource="http://www.w3.org/2002/07/owl"/>
-    <j.0:altURL rdf:resource="file:/C:/Users/200005201/sadl3-master6/git/DARPA-ASKE-TA1/Ontology/M5/OwlModels/AugmentedTable.sadl.metrics.owl"/>
-    <j.0:publicURI rdf:resource="http://sadl.org/AugmentedTable.sadl.metrics"/>
-  </j.0:OntologySpec>
-  <j.0:OntologySpec>
-    <j.0:publicURI rdf:resource="http://sadl.org/QueryTurbo.sadl.metrics"/>
-    <j.0:altURL rdf:resource="file:/C:/Users/200005201/sadl3-master6/git/DARPA-ASKE-TA1/Ontology/M5/OwlModels/QueryTurbo.sadl.metrics.owl"/>
-    <j.0:language rdf:resource="http://www.w3.org/2002/07/owl"/>
-    <j.0:createdBy>SRL_Metrics</j.0:createdBy>
-  </j.0:OntologySpec>
-  <j.0:OntologySpec>
-    <j.0:prefix rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
-    >bldlg</j.0:prefix>
-    <j.0:createdBy>Dialog</j.0:createdBy>
-    <j.0:language rdf:resource="http://www.w3.org/2002/07/owl"/>
-    <j.0:altURL rdf:resource="file:/C:/Users/200005201/sadl3-master6/git/DARPA-ASKE-TA1/Ontology/M5/OwlModels/build.dialog.owl"/>
-    <j.0:publicURI rdf:resource="http://answer/build.dialog"/>
-  </j.0:OntologySpec>
-  <j.0:OntologySpec>
-    <j.0:createdBy>SRL_Metrics</j.0:createdBy>
-    <j.0:language rdf:resource="http://www.w3.org/2002/07/owl"/>
-    <j.0:altURL rdf:resource="file:/C:/Users/200005201/sadl3-master6/git/DARPA-ASKE-TA1/Ontology/M5/OwlModels/ScientificConcepts2.sadl.metrics.owl"/>
-    <j.0:publicURI rdf:resource="http://sadl.org/ScientificConcepts2.sadl.metrics"/>
-  </j.0:OntologySpec>
-  <j.0:OntologySpec>
-    <j.0:createdBy>DialogInference</j.0:createdBy>
-    <j.0:language rdf:resource="http://www.w3.org/2002/07/owl"/>
-    <j.0:altURL rdf:resource="file:/C:/Users/200005201/sadl3-master6/git/DARPA-ASKE-TA1/Ontology/M5/ComputationalGraphModels/Q_1581369299624.owl"/>
     <j.0:publicURI rdf:resource="http://aske.ge.com/Model_Q_1581369299624"/>
+    <j.0:altURL rdf:resource="file:/C:/Users/200005201/sadl3-master6/git/DARPA-ASKE-TA1/Ontology/M5/ComputationalGraphModels/Q_1581369299624.owl"/>
+    <j.0:language rdf:resource="http://www.w3.org/2002/07/owl"/>
+    <j.0:createdBy>DialogInference</j.0:createdBy>
   </j.0:OntologySpec>
   <j.0:OntologySpec>
     <j.0:prefix rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
-    >Isentrop_java</j.0:prefix>
-    <j.0:createdBy>AnswerCurationManager</j.0:createdBy>
+    >ThinThread1</j.0:prefix>
+    <j.0:createdBy>Dialog</j.0:createdBy>
     <j.0:language rdf:resource="http://www.w3.org/2002/07/owl"/>
-    <j.0:altURL rdf:resource="file:/C:/Users/200005201/sadl3-master6/git/DARPA-ASKE-TA1/Ontology/M5/ExtractedModels/Isentrop.java.owl"/>
-    <j.0:publicURI rdf:resource="http://com.ge.research.sadl.darpa.aske.answer/Isentrop_java"/>
+    <j.0:altURL rdf:resource="file:/C:/Users/200005201/sadl3-master6/git/DARPA-ASKE-TA1/Ontology/M5/OwlModels/ThinThread1.dialog.owl"/>
+    <j.0:publicURI rdf:resource="http://sadl.org/ThinThread1.dialog"/>
   </j.0:OntologySpec>
   <j.0:OntologySpec>
-    <j.0:publicURI rdf:resource="http://sadl.org/UnitExpressions.sadl"/>
-    <j.0:altURL rdf:resource="file:/C:/Users/200005201/sadl3-master6/git/DARPA-ASKE-TA1/Ontology/M5/OwlModels/UnitExpressions.owl"/>
+    <j.0:publicURI rdf:resource="http://com.ge.research.sadl.darpa.aske.answer/Sound.metrics"/>
+    <j.0:altURL rdf:resource="file:/C:/Users/200005201/sadl3-master6/git/DARPA-ASKE-TA1/Ontology/M5/OwlModels/Sound.txt.owl.sadl.metrics.owl"/>
     <j.0:language rdf:resource="http://www.w3.org/2002/07/owl"/>
-    <j.0:createdBy>SADL</j.0:createdBy>
-    <j.0:prefix rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
-    >uexpr</j.0:prefix>
+    <j.0:createdBy>SRL_Metrics</j.0:createdBy>
+  </j.0:OntologySpec>
+  <j.0:OntologySpec>
+    <j.0:publicURI rdf:resource="http://sadl.org/AugTabModel.sadl.metrics"/>
+    <j.0:altURL rdf:resource="file:/C:/Users/200005201/sadl3-master6/git/DARPA-ASKE-TA1/Ontology/M5/OwlModels/AugTabModel.sadl.metrics.owl"/>
+    <j.0:language rdf:resource="http://www.w3.org/2002/07/owl"/>
+    <j.0:createdBy>SRL_Metrics</j.0:createdBy>
   </j.0:OntologySpec>
   <j.0:OntologySpec>
     <j.0:createdBy>DialogInference</j.0:createdBy>
     <j.0:language rdf:resource="http://www.w3.org/2002/07/owl"/>
-    <j.0:altURL rdf:resource="file:/C:/Users/200005201/sadl3-master6/git/DARPA-ASKE-TA1/Ontology/M5/ComputationalGraphModels/Q_1581372027600.owl"/>
-    <j.0:publicURI rdf:resource="http://aske.ge.com/Model_Q_1581372027600"/>
+    <j.0:altURL rdf:resource="file:/C:/Users/200005201/sadl3-master6/git/DARPA-ASKE-TA1/Ontology/M5/ComputationalGraphModels/Q_1580231988967.owl"/>
+    <j.0:publicURI rdf:resource="http://aske.ge.com/Model_Q_1580231988967"/>
   </j.0:OntologySpec>
   <j.0:OntologySpec>
-    <j.0:publicURI rdf:resource="http://sadl.org/SeeAlso.dialog"/>
-    <j.0:altURL rdf:resource="file:/C:/Users/200005201/sadl3-master6/git/DARPA-ASKE-TA1/Ontology/M5/OwlModels/SeeAlso.dialog.owl"/>
+    <j.0:publicURI rdf:resource="http://sadl.org/Test.sadl.metrics"/>
+    <j.0:altURL rdf:resource="file:/C:/Users/200005201/sadl3-master6/git/DARPA-ASKE-TA1/Ontology/M5/OwlModels/test.sadl.metrics.owl"/>
     <j.0:language rdf:resource="http://www.w3.org/2002/07/owl"/>
-    <j.0:createdBy>Dialog</j.0:createdBy>
-    <j.0:prefix rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
-    >sad</j.0:prefix>
-  </j.0:OntologySpec>
-  <j.0:OntologySpec>
     <j.0:createdBy>SRL_Metrics</j.0:createdBy>
+  </j.0:OntologySpec>
+  <j.0:OntologySpec>
+    <j.0:publicURI rdf:resource="http://sadl.org/ExampleDataTable.sadl"/>
+    <j.0:altURL rdf:resource="file:/C:/Users/200005201/sadl3-master6/git/DARPA-ASKE-TA1/Ontology/M5/OwlModels/ExampleDataTable.owl"/>
     <j.0:language rdf:resource="http://www.w3.org/2002/07/owl"/>
-    <j.0:altURL rdf:resource="file:/C:/Users/200005201/sadl3-master6/git/DARPA-ASKE-TA1/Ontology/M5/OwlModels/TestCEonMach.sadl.metrics.owl"/>
-    <j.0:publicURI rdf:resource="http://sadl.org/TestCEonMach.sadl.metrics"/>
+    <j.0:createdBy>SADL</j.0:createdBy>
+    <j.0:prefix rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >ExampleDataTable</j.0:prefix>
+  </j.0:OntologySpec>
+  <j.0:OntologySpec>
+    <j.0:publicURI rdf:resource="http://sadl.org/sandbox.sadl.metrics"/>
+    <j.0:altURL rdf:resource="file:/C:/Users/200005201/sadl3-master6/git/DARPA-ASKE-TA1/Ontology/M5/OwlModels/sandbox.sadl.metrics.owl"/>
+    <j.0:language rdf:resource="http://www.w3.org/2002/07/owl"/>
+    <j.0:createdBy>SRL_Metrics</j.0:createdBy>
+  </j.0:OntologySpec>
+  <j.0:OntologySpec>
+    <j.0:publicURI rdf:resource="http://aske.ge.com/Model_Q_1580314222945"/>
+    <j.0:altURL rdf:resource="file:/C:/Users/200005201/sadl3-master6/git/DARPA-ASKE-TA1/Ontology/M5/ComputationalGraphModels/Q_1580314222945.owl"/>
+    <j.0:language rdf:resource="http://www.w3.org/2002/07/owl"/>
+    <j.0:createdBy>DialogInference</j.0:createdBy>
   </j.0:OntologySpec>
   <j.0:OntologySpec>
     <j.0:prefix rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
     >Mach_java</j.0:prefix>
-    <j.0:createdBy>AnswerCurationManager</j.0:createdBy>
-    <j.0:language rdf:resource="http://www.w3.org/2002/07/owl"/>
-    <j.0:altURL rdf:resource="file:/C:/Users/200005201/sadl3-master6/git/DARPA-ASKE-TA1/Ontology/M5/ExtractedModels/Mach.java.owl"/>
-    <j.0:publicURI rdf:resource="http://com.ge.research.sadl.darpa.aske.answer/Mach_java"/>
-  </j.0:OntologySpec>
-  <j.0:OntologySpec>
-    <j.0:prefix rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
-    >demodlg</j.0:prefix>
-    <j.0:createdBy>Dialog</j.0:createdBy>
-    <j.0:language rdf:resource="http://www.w3.org/2002/07/owl"/>
-    <j.0:altURL rdf:resource="file:/C:/Users/200005201/sadl3-master6/git/DARPA-ASKE-TA1/Ontology/M5/OwlModels/demo.dialog.owl"/>
-    <j.0:publicURI rdf:resource="http://answer/demo.dialog"/>
-  </j.0:OntologySpec>
-  <j.0:OntologySpec>
-    <j.0:publicURI rdf:resource="http://sadl.org/ThinThread1.dialog"/>
-    <j.0:altURL rdf:resource="file:/C:/Users/200005201/sadl3-master6/git/DARPA-ASKE-TA1/Ontology/M5/OwlModels/ThinThread1.dialog.owl"/>
-    <j.0:language rdf:resource="http://www.w3.org/2002/07/owl"/>
-    <j.0:createdBy>Dialog</j.0:createdBy>
-    <j.0:prefix rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
-    >ThinThread1</j.0:prefix>
-  </j.0:OntologySpec>
-  <j.0:OntologySpec>
-    <j.0:prefix rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
-    >cem</j.0:prefix>
     <j.0:createdBy>SADL</j.0:createdBy>
     <j.0:language rdf:resource="http://www.w3.org/2002/07/owl"/>
-    <j.0:altURL rdf:resource="file:/C:/Users/200005201/sadl3-master6/git/DARPA-ASKE-TA1/Ontology/M5/OwlModels/CodeExtractionModel.owl"/>
-    <j.0:publicURI rdf:resource="http://sadl.org/CodeExtractionModel.sadl"/>
+    <j.0:altURL rdf:resource="file:/C:/Users/200005201/sadl3-master6/git/DARPA-ASKE-TA1/Ontology/M5/OwlModels/MachDebug.owl"/>
+    <j.0:publicURI rdf:resource="http://com.ge.research.sadl.darpa.aske.answer/Mach_java2"/>
   </j.0:OntologySpec>
   <j.0:OntologySpec>
-    <j.0:publicURI rdf:resource="http://sadl.org/EngineOnly.dialog"/>
-    <j.0:altURL rdf:resource="file:/C:/Users/200005201/sadl3-master6/git/DARPA-ASKE-TA1/Ontology/M5/OwlModels/EngineOnly.dialog.owl"/>
+    <j.0:publicURI rdf:resource="http://sadl.org/ScientificConcepts2.sadl.metrics"/>
+    <j.0:altURL rdf:resource="file:/C:/Users/200005201/sadl3-master6/git/DARPA-ASKE-TA1/Ontology/M5/OwlModels/ScientificConcepts2.sadl.metrics.owl"/>
+    <j.0:language rdf:resource="http://www.w3.org/2002/07/owl"/>
+    <j.0:createdBy>SRL_Metrics</j.0:createdBy>
+  </j.0:OntologySpec>
+  <j.0:OntologySpec>
+    <j.0:publicURI rdf:resource="http://sadl.org/sadllistmodel"/>
+    <j.0:altURL rdf:resource="file:/C:/Users/200005201/sadl3-master6/git/DARPA-ASKE-TA1/Ontology/M5/OwlModels/SadlListModel.owl"/>
+    <j.0:language rdf:resource="http://www.w3.org/2002/07/owl"/>
+    <j.0:createdBy>SADL</j.0:createdBy>
+    <j.0:prefix rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >sadllistmodel</j.0:prefix>
+  </j.0:OntologySpec>
+  <j.0:OntologySpec>
+    <j.0:prefix rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >boundlay_txt</j.0:prefix>
+    <j.0:createdBy>AnswerCurationManager</j.0:createdBy>
+    <j.0:language rdf:resource="http://www.w3.org/2002/07/owl"/>
+    <j.0:altURL rdf:resource="file:/C:/Users/200005201/sadl3-master6/git/DARPA-ASKE-TA1/Ontology/M5/ExtractedModels/boundlay.txt.owl"/>
+    <j.0:publicURI rdf:resource="http://com.ge.research.sadl.darpa.aske.answer/boundlay_txt"/>
+  </j.0:OntologySpec>
+  <j.0:OntologySpec>
+    <j.0:prefix rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >MachCM</j.0:prefix>
+    <j.0:createdBy>Dialog</j.0:createdBy>
+    <j.0:language rdf:resource="http://www.w3.org/2002/07/owl"/>
+    <j.0:altURL rdf:resource="file:/C:/Users/200005201/sadl3-master6/git/DARPA-ASKE-TA1/Ontology/M5/OwlModels/Mach.dialog.owl"/>
+    <j.0:publicURI rdf:resource="http://sadl.org/Mach.dialog"/>
+  </j.0:OntologySpec>
+  <j.0:OntologySpec>
+    <j.0:publicURI rdf:resource="http://com.ge.research.sadl.darpa.aske.answer/Isentrop_java"/>
+    <j.0:altURL rdf:resource="file:/C:/Users/200005201/sadl3-master6/git/DARPA-ASKE-TA1/Ontology/M5/ExtractedModels/Isentrop.java.owl"/>
+    <j.0:language rdf:resource="http://www.w3.org/2002/07/owl"/>
+    <j.0:createdBy>AnswerCurationManager</j.0:createdBy>
+    <j.0:prefix rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >Isentrop_java</j.0:prefix>
+  </j.0:OntologySpec>
+  <j.0:OntologySpec>
+    <j.0:publicURI rdf:resource="http://sadl.org/builtinfunctions"/>
+    <j.0:altURL rdf:resource="file:/C:/Users/200005201/sadl3-master6/git/DARPA-ASKE-TA1/Ontology/M5/OwlModels/SadlBuiltinFunctions.owl"/>
+    <j.0:language rdf:resource="http://www.w3.org/2002/07/owl"/>
+    <j.0:createdBy>SADL</j.0:createdBy>
+    <j.0:prefix rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >builtinfunctions</j.0:prefix>
+  </j.0:OntologySpec>
+  <j.0:OntologySpec>
+    <j.0:publicURI rdf:resource="http://com.ge.research.sadl.darpa.aske.answer/atmos_txt"/>
+    <j.0:altURL rdf:resource="file:/C:/Users/200005201/sadl3-master6/git/DARPA-ASKE-TA1/Ontology/M5/ExtractedModels/atmos.txt.owl"/>
+    <j.0:language rdf:resource="http://www.w3.org/2002/07/owl"/>
+    <j.0:createdBy>AnswerCurationManager</j.0:createdBy>
+    <j.0:prefix rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >atmos_txt</j.0:prefix>
+  </j.0:OntologySpec>
+  <j.0:OntologySpec>
+    <j.0:publicURI rdf:resource="http://sadl.org/ExampleDataTable.sadl.metrics"/>
+    <j.0:altURL rdf:resource="file:/C:/Users/200005201/sadl3-master6/git/DARPA-ASKE-TA1/Ontology/M5/OwlModels/ExampleDataTable.sadl.metrics.owl"/>
+    <j.0:language rdf:resource="http://www.w3.org/2002/07/owl"/>
+    <j.0:createdBy>SRL_Metrics</j.0:createdBy>
+  </j.0:OntologySpec>
+  <j.0:OntologySpec>
+    <j.0:createdBy>SRL_Metrics</j.0:createdBy>
+    <j.0:language rdf:resource="http://www.w3.org/2002/07/owl"/>
+    <j.0:altURL rdf:resource="file:/C:/Users/200005201/sadl3-master6/git/DARPA-ASKE-TA1/Ontology/M5/OwlModels/QueryTurbo.sadl.metrics.owl"/>
+    <j.0:publicURI rdf:resource="http://sadl.org/QueryTurbo.sadl.metrics"/>
+  </j.0:OntologySpec>
+  <j.0:OntologySpec>
+    <j.0:publicURI rdf:resource="http://sadl.org/sandbox.dialog"/>
+    <j.0:altURL rdf:resource="file:/C:/Users/200005201/sadl3-master6/git/DARPA-ASKE-TA1/Ontology/M5/OwlModels/sandbox.dialog.owl"/>
     <j.0:language rdf:resource="http://www.w3.org/2002/07/owl"/>
     <j.0:createdBy>Dialog</j.0:createdBy>
     <j.0:prefix rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
-    >EngineOnly</j.0:prefix>
+    >sandboxdlg</j.0:prefix>
+  </j.0:OntologySpec>
+  <j.0:OntologySpec>
+    <j.0:publicURI rdf:resource="http://sadl.org/SpeedOfSound.sadl.metrics"/>
+    <j.0:altURL rdf:resource="file:/C:/Users/200005201/sadl3-master6/git/DARPA-ASKE-TA1/Ontology/M5/OwlModels/SpeedOfSound.sadl.metrics.owl"/>
+    <j.0:language rdf:resource="http://www.w3.org/2002/07/owl"/>
+    <j.0:createdBy>SRL_Metrics</j.0:createdBy>
   </j.0:OntologySpec>
   <j.0:OntologySpec>
     <j.0:createdBy>DialogInference</j.0:createdBy>
     <j.0:language rdf:resource="http://www.w3.org/2002/07/owl"/>
-    <j.0:altURL rdf:resource="file:/C:/Users/200005201/sadl3-master6/git/DARPA-ASKE-TA1/Ontology/M5/ComputationalGraphModels/Q_1581008340835.owl"/>
-    <j.0:publicURI rdf:resource="http://aske.ge.com/Model_Q_1581008340835"/>
+    <j.0:altURL rdf:resource="file:/C:/Users/200005201/sadl3-master6/git/DARPA-ASKE-TA1/Ontology/M5/ComputationalGraphModels/Q_1580231955939.owl"/>
+    <j.0:publicURI rdf:resource="http://aske.ge.com/Model_Q_1580231955939"/>
   </j.0:OntologySpec>
   <j.0:OntologySpec>
-    <j.0:publicURI rdf:resource="http://aske.ge.com/Model_Q_1581084423544"/>
-    <j.0:altURL rdf:resource="file:/C:/Users/200005201/sadl3-master6/git/DARPA-ASKE-TA1/Ontology/M5/ComputationalGraphModels/Q_1581084423544.owl"/>
+    <j.0:publicURI rdf:resource="http://com.ge.research.sadl.darpa.aske.answer/Sound"/>
+    <j.0:altURL rdf:resource="file:/C:/Users/200005201/sadl3-master6/git/DARPA-ASKE-TA1/Ontology/M5/OwlModels/Sound.txt.owl.owl"/>
     <j.0:language rdf:resource="http://www.w3.org/2002/07/owl"/>
-    <j.0:createdBy>DialogInference</j.0:createdBy>
+    <j.0:createdBy>SADL</j.0:createdBy>
+    <j.0:prefix rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >Sound_txt</j.0:prefix>
   </j.0:OntologySpec>
   <j.0:OntologySpec>
-    <j.0:createdBy>DialogInference</j.0:createdBy>
+    <j.0:publicURI rdf:resource="http://sadl.org/DeeperKnowledge.sadl.metrics"/>
+    <j.0:altURL rdf:resource="file:/C:/Users/200005201/sadl3-master6/git/DARPA-ASKE-TA1/Ontology/M5/OwlModels/DeeperKnowledge.sadl.metrics.owl"/>
     <j.0:language rdf:resource="http://www.w3.org/2002/07/owl"/>
-    <j.0:altURL rdf:resource="file:/C:/Users/200005201/sadl3-master6/git/DARPA-ASKE-TA1/Ontology/M5/ComputationalGraphModels/Q_1581369269254.owl"/>
-    <j.0:publicURI rdf:resource="http://aske.ge.com/Model_Q_1581369269254"/>
+    <j.0:createdBy>SRL_Metrics</j.0:createdBy>
+  </j.0:OntologySpec>
+  <j.0:OntologySpec>
+    <j.0:publicURI rdf:resource="http://com.ge.research.sadl.darpa.aske.answer/Mach_java2.metrics"/>
+    <j.0:altURL rdf:resource="file:/C:/Users/200005201/sadl3-master6/git/DARPA-ASKE-TA1/Ontology/M5/OwlModels/MachDebug.sadl.metrics.owl"/>
+    <j.0:language rdf:resource="http://www.w3.org/2002/07/owl"/>
+    <j.0:createdBy>SRL_Metrics</j.0:createdBy>
+  </j.0:OntologySpec>
+  <j.0:OntologySpec>
+    <j.0:publicURI rdf:resource="http://answer/demo.dialog"/>
+    <j.0:altURL rdf:resource="file:/C:/Users/200005201/sadl3-master6/git/DARPA-ASKE-TA1/Ontology/M5/OwlModels/demo.dialog.owl"/>
+    <j.0:language rdf:resource="http://www.w3.org/2002/07/owl"/>
+    <j.0:createdBy>Dialog</j.0:createdBy>
+    <j.0:prefix rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >demodlg</j.0:prefix>
+  </j.0:OntologySpec>
+  <j.0:OntologySpec>
+    <j.0:prefix rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >sad</j.0:prefix>
+    <j.0:createdBy>Dialog</j.0:createdBy>
+    <j.0:language rdf:resource="http://www.w3.org/2002/07/owl"/>
+    <j.0:altURL rdf:resource="file:/C:/Users/200005201/sadl3-master6/git/DARPA-ASKE-TA1/Ontology/M5/OwlModels/SeeAlso.dialog.owl"/>
+    <j.0:publicURI rdf:resource="http://sadl.org/SeeAlso.dialog"/>
+  </j.0:OntologySpec>
+  <j.0:OntologySpec>
+    <j.0:createdBy>SRL_Metrics</j.0:createdBy>
+    <j.0:language rdf:resource="http://www.w3.org/2002/07/owl"/>
+    <j.0:altURL rdf:resource="file:/C:/Users/200005201/sadl3-master6/git/DARPA-ASKE-TA1/Ontology/M5/OwlModels/TemperatureConversion.java.owl.sadl.metrics.owl"/>
+    <j.0:publicURI rdf:resource="http://com.ge.research.answer.java/TemperatureConversion.metrics"/>
+  </j.0:OntologySpec>
+  <j.0:OntologySpec>
+    <j.0:prefix rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >demo2</j.0:prefix>
+    <j.0:createdBy>SADL</j.0:createdBy>
+    <j.0:language rdf:resource="http://www.w3.org/2002/07/owl"/>
+    <j.0:altURL rdf:resource="file:/C:/Users/200005201/sadl3-master6/git/DARPA-ASKE-TA1/Ontology/M5/OwlModels/demo2.dialog.owl"/>
+    <j.0:publicURI rdf:resource="http://sadl.org/demo2.sadl"/>
   </j.0:OntologySpec>
 </rdf:RDF>

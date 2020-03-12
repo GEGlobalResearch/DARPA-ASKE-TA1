@@ -302,8 +302,8 @@ public class DialogAnswerProvider extends BaseDialogAnswerProvider {
 			Object ctx, boolean quote, boolean prependAgent, boolean repositionCursor, boolean addLeadingSpaces) throws BadLocationException {
 		LOGGER.debug(content);
 //		System.err.println("addCMContent: " + content);
-//		Display.getDefault().asyncExec(() -> {
-		Display.getDefault().syncExec(() -> {
+		Display.getDefault().asyncExec(() -> {
+//		Display.getDefault().syncExec(() -> {
 			try {
 				String modContent = generateModifiedContent(document, ctx, quote, prependAgent, content);
 				Object[] insertionInfo = generateInsertionLocation(document, ctx, modContent);
@@ -339,6 +339,54 @@ public class DialogAnswerProvider extends BaseDialogAnswerProvider {
 				e.printStackTrace();
 			}
 		}
+		return true;
+	}
+
+	private synchronized boolean replaceDialogText(IXtextDocument theDocument, EObject ctx, String originalTxt, String replacementTxt) throws BadLocationException {
+		LOGGER.debug("replacing '" + originalTxt + "' with '" + replacementTxt + "'");
+		Display.getDefault().asyncExec(() -> {
+//		Display.getDefault().syncExec(() -> {
+			Object elementInfos = getConfigMgr().getPrivateKeyValuePair("ElementInfo");
+			String docText = document.get();
+			int docLength = document.getLength();
+			int idx = 0;
+			if (elementInfos instanceof List<?>) {
+				int cumulativeOffset = 0;
+				for (Object einfo : ((List<?>)elementInfos)) {
+					if (einfo instanceof ModelElementInfo) {
+						ModelElementInfo mei = (ModelElementInfo) einfo;
+						if (mei.isInserted()) {
+							cumulativeOffset += mei.getLength();
+						}
+						else if (mei.getObject().equals(ctx)) {
+							String origTxt = mei.getTxt();
+							if (!origTxt.trim().substring(4).equals(originalTxt)) {
+								// error
+								System.err.println("equation text doesn't match");
+							}
+							int len = mei.getLength();									// length of original element
+							int currentStart = docText.indexOf(origTxt);				// start of element text in current document
+							String currentTxt;
+							try {
+								currentTxt = document.get(currentStart, len);
+								if (!currentTxt.trim().substring(4).equals(originalTxt)) {
+									// error
+									System.err.println("document text doesn't match");
+								}
+								int loc = currentStart + 6; 	// this is for "/r/nCM: "
+								document.replace(loc, originalTxt.length(), replacementTxt);
+//								final int caretOffset = loc + modContent.length();
+//								setCaretOffsetInEditor(uri, caretOffset);
+								break;
+							} catch (BadLocationException e) {
+								// TODO Auto-generated catch block
+								e.printStackTrace();
+							}
+						}
+					}
+				}
+			}
+		});
 		return true;
 	}
 
@@ -471,7 +519,19 @@ public class DialogAnswerProvider extends BaseDialogAnswerProvider {
 		int numSpacesBeforeEachLine = 0;
 		if (prependAgent) {
 			if (!content.startsWith("CM:")) {
-				response = "CM: " + response;
+				String lines[] = response.split("\\r\\n\\.|\\n\\.|\\r\\.");
+				if (lines.length > 1) {
+					StringBuilder sb = new StringBuilder();
+					for (String s : lines) {
+						sb.append("CM: ");
+						sb.append(s);
+						sb.append(System.lineSeparator());
+					}
+					response = sb.toString();
+				}
+				else {
+					response = "CM: " + response;
+				}
 				numSpacesBeforeEachLine += 4;
 			}
 		}
@@ -479,7 +539,7 @@ public class DialogAnswerProvider extends BaseDialogAnswerProvider {
 			response += ".";
 		}
 		if (numSpacesBeforeEachLine > 0) {
-			String lines[] = response.split(System.lineSeparator());
+			String lines[] = response.split("\\r\\n|\\n|\\r");
 			StringBuilder sb = new StringBuilder(lines[0]);
 			sb.append(System.lineSeparator());
 			for (int i = 1; i < lines.length; i++) {
@@ -599,6 +659,16 @@ public class DialogAnswerProvider extends BaseDialogAnswerProvider {
 		return null;
 	}
 
+	@Override
+	public String replaceDialogText(AnswerCurationManager answerCurationManager, EObject eObject, String originalTxt, String replacementTxt) {
+		try {
+			replaceDialogText(getTheDocument(), eObject, originalTxt, replacementTxt);
+		} catch (BadLocationException e) {
+			// This happens sometimes but doesn't usually have dire consequences....
+//			e.printStackTrace();
+		}
+		return null;
+	}
 	private boolean isContentQuoted(String content) {
 		content = content.trim();
 		if (content.startsWith("\"") && content.endsWith("\"")) {

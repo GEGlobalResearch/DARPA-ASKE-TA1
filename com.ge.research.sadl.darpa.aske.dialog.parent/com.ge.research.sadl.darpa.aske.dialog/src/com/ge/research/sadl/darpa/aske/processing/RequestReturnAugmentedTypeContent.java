@@ -4,7 +4,7 @@ import org.eclipse.emf.ecore.EObject;
 
 import com.ge.research.sadl.darpa.aske.curation.AnswerCurationManager.Agent;
 
-public class RequestReturnAugmentedTypeContent extends QuestionUserContent {
+public class RequestReturnAugmentedTypeContent extends QuestionContent {
 	private String equationName;
 	private String question;
 	

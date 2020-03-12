@@ -2391,7 +2391,10 @@ private void runInference(Resource resource, String query, String testQuery) thr
 				
 				// create triple: cgq, mm:input, inputVar
 				OntProperty inputprop = getModelProperty(getTheJenaModel(), METAMODEL_INPUT_PROP); // getTheJenaModel().getOntProperty(METAMODEL_INPUT_PROP);
-
+				if (inputprop == null) {
+					System.err.println("Can't find property '" + METAMODEL_INPUT_PROP + "'; is the SadlImplicitModel out of date?");
+					return;
+				}
 				ingestKGTriple(cgq, inputprop, sso); //(bnode, mm:input, v1)
 
 				
