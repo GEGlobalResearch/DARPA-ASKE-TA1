@@ -193,7 +193,7 @@ class invizin(object):
             inUnit = self._getVarUnit(inputVariable)
             inText = self._getWrappedText(inName)+'<br>'+inUnit
             
-            X = sensitivityData[ii]['OATMatrix'][inputVariable['name']]
+            X = sensitivityData[ii]['OATMatrix'][self._getVarName(inputVariable, aliasFlag=False)]
             
             df = sensitivityData[ii]['OATMatrix']
             for jj, outputVariable in enumerate(pck['outputVariables']):
@@ -256,7 +256,7 @@ class invizin(object):
             inUnit = self._getVarUnit(inputVariable)
             inText = self._getWrappedText(inName)+'<br>'+inUnit
             
-            X = sensitivityData[ii]['OATRSMatrix'][inputVariable['name']]
+            X = sensitivityData[ii]['OATRSMatrix'][self._getVarName(inputVariable, aliasFlag=False)]
             df = sensitivityData[ii]['OATRSMatrix']
             
             Xd = (np.asarray(X) - refDat[inputVariable['name']])*100.0/refDat[inputVariable['name']]
