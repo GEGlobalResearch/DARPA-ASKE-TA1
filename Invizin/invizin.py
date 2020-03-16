@@ -28,7 +28,8 @@ class invizin(object):
         """
         self.debug = debug
         self.url_evaluate = url_evaluate
-        self.sensitivityData = []
+        self.OATSensitivityData = []
+        self.normalizedSensitivityData = []
         
     
     def _getOutputValue(self, evalPacket, inputVal, index):
@@ -73,7 +74,9 @@ class invizin(object):
                 
                 df[outputVariable['name']] = pd.Series(np.fromstring(tstr, sep = ','))
             
-            df[evalPacket['inputVariables'][index]['name']] = pd.Series(X)
+            vName = self._getVarName(var = evalPacket['inputVariables'][index], 
+                                     aliasFlag = False)
+            df[vName] = pd.Series(X)
             
         return df
     
@@ -91,11 +94,16 @@ class invizin(object):
         
         return MIN, MAX
     
-    def _getVarName(self, var):
-        if 'alias' in var.keys():
+    def _getVarName(self, var, aliasFlag = True):
+        if 'alias' in var.keys() and aliasFlag:
             varName = var['alias']
         else:
-            varName = var['name']
+            v = var['name']
+            ind = v.find('_val')
+            if ind != -1 and v.endswith('_val'):
+                varName = v[0:ind]
+            else:
+                varName = v
         return varName
     
     def _getVarUnit(self, var):
@@ -117,13 +125,13 @@ class invizin(object):
     
     def getOATSensitivityData(self, evalPacket):
         pck = copy.deepcopy(evalPacket)
-        NUM = 20
-        sensitivityData = []
+        NUM = 21
+        OATSensitivityData = []
         
         for ii, inputVariable in enumerate(pck['inputVariables']):
             #only one input is changed while others stay at base
             d = dict()
-            d['name'] = inputVariable['name']
+            d['name'] = self._getVarName(var = inputVariable, aliasFlag = False)
             d['type'] = inputVariable['type']
             d['value'] = inputVariable['value']
             
@@ -143,20 +151,27 @@ class invizin(object):
                 d['OATMatrix'] = df.to_dict(orient='list')
                 d['OATRSMatrix'] = df.to_dict(orient='list')
                 
-            sensitivityData.append(d)    
+            OATSensitivityData.append(d)    
         
-        self.sensitivityData = sensitivityData
-        return sensitivityData
-        
+        self.OATSensitivityData = OATSensitivityData
+        return OATSensitivityData
     
-    def createSensitivityGraphOAT(self, evalPacket):
+    def getJacobian(self, evalPacket):
+        r = requests.post(self.url_evaluate+'Grad', json=evalPacket)
+        rj = r.json()
+        print(rj)
+        
+        self.normalizedSensitivityData = rj['jacobian']
+        return rj['jacobian'], rj['errorMessage']
+    
+    def createOATSensitivityGraph(self, evalPacket):
         pck = copy.deepcopy(evalPacket)
     
-        if self.sensitivityData == []:
+        if self.OATSensitivityData == []:
             #error condition
             print('Missing sensitivity data')
         else:
-            sensitivityData = self.sensitivityData
+            sensitivityData = self.OATSensitivityData
             
         refDat = {}
         for inputVariable in pck['inputVariables']:
@@ -210,14 +225,14 @@ class invizin(object):
         label = 'OAT Sensitivity Analysis'
         return fig, label
     
-    def createRelativeSensitivityGraphOAT(self, evalPacket):
+    def createOATRelativeSensitivityGraph(self, evalPacket):
         pck = copy.deepcopy(evalPacket)
         
-        if self.sensitivityData == []:
+        if self.OATSensitivityData == []:
             #error condition
             print('Missing sensitivity data')
         else:
-            sensitivityData = self.sensitivityData
+            sensitivityData = self.OATSensitivityData
     
         refDat = {}
         for inputVariable in pck['inputVariables']:
@@ -271,18 +286,30 @@ class invizin(object):
         label = 'Relative Sensitivity Analysis'
         return fig, label
     
-    def createLocalSensitivityGraph(self, evalPacket):
-        #TODO: update with gradient computation
-        fig = { #https://plot.ly/python/bar-charts/#basic-bar-chart-with-plotlygraphobjects
-                'data': [
-                    {'x': ['mach', 'gamma'], 'y': [2, 1],
-                        'type': 'bar', 'name': 'aflow'},
-                    {'x': ['mach', 'gamma'], 'y': [5, 4],
-                     'type': 'bar', 'name': 'fac1'},
-                    {'x': ['mach', 'gamma'], 'y': [0, 2],
-                     'type': 'bar', 'name': 'fac2'}
-                    ]
-                }
+    def createNormalizedSensitivityGraph(self, evalPacket):
+        
+        if self.normalizedSensitivityData == []:
+            #error condition
+            print('Missing sensitivity data')
+        else:
+            J = self.normalizedSensitivityData
+            
+        plotData = []
+        inpNames = []
+        for inputVar in iter(evalPacket['inputVariables']):
+            inpNames.append(self._getVarName(inputVar))
+            
+        for ind, outputVar in enumerate(evalPacket['outputVariables']):
+            plotData.append(go.Bar(name=self._getVarName(outputVar), x=inpNames, y=J[ind]))
+        
+        fig = go.Figure(data = plotData)
+        # Change the bar mode
+        fig.update_layout(barmode='group', 
+                          xaxis_tickangle=-45,
+                          yaxis_title = 'Sensitivity',
+                          hovermode = 'x',
+                          title = 'Normalized Gradients')
+        
         label = 'Local Gradients'
         return fig, label
     

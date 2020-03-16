@@ -51,7 +51,7 @@ import dash
 URL_EVALUATE = 'http://localhost:12345/darpa/aske/kchain/evaluate'
 
 # this is the port where the graphs will be shown
-GRAPH_PORT = 1177
+PORT_NUM = 1177
 
 #setting up the REST service
 app = connexion.FlaskApp(__name__, specification_dir='swagger/')
@@ -66,28 +66,25 @@ if __name__ == '__main__':
     app.run(port=12309)
     
     
-def _deployDash(layout):
+def _deployDash(layout, portNum):
     global dashApp
     dashApp.layout = layout
     dashApp.scripts.config.serve_locally = True
     dashApp.css.config.serve_locally = True
     print('deploying dash now')
-    dashApp.run_server(port=GRAPH_PORT,debug=False, use_reloader=False)
+    dashApp.run_server(port=portNum,debug=False, use_reloader=False)
     
-def terminateDeploy():
+def terminateDeploy(portNum):
     m = active_children()
     for pr in m:
-        if pr.name == 'deployDash':
+        if pr.name == ('deployDash_'+str(portNum)):
             print(pr)
             pr.terminate()
             print("stopped serving graphs at URL") 
 
-
 def visualize(body):
     #function to create plots
-    
-    terminateDeploy()
-        
+            
     print(body)
     
     if 'url_evaluate' in body.keys():
@@ -95,6 +92,12 @@ def visualize(body):
         url_evaluate = body['url_evaluate']    
     else:
         url_evaluate = URL_EVALUATE
+    
+    if 'portNum' in body.keys():
+        print("assigned port")
+        portNum = body['portNum']    
+    else:
+        portNum = PORT_NUM
         
     inviz = invizin(url_evaluate)
     
@@ -103,28 +106,40 @@ def visualize(body):
     figs = []
     labels = []
 
-    fig, label = inviz.createSensitivityGraphOAT(body)
+    fig, label = inviz.createOATSensitivityGraph(body)
     figs.append(fig)
     labels.append(label)
     if body['plotType'] == '1':
         layout = inviz.getSimpleLayout(figs)
     else:
-        fig, label = inviz.createRelativeSensitivityGraphOAT(body)
+        fig, label = inviz.createOATRelativeSensitivityGraph(body)
         figs.append(fig)
         labels.append(label)
-        # fig, label = inviz.createLocalSensitivityGraph(body)
-        # figs.append(fig)
-        # labels.append(label)
+        
+        J, errMsg = inviz.getJacobian(body)
+        print('Jacobian:')
+        print(J)
+        JData = []
+        
+        for ind, outputVar in enumerate(body['outputVariables']):
+            JData.append({'name':outputVar['name'], 'value':J[ind]})
+        
+        fig, label = inviz.createNormalizedSensitivityGraph(body)
+        figs.append(fig)
+        labels.append(label)
         layout = inviz.getTabLayout(figs, labels)
 
     print(labels)
     
-    p = Process(name = 'deployDash', target=_deployDash, kwargs={"layout": layout})
+    terminateDeploy(portNum)    
+    
+    p = Process(name = 'deployDash_'+str(portNum), target=_deployDash, 
+                kwargs={"layout": layout, "portNum": portNum})
     p.start()
           
     ur = parse.urlparse(flask.request.url)
     
-    URL = ur.scheme + '://' + ur.hostname + ':' + str(GRAPH_PORT)
+    URL = ur.scheme + '://' + ur.hostname + ':' + str(portNum)
     
     m = active_children()
     for pr in m:
@@ -134,6 +149,8 @@ def visualize(body):
             
     outputPacket = {}
     outputPacket['url'] = URL
-    outputPacket['sensitivityData'] = OATSensitivityData
+    outputPacket['OATSensitivityData'] = OATSensitivityData
+    outputPacket['normalizedSensitivityData'] = JData
+    
     return outputPacket
 
