@@ -190,7 +190,35 @@ def evaluate(body):
     
     return outputPacket
     
-
+def evaluateGrad(body):
+    #wrapper function to interact with K-CHAIN evaluate jacobian function
+    
+    ko = kc.kChainModel(debug=False)
+    
+    print(body)
+    errMsg = ''
+    J = []
+    
+    if 'CGType' in body.keys(): 
+        if body['CGType'] == 'python':
+            J = ko.evaluatePyGrad(inputVars = body['inputVariables'], 
+                                  outputVars = body['outputVariables'],
+                                  mdlName = body['modelName'])
+        else:
+            errMsg = 'Need python-numpy model for gradient computation'
+    else:
+        errMsg = 'Need python-numpy model for gradient computation'
+    
+    outputPacket = {}
+    outputPacket['jacobian'] = J
+    outputPacket['errorMessage'] = errMsg
+    
+    print(outputPacket)
+    
+    return outputPacket
+        
+    
+    
 def tryLocalDemo1():
     #Create kchain model with dataset
     inputPacket = {

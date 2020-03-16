@@ -54,6 +54,8 @@ import eqnModels
 from codeTransform import codeTransform
 
 from tensorflow import autograph as ag
+from autograd import grad
+
 from GPyOpt.methods import BayesianOptimization as bo
 from GPyOpt import Design_space, experiment_design
 
@@ -1234,3 +1236,89 @@ class kChainModel(object):
         return outputVars, defaultValuesUsed, missingVar
             
         
+    def evaluatePyGrad(self, inputVars, outputVars, mdlName):
+        """
+        Evaluates output gradients for a given model wrt inputs at given input values
+        
+        Arguments:
+            inputVars (JSON array):
+                array of JSON variable objects with name, type, value, and unit fields
+            outputVars (JSON array):
+                array of JSON variable objects with name, type, value, and unit fields
+            mdlName (string):
+                Name to model to use (E.g.: 'Newtons2ndLaw')
+        
+        Returns:
+            (JSON array):
+                * JSON array : array of output gradients for each input as JSON objects with name field and normalized Jacobian fields. 
+            
+        """
+        
+        #reload the eqnModels package as a method was newly added
+        imp.reload(eqnModels)
+        
+        
+        #get the method created by the code
+        pyFunc = getattr(eqnModels, mdlName)
+        
+        if self.debug:
+            print(pyFunc)
+        
+        listOfInputs = []
+        
+        for node in inputVars:
+            if '[' in node['value'] and ']' in node['value']:
+                tstr = node['value'][1:-1]
+            else:
+                tstr = node['value']
+                
+            listOfInputs.append(np.fromstring(tstr, sep = ','))
+        
+        alignedList = np.broadcast(*listOfInputs)
+                
+        #get first tuple of inputs
+        singleInput = next(alignedList)
+        
+        print(singleInput)
+        
+        inputs = {}
+        #assign values to nodes
+        for index, node in enumerate(inputVars):
+            inputs[node['name']] = singleInput[index]
+        
+        print(inputs)
+        
+        #evaluate
+        y = pyFunc(**inputs)
+        
+        values = {}
+        #assign outputs
+        if len(outputVars) > 1:
+            for index, outputVar in enumerate(outputVars):
+                values[outputVar['name']] = y[index]
+        else:
+            values[outputVars[0]['name']] = y
+        
+        #initial jacobian
+        J = np.ndarray(shape=(len(outputVars),len(inputVars)), dtype=float)
+                   
+        #evaluate
+        for inputIndex in range(len(inputVars)):
+            if len(outputVars) > 1:
+                g = grad(self._responseWrapper, argnum = 2+inputIndex)
+            else:
+                g = grad(self._responseWrapper1, argnum = 2+inputIndex)
+                
+            for outputIndex, outputVar in enumerate(outputVars):
+                J[outputIndex][inputIndex] = g(outputIndex, pyFunc, *singleInput)*\
+                    (singleInput[inputIndex]/values[outputVar['name']])
+        
+        return J.tolist()
+    
+    def _responseWrapper(self, outputNum, fun, *args):
+        r = fun(*args)
+        return r[outputNum]
+    
+    def _responseWrapper1(self, outputNum, fun, *args):
+        r = fun(*args)
+        return r
