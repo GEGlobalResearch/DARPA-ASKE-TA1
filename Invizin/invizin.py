@@ -243,6 +243,8 @@ class invizin(object):
         for ix, outVal in enumerate(outVals):
             refDat[pck['outputVariables'][ix]['name']] = outVal
     
+        cols = colors.DEFAULT_PLOTLY_COLORS
+        
         fig = make_subplots(rows=len(pck['outputVariables']), 
                             cols=1, 
                             shared_xaxes=True, 
@@ -263,18 +265,39 @@ class invizin(object):
                 outUnit = self._getVarUnit(outputVariable)
                 outText = self._getWrappedText(outName)+'<br>'+outUnit
                 
-                fig.add_trace(go.Scatter(x = Xd, y=df[outputVariable['name']], 
-                                         mode="lines",name = inText,
-                                         marker = {"size": 10},
-                                         hoverinfo = "x+y"),
-                              row=jj+1, col=1)
-                if ii == 0:
-                    fig.add_trace(go.Scatter(x = [0.0], 
-                                             y = [refDat[outputVariable['name']]],
-                                             name = "Reference", mode="markers", 
-                                             marker = {"symbol":"diamond-open","size": 10, "color": "black"},
+                if jj == 0:
+                    fig.add_trace(go.Scatter(x = Xd, y=df[outputVariable['name']], 
+                                             mode="lines",name = inText,
+                                             marker = {"size": 10},
+                                             line_color = cols[ii],
                                              hoverinfo = "x+y"),
                                   row=jj+1, col=1)
+                else:
+                    fig.add_trace(go.Scatter(x = Xd, y=df[outputVariable['name']], 
+                                             mode="lines",name = inText,
+                                             marker = {"size": 10},
+                                             line_color = cols[ii],
+                                             showlegend = False,
+                                             hoverinfo = "x+y"),
+                                  row=jj+1, col=1)
+                    
+                if ii == 0:
+                    if jj == 0:
+                        fig.add_trace(go.Scatter(x = [0.0], 
+                                                 y = [refDat[outputVariable['name']]],
+                                                 name = "Reference", mode="markers", 
+                                                 marker = {"symbol":"diamond-open","size": 10, "color": "black"},
+                                                 hoverinfo = "x+y"),
+                                      row=jj+1, col=1)
+                    else:
+                        fig.add_trace(go.Scatter(x = [0.0], 
+                                                 y = [refDat[outputVariable['name']]],
+                                                 name = "Reference", mode="markers", 
+                                                 marker = {"symbol":"diamond-open","size": 10, "color": "black"},
+                                                 hoverinfo = "x+y",
+                                                 showlegend = False),
+                                      row=jj+1, col=1)
+                            
                     fig.update_yaxes(title_text=outText, row=jj+1, col=1, hoverformat=".3f")
 
                 if jj == len(pck['outputVariables'])-1:
