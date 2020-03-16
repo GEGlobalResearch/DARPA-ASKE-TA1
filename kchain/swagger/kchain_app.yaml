@@ -77,6 +77,28 @@ paths:
           description: "success"
           schema:
             $ref: "#/definitions/evaluate_out"
+
+  /kchain/evaluateGrad:
+    post:
+      tags:
+      - "K-CHAIN"
+      summary: "Evaluates Jacobian at input values for input-output variables of interest"
+      operationId: "kchain_app.evaluateGrad"
+      consumes:
+      - application/json
+      produces:
+      - application/json
+      parameters:
+      - in: "body"
+        name: "body"
+        required: true
+        schema:
+          $ref: "#/definitions/evaluate_in"
+      responses:
+        200:
+          description: "success"
+          schema:
+            $ref: "#/definitions/evaluateGrad_out"
             
 definitions:
   build_in:
@@ -189,6 +211,22 @@ definitions:
         type: "string"
       error:
         type: "string"
+  
+  evaluateGrad_out:
+    type: "object"
+    required: 
+    - "jacobian"
+    properties:
+      jacobian:
+        type: "array"
+        items:
+          type: "array"
+          items:
+            type: "number"
+      errorMessage:
+        type: "string"
+          
+      
         
   variable:
     type: "object"
