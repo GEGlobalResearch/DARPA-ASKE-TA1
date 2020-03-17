@@ -72,7 +72,7 @@ def _deployDash(layout, portNum):
     dashApp.scripts.config.serve_locally = True
     dashApp.css.config.serve_locally = True
     print('deploying dash now')
-    dashApp.run_server(port=portNum,debug=False, use_reloader=False)
+    dashApp.run_server(port=portNum, debug=False, use_reloader=False)
     
 def terminateDeploy(portNum):
     m = active_children()
@@ -80,7 +80,7 @@ def terminateDeploy(portNum):
         if pr.name == ('deployDash_'+str(portNum)):
             print(pr)
             pr.terminate()
-            print("stopped serving graphs at URL") 
+            print("stopped serving graphs at port: "+str(portNum)) 
 
 def visualize(body):
     #function to create plots
@@ -98,6 +98,8 @@ def visualize(body):
         portNum = body['portNum']    
     else:
         portNum = PORT_NUM
+    
+    terminateDeploy(portNum)    
         
     inviz = invizin(url_evaluate)
     
@@ -116,22 +118,21 @@ def visualize(body):
         figs.append(fig)
         labels.append(label)
         
-        J, errMsg = inviz.getJacobian(body)
-        print('Jacobian:')
-        print(J)
-        JData = []
+        # J, errMsg = inviz.getJacobian(body)
+        # print('Jacobian:')
+        # print(J)
+        # JData = []
         
-        for ind, outputVar in enumerate(body['outputVariables']):
-            JData.append({'name':outputVar['name'], 'value':J[ind]})
+        # for ind, outputVar in enumerate(body['outputVariables']):
+        #     JData.append({'name':outputVar['name'], 'value':J[ind]})
         
-        fig, label = inviz.createNormalizedSensitivityGraph(body)
-        figs.append(fig)
-        labels.append(label)
+        # fig, label = inviz.createNormalizedSensitivityGraph(body)
+        # figs.append(fig)
+        # labels.append(label)
+        
         layout = inviz.getTabLayout(figs, labels)
 
     print(labels)
-    
-    terminateDeploy(portNum)    
     
     p = Process(name = 'deployDash_'+str(portNum), target=_deployDash, 
                 kwargs={"layout": layout, "portNum": portNum})
@@ -143,14 +144,15 @@ def visualize(body):
     
     m = active_children()
     for pr in m:
-        if pr.name == 'deployDash':
+        if pr.name == ('deployDash_'+str(portNum)):
             print(pr)
             print("Successfully started serving graphs at " + URL)
             
     outputPacket = {}
     outputPacket['url'] = URL
     outputPacket['OATSensitivityData'] = OATSensitivityData
-    outputPacket['normalizedSensitivityData'] = JData
+    
+    #outputPacket['normalizedSensitivityData'] = JData
     
     return outputPacket
 
