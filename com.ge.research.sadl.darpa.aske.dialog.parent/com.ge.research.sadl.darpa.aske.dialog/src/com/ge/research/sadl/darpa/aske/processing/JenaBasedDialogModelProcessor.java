@@ -2285,6 +2285,7 @@ public class JenaBasedDialogModelProcessor extends JenaBasedSadlModelProcessor {
 			// compute answer using computational graph
 			List<Rule> comparisonRules;
 			try {
+				clearUndefinedEObjects();
 				comparisonRules = whenAndThenToCookedRules(when, whatIsTarget);
 				if (comparisonRules != null && comparisonRules.size() > 0) {
 					WhatIsContent wic = new WhatIsContent(stmt.eContainer(), Agent.USER, comparisonRules);
