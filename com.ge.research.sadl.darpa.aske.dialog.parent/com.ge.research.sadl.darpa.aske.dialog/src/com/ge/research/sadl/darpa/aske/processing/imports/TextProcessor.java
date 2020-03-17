@@ -38,6 +38,7 @@ package com.ge.research.sadl.darpa.aske.processing.imports;
 
 import java.io.File;
 import java.io.IOException;
+import java.io.Writer;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -67,6 +68,7 @@ import com.hp.hpl.jena.ontology.OntModelSpec;
 import com.hp.hpl.jena.ontology.Ontology;
 import com.hp.hpl.jena.rdf.model.Model;
 import com.hp.hpl.jena.rdf.model.ModelFactory;
+import com.hp.hpl.jena.util.iterator.ExtendedIterator;
 
 public class TextProcessor {
 	private static final Logger logger = Logger.getLogger (TextProcessor.class) ;
@@ -84,6 +86,8 @@ public class TextProcessor {
 	private Map<String, OntModel> textModels;
 	private String textModelName;	// the name of the model being created by extraction
 	private String textmodelPrefix;	// the prefix of the model being created by extraction
+
+	private OntModel registeredDomainModel = null;	// domain model registered with text to triples service
 
 //	private String defaultTextModelName = null;
 //	private String defaultTextModelPrefix = null;
@@ -172,7 +176,7 @@ public class TextProcessor {
 	 * @throws ConfigurationException
 	 * @throws IOException
 	 */
-	public int[] processText(String inputIdentifier, String text, String modelName, String modelPrefix) throws ConfigurationException, IOException {
+	public int[] processText(String inputIdentifier, String text, String localityURI, String modelName, String modelPrefix) throws ConfigurationException, IOException {
 		initializeTextModel(modelName, modelPrefix);
 		try {
 			String source = null;
@@ -185,7 +189,7 @@ public class TextProcessor {
 			else {
 				source = inputIdentifier;
 			}
-			String msg = "Extracting text from '" + source + "' into locality '" + modelName + "'.";
+			String msg = "Extracting text from '" + source + "' into locality '" + localityURI + "'.";
 			getCurationManager().notifyUser(getTextModelConfigMgr().getModelFolder(), msg, true);
 		} catch (ConfigurationException e) {
 			// TODO Auto-generated catch block
@@ -193,7 +197,7 @@ public class TextProcessor {
 		}
 		String serviceBaseUri = getPreference(DialogPreferences.ANSWER_TEXT_SERVICE_BASE_URI.getId());
 		TextProcessingServiceInterface tpsi = new TextProcessingServiceInterface(serviceBaseUri);
-		return tpsi.processText(inputIdentifier, text, modelName);
+		return tpsi.processText(inputIdentifier, text, localityURI);
 	}
 	
 	public String[] retrieveGraph(String locality) throws IOException {
@@ -426,6 +430,51 @@ public class TextProcessor {
 		return results;
 	}
 
+	/** 
+	 * Method to add a domainOntology to the text to triples service
+	 * @param dialogModelName
+	 * @param domainModel
+	 * @throws IOException 
+	 */
+	public String addDomainOntology(String dialogModelName, OntModel domainModel) throws IOException {
+//		if (getRegisteredDomainModel() == null) {
+			OntModelSpec spec = new OntModelSpec(OntModelSpec.OWL_MEM);
+			OntModel aggregateDomainModel = ModelFactory.createOntologyModel(spec);	
+			aggregateDomainModel.add(domainModel.getBaseModel());
+//			aggregateDomainModel.write(System.out);
+			ExtendedIterator<OntModel> smitr = domainModel.listSubModels();
+			for (OntModel sm : smitr.toList()) {
+				ExtendedIterator<Ontology> ontitr = sm.listOntologies();
+				String onturi = null;
+				while (ontitr.hasNext()) {
+					onturi = ontitr.next().getURI();
+//					System.out.println(onturi);
+					break;
+				}
+				if (onturi != null) {
+					if (onturi.equals(SadlConstants.SADL_BASE_MODEL_URI) ||
+							onturi.equals(SadlConstants.SADL_DEFAULTS_MODEL_URI) ||
+							onturi.equals(SadlConstants.SADL_IMPLICIT_MODEL_URI) ||
+							onturi.equals(SadlConstants.SADL_LIST_MODEL_URI) ||
+							onturi.equals(IReasoner.SADL_BUILTIN_FUNCTIONS_URI)) {
+						continue;
+					}
+				}
+//				System.out.println("*****************************************************************");
+//				sm.getBaseModel().write(System.out);
+				aggregateDomainModel.add(sm.getBaseModel());
+			}
+			String ontologyAsString = getCurationManager().ontModelToString(aggregateDomainModel);
+			(new SadlUtils()).stringToFile(new File("c:/tmp/isentrop_txt.owl"), ontologyAsString, false);	// temporary for debug purposes
+			String serviceBaseUri = getPreference(DialogPreferences.ANSWER_TEXT_SERVICE_BASE_URI.getId());
+			TextProcessingServiceInterface tpsi = new TextProcessingServiceInterface(serviceBaseUri);
+			String response = tpsi.uploadDomainOntology(dialogModelName, dialogModelName, ontologyAsString);
+			setRegisteredDomainModel(aggregateDomainModel);
+			return response;
+//		}
+//		return "Domain ontology already uploaded";
+	}
+	
 	/**
 	 * Method to determine if a character is a vowel. 
 	 * Reference: https://stackoverflow.com/questions/26557604/whats-the-best-way-to-check-if-a-character-is-a-vowel-in-java
@@ -709,5 +758,13 @@ public class TextProcessor {
 	    }
 	    return false;
 	}
-	
+
+	private OntModel getRegisteredDomainModel() {
+		return registeredDomainModel;
+	}
+
+	private void setRegisteredDomainModel(OntModel registeredDomainModel) {
+		this.registeredDomainModel = registeredDomainModel;
+	}
+
 }

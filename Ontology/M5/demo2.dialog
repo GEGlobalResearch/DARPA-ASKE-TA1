@@ -1,6 +1,6 @@
  uri "http://sadl.org/demo2.sadl" alias demo2.
  import "http://sadl.org/SpeedOfSound.sadl".
- import "http://com.ge.research.sadl.darpa.aske.answer/Turbo_java".
+// import "http://com.ge.research.sadl.darpa.aske.answer/Turbo_java".
  
 // what is force?
  

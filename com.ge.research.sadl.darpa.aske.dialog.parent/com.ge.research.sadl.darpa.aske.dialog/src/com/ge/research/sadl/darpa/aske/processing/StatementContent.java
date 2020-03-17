@@ -1,6 +1,7 @@
 package com.ge.research.sadl.darpa.aske.processing;
 
 import org.eclipse.emf.ecore.EObject;
+import org.eclipse.xtext.nodemodel.ICompositeNode;
 import org.eclipse.xtext.nodemodel.util.NodeModelUtils;
 
 import com.ge.research.sadl.darpa.aske.curation.AnswerCurationManager.Agent;
@@ -35,27 +36,36 @@ public abstract class StatementContent {
 		return hostEObject;
 	}
 
-	private void setHostEObject(EObject hostEObject) {
+	public void setHostEObject(EObject hostEObject) {
 		this.hostEObject = hostEObject;
 	}
 	
 	public String getText() {
-		if (getHostEObject() != null) {
-			return removeLeadingComments(NodeModelUtils.findActualNodeFor(getHostEObject()).getText());
+		if (getUnParsedText() == null && getHostEObject() != null) {
+			ICompositeNode icn = NodeModelUtils.findActualNodeFor(getHostEObject());
+			if (icn != null) {
+				return removeLeadingComments(icn.getText());
+			}
 		}
 		return getUnParsedText();
 	}
 	
 	public int getOffset() {
 		if (getHostEObject() != null) {
-			return NodeModelUtils.findActualNodeFor(getHostEObject()).getTotalOffset();
+			ICompositeNode icn = NodeModelUtils.findActualNodeFor(getHostEObject());
+			if (icn != null) {
+				return icn.getTotalOffset();
+			}
 		}
 		return -1;
 	}
 
 	public int getLength() {
 		if (getHostEObject() != null) {
-			return NodeModelUtils.findActualNodeFor(getHostEObject()).getLength();
+			ICompositeNode icn = NodeModelUtils.findActualNodeFor(getHostEObject());
+			if (icn != null) {
+				return icn.getLength();
+			}
 		}
 		return -1;
 	}

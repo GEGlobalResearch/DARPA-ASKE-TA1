@@ -19,12 +19,12 @@ public class SparqlQueries {
 			"		MINUS {?m <rdf:type> <ExternalMethod>} }";
 
 	public static final String All_TEXT_EXTRACTED_METHODS = 
-			"select distinct ?m ?pm ?ts ?ps ?ptfs where {?m <rdf:type> <ExternalEquation> . "
+			"select distinct ?m ?pm ?ts ?ps ?pstf ?psnp where {?m <rdf:type> <ExternalEquation> . "
 			+ "OPTIONAL {?m <http://sadl.org/sadlimplicitmodel#derivedFrom> ?pm} . "
 			+ "OPTIONAL { ?m <expression> ?exp . ?exp <language> <Text> . ?exp <script> ?ts} . "
 			+ "OPTIONAL {?m <expression> ?exp2 . ?exp2 <language> <Python> . ?exp2 <script> ?ps} . "
-			+ "OPTIONAL {?m <expression> ?exp2 . ?exp3 <language> <Python-TF> . ?exp3 <script> ?ps} . "
-			+ "OPTIONAL {?m <expression> ?exp3 . ?exp4 <language> <Python-NumPy> . ?exp4 <script> ?ptfs}}";
+			+ "OPTIONAL {?m <expression> ?exp3 . ?exp3 <language> <Python-TF> . ?exp3 <script> ?pstf} . "
+			+ "OPTIONAL {?m <expression> ?exp4 . ?exp4 <language> <Python-NumPy> . ?exp4 <script> ?psnp}}";
 	
 	public static final String ALL_EXTERNAL_EQUATIONS = 
 			"select ?eq ?lang ?expr where {?eq <rdf:type> <ExternalEquation> . ?eq <expression> ?script . ?script <script> ?expr . ?script <language> ?lang}";
