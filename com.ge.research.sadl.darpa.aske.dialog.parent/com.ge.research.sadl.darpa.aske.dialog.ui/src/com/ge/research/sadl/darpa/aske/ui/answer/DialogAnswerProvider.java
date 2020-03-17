@@ -445,11 +445,16 @@ public class DialogAnswerProvider extends BaseDialogAnswerProvider {
 							String origTxt = mei.getTxt();
 							int len = mei.getLength();									// length of original element
 							int currentStart = docText.indexOf(origTxt);				// start of element text in current document
-							String currentTxt = document.get(currentStart, len);
-							if (!currentTxt.equals(origTxt)) {
-								System.err.println("Error in Dialog text");
-								System.err.println("  currentTxt: " + currentTxt);
-								System.err.println("  origTxt: " + origTxt);
+							if (currentStart >= 0) {
+								String currentTxt = document.get(currentStart, len);
+								if (!currentTxt.equals(origTxt)) {
+									System.err.println("Error in Dialog text");
+									System.err.println("  currentTxt: " + currentTxt);
+									System.err.println("  origTxt: " + origTxt);
+								}
+							}
+							else {
+								currentStart = 0;
 							}
 							int currentEndLoc = currentStart+ origTxt.length();			// end of element text in current document
 							int expectedEndLoc = mei.getEnd() + cumulativeOffset;		// expected end of element text in current document
@@ -477,7 +482,7 @@ public class DialogAnswerProvider extends BaseDialogAnswerProvider {
 										loc += lineSep.length();
 									}
 								}
-							}
+							}							
 						} catch (BadLocationException e) {
 							// TODO Auto-generated catch block
 							e.printStackTrace();
@@ -489,7 +494,12 @@ public class DialogAnswerProvider extends BaseDialogAnswerProvider {
 			}
 		}
 		if (loc == 0) {
-			System.err.println("Context EObject not found in list of ModelElementInfos!");
+			if (getResource() != null) {
+				System.err.println("Context EObject not found in list of ModelElementInfos for document '" + getResource().getURI() + "'!");
+			}
+			else {
+				System.err.println("Context EObject not found in list of ModelElementInfos!");
+			}
 			loc = docLength;
 		}
 		// should there be a newline at the beginning or a newline at the end of modContent?
@@ -624,7 +634,7 @@ public class DialogAnswerProvider extends BaseDialogAnswerProvider {
 	@Override
 	public String addCurationManagerInitiatedContent(AnswerCurationManager answerCurationManager, StatementContent sc) {
 		try {
-			addCurationManagerContentToDialog(getTheDocument(), null, sc.getText(), null, false);
+			addCurationManagerContentToDialog(getTheDocument(), null, sc.getText(), sc.getHostEObject(), false);
 		} catch (BadLocationException e) {
 			// This happens sometimes but doesn't usually have dire consequences....
 //			e.printStackTrace();
