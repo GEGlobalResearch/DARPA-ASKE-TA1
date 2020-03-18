@@ -10,6 +10,10 @@
     <eStructuralFeatures xsi:type="ecore:EReference" name="concept" eType="ecore:EClass platform:/resource/com.ge.research.sadl/model/generated/SADL.ecore#//SadlResource"
         containment="true"/>
   </eClassifiers>
+  <eClassifiers xsi:type="ecore:EClass" name="NoModelFoundStatement">
+    <eStructuralFeatures xsi:type="ecore:EReference" name="target" eType="ecore:EClass platform:/resource/com.ge.research.sadl/model/generated/SADL.ecore#//Expression"
+        containment="true"/>
+  </eClassifiers>
   <eClassifiers xsi:type="ecore:EClass" name="RelationshipDescriptor1" eSuperTypes="#//RelationshipDescriptor2"/>
   <eClassifiers xsi:type="ecore:EClass" name="RelationshipDescriptor2">
     <eStructuralFeatures xsi:type="ecore:EAttribute" name="relDesc" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EString"/>

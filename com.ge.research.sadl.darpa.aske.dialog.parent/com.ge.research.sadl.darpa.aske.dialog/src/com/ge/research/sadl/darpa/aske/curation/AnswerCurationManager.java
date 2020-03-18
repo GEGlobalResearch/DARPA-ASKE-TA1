@@ -97,6 +97,7 @@ import com.ge.research.sadl.darpa.aske.processing.IDialogAnswerProvider;
 import com.ge.research.sadl.darpa.aske.processing.InformationContent;
 import com.ge.research.sadl.darpa.aske.processing.LongTaskContent;
 import com.ge.research.sadl.darpa.aske.processing.ModifiedAskContent;
+import com.ge.research.sadl.darpa.aske.processing.NoModelFoundStatementContent;
 import com.ge.research.sadl.darpa.aske.processing.QuestionContent;
 import com.ge.research.sadl.darpa.aske.processing.QuestionWithCallbackContent;
 import com.ge.research.sadl.darpa.aske.processing.RequestArgumentAugmentedTypeContent;
@@ -4990,6 +4991,11 @@ public class AnswerCurationManager {
 							return true;
 						}
 					}
+					else if (ce.getStatement() instanceof NoModelFoundStatementContent) {
+						if (((NoModelFoundStatementContent)ce.getStatement()).getText().equals(sc.getExplicitQuestion())) {
+							return true;
+						}
+					}
 				}
 				idx++;
 			}
@@ -5051,6 +5057,9 @@ public class AnswerCurationManager {
 		String question = null;
 		if (sc instanceof UndefinedConceptStatementContent) {
 			question = ((UndefinedConceptStatementContent)sc).getText();
+		}
+		else if (sc instanceof NoModelFoundStatementContent) {
+			question = ((NoModelFoundStatementContent)sc).getText();
 		}
 		if (question != null) {
 			try {
