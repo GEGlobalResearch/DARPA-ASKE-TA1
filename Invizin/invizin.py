@@ -116,7 +116,7 @@ class invizin(object):
             varUnit = ''
         return varUnit
     
-    def _getWrappedText(self, strText, w=14):
+    def _getWrappedText(self, strText, w=25):
         split_text = []
         for i in range(0, len(strText), w):
             split_text.append(strText[i:i + w])
@@ -125,7 +125,7 @@ class invizin(object):
     
     def getOATSensitivityData(self, evalPacket):
         pck = copy.deepcopy(evalPacket)
-        NUM = 21
+        NUM = 41
         OATSensitivityData = []
         
         for ii, inputVariable in enumerate(pck['inputVariables']):
@@ -213,15 +213,19 @@ class invizin(object):
                                          hoverinfo = "x+y"),
                               row=jj+1, col=ii+1)
                 if ii == 0:
-                    fig.update_yaxes(title_text=outText, row=jj+1, col=ii+1, hoverformat=".3f")
+                    fig.update_yaxes(title_text=outText, row=jj+1, col=ii+1, 
+                                     hoverformat=".3f", titlefont=dict(size=12))
                 else:
                     fig.update_yaxes(row=jj+1, col=ii+1, hoverformat=".3f")
                 if jj == len(pck['outputVariables'])-1:
-                    fig.update_xaxes(title_text=inText, row=jj+1, col=ii+1, hoverformat=".3f")
+                    fig.update_xaxes(title_text=inText, titlefont=dict(size=12),
+                                     row=jj+1, col=ii+1, hoverformat=".3f")
                 else:
                     fig.update_xaxes(row=jj+1, col=ii+1, hoverformat=".3f")
     
-        fig.update_layout(title='One-at-a-time Parametric Analysis', showlegend=False, hovermode='x')
+        fig.update_layout(title='One-at-a-time Parametric Analysis', 
+                          showlegend=False, hovermode='x',
+                          autosize=True, height=250*jj)
         label = 'OAT Sensitivity Analysis'
         return fig, label
     
@@ -298,14 +302,18 @@ class invizin(object):
                                                  showlegend = False),
                                       row=jj+1, col=1)
                             
-                    fig.update_yaxes(title_text=outText, row=jj+1, col=1, hoverformat=".3f")
+                    fig.update_yaxes(title_text=outText, row=jj+1, col=1, 
+                                     hoverformat=".3f", titlefont=dict(size=12))
 
                 if jj == len(pck['outputVariables'])-1:
-                    fig.update_xaxes(title_text='relative change in input (%)', row=jj+1, col=1, hoverformat=".3f")
+                    fig.update_xaxes(title_text='relative change in input (%)', 
+                                     row=jj+1, col=1, hoverformat=".3f", titlefont=dict(size=12))
                 else:
                     fig.update_xaxes(row=jj+1, col=1, hoverformat=".3f")
     
-        fig.update_layout(title='One-at-a-time Parametric Analysis', showlegend=True, hovermode='x')
+        fig.update_layout(title='One-at-a-time Parametric Analysis', 
+                          showlegend=True, hovermode='x',
+                          autosize=True, height=250*jj)
         label = 'Relative Sensitivity Analysis'
         return fig, label
     
@@ -327,6 +335,7 @@ class invizin(object):
         
         fig = go.Figure(data = plotData)
         # Change the bar mode
+        fig.update_yaxes(hoverformat=".3f", titlefont=dict(size=12))
         fig.update_layout(barmode='group', 
                           xaxis_tickangle=-45,
                           yaxis_title = 'Sensitivity',
