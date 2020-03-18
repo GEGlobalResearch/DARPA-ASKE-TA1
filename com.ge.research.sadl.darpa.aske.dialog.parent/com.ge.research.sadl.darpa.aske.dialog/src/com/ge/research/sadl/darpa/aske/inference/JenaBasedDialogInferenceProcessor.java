@@ -958,11 +958,13 @@ public class JenaBasedDialogInferenceProcessor extends JenaBasedSadlInferencePro
 	 * 1) data for the model diagram
 	 * 2) the actual numeric answer + the sensitivity URL
 	 * 3) triples corresponding to increasing/decreasing trend insights
+	 * @throws SadlInferenceException
+	 * @throws DialogInferenceException 
 	 */
 	
 //	@Override
 //	public Object[] insertTriplesAndQuery(Resource resource, List<TripleElement[]> triples) throws SadlInferenceException {
-	public Object[] insertTriplesAndQuery(Resource resource, List<TripleElement[]> triples) throws SadlInferenceException {
+	public Object[] insertTriplesAndQuery(Resource resource, List<Rule> rules, List<TripleElement[]> triples) throws SadlInferenceException, DialogInferenceException {
  		List<Object[]> combinedResults = new ArrayList<Object[]>(triples.size());
  		Object[] results = null;
 //	    JsonArray sensitivityJsonList = new JsonArray();
@@ -1286,7 +1288,12 @@ public class JenaBasedDialogInferenceProcessor extends JenaBasedSadlInferencePro
 //			boolean useKC, String queryModelFileName, String queryModelURI, String queryModelPrefix,
 //			String queryInstanceName, String queryOwlFileWithPath) throws SadlInferenceException {
 
+//<<<<<<< HEAD
 	private Object[] processSingleWhatWhenQuery(Resource resource, TripleElement[] triples, String kgsDirectory, int numOfQueries, int queryNum, Map<String, Map<String, List<String>>> insightsMap) throws SadlInferenceException {
+//=======
+//	private Object[] processSingleWhatWhenQuery(Resource resource, TripleElement[] triples, String kgsDirectory, JsonArray sensitivityJsonList) 
+//			throws SadlInferenceException, DialogInferenceException {
+//>>>>>>> 2c8d8f1421eb7017e0ed4d61ecbde8d027c8480e
 
 		Object[] dbnResults = null;
 		Object[] kcResults = null;
@@ -1379,7 +1386,8 @@ public class JenaBasedDialogInferenceProcessor extends JenaBasedSadlInferencePro
 			//saveMetaDataFile(resource,queryModelURI, queryModelFileName);
 	
 		
-		} catch (Exception e) {
+		}
+		catch (Exception e) {
 			e.printStackTrace();
 //			results = null;
 		}
@@ -1434,8 +1442,8 @@ private ResultSet[] processWhatWhenQuery(Resource resource, String queryModelFil
 //	eqnsResults = retrieveCG(resource, inputsList, outputsList);
 	eqnsResults1 = retrieveCG1(resource, inputsList, outputsList);
 	if (eqnsResults1 == null) {
-		throw new NoModelFoundForTargetException("No model found for " + outputsList.get(0).toString() + ".", outputsList.get(0));
-		//Node targetNode = null;
+//		throw new NoModelFoundForTargetException("No model found for " + outputsList.get(0).toString() + ".", outputsList.get(0));
+//		Node targetNode = null;
 	}
 	long endTime = System.currentTimeMillis();
 	System.out.println((endTime - startTime)/1000.0 + " secs");
@@ -2727,7 +2735,10 @@ private void runInference(Resource resource, String query, String testQuery) thr
 				
 				// create triple: cgq, mm:input, inputVar
 				OntProperty inputprop = getModelProperty(getTheJenaModel(), METAMODEL_INPUT_PROP); // getTheJenaModel().getOntProperty(METAMODEL_INPUT_PROP);
-
+				if (inputprop == null) {
+					System.err.println("Can't find property '" + METAMODEL_INPUT_PROP + "'; is the SadlImplicitModel out of date?");
+					return;
+				}
 				ingestKGTriple(cgq, inputprop, sso); //(bnode, mm:input, v1)
 
 				

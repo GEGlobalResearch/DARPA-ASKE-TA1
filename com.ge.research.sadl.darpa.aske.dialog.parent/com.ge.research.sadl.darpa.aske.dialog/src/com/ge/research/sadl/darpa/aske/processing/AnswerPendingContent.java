@@ -17,7 +17,7 @@ public class AnswerPendingContent extends AnswerContent {
 		// TODO Auto-generated constructor stub
 	}
 
-	public AnswerPendingContent(EObject host, Agent agnt, ExpectsAnswerContent inAnswerTo) {
+	public AnswerPendingContent(EObject host, Agent agnt, StatementContent inAnswerTo) {
 		super(host, agnt);
 		setAnswerTo(inAnswerTo);
 	}

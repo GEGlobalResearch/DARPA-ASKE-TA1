@@ -87,6 +87,7 @@ import com.ge.research.sadl.darpa.aske.dialog.ExtractStatement;
 import com.ge.research.sadl.darpa.aske.dialog.HowManyValuesStatement;
 import com.ge.research.sadl.darpa.aske.dialog.ModifiedAskStatement;
 import com.ge.research.sadl.darpa.aske.dialog.MyNameIsStatement;
+import com.ge.research.sadl.darpa.aske.dialog.NewExpressionStatement;
 import com.ge.research.sadl.darpa.aske.dialog.PLink;
 import com.ge.research.sadl.darpa.aske.dialog.ParameterizedExpressionWithUnit;
 import com.ge.research.sadl.darpa.aske.dialog.SadlEquationInvocation;
@@ -95,17 +96,22 @@ import com.ge.research.sadl.darpa.aske.dialog.SeeParentheticalLink;
 import com.ge.research.sadl.darpa.aske.dialog.SuitabilityStatement;
 import com.ge.research.sadl.darpa.aske.dialog.TargetModelName;
 import com.ge.research.sadl.darpa.aske.dialog.TestLongrunningTask;
+import com.ge.research.sadl.darpa.aske.dialog.UndefinedConceptStatement;
 import com.ge.research.sadl.darpa.aske.dialog.WhatIsStatement;
 import com.ge.research.sadl.darpa.aske.dialog.WhatStatement;
+import com.ge.research.sadl.darpa.aske.dialog.WhatTypeStatement;
 import com.ge.research.sadl.darpa.aske.dialog.WhatValuesStatement;
 import com.ge.research.sadl.darpa.aske.dialog.YesNoAnswerStatement;
 import com.ge.research.sadl.darpa.aske.preferences.DialogPreferences;
 import com.ge.research.sadl.darpa.aske.processing.EvalContent.UnittedParameter;
 import com.ge.research.sadl.errorgenerator.generator.SadlErrorMessages;
+import com.ge.research.sadl.jena.DontTypeCheckException;
 import com.ge.research.sadl.jena.IntermediateFormTranslator;
 import com.ge.research.sadl.jena.JenaBasedSadlModelProcessor;
+import com.ge.research.sadl.jena.JenaBasedSadlModelValidator.TypeCheckInfo;
 import com.ge.research.sadl.jena.JenaProcessorException;
 import com.ge.research.sadl.jena.MetricsProcessor;
+import com.ge.research.sadl.jena.PropertyWithoutRangeException;
 import com.ge.research.sadl.jena.UtilsForJena;
 import com.ge.research.sadl.model.CircularDefinitionException;
 import com.ge.research.sadl.model.ModelError;
@@ -137,6 +143,7 @@ import com.ge.research.sadl.reasoner.QueryParseException;
 import com.ge.research.sadl.reasoner.ReasonerNotFoundException;
 import com.ge.research.sadl.reasoner.TranslationException;
 import com.ge.research.sadl.reasoner.utils.SadlUtils;
+import com.ge.research.sadl.sADL.BinaryOperation;
 import com.ge.research.sadl.sADL.Declaration;
 import com.ge.research.sadl.sADL.EquationStatement;
 import com.ge.research.sadl.sADL.Expression;
@@ -150,10 +157,13 @@ import com.ge.research.sadl.sADL.SadlInstance;
 import com.ge.research.sadl.sADL.SadlModel;
 import com.ge.research.sadl.sADL.SadlModelElement;
 import com.ge.research.sadl.sADL.SadlParameterDeclaration;
+import com.ge.research.sadl.sADL.SadlProperty;
+import com.ge.research.sadl.sADL.SadlPropertyRestriction;
 import com.ge.research.sadl.sADL.SadlResource;
 import com.ge.research.sadl.sADL.SadlReturnDeclaration;
 import com.ge.research.sadl.sADL.SadlSimpleTypeReference;
 import com.ge.research.sadl.sADL.SadlStatement;
+import com.ge.research.sadl.sADL.SadlTypeAssociation;
 import com.ge.research.sadl.sADL.SadlTypeReference;
 import com.ge.research.sadl.sADL.ValueTable;
 import com.ge.research.sadl.utils.ResourceManager;
@@ -352,16 +362,6 @@ public class JenaBasedDialogModelProcessor extends JenaBasedSadlModelProcessor {
 	    	return;
 	    }
 
-//		try {
-//			if (!getAnswerCurationManager().dialogAnserProviderInitialized()) {
-//				System.err.println("DialogAnswerProvider not yet initialized. Touch window.");
-////				return;
-//			}
-//		} catch (IOException e2) {
-//			// TODO Auto-generated catch block
-//			e2.printStackTrace();
-//		}
-
 		// create validator for expressions
 		initializeModelValidator();
 		initializeAllImpliedPropertyClasses();
@@ -371,7 +371,6 @@ public class JenaBasedDialogModelProcessor extends JenaBasedSadlModelProcessor {
 		List<SadlModelElement> elements = model.getElements();
 		if (elements != null) {
 			Iterator<SadlModelElement> elitr = elements.iterator();
-			Object lastElement = null;
 			while (elitr.hasNext()) {
 				// check for cancelation from time to time
 				if (cancelIndicator.isCanceled()) {
@@ -398,63 +397,10 @@ public class JenaBasedDialogModelProcessor extends JenaBasedSadlModelProcessor {
 						ConversationElement ce = new ConversationElement(getAnswerCurationManager().getConversation(), sc, sc.getAgent());
 						getAnswerCurationManager().addToConversation(ce);
 					}
-				} catch (JenaProcessorException e1) {
-					// TODO Auto-generated catch block
+				} catch (Exception e1) {
+					// shouldn't happen; all exceptions should be caught before here
 					e1.printStackTrace();
-				} catch (InvalidNameException e1) {
-					// TODO Auto-generated catch block
-					e1.printStackTrace();
-				} catch (InvalidTypeException e1) {
-					// TODO Auto-generated catch block
-					e1.printStackTrace();
-				} catch (TranslationException e1) {
-					// TODO Auto-generated catch block
-					e1.printStackTrace();
-				} catch (IOException e1) {
-					// TODO Auto-generated catch block
-					e1.printStackTrace();
-				} catch (ConfigurationException e1) {
-					// TODO Auto-generated catch block
-					e1.printStackTrace();
-				} catch (QueryParseException e1) {
-					// TODO Auto-generated catch block
-					e1.printStackTrace();
-				} catch (QueryCancelledException e1) {
-					// TODO Auto-generated catch block
-					e1.printStackTrace();
-				} catch (ReasonerNotFoundException e1) {
-					// TODO Auto-generated catch block
-					e1.printStackTrace();
-				}
-				catch (PrefixNotFoundException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				}
-//				try {
-//					if (!(element instanceof AnswerCMStatement)) {
-//						// this is user input
-//						lastElement = processDialogModelElement(resource, element);
-//					lastACMQuestion = null;
-//					}
-//					else if (eos != null && eos.equals("?")) {
-//						// this is a question from the backend
-//						lastACMQuestion = (AnswerCMStatement) element;
-//					}
-//					else {
-//						// this is a response from CM
-//						//	clear last command
-//						OntModelProvider.clearPrivateKeyValuePair(resource, DialogConstants.LAST_DIALOG_COMMAND);
-//						lastElement = null;
-//						processAnswerCMStatement(resource, (AnswerCMStatement)element);
-//					}
-//				} catch (IOException | TranslationException | InvalidNameException | InvalidTypeException | ConfigurationException e) {
-//					// TODO Auto-generated catch block
-//					e.printStackTrace();
-//				}
-			}
-			if (lastElement != null) {
-				// this is the one to which the CM should respond; keep it for the DialogAnswerProvider
-//				processUserInputElement(lastElement);
+				} 
 			}
 			
 			File saveFile = getModelFile(resource);
@@ -513,7 +459,7 @@ public class JenaBasedDialogModelProcessor extends JenaBasedSadlModelProcessor {
 		}
 	}
 
-	private StatementContent processDialogModelElement(SadlModelElement element) throws JenaProcessorException, InvalidNameException, InvalidTypeException, TranslationException, IOException, ConfigurationException, QueryParseException, QueryCancelledException, ReasonerNotFoundException, PrefixNotFoundException {
+	private StatementContent processDialogModelElement(EObject element) throws JenaProcessorException, InvalidNameException, InvalidTypeException, TranslationException, IOException, ConfigurationException, QueryParseException, QueryCancelledException, ReasonerNotFoundException, PrefixNotFoundException {
 		clearCruleVariables();
 		if (element instanceof AnswerCMStatement) {
 			return processAnswerCMStatement((AnswerCMStatement)element);
@@ -558,7 +504,11 @@ public class JenaBasedDialogModelProcessor extends JenaBasedSadlModelProcessor {
 		else if (element instanceof TargetModelName) {
 			return processStatement((TargetModelName)element);
 		}
+		else if (element instanceof NewExpressionStatement) {
+			return processStatement((NewExpressionStatement)element);
+		}
 		else if (element instanceof ExternalEquationStatement) {
+			EquationStatementContent ssc = new EquationStatementContent(element, Agent.USER);
 			super.processStatement((ExternalEquationStatement)element);
 			List<Object> oc = OntModelProvider.getOtherContent(getCurrentResource());
 			String eqUri  = null;
@@ -566,7 +516,9 @@ public class JenaBasedDialogModelProcessor extends JenaBasedSadlModelProcessor {
 				Object obj = oc.get(oc.size() - 1);
 				if (obj instanceof Equation) {
 					Equation eq = (Equation)obj;
-					validateEquationAugmentedTypes((ExternalEquationStatement) element, eq);
+					List<StatementContent> questionsForUser = validateEquationAugmentedTypes((ExternalEquationStatement) element, eq);
+					ssc.setEquationName(eq.getName());
+					ssc.setQuestionsForUser(questionsForUser);
 					eqUri = eq.getUri();
 				}
 			}
@@ -576,9 +528,10 @@ public class JenaBasedDialogModelProcessor extends JenaBasedSadlModelProcessor {
 			else {
 				addError("Unable to find URI of External equation", element);
 			}
-			return null;
+			return ssc;
 		}
 		else if (element instanceof EquationStatement) {
+			EquationStatementContent ssc = new EquationStatementContent(element, Agent.USER);
 			super.processStatement((EquationStatement)element);
 			List<Object> oc = OntModelProvider.getOtherContent(getCurrentResource());
 			String eqUri  = null;
@@ -586,7 +539,9 @@ public class JenaBasedDialogModelProcessor extends JenaBasedSadlModelProcessor {
 				Object obj = oc.get(oc.size() - 1);
 				if (obj instanceof Equation) {
 					Equation eq = (Equation)obj;
-					validateEquationAugmentedTypes((EquationStatement) element, eq);
+					List<StatementContent> questionsForUser = validateEquationAugmentedTypes((EquationStatement) element, eq);
+					ssc.setEquationName(eq.getName());
+					ssc.setQuestionsForUser(questionsForUser);
 					eqUri = eq.getUri();
 				}
 			}
@@ -596,7 +551,7 @@ public class JenaBasedDialogModelProcessor extends JenaBasedSadlModelProcessor {
 			else {
 				addError("Unable to find URI of External equation", element);
 			}
-			return null;
+			return ssc;
 		}
 		else if (element instanceof SadlStatement) {
 			SadlStatementContent ssc = new SadlStatementContent(element, Agent.USER);
@@ -606,6 +561,7 @@ public class JenaBasedDialogModelProcessor extends JenaBasedSadlModelProcessor {
 				if (getAnswerCurationManager().getEquationInformation(srUri) != null) {
 					getAnswerCurationManager().addEquationInformation(srUri, NodeModelUtils.findActualNodeFor(element).getText());
 				}
+				ssc.setConceptUri(srUri);
 			}
 			return ssc;
 		}
@@ -624,6 +580,10 @@ public class JenaBasedDialogModelProcessor extends JenaBasedSadlModelProcessor {
 				}
 			}
 			return null;
+		}
+		else if (element instanceof UndefinedConceptStatement) {
+			SadlResource ucsr = ((UndefinedConceptStatement)element).getConcept();
+			return new UndefinedConceptStatementContent(element, Agent.CM, ucsr);
 		}
 		else {
 			throw new TranslationException("Model element of type '" + element.getClass().getCanonicalName() + "' not handled.");
@@ -651,12 +611,19 @@ public class JenaBasedDialogModelProcessor extends JenaBasedSadlModelProcessor {
 		return super.validURI(uri);
 	}
 	
-	private void validateEquationAugmentedTypes(ExternalEquationStatement element, Equation eq) {
+	private List<StatementContent>  validateEquationAugmentedTypes(ExternalEquationStatement element, Equation eq) throws IOException {
+		List<StatementContent> missingInformation = null;
 		Iterator<SadlParameterDeclaration> spitr = element.getParameter().iterator();
 		while (spitr.hasNext()) {
 			SadlParameterDeclaration spd = spitr.next();
 			if (spd.getAugtype() == null) {
 				addWarning("Missing augmented type information", spd.getName());
+				String argName = getDeclarationExtensions().getConcreteName(spd.getName());
+				String prompt = "What type is " + getAnswerCurationManager().checkForKeyword(argName) + "?";
+				if (missingInformation == null) {
+					missingInformation = new ArrayList<StatementContent>();
+				}
+				missingInformation.add(new RequestArgumentAugmentedTypeContent(element, Agent.CM, null, argName, eq.getName(), prompt));
 			}
 		}
 		Iterator<SadlReturnDeclaration> srtitr = element.getReturnType().iterator();
@@ -664,16 +631,29 @@ public class JenaBasedDialogModelProcessor extends JenaBasedSadlModelProcessor {
 			SadlReturnDeclaration srd = srtitr.next();
 			if (srd.getAugtype() == null) {
 				addWarning("Missing augmented return type information", srd.getType());
+				String prompt = "What type does " + eq.getName() + " return?";
+				if (missingInformation == null) {
+					missingInformation = new ArrayList<StatementContent>();
+				}
+				missingInformation.add(new RequestReturnAugmentedTypeContent(element, Agent.CM, null, eq.getName(), prompt));
 			}
 		}
+		return missingInformation;
 	}
 
-	private void validateEquationAugmentedTypes(EquationStatement element, Equation eq) {
+	private List<StatementContent> validateEquationAugmentedTypes(EquationStatement element, Equation eq) {
+		List<StatementContent> missingInformation = null;
 		Iterator<SadlParameterDeclaration> spitr = element.getParameter().iterator();
 		while (spitr.hasNext()) {
 			SadlParameterDeclaration spd = spitr.next();
 			if (spd.getAugtype() == null) {
 				addWarning("Missing augmented type information", spd.getName());
+				String argName = getDeclarationExtensions().getConcreteName(spd.getName());
+				String prompt = "What type is " + argName + "?";
+				if (missingInformation == null) {
+					missingInformation = new ArrayList<StatementContent>();
+				}
+				missingInformation.add(new RequestArgumentAugmentedTypeContent(element, Agent.CM, null, argName, eq.getName(), prompt));
 			}
 		}
 		Iterator<SadlReturnDeclaration> srtitr = element.getReturnType().iterator();
@@ -681,9 +661,43 @@ public class JenaBasedDialogModelProcessor extends JenaBasedSadlModelProcessor {
 			SadlReturnDeclaration srd = srtitr.next();
 			if (srd.getAugtype() == null) {
 				addWarning("Missing augmented return type information", srd.getType());
+				String prompt = "What type does " + eq.getName() + " return?";
+				if (missingInformation == null) {
+					missingInformation = new ArrayList<StatementContent>();
+				}
+				missingInformation.add(new RequestReturnAugmentedTypeContent(element, Agent.CM, null, eq.getName(), prompt));
 			}
 		}
+		return missingInformation;
 	}
+	
+	/*
+	 	@Override
+	public void addWarning(String msg, EObject context, String issueCode, String... issueData) {
+		if (msg.equals("Missing augmented type information")) {
+			if (context.eContainer() instanceof SadlParameterDeclaration) {
+				if (context instanceof SadlResource) {
+					String argName = getDeclarationExtensions().getConcreteName((SadlResource) context);
+					String question = "What type is " + argName + "?";
+					System.out.println(question);
+				}
+			}
+		}
+		else if (msg.equals("Missing augmented return type information")) {
+			if (context.eContainer() instanceof SadlReturnDeclaration) {
+				EObject eq = context.eContainer().eContainer();
+				if (eq instanceof EquationStatement) {
+					Object trgt = getTarget();
+					EList<EObject> contents = ((EquationStatement)eq).eContents();
+					int i = 0;
+				}
+				String question = "What type does " + " return?";
+			}
+		}
+		super.addWarning(msg, context, issueCode, issueData);
+	}
+
+	 */
 
 	private StatementContent processStatement(ExtractStatement element) {
 		EList<String> srcUris = element.getSourceURIs();
@@ -761,6 +775,7 @@ public class JenaBasedDialogModelProcessor extends JenaBasedSadlModelProcessor {
 
 		DialogIntermediateFormTranslator dift = new DialogIntermediateFormTranslator(this, getTheJenaModel());
 
+		addVariableAllowedInContainerType(WhatStatement.class);
 		Object thenObj = processExpression(thenExpr);	// do this first for article checking conformance
 
 		List<Node> whenObjects = new ArrayList<Node>();
@@ -1362,6 +1377,313 @@ public class JenaBasedDialogModelProcessor extends JenaBasedSadlModelProcessor {
 		return null;
 	}
 	
+	private StatementContent processStatement(NewExpressionStatement element) {
+		Expression expr = element.getNewExpr();
+		String uptxt = getSourceText(element);
+		if (expr instanceof Name) {
+			try {
+				Object nmObj = processExpression((Name)expr);
+				if (nmObj instanceof NamedNode && ((NamedNode)nmObj).getNodeType().equals(NodeType.ClassNode)) {
+					// this makes sense in the context of a prior question about type of a variable
+					// 1. find prior statement asking about variable to get variable name
+					// 2. find prior Equation statement to be able to add the type to the argument
+					String modEq = "modified equation with type '" + ((NamedNode)nmObj).getName() + "' added";
+					AddAugmentedTypeInfoContent mec = new AddAugmentedTypeInfoContent(element, Agent.USER, uptxt, modEq, true);
+					return mec;
+				}
+			} catch (TranslationException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			} catch (InvalidNameException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			} catch (InvalidTypeException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		}
+		else if (expr instanceof BinaryOperation && isEqualOperator(((BinaryOperation)expr).getOp())) {
+			// this is a new equation
+			Expression lexpr = ((BinaryOperation)expr).getLeft();
+			Expression rexpr = ((BinaryOperation)expr).getRight();
+			try {
+				addVariableAllowedInContainerType(NewExpressionStatement.class);
+				addVariableAllowedInContainerType(UndefinedConceptStatement.class);
+				addVariableAllowedInContainerType(WhatTypeStatement.class);
+				Object lobj = processExpression(lexpr);
+				String lexprtext = NodeModelUtils.findActualNodeFor(lexpr).getText();
+				Object robj = processExpression(rexpr);
+				if (lobj instanceof VariableNode) {
+					if (robj instanceof NamedNode) {
+						if (((NamedNode)robj).getNodeType().equals(NodeType.ClassNode)) {
+							// this is the addition of a named argument variable type
+							//  find prior Equation statement, find argument variable, add the type to the argument
+							String modEq = "modified equation variable '" + ((VariableNode)lobj).getName() + "' with type '" + ((NamedNode)robj).getName() + "' added";
+							AddAugmentedTypeInfoContent mec = new AddAugmentedTypeInfoContent(element, Agent.USER, uptxt, modEq, true);
+							mec.setArgName(((VariableNode)lobj).getName());
+							mec.setAddedTypeUri(((NamedNode)robj).getURI());
+							return mec;
+						}
+						else if (robj instanceof VariableNode) {
+							// need to ask what this is
+							WhatIsContent wic = new WhatIsContent(element, Agent.USER, robj, null);
+							return wic;
+						}
+					}
+									
+					String eqName = "calc_" + ((VariableNode)lobj).getName();
+					if (robj instanceof BuiltinElement && isNumericOperator(((BuiltinElement)robj).getFuncName())) {
+						if (allArgumentsVariables((BuiltinElement)robj)) {
+							StringBuilder sb = new StringBuilder("Equation ");
+							sb.append(eqName);
+							sb.append(" (");
+							int argCnt = 0;
+							for (Node arg : ((BuiltinElement)robj).getArguments()) {
+								if (argCnt++ > 0) {
+									sb.append(", ");
+								}
+								sb.append("double ");
+								sb.append(arg.getName());
+							}
+							sb.append(") returns double: ");
+							String sadlEqText;
+							try {
+								DialogIntermediateFormTranslator dift = new DialogIntermediateFormTranslator(this, getTheJenaModel());
+								sadlEqText = dift.intermediateFormToSadlExpression((BuiltinElement) robj);
+							}
+							catch (TranslationException e) {
+								addError(e.getMessage(), expr);
+								sadlEqText = robj.toString();
+							}
+							sb.append(sadlEqText);
+							sb.append(".");
+							AddEquationContent nec = new AddEquationContent(element, Agent.USER, uptxt, eqName, sb.toString());
+							return nec;
+						}
+					}
+				}
+				else if (lobj instanceof NamedNode && isProperty(((NamedNode)lobj).getNodeType())) {
+					lobj = new TripleElement(null, (Node) lobj, null);
+					if (lexpr instanceof Name && ((Name)lexpr).getName().eContainer() instanceof SadlProperty) {
+						EList<SadlPropertyRestriction> rstrs = ((SadlProperty)((Name)lexpr).getName().eContainer()).getRestrictions();
+						for (SadlPropertyRestriction rstr : rstrs) {
+							if (rstr instanceof SadlTypeAssociation) {
+								SadlTypeReference dmn = ((SadlTypeAssociation)rstr).getDomain();
+								try {
+									TypeCheckInfo dmntci = getModelValidator().getType(dmn);
+									if (dmntci != null && dmntci.getTypeCheckType() instanceof NamedNode) {
+										VariableNode svar = createComparisonTypedVariable((NamedNode) dmntci.getTypeCheckType(), lexpr);
+										((TripleElement)lobj).setSubject(svar);
+										break;
+									}
+								} catch (URISyntaxException e) {
+									// TODO Auto-generated catch block
+									e.printStackTrace();
+								} catch (IOException e) {
+									// TODO Auto-generated catch block
+									e.printStackTrace();
+								} catch (ConfigurationException e) {
+									// TODO Auto-generated catch block
+									e.printStackTrace();
+								} catch (DontTypeCheckException e) {
+									// TODO Auto-generated catch block
+									e.printStackTrace();
+								} catch (CircularDefinitionException e) {
+									// TODO Auto-generated catch block
+									e.printStackTrace();
+								} catch (CircularDependencyException e) {
+									// TODO Auto-generated catch block
+									e.printStackTrace();
+								} catch (PropertyWithoutRangeException e) {
+									// TODO Auto-generated catch block
+									e.printStackTrace();
+								} catch (PrefixNotFoundException e) {
+									// TODO Auto-generated catch block
+									e.printStackTrace();
+								}
+							}
+						}
+					}
+				}
+				if (lobj instanceof VariableNode) {
+					addWarning(((VariableNode)lobj).getName() + " is not defined.", lexpr);
+					WhatIsContent wic = new WhatIsContent(element, Agent.CM, lobj, null);
+					try {
+						wic.setExplicitQuestion("Concept " + getAnswerCurationManager().checkForKeyword(((VariableNode)lobj).getName()) + " is not defined; please define or do extraction");
+					} catch (IOException e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					}
+					return wic;					
+				}
+				else if (!(lobj instanceof GraphPatternElement)) {
+					addError("LHS is not a Graph Pattern", lexpr);
+				}
+				else if (!(robj instanceof GraphPatternElement)) {
+					addError("RHS is not a Graph Pattern", lexpr);
+				}
+				else {
+					String rn = "calc_" + getNewEquationName(lobj);
+					Rule pseudoRule = new Rule(rn);
+					pseudoRule.addIf((GraphPatternElement) robj);
+					pseudoRule.addThen((GraphPatternElement) lobj);
+					DialogIntermediateFormTranslator dift = new DialogIntermediateFormTranslator(this, getTheJenaModel());
+					dift.setStartingVariableNumber(getVariableNumber());
+					populateRuleVariables(pseudoRule);
+					dift.setTarget(pseudoRule);
+					Rule modifiedRule = dift.cook(pseudoRule);
+					List<GraphPatternElement> ifs = modifiedRule.getIfs();
+					BuiltinElement trgtExpr = getTheTargetExpression(ifs, robj);
+					StringBuilder sb = new StringBuilder("Equation ");
+					sb.append(rn);
+					sb.append(" (");
+					int argCnt = 0;
+					for (Node arg : ((BuiltinElement)robj).getArguments()) {
+						if (argCnt > 0) {
+							sb.append(", ");
+						}
+						sb.append("double ");
+						sb.append(arg.getName());
+						String augt = getAugmentedTypeOfArg(arg, modifiedRule, argCnt);
+						if (augt != null) {
+							sb.append(" (");
+							sb.append(augt);
+							sb.append(")");
+						}
+						argCnt++;
+					}
+					sb.append(") returns double");
+					String augt = getAugmentedTypeOfReturn(modifiedRule);
+					if (augt != null) {
+						sb.append(" (");
+						sb.append(augt);
+						sb.append(")");
+					}
+					sb.append(": ");
+					String sadlEqText;
+					try {
+						sadlEqText = dift.intermediateFormToSadlExpression(trgtExpr);
+					}
+					catch (TranslationException e) {
+						addError(e.getMessage(), expr);
+						sadlEqText = trgtExpr.toString();
+					}
+					sb.append(sadlEqText);
+					sb.append(".");
+					AddEquationContent nec = new AddEquationContent(element, Agent.USER, uptxt, rn, sb.toString());
+					return nec;
+				}
+			} catch (InvalidNameException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			} catch (InvalidTypeException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			} catch (TranslationException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		}
+		return null;
+	}
+	
+	private String getAugmentedTypeOfArg(Node arg, Rule rule, int argCnt) {
+		TripleElement tr = findTripleWithObject(rule.getIfs(), arg);
+		if (tr != null) {
+			StringBuilder sb = new StringBuilder();
+			TripleElement lastTr = tr;
+			do {
+				TripleElement tr2 = findTripleWithObject(rule.getIfs(), tr.getSubject());
+				sb.append(tr.getPredicate().getName());
+				sb.append(" of ");
+				tr = tr2;
+				if (tr != null) {
+					lastTr = tr;
+				}
+			} while (tr != null);
+			if (argCnt == 0) {
+				sb.append("an ");
+			}
+			else {
+				sb.append("the ");
+			}
+			if (lastTr.getSubject()instanceof VariableNode) {
+				Node subjType = ((VariableNode)lastTr.getSubject()).getType();
+				if (subjType instanceof NamedNode) {
+					sb.append(((NamedNode)subjType).getName());
+				}
+			}
+			else if (lastTr.getSubject()instanceof NamedNode) {
+				sb.append(((NamedNode)lastTr.getSubject()).getName());
+			}
+			return sb.toString();
+		}
+		return null;
+	}
+
+	private TripleElement findTripleWithObject(List<GraphPatternElement> gpes, Node arg) {
+		for (GraphPatternElement gpe : gpes) {
+			if (gpe instanceof TripleElement && ((TripleElement)gpe).getObject().equals(arg)) {
+				return (TripleElement) gpe;
+			}
+		}
+		return null;
+	}
+
+	private String getAugmentedTypeOfReturn(Rule rule) {
+		List<GraphPatternElement> thens = rule.getThens();
+		if (thens.size() == 1 && thens.get(0) instanceof TripleElement) {
+			StringBuilder sb = new StringBuilder();
+			TripleElement tr = (TripleElement) thens.get(0);
+			sb.append(tr.getPredicate().getName());
+			sb.append(" of ");
+			sb.append("the ");
+			if (tr.getSubject()instanceof VariableNode) {
+				Node subjType = ((VariableNode)tr.getSubject()).getType();
+				if (subjType instanceof NamedNode) {
+					sb.append(((NamedNode)subjType).getName());
+				}
+			}
+			else if (tr.getSubject()instanceof NamedNode) {
+				sb.append(((NamedNode)tr.getSubject()).getName());
+			}
+			return sb.toString();
+		}
+		return null;
+	}
+
+	private BuiltinElement getTheTargetExpression(List<GraphPatternElement> thens, Object lobj) {
+		if (lobj instanceof BuiltinElement) {
+			for (GraphPatternElement gpe : thens) {
+				if (gpe.equals(lobj)) {
+					return (BuiltinElement) gpe;
+				}
+			}
+		}
+		return null;
+	}
+
+	private boolean allArgumentsVariables(BuiltinElement robj) {
+		for (Node arg : robj.getArguments()) {
+			if (!(arg instanceof VariableNode)) {
+				return false;
+			}
+		}
+		return true;
+	}
+
+	private String getNewEquationName(Object lhs) {
+		if (lhs instanceof TripleElement) {
+			Node subj = ((TripleElement)lhs).getSubject();
+			if (subj instanceof NamedNode && !(subj instanceof VariableNode)) {
+				return ((NamedNode)subj).getName();
+			}
+			Node pred = ((TripleElement)lhs).getPredicate();
+			return pred.getName();
+		}
+		return "tbd";
+	}
+
 	private StatementContent processStatement(SadlEquationInvocation element) throws TranslationException, InvalidNameException, InvalidTypeException, IOException {
 		SadlResource name = element.getName();
 		Node srobj = processExpression(name);
@@ -1673,40 +1995,14 @@ public class JenaBasedDialogModelProcessor extends JenaBasedSadlModelProcessor {
 		
 	}
 	
-//	private ConversationElement processUserInputElement(EObject element) {
-//		ConversationElement ce = null;
-//		try {
-//			if (element instanceof ModifiedAskStatement) {
-////				ce = processStatement((ModifiedAskStatement)element);
-//			}
-//			else if (element instanceof WhatStatement) {
-//				ce = processStatement((WhatStatement)element);
-//			}
-//			else if (element instanceof HowManyValuesStatement) {
-//				ce = processStatement((HowManyValuesStatement)element);
-//			}
-//			else if (element instanceof SaveStatement) {
-//				ce = processStatement((SaveStatement)element);
-//			}
-//			else {
-//				throw new JenaProcessorException("onValidate for element of type '"
-//						+ element.getClass().getCanonicalName() + "' not implemented");
-//			}
-//		} catch (JenaProcessorException e) {
-//			addError(e.getMessage(), element);
-//		} catch (Exception e) {
-//			e.printStackTrace();
-//		}
-//		return ce;
-//	}	
-	
 	private StatementContent  processAnswerCMStatement( AnswerCMStatement element) throws IOException, TranslationException, InvalidNameException, InvalidTypeException, ConfigurationException, JenaProcessorException, QueryParseException, QueryCancelledException, ReasonerNotFoundException, PrefixNotFoundException {
 		EObject stmt = element.getSstmt();
 		if (stmt != null) {
-			StatementContent sc = processDialogModelElement((SadlModelElement) stmt);
-			AnswerContent ac = new AnswerContent(element, Agent.CM);
-			ac.setAnswer(sc);
-			return ac;
+			StatementContent sc = processDialogModelElement(stmt);
+//			AnswerContent ac = new AnswerContent(element, Agent.CM);
+//			ac.setAnswer(sc);
+//			return ac;
+			return sc;
 		}
 		else {
 			String str = element.getStr();
@@ -1849,9 +2145,45 @@ public class JenaBasedDialogModelProcessor extends JenaBasedSadlModelProcessor {
 		else if (substmt instanceof WhatValuesStatement) {
 			return processStatement((WhatValuesStatement)substmt);
 		}
+		else if (substmt instanceof WhatTypeStatement) {
+			return processStatement((WhatTypeStatement)substmt);
+		}
 		return null;
 	}
 	
+	private StatementContent processStatement(WhatTypeStatement stmt) {
+		try {
+			if (stmt.getTarget() != null) {
+				addVariableAllowedInContainerType(stmt.getClass());
+				Object trgtObj = processExpression(stmt.getTarget());
+				if (trgtObj instanceof VariableNode) {
+	//				addInfo("what type is '" + ((VariableNode)trgtObj).getName(), stmt);
+					WhatIsContent wic = new WhatIsContent(stmt.eContainer(), Agent.CM, trgtObj, stmt);
+					wic.setUnParsedText(getSourceText(stmt.eContainer()).trim());
+					return wic;
+				}
+			}
+			else if (stmt.getEquation() != null) {
+				Object eqObj = processExpression(stmt.getEquation());
+				if (eqObj instanceof NamedNode) {
+					WhatIsContent wic = new WhatIsContent(stmt.eContainer(), Agent.CM, eqObj, stmt);
+					wic.setUnParsedText(getSourceText(stmt.eContainer()).trim());
+					return wic;
+				}
+			}
+		} catch (InvalidNameException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (InvalidTypeException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (TranslationException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		return null;
+	}
+
 	private StatementContent processStatement(WhatIsStatement stmt) {
 		EObject whatIsTarget = stmt.getTarget();
 		EObject when = stmt.getWhen();
@@ -1953,10 +2285,25 @@ public class JenaBasedDialogModelProcessor extends JenaBasedSadlModelProcessor {
 			// compute answer using computational graph
 			List<Rule> comparisonRules;
 			try {
+				clearUndefinedEObjects();
 				comparisonRules = whenAndThenToCookedRules(when, whatIsTarget);
-				if (comparisonRules != null) {
+				if (comparisonRules != null && comparisonRules.size() > 0) {
 					WhatIsContent wic = new WhatIsContent(stmt.eContainer(), Agent.USER, comparisonRules);
 					return wic;
+				}
+				else {
+					List<EObject> udeobjs = getUndefinedEObjects();
+					if (udeobjs.size() > 0) {
+						WhatIsContent wic = new WhatIsContent(udeobjs.get(0), Agent.CM, null, null);
+						try {
+							String name = getEObjectName(udeobjs.get(0));
+							wic.setExplicitQuestion("Concept " + getAnswerCurationManager().checkForKeyword(name) + " is not defined; please define or do extraction");
+						} catch (IOException e) {
+							// TODO Auto-generated catch block
+							e.printStackTrace();
+						}
+						return wic;					
+					}
 				}
 			} catch (InvalidNameException | InvalidTypeException | TranslationException e) {
 				// TODO Auto-generated catch block
@@ -1974,6 +2321,37 @@ public class JenaBasedDialogModelProcessor extends JenaBasedSadlModelProcessor {
 	//		}
 		}
 		return null;
+	}
+
+	private String getEObjectName(EObject eobj) {
+		String name = null;
+		if (eobj instanceof SadlResource) {
+			name = getDeclarationExtensions().getConcreteName((SadlResource) eobj);
+		}
+		else if (eobj instanceof SadlSimpleTypeReference) {
+			
+		}
+		else if (eobj instanceof Declaration) {
+			ICompositeNode icn = NodeModelUtils.findActualNodeFor(eobj);
+			if (icn != null) {
+				String ntxt = (icn.getText());
+				if (ntxt != null) {
+					if (ntxt.trim().startsWith("the ")) {
+						name = ntxt.trim().substring(4);
+					}
+				}
+			}
+		}
+		if (name == null) {
+			ICompositeNode icn = NodeModelUtils.findActualNodeFor(eobj);
+			if (icn != null) {
+				String ntxt = (icn.getText());
+				if (ntxt != null) {
+						name = ntxt;
+				}
+			}
+		}
+		return name;
 	}
 
 	private List<GraphPatternElement> unitSpecialConsiderations(List<GraphPatternElement> gpes, Object whenObj, EObject whatIsTarget)
@@ -2185,20 +2563,23 @@ public class JenaBasedDialogModelProcessor extends JenaBasedSadlModelProcessor {
 		SadlResource prop = stmt.getProp();
 		SadlTypeReference typ = stmt.getTyp(); 
 		try {
-			Object clsObj = processExpression(cls);
+			Object clsObj = cls != null ? processExpression(cls) : null;
 			Object propObj = processExpression(prop);
-			Object typObj = null;
-			if (typ != null) {
-				typObj = processExpression(typ);
-			}
+			Object typObj = typ != null ? processExpression(typ) : null;
 //			System.out.println("HowManyValuesStatement: cls=" + (article!= null ? article : "") + " '" + 
 //					clsObj.toString() + "'; prop='" + propObj.toString() + 
 //					"'" + (typObj != null ? ("; type='" + typObj.toString() + "'") : ""));
 			HowManyValuesContent hmvc = new HowManyValuesContent(stmt, Agent.USER);
 			hmvc.setProp(nodeCheck(propObj));
-			hmvc.setTyp(nodeCheck(typObj));
-			hmvc.setArticle(article);
-			hmvc.setCls(nodeCheck(clsObj));
+			if (typObj != null) {
+				hmvc.setTyp(nodeCheck(typObj));
+			}
+			if (article != null) {
+				hmvc.setArticle(article);
+			}
+			if (clsObj != null) {
+				hmvc.setCls(nodeCheck(clsObj));
+			}
 			return hmvc;
 		} catch (TranslationException e) {
 			// TODO Auto-generated catch block

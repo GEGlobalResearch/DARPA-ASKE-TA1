@@ -98,6 +98,7 @@ import com.ge.research.sadl.builder.IConfigurationManagerForIDE;
 import com.ge.research.sadl.darpa.aske.curation.AnswerCurationManager;
 import com.ge.research.sadl.darpa.aske.curation.BaseDialogAnswerProvider;
 import com.ge.research.sadl.darpa.aske.curation.EquationNotFoundException;
+import com.ge.research.sadl.darpa.aske.dialog.ExtractStatement;
 import com.ge.research.sadl.darpa.aske.preferences.DialogPreferences;
 import com.ge.research.sadl.darpa.aske.processing.DialogConstants;
 import com.ge.research.sadl.darpa.aske.processing.ExpectsAnswerContent;
@@ -305,8 +306,9 @@ public class DialogAnswerProvider extends BaseDialogAnswerProvider {
 //		Display.getDefault().syncExec(() -> {
 			try {
 				String modContent = generateModifiedContent(document, ctx, quote, prependAgent, content);
-				int loc = generateInsertionLocation(document, ctx, modContent);
-				
+				Object[] insertionInfo = generateInsertionLocation(document, ctx, modContent);
+				modContent = (String) insertionInfo[0];
+				int loc = (int) insertionInfo[1];
 				if (loc >= 0) {
 					document.replace(loc, 0, modContent);
 					if (repositionCursor && document instanceof XtextDocument && ctx instanceof EObject) {
@@ -323,6 +325,66 @@ public class DialogAnswerProvider extends BaseDialogAnswerProvider {
 			} catch (BadLocationException e) {
 				// This happens sometimes but doesn't usually have dire consequences....
 //				Exceptions.throwUncheckedException(e);
+			}
+		});
+		if (ctx instanceof ExtractStatement) {
+			try {
+				String mf = SadlActionHandler.getModelFolderFromResource(((ExtractStatement) ctx).eResource());
+				File mff = new File(mf);
+				String prjname = mff.getParentFile().getName();
+				IProject prj = ResourcesPlugin.getWorkspace().getRoot().getProject(prjname);
+				prj.refreshLocal(IResource.DEPTH_INFINITE, null);
+			} catch (CoreException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		}
+		return true;
+	}
+
+	private synchronized boolean replaceDialogText(IXtextDocument theDocument, EObject ctx, String originalTxt, String replacementTxt) throws BadLocationException {
+		LOGGER.debug("replacing '" + originalTxt + "' with '" + replacementTxt + "'");
+		Display.getDefault().asyncExec(() -> {
+//		Display.getDefault().syncExec(() -> {
+			Object elementInfos = getConfigMgr().getPrivateKeyValuePair("ElementInfo");
+			String docText = document.get();
+			int docLength = document.getLength();
+			int idx = 0;
+			if (elementInfos instanceof List<?>) {
+				int cumulativeOffset = 0;
+				for (Object einfo : ((List<?>)elementInfos)) {
+					if (einfo instanceof ModelElementInfo) {
+						ModelElementInfo mei = (ModelElementInfo) einfo;
+						if (mei.isInserted()) {
+							cumulativeOffset += mei.getLength();
+						}
+						else if (mei.getObject().equals(ctx)) {
+							String origTxt = mei.getTxt();
+							if (!origTxt.trim().substring(4).equals(originalTxt)) {
+								// error
+								System.err.println("equation text doesn't match");
+							}
+							int len = mei.getLength();									// length of original element
+							int currentStart = docText.indexOf(origTxt);				// start of element text in current document
+							String currentTxt;
+							try {
+								currentTxt = document.get(currentStart, len);
+								if (!currentTxt.trim().substring(4).equals(originalTxt)) {
+									// error
+									System.err.println("document text doesn't match");
+								}
+								int loc = currentStart + 6; 	// this is for "/r/nCM: "
+								document.replace(loc, originalTxt.length(), replacementTxt);
+//								final int caretOffset = loc + modContent.length();
+//								setCaretOffsetInEditor(uri, caretOffset);
+								break;
+							} catch (BadLocationException e) {
+								// TODO Auto-generated catch block
+								e.printStackTrace();
+							}
+						}
+					}
+				}
 			}
 		});
 		return true;
@@ -362,7 +424,7 @@ public class DialogAnswerProvider extends BaseDialogAnswerProvider {
 		return modContent;
 	}
 
-	private int generateInsertionLocation(IXtextDocument document, Object ctx, String modContent) {
+	private Object[] generateInsertionLocation(IXtextDocument document, Object ctx, String modContent) {
 		int loc = 0;
 		String lineSep = System.lineSeparator();
 		int lineSepLen = lineSep.length();
@@ -383,11 +445,16 @@ public class DialogAnswerProvider extends BaseDialogAnswerProvider {
 							String origTxt = mei.getTxt();
 							int len = mei.getLength();									// length of original element
 							int currentStart = docText.indexOf(origTxt);				// start of element text in current document
-							String currentTxt = document.get(currentStart, len);
-							if (!currentTxt.equals(origTxt)) {
-								System.err.println("Error in Dialog text");
-								System.err.println("  currentTxt: " + currentTxt);
-								System.err.println("  origTxt: " + origTxt);
+							if (currentStart >= 0) {
+								String currentTxt = document.get(currentStart, len);
+								if (!currentTxt.equals(origTxt)) {
+									System.err.println("Error in Dialog text");
+									System.err.println("  currentTxt: " + currentTxt);
+									System.err.println("  origTxt: " + origTxt);
+								}
+							}
+							else {
+								currentStart = 0;
 							}
 							int currentEndLoc = currentStart+ origTxt.length();			// end of element text in current document
 							int expectedEndLoc = mei.getEnd() + cumulativeOffset;		// expected end of element text in current document
@@ -415,7 +482,7 @@ public class DialogAnswerProvider extends BaseDialogAnswerProvider {
 										loc += lineSep.length();
 									}
 								}
-							}
+							}							
 						} catch (BadLocationException e) {
 							// TODO Auto-generated catch block
 							e.printStackTrace();
@@ -427,7 +494,12 @@ public class DialogAnswerProvider extends BaseDialogAnswerProvider {
 			}
 		}
 		if (loc == 0) {
-			System.err.println("Context EObject not found in list of ModelElementInfos!");
+			if (getResource() != null) {
+				System.err.println("Context EObject not found in list of ModelElementInfos for document '" + getResource().getURI() + "'!");
+			}
+			else {
+				System.err.println("Context EObject not found in list of ModelElementInfos!");
+			}
 			loc = docLength;
 		}
 		// should there be a newline at the beginning or a newline at the end of modContent?
@@ -440,7 +512,10 @@ public class DialogAnswerProvider extends BaseDialogAnswerProvider {
 		else {
 			((List<ModelElementInfo>)elementInfos).add(newMei);
 		}
-		return loc;
+		Object[] returnvals = new Object[2];
+		returnvals[0] = modContent;
+		returnvals[1] = loc;
+		return returnvals;
 	}
 
 	private String generateModifiedContent(IXtextDocument document, Object ctx, boolean quote, boolean prependAgent, String content) {
@@ -454,7 +529,19 @@ public class DialogAnswerProvider extends BaseDialogAnswerProvider {
 		int numSpacesBeforeEachLine = 0;
 		if (prependAgent) {
 			if (!content.startsWith("CM:")) {
-				response = "CM: " + response;
+				String lines[] = response.split("\\r\\n\\.|\\n\\.|\\r\\.");
+				if (lines.length > 1) {
+					StringBuilder sb = new StringBuilder();
+					for (String s : lines) {
+						sb.append("CM: ");
+						sb.append(s);
+						sb.append(System.lineSeparator());
+					}
+					response = sb.toString();
+				}
+				else {
+					response = "CM: " + response;
+				}
 				numSpacesBeforeEachLine += 4;
 			}
 		}
@@ -462,7 +549,7 @@ public class DialogAnswerProvider extends BaseDialogAnswerProvider {
 			response += ".";
 		}
 		if (numSpacesBeforeEachLine > 0) {
-			String lines[] = response.split(System.lineSeparator());
+			String lines[] = response.split("\\r\\n|\\n|\\r");
 			StringBuilder sb = new StringBuilder(lines[0]);
 			sb.append(System.lineSeparator());
 			for (int i = 1; i < lines.length; i++) {
@@ -547,7 +634,7 @@ public class DialogAnswerProvider extends BaseDialogAnswerProvider {
 	@Override
 	public String addCurationManagerInitiatedContent(AnswerCurationManager answerCurationManager, StatementContent sc) {
 		try {
-			addCurationManagerContentToDialog(getTheDocument(), null, sc.getText(), null, false);
+			addCurationManagerContentToDialog(getTheDocument(), null, sc.getText(), sc.getHostEObject(), false);
 		} catch (BadLocationException e) {
 			// This happens sometimes but doesn't usually have dire consequences....
 //			e.printStackTrace();
@@ -582,6 +669,16 @@ public class DialogAnswerProvider extends BaseDialogAnswerProvider {
 		return null;
 	}
 
+	@Override
+	public String replaceDialogText(AnswerCurationManager answerCurationManager, EObject eObject, String originalTxt, String replacementTxt) {
+		try {
+			replaceDialogText(getTheDocument(), eObject, originalTxt, replacementTxt);
+		} catch (BadLocationException e) {
+			// This happens sometimes but doesn't usually have dire consequences....
+//			e.printStackTrace();
+		}
+		return null;
+	}
 	private boolean isContentQuoted(String content) {
 		content = content.trim();
 		if (content.startsWith("\"") && content.endsWith("\"")) {

@@ -1,6 +1,7 @@
 package com.ge.research.sadl.darpa.aske.processing;
 
 import org.eclipse.emf.ecore.EObject;
+import org.eclipse.xtext.nodemodel.ICompositeNode;
 import org.eclipse.xtext.nodemodel.util.NodeModelUtils;
 
 import com.ge.research.sadl.darpa.aske.curation.AnswerCurationManager.Agent;
@@ -14,6 +15,7 @@ public abstract class StatementContent {
 	private EObject hostEObject;
 	private Agent agent;
 	private String unParsedText = null;
+	private boolean quoteResult = false;
 	
 	public StatementContent(EObject host) {
 		setHostEObject(host);
@@ -24,37 +26,46 @@ public abstract class StatementContent {
 		setAgent(agnt);
 	}
 
-	public StatementContent(EObject host, Agent agnt, String text) {
+	public StatementContent(EObject host, Agent agnt, String uptxt) {
 		setHostEObject(host);
 		setAgent(agnt);
-		setUnParsedText(text);
+		setUnParsedText(uptxt);
 	}
 
 	public EObject getHostEObject() {
 		return hostEObject;
 	}
 
-	private void setHostEObject(EObject hostEObject) {
+	public void setHostEObject(EObject hostEObject) {
 		this.hostEObject = hostEObject;
 	}
 	
 	public String getText() {
-		if (getHostEObject() != null) {
-			return removeLeadingComments(NodeModelUtils.findActualNodeFor(getHostEObject()).getText());
+		if (getUnParsedText() == null && getHostEObject() != null) {
+			ICompositeNode icn = NodeModelUtils.findActualNodeFor(getHostEObject());
+			if (icn != null) {
+				return removeLeadingComments(icn.getText());
+			}
 		}
 		return getUnParsedText();
 	}
 	
 	public int getOffset() {
 		if (getHostEObject() != null) {
-			return NodeModelUtils.findActualNodeFor(getHostEObject()).getTotalOffset();
+			ICompositeNode icn = NodeModelUtils.findActualNodeFor(getHostEObject());
+			if (icn != null) {
+				return icn.getTotalOffset();
+			}
 		}
 		return -1;
 	}
 
 	public int getLength() {
 		if (getHostEObject() != null) {
-			return NodeModelUtils.findActualNodeFor(getHostEObject()).getLength();
+			ICompositeNode icn = NodeModelUtils.findActualNodeFor(getHostEObject());
+			if (icn != null) {
+				return icn.getLength();
+			}
 		}
 		return -1;
 	}
@@ -87,12 +98,20 @@ public abstract class StatementContent {
 		return text;
 	}
 
-	private String getUnParsedText() {
+	public String getUnParsedText() {
 		return unParsedText;
 	}
 
-	private void setUnParsedText(String unParsedText) {
+	public void setUnParsedText(String unParsedText) {
 		this.unParsedText = unParsedText;
+	}
+
+	public boolean isQuoteResult() {
+		return quoteResult;
+	}
+
+	public void setQuoteResult(boolean quoteResult) {
+		this.quoteResult = quoteResult;
 	}
 
 

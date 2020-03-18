@@ -68,6 +68,7 @@ SadlModelElement returns sadl::SadlModelElement :
 	SeeParentheticalLink 		|
 	TestLongrunningTask EOS		|
 	ComparisonTableStatement EOS |
+	NewExpressionStatement EOS	|
 	InsightStatement EOS
 ;
 
@@ -80,7 +81,20 @@ InsightStatement:
 
 //LocalExtreme:
 //	locExtreme=''
-//;
+
+NewExpressionStatement:
+	('Add'|'add') 
+	(newExpr=EqualityExpression<false,false>
+	)
+;
+
+UndefinedConceptStatement:
+	'Concept' concept=SadlResource 'is' 'not' 'defined' ';' 'please' 'define' 'or' 'do' 'extraction'
+;
+
+NoModelFoundStatement:
+	'No' 'model' 'found' 'to' 'compute' target=PropOfSubject<false,false> ';' 'please' 'add' 'a' 'model' 'or' 'do' 'extraction'
+;
 
 RelationshipDescriptor1:
 	relDesc='Increasing' | {RelationshipDescriptor1} 'increasing' | {RelationshipDescriptor1} 'Decreasing' | {RelationshipDescriptor1} 'decreasing'
@@ -149,7 +163,17 @@ SaveStatement:
 ;
 
 AnswerCMStatement:
-	'CM:' (sstmt = ((SadlStatement|ModifiedAskStatement|WhatStatement|YesNoAnswerStatement|ExternalEquationStatement|EquationStatement|ComparisonTableStatement)) | str = STRING)
+	'CM:' (sstmt = ((
+		SadlStatement|
+		ModifiedAskStatement|
+		WhatStatement|
+		YesNoAnswerStatement|
+		ExternalEquationStatement|
+		EquationStatement|
+		ComparisonTableStatement|
+		UndefinedConceptStatement |
+		NoModelFoundStatement
+	)) | str = STRING)
 ;
 
 ModifiedAskStatement returns sadl::ExpressionScope:
@@ -160,10 +184,14 @@ ModifiedAskStatement returns sadl::ExpressionScope:
 ;
 
 WhatStatement:
-	{WhatStatement} ('What'|'what') stmt=(WhatIsStatement | WhatValuesStatement)
+	{WhatStatement} ('What'|'what') stmt=(WhatIsStatement | WhatValuesStatement | WhatTypeStatement)
 ;
 WhatIsStatement:
 	{WhatIsStatement} 'is' (('your' 'name') | target=Expression WhenPart?)
+;
+
+WhatTypeStatement:
+	{WhatTypeStatement} 'semantic'?'type' ('is' target=Expression | 'does' equation=SadlResource 'return')
 ;
 
 fragment WhenPart returns WithWhenPart:
@@ -171,11 +199,12 @@ fragment WhenPart returns WithWhenPart:
 ;
 
 WhatValuesStatement:
-	{WhatValuesStatement} (typof='type' 'of')? ('value'|'values') typ=('can'|'must') prop=SadlResource 'of' article=AnArticle? cls=SadlPrimaryTypeReference 'have'
+	{WhatValuesStatement} (typof='type' 'of')? ('value'|'values') typ=('can'|'must') prop=SadlResource ('of' article=AnArticle? cls=SadlPrimaryTypeReference)? 'have'
 ;
 
 HowManyValuesStatement:
-	{HowManyValuesStatement} ('How'|'how') 'many' 'values' 'of' prop=SadlResource ('of' 'type' typ=SadlPrimaryTypeReference)? 'can' article=AnArticle? cls=SadlPrimaryTypeReference 'have'
+//	{HowManyValuesStatement} ('How'|'how') 'many' 'values' 'of' prop=SadlResource ('of' 'type' typ=SadlPrimaryTypeReference)? 'can' article=AnArticle? cls=SadlPrimaryTypeReference 'have'
+	{HowManyValuesStatement} ('How'|'how') 'many' 'values' ('of' 'type' typ=SadlPrimaryTypeReference)? 'can' prop=SadlResource ('of' article=AnArticle? cls=SadlPrimaryTypeReference)? 'have'
 ;
 
 @Override

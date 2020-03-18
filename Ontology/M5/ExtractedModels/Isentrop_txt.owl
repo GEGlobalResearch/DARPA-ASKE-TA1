@@ -1,0 +1,2305 @@
+<rdf:RDF
+    xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+    xmlns:owl="http://www.w3.org/2002/07/owl#"
+    xmlns:sadlimplicitmodel="http://sadl.org/sadlimplicitmodel"
+    xmlns:ns1="http://sadl.org/sadlimplicitmodel#"
+    xmlns="http://com.ge.research.sadl.darpa.aske.answer/Isentrop_txt#"
+    xmlns:rdfs="http://www.w3.org/2000/01/rdf-schema#"
+    xmlns:xsd="http://www.w3.org/2001/XMLSchema#"
+  xml:base="http://com.ge.research.sadl.darpa.aske.answer/Isentrop_txt">
+  <owl:Ontology rdf:about="http://com.ge.research.sadl.darpa.aske.answer/Isentrop_txt">
+    <owl:imports rdf:resource="http://sadl.org/sadlimplicitmodel"/>
+    <rdfs:comment xml:lang="en">This ontology was created by extraction from text by the ANSWER TextProcessor.</rdfs:comment>
+  </owl:Ontology>
+  <rdf:Description rdf:about="http://com.ge.research.sadl.darpa.aske.answer/speedofsound">
+    <rdfs:label>speed of</rdfs:label>
+    <rdfs:label>speed of sound</rdfs:label>
+    <rdfs:label>speed of sound of</rdfs:label>
+    <rdfs:label>speed of sound,</rdfs:label>
+    <ns1:matchingProperty rdf:resource="http://sadl.org/ScientificConcepts2.sadl#velocity"/>
+    <rdfs:seeAlso rdf:resource="http://www.wikidata.org/entity/Q124003"/>
+    <rdfs:subClassOf rdf:resource="http://sadl.org/sadlimplicitmodel#ScientificConcept"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://com.ge.research.sadl.darpa.aske.answer/rotationalspeed">
+    <rdfs:label>rotational speed</rdfs:label>
+    <rdfs:label>speed</rdfs:label>
+    <ns1:matchingProperty rdf:resource="http://sadl.org/ScientificConcepts2.sadl#velocity"/>
+    <rdfs:seeAlso rdf:resource="http://www.wikidata.org/entity/Q1256787"/>
+    <rdfs:subClassOf rdf:resource="http://sadl.org/sadlimplicitmodel#ScientificConcept"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://com.ge.research.sadl.darpa.aske.answer/mass">
+    <rdfs:label>mass</rdfs:label>
+    <rdfs:label>mass,</rdfs:label>
+    <rdfs:seeAlso rdf:resource="http://www.wikidata.org/entity/Q11423"/>
+    <rdfs:subClassOf rdf:resource="http://sadl.org/sadlimplicitmodel#ScientificConcept"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://com.ge.research.sadl.darpa.aske.answer/heatcapacity">
+    <rdfs:label>heat capacity</rdfs:label>
+    <rdfs:seeAlso rdf:resource="http://www.wikidata.org/entity/Q179388"/>
+    <rdfs:subClassOf rdf:resource="http://sadl.org/sadlimplicitmodel#ScientificConcept"/>
+  </rdf:Description>
+  <ns1:ExternalEquation rdf:about="http://sadl.org/demo2.sadl#equation_30">
+    <ns1:arguments rdf:parseType="Resource">
+      <rdf:first>
+        <ns1:DataDescriptor>
+          <ns1:dataType rdf:resource="http://www.w3.org/2001/XMLSchema#decimal"/>
+          <ns1:localDescriptorName>theta</ns1:localDescriptorName>
+        </ns1:DataDescriptor>
+      </rdf:first>
+      <rdf:rest rdf:parseType="Resource">
+        <rdf:first>
+          <ns1:DataDescriptor>
+            <ns1:dataType rdf:resource="http://www.w3.org/2001/XMLSchema#decimal"/>
+            <ns1:localDescriptorName>Tt</ns1:localDescriptorName>
+          </ns1:DataDescriptor>
+        </rdf:first>
+        <rdf:rest rdf:parseType="Resource">
+          <rdf:first>
+            <ns1:DataDescriptor>
+              <ns1:dataType rdf:resource="http://www.w3.org/2001/XMLSchema#decimal"/>
+              <ns1:localDescriptorName>T</ns1:localDescriptorName>
+            </ns1:DataDescriptor>
+          </rdf:first>
+          <rdf:rest rdf:parseType="Resource">
+            <rdf:first>
+              <ns1:DataDescriptor>
+                <ns1:dataType rdf:resource="http://www.w3.org/2001/XMLSchema#decimal"/>
+                <ns1:localDescriptorName>gamma</ns1:localDescriptorName>
+              </ns1:DataDescriptor>
+            </rdf:first>
+            <rdf:rest rdf:parseType="Resource">
+              <rdf:first>
+                <ns1:DataDescriptor>
+                  <ns1:dataType rdf:resource="http://www.w3.org/2001/XMLSchema#decimal"/>
+                  <ns1:localDescriptorName>exp</ns1:localDescriptorName>
+                </ns1:DataDescriptor>
+              </rdf:first>
+              <rdf:rest rdf:parseType="Resource">
+                <rdf:first>
+                  <ns1:DataDescriptor>
+                    <ns1:dataType rdf:resource="http://www.w3.org/2001/XMLSchema#decimal"/>
+                    <ns1:localDescriptorName>rhot</ns1:localDescriptorName>
+                  </ns1:DataDescriptor>
+                </rdf:first>
+                <rdf:rest rdf:parseType="Resource">
+                </rdf:rest>
+              </rdf:rest>
+            </rdf:rest>
+          </rdf:rest>
+        </rdf:rest>
+      </rdf:rest>
+    </ns1:arguments>
+    <ns1:derivedFrom>
+      <ns1:ExternalEquation rdf:about="http://sadl.org/demo2.sadl#equation_29">
+        <ns1:expression>
+          <ns1:Script>
+            <ns1:language rdf:resource="http://sadl.org/sadlimplicitmodel#Text"/>
+            <ns1:script>rho/rhot = [(e^(theta/Tt) - 1)/(e^(theta/T) - 1)] * [(T/Tt)^(1/(gamma-1))] * exp[(theta/T) * (e^(theta/T)/(e^(theta/T) -1)) - (theta/Tt) * (e^(theta/Tt)/(e^(theta/Tt) -1)) ]</ns1:script>
+          </ns1:Script>
+        </ns1:expression>
+      </ns1:ExternalEquation>
+    </ns1:derivedFrom>
+    <ns1:expression>
+      <ns1:Script>
+        <ns1:language rdf:resource="http://sadl.org/sadlimplicitmodel#Python"/>
+        <ns1:script>rho = (( (  math.exp( theta/Tt) - 1 ) / (  math.exp( theta/T ) - 1 ) ) * (  math.pow( (T/Tt),( 1)/( gamma-1 ) ) ) * exp(( theta/T ) * (  math.exp( theta/T ) / (  math.exp( theta/T ) - 1 ) ) - ( theta/Tt) * (  math.exp( theta/Tt) / (  math.exp( theta/Tt) - 1 ) ) )) * rhot</ns1:script>
+      </ns1:Script>
+    </ns1:expression>
+    <ns1:expression>
+      <ns1:Script>
+        <ns1:language rdf:resource="http://sadl.org/sadlimplicitmodel#Python-TF"/>
+        <ns1:script>rho = (( (  tf.math.exp( theta/Tt) - 1 ) / (  tf.math.exp( theta/T ) - 1 ) ) * (  tf.math.pow( (T/Tt),( 1)/( gamma-1 ) ) ) * exp(( theta/T ) * (  tf.math.exp( theta/T ) / (  tf.math.exp( theta/T ) - 1 ) ) - ( theta/Tt) * (  tf.math.exp( theta/Tt) / (  tf.math.exp( theta/Tt) - 1 ) ) )) * rhot</ns1:script>
+      </ns1:Script>
+    </ns1:expression>
+    <ns1:expression>
+      <ns1:Script>
+        <ns1:language rdf:resource="http://sadl.org/sadlimplicitmodel#Python-NumPy"/>
+        <ns1:script>rho = (( (  np.exp( theta/Tt) - 1 ) / (  np.exp( theta/T ) - 1 ) ) * (  np.power( (T/Tt),( 1)/( gamma-1 ) ) ) * exp(( theta/T ) * (  np.exp( theta/T ) / (  np.exp( theta/T ) - 1 ) ) - ( theta/Tt) * (  np.exp( theta/Tt) / (  np.exp( theta/Tt) - 1 ) ) )) * rhot</ns1:script>
+      </ns1:Script>
+    </ns1:expression>
+    <ns1:returnTypes rdf:parseType="Resource">
+      <rdf:first>
+        <ns1:DataDescriptor>
+          <ns1:dataType rdf:resource="http://www.w3.org/2001/XMLSchema#decimal"/>
+          <ns1:localDescriptorName>rho</ns1:localDescriptorName>
+        </ns1:DataDescriptor>
+      </rdf:first>
+      <rdf:rest rdf:parseType="Resource">
+      </rdf:rest>
+    </ns1:returnTypes>
+  </ns1:ExternalEquation>
+  <ns1:ExternalEquation rdf:about="http://sadl.org/demo2.sadl#equation_20">
+    <ns1:arguments rdf:parseType="Resource">
+      <rdf:first>
+        <ns1:DataDescriptor>
+          <ns1:augmentedType>
+            <ns1:SemanticType>
+              <ns1:semType>
+                <rdf:Description rdf:about="http://com.ge.research.sadl.darpa.aske.answer/density">
+                  <rdfs:label>density</rdfs:label>
+                  <rdfs:label>density.</rdfs:label>
+                  <rdfs:seeAlso rdf:resource="http://www.wikidata.org/entity/Q29539"/>
+                  <rdfs:subClassOf rdf:resource="http://sadl.org/sadlimplicitmodel#ScientificConcept"/>
+                </rdf:Description>
+              </ns1:semType>
+            </ns1:SemanticType>
+          </ns1:augmentedType>
+          <ns1:dataType rdf:resource="http://www.w3.org/2001/XMLSchema#decimal"/>
+          <ns1:localDescriptorName>r</ns1:localDescriptorName>
+        </ns1:DataDescriptor>
+      </rdf:first>
+      <rdf:rest rdf:parseType="Resource">
+        <rdf:first>
+          <ns1:DataDescriptor>
+            <ns1:augmentedType>
+              <ns1:SemanticType>
+                <ns1:semType>
+                  <rdf:Description rdf:about="http://com.ge.research.sadl.darpa.aske.answer/Machnumber">
+                    <rdfs:label>Mach number</rdfs:label>
+                    <rdfs:label>Machnumber</rdfs:label>
+                    <rdfs:seeAlso rdf:resource="http://www.wikidata.org/entity/Q160669"/>
+                    <rdfs:subClassOf rdf:resource="http://sadl.org/sadlimplicitmodel#ScientificConcept"/>
+                  </rdf:Description>
+                </ns1:semType>
+              </ns1:SemanticType>
+            </ns1:augmentedType>
+            <ns1:dataType rdf:resource="http://www.w3.org/2001/XMLSchema#decimal"/>
+            <ns1:localDescriptorName>M</ns1:localDescriptorName>
+          </ns1:DataDescriptor>
+        </rdf:first>
+        <rdf:rest rdf:parseType="Resource">
+          <rdf:first>
+            <ns1:DataDescriptor>
+              <ns1:augmentedType>
+                <ns1:SemanticType>
+                  <ns1:semType>
+                    <rdf:Description rdf:about="http://com.ge.research.sadl.darpa.aske.answer/Latticedefectsandspecificheats">
+                      <rdfs:label>Latticedefectsandspecificheats</rdfs:label>
+                      <rdfs:label>specific heats</rdfs:label>
+                      <rdfs:seeAlso rdf:resource="http://www.wikidata.org/entity/Q58859805"/>
+                      <rdfs:subClassOf rdf:resource="http://sadl.org/sadlimplicitmodel#ScientificConcept"/>
+                    </rdf:Description>
+                  </ns1:semType>
+                </ns1:SemanticType>
+              </ns1:augmentedType>
+              <ns1:augmentedType>
+                <ns1:SemanticType>
+                  <ns1:semType rdf:resource="http://com.ge.research.sadl.darpa.aske.answer/Latticedefectsandspecificheats"/>
+                </ns1:SemanticType>
+              </ns1:augmentedType>
+              <ns1:dataType rdf:resource="http://www.w3.org/2001/XMLSchema#decimal"/>
+              <ns1:localDescriptorName>gam</ns1:localDescriptorName>
+            </ns1:DataDescriptor>
+          </rdf:first>
+          <rdf:rest rdf:parseType="Resource">
+          </rdf:rest>
+        </rdf:rest>
+      </rdf:rest>
+    </ns1:arguments>
+    <ns1:derivedFrom>
+      <ns1:ExternalEquation rdf:about="http://sadl.org/demo2.sadl#equation_18">
+        <ns1:expression>
+          <ns1:Script>
+            <ns1:language rdf:resource="http://sadl.org/sadlimplicitmodel#Text"/>
+            <ns1:script>r / rt = [1 + M^2 * (gam-1)/2]^-[1/(gam-1)]</ns1:script>
+          </ns1:Script>
+        </ns1:expression>
+      </ns1:ExternalEquation>
+    </ns1:derivedFrom>
+    <ns1:expression>
+      <ns1:Script>
+        <ns1:language rdf:resource="http://sadl.org/sadlimplicitmodel#Python-TF"/>
+        <ns1:script>rt = r / (( 1 + ( tf.math.pow( 1+M,2)*( tf.math.pow( (1+M^2*(gam-1)/2), - ( 1)/( gam-1 ) ))))</ns1:script>
+      </ns1:Script>
+    </ns1:expression>
+    <ns1:expression>
+      <ns1:Script>
+        <ns1:language rdf:resource="http://sadl.org/sadlimplicitmodel#Python-NumPy"/>
+        <ns1:script>rt = r / (( 1 + ( np.power( 1+M,2)*( np.power( (1+M^2*(gam-1)/2), - ( 1)/( gam-1 ) ))))</ns1:script>
+      </ns1:Script>
+    </ns1:expression>
+    <ns1:expression>
+      <ns1:Script>
+        <ns1:language rdf:resource="http://sadl.org/sadlimplicitmodel#Python"/>
+        <ns1:script>rt = r / (( 1 + ( math.pow( 1+M,2)*( math.pow( (1+M^2*(gam-1)/2), - ( 1)/( gam-1 ) ))))</ns1:script>
+      </ns1:Script>
+    </ns1:expression>
+    <ns1:returnTypes rdf:parseType="Resource">
+      <rdf:first>
+        <ns1:DataDescriptor>
+          <ns1:dataType rdf:resource="http://www.w3.org/2001/XMLSchema#decimal"/>
+          <ns1:localDescriptorName>rt</ns1:localDescriptorName>
+        </ns1:DataDescriptor>
+      </rdf:first>
+      <rdf:rest rdf:parseType="Resource">
+      </rdf:rest>
+    </ns1:returnTypes>
+  </ns1:ExternalEquation>
+  <ns1:ExternalEquation rdf:about="http://sadl.org/demo2.sadl#equation_31">
+    <ns1:arguments rdf:parseType="Resource">
+      <rdf:first>
+        <ns1:DataDescriptor>
+          <ns1:dataType rdf:resource="http://www.w3.org/2001/XMLSchema#decimal"/>
+          <ns1:localDescriptorName>rho</ns1:localDescriptorName>
+        </ns1:DataDescriptor>
+      </rdf:first>
+      <rdf:rest rdf:parseType="Resource">
+        <rdf:first>
+          <ns1:DataDescriptor>
+            <ns1:dataType rdf:resource="http://www.w3.org/2001/XMLSchema#decimal"/>
+            <ns1:localDescriptorName>theta</ns1:localDescriptorName>
+          </ns1:DataDescriptor>
+        </rdf:first>
+        <rdf:rest rdf:parseType="Resource">
+          <rdf:first>
+            <ns1:DataDescriptor>
+              <ns1:dataType rdf:resource="http://www.w3.org/2001/XMLSchema#decimal"/>
+              <ns1:localDescriptorName>Tt</ns1:localDescriptorName>
+            </ns1:DataDescriptor>
+          </rdf:first>
+          <rdf:rest rdf:parseType="Resource">
+            <rdf:first>
+              <ns1:DataDescriptor>
+                <ns1:dataType rdf:resource="http://www.w3.org/2001/XMLSchema#decimal"/>
+                <ns1:localDescriptorName>T</ns1:localDescriptorName>
+              </ns1:DataDescriptor>
+            </rdf:first>
+            <rdf:rest rdf:parseType="Resource">
+              <rdf:first>
+                <ns1:DataDescriptor>
+                  <ns1:dataType rdf:resource="http://www.w3.org/2001/XMLSchema#decimal"/>
+                  <ns1:localDescriptorName>gamma</ns1:localDescriptorName>
+                </ns1:DataDescriptor>
+              </rdf:first>
+              <rdf:rest rdf:parseType="Resource">
+                <rdf:first>
+                  <ns1:DataDescriptor>
+                    <ns1:dataType rdf:resource="http://www.w3.org/2001/XMLSchema#decimal"/>
+                    <ns1:localDescriptorName>exp</ns1:localDescriptorName>
+                  </ns1:DataDescriptor>
+                </rdf:first>
+                <rdf:rest rdf:parseType="Resource">
+                </rdf:rest>
+              </rdf:rest>
+            </rdf:rest>
+          </rdf:rest>
+        </rdf:rest>
+      </rdf:rest>
+    </ns1:arguments>
+    <ns1:derivedFrom rdf:resource="http://sadl.org/demo2.sadl#equation_29"/>
+    <ns1:expression>
+      <ns1:Script>
+        <ns1:language rdf:resource="http://sadl.org/sadlimplicitmodel#Python"/>
+        <ns1:script>rhot = rho / (( (  math.exp( theta/Tt) - 1 ) / (  math.exp( theta/T ) - 1 ) ) * (  math.pow( (T/Tt),( 1)/( gamma-1 ) ) ) * exp(( theta/T ) * (  math.exp( theta/T ) / (  math.exp( theta/T ) - 1 ) ) - ( theta/Tt) * (  math.exp( theta/Tt) / (  math.exp( theta/Tt) - 1 ) ) ))</ns1:script>
+      </ns1:Script>
+    </ns1:expression>
+    <ns1:expression>
+      <ns1:Script>
+        <ns1:language rdf:resource="http://sadl.org/sadlimplicitmodel#Python-NumPy"/>
+        <ns1:script>rhot = rho / (( (  np.exp( theta/Tt) - 1 ) / (  np.exp( theta/T ) - 1 ) ) * (  np.power( (T/Tt),( 1)/( gamma-1 ) ) ) * exp(( theta/T ) * (  np.exp( theta/T ) / (  np.exp( theta/T ) - 1 ) ) - ( theta/Tt) * (  np.exp( theta/Tt) / (  np.exp( theta/Tt) - 1 ) ) ))</ns1:script>
+      </ns1:Script>
+    </ns1:expression>
+    <ns1:expression>
+      <ns1:Script>
+        <ns1:language rdf:resource="http://sadl.org/sadlimplicitmodel#Python-TF"/>
+        <ns1:script>rhot = rho / (( (  tf.math.exp( theta/Tt) - 1 ) / (  tf.math.exp( theta/T ) - 1 ) ) * (  tf.math.pow( (T/Tt),( 1)/( gamma-1 ) ) ) * exp(( theta/T ) * (  tf.math.exp( theta/T ) / (  tf.math.exp( theta/T ) - 1 ) ) - ( theta/Tt) * (  tf.math.exp( theta/Tt) / (  tf.math.exp( theta/Tt) - 1 ) ) ))</ns1:script>
+      </ns1:Script>
+    </ns1:expression>
+    <ns1:returnTypes rdf:parseType="Resource">
+      <rdf:first>
+        <ns1:DataDescriptor>
+          <ns1:dataType rdf:resource="http://www.w3.org/2001/XMLSchema#decimal"/>
+          <ns1:localDescriptorName>rhot</ns1:localDescriptorName>
+        </ns1:DataDescriptor>
+      </rdf:first>
+      <rdf:rest rdf:parseType="Resource">
+      </rdf:rest>
+    </ns1:returnTypes>
+  </ns1:ExternalEquation>
+  <ns1:ExternalEquation rdf:about="http://sadl.org/demo2.sadl#equation_14">
+    <ns1:arguments rdf:parseType="Resource">
+      <rdf:first>
+        <ns1:DataDescriptor>
+          <ns1:augmentedType>
+            <ns1:SemanticType>
+              <ns1:semType rdf:resource="http://com.ge.research.sadl.darpa.aske.answer/Latticedefectsandspecificheats"/>
+            </ns1:SemanticType>
+          </ns1:augmentedType>
+          <ns1:augmentedType>
+            <ns1:SemanticType>
+              <ns1:semType rdf:resource="http://com.ge.research.sadl.darpa.aske.answer/Latticedefectsandspecificheats"/>
+            </ns1:SemanticType>
+          </ns1:augmentedType>
+          <ns1:dataType rdf:resource="http://www.w3.org/2001/XMLSchema#decimal"/>
+          <ns1:localDescriptorName>gam</ns1:localDescriptorName>
+        </ns1:DataDescriptor>
+      </rdf:first>
+      <rdf:rest rdf:parseType="Resource">
+        <rdf:first>
+          <ns1:DataDescriptor>
+            <ns1:augmentedType>
+              <ns1:SemanticType>
+                <ns1:semType>
+                  <rdf:Description rdf:about="http://com.ge.research.sadl.darpa.aske.answer/pressure">
+                    <rdfs:label>dynamic pressure</rdfs:label>
+                    <rdfs:label>pressure</rdfs:label>
+                    <rdfs:label>total pressure</rdfs:label>
+                    <rdfs:seeAlso rdf:resource="http://www.wikidata.org/entity/Q39552"/>
+                    <rdfs:subClassOf rdf:resource="http://sadl.org/sadlimplicitmodel#ScientificConcept"/>
+                  </rdf:Description>
+                </ns1:semType>
+              </ns1:SemanticType>
+            </ns1:augmentedType>
+            <ns1:dataType rdf:resource="http://www.w3.org/2001/XMLSchema#decimal"/>
+            <ns1:localDescriptorName>p</ns1:localDescriptorName>
+          </ns1:DataDescriptor>
+        </rdf:first>
+        <rdf:rest rdf:parseType="Resource">
+          <rdf:first>
+            <ns1:DataDescriptor>
+              <ns1:augmentedType>
+                <ns1:SemanticType>
+                  <ns1:semType rdf:resource="http://com.ge.research.sadl.darpa.aske.answer/Machnumber"/>
+                </ns1:SemanticType>
+              </ns1:augmentedType>
+              <ns1:dataType rdf:resource="http://www.w3.org/2001/XMLSchema#decimal"/>
+              <ns1:localDescriptorName>M</ns1:localDescriptorName>
+            </ns1:DataDescriptor>
+          </rdf:first>
+          <rdf:rest rdf:parseType="Resource">
+          </rdf:rest>
+        </rdf:rest>
+      </rdf:rest>
+    </ns1:arguments>
+    <ns1:expression>
+      <ns1:Script>
+        <ns1:language rdf:resource="http://sadl.org/sadlimplicitmodel#Python"/>
+        <ns1:script>q = ( math.pow( gam*p*M,2)) / 2</ns1:script>
+      </ns1:Script>
+    </ns1:expression>
+    <ns1:expression>
+      <ns1:Script>
+        <ns1:language rdf:resource="http://sadl.org/sadlimplicitmodel#Python-TF"/>
+        <ns1:script>q = ( tf.math.pow( gam*p*M,2)) / 2</ns1:script>
+      </ns1:Script>
+    </ns1:expression>
+    <ns1:expression>
+      <ns1:Script>
+        <ns1:language rdf:resource="http://sadl.org/sadlimplicitmodel#Text"/>
+        <ns1:script>q = (r * v^2) / 2 = (gam * p * M^2) / 2</ns1:script>
+      </ns1:Script>
+    </ns1:expression>
+    <ns1:expression>
+      <ns1:Script>
+        <ns1:language rdf:resource="http://sadl.org/sadlimplicitmodel#Python-NumPy"/>
+        <ns1:script>q = ( np.power( gam*p*M,2)) / 2</ns1:script>
+      </ns1:Script>
+    </ns1:expression>
+    <ns1:returnTypes rdf:parseType="Resource">
+      <rdf:first>
+        <ns1:DataDescriptor>
+          <ns1:augmentedType>
+            <ns1:SemanticType>
+              <ns1:semType rdf:resource="http://com.ge.research.sadl.darpa.aske.answer/pressure"/>
+            </ns1:SemanticType>
+          </ns1:augmentedType>
+          <ns1:augmentedType>
+            <ns1:SemanticType>
+              <ns1:semType rdf:resource="http://com.ge.research.sadl.darpa.aske.answer/pressure"/>
+            </ns1:SemanticType>
+          </ns1:augmentedType>
+          <ns1:augmentedType>
+            <ns1:SemanticType>
+              <ns1:semType>
+                <rdf:Description rdf:about="http://com.ge.research.sadl.darpa.aske.answer/Pressurecoefficient">
+                  <rdfs:label>Pressurecoefficient</rdfs:label>
+                  <rdfs:label>dynamic pressure coefficient</rdfs:label>
+                  <rdfs:seeAlso rdf:resource="http://www.wikidata.org/entity/Q1260777"/>
+                  <rdfs:subClassOf rdf:resource="http://sadl.org/sadlimplicitmodel#ScientificConcept"/>
+                </rdf:Description>
+              </ns1:semType>
+            </ns1:SemanticType>
+          </ns1:augmentedType>
+          <ns1:dataType rdf:resource="http://www.w3.org/2001/XMLSchema#decimal"/>
+          <ns1:localDescriptorName>q</ns1:localDescriptorName>
+        </ns1:DataDescriptor>
+      </rdf:first>
+      <rdf:rest rdf:parseType="Resource">
+      </rdf:rest>
+    </ns1:returnTypes>
+  </ns1:ExternalEquation>
+  <ns1:ExternalEquation rdf:about="http://sadl.org/demo2.sadl#equation_2">
+    <ns1:arguments rdf:parseType="Resource">
+      <rdf:first>
+        <ns1:DataDescriptor>
+          <ns1:augmentedType>
+            <ns1:SemanticType>
+              <ns1:semType rdf:resource="http://com.ge.research.sadl.darpa.aske.answer/Latticedefectsandspecificheats"/>
+            </ns1:SemanticType>
+          </ns1:augmentedType>
+          <ns1:augmentedType>
+            <ns1:SemanticType>
+              <ns1:semType rdf:resource="http://com.ge.research.sadl.darpa.aske.answer/Latticedefectsandspecificheats"/>
+            </ns1:SemanticType>
+          </ns1:augmentedType>
+          <ns1:dataType rdf:resource="http://www.w3.org/2001/XMLSchema#decimal"/>
+          <ns1:localDescriptorName>gam</ns1:localDescriptorName>
+        </ns1:DataDescriptor>
+      </rdf:first>
+      <rdf:rest rdf:parseType="Resource">
+        <rdf:first>
+          <ns1:DataDescriptor>
+            <ns1:augmentedType>
+              <ns1:SemanticType>
+                <ns1:semType rdf:resource="http://com.ge.research.sadl.darpa.aske.answer/pressure"/>
+              </ns1:SemanticType>
+            </ns1:augmentedType>
+            <ns1:dataType rdf:resource="http://www.w3.org/2001/XMLSchema#decimal"/>
+            <ns1:localDescriptorName>p</ns1:localDescriptorName>
+          </ns1:DataDescriptor>
+        </rdf:first>
+        <rdf:rest rdf:parseType="Resource">
+          <rdf:first>
+            <ns1:DataDescriptor>
+              <ns1:augmentedType>
+                <ns1:SemanticType>
+                  <ns1:semType rdf:resource="http://com.ge.research.sadl.darpa.aske.answer/density"/>
+                </ns1:SemanticType>
+              </ns1:augmentedType>
+              <ns1:dataType rdf:resource="http://www.w3.org/2001/XMLSchema#decimal"/>
+              <ns1:localDescriptorName>r</ns1:localDescriptorName>
+            </ns1:DataDescriptor>
+          </rdf:first>
+          <rdf:rest rdf:parseType="Resource">
+          </rdf:rest>
+        </rdf:rest>
+      </rdf:rest>
+    </ns1:arguments>
+    <ns1:expression>
+      <ns1:Script>
+        <ns1:language rdf:resource="http://sadl.org/sadlimplicitmodel#Python"/>
+        <ns1:script>a = math.sqrt( gam*p / r )</ns1:script>
+      </ns1:Script>
+    </ns1:expression>
+    <ns1:expression>
+      <ns1:Script>
+        <ns1:language rdf:resource="http://sadl.org/sadlimplicitmodel#Python-TF"/>
+        <ns1:script>a = tf.math.sqrt( gam*p / r )</ns1:script>
+      </ns1:Script>
+    </ns1:expression>
+    <ns1:expression>
+      <ns1:Script>
+        <ns1:language rdf:resource="http://sadl.org/sadlimplicitmodel#Python-NumPy"/>
+        <ns1:script>a = np.sqrt( gam*p / r )</ns1:script>
+      </ns1:Script>
+    </ns1:expression>
+    <ns1:expression>
+      <ns1:Script>
+        <ns1:language rdf:resource="http://sadl.org/sadlimplicitmodel#Text"/>
+        <ns1:script>a = sqrt(gam * p / r) = sqrt (gam * R * T)</ns1:script>
+      </ns1:Script>
+    </ns1:expression>
+    <ns1:returnTypes rdf:parseType="Resource">
+      <rdf:first>
+        <ns1:DataDescriptor>
+          <ns1:augmentedType>
+            <ns1:SemanticType>
+              <ns1:semType>
+                <rdf:Description rdf:about="http://com.ge.research.sadl.darpa.aske.answer/soundpower">
+                  <rdfs:label>sound</rdfs:label>
+                  <rdfs:label>soundpower</rdfs:label>
+                  <rdfs:seeAlso rdf:resource="http://www.wikidata.org/entity/Q1588477"/>
+                  <rdfs:subClassOf rdf:resource="http://sadl.org/sadlimplicitmodel#ScientificConcept"/>
+                </rdf:Description>
+              </ns1:semType>
+            </ns1:SemanticType>
+          </ns1:augmentedType>
+          <ns1:dataType rdf:resource="http://www.w3.org/2001/XMLSchema#decimal"/>
+          <ns1:localDescriptorName>a</ns1:localDescriptorName>
+        </ns1:DataDescriptor>
+      </rdf:first>
+      <rdf:rest rdf:parseType="Resource">
+      </rdf:rest>
+    </ns1:returnTypes>
+  </ns1:ExternalEquation>
+  <ns1:ExternalEquation rdf:about="http://sadl.org/demo2.sadl#equation_37">
+    <ns1:arguments rdf:parseType="Resource">
+      <rdf:first>
+        <ns1:DataDescriptor>
+          <ns1:augmentedType>
+            <ns1:SemanticType>
+              <ns1:semType rdf:resource="http://com.ge.research.sadl.darpa.aske.answer/pressure"/>
+            </ns1:SemanticType>
+          </ns1:augmentedType>
+          <ns1:augmentedType>
+            <ns1:SemanticType>
+              <ns1:semType rdf:resource="http://com.ge.research.sadl.darpa.aske.answer/Pressurecoefficient"/>
+            </ns1:SemanticType>
+          </ns1:augmentedType>
+          <ns1:augmentedType>
+            <ns1:SemanticType>
+              <ns1:semType rdf:resource="http://com.ge.research.sadl.darpa.aske.answer/pressure"/>
+            </ns1:SemanticType>
+          </ns1:augmentedType>
+          <ns1:dataType rdf:resource="http://www.w3.org/2001/XMLSchema#decimal"/>
+          <ns1:localDescriptorName>q</ns1:localDescriptorName>
+        </ns1:DataDescriptor>
+      </rdf:first>
+      <rdf:rest rdf:parseType="Resource">
+        <rdf:first>
+          <ns1:DataDescriptor>
+            <ns1:dataType rdf:resource="http://www.w3.org/2001/XMLSchema#decimal"/>
+            <ns1:localDescriptorName>gamma</ns1:localDescriptorName>
+          </ns1:DataDescriptor>
+        </rdf:first>
+        <rdf:rest rdf:parseType="Resource">
+          <rdf:first>
+            <ns1:DataDescriptor>
+              <ns1:dataType rdf:resource="http://www.w3.org/2001/XMLSchema#decimal"/>
+              <ns1:localDescriptorName>Tt</ns1:localDescriptorName>
+            </ns1:DataDescriptor>
+          </rdf:first>
+          <rdf:rest rdf:parseType="Resource">
+            <rdf:first>
+              <ns1:DataDescriptor>
+                <ns1:dataType rdf:resource="http://www.w3.org/2001/XMLSchema#decimal"/>
+                <ns1:localDescriptorName>T</ns1:localDescriptorName>
+              </ns1:DataDescriptor>
+            </rdf:first>
+            <rdf:rest rdf:parseType="Resource">
+              <rdf:first>
+                <ns1:DataDescriptor>
+                  <ns1:dataType rdf:resource="http://www.w3.org/2001/XMLSchema#decimal"/>
+                  <ns1:localDescriptorName>theta</ns1:localDescriptorName>
+                </ns1:DataDescriptor>
+              </rdf:first>
+              <rdf:rest rdf:parseType="Resource">
+              </rdf:rest>
+            </rdf:rest>
+          </rdf:rest>
+        </rdf:rest>
+      </rdf:rest>
+    </ns1:arguments>
+    <ns1:derivedFrom>
+      <ns1:ExternalEquation rdf:about="http://sadl.org/demo2.sadl#equation_35">
+        <ns1:expression>
+          <ns1:Script>
+            <ns1:language rdf:resource="http://sadl.org/sadlimplicitmodel#Text"/>
+            <ns1:script>q/p = (gamma/(gamma-1)) * (Tt/T - 1) + (theta/T)*[1/(e^(theta/Tt) -1) - 1/(e^(theta/T) -1) ]</ns1:script>
+          </ns1:Script>
+        </ns1:expression>
+      </ns1:ExternalEquation>
+    </ns1:derivedFrom>
+    <ns1:expression>
+      <ns1:Script>
+        <ns1:language rdf:resource="http://sadl.org/sadlimplicitmodel#Python-TF"/>
+        <ns1:script>p = q / (( gamma/( gamma-1 ) ) * ( Tt/T - 1 ) + ( theta/T ) * ( 1 / (  tf.math.exp( theta/Tt) - 1 ) - 1 / (  tf.math.exp( theta/T ) - 1 ) ))</ns1:script>
+      </ns1:Script>
+    </ns1:expression>
+    <ns1:expression>
+      <ns1:Script>
+        <ns1:language rdf:resource="http://sadl.org/sadlimplicitmodel#Python"/>
+        <ns1:script>p = q / (( gamma/( gamma-1 ) ) * ( Tt/T - 1 ) + ( theta/T ) * ( 1 / (  math.exp( theta/Tt) - 1 ) - 1 / (  math.exp( theta/T ) - 1 ) ))</ns1:script>
+      </ns1:Script>
+    </ns1:expression>
+    <ns1:expression>
+      <ns1:Script>
+        <ns1:language rdf:resource="http://sadl.org/sadlimplicitmodel#Python-NumPy"/>
+        <ns1:script>p = q / (( gamma/( gamma-1 ) ) * ( Tt/T - 1 ) + ( theta/T ) * ( 1 / (  np.exp( theta/Tt) - 1 ) - 1 / (  np.exp( theta/T ) - 1 ) ))</ns1:script>
+      </ns1:Script>
+    </ns1:expression>
+    <ns1:returnTypes rdf:parseType="Resource">
+      <rdf:first>
+        <ns1:DataDescriptor>
+          <ns1:augmentedType>
+            <ns1:SemanticType>
+              <ns1:semType rdf:resource="http://com.ge.research.sadl.darpa.aske.answer/pressure"/>
+            </ns1:SemanticType>
+          </ns1:augmentedType>
+          <ns1:dataType rdf:resource="http://www.w3.org/2001/XMLSchema#decimal"/>
+          <ns1:localDescriptorName>p</ns1:localDescriptorName>
+        </ns1:DataDescriptor>
+      </rdf:first>
+      <rdf:rest rdf:parseType="Resource">
+      </rdf:rest>
+    </ns1:returnTypes>
+  </ns1:ExternalEquation>
+  <ns1:ExternalEquation rdf:about="http://sadl.org/demo2.sadl#equation_25">
+    <ns1:arguments rdf:parseType="Resource">
+      <rdf:first>
+        <ns1:DataDescriptor>
+          <ns1:dataType rdf:resource="http://www.w3.org/2001/XMLSchema#decimal"/>
+          <ns1:localDescriptorName>R</ns1:localDescriptorName>
+        </ns1:DataDescriptor>
+      </rdf:first>
+      <rdf:rest rdf:parseType="Resource">
+        <rdf:first>
+          <ns1:DataDescriptor>
+            <ns1:dataType rdf:resource="http://www.w3.org/2001/XMLSchema#decimal"/>
+            <ns1:localDescriptorName>T</ns1:localDescriptorName>
+          </ns1:DataDescriptor>
+        </rdf:first>
+        <rdf:rest rdf:parseType="Resource">
+          <rdf:first>
+            <ns1:DataDescriptor>
+              <ns1:dataType rdf:resource="http://www.w3.org/2001/XMLSchema#decimal"/>
+              <ns1:localDescriptorName>gamma</ns1:localDescriptorName>
+            </ns1:DataDescriptor>
+          </rdf:first>
+          <rdf:rest rdf:parseType="Resource">
+            <rdf:first>
+              <ns1:DataDescriptor>
+                <ns1:dataType rdf:resource="http://www.w3.org/2001/XMLSchema#decimal"/>
+                <ns1:localDescriptorName>theta</ns1:localDescriptorName>
+              </ns1:DataDescriptor>
+            </rdf:first>
+            <rdf:rest rdf:parseType="Resource">
+            </rdf:rest>
+          </rdf:rest>
+        </rdf:rest>
+      </rdf:rest>
+    </ns1:arguments>
+    <ns1:derivedFrom>
+      <ns1:ExternalEquation rdf:about="http://sadl.org/demo2.sadl#equation_24">
+        <ns1:expression>
+          <ns1:Script>
+            <ns1:language rdf:resource="http://sadl.org/sadlimplicitmodel#Text"/>
+            <ns1:script>a^2 = R * T * {1 + (gamma - 1) / ( 1 + (gamma-1) * [(theta/T)^2 * e^(theta/T) /(e^(theta/T) -1)^2]) }</ns1:script>
+          </ns1:Script>
+        </ns1:expression>
+      </ns1:ExternalEquation>
+    </ns1:derivedFrom>
+    <ns1:expression>
+      <ns1:Script>
+        <ns1:language rdf:resource="http://sadl.org/sadlimplicitmodel#Python-NumPy"/>
+        <ns1:script>a = np.power(R * T * ( 1 + ( gamma-1 ) / ( 1 + ( gamma-1 ) * (  np.power( (theta/T),2)* np.exp( theta/T ) / (   np.power(  (np.exp( theta/T ) - 1 ),2))) ) ), 1/2)</ns1:script>
+      </ns1:Script>
+    </ns1:expression>
+    <ns1:expression>
+      <ns1:Script>
+        <ns1:language rdf:resource="http://sadl.org/sadlimplicitmodel#Python"/>
+        <ns1:script>a = math.pow(R * T * ( 1 + ( gamma-1 ) / ( 1 + ( gamma-1 ) * (  math.pow( (theta/T),2)* math.exp( theta/T ) / (   math.pow(  (math.exp( theta/T ) - 1 ),2))) ) ), 1/2)</ns1:script>
+      </ns1:Script>
+    </ns1:expression>
+    <ns1:expression>
+      <ns1:Script>
+        <ns1:language rdf:resource="http://sadl.org/sadlimplicitmodel#Python-TF"/>
+        <ns1:script>a = tf.math.pow(R * T * ( 1 + ( gamma-1 ) / ( 1 + ( gamma-1 ) * (  tf.math.pow( (theta/T),2)* tf.math.exp( theta/T ) / (   tf.math.pow(  (tf.math.exp( theta/T ) - 1 ),2))) ) ), 1/2)</ns1:script>
+      </ns1:Script>
+    </ns1:expression>
+    <ns1:returnTypes rdf:parseType="Resource">
+      <rdf:first>
+        <ns1:DataDescriptor>
+          <ns1:augmentedType>
+            <ns1:SemanticType>
+              <ns1:semType rdf:resource="http://com.ge.research.sadl.darpa.aske.answer/soundpower"/>
+            </ns1:SemanticType>
+          </ns1:augmentedType>
+          <ns1:dataType rdf:resource="http://www.w3.org/2001/XMLSchema#decimal"/>
+          <ns1:localDescriptorName>a</ns1:localDescriptorName>
+        </ns1:DataDescriptor>
+      </rdf:first>
+      <rdf:rest rdf:parseType="Resource">
+      </rdf:rest>
+    </ns1:returnTypes>
+  </ns1:ExternalEquation>
+  <rdf:Description rdf:about="http://com.ge.research.sadl.darpa.aske.answer/enthalpy">
+    <rdfs:label>enthalpy</rdfs:label>
+    <rdfs:seeAlso rdf:resource="http://www.wikidata.org/entity/Q161064"/>
+    <rdfs:subClassOf rdf:resource="http://sadl.org/sadlimplicitmodel#ScientificConcept"/>
+  </rdf:Description>
+  <ns1:ExternalEquation rdf:about="http://sadl.org/demo2.sadl#equation_13">
+    <ns1:arguments rdf:parseType="Resource">
+      <rdf:first>
+        <ns1:DataDescriptor>
+          <ns1:augmentedType>
+            <ns1:SemanticType>
+              <ns1:semType rdf:resource="http://com.ge.research.sadl.darpa.aske.answer/density"/>
+            </ns1:SemanticType>
+          </ns1:augmentedType>
+          <ns1:dataType rdf:resource="http://www.w3.org/2001/XMLSchema#decimal"/>
+          <ns1:localDescriptorName>r</ns1:localDescriptorName>
+        </ns1:DataDescriptor>
+      </rdf:first>
+      <rdf:rest rdf:parseType="Resource">
+        <rdf:first>
+          <ns1:DataDescriptor>
+            <ns1:dataType rdf:resource="http://www.w3.org/2001/XMLSchema#decimal"/>
+            <ns1:localDescriptorName>v</ns1:localDescriptorName>
+          </ns1:DataDescriptor>
+        </rdf:first>
+        <rdf:rest rdf:parseType="Resource">
+        </rdf:rest>
+      </rdf:rest>
+    </ns1:arguments>
+    <ns1:expression>
+      <ns1:Script>
+        <ns1:language rdf:resource="http://sadl.org/sadlimplicitmodel#Python-NumPy"/>
+        <ns1:script>q = ( np.power( r*v,2)) / 2</ns1:script>
+      </ns1:Script>
+    </ns1:expression>
+    <ns1:expression>
+      <ns1:Script>
+        <ns1:language rdf:resource="http://sadl.org/sadlimplicitmodel#Text"/>
+        <ns1:script>q = (r * v^2) / 2 = (gam * p * M^2) / 2</ns1:script>
+      </ns1:Script>
+    </ns1:expression>
+    <ns1:expression>
+      <ns1:Script>
+        <ns1:language rdf:resource="http://sadl.org/sadlimplicitmodel#Python"/>
+        <ns1:script>q = ( math.pow( r*v,2)) / 2</ns1:script>
+      </ns1:Script>
+    </ns1:expression>
+    <ns1:expression>
+      <ns1:Script>
+        <ns1:language rdf:resource="http://sadl.org/sadlimplicitmodel#Python-TF"/>
+        <ns1:script>q = ( tf.math.pow( r*v,2)) / 2</ns1:script>
+      </ns1:Script>
+    </ns1:expression>
+    <ns1:returnTypes rdf:parseType="Resource">
+      <rdf:first>
+        <ns1:DataDescriptor>
+          <ns1:augmentedType>
+            <ns1:SemanticType>
+              <ns1:semType rdf:resource="http://com.ge.research.sadl.darpa.aske.answer/pressure"/>
+            </ns1:SemanticType>
+          </ns1:augmentedType>
+          <ns1:augmentedType>
+            <ns1:SemanticType>
+              <ns1:semType rdf:resource="http://com.ge.research.sadl.darpa.aske.answer/Pressurecoefficient"/>
+            </ns1:SemanticType>
+          </ns1:augmentedType>
+          <ns1:augmentedType>
+            <ns1:SemanticType>
+              <ns1:semType rdf:resource="http://com.ge.research.sadl.darpa.aske.answer/pressure"/>
+            </ns1:SemanticType>
+          </ns1:augmentedType>
+          <ns1:dataType rdf:resource="http://www.w3.org/2001/XMLSchema#decimal"/>
+          <ns1:localDescriptorName>q</ns1:localDescriptorName>
+        </ns1:DataDescriptor>
+      </rdf:first>
+      <rdf:rest rdf:parseType="Resource">
+      </rdf:rest>
+    </ns1:returnTypes>
+  </ns1:ExternalEquation>
+  <ns1:ExternalEquation rdf:about="http://sadl.org/demo2.sadl#equation_1">
+    <ns1:arguments rdf:parseType="Resource">
+      <rdf:first>
+        <ns1:DataDescriptor>
+          <ns1:dataType rdf:resource="http://www.w3.org/2001/XMLSchema#decimal"/>
+          <ns1:localDescriptorName>v</ns1:localDescriptorName>
+        </ns1:DataDescriptor>
+      </rdf:first>
+      <rdf:rest rdf:parseType="Resource">
+        <rdf:first>
+          <ns1:DataDescriptor>
+            <ns1:augmentedType>
+              <ns1:SemanticType>
+                <ns1:semType rdf:resource="http://com.ge.research.sadl.darpa.aske.answer/soundpower"/>
+              </ns1:SemanticType>
+            </ns1:augmentedType>
+            <ns1:dataType rdf:resource="http://www.w3.org/2001/XMLSchema#decimal"/>
+            <ns1:localDescriptorName>a</ns1:localDescriptorName>
+          </ns1:DataDescriptor>
+        </rdf:first>
+        <rdf:rest rdf:parseType="Resource">
+        </rdf:rest>
+      </rdf:rest>
+    </ns1:arguments>
+    <ns1:expression>
+      <ns1:Script>
+        <ns1:language rdf:resource="http://sadl.org/sadlimplicitmodel#Text"/>
+        <ns1:script>M = v / a</ns1:script>
+      </ns1:Script>
+    </ns1:expression>
+    <ns1:expression>
+      <ns1:Script>
+        <ns1:language rdf:resource="http://sadl.org/sadlimplicitmodel#Python"/>
+        <ns1:script>M = v / a</ns1:script>
+      </ns1:Script>
+    </ns1:expression>
+    <ns1:expression>
+      <ns1:Script>
+        <ns1:language rdf:resource="http://sadl.org/sadlimplicitmodel#Python-NumPy"/>
+        <ns1:script>M = v / a</ns1:script>
+      </ns1:Script>
+    </ns1:expression>
+    <ns1:expression>
+      <ns1:Script>
+        <ns1:language rdf:resource="http://sadl.org/sadlimplicitmodel#Python-TF"/>
+        <ns1:script>M = v / a</ns1:script>
+      </ns1:Script>
+    </ns1:expression>
+    <ns1:returnTypes rdf:parseType="Resource">
+      <rdf:first>
+        <ns1:DataDescriptor>
+          <ns1:augmentedType>
+            <ns1:SemanticType>
+              <ns1:semType rdf:resource="http://com.ge.research.sadl.darpa.aske.answer/Machnumber"/>
+            </ns1:SemanticType>
+          </ns1:augmentedType>
+          <ns1:dataType rdf:resource="http://www.w3.org/2001/XMLSchema#decimal"/>
+          <ns1:localDescriptorName>M</ns1:localDescriptorName>
+        </ns1:DataDescriptor>
+      </rdf:first>
+      <rdf:rest rdf:parseType="Resource">
+      </rdf:rest>
+    </ns1:returnTypes>
+  </ns1:ExternalEquation>
+  <ns1:ExternalEquation rdf:about="http://sadl.org/demo2.sadl#equation_28">
+    <ns1:arguments rdf:parseType="Resource">
+      <rdf:first>
+        <ns1:DataDescriptor>
+          <ns1:dataType rdf:resource="http://www.w3.org/2001/XMLSchema#decimal"/>
+          <ns1:localDescriptorName>gamma</ns1:localDescriptorName>
+        </ns1:DataDescriptor>
+      </rdf:first>
+      <rdf:rest rdf:parseType="Resource">
+        <rdf:first>
+          <ns1:DataDescriptor>
+            <ns1:dataType rdf:resource="http://www.w3.org/2001/XMLSchema#decimal"/>
+            <ns1:localDescriptorName>theta</ns1:localDescriptorName>
+          </ns1:DataDescriptor>
+        </rdf:first>
+        <rdf:rest rdf:parseType="Resource">
+          <rdf:first>
+            <ns1:DataDescriptor>
+              <ns1:dataType rdf:resource="http://www.w3.org/2001/XMLSchema#decimal"/>
+              <ns1:localDescriptorName>T</ns1:localDescriptorName>
+            </ns1:DataDescriptor>
+          </rdf:first>
+          <rdf:rest rdf:parseType="Resource">
+          </rdf:rest>
+        </rdf:rest>
+      </rdf:rest>
+    </ns1:arguments>
+    <ns1:expression>
+      <ns1:Script>
+        <ns1:language rdf:resource="http://sadl.org/sadlimplicitmodel#Text"/>
+        <ns1:script>gam = 1 + (gamma - 1) / ( 1 + (gamma-1) * [(theta/T)^2 * e^(theta/T) /(e^(theta/T) -1)^2])</ns1:script>
+      </ns1:Script>
+    </ns1:expression>
+    <ns1:expression>
+      <ns1:Script>
+        <ns1:language rdf:resource="http://sadl.org/sadlimplicitmodel#Python-TF"/>
+        <ns1:script>gam = 1 + ( gamma-1 ) / ( 1 + ( gamma-1 ) * (  tf.math.pow( (theta/T),2)* tf.math.exp( theta/T ) / (   tf.math.pow(  (tf.math.exp( theta/T ) - 1 ),2))) )</ns1:script>
+      </ns1:Script>
+    </ns1:expression>
+    <ns1:expression>
+      <ns1:Script>
+        <ns1:language rdf:resource="http://sadl.org/sadlimplicitmodel#Python"/>
+        <ns1:script>gam = 1 + ( gamma-1 ) / ( 1 + ( gamma-1 ) * (  math.pow( (theta/T),2)* math.exp( theta/T ) / (   math.pow(  (math.exp( theta/T ) - 1 ),2))) )</ns1:script>
+      </ns1:Script>
+    </ns1:expression>
+    <ns1:expression>
+      <ns1:Script>
+        <ns1:language rdf:resource="http://sadl.org/sadlimplicitmodel#Python-NumPy"/>
+        <ns1:script>gam = 1 + ( gamma-1 ) / ( 1 + ( gamma-1 ) * (  np.power( (theta/T),2)* np.exp( theta/T ) / (   np.power(  (np.exp( theta/T ) - 1 ),2))) )</ns1:script>
+      </ns1:Script>
+    </ns1:expression>
+    <ns1:returnTypes rdf:parseType="Resource">
+      <rdf:first>
+        <ns1:DataDescriptor>
+          <ns1:augmentedType>
+            <ns1:SemanticType>
+              <ns1:semType rdf:resource="http://com.ge.research.sadl.darpa.aske.answer/Latticedefectsandspecificheats"/>
+            </ns1:SemanticType>
+          </ns1:augmentedType>
+          <ns1:augmentedType>
+            <ns1:SemanticType>
+              <ns1:semType rdf:resource="http://com.ge.research.sadl.darpa.aske.answer/Latticedefectsandspecificheats"/>
+            </ns1:SemanticType>
+          </ns1:augmentedType>
+          <ns1:dataType rdf:resource="http://www.w3.org/2001/XMLSchema#decimal"/>
+          <ns1:localDescriptorName>gam</ns1:localDescriptorName>
+        </ns1:DataDescriptor>
+      </rdf:first>
+      <rdf:rest rdf:parseType="Resource">
+      </rdf:rest>
+    </ns1:returnTypes>
+  </ns1:ExternalEquation>
+  <ns1:ExternalEquation rdf:about="http://sadl.org/demo2.sadl#equation_16">
+    <ns1:arguments rdf:parseType="Resource">
+      <rdf:first>
+        <ns1:DataDescriptor>
+          <ns1:augmentedType>
+            <ns1:SemanticType>
+              <ns1:semType rdf:resource="http://com.ge.research.sadl.darpa.aske.answer/Machnumber"/>
+            </ns1:SemanticType>
+          </ns1:augmentedType>
+          <ns1:dataType rdf:resource="http://www.w3.org/2001/XMLSchema#decimal"/>
+          <ns1:localDescriptorName>M</ns1:localDescriptorName>
+        </ns1:DataDescriptor>
+      </rdf:first>
+      <rdf:rest rdf:parseType="Resource">
+        <rdf:first>
+          <ns1:DataDescriptor>
+            <ns1:augmentedType>
+              <ns1:SemanticType>
+                <ns1:semType rdf:resource="http://com.ge.research.sadl.darpa.aske.answer/Latticedefectsandspecificheats"/>
+              </ns1:SemanticType>
+            </ns1:augmentedType>
+            <ns1:augmentedType>
+              <ns1:SemanticType>
+                <ns1:semType rdf:resource="http://com.ge.research.sadl.darpa.aske.answer/Latticedefectsandspecificheats"/>
+              </ns1:SemanticType>
+            </ns1:augmentedType>
+            <ns1:dataType rdf:resource="http://www.w3.org/2001/XMLSchema#decimal"/>
+            <ns1:localDescriptorName>gam</ns1:localDescriptorName>
+          </ns1:DataDescriptor>
+        </rdf:first>
+        <rdf:rest rdf:parseType="Resource">
+          <rdf:first>
+            <ns1:DataDescriptor>
+              <ns1:dataType rdf:resource="http://www.w3.org/2001/XMLSchema#decimal"/>
+              <ns1:localDescriptorName>pt</ns1:localDescriptorName>
+            </ns1:DataDescriptor>
+          </rdf:first>
+          <rdf:rest rdf:parseType="Resource">
+          </rdf:rest>
+        </rdf:rest>
+      </rdf:rest>
+    </ns1:arguments>
+    <ns1:derivedFrom>
+      <ns1:ExternalEquation rdf:about="http://sadl.org/demo2.sadl#equation_15">
+        <ns1:expression>
+          <ns1:Script>
+            <ns1:language rdf:resource="http://sadl.org/sadlimplicitmodel#Text"/>
+            <ns1:script>p / pt = [1 + M^2 * (gam-1)/2]^-[gam/(gam-1)]</ns1:script>
+          </ns1:Script>
+        </ns1:expression>
+      </ns1:ExternalEquation>
+    </ns1:derivedFrom>
+    <ns1:expression>
+      <ns1:Script>
+        <ns1:language rdf:resource="http://sadl.org/sadlimplicitmodel#Python-NumPy"/>
+        <ns1:script>p = (( 1 + ( np.power( 1+M,2)*( np.power( (1+M^2*(gam-1)/2), - ( gam/( gam-1) )))) * pt</ns1:script>
+      </ns1:Script>
+    </ns1:expression>
+    <ns1:expression>
+      <ns1:Script>
+        <ns1:language rdf:resource="http://sadl.org/sadlimplicitmodel#Python"/>
+        <ns1:script>p = (( 1 + ( math.pow( 1+M,2)*( math.pow( (1+M^2*(gam-1)/2), - ( gam/( gam-1) )))) * pt</ns1:script>
+      </ns1:Script>
+    </ns1:expression>
+    <ns1:expression>
+      <ns1:Script>
+        <ns1:language rdf:resource="http://sadl.org/sadlimplicitmodel#Python-TF"/>
+        <ns1:script>p = (( 1 + ( tf.math.pow( 1+M,2)*( tf.math.pow( (1+M^2*(gam-1)/2), - ( gam/( gam-1) )))) * pt</ns1:script>
+      </ns1:Script>
+    </ns1:expression>
+    <ns1:returnTypes rdf:parseType="Resource">
+      <rdf:first>
+        <ns1:DataDescriptor>
+          <ns1:augmentedType>
+            <ns1:SemanticType>
+              <ns1:semType rdf:resource="http://com.ge.research.sadl.darpa.aske.answer/pressure"/>
+            </ns1:SemanticType>
+          </ns1:augmentedType>
+          <ns1:dataType rdf:resource="http://www.w3.org/2001/XMLSchema#decimal"/>
+          <ns1:localDescriptorName>p</ns1:localDescriptorName>
+        </ns1:DataDescriptor>
+      </rdf:first>
+      <rdf:rest rdf:parseType="Resource">
+      </rdf:rest>
+    </ns1:returnTypes>
+  </ns1:ExternalEquation>
+  <ns1:ExternalEquation rdf:about="http://sadl.org/demo2.sadl#equation_27">
+    <ns1:arguments rdf:parseType="Resource">
+      <rdf:first>
+        <ns1:DataDescriptor>
+          <ns1:dataType rdf:resource="http://www.w3.org/2001/XMLSchema#decimal"/>
+          <ns1:localDescriptorName>Tt</ns1:localDescriptorName>
+        </ns1:DataDescriptor>
+      </rdf:first>
+      <rdf:rest rdf:parseType="Resource">
+        <rdf:first>
+          <ns1:DataDescriptor>
+            <ns1:dataType rdf:resource="http://www.w3.org/2001/XMLSchema#decimal"/>
+            <ns1:localDescriptorName>T</ns1:localDescriptorName>
+          </ns1:DataDescriptor>
+        </rdf:first>
+        <rdf:rest rdf:parseType="Resource">
+          <rdf:first>
+            <ns1:DataDescriptor>
+              <ns1:augmentedType>
+                <ns1:SemanticType>
+                  <ns1:semType rdf:resource="http://com.ge.research.sadl.darpa.aske.answer/Latticedefectsandspecificheats"/>
+                </ns1:SemanticType>
+              </ns1:augmentedType>
+              <ns1:augmentedType>
+                <ns1:SemanticType>
+                  <ns1:semType rdf:resource="http://com.ge.research.sadl.darpa.aske.answer/Latticedefectsandspecificheats"/>
+                </ns1:SemanticType>
+              </ns1:augmentedType>
+              <ns1:dataType rdf:resource="http://www.w3.org/2001/XMLSchema#decimal"/>
+              <ns1:localDescriptorName>gam</ns1:localDescriptorName>
+            </ns1:DataDescriptor>
+          </rdf:first>
+          <rdf:rest rdf:parseType="Resource">
+            <rdf:first>
+              <ns1:DataDescriptor>
+                <ns1:dataType rdf:resource="http://www.w3.org/2001/XMLSchema#decimal"/>
+                <ns1:localDescriptorName>gamma</ns1:localDescriptorName>
+              </ns1:DataDescriptor>
+            </rdf:first>
+            <rdf:rest rdf:parseType="Resource">
+              <rdf:first>
+                <ns1:DataDescriptor>
+                  <ns1:dataType rdf:resource="http://www.w3.org/2001/XMLSchema#decimal"/>
+                  <ns1:localDescriptorName>theta</ns1:localDescriptorName>
+                </ns1:DataDescriptor>
+              </rdf:first>
+              <rdf:rest rdf:parseType="Resource">
+              </rdf:rest>
+            </rdf:rest>
+          </rdf:rest>
+        </rdf:rest>
+      </rdf:rest>
+    </ns1:arguments>
+    <ns1:derivedFrom>
+      <ns1:ExternalEquation rdf:about="http://sadl.org/demo2.sadl#equation_26">
+        <ns1:expression>
+          <ns1:Script>
+            <ns1:language rdf:resource="http://sadl.org/sadlimplicitmodel#Text"/>
+            <ns1:script>M^2 = (2 (Tt/T) / gam) * [(gamma/(gamma-1) * (1 - T/Tt) + (theta/Tt) * (1/(e^theta/Tt -1) - 1/(e^theta/T -1)]</ns1:script>
+          </ns1:Script>
+        </ns1:expression>
+      </ns1:ExternalEquation>
+    </ns1:derivedFrom>
+    <ns1:expression>
+      <ns1:Script>
+        <ns1:language rdf:resource="http://sadl.org/sadlimplicitmodel#Python-NumPy"/>
+        <ns1:script>M = np.power(( 2 * ( Tt/T ) / gam) * ( ( gamma/( gamma-1 ) * ( 1 - T / Tt) + ( theta/Tt) * ( 1 / (  np.exptheta/Tt-1 ) - 1 / (  np.exptheta/T - 1 ) ), 1/2)</ns1:script>
+      </ns1:Script>
+    </ns1:expression>
+    <ns1:expression>
+      <ns1:Script>
+        <ns1:language rdf:resource="http://sadl.org/sadlimplicitmodel#Python"/>
+        <ns1:script>M = math.pow(( 2 * ( Tt/T ) / gam) * ( ( gamma/( gamma-1 ) * ( 1 - T / Tt) + ( theta/Tt) * ( 1 / (  math.exptheta/Tt-1 ) - 1 / (  math.exptheta/T - 1 ) ), 1/2)</ns1:script>
+      </ns1:Script>
+    </ns1:expression>
+    <ns1:expression>
+      <ns1:Script>
+        <ns1:language rdf:resource="http://sadl.org/sadlimplicitmodel#Python-TF"/>
+        <ns1:script>M = tf.math.pow(( 2 * ( Tt/T ) / gam) * ( ( gamma/( gamma-1 ) * ( 1 - T / Tt) + ( theta/Tt) * ( 1 / (  tf.math.exptheta/Tt-1 ) - 1 / (  tf.math.exptheta/T - 1 ) ), 1/2)</ns1:script>
+      </ns1:Script>
+    </ns1:expression>
+    <ns1:returnTypes rdf:parseType="Resource">
+      <rdf:first>
+        <ns1:DataDescriptor>
+          <ns1:augmentedType>
+            <ns1:SemanticType>
+              <ns1:semType rdf:resource="http://com.ge.research.sadl.darpa.aske.answer/Machnumber"/>
+            </ns1:SemanticType>
+          </ns1:augmentedType>
+          <ns1:dataType rdf:resource="http://www.w3.org/2001/XMLSchema#decimal"/>
+          <ns1:localDescriptorName>M</ns1:localDescriptorName>
+        </ns1:DataDescriptor>
+      </rdf:first>
+      <rdf:rest rdf:parseType="Resource">
+      </rdf:rest>
+    </ns1:returnTypes>
+  </ns1:ExternalEquation>
+  <rdf:Description rdf:about="http://com.ge.research.sadl.darpa.aske.answer/Investigationofthemechanismofactionofpapain">
+    <rdfs:label>Investigation of the mechanism of action of papain</rdfs:label>
+    <rdfs:label>of</rdfs:label>
+    <rdfs:seeAlso rdf:resource="http://www.wikidata.org/entity/Q28912099"/>
+    <rdfs:subClassOf rdf:resource="http://sadl.org/sadlimplicitmodel#ScientificConcept"/>
+  </rdf:Description>
+  <ns1:ExternalEquation rdf:about="http://sadl.org/demo2.sadl#equation_34">
+    <ns1:arguments rdf:parseType="Resource">
+      <rdf:first>
+        <ns1:DataDescriptor>
+          <ns1:augmentedType>
+            <ns1:SemanticType>
+              <ns1:semType rdf:resource="http://com.ge.research.sadl.darpa.aske.answer/pressure"/>
+            </ns1:SemanticType>
+          </ns1:augmentedType>
+          <ns1:dataType rdf:resource="http://www.w3.org/2001/XMLSchema#decimal"/>
+          <ns1:localDescriptorName>p</ns1:localDescriptorName>
+        </ns1:DataDescriptor>
+      </rdf:first>
+      <rdf:rest rdf:parseType="Resource">
+        <rdf:first>
+          <ns1:DataDescriptor>
+            <ns1:dataType rdf:resource="http://www.w3.org/2001/XMLSchema#decimal"/>
+            <ns1:localDescriptorName>theta</ns1:localDescriptorName>
+          </ns1:DataDescriptor>
+        </rdf:first>
+        <rdf:rest rdf:parseType="Resource">
+          <rdf:first>
+            <ns1:DataDescriptor>
+              <ns1:dataType rdf:resource="http://www.w3.org/2001/XMLSchema#decimal"/>
+              <ns1:localDescriptorName>Tt</ns1:localDescriptorName>
+            </ns1:DataDescriptor>
+          </rdf:first>
+          <rdf:rest rdf:parseType="Resource">
+            <rdf:first>
+              <ns1:DataDescriptor>
+                <ns1:dataType rdf:resource="http://www.w3.org/2001/XMLSchema#decimal"/>
+                <ns1:localDescriptorName>T</ns1:localDescriptorName>
+              </ns1:DataDescriptor>
+            </rdf:first>
+            <rdf:rest rdf:parseType="Resource">
+              <rdf:first>
+                <ns1:DataDescriptor>
+                  <ns1:dataType rdf:resource="http://www.w3.org/2001/XMLSchema#decimal"/>
+                  <ns1:localDescriptorName>gamma</ns1:localDescriptorName>
+                </ns1:DataDescriptor>
+              </rdf:first>
+              <rdf:rest rdf:parseType="Resource">
+                <rdf:first>
+                  <ns1:DataDescriptor>
+                    <ns1:dataType rdf:resource="http://www.w3.org/2001/XMLSchema#decimal"/>
+                    <ns1:localDescriptorName>exp</ns1:localDescriptorName>
+                  </ns1:DataDescriptor>
+                </rdf:first>
+                <rdf:rest rdf:parseType="Resource">
+                </rdf:rest>
+              </rdf:rest>
+            </rdf:rest>
+          </rdf:rest>
+        </rdf:rest>
+      </rdf:rest>
+    </ns1:arguments>
+    <ns1:derivedFrom>
+      <ns1:ExternalEquation rdf:about="http://sadl.org/demo2.sadl#equation_32">
+        <ns1:expression>
+          <ns1:Script>
+            <ns1:language rdf:resource="http://sadl.org/sadlimplicitmodel#Text"/>
+            <ns1:script>p/pt = [(e^(theta/Tt) - 1)/(e^(theta/T) - 1)] * [(T/Tt)^(gamma/(gamma-1))] * exp[(theta/T) * (e^(theta/T)/(e^(theta/T) -1)) - (theta/Tt) * (e^(theta/Tt)/(e^(theta/Tt) -1)) ]</ns1:script>
+          </ns1:Script>
+        </ns1:expression>
+      </ns1:ExternalEquation>
+    </ns1:derivedFrom>
+    <ns1:expression>
+      <ns1:Script>
+        <ns1:language rdf:resource="http://sadl.org/sadlimplicitmodel#Python-TF"/>
+        <ns1:script>pt = p / (( (  tf.math.exp( theta/Tt) - 1 ) / (  tf.math.exp( theta/T ) - 1 ) ) * (  tf.math.pow( (T/Tt),( gamma/( gamma-1)) ) ) * exp(( theta/T ) * (  tf.math.exp( theta/T ) / (  tf.math.exp( theta/T ) - 1 ) ) - ( theta/Tt) * (  tf.math.exp( theta/Tt) / (  tf.math.exp( theta/Tt) - 1 ) ) ))</ns1:script>
+      </ns1:Script>
+    </ns1:expression>
+    <ns1:expression>
+      <ns1:Script>
+        <ns1:language rdf:resource="http://sadl.org/sadlimplicitmodel#Python"/>
+        <ns1:script>pt = p / (( (  math.exp( theta/Tt) - 1 ) / (  math.exp( theta/T ) - 1 ) ) * (  math.pow( (T/Tt),( gamma/( gamma-1)) ) ) * exp(( theta/T ) * (  math.exp( theta/T ) / (  math.exp( theta/T ) - 1 ) ) - ( theta/Tt) * (  math.exp( theta/Tt) / (  math.exp( theta/Tt) - 1 ) ) ))</ns1:script>
+      </ns1:Script>
+    </ns1:expression>
+    <ns1:expression>
+      <ns1:Script>
+        <ns1:language rdf:resource="http://sadl.org/sadlimplicitmodel#Python-NumPy"/>
+        <ns1:script>pt = p / (( (  np.exp( theta/Tt) - 1 ) / (  np.exp( theta/T ) - 1 ) ) * (  np.power( (T/Tt),( gamma/( gamma-1)) ) ) * exp(( theta/T ) * (  np.exp( theta/T ) / (  np.exp( theta/T ) - 1 ) ) - ( theta/Tt) * (  np.exp( theta/Tt) / (  np.exp( theta/Tt) - 1 ) ) ))</ns1:script>
+      </ns1:Script>
+    </ns1:expression>
+    <ns1:returnTypes rdf:parseType="Resource">
+      <rdf:first>
+        <ns1:DataDescriptor>
+          <ns1:dataType rdf:resource="http://www.w3.org/2001/XMLSchema#decimal"/>
+          <ns1:localDescriptorName>pt</ns1:localDescriptorName>
+        </ns1:DataDescriptor>
+      </rdf:first>
+      <rdf:rest rdf:parseType="Resource">
+      </rdf:rest>
+    </ns1:returnTypes>
+  </ns1:ExternalEquation>
+  <ns1:ExternalEquation rdf:about="http://sadl.org/demo2.sadl#equation_22">
+    <ns1:arguments rdf:parseType="Resource">
+      <rdf:first>
+        <ns1:DataDescriptor>
+          <ns1:augmentedType>
+            <ns1:SemanticType>
+              <ns1:semType rdf:resource="http://com.ge.research.sadl.darpa.aske.answer/Machnumber"/>
+            </ns1:SemanticType>
+          </ns1:augmentedType>
+          <ns1:dataType rdf:resource="http://www.w3.org/2001/XMLSchema#decimal"/>
+          <ns1:localDescriptorName>M</ns1:localDescriptorName>
+        </ns1:DataDescriptor>
+      </rdf:first>
+      <rdf:rest rdf:parseType="Resource">
+        <rdf:first>
+          <ns1:DataDescriptor>
+            <ns1:augmentedType>
+              <ns1:SemanticType>
+                <ns1:semType rdf:resource="http://com.ge.research.sadl.darpa.aske.answer/Latticedefectsandspecificheats"/>
+              </ns1:SemanticType>
+            </ns1:augmentedType>
+            <ns1:augmentedType>
+              <ns1:SemanticType>
+                <ns1:semType rdf:resource="http://com.ge.research.sadl.darpa.aske.answer/Latticedefectsandspecificheats"/>
+              </ns1:SemanticType>
+            </ns1:augmentedType>
+            <ns1:dataType rdf:resource="http://www.w3.org/2001/XMLSchema#decimal"/>
+            <ns1:localDescriptorName>gam</ns1:localDescriptorName>
+          </ns1:DataDescriptor>
+        </rdf:first>
+        <rdf:rest rdf:parseType="Resource">
+          <rdf:first>
+            <ns1:DataDescriptor>
+              <ns1:dataType rdf:resource="http://www.w3.org/2001/XMLSchema#decimal"/>
+              <ns1:localDescriptorName>A</ns1:localDescriptorName>
+            </ns1:DataDescriptor>
+          </rdf:first>
+          <rdf:rest rdf:parseType="Resource">
+          </rdf:rest>
+        </rdf:rest>
+      </rdf:rest>
+    </ns1:arguments>
+    <ns1:derivedFrom>
+      <ns1:ExternalEquation rdf:about="http://sadl.org/demo2.sadl#equation_21">
+        <ns1:expression>
+          <ns1:Script>
+            <ns1:language rdf:resource="http://sadl.org/sadlimplicitmodel#Text"/>
+            <ns1:script>A / A* = {[1 + M^2 * (gam-1)/2]^[(gam+1)/(gam-1)/2]}*{[(gam+1)/2]^-[(gam+1)/(gam-1)/2]} / M</ns1:script>
+          </ns1:Script>
+        </ns1:expression>
+      </ns1:ExternalEquation>
+    </ns1:derivedFrom>
+    <ns1:expression>
+      <ns1:Script>
+        <ns1:language rdf:resource="http://sadl.org/sadlimplicitmodel#Python"/>
+        <ns1:script>A = (( math.pow( 1+M,2)*( math.pow( (1+M^2*(gam-1)/2),( ( gam+1) / ( gam-1 ) / 2 ) ) * ( (  math.pow( ((gam+1)/2), - ( ( gam+1) / ( gam-1 ) / 2 ) ) / M))) * A*</ns1:script>
+      </ns1:Script>
+    </ns1:expression>
+    <ns1:expression>
+      <ns1:Script>
+        <ns1:language rdf:resource="http://sadl.org/sadlimplicitmodel#Python-TF"/>
+        <ns1:script>A = (( tf.math.pow( 1+M,2)*( tf.math.pow( (1+M^2*(gam-1)/2),( ( gam+1) / ( gam-1 ) / 2 ) ) * ( (  tf.math.pow( ((gam+1)/2), - ( ( gam+1) / ( gam-1 ) / 2 ) ) / M))) * A*</ns1:script>
+      </ns1:Script>
+    </ns1:expression>
+    <ns1:expression>
+      <ns1:Script>
+        <ns1:language rdf:resource="http://sadl.org/sadlimplicitmodel#Python-NumPy"/>
+        <ns1:script>A = (( np.power( 1+M,2)*( np.power( (1+M^2*(gam-1)/2),( ( gam+1) / ( gam-1 ) / 2 ) ) * ( (  np.power( ((gam+1)/2), - ( ( gam+1) / ( gam-1 ) / 2 ) ) / M))) * A*</ns1:script>
+      </ns1:Script>
+    </ns1:expression>
+    <ns1:returnTypes rdf:parseType="Resource">
+      <rdf:first>
+        <ns1:DataDescriptor>
+          <ns1:dataType rdf:resource="http://www.w3.org/2001/XMLSchema#decimal"/>
+          <ns1:localDescriptorName>A</ns1:localDescriptorName>
+        </ns1:DataDescriptor>
+      </rdf:first>
+      <rdf:rest rdf:parseType="Resource">
+      </rdf:rest>
+    </ns1:returnTypes>
+  </ns1:ExternalEquation>
+  <ns1:ExternalEquation rdf:about="http://sadl.org/demo2.sadl#equation_6">
+    <ns1:arguments rdf:parseType="Resource">
+      <rdf:first>
+        <ns1:DataDescriptor>
+          <ns1:augmentedType>
+            <ns1:SemanticType>
+              <ns1:semType rdf:resource="http://com.ge.research.sadl.darpa.aske.answer/pressure"/>
+            </ns1:SemanticType>
+          </ns1:augmentedType>
+          <ns1:dataType rdf:resource="http://www.w3.org/2001/XMLSchema#decimal"/>
+          <ns1:localDescriptorName>p</ns1:localDescriptorName>
+        </ns1:DataDescriptor>
+      </rdf:first>
+      <rdf:rest rdf:parseType="Resource">
+        <rdf:first>
+          <ns1:DataDescriptor>
+            <ns1:dataType rdf:resource="http://www.w3.org/2001/XMLSchema#decimal"/>
+            <ns1:localDescriptorName>constant</ns1:localDescriptorName>
+          </ns1:DataDescriptor>
+        </rdf:first>
+        <rdf:rest rdf:parseType="Resource">
+        </rdf:rest>
+      </rdf:rest>
+    </ns1:arguments>
+    <ns1:derivedFrom>
+      <ns1:ExternalEquation rdf:about="http://sadl.org/demo2.sadl#equation_4">
+        <ns1:expression>
+          <ns1:Script>
+            <ns1:language rdf:resource="http://sadl.org/sadlimplicitmodel#Text"/>
+            <ns1:script>p / r^gam = constant</ns1:script>
+          </ns1:Script>
+        </ns1:expression>
+      </ns1:ExternalEquation>
+    </ns1:derivedFrom>
+    <ns1:expression>
+      <ns1:Script>
+        <ns1:language rdf:resource="http://sadl.org/sadlimplicitmodel#Python-TF"/>
+        <ns1:script>r^gam = p / (constant)</ns1:script>
+      </ns1:Script>
+    </ns1:expression>
+    <ns1:expression>
+      <ns1:Script>
+        <ns1:language rdf:resource="http://sadl.org/sadlimplicitmodel#Python-NumPy"/>
+        <ns1:script>r^gam = p / (constant)</ns1:script>
+      </ns1:Script>
+    </ns1:expression>
+    <ns1:expression>
+      <ns1:Script>
+        <ns1:language rdf:resource="http://sadl.org/sadlimplicitmodel#Python"/>
+        <ns1:script>r^gam = p / (constant)</ns1:script>
+      </ns1:Script>
+    </ns1:expression>
+    <ns1:returnTypes rdf:parseType="Resource">
+      <rdf:first>
+        <ns1:DataDescriptor>
+          <ns1:augmentedType>
+            <ns1:SemanticType>
+              <ns1:semType rdf:resource="http://com.ge.research.sadl.darpa.aske.answer/density"/>
+            </ns1:SemanticType>
+          </ns1:augmentedType>
+          <ns1:dataType rdf:resource="http://www.w3.org/2001/XMLSchema#decimal"/>
+          <ns1:localDescriptorName>r</ns1:localDescriptorName>
+        </ns1:DataDescriptor>
+      </rdf:first>
+      <rdf:rest rdf:parseType="Resource">
+        <rdf:first>
+          <ns1:DataDescriptor>
+            <ns1:augmentedType>
+              <ns1:SemanticType>
+                <ns1:semType rdf:resource="http://com.ge.research.sadl.darpa.aske.answer/Latticedefectsandspecificheats"/>
+              </ns1:SemanticType>
+            </ns1:augmentedType>
+            <ns1:augmentedType>
+              <ns1:SemanticType>
+                <ns1:semType rdf:resource="http://com.ge.research.sadl.darpa.aske.answer/Latticedefectsandspecificheats"/>
+              </ns1:SemanticType>
+            </ns1:augmentedType>
+            <ns1:dataType rdf:resource="http://www.w3.org/2001/XMLSchema#decimal"/>
+            <ns1:localDescriptorName>gam</ns1:localDescriptorName>
+          </ns1:DataDescriptor>
+        </rdf:first>
+        <rdf:rest rdf:parseType="Resource">
+        </rdf:rest>
+      </rdf:rest>
+    </ns1:returnTypes>
+  </ns1:ExternalEquation>
+  <ns1:ExternalEquation rdf:about="http://sadl.org/demo2.sadl#equation_33">
+    <ns1:arguments rdf:parseType="Resource">
+      <rdf:first>
+        <ns1:DataDescriptor>
+          <ns1:dataType rdf:resource="http://www.w3.org/2001/XMLSchema#decimal"/>
+          <ns1:localDescriptorName>theta</ns1:localDescriptorName>
+        </ns1:DataDescriptor>
+      </rdf:first>
+      <rdf:rest rdf:parseType="Resource">
+        <rdf:first>
+          <ns1:DataDescriptor>
+            <ns1:dataType rdf:resource="http://www.w3.org/2001/XMLSchema#decimal"/>
+            <ns1:localDescriptorName>Tt</ns1:localDescriptorName>
+          </ns1:DataDescriptor>
+        </rdf:first>
+        <rdf:rest rdf:parseType="Resource">
+          <rdf:first>
+            <ns1:DataDescriptor>
+              <ns1:dataType rdf:resource="http://www.w3.org/2001/XMLSchema#decimal"/>
+              <ns1:localDescriptorName>T</ns1:localDescriptorName>
+            </ns1:DataDescriptor>
+          </rdf:first>
+          <rdf:rest rdf:parseType="Resource">
+            <rdf:first>
+              <ns1:DataDescriptor>
+                <ns1:dataType rdf:resource="http://www.w3.org/2001/XMLSchema#decimal"/>
+                <ns1:localDescriptorName>gamma</ns1:localDescriptorName>
+              </ns1:DataDescriptor>
+            </rdf:first>
+            <rdf:rest rdf:parseType="Resource">
+              <rdf:first>
+                <ns1:DataDescriptor>
+                  <ns1:dataType rdf:resource="http://www.w3.org/2001/XMLSchema#decimal"/>
+                  <ns1:localDescriptorName>exp</ns1:localDescriptorName>
+                </ns1:DataDescriptor>
+              </rdf:first>
+              <rdf:rest rdf:parseType="Resource">
+                <rdf:first>
+                  <ns1:DataDescriptor>
+                    <ns1:dataType rdf:resource="http://www.w3.org/2001/XMLSchema#decimal"/>
+                    <ns1:localDescriptorName>pt</ns1:localDescriptorName>
+                  </ns1:DataDescriptor>
+                </rdf:first>
+                <rdf:rest rdf:parseType="Resource">
+                </rdf:rest>
+              </rdf:rest>
+            </rdf:rest>
+          </rdf:rest>
+        </rdf:rest>
+      </rdf:rest>
+    </ns1:arguments>
+    <ns1:derivedFrom rdf:resource="http://sadl.org/demo2.sadl#equation_32"/>
+    <ns1:expression>
+      <ns1:Script>
+        <ns1:language rdf:resource="http://sadl.org/sadlimplicitmodel#Python-TF"/>
+        <ns1:script>p = (( (  tf.math.exp( theta/Tt) - 1 ) / (  tf.math.exp( theta/T ) - 1 ) ) * (  tf.math.pow( (T/Tt),( gamma/( gamma-1)) ) ) * exp(( theta/T ) * (  tf.math.exp( theta/T ) / (  tf.math.exp( theta/T ) - 1 ) ) - ( theta/Tt) * (  tf.math.exp( theta/Tt) / (  tf.math.exp( theta/Tt) - 1 ) ) )) * pt</ns1:script>
+      </ns1:Script>
+    </ns1:expression>
+    <ns1:expression>
+      <ns1:Script>
+        <ns1:language rdf:resource="http://sadl.org/sadlimplicitmodel#Python-NumPy"/>
+        <ns1:script>p = (( (  np.exp( theta/Tt) - 1 ) / (  np.exp( theta/T ) - 1 ) ) * (  np.power( (T/Tt),( gamma/( gamma-1)) ) ) * exp(( theta/T ) * (  np.exp( theta/T ) / (  np.exp( theta/T ) - 1 ) ) - ( theta/Tt) * (  np.exp( theta/Tt) / (  np.exp( theta/Tt) - 1 ) ) )) * pt</ns1:script>
+      </ns1:Script>
+    </ns1:expression>
+    <ns1:expression>
+      <ns1:Script>
+        <ns1:language rdf:resource="http://sadl.org/sadlimplicitmodel#Python"/>
+        <ns1:script>p = (( (  math.exp( theta/Tt) - 1 ) / (  math.exp( theta/T ) - 1 ) ) * (  math.pow( (T/Tt),( gamma/( gamma-1)) ) ) * exp(( theta/T ) * (  math.exp( theta/T ) / (  math.exp( theta/T ) - 1 ) ) - ( theta/Tt) * (  math.exp( theta/Tt) / (  math.exp( theta/Tt) - 1 ) ) )) * pt</ns1:script>
+      </ns1:Script>
+    </ns1:expression>
+    <ns1:returnTypes rdf:parseType="Resource">
+      <rdf:first>
+        <ns1:DataDescriptor>
+          <ns1:augmentedType>
+            <ns1:SemanticType>
+              <ns1:semType rdf:resource="http://com.ge.research.sadl.darpa.aske.answer/pressure"/>
+            </ns1:SemanticType>
+          </ns1:augmentedType>
+          <ns1:dataType rdf:resource="http://www.w3.org/2001/XMLSchema#decimal"/>
+          <ns1:localDescriptorName>p</ns1:localDescriptorName>
+        </ns1:DataDescriptor>
+      </rdf:first>
+      <rdf:rest rdf:parseType="Resource">
+      </rdf:rest>
+    </ns1:returnTypes>
+  </ns1:ExternalEquation>
+  <ns1:ExternalEquation rdf:about="http://sadl.org/demo2.sadl#equation_5">
+    <ns1:arguments rdf:parseType="Resource">
+      <rdf:first>
+        <ns1:DataDescriptor>
+          <ns1:dataType rdf:resource="http://www.w3.org/2001/XMLSchema#decimal"/>
+          <ns1:localDescriptorName>constant</ns1:localDescriptorName>
+        </ns1:DataDescriptor>
+      </rdf:first>
+      <rdf:rest rdf:parseType="Resource">
+        <rdf:first>
+          <ns1:DataDescriptor>
+            <ns1:augmentedType>
+              <ns1:SemanticType>
+                <ns1:semType rdf:resource="http://com.ge.research.sadl.darpa.aske.answer/density"/>
+              </ns1:SemanticType>
+            </ns1:augmentedType>
+            <ns1:dataType rdf:resource="http://www.w3.org/2001/XMLSchema#decimal"/>
+            <ns1:localDescriptorName>r</ns1:localDescriptorName>
+          </ns1:DataDescriptor>
+        </rdf:first>
+        <rdf:rest rdf:parseType="Resource">
+          <rdf:first>
+            <ns1:DataDescriptor>
+              <ns1:augmentedType>
+                <ns1:SemanticType>
+                  <ns1:semType rdf:resource="http://com.ge.research.sadl.darpa.aske.answer/Latticedefectsandspecificheats"/>
+                </ns1:SemanticType>
+              </ns1:augmentedType>
+              <ns1:augmentedType>
+                <ns1:SemanticType>
+                  <ns1:semType rdf:resource="http://com.ge.research.sadl.darpa.aske.answer/Latticedefectsandspecificheats"/>
+                </ns1:SemanticType>
+              </ns1:augmentedType>
+              <ns1:dataType rdf:resource="http://www.w3.org/2001/XMLSchema#decimal"/>
+              <ns1:localDescriptorName>gam</ns1:localDescriptorName>
+            </ns1:DataDescriptor>
+          </rdf:first>
+          <rdf:rest rdf:parseType="Resource">
+          </rdf:rest>
+        </rdf:rest>
+      </rdf:rest>
+    </ns1:arguments>
+    <ns1:derivedFrom rdf:resource="http://sadl.org/demo2.sadl#equation_4"/>
+    <ns1:expression>
+      <ns1:Script>
+        <ns1:language rdf:resource="http://sadl.org/sadlimplicitmodel#Python-TF"/>
+        <ns1:script>p = (constant) * r^gam</ns1:script>
+      </ns1:Script>
+    </ns1:expression>
+    <ns1:expression>
+      <ns1:Script>
+        <ns1:language rdf:resource="http://sadl.org/sadlimplicitmodel#Python-NumPy"/>
+        <ns1:script>p = (constant) * r^gam</ns1:script>
+      </ns1:Script>
+    </ns1:expression>
+    <ns1:expression>
+      <ns1:Script>
+        <ns1:language rdf:resource="http://sadl.org/sadlimplicitmodel#Python"/>
+        <ns1:script>p = (constant) * r^gam</ns1:script>
+      </ns1:Script>
+    </ns1:expression>
+    <ns1:returnTypes rdf:parseType="Resource">
+      <rdf:first>
+        <ns1:DataDescriptor>
+          <ns1:augmentedType>
+            <ns1:SemanticType>
+              <ns1:semType rdf:resource="http://com.ge.research.sadl.darpa.aske.answer/pressure"/>
+            </ns1:SemanticType>
+          </ns1:augmentedType>
+          <ns1:dataType rdf:resource="http://www.w3.org/2001/XMLSchema#decimal"/>
+          <ns1:localDescriptorName>p</ns1:localDescriptorName>
+        </ns1:DataDescriptor>
+      </rdf:first>
+      <rdf:rest rdf:parseType="Resource">
+      </rdf:rest>
+    </ns1:returnTypes>
+  </ns1:ExternalEquation>
+  <ns1:ExternalEquation rdf:about="http://sadl.org/demo2.sadl#equation_36">
+    <ns1:arguments rdf:parseType="Resource">
+      <rdf:first>
+        <ns1:DataDescriptor>
+          <ns1:dataType rdf:resource="http://www.w3.org/2001/XMLSchema#decimal"/>
+          <ns1:localDescriptorName>gamma</ns1:localDescriptorName>
+        </ns1:DataDescriptor>
+      </rdf:first>
+      <rdf:rest rdf:parseType="Resource">
+        <rdf:first>
+          <ns1:DataDescriptor>
+            <ns1:dataType rdf:resource="http://www.w3.org/2001/XMLSchema#decimal"/>
+            <ns1:localDescriptorName>Tt</ns1:localDescriptorName>
+          </ns1:DataDescriptor>
+        </rdf:first>
+        <rdf:rest rdf:parseType="Resource">
+          <rdf:first>
+            <ns1:DataDescriptor>
+              <ns1:dataType rdf:resource="http://www.w3.org/2001/XMLSchema#decimal"/>
+              <ns1:localDescriptorName>T</ns1:localDescriptorName>
+            </ns1:DataDescriptor>
+          </rdf:first>
+          <rdf:rest rdf:parseType="Resource">
+            <rdf:first>
+              <ns1:DataDescriptor>
+                <ns1:dataType rdf:resource="http://www.w3.org/2001/XMLSchema#decimal"/>
+                <ns1:localDescriptorName>theta</ns1:localDescriptorName>
+              </ns1:DataDescriptor>
+            </rdf:first>
+            <rdf:rest rdf:parseType="Resource">
+              <rdf:first>
+                <ns1:DataDescriptor>
+                  <ns1:augmentedType>
+                    <ns1:SemanticType>
+                      <ns1:semType rdf:resource="http://com.ge.research.sadl.darpa.aske.answer/pressure"/>
+                    </ns1:SemanticType>
+                  </ns1:augmentedType>
+                  <ns1:dataType rdf:resource="http://www.w3.org/2001/XMLSchema#decimal"/>
+                  <ns1:localDescriptorName>p</ns1:localDescriptorName>
+                </ns1:DataDescriptor>
+              </rdf:first>
+              <rdf:rest rdf:parseType="Resource">
+              </rdf:rest>
+            </rdf:rest>
+          </rdf:rest>
+        </rdf:rest>
+      </rdf:rest>
+    </ns1:arguments>
+    <ns1:derivedFrom rdf:resource="http://sadl.org/demo2.sadl#equation_35"/>
+    <ns1:expression>
+      <ns1:Script>
+        <ns1:language rdf:resource="http://sadl.org/sadlimplicitmodel#Python-TF"/>
+        <ns1:script>q = (( gamma/( gamma-1 ) ) * ( Tt/T - 1 ) + ( theta/T ) * ( 1 / (  tf.math.exp( theta/Tt) - 1 ) - 1 / (  tf.math.exp( theta/T ) - 1 ) )) * p</ns1:script>
+      </ns1:Script>
+    </ns1:expression>
+    <ns1:expression>
+      <ns1:Script>
+        <ns1:language rdf:resource="http://sadl.org/sadlimplicitmodel#Python-NumPy"/>
+        <ns1:script>q = (( gamma/( gamma-1 ) ) * ( Tt/T - 1 ) + ( theta/T ) * ( 1 / (  np.exp( theta/Tt) - 1 ) - 1 / (  np.exp( theta/T ) - 1 ) )) * p</ns1:script>
+      </ns1:Script>
+    </ns1:expression>
+    <ns1:expression>
+      <ns1:Script>
+        <ns1:language rdf:resource="http://sadl.org/sadlimplicitmodel#Python"/>
+        <ns1:script>q = (( gamma/( gamma-1 ) ) * ( Tt/T - 1 ) + ( theta/T ) * ( 1 / (  math.exp( theta/Tt) - 1 ) - 1 / (  math.exp( theta/T ) - 1 ) )) * p</ns1:script>
+      </ns1:Script>
+    </ns1:expression>
+    <ns1:returnTypes rdf:parseType="Resource">
+      <rdf:first>
+        <ns1:DataDescriptor>
+          <ns1:augmentedType>
+            <ns1:SemanticType>
+              <ns1:semType rdf:resource="http://com.ge.research.sadl.darpa.aske.answer/pressure"/>
+            </ns1:SemanticType>
+          </ns1:augmentedType>
+          <ns1:augmentedType>
+            <ns1:SemanticType>
+              <ns1:semType rdf:resource="http://com.ge.research.sadl.darpa.aske.answer/pressure"/>
+            </ns1:SemanticType>
+          </ns1:augmentedType>
+          <ns1:augmentedType>
+            <ns1:SemanticType>
+              <ns1:semType rdf:resource="http://com.ge.research.sadl.darpa.aske.answer/Pressurecoefficient"/>
+            </ns1:SemanticType>
+          </ns1:augmentedType>
+          <ns1:dataType rdf:resource="http://www.w3.org/2001/XMLSchema#decimal"/>
+          <ns1:localDescriptorName>q</ns1:localDescriptorName>
+        </ns1:DataDescriptor>
+      </rdf:first>
+      <rdf:rest rdf:parseType="Resource">
+      </rdf:rest>
+    </ns1:returnTypes>
+  </ns1:ExternalEquation>
+  <ns1:ExternalEquation rdf:about="http://sadl.org/demo2.sadl#equation_12">
+    <ns1:arguments rdf:parseType="Resource">
+      <rdf:first>
+        <ns1:DataDescriptor>
+          <ns1:augmentedType>
+            <ns1:SemanticType>
+              <ns1:semType rdf:resource="http://com.ge.research.sadl.darpa.aske.answer/pressure"/>
+            </ns1:SemanticType>
+          </ns1:augmentedType>
+          <ns1:dataType rdf:resource="http://www.w3.org/2001/XMLSchema#decimal"/>
+          <ns1:localDescriptorName>p</ns1:localDescriptorName>
+        </ns1:DataDescriptor>
+      </rdf:first>
+      <rdf:rest rdf:parseType="Resource">
+        <rdf:first>
+          <ns1:DataDescriptor>
+            <ns1:dataType rdf:resource="http://www.w3.org/2001/XMLSchema#decimal"/>
+            <ns1:localDescriptorName>pt</ns1:localDescriptorName>
+          </ns1:DataDescriptor>
+        </rdf:first>
+        <rdf:rest rdf:parseType="Resource">
+          <rdf:first>
+            <ns1:DataDescriptor>
+              <ns1:dataType rdf:resource="http://www.w3.org/2001/XMLSchema#decimal"/>
+              <ns1:localDescriptorName>rt</ns1:localDescriptorName>
+            </ns1:DataDescriptor>
+          </rdf:first>
+          <rdf:rest rdf:parseType="Resource">
+            <rdf:first>
+              <ns1:DataDescriptor>
+                <ns1:augmentedType>
+                  <ns1:SemanticType>
+                    <ns1:semType rdf:resource="http://com.ge.research.sadl.darpa.aske.answer/Latticedefectsandspecificheats"/>
+                  </ns1:SemanticType>
+                </ns1:augmentedType>
+                <ns1:augmentedType>
+                  <ns1:SemanticType>
+                    <ns1:semType rdf:resource="http://com.ge.research.sadl.darpa.aske.answer/Latticedefectsandspecificheats"/>
+                  </ns1:SemanticType>
+                </ns1:augmentedType>
+                <ns1:dataType rdf:resource="http://www.w3.org/2001/XMLSchema#decimal"/>
+                <ns1:localDescriptorName>gam</ns1:localDescriptorName>
+              </ns1:DataDescriptor>
+            </rdf:first>
+            <rdf:rest rdf:parseType="Resource">
+            </rdf:rest>
+          </rdf:rest>
+        </rdf:rest>
+      </rdf:rest>
+    </ns1:arguments>
+    <ns1:derivedFrom>
+      <ns1:ExternalEquation rdf:about="http://sadl.org/demo2.sadl#equation_10">
+        <ns1:expression>
+          <ns1:Script>
+            <ns1:language rdf:resource="http://sadl.org/sadlimplicitmodel#Text"/>
+            <ns1:script>p / r^gam = constant = pt / rt^gam</ns1:script>
+          </ns1:Script>
+        </ns1:expression>
+      </ns1:ExternalEquation>
+    </ns1:derivedFrom>
+    <ns1:expression>
+      <ns1:Script>
+        <ns1:language rdf:resource="http://sadl.org/sadlimplicitmodel#Python-TF"/>
+        <ns1:script>r^gam = p / (pt/rt^gam)</ns1:script>
+      </ns1:Script>
+    </ns1:expression>
+    <ns1:expression>
+      <ns1:Script>
+        <ns1:language rdf:resource="http://sadl.org/sadlimplicitmodel#Python-NumPy"/>
+        <ns1:script>r^gam = p / (pt/rt^gam)</ns1:script>
+      </ns1:Script>
+    </ns1:expression>
+    <ns1:expression>
+      <ns1:Script>
+        <ns1:language rdf:resource="http://sadl.org/sadlimplicitmodel#Python"/>
+        <ns1:script>r^gam = p / (pt/rt^gam)</ns1:script>
+      </ns1:Script>
+    </ns1:expression>
+    <ns1:returnTypes rdf:parseType="Resource">
+      <rdf:first>
+        <ns1:DataDescriptor>
+          <ns1:augmentedType>
+            <ns1:SemanticType>
+              <ns1:semType rdf:resource="http://com.ge.research.sadl.darpa.aske.answer/density"/>
+            </ns1:SemanticType>
+          </ns1:augmentedType>
+          <ns1:dataType rdf:resource="http://www.w3.org/2001/XMLSchema#decimal"/>
+          <ns1:localDescriptorName>r</ns1:localDescriptorName>
+        </ns1:DataDescriptor>
+      </rdf:first>
+      <rdf:rest rdf:parseType="Resource">
+        <rdf:first>
+          <ns1:DataDescriptor>
+            <ns1:augmentedType>
+              <ns1:SemanticType>
+                <ns1:semType rdf:resource="http://com.ge.research.sadl.darpa.aske.answer/Latticedefectsandspecificheats"/>
+              </ns1:SemanticType>
+            </ns1:augmentedType>
+            <ns1:augmentedType>
+              <ns1:SemanticType>
+                <ns1:semType rdf:resource="http://com.ge.research.sadl.darpa.aske.answer/Latticedefectsandspecificheats"/>
+              </ns1:SemanticType>
+            </ns1:augmentedType>
+            <ns1:dataType rdf:resource="http://www.w3.org/2001/XMLSchema#decimal"/>
+            <ns1:localDescriptorName>gam</ns1:localDescriptorName>
+          </ns1:DataDescriptor>
+        </rdf:first>
+        <rdf:rest rdf:parseType="Resource">
+        </rdf:rest>
+      </rdf:rest>
+    </ns1:returnTypes>
+  </ns1:ExternalEquation>
+  <rdf:Description rdf:about="http://com.ge.research.sadl.darpa.aske.answer/colortemperature">
+    <rdfs:label>color temperature</rdfs:label>
+    <rdfs:label>temperature</rdfs:label>
+    <rdfs:label>temperature,</rdfs:label>
+    <rdfs:label>temperature.</rdfs:label>
+    <rdfs:seeAlso rdf:resource="http://www.wikidata.org/entity/Q327408"/>
+    <rdfs:subClassOf rdf:resource="http://sadl.org/sadlimplicitmodel#ScientificConcept"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://com.ge.research.sadl.darpa.aske.answer/momentumindicator">
+    <rdfs:label>momentum indicator</rdfs:label>
+    <rdfs:label>momentum,</rdfs:label>
+    <rdfs:seeAlso rdf:resource="http://www.wikidata.org/entity/Q2230241"/>
+    <rdfs:subClassOf rdf:resource="http://sadl.org/sadlimplicitmodel#ScientificConcept"/>
+  </rdf:Description>
+  <ns1:ExternalEquation rdf:about="http://sadl.org/demo2.sadl#equation_23">
+    <ns1:arguments rdf:parseType="Resource">
+      <rdf:first>
+        <ns1:DataDescriptor>
+          <ns1:dataType rdf:resource="http://www.w3.org/2001/XMLSchema#decimal"/>
+          <ns1:localDescriptorName>A</ns1:localDescriptorName>
+        </ns1:DataDescriptor>
+      </rdf:first>
+      <rdf:rest rdf:parseType="Resource">
+        <rdf:first>
+          <ns1:DataDescriptor>
+            <ns1:augmentedType>
+              <ns1:SemanticType>
+                <ns1:semType rdf:resource="http://com.ge.research.sadl.darpa.aske.answer/Machnumber"/>
+              </ns1:SemanticType>
+            </ns1:augmentedType>
+            <ns1:dataType rdf:resource="http://www.w3.org/2001/XMLSchema#decimal"/>
+            <ns1:localDescriptorName>M</ns1:localDescriptorName>
+          </ns1:DataDescriptor>
+        </rdf:first>
+        <rdf:rest rdf:parseType="Resource">
+          <rdf:first>
+            <ns1:DataDescriptor>
+              <ns1:augmentedType>
+                <ns1:SemanticType>
+                  <ns1:semType rdf:resource="http://com.ge.research.sadl.darpa.aske.answer/Latticedefectsandspecificheats"/>
+                </ns1:SemanticType>
+              </ns1:augmentedType>
+              <ns1:augmentedType>
+                <ns1:SemanticType>
+                  <ns1:semType rdf:resource="http://com.ge.research.sadl.darpa.aske.answer/Latticedefectsandspecificheats"/>
+                </ns1:SemanticType>
+              </ns1:augmentedType>
+              <ns1:dataType rdf:resource="http://www.w3.org/2001/XMLSchema#decimal"/>
+              <ns1:localDescriptorName>gam</ns1:localDescriptorName>
+            </ns1:DataDescriptor>
+          </rdf:first>
+          <rdf:rest rdf:parseType="Resource">
+          </rdf:rest>
+        </rdf:rest>
+      </rdf:rest>
+    </ns1:arguments>
+    <ns1:derivedFrom rdf:resource="http://sadl.org/demo2.sadl#equation_21"/>
+    <ns1:expression>
+      <ns1:Script>
+        <ns1:language rdf:resource="http://sadl.org/sadlimplicitmodel#Python-TF"/>
+        <ns1:script>A* = A / (( tf.math.pow( 1+M,2)*( tf.math.pow( (1+M^2*(gam-1)/2),( ( gam+1) / ( gam-1 ) / 2 ) ) * ( (  tf.math.pow( ((gam+1)/2), - ( ( gam+1) / ( gam-1 ) / 2 ) ) / M)))</ns1:script>
+      </ns1:Script>
+    </ns1:expression>
+    <ns1:expression>
+      <ns1:Script>
+        <ns1:language rdf:resource="http://sadl.org/sadlimplicitmodel#Python-NumPy"/>
+        <ns1:script>A* = A / (( np.power( 1+M,2)*( np.power( (1+M^2*(gam-1)/2),( ( gam+1) / ( gam-1 ) / 2 ) ) * ( (  np.power( ((gam+1)/2), - ( ( gam+1) / ( gam-1 ) / 2 ) ) / M)))</ns1:script>
+      </ns1:Script>
+    </ns1:expression>
+    <ns1:expression>
+      <ns1:Script>
+        <ns1:language rdf:resource="http://sadl.org/sadlimplicitmodel#Python"/>
+        <ns1:script>A* = A / (( math.pow( 1+M,2)*( math.pow( (1+M^2*(gam-1)/2),( ( gam+1) / ( gam-1 ) / 2 ) ) * ( (  math.pow( ((gam+1)/2), - ( ( gam+1) / ( gam-1 ) / 2 ) ) / M)))</ns1:script>
+      </ns1:Script>
+    </ns1:expression>
+    <ns1:returnTypes rdf:parseType="Resource">
+      <rdf:first>
+        <ns1:DataDescriptor>
+          <ns1:dataType rdf:resource="http://www.w3.org/2001/XMLSchema#decimal"/>
+          <ns1:localDescriptorName>A</ns1:localDescriptorName>
+        </ns1:DataDescriptor>
+      </rdf:first>
+      <rdf:rest rdf:parseType="Resource">
+      </rdf:rest>
+    </ns1:returnTypes>
+  </ns1:ExternalEquation>
+  <ns1:ExternalEquation rdf:about="http://sadl.org/demo2.sadl#equation_11">
+    <ns1:arguments rdf:parseType="Resource">
+      <rdf:first>
+        <ns1:DataDescriptor>
+          <ns1:dataType rdf:resource="http://www.w3.org/2001/XMLSchema#decimal"/>
+          <ns1:localDescriptorName>pt</ns1:localDescriptorName>
+        </ns1:DataDescriptor>
+      </rdf:first>
+      <rdf:rest rdf:parseType="Resource">
+        <rdf:first>
+          <ns1:DataDescriptor>
+            <ns1:dataType rdf:resource="http://www.w3.org/2001/XMLSchema#decimal"/>
+            <ns1:localDescriptorName>rt</ns1:localDescriptorName>
+          </ns1:DataDescriptor>
+        </rdf:first>
+        <rdf:rest rdf:parseType="Resource">
+          <rdf:first>
+            <ns1:DataDescriptor>
+              <ns1:augmentedType>
+                <ns1:SemanticType>
+                  <ns1:semType rdf:resource="http://com.ge.research.sadl.darpa.aske.answer/Latticedefectsandspecificheats"/>
+                </ns1:SemanticType>
+              </ns1:augmentedType>
+              <ns1:augmentedType>
+                <ns1:SemanticType>
+                  <ns1:semType rdf:resource="http://com.ge.research.sadl.darpa.aske.answer/Latticedefectsandspecificheats"/>
+                </ns1:SemanticType>
+              </ns1:augmentedType>
+              <ns1:dataType rdf:resource="http://www.w3.org/2001/XMLSchema#decimal"/>
+              <ns1:localDescriptorName>gam</ns1:localDescriptorName>
+            </ns1:DataDescriptor>
+          </rdf:first>
+          <rdf:rest rdf:parseType="Resource">
+            <rdf:first>
+              <ns1:DataDescriptor>
+                <ns1:augmentedType>
+                  <ns1:SemanticType>
+                    <ns1:semType rdf:resource="http://com.ge.research.sadl.darpa.aske.answer/density"/>
+                  </ns1:SemanticType>
+                </ns1:augmentedType>
+                <ns1:dataType rdf:resource="http://www.w3.org/2001/XMLSchema#decimal"/>
+                <ns1:localDescriptorName>r</ns1:localDescriptorName>
+              </ns1:DataDescriptor>
+            </rdf:first>
+            <rdf:rest rdf:parseType="Resource">
+            </rdf:rest>
+          </rdf:rest>
+        </rdf:rest>
+      </rdf:rest>
+    </ns1:arguments>
+    <ns1:derivedFrom rdf:resource="http://sadl.org/demo2.sadl#equation_10"/>
+    <ns1:expression>
+      <ns1:Script>
+        <ns1:language rdf:resource="http://sadl.org/sadlimplicitmodel#Python-NumPy"/>
+        <ns1:script>p = (pt/rt^gam) * r^gam</ns1:script>
+      </ns1:Script>
+    </ns1:expression>
+    <ns1:expression>
+      <ns1:Script>
+        <ns1:language rdf:resource="http://sadl.org/sadlimplicitmodel#Python-TF"/>
+        <ns1:script>p = (pt/rt^gam) * r^gam</ns1:script>
+      </ns1:Script>
+    </ns1:expression>
+    <ns1:expression>
+      <ns1:Script>
+        <ns1:language rdf:resource="http://sadl.org/sadlimplicitmodel#Python"/>
+        <ns1:script>p = (pt/rt^gam) * r^gam</ns1:script>
+      </ns1:Script>
+    </ns1:expression>
+    <ns1:returnTypes rdf:parseType="Resource">
+      <rdf:first>
+        <ns1:DataDescriptor>
+          <ns1:augmentedType>
+            <ns1:SemanticType>
+              <ns1:semType rdf:resource="http://com.ge.research.sadl.darpa.aske.answer/pressure"/>
+            </ns1:SemanticType>
+          </ns1:augmentedType>
+          <ns1:dataType rdf:resource="http://www.w3.org/2001/XMLSchema#decimal"/>
+          <ns1:localDescriptorName>p</ns1:localDescriptorName>
+        </ns1:DataDescriptor>
+      </rdf:first>
+      <rdf:rest rdf:parseType="Resource">
+      </rdf:rest>
+    </ns1:returnTypes>
+  </ns1:ExternalEquation>
+  <ns1:ExternalEquation rdf:about="http://sadl.org/demo2.sadl#equation_3">
+    <ns1:arguments rdf:parseType="Resource">
+      <rdf:first>
+        <ns1:DataDescriptor>
+          <ns1:augmentedType>
+            <ns1:SemanticType>
+              <ns1:semType rdf:resource="http://com.ge.research.sadl.darpa.aske.answer/Latticedefectsandspecificheats"/>
+            </ns1:SemanticType>
+          </ns1:augmentedType>
+          <ns1:augmentedType>
+            <ns1:SemanticType>
+              <ns1:semType rdf:resource="http://com.ge.research.sadl.darpa.aske.answer/Latticedefectsandspecificheats"/>
+            </ns1:SemanticType>
+          </ns1:augmentedType>
+          <ns1:dataType rdf:resource="http://www.w3.org/2001/XMLSchema#decimal"/>
+          <ns1:localDescriptorName>gam</ns1:localDescriptorName>
+        </ns1:DataDescriptor>
+      </rdf:first>
+      <rdf:rest rdf:parseType="Resource">
+        <rdf:first>
+          <ns1:DataDescriptor>
+            <ns1:dataType rdf:resource="http://www.w3.org/2001/XMLSchema#decimal"/>
+            <ns1:localDescriptorName>R</ns1:localDescriptorName>
+          </ns1:DataDescriptor>
+        </rdf:first>
+        <rdf:rest rdf:parseType="Resource">
+          <rdf:first>
+            <ns1:DataDescriptor>
+              <ns1:dataType rdf:resource="http://www.w3.org/2001/XMLSchema#decimal"/>
+              <ns1:localDescriptorName>T</ns1:localDescriptorName>
+            </ns1:DataDescriptor>
+          </rdf:first>
+          <rdf:rest rdf:parseType="Resource">
+          </rdf:rest>
+        </rdf:rest>
+      </rdf:rest>
+    </ns1:arguments>
+    <ns1:expression>
+      <ns1:Script>
+        <ns1:language rdf:resource="http://sadl.org/sadlimplicitmodel#Python"/>
+        <ns1:script>a = math.sqrt( gam*R * T )</ns1:script>
+      </ns1:Script>
+    </ns1:expression>
+    <ns1:expression>
+      <ns1:Script>
+        <ns1:language rdf:resource="http://sadl.org/sadlimplicitmodel#Text"/>
+        <ns1:script>a = sqrt(gam * p / r) = sqrt (gam * R * T)</ns1:script>
+      </ns1:Script>
+    </ns1:expression>
+    <ns1:expression>
+      <ns1:Script>
+        <ns1:language rdf:resource="http://sadl.org/sadlimplicitmodel#Python-NumPy"/>
+        <ns1:script>a = np.sqrt( gam*R * T )</ns1:script>
+      </ns1:Script>
+    </ns1:expression>
+    <ns1:expression>
+      <ns1:Script>
+        <ns1:language rdf:resource="http://sadl.org/sadlimplicitmodel#Python-TF"/>
+        <ns1:script>a = tf.math.sqrt( gam*R * T )</ns1:script>
+      </ns1:Script>
+    </ns1:expression>
+    <ns1:returnTypes rdf:parseType="Resource">
+      <rdf:first>
+        <ns1:DataDescriptor>
+          <ns1:augmentedType>
+            <ns1:SemanticType>
+              <ns1:semType rdf:resource="http://com.ge.research.sadl.darpa.aske.answer/soundpower"/>
+            </ns1:SemanticType>
+          </ns1:augmentedType>
+          <ns1:dataType rdf:resource="http://www.w3.org/2001/XMLSchema#decimal"/>
+          <ns1:localDescriptorName>a</ns1:localDescriptorName>
+        </ns1:DataDescriptor>
+      </rdf:first>
+      <rdf:rest rdf:parseType="Resource">
+      </rdf:rest>
+    </ns1:returnTypes>
+  </ns1:ExternalEquation>
+  <ns1:ExternalEquation rdf:about="http://sadl.org/demo2.sadl#equation_9">
+    <ns1:arguments rdf:parseType="Resource">
+      <rdf:first>
+        <ns1:DataDescriptor>
+          <ns1:augmentedType>
+            <ns1:SemanticType>
+              <ns1:semType rdf:resource="http://com.ge.research.sadl.darpa.aske.answer/pressure"/>
+            </ns1:SemanticType>
+          </ns1:augmentedType>
+          <ns1:dataType rdf:resource="http://www.w3.org/2001/XMLSchema#decimal"/>
+          <ns1:localDescriptorName>p</ns1:localDescriptorName>
+        </ns1:DataDescriptor>
+      </rdf:first>
+      <rdf:rest rdf:parseType="Resource">
+        <rdf:first>
+          <ns1:DataDescriptor>
+            <ns1:dataType rdf:resource="http://www.w3.org/2001/XMLSchema#decimal"/>
+            <ns1:localDescriptorName>constant</ns1:localDescriptorName>
+          </ns1:DataDescriptor>
+        </rdf:first>
+        <rdf:rest rdf:parseType="Resource">
+        </rdf:rest>
+      </rdf:rest>
+    </ns1:arguments>
+    <ns1:derivedFrom>
+      <ns1:ExternalEquation rdf:about="http://sadl.org/demo2.sadl#equation_7">
+        <ns1:expression>
+          <ns1:Script>
+            <ns1:language rdf:resource="http://sadl.org/sadlimplicitmodel#Text"/>
+            <ns1:script>p / r^gam = constant = pt / rt^gam</ns1:script>
+          </ns1:Script>
+        </ns1:expression>
+      </ns1:ExternalEquation>
+    </ns1:derivedFrom>
+    <ns1:expression>
+      <ns1:Script>
+        <ns1:language rdf:resource="http://sadl.org/sadlimplicitmodel#Python-TF"/>
+        <ns1:script>r^gam = p / (constant)</ns1:script>
+      </ns1:Script>
+    </ns1:expression>
+    <ns1:expression>
+      <ns1:Script>
+        <ns1:language rdf:resource="http://sadl.org/sadlimplicitmodel#Python-NumPy"/>
+        <ns1:script>r^gam = p / (constant)</ns1:script>
+      </ns1:Script>
+    </ns1:expression>
+    <ns1:expression>
+      <ns1:Script>
+        <ns1:language rdf:resource="http://sadl.org/sadlimplicitmodel#Python"/>
+        <ns1:script>r^gam = p / (constant)</ns1:script>
+      </ns1:Script>
+    </ns1:expression>
+    <ns1:returnTypes rdf:parseType="Resource">
+      <rdf:first>
+        <ns1:DataDescriptor>
+          <ns1:augmentedType>
+            <ns1:SemanticType>
+              <ns1:semType rdf:resource="http://com.ge.research.sadl.darpa.aske.answer/density"/>
+            </ns1:SemanticType>
+          </ns1:augmentedType>
+          <ns1:dataType rdf:resource="http://www.w3.org/2001/XMLSchema#decimal"/>
+          <ns1:localDescriptorName>r</ns1:localDescriptorName>
+        </ns1:DataDescriptor>
+      </rdf:first>
+      <rdf:rest rdf:parseType="Resource">
+        <rdf:first>
+          <ns1:DataDescriptor>
+            <ns1:augmentedType>
+              <ns1:SemanticType>
+                <ns1:semType rdf:resource="http://com.ge.research.sadl.darpa.aske.answer/Latticedefectsandspecificheats"/>
+              </ns1:SemanticType>
+            </ns1:augmentedType>
+            <ns1:augmentedType>
+              <ns1:SemanticType>
+                <ns1:semType rdf:resource="http://com.ge.research.sadl.darpa.aske.answer/Latticedefectsandspecificheats"/>
+              </ns1:SemanticType>
+            </ns1:augmentedType>
+            <ns1:dataType rdf:resource="http://www.w3.org/2001/XMLSchema#decimal"/>
+            <ns1:localDescriptorName>gam</ns1:localDescriptorName>
+          </ns1:DataDescriptor>
+        </rdf:first>
+        <rdf:rest rdf:parseType="Resource">
+        </rdf:rest>
+      </rdf:rest>
+    </ns1:returnTypes>
+  </ns1:ExternalEquation>
+  <ns1:ExternalEquation rdf:about="http://sadl.org/demo2.sadl#equation_8">
+    <ns1:arguments rdf:parseType="Resource">
+      <rdf:first>
+        <ns1:DataDescriptor>
+          <ns1:dataType rdf:resource="http://www.w3.org/2001/XMLSchema#decimal"/>
+          <ns1:localDescriptorName>constant</ns1:localDescriptorName>
+        </ns1:DataDescriptor>
+      </rdf:first>
+      <rdf:rest rdf:parseType="Resource">
+        <rdf:first>
+          <ns1:DataDescriptor>
+            <ns1:augmentedType>
+              <ns1:SemanticType>
+                <ns1:semType rdf:resource="http://com.ge.research.sadl.darpa.aske.answer/density"/>
+              </ns1:SemanticType>
+            </ns1:augmentedType>
+            <ns1:dataType rdf:resource="http://www.w3.org/2001/XMLSchema#decimal"/>
+            <ns1:localDescriptorName>r</ns1:localDescriptorName>
+          </ns1:DataDescriptor>
+        </rdf:first>
+        <rdf:rest rdf:parseType="Resource">
+          <rdf:first>
+            <ns1:DataDescriptor>
+              <ns1:augmentedType>
+                <ns1:SemanticType>
+                  <ns1:semType rdf:resource="http://com.ge.research.sadl.darpa.aske.answer/Latticedefectsandspecificheats"/>
+                </ns1:SemanticType>
+              </ns1:augmentedType>
+              <ns1:augmentedType>
+                <ns1:SemanticType>
+                  <ns1:semType rdf:resource="http://com.ge.research.sadl.darpa.aske.answer/Latticedefectsandspecificheats"/>
+                </ns1:SemanticType>
+              </ns1:augmentedType>
+              <ns1:dataType rdf:resource="http://www.w3.org/2001/XMLSchema#decimal"/>
+              <ns1:localDescriptorName>gam</ns1:localDescriptorName>
+            </ns1:DataDescriptor>
+          </rdf:first>
+          <rdf:rest rdf:parseType="Resource">
+          </rdf:rest>
+        </rdf:rest>
+      </rdf:rest>
+    </ns1:arguments>
+    <ns1:derivedFrom rdf:resource="http://sadl.org/demo2.sadl#equation_7"/>
+    <ns1:expression>
+      <ns1:Script>
+        <ns1:language rdf:resource="http://sadl.org/sadlimplicitmodel#Python-NumPy"/>
+        <ns1:script>p = (constant) * r^gam</ns1:script>
+      </ns1:Script>
+    </ns1:expression>
+    <ns1:expression>
+      <ns1:Script>
+        <ns1:language rdf:resource="http://sadl.org/sadlimplicitmodel#Python"/>
+        <ns1:script>p = (constant) * r^gam</ns1:script>
+      </ns1:Script>
+    </ns1:expression>
+    <ns1:expression>
+      <ns1:Script>
+        <ns1:language rdf:resource="http://sadl.org/sadlimplicitmodel#Python-TF"/>
+        <ns1:script>p = (constant) * r^gam</ns1:script>
+      </ns1:Script>
+    </ns1:expression>
+    <ns1:returnTypes rdf:parseType="Resource">
+      <rdf:first>
+        <ns1:DataDescriptor>
+          <ns1:augmentedType>
+            <ns1:SemanticType>
+              <ns1:semType rdf:resource="http://com.ge.research.sadl.darpa.aske.answer/pressure"/>
+            </ns1:SemanticType>
+          </ns1:augmentedType>
+          <ns1:dataType rdf:resource="http://www.w3.org/2001/XMLSchema#decimal"/>
+          <ns1:localDescriptorName>p</ns1:localDescriptorName>
+        </ns1:DataDescriptor>
+      </rdf:first>
+      <rdf:rest rdf:parseType="Resource">
+      </rdf:rest>
+    </ns1:returnTypes>
+  </ns1:ExternalEquation>
+  <ns1:ExternalEquation rdf:about="http://sadl.org/demo2.sadl#equation_17">
+    <ns1:arguments rdf:parseType="Resource">
+      <rdf:first>
+        <ns1:DataDescriptor>
+          <ns1:augmentedType>
+            <ns1:SemanticType>
+              <ns1:semType rdf:resource="http://com.ge.research.sadl.darpa.aske.answer/pressure"/>
+            </ns1:SemanticType>
+          </ns1:augmentedType>
+          <ns1:dataType rdf:resource="http://www.w3.org/2001/XMLSchema#decimal"/>
+          <ns1:localDescriptorName>p</ns1:localDescriptorName>
+        </ns1:DataDescriptor>
+      </rdf:first>
+      <rdf:rest rdf:parseType="Resource">
+        <rdf:first>
+          <ns1:DataDescriptor>
+            <ns1:augmentedType>
+              <ns1:SemanticType>
+                <ns1:semType rdf:resource="http://com.ge.research.sadl.darpa.aske.answer/Machnumber"/>
+              </ns1:SemanticType>
+            </ns1:augmentedType>
+            <ns1:dataType rdf:resource="http://www.w3.org/2001/XMLSchema#decimal"/>
+            <ns1:localDescriptorName>M</ns1:localDescriptorName>
+          </ns1:DataDescriptor>
+        </rdf:first>
+        <rdf:rest rdf:parseType="Resource">
+          <rdf:first>
+            <ns1:DataDescriptor>
+              <ns1:augmentedType>
+                <ns1:SemanticType>
+                  <ns1:semType rdf:resource="http://com.ge.research.sadl.darpa.aske.answer/Latticedefectsandspecificheats"/>
+                </ns1:SemanticType>
+              </ns1:augmentedType>
+              <ns1:augmentedType>
+                <ns1:SemanticType>
+                  <ns1:semType rdf:resource="http://com.ge.research.sadl.darpa.aske.answer/Latticedefectsandspecificheats"/>
+                </ns1:SemanticType>
+              </ns1:augmentedType>
+              <ns1:dataType rdf:resource="http://www.w3.org/2001/XMLSchema#decimal"/>
+              <ns1:localDescriptorName>gam</ns1:localDescriptorName>
+            </ns1:DataDescriptor>
+          </rdf:first>
+          <rdf:rest rdf:parseType="Resource">
+          </rdf:rest>
+        </rdf:rest>
+      </rdf:rest>
+    </ns1:arguments>
+    <ns1:derivedFrom rdf:resource="http://sadl.org/demo2.sadl#equation_15"/>
+    <ns1:expression>
+      <ns1:Script>
+        <ns1:language rdf:resource="http://sadl.org/sadlimplicitmodel#Python"/>
+        <ns1:script>pt = p / (( 1 + ( math.pow( 1+M,2)*( math.pow( (1+M^2*(gam-1)/2), - ( gam/( gam-1) ))))</ns1:script>
+      </ns1:Script>
+    </ns1:expression>
+    <ns1:expression>
+      <ns1:Script>
+        <ns1:language rdf:resource="http://sadl.org/sadlimplicitmodel#Python-NumPy"/>
+        <ns1:script>pt = p / (( 1 + ( np.power( 1+M,2)*( np.power( (1+M^2*(gam-1)/2), - ( gam/( gam-1) ))))</ns1:script>
+      </ns1:Script>
+    </ns1:expression>
+    <ns1:expression>
+      <ns1:Script>
+        <ns1:language rdf:resource="http://sadl.org/sadlimplicitmodel#Python-TF"/>
+        <ns1:script>pt = p / (( 1 + ( tf.math.pow( 1+M,2)*( tf.math.pow( (1+M^2*(gam-1)/2), - ( gam/( gam-1) ))))</ns1:script>
+      </ns1:Script>
+    </ns1:expression>
+    <ns1:returnTypes rdf:parseType="Resource">
+      <rdf:first>
+        <ns1:DataDescriptor>
+          <ns1:dataType rdf:resource="http://www.w3.org/2001/XMLSchema#decimal"/>
+          <ns1:localDescriptorName>pt</ns1:localDescriptorName>
+        </ns1:DataDescriptor>
+      </rdf:first>
+      <rdf:rest rdf:parseType="Resource">
+      </rdf:rest>
+    </ns1:returnTypes>
+  </ns1:ExternalEquation>
+  <ns1:ExternalEquation rdf:about="http://sadl.org/demo2.sadl#equation_19">
+    <ns1:arguments rdf:parseType="Resource">
+      <rdf:first>
+        <ns1:DataDescriptor>
+          <ns1:augmentedType>
+            <ns1:SemanticType>
+              <ns1:semType rdf:resource="http://com.ge.research.sadl.darpa.aske.answer/Machnumber"/>
+            </ns1:SemanticType>
+          </ns1:augmentedType>
+          <ns1:dataType rdf:resource="http://www.w3.org/2001/XMLSchema#decimal"/>
+          <ns1:localDescriptorName>M</ns1:localDescriptorName>
+        </ns1:DataDescriptor>
+      </rdf:first>
+      <rdf:rest rdf:parseType="Resource">
+        <rdf:first>
+          <ns1:DataDescriptor>
+            <ns1:augmentedType>
+              <ns1:SemanticType>
+                <ns1:semType rdf:resource="http://com.ge.research.sadl.darpa.aske.answer/Latticedefectsandspecificheats"/>
+              </ns1:SemanticType>
+            </ns1:augmentedType>
+            <ns1:augmentedType>
+              <ns1:SemanticType>
+                <ns1:semType rdf:resource="http://com.ge.research.sadl.darpa.aske.answer/Latticedefectsandspecificheats"/>
+              </ns1:SemanticType>
+            </ns1:augmentedType>
+            <ns1:dataType rdf:resource="http://www.w3.org/2001/XMLSchema#decimal"/>
+            <ns1:localDescriptorName>gam</ns1:localDescriptorName>
+          </ns1:DataDescriptor>
+        </rdf:first>
+        <rdf:rest rdf:parseType="Resource">
+          <rdf:first>
+            <ns1:DataDescriptor>
+              <ns1:dataType rdf:resource="http://www.w3.org/2001/XMLSchema#decimal"/>
+              <ns1:localDescriptorName>rt</ns1:localDescriptorName>
+            </ns1:DataDescriptor>
+          </rdf:first>
+          <rdf:rest rdf:parseType="Resource">
+          </rdf:rest>
+        </rdf:rest>
+      </rdf:rest>
+    </ns1:arguments>
+    <ns1:derivedFrom rdf:resource="http://sadl.org/demo2.sadl#equation_18"/>
+    <ns1:expression>
+      <ns1:Script>
+        <ns1:language rdf:resource="http://sadl.org/sadlimplicitmodel#Python"/>
+        <ns1:script>r = (( 1 + ( math.pow( 1+M,2)*( math.pow( (1+M^2*(gam-1)/2), - ( 1)/( gam-1 ) )))) * rt</ns1:script>
+      </ns1:Script>
+    </ns1:expression>
+    <ns1:expression>
+      <ns1:Script>
+        <ns1:language rdf:resource="http://sadl.org/sadlimplicitmodel#Python-TF"/>
+        <ns1:script>r = (( 1 + ( tf.math.pow( 1+M,2)*( tf.math.pow( (1+M^2*(gam-1)/2), - ( 1)/( gam-1 ) )))) * rt</ns1:script>
+      </ns1:Script>
+    </ns1:expression>
+    <ns1:expression>
+      <ns1:Script>
+        <ns1:language rdf:resource="http://sadl.org/sadlimplicitmodel#Python-NumPy"/>
+        <ns1:script>r = (( 1 + ( np.power( 1+M,2)*( np.power( (1+M^2*(gam-1)/2), - ( 1)/( gam-1 ) )))) * rt</ns1:script>
+      </ns1:Script>
+    </ns1:expression>
+    <ns1:returnTypes rdf:parseType="Resource">
+      <rdf:first>
+        <ns1:DataDescriptor>
+          <ns1:augmentedType>
+            <ns1:SemanticType>
+              <ns1:semType rdf:resource="http://com.ge.research.sadl.darpa.aske.answer/density"/>
+            </ns1:SemanticType>
+          </ns1:augmentedType>
+          <ns1:dataType rdf:resource="http://www.w3.org/2001/XMLSchema#decimal"/>
+          <ns1:localDescriptorName>r</ns1:localDescriptorName>
+        </ns1:DataDescriptor>
+      </rdf:first>
+      <rdf:rest rdf:parseType="Resource">
+      </rdf:rest>
+    </ns1:returnTypes>
+  </ns1:ExternalEquation>
+</rdf:RDF>

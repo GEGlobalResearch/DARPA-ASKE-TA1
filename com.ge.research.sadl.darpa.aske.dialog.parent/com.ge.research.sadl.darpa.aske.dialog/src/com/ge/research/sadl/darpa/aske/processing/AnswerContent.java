@@ -6,24 +6,26 @@ import com.ge.research.sadl.darpa.aske.curation.AnswerCurationManager.Agent;
 
 public class AnswerContent extends StatementContent {
 	private Object answer;
-	private ExpectsAnswerContent answerTo;
+	private StatementContent answerTo;
 	private Object otherResults;
 
 	public AnswerContent(EObject host) {
 		super(host);
-		// TODO Auto-generated constructor stub
 	}
 
 	public AnswerContent(EObject host, Agent agnt) {
 		super(host, agnt);
-		// TODO Auto-generated constructor stub
 	}
 
-	public ExpectsAnswerContent getAnswerTo() {
+	public AnswerContent(EObject host, Agent agnt, String uptxt) {
+		super(host, agnt, uptxt);
+	}
+
+	public StatementContent getAnswerTo() {
 		return answerTo;
 	}
 
-	public void setAnswerTo(ExpectsAnswerContent answerTo) {
+	public void setAnswerTo(StatementContent answerTo) {
 		this.answerTo = answerTo;
 	}
 

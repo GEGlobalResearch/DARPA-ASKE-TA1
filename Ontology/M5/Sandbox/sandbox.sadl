@@ -1,0 +1,9 @@
+ uri "http://sadl.org/sandbox.sadl" alias sandbox.
+ 
+ PO is a class.
+ velocity (alias "speed") describes PO with values of type UnittedQuantity.
+ 
+ PO is a class.
+
+// MyPo is a PO with speed 23 mph.
+ 

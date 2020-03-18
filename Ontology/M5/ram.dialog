@@ -1,0 +1,5 @@
+ uri "http://sadl.org/ram.dialog" alias ram.
+ 
+ import "http://sadl.org/SpeedOfSound.sadl".
+ 
+// Extract from "file:///c:/TMP/compute.java".

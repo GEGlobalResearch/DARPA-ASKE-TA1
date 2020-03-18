@@ -1,0 +1,1689 @@
+<rdf:RDF
+    xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+    xmlns:cem="http://sadl.org/CodeExtractionModel.sadl#"
+    xmlns:sadllistmodel="http://sadl.org/sadllistmodel#"
+    xmlns:owl="http://www.w3.org/2002/07/owl#"
+    xmlns:sadlimplicitmodel="http://sadl.org/sadlimplicitmodel#"
+    xmlns:rdfs="http://www.w3.org/2000/01/rdf-schema#"
+    xmlns="http://com.ge.research.sadl.darpa.aske.answer/compute_java#"
+    xmlns:xsd="http://www.w3.org/2001/XMLSchema#"
+  xml:base="http://com.ge.research.sadl.darpa.aske.answer/compute_java">
+  <owl:Ontology rdf:about="http://com.ge.research.sadl.darpa.aske.answer/compute_java">
+    <owl:imports rdf:resource="http://sadl.org/sadllistmodel"/>
+    <owl:imports rdf:resource="http://sadl.org/sadlimplicitmodel"/>
+    <owl:imports rdf:resource="http://sadl.org/CodeExtractionModel.sadl"/>
+    <rdfs:comment xml:lang="en">This ontology was created by extraction from code by the ANSWER JavaModelExtractorJP.</rdfs:comment>
+  </owl:Ontology>
+  <cem:MethodVariable rdf:ID="Compute.main.air">
+    <cem:reference>
+      <cem:Reference>
+        <cem:endsAt rdf:datatype="http://www.w3.org/2001/XMLSchema#int"
+        >12</cem:endsAt>
+        <cem:beginsAt rdf:datatype="http://www.w3.org/2001/XMLSchema#int"
+        >12</cem:beginsAt>
+        <cem:usage rdf:resource="http://sadl.org/CodeExtractionModel.sadl#Reassigned"/>
+        <cem:codeBlock>
+          <cem:Method rdf:ID="Compute.main">
+            <cem:doesComputation rdf:datatype="http://www.w3.org/2001/XMLSchema#boolean"
+            >true</cem:doesComputation>
+            <cem:cmArguments rdf:parseType="Resource">
+              <sadllistmodel:first>
+                <cem:MethodArgument rdf:ID="Compute.main.args">
+                  <cem:varType rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+                  >String[]</cem:varType>
+                  <cem:varName rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+                  >args</cem:varName>
+                  <cem:reference>
+                    <cem:Reference>
+                      <cem:input rdf:datatype="http://www.w3.org/2001/XMLSchema#boolean"
+                      >true</cem:input>
+                      <cem:endsAt rdf:datatype="http://www.w3.org/2001/XMLSchema#int"
+                      >5</cem:endsAt>
+                      <cem:beginsAt rdf:datatype="http://www.w3.org/2001/XMLSchema#int"
+                      >5</cem:beginsAt>
+                      <cem:usage rdf:resource="http://sadl.org/CodeExtractionModel.sadl#Defined"/>
+                      <cem:codeBlock rdf:resource="http://com.ge.research.sadl.darpa.aske.answer/compute_java#Compute.main"/>
+                    </cem:Reference>
+                  </cem:reference>
+                </cem:MethodArgument>
+              </sadllistmodel:first>
+              <rdf:type rdf:nodeID="A0"/>
+            </cem:cmArguments>
+            <cem:serialization rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+            >public static void main(String[] args) {&#xD;
+    double Cp, air;&#xD;
+    Compute c = new Compute();&#xD;
+    Cp = c.getCp(200, 0);&#xD;
+    System.out.println("Cp = " + Cp);&#xD;
+    air = c.getAir(0.85, 1.4);&#xD;
+    System.out.println("Airflow = " + air);&#xD;
+}</cem:serialization>
+            <cem:cmArguments rdf:parseType="Resource">
+              <sadllistmodel:first rdf:resource="http://com.ge.research.sadl.darpa.aske.answer/compute_java#Compute.main.args"/>
+              <rdf:type rdf:nodeID="A0"/>
+            </cem:cmArguments>
+            <cem:endsAt rdf:datatype="http://www.w3.org/2001/XMLSchema#int"
+            >15</cem:endsAt>
+            <cem:beginsAt rdf:datatype="http://www.w3.org/2001/XMLSchema#int"
+            >5</cem:beginsAt>
+            <cem:cmArguments rdf:parseType="Resource">
+              <sadllistmodel:first rdf:resource="http://com.ge.research.sadl.darpa.aske.answer/compute_java#Compute.main.args"/>
+              <rdf:type rdf:nodeID="A0"/>
+            </cem:cmArguments>
+            <cem:containedIn>
+              <cem:Class rdf:ID="Compute">
+                <cem:serialization rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+                >public class Compute {&#xD;
+&#xD;
+    public static void main(String[] args) {&#xD;
+        double Cp, air;&#xD;
+        Compute c = new Compute();&#xD;
+        Cp = c.getCp(200, 0);&#xD;
+        System.out.println("Cp = " + Cp);&#xD;
+        air = c.getAir(0.85, 1.4);&#xD;
+        System.out.println("Airflow = " + air);&#xD;
+    }&#xD;
+&#xD;
+    public double getCp(double temp, int opt) {&#xD;
+        // Utility to get cp as a function of temp&#xD;
+        double number, a, b, c, d;&#xD;
+        /* BTU/R */&#xD;
+        a = -4.4702130e-13;&#xD;
+        b = -5.1286514e-10;&#xD;
+        c = 2.8323331e-05;&#xD;
+        d = 0.2245283;&#xD;
+        if (opt == 0) {&#xD;
+            number = .2399;&#xD;
+        } else {&#xD;
+            number = a * temp * temp * temp + b * temp * temp + c * temp + d;&#xD;
+        }&#xD;
+        return (number);&#xD;
+    }&#xD;
+&#xD;
+    public double getAir(double mach, double gamma) {&#xD;
+        /* Utility to get the corrected airflow per area given the Mach number */&#xD;
+        double number, fac1, fac2;&#xD;
+        fac2 = (gamma + 1.0) / (2.0 * (gamma - 1.0));&#xD;
+        fac1 = Math.pow((1.0 + .5 * (gamma - 1.0) * mach * mach), fac2);&#xD;
+        number = .50161 * Math.sqrt(gamma) * mach / fac1;&#xD;
+        return (number);&#xD;
+    }&#xD;
+}</cem:serialization>
+              </cem:Class>
+            </cem:containedIn>
+          </cem:Method>
+        </cem:codeBlock>
+      </cem:Reference>
+    </cem:reference>
+    <cem:reference>
+      <cem:Reference>
+        <cem:endsAt rdf:datatype="http://www.w3.org/2001/XMLSchema#int"
+        >13</cem:endsAt>
+        <cem:beginsAt rdf:datatype="http://www.w3.org/2001/XMLSchema#int"
+        >13</cem:beginsAt>
+        <cem:usage rdf:resource="http://sadl.org/CodeExtractionModel.sadl#Used"/>
+        <cem:codeBlock rdf:resource="http://com.ge.research.sadl.darpa.aske.answer/compute_java#Compute.main"/>
+      </cem:Reference>
+    </cem:reference>
+    <cem:reference>
+      <cem:Reference>
+        <cem:endsAt rdf:datatype="http://www.w3.org/2001/XMLSchema#int"
+        >13</cem:endsAt>
+        <cem:beginsAt rdf:datatype="http://www.w3.org/2001/XMLSchema#int"
+        >13</cem:beginsAt>
+        <cem:usage rdf:resource="http://sadl.org/CodeExtractionModel.sadl#Used"/>
+        <cem:codeBlock rdf:resource="http://com.ge.research.sadl.darpa.aske.answer/compute_java#Compute.main"/>
+      </cem:Reference>
+    </cem:reference>
+    <cem:reference>
+      <cem:Reference>
+        <cem:endsAt rdf:datatype="http://www.w3.org/2001/XMLSchema#int"
+        >6</cem:endsAt>
+        <cem:beginsAt rdf:datatype="http://www.w3.org/2001/XMLSchema#int"
+        >6</cem:beginsAt>
+        <cem:usage rdf:resource="http://sadl.org/CodeExtractionModel.sadl#Defined"/>
+        <cem:codeBlock rdf:resource="http://com.ge.research.sadl.darpa.aske.answer/compute_java#Compute.main"/>
+      </cem:Reference>
+    </cem:reference>
+    <cem:reference>
+      <cem:Reference>
+        <cem:endsAt rdf:datatype="http://www.w3.org/2001/XMLSchema#int"
+        >12</cem:endsAt>
+        <cem:beginsAt rdf:datatype="http://www.w3.org/2001/XMLSchema#int"
+        >12</cem:beginsAt>
+        <cem:usage rdf:resource="http://sadl.org/CodeExtractionModel.sadl#Reassigned"/>
+        <cem:codeBlock rdf:resource="http://com.ge.research.sadl.darpa.aske.answer/compute_java#Compute.main"/>
+      </cem:Reference>
+    </cem:reference>
+    <cem:reference>
+      <cem:Reference>
+        <cem:endsAt rdf:datatype="http://www.w3.org/2001/XMLSchema#int"
+        >12</cem:endsAt>
+        <cem:beginsAt rdf:datatype="http://www.w3.org/2001/XMLSchema#int"
+        >12</cem:beginsAt>
+        <cem:usage rdf:resource="http://sadl.org/CodeExtractionModel.sadl#Reassigned"/>
+        <cem:codeBlock rdf:resource="http://com.ge.research.sadl.darpa.aske.answer/compute_java#Compute.main"/>
+      </cem:Reference>
+    </cem:reference>
+    <cem:varType rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >double</cem:varType>
+    <rdfs:label xml:lang="Java">double air;</rdfs:label>
+    <cem:varName rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >air</cem:varName>
+    <cem:reference>
+      <cem:Reference>
+        <cem:endsAt rdf:datatype="http://www.w3.org/2001/XMLSchema#int"
+        >13</cem:endsAt>
+        <cem:beginsAt rdf:datatype="http://www.w3.org/2001/XMLSchema#int"
+        >13</cem:beginsAt>
+        <cem:usage rdf:resource="http://sadl.org/CodeExtractionModel.sadl#Used"/>
+        <cem:codeBlock rdf:resource="http://com.ge.research.sadl.darpa.aske.answer/compute_java#Compute.main"/>
+      </cem:Reference>
+    </cem:reference>
+  </cem:MethodVariable>
+  <cem:MethodVariable rdf:ID="Compute.getAir.fac1">
+    <cem:reference>
+      <cem:Reference>
+        <cem:endsAt rdf:datatype="http://www.w3.org/2001/XMLSchema#int"
+        >36</cem:endsAt>
+        <cem:beginsAt rdf:datatype="http://www.w3.org/2001/XMLSchema#int"
+        >36</cem:beginsAt>
+        <cem:usage rdf:resource="http://sadl.org/CodeExtractionModel.sadl#Defined"/>
+        <cem:codeBlock>
+          <cem:Method rdf:ID="Compute.getAir">
+            <cem:doesComputation rdf:datatype="http://www.w3.org/2001/XMLSchema#boolean"
+            >true</cem:doesComputation>
+            <cem:serialization rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+            >public double getAir(double mach, double gamma) {&#xD;
+    /* Utility to get the corrected airflow per area given the Mach number */&#xD;
+    double number, fac1, fac2;&#xD;
+    fac2 = (gamma + 1.0) / (2.0 * (gamma - 1.0));&#xD;
+    fac1 = Math.pow((1.0 + .5 * (gamma - 1.0) * mach * mach), fac2);&#xD;
+    number = .50161 * Math.sqrt(gamma) * mach / fac1;&#xD;
+    return (number);&#xD;
+}</cem:serialization>
+            <cem:beginsAt rdf:datatype="http://www.w3.org/2001/XMLSchema#int"
+            >34</cem:beginsAt>
+            <cem:cmReturnTypes rdf:parseType="Resource">
+              <sadllistmodel:first rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+              >double</sadllistmodel:first>
+              <rdf:type rdf:nodeID="A1"/>
+            </cem:cmReturnTypes>
+            <cem:comment>
+              <cem:Comment>
+                <cem:endsAt rdf:datatype="http://www.w3.org/2001/XMLSchema#int"
+                >36</cem:endsAt>
+                <cem:beginsAt rdf:datatype="http://www.w3.org/2001/XMLSchema#int"
+                >36</cem:beginsAt>
+                <cem:commentContent rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+                > Utility to get the corrected airflow per area given the Mach number </cem:commentContent>
+              </cem:Comment>
+            </cem:comment>
+            <cem:comment>
+              <cem:Comment>
+                <cem:endsAt rdf:datatype="http://www.w3.org/2001/XMLSchema#int"
+                >36</cem:endsAt>
+                <cem:beginsAt rdf:datatype="http://www.w3.org/2001/XMLSchema#int"
+                >36</cem:beginsAt>
+                <cem:commentContent rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+                > Utility to get the corrected airflow per area given the Mach number </cem:commentContent>
+              </cem:Comment>
+            </cem:comment>
+            <cem:cmArguments rdf:parseType="Resource">
+              <sadllistmodel:rest rdf:parseType="Resource">
+                <sadllistmodel:first>
+                  <cem:MethodArgument rdf:ID="Compute.getAir.gamma">
+                    <cem:reference>
+                      <cem:Reference>
+                        <cem:endsAt rdf:datatype="http://www.w3.org/2001/XMLSchema#int"
+                        >37</cem:endsAt>
+                        <cem:beginsAt rdf:datatype="http://www.w3.org/2001/XMLSchema#int"
+                        >37</cem:beginsAt>
+                        <cem:usage rdf:resource="http://sadl.org/CodeExtractionModel.sadl#Used"/>
+                        <cem:codeBlock rdf:resource="http://com.ge.research.sadl.darpa.aske.answer/compute_java#Compute.getAir"/>
+                      </cem:Reference>
+                    </cem:reference>
+                    <cem:reference>
+                      <cem:Reference>
+                        <cem:input rdf:datatype="http://www.w3.org/2001/XMLSchema#boolean"
+                        >true</cem:input>
+                        <cem:endsAt rdf:datatype="http://www.w3.org/2001/XMLSchema#int"
+                        >34</cem:endsAt>
+                        <cem:beginsAt rdf:datatype="http://www.w3.org/2001/XMLSchema#int"
+                        >34</cem:beginsAt>
+                        <cem:usage rdf:resource="http://sadl.org/CodeExtractionModel.sadl#Defined"/>
+                        <cem:codeBlock rdf:resource="http://com.ge.research.sadl.darpa.aske.answer/compute_java#Compute.getAir"/>
+                      </cem:Reference>
+                    </cem:reference>
+                    <cem:varType rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+                    >double</cem:varType>
+                    <cem:reference>
+                      <cem:Reference>
+                        <cem:endsAt rdf:datatype="http://www.w3.org/2001/XMLSchema#int"
+                        >37</cem:endsAt>
+                        <cem:beginsAt rdf:datatype="http://www.w3.org/2001/XMLSchema#int"
+                        >37</cem:beginsAt>
+                        <cem:usage rdf:resource="http://sadl.org/CodeExtractionModel.sadl#Used"/>
+                        <cem:codeBlock rdf:resource="http://com.ge.research.sadl.darpa.aske.answer/compute_java#Compute.getAir"/>
+                      </cem:Reference>
+                    </cem:reference>
+                    <cem:reference>
+                      <cem:Reference>
+                        <cem:endsAt rdf:datatype="http://www.w3.org/2001/XMLSchema#int"
+                        >39</cem:endsAt>
+                        <cem:beginsAt rdf:datatype="http://www.w3.org/2001/XMLSchema#int"
+                        >39</cem:beginsAt>
+                        <cem:usage rdf:resource="http://sadl.org/CodeExtractionModel.sadl#Used"/>
+                        <cem:codeBlock rdf:resource="http://com.ge.research.sadl.darpa.aske.answer/compute_java#Compute.getAir"/>
+                      </cem:Reference>
+                    </cem:reference>
+                    <cem:reference>
+                      <cem:Reference>
+                        <cem:endsAt rdf:datatype="http://www.w3.org/2001/XMLSchema#int"
+                        >37</cem:endsAt>
+                        <cem:beginsAt rdf:datatype="http://www.w3.org/2001/XMLSchema#int"
+                        >37</cem:beginsAt>
+                        <cem:usage rdf:resource="http://sadl.org/CodeExtractionModel.sadl#Used"/>
+                        <cem:codeBlock rdf:resource="http://com.ge.research.sadl.darpa.aske.answer/compute_java#Compute.getAir"/>
+                      </cem:Reference>
+                    </cem:reference>
+                    <cem:reference>
+                      <cem:Reference>
+                        <cem:endsAt rdf:datatype="http://www.w3.org/2001/XMLSchema#int"
+                        >38</cem:endsAt>
+                        <cem:beginsAt rdf:datatype="http://www.w3.org/2001/XMLSchema#int"
+                        >38</cem:beginsAt>
+                        <cem:usage rdf:resource="http://sadl.org/CodeExtractionModel.sadl#Used"/>
+                        <cem:codeBlock rdf:resource="http://com.ge.research.sadl.darpa.aske.answer/compute_java#Compute.getAir"/>
+                      </cem:Reference>
+                    </cem:reference>
+                    <cem:reference>
+                      <cem:Reference>
+                        <cem:endsAt rdf:datatype="http://www.w3.org/2001/XMLSchema#int"
+                        >37</cem:endsAt>
+                        <cem:beginsAt rdf:datatype="http://www.w3.org/2001/XMLSchema#int"
+                        >37</cem:beginsAt>
+                        <cem:usage rdf:resource="http://sadl.org/CodeExtractionModel.sadl#Used"/>
+                        <cem:codeBlock rdf:resource="http://com.ge.research.sadl.darpa.aske.answer/compute_java#Compute.getAir"/>
+                      </cem:Reference>
+                    </cem:reference>
+                    <cem:reference>
+                      <cem:Reference>
+                        <cem:endsAt rdf:datatype="http://www.w3.org/2001/XMLSchema#int"
+                        >39</cem:endsAt>
+                        <cem:beginsAt rdf:datatype="http://www.w3.org/2001/XMLSchema#int"
+                        >39</cem:beginsAt>
+                        <cem:usage rdf:resource="http://sadl.org/CodeExtractionModel.sadl#Used"/>
+                        <cem:codeBlock rdf:resource="http://com.ge.research.sadl.darpa.aske.answer/compute_java#Compute.getAir"/>
+                      </cem:Reference>
+                    </cem:reference>
+                    <cem:varName rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+                    >gamma</cem:varName>
+                    <cem:reference>
+                      <cem:Reference>
+                        <cem:endsAt rdf:datatype="http://www.w3.org/2001/XMLSchema#int"
+                        >37</cem:endsAt>
+                        <cem:beginsAt rdf:datatype="http://www.w3.org/2001/XMLSchema#int"
+                        >37</cem:beginsAt>
+                        <cem:usage rdf:resource="http://sadl.org/CodeExtractionModel.sadl#Used"/>
+                        <cem:codeBlock rdf:resource="http://com.ge.research.sadl.darpa.aske.answer/compute_java#Compute.getAir"/>
+                      </cem:Reference>
+                    </cem:reference>
+                    <cem:reference>
+                      <cem:Reference>
+                        <cem:endsAt rdf:datatype="http://www.w3.org/2001/XMLSchema#int"
+                        >39</cem:endsAt>
+                        <cem:beginsAt rdf:datatype="http://www.w3.org/2001/XMLSchema#int"
+                        >39</cem:beginsAt>
+                        <cem:usage rdf:resource="http://sadl.org/CodeExtractionModel.sadl#Used"/>
+                        <cem:codeBlock rdf:resource="http://com.ge.research.sadl.darpa.aske.answer/compute_java#Compute.getAir"/>
+                      </cem:Reference>
+                    </cem:reference>
+                    <cem:reference>
+                      <cem:Reference>
+                        <cem:endsAt rdf:datatype="http://www.w3.org/2001/XMLSchema#int"
+                        >38</cem:endsAt>
+                        <cem:beginsAt rdf:datatype="http://www.w3.org/2001/XMLSchema#int"
+                        >38</cem:beginsAt>
+                        <cem:usage rdf:resource="http://sadl.org/CodeExtractionModel.sadl#Used"/>
+                        <cem:codeBlock rdf:resource="http://com.ge.research.sadl.darpa.aske.answer/compute_java#Compute.getAir"/>
+                      </cem:Reference>
+                    </cem:reference>
+                    <cem:reference>
+                      <cem:Reference>
+                        <cem:endsAt rdf:datatype="http://www.w3.org/2001/XMLSchema#int"
+                        >37</cem:endsAt>
+                        <cem:beginsAt rdf:datatype="http://www.w3.org/2001/XMLSchema#int"
+                        >37</cem:beginsAt>
+                        <cem:usage rdf:resource="http://sadl.org/CodeExtractionModel.sadl#Used"/>
+                        <cem:codeBlock rdf:resource="http://com.ge.research.sadl.darpa.aske.answer/compute_java#Compute.getAir"/>
+                      </cem:Reference>
+                    </cem:reference>
+                    <cem:reference>
+                      <cem:Reference>
+                        <cem:endsAt rdf:datatype="http://www.w3.org/2001/XMLSchema#int"
+                        >38</cem:endsAt>
+                        <cem:beginsAt rdf:datatype="http://www.w3.org/2001/XMLSchema#int"
+                        >38</cem:beginsAt>
+                        <cem:usage rdf:resource="http://sadl.org/CodeExtractionModel.sadl#Used"/>
+                        <cem:codeBlock rdf:resource="http://com.ge.research.sadl.darpa.aske.answer/compute_java#Compute.getAir"/>
+                      </cem:Reference>
+                    </cem:reference>
+                  </cem:MethodArgument>
+                </sadllistmodel:first>
+                <rdf:type rdf:nodeID="A0"/>
+              </sadllistmodel:rest>
+              <sadllistmodel:first>
+                <cem:MethodArgument rdf:ID="Compute.getAir.mach">
+                  <cem:reference>
+                    <cem:Reference>
+                      <cem:endsAt rdf:datatype="http://www.w3.org/2001/XMLSchema#int"
+                      >38</cem:endsAt>
+                      <cem:beginsAt rdf:datatype="http://www.w3.org/2001/XMLSchema#int"
+                      >38</cem:beginsAt>
+                      <cem:usage rdf:resource="http://sadl.org/CodeExtractionModel.sadl#Used"/>
+                      <cem:codeBlock rdf:resource="http://com.ge.research.sadl.darpa.aske.answer/compute_java#Compute.getAir"/>
+                    </cem:Reference>
+                  </cem:reference>
+                  <cem:reference>
+                    <cem:Reference>
+                      <cem:endsAt rdf:datatype="http://www.w3.org/2001/XMLSchema#int"
+                      >39</cem:endsAt>
+                      <cem:beginsAt rdf:datatype="http://www.w3.org/2001/XMLSchema#int"
+                      >39</cem:beginsAt>
+                      <cem:usage rdf:resource="http://sadl.org/CodeExtractionModel.sadl#Used"/>
+                      <cem:codeBlock rdf:resource="http://com.ge.research.sadl.darpa.aske.answer/compute_java#Compute.getAir"/>
+                    </cem:Reference>
+                  </cem:reference>
+                  <cem:reference>
+                    <cem:Reference>
+                      <cem:input rdf:datatype="http://www.w3.org/2001/XMLSchema#boolean"
+                      >true</cem:input>
+                      <cem:endsAt rdf:datatype="http://www.w3.org/2001/XMLSchema#int"
+                      >34</cem:endsAt>
+                      <cem:beginsAt rdf:datatype="http://www.w3.org/2001/XMLSchema#int"
+                      >34</cem:beginsAt>
+                      <cem:usage rdf:resource="http://sadl.org/CodeExtractionModel.sadl#Defined"/>
+                      <cem:codeBlock rdf:resource="http://com.ge.research.sadl.darpa.aske.answer/compute_java#Compute.getAir"/>
+                    </cem:Reference>
+                  </cem:reference>
+                  <cem:reference>
+                    <cem:Reference>
+                      <cem:endsAt rdf:datatype="http://www.w3.org/2001/XMLSchema#int"
+                      >38</cem:endsAt>
+                      <cem:beginsAt rdf:datatype="http://www.w3.org/2001/XMLSchema#int"
+                      >38</cem:beginsAt>
+                      <cem:usage rdf:resource="http://sadl.org/CodeExtractionModel.sadl#Used"/>
+                      <cem:codeBlock rdf:resource="http://com.ge.research.sadl.darpa.aske.answer/compute_java#Compute.getAir"/>
+                    </cem:Reference>
+                  </cem:reference>
+                  <cem:reference>
+                    <cem:Reference>
+                      <cem:endsAt rdf:datatype="http://www.w3.org/2001/XMLSchema#int"
+                      >38</cem:endsAt>
+                      <cem:beginsAt rdf:datatype="http://www.w3.org/2001/XMLSchema#int"
+                      >38</cem:beginsAt>
+                      <cem:usage rdf:resource="http://sadl.org/CodeExtractionModel.sadl#Used"/>
+                      <cem:codeBlock rdf:resource="http://com.ge.research.sadl.darpa.aske.answer/compute_java#Compute.getAir"/>
+                    </cem:Reference>
+                  </cem:reference>
+                  <cem:reference>
+                    <cem:Reference>
+                      <cem:endsAt rdf:datatype="http://www.w3.org/2001/XMLSchema#int"
+                      >38</cem:endsAt>
+                      <cem:beginsAt rdf:datatype="http://www.w3.org/2001/XMLSchema#int"
+                      >38</cem:beginsAt>
+                      <cem:usage rdf:resource="http://sadl.org/CodeExtractionModel.sadl#Used"/>
+                      <cem:codeBlock rdf:resource="http://com.ge.research.sadl.darpa.aske.answer/compute_java#Compute.getAir"/>
+                    </cem:Reference>
+                  </cem:reference>
+                  <cem:reference>
+                    <cem:Reference>
+                      <cem:endsAt rdf:datatype="http://www.w3.org/2001/XMLSchema#int"
+                      >39</cem:endsAt>
+                      <cem:beginsAt rdf:datatype="http://www.w3.org/2001/XMLSchema#int"
+                      >39</cem:beginsAt>
+                      <cem:usage rdf:resource="http://sadl.org/CodeExtractionModel.sadl#Used"/>
+                      <cem:codeBlock rdf:resource="http://com.ge.research.sadl.darpa.aske.answer/compute_java#Compute.getAir"/>
+                    </cem:Reference>
+                  </cem:reference>
+                  <cem:varName rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+                  >mach</cem:varName>
+                  <cem:reference>
+                    <cem:Reference>
+                      <cem:endsAt rdf:datatype="http://www.w3.org/2001/XMLSchema#int"
+                      >38</cem:endsAt>
+                      <cem:beginsAt rdf:datatype="http://www.w3.org/2001/XMLSchema#int"
+                      >38</cem:beginsAt>
+                      <cem:usage rdf:resource="http://sadl.org/CodeExtractionModel.sadl#Used"/>
+                      <cem:codeBlock rdf:resource="http://com.ge.research.sadl.darpa.aske.answer/compute_java#Compute.getAir"/>
+                    </cem:Reference>
+                  </cem:reference>
+                  <cem:reference>
+                    <cem:Reference>
+                      <cem:endsAt rdf:datatype="http://www.w3.org/2001/XMLSchema#int"
+                      >38</cem:endsAt>
+                      <cem:beginsAt rdf:datatype="http://www.w3.org/2001/XMLSchema#int"
+                      >38</cem:beginsAt>
+                      <cem:usage rdf:resource="http://sadl.org/CodeExtractionModel.sadl#Used"/>
+                      <cem:codeBlock rdf:resource="http://com.ge.research.sadl.darpa.aske.answer/compute_java#Compute.getAir"/>
+                    </cem:Reference>
+                  </cem:reference>
+                  <cem:varType rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+                  >double</cem:varType>
+                  <cem:reference>
+                    <cem:Reference>
+                      <cem:endsAt rdf:datatype="http://www.w3.org/2001/XMLSchema#int"
+                      >39</cem:endsAt>
+                      <cem:beginsAt rdf:datatype="http://www.w3.org/2001/XMLSchema#int"
+                      >39</cem:beginsAt>
+                      <cem:usage rdf:resource="http://sadl.org/CodeExtractionModel.sadl#Used"/>
+                      <cem:codeBlock rdf:resource="http://com.ge.research.sadl.darpa.aske.answer/compute_java#Compute.getAir"/>
+                    </cem:Reference>
+                  </cem:reference>
+                </cem:MethodArgument>
+              </sadllistmodel:first>
+              <rdf:type rdf:nodeID="A0"/>
+            </cem:cmArguments>
+            <cem:cmArguments rdf:parseType="Resource">
+              <sadllistmodel:rest rdf:parseType="Resource">
+                <sadllistmodel:first rdf:resource="http://com.ge.research.sadl.darpa.aske.answer/compute_java#Compute.getAir.gamma"/>
+                <rdf:type rdf:nodeID="A0"/>
+              </sadllistmodel:rest>
+              <sadllistmodel:first rdf:resource="http://com.ge.research.sadl.darpa.aske.answer/compute_java#Compute.getAir.mach"/>
+              <rdf:type rdf:nodeID="A0"/>
+            </cem:cmArguments>
+            <cem:cmReturnTypes rdf:parseType="Resource">
+              <sadllistmodel:first rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+              >double</sadllistmodel:first>
+              <rdf:type rdf:nodeID="A1"/>
+            </cem:cmReturnTypes>
+            <cem:containedIn rdf:resource="http://com.ge.research.sadl.darpa.aske.answer/compute_java#Compute"/>
+            <cem:comment>
+              <cem:Comment>
+                <cem:endsAt rdf:datatype="http://www.w3.org/2001/XMLSchema#int"
+                >36</cem:endsAt>
+                <cem:beginsAt rdf:datatype="http://www.w3.org/2001/XMLSchema#int"
+                >36</cem:beginsAt>
+                <cem:commentContent rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+                > Utility to get the corrected airflow per area given the Mach number </cem:commentContent>
+              </cem:Comment>
+            </cem:comment>
+            <cem:cmReturnTypes rdf:parseType="Resource">
+              <sadllistmodel:first rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+              >double</sadllistmodel:first>
+              <rdf:type rdf:nodeID="A1"/>
+            </cem:cmReturnTypes>
+            <cem:cmArguments rdf:parseType="Resource">
+              <sadllistmodel:rest rdf:parseType="Resource">
+                <sadllistmodel:first rdf:resource="http://com.ge.research.sadl.darpa.aske.answer/compute_java#Compute.getAir.gamma"/>
+                <rdf:type rdf:nodeID="A0"/>
+              </sadllistmodel:rest>
+              <sadllistmodel:first rdf:resource="http://com.ge.research.sadl.darpa.aske.answer/compute_java#Compute.getAir.mach"/>
+              <rdf:type rdf:nodeID="A0"/>
+            </cem:cmArguments>
+            <cem:endsAt rdf:datatype="http://www.w3.org/2001/XMLSchema#int"
+            >41</cem:endsAt>
+          </cem:Method>
+        </cem:codeBlock>
+      </cem:Reference>
+    </cem:reference>
+    <cem:reference>
+      <cem:Reference>
+        <cem:endsAt rdf:datatype="http://www.w3.org/2001/XMLSchema#int"
+        >38</cem:endsAt>
+        <cem:beginsAt rdf:datatype="http://www.w3.org/2001/XMLSchema#int"
+        >38</cem:beginsAt>
+        <cem:usage rdf:resource="http://sadl.org/CodeExtractionModel.sadl#Reassigned"/>
+        <cem:codeBlock rdf:resource="http://com.ge.research.sadl.darpa.aske.answer/compute_java#Compute.getAir"/>
+      </cem:Reference>
+    </cem:reference>
+    <cem:varName rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >fac1</cem:varName>
+    <cem:reference>
+      <cem:Reference>
+        <cem:endsAt rdf:datatype="http://www.w3.org/2001/XMLSchema#int"
+        >39</cem:endsAt>
+        <cem:beginsAt rdf:datatype="http://www.w3.org/2001/XMLSchema#int"
+        >39</cem:beginsAt>
+        <cem:usage rdf:resource="http://sadl.org/CodeExtractionModel.sadl#Used"/>
+        <cem:codeBlock rdf:resource="http://com.ge.research.sadl.darpa.aske.answer/compute_java#Compute.getAir"/>
+      </cem:Reference>
+    </cem:reference>
+    <cem:reference>
+      <cem:Reference>
+        <cem:endsAt rdf:datatype="http://www.w3.org/2001/XMLSchema#int"
+        >39</cem:endsAt>
+        <cem:beginsAt rdf:datatype="http://www.w3.org/2001/XMLSchema#int"
+        >39</cem:beginsAt>
+        <cem:usage rdf:resource="http://sadl.org/CodeExtractionModel.sadl#Used"/>
+        <cem:codeBlock rdf:resource="http://com.ge.research.sadl.darpa.aske.answer/compute_java#Compute.getAir"/>
+      </cem:Reference>
+    </cem:reference>
+    <rdfs:label xml:lang="Java">double fac1;</rdfs:label>
+    <cem:varType rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >double</cem:varType>
+    <cem:reference>
+      <cem:Reference>
+        <cem:endsAt rdf:datatype="http://www.w3.org/2001/XMLSchema#int"
+        >38</cem:endsAt>
+        <cem:beginsAt rdf:datatype="http://www.w3.org/2001/XMLSchema#int"
+        >38</cem:beginsAt>
+        <cem:usage rdf:resource="http://sadl.org/CodeExtractionModel.sadl#Reassigned"/>
+        <cem:codeBlock rdf:resource="http://com.ge.research.sadl.darpa.aske.answer/compute_java#Compute.getAir"/>
+      </cem:Reference>
+    </cem:reference>
+    <cem:reference>
+      <cem:Reference>
+        <cem:endsAt rdf:datatype="http://www.w3.org/2001/XMLSchema#int"
+        >39</cem:endsAt>
+        <cem:beginsAt rdf:datatype="http://www.w3.org/2001/XMLSchema#int"
+        >39</cem:beginsAt>
+        <cem:usage rdf:resource="http://sadl.org/CodeExtractionModel.sadl#Used"/>
+        <cem:codeBlock rdf:resource="http://com.ge.research.sadl.darpa.aske.answer/compute_java#Compute.getAir"/>
+      </cem:Reference>
+    </cem:reference>
+    <cem:reference>
+      <cem:Reference>
+        <cem:endsAt rdf:datatype="http://www.w3.org/2001/XMLSchema#int"
+        >38</cem:endsAt>
+        <cem:beginsAt rdf:datatype="http://www.w3.org/2001/XMLSchema#int"
+        >38</cem:beginsAt>
+        <cem:usage rdf:resource="http://sadl.org/CodeExtractionModel.sadl#Reassigned"/>
+        <cem:codeBlock rdf:resource="http://com.ge.research.sadl.darpa.aske.answer/compute_java#Compute.getAir"/>
+      </cem:Reference>
+    </cem:reference>
+  </cem:MethodVariable>
+  <cem:MethodVariable rdf:ID="Compute.getAir.fac2">
+    <cem:reference>
+      <cem:Reference>
+        <cem:endsAt rdf:datatype="http://www.w3.org/2001/XMLSchema#int"
+        >38</cem:endsAt>
+        <cem:beginsAt rdf:datatype="http://www.w3.org/2001/XMLSchema#int"
+        >38</cem:beginsAt>
+        <cem:usage rdf:resource="http://sadl.org/CodeExtractionModel.sadl#Used"/>
+        <cem:codeBlock rdf:resource="http://com.ge.research.sadl.darpa.aske.answer/compute_java#Compute.getAir"/>
+      </cem:Reference>
+    </cem:reference>
+    <cem:reference>
+      <cem:Reference>
+        <cem:endsAt rdf:datatype="http://www.w3.org/2001/XMLSchema#int"
+        >37</cem:endsAt>
+        <cem:beginsAt rdf:datatype="http://www.w3.org/2001/XMLSchema#int"
+        >37</cem:beginsAt>
+        <cem:usage rdf:resource="http://sadl.org/CodeExtractionModel.sadl#Reassigned"/>
+        <cem:codeBlock rdf:resource="http://com.ge.research.sadl.darpa.aske.answer/compute_java#Compute.getAir"/>
+      </cem:Reference>
+    </cem:reference>
+    <cem:reference>
+      <cem:Reference>
+        <cem:endsAt rdf:datatype="http://www.w3.org/2001/XMLSchema#int"
+        >37</cem:endsAt>
+        <cem:beginsAt rdf:datatype="http://www.w3.org/2001/XMLSchema#int"
+        >37</cem:beginsAt>
+        <cem:usage rdf:resource="http://sadl.org/CodeExtractionModel.sadl#Reassigned"/>
+        <cem:codeBlock rdf:resource="http://com.ge.research.sadl.darpa.aske.answer/compute_java#Compute.getAir"/>
+      </cem:Reference>
+    </cem:reference>
+    <cem:varType rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >double</cem:varType>
+    <cem:varName rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >fac2</cem:varName>
+    <cem:reference>
+      <cem:Reference>
+        <cem:endsAt rdf:datatype="http://www.w3.org/2001/XMLSchema#int"
+        >38</cem:endsAt>
+        <cem:beginsAt rdf:datatype="http://www.w3.org/2001/XMLSchema#int"
+        >38</cem:beginsAt>
+        <cem:usage rdf:resource="http://sadl.org/CodeExtractionModel.sadl#Used"/>
+        <cem:codeBlock rdf:resource="http://com.ge.research.sadl.darpa.aske.answer/compute_java#Compute.getAir"/>
+      </cem:Reference>
+    </cem:reference>
+    <cem:reference>
+      <cem:Reference>
+        <cem:endsAt rdf:datatype="http://www.w3.org/2001/XMLSchema#int"
+        >37</cem:endsAt>
+        <cem:beginsAt rdf:datatype="http://www.w3.org/2001/XMLSchema#int"
+        >37</cem:beginsAt>
+        <cem:usage rdf:resource="http://sadl.org/CodeExtractionModel.sadl#Reassigned"/>
+        <cem:codeBlock rdf:resource="http://com.ge.research.sadl.darpa.aske.answer/compute_java#Compute.getAir"/>
+      </cem:Reference>
+    </cem:reference>
+    <cem:reference>
+      <cem:Reference>
+        <cem:endsAt rdf:datatype="http://www.w3.org/2001/XMLSchema#int"
+        >36</cem:endsAt>
+        <cem:beginsAt rdf:datatype="http://www.w3.org/2001/XMLSchema#int"
+        >36</cem:beginsAt>
+        <cem:usage rdf:resource="http://sadl.org/CodeExtractionModel.sadl#Defined"/>
+        <cem:codeBlock rdf:resource="http://com.ge.research.sadl.darpa.aske.answer/compute_java#Compute.getAir"/>
+      </cem:Reference>
+    </cem:reference>
+    <rdfs:label xml:lang="Java">double fac2;</rdfs:label>
+    <cem:reference>
+      <cem:Reference>
+        <cem:endsAt rdf:datatype="http://www.w3.org/2001/XMLSchema#int"
+        >38</cem:endsAt>
+        <cem:beginsAt rdf:datatype="http://www.w3.org/2001/XMLSchema#int"
+        >38</cem:beginsAt>
+        <cem:usage rdf:resource="http://sadl.org/CodeExtractionModel.sadl#Used"/>
+        <cem:codeBlock rdf:resource="http://com.ge.research.sadl.darpa.aske.answer/compute_java#Compute.getAir"/>
+      </cem:Reference>
+    </cem:reference>
+  </cem:MethodVariable>
+  <cem:MethodVariable rdf:ID="Compute.getAir.number">
+    <cem:reference>
+      <cem:Reference>
+        <cem:output rdf:datatype="http://www.w3.org/2001/XMLSchema#boolean"
+        >true</cem:output>
+        <cem:endsAt rdf:datatype="http://www.w3.org/2001/XMLSchema#int"
+        >40</cem:endsAt>
+        <cem:beginsAt rdf:datatype="http://www.w3.org/2001/XMLSchema#int"
+        >40</cem:beginsAt>
+        <cem:usage rdf:resource="http://sadl.org/CodeExtractionModel.sadl#Used"/>
+        <cem:codeBlock rdf:resource="http://com.ge.research.sadl.darpa.aske.answer/compute_java#Compute.getAir"/>
+      </cem:Reference>
+    </cem:reference>
+    <cem:reference>
+      <cem:Reference>
+        <cem:endsAt rdf:datatype="http://www.w3.org/2001/XMLSchema#int"
+        >39</cem:endsAt>
+        <cem:beginsAt rdf:datatype="http://www.w3.org/2001/XMLSchema#int"
+        >39</cem:beginsAt>
+        <cem:usage rdf:resource="http://sadl.org/CodeExtractionModel.sadl#Reassigned"/>
+        <cem:codeBlock rdf:resource="http://com.ge.research.sadl.darpa.aske.answer/compute_java#Compute.getAir"/>
+      </cem:Reference>
+    </cem:reference>
+    <cem:varName rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >number</cem:varName>
+    <cem:reference>
+      <cem:Reference>
+        <cem:endsAt rdf:datatype="http://www.w3.org/2001/XMLSchema#int"
+        >39</cem:endsAt>
+        <cem:beginsAt rdf:datatype="http://www.w3.org/2001/XMLSchema#int"
+        >39</cem:beginsAt>
+        <cem:usage rdf:resource="http://sadl.org/CodeExtractionModel.sadl#Reassigned"/>
+        <cem:codeBlock rdf:resource="http://com.ge.research.sadl.darpa.aske.answer/compute_java#Compute.getAir"/>
+      </cem:Reference>
+    </cem:reference>
+    <cem:reference>
+      <cem:Reference>
+        <cem:output rdf:datatype="http://www.w3.org/2001/XMLSchema#boolean"
+        >true</cem:output>
+        <cem:endsAt rdf:datatype="http://www.w3.org/2001/XMLSchema#int"
+        >40</cem:endsAt>
+        <cem:beginsAt rdf:datatype="http://www.w3.org/2001/XMLSchema#int"
+        >40</cem:beginsAt>
+        <cem:usage rdf:resource="http://sadl.org/CodeExtractionModel.sadl#Used"/>
+        <cem:codeBlock rdf:resource="http://com.ge.research.sadl.darpa.aske.answer/compute_java#Compute.getAir"/>
+      </cem:Reference>
+    </cem:reference>
+    <cem:varType rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >double</cem:varType>
+    <rdfs:label xml:lang="Java">double number;</rdfs:label>
+    <cem:reference>
+      <cem:Reference>
+        <cem:output rdf:datatype="http://www.w3.org/2001/XMLSchema#boolean"
+        >true</cem:output>
+        <cem:endsAt rdf:datatype="http://www.w3.org/2001/XMLSchema#int"
+        >40</cem:endsAt>
+        <cem:beginsAt rdf:datatype="http://www.w3.org/2001/XMLSchema#int"
+        >40</cem:beginsAt>
+        <cem:usage rdf:resource="http://sadl.org/CodeExtractionModel.sadl#Used"/>
+        <cem:codeBlock rdf:resource="http://com.ge.research.sadl.darpa.aske.answer/compute_java#Compute.getAir"/>
+      </cem:Reference>
+    </cem:reference>
+    <cem:reference>
+      <cem:Reference>
+        <cem:endsAt rdf:datatype="http://www.w3.org/2001/XMLSchema#int"
+        >36</cem:endsAt>
+        <cem:beginsAt rdf:datatype="http://www.w3.org/2001/XMLSchema#int"
+        >36</cem:beginsAt>
+        <cem:usage rdf:resource="http://sadl.org/CodeExtractionModel.sadl#Defined"/>
+        <cem:codeBlock rdf:resource="http://com.ge.research.sadl.darpa.aske.answer/compute_java#Compute.getAir"/>
+      </cem:Reference>
+    </cem:reference>
+    <cem:reference>
+      <cem:Reference>
+        <cem:endsAt rdf:datatype="http://www.w3.org/2001/XMLSchema#int"
+        >39</cem:endsAt>
+        <cem:beginsAt rdf:datatype="http://www.w3.org/2001/XMLSchema#int"
+        >39</cem:beginsAt>
+        <cem:usage rdf:resource="http://sadl.org/CodeExtractionModel.sadl#Reassigned"/>
+        <cem:codeBlock rdf:resource="http://com.ge.research.sadl.darpa.aske.answer/compute_java#Compute.getAir"/>
+      </cem:Reference>
+    </cem:reference>
+  </cem:MethodVariable>
+  <cem:MethodVariable rdf:ID="Compute.getCp.a">
+    <cem:reference>
+      <cem:Reference>
+        <cem:endsAt rdf:datatype="http://www.w3.org/2001/XMLSchema#int"
+        >29</cem:endsAt>
+        <cem:beginsAt rdf:datatype="http://www.w3.org/2001/XMLSchema#int"
+        >29</cem:beginsAt>
+        <cem:usage rdf:resource="http://sadl.org/CodeExtractionModel.sadl#Used"/>
+        <cem:codeBlock>
+          <cem:Method rdf:ID="Compute.getCp">
+            <cem:beginsAt rdf:datatype="http://www.w3.org/2001/XMLSchema#int"
+            >17</cem:beginsAt>
+            <cem:cmArguments rdf:parseType="Resource">
+              <sadllistmodel:rest rdf:parseType="Resource">
+                <sadllistmodel:first>
+                  <cem:MethodArgument rdf:ID="Compute.getCp.opt">
+                    <cem:reference>
+                      <cem:Reference>
+                        <cem:endsAt rdf:datatype="http://www.w3.org/2001/XMLSchema#int"
+                        >25</cem:endsAt>
+                        <cem:beginsAt rdf:datatype="http://www.w3.org/2001/XMLSchema#int"
+                        >25</cem:beginsAt>
+                        <cem:usage rdf:resource="http://sadl.org/CodeExtractionModel.sadl#Used"/>
+                        <cem:codeBlock rdf:resource="http://com.ge.research.sadl.darpa.aske.answer/compute_java#Compute.getCp"/>
+                      </cem:Reference>
+                    </cem:reference>
+                    <cem:reference>
+                      <cem:Reference>
+                        <cem:endsAt rdf:datatype="http://www.w3.org/2001/XMLSchema#int"
+                        >25</cem:endsAt>
+                        <cem:beginsAt rdf:datatype="http://www.w3.org/2001/XMLSchema#int"
+                        >25</cem:beginsAt>
+                        <cem:usage rdf:resource="http://sadl.org/CodeExtractionModel.sadl#Used"/>
+                        <cem:codeBlock rdf:resource="http://com.ge.research.sadl.darpa.aske.answer/compute_java#Compute.getCp"/>
+                      </cem:Reference>
+                    </cem:reference>
+                    <cem:reference>
+                      <cem:Reference>
+                        <cem:endsAt rdf:datatype="http://www.w3.org/2001/XMLSchema#int"
+                        >25</cem:endsAt>
+                        <cem:beginsAt rdf:datatype="http://www.w3.org/2001/XMLSchema#int"
+                        >25</cem:beginsAt>
+                        <cem:usage rdf:resource="http://sadl.org/CodeExtractionModel.sadl#Used"/>
+                        <cem:codeBlock rdf:resource="http://com.ge.research.sadl.darpa.aske.answer/compute_java#Compute.getCp"/>
+                      </cem:Reference>
+                    </cem:reference>
+                    <cem:varType rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+                    >int</cem:varType>
+                    <cem:varName rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+                    >opt</cem:varName>
+                    <cem:reference>
+                      <cem:Reference>
+                        <cem:input rdf:datatype="http://www.w3.org/2001/XMLSchema#boolean"
+                        >true</cem:input>
+                        <cem:endsAt rdf:datatype="http://www.w3.org/2001/XMLSchema#int"
+                        >17</cem:endsAt>
+                        <cem:beginsAt rdf:datatype="http://www.w3.org/2001/XMLSchema#int"
+                        >17</cem:beginsAt>
+                        <cem:usage rdf:resource="http://sadl.org/CodeExtractionModel.sadl#Defined"/>
+                        <cem:codeBlock rdf:resource="http://com.ge.research.sadl.darpa.aske.answer/compute_java#Compute.getCp"/>
+                      </cem:Reference>
+                    </cem:reference>
+                  </cem:MethodArgument>
+                </sadllistmodel:first>
+                <rdf:type rdf:nodeID="A0"/>
+              </sadllistmodel:rest>
+              <sadllistmodel:first>
+                <cem:MethodArgument rdf:ID="Compute.getCp.temp">
+                  <cem:reference>
+                    <cem:Reference>
+                      <cem:endsAt rdf:datatype="http://www.w3.org/2001/XMLSchema#int"
+                      >29</cem:endsAt>
+                      <cem:beginsAt rdf:datatype="http://www.w3.org/2001/XMLSchema#int"
+                      >29</cem:beginsAt>
+                      <cem:usage rdf:resource="http://sadl.org/CodeExtractionModel.sadl#Used"/>
+                      <cem:codeBlock rdf:resource="http://com.ge.research.sadl.darpa.aske.answer/compute_java#Compute.getCp"/>
+                    </cem:Reference>
+                  </cem:reference>
+                  <cem:reference>
+                    <cem:Reference>
+                      <cem:input rdf:datatype="http://www.w3.org/2001/XMLSchema#boolean"
+                      >true</cem:input>
+                      <cem:endsAt rdf:datatype="http://www.w3.org/2001/XMLSchema#int"
+                      >17</cem:endsAt>
+                      <cem:beginsAt rdf:datatype="http://www.w3.org/2001/XMLSchema#int"
+                      >17</cem:beginsAt>
+                      <cem:usage rdf:resource="http://sadl.org/CodeExtractionModel.sadl#Defined"/>
+                      <cem:codeBlock rdf:resource="http://com.ge.research.sadl.darpa.aske.answer/compute_java#Compute.getCp"/>
+                    </cem:Reference>
+                  </cem:reference>
+                  <cem:varName rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+                  >temp</cem:varName>
+                  <cem:reference>
+                    <cem:Reference>
+                      <cem:endsAt rdf:datatype="http://www.w3.org/2001/XMLSchema#int"
+                      >29</cem:endsAt>
+                      <cem:beginsAt rdf:datatype="http://www.w3.org/2001/XMLSchema#int"
+                      >29</cem:beginsAt>
+                      <cem:usage rdf:resource="http://sadl.org/CodeExtractionModel.sadl#Used"/>
+                      <cem:codeBlock rdf:resource="http://com.ge.research.sadl.darpa.aske.answer/compute_java#Compute.getCp"/>
+                    </cem:Reference>
+                  </cem:reference>
+                  <cem:reference>
+                    <cem:Reference>
+                      <cem:endsAt rdf:datatype="http://www.w3.org/2001/XMLSchema#int"
+                      >29</cem:endsAt>
+                      <cem:beginsAt rdf:datatype="http://www.w3.org/2001/XMLSchema#int"
+                      >29</cem:beginsAt>
+                      <cem:usage rdf:resource="http://sadl.org/CodeExtractionModel.sadl#Used"/>
+                      <cem:codeBlock rdf:resource="http://com.ge.research.sadl.darpa.aske.answer/compute_java#Compute.getCp"/>
+                    </cem:Reference>
+                  </cem:reference>
+                  <cem:reference>
+                    <cem:Reference>
+                      <cem:endsAt rdf:datatype="http://www.w3.org/2001/XMLSchema#int"
+                      >29</cem:endsAt>
+                      <cem:beginsAt rdf:datatype="http://www.w3.org/2001/XMLSchema#int"
+                      >29</cem:beginsAt>
+                      <cem:usage rdf:resource="http://sadl.org/CodeExtractionModel.sadl#Used"/>
+                      <cem:codeBlock rdf:resource="http://com.ge.research.sadl.darpa.aske.answer/compute_java#Compute.getCp"/>
+                    </cem:Reference>
+                  </cem:reference>
+                  <cem:reference>
+                    <cem:Reference>
+                      <cem:endsAt rdf:datatype="http://www.w3.org/2001/XMLSchema#int"
+                      >29</cem:endsAt>
+                      <cem:beginsAt rdf:datatype="http://www.w3.org/2001/XMLSchema#int"
+                      >29</cem:beginsAt>
+                      <cem:usage rdf:resource="http://sadl.org/CodeExtractionModel.sadl#Used"/>
+                      <cem:codeBlock rdf:resource="http://com.ge.research.sadl.darpa.aske.answer/compute_java#Compute.getCp"/>
+                    </cem:Reference>
+                  </cem:reference>
+                  <cem:reference>
+                    <cem:Reference>
+                      <cem:endsAt rdf:datatype="http://www.w3.org/2001/XMLSchema#int"
+                      >29</cem:endsAt>
+                      <cem:beginsAt rdf:datatype="http://www.w3.org/2001/XMLSchema#int"
+                      >29</cem:beginsAt>
+                      <cem:usage rdf:resource="http://sadl.org/CodeExtractionModel.sadl#Used"/>
+                      <cem:codeBlock rdf:resource="http://com.ge.research.sadl.darpa.aske.answer/compute_java#Compute.getCp"/>
+                    </cem:Reference>
+                  </cem:reference>
+                  <cem:reference>
+                    <cem:Reference>
+                      <cem:endsAt rdf:datatype="http://www.w3.org/2001/XMLSchema#int"
+                      >29</cem:endsAt>
+                      <cem:beginsAt rdf:datatype="http://www.w3.org/2001/XMLSchema#int"
+                      >29</cem:beginsAt>
+                      <cem:usage rdf:resource="http://sadl.org/CodeExtractionModel.sadl#Used"/>
+                      <cem:codeBlock rdf:resource="http://com.ge.research.sadl.darpa.aske.answer/compute_java#Compute.getCp"/>
+                    </cem:Reference>
+                  </cem:reference>
+                  <cem:reference>
+                    <cem:Reference>
+                      <cem:endsAt rdf:datatype="http://www.w3.org/2001/XMLSchema#int"
+                      >29</cem:endsAt>
+                      <cem:beginsAt rdf:datatype="http://www.w3.org/2001/XMLSchema#int"
+                      >29</cem:beginsAt>
+                      <cem:usage rdf:resource="http://sadl.org/CodeExtractionModel.sadl#Used"/>
+                      <cem:codeBlock rdf:resource="http://com.ge.research.sadl.darpa.aske.answer/compute_java#Compute.getCp"/>
+                    </cem:Reference>
+                  </cem:reference>
+                  <cem:varType rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+                  >double</cem:varType>
+                  <cem:reference>
+                    <cem:Reference>
+                      <cem:endsAt rdf:datatype="http://www.w3.org/2001/XMLSchema#int"
+                      >29</cem:endsAt>
+                      <cem:beginsAt rdf:datatype="http://www.w3.org/2001/XMLSchema#int"
+                      >29</cem:beginsAt>
+                      <cem:usage rdf:resource="http://sadl.org/CodeExtractionModel.sadl#Used"/>
+                      <cem:codeBlock rdf:resource="http://com.ge.research.sadl.darpa.aske.answer/compute_java#Compute.getCp"/>
+                    </cem:Reference>
+                  </cem:reference>
+                  <cem:reference>
+                    <cem:Reference>
+                      <cem:endsAt rdf:datatype="http://www.w3.org/2001/XMLSchema#int"
+                      >29</cem:endsAt>
+                      <cem:beginsAt rdf:datatype="http://www.w3.org/2001/XMLSchema#int"
+                      >29</cem:beginsAt>
+                      <cem:usage rdf:resource="http://sadl.org/CodeExtractionModel.sadl#Used"/>
+                      <cem:codeBlock rdf:resource="http://com.ge.research.sadl.darpa.aske.answer/compute_java#Compute.getCp"/>
+                    </cem:Reference>
+                  </cem:reference>
+                  <cem:reference>
+                    <cem:Reference>
+                      <cem:endsAt rdf:datatype="http://www.w3.org/2001/XMLSchema#int"
+                      >29</cem:endsAt>
+                      <cem:beginsAt rdf:datatype="http://www.w3.org/2001/XMLSchema#int"
+                      >29</cem:beginsAt>
+                      <cem:usage rdf:resource="http://sadl.org/CodeExtractionModel.sadl#Used"/>
+                      <cem:codeBlock rdf:resource="http://com.ge.research.sadl.darpa.aske.answer/compute_java#Compute.getCp"/>
+                    </cem:Reference>
+                  </cem:reference>
+                  <cem:reference>
+                    <cem:Reference>
+                      <cem:endsAt rdf:datatype="http://www.w3.org/2001/XMLSchema#int"
+                      >29</cem:endsAt>
+                      <cem:beginsAt rdf:datatype="http://www.w3.org/2001/XMLSchema#int"
+                      >29</cem:beginsAt>
+                      <cem:usage rdf:resource="http://sadl.org/CodeExtractionModel.sadl#Used"/>
+                      <cem:codeBlock rdf:resource="http://com.ge.research.sadl.darpa.aske.answer/compute_java#Compute.getCp"/>
+                    </cem:Reference>
+                  </cem:reference>
+                  <cem:reference>
+                    <cem:Reference>
+                      <cem:endsAt rdf:datatype="http://www.w3.org/2001/XMLSchema#int"
+                      >29</cem:endsAt>
+                      <cem:beginsAt rdf:datatype="http://www.w3.org/2001/XMLSchema#int"
+                      >29</cem:beginsAt>
+                      <cem:usage rdf:resource="http://sadl.org/CodeExtractionModel.sadl#Used"/>
+                      <cem:codeBlock rdf:resource="http://com.ge.research.sadl.darpa.aske.answer/compute_java#Compute.getCp"/>
+                    </cem:Reference>
+                  </cem:reference>
+                  <cem:reference>
+                    <cem:Reference>
+                      <cem:endsAt rdf:datatype="http://www.w3.org/2001/XMLSchema#int"
+                      >29</cem:endsAt>
+                      <cem:beginsAt rdf:datatype="http://www.w3.org/2001/XMLSchema#int"
+                      >29</cem:beginsAt>
+                      <cem:usage rdf:resource="http://sadl.org/CodeExtractionModel.sadl#Used"/>
+                      <cem:codeBlock rdf:resource="http://com.ge.research.sadl.darpa.aske.answer/compute_java#Compute.getCp"/>
+                    </cem:Reference>
+                  </cem:reference>
+                  <cem:reference>
+                    <cem:Reference>
+                      <cem:endsAt rdf:datatype="http://www.w3.org/2001/XMLSchema#int"
+                      >29</cem:endsAt>
+                      <cem:beginsAt rdf:datatype="http://www.w3.org/2001/XMLSchema#int"
+                      >29</cem:beginsAt>
+                      <cem:usage rdf:resource="http://sadl.org/CodeExtractionModel.sadl#Used"/>
+                      <cem:codeBlock rdf:resource="http://com.ge.research.sadl.darpa.aske.answer/compute_java#Compute.getCp"/>
+                    </cem:Reference>
+                  </cem:reference>
+                  <cem:reference>
+                    <cem:Reference>
+                      <cem:endsAt rdf:datatype="http://www.w3.org/2001/XMLSchema#int"
+                      >29</cem:endsAt>
+                      <cem:beginsAt rdf:datatype="http://www.w3.org/2001/XMLSchema#int"
+                      >29</cem:beginsAt>
+                      <cem:usage rdf:resource="http://sadl.org/CodeExtractionModel.sadl#Used"/>
+                      <cem:codeBlock rdf:resource="http://com.ge.research.sadl.darpa.aske.answer/compute_java#Compute.getCp"/>
+                    </cem:Reference>
+                  </cem:reference>
+                  <cem:reference>
+                    <cem:Reference>
+                      <cem:endsAt rdf:datatype="http://www.w3.org/2001/XMLSchema#int"
+                      >29</cem:endsAt>
+                      <cem:beginsAt rdf:datatype="http://www.w3.org/2001/XMLSchema#int"
+                      >29</cem:beginsAt>
+                      <cem:usage rdf:resource="http://sadl.org/CodeExtractionModel.sadl#Used"/>
+                      <cem:codeBlock rdf:resource="http://com.ge.research.sadl.darpa.aske.answer/compute_java#Compute.getCp"/>
+                    </cem:Reference>
+                  </cem:reference>
+                  <cem:reference>
+                    <cem:Reference>
+                      <cem:endsAt rdf:datatype="http://www.w3.org/2001/XMLSchema#int"
+                      >29</cem:endsAt>
+                      <cem:beginsAt rdf:datatype="http://www.w3.org/2001/XMLSchema#int"
+                      >29</cem:beginsAt>
+                      <cem:usage rdf:resource="http://sadl.org/CodeExtractionModel.sadl#Used"/>
+                      <cem:codeBlock rdf:resource="http://com.ge.research.sadl.darpa.aske.answer/compute_java#Compute.getCp"/>
+                    </cem:Reference>
+                  </cem:reference>
+                </cem:MethodArgument>
+              </sadllistmodel:first>
+              <rdf:type rdf:nodeID="A0"/>
+            </cem:cmArguments>
+            <cem:cmArguments rdf:parseType="Resource">
+              <sadllistmodel:rest rdf:parseType="Resource">
+                <sadllistmodel:first rdf:resource="http://com.ge.research.sadl.darpa.aske.answer/compute_java#Compute.getCp.opt"/>
+                <rdf:type rdf:nodeID="A0"/>
+              </sadllistmodel:rest>
+              <sadllistmodel:first rdf:resource="http://com.ge.research.sadl.darpa.aske.answer/compute_java#Compute.getCp.temp"/>
+              <rdf:type rdf:nodeID="A0"/>
+            </cem:cmArguments>
+            <cem:containedIn rdf:resource="http://com.ge.research.sadl.darpa.aske.answer/compute_java#Compute"/>
+            <cem:cmArguments rdf:parseType="Resource">
+              <sadllistmodel:rest rdf:parseType="Resource">
+                <sadllistmodel:first rdf:resource="http://com.ge.research.sadl.darpa.aske.answer/compute_java#Compute.getCp.opt"/>
+                <rdf:type rdf:nodeID="A0"/>
+              </sadllistmodel:rest>
+              <sadllistmodel:first rdf:resource="http://com.ge.research.sadl.darpa.aske.answer/compute_java#Compute.getCp.temp"/>
+              <rdf:type rdf:nodeID="A0"/>
+            </cem:cmArguments>
+            <cem:serialization rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+            >public double getCp(double temp, int opt) {&#xD;
+    // Utility to get cp as a function of temp&#xD;
+    double number, a, b, c, d;&#xD;
+    /* BTU/R */&#xD;
+    a = -4.4702130e-13;&#xD;
+    b = -5.1286514e-10;&#xD;
+    c = 2.8323331e-05;&#xD;
+    d = 0.2245283;&#xD;
+    if (opt == 0) {&#xD;
+        number = .2399;&#xD;
+    } else {&#xD;
+        number = a * temp * temp * temp + b * temp * temp + c * temp + d;&#xD;
+    }&#xD;
+    return (number);&#xD;
+}</cem:serialization>
+            <cem:comment>
+              <cem:Comment>
+                <cem:endsAt rdf:datatype="http://www.w3.org/2001/XMLSchema#int"
+                >19</cem:endsAt>
+                <cem:beginsAt rdf:datatype="http://www.w3.org/2001/XMLSchema#int"
+                >19</cem:beginsAt>
+                <cem:commentContent rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+                > Utility to get cp as a function of temp </cem:commentContent>
+              </cem:Comment>
+            </cem:comment>
+            <cem:doesComputation rdf:datatype="http://www.w3.org/2001/XMLSchema#boolean"
+            >true</cem:doesComputation>
+            <cem:comment>
+              <cem:Comment>
+                <cem:endsAt rdf:datatype="http://www.w3.org/2001/XMLSchema#int"
+                >19</cem:endsAt>
+                <cem:beginsAt rdf:datatype="http://www.w3.org/2001/XMLSchema#int"
+                >19</cem:beginsAt>
+                <cem:commentContent rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+                > Utility to get cp as a function of temp </cem:commentContent>
+              </cem:Comment>
+            </cem:comment>
+            <cem:comment>
+              <cem:Comment>
+                <cem:endsAt rdf:datatype="http://www.w3.org/2001/XMLSchema#int"
+                >21</cem:endsAt>
+                <cem:beginsAt rdf:datatype="http://www.w3.org/2001/XMLSchema#int"
+                >21</cem:beginsAt>
+                <cem:commentContent rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+                > BTU/R </cem:commentContent>
+              </cem:Comment>
+            </cem:comment>
+            <cem:cmReturnTypes rdf:parseType="Resource">
+              <sadllistmodel:first rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+              >double</sadllistmodel:first>
+              <rdf:type rdf:nodeID="A1"/>
+            </cem:cmReturnTypes>
+            <cem:cmReturnTypes rdf:parseType="Resource">
+              <sadllistmodel:first rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+              >double</sadllistmodel:first>
+              <rdf:type rdf:nodeID="A1"/>
+            </cem:cmReturnTypes>
+            <cem:endsAt rdf:datatype="http://www.w3.org/2001/XMLSchema#int"
+            >32</cem:endsAt>
+            <cem:cmReturnTypes rdf:parseType="Resource">
+              <sadllistmodel:first rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+              >double</sadllistmodel:first>
+              <rdf:type rdf:nodeID="A1"/>
+            </cem:cmReturnTypes>
+            <cem:comment>
+              <cem:Comment>
+                <cem:endsAt rdf:datatype="http://www.w3.org/2001/XMLSchema#int"
+                >19</cem:endsAt>
+                <cem:beginsAt rdf:datatype="http://www.w3.org/2001/XMLSchema#int"
+                >19</cem:beginsAt>
+                <cem:commentContent rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+                > Utility to get cp as a function of temp </cem:commentContent>
+              </cem:Comment>
+            </cem:comment>
+            <cem:comment>
+              <cem:Comment>
+                <cem:endsAt rdf:datatype="http://www.w3.org/2001/XMLSchema#int"
+                >21</cem:endsAt>
+                <cem:beginsAt rdf:datatype="http://www.w3.org/2001/XMLSchema#int"
+                >21</cem:beginsAt>
+                <cem:commentContent rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+                > BTU/R </cem:commentContent>
+              </cem:Comment>
+            </cem:comment>
+            <cem:comment>
+              <cem:Comment>
+                <cem:endsAt rdf:datatype="http://www.w3.org/2001/XMLSchema#int"
+                >21</cem:endsAt>
+                <cem:beginsAt rdf:datatype="http://www.w3.org/2001/XMLSchema#int"
+                >21</cem:beginsAt>
+                <cem:commentContent rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+                > BTU/R </cem:commentContent>
+              </cem:Comment>
+            </cem:comment>
+          </cem:Method>
+        </cem:codeBlock>
+      </cem:Reference>
+    </cem:reference>
+    <cem:reference>
+      <cem:Reference>
+        <cem:endsAt rdf:datatype="http://www.w3.org/2001/XMLSchema#int"
+        >21</cem:endsAt>
+        <cem:beginsAt rdf:datatype="http://www.w3.org/2001/XMLSchema#int"
+        >21</cem:beginsAt>
+        <cem:usage rdf:resource="http://sadl.org/CodeExtractionModel.sadl#Reassigned"/>
+        <cem:codeBlock rdf:resource="http://com.ge.research.sadl.darpa.aske.answer/compute_java#Compute.getCp"/>
+      </cem:Reference>
+    </cem:reference>
+    <rdfs:label xml:lang="Java">double a;</rdfs:label>
+    <cem:reference>
+      <cem:Reference>
+        <cem:endsAt rdf:datatype="http://www.w3.org/2001/XMLSchema#int"
+        >21</cem:endsAt>
+        <cem:beginsAt rdf:datatype="http://www.w3.org/2001/XMLSchema#int"
+        >21</cem:beginsAt>
+        <cem:usage rdf:resource="http://sadl.org/CodeExtractionModel.sadl#Reassigned"/>
+        <cem:codeBlock rdf:resource="http://com.ge.research.sadl.darpa.aske.answer/compute_java#Compute.getCp"/>
+      </cem:Reference>
+    </cem:reference>
+    <cem:reference>
+      <cem:Reference>
+        <cem:endsAt rdf:datatype="http://www.w3.org/2001/XMLSchema#int"
+        >21</cem:endsAt>
+        <cem:beginsAt rdf:datatype="http://www.w3.org/2001/XMLSchema#int"
+        >21</cem:beginsAt>
+        <cem:usage rdf:resource="http://sadl.org/CodeExtractionModel.sadl#Reassigned"/>
+        <cem:codeBlock rdf:resource="http://com.ge.research.sadl.darpa.aske.answer/compute_java#Compute.getCp"/>
+      </cem:Reference>
+    </cem:reference>
+    <cem:reference>
+      <cem:Reference>
+        <cem:endsAt rdf:datatype="http://www.w3.org/2001/XMLSchema#int"
+        >29</cem:endsAt>
+        <cem:beginsAt rdf:datatype="http://www.w3.org/2001/XMLSchema#int"
+        >29</cem:beginsAt>
+        <cem:usage rdf:resource="http://sadl.org/CodeExtractionModel.sadl#Used"/>
+        <cem:codeBlock rdf:resource="http://com.ge.research.sadl.darpa.aske.answer/compute_java#Compute.getCp"/>
+      </cem:Reference>
+    </cem:reference>
+    <cem:reference>
+      <cem:Reference>
+        <cem:endsAt rdf:datatype="http://www.w3.org/2001/XMLSchema#int"
+        >19</cem:endsAt>
+        <cem:beginsAt rdf:datatype="http://www.w3.org/2001/XMLSchema#int"
+        >19</cem:beginsAt>
+        <cem:usage rdf:resource="http://sadl.org/CodeExtractionModel.sadl#Defined"/>
+        <cem:codeBlock rdf:resource="http://com.ge.research.sadl.darpa.aske.answer/compute_java#Compute.getCp"/>
+      </cem:Reference>
+    </cem:reference>
+    <cem:varName rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >a</cem:varName>
+    <cem:varType rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >double</cem:varType>
+    <cem:reference>
+      <cem:Reference>
+        <cem:endsAt rdf:datatype="http://www.w3.org/2001/XMLSchema#int"
+        >29</cem:endsAt>
+        <cem:beginsAt rdf:datatype="http://www.w3.org/2001/XMLSchema#int"
+        >29</cem:beginsAt>
+        <cem:usage rdf:resource="http://sadl.org/CodeExtractionModel.sadl#Used"/>
+        <cem:codeBlock rdf:resource="http://com.ge.research.sadl.darpa.aske.answer/compute_java#Compute.getCp"/>
+      </cem:Reference>
+    </cem:reference>
+  </cem:MethodVariable>
+  <cem:MethodVariable rdf:ID="Compute.getCp.number">
+    <cem:reference>
+      <cem:Reference>
+        <cem:endsAt rdf:datatype="http://www.w3.org/2001/XMLSchema#int"
+        >29</cem:endsAt>
+        <cem:beginsAt rdf:datatype="http://www.w3.org/2001/XMLSchema#int"
+        >29</cem:beginsAt>
+        <cem:usage rdf:resource="http://sadl.org/CodeExtractionModel.sadl#Reassigned"/>
+        <cem:codeBlock rdf:resource="http://com.ge.research.sadl.darpa.aske.answer/compute_java#Compute.getCp"/>
+      </cem:Reference>
+    </cem:reference>
+    <cem:reference>
+      <cem:Reference>
+        <cem:output rdf:datatype="http://www.w3.org/2001/XMLSchema#boolean"
+        >true</cem:output>
+        <cem:endsAt rdf:datatype="http://www.w3.org/2001/XMLSchema#int"
+        >31</cem:endsAt>
+        <cem:beginsAt rdf:datatype="http://www.w3.org/2001/XMLSchema#int"
+        >31</cem:beginsAt>
+        <cem:usage rdf:resource="http://sadl.org/CodeExtractionModel.sadl#Used"/>
+        <cem:codeBlock rdf:resource="http://com.ge.research.sadl.darpa.aske.answer/compute_java#Compute.getCp"/>
+      </cem:Reference>
+    </cem:reference>
+    <cem:varName rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >number</cem:varName>
+    <cem:reference>
+      <cem:Reference>
+        <cem:endsAt rdf:datatype="http://www.w3.org/2001/XMLSchema#int"
+        >26</cem:endsAt>
+        <cem:beginsAt rdf:datatype="http://www.w3.org/2001/XMLSchema#int"
+        >26</cem:beginsAt>
+        <cem:usage rdf:resource="http://sadl.org/CodeExtractionModel.sadl#Reassigned"/>
+        <cem:codeBlock rdf:resource="http://com.ge.research.sadl.darpa.aske.answer/compute_java#Compute.getCp"/>
+      </cem:Reference>
+    </cem:reference>
+    <rdfs:label xml:lang="Java">double number;</rdfs:label>
+    <cem:varType rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >double</cem:varType>
+    <cem:reference>
+      <cem:Reference>
+        <cem:endsAt rdf:datatype="http://www.w3.org/2001/XMLSchema#int"
+        >26</cem:endsAt>
+        <cem:beginsAt rdf:datatype="http://www.w3.org/2001/XMLSchema#int"
+        >26</cem:beginsAt>
+        <cem:usage rdf:resource="http://sadl.org/CodeExtractionModel.sadl#Reassigned"/>
+        <cem:codeBlock rdf:resource="http://com.ge.research.sadl.darpa.aske.answer/compute_java#Compute.getCp"/>
+      </cem:Reference>
+    </cem:reference>
+    <cem:reference>
+      <cem:Reference>
+        <cem:endsAt rdf:datatype="http://www.w3.org/2001/XMLSchema#int"
+        >29</cem:endsAt>
+        <cem:beginsAt rdf:datatype="http://www.w3.org/2001/XMLSchema#int"
+        >29</cem:beginsAt>
+        <cem:usage rdf:resource="http://sadl.org/CodeExtractionModel.sadl#Reassigned"/>
+        <cem:codeBlock rdf:resource="http://com.ge.research.sadl.darpa.aske.answer/compute_java#Compute.getCp"/>
+      </cem:Reference>
+    </cem:reference>
+    <cem:reference>
+      <cem:Reference>
+        <cem:endsAt rdf:datatype="http://www.w3.org/2001/XMLSchema#int"
+        >26</cem:endsAt>
+        <cem:beginsAt rdf:datatype="http://www.w3.org/2001/XMLSchema#int"
+        >26</cem:beginsAt>
+        <cem:usage rdf:resource="http://sadl.org/CodeExtractionModel.sadl#Reassigned"/>
+        <cem:codeBlock rdf:resource="http://com.ge.research.sadl.darpa.aske.answer/compute_java#Compute.getCp"/>
+      </cem:Reference>
+    </cem:reference>
+    <cem:reference>
+      <cem:Reference>
+        <cem:endsAt rdf:datatype="http://www.w3.org/2001/XMLSchema#int"
+        >29</cem:endsAt>
+        <cem:beginsAt rdf:datatype="http://www.w3.org/2001/XMLSchema#int"
+        >29</cem:beginsAt>
+        <cem:usage rdf:resource="http://sadl.org/CodeExtractionModel.sadl#Reassigned"/>
+        <cem:codeBlock rdf:resource="http://com.ge.research.sadl.darpa.aske.answer/compute_java#Compute.getCp"/>
+      </cem:Reference>
+    </cem:reference>
+    <cem:reference>
+      <cem:Reference>
+        <cem:output rdf:datatype="http://www.w3.org/2001/XMLSchema#boolean"
+        >true</cem:output>
+        <cem:endsAt rdf:datatype="http://www.w3.org/2001/XMLSchema#int"
+        >31</cem:endsAt>
+        <cem:beginsAt rdf:datatype="http://www.w3.org/2001/XMLSchema#int"
+        >31</cem:beginsAt>
+        <cem:usage rdf:resource="http://sadl.org/CodeExtractionModel.sadl#Used"/>
+        <cem:codeBlock rdf:resource="http://com.ge.research.sadl.darpa.aske.answer/compute_java#Compute.getCp"/>
+      </cem:Reference>
+    </cem:reference>
+    <cem:reference>
+      <cem:Reference>
+        <cem:endsAt rdf:datatype="http://www.w3.org/2001/XMLSchema#int"
+        >19</cem:endsAt>
+        <cem:beginsAt rdf:datatype="http://www.w3.org/2001/XMLSchema#int"
+        >19</cem:beginsAt>
+        <cem:usage rdf:resource="http://sadl.org/CodeExtractionModel.sadl#Defined"/>
+        <cem:codeBlock rdf:resource="http://com.ge.research.sadl.darpa.aske.answer/compute_java#Compute.getCp"/>
+      </cem:Reference>
+    </cem:reference>
+    <cem:reference>
+      <cem:Reference>
+        <cem:output rdf:datatype="http://www.w3.org/2001/XMLSchema#boolean"
+        >true</cem:output>
+        <cem:endsAt rdf:datatype="http://www.w3.org/2001/XMLSchema#int"
+        >31</cem:endsAt>
+        <cem:beginsAt rdf:datatype="http://www.w3.org/2001/XMLSchema#int"
+        >31</cem:beginsAt>
+        <cem:usage rdf:resource="http://sadl.org/CodeExtractionModel.sadl#Used"/>
+        <cem:codeBlock rdf:resource="http://com.ge.research.sadl.darpa.aske.answer/compute_java#Compute.getCp"/>
+      </cem:Reference>
+    </cem:reference>
+  </cem:MethodVariable>
+  <cem:MethodVariable rdf:ID="Compute.getCp.b">
+    <cem:reference>
+      <cem:Reference>
+        <cem:endsAt rdf:datatype="http://www.w3.org/2001/XMLSchema#int"
+        >19</cem:endsAt>
+        <cem:beginsAt rdf:datatype="http://www.w3.org/2001/XMLSchema#int"
+        >19</cem:beginsAt>
+        <cem:usage rdf:resource="http://sadl.org/CodeExtractionModel.sadl#Defined"/>
+        <cem:codeBlock rdf:resource="http://com.ge.research.sadl.darpa.aske.answer/compute_java#Compute.getCp"/>
+      </cem:Reference>
+    </cem:reference>
+    <cem:reference>
+      <cem:Reference>
+        <cem:endsAt rdf:datatype="http://www.w3.org/2001/XMLSchema#int"
+        >22</cem:endsAt>
+        <cem:beginsAt rdf:datatype="http://www.w3.org/2001/XMLSchema#int"
+        >22</cem:beginsAt>
+        <cem:usage rdf:resource="http://sadl.org/CodeExtractionModel.sadl#Reassigned"/>
+        <cem:codeBlock rdf:resource="http://com.ge.research.sadl.darpa.aske.answer/compute_java#Compute.getCp"/>
+      </cem:Reference>
+    </cem:reference>
+    <cem:varType rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >double</cem:varType>
+    <cem:reference>
+      <cem:Reference>
+        <cem:endsAt rdf:datatype="http://www.w3.org/2001/XMLSchema#int"
+        >29</cem:endsAt>
+        <cem:beginsAt rdf:datatype="http://www.w3.org/2001/XMLSchema#int"
+        >29</cem:beginsAt>
+        <cem:usage rdf:resource="http://sadl.org/CodeExtractionModel.sadl#Used"/>
+        <cem:codeBlock rdf:resource="http://com.ge.research.sadl.darpa.aske.answer/compute_java#Compute.getCp"/>
+      </cem:Reference>
+    </cem:reference>
+    <cem:varName rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >b</cem:varName>
+    <cem:reference>
+      <cem:Reference>
+        <cem:endsAt rdf:datatype="http://www.w3.org/2001/XMLSchema#int"
+        >22</cem:endsAt>
+        <cem:beginsAt rdf:datatype="http://www.w3.org/2001/XMLSchema#int"
+        >22</cem:beginsAt>
+        <cem:usage rdf:resource="http://sadl.org/CodeExtractionModel.sadl#Reassigned"/>
+        <cem:codeBlock rdf:resource="http://com.ge.research.sadl.darpa.aske.answer/compute_java#Compute.getCp"/>
+      </cem:Reference>
+    </cem:reference>
+    <cem:reference>
+      <cem:Reference>
+        <cem:endsAt rdf:datatype="http://www.w3.org/2001/XMLSchema#int"
+        >22</cem:endsAt>
+        <cem:beginsAt rdf:datatype="http://www.w3.org/2001/XMLSchema#int"
+        >22</cem:beginsAt>
+        <cem:usage rdf:resource="http://sadl.org/CodeExtractionModel.sadl#Reassigned"/>
+        <cem:codeBlock rdf:resource="http://com.ge.research.sadl.darpa.aske.answer/compute_java#Compute.getCp"/>
+      </cem:Reference>
+    </cem:reference>
+    <rdfs:label xml:lang="Java">double b;</rdfs:label>
+    <cem:reference>
+      <cem:Reference>
+        <cem:endsAt rdf:datatype="http://www.w3.org/2001/XMLSchema#int"
+        >29</cem:endsAt>
+        <cem:beginsAt rdf:datatype="http://www.w3.org/2001/XMLSchema#int"
+        >29</cem:beginsAt>
+        <cem:usage rdf:resource="http://sadl.org/CodeExtractionModel.sadl#Used"/>
+        <cem:codeBlock rdf:resource="http://com.ge.research.sadl.darpa.aske.answer/compute_java#Compute.getCp"/>
+      </cem:Reference>
+    </cem:reference>
+    <cem:reference>
+      <cem:Reference>
+        <cem:endsAt rdf:datatype="http://www.w3.org/2001/XMLSchema#int"
+        >29</cem:endsAt>
+        <cem:beginsAt rdf:datatype="http://www.w3.org/2001/XMLSchema#int"
+        >29</cem:beginsAt>
+        <cem:usage rdf:resource="http://sadl.org/CodeExtractionModel.sadl#Used"/>
+        <cem:codeBlock rdf:resource="http://com.ge.research.sadl.darpa.aske.answer/compute_java#Compute.getCp"/>
+      </cem:Reference>
+    </cem:reference>
+  </cem:MethodVariable>
+  <cem:MethodVariable rdf:ID="Compute.main.Cp">
+    <cem:reference>
+      <cem:Reference>
+        <cem:endsAt rdf:datatype="http://www.w3.org/2001/XMLSchema#int"
+        >9</cem:endsAt>
+        <cem:beginsAt rdf:datatype="http://www.w3.org/2001/XMLSchema#int"
+        >9</cem:beginsAt>
+        <cem:usage rdf:resource="http://sadl.org/CodeExtractionModel.sadl#Reassigned"/>
+        <cem:codeBlock rdf:resource="http://com.ge.research.sadl.darpa.aske.answer/compute_java#Compute.main"/>
+      </cem:Reference>
+    </cem:reference>
+    <cem:reference>
+      <cem:Reference>
+        <cem:endsAt rdf:datatype="http://www.w3.org/2001/XMLSchema#int"
+        >9</cem:endsAt>
+        <cem:beginsAt rdf:datatype="http://www.w3.org/2001/XMLSchema#int"
+        >9</cem:beginsAt>
+        <cem:usage rdf:resource="http://sadl.org/CodeExtractionModel.sadl#Reassigned"/>
+        <cem:codeBlock rdf:resource="http://com.ge.research.sadl.darpa.aske.answer/compute_java#Compute.main"/>
+      </cem:Reference>
+    </cem:reference>
+    <rdfs:label xml:lang="Java">double Cp;</rdfs:label>
+    <cem:reference>
+      <cem:Reference>
+        <cem:endsAt rdf:datatype="http://www.w3.org/2001/XMLSchema#int"
+        >10</cem:endsAt>
+        <cem:beginsAt rdf:datatype="http://www.w3.org/2001/XMLSchema#int"
+        >10</cem:beginsAt>
+        <cem:usage rdf:resource="http://sadl.org/CodeExtractionModel.sadl#Used"/>
+        <cem:codeBlock rdf:resource="http://com.ge.research.sadl.darpa.aske.answer/compute_java#Compute.main"/>
+      </cem:Reference>
+    </cem:reference>
+    <cem:reference>
+      <cem:Reference>
+        <cem:endsAt rdf:datatype="http://www.w3.org/2001/XMLSchema#int"
+        >10</cem:endsAt>
+        <cem:beginsAt rdf:datatype="http://www.w3.org/2001/XMLSchema#int"
+        >10</cem:beginsAt>
+        <cem:usage rdf:resource="http://sadl.org/CodeExtractionModel.sadl#Used"/>
+        <cem:codeBlock rdf:resource="http://com.ge.research.sadl.darpa.aske.answer/compute_java#Compute.main"/>
+      </cem:Reference>
+    </cem:reference>
+    <cem:varType rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >double</cem:varType>
+    <cem:reference>
+      <cem:Reference>
+        <cem:endsAt rdf:datatype="http://www.w3.org/2001/XMLSchema#int"
+        >9</cem:endsAt>
+        <cem:beginsAt rdf:datatype="http://www.w3.org/2001/XMLSchema#int"
+        >9</cem:beginsAt>
+        <cem:usage rdf:resource="http://sadl.org/CodeExtractionModel.sadl#Reassigned"/>
+        <cem:codeBlock rdf:resource="http://com.ge.research.sadl.darpa.aske.answer/compute_java#Compute.main"/>
+      </cem:Reference>
+    </cem:reference>
+    <cem:reference>
+      <cem:Reference>
+        <cem:endsAt rdf:datatype="http://www.w3.org/2001/XMLSchema#int"
+        >10</cem:endsAt>
+        <cem:beginsAt rdf:datatype="http://www.w3.org/2001/XMLSchema#int"
+        >10</cem:beginsAt>
+        <cem:usage rdf:resource="http://sadl.org/CodeExtractionModel.sadl#Used"/>
+        <cem:codeBlock rdf:resource="http://com.ge.research.sadl.darpa.aske.answer/compute_java#Compute.main"/>
+      </cem:Reference>
+    </cem:reference>
+    <cem:varName rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >Cp</cem:varName>
+    <cem:reference>
+      <cem:Reference>
+        <cem:endsAt rdf:datatype="http://www.w3.org/2001/XMLSchema#int"
+        >6</cem:endsAt>
+        <cem:beginsAt rdf:datatype="http://www.w3.org/2001/XMLSchema#int"
+        >6</cem:beginsAt>
+        <cem:usage rdf:resource="http://sadl.org/CodeExtractionModel.sadl#Defined"/>
+        <cem:codeBlock rdf:resource="http://com.ge.research.sadl.darpa.aske.answer/compute_java#Compute.main"/>
+      </cem:Reference>
+    </cem:reference>
+  </cem:MethodVariable>
+  <cem:ConstantVariable rdf:ID="Compute.getCp.c">
+    <cem:reference>
+      <cem:Reference>
+        <cem:endsAt rdf:datatype="http://www.w3.org/2001/XMLSchema#int"
+        >23</cem:endsAt>
+        <cem:beginsAt rdf:datatype="http://www.w3.org/2001/XMLSchema#int"
+        >23</cem:beginsAt>
+        <cem:usage rdf:resource="http://sadl.org/CodeExtractionModel.sadl#Reassigned"/>
+        <cem:codeBlock rdf:resource="http://com.ge.research.sadl.darpa.aske.answer/compute_java#Compute.getCp"/>
+      </cem:Reference>
+    </cem:reference>
+    <cem:reference>
+      <cem:Reference>
+        <cem:endsAt rdf:datatype="http://www.w3.org/2001/XMLSchema#int"
+        >29</cem:endsAt>
+        <cem:beginsAt rdf:datatype="http://www.w3.org/2001/XMLSchema#int"
+        >29</cem:beginsAt>
+        <cem:usage rdf:resource="http://sadl.org/CodeExtractionModel.sadl#Used"/>
+        <cem:codeBlock rdf:resource="http://com.ge.research.sadl.darpa.aske.answer/compute_java#Compute.getCp"/>
+      </cem:Reference>
+    </cem:reference>
+    <cem:reference>
+      <cem:Reference>
+        <cem:endsAt rdf:datatype="http://www.w3.org/2001/XMLSchema#int"
+        >23</cem:endsAt>
+        <cem:beginsAt rdf:datatype="http://www.w3.org/2001/XMLSchema#int"
+        >23</cem:beginsAt>
+        <cem:usage rdf:resource="http://sadl.org/CodeExtractionModel.sadl#Reassigned"/>
+        <cem:codeBlock rdf:resource="http://com.ge.research.sadl.darpa.aske.answer/compute_java#Compute.getCp"/>
+      </cem:Reference>
+    </cem:reference>
+    <cem:reference>
+      <cem:Reference>
+        <cem:endsAt rdf:datatype="http://www.w3.org/2001/XMLSchema#int"
+        >19</cem:endsAt>
+        <cem:beginsAt rdf:datatype="http://www.w3.org/2001/XMLSchema#int"
+        >19</cem:beginsAt>
+        <cem:usage rdf:resource="http://sadl.org/CodeExtractionModel.sadl#Defined"/>
+        <cem:codeBlock rdf:resource="http://com.ge.research.sadl.darpa.aske.answer/compute_java#Compute.getCp"/>
+      </cem:Reference>
+    </cem:reference>
+    <cem:reference>
+      <cem:Reference>
+        <cem:endsAt rdf:datatype="http://www.w3.org/2001/XMLSchema#int"
+        >23</cem:endsAt>
+        <cem:beginsAt rdf:datatype="http://www.w3.org/2001/XMLSchema#int"
+        >23</cem:beginsAt>
+        <cem:usage rdf:resource="http://sadl.org/CodeExtractionModel.sadl#Reassigned"/>
+        <cem:codeBlock rdf:resource="http://com.ge.research.sadl.darpa.aske.answer/compute_java#Compute.getCp"/>
+      </cem:Reference>
+    </cem:reference>
+    <cem:reference>
+      <cem:Reference>
+        <cem:endsAt rdf:datatype="http://www.w3.org/2001/XMLSchema#int"
+        >29</cem:endsAt>
+        <cem:beginsAt rdf:datatype="http://www.w3.org/2001/XMLSchema#int"
+        >29</cem:beginsAt>
+        <cem:usage rdf:resource="http://sadl.org/CodeExtractionModel.sadl#Used"/>
+        <cem:codeBlock rdf:resource="http://com.ge.research.sadl.darpa.aske.answer/compute_java#Compute.getCp"/>
+      </cem:Reference>
+    </cem:reference>
+    <cem:reference>
+      <cem:Reference>
+        <cem:endsAt rdf:datatype="http://www.w3.org/2001/XMLSchema#int"
+        >29</cem:endsAt>
+        <cem:beginsAt rdf:datatype="http://www.w3.org/2001/XMLSchema#int"
+        >29</cem:beginsAt>
+        <cem:usage rdf:resource="http://sadl.org/CodeExtractionModel.sadl#Used"/>
+        <cem:codeBlock rdf:resource="http://com.ge.research.sadl.darpa.aske.answer/compute_java#Compute.getCp"/>
+      </cem:Reference>
+    </cem:reference>
+    <cem:varType rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >double</cem:varType>
+    <cem:constantValue>
+      <sadlimplicitmodel:UnittedQuantity>
+        <sadlimplicitmodel:value rdf:datatype="http://www.w3.org/2001/XMLSchema#double"
+        >2.8323331E-5</sadlimplicitmodel:value>
+      </sadlimplicitmodel:UnittedQuantity>
+    </cem:constantValue>
+    <rdfs:label xml:lang="Java">double c;</rdfs:label>
+    <rdf:type rdf:resource="http://sadl.org/CodeExtractionModel.sadl#MethodVariable"/>
+    <cem:varName rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >c</cem:varName>
+  </cem:ConstantVariable>
+  <cem:MethodVariable rdf:ID="Compute.getCp.d">
+    <cem:varName rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >d</cem:varName>
+    <cem:reference>
+      <cem:Reference>
+        <cem:endsAt rdf:datatype="http://www.w3.org/2001/XMLSchema#int"
+        >19</cem:endsAt>
+        <cem:beginsAt rdf:datatype="http://www.w3.org/2001/XMLSchema#int"
+        >19</cem:beginsAt>
+        <cem:usage rdf:resource="http://sadl.org/CodeExtractionModel.sadl#Defined"/>
+        <cem:codeBlock rdf:resource="http://com.ge.research.sadl.darpa.aske.answer/compute_java#Compute.getCp"/>
+      </cem:Reference>
+    </cem:reference>
+    <cem:reference>
+      <cem:Reference>
+        <cem:endsAt rdf:datatype="http://www.w3.org/2001/XMLSchema#int"
+        >24</cem:endsAt>
+        <cem:beginsAt rdf:datatype="http://www.w3.org/2001/XMLSchema#int"
+        >24</cem:beginsAt>
+        <cem:usage rdf:resource="http://sadl.org/CodeExtractionModel.sadl#Reassigned"/>
+        <cem:codeBlock rdf:resource="http://com.ge.research.sadl.darpa.aske.answer/compute_java#Compute.getCp"/>
+      </cem:Reference>
+    </cem:reference>
+    <cem:reference>
+      <cem:Reference>
+        <cem:endsAt rdf:datatype="http://www.w3.org/2001/XMLSchema#int"
+        >29</cem:endsAt>
+        <cem:beginsAt rdf:datatype="http://www.w3.org/2001/XMLSchema#int"
+        >29</cem:beginsAt>
+        <cem:usage rdf:resource="http://sadl.org/CodeExtractionModel.sadl#Used"/>
+        <cem:codeBlock rdf:resource="http://com.ge.research.sadl.darpa.aske.answer/compute_java#Compute.getCp"/>
+      </cem:Reference>
+    </cem:reference>
+    <rdfs:label xml:lang="Java">double d;</rdfs:label>
+    <cem:reference>
+      <cem:Reference>
+        <cem:endsAt rdf:datatype="http://www.w3.org/2001/XMLSchema#int"
+        >24</cem:endsAt>
+        <cem:beginsAt rdf:datatype="http://www.w3.org/2001/XMLSchema#int"
+        >24</cem:beginsAt>
+        <cem:usage rdf:resource="http://sadl.org/CodeExtractionModel.sadl#Reassigned"/>
+        <cem:codeBlock rdf:resource="http://com.ge.research.sadl.darpa.aske.answer/compute_java#Compute.getCp"/>
+      </cem:Reference>
+    </cem:reference>
+    <cem:reference>
+      <cem:Reference>
+        <cem:endsAt rdf:datatype="http://www.w3.org/2001/XMLSchema#int"
+        >29</cem:endsAt>
+        <cem:beginsAt rdf:datatype="http://www.w3.org/2001/XMLSchema#int"
+        >29</cem:beginsAt>
+        <cem:usage rdf:resource="http://sadl.org/CodeExtractionModel.sadl#Used"/>
+        <cem:codeBlock rdf:resource="http://com.ge.research.sadl.darpa.aske.answer/compute_java#Compute.getCp"/>
+      </cem:Reference>
+    </cem:reference>
+    <cem:reference>
+      <cem:Reference>
+        <cem:endsAt rdf:datatype="http://www.w3.org/2001/XMLSchema#int"
+        >29</cem:endsAt>
+        <cem:beginsAt rdf:datatype="http://www.w3.org/2001/XMLSchema#int"
+        >29</cem:beginsAt>
+        <cem:usage rdf:resource="http://sadl.org/CodeExtractionModel.sadl#Used"/>
+        <cem:codeBlock rdf:resource="http://com.ge.research.sadl.darpa.aske.answer/compute_java#Compute.getCp"/>
+      </cem:Reference>
+    </cem:reference>
+    <cem:reference>
+      <cem:Reference>
+        <cem:endsAt rdf:datatype="http://www.w3.org/2001/XMLSchema#int"
+        >24</cem:endsAt>
+        <cem:beginsAt rdf:datatype="http://www.w3.org/2001/XMLSchema#int"
+        >24</cem:beginsAt>
+        <cem:usage rdf:resource="http://sadl.org/CodeExtractionModel.sadl#Reassigned"/>
+        <cem:codeBlock rdf:resource="http://com.ge.research.sadl.darpa.aske.answer/compute_java#Compute.getCp"/>
+      </cem:Reference>
+    </cem:reference>
+    <cem:constantValue>
+      <sadlimplicitmodel:UnittedQuantity>
+        <sadlimplicitmodel:value rdf:datatype="http://www.w3.org/2001/XMLSchema#double"
+        >0.2245283</sadlimplicitmodel:value>
+      </sadlimplicitmodel:UnittedQuantity>
+    </cem:constantValue>
+    <rdf:type rdf:resource="http://sadl.org/CodeExtractionModel.sadl#ConstantVariable"/>
+    <cem:varType rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >double</cem:varType>
+  </cem:MethodVariable>
+  <cem:MethodVariable rdf:ID="Compute.main.c">
+    <cem:reference>
+      <cem:Reference>
+        <cem:endsAt rdf:datatype="http://www.w3.org/2001/XMLSchema#int"
+        >7</cem:endsAt>
+        <cem:beginsAt rdf:datatype="http://www.w3.org/2001/XMLSchema#int"
+        >7</cem:beginsAt>
+        <cem:usage rdf:resource="http://sadl.org/CodeExtractionModel.sadl#Reassigned"/>
+        <cem:codeBlock rdf:resource="http://com.ge.research.sadl.darpa.aske.answer/compute_java#Compute.main"/>
+      </cem:Reference>
+    </cem:reference>
+    <cem:reference>
+      <cem:Reference>
+        <cem:endsAt rdf:datatype="http://www.w3.org/2001/XMLSchema#int"
+        >7</cem:endsAt>
+        <cem:beginsAt rdf:datatype="http://www.w3.org/2001/XMLSchema#int"
+        >7</cem:beginsAt>
+        <cem:usage rdf:resource="http://sadl.org/CodeExtractionModel.sadl#Reassigned"/>
+        <cem:codeBlock rdf:resource="http://com.ge.research.sadl.darpa.aske.answer/compute_java#Compute.main"/>
+      </cem:Reference>
+    </cem:reference>
+    <cem:reference>
+      <cem:Reference>
+        <cem:endsAt rdf:datatype="http://www.w3.org/2001/XMLSchema#int"
+        >7</cem:endsAt>
+        <cem:beginsAt rdf:datatype="http://www.w3.org/2001/XMLSchema#int"
+        >7</cem:beginsAt>
+        <cem:usage rdf:resource="http://sadl.org/CodeExtractionModel.sadl#Reassigned"/>
+        <cem:codeBlock rdf:resource="http://com.ge.research.sadl.darpa.aske.answer/compute_java#Compute.main"/>
+      </cem:Reference>
+    </cem:reference>
+    <cem:varType rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >Compute</cem:varType>
+    <cem:varName rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >c</cem:varName>
+    <rdfs:label xml:lang="Java">Compute c = new Compute();</rdfs:label>
+    <cem:reference>
+      <cem:Reference>
+        <cem:endsAt rdf:datatype="http://www.w3.org/2001/XMLSchema#int"
+        >7</cem:endsAt>
+        <cem:beginsAt rdf:datatype="http://www.w3.org/2001/XMLSchema#int"
+        >7</cem:beginsAt>
+        <cem:usage rdf:resource="http://sadl.org/CodeExtractionModel.sadl#Defined"/>
+        <cem:codeBlock rdf:resource="http://com.ge.research.sadl.darpa.aske.answer/compute_java#Compute.main"/>
+      </cem:Reference>
+    </cem:reference>
+  </cem:MethodVariable>
+</rdf:RDF>

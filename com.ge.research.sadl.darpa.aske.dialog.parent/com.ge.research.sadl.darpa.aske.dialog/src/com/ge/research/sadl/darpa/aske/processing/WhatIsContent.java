@@ -65,7 +65,10 @@ public class WhatIsContent extends QuestionContent {
 
 	public String toString() {
 		ICompositeNode nd = NodeModelUtils.findActualNodeFor(getHostEObject().eContainer());
-		return nd.getText().trim();
+		if (nd != null) {
+			return nd.getText().trim();			
+		}
+		return null;
 	}
 
 	public List<Rule> getComputationalGraphRules() {

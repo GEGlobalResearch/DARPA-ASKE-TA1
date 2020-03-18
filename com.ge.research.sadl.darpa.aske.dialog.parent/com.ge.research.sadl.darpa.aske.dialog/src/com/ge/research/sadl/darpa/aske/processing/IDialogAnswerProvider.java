@@ -40,6 +40,7 @@ import java.io.File;
 import java.util.List;
 import java.util.Map;
 
+import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.ecore.resource.Resource;
 
 import com.ge.research.sadl.darpa.aske.curation.AnswerCurationManager;
@@ -85,5 +86,8 @@ public interface IDialogAnswerProvider {
 	 */
 	String processUserQueryNewThreadWithBusyIndicator(Resource resource, OntModel theModel, String modelName,
 			ExpectsAnswerContent sc);
+
+	String replaceDialogText(AnswerCurationManager answerCurationManager, EObject eObject, String originalTxt,
+			String replacementTxt);
 
 }
