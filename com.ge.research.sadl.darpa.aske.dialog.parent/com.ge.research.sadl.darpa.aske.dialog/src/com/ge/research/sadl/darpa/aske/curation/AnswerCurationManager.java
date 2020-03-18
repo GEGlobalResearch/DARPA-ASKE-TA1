@@ -77,6 +77,7 @@ import com.ge.research.sadl.builder.ConfigurationManagerForIdeFactory;
 import com.ge.research.sadl.builder.IConfigurationManagerForIDE;
 import com.ge.research.sadl.darpa.aske.dialog.AnswerCMStatement;
 import com.ge.research.sadl.darpa.aske.inference.JenaBasedDialogInferenceProcessor;
+import com.ge.research.sadl.darpa.aske.inference.NoModelFoundForTargetException;
 import com.ge.research.sadl.darpa.aske.preferences.DialogPreferences;
 import com.ge.research.sadl.darpa.aske.processing.AddAugmentedTypeInfoContent;
 import com.ge.research.sadl.darpa.aske.processing.AddEquationContent;
@@ -2995,7 +2996,17 @@ public class AnswerCurationManager {
 		}
 		else if (sc != null && sc.getComparisonRules() != null) {
 			List<Rule> comparisonRules = sc.getComparisonRules();
-			Object[] rss = insertRulesAndQuery(resource2, comparisonRules);
+			Object[] rss = null;
+			try {
+				rss = insertRulesAndQuery(resource2, comparisonRules);
+			} catch (SadlInferenceException e) {
+				if (e.getCause() instanceof NoModelFoundForTargetException) {
+					return handleNoModelFoundForTargetException(sc, (NoModelFoundForTargetException) e.getCause());
+				}
+				else {
+					throw e;
+				}
+			}
 			return processResultsOfInsertRulesAndQuery(sc, rss, comparisonRules);
 //			return "Processing of query disabled";
 		}
@@ -3367,12 +3378,22 @@ public class AnswerCurationManager {
 	}
 
 	private String processWhatIsContent(org.eclipse.emf.ecore.resource.Resource resource, OntModel theModel,
-			String modelName, WhatIsContent sc) throws ExecutionException, SadlInferenceException,
+			String modelName, WhatIsContent sc) throws ExecutionException, SadlInferenceException, 
 			TranslationException, ConfigurationException, IOException, AnswerExtractionException {
 		if (sc != null) {
 			if (sc.getComputationalGraphRules() != null) {
 				List<Rule> comparisonRules = ((WhatIsContent)sc).getComputationalGraphRules();
-				Object[] rss = insertRulesAndQuery(resource, comparisonRules);
+				Object[] rss = null;
+				try {
+					rss = insertRulesAndQuery(resource, comparisonRules);
+				} catch (SadlInferenceException e) {
+					if (e.getCause() instanceof NoModelFoundForTargetException) {
+						return handleNoModelFoundForTargetException(sc, (NoModelFoundForTargetException) e.getCause());
+					}
+					else {
+						throw e;
+					}
+				}
 				return processResultsOfInsertRulesAndQuery(sc, rss, comparisonRules);
 			}
 			else {
@@ -4089,6 +4110,21 @@ public class AnswerCurationManager {
 			logger.debug(answer.toString());
 			return answer.toString();
 		}
+	}
+
+	private String handleNoModelFoundForTargetException(ExpectsAnswerContent sc, NoModelFoundForTargetException cause) throws ConfigurationException {
+		Node target = cause.getTarget();
+		String msg;
+		boolean quote = false;
+		if (target instanceof NamedNode) {
+			msg = "No model found to compute " + ((NamedNode)target).getName() + "; please add a model or do extraction";
+		}
+		else {
+			msg = "No model found to compute " + target.toString() + "; please add a model or do extraction";
+			quote = true;
+		}
+		answerUser(getOwlModelsFolder(), msg, quote, sc.getHostEObject());
+		return msg;
 	}
 
 	/**

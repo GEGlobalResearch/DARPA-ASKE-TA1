@@ -946,11 +946,13 @@ public class JenaBasedDialogInferenceProcessor extends JenaBasedSadlInferencePro
 	 * 1) data for the model diagram
 	 * 2) the actual numeric answer + the sensitivity URL
 	 * 3) triples corresponding to increasing/decreasing trend insights
+	 * @throws SadlInferenceException
+	 * @throws DialogInferenceException 
 	 */
 	
 //	@Override
 //	public Object[] insertTriplesAndQuery(Resource resource, List<TripleElement[]> triples) throws SadlInferenceException {
-	public Object[] insertTriplesAndQuery(Resource resource, List<Rule> rules, List<TripleElement[]> triples) throws SadlInferenceException {
+	public Object[] insertTriplesAndQuery(Resource resource, List<Rule> rules, List<TripleElement[]> triples) throws SadlInferenceException, DialogInferenceException {
  		List<Object[]> combinedResults = new ArrayList<Object[]>(triples.size());
  		Object[] results = null;
 	    JsonArray sensitivityJsonList = new JsonArray();
@@ -1112,7 +1114,8 @@ public class JenaBasedDialogInferenceProcessor extends JenaBasedSadlInferencePro
 //			boolean useKC, String queryModelFileName, String queryModelURI, String queryModelPrefix,
 //			String queryInstanceName, String queryOwlFileWithPath) throws SadlInferenceException {
 
-	private Object[] processSingleWhatWhenQuery(Resource resource, TripleElement[] triples, String kgsDirectory, JsonArray sensitivityJsonList) throws SadlInferenceException {
+	private Object[] processSingleWhatWhenQuery(Resource resource, TripleElement[] triples, String kgsDirectory, JsonArray sensitivityJsonList) 
+			throws SadlInferenceException, DialogInferenceException {
 
 		Object[] dbnResults = null;
 		Object[] kcResults = null;
@@ -1207,7 +1210,11 @@ public class JenaBasedDialogInferenceProcessor extends JenaBasedSadlInferencePro
 			
 			results = getCombinedResultSet(dbnResults, kcResults);
 			
-		} catch (Exception e) {
+		} 
+		catch (NoModelFoundForTargetException e) {
+			throw e;
+		}
+		catch (Exception e) {
 			e.printStackTrace();
 			results = null;
 		}
@@ -1261,6 +1268,11 @@ private ResultSet[] processWhatWhenQuery(Resource resource, String queryModelFil
 	eqnsResults1 = retrieveCG1(resource, inputsList, outputsList);
 	long endTime = System.currentTimeMillis();
 	System.out.println((endTime - startTime)/1000 + " secs");
+	
+	if (eqnsResults1 == null) {
+		Node targetNode = null;
+		throw new NoModelFoundForTargetException("No model found for target node " + targetNode.toString() + ".", targetNode);
+	}
 	
 	//dbnEqns = createDbnEqnMap(eqnsResults);
 //	dbnEqnMap = createOutputEqnMap(eqnsResults1);
