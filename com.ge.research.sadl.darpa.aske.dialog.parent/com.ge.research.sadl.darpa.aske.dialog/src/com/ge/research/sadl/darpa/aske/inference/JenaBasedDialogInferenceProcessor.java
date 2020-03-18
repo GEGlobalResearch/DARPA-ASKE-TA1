@@ -73,6 +73,7 @@ import org.apache.http.message.BasicNameValuePair;
 import org.apache.http.util.EntityUtils;
 import org.eclipse.emf.common.util.URI;
 import org.eclipse.emf.ecore.resource.Resource;
+import org.eclipse.xtext.generator.parser.antlr.debug.simpleAntlr.Skip;
 
 import com.ge.research.sadl.builder.ConfigurationManagerForIDE;
 import com.ge.research.sadl.builder.ConfigurationManagerForIdeFactory;
@@ -142,7 +143,7 @@ public class JenaBasedDialogInferenceProcessor extends JenaBasedSadlInferencePro
 //	public static final String qhModelName = "http://aske.ge.com/MetaData";
 //	public static final String qhOwlFileName = "MetaData.owl";
 
-	public static final boolean debugMode = true;
+	public static final boolean debugMode = false;
 	
 	
     private static final String KCHAIN_SERVICE_URL_FRAGMENT = "/darpa/aske/kchain/";
@@ -185,10 +186,18 @@ public class JenaBasedDialogInferenceProcessor extends JenaBasedSadlInferencePro
 	private static final String METAMODEL_TREND_DECRINCR = METAMODEL_PREFIX + "decreasingIncreases";
 	private static final String METAMODEL_TREND_DECRDECR = METAMODEL_PREFIX + "decreasingDecreases";
 	private static final String METAMODEL_TREND_INDEPENDENT = METAMODEL_PREFIX + "independent";
+	private static final String METAMODEL_SENS_TREND_LOC_PROP = METAMODEL_PREFIX + "locationWRTquery";
+	private static final String METAMODEL_TREND_AT_LOWER = METAMODEL_PREFIX + "lower_values";
+	private static final String METAMODEL_TREND_AT_HIGHER = METAMODEL_PREFIX + "higher_values";
+	private static final String METAMODEL_TREND_LOCALMAX = METAMODEL_PREFIX + "local_maximum";
+	private static final String METAMODEL_TREND_LOCALMIN = METAMODEL_PREFIX + "local_minimum";
 	public static final String METAMODEL_ASSUMPTIONSSATISFIED_PROP = METAMODEL_PREFIX + "assumptionsSatisfied";
 	public static final String METAMODEL_ASSUMPTIONUNSATISFIED_PROP = METAMODEL_PREFIX + "unsatisfiedAssumption";
 	public static final String CGMODEL_CG_CLASS = "http://aske.ge.com/compgraphmodel#ComputationalGraph";
 
+	
+	
+	
 	public static final String GENERICIOs = "prefix cg:<http://aske.ge.com/compgraphmodel#>\n" + 
 			"prefix imp:<http://sadl.org/sadlimplicitmodel#>\n" + 
 			"prefix sci:<http://aske.ge.com/sciknow#>\n" + 
@@ -875,20 +884,23 @@ public class JenaBasedDialogInferenceProcessor extends JenaBasedSadlInferencePro
 	
 	private static final String TRENDSQUERY = "prefix mm:<http://aske.ge.com/metamodel#>\n" + 
 			"prefix rdf:<http://www.w3.org/1999/02/22-rdf-syntax-ns#>\n" + 
-			"select distinct (strafter(str(?C),'#') as ?Class) (strafter(str(?SIn),'#') as ?Input) (strafter(str(?Trnd),'#') as ?Trend) (strafter(str(?SOut),'#') as ?Output)\n" + 
+			"select distinct (strafter(str(?C),'#') as ?Class) (strafter(str(?SIn),'#') as ?Input) (strafter(str(?Trnd),'#') as ?Trend) (strafter(str(?SOut),'#') as ?Output) (strafter(str(?Loc),'#') as ?Location)\n" + 
 			"where {\n" + 
 			"   filter (?CCG in (COMPGRAPH)). #<http://aske.ge.com/Model_Q_1583352078126#CG_1583352078156>\n" +  
 			"  ?CCG mm:sensitivity ?SS.\n" + 
 			"  ?SS mm:trendEffect ?TE.\n" + 
 			"  ?TE mm:cgInput ?SIn.\n" + 
-			"  ?TE mm:trend ?Trnd.\n" + 
+			"  ?TE mm:trend ?Trnd.\n" +
+			"  optional {?TE mm:locationWRTquery ?Loc.}\n" +
 			"  ?SS mm:output ?SOut.\n\n" + 
 			"  ?CGQ mm:execution/mm:compGraph ?CCG.\n" + 
 			"  ?CGQ mm:cgInput ?IVar.\n" + 
 			"  ?Obj ?prop ?IVar.\n" + 
 			"  filter (?prop not in (mm:cgInput))\n" + 
 			"  ?Obj rdf:type ?C.\n" + 
-			"} order by ?Input";
+			"} order by ?Output";
+
+
 	
 	boolean useDbn;
 	boolean useKC; 
@@ -903,8 +915,8 @@ public class JenaBasedDialogInferenceProcessor extends JenaBasedSadlInferencePro
 		List<TripleElement[]> triples = new ArrayList<TripleElement[]>();
 		for (Rule rule : rules) {
 			int size = (rule.getGivens() != null ? rule.getGivens().size() : 0) +
-					(rule.getIfs() != null ? rule.getIfs().size() : 0) +
-							(rule.getThens() != null ? rule.getThens().size() : 0);
+					   (rule.getIfs() != null ? rule.getIfs().size() : 0) +
+					   (rule.getThens() != null ? rule.getThens().size() : 0);
 			TripleElement[] thisRulesTriples = new TripleElement[size];
 			int idx = 0;
 			for (int i = 0; rule.getGivens() != null && i < rule.getGivens().size(); i++) {
@@ -955,7 +967,8 @@ public class JenaBasedDialogInferenceProcessor extends JenaBasedSadlInferencePro
 	public Object[] insertTriplesAndQuery(Resource resource, List<Rule> rules, List<TripleElement[]> triples) throws SadlInferenceException, DialogInferenceException {
  		List<Object[]> combinedResults = new ArrayList<Object[]>(triples.size());
  		Object[] results = null;
-	    JsonArray sensitivityJsonList = new JsonArray();
+//	    JsonArray sensitivityJsonList = new JsonArray();
+		Map<String, Map<String,List<String>>> insightsMap = new HashMap<String, Map<String,List<String>>>();
 
  		setCurrentResource(resource);
 		setModelFolderPath(getModelFolderPath(resource));
@@ -1066,10 +1079,11 @@ public class JenaBasedDialogInferenceProcessor extends JenaBasedSadlInferencePro
 			// TODO: handle exception
 		}
 
+		int numOfQueries = triples.size();
 		
 		for (int i=0 ; i<triples.size(); i++) {
 //			results = processSingleWhatWhenQuery(resource, triples.get(i), useDbn, useKC, queryModelFileName, queryModelURI,queryModelPrefix, queryInstanceName, queryOwlFileWithPath);
-			results = processSingleWhatWhenQuery(resource, triples.get(i), kgsDirectory, sensitivityJsonList);
+			results = processSingleWhatWhenQuery(resource, triples.get(i), kgsDirectory, numOfQueries, i+1, insightsMap);
 			combinedResults.add(results);
 			
 		}
@@ -1084,7 +1098,7 @@ public class JenaBasedDialogInferenceProcessor extends JenaBasedSadlInferencePro
 		
 		if(debugMode) {
 			long endTime = System.currentTimeMillis();
-			System.out.println("InsertTriplesAndQuery: " + (endTime - startTime)/1000 + " secs" );
+			System.out.println("InsertTriplesAndQuery: " + (endTime - startTime)/1000.0 + " secs" );
 			SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 			String time = sdf.format(Calendar.getInstance().getTime());
 			System.out.println("InsertTriplesAndQuery returned " + time);
@@ -1096,17 +1110,177 @@ public class JenaBasedDialogInferenceProcessor extends JenaBasedSadlInferencePro
 	
 	
 	private Object[] generateCompareResults(List<Object[]> combinedResults) {
-		List<Object> res = new ArrayList<Object>(); 
+		List<Object> res = new ArrayList<Object>();
+		List<Object> wres;
+		Map<String, List<Object[]>> classResMap = new HashMap<String, List<Object[]>>();
+		
+		List<Object[]> list;
+		String cl = null;
 		
 		for(int i=0; i<combinedResults.size(); i++) {
-			Object[] cr = combinedResults.get(i);
-			for(int j=0; j<cr.length; j++) {
-				res.add(cr[j]);
+			if (combinedResults.get(i).length > 0) {
+				cl = ((ResultSet)combinedResults.get(i)[1]).getResultAt(0, 1).toString();
+				if(classResMap.containsKey(cl)) {
+					list = classResMap.get(cl);
+				}
+				else {
+					list = new ArrayList<Object[]>();
+				}
+				list.add(combinedResults.get(i));
+				classResMap.put(cl, list );
+			}
+		}
+		
+		int numOfWhens = (classResMap.get(cl) != null ? classResMap.get(cl).size() : 0);
+		int numOfClasses = combinedResults.size()/numOfWhens;
+		
+		List<Object[]> singleCaseResults = new ArrayList<Object[]>();
+		
+		for(int i=0; i<numOfWhens; i++) {
+			singleCaseResults.clear();
+			for(int j=i; j<numOfClasses+i; j++) {
+				singleCaseResults.add( combinedResults.get(i+j));
+			}
+			wres = generateCompareResults1(singleCaseResults);
+			for(int k=0; k<wres.size(); k++) {
+				res.add(wres.get(k));
+			}
+		}
+		
+		return res.toArray();
+	}
+
+	/***
+	 * For each "class" (e.g. CF6, F100), computes the unique insights.
+	 * 
+	 * @param combinedResults
+	 * @return
+	 */
+	private List<Object> generateCompareResults1(List<Object[]> combinedResults) {
+//		List<Object> cres = new ArrayList<Object>();
+		List<Object> res = new ArrayList<Object>();
+		
+		int numOfClasses = combinedResults.size();
+
+		Object insights1, insights2;
+		
+		for(int i=0; i<numOfClasses; i++) {
+			if(combinedResults.get(i).length > 0) {
+				insights1 = combinedResults.get(i)[2];			
+				for(int j=0; j<numOfClasses; j++) {
+					if(j!=i) {
+						if(combinedResults.get(j).length > 0) {
+							insights2 = combinedResults.get(j)[2];
+							insights1 = getUniqueResults((ResultSet)insights1, (ResultSet)insights2);
+						}
+					}
+				}
+				res.add(combinedResults.get(i)[0]);
+				res.add(combinedResults.get(i)[1]);
+				res.add(insights1);
+			}
+			else {
+				ResultSet e1 = new ResultSet(new String[0]);
+				res.add(e1);
+//				res.add(e1);
+//				res.add(e1);
 			}
 		}
 		
 		
+		return res;
+	}
+
+	
+	
+	private Object[] generateCompareResults0(List<Object[]> combinedResults) {
+		List<Object> res = new ArrayList<Object>();
+		Object[] res1 = new Object[3];
+		Object[] res2 = new Object[3];
+		
+//		for(int i=0; i<combinedResults.size(); i++) {
+//			Object[] cr = combinedResults.get(i);
+//			for(int j=0; j<cr.length; j++) {
+//				res.add(cr[j]);
+//			}
+//		}
+		
+		Object[] result1 = combinedResults.get(0);
+		Object[] result2 = combinedResults.get(1);
+
+		res1[0] = result1[0];
+		res1[1] = result1[1];
+		res2[0] = result2[0];
+		res2[1] = result2[1];
+		
+		ResultSet insights1 = (ResultSet) result1[2];
+		ResultSet insights2 = (ResultSet) result2[2];
+		
+		res1[2] = getUniqueResults(insights1, insights2);
+
+		res2[2] = getUniqueResults(insights2, insights1);
+		
+
+		res.add(result1[0]);
+		res.add(result1[1]);
+		res.add(res1[2]);
+		res.add(result2[0]);
+		res.add(result2[1]);
+		res.add(res2[2]);
+		
+		
 		return res.toArray();
+	}
+	
+	private Object getUniqueResults(ResultSet insights1, ResultSet insights2) {
+		ResultSet jointInsights ;
+		boolean jointProperty;
+		String[] insHeaders = insights1.getColumnNames();
+		Object[][] insData1 = insights1.getData();
+		Object[][] insData2 = insights2.getData();
+
+		List<Object[]> jointInsightsData = new ArrayList<Object[]>();
+		
+		int trendIdx = 2;
+		int inputIdx = 1;
+		int outputIdx = 3;
+		
+		for(int i=0; i<insData1.length; i++) {
+			String input1 = insData1[i][inputIdx].toString();
+			String output1 = insData1[i][outputIdx].toString();
+			String ins1 = insData1[i][trendIdx].toString();
+			jointProperty = false;
+			for(int j=0; j<insData2.length; j++) {
+				String input2 = insData2[j][inputIdx].toString();
+				String output2 = insData2[j][outputIdx].toString();
+				String ins2 = insData2[j][trendIdx].toString();
+				if(input1.equals(input2) && output1.equals(output2) && ins1.equals(ins2)) {
+					jointProperty = true;
+					break;
+				}
+			}
+			if(!jointProperty) {
+				jointInsightsData.add(insData1[i]);
+			}
+		}
+		
+		int a = jointInsightsData.size();
+		int b = insHeaders.length;
+		
+//		Object[][] jid = new Object[insHeaders.length][jointInsightsData.size()];
+		Object[][] jid = new Object[jointInsightsData.size()][insHeaders.length];
+		
+		for (int i=0; i<jointInsightsData.size(); i++)
+			for (int j=0; j<insHeaders.length; j++)
+				jid[i][j] = jointInsightsData.get(i)[j];
+		
+		if(jointInsightsData.size() <= 0) {
+			jointInsights = new ResultSet(insHeaders);
+		}
+		else {
+			jointInsights = new ResultSet(insHeaders, (Object[][]) jid);
+		}
+		return jointInsights;
 	}
 
 
@@ -1114,8 +1288,12 @@ public class JenaBasedDialogInferenceProcessor extends JenaBasedSadlInferencePro
 //			boolean useKC, String queryModelFileName, String queryModelURI, String queryModelPrefix,
 //			String queryInstanceName, String queryOwlFileWithPath) throws SadlInferenceException {
 
-	private Object[] processSingleWhatWhenQuery(Resource resource, TripleElement[] triples, String kgsDirectory, JsonArray sensitivityJsonList) 
-			throws SadlInferenceException, DialogInferenceException {
+//<<<<<<< HEAD
+	private Object[] processSingleWhatWhenQuery(Resource resource, TripleElement[] triples, String kgsDirectory, int numOfQueries, int queryNum, Map<String, Map<String, List<String>>> insightsMap) throws SadlInferenceException {
+//=======
+//	private Object[] processSingleWhatWhenQuery(Resource resource, TripleElement[] triples, String kgsDirectory, JsonArray sensitivityJsonList) 
+//			throws SadlInferenceException, DialogInferenceException {
+//>>>>>>> 2c8d8f1421eb7017e0ed4d61ecbde8d027c8480e
 
 		Object[] dbnResults = null;
 		Object[] kcResults = null;
@@ -1184,7 +1362,7 @@ public class JenaBasedDialogInferenceProcessor extends JenaBasedSadlInferencePro
 
 				if (outputsList.size() > 0 && docPatterns.size() <= 0) { 
 					dbnResults = processWhatWhenQuery(resource, queryModelFileName, queryModelURI, queryModelPrefix,
-							queryOwlFileWithPath, inputsList, outputsList, contextClassList, cgq, sensitivityJsonList);
+							queryOwlFileWithPath, inputsList, outputsList, contextClassList, cgq, numOfQueries, queryNum, insightsMap);
 
 
 
@@ -1198,7 +1376,7 @@ public class JenaBasedDialogInferenceProcessor extends JenaBasedSadlInferencePro
 			
 			if (useKC) {
 				kcResults = processWhatWhenQuery(resource, queryModelFileName, queryModelURI, queryModelPrefix,
-						queryOwlFileWithPath, inputsList, outputsList, contextClassList, cgq, sensitivityJsonList);
+						queryOwlFileWithPath, inputsList, outputsList, contextClassList, cgq, numOfQueries, queryNum, insightsMap);
 				
 			}
 		
@@ -1206,26 +1384,23 @@ public class JenaBasedDialogInferenceProcessor extends JenaBasedSadlInferencePro
 			// Save metadata owl file
 			// Don't need to save at this point?
 			//saveMetaDataFile(resource,queryModelURI, queryModelFileName);
+	
 		
-			
-			results = getCombinedResultSet(dbnResults, kcResults);
-			
-		} 
-		catch (NoModelFoundForTargetException e) {
-			throw e;
 		}
 		catch (Exception e) {
 			e.printStackTrace();
-			results = null;
+//			results = null;
 		}
-
+		
+		results = getCombinedResultSet(dbnResults, kcResults);
+	
 		return results;
 	}
 
 
 private ResultSet[] processWhatWhenQuery(Resource resource, String queryModelFileName, String queryModelURI,
 		String queryModelPrefix, String queryOwlFileWithPath, List<RDFNode> inputsList, List<RDFNode> outputsList,
-		List<String> contextClassList, Individual cgq, JsonArray sensitivityJsonList)
+		List<String> contextClassList, Individual cgq, int numOfQueries, int queryNum, Map<String, Map<String, List<String>>> insightsMap)
 		throws TranslationException, Exception, IOException, URISyntaxException, ConfigurationException {
 	
 	com.hp.hpl.jena.query.ResultSetRewindable eqnsResults = null;
@@ -1266,13 +1441,12 @@ private ResultSet[] processWhatWhenQuery(Resource resource, String queryModelFil
 	long startTime = System.currentTimeMillis();
 //	eqnsResults = retrieveCG(resource, inputsList, outputsList);
 	eqnsResults1 = retrieveCG1(resource, inputsList, outputsList);
-	long endTime = System.currentTimeMillis();
-	System.out.println((endTime - startTime)/1000 + " secs");
-	
 	if (eqnsResults1 == null) {
-		Node targetNode = null;
-		throw new NoModelFoundForTargetException("No model found for target node " + targetNode.toString() + ".", targetNode);
+//		throw new NoModelFoundForTargetException("No model found for " + outputsList.get(0).toString() + ".", outputsList.get(0));
+//		Node targetNode = null;
 	}
+	long endTime = System.currentTimeMillis();
+	System.out.println((endTime - startTime)/1000.0 + " secs");
 	
 	//dbnEqns = createDbnEqnMap(eqnsResults);
 //	dbnEqnMap = createOutputEqnMap(eqnsResults1);
@@ -1312,7 +1486,7 @@ private ResultSet[] processWhatWhenQuery(Resource resource, String queryModelFil
 		String scriptLanguage = "http://sadl.org/sadlimplicitmodel#Python-NumPy";
 //		String scriptLanguage = "http://sadl.org/sadlimplicitmodel#Python";
 		
-		String nodesModelsJSONStr = retrieveModelsAndNodes(resource, listOfEqns, cgIns, contextClassList, scriptLanguage);
+		String nodesModelsJSONStr = retrieveModelsAndNodes(resource, listOfEqns, cgIns, contextClassList, scriptLanguage, numOfQueries, queryNum);
 		
 		
 
@@ -1322,11 +1496,12 @@ private ResultSet[] processWhatWhenQuery(Resource resource, String queryModelFil
 		
 		class2units = getClassUnitsMappingFromModelsJson(nodesModelsJSONStr);
 		
+		
 		System.out.print("Translating KG results into json: ");
 		startTime = System.currentTimeMillis();
 		cgJson = kgResultsToJson(nodesModelsJSONStr, "prognostic", "");
 		endTime = System.currentTimeMillis();
-		System.out.println((endTime - startTime)/1000 + " secs"); // + "  Payload size: " + cgJson.length());
+		System.out.println((endTime - startTime)/1000.0 + " secs"); // + "  Payload size: " + cgJson.length());
 		
 		if (useDbn) {
 		
@@ -1350,7 +1525,7 @@ private ResultSet[] processWhatWhenQuery(Resource resource, String queryModelFil
 			startTime = System.currentTimeMillis();
 			cgJson = generateDBNjson(cgJson);
 			endTime = System.currentTimeMillis();
-			System.out.println((endTime - startTime)/1000 + " secs"); // + "  Payload size: " + cgJson.length());
+			System.out.println((endTime - startTime)/1000.0 + " secs"); // + "  Payload size: " + cgJson.length());
 
 			kchainBuildJson = generateKChainBuildJson(cgJson);
 			
@@ -1359,7 +1534,7 @@ private ResultSet[] processWhatWhenQuery(Resource resource, String queryModelFil
 				startTime = System.currentTimeMillis();
 				String buildResult = buildKChain(kchainBuildJson);
 				endTime = System.currentTimeMillis();
-				System.out.println((endTime - startTime)/1000 + " secs"); // + "  Payload size: " + kchainBuildJson.toString().length());
+				System.out.println((endTime - startTime)/1000.0 + " secs"); // + "  Payload size: " + kchainBuildJson.toString().length());
 
 				if ( getBuildKChainOutcome(buildResult) ) {
 			
@@ -1369,15 +1544,14 @@ private ResultSet[] processWhatWhenQuery(Resource resource, String queryModelFil
 					startTime = System.currentTimeMillis();
 					kchainResultsJson = executeKChain(kchainEvalJson);
 					endTime = System.currentTimeMillis();
-					System.out.println((endTime - startTime)/1000 + " secs");
+					System.out.println((endTime - startTime)/1000.0 + " secs");
 				    
 				    resmsg = getEvalKChainOutcome(kchainResultsJson);
 				    
 				    kchainResultsJson = executeKChain(kchainEvalJson); //call sensitivity service instead
 				    
 				    JsonObject sensitivityJson = generateKChainSensitivityJson(cgJson);
-					sensitivityJsonList.add(sensitivityJson);
-				    
+			    
 				    kchainEvalJson = addKCserviceURL(sensitivityJson); //Add kchain eval service URL for invizin
 				    
 					System.out.print("Sensitivity analysis: ");
@@ -1385,7 +1559,7 @@ private ResultSet[] processWhatWhenQuery(Resource resource, String queryModelFil
 					sensitivityResult = execKChainSensitivity(sensitivityJson);
 				    sensitivityURL = getVisualizationURL(sensitivityResult);
 					endTime = System.currentTimeMillis();
-					System.out.println((endTime - startTime)/1000 + " secs");
+					System.out.println((endTime - startTime)/1000.0 + " secs");
 				    //sensitivityURL = "http://localhost:1177";
 				    
 //				    if (isMac()) {
@@ -1414,7 +1588,7 @@ private ResultSet[] processWhatWhenQuery(Resource resource, String queryModelFil
 	        createCEoutputInstances(outputsList, ce, class2lbl, lbl2value, class2units);
 
 
-			analyzeSensitivityResults(sensitivityResult, cgIns, lbl2class, queryModelPrefix);			
+			analyzeSensitivityResults(sensitivityResult, cgIns, lbl2class, queryModelPrefix, insightsMap);			
 
 	        
 	        saveMetaDataFile(resource,queryModelURI,queryModelFileName); //so we can query the the eqns in the CCG
@@ -1461,7 +1635,13 @@ private ResultSet[] processWhatWhenQuery(Resource resource, String queryModelFil
 //		dbnResults[0] = runReasonerQuery(resource, DEPENDENCY_GRAPH);
 
 	} else {
-		dbnResults = null;
+		saveMetaDataFile(resource,queryModelURI,queryModelFileName);
+		dbnResults = new ResultSet[1];
+		Object[][] data = new Object[1][1];
+		data[0][0] = outputsList.get(0).toString().split("#")[1];
+		String[] header = {"NoModelFound"};
+		dbnResults[0] = new ResultSet(header,data);
+//		dbnResults = null;
 	}
 	
 	if (modelCCGs.size() > 0) {
@@ -1475,6 +1655,17 @@ private ResultSet[] processWhatWhenQuery(Resource resource, String queryModelFil
 
 
 
+
+/**
+ * 
+ * @param resource
+ * @param outputsList
+ * @return
+ */
+private ResultSet retrieveQueryOutput(Resource resource, List<RDFNode> outputsList) {
+	// TODO Auto-generated method stub
+	return null;
+}
 
 /**
  * 
@@ -1507,18 +1698,21 @@ private Map<String, String> getInverseMap(Map<String, String> map) {
  * @param queryModelPrefix 
  * @param class2lbl 
  * @param cgIns 
+ * @param insightsMap 
  * @throws IOException 
  */
-private void analyzeSensitivityResults(String sensitivityResult, Individual cgIns, Map<String, String> lbl2class, String queryModelPrefix) throws IOException {
+private void analyzeSensitivityResults(String sensitivityResult, Individual cgIns, Map<String, String> lbl2class, String queryModelPrefix, Map<String, Map<String, List<String>>> insightsMap) throws IOException {
 //	sensitivityResult = "{\"sensitivityData\":[{\"OATMatrix\":{\"fsmach\":[0,0.09232463,0.1766437,0.2464482,0.29775146,0.32939076,0.34265238,0.3404852,0.3266189,0.30482608,0.2784374,0.25010738,0.22177133,0.194718,0.1697141,0.14713784,0.12709871,0.10953298,0.09427574,0.08111054],\"altd\":[0,0.15789473684210525,0.3157894736842105,0.47368421052631576,0.631578947368421,0.7894736842105263,0.9473684210526315,1.1052631578947367,1.263157894736842,1.4210526315789473,1.5789473684210527,1.7368421052631577,1.894736842105263,2.052631578947368,2.2105263157894735,2.3684210526315788,2.526315789473684,2.6842105263157894,2.8421052631578947,3]},\"OATRSMatrix\":{\"fsmach\":[0.33210394,0.3332521,0.33433527,0.33535418,0.33630925,0.33720127,0.33803058,0.3387981,0.3395045,0.34015036,0.3407363,0.34126318,0.34173167,0.3421426,0.34249645,0.3427943,0.34303662,0.34322447,0.34335843,0.34343934],\"altd\":[0.81,0.8194736842105264,0.8289473684210527,0.838421052631579,0.8478947368421054,0.8573684210526317,0.866842105263158,0.8763157894736843,0.8857894736842106,0.8952631578947369,0.9047368421052633,0.9142105263157896,0.9236842105263159,0.9331578947368422,0.9426315789473685,0.9521052631578948,0.9615789473684211,0.9710526315789475,0.9805263157894738,0.9900000000000001]},\"name\":\"altd\",\"type\":\"float\",\"value\":\"0.9\"},{\"OATMatrix\":{\"fsmach\":[0.30224335,0.30802384,0.3135674,0.3188915,0.32401192,0.32894263,0.33369592,0.33828318,0.34271488,0.34699997,0.35114703,0.355164,0.35905787,0.36283517,0.36650208,0.3700641,0.37352648,0.37689403,0.38017118,0.3833621],\"u0d\":[1.01,1.0621052631578947,1.1142105263157895,1.1663157894736842,1.2184210526315788,1.2705263157894737,1.3226315789473684,1.3747368421052633,1.426842105263158,1.4789473684210526,1.5310526315789474,1.583157894736842,1.635263157894737,1.6873684210526316,1.7394736842105263,1.791578947368421,1.8436842105263158,1.8957894736842107,1.9478947368421053,2]},\"OATRSMatrix\":{\"fsmach\":[0.32796124,0.32933322,0.33069092,0.33203492,0.3333654,0.33468255,0.33598652,0.33727765,0.33855626,0.3398223,0.34107617,0.34231815,0.34354833,0.34476686,0.34597406,0.34717005,0.34835514,0.34952927,0.3506928,0.35184592],\"u0d\":[1.26,1.2747368421052632,1.2894736842105263,1.3042105263157895,1.3189473684210526,1.3336842105263158,1.348421052631579,1.3631578947368421,1.3778947368421053,1.3926315789473684,1.4073684210526316,1.4221052631578948,1.436842105263158,1.451578947368421,1.4663157894736842,1.4810526315789474,1.4957894736842106,1.5105263157894737,1.5252631578947369,1.54]},\"name\":\"u0d\",\"type\":\"float\",\"value\":\"1.4\"}],\"url\":\"http://localhost:1177\"}";
+	
+	System.out.println(sensitivityResult);
 	
 	JsonElement je = new JsonParser().parse(sensitivityResult);
 	if (je.isJsonObject()) {
 		JsonObject jobj = je.getAsJsonObject();
-		if (jobj.has("sensitivityData")) {
-			JsonArray ja = jobj.getAsJsonArray("sensitivityData");
-			for(int i=0; i<ja.size(); i++) {
-				extractVarInfluence(ja.get(i).getAsJsonObject(), cgIns, lbl2class, queryModelPrefix);
+		if (jobj.has("OATSensitivityData")) { //sensitivityData
+			JsonArray ja = jobj.getAsJsonArray("OATSensitivityData");
+			for(int i=0; i<ja.size(); i++) { //for each input variable
+				extractVarInfluence(ja.get(i).getAsJsonObject(), cgIns, lbl2class, queryModelPrefix, insightsMap);
 			}
 		}
 		else {
@@ -1536,107 +1730,165 @@ private void analyzeSensitivityResults(String sensitivityResult, Individual cgIn
 
 /**
  * 
+ * @param insightsMap 
  * @param asJsonObject
  */
-private void extractVarInfluence(JsonObject sensitivityResult, Individual cgIns, Map<String, String> lbl2class, String queryModelPrefix) {
+private void extractVarInfluence(JsonObject sensitivityResult, Individual cgIns, Map<String, String> lbl2class, String queryModelPrefix, Map<String, Map<String, List<String>>> insightsMap) {
 	String input = sensitivityResult.get("name").getAsString();
 	String output = null;
 	String vstr = sensitivityResult.get("value").getAsString();
 	double value = new Double(vstr);
 	JsonArray inputArray = null;
 	JsonArray outputArray = null;
-	double prevIn, prevOut, min, max, ip, op;
+	int queryPointIdx;
+	double queryOutput; 
+	double prevOut, min, max, ip, op;
 	boolean increasingIncreases;
 	boolean increasingDecreases;
 	boolean decreasingIncreases;
 	boolean decreasingDecreases;
-	boolean independent = increasingIncreases = increasingDecreases = decreasingIncreases = decreasingDecreases = false;
+	boolean independent;
+	Map<String, List<String>> outputInsights = new HashMap<String, List<String>>();
+	List<String> insightList;
 	
-	boolean localmin;
-	boolean localmax = localmin = false;
-	boolean incr;
-	boolean decr = incr = false;
+//	boolean localmin;
+//	boolean localmax;
+//	boolean incr;
+//	boolean decr = incr = false;
+	boolean lower;
+	boolean higher;
 	
+	String matrixType = "OATRSMatrix";
 	
-	Iterator<Entry<String, JsonElement>> mtxitr = sensitivityResult.get("OATRSMatrix").getAsJsonObject().entrySet().iterator();
+	Iterator<Entry<String, JsonElement>> mtxitr = sensitivityResult.get(matrixType).getAsJsonObject().entrySet().iterator();  //input/output - data
 	
+	inputArray = sensitivityResult.get(matrixType).getAsJsonObject().get(input).getAsJsonArray();
+
+	
+//	while(mtxitr.hasNext()) {
+//		Entry<String, JsonElement> mtxe = mtxitr.next();
+//		if(mtxe.getKey().equals(input)) {
+//			inputArray = sensitivityResult.get("OATMatrix").getAsJsonObject().get(input).getAsJsonArray();
+//		} else {
+//			output = mtxe.getKey();
+//			outputArray = sensitivityResult.get("OATMatrix").getAsJsonObject().get(output).getAsJsonArray();
+//		}
+//	}	
+
+
 	while(mtxitr.hasNext()) {
 		Entry<String, JsonElement> mtxe = mtxitr.next();
-		if(mtxe.getKey().equals(input)) {
-			inputArray = sensitivityResult.get("OATRSMatrix").getAsJsonObject().get(input).getAsJsonArray();
-		} else {
-			output = mtxe.getKey();
-			outputArray = sensitivityResult.get("OATRSMatrix").getAsJsonObject().get(output).getAsJsonArray();
-		}
-	}	
+		if (mtxe.getKey().equals(input))
+			if (mtxitr.hasNext())
+				mtxe = mtxitr.next();
+			else
+				continue;
+		output = mtxe.getKey();
+		outputArray = sensitivityResult.get(matrixType).getAsJsonObject().get(output).getAsJsonArray();
 
-	prevOut = min = max = outputArray.get(0).getAsDouble();
-	prevIn = inputArray.get(0).getAsDouble();
+		independent = increasingIncreases = increasingDecreases = decreasingIncreases = decreasingDecreases = lower = higher = false;
 	
-	
-	/**
-	 *  Only results can be:
-	 *  1) decreasingDecreases
-	 *  2) decreasingIncreases
-	 *  3) decreasingDecreases & increasingDecreases
-	 *  4) decreasingIncreases & increasingIncreases
-	 */
+		prevOut = min = max = outputArray.get(0).getAsDouble();
 		
-	int size = outputArray.size();
-	for(int i=1; i<size; i++) {
-		ip = inputArray.get(i).getAsDouble();
-		op = outputArray.get(i).getAsDouble();
-		if (op < min)
-			min = op;
-		if (op > max)
-			max = op;
-		if(prevOut < op && !decreasingIncreases)
-			decreasingDecreases = true;
-		if(prevOut > op && !decreasingDecreases)
-			decreasingIncreases = true;
-		if(prevOut > op && decreasingDecreases) //found local max
-			increasingDecreases = true;
-		if(prevOut < op && decreasingIncreases) //found local min
-			increasingIncreases = true;
+		insightList= new ArrayList<String>();
+		
+		/**
+		 *  Only results can be:
+		 *  1) decreasingDecreases (at lower)
+		 *  2) decreasingIncreases (at lower)
+		 *  3) decreasingIncreases & increasingIncreases (localmin) at lower
+		 *  4) decreasingDecreases & increasingDecreases (localmax) at lower
+		 *  5) increasingIncreases (at higher)
+		 *  6) increasingDecreases (at higher)
+		 *  7) increasingDecreases & increasingIncreases (localmin) at higher
+		 */
+			
+		int size = outputArray.size();
+		queryPointIdx = size/2;
+		queryOutput = outputArray.get(queryPointIdx).getAsDouble();
+	
+		for(int i=1; i<size; i++) {
+			ip = inputArray.get(i).getAsDouble();
+			op = outputArray.get(i).getAsDouble();
+			if (op < min)
+				min = op;
+			if (op > max)
+				max = op;
+			
+			if(i<=queryPointIdx) {
+				if(prevOut < op) {
+					decreasingDecreases = true;
+					insightList.add("decreasingDecreases");
+				}
+				if(prevOut > op) {
+					decreasingIncreases = true;
+					insightList.add("decreasingIncreases");
+				}
+			}
+			if (queryPointIdx <= i) {
+				if(prevOut < op) {
+					increasingIncreases = true;
+					insightList.add("increasingIncreases");
+				}
+				if(prevOut > op) {
+					increasingDecreases = true;
+					insightList.add("increasingDecreases");
+				}
+			}
 
-//		if(prevIn < ip && prevOut < op)
-//			increasingIncreases = true;
-//		if(prevIn < ip && prevOut > op)
-//			increasingDecreases = true;
-//		if(prevIn > ip && prevOut < op)
-//			decreasingIncreases = true;
-//		if(prevIn > ip && prevOut > op)
+//		if(prevOut < op && !decreasingIncreases)
 //			decreasingDecreases = true;
-
-		prevIn = ip;
-		prevOut = op;
-	}
-
-	
-//	
-//	prevOut = outputArray.get(0).getAsDouble();
-//	for(int i=1; i<size; i++) {
-//		op = outputArray.get(i).getAsDouble();
-//		if(incr && prevOut > op)
-//			localmax = true;
-//		if(decr && prevOut < op)
-//			localmin = true;
-//		if(prevOut < op) {
-//			incr = true;
-//			decr = false;
+//		if(prevOut > op && !decreasingDecreases)
+//			decreasingIncreases = true;
+//		if(decreasingIncreases && ! increasingIncreases && prevOut < op) {//found local min
+//			increasingIncreases = true;
+//			if (i < queryPointIdx && prevOut != queryOutput)
+//				lower = true;
+//			if (i > queryPointIdx && prevOut != queryOutput)
+//				higher = true;
 //		}
-//		if( prevOut > op) {
-//			incr = false;
-//			decr = true;
+//		if(decreasingDecreases && !increasingDecreases && prevOut > op) {//found local max
+//			increasingDecreases = true;
+//			if (i < queryPointIdx && prevOut != queryOutput)
+//				lower = true;
+//			if (i > queryPointIdx && prevOut != queryOutput)
+//				higher = true;
 //		}
-//	}
+
+			
+			prevOut = op;
+		}
 	
-	
-	if(min == max)
-		independent = true;
-	
-	ingestTrend(input.replace("_val", ""), output, increasingIncreases, increasingDecreases, decreasingIncreases, decreasingDecreases, independent, cgIns, lbl2class);
-	
+		
+	//	
+	//	prevOut = outputArray.get(0).getAsDouble();
+	//	for(int i=1; i<size; i++) {
+	//		op = outputArray.get(i).getAsDouble();
+	//		if(incr && prevOut > op)
+	//			localmax = true;
+	//		if(decr && prevOut < op)
+	//			localmin = true;
+	//		if(prevOut < op) {
+	//			incr = true;
+	//			decr = false;
+	//		}
+	//		if( prevOut > op) {
+	//			incr = false;
+	//			decr = true;
+	//		}
+	//	}
+		
+		
+		if(min == max) {
+			independent = true;
+			insightList.add("independent");
+		}
+		
+		outputInsights.put(output,insightList);
+		insightsMap.put(input, outputInsights);
+		
+		ingestTrend(input.replace("_val", ""), output, increasingIncreases, increasingDecreases, decreasingIncreases, decreasingDecreases, lower, higher, independent, cgIns, lbl2class);
+	}	
 	
 }
 
@@ -1649,10 +1901,12 @@ private void extractVarInfluence(JsonObject sensitivityResult, Individual cgIns,
  * @param independent 
  * @param independent2 
  * @param decreasingDecreases 
+ * @param independent2 
+ * @param higher 
  * @param cgIns
  * @param class2lbl
  */
-private void ingestTrend(String input, String output, boolean increasingIncreases, boolean increasingDecreases, boolean decreasingIncreases, boolean decreasingDecreases, boolean independent, Individual cgIns, Map<String, String> lbl2class) {
+private void ingestTrend(String input, String output, boolean increasingIncreases, boolean increasingDecreases, boolean decreasingIncreases, boolean decreasingDecreases, boolean lower, boolean higher, boolean independent, Individual cgIns, Map<String, String> lbl2class) {
 	String inputType = lbl2class.get(input);
 	String outputType = lbl2class.get(output);
 	
@@ -1679,28 +1933,100 @@ private void ingestTrend(String input, String output, boolean increasingIncrease
 
 	//outputTrednIns trend :increasing
 
-	if(decreasingDecreases) {
-		if(increasingDecreases) {
-			ingestKGTriple(outputTrendIns, getModelProperty(getTheJenaModel(), METAMODEL_SENS_TREND_PROP), getTheJenaModel().getResource(METAMODEL_TREND_DECRDECR));
-			ingestKGTriple(outputTrendIns, getModelProperty(getTheJenaModel(), METAMODEL_SENS_TREND_PROP), getTheJenaModel().getResource(METAMODEL_TREND_INCRDECR));
+	if(decreasingDecreases && increasingIncreases) { //uptrend around query point
+		if(decreasingIncreases) { //local min @ lower
+			ingestKGTriple(outputTrendIns, getModelProperty(getTheJenaModel(), METAMODEL_SENS_TREND_LOC_PROP), getTheJenaModel().getResource(METAMODEL_TREND_AT_LOWER));
+			ingestKGTriple(outputTrendIns, getModelProperty(getTheJenaModel(), METAMODEL_SENS_TREND_PROP), getTheJenaModel().getResource(METAMODEL_TREND_LOCALMIN));
 		}
-		else {
+		else if (increasingDecreases) { //local max @ higher
+			ingestKGTriple(outputTrendIns, getModelProperty(getTheJenaModel(), METAMODEL_SENS_TREND_LOC_PROP), getTheJenaModel().getResource(METAMODEL_TREND_AT_HIGHER));
+			ingestKGTriple(outputTrendIns, getModelProperty(getTheJenaModel(), METAMODEL_SENS_TREND_PROP), getTheJenaModel().getResource(METAMODEL_TREND_LOCALMAX));
+		}
+		else { // only uptrend
 			ingestKGTriple(outputTrendIns, getModelProperty(getTheJenaModel(), METAMODEL_SENS_TREND_PROP), getTheJenaModel().getResource(METAMODEL_TREND_INCRINCR));
 		}
-	} 
-	if(decreasingIncreases) {
-		if(increasingIncreases) {
+	}
+	else if(decreasingIncreases &&  increasingDecreases) { //downtrend around query point
+		if(decreasingDecreases) { //local max @ lower
+			ingestKGTriple(outputTrendIns, getModelProperty(getTheJenaModel(), METAMODEL_SENS_TREND_LOC_PROP), getTheJenaModel().getResource(METAMODEL_TREND_AT_LOWER));
+			ingestKGTriple(outputTrendIns, getModelProperty(getTheJenaModel(), METAMODEL_SENS_TREND_PROP), getTheJenaModel().getResource(METAMODEL_TREND_LOCALMAX));
+		}
+		else if (increasingIncreases) { //local min @ higher
+				ingestKGTriple(outputTrendIns, getModelProperty(getTheJenaModel(), METAMODEL_SENS_TREND_LOC_PROP), getTheJenaModel().getResource(METAMODEL_TREND_AT_HIGHER));
+				ingestKGTriple(outputTrendIns, getModelProperty(getTheJenaModel(), METAMODEL_SENS_TREND_PROP), getTheJenaModel().getResource(METAMODEL_TREND_LOCALMIN));
+		}
+		else {
+			ingestKGTriple(outputTrendIns, getModelProperty(getTheJenaModel(), METAMODEL_SENS_TREND_PROP), getTheJenaModel().getResource(METAMODEL_TREND_INCRDECR));
+		}
+	}
+	else if (decreasingIncreases && increasingIncreases) {//local min @ query point
+		ingestKGTriple(outputTrendIns, getModelProperty(getTheJenaModel(), METAMODEL_SENS_TREND_PROP), getTheJenaModel().getResource(METAMODEL_TREND_DECRINCR));
+		ingestKGTriple(outputTrendIns, getModelProperty(getTheJenaModel(), METAMODEL_SENS_TREND_PROP), getTheJenaModel().getResource(METAMODEL_TREND_INCRINCR));
+	}
+	else if (decreasingDecreases && increasingDecreases) { //local max @ query point
+		ingestKGTriple(outputTrendIns, getModelProperty(getTheJenaModel(), METAMODEL_SENS_TREND_PROP), getTheJenaModel().getResource(METAMODEL_TREND_DECRDECR));
+		ingestKGTriple(outputTrendIns, getModelProperty(getTheJenaModel(), METAMODEL_SENS_TREND_PROP), getTheJenaModel().getResource(METAMODEL_TREND_INCRDECR));
+	}
+	else { // otherwise just output as-is
+		if (increasingIncreases) {
+			ingestKGTriple(outputTrendIns, getModelProperty(getTheJenaModel(), METAMODEL_SENS_TREND_PROP), getTheJenaModel().getResource(METAMODEL_TREND_INCRINCR));
+		}
+		if (increasingDecreases) {
+			ingestKGTriple(outputTrendIns, getModelProperty(getTheJenaModel(), METAMODEL_SENS_TREND_PROP), getTheJenaModel().getResource(METAMODEL_TREND_INCRDECR));
+		}
+		if (decreasingIncreases) {
 			ingestKGTriple(outputTrendIns, getModelProperty(getTheJenaModel(), METAMODEL_SENS_TREND_PROP), getTheJenaModel().getResource(METAMODEL_TREND_DECRINCR));
-			ingestKGTriple(outputTrendIns, getModelProperty(getTheJenaModel(), METAMODEL_SENS_TREND_PROP), getTheJenaModel().getResource(METAMODEL_TREND_INCRINCR));
 		}
-		else {
-			ingestKGTriple(outputTrendIns, getModelProperty(getTheJenaModel(), METAMODEL_SENS_TREND_PROP), getTheJenaModel().getResource(METAMODEL_TREND_INCRDECR));
+		if (decreasingDecreases) {
+			ingestKGTriple(outputTrendIns, getModelProperty(getTheJenaModel(), METAMODEL_SENS_TREND_PROP), getTheJenaModel().getResource(METAMODEL_TREND_DECRDECR));
 		}
+		
+		
 	}
 	if (independent) {
 		ingestKGTriple(outputTrendIns, getModelProperty(getTheJenaModel(), METAMODEL_SENS_TREND_PROP), getTheJenaModel().getResource(METAMODEL_TREND_INDEPENDENT));
 	}
 	
+	
+	
+//	if(decreasingDecreases) {
+//		if(increasingDecreases) {
+//			if (lower) {
+//				ingestKGTriple(outputTrendIns, getModelProperty(getTheJenaModel(), METAMODEL_SENS_TREND_LOC_PROP), getTheJenaModel().getResource(METAMODEL_TREND_AT_LOWER));
+//				ingestKGTriple(outputTrendIns, getModelProperty(getTheJenaModel(), METAMODEL_SENS_TREND_PROP), getTheJenaModel().getResource(METAMODEL_TREND_LOCALMAX));
+//			}
+//			if (higher) {
+//				ingestKGTriple(outputTrendIns, getModelProperty(getTheJenaModel(), METAMODEL_SENS_TREND_LOC_PROP), getTheJenaModel().getResource(METAMODEL_TREND_AT_HIGHER));
+//				ingestKGTriple(outputTrendIns, getModelProperty(getTheJenaModel(), METAMODEL_SENS_TREND_PROP), getTheJenaModel().getResource(METAMODEL_TREND_LOCALMAX));
+//			}
+//			else {
+//				ingestKGTriple(outputTrendIns, getModelProperty(getTheJenaModel(), METAMODEL_SENS_TREND_PROP), getTheJenaModel().getResource(METAMODEL_TREND_DECRDECR));
+//				ingestKGTriple(outputTrendIns, getModelProperty(getTheJenaModel(), METAMODEL_SENS_TREND_PROP), getTheJenaModel().getResource(METAMODEL_TREND_INCRDECR));
+//			}
+//		}
+//		else {
+//			ingestKGTriple(outputTrendIns, getModelProperty(getTheJenaModel(), METAMODEL_SENS_TREND_PROP), getTheJenaModel().getResource(METAMODEL_TREND_INCRINCR));
+//		}
+//	} 
+//	if(decreasingIncreases) {
+//		if(increasingIncreases) {
+//			if (lower) {
+//				ingestKGTriple(outputTrendIns, getModelProperty(getTheJenaModel(), METAMODEL_SENS_TREND_LOC_PROP), getTheJenaModel().getResource(METAMODEL_TREND_AT_LOWER));
+//				ingestKGTriple(outputTrendIns, getModelProperty(getTheJenaModel(), METAMODEL_SENS_TREND_PROP), getTheJenaModel().getResource(METAMODEL_TREND_LOCALMIN));
+//			}
+//			if (higher) {
+//				ingestKGTriple(outputTrendIns, getModelProperty(getTheJenaModel(), METAMODEL_SENS_TREND_LOC_PROP), getTheJenaModel().getResource(METAMODEL_TREND_AT_HIGHER));
+//				ingestKGTriple(outputTrendIns, getModelProperty(getTheJenaModel(), METAMODEL_SENS_TREND_PROP), getTheJenaModel().getResource(METAMODEL_TREND_LOCALMIN));
+//			}
+//			else {
+//				ingestKGTriple(outputTrendIns, getModelProperty(getTheJenaModel(), METAMODEL_SENS_TREND_PROP), getTheJenaModel().getResource(METAMODEL_TREND_DECRINCR));
+//				ingestKGTriple(outputTrendIns, getModelProperty(getTheJenaModel(), METAMODEL_SENS_TREND_PROP), getTheJenaModel().getResource(METAMODEL_TREND_INCRINCR));
+//			}
+//		}
+//		else {
+//			ingestKGTriple(outputTrendIns, getModelProperty(getTheJenaModel(), METAMODEL_SENS_TREND_PROP), getTheJenaModel().getResource(METAMODEL_TREND_INCRDECR));
+//		}
+//	}
 	
 }
 
@@ -1785,7 +2111,7 @@ private void computeSensitivityAndAddToDialog(Resource resource, ConfigurationMa
 	}//assumptions satisfied
 }
 
-private String retrieveModelsAndNodes(Resource resource, String listOfEqns, Individual cgIns, List<String> contextClassList, String scriptLanguage) throws SadlInferenceException, ConfigurationException, ReasonerNotFoundException, InvalidNameException, QueryParseException, QueryCancelledException {
+private String retrieveModelsAndNodes(Resource resource, String listOfEqns, Individual cgIns, List<String> contextClassList, String scriptLanguage, int numOfQueries, int modelNum) throws SadlInferenceException, ConfigurationException, ReasonerNotFoundException, InvalidNameException, QueryParseException, QueryCancelledException {
 	long startTime;
 	long endTime;
 	String modelsJSONString = "";
@@ -1798,7 +2124,7 @@ private String retrieveModelsAndNodes(Resource resource, String listOfEqns, Indi
 	nodesJSONString = retrieveCGforDBNSpec(resource, listOfEqns, null, cgIns, RETRIEVE_NODES);
 	expressionsJSONString = retrieveCGforDBNSpec(resource, listOfEqns, contextClassList, cgIns, RETRIEVE_MODEL_EXPRESSIONS.replaceAll("SCRIPTLANGUAGE", scriptLanguage));
 	endTime = System.currentTimeMillis();
-	System.out.println((endTime - startTime)/1000 + " secs");
+	System.out.println((endTime - startTime)/1000.0 + " secs");
 
 	StringBuilder ctxtBldr = new StringBuilder();
 	for(String c : contextClassList) {
@@ -1807,7 +2133,13 @@ private String retrieveModelsAndNodes(Resource resource, String listOfEqns, Indi
 	
     String context = ctxtBldr.toString();
     
-	String nodesModelsJSONStr = "{ \"models\": " + modelsJSONString + ", \"nodes\": "  + nodesJSONString + ", \"expressions\": " + expressionsJSONString + ", \"context\": \"" + context + "\" }";
+	String nodesModelsJSONStr = "{ \"models\": " + modelsJSONString
+							   + ", \"nodes\": "  + nodesJSONString 
+							   + ", \"expressions\": " + expressionsJSONString
+							   + ", \"context\": \"" + context
+							   + "\", \"numOfModels\": \"" + numOfQueries
+							   + "\", \"modelNum\": \"" + modelNum
+							   + "\" }";
 	if (debugMode) {System.out.println(nodesModelsJSONStr);}
 	return nodesModelsJSONStr;
 }
@@ -1950,7 +2282,7 @@ private void inferDependencyGraph(Resource resource) throws SadlInferenceExcepti
 	//String tmp = DEPENDENCY_GRAPH_INSERT
 	runInference(resource, DEPENDENCY_GRAPH_INSERT,CHECK_DEPENDENCY);
 	long endTime = System.currentTimeMillis();
-	System.out.println((endTime - startTime)/1000 + " secs" );
+	System.out.println((endTime - startTime)/1000.0 + " secs" );
 }
 
 /**
@@ -2336,7 +2668,7 @@ private void getInputPatterns(TripleElement[] triples, List<TripleElement[]> inp
 
 private void runInference(Resource resource, String query, String testQuery) throws SadlInferenceException, ConfigurationException, ReasonerNotFoundException, InvalidNameException, QueryParseException, QueryCancelledException {
 
-	UpdateAction.parseExecute(query , getTheJenaModel()); // use runReasonerQuery instead
+//	UpdateAction.parseExecute(query , getTheJenaModel()); // use runReasonerQuery instead
 
 	runReasonerQuery(resource, query);
 	
@@ -2670,9 +3002,9 @@ private void runInference(Resource resource, String query, String testQuery) thr
 			}
 		}
 		queryStr = queryStr.replaceAll("CONTEXCLASSES", contextClasses);
-		rset = queryKnowledgeGraph(queryStr, getTheJenaModel().union(queryModel));
+//		rset = queryKnowledgeGraph(queryStr, getTheJenaModel().union(queryModel));
 		
-		resultSet = runReasonerQuery(resource, queryStr);
+//		resultSet = runReasonerQuery(resource, queryStr);
 		
 //		QuerySolution res;
 //		RDFNode model = null;
@@ -2687,10 +3019,12 @@ private void runInference(Resource resource, String query, String testQuery) thr
 //			
 //		}
 		
-		resStr = convertResultSetToString(rset);
+//		resStr = convertResultSetToString(rset);
 //		if (debugMode) {System.out.println(resStr);}
 		
 //		resStr = resultSet.toString();
+		
+		resStr = runReasonerQueryJson(resource, queryStr);
 		
 		return resStr;
 	}
@@ -2834,12 +3168,12 @@ private RDFNode getObjectAsLiteralOrResource(Node property, Node object) {
 	
 				equations = runReasonerQuery(resource, queryStr);
 	
-				if (!equations.hasNext()) {
+				if (equations == null || !equations.hasNext()) {
 					queryStr = BUILD_COMP_GRAPH.replaceAll("LISTOFOUTPUTS", inpStr).replaceAll("LISTOFINPUTS", outpStr);
 					equations = runReasonerQuery(resource, queryStr);
 				}
 	
-				if (equations.hasNext() ) {
+				if (equations != null && equations.hasNext() ) {
 					if(equationsRes == null) {
 						equationsRes = equations;
 					}
@@ -3006,26 +3340,28 @@ private RDFNode getObjectAsLiteralOrResource(Node property, Node object) {
 		Map<RDFNode, Set<String>> mapSet = new HashMap<RDFNode, Set<String>>();
 		String eq;
 
-		int OutColIdx = eqnsResults.getColumnPosition("Out");
-		int EqColIdx = eqnsResults.getColumnPosition("Eq");
-		
-		for(int i=0; i<eqnsResults.getRowCount(); i++) {
-			String outpStr = eqnsResults.getResultAt(i, OutColIdx).toString();
-			outp = (RDFNode) getTheJenaModel().getResource(outpStr); 
-			Set<String> eq_set = new HashSet<String>(); 
-			mapSet.put(outp, eq_set);
-		}
-
-		for(int i=0; i<eqnsResults.getRowCount(); i++) {
-			String outpStr = eqnsResults.getResultAt(i, OutColIdx).toString();
-			outp = (RDFNode) getTheJenaModel().getResource(outpStr); 
-			eq = eqnsResults.getResultAt(i, EqColIdx).toString();
-			mapSet.get(outp).add(eq);
-		}
-		for(RDFNode n : mapSet.keySet()) {
-			String[] eqns = new String[mapSet.get(n).size()];
-			eqns = mapSet.get(n).toArray(eqns);
-			map.put(n, eqns );
+		if(eqnsResults != null) {
+			int OutColIdx = eqnsResults.getColumnPosition("Out");
+			int EqColIdx = eqnsResults.getColumnPosition("Eq");
+			
+			for(int i=0; i<eqnsResults.getRowCount(); i++) {
+				String outpStr = eqnsResults.getResultAt(i, OutColIdx).toString();
+				outp = (RDFNode) getTheJenaModel().getResource(outpStr); 
+				Set<String> eq_set = new HashSet<String>(); 
+				mapSet.put(outp, eq_set);
+			}
+	
+			for(int i=0; i<eqnsResults.getRowCount(); i++) {
+				String outpStr = eqnsResults.getResultAt(i, OutColIdx).toString();
+				outp = (RDFNode) getTheJenaModel().getResource(outpStr); 
+				eq = eqnsResults.getResultAt(i, EqColIdx).toString();
+				mapSet.get(outp).add(eq);
+			}
+			for(RDFNode n : mapSet.keySet()) {
+				String[] eqns = new String[mapSet.get(n).size()];
+				eqns = mapSet.get(n).toArray(eqns);
+				map.put(n, eqns );
+			}
 		}
 		return map;
 	}
@@ -3221,6 +3557,28 @@ private RDFNode getObjectAsLiteralOrResource(Node property, Node object) {
 		return res;
 	}
 
+	private String runReasonerQueryJson(Resource resource, String query) throws SadlInferenceException, ConfigurationException, ReasonerNotFoundException, InvalidNameException, QueryParseException, QueryCancelledException {
+		String modelFolderUri = getModelFolderPath(resource); 
+		final String format = ConfigurationManager.RDF_XML_ABBREV_FORMAT;
+		IConfigurationManagerForIDE configMgr;
+
+		
+		configMgr = ConfigurationManagerForIdeFactory.getConfigurationManagerForIDE(modelFolderUri, format);
+		IReasoner reasoner = configMgr.getReasoner();
+	
+		
+		if (!reasoner.isInitialized()) {
+			reasoner.setConfigurationManager(configMgr);
+			reasoner.initializeReasoner(getTheJenaModel(), getModelName(), null, null); 
+		}
+
+		reasoner.loadInstanceData(queryModel);	//Need to load new metadata
+		
+		String pquery = reasoner.prepareQuery(query);
+
+		String resJson = reasoner.askJson(pquery);
+		return resJson;
+	}
 
 	private void saveMetaDataFile(Resource resource, String queryModelURI, String queryModelFileName) {
 		String qhOwlFileWithPath = new File(getModelFolderPath(resource)).getParent() + File.separator + CGMODELS_FOLDER + File.separator + queryModelFileName + ".owl";

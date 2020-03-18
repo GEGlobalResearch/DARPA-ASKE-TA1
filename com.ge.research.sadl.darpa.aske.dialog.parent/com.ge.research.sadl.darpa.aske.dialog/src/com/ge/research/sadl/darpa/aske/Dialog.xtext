@@ -68,9 +68,19 @@ SadlModelElement returns sadl::SadlModelElement :
 	SeeParentheticalLink 		|
 	TestLongrunningTask EOS		|
 	ComparisonTableStatement EOS |
-	NewExpressionStatement EOS	//|
-//	InsightStatement EOS
+	NewExpressionStatement EOS	|
+	InsightStatement EOS
 ;
+
+InsightStatement:
+	indep=SadlResource 'does' 'not' 'affect' dep=SadlResource |
+	relDesc1=RelationshipDescriptor1 indep=SadlResource relDesc2=RelationshipDescriptor2 dep=SadlResource ('of' 'the' class=SadlResource)?|
+	indep=SadlResource ('of' 'the' class=SadlResource)? 'has' 'a' localExtreme=SadlResource 'at' extremeLoc=SadlResource 'of' dep=SadlResource |
+	relDesc1=RelationshipDescriptor1 indep=SadlResource 'takes' 'the' class=SadlResource 'outside' 'operating' 'conditions'
+;
+
+//LocalExtreme:
+//	locExtreme=''
 
 NewExpressionStatement:
 	('Add'|'add') 
@@ -85,11 +95,6 @@ UndefinedConceptStatement:
 NoModelFoundStatement:
 	'No' 'model' 'found' 'to' 'compute' target=PropOfSubject<false,false> ';' 'please' 'add' 'a' 'model' 'or' 'do' 'extraction'
 ;
-
-//InsightStatement:
-//	indep=SadlResource 'does' 'not' 'affect' dep=SadlResource |
-//	relDesc1=RelationshipDescriptor1 indep=SadlResource relDesc2=RelationshipDescriptor2 dep=SadlResource 
-//;
 
 RelationshipDescriptor1:
 	relDesc='Increasing' | {RelationshipDescriptor1} 'increasing' | {RelationshipDescriptor1} 'Decreasing' | {RelationshipDescriptor1} 'decreasing'
