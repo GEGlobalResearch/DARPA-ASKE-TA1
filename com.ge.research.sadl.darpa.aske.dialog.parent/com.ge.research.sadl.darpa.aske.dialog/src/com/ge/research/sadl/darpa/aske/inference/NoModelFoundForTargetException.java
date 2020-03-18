@@ -8,6 +8,10 @@ import com.ge.research.sadl.model.gp.Node;
  *
  */
 public class NoModelFoundForTargetException extends DialogInferenceException {
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
 	private Node target = null;
 
 	public NoModelFoundForTargetException(String msg, Node target) {
