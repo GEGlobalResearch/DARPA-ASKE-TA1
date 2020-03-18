@@ -3293,7 +3293,7 @@ public class AnswerCurationManager {
 			//	and the value is the value to be displayed in that column.
 		
 		boolean isTable = false;
-		String insights = null;
+		String insights = "";
 		
 		if (rss != null) {
 			int cntr = 0;
@@ -3351,7 +3351,7 @@ public class AnswerCurationManager {
 //						}
 					}
 					else if(cols.contains("Trend")) {//the "insights" section
-						insights = generateInsightsSADL((ResultSet)rs);
+						insights += generateInsightsSADL((ResultSet)rs, isTable);
 						
 					}
 					else {
@@ -3369,74 +3369,80 @@ public class AnswerCurationManager {
 						ResultSet rset = (ResultSet) rs;
 						rset.setShowNamespaces(false);
 						
-						String className = rset.getResultAt(0, 1).toString();	// Used to name the link to the model graph 
-						if (isTable) {					
-							HashMap<String,List<HashMap<String,String>>> tableRow = new HashMap<String, List<HashMap<String,String>>>();
-							table.add(tableRow);
-							// are there different conditions in the comparisonRules?
-							// Note: the assumption is made there that the sets of results in rss are in the same
-							//	order as the rules in comparisonRules, allowing us to get the conditions on which
-							//	the answer depends from the rule conditions.
-							
-							for(int i=0; i< rset.getRowCount(); i++) {
-								List<HashMap<String, String>> varVal = new ArrayList<HashMap<String,String>>();
-								String comparand = rset.getResultAt(i, 1).toString();
-								tableRow.put(comparand,  varVal); 
-								// see if there are any conditions to be added
-								List<HashMap<String, String>> conditionVals = getTableRowConditions(comparisonRules.get(cntr));
-								if (conditionVals != null) {
-									varVal.addAll(conditionVals);
-								}
+						if(rset.getRowCount() > 0) {
+						
+							String className = rset.getResultAt(0, 1).toString();	// Used to name the link to the model graph 
+							if (isTable) {					
+								HashMap<String,List<HashMap<String,String>>> tableRow = new HashMap<String, List<HashMap<String,String>>>();
+								table.add(tableRow);
+								// are there different conditions in the comparisonRules?
+								// Note: the assumption is made there that the sets of results in rss are in the same
+								//	order as the rules in comparisonRules, allowing us to get the conditions on which
+								//	the answer depends from the rule conditions.
 								
-								// now add the output of the computation
-								String value = SadlUtils.formatNumberList(rset.getResultAt(i, 3).toString(), 5);
-								Object unitObj = rset.getResultAt(i, 5);
-								if (unitObj != null) {
-									String unit = quoteUnitIfNecessary(unitObj.toString());
-									value = value + " " + unit;
-								}
-								HashMap<String, String> valmap = new HashMap<String, String>();
-								valmap.put(rset.getResultAt(i, 2).toString(), value);
-								varVal.add(valmap);
-							}
-						}
-						else {
-							answer.append(addResultsToDialog((ResultSet) rs));
-
-						}
-						String graphicUrl;
-						String sglink = getPreference(DialogPreferences.SHORT_GRAPH_LINK.getId());
-						String graphFileName = baseFileName + ".svg";
-						String sourceName = graphsDirectory + "/" + graphFileName;
-						if (sglink != null && sglink.length() > 0) {
-							String targetName = sglink + "/" + className + baseFileName.substring(13);
-							File srcFile = new File(sourceName);
-							if (srcFile.exists()) {
-								File trgtFile = new File(targetName);
-								try {
-									Files.copy(srcFile, trgtFile);
-								} catch (IOException e) {
-									// TODO Auto-generated catch block
-									e.printStackTrace();
-									graphicUrl = "file://" + sourceName; //file url
+								for(int i=0; i< rset.getRowCount(); i++) {
+									List<HashMap<String, String>> varVal = new ArrayList<HashMap<String,String>>();
+									String comparand = rset.getResultAt(i, 1).toString();
+									tableRow.put(comparand,  varVal); 
+									// see if there are any conditions to be added
+									List<HashMap<String, String>> conditionVals = getTableRowConditions(comparisonRules.get(cntr));
+									if (conditionVals != null) {
+										varVal.addAll(conditionVals);
+									}
+									
+									// now add the output of the computation
+									String value = SadlUtils.formatNumberList(rset.getResultAt(i, 3).toString(), 5);
+									Object unitObj = rset.getResultAt(i, 5);
+									if (unitObj != null) {
+										String unit = quoteUnitIfNecessary(unitObj.toString());
+										value = value + " " + unit;
+									}
+									HashMap<String, String> valmap = new HashMap<String, String>();
+									valmap.put(rset.getResultAt(i, 2).toString(), value);
+									varVal.add(valmap);
 								}
 							}
-							graphicUrl = "file://" + targetName;
+							else {
+								answer.append(addResultsToDialog((ResultSet) rs));
+	
+							}
+							String graphicUrl;
+							String sglink = getPreference(DialogPreferences.SHORT_GRAPH_LINK.getId());
+							String graphFileName = baseFileName + ".svg";
+							String sourceName = graphsDirectory + "/" + graphFileName;
+							if (sglink != null && sglink.length() > 0) {
+								String targetName = sglink + "/" + className + baseFileName.substring(13);
+								File srcFile = new File(sourceName);
+								if (srcFile.exists()) {
+									File trgtFile = new File(targetName);
+									try {
+										Files.copy(srcFile, trgtFile);
+									} catch (IOException e) {
+										// TODO Auto-generated catch block
+										e.printStackTrace();
+										graphicUrl = "file://" + sourceName; //file url
+									}
+								}
+								graphicUrl = "file://" + targetName;
+							}
+							else {
+								graphicUrl = "file://" + sourceName; //file url
+							}
+							//sadlAnswer += 
+							String seeStmt = "\"" + graphicUrl + "\"";
+							List<String> rowUrls = new ArrayList<String>();
+							rowUrls.add(seeStmt);
+							if (rset.getResultAt(0, 6) != null) {
+								String sensitivityUrl = rset.getResultAt(0, 6).toString();
+								rowUrls.add("\"" + sensitivityUrl + "\"");
+							}
+							diagrams.add(rowUrls);
+	//						answer.append(sadlAnswer);
+							cntr++;
 						}
 						else {
-							graphicUrl = "file://" + sourceName; //file url
+							//TODO: answer that "No model was found"
 						}
-						//sadlAnswer += 
-						String seeStmt = "\"" + graphicUrl + "\"";
-						List<String> rowUrls = new ArrayList<String>();
-						rowUrls.add(seeStmt);
-						if (rset.getResultAt(0, 6) != null) {
-							String sensitivityUrl = rset.getResultAt(0, 6).toString();
-							rowUrls.add("\"" + sensitivityUrl + "\"");
-						}
-						diagrams.add(rowUrls);
-//						answer.append(sadlAnswer);
-						cntr++;
 					}
 				}
 				else if (rs != null){
@@ -3501,52 +3507,153 @@ public class AnswerCurationManager {
 	/**
 	 * Generate sadl insight statements. For example: increasing Altitude increases Thrust 
 	 * @param rs
+	 * @param isTable 
 	 * @return
 	 */
-	private String generateInsightsSADL(ResultSet rs) {
+	private String generateInsightsSADL(ResultSet rs, boolean isTable) {
 		StringBuilder sb = new StringBuilder();
 		if (rs != null && rs.getRowCount() > 0) {
 			sb.append(System.lineSeparator());
 			int classIdx = rs.getColumnPosition("Class");
 			int inputIdx = rs.getColumnPosition("Input");
 			int trendIdx = rs.getColumnPosition("Trend");
+			int locIdx = rs.getColumnPosition("Location");
 			int ouputIdx = rs.getColumnPosition("Output");
+			/**
+			 *  Only results can be:
+			 *  1) decreasingDecreases => increasingIncreases
+			 *  2) decreasingIncreases => increasingDecreases
+			 *  3) localmin at lower/higher
+			 *  4) localmax at lower/higher
+			 *  5) localmin/localmax at query point
+			 */
+			
+//			boolean compare=false;
+//			Object cl = rs.getResultAt(0, classIdx);
+//			for(int i=1; i<rs.getRowCount(); i++) {
+//				if (cl != rs.getResultAt(0, classIdx)) {
+//					compare=true;
+//					continue;
+//				}
+//			}
+			
 			for (int row = 0; row < rs.getRowCount(); row++) {
 				if(rs.getResultAt(row, trendIdx).equals("increasingIncreases")) {
-					sb.append("Increasing ");
-					sb.append(rs.getResultAt(row, inputIdx).toString());
-					sb.append(" increases ");
-					sb.append(rs.getResultAt(row, ouputIdx).toString());
-					sb.append(" .");
+					if (rs.getResultAt(row, ouputIdx).toString().equals("FireFlag")) {
+						sb.append("Increasing ");
+						sb.append(rs.getResultAt(row, inputIdx).toString());
+						sb.append(" takes the ");
+						sb.append(rs.getResultAt(row, classIdx).toString());
+						sb.append(" outside operating conditions.");
+						sb.append(System.lineSeparator());
+					}
+					else {
+						sb.append("Increasing ");
+						sb.append(rs.getResultAt(row, inputIdx).toString());
+						sb.append(" increases ");
+						sb.append(rs.getResultAt(row, ouputIdx).toString());
+						if(isTable) {
+							sb.append(" of the ");
+							sb.append(rs.getResultAt(row, classIdx).toString());
+						}
+						sb.append(" .");
+						sb.append(System.lineSeparator());
+					}
 				} 
 				else if(rs.getResultAt(row, trendIdx).equals("increasingDecreases")) {
-					sb.append("Increasing ");
-					sb.append(rs.getResultAt(row, inputIdx).toString());
-					sb.append(" decreases ");
-					sb.append(rs.getResultAt(row, ouputIdx).toString());
-					sb.append(" .");
+					if (rs.getResultAt(row, ouputIdx).toString().equals("FireFlag")) {
+						sb.append("Increasing ");
+						sb.append(rs.getResultAt(row, inputIdx).toString());
+						sb.append(" takes the ");
+						sb.append(rs.getResultAt(row, classIdx).toString());
+						sb.append(" inside operating conditions.");
+						sb.append(System.lineSeparator());
+					}
+					else {
+						sb.append("Increasing ");
+						sb.append(rs.getResultAt(row, inputIdx).toString());
+						sb.append(" decreases ");
+						sb.append(rs.getResultAt(row, ouputIdx).toString());
+						if(isTable) {
+							sb.append(" of the ");
+							sb.append(rs.getResultAt(row, classIdx).toString());
+						}
+						sb.append(" .");
+						sb.append(System.lineSeparator());
+					}
 				} 
 				else if(rs.getResultAt(row, trendIdx).equals("decreasingIncreases")) {
-					sb.append("Decreasing ");
-					sb.append(rs.getResultAt(row, inputIdx).toString());
-					sb.append(" increases ");
-					sb.append(rs.getResultAt(row, ouputIdx).toString());
-					sb.append(" .");
+					if (rs.getResultAt(row, ouputIdx).toString().equals("FireFlag")) {
+						sb.append("Decreasing ");
+						sb.append(rs.getResultAt(row, inputIdx).toString());
+						sb.append(" takes the ");
+						sb.append(rs.getResultAt(row, classIdx).toString());
+						sb.append(" outside operating conditions.");
+						sb.append(System.lineSeparator());
+					}
+					else {
+						sb.append("Decreasing ");
+						sb.append(rs.getResultAt(row, inputIdx).toString());
+						sb.append(" increases ");
+						sb.append(rs.getResultAt(row, ouputIdx).toString());
+						if(isTable) {
+							sb.append(" of the ");
+							sb.append(rs.getResultAt(row, classIdx).toString());
+						}
+						sb.append(" .");
+						sb.append(System.lineSeparator());
+					}
 				} 
 				else if(rs.getResultAt(row, trendIdx).equals("decreasingDecreases")) {
-					sb.append("Decreasing ");
-					sb.append(rs.getResultAt(row, inputIdx).toString());
-					sb.append(" decreases ");
-					sb.append(rs.getResultAt(row, ouputIdx).toString());
-					sb.append(" .");
+					if (rs.getResultAt(row, ouputIdx).toString().equals("FireFlag")) {
+						sb.append("Decreasing ");
+						sb.append(rs.getResultAt(row, inputIdx).toString());
+						sb.append(" takes the ");
+						sb.append(rs.getResultAt(row, classIdx).toString());
+						sb.append(" inside operating conditions.");
+						sb.append(System.lineSeparator());
+					}
+					else {
+						sb.append("Decreasing ");
+						sb.append(rs.getResultAt(row, inputIdx).toString());
+						sb.append(" decreases ");
+						sb.append(rs.getResultAt(row, ouputIdx).toString());
+						if(isTable) {
+							sb.append(" of the ");
+							sb.append(rs.getResultAt(row, classIdx).toString());
+						}
+						sb.append(" .");
+						sb.append(System.lineSeparator());
+					}
 				} 
-				else if(rs.getResultAt(row, trendIdx).equals("independent")) {
+				else if(rs.getResultAt(row, trendIdx).equals("local_minimum") || rs.getResultAt(row, trendIdx).equals("local_maximum")) {
+					if(rs.getResultAt(row, locIdx) != null && (rs.getResultAt(row, locIdx).equals("lower_values") || rs.getResultAt(row, locIdx).equals("higher_values"))) {
+						sb.append(rs.getResultAt(row, ouputIdx).toString());
+						if(isTable) {
+							sb.append(" of the ");
+							sb.append(rs.getResultAt(row, classIdx).toString());
+						}
+						sb.append(" has a ");
+						sb.append(rs.getResultAt(row, trendIdx));
+						sb.append(" at " );
+						sb.append(rs.getResultAt(row, locIdx));
+						sb.append(" of " );
+						sb.append(rs.getResultAt(row, inputIdx).toString());
+						sb.append(" .");
+						sb.append(System.lineSeparator());
+					}
+				}
+				else if(rs.getResultAt(row, trendIdx).equals("independent") && !rs.getResultAt(row, ouputIdx).toString().equals("FireFlag")) {
 					sb.append(rs.getResultAt(row, inputIdx).toString());
 					sb.append(" does not affect ");
 					sb.append(rs.getResultAt(row, ouputIdx).toString());
+					if(isTable) {
+						sb.append(" of the ");
+						sb.append(rs.getResultAt(row, classIdx).toString());
+					}
 					sb.append(" .");
+					sb.append(System.lineSeparator());
 				}
-				sb.append(System.lineSeparator());
 			}
 		}
 		return sb.toString();
@@ -3642,9 +3749,10 @@ public class AnswerCurationManager {
 		sb.append(String.format(formatStr, secondLinkColHdr));
 		sb.append("],");
 		sb.append(System.lineSeparator());
+		int rowNum = 0;
 		for (HashMap<String, List<HashMap<String, String>>> tableRow : table) {			
 			// now output the table rows
-			int rowNum = 0;
+//			int rowNum = 0;
 			for(String c : tableRow.keySet()) {
 	//			sb.append("     [" + c + "\t ");
 				idx = 0;
