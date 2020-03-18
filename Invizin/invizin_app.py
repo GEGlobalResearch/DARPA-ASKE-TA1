@@ -57,8 +57,8 @@ PORT_NUM = 1177
 app = connexion.FlaskApp(__name__, specification_dir='swagger/')
 
 dashApp = dash.Dash('dashApp', 
-                    meta_tags=[{"name": "viewport", 
-                                "content": "width=device-width"}])
+                    meta_tags=[{"name": "viewport",
+                                "content": "height=device-height"}])#
 
 if __name__ == '__main__':   
     os.environ["WERKZEUG_RUN_MAIN"] = 'true'
@@ -152,7 +152,7 @@ def visualize(body):
     outputPacket['url'] = URL
     outputPacket['OATSensitivityData'] = OATSensitivityData
     
-    #outputPacket['normalizedSensitivityData'] = JData
+    # outputPacket['normalizedSensitivityData'] = JData
     
     return outputPacket
 
