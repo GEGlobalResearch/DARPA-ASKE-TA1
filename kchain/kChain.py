@@ -279,8 +279,9 @@ class kChainModel(object):
         if self.debug:
             print(stringfun)
         
-        ct = codeTransform(codeStr=stringfun)
-        stringfun = ct.whileTransformation()
+        if prefix == 'import tensorflow as tf':
+            ct = codeTransform(codeStr=stringfun)
+            stringfun = ct.whileTransformation()
         
         print(stringfun)
         
