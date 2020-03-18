@@ -946,7 +946,7 @@ public class JenaBasedDialogInferenceProcessor extends JenaBasedSadlInferencePro
 			triples.add(thisRulesTriples);
 		}
 		try {
-			return insertTriplesAndQuery(resource, triples);
+			return insertTriplesAndQuery(resource, rules, triples);
 		}
 		catch (Throwable t) {
 			throw new SadlInferenceException(t.getMessage(), t);
