@@ -2213,9 +2213,11 @@ private List<RDFNode> getRDFOutputsList(List<TripleElement> outputPatterns, List
 			itr = outputPatterns.get(i); //e.g. itr = (v0 altitude v1)
 			sp = itr.getPredicate().getURI();
 			ssp = getTheJenaModel().getProperty(sp);
-			OntResource rng = ssp.as(OntProperty.class).getRange();
-			// Add property to list of vars
-			outputsList.add(rng);
+			if (ssp.canAs(OntProperty.class)) { 
+				OntResource rng = ssp.as(OntProperty.class).getRange();
+				// Add property to list of vars
+				outputsList.add(rng);
+			}
 		}
 	}
 		
