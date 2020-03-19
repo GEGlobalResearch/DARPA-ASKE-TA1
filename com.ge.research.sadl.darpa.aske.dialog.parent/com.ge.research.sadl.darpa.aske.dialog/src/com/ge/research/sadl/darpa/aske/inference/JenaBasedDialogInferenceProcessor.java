@@ -143,7 +143,7 @@ public class JenaBasedDialogInferenceProcessor extends JenaBasedSadlInferencePro
 //	public static final String qhModelName = "http://aske.ge.com/MetaData";
 //	public static final String qhOwlFileName = "MetaData.owl";
 
-	public static final boolean debugMode = false;
+	public static final boolean debugMode = true;
 	
 	
     private static final String KCHAIN_SERVICE_URL_FRAGMENT = "/darpa/aske/kchain/";
@@ -531,7 +531,7 @@ public class JenaBasedDialogInferenceProcessor extends JenaBasedSadlInferencePro
 			"prefix rdf:<http://www.w3.org/1999/02/22-rdf-syntax-ns#>\n"+
 			"prefix list:<http://sadl.org/sadllistmodel#>\n" +
 			"\n" + 
-			"select distinct ?Node (str(?NUnits) as ?NodeOutputUnits) ?Child (str(?CUnits) as ?ChildInputUnits) ?Eq  ?Value ?Lower ?Upper #?Distribution \n" + 
+			"select distinct ?Node ?DataType (str(?NUnits) as ?NodeOutputUnits) ?Child (str(?CUnits) as ?ChildInputUnits) ?Eq  ?Value ?Lower ?Upper #?Distribution \n" + 
 			"where {\n" + 
 			"{select distinct ?Node ?Child ?CUnits ?Eq ?Lower ?Upper \n" + 
 			"where { \n" + 
@@ -604,7 +604,7 @@ public class JenaBasedDialogInferenceProcessor extends JenaBasedSadlInferencePro
 			"   \n" + 
 			" }} \n" + 
 			"  union {\n" + 
-			"  select distinct ?Eq ?Node ?NUnits #?CUnits\n" + 
+			"  select distinct ?Eq ?Node (strafter(str(?DT),'#') as ?DataType) ?NUnits #?CUnits\n" + 
 			"where { \n" + 
 			"   \n" + 
 			"   {?Eq imp:genericOutput ?Node.\n" + 
@@ -617,7 +617,8 @@ public class JenaBasedDialogInferenceProcessor extends JenaBasedSadlInferencePro
 			"   }union {\n" + 
 			"    ?Eq imp:implicitOutput ?IO. \n" + 
 			"    ?IO imp:augmentedType/imp:semType ?Node.\n" + 
-			"    optional {?IO imp:specifiedUnits/list:first ?NUnits.}\n" + 
+			"    optional {?IO imp:specifiedUnits/list:first ?NUnits.}\n" +
+			"    ?IO imp:dataType ?DT." + 
 			"   }\n" + 
 			"\n" + 
 			"  filter not exists {\n" + 
@@ -1636,12 +1637,12 @@ private ResultSet[] processWhatWhenQuery(Resource resource, String queryModelFil
 
 	} else {
 		saveMetaDataFile(resource,queryModelURI,queryModelFileName);
-		dbnResults = new ResultSet[1];
-		Object[][] data = new Object[1][1];
-		data[0][0] = outputsList.get(0).toString().split("#")[1];
-		String[] header = {"NoModelFound"};
-		dbnResults[0] = new ResultSet(header,data);
-//		dbnResults = null;
+//		dbnResults = new ResultSet[1];
+//		Object[][] data = new Object[1][1];
+//		data[0][0] = outputsList.get(0).toString().split("#")[1];
+//		String[] header = {"NoModelFound"};
+//		dbnResults[0] = new ResultSet(header,data);
+		dbnResults = null;
 	}
 	
 	if (modelCCGs.size() > 0) {
