@@ -959,13 +959,16 @@ public class JenaBasedDialogInferenceProcessor extends JenaBasedSadlInferencePro
 	 * 1) data for the model diagram
 	 * 2) the actual numeric answer + the sensitivity URL
 	 * 3) triples corresponding to increasing/decreasing trend insights
-	 * @throws SadlInferenceException
-	 * @throws DialogInferenceException 
+	 * @throws Exception 
+	 * @throws ConfigurationException 
+	 * @throws URISyntaxException 
+	 * @throws IOException 
+	 * @throws TranslationException 
 	 */
 	
 //	@Override
 //	public Object[] insertTriplesAndQuery(Resource resource, List<TripleElement[]> triples) throws SadlInferenceException {
-	public Object[] insertTriplesAndQuery(Resource resource, List<Rule> rules, List<TripleElement[]> triples) throws SadlInferenceException, DialogInferenceException {
+	public Object[] insertTriplesAndQuery(Resource resource, List<Rule> rules, List<TripleElement[]> triples) throws TranslationException, IOException, URISyntaxException, ConfigurationException, Exception {
  		List<Object[]> combinedResults = new ArrayList<Object[]>(triples.size());
  		Object[] results = null;
 //	    JsonArray sensitivityJsonList = new JsonArray();
@@ -1290,7 +1293,7 @@ public class JenaBasedDialogInferenceProcessor extends JenaBasedSadlInferencePro
 //			String queryInstanceName, String queryOwlFileWithPath) throws SadlInferenceException {
 
 //<<<<<<< HEAD
-	private Object[] processSingleWhatWhenQuery(Resource resource, TripleElement[] triples, String kgsDirectory, int numOfQueries, int queryNum, Map<String, Map<String, List<String>>> insightsMap) throws SadlInferenceException {
+	private Object[] processSingleWhatWhenQuery(Resource resource, TripleElement[] triples, String kgsDirectory, int numOfQueries, int queryNum, Map<String, Map<String, List<String>>> insightsMap) throws TranslationException, IOException, URISyntaxException, ConfigurationException, Exception {
 //=======
 //	private Object[] processSingleWhatWhenQuery(Resource resource, TripleElement[] triples, String kgsDirectory, JsonArray sensitivityJsonList) 
 //			throws SadlInferenceException, DialogInferenceException {
@@ -1357,7 +1360,7 @@ public class JenaBasedDialogInferenceProcessor extends JenaBasedSadlInferencePro
 	
 //		infereDependencyGraph();
 	
-		try {
+//		try {
 
 			if (useDbn) {
 
@@ -1387,11 +1390,11 @@ public class JenaBasedDialogInferenceProcessor extends JenaBasedSadlInferencePro
 			//saveMetaDataFile(resource,queryModelURI, queryModelFileName);
 	
 		
-		}
-		catch (Exception e) {
-			e.printStackTrace();
-//			results = null;
-		}
+//		}
+//		catch (Exception e) {
+//			e.printStackTrace();
+////			results = null;
+//		}
 		
 		results = getCombinedResultSet(dbnResults, kcResults);
 	
@@ -1443,8 +1446,11 @@ private ResultSet[] processWhatWhenQuery(Resource resource, String queryModelFil
 //	eqnsResults = retrieveCG(resource, inputsList, outputsList);
 	eqnsResults1 = retrieveCG1(resource, inputsList, outputsList);
 	if (eqnsResults1 == null) {
-//		throw new NoModelFoundForTargetException("No model found for " + outputsList.get(0).toString() + ".", outputsList.get(0));
-//		Node targetNode = null;
+		RDFNode rdfn = outputsList.get(0);
+		if (rdfn.isURIResource()) {
+			NamedNode nn = new NamedNode(rdfn.asResource().getURI());
+			throw new NoModelFoundForTargetException("No model found for " + nn.toString() + ".", nn);
+		}
 	}
 	long endTime = System.currentTimeMillis();
 	System.out.println((endTime - startTime)/1000.0 + " secs");

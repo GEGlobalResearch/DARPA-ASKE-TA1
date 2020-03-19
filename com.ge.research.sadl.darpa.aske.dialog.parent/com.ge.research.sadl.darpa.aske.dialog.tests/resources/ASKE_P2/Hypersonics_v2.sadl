@@ -35,7 +35,7 @@
 ***********************************************************************/
 uri "http://aske.ge.com/hypersonicsV2" alias hypersonicsV2 .
 
-import "http://aske.ge.com/sciknow".
+//import "http://aske.ge.com/sciknow".
 
 Temperature is a type of UnittedQuantity.
 Pressure is a type of UnittedQuantity.
@@ -66,11 +66,16 @@ Air is a type of Gas.
 //	described by afterburner with a single value of type boolean.
 
 AircraftEngine is a type of PhysicalThing
-	described by mach with values of type MachSpeed
+	described by machSpeed with values of type MachSpeed
 	described by sfc (alias "specific fuel consumption") with values of type SpecificFuelConsumption
-	described by thrust with values of type SpecificNetThrust.
+	described by thrust with values of type Thrust
+	described by netThrust with values of type SpecificNetThrust
+	described by fireflag with values of type FireFlag
+	.
                     
 {CF6, F100, J85, RamJet} are types of AircraftEngine.
+
+FireFlag is a type of UnittedQuantity.
 
 
 BurnerTemperature is a type of Temperature.
@@ -100,6 +105,8 @@ RgasConstant is a type of UnittedQuantity.
 Flow is a type of UnittedQuantity.
 
 CP is a type of UnittedQuantity.
+Thrust is a type of UnittedQuantity.
+
 SpecificNetThrust is a type of UnittedQuantity.
 SpecificFuelConsumption is a type of UnittedQuantity.
 
@@ -134,7 +141,6 @@ rgas describes Air with values of type RgasConstant.
 
 cp describes Air with values of type CP.
 
-specificNetThrust describes AircraftEngine with values of type SpecificNetThrust.
 
 
 ////Troposphere Constants
@@ -157,12 +163,12 @@ specificNetThrust describes AircraftEngine with values of type SpecificNetThrust
 //mphToftpersec has expression (a Script script "s * 5280/3600" language Python).
 
 
-//st_temp_eq_tropo is a StaticTemperatureEquation.
-//Equation st_temp_eq_tropo(double alt (altitude of some Air and alt < 36152 {ft}) )
-//	returns double (staticTemperature of the Air {degF}) : 
-//	return 59 - 0.00356 * alt .
-//st_temp_eq_tropo has expression (a Script with script "59 - 0.00356 * alt" language Python).
-//
+st_temp_eq_tropo is a StaticTemperatureEquation.
+Equation st_temp_eq_tropo(double alt (altitude of some Air and alt < 36152 {ft}) )
+	returns double (staticTemperature of the Air {degF}) : 
+	return 59 - 0.00356 * alt .
+st_temp_eq_tropo has expression (a Script with script "59 - 0.00356 * alt" language Python).
+
 //st_temp_eq_lowerStrato is a StaticTemperatureEquation.
 //Equation st_temp_eq_lowerStrato(double alt (altitude of some Air and alt < 82345 and alt >= 36152 {ft}))
 //	returns double (staticTemperature of the Air {degF}) : 
@@ -197,7 +203,7 @@ specificNetThrust describes AircraftEngine with values of type SpecificNetThrust
 //	return 51.97 * (((-205.05 + .00164 * alt) + 459.7)/ 389.98)^-11.388 .
 //	
 //st_pressure_eq_upperStrato has expression (a Script with script "51.97 * (((-205.05 + .00164 * alt) + 459.7)/ 389.98)**-11.388" language Python).
-//	
+	
 //sos_eq is a SpeedOfSoundEquation.
 //Equation sos_eq(double ts0 (staticTemperature of some Air {degR}),
 //				double g (gamma of the Air),
