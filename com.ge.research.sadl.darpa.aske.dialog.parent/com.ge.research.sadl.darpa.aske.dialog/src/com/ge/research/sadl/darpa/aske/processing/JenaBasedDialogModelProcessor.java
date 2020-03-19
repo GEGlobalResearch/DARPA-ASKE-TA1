@@ -88,6 +88,7 @@ import com.ge.research.sadl.darpa.aske.dialog.HowManyValuesStatement;
 import com.ge.research.sadl.darpa.aske.dialog.ModifiedAskStatement;
 import com.ge.research.sadl.darpa.aske.dialog.MyNameIsStatement;
 import com.ge.research.sadl.darpa.aske.dialog.NewExpressionStatement;
+import com.ge.research.sadl.darpa.aske.dialog.NoModelFoundStatement;
 import com.ge.research.sadl.darpa.aske.dialog.PLink;
 import com.ge.research.sadl.darpa.aske.dialog.ParameterizedExpressionWithUnit;
 import com.ge.research.sadl.darpa.aske.dialog.SadlEquationInvocation;
@@ -584,6 +585,21 @@ public class JenaBasedDialogModelProcessor extends JenaBasedSadlModelProcessor {
 		else if (element instanceof UndefinedConceptStatement) {
 			SadlResource ucsr = ((UndefinedConceptStatement)element).getConcept();
 			return new UndefinedConceptStatementContent(element, Agent.CM, ucsr);
+		}
+		else if (element instanceof NoModelFoundStatement) {
+			Expression trgt = ((NoModelFoundStatement)element).getTarget();
+			if (trgt instanceof EObject) {
+				Object trgtObj = super.processExpression((EObject)trgt);
+				if (trgtObj instanceof Node) {
+					return new NoModelFoundStatementContent(element, Agent.CM,  null, (Node) trgtObj);
+				}
+				else {
+					throw new TranslationException("NoModelFoundStatement target translates to unsupported class: '" + trgtObj.getClass().getCanonicalName() + "'");
+				}
+			}
+			else {
+				throw new TranslationException("NoModelFoundStatement has unsupported target class: '" + trgt.getClass().getCanonicalName() + "'");
+			}
 		}
 		else {
 			throw new TranslationException("Model element of type '" + element.getClass().getCanonicalName() + "' not handled.");

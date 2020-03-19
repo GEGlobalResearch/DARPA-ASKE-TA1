@@ -187,11 +187,12 @@ public class DialogAnswerProvider extends BaseDialogAnswerProvider {
 		if (modelListener != null) {
 			this.document.removeModelListener(modelListener);
 		}
-		if (answerConfigurationManager != null) {
-			answerConfigurationManager.clearQuestionsAndAnsers();
-		}
+//		if (answerConfigurationManager != null) {
+//			answerConfigurationManager.clearQuestionsAndAnsers();
+//		}
 		if (configManager != null) {
 			configManager.addPrivateKeyValuePair(DialogConstants.DIALOG_ANSWER_PROVIDER, null);
+			configManager.addPrivateKeyValuePair(DialogConstants.ANSWER_CURATION_MANAGER, null);
 		}
 		LOGGER.debug("[DialogAnswerProvider] >>> Disposed. [" + uri + "]");
 	}
