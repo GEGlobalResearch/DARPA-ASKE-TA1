@@ -2778,13 +2778,15 @@ public class AnswerCurationManager {
 	protected IDialogAnswerProvider getDialogAnswerProvider() {
 		if (dialogAnswerProvider == null) {
 			IDialogAnswerProvider dapFound = (IDialogAnswerProvider) getConfigurationManager().getPrivateKeyValuePair(DialogConstants.DIALOG_ANSWER_PROVIDER);
-			org.eclipse.emf.ecore.resource.Resource dapRsrc = dapFound.getResource();
-			XtextResource thisRsrc = getResource();
-			if (dapFound.getResource().getURI().equals(getResource().getURI()) && dapRsrc instanceof XtextResource) {
-				setResource((XtextResource) dapRsrc);
-				setDialogAnswerProvider(dapFound);
-				if (dialogAnswerProvider == null) {
-					setDialogAnswerProvider(new DialogAnswerProviderConsoleForTest());
+			if (dapFound != null) {
+				org.eclipse.emf.ecore.resource.Resource dapRsrc = dapFound.getResource();
+				XtextResource thisRsrc = getResource();
+				if (dapFound.getResource().getURI().equals(getResource().getURI()) && dapRsrc instanceof XtextResource) {
+					setResource((XtextResource) dapRsrc);
+					setDialogAnswerProvider(dapFound);
+					if (dialogAnswerProvider == null) {
+						setDialogAnswerProvider(new DialogAnswerProviderConsoleForTest());
+					}
 				}
 			}
 		} else if (dialogAnswerProvider instanceof DialogAnswerProviderConsoleForTest) {
@@ -4822,7 +4824,7 @@ public class AnswerCurationManager {
 	 */
 	public void processConversation(org.eclipse.emf.ecore.resource.Resource resource, OntModel ontModel, String modelName) {
 		if (getDialogAnswerProvider() == null) {
-			System.err.println("No DialogAnswerProvider registered.");
+			System.err.println("No DialogAnswerProvider registered for '" + resource.getURI().lastSegment() + "'.");
 			return;
 		}
 		org.eclipse.emf.ecore.resource.Resource dapRsrc = getDialogAnswerProvider().getResource();
