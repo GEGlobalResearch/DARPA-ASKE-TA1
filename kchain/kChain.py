@@ -1311,9 +1311,16 @@ class kChainModel(object):
                 g = grad(self._responseWrapper1, argnum = 2+inputIndex)
                 
             for outputIndex, outputVar in enumerate(outputVars):
-                J[outputIndex][inputIndex] = g(outputIndex, pyFunc, *singleInput)*\
-                    (singleInput[inputIndex]/values[outputVar['name']])
-        
+                try:
+                    J[outputIndex][inputIndex] = g(outputIndex, pyFunc, *singleInput)*\
+                        (singleInput[inputIndex]/values[outputVar['name']])
+                except TypeError:
+                    print('Type error was experienced in gradient computation')
+                    J[outputIndex][inputIndex] = np.nan
+                except ZeroDivisionError:
+                    print('Division by zero was experienced in sensitivity computation')
+                    J[outputIndex][inputIndex] = np.nan
+                    
         return J.tolist()
     
     def _responseWrapper(self, outputNum, fun, *args):
