@@ -756,7 +756,21 @@ public class JenaBasedDialogModelProcessor extends JenaBasedSadlModelProcessor {
 	private StatementContent processStatement(CompareStatement element) throws InvalidNameException, InvalidTypeException, TranslationException, IOException, PrefixNotFoundException, ConfigurationException {
 		Expression thenExpr = element.getToCompare();
 		EList<CompareWhen> whenLst = element.getCompareWhens();
-		List<Rule> comparisonRules = whenListAndThenToCookedRules(whenLst, thenExpr);
+		List<Rule> comparisonRules = null;
+		try {
+			comparisonRules = whenListAndThenToCookedRules(whenLst, thenExpr);
+		} catch (UndefinedConceptException e) {
+			return e.getWhatIsContent();
+		} catch (InvalidNameException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (InvalidTypeException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (TranslationException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 		
 		return new CompareContent(element, Agent.USER, comparisonRules);
 	}
@@ -765,17 +779,31 @@ public class JenaBasedDialogModelProcessor extends JenaBasedSadlModelProcessor {
 		EList<CompareWhen> whenExprs = element.getSuitableWhens();
 		Expression thenExpr = element.getWhat();
 		
-		List<Rule> comparisonRules = whenListAndThenToCookedRules(whenExprs, thenExpr);
+		List<Rule> comparisonRules = null;
+		try {
+			comparisonRules = whenListAndThenToCookedRules(whenExprs, thenExpr);
+		} catch (UndefinedConceptException e) {
+			return e.getWhatIsContent();
+		} catch (InvalidNameException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (InvalidTypeException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (TranslationException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 		return new CompareContent(element, Agent.USER, comparisonRules);
 	}
 
-	private List<Rule> whenAndThenToCookedRules(EObject when, EObject whatIsTarget) throws InvalidNameException, InvalidTypeException, TranslationException {
+	private List<Rule> whenAndThenToCookedRules(EObject when, EObject whatIsTarget) throws InvalidNameException, InvalidTypeException, TranslationException, UndefinedConceptException {
 		List<EObject> whenLst = new ArrayList<EObject>();
 		whenLst.add(when);
 		return whenAndThenToCookedRules(whenLst, whatIsTarget);
 	}
 
-	private List<Rule> whenListAndThenToCookedRules(EList<CompareWhen> whenLst, EObject thenExpr) throws InvalidNameException, InvalidTypeException, TranslationException {
+	private List<Rule> whenListAndThenToCookedRules(EList<CompareWhen> whenLst, EObject thenExpr) throws InvalidNameException, InvalidTypeException, TranslationException, UndefinedConceptException {
 		List<EObject> whenObjLst = new ArrayList<EObject>();
 		for (CompareWhen cw : whenLst) {
 			whenObjLst.add(cw.getWhenExpr());
@@ -784,7 +812,7 @@ public class JenaBasedDialogModelProcessor extends JenaBasedSadlModelProcessor {
 	}
 
 	private List<Rule> whenAndThenToCookedRules(List<EObject> whenLst, EObject thenExpr)
-			throws InvalidNameException, InvalidTypeException, TranslationException {
+			throws InvalidNameException, InvalidTypeException, TranslationException, UndefinedConceptException {
 		if (whenLst == null && (thenExpr instanceof Declaration || thenExpr instanceof Name)) {
 			// this is a simple query of the ontology, not a 
 		}
@@ -862,6 +890,22 @@ public class JenaBasedDialogModelProcessor extends JenaBasedSadlModelProcessor {
 				thenObjects.add((Node) origThenObj);
 			}
 			else if (origThenObj instanceof TripleElement) {
+				if (((TripleElement)origThenObj).getPredicate() instanceof VariableNode) {
+					// predicate cannot be a variable--means the question has an undefined concept
+					VariableNode pvar = (VariableNode) ((TripleElement)origThenObj).getPredicate();
+					addWarning(pvar.getName() + " is not defined.", thenExpr);
+					WhatIsContent wic = new WhatIsContent(thenExpr, Agent.CM, pvar, null);
+					String msg;
+					try {
+						msg = "Concept " + getAnswerCurationManager().checkForKeyword(pvar.getName()) + " is not defined; please define or do extraction";
+						wic.setExplicitQuestion(msg);
+					} catch (IOException e) {
+						// TODO Auto-generated catch block
+						msg = e.getMessage();
+						e.printStackTrace();
+					}
+					throw new UndefinedConceptException(msg, wic);
+				}
 				if (((TripleElement)origThenObj).getSubject() instanceof VariableNode) {
 					((TripleElement)origThenObj).setSubject(((VariableNode)((TripleElement)origThenObj).getSubject()).getType());
 				}
@@ -2299,10 +2343,14 @@ public class JenaBasedDialogModelProcessor extends JenaBasedSadlModelProcessor {
 		}
 		else {
 			// compute answer using computational graph
-			List<Rule> comparisonRules;
+			List<Rule> comparisonRules = null;
 			try {
 				clearUndefinedEObjects();
-				comparisonRules = whenAndThenToCookedRules(when, whatIsTarget);
+				try {
+					comparisonRules = whenAndThenToCookedRules(when, whatIsTarget);
+				} catch (UndefinedConceptException e1) {
+					return e1.getWhatIsContent();
+				}
 				if (comparisonRules != null && comparisonRules.size() > 0) {
 					WhatIsContent wic = new WhatIsContent(stmt.eContainer(), Agent.USER, comparisonRules);
 					return wic;

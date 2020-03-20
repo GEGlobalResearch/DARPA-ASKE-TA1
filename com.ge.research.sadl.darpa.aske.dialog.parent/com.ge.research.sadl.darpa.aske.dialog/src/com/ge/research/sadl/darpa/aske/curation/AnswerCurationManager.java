@@ -2586,6 +2586,9 @@ public class AnswerCurationManager {
 				sc.setHostEObject(getExtractionContext().getHostEObject());
 			}
 		}
+		else {
+			sc.setHostEObject(getConversationHostObject(sc.getHostEObject()));
+		}
 		if (getDialogAnswerProvider() != null) {
 			// talk to the user via the Dialog editor
 			Method acmic = null;
