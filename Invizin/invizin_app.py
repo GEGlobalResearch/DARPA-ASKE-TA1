@@ -43,6 +43,7 @@ import os
 from multiprocessing import Process, active_children
 import flask
 from urllib import parse
+import json
 
 #for visualization
 import dash
@@ -118,17 +119,17 @@ def visualize(body):
         figs.append(fig)
         labels.append(label)
         
-        # J, errMsg = inviz.getJacobian(body)
-        # print('Jacobian:')
-        # print(J)
-        # JData = []
+        J, errMsg = inviz.getJacobian(body)
+        print('Jacobian:')
+        print(J)
+        JData = []
         
-        # for ind, outputVar in enumerate(body['outputVariables']):
-        #     JData.append({'name':outputVar['name'], 'value':J[ind]})
+        for ind, outputVar in enumerate(body['outputVariables']):
+            JData.append({'name':outputVar['name'], 'value':str(J[ind])})
         
-        # fig, label = inviz.createNormalizedSensitivityGraph(body)
-        # figs.append(fig)
-        # labels.append(label)
+        fig, label = inviz.createNormalizedSensitivityGraph(body)
+        figs.append(fig)
+        labels.append(label)
         
         layout = inviz.getTabLayout(figs, labels)
 
@@ -152,7 +153,8 @@ def visualize(body):
     outputPacket['url'] = URL
     outputPacket['OATSensitivityData'] = OATSensitivityData
     
-    # outputPacket['normalizedSensitivityData'] = JData
+    outputPacket['normalizedSensitivityData'] = JData
+    #outputPacket = json.dump(outputPacket)
     
     return outputPacket
 
