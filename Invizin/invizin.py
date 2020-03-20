@@ -225,8 +225,8 @@ class invizin(object):
     
         fig.update_layout(title='One-at-a-time Parametric Analysis', 
                           showlegend=False, hovermode='x',
-                          autosize=True, height=250*jj)
-        label = 'OAT Sensitivity Analysis'
+                          autosize=True, height=200*len(pck['outputVariables']))
+        label = 'OAT Parametric Analysis'
         return fig, label
     
     def createOATRelativeSensitivityGraph(self, evalPacket):
@@ -311,9 +311,9 @@ class invizin(object):
                 else:
                     fig.update_xaxes(row=jj+1, col=1, hoverformat=".3f")
     
-        fig.update_layout(title='One-at-a-time Parametric Analysis', 
+        fig.update_layout(title='One-at-a-time Relative Parametric Analysis', 
                           showlegend=True, hovermode='x',
-                          autosize=True, height=250*jj)
+                          autosize=True, height=200*len(pck['outputVariables']))
         label = 'Relative Sensitivity Analysis'
         return fig, label
     
