@@ -73,7 +73,7 @@ def _deployDash(layout, portNum):
     dashApp.scripts.config.serve_locally = True
     dashApp.css.config.serve_locally = True
     print('deploying dash now')
-    dashApp.run_server(port=portNum, debug=False, use_reloader=False)
+    dashApp.run_server(port=portNum, host='0.0.0.0', debug=False, use_reloader=False)
     
 def terminateDeploy(portNum):
     m = active_children()
