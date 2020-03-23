@@ -1024,6 +1024,15 @@ public class JenaBasedDialogInferenceProcessor extends JenaBasedSadlInferencePro
 			System.out.println("Query answering disabled as no Computational Graph is selected in preferences.");
 			return null;
 		}
+		
+//		// TODO this is temporary for testing only
+//		if (useDbn) {
+//			TripleElement[] trl0 = triples.get(0);
+//			int lastTr = trl0.length - 1;
+//			TripleElement tr0 = trl0[lastTr];
+//			NamedNode nn = (NamedNode) tr0.getPredicate();
+//			throw new NoModelFoundForTargetException("No model found for " + nn.getName() + ".", nn);
+//		}
 
 		//		System.out.println(" >> Builtin classes discovered by the service loader:");
 //		Iterator<Builtin> iter = ServiceLoader.load(Builtin.class).iterator();
@@ -2242,9 +2251,11 @@ private List<RDFNode> getRDFOutputsList(List<TripleElement> outputPatterns, List
 			itr = outputPatterns.get(i); //e.g. itr = (v0 altitude v1)
 			sp = itr.getPredicate().getURI();
 			ssp = getTheJenaModel().getProperty(sp);
-			OntResource rng = ssp.as(OntProperty.class).getRange();
-			// Add property to list of vars
-			outputsList.add(rng);
+			if (ssp.canAs(OntProperty.class)) { 
+				OntResource rng = ssp.as(OntProperty.class).getRange();
+				// Add property to list of vars
+				outputsList.add(rng);
+			}
 		}
 	}
 		

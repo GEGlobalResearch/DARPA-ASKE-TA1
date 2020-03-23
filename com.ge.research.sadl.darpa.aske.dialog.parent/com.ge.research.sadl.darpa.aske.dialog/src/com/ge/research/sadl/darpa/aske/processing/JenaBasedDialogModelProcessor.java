@@ -88,6 +88,7 @@ import com.ge.research.sadl.darpa.aske.dialog.HowManyValuesStatement;
 import com.ge.research.sadl.darpa.aske.dialog.ModifiedAskStatement;
 import com.ge.research.sadl.darpa.aske.dialog.MyNameIsStatement;
 import com.ge.research.sadl.darpa.aske.dialog.NewExpressionStatement;
+import com.ge.research.sadl.darpa.aske.dialog.NoModelFoundStatement;
 import com.ge.research.sadl.darpa.aske.dialog.PLink;
 import com.ge.research.sadl.darpa.aske.dialog.ParameterizedExpressionWithUnit;
 import com.ge.research.sadl.darpa.aske.dialog.SadlEquationInvocation;
@@ -585,6 +586,21 @@ public class JenaBasedDialogModelProcessor extends JenaBasedSadlModelProcessor {
 			SadlResource ucsr = ((UndefinedConceptStatement)element).getConcept();
 			return new UndefinedConceptStatementContent(element, Agent.CM, ucsr);
 		}
+		else if (element instanceof NoModelFoundStatement) {
+			Expression trgt = ((NoModelFoundStatement)element).getTarget();
+			if (trgt instanceof EObject) {
+				Object trgtObj = super.processExpression((EObject)trgt);
+				if (trgtObj instanceof Node) {
+					return new NoModelFoundStatementContent(element, Agent.CM,  null, (Node) trgtObj);
+				}
+				else {
+					throw new TranslationException("NoModelFoundStatement target translates to unsupported class: '" + trgtObj.getClass().getCanonicalName() + "'");
+				}
+			}
+			else {
+				throw new TranslationException("NoModelFoundStatement has unsupported target class: '" + trgt.getClass().getCanonicalName() + "'");
+			}
+		}
 		else {
 			throw new TranslationException("Model element of type '" + element.getClass().getCanonicalName() + "' not handled.");
 		}	
@@ -740,7 +756,21 @@ public class JenaBasedDialogModelProcessor extends JenaBasedSadlModelProcessor {
 	private StatementContent processStatement(CompareStatement element) throws InvalidNameException, InvalidTypeException, TranslationException, IOException, PrefixNotFoundException, ConfigurationException {
 		Expression thenExpr = element.getToCompare();
 		EList<CompareWhen> whenLst = element.getCompareWhens();
-		List<Rule> comparisonRules = whenListAndThenToCookedRules(whenLst, thenExpr);
+		List<Rule> comparisonRules = null;
+		try {
+			comparisonRules = whenListAndThenToCookedRules(whenLst, thenExpr);
+		} catch (UndefinedConceptException e) {
+			return e.getWhatIsContent();
+		} catch (InvalidNameException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (InvalidTypeException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (TranslationException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 		
 		return new CompareContent(element, Agent.USER, comparisonRules);
 	}
@@ -749,17 +779,31 @@ public class JenaBasedDialogModelProcessor extends JenaBasedSadlModelProcessor {
 		EList<CompareWhen> whenExprs = element.getSuitableWhens();
 		Expression thenExpr = element.getWhat();
 		
-		List<Rule> comparisonRules = whenListAndThenToCookedRules(whenExprs, thenExpr);
+		List<Rule> comparisonRules = null;
+		try {
+			comparisonRules = whenListAndThenToCookedRules(whenExprs, thenExpr);
+		} catch (UndefinedConceptException e) {
+			return e.getWhatIsContent();
+		} catch (InvalidNameException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (InvalidTypeException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (TranslationException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 		return new CompareContent(element, Agent.USER, comparisonRules);
 	}
 
-	private List<Rule> whenAndThenToCookedRules(EObject when, EObject whatIsTarget) throws InvalidNameException, InvalidTypeException, TranslationException {
+	private List<Rule> whenAndThenToCookedRules(EObject when, EObject whatIsTarget) throws InvalidNameException, InvalidTypeException, TranslationException, UndefinedConceptException {
 		List<EObject> whenLst = new ArrayList<EObject>();
 		whenLst.add(when);
 		return whenAndThenToCookedRules(whenLst, whatIsTarget);
 	}
 
-	private List<Rule> whenListAndThenToCookedRules(EList<CompareWhen> whenLst, EObject thenExpr) throws InvalidNameException, InvalidTypeException, TranslationException {
+	private List<Rule> whenListAndThenToCookedRules(EList<CompareWhen> whenLst, EObject thenExpr) throws InvalidNameException, InvalidTypeException, TranslationException, UndefinedConceptException {
 		List<EObject> whenObjLst = new ArrayList<EObject>();
 		for (CompareWhen cw : whenLst) {
 			whenObjLst.add(cw.getWhenExpr());
@@ -768,7 +812,7 @@ public class JenaBasedDialogModelProcessor extends JenaBasedSadlModelProcessor {
 	}
 
 	private List<Rule> whenAndThenToCookedRules(List<EObject> whenLst, EObject thenExpr)
-			throws InvalidNameException, InvalidTypeException, TranslationException {
+			throws InvalidNameException, InvalidTypeException, TranslationException, UndefinedConceptException {
 		if (whenLst == null && (thenExpr instanceof Declaration || thenExpr instanceof Name)) {
 			// this is a simple query of the ontology, not a 
 		}
@@ -846,6 +890,22 @@ public class JenaBasedDialogModelProcessor extends JenaBasedSadlModelProcessor {
 				thenObjects.add((Node) origThenObj);
 			}
 			else if (origThenObj instanceof TripleElement) {
+				if (((TripleElement)origThenObj).getPredicate() instanceof VariableNode) {
+					// predicate cannot be a variable--means the question has an undefined concept
+					VariableNode pvar = (VariableNode) ((TripleElement)origThenObj).getPredicate();
+					addWarning(pvar.getName() + " is not defined.", thenExpr);
+					WhatIsContent wic = new WhatIsContent(thenExpr, Agent.CM, pvar, null);
+					String msg;
+					try {
+						msg = "Concept " + getAnswerCurationManager().checkForKeyword(pvar.getName()) + " is not defined; please define or do extraction";
+						wic.setExplicitQuestion(msg);
+					} catch (IOException e) {
+						// TODO Auto-generated catch block
+						msg = e.getMessage();
+						e.printStackTrace();
+					}
+					throw new UndefinedConceptException(msg, wic);
+				}
 				if (((TripleElement)origThenObj).getSubject() instanceof VariableNode) {
 					((TripleElement)origThenObj).setSubject(((VariableNode)((TripleElement)origThenObj).getSubject()).getType());
 				}
@@ -1386,10 +1446,31 @@ public class JenaBasedDialogModelProcessor extends JenaBasedSadlModelProcessor {
 				if (nmObj instanceof NamedNode && ((NamedNode)nmObj).getNodeType().equals(NodeType.ClassNode)) {
 					// this makes sense in the context of a prior question about type of a variable
 					// 1. find prior statement asking about variable to get variable name
-					// 2. find prior Equation statement to be able to add the type to the argument
-					String modEq = "modified equation with type '" + ((NamedNode)nmObj).getName() + "' added";
-					AddAugmentedTypeInfoContent mec = new AddAugmentedTypeInfoContent(element, Agent.USER, uptxt, modEq, true);
-					return mec;
+					List<ConversationElement> celements = getAnswerCurationManager().getConversationElements();
+					if (celements != null) {
+						ConversationElement lastElement = celements.get(celements.size() - 1);
+						if (lastElement != null && lastElement.getStatement() instanceof WhatIsContent &&
+								lastElement.getStatement().getAgent().equals(Agent.CM) &&
+								((WhatIsContent)lastElement.getStatement()).getTarget() instanceof NamedNode) {
+							NamedNode targetNode = (NamedNode) ((WhatIsContent)lastElement.getStatement()).getTarget();
+							// 2. find prior Equation statement to be able to add the type to the argument
+							for (int i = celements.size() - 1; i >= 0; i--) {
+								ConversationElement anElement = celements.get(i);
+								if (anElement.getStatement() instanceof EquationStatementContent) {
+									 EquationStatementContent eqContent = (EquationStatementContent)anElement.getStatement();
+									AddAugmentedTypeInfoContent mec = new AddAugmentedTypeInfoContent(element, Agent.USER, uptxt, eqContent, targetNode, (Node)nmObj);
+									return mec;
+								}
+							}
+							addError("Addition of information missing preceding equation to be augmented", expr);
+						}
+						else {
+							addError("Addition of information missing preceding question to be answered", expr);
+						}
+					}
+					else {
+						addError("Addition of information missing preceding context", expr);
+					}
 				}
 			} catch (TranslationException e) {
 				// TODO Auto-generated catch block
@@ -1398,6 +1479,9 @@ public class JenaBasedDialogModelProcessor extends JenaBasedSadlModelProcessor {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
 			} catch (InvalidTypeException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			} catch (IOException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
@@ -1418,11 +1502,31 @@ public class JenaBasedDialogModelProcessor extends JenaBasedSadlModelProcessor {
 						if (((NamedNode)robj).getNodeType().equals(NodeType.ClassNode)) {
 							// this is the addition of a named argument variable type
 							//  find prior Equation statement, find argument variable, add the type to the argument
-							String modEq = "modified equation variable '" + ((VariableNode)lobj).getName() + "' with type '" + ((NamedNode)robj).getName() + "' added";
-							AddAugmentedTypeInfoContent mec = new AddAugmentedTypeInfoContent(element, Agent.USER, uptxt, modEq, true);
-							mec.setArgName(((VariableNode)lobj).getName());
-							mec.setAddedTypeUri(((NamedNode)robj).getURI());
-							return mec;
+							List<ConversationElement> celements = getAnswerCurationManager().getConversationElements();
+							if (celements != null) {
+								ConversationElement lastElement = celements.get(celements.size() - 1);
+								if (lastElement != null && lastElement.getStatement() instanceof WhatIsContent &&
+										lastElement.getStatement().getAgent().equals(Agent.CM) &&
+										((WhatIsContent)lastElement.getStatement()).getTarget() instanceof VariableNode) {
+									VariableNode argVar = (VariableNode) ((WhatIsContent)lastElement.getStatement()).getTarget();
+									// 2. find prior Equation statement to be able to add the type to the argument
+									for (int i = celements.size() - 1; i >= 0; i--) {
+										ConversationElement anElement = celements.get(i);
+										if (anElement.getStatement() instanceof EquationStatementContent) {
+											 EquationStatementContent eqContent = (EquationStatementContent)anElement.getStatement();
+											AddAugmentedTypeInfoContent mec = new AddAugmentedTypeInfoContent(element, Agent.USER, uptxt, eqContent, argVar, (Node)robj);
+											return mec;
+										}
+									}
+									addError("Addition of information missing preceding equation to be augmented", expr);
+								}
+								else {
+									addError("Addition of information missing preceding question to be answered", expr);
+								}
+							}
+							else {
+								addError("Addition of information missing preceding context", expr);
+							}
 						}
 						else if (robj instanceof VariableNode) {
 							// need to ask what this is
@@ -1580,6 +1684,9 @@ public class JenaBasedDialogModelProcessor extends JenaBasedSadlModelProcessor {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
 			} catch (TranslationException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			} catch (IOException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
@@ -2283,10 +2390,14 @@ public class JenaBasedDialogModelProcessor extends JenaBasedSadlModelProcessor {
 		}
 		else {
 			// compute answer using computational graph
-			List<Rule> comparisonRules;
+			List<Rule> comparisonRules = null;
 			try {
 				clearUndefinedEObjects();
-				comparisonRules = whenAndThenToCookedRules(when, whatIsTarget);
+				try {
+					comparisonRules = whenAndThenToCookedRules(when, whatIsTarget);
+				} catch (UndefinedConceptException e1) {
+					return e1.getWhatIsContent();
+				}
 				if (comparisonRules != null && comparisonRules.size() > 0) {
 					WhatIsContent wic = new WhatIsContent(stmt.eContainer(), Agent.USER, comparisonRules);
 					return wic;

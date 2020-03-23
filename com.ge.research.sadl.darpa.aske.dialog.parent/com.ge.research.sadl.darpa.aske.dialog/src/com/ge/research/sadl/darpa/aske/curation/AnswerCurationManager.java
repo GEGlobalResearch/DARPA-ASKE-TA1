@@ -2389,19 +2389,21 @@ public class AnswerCurationManager {
 	}
 
 	private String getInitializedClassName(List<String> initializerKeywords, String methodName) {
-		for (String ikw : initializerKeywords) {
-			String lastSegment;
-			int lastDot = methodName.lastIndexOf('.');
-			if (lastDot > 0) {
-				lastSegment = methodName.substring(lastDot+ 1); 
-			}
-			else {
-				lastSegment = methodName;
-			}
-			if (lastSegment.startsWith(ikw)) {
-				String rest = lastSegment.substring(ikw.length());
-				// TODO if rest is the name of a domain class
-				return rest;
+		if (initializerKeywords != null) {
+			for (String ikw : initializerKeywords) {
+				String lastSegment;
+				int lastDot = methodName.lastIndexOf('.');
+				if (lastDot > 0) {
+					lastSegment = methodName.substring(lastDot+ 1); 
+				}
+				else {
+					lastSegment = methodName;
+				}
+				if (lastSegment.startsWith(ikw)) {
+					String rest = lastSegment.substring(ikw.length());
+					// TODO if rest is the name of a domain class
+					return rest;
+				}
 			}
 		}
 		return null;
@@ -2585,6 +2587,9 @@ public class AnswerCurationManager {
 			if (getExtractionContext() != null) {
 				sc.setHostEObject(getExtractionContext().getHostEObject());
 			}
+		}
+		else {
+			sc.setHostEObject(getConversationHostObject(sc.getHostEObject()));
 		}
 		if (getDialogAnswerProvider() != null) {
 			// talk to the user via the Dialog editor
@@ -2977,12 +2982,7 @@ public class AnswerCurationManager {
 			retVal = eqStr;
 		}
 		else if (sc instanceof AddAugmentedTypeInfoContent) {
-			String argName = ((AddAugmentedTypeInfoContent)sc).getArgName();
-			String semTypeUri = ((AddAugmentedTypeInfoContent)sc).getAddedTypeUri();
-			String question = "What type is " + argName;
-			List<ConversationElement> dialogStmts = getConversation().getStatements();
-			int conversationIdx = dialogStmts.indexOf(sc);
-			retVal = addAugmentedTypeToEquation(dialogStmts, conversationIdx, question, semTypeUri);
+			retVal = addAugmentedTypeToEquation((AddAugmentedTypeInfoContent)sc);
 		}
 		else {
 			logger.debug("Need to add '" + sc.getClass().getCanonicalName() + "' to processUserRequest");
@@ -2991,6 +2991,17 @@ public class AnswerCurationManager {
 		return retVal;
 	}
 	
+	private int getDialogStatementIndex(List<ConversationElement> dialogStmts, ExpectsAnswerContent sc) {
+		int idx = 0;
+		for (ConversationElement ce : dialogStmts) {
+			if (ce.getStatement().equals(sc)) {
+				return idx;
+			}
+			idx++;
+		}
+		return -1;
+	}
+
 	private String processCompareRequest(org.eclipse.emf.ecore.resource.Resource resource2, OntModel theModel,
 			String modelName, CompareContent sc) throws AnswerExtractionException, ExecutionException, SadlInferenceException, TranslationException, ConfigurationException {
 		if (ResourceManager.isSyntheticUri(null, resource2.getURI())) {
@@ -4943,6 +4954,21 @@ public class AnswerCurationManager {
 		addAugmentedTypeToEquation(dialogStmts, conversationIdx, question, semTypeUri);
 	}
 
+	private String addAugmentedTypeToEquation(AddAugmentedTypeInfoContent sc) {
+		EquationStatementContent eqsc = sc.getEquationContent();
+		NamedNode targetNode = ((AddAugmentedTypeInfoContent)sc).getTargetNode();
+		Node semType = ((AddAugmentedTypeInfoContent)sc).getAddedType();
+		if (semType instanceof NamedNode && ((NamedNode)semType).getNodeType().equals(NodeType.ClassNode)) {
+			OntClass augTypeClass = getDomainModel().getOntClass(((NamedNode)semType).getURI());
+			if (augTypeClass != null) {
+				EObject equationEObject = eqsc.getHostEObject();
+				addAugmentedTypeToEquation(eqsc, equationEObject , targetNode instanceof VariableNode ? targetNode.getName() : null, augTypeClass);
+				return "Added augmented type '" + augTypeClass.getURI() + "' to " + eqsc.getEquationName();
+			}
+		}
+		return "Failed to add augmented type";
+	}
+
 	private String addAugmentedTypeToEquation(List<ConversationElement> dialogStmts, int conversationIdx, String question,
 			String semTypeUri) {
 		for (int i = conversationIdx - 1; i >= 0; i--) {
@@ -5033,39 +5059,77 @@ public class AnswerCurationManager {
 		StatementContent lastStatement;
 		String question = sc.getText().trim();
 		currentQuestions.add(question);
-		if (getQuestionsAndAnswers().containsKey(question)) {
-			String ans = getQuestionsAndAnswers().get(question);
-//					logger.debug(ans + " ? " + ((AnswerContent)statementAfter).getAnswer().toString().trim());
-			if (statementAfter != null && statementAfter != null) {
-				String val = statementAfter.toString().trim();
-				val = stripEOS(SadlUtils.stripQuotes(val));
-				ans = stripEOS(SadlUtils.stripQuotes(ans));
-				if (val.equals(ans)) {
-					// this statement has already been answered		
-					((ExpectsAnswerContent) sc).setAnswer(statementAfter);
-//								continue;
-				}
+		if (sc instanceof AddAugmentedTypeInfoContent) {
+			// for these we must look back at the equation ands see if there's still a question
+			NamedNode targetNode = ((AddAugmentedTypeInfoContent)sc).getTargetNode();
+			String atquestion;
+			if (targetNode instanceof VariableNode) {
+				atquestion = "What type is " + targetNode.getName();
 			}
 			else {
-				try {
-					answerUser(getOwlModelsFolder(), ans, sc.isQuoteResult(), sc.getHostEObject());
-				} catch (ConfigurationException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				}	
+				atquestion = "What type does " + targetNode.getName() + " return";
+			}
+			EquationStatementContent eqcnt = ((AddAugmentedTypeInfoContent)sc).getEquationContent();
+			List<StatementContent> questions = eqcnt.getQuestionsForUser();
+			boolean questionFound = false;
+			if (questions != null) {
+				for (StatementContent anotherSc : questions) {
+					String anotherTxt = null;
+					if (anotherSc instanceof RequestArgumentAugmentedTypeContent) {
+						anotherTxt = ((RequestArgumentAugmentedTypeContent) anotherSc).getQuestion();
+					}
+					else if (anotherSc instanceof RequestReturnAugmentedTypeContent) {
+						anotherTxt = ((RequestReturnAugmentedTypeContent)anotherSc).getQuestion();
+					}
+					else {
+						anotherSc.getText();
+					}
+					if (stripEOS(anotherTxt).equals(stripEOS(atquestion))) {
+						questionFound = true;
+						break;
+					}
+				}
+			}
+			if (questionFound) {
+				processExpectsAnswerContent(resource, ontModel, modelName, dc, additionMap, additions, ce, sc);	
 			}
 		}
-		else if (sc instanceof QuestionWithCallbackContent) {
-			String key = getUnansweredQuestionKey((QuestionWithCallbackContent)sc);
-			if (key != null) {
-				replaceUnansweredQuestionStatementContent(key, (QuestionWithCallbackContent)sc);
-				lastStatement = sc;
-			}
-		}
-
-		// this statement needs an answer
 		else {
-			processExpectsAnswerContent(resource, ontModel, modelName, dc, additionMap, additions, ce, sc);
+			// for these we can look forward to see if the question has been answered
+			if (getQuestionsAndAnswers().containsKey(question)) {
+				String ans = getQuestionsAndAnswers().get(question);
+	//					logger.debug(ans + " ? " + ((AnswerContent)statementAfter).getAnswer().toString().trim());
+				if (statementAfter != null && statementAfter != null) {
+					String val = statementAfter.toString().trim();
+					val = stripEOS(SadlUtils.stripQuotes(val));
+					ans = stripEOS(SadlUtils.stripQuotes(ans));
+					if (val.equals(ans)) {
+						// this statement has already been answered		
+						((ExpectsAnswerContent) sc).setAnswer(statementAfter);
+	//								continue;
+					}
+				}
+				else {
+					try {
+						answerUser(getOwlModelsFolder(), ans, sc.isQuoteResult(), sc.getHostEObject());
+					} catch (ConfigurationException e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					}	
+				}
+			}
+			else if (sc instanceof QuestionWithCallbackContent) {
+				String key = getUnansweredQuestionKey((QuestionWithCallbackContent)sc);
+				if (key != null) {
+					replaceUnansweredQuestionStatementContent(key, (QuestionWithCallbackContent)sc);
+					lastStatement = sc;
+				}
+			}
+	
+			// this statement needs an answer
+			else {
+				processExpectsAnswerContent(resource, ontModel, modelName, dc, additionMap, additions, ce, sc);
+			}
 		}
 	}
 
@@ -5095,7 +5159,7 @@ public class AnswerCurationManager {
 						scLoc = idx;
 					}
 				}
-				else {
+//				else {
 					if (ce.getStatement() instanceof UndefinedConceptStatementContent) {
 						if (((UndefinedConceptStatementContent)ce.getStatement()).getText().equals(sc.getExplicitQuestion())) {
 							return true;
@@ -5106,7 +5170,12 @@ public class AnswerCurationManager {
 							return true;
 						}
 					}
-				}
+					else if (ce.getStatement() instanceof WhatIsContent) {
+						if (((WhatIsContent)ce.getStatement()).getText().equals(sc.getUnParsedText())) {
+							return true;
+						}
+					}
+//				}
 				idx++;
 			}
 		}

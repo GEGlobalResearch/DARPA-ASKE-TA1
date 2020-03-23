@@ -4,11 +4,14 @@ import org.eclipse.emf.ecore.EObject;
 
 import com.ge.research.sadl.darpa.aske.curation.AnswerCurationManager.Agent;
 import com.ge.research.sadl.darpa.aske.dialog.NewExpressionStatement;
+import com.ge.research.sadl.model.gp.NamedNode;
+import com.ge.research.sadl.model.gp.Node;
+import com.ge.research.sadl.model.gp.VariableNode;
 
 public class AddAugmentedTypeInfoContent extends AddToModelContent {
-	private String equationName;
-	private String argName;
-	private String addedTypeUri;
+	private EquationStatementContent equationContent;		// the Equation being modified
+	private NamedNode targetNode;							// the argument of the equation being augmented
+	private Node addedType;									// the augmentation information (NamedNode supported for starters)
 
 	public AddAugmentedTypeInfoContent(EObject host) {
 		super(host);
@@ -22,33 +25,37 @@ public class AddAugmentedTypeInfoContent extends AddToModelContent {
 		super(host, agnt, uptxt);
 	}
 
-	public AddAugmentedTypeInfoContent(NewExpressionStatement host, Agent agnt, String uptxt, String modEq, boolean quote) {
+	public AddAugmentedTypeInfoContent(NewExpressionStatement host, Agent agnt, String uptxt, 
+			EquationStatementContent eqContent, NamedNode targetNode, Node addedType) {
 		super(host, agnt, uptxt);
-		setEquationName(modEq);
-		setQuoteResult(quote);
+		setEquationContent(eqContent);
+		setTargetNode(targetNode);
+		setAddedType(addedType);
 	}
 
-	public String getEquationName() {
-		return equationName;
+	public Node getAddedType() {
+		return addedType;
 	}
 
-	public void setEquationName(String equationName) {
-		this.equationName = equationName;
+	public void setAddedType(Node addedType) {
+		this.addedType = addedType;
 	}
 
-	public String getArgName() {
-		return argName;
+	public NamedNode getTargetNode() {
+		return targetNode;
 	}
 
-	public void setArgName(String argName) {
-		this.argName = argName;
+	public void setTargetNode(NamedNode argument) {
+		this.targetNode = argument;
 	}
 
-	public String getAddedTypeUri() {
-		return addedTypeUri;
+	public EquationStatementContent getEquationContent() {
+		return equationContent;
 	}
 
-	public void setAddedTypeUri(String addedTypeUri) {
-		this.addedTypeUri = addedTypeUri;
+	public void setEquationContent(EquationStatementContent equationContent) {
+		this.equationContent = equationContent;
 	}
+
+
 }
