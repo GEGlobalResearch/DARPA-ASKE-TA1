@@ -5072,20 +5072,22 @@ public class AnswerCurationManager {
 			EquationStatementContent eqcnt = ((AddAugmentedTypeInfoContent)sc).getEquationContent();
 			List<StatementContent> questions = eqcnt.getQuestionsForUser();
 			boolean questionFound = false;
-			for (StatementContent anotherSc : questions) {
-				String anotherTxt = null;
-				if (anotherSc instanceof RequestArgumentAugmentedTypeContent) {
-					anotherTxt = ((RequestArgumentAugmentedTypeContent) anotherSc).getQuestion();
-				}
-				else if (anotherSc instanceof RequestReturnAugmentedTypeContent) {
-					anotherTxt = ((RequestReturnAugmentedTypeContent)anotherSc).getQuestion();
-				}
-				else {
-					anotherSc.getText();
-				}
-				if (stripEOS(anotherTxt).equals(stripEOS(atquestion))) {
-					questionFound = true;
-					break;
+			if (questions != null) {
+				for (StatementContent anotherSc : questions) {
+					String anotherTxt = null;
+					if (anotherSc instanceof RequestArgumentAugmentedTypeContent) {
+						anotherTxt = ((RequestArgumentAugmentedTypeContent) anotherSc).getQuestion();
+					}
+					else if (anotherSc instanceof RequestReturnAugmentedTypeContent) {
+						anotherTxt = ((RequestReturnAugmentedTypeContent)anotherSc).getQuestion();
+					}
+					else {
+						anotherSc.getText();
+					}
+					if (stripEOS(anotherTxt).equals(stripEOS(atquestion))) {
+						questionFound = true;
+						break;
+					}
 				}
 			}
 			if (questionFound) {
