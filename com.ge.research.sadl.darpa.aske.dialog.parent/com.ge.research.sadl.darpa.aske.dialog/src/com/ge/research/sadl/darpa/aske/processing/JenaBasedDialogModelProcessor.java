@@ -1446,10 +1446,31 @@ public class JenaBasedDialogModelProcessor extends JenaBasedSadlModelProcessor {
 				if (nmObj instanceof NamedNode && ((NamedNode)nmObj).getNodeType().equals(NodeType.ClassNode)) {
 					// this makes sense in the context of a prior question about type of a variable
 					// 1. find prior statement asking about variable to get variable name
-					// 2. find prior Equation statement to be able to add the type to the argument
-					String modEq = "modified equation with type '" + ((NamedNode)nmObj).getName() + "' added";
-					AddAugmentedTypeInfoContent mec = new AddAugmentedTypeInfoContent(element, Agent.USER, uptxt, modEq, true);
-					return mec;
+					List<ConversationElement> celements = getAnswerCurationManager().getConversationElements();
+					if (celements != null) {
+						ConversationElement lastElement = celements.get(celements.size() - 1);
+						if (lastElement != null && lastElement.getStatement() instanceof WhatIsContent &&
+								lastElement.getStatement().getAgent().equals(Agent.CM) &&
+								((WhatIsContent)lastElement.getStatement()).getTarget() instanceof NamedNode) {
+							NamedNode targetNode = (NamedNode) ((WhatIsContent)lastElement.getStatement()).getTarget();
+							// 2. find prior Equation statement to be able to add the type to the argument
+							for (int i = celements.size() - 1; i >= 0; i--) {
+								ConversationElement anElement = celements.get(i);
+								if (anElement.getStatement() instanceof EquationStatementContent) {
+									 EquationStatementContent eqContent = (EquationStatementContent)anElement.getStatement();
+									AddAugmentedTypeInfoContent mec = new AddAugmentedTypeInfoContent(element, Agent.USER, uptxt, eqContent, targetNode, (Node)nmObj);
+									return mec;
+								}
+							}
+							addError("Addition of information missing preceding equation to be augmented", expr);
+						}
+						else {
+							addError("Addition of information missing preceding question to be answered", expr);
+						}
+					}
+					else {
+						addError("Addition of information missing preceding context", expr);
+					}
 				}
 			} catch (TranslationException e) {
 				// TODO Auto-generated catch block
@@ -1458,6 +1479,9 @@ public class JenaBasedDialogModelProcessor extends JenaBasedSadlModelProcessor {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
 			} catch (InvalidTypeException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			} catch (IOException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
@@ -1478,11 +1502,31 @@ public class JenaBasedDialogModelProcessor extends JenaBasedSadlModelProcessor {
 						if (((NamedNode)robj).getNodeType().equals(NodeType.ClassNode)) {
 							// this is the addition of a named argument variable type
 							//  find prior Equation statement, find argument variable, add the type to the argument
-							String modEq = "modified equation variable '" + ((VariableNode)lobj).getName() + "' with type '" + ((NamedNode)robj).getName() + "' added";
-							AddAugmentedTypeInfoContent mec = new AddAugmentedTypeInfoContent(element, Agent.USER, uptxt, modEq, true);
-							mec.setArgName(((VariableNode)lobj).getName());
-							mec.setAddedTypeUri(((NamedNode)robj).getURI());
-							return mec;
+							List<ConversationElement> celements = getAnswerCurationManager().getConversationElements();
+							if (celements != null) {
+								ConversationElement lastElement = celements.get(celements.size() - 1);
+								if (lastElement != null && lastElement.getStatement() instanceof WhatIsContent &&
+										lastElement.getStatement().getAgent().equals(Agent.CM) &&
+										((WhatIsContent)lastElement.getStatement()).getTarget() instanceof VariableNode) {
+									VariableNode argVar = (VariableNode) ((WhatIsContent)lastElement.getStatement()).getTarget();
+									// 2. find prior Equation statement to be able to add the type to the argument
+									for (int i = celements.size() - 1; i >= 0; i--) {
+										ConversationElement anElement = celements.get(i);
+										if (anElement.getStatement() instanceof EquationStatementContent) {
+											 EquationStatementContent eqContent = (EquationStatementContent)anElement.getStatement();
+											AddAugmentedTypeInfoContent mec = new AddAugmentedTypeInfoContent(element, Agent.USER, uptxt, eqContent, argVar, (Node)robj);
+											return mec;
+										}
+									}
+									addError("Addition of information missing preceding equation to be augmented", expr);
+								}
+								else {
+									addError("Addition of information missing preceding question to be answered", expr);
+								}
+							}
+							else {
+								addError("Addition of information missing preceding context", expr);
+							}
 						}
 						else if (robj instanceof VariableNode) {
 							// need to ask what this is
@@ -1640,6 +1684,9 @@ public class JenaBasedDialogModelProcessor extends JenaBasedSadlModelProcessor {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
 			} catch (TranslationException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			} catch (IOException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
