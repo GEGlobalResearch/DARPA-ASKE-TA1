@@ -228,7 +228,8 @@ public class JenaBasedDialogInferenceProcessor extends JenaBasedSadlInferencePro
 			"   ?Type2 imp:constraints ?CL2.\n" + 
 			"   ?CL2 rdf:rest*/rdf:first ?C2.\n" + 
 			"   ?C2 imp:gpPredicate ?P.\n" + 
-			"   ?P rdfs:range ?In.}\n" + 
+			"   ?P rdfs:range ?In." +
+			"   ?In rdfs:subClassOf imp:UnittedQuantity.}\n" + 
 			"\n" + 
 			"  union { #Explicit inputs w/o AT\n" + 
 			"    ?Eq imp:arguments ?AL2.\n" + 
@@ -326,7 +327,13 @@ public class JenaBasedDialogInferenceProcessor extends JenaBasedSadlInferencePro
 			"           ?Model imp:initializes ?Class.\n" + 
 			"           filter (?Class in ( CONTEXCLASSES )). #CONTEXCLASSES\n" + 
 			"           bind(bound(?Model) as ?Initializer).\n" + 
-			"        }}union\n" + 
+			"        }}union\n" +
+			"        {select ?Model ?Dependency where {\n" + 
+			"           ?Eq imp:initializes ?Class.\n" + 
+			"           filter (?Class in ( CONTEXCLASSES )). #CONTEXCLASSES\n" + 
+			"           ?Eq imp:dependsOn ?Model.\n" + 
+			"           bind(bound(?Model) as ?Dependency).\n" + 
+			"        }}union\n" +
 			"        {select ?Model ?Dependency  where {\n" + 
 			"          ?Eq imp:dependsOn ?Model.\n" + 
 			"          filter (?Eq in ( EQNSLIST )). #EQNSLIST\n" + 
@@ -381,6 +388,12 @@ public class JenaBasedDialogInferenceProcessor extends JenaBasedSadlInferencePro
 			"           filter (?Class in ( CONTEXCLASSES )). #CONTEXCLASSES\n" + 
 			"           bind(bound(?Model) as ?Initializer).\n" + 
 			"       }}union\n" + 
+			"        {select ?Model ?Dependency where {\n" + 
+			"           ?Eq imp:initializes ?Class.\n" + 
+			"           filter (?Class in ( CONTEXCLASSES )). #CONTEXCLASSES\n" + 
+			"           ?Eq imp:dependsOn ?Model.\n" + 
+			"           bind(bound(?Model) as ?Dependency).\n" + 
+			"        }}union\n" +
 			"        {select ?Model ?Dependency where {\n" + 
 			"          ?Eq imp:dependsOn ?Model.\n" + 
 			"          filter (?Eq in ( EQNSLIST )). #EQNSLIST\n" + 
@@ -472,6 +485,11 @@ public class JenaBasedDialogInferenceProcessor extends JenaBasedSadlInferencePro
 			"           bind(bound(?Model) as ?Initializer).\n" + 
 			"       }}union\n" + 
 			"        {select ?Model ?Dependency where {\n" + 
+			"           ?Eq imp:initializes ?Class.\n" + 
+			"           filter (?Class in ( CONTEXCLASSES )). #CONTEXCLASSES\n" + 
+			"           ?Eq imp:dependsOn ?Model.\n" + 
+			"           bind(bound(?Model) as ?Dependency).\n" + 
+			"        }}union\n" +			"        {select ?Model ?Dependency where {\n" + 
 			"          ?Eq imp:dependsOn ?Model.\n" + 
 			"          filter (?Eq in ( EQNSLIST )). #EQNSLIST\n" + 
 			"          #bind(\"\" as ?Initializer)\n" + 
@@ -496,9 +514,15 @@ public class JenaBasedDialogInferenceProcessor extends JenaBasedSadlInferencePro
 			"   filter not exists {?Model imp:implicitInput/imp:localDescriptorName ?Input.}\n" + 
 			"   filter not exists {?Model imp:implicitInput/imp:augmentedType/imp:semType ?Input.}\n" + 
 			"\n" + 
-			"   optional {?Input imp:localDescriptorName ?InLabel.} #only applies to SemanticInputs\n" + 
-			"   optional {?Input imp:descriptorVariable ?UniqueInputLabel.} \n" + 
-			"   # Get the uniquelabel if available\n" + 
+//			"   optional {?Input imp:localDescriptorName ?InLabel.} #only applies to SemanticInputs\n" + 
+//			"   optional {?Input imp:descriptorVariable ?UniqueInputLabel.} \n" + 
+			"   # Get variable label for augmented type inputs\n" + 
+			"   optional {?Model imp:arguments/list:rest*/list:first ?AO2.\n" +
+			"            ?AO2 imp:localDescriptorName ?InLabel.\n" + 
+			"            ?AO2 imp:descriptorVariable  ?UniqueInputLabel.\n" + 
+            "            ?AO2 imp:augmentedType/imp:constraints/rdf:rest*/rdf:first/imp:gpPredicate/rdfs:range ?Input.\n" +
+			"            ?Input rdfs:subClassOf imp:UnittedQuantity.}\n" +
+            "   # Get the uniquelabel if available\n" + 
 			"   optional {?Model imp:arguments ?AL2.\n" + 
 			"            ?AL2 list:rest*/list:first ?AO2.\n" + 
 			"            ?AO2 imp:localDescriptorName ?Input.\n" + 
@@ -531,7 +555,7 @@ public class JenaBasedDialogInferenceProcessor extends JenaBasedSadlInferencePro
 			"prefix rdf:<http://www.w3.org/1999/02/22-rdf-syntax-ns#>\n"+
 			"prefix list:<http://sadl.org/sadllistmodel#>\n" +
 			"\n" + 
-			"select distinct ?Node ?DataType (str(?NUnits) as ?NodeOutputUnits) ?Child (str(?CUnits) as ?ChildInputUnits) ?Eq  ?Value ?Lower ?Upper #?Distribution \n" + 
+			"select distinct ?Node ?DataType (str(?NUnits) as ?NodeOutputUnits) ?Child (str(?CUnits) as ?ChildInputUnits) ?Eq ?InlineEq ?Value ?Lower ?Upper #?Distribution \n" + 
 			"where {\n" + 
 			"{select distinct ?Node ?Child ?CUnits ?Eq ?Lower ?Upper \n" + 
 			"where { \n" + 
@@ -632,7 +656,14 @@ public class JenaBasedDialogInferenceProcessor extends JenaBasedSadlInferencePro
 			"\n" + 
 			" filter (?Eq in (EQNSLIST )) . #EQNSLIST\n" + 
 			" \n" + 
-			"}}\n" + 
+			"}}\n" +
+//			"   optional{ ?Eq a imp:ExternalEquation. bind(\"ExternalEquation\" as ?EqType) }" +
+//			"   optional{ ?Eq a imp:Equation. bind(\"Equation\" as ?EqType) }" +
+			"   optional { ?Eq a imp:Equation. \n" +
+			"    ?Eq imp:expression ?Scr.\n" + 
+			"    ?Scr imp:script ?InlineEq.\n" + 
+			"    ?Scr imp:language ?lang.\n" + 
+			"      filter ( ?lang = <SCRIPTLANGUAGE> ) }\n" + //http://sadl.org/sadlimplicitmodel#Python-NumPy
 			"   ?Q mm:execution/mm:compGraph ?CG.\n" + 
 			"   filter (?CG in (COMPGRAPH)).\n" + 
 			"  optional{\n" + 
@@ -1268,9 +1299,7 @@ public class JenaBasedDialogInferenceProcessor extends JenaBasedSadlInferencePro
 			}
 		}
 		
-		int a = jointInsightsData.size();
-		int b = insHeaders.length;
-		
+	
 //		Object[][] jid = new Object[insHeaders.length][jointInsightsData.size()];
 		Object[][] jid = new Object[jointInsightsData.size()][insHeaders.length];
 		
@@ -1288,17 +1317,8 @@ public class JenaBasedDialogInferenceProcessor extends JenaBasedSadlInferencePro
 	}
 
 
-//	private Object[] processSingleWhatWhenQuery(Resource resource, TripleElement[] triples, boolean useDbn,
-//			boolean useKC, String queryModelFileName, String queryModelURI, String queryModelPrefix,
-//			String queryInstanceName, String queryOwlFileWithPath) throws SadlInferenceException {
 
-//<<<<<<< HEAD
 	private Object[] processSingleWhatWhenQuery(Resource resource, TripleElement[] triples, String kgsDirectory, int numOfQueries, int queryNum, Map<String, Map<String, List<String>>> insightsMap) throws TranslationException, IOException, URISyntaxException, ConfigurationException, Exception {
-//=======
-//	private Object[] processSingleWhatWhenQuery(Resource resource, TripleElement[] triples, String kgsDirectory, JsonArray sensitivityJsonList) 
-//			throws SadlInferenceException, DialogInferenceException {
-//>>>>>>> 2c8d8f1421eb7017e0ed4d61ecbde8d027c8480e
-
 		Object[] dbnResults = null;
 		Object[] kcResults = null;
 		Object[] results = null;
@@ -1308,6 +1328,7 @@ public class JenaBasedDialogInferenceProcessor extends JenaBasedSadlInferencePro
 		List<TripleElement> docPatterns = new ArrayList<TripleElement>();
 		List<TripleElement> contextPatterns = new ArrayList<TripleElement>();
 		List<Node> inputNodes = new ArrayList<Node>();
+		List<Node> contextNodes = new ArrayList<Node>();
 
 		//getTheJenaModel().write(System.out, "TTL" );
   		//qhmodel.write(System.out,"RDF/XML-ABBREV");
@@ -1346,7 +1367,10 @@ public class JenaBasedDialogInferenceProcessor extends JenaBasedSadlInferencePro
 		
 		getInputPatterns(triples, inputPatterns, inputNodes);
 
-		getOutputDocContextPatterns(triples, inputNodes, outputPatterns, docPatterns, contextPatterns);
+		getContextPatterns(triples, inputNodes, contextPatterns, contextNodes);
+		
+//		getOutputDocContextPatterns(triples, inputNodes, outputPatterns, docPatterns, contextPatterns);
+		getOutputPatterns(triples, inputNodes, contextNodes, outputPatterns);
 		
 		ingestInputValues(queryModelPrefix, inputPatterns, contextPatterns, cgq);
 		
@@ -1360,46 +1384,40 @@ public class JenaBasedDialogInferenceProcessor extends JenaBasedSadlInferencePro
 	
 //		infereDependencyGraph();
 	
-//		try {
 
-			if (useDbn) {
+		if (useDbn) {
 
-				if (outputsList.size() > 0 && docPatterns.size() <= 0) { 
-					dbnResults = processWhatWhenQuery(resource, queryModelFileName, queryModelURI, queryModelPrefix,
-							queryOwlFileWithPath, inputsList, outputsList, contextClassList, cgq, numOfQueries, queryNum, insightsMap);
-
-
-
-				} else if (outputsList.size() > 0 && docPatterns.size() > 0) { //models from dataset
-
-					dbnResults = processModelsFromDataset(resource, triples, queryModelFileName, queryModelURI, queryModelPrefix,
-							queryOwlFileWithPath, inputsList, outputsList, contextClassList, cgq);
-
-				}
-			}
-			
-			if (useKC) {
-				kcResults = processWhatWhenQuery(resource, queryModelFileName, queryModelURI, queryModelPrefix,
+			if (outputsList.size() > 0 && docPatterns.size() <= 0) { 
+				dbnResults = processWhatWhenQuery(resource, queryModelFileName, queryModelURI, queryModelPrefix,
 						queryOwlFileWithPath, inputsList, outputsList, contextClassList, cgq, numOfQueries, queryNum, insightsMap);
-				
+
+
+
+			} else if (outputsList.size() > 0 && docPatterns.size() > 0) { //models from dataset
+
+				dbnResults = processModelsFromDataset(resource, triples, queryModelFileName, queryModelURI, queryModelPrefix,
+						queryOwlFileWithPath, inputsList, outputsList, contextClassList, cgq);
+
 			}
-		
+		}
+
+		if (useKC) {
+			kcResults = processWhatWhenQuery(resource, queryModelFileName, queryModelURI, queryModelPrefix,
+					queryOwlFileWithPath, inputsList, outputsList, contextClassList, cgq, numOfQueries, queryNum, insightsMap);
+
+		}
+
 			
 			// Save metadata owl file
 			// Don't need to save at this point?
 			//saveMetaDataFile(resource,queryModelURI, queryModelFileName);
-	
-		
-//		}
-//		catch (Exception e) {
-//			e.printStackTrace();
-////			results = null;
-//		}
 		
 		results = getCombinedResultSet(dbnResults, kcResults);
 	
 		return results;
 	}
+
+
 
 
 private ResultSet[] processWhatWhenQuery(Resource resource, String queryModelFileName, String queryModelURI,
@@ -1493,6 +1511,8 @@ private ResultSet[] processWhatWhenQuery(Resource resource, String queryModelFil
 		String scriptLanguage = "http://sadl.org/sadlimplicitmodel#Python-NumPy";
 //		String scriptLanguage = "http://sadl.org/sadlimplicitmodel#Python";
 		
+//		contextClassList.
+		
 		String nodesModelsJSONStr = retrieveModelsAndNodes(resource, listOfEqns, cgIns, contextClassList, scriptLanguage, numOfQueries, queryNum);
 		
 		
@@ -1518,7 +1538,10 @@ private ResultSet[] processWhatWhenQuery(Resource resource, String queryModelFil
 			class2lbl 	= getClassLabelMapping(dbnJson);
 
 			// Execute DBN
-
+	
+//			ArrayList<String> methods = new ArrayList<String>();
+//			me  = methods.get(methods.size()-1);
+			
 			dbnResultsJson = executeDBN(dbnJson);
 			
 				//get DBN execution outcome
@@ -2128,7 +2151,7 @@ private String retrieveModelsAndNodes(Resource resource, String listOfEqns, Indi
 	startTime = System.currentTimeMillis();
 //	modelsJSONString = retrieveCGforDBNSpec(listOfEqns, contextClassList, cgIns, RETRIEVE_MODELS_WEXP);
 	modelsJSONString = retrieveCGforDBNSpec(resource, listOfEqns, contextClassList, cgIns, RETRIEVE_MODELS);
-	nodesJSONString = retrieveCGforDBNSpec(resource, listOfEqns, null, cgIns, RETRIEVE_NODES);
+	nodesJSONString = retrieveCGforDBNSpec(resource, listOfEqns, null, cgIns, RETRIEVE_NODES.replaceAll("SCRIPTLANGUAGE", scriptLanguage));
 	expressionsJSONString = retrieveCGforDBNSpec(resource, listOfEqns, contextClassList, cgIns, RETRIEVE_MODEL_EXPRESSIONS.replaceAll("SCRIPTLANGUAGE", scriptLanguage));
 	endTime = System.currentTimeMillis();
 	System.out.println((endTime - startTime)/1000.0 + " secs");
@@ -2258,6 +2281,45 @@ private List<RDFNode> getRDFInputsList(List<TripleElement[]> inputPatterns) {
 	}
 	return inputsList;
 }
+
+/**
+ * 
+ * @param triples
+ * @param inputNodes
+ * @param contextPatterns
+ * @param contextNodes 
+ */
+private void getContextPatterns(TripleElement[] triples, List<Node> inputNodes, List<TripleElement> contextPatterns, List<Node> contextNodes) {
+	for (int i = 0; i < triples.length; i++) {
+		TripleElement tr = triples[i];
+		if (tr.getSubject() instanceof NamedNode) {
+			if (tr.getPredicate().getURI() != null) {
+				if ( ! inputNodes.contains(tr.getSubject()) && ! inputNodes.contains(tr.getObject()) ) {
+					if (tr.getPredicate().toString().equals("rdf:type")){
+						contextPatterns.add(tr); //rdf(v16, rdf:type, hypersonicsV2:CF6)
+						contextNodes.add(tr.getSubject());
+					}
+				}
+			}
+		}
+	}
+}
+
+private void getOutputPatterns(TripleElement[] triples, List<Node> inputNodes, List<Node> contextNodes, List<TripleElement> outputPatterns) {
+	for (int i = 0; i < triples.length; i++) {
+		TripleElement tr = triples[i];
+		if (tr.getSubject() instanceof NamedNode) {
+			if (tr.getPredicate().getURI() != null) {
+				if ( ! inputNodes.contains(tr.getSubject()) && ! inputNodes.contains(tr.getObject()) ) {
+					if ( !tr.getPredicate().toString().equals("rdf:type") && !contextNodes.contains( tr.getObject() ) ){
+						outputPatterns.add(tr); //[rdf(v16, hypersonicsV2:machSpeed, v15)]
+					}
+				}
+			}
+		}
+	}
+}
+
 
 private void getOutputDocContextPatterns(TripleElement[] triples, List<Node> inputNodes,
 		List<TripleElement> outputPatterns, List<TripleElement> docPatterns, List<TripleElement> contextPatterns) {
@@ -2996,8 +3058,8 @@ private void runInference(Resource resource, String query, String testQuery) thr
 
 	private String retrieveCGforDBNSpec(Resource resource, String listOfEqns, List<String> contextClassList, Individual cgIns, String queryTemplate) throws SadlInferenceException, ConfigurationException, ReasonerNotFoundException, InvalidNameException, QueryParseException, QueryCancelledException {
 		String queryStr;
-		com.hp.hpl.jena.query.ResultSetRewindable rset;
-		ResultSet resultSet;
+//		com.hp.hpl.jena.query.ResultSetRewindable rset;
+//		ResultSet resultSet;
 		//Object[] abridgedRes = new Object[rset.size()];
 		String resStr;
 		String contextClasses = "";
@@ -3005,8 +3067,9 @@ private void runInference(Resource resource, String query, String testQuery) thr
 		queryStr = queryStr.replaceAll("COMPGRAPH", "<" + cgIns.getURI() + ">");
 		if (contextClassList != null) {
 			for(int i=0; i<contextClassList.size(); i++) {
-				contextClasses += "<" + contextClassList.get(i) + ">";
+				contextClasses += "<" + contextClassList.get(i) + ">, ";
 			}
+			contextClasses=contextClasses.substring(0, contextClasses.length()-2);
 		}
 		queryStr = queryStr.replaceAll("CONTEXCLASSES", contextClasses);
 //		rset = queryKnowledgeGraph(queryStr, getTheJenaModel().union(queryModel));
@@ -3907,16 +3970,23 @@ private Map<String, String> getClassLabelMappingFromModelsJson(String json) {
         for(int i=0; i < jbindings.size(); i++) {
         	JsonObject jo = (JsonObject)jbindings.get(i);
         	if (jo.has("Input") && jo.has("InputLabel")) {
+        		String c = jo.getAsJsonObject("Input").get("value").getAsString();
+        		String l = jo.getAsJsonObject("InputLabel").get("value").getAsString();
         		class2lbl.put(jo.getAsJsonObject("Input").get("value").getAsString(), jo.getAsJsonObject("InputLabel").get("value").getAsString() );
         	}
         	if (jo.has("ImpInput") && jo.has("ImpInputAugType")) {
+        		String c = jo.getAsJsonObject("ImpInputAugType").get("value").getAsString();
+        		String l = jo.getAsJsonObject("ImpInput").get("value").getAsString();
         		class2lbl.put(jo.getAsJsonObject("ImpInputAugType").get("value").getAsString(), jo.getAsJsonObject("ImpInput").get("value").getAsString() );
         	}
         	if (jo.has("Output") && jo.has("OutputLabel")) {
+        		String c = jo.getAsJsonObject("Output").get("value").getAsString();
+        		String l = jo.getAsJsonObject("OutputLabel").get("value").getAsString();
         		class2lbl.put(jo.getAsJsonObject("Output").get("value").getAsString(), jo.getAsJsonObject("OutputLabel").get("value").getAsString() );
         	}
         	if (jo.has("ImpOutput") && jo.has("ImpOutputAugType")) {
-//        		String c = jo.getAsJsonObject("ImpOutputAugType").get("value").getAsString();
+        		String c = jo.getAsJsonObject("ImpOutputAugType").get("value").getAsString();
+        		String l = jo.getAsJsonObject("ImpOutput").get("value").getAsString();
         		class2lbl.put(jo.getAsJsonObject("ImpOutputAugType").get("value").getAsString(), jo.getAsJsonObject("ImpOutput").get("value").getAsString() );
         	}
         	
