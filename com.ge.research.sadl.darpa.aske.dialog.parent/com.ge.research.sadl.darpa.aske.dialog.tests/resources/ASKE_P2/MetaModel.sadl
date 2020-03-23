@@ -54,13 +54,14 @@ SubGraph is a class
  	described by output with values of type UnittedQuantity
  	.
 
-QueryType is a class must be one of {prognostic,calibration,explanation,sensitivity}.
+QueryType is a class must be one of {prognostic,calibration,explanation}.
  
 CGQuery is a class
 	described by queryType with a single value of type QueryType
- 	described by input with values of type UnittedQuantity
+ 	described by cgInput with values of type UnittedQuantity
  	described by machineGenerated with a single value of type boolean
  	described by execution with values of type CGExecution //A query can result in multiple models and executions
+ 	described by output with values of type UnittedQuantity
  	.
  	
 CGExecution is a class
@@ -74,11 +75,21 @@ CGExecution is a class
 Sensitivity is a class
     described by output with a single value of type UnittedQuantity
     described by inputSensitivity with values of type InputSensitivity
+    described by trendEffect with values of type OutputTrend
     .
 Sensitivity has impliedProperty inputSensitivity.    
+
+OutputTrend is a class
+	described by cgInput with a single value of type UnittedQuantity
+	described by trend with a single value of type TrendValue
+	described by locationWRTquery with a single value of type TrendLocation
+	.
+	
+TrendValue is a class must be one of {increasingDecreases, increasingIncreases, decreasingDecreases, decreasingIncreases, independent, local_minimum, local_maximum}.
+TrendLocation is a class must be one of {lower_values,higher_values}.    
     
 InputSensitivity is a class
-	described by input with a single value of type UnittedQuantity
+	described by cgInput with a single value of type UnittedQuantity
 	described by sensitivityValue with a single value of type decimal
 .
 
