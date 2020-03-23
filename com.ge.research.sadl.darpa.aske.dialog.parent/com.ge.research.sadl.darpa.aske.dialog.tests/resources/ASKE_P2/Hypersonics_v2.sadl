@@ -65,6 +65,12 @@ Air is a type of Gas.
 //RamJet is a type of Engine
 //	described by afterburner with a single value of type boolean.
 
+Aircraft is a type of PhysicalThing
+	described by numEngines with values of type NumOfEngines
+	described by totalThrust with values of type TotalThrust
+	described by engine with values of type AircraftEngine
+	.
+
 AircraftEngine is a type of PhysicalThing
 	described by machSpeed with values of type MachSpeed
 	described by sfc (alias "specific fuel consumption") with values of type SpecificFuelConsumption
@@ -77,6 +83,7 @@ AircraftEngine is a type of PhysicalThing
 
 FireFlag is a type of UnittedQuantity.
 
+NumOfEngines is a type of UnittedQuantity.
 
 BurnerTemperature is a type of Temperature.
 burnerTemperature describes AircraftEngine with values of type BurnerTemperature.
@@ -107,6 +114,9 @@ Flow is a type of UnittedQuantity.
 CP is a type of UnittedQuantity.
 Thrust is a type of UnittedQuantity.
 
+TotalThrust is a type of UnittedQuantity.
+
+
 SpecificNetThrust is a type of UnittedQuantity.
 SpecificFuelConsumption is a type of UnittedQuantity.
 
@@ -116,6 +126,7 @@ SpeedOfSoundEquation is a type of ^Equation.
 MachSpeedEquation is a type of ^Equation.
 TotalTemperatureEquation is a type of ^Equation.
 TotalPressureEquation is a type of ^Equation.
+TotalThrustEquation is a type of ^Equation.
 
 GammaConstEquation is a type of ^Equation.
 RgasConstEquation is a type of ^Equation.
@@ -142,6 +153,11 @@ rgas describes Air with values of type RgasConstant.
 cp describes Air with values of type CP.
 
 
+calc_totalThrust2 is a TotalThrustEquation.
+Equation calc_totalThrust2 (double ne (numEngines of an Aircraft), double fnlb (thrust of engine of the Aircraft))
+  returns double (totalThrust of the Aircraft): ne*fnlb.
+
+calc_totalThrust2 has expression (a Script with script "totalThrust=ne*fnlb" language Python-NumPy).
 
 ////Troposphere Constants
 //Equation tropo_C1_Eq() returns double (tropo_c1 of some Air {degF}) : return 59.0 .
@@ -167,7 +183,7 @@ st_temp_eq_tropo is a StaticTemperatureEquation.
 Equation st_temp_eq_tropo(double alt (altitude of some Air and alt < 36152 {ft}) )
 	returns double (staticTemperature of the Air {degF}) : 
 	return 59 - 0.00356 * alt .
-st_temp_eq_tropo has expression (a Script with script "59 - 0.00356 * alt" language Python).
+st_temp_eq_tropo has expression (a Script with script "st0 = 59 - 0.00356 * alt" language Python-NumPy).
 
 //st_temp_eq_lowerStrato is a StaticTemperatureEquation.
 //Equation st_temp_eq_lowerStrato(double alt (altitude of some Air and alt < 82345 and alt >= 36152 {ft}))
