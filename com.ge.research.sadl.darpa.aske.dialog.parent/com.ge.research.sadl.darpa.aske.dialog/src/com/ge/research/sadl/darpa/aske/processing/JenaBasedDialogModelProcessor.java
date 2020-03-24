@@ -1487,7 +1487,7 @@ public class JenaBasedDialogModelProcessor extends JenaBasedSadlModelProcessor {
 			}
 		}
 		else if (expr instanceof BinaryOperation && isEqualOperator(((BinaryOperation)expr).getOp())) {
-			// this is a new equation
+			// this is of the form: a LHS, an equal operator, and a RHS
 			Expression lexpr = ((BinaryOperation)expr).getLeft();
 			Expression rexpr = ((BinaryOperation)expr).getRight();
 			try {
@@ -1497,9 +1497,9 @@ public class JenaBasedDialogModelProcessor extends JenaBasedSadlModelProcessor {
 				Object lobj = processExpression(lexpr);
 				String lexprtext = NodeModelUtils.findActualNodeFor(lexpr).getText();
 				Object robj = processExpression(rexpr);
-				if (lobj instanceof VariableNode) {
-					if (robj instanceof NamedNode) {
-						if (((NamedNode)robj).getNodeType().equals(NodeType.ClassNode)) {
+				if (lobj instanceof VariableNode) {			// LHS is a VariableNode
+					if (robj instanceof NamedNode) {		// RHS is a NamedNode
+						if (((NamedNode)robj).getNodeType().equals(NodeType.ClassNode)) {		// RHS NamedNode is a class name
 							// this is the addition of a named argument variable type
 							//  find prior Equation statement, find argument variable, add the type to the argument
 							List<ConversationElement> celements = getAnswerCurationManager().getConversationElements();
@@ -1528,27 +1528,23 @@ public class JenaBasedDialogModelProcessor extends JenaBasedSadlModelProcessor {
 								addError("Addition of information missing preceding context", expr);
 							}
 						}
-						else if (robj instanceof VariableNode) {
+						else if (robj instanceof VariableNode) {		// RHS NamedNode is a variable
 							// need to ask what this is
 							WhatIsContent wic = new WhatIsContent(element, Agent.USER, robj, null);
 							return wic;
 						}
+						else {
+							addError("Unexpected right-hand side of Add expression", rexpr);
+						}
 					}
 									
 					String eqName = "calc_" + ((VariableNode)lobj).getName();
-					if (robj instanceof BuiltinElement && isNumericOperator(((BuiltinElement)robj).getFuncName())) {
+					if (robj instanceof BuiltinElement) { // && isNumericOperator(((BuiltinElement)robj).getFuncName())) {
 						if (allArgumentsVariables((BuiltinElement)robj)) {
 							StringBuilder sb = new StringBuilder("Equation ");
 							sb.append(eqName);
 							sb.append(" (");
-							int argCnt = 0;
-							for (Node arg : ((BuiltinElement)robj).getArguments()) {
-								if (argCnt++ > 0) {
-									sb.append(", ");
-								}
-								sb.append("double ");
-								sb.append(arg.getName());
-							}
+							sb.append(generateArguments((BuiltinElement)robj));
 							sb.append(") returns double: ");
 							String sadlEqText;
 							try {
@@ -1564,9 +1560,12 @@ public class JenaBasedDialogModelProcessor extends JenaBasedSadlModelProcessor {
 							AddEquationContent nec = new AddEquationContent(element, Agent.USER, uptxt, eqName, sb.toString());
 							return nec;
 						}
+						else {
+							addError("Expected all arguments to be variables", rexpr);
+						}
 					}
 				}
-				else if (lobj instanceof NamedNode && isProperty(((NamedNode)lobj).getNodeType())) {
+				else if (lobj instanceof NamedNode && isProperty(((NamedNode)lobj).getNodeType())) {		// LHS is a property name
 					lobj = new TripleElement(null, (Node) lobj, null);
 					if (lexpr instanceof Name && ((Name)lexpr).getName().eContainer() instanceof SadlProperty) {
 						EList<SadlPropertyRestriction> rstrs = ((SadlProperty)((Name)lexpr).getName().eContainer()).getRestrictions();
@@ -1580,34 +1579,16 @@ public class JenaBasedDialogModelProcessor extends JenaBasedSadlModelProcessor {
 										((TripleElement)lobj).setSubject(svar);
 										break;
 									}
-								} catch (URISyntaxException e) {
+								} catch (Exception e) {
 									// TODO Auto-generated catch block
 									e.printStackTrace();
-								} catch (IOException e) {
-									// TODO Auto-generated catch block
-									e.printStackTrace();
-								} catch (ConfigurationException e) {
-									// TODO Auto-generated catch block
-									e.printStackTrace();
-								} catch (DontTypeCheckException e) {
-									// TODO Auto-generated catch block
-									e.printStackTrace();
-								} catch (CircularDefinitionException e) {
-									// TODO Auto-generated catch block
-									e.printStackTrace();
-								} catch (CircularDependencyException e) {
-									// TODO Auto-generated catch block
-									e.printStackTrace();
-								} catch (PropertyWithoutRangeException e) {
-									// TODO Auto-generated catch block
-									e.printStackTrace();
-								} catch (PrefixNotFoundException e) {
-									// TODO Auto-generated catch block
-									e.printStackTrace();
-								}
+								} 
 							}
 						}
 					}
+				}
+				else {
+					addError("LHS is of a type not currently handled", lexpr);
 				}
 				if (lobj instanceof VariableNode) {
 					addWarning(((VariableNode)lobj).getName() + " is not defined.", lexpr);
@@ -1641,21 +1622,7 @@ public class JenaBasedDialogModelProcessor extends JenaBasedSadlModelProcessor {
 					StringBuilder sb = new StringBuilder("Equation ");
 					sb.append(rn);
 					sb.append(" (");
-					int argCnt = 0;
-					for (Node arg : ((BuiltinElement)robj).getArguments()) {
-						if (argCnt > 0) {
-							sb.append(", ");
-						}
-						sb.append("double ");
-						sb.append(arg.getName());
-						String augt = getAugmentedTypeOfArg(arg, modifiedRule, argCnt);
-						if (augt != null) {
-							sb.append(" (");
-							sb.append(augt);
-							sb.append(")");
-						}
-						argCnt++;
-					}
+					sb.append(generateArguments((BuiltinElement)robj, pseudoRule));
 					sb.append(") returns double");
 					String augt = getAugmentedTypeOfReturn(modifiedRule);
 					if (augt != null) {
@@ -1692,6 +1659,67 @@ public class JenaBasedDialogModelProcessor extends JenaBasedSadlModelProcessor {
 			}
 		}
 		return null;
+	}
+
+	private String generateArguments(BuiltinElement be) throws TranslationException {
+		List<NamedNode>args = getAllArguments(be, new ArrayList<NamedNode>());
+		StringBuilder sb = new StringBuilder();
+		int argCnt = 0;
+		for (Node arg : args) {
+			if (argCnt++ > 0) {
+				sb.append(", ");
+			}
+			sb.append("double ");
+			sb.append(arg.getName());
+		}
+		return sb.toString();
+	}
+	
+	private List<NamedNode> getAllArguments(BuiltinElement be, List<NamedNode> nnArgs) throws TranslationException {
+		List<Node> args = be.getArguments();
+		for (Node arg : args) {
+			if (arg instanceof NamedNode) {
+				if (!nnArgs.contains((NamedNode)arg)) {
+					nnArgs.add((NamedNode) arg);
+				}
+			}
+			else if (arg instanceof ProxyNode) {
+				if (((ProxyNode)arg).getProxyFor() instanceof BuiltinElement) {
+					List<NamedNode> moreArgs = getAllArguments((BuiltinElement) ((ProxyNode)arg).getProxyFor(), nnArgs);
+					if (moreArgs != null) {
+						for (NamedNode nn : moreArgs) {
+							if (!nnArgs.contains(nn)) {
+								nnArgs.add(nn);
+							}
+						}
+					}
+				}
+				else {
+					throw new TranslationException("Added equation argument type '" + arg.getClass().getCanonicalName() + "' not yet supported.");
+				}
+			}
+		}
+		return nnArgs;
+	}
+
+	private String generateArguments(BuiltinElement robj, Rule modifiedRule) {
+		StringBuilder sb = new StringBuilder();
+		int argCnt = 0;
+		for (Node arg : robj.getArguments()) {
+			if (argCnt > 0) {
+				sb.append(", ");
+			}
+			sb.append("double ");
+			sb.append(arg.getName());
+			String augt = getAugmentedTypeOfArg(arg, modifiedRule, argCnt);
+			if (augt != null) {
+				sb.append(" (");
+				sb.append(augt);
+				sb.append(")");
+			}
+			argCnt++;
+		}
+		return sb.toString();
 	}
 	
 	private String getAugmentedTypeOfArg(Node arg, Rule rule, int argCnt) {
@@ -1772,7 +1800,16 @@ public class JenaBasedDialogModelProcessor extends JenaBasedSadlModelProcessor {
 
 	private boolean allArgumentsVariables(BuiltinElement robj) {
 		for (Node arg : robj.getArguments()) {
-			if (!(arg instanceof VariableNode)) {
+			if (arg instanceof ProxyNode && ((ProxyNode)arg).getProxyFor() instanceof BuiltinElement) {
+				if (!allArgumentsVariables((BuiltinElement)((ProxyNode)arg).getProxyFor())) {
+					return false;
+				}
+			}
+			else if (arg instanceof ProxyNode && ((ProxyNode)arg).getProxyFor() instanceof TripleElement) {
+				Node objNode = ((TripleElement)((ProxyNode)arg).getProxyFor()).getObject();
+				// ??
+			}
+			else if (!(arg instanceof VariableNode) && !(arg instanceof Literal)) {
 				return false;
 			}
 		}

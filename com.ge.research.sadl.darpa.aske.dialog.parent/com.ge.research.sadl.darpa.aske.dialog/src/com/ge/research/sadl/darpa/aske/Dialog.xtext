@@ -59,7 +59,7 @@ SadlModelElement returns sadl::SadlModelElement :
 	HowManyValuesStatement EOS	|
 	SaveStatement EOS			|
 	EvalStatement EOS			|
-	YesNoAnswerStatement EOS	|
+	YesNoAnswerStatement		|
 	MyNameIsStatement EOS		|
 	TargetModelName EOS			|
 	ExtractStatement EOS		|
@@ -155,7 +155,7 @@ MyNameIsStatement:
 ;
 
 YesNoAnswerStatement:
-	{YesNoAnswerStatement} answer = ('Y'|'y'|'Yes'|'yes'|'N'|'n'|'No'|'no')
+	{YesNoAnswerStatement} answer = ('Y.'|'y.'|'Yes.'|'yes.'|'N.'|'n.'|'No.'|'no.')
 ;
 
 SaveStatement:
