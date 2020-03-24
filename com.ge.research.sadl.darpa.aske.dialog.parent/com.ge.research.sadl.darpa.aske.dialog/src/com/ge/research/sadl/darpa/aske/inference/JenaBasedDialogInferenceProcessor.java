@@ -2297,10 +2297,12 @@ private List<RDFNode> getRDFInputsList(List<TripleElement[]> inputPatterns) {
 			itr = inputPatterns.get(i)[3]; //e.g. itr = rdf(v1, rdf:type, hypersonicsV2:Speed)
 			//sp = itr.getPredicate().getURI();
 			//ssp = getTheJenaModel().getProperty(sp);
-			so = itr.getObject().getURI();
-			sso = getTheJenaModel().getResource(so);
-			// Add property to list of vars
-			inputsList.add(sso);
+			if (itr != null) {
+				so = itr.getObject().getURI();
+				sso = getTheJenaModel().getResource(so);
+				// Add property to list of vars
+				inputsList.add(sso);
+			}
 		}
 	}
 	return inputsList;

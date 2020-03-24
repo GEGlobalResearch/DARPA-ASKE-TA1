@@ -84,7 +84,7 @@ InsightStatement:
 
 NewExpressionStatement:
 	('Add'|'add') 
-	(newExpr=EqualityExpression<false,false>
+	(newExpr=Expression
 	)
 ;
 
