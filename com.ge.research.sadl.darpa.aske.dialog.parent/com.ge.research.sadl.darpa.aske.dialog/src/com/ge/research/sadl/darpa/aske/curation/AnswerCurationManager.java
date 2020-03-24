@@ -450,7 +450,7 @@ public class AnswerCurationManager {
 		else {
 			notifyUser(getOwlModelsFolder(), response, true);
 		}
-		int[] results = getTextProcessor().processText(inputIdentifier, content, localityURI, extractedTxtModelName, prefix);
+		int[] results = getTextProcessor().processText(inputIdentifier, content, localityURI, extractedTxtModelName, prefix, true);
 		if (results == null) {
 			throw new AnswerExtractionException("Text processing service returned no information");
 		}
@@ -2977,8 +2977,32 @@ public class AnswerCurationManager {
 			// last action: task is complete so remove user notification (cancel effect of first action)
 		}
 		else if (sc instanceof AddEquationContent) {
+			String lhs = ((AddEquationContent)sc).getLhs();
 			String eqStr = ((AddEquationContent)sc).getSadlEqStr();
+			String eqName = ((AddEquationContent)sc).getEquationName();
 			answerUser(getOwlModelsFolder(), eqStr, ((StatementContent)sc).isQuoteResult(), sc.getHostEObject());
+			if (((AddEquationContent)sc).getEquationBody() != null) {
+				// translate to Python using texttotriples service
+				String toTranslate = lhs + " = " + ((AddEquationContent)sc).getEquationBody();
+				String inputIdentifier = modelName + "_temp";
+				String localityURI = inputIdentifier;
+				String extractedTxtModelName = inputIdentifier;
+				String prefix = "temp";
+				getTextProcessor().clearGraph(localityURI);
+				int[] results = getTextProcessor().processText(inputIdentifier, toTranslate, localityURI, extractedTxtModelName, prefix, false);
+				if (results == null) {
+					throw new AnswerExtractionException("Text processing service returned no information");
+				}
+				if (results[1] > 0) {
+					// get the equation.
+					List<String> scriptStatements = getScriptStatementsFromTextService(localityURI, eqName);
+					if (scriptStatements != null) {
+						for (String scptstmt : scriptStatements) {
+							answerUser(getOwlModelsFolder(), scptstmt, false, sc.getHostEObject());
+						}
+					}
+				}
+			}
 			retVal = eqStr;
 		}
 		else if (sc instanceof AddAugmentedTypeInfoContent) {
@@ -2991,6 +3015,53 @@ public class AnswerCurationManager {
 		return retVal;
 	}
 	
+	private List<String> getScriptStatementsFromTextService(String localityURI, String eqName) throws IOException {
+		String[] graphResults = getTextProcessor().retrieveGraph(localityURI);
+		if (graphResults != null && graphResults.length == 3) {
+			OntModel m = getTextProcessor().getTextModelConfigMgr().getOntModel(localityURI, graphResults[2], Scope.INCLUDEIMPORTS, graphResults[1]);
+			if (m != null) {
+				List<String> results = new ArrayList<String>();
+				StmtIterator eqnItr = m.listStatements(null, RDF.type, m.getOntClass(SadlConstants.SADL_IMPLICIT_MODEL_EXTERNAL_EQUATION_CLASS_URI));
+				StringBuilder sb = new StringBuilder();
+				sb.append(eqName);
+				int cntr = 0;
+				while (eqnItr.hasNext()) {
+					Resource eqInst = eqnItr.nextStatement().getSubject();
+					StmtIterator exprItr = m.listStatements(eqInst, m.getProperty(SadlConstants.SADL_IMPLICIT_MODEL_EXPRESSTION_PROPERTY_URI), (RDFNode)null);
+					while (exprItr.hasNext()) {
+						RDFNode exprInst = exprItr.nextStatement().getObject();
+						if (exprInst.isResource()) {
+							Statement lstmt = m.getProperty(exprInst.asResource(), m.getProperty(SadlConstants.SADL_IMPLICIT_MODEL_LANGUAGE_PROPERTY_URI));
+							if (lstmt != null) {
+								String language = lstmt.getObject().asResource().getLocalName();
+								Statement scrptstmt = m.getProperty(exprInst.asResource(), m.getProperty(SadlConstants.SADL_IMPLICIT_MODEL_SCRIPT_PROPERTY_URI));
+								if (scrptstmt != null) {
+									String scrpt = scrptstmt.getObject().asLiteral().getString();
+									if (scrpt != null) {
+										if (cntr++ > 0) {
+											sb.append(", ");
+										}
+										sb.append(System.lineSeparator());
+										sb.append(" has expression (a Script with language ");
+										sb.append(language);
+										sb.append(", with script \"");
+										sb.append(scrpt);
+										sb.append("\"");
+										sb.append(")");
+									}
+								}
+							}
+						}
+					}
+				}
+				sb.append(".");
+				results.add(sb.toString());
+				return results;
+			}
+		}
+		return null;
+	}
+
 	private int getDialogStatementIndex(List<ConversationElement> dialogStmts, ExpectsAnswerContent sc) {
 		int idx = 0;
 		for (ConversationElement ce : dialogStmts) {

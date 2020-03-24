@@ -1537,12 +1537,15 @@ public class JenaBasedDialogModelProcessor extends JenaBasedSadlModelProcessor {
 							addError("Unexpected right-hand side of Add expression", rexpr);
 						}
 					}
-									
-					String eqName = "calc_" + ((VariableNode)lobj).getName();
+					String lhs = ((VariableNode)lobj).getName();
+					String eqName = "calc_" + lhs;
 					if (robj instanceof BuiltinElement) { // && isNumericOperator(((BuiltinElement)robj).getFuncName())) {
 						if (allArgumentsVariables((BuiltinElement)robj)) {
 							StringBuilder sb = new StringBuilder("Equation ");
 							sb.append(eqName);
+							sb.append(" (alias \"");
+							sb.append(lhs);
+							sb.append("\")");
 							sb.append(" (");
 							sb.append(generateArguments((BuiltinElement)robj));
 							sb.append(") returns double: ");
@@ -1558,6 +1561,8 @@ public class JenaBasedDialogModelProcessor extends JenaBasedSadlModelProcessor {
 							sb.append(sadlEqText);
 							sb.append(".");
 							AddEquationContent nec = new AddEquationContent(element, Agent.USER, uptxt, eqName, sb.toString());
+							nec.setLhs(lhs);
+							nec.setEquationBody(sadlEqText);
 							return nec;
 						}
 						else {
@@ -1608,7 +1613,8 @@ public class JenaBasedDialogModelProcessor extends JenaBasedSadlModelProcessor {
 					addError("RHS is not a Graph Pattern", lexpr);
 				}
 				else {
-					String rn = "calc_" + getNewEquationName(lobj);
+					String lhs = getNewEquationName(lobj);
+					String rn = "calc_" + lhs;
 					Rule pseudoRule = new Rule(rn);
 					pseudoRule.addIf((GraphPatternElement) robj);
 					pseudoRule.addThen((GraphPatternElement) lobj);
@@ -1621,6 +1627,9 @@ public class JenaBasedDialogModelProcessor extends JenaBasedSadlModelProcessor {
 					BuiltinElement trgtExpr = getTheTargetExpression(ifs, robj);
 					StringBuilder sb = new StringBuilder("Equation ");
 					sb.append(rn);
+					sb.append(" (alias \"");
+					sb.append(lhs);
+					sb.append("\")");
 					sb.append(" (");
 					sb.append(generateArguments((BuiltinElement)robj, pseudoRule));
 					sb.append(") returns double");
@@ -1642,6 +1651,7 @@ public class JenaBasedDialogModelProcessor extends JenaBasedSadlModelProcessor {
 					sb.append(sadlEqText);
 					sb.append(".");
 					AddEquationContent nec = new AddEquationContent(element, Agent.USER, uptxt, rn, sb.toString());
+					nec.setEquationBody(sadlEqText);
 					return nec;
 				}
 			} catch (InvalidNameException e) {

@@ -176,7 +176,7 @@ public class TextProcessor {
 	 * @throws ConfigurationException
 	 * @throws IOException
 	 */
-	public int[] processText(String inputIdentifier, String text, String localityURI, String modelName, String modelPrefix) throws ConfigurationException, IOException {
+	public int[] processText(String inputIdentifier, String text, String localityURI, String modelName, String modelPrefix, boolean notifyUser) throws ConfigurationException, IOException {
 		initializeTextModel(modelName, modelPrefix);
 		try {
 			String source = null;
@@ -189,8 +189,10 @@ public class TextProcessor {
 			else {
 				source = inputIdentifier;
 			}
-			String msg = "Extracting text from '" + source + "' into locality '" + localityURI + "'.";
-			getCurationManager().notifyUser(getTextModelConfigMgr().getModelFolder(), msg, true);
+			if (notifyUser) {
+				String msg = "Extracting text from '" + source + "' into locality '" + localityURI + "'.";
+				getCurationManager().notifyUser(getTextModelConfigMgr().getModelFolder(), msg, true);
+			}
 		} catch (ConfigurationException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();

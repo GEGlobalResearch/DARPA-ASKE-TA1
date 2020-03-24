@@ -1110,7 +1110,7 @@ public class JavaModelExtractorJP implements IModelFromCodeExtractor {
 				String inputIdentifier = "CodeComments";
 				int[] tpresult = null;
 				try {
-					tpresult = getCurationMgr().getTextProcessor().processText(inputIdentifier, cmt.getContent(), locality, null, getCodeModelPrefix());
+					tpresult = getCurationMgr().getTextProcessor().processText(inputIdentifier, cmt.getContent(), locality, null, getCodeModelPrefix(), true);
 				} catch (ConfigurationException e) {
 					// TODO Auto-generated catch block
 					e.printStackTrace();
