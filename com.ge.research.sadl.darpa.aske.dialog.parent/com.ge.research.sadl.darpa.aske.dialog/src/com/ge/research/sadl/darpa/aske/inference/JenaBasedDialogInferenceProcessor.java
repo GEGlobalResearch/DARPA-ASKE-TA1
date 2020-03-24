@@ -784,7 +784,7 @@ public class JenaBasedDialogInferenceProcessor extends JenaBasedSadlInferencePro
 			"    bind('filled' as ?X_style)\n" + 
 			"    bind('yellow' as ?X_color)\n" + 
 			"}}union\n" + 
-			" {select ?CCG (?Output as ?X) ?Y (concat(concat(strbefore(strafter(?Value,'['),'.'),'.'),substr(strafter(?Value,'.'),1,3)) as ?Z) ?X_style ?X_color ('oval' as ?Z_shape) ('output value' as ?Z_tooltip)\n" + 
+			" {select ?CCG (?Output as ?X) ?Y (if(strbefore(strafter(?Value,'['),'.')='',strbefore(strafter(?Value,'['),']'), concat(concat(strbefore(strafter(?Value,'['),'.'),'.'),substr(strafter(?Value,'.'),1,3))) as ?Z) ?X_style ?X_color ('oval' as ?Z_shape) ('output value' as ?Z_tooltip)\n" + 
 			"  where {\n" + 
 			"    ?CCG mm:subgraph ?SG.\n" + 
 			"    filter (?CCG in (COMPGRAPH)).\n" + 
@@ -2825,8 +2825,14 @@ private void runInference(Resource resource, String query, String testQuery) thr
 				// Add property to list of inputs
 //				inputsList.add(ssp);
 				
+				if(ssc == null) {
+					continue;
+				}
+
+				
 				ingestKGTriple(sss, ssp, sso); //(:v0 :altitude :v1)
 				ingestKGTriple(sss, RDF.type, ssc); //v0 rdf:type :CF6)
+				
 				
 				// create triple: cgq, mm:input, inputVar
 				OntProperty inputprop = getModelProperty(getTheJenaModel(), METAMODEL_INPUT_PROP); // getTheJenaModel().getOntProperty(METAMODEL_INPUT_PROP);
