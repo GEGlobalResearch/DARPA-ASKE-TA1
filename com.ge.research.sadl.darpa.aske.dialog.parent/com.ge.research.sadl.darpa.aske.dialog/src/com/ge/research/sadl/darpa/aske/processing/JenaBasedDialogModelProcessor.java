@@ -894,7 +894,8 @@ public class JenaBasedDialogModelProcessor extends JenaBasedSadlModelProcessor {
 					// predicate cannot be a variable--means the question has an undefined concept
 					VariableNode pvar = (VariableNode) ((TripleElement)origThenObj).getPredicate();
 					addWarning(pvar.getName() + " is not defined.", thenExpr);
-					WhatIsContent wic = new WhatIsContent(thenExpr, Agent.CM, pvar, null);
+					WhatIsContent wic = new WhatIsContent(thenExpr, Agent.CM, pvar, null);	
+					// this is Agent.CM because it houses a question/statement for the user from the CM
 					String msg;
 					try {
 						msg = "Concept " + getAnswerCurationManager().checkForKeyword(pvar.getName()) + " is not defined; please define or do extraction";
