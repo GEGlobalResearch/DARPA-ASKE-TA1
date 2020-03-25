@@ -464,10 +464,10 @@ public class JenaBasedDialogInferenceProcessor extends JenaBasedSadlInferencePro
 			"prefix list:<http://sadl.org/sadllistmodel#>\n" +
 			"\n" + 
 			"select distinct ?Model ?Input (str(?InLabel) as ?InputLabel) ?UniqueInputLabel \n" + 
-			"?Output \n" + 
+			"?Output ?OutputLabel\n" + 
 //			"(str(?expr) as ?ModelForm) (str(?Fun) as ?Function) \n" + 
 			"(str(?ImpIn) as ?ImpInput) ?ImpInputAugType (str(?InpD) as ?InpDeclaration)\n" + 
-			"(str(?ImpOut) as ?ImpOutput) ?ImpOutputAugType (str(?OutpD) as?OutpDeclaration)\n" + 
+			"(str(?ImpOut) as ?ImpOutput) (strafter(str(?DT),'#') as ?DataType) ?ImpOutputAugType (str(?OutpD) as?OutpDeclaration)\n" + 
 			"?Initializer ?Dependency\n" + 
 			"where { \n" + 
 			"\n" + 
@@ -506,6 +506,7 @@ public class JenaBasedDialogInferenceProcessor extends JenaBasedSadlInferencePro
 			"  \n" + 
 			"  optional{ #Explicit outputs. ?Output is a UQ or a label\n" + 
 			"   ?Model imp:genericOutput ?Output.\n" + 
+			"   optional{?Model rdfs:label ?OutputLabel}\n" + 
 			"   filter not exists {?Model imp:implicitOutput/imp:localDescriptorName ?Output}\n" + 
 			"   filter not exists {?Model imp:implicitOutput/imp:augmentedType/imp:semType ?Output.}}\n" + 
 			"\n" + 
@@ -540,6 +541,7 @@ public class JenaBasedDialogInferenceProcessor extends JenaBasedSadlInferencePro
 			"  optional{\n" + 
 			"   ?Model imp:implicitOutput ?IO.\n" + 
 			"   ?IO imp:localDescriptorName ?ImpOut.\n" + 
+			"   optional{?IO imp:dataType ?DT.}\n" + 
 			"   optional{?IO imp:augmentedType ?OT. ?OT imp:semType ?ImpOutputAugType.}\n" + 
 			"   optional{?IO imp:declaration ?OD. ?OD imp:language imp:Python. ?OD imp:script ?OutpD}}\n" + 
 			"  \n" + 
@@ -642,7 +644,7 @@ public class JenaBasedDialogInferenceProcessor extends JenaBasedSadlInferencePro
 			"    ?Eq imp:implicitOutput ?IO. \n" + 
 			"    ?IO imp:augmentedType/imp:semType ?Node.\n" + 
 			"    optional {?IO imp:specifiedUnits/list:first ?NUnits.}\n" +
-			"    ?IO imp:dataType ?DT." + 
+			"    ?IO imp:dataType ?DT.\n" + 
 			"   }\n" + 
 			"\n" + 
 			"  filter not exists {\n" + 
@@ -657,13 +659,12 @@ public class JenaBasedDialogInferenceProcessor extends JenaBasedSadlInferencePro
 			" filter (?Eq in (EQNSLIST )) . #EQNSLIST\n" + 
 			" \n" + 
 			"}}\n" +
-//			"   optional{ ?Eq a imp:ExternalEquation. bind(\"ExternalEquation\" as ?EqType) }" +
-//			"   optional{ ?Eq a imp:Equation. bind(\"Equation\" as ?EqType) }" +
-			"   optional { ?Eq a imp:Equation. \n" +
-			"    ?Eq imp:expression ?Scr.\n" + 
-			"    ?Scr imp:script ?InlineEq.\n" + 
-			"    ?Scr imp:language ?lang.\n" + 
-			"      filter ( ?lang = <SCRIPTLANGUAGE> ) }\n" + //http://sadl.org/sadlimplicitmodel#Python-NumPy
+			// This option is needed for inline equations
+//			"   optional { ?Eq a imp:Equation. \n" +
+//			"    ?Eq imp:expression ?Scr.\n" + 
+//			"    ?Scr imp:script ?InlineEq.\n" + 
+//			"    ?Scr imp:language ?lang.\n" + 
+//			"      filter ( ?lang = <SCRIPTLANGUAGE> ) }\n" + //http://sadl.org/sadlimplicitmodel#Python-NumPy
 			"   ?Q mm:execution/mm:compGraph ?CG.\n" + 
 			"   filter (?CG in (COMPGRAPH)).\n" + 
 			"  optional{\n" + 
@@ -784,7 +785,7 @@ public class JenaBasedDialogInferenceProcessor extends JenaBasedSadlInferencePro
 			"    bind('filled' as ?X_style)\n" + 
 			"    bind('yellow' as ?X_color)\n" + 
 			"}}union\n" + 
-			" {select ?CCG (?Output as ?X) ?Y (concat(concat(strbefore(strafter(?Value,'['),'.'),'.'),substr(strafter(?Value,'.'),1,3)) as ?Z) ?X_style ?X_color ('oval' as ?Z_shape) ('output value' as ?Z_tooltip)\n" + 
+			" {select ?CCG (?Output as ?X) ?Y (if(strbefore(strafter(?Value,'['),'.')='',strbefore(strafter(?Value,'['),']'), concat(concat(strbefore(strafter(?Value,'['),'.'),'.'),substr(strafter(?Value,'.'),1,3))) as ?Z) ?X_style ?X_color ('oval' as ?Z_shape) ('output value' as ?Z_tooltip)\n" + 
 			"  where {\n" + 
 			"    ?CCG mm:subgraph ?SG.\n" + 
 			"    filter (?CCG in (COMPGRAPH)).\n" + 
@@ -799,8 +800,9 @@ public class JenaBasedDialogInferenceProcessor extends JenaBasedSadlInferencePro
 
 	public static final String RESULTSQUERY = "prefix imp:<http://sadl.org/sadlimplicitmodel#>\n" + 
 			"prefix mm:<http://aske.ge.com/metamodel#>\n" +
-			"prefix sci:<http://aske.ge.com/sciknow#>\n"
-			+ "prefix rdf:<http://www.w3.org/1999/02/22-rdf-syntax-ns#>\n" + 
+			"prefix sci:<http://aske.ge.com/sciknow#>\n" +
+			"prefix rdfs:<http://www.w3.org/2000/01/rdf-schema#>\n" + 
+			"prefix rdf:<http://www.w3.org/1999/02/22-rdf-syntax-ns#>\n" + 
 			"select distinct (strafter(str(?CCG),'#') as ?Model) (strafter(str(?C),'#') as ?Class) (strafter(str(?Var),'#') as ?Variable) ?Mean ?StdDev ?Units\n" + 
 			"where {\n" + 
 //			"   {?CCG mm:subgraph ?SG.\n" + 
@@ -820,6 +822,9 @@ public class JenaBasedDialogInferenceProcessor extends JenaBasedSadlInferencePro
 			"   ?Obj ?prop ?IVar.\n" + 
 			"   filter (?prop not in (mm:cgInput))\n" + 
 			"   ?Obj rdf:type ?C.\n" +
+			"   ?C rdfs:subClassOf* ?CP.\n" + 
+			"   ?p rdfs:domain ?CP.\n" + 
+			"   ?p rdfs:range ?Var.\n" +
 			"}";
 	public static final String RESULTSQUERYHYPO = "prefix imp:<http://sadl.org/sadlimplicitmodel#>\n" + 
 			"prefix mm:<http://aske.ge.com/metamodel#>\n" +
@@ -1527,7 +1532,7 @@ private ResultSet[] processWhatWhenQuery(Resource resource, String queryModelFil
 		
 
 		class2lbl 	= getClassLabelMappingFromModelsJson(nodesModelsJSONStr);
-
+		
 		lbl2class = getInverseMap(class2lbl);
 		
 		class2units = getClassUnitsMappingFromModelsJson(nodesModelsJSONStr);
@@ -1624,10 +1629,10 @@ private ResultSet[] processWhatWhenQuery(Resource resource, String queryModelFil
 	        
 			//Create output instances and link them to ce
 			//There may be multiple outputs, need to loop through them
-	        createCEoutputInstances(outputsList, ce, class2lbl, lbl2value, class2units);
+	        createCEoutputInstances(outputsList, ce, class2lbl, lbl2class, lbl2value, class2units);
 
 
-			analyzeSensitivityResults(sensitivityResult, cgIns, lbl2class, queryModelPrefix, insightsMap);			
+			analyzeSensitivityResults(sensitivityResult, cgIns, lbl2class, outputsList, queryModelPrefix, insightsMap);			
 
 	        
 	        saveMetaDataFile(resource,queryModelURI,queryModelFileName); //so we can query the the eqns in the CCG
@@ -1737,10 +1742,11 @@ private Map<String, String> getInverseMap(Map<String, String> map) {
  * @param queryModelPrefix 
  * @param class2lbl 
  * @param cgIns 
+ * @param outputsList 
  * @param insightsMap 
  * @throws IOException 
  */
-private void analyzeSensitivityResults(String sensitivityResult, Individual cgIns, Map<String, String> lbl2class, String queryModelPrefix, Map<String, Map<String, List<String>>> insightsMap) throws IOException {
+private void analyzeSensitivityResults(String sensitivityResult, Individual cgIns, Map<String, String> lbl2class, List<RDFNode> outputsList, String queryModelPrefix, Map<String, Map<String, List<String>>> insightsMap) throws IOException {
 //	sensitivityResult = "{\"sensitivityData\":[{\"OATMatrix\":{\"fsmach\":[0,0.09232463,0.1766437,0.2464482,0.29775146,0.32939076,0.34265238,0.3404852,0.3266189,0.30482608,0.2784374,0.25010738,0.22177133,0.194718,0.1697141,0.14713784,0.12709871,0.10953298,0.09427574,0.08111054],\"altd\":[0,0.15789473684210525,0.3157894736842105,0.47368421052631576,0.631578947368421,0.7894736842105263,0.9473684210526315,1.1052631578947367,1.263157894736842,1.4210526315789473,1.5789473684210527,1.7368421052631577,1.894736842105263,2.052631578947368,2.2105263157894735,2.3684210526315788,2.526315789473684,2.6842105263157894,2.8421052631578947,3]},\"OATRSMatrix\":{\"fsmach\":[0.33210394,0.3332521,0.33433527,0.33535418,0.33630925,0.33720127,0.33803058,0.3387981,0.3395045,0.34015036,0.3407363,0.34126318,0.34173167,0.3421426,0.34249645,0.3427943,0.34303662,0.34322447,0.34335843,0.34343934],\"altd\":[0.81,0.8194736842105264,0.8289473684210527,0.838421052631579,0.8478947368421054,0.8573684210526317,0.866842105263158,0.8763157894736843,0.8857894736842106,0.8952631578947369,0.9047368421052633,0.9142105263157896,0.9236842105263159,0.9331578947368422,0.9426315789473685,0.9521052631578948,0.9615789473684211,0.9710526315789475,0.9805263157894738,0.9900000000000001]},\"name\":\"altd\",\"type\":\"float\",\"value\":\"0.9\"},{\"OATMatrix\":{\"fsmach\":[0.30224335,0.30802384,0.3135674,0.3188915,0.32401192,0.32894263,0.33369592,0.33828318,0.34271488,0.34699997,0.35114703,0.355164,0.35905787,0.36283517,0.36650208,0.3700641,0.37352648,0.37689403,0.38017118,0.3833621],\"u0d\":[1.01,1.0621052631578947,1.1142105263157895,1.1663157894736842,1.2184210526315788,1.2705263157894737,1.3226315789473684,1.3747368421052633,1.426842105263158,1.4789473684210526,1.5310526315789474,1.583157894736842,1.635263157894737,1.6873684210526316,1.7394736842105263,1.791578947368421,1.8436842105263158,1.8957894736842107,1.9478947368421053,2]},\"OATRSMatrix\":{\"fsmach\":[0.32796124,0.32933322,0.33069092,0.33203492,0.3333654,0.33468255,0.33598652,0.33727765,0.33855626,0.3398223,0.34107617,0.34231815,0.34354833,0.34476686,0.34597406,0.34717005,0.34835514,0.34952927,0.3506928,0.35184592],\"u0d\":[1.26,1.2747368421052632,1.2894736842105263,1.3042105263157895,1.3189473684210526,1.3336842105263158,1.348421052631579,1.3631578947368421,1.3778947368421053,1.3926315789473684,1.4073684210526316,1.4221052631578948,1.436842105263158,1.451578947368421,1.4663157894736842,1.4810526315789474,1.4957894736842106,1.5105263157894737,1.5252631578947369,1.54]},\"name\":\"u0d\",\"type\":\"float\",\"value\":\"1.4\"}],\"url\":\"http://localhost:1177\"}";
 	
 	System.out.println(sensitivityResult);
@@ -1751,7 +1757,7 @@ private void analyzeSensitivityResults(String sensitivityResult, Individual cgIn
 		if (jobj.has("OATSensitivityData")) { //sensitivityData
 			JsonArray ja = jobj.getAsJsonArray("OATSensitivityData");
 			for(int i=0; i<ja.size(); i++) { //for each input variable
-				extractVarInfluence(ja.get(i).getAsJsonObject(), cgIns, lbl2class, queryModelPrefix, insightsMap);
+				extractVarInfluence(ja.get(i).getAsJsonObject(), cgIns, lbl2class, outputsList, queryModelPrefix, insightsMap);
 			}
 		}
 		else {
@@ -1769,10 +1775,11 @@ private void analyzeSensitivityResults(String sensitivityResult, Individual cgIn
 
 /**
  * 
+ * @param outputsList 
  * @param insightsMap 
  * @param asJsonObject
  */
-private void extractVarInfluence(JsonObject sensitivityResult, Individual cgIns, Map<String, String> lbl2class, String queryModelPrefix, Map<String, Map<String, List<String>>> insightsMap) {
+private void extractVarInfluence(JsonObject sensitivityResult, Individual cgIns, Map<String, String> lbl2class, List<RDFNode> outputsList, String queryModelPrefix, Map<String, Map<String, List<String>>> insightsMap) {
 	String input = sensitivityResult.get("name").getAsString();
 	String output = null;
 	String vstr = sensitivityResult.get("value").getAsString();
@@ -1926,7 +1933,7 @@ private void extractVarInfluence(JsonObject sensitivityResult, Individual cgIns,
 		outputInsights.put(output,insightList);
 		insightsMap.put(input, outputInsights);
 		
-		ingestTrend(input.replace("_val", ""), output, increasingIncreases, increasingDecreases, decreasingIncreases, decreasingDecreases, lower, higher, independent, cgIns, lbl2class);
+		ingestTrend(input.replace("_val", ""), output, increasingIncreases, increasingDecreases, decreasingIncreases, decreasingDecreases, lower, higher, independent, cgIns, lbl2class, outputsList);
 	}	
 	
 }
@@ -1943,12 +1950,19 @@ private void extractVarInfluence(JsonObject sensitivityResult, Individual cgIns,
  * @param independent2 
  * @param higher 
  * @param cgIns
+ * @param outputsList 
  * @param class2lbl
  */
-private void ingestTrend(String input, String output, boolean increasingIncreases, boolean increasingDecreases, boolean decreasingIncreases, boolean decreasingDecreases, boolean lower, boolean higher, boolean independent, Individual cgIns, Map<String, String> lbl2class) {
+private void ingestTrend(String input, String output, boolean increasingIncreases, boolean increasingDecreases, boolean decreasingIncreases, boolean decreasingDecreases, boolean lower, boolean higher, boolean independent, Individual cgIns, Map<String, String> lbl2class, List<RDFNode> outputsList) {
 	String inputType = lbl2class.get(input);
-	String outputType = lbl2class.get(output);
+	String outputType;
 	
+	if (lbl2class.containsKey(output)) {
+		outputType = lbl2class.get(output);
+	}
+	else {
+		outputType = outputsList.get(0).toString();
+	}
 	//cgIns sensitivity sensIns
 	Individual sensIns = createIndividualOfClass(queryModel, null, null, METAMODEL_SENSITIVITY);
 	ingestKGTriple(cgIns, getModelProperty(getTheJenaModel(), METAMODEL_SENS_PROP), sensIns);
@@ -2673,7 +2687,7 @@ private ResultSet[] processModelsFromDataset(Resource resource, TripleElement[] 
 				lbl2value = getLabelToMeanStdMapping(dbnResultsJson);
 				createCGsubgraphs(cgIns, dbnEqnMap, dbnOutput, listOfEqns, class2lbl, lbl2value, class2units, queryModelPrefix);
 
-				createCEoutputInstances(outputsList, ce, class2lbl, lbl2value, class2units);
+				//createCEoutputInstances(outputsList, ce, class2lbl, lbl2class, lbl2value, class2units);
 
 				//							
 				//							//TODO: create output instances and link them to ce
@@ -2812,8 +2826,14 @@ private void runInference(Resource resource, String query, String testQuery) thr
 				// Add property to list of inputs
 //				inputsList.add(ssp);
 				
+				if(ssc == null) {
+					continue;
+				}
+
+				
 				ingestKGTriple(sss, ssp, sso); //(:v0 :altitude :v1)
 				ingestKGTriple(sss, RDF.type, ssc); //v0 rdf:type :CF6)
+				
 				
 				// create triple: cgq, mm:input, inputVar
 				OntProperty inputprop = getModelProperty(getTheJenaModel(), METAMODEL_INPUT_PROP); // getTheJenaModel().getOntProperty(METAMODEL_INPUT_PROP);
@@ -3041,30 +3061,61 @@ private void runInference(Resource resource, String query, String testQuery) thr
 		return numOfModels;
 	}
 
-	private void createCEoutputInstances(List<RDFNode> outputsList, Individual ce, Map<String, String> class2lbl, Map<String, String[]> lbl2value, Map<String, String> class2units) {
+	private void createCEoutputInstances(List<RDFNode> outputsList, Individual ce, Map<String, String> class2lbl, Map<String,String> lbl2class, Map<String, String[]> lbl2value, Map<String, String> class2units) {
 		
 		OntProperty outputprop = getTheJenaModel().getOntProperty(METAMODEL_OUTPUT_PROP);
-
-		for(RDFNode outType : outputsList) {
-			if( class2lbl.containsKey(outType.toString())) {
-				
-				//String rng = outType.as(OntProperty.class).getRange().toString(); //e.g. :Altitude
-				
-				//Individual outpIns = createIndividualOfClass(queryModel, null, null, rng); //e.g. instance of :Altitude
-				Individual outpIns = createIndividualOfClass(queryModel, null, null, outType.toString());
-				ingestKGTriple(ce, outputprop, outpIns);
-				
-				String cls = class2lbl.get(outType.toString());
-				if(class2units.containsKey(outType.toString())) {
-					String unit = class2units.get(outType.toString());
-					queryModel.add(outpIns, getTheJenaModel().getProperty(UNIT_PROP), unit);
+		String oType;
+		
+//		for(RDFNode outType : outputsList) {
+//			Individual outpIns = createIndividualOfClass(queryModel, null, null, outType.toString());
+//			ingestKGTriple(ce, outputprop, outpIns);
+//
+//			if( class2lbl.containsKey(outType.toString())) {
+//				String cls = class2lbl.get(outType.toString());
+//					
+//			if(class2units.containsKey(outType.toString())) {
+//				String unit = class2units.get(outType.toString());
+//				queryModel.add(outpIns, getTheJenaModel().getProperty(UNIT_PROP), unit);
+//			}
+//			String[] ms = lbl2value.get(cls);  //class2lbl.get(o.toString()));
+//			queryModel.add(outpIns, getTheJenaModel().getProperty(VALUE_PROP), ms[0] );
+//			if(ms[1] != null)
+//				queryModel.add(outpIns, getTheJenaModel().getProperty(STDDEV_PROP), ms[1] );
+//			if(ms[2] != null)
+//				queryModel.add(outpIns, getTheJenaModel().getProperty(VARERROR_PROP), ms[2] );
+//			}
+//		}
+		
+		for( String lbl : lbl2value.keySet()) {
+			oType = null;
+			if(lbl2class.containsKey(lbl) ) {
+				String c = lbl2class.get(lbl);
+				for(RDFNode o : outputsList) {
+					if(o.toString().equals(c)) {
+						oType = c;
+					}
 				}
-				String[] ms = lbl2value.get(cls);  //class2lbl.get(o.toString()));
-				queryModel.add(outpIns, getTheJenaModel().getProperty(VALUE_PROP), ms[0] );
-				if(ms[1] != null)
-					queryModel.add(outpIns, getTheJenaModel().getProperty(STDDEV_PROP), ms[1] );
-				if(ms[2] != null)
-					queryModel.add(outpIns, getTheJenaModel().getProperty(VARERROR_PROP), ms[2] );
+				if(oType == null) {
+					continue;
+				}
+			}
+			else {
+				oType = outputsList.get(0).toString(); //we don't know the class for the label, assume is the outputList class. Only works with single output.
+			}
+			Individual outpIns = createIndividualOfClass(queryModel, null, null, oType);
+			ingestKGTriple(ce, outputprop, outpIns);
+			
+			if(class2units.containsKey(oType)) {
+				String unit = class2units.get(oType);
+				queryModel.add(outpIns, getTheJenaModel().getProperty(UNIT_PROP), unit);
+			}
+			String[] ms = lbl2value.get(lbl);  //class2lbl.get(o.toString()));
+			queryModel.add(outpIns, getTheJenaModel().getProperty(VALUE_PROP), ms[0] );
+			if(ms[1] != null) {
+				queryModel.add(outpIns, getTheJenaModel().getProperty(STDDEV_PROP), ms[1] );
+			}
+			if(ms[2] != null) {
+				queryModel.add(outpIns, getTheJenaModel().getProperty(VARERROR_PROP), ms[2] );
 			}
 		}
 	}

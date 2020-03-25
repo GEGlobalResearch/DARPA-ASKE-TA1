@@ -67,7 +67,7 @@ Air is a type of Gas.
 
 Aircraft is a type of PhysicalThing
 	described by numEngines with values of type NumOfEngines
-	described by totalThrust with values of type TotalThrust
+//	described by totalThrust with values of type TotalThrust
 	described by engine with values of type AircraftEngine
 	.
 
@@ -114,7 +114,6 @@ Flow is a type of UnittedQuantity.
 CP is a type of UnittedQuantity.
 Thrust is a type of UnittedQuantity.
 
-TotalThrust is a type of UnittedQuantity.
 
 
 SpecificNetThrust is a type of UnittedQuantity.
@@ -145,7 +144,7 @@ totalPressure describes Air with values of type TotalPressure.
 //speed describes PhysicalThing with values of type Speed.
 speedOfSound describes Air with values of type SpeedOfSound.
 airSpeed describes Air with values of type AirSpeed.
-machSpeed describes Air with values of type MachSpeed.
+//machSpeed describes Air with values of type MachSpeed.
 
 gamma describes Air with values of type GammaConstant.
 rgas describes Air with values of type RgasConstant.
@@ -153,11 +152,23 @@ rgas describes Air with values of type RgasConstant.
 cp describes Air with values of type CP.
 
 
-calc_totalThrust2 is a TotalThrustEquation.
-Equation calc_totalThrust2 (double ne (numEngines of an Aircraft), double fnlb (thrust of engine of the Aircraft))
-  returns double (totalThrust of the Aircraft): ne*fnlb.
+//TotalThrust is a type of UnittedQuantity.
+//totalThrust describes Aircraft with values of type TotalThrust.
 
-calc_totalThrust2 has expression (a Script with script "totalThrust=ne*fnlb" language Python-NumPy).
+//totalThrustFunc is a TotalThrustEquation.
+//Equation totalThrustFunc (alias "totalThrust") (double ne (numEngines of an Aircraft), double fnlb (thrust of engine of the Aircraft))
+//  returns double (totalThrust of the Aircraft): ne*fnlb.
+
+//totalThrustFunc has expression (a Script with script "totalThrust=ne*fnlb" language Python-NumPy).
+
+
+//Equation calc_totalThrust (double numEngines, double thrust) returns double (totalThrust of the Aircraft): numEngines*thrust.
+
+//totalThrustFunc has expression (a Script with script 
+//"def totalThrustFunc(ne, fnlb):
+//    totalThrust=ne*fnlb
+//    return totalThrust"
+//language Python-NumPy).
 
 ////Troposphere Constants
 //Equation tropo_C1_Eq() returns double (tropo_c1 of some Air {degF}) : return 59.0 .
