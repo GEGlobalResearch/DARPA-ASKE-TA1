@@ -113,7 +113,7 @@ public class TextProcessorTests {
 		tp.setTextModelName(localityURI);
 		String msg = tp.clearGraph(localityURI);
 		System.out.println("Clear graph response: " + msg);
-		int[] result = tp.processText(localityURI, "a^2 = R * T * gamma", localityURI, null, null);
+		int[] result = tp.processText(localityURI, "a^2 = R * T * gamma", localityURI, null, null, true);
 		assertNotNull(result);
 		assertEquals(0, result[0]);
 		assertEquals(1, result[1]);
@@ -145,7 +145,7 @@ public class TextProcessorTests {
 		tp.setTextModelName(localityURI);
 		String msg = tp.clearGraph(localityURI);
 		System.out.println("Clear graph response: " + msg);
-		int[] result = tp.processText(localityURI, "The speed of sound is a concept known in physics ", localityURI, localityURI, "sos");
+		int[] result = tp.processText(localityURI, "The speed of sound is a concept known in physics ", localityURI, localityURI, "sos", true);
 		assertNotNull(result);
 //		assertEquals(1, result[0]);
 //		assertEquals(0, result[1]);
@@ -168,7 +168,7 @@ public class TextProcessorTests {
 		tp.setTextModelName(localityURI);
 		String msg = tp.clearGraph(localityURI);
 		System.out.println("Clear graph response: " + msg);
-		int[] result = tp.processText(localityURI, javaContent, localityURI, localityURI, "sos");
+		int[] result = tp.processText(localityURI, javaContent, localityURI, localityURI, "sos", true);
 		System.out.println("nc=" + result[0] + ", neq=" + result[1]);
 		EquationVariableContextResponse results = tp.equationVariableContext("T", localityURI);
 		System.out.println(results.getMessage());
@@ -351,7 +351,7 @@ public class TextProcessorTests {
 		tp.setTextModelName(localityURI);
 		String msg = tp.clearGraph(localityURI);
 		System.out.println("Clear graph response: " + msg);
-		int[] result = tp.processText(localityURI, javaContent, localityURI, localityURI, "sos");
+		int[] result = tp.processText(localityURI, javaContent, localityURI, localityURI, "sos", true);
 		System.out.println("nc=" + result[0] + ", neq=" + result[1]);
 		EquationVariableContextResponse results = tp.equationVariableContext("a", localityURI);
 		System.out.println(results.getMessage());
@@ -403,7 +403,7 @@ public class TextProcessorTests {
 		tp.setTextModelName(localityURI);
 		String msg = tp.clearGraph(localityURI);
 		System.out.println("Clear graph response: " + msg);
-		int[] result = tp.processText(localityURI, javaContent, localityURI, localityURI, "sos");
+		int[] result = tp.processText(localityURI, javaContent, localityURI, localityURI, "sos", true);
 		System.out.println("nc=" + result[0] + ", neq=" + result[1]);
 		List<UnitExtractionResponse> uresult = tp.unitExtraction("variable measurement degree Celsius", localityURI);
 		assertNotNull(uresult);
@@ -629,7 +629,7 @@ public class TextProcessorTests {
 		tp.setTextModelName(localityURI);
 		String msg = tp.clearGraph(localityURI);
 		System.out.println("Clear graph response: " + msg);
-		int[] result = tp.processText(localityURI, content, localityURI, localityURI, "sos");
+		int[] result = tp.processText(localityURI, content, localityURI, localityURI, "sos", true);
 		assertNotNull(result);
 //		assertEquals(0, result[0]);
 //		assertEquals(1, result[1]);
@@ -725,7 +725,7 @@ public class TextProcessorTests {
 		tp.setTextModelName(localityURI);
 		String msg = tp.clearGraph(localityURI);
 		System.out.println("Clear graph response: " + msg);
-		int[] result = tp.processText(localityURI, content, localityURI, localityURI, null);
+		int[] result = tp.processText(localityURI, content, localityURI, localityURI, null, true);
 		assertNotNull(result);
 //		assertEquals(0, result[0]);
 //		assertEquals(1, result[1]);

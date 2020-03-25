@@ -6,8 +6,10 @@ import com.ge.research.sadl.darpa.aske.curation.AnswerCurationManager.Agent;
 import com.ge.research.sadl.darpa.aske.dialog.NewExpressionStatement;
 
 public class AddEquationContent extends AddToModelContent {
+	private String lhs;
 	private String equationName;
-	private String sadlEqStr;
+	private String sadlEqStr;		// AKA, RHS
+	private String equationBody;
 
 	public AddEquationContent(EObject host) {
 		super(host);
@@ -41,5 +43,21 @@ public class AddEquationContent extends AddToModelContent {
 
 	public void setEquationName(String equationName) {
 		this.equationName = equationName;
+	}
+
+	public String getEquationBody() {
+		return equationBody;
+	}
+
+	public void setEquationBody(String equationBody) {
+		this.equationBody = equationBody;
+	}
+
+	public String getLhs() {
+		return lhs;
+	}
+
+	public void setLhs(String lhs) {
+		this.lhs = lhs;
 	}
 }
