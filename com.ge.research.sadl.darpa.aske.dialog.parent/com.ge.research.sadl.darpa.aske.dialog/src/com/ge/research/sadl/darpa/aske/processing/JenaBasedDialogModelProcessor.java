@@ -686,34 +686,6 @@ public class JenaBasedDialogModelProcessor extends JenaBasedSadlModelProcessor {
 		}
 		return missingInformation;
 	}
-	
-	/*
-	 	@Override
-	public void addWarning(String msg, EObject context, String issueCode, String... issueData) {
-		if (msg.equals("Missing augmented type information")) {
-			if (context.eContainer() instanceof SadlParameterDeclaration) {
-				if (context instanceof SadlResource) {
-					String argName = getDeclarationExtensions().getConcreteName((SadlResource) context);
-					String question = "What type is " + argName + "?";
-					System.out.println(question);
-				}
-			}
-		}
-		else if (msg.equals("Missing augmented return type information")) {
-			if (context.eContainer() instanceof SadlReturnDeclaration) {
-				EObject eq = context.eContainer().eContainer();
-				if (eq instanceof EquationStatement) {
-					Object trgt = getTarget();
-					EList<EObject> contents = ((EquationStatement)eq).eContents();
-					int i = 0;
-				}
-				String question = "What type does " + " return?";
-			}
-		}
-		super.addWarning(msg, context, issueCode, issueData);
-	}
-
-	 */
 
 	private StatementContent processStatement(ExtractStatement element) {
 		EList<String> srcUris = element.getSourceURIs();
@@ -738,17 +710,11 @@ public class JenaBasedDialogModelProcessor extends JenaBasedSadlModelProcessor {
 				}
 				return new ExtractContent(element, Agent.USER, scheme, source, srcUri);
 			} catch (URISyntaxException e) {
-				addError("'" + srcUri + "' does not appear to be a valid URL: " + e.getMessage(), element);
 			} catch (MalformedURLException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
 			} catch (IOException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
 			}
-			if (!validURI(srcUri)) {
-				addError("'" + srcUri + "' does not appear to be a valid URL", element);
-			}
+			addInfo("'" + srcUri + "' does not appear to be a URL so doing extraction from the text", element);
+			return new ExtractContent(element, Agent.USER, "text", srcUri, srcUri);
 		}
 		return null;
 	}
@@ -2311,12 +2277,12 @@ public class JenaBasedDialogModelProcessor extends JenaBasedSadlModelProcessor {
 			if (stmt.getTarget() != null) {
 				addVariableAllowedInContainerType(stmt.getClass());
 				Object trgtObj = processExpression(stmt.getTarget());
-				if (trgtObj instanceof VariableNode) {
-	//				addInfo("what type is '" + ((VariableNode)trgtObj).getName(), stmt);
-					WhatIsContent wic = new WhatIsContent(stmt.eContainer(), Agent.CM, trgtObj, stmt);
-					wic.setUnParsedText(getSourceText(stmt.eContainer()).trim());
-					return wic;
+				WhatIsContent wic = new WhatIsContent(stmt.eContainer(), Agent.CM, trgtObj, stmt);
+				wic.setUnParsedText(getSourceText(stmt.eContainer()).trim());
+				if (!(trgtObj instanceof VariableNode)) {
+					addWarning("The argument name is also a concept in the ontology, which may be confusing.", stmt.getTarget());
 				}
+				return wic;
 			}
 			else if (stmt.getEquation() != null) {
 				Object eqObj = processExpression(stmt.getEquation());
