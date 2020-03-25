@@ -3102,7 +3102,6 @@ Turbo.Solver.getPerform has dependsOn Turbo.getAir,
  has implicitInput (an ImplicitDataDescriptor with localDescriptorName "a0", with dataType "http://www.w3.org/2001/XMLSchema#double", 
    with declaration (a Script with script "double a0;", with language Java)
    with declaration (a Script with script "a0 = 0.0", with language Python))
-,
  has implicitOutput (an ImplicitDataDescriptor with localDescriptorName "g0", with dataType "http://www.w3.org/2001/XMLSchema#double", 
    with declaration (a Script with script "double g0;", with language Java)
    with declaration (a Script with script "g0 = 0.0", with language Python)),
@@ -4925,13 +4924,13 @@ Turbo.Solver.getGeo has dependsOn Turbo.getAir,
 
 External Turbo.Solver.loadCF6(): "http://com.ge.research.sadl.darpa.aske.answer/TurboModified2_java#Turbo.Solver.loadCF6".
 Turbo.Solver.loadCF6 is an IntializerMethod, initializes CF6,
+dependsOn Turbo.Solver.setDefaults
  has implicitInput (an ImplicitDataDescriptor with localDescriptorName "u0mt", with dataType "http://www.w3.org/2001/XMLSchema#double", 
    with declaration (a Script with script "double u0mt;", with language Java)
    with declaration (a Script with script "u0mt = 0.0", with language Python)),
  has implicitInput (an ImplicitDataDescriptor with localDescriptorName "altmt", with dataType "http://www.w3.org/2001/XMLSchema#double", 
    with declaration (a Script with script "double altmt;", with language Java)
    with declaration (a Script with script "altmt = 0.0", with language Python))
-,
  has implicitOutput (an ImplicitDataDescriptor with localDescriptorName "prat", with dataType "http://www.w3.org/2001/XMLSchema#double", 
    with declaration (a Script with script "double[] prat = new double[20];", with language Java)
    with declaration (a Script with script "prat = [None]*20", with language Python)),
@@ -5305,6 +5304,7 @@ Turbo.Solver.loadCF6 is an IntializerMethod, initializes CF6,
  has expression (a Script with language Python-NumPy, with script 
 "def loadCF6():
     \"\"\" generated source for method loadCF6 \"\"\"
+    setDefaults()
     entype = 2
     abflag = 0
     fueltype = 0
@@ -7000,6 +7000,8 @@ Turbo.Solver.getThermo has dependsOn Turbo.getCp,
     prat[7] = 1.0
     tt[2] = tt[1] = tt[0]
     pt[1] = pt[0]
+    print(tt[2])
+    print(gamopt)
     gam[2] = getGama(tt[2], gamopt)
     cp[2] = getCp(tt[2], gamopt)
     pt[2] = pt[1] * prat[2]
