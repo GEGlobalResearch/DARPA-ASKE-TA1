@@ -225,7 +225,7 @@ class invizin(object):
     
         fig.update_layout(title='One-at-a-time Parametric Analysis', 
                           showlegend=False, hovermode='x',
-                          autosize=True, height=200*len(pck['outputVariables']))
+                          autosize=True, height=200*(1+len(pck['outputVariables'])))
         label = 'OAT Parametric Analysis'
         return fig, label
     
@@ -313,7 +313,7 @@ class invizin(object):
     
         fig.update_layout(title='One-at-a-time Relative Parametric Analysis', 
                           showlegend=True, hovermode='x',
-                          autosize=True, height=200*len(pck['outputVariables']))
+                          autosize=True, height=200*(1+len(pck['outputVariables'])))
         label = 'Relative Sensitivity Analysis'
         return fig, label
     
