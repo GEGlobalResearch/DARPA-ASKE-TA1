@@ -921,6 +921,7 @@ public class JenaBasedDialogInferenceProcessor extends JenaBasedSadlInferencePro
 	
 	private static final String TRENDSQUERY = "prefix mm:<http://aske.ge.com/metamodel#>\n" + 
 			"prefix rdf:<http://www.w3.org/1999/02/22-rdf-syntax-ns#>\n" + 
+			"prefix rdfs:<http://www.w3.org/2000/01/rdf-schema#>\n" + 
 			"select distinct (strafter(str(?C),'#') as ?Class) (strafter(str(?SIn),'#') as ?Input) (strafter(str(?Trnd),'#') as ?Trend) (strafter(str(?SOut),'#') as ?Output) (strafter(str(?Loc),'#') as ?Location)\n" + 
 			"where {\n" + 
 			"   filter (?CCG in (COMPGRAPH)). #<http://aske.ge.com/Model_Q_1583352078126#CG_1583352078156>\n" +  
@@ -935,6 +936,9 @@ public class JenaBasedDialogInferenceProcessor extends JenaBasedSadlInferencePro
 			"  ?Obj ?prop ?IVar.\n" + 
 			"  filter (?prop not in (mm:cgInput))\n" + 
 			"  ?Obj rdf:type ?C.\n" + 
+			"  ?C rdfs:subClassOf* ?CP.\n" + 
+			"  ?prop rdfs:domain ?CP.\n" + 
+			"  ?prop rdfs:range ?SIn.\n"+
 			"} order by ?Output";
 
 
