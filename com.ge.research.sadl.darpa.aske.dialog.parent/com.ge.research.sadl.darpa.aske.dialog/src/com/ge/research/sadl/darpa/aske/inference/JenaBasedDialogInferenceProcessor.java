@@ -464,10 +464,10 @@ public class JenaBasedDialogInferenceProcessor extends JenaBasedSadlInferencePro
 			"prefix list:<http://sadl.org/sadllistmodel#>\n" +
 			"\n" + 
 			"select distinct ?Model ?Input (str(?InLabel) as ?InputLabel) ?UniqueInputLabel \n" + 
-			"?Output \n" + 
+			"?Output ?OutputLabel\n" + 
 //			"(str(?expr) as ?ModelForm) (str(?Fun) as ?Function) \n" + 
 			"(str(?ImpIn) as ?ImpInput) ?ImpInputAugType (str(?InpD) as ?InpDeclaration)\n" + 
-			"(str(?ImpOut) as ?ImpOutput) ?ImpOutputAugType (str(?OutpD) as?OutpDeclaration)\n" + 
+			"(str(?ImpOut) as ?ImpOutput) (strafter(str(?DT),'#') as ?DataType) ?ImpOutputAugType (str(?OutpD) as?OutpDeclaration)\n" + 
 			"?Initializer ?Dependency\n" + 
 			"where { \n" + 
 			"\n" + 
@@ -506,6 +506,7 @@ public class JenaBasedDialogInferenceProcessor extends JenaBasedSadlInferencePro
 			"  \n" + 
 			"  optional{ #Explicit outputs. ?Output is a UQ or a label\n" + 
 			"   ?Model imp:genericOutput ?Output.\n" + 
+			"   optional{?Model rdfs:label ?OutputLabel}\n" + 
 			"   filter not exists {?Model imp:implicitOutput/imp:localDescriptorName ?Output}\n" + 
 			"   filter not exists {?Model imp:implicitOutput/imp:augmentedType/imp:semType ?Output.}}\n" + 
 			"\n" + 
@@ -540,6 +541,7 @@ public class JenaBasedDialogInferenceProcessor extends JenaBasedSadlInferencePro
 			"  optional{\n" + 
 			"   ?Model imp:implicitOutput ?IO.\n" + 
 			"   ?IO imp:localDescriptorName ?ImpOut.\n" + 
+			"   optional{?IO imp:dataType ?DT.}\n" + 
 			"   optional{?IO imp:augmentedType ?OT. ?OT imp:semType ?ImpOutputAugType.}\n" + 
 			"   optional{?IO imp:declaration ?OD. ?OD imp:language imp:Python. ?OD imp:script ?OutpD}}\n" + 
 			"  \n" + 
@@ -642,7 +644,7 @@ public class JenaBasedDialogInferenceProcessor extends JenaBasedSadlInferencePro
 			"    ?Eq imp:implicitOutput ?IO. \n" + 
 			"    ?IO imp:augmentedType/imp:semType ?Node.\n" + 
 			"    optional {?IO imp:specifiedUnits/list:first ?NUnits.}\n" +
-			"    ?IO imp:dataType ?DT." + 
+			"    ?IO imp:dataType ?DT.\n" + 
 			"   }\n" + 
 			"\n" + 
 			"  filter not exists {\n" + 
@@ -657,13 +659,12 @@ public class JenaBasedDialogInferenceProcessor extends JenaBasedSadlInferencePro
 			" filter (?Eq in (EQNSLIST )) . #EQNSLIST\n" + 
 			" \n" + 
 			"}}\n" +
-//			"   optional{ ?Eq a imp:ExternalEquation. bind(\"ExternalEquation\" as ?EqType) }" +
-//			"   optional{ ?Eq a imp:Equation. bind(\"Equation\" as ?EqType) }" +
-			"   optional { ?Eq a imp:Equation. \n" +
-			"    ?Eq imp:expression ?Scr.\n" + 
-			"    ?Scr imp:script ?InlineEq.\n" + 
-			"    ?Scr imp:language ?lang.\n" + 
-			"      filter ( ?lang = <SCRIPTLANGUAGE> ) }\n" + //http://sadl.org/sadlimplicitmodel#Python-NumPy
+			// This option is needed for inline equations
+//			"   optional { ?Eq a imp:Equation. \n" +
+//			"    ?Eq imp:expression ?Scr.\n" + 
+//			"    ?Scr imp:script ?InlineEq.\n" + 
+//			"    ?Scr imp:language ?lang.\n" + 
+//			"      filter ( ?lang = <SCRIPTLANGUAGE> ) }\n" + //http://sadl.org/sadlimplicitmodel#Python-NumPy
 			"   ?Q mm:execution/mm:compGraph ?CG.\n" + 
 			"   filter (?CG in (COMPGRAPH)).\n" + 
 			"  optional{\n" + 
