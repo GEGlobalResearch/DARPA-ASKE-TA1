@@ -1522,8 +1522,8 @@ public class AnswerCurationManager {
 		inputQuery += "> <arguments>/<rdf:rest>*/<rdf:first> ?arg . ?arg <localDescriptorName> ?argName . ";
 		inputQuery += "OPTIONAL{?arg <dataType> ?argtyp} . ";
 		inputQuery += "OPTIONAL{?arg <augmentedType> ?augt . ?augt <semType> ?st}}";
-		inputQuery = reasoner.prepareQuery(inputQuery);
-		ResultSet inputResults =  reasoner.ask(inputQuery);
+		inputQuery = getInitializedTextModelReasoner().prepareQuery(inputQuery);
+		ResultSet inputResults =  getInitializedTextModelReasoner().ask(inputQuery);
 
 		sb.append("(");
 //		clearCodeModelReasoner();
@@ -2996,11 +2996,18 @@ public class AnswerCurationManager {
 				}
 				if (results[1] > 0) {
 					// get the equation.
-					List<String> scriptStatements = getScriptStatementsFromTextService(localityURI, eqName);
-					if (scriptStatements != null) {
-						for (String scptstmt : scriptStatements) {
-							answerUser(getOwlModelsFolder(), scptstmt, false, sc.getHostEObject());
+					String[] graphResults = getTextProcessor().retrieveGraph(localityURI);
+					if (graphResults != null && graphResults.length == 3) {
+						OntModel m = getTextProcessor().getTextModelConfigMgr().getOntModel(localityURI, graphResults[2], Scope.INCLUDEIMPORTS, graphResults[1]);
+						List<String> scriptStatements = getScriptStatementsFromTextService(graphResults, m, eqName);
+						if (scriptStatements != null) {
+							for (String scptstmt : scriptStatements) {
+								answerUser(getOwlModelsFolder(), scptstmt, false, sc.getHostEObject());
+							}
 						}
+					}
+					else {
+						throw new AnswerExtractionException("Text processor failed to return an OWL model.");
 					}
 				}
 			}
@@ -3016,10 +3023,9 @@ public class AnswerCurationManager {
 		return retVal;
 	}
 	
-	private List<String> getScriptStatementsFromTextService(String localityURI, String eqName) throws IOException {
-		String[] graphResults = getTextProcessor().retrieveGraph(localityURI);
+	private List<String> getScriptStatementsFromTextService(String[] graphResults, OntModel m, String eqName) throws IOException {
 		if (graphResults != null && graphResults.length == 3) {
-			OntModel m = getTextProcessor().getTextModelConfigMgr().getOntModel(localityURI, graphResults[2], Scope.INCLUDEIMPORTS, graphResults[1]);
+			String localityURI = graphResults[0];
 			if (m != null) {
 				List<String> results = new ArrayList<String>();
 				StmtIterator eqnItr = m.listStatements(null, RDF.type, m.getOntClass(SadlConstants.SADL_IMPLICIT_MODEL_EXTERNAL_EQUATION_CLASS_URI));
@@ -3093,6 +3099,10 @@ public class AnswerCurationManager {
 		String returnStatus = null;
 		String scheme = sc.getScheme();
 		String source = sc.getScheme();
+		if (scheme.equals("text") && source.equals("text")) {
+			// actual text from which to extract has been provided
+			return processExtractionFromActualTextRequest(theModel, dialogModelName, sc);
+		}
 
 		String content = null;
 		String outputModelName;
@@ -3189,6 +3199,70 @@ public class AnswerCurationManager {
 		}
 		clearExtractionContext();
 		return returnStatus;
+	}
+
+	private String processExtractionFromActualTextRequest(OntModel theModel, String dialogModelName,
+			ExtractContent sc) throws AnswerExtractionException, IOException, ConfigurationException {
+		setExtractionContext(sc);
+		String toTranslate = sc.getUrl();
+		String inputIdentifier = dialogModelName + "_temp";
+		String localityURI = inputIdentifier;
+		String extractedTxtModelName = inputIdentifier;
+		String prefix = "temp";
+		getTextProcessor().clearGraph(localityURI);
+		int[] results = getTextProcessor().processText(inputIdentifier, toTranslate, localityURI, extractedTxtModelName, prefix, false);
+		if (results == null) {
+			throw new AnswerExtractionException("Text processing service returned no information");
+		}
+		if (results[1] > 0) {
+			// get the equation.
+			String[] graphResults = getTextProcessor().retrieveGraph(localityURI);	
+			if (graphResults != null && graphResults.length == 3) {
+				OntModel m = getTextProcessor().getTextModelConfigMgr().getOntModel(localityURI, graphResults[2], Scope.INCLUDEIMPORTS, graphResults[1]);
+				String rememberDomainModelName = getDomainModelName();
+				setDomainModelName(extractedTxtModelName);
+				Map<String, String> equations;
+				try {
+					equations = getEquationNamesFromTextServiceResults(graphResults, m, dialogModelName);
+//					Iterator<String> eqItr = equations.keySet().iterator();
+//					while (eqItr.hasNext()) {
+//						String eqName = eqItr.next();
+//						String eqStatement = equations.get(eqName);
+//						// output equation statement
+//						answerUser(getOwlModelsFolder(), eqStatement, ((StatementContent)sc).isQuoteResult(), sc.getHostEObject());
+//						// output scripts
+//						List<String> scriptStatements = getScriptStatementsFromTextService(graphResults, m, eqName);
+//						if (scriptStatements != null) {
+//							for (String scptstmt : scriptStatements) {
+//								answerUser(getOwlModelsFolder(), scptstmt, false, sc.getHostEObject());
+//							}
+//						}
+//					}
+					return "Extracted " + results[1] + " equations from the specified text";
+				} catch (Exception e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+					return e.getMessage();
+				}
+				finally {
+					setDomainModelName(rememberDomainModelName);
+				}
+			}
+			else {
+				throw new AnswerExtractionException("Failed to get OWL model from text service");
+			}
+		}
+		return null;
+	}
+
+	private Map<String, String> getEquationNamesFromTextServiceResults(String[] graphResults, OntModel m, String dialogModelName) throws ConfigurationException, IOException, ReasonerNotFoundException, InvalidNameException, QueryParseException, QueryCancelledException {
+//		Map<String,String> eqMap = new HashMap<String,String>();
+		OntModel theModel = getExtractionProcessor().getTextModel();
+//		logger.debug("The existing model:");
+//		theModel.write(System.err, "N-TRIPLES");
+		theModel.add(m);
+		processExtractedText(dialogModelName, null, SaveAsSadl.DoNotSaveAsSadl);
+		return null;
 	}
 
 	private String getModelPrefixFromInputUrl(String url) {
@@ -5213,7 +5287,9 @@ public class AnswerCurationManager {
 						return false;
 					}
 					if (someSc instanceof  ExtractContent) {
-						return true;
+						if (((ExtractContent)someSc).getAnswer() != null) {
+							return true;
+						}
 					}
 					else if (someSc instanceof AddEquationContent) {
 						// must be followed by the equation 
