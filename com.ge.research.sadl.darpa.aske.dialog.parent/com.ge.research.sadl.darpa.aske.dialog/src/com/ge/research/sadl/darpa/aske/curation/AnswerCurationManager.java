@@ -4518,6 +4518,11 @@ public class AnswerCurationManager {
 		}
 		return inferenceProcessor;
 	}
+	
+	private void clearInferenceProcessor() {
+		inferenceProcessor = null;
+	}
+	
 
 	private StringBuilder addBlankNodeObject(org.eclipse.emf.ecore.resource.Resource resource, StringBuilder answer, String bNodeUri) throws ExecutionException, ConfigurationException, TranslationException, InvalidNameException, ReasonerNotFoundException, QueryParseException, QueryCancelledException {
 		String query = "select ?t ?p ?v where {<" + bNodeUri + "> ?p ?v }";
