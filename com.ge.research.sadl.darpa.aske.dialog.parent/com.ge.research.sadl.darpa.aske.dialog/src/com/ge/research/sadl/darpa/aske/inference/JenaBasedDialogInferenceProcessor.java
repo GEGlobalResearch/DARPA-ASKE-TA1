@@ -535,6 +535,11 @@ public class JenaBasedDialogInferenceProcessor extends JenaBasedSadlInferencePro
 			"            ?AO2 imp:descriptorVariable  ?UniqueInputLabel.\n" + 
             "            ?AO2 imp:augmentedType/imp:constraints/rdf:rest*/rdf:first/imp:gpPredicate/rdfs:range ?Input.\n" +
 			"            ?Input rdfs:subClassOf imp:UnittedQuantity.}\n" +
+			"   optional {?Model imp:arguments/list:rest*/list:first ?AO2.\n" +
+			"            ?AO2 imp:localDescriptorName ?InLabel.\n" + 
+			"            ?AO2 imp:descriptorVariable  ?UniqueInputLabel.\n" + 
+            "            ?AO2 imp:augmentedType/imp:semType ?Input.}\n" +
+//			"            ?Input rdfs:subClassOf imp:UnittedQuantity.}\n" +
             "   # Get the uniquelabel if available\n" + 
 			"   optional {?Model imp:arguments ?AL2.\n" + 
 			"            ?AL2 list:rest*/list:first ?AO2.\n" + 
