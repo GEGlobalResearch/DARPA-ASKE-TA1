@@ -361,6 +361,9 @@ public class DialogAnswerProvider extends BaseDialogAnswerProvider {
 						}
 						else if (mei.getObject().equals(ctx)) {
 							String origTxt = mei.getTxt();
+							if(origTxt.endsWith(".")) {
+								origTxt = origTxt.substring(0,origTxt.length()-1);
+							}
 							if (!origTxt.trim().substring(4).equals(originalTxt)) {
 								// error
 								System.err.println("equation text doesn't match");
@@ -370,11 +373,14 @@ public class DialogAnswerProvider extends BaseDialogAnswerProvider {
 							String currentTxt;
 							try {
 								currentTxt = document.get(currentStart, len);
+								if(currentTxt.endsWith(".")) {
+									currentTxt = currentTxt.substring(0,currentTxt.length()-1);
+								}
 								if (!currentTxt.trim().substring(4).equals(originalTxt)) {
 									// error
 									System.err.println("document text doesn't match");
 								}
-								int loc = currentStart + 6; 	// this is for "/r/nCM: "
+								int loc = currentStart + 4 + System.lineSeparator().length(); 	// this is for "/r/nCM: "
 								document.replace(loc, originalTxt.length(), replacementTxt);
 //								final int caretOffset = loc + modContent.length();
 //								setCaretOffsetInEditor(uri, caretOffset);
