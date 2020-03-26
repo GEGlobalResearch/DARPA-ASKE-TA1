@@ -1462,7 +1462,8 @@ public class JenaBasedDialogModelProcessor extends JenaBasedSadlModelProcessor {
 						}
 					}
 					String lhs = ((VariableNode)lobj).getName();
-					String eqName = "calc_" + lhs;
+//					String eqName = "calc_" + lhs;
+					String eqName = "func_" + lhs;
 					if (robj instanceof BuiltinElement) { // && isNumericOperator(((BuiltinElement)robj).getFuncName())) {
 						if (allArgumentsVariables((BuiltinElement)robj)) {
 							StringBuilder sb = new StringBuilder("Equation ");
@@ -1538,7 +1539,8 @@ public class JenaBasedDialogModelProcessor extends JenaBasedSadlModelProcessor {
 				}
 				else {
 					String lhs = getNewEquationName(lobj);
-					String rn = "calc_" + lhs;
+//					String rn = "calc_" + lhs;
+					String rn = "func_" + lhs;
 					Rule pseudoRule = new Rule(rn);
 					pseudoRule.addIf((GraphPatternElement) robj);
 					pseudoRule.addThen((GraphPatternElement) lobj);
