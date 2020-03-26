@@ -2989,26 +2989,31 @@ public class AnswerCurationManager {
 				String localityURI = inputIdentifier;
 				String extractedTxtModelName = inputIdentifier;
 				String prefix = "temp";
-				getTextProcessor().clearGraph(localityURI);
-				int[] results = getTextProcessor().processText(inputIdentifier, toTranslate, localityURI, extractedTxtModelName, prefix, false);
-				if (results == null) {
-					throw new AnswerExtractionException("Text processing service returned no information");
-				}
-				if (results[1] > 0) {
-					// get the equation.
-					String[] graphResults = getTextProcessor().retrieveGraph(localityURI);
-					if (graphResults != null && graphResults.length == 3) {
-						OntModel m = getTextProcessor().getTextModelConfigMgr().getOntModel(localityURI, graphResults[2], Scope.INCLUDEIMPORTS, graphResults[1]);
-						List<String> scriptStatements = getScriptStatementsFromTextService(graphResults, m, eqName);
-						if (scriptStatements != null) {
-							for (String scptstmt : scriptStatements) {
-								answerUser(getOwlModelsFolder(), scptstmt, false, sc.getHostEObject());
+				try {
+					getTextProcessor().clearGraph(localityURI);
+					int[] results = getTextProcessor().processText(inputIdentifier, toTranslate, localityURI, extractedTxtModelName, prefix, false);
+					if (results == null) {
+						throw new AnswerExtractionException("Text processing service returned no information");
+					}
+					if (results[1] > 0) {
+						// get the equation.
+						String[] graphResults = getTextProcessor().retrieveGraph(localityURI);
+						if (graphResults != null && graphResults.length == 3) {
+							OntModel m = getTextProcessor().getTextModelConfigMgr().getOntModel(localityURI, graphResults[2], Scope.INCLUDEIMPORTS, graphResults[1]);
+							List<String> scriptStatements = getScriptStatementsFromTextService(graphResults, m, eqName);
+							if (scriptStatements != null) {
+								for (String scptstmt : scriptStatements) {
+									answerUser(getOwlModelsFolder(), scptstmt, false, sc.getHostEObject());
+								}
 							}
 						}
+						else {
+							throw new AnswerExtractionException("Text processor failed to return an OWL model.");
+						}
 					}
-					else {
-						throw new AnswerExtractionException("Text processor failed to return an OWL model.");
-					}
+				}
+				catch (Throwable t) {
+					retVal = t.getMessage();
 				}
 			}
 			retVal = eqStr;
@@ -3179,22 +3184,11 @@ public class AnswerCurationManager {
 				returnStatus = "Saved extracted model to OWL '" + owlFileForDisplay + "'";
 				answerUser(getOwlModelsFolder(), returnStatus, true, sc.getHostEObject());	
 				processExtractedText(outputModelName, outputOwlFileName, SaveAsSadl.DoNotSaveAsSadl);
-			} catch (ConfigurationException e) {
+			} catch (Exception e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
-			} catch (ReasonerNotFoundException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			} catch (InvalidNameException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			} catch (QueryParseException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			} catch (QueryCancelledException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
+				returnStatus = e.getMessage();
+			} 
 
 		}
 		clearExtractionContext();
@@ -3209,48 +3203,52 @@ public class AnswerCurationManager {
 		String localityURI = inputIdentifier;
 		String extractedTxtModelName = inputIdentifier;
 		String prefix = "temp";
-		getTextProcessor().clearGraph(localityURI);
-		int[] results = getTextProcessor().processText(inputIdentifier, toTranslate, localityURI, extractedTxtModelName, prefix, false);
-		if (results == null) {
-			throw new AnswerExtractionException("Text processing service returned no information");
-		}
-		if (results[1] > 0) {
-			// get the equation.
-			String[] graphResults = getTextProcessor().retrieveGraph(localityURI);	
-			if (graphResults != null && graphResults.length == 3) {
-				OntModel m = getTextProcessor().getTextModelConfigMgr().getOntModel(localityURI, graphResults[2], Scope.INCLUDEIMPORTS, graphResults[1]);
-				String rememberDomainModelName = getDomainModelName();
-				setDomainModelName(extractedTxtModelName);
-				Map<String, String> equations;
-				try {
-					equations = getEquationNamesFromTextServiceResults(graphResults, m, dialogModelName);
-//					Iterator<String> eqItr = equations.keySet().iterator();
-//					while (eqItr.hasNext()) {
-//						String eqName = eqItr.next();
-//						String eqStatement = equations.get(eqName);
-//						// output equation statement
-//						answerUser(getOwlModelsFolder(), eqStatement, ((StatementContent)sc).isQuoteResult(), sc.getHostEObject());
-//						// output scripts
-//						List<String> scriptStatements = getScriptStatementsFromTextService(graphResults, m, eqName);
-//						if (scriptStatements != null) {
-//							for (String scptstmt : scriptStatements) {
-//								answerUser(getOwlModelsFolder(), scptstmt, false, sc.getHostEObject());
-//							}
-//						}
-//					}
-					return "Extracted " + results[1] + " equations from the specified text";
-				} catch (Exception e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-					return e.getMessage();
+		try {
+			getTextProcessor().clearGraph(localityURI);
+			int[] results = getTextProcessor().processText(inputIdentifier, toTranslate, localityURI, extractedTxtModelName, prefix, false);
+			if (results == null) {
+				throw new AnswerExtractionException("Text processing service returned no information");
+			}
+			if (results[1] > 0) {
+				// get the equation.
+				String[] graphResults = getTextProcessor().retrieveGraph(localityURI);	
+				if (graphResults != null && graphResults.length == 3) {
+					OntModel m = getTextProcessor().getTextModelConfigMgr().getOntModel(localityURI, graphResults[2], Scope.INCLUDEIMPORTS, graphResults[1]);
+					String rememberDomainModelName = getDomainModelName();
+					setDomainModelName(extractedTxtModelName);
+					Map<String, String> equations;
+					try {
+						equations = getEquationNamesFromTextServiceResults(graphResults, m, dialogModelName);
+	//					Iterator<String> eqItr = equations.keySet().iterator();
+	//					while (eqItr.hasNext()) {
+	//						String eqName = eqItr.next();
+	//						String eqStatement = equations.get(eqName);
+	//						// output equation statement
+	//						answerUser(getOwlModelsFolder(), eqStatement, ((StatementContent)sc).isQuoteResult(), sc.getHostEObject());
+	//						// output scripts
+	//						List<String> scriptStatements = getScriptStatementsFromTextService(graphResults, m, eqName);
+	//						if (scriptStatements != null) {
+	//							for (String scptstmt : scriptStatements) {
+	//								answerUser(getOwlModelsFolder(), scptstmt, false, sc.getHostEObject());
+	//							}
+	//						}
+	//					}
+						return "Extracted " + results[1] + " equations from the specified text";
+					} catch (Exception e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+						return e.getMessage();
+					}
+					finally {
+						setDomainModelName(rememberDomainModelName);
+					}
 				}
-				finally {
-					setDomainModelName(rememberDomainModelName);
+				else {
+					throw new AnswerExtractionException("Failed to get OWL model from text service");
 				}
 			}
-			else {
-				throw new AnswerExtractionException("Failed to get OWL model from text service");
-			}
+		} catch (Throwable t) {
+			return t.getMessage();
 		}
 		return null;
 	}
@@ -5097,9 +5095,15 @@ public class AnswerCurationManager {
 			OntClass augTypeClass = getDomainModel().getOntClass(((NamedNode)semType).getURI());
 			if (augTypeClass != null) {
 				EObject equationEObject = eqsc.getHostEObject();
-				addAugmentedTypeToEquation(eqsc, equationEObject , targetNode instanceof VariableNode ? targetNode.getName() : null, augTypeClass);
+				addAugmentedTypeToEquation(eqsc, equationEObject , targetNode instanceof VariableNode ? targetNode.getName() : null, augTypeClass.getLocalName());
 				return "Added augmented type '" + augTypeClass.getURI() + "' to " + eqsc.getEquationName();
 			}
+		}
+		else if (semType instanceof ProxyNode) {
+			EObject equationEObject = eqsc.getHostEObject();
+			String augTypeTxt = sc.getUnParsedText();
+			addAugmentedTypeToEquation(eqsc, equationEObject , targetNode instanceof VariableNode ? targetNode.getName() : null, augTypeTxt);
+			return "Added augmented type '" + augTypeTxt + "' to " + eqsc.getEquationName();
 		}
 		return "Failed to add augmented type";
 	}
@@ -5129,7 +5133,7 @@ public class AnswerCurationManager {
 							// we have the equation and the question
 							OntClass cls = getDomainModel().getOntClass(semTypeUri);
 							if (cls != null) {
-								addAugmentedTypeToEquation(eqsc, equationEObject, argNameToUpdate, cls);
+								addAugmentedTypeToEquation(eqsc, equationEObject, argNameToUpdate, cls.getLocalName());
 								return "Added augmented type '" + cls.getURI() + "' to " + eqsc.getEquationName();
 							}
 							else {
@@ -5144,7 +5148,7 @@ public class AnswerCurationManager {
 	}
 
 	private void addAugmentedTypeToEquation(EquationStatementContent eqsc, EObject equationEObject,
-			String argNameToUpdate, OntClass cls) {
+			String argNameToUpdate, String augTypeTxt) {
 		if (argNameToUpdate != null) {
 			// update argument with semantic type
 			String eqTxt = eqsc.getText();
@@ -5153,7 +5157,7 @@ public class AnswerCurationManager {
 			int insertLoc = argStart + argNameToUpdate.length();
 			StringBuilder newEqTxt = new StringBuilder(eqTxt.subSequence(0, insertLoc));
 			newEqTxt.append(" (");
-			newEqTxt.append(cls.getLocalName());
+			newEqTxt.append(augTypeTxt);
 			newEqTxt.append(")");
 			newEqTxt.append(eqTxt.substring(insertLoc));
 			String replacementTxt = newEqTxt.toString();
@@ -5168,7 +5172,7 @@ public class AnswerCurationManager {
 			int insertLoc = eqTxt.indexOf(":", sigEnd);
 			StringBuilder newEqTxt = new StringBuilder(eqTxt.subSequence(0, insertLoc));
 			newEqTxt.append(" (");
-			newEqTxt.append(cls.getLocalName());
+			newEqTxt.append(augTypeTxt);
 			newEqTxt.append(")");
 			newEqTxt.append(eqTxt.substring(insertLoc));
 			String replacementTxt = newEqTxt.toString();

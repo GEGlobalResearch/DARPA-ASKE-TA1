@@ -202,6 +202,8 @@ public class JenaBasedDialogModelProcessor extends JenaBasedSadlModelProcessor {
 	private String shortGraphLink = null;
 
 	private AnswerCurationManager answerCurationManager = null;
+	
+	private StatementContent lastStatementContent = null;
 
 	@Inject IPreferenceValuesProvider preferenceProvider;
 	private boolean savePhthonTF;
@@ -398,6 +400,7 @@ public class JenaBasedDialogModelProcessor extends JenaBasedSadlModelProcessor {
 						ConversationElement ce = new ConversationElement(getAnswerCurationManager().getConversation(), sc, sc.getAgent());
 						getAnswerCurationManager().addToConversation(ce);
 					}
+					setLastStatementContent(sc);
 				} catch (Exception e1) {
 					// shouldn't happen; all exceptions should be caught before here
 					e1.printStackTrace();
@@ -1407,53 +1410,7 @@ public class JenaBasedDialogModelProcessor extends JenaBasedSadlModelProcessor {
 	private StatementContent processStatement(NewExpressionStatement element) {
 		Expression expr = element.getNewExpr();
 		String uptxt = getSourceText(element);
-		if (expr instanceof Name) {
-			try {
-				Object nmObj = processExpression((Name)expr);
-				if (nmObj instanceof NamedNode && ((NamedNode)nmObj).getNodeType().equals(NodeType.ClassNode)) {
-					// this makes sense in the context of a prior question about type of a variable
-					// 1. find prior statement asking about variable to get variable name
-					List<ConversationElement> celements = getAnswerCurationManager().getConversationElements();
-					if (celements != null) {
-						ConversationElement lastElement = celements.get(celements.size() - 1);
-						if (lastElement != null && lastElement.getStatement() instanceof WhatIsContent &&
-								lastElement.getStatement().getAgent().equals(Agent.CM) &&
-								((WhatIsContent)lastElement.getStatement()).getTarget() instanceof NamedNode) {
-							NamedNode targetNode = (NamedNode) ((WhatIsContent)lastElement.getStatement()).getTarget();
-							// 2. find prior Equation statement to be able to add the type to the argument
-							for (int i = celements.size() - 1; i >= 0; i--) {
-								ConversationElement anElement = celements.get(i);
-								if (anElement.getStatement() instanceof EquationStatementContent) {
-									 EquationStatementContent eqContent = (EquationStatementContent)anElement.getStatement();
-									AddAugmentedTypeInfoContent mec = new AddAugmentedTypeInfoContent(element, Agent.USER, uptxt, eqContent, targetNode, (Node)nmObj);
-									return mec;
-								}
-							}
-							addError("Addition of information missing preceding equation to be augmented", expr);
-						}
-						else {
-							addError("Addition of information missing preceding question to be answered", expr);
-						}
-					}
-					else {
-						addError("Addition of information missing preceding context", expr);
-					}
-				}
-			} catch (TranslationException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			} catch (InvalidNameException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			} catch (InvalidTypeException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			} catch (IOException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
-		}
-		else if (expr instanceof BinaryOperation && isEqualOperator(((BinaryOperation)expr).getOp())) {
+		if (expr instanceof BinaryOperation && isEqualOperator(((BinaryOperation)expr).getOp())) {
 			// this is of the form: a LHS, an equal operator, and a RHS
 			Expression lexpr = ((BinaryOperation)expr).getLeft();
 			Expression rexpr = ((BinaryOperation)expr).getRight();
@@ -1628,6 +1585,67 @@ public class JenaBasedDialogModelProcessor extends JenaBasedSadlModelProcessor {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
 			} catch (TranslationException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		}
+		else {
+			// this isn't of type equation (LHS = RHS) so see if we can make sense of it for augmented type addition
+			try {
+				boolean originalUseArticlesInValidation = isUseArticlesInValidation();
+				setUseArticlesInValidation(false);
+				Object nmObj = processExpression(expr);
+				setUseArticlesInValidation(originalUseArticlesInValidation);
+				if (nmObj instanceof GraphPatternElement) {
+					nmObj = nodeCheck(nmObj);
+				}
+				if (nmObj instanceof Node) {
+					if (nmObj instanceof NamedNode && ((NamedNode)nmObj).getNodeType().equals(NodeType.ClassNode)) {
+						// this makes sense in the context of a prior question about type of a variable						
+					}
+					else if (nmObj instanceof ProxyNode) {
+						uptxt = getSourceText(expr).trim();
+						if (uptxt.endsWith(".")) {
+							uptxt = uptxt.substring(0, uptxt.length() - 1);
+						}
+					}
+					// 1. find prior statement asking about variable to get variable name
+					List<ConversationElement> celements = getAnswerCurationManager().getConversationElements();
+					if (celements != null) {
+						ConversationElement lastElement = celements.size() > 0 ? celements.get(celements.size() - 1) : null;
+						if (lastElement != null && lastElement.getStatement() instanceof WhatIsContent &&
+								lastElement.getStatement().getAgent().equals(Agent.CM) &&
+								((WhatIsContent)lastElement.getStatement()).getTarget() instanceof NamedNode) {
+							NamedNode targetNode = (NamedNode) ((WhatIsContent)lastElement.getStatement()).getTarget();
+							// 2. find prior Equation statement to be able to add the type to the argument
+							for (int i = celements.size() - 1; i >= 0; i--) {
+								ConversationElement anElement = celements.get(i);
+								if (anElement.getStatement() instanceof EquationStatementContent) {
+									 EquationStatementContent eqContent = (EquationStatementContent)anElement.getStatement();
+									AddAugmentedTypeInfoContent mec = new AddAugmentedTypeInfoContent(element, Agent.USER, uptxt, eqContent, targetNode, (Node)nmObj);
+									return mec;
+								}
+							}
+							addError("Addition of information missing preceding equation to be augmented", expr);
+						}
+						else {
+							addError("Addition of information missing preceding question to be answered", expr);
+						}
+					}
+					else {
+						addError("Addition of information missing preceding context", expr);
+					}
+				}
+			} catch (TranslationException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			} catch (InvalidNameException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			} catch (InvalidTypeException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
 			} catch (IOException e) {
@@ -3091,6 +3109,14 @@ public class JenaBasedDialogModelProcessor extends JenaBasedSadlModelProcessor {
 
 	private void setInvizinserviceurl(String invizinserviceurl) {
 		this.invizinserviceurl = invizinserviceurl;
+	}
+
+	private StatementContent getLastStatementContent() {
+		return lastStatementContent;
+	}
+
+	private void setLastStatementContent(StatementContent lastStatementContent) {
+		this.lastStatementContent = lastStatementContent;
 	}
 
 }

@@ -226,13 +226,13 @@ public class TextProcessor {
 	 * @throws IOException 
 	 */
 	public EquationVariableContextResponse equationVariableContext(String name, String locality) throws InvalidInputException, IOException {
-		try {
-			String msg = "Searching for name '" + name + "' in locality '" + locality + "'.";
-			getCurationManager().notifyUser(getTextModelConfigMgr().getModelFolder(), msg, true);
-		} catch (ConfigurationException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
+//		try {
+//			String msg = "Searching for name '" + name + "' in locality '" + locality + "'.";
+//			getCurationManager().notifyUser(getTextModelConfigMgr().getModelFolder(), msg, true);
+//		} catch (ConfigurationException e) {
+//			// TODO Auto-generated catch block
+//			e.printStackTrace();
+//		}
 		String serviceUri = getPreference(DialogPreferences.ANSWER_TEXT_SERVICE_BASE_URI.getId());
 		TextProcessingServiceInterface tpsi = new TextProcessingServiceInterface(serviceUri);
 		return tpsi.equationVariableContext(name, locality);
