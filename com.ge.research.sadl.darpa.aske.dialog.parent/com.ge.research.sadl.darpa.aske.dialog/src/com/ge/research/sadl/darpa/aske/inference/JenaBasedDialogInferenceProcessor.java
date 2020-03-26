@@ -218,6 +218,12 @@ public class JenaBasedDialogInferenceProcessor extends JenaBasedSadlInferencePro
 			"  ?P rdfs:range ?Out. }\n" + 
 			"\n" + 
 			"  union {\n" + 
+			"  ?Eq imp:returnTypes ?AL1.\n" + 
+			"  ?AL1 list:rest*/list:first ?AO1.\n" + 
+			"  ?AO1 imp:augmentedType ?Type1.\n" + 
+			"  ?Type1 imp:semType ?Out. }\n" + 
+			"\n" + 
+			"  union {\n" + 
 			"    ?Eq imp:implicitOutput/imp:augmentedType/imp:semType ?Out.\n" + 
 			"    filter not exists{?Eq a imp:IntializerMethod} }\n" + 
 			"\n" + 
@@ -230,6 +236,12 @@ public class JenaBasedDialogInferenceProcessor extends JenaBasedSadlInferencePro
 			"   ?C2 imp:gpPredicate ?P.\n" + 
 			"   ?P rdfs:range ?In." +
 			"   ?In rdfs:subClassOf imp:UnittedQuantity.}\n" + 
+			"  union{\n" + 
+			"   ?Eq imp:arguments ?AL2.\n" + 
+			"   ?AL2 list:rest*/list:first ?AO2.\n" + 
+			"   ?AO2 imp:augmentedType ?Type2.\n" + 
+			"   ?Type2 imp:semType ?In.}" +
+//			"   ?In rdfs:subClassOf imp:UnittedQuantity.}\n" + 
 			"\n" + 
 			"  union { #Explicit inputs w/o AT\n" + 
 			"    ?Eq imp:arguments ?AL2.\n" + 
@@ -1018,6 +1030,7 @@ public class JenaBasedDialogInferenceProcessor extends JenaBasedSadlInferencePro
 		setModelFolderPath(getModelFolderPath(resource));
 		setModelName(OntModelProvider.getModelName(resource));
 		setTheJenaModel(OntModelProvider.find(resource));
+//		getTheJenaModel().write(System.err); 
 		long startTime;
 		
 		if(debugMode) {
@@ -2772,12 +2785,12 @@ private void runInference(Resource resource, String query, String testQuery) thr
 
 	runReasonerQuery(resource, query);
 	
-//	if(debugMode) {
-//		ResultSet insertTest = runReasonerQuery(resource, testQuery);
-//		if (!insertTest.hasNext()) {
-//			throw new SadlInferenceException("Inference execution failed for " + query);
-//		}
-//	}
+	if(debugMode) {
+		ResultSet insertTest = runReasonerQuery(resource, testQuery);
+		if (!insertTest.hasNext()) {
+			throw new SadlInferenceException("Inference execution failed for " + query);
+		}
+	}
 }
 	
 
@@ -3655,6 +3668,7 @@ private RDFNode getObjectAsLiteralOrResource(Node property, Node object) {
 
 		
 		configMgr = ConfigurationManagerForIdeFactory.getConfigurationManagerForIDE(modelFolderUri, format);
+//		configMgr.clearReasoner();
 		IReasoner reasoner = configMgr.getReasoner();
 	
 		
@@ -3665,11 +3679,18 @@ private RDFNode getObjectAsLiteralOrResource(Node property, Node object) {
 			//String mname = getModelName();
 //			reasoner.initializeReasoner(modelFolderUri, getModelName(), format); 
 			reasoner.initializeReasoner(getTheJenaModel(), getModelName(), null, null); 
+//			getTheJenaModel().write(System.err,"N3");
 			//reasoner.loadInstanceData(qhmodel);
 			//System.out.print("reasoner is not initialized");
 			//return null;
 		}
 
+//		reasoner.initializeReasoner(getTheJenaModel(), getModelName(), null, null);
+		
+//		String modelName = getModelName();
+		
+//		reasoner.loadInstanceData(getModelName());
+		
 		reasoner.loadInstanceData(queryModel);	//Need to load new metadata
 		
 //		String family = reasoner.getReasonerFamily();
@@ -3688,6 +3709,7 @@ private RDFNode getObjectAsLiteralOrResource(Node property, Node object) {
 //			reasoner.loadRules(modelFile);
 //		}
 			
+//		((Model) reasoner.getInferredModel(false)).write(System.err);
 		
 		String pquery = reasoner.prepareQuery(query);
 
