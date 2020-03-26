@@ -3690,11 +3690,6 @@ private RDFNode getObjectAsLiteralOrResource(Node property, Node object) {
 			//return null;
 		}
 
-//		reasoner.initializeReasoner(getTheJenaModel(), getModelName(), null, null);
-		
-//		String modelName = getModelName();
-		
-//		reasoner.loadInstanceData(getModelName());
 		
 		reasoner.loadInstanceData(queryModel);	//Need to load new metadata
 		
