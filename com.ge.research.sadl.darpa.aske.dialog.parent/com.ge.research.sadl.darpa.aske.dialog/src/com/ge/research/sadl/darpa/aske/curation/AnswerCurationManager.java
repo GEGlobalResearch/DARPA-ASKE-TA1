@@ -5549,6 +5549,8 @@ public class AnswerCurationManager {
 //			getDialogAnswerProvider().clearCumulatifeOffset();
 //		}
 		clearConceptsAdded();
+		getConfigurationManager().clearReasoner();
+		clearInferenceProcessor();
 	}
 
 	private boolean applyAnswerToUnansweredQuestion(StatementContent question, StatementContent sc) {
