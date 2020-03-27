@@ -3204,9 +3204,10 @@ public class AnswerCurationManager {
 		String extractedTxtModelName = inputIdentifier;
 		String prefix = "temp";
 		try {
-			getTextProcessor().clearGraph(localityURI);
+			String cgResponse = getTextProcessor().clearGraph(localityURI);
+			String aDoResponse = getTextProcessor().addDomainOntology(dialogModelName, getDomainModelExtractForTextService());
 			int[] results = getTextProcessor().processText(inputIdentifier, toTranslate, localityURI, extractedTxtModelName, prefix, false);
-			if (results == null) {
+			if (results == null || (results[0] == 0 && results[1] == 0)) {
 				throw new AnswerExtractionException("Text processing service returned no information");
 			}
 			if (results[1] > 0) {
@@ -3251,6 +3252,48 @@ public class AnswerCurationManager {
 			return t.getMessage();
 		}
 		return null;
+	}
+
+	private OntModel getDomainModelExtractForTextService() throws ConfigurationException {
+		OntModel dm = getDomainModel();
+		OntModelSpec spec = new OntModelSpec(OntModelSpec.OWL_MEM);
+		OntDocumentManager owlDocMgr = getConfigurationManager().getJenaDocumentMgr();
+		if (getOwlModelsFolder() != null && !getOwlModelsFolder().startsWith(IModelProcessor.SYNTHETIC_FROM_TEST)) {
+			File mff = new File(getOwlModelsFolder());
+			mff.mkdirs();
+			spec.setImportModelGetter(new SadlJenaModelGetterPutter(spec, getOwlModelsFolder()));
+		}
+		if (owlDocMgr != null) {
+			spec.setDocumentManager(owlDocMgr);
+			owlDocMgr.setProcessImports(true);
+		}
+		OntModel extractModel = ModelFactory.createOntologyModel(spec);
+		ExtendedIterator<OntClass> clssitr = dm.listClasses();
+		while (clssitr.hasNext()) {
+			OntClass cls = clssitr.next();
+			StmtIterator stmtitr = dm.listStatements(cls, RDFS.subClassOf, (RDFNode)null);
+			while (stmtitr.hasNext()) {
+				extractModel.add(stmtitr.nextStatement());
+			}
+			StmtIterator lstmtitr = dm.listStatements(cls, RDFS.label, (RDFNode)null);
+			while (lstmtitr.hasNext()) {
+				extractModel.add(lstmtitr.nextStatement());
+			}
+		}
+		ExtendedIterator<OntProperty> opropitr = dm.listAllOntProperties();
+		while (opropitr.hasNext()) {
+			OntProperty op = opropitr.next();
+			StmtIterator stmtitr = dm.listStatements(op, RDF.type, (RDFNode)null);
+			while (stmtitr.hasNext()) {
+				extractModel.add(stmtitr.nextStatement());
+			}
+			StmtIterator lstmtitr = dm.listStatements(op, RDF.type, (RDFNode)null);
+			while (lstmtitr.hasNext()) {
+				extractModel.add(lstmtitr.nextStatement());
+			}
+		}
+		extractModel.write(System.err, "N3");
+		return extractModel;
 	}
 
 	private Map<String, String> getEquationNamesFromTextServiceResults(String[] graphResults, OntModel m, String dialogModelName) throws ConfigurationException, IOException, ReasonerNotFoundException, InvalidNameException, QueryParseException, QueryCancelledException {
