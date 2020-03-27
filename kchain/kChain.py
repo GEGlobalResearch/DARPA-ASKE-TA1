@@ -234,30 +234,12 @@ class kChainModel(object):
                 * stringfun: formatted python code as string to be written in python file
         
         """
-#        in_dims = len(inputVar)
-#                
-#        inStr = inputVar[0]['name'] + ' = inArg[0]'
-#        for ii in range(1,in_dims):
-#            inStr = inStr + '\n    ' + inputVar[ii]['name'] + ' = inArg['+str(ii)+']'            
-#        
-#        outStr = outputVar[0]['name']
-#        for ii in range(1,len(outputVar)):
-#            outStr = outStr + ', ' + outputVar[ii]['name']    
-#        
-#        #4 spaces is ideal for indentation
-#        #construct the python function around the python snippet
-#        stringfun = 'import tensorflow as tf'\
-#        +'\ndef '+mdlName+'(inArg):'\
-#        +'\n    '+ inStr\
-#        +'\n    '+ eqMdl\
-#        +'\n    return '+ outStr + '\n\n'
         
         if eqMdl.find('def ') == -1:
             #implies that str does not have a method but only a code block
-            in_dims = len(inputVar)
                     
             inStr = inputVar[0]['name']
-            for ii in range(1,in_dims):
+            for ii in range(1,len(inputVar)):
                 inStr = inStr + ', ' + inputVar[ii]['name']            
             
             outStr = outputVar[0]['name']
@@ -637,10 +619,10 @@ class kChainModel(object):
             (output type, Default JSON array, string):
                 * output: value(s) of output variable.
                 * Default JSON array : array of default variable JSON objects with name and value fields. 
-                * string : Name of missing variable, which is needed for inference
+                * list of strings : Name of missing variable, which is needed for inference
             
         """
-        missingVar = ''
+        missingVar = []
         try:
             #if all required inputs are available in correct type then no InvalidArgumentError
             aval = sess.run(output, feed_dict=fd)
@@ -694,11 +676,11 @@ class kChainModel(object):
                 #if missing variable is not in the list of default variables, then inform user
                 print('Please provide value for : ' + varName)
                 aval = None
-                missingVar = varName
+                missingVar = [varName]
                 
         return aval, defaultValuesUsed, missingVar, fd
         
-    def evaluateInverse(self, inputVars, outputVars, mdlName):
+    def evaluateInverse(self, inputVars, outputVars, mdlName, CGType):
         """
         Evaluates a model with given inputs to compute output values
         
@@ -709,6 +691,8 @@ class kChainModel(object):
                 array of JSON variable objects with name, type, value, and unit fields
             mdlName (string):
                 Name to model to use (E.g.: 'Newtons2ndLaw')
+            CGType (string):
+                Computational graph type - python, tensorflow 
         
         Returns:
             (Output JSON array, Default JSON array, string):
@@ -744,16 +728,22 @@ class kChainModel(object):
         
         for ii in range(len(inputVars)):
             inputVars[ii]['value'] = str(x0[0][ii])
-            
-        outputVars, defaultValuesUsed, missingVar = self.evaluate(inputVars = inputVars, 
-                                                                 outputVars = outputVars,
-                                                                 mdlName = mdlName)
+        
+        if CGType == 'python':
+            outputVars, defaultValuesUsed, missingVar = self.evaluatePy(inputVars = inputVars, 
+                                                                     outputVars = outputVars,
+                                                                     mdlName = mdlName)
+        else:
+            outputVars, defaultValuesUsed, missingVar = self.evaluate(inputVars = inputVars, 
+                                                                     outputVars = outputVars,
+                                                                     mdlName = mdlName)
+                
         
         if outputVars[0]['value'] is not None:
             #Call evaluate with TF model within obj function
-            fx = lambda x : self.errC(x[0], tv = targetValue, ti = targetIndex,
+            fx = lambda x : self._errC(x[0], tv = targetValue, ti = targetIndex,
                                       mdlName = mdlName, inputVars = inputVars,
-                                      outputVars = outputVars)
+                                      outputVars = outputVars, CGType = CGType)
             
             #introduce stopping condition 
             MAXITER = 35
@@ -772,11 +762,17 @@ class kChainModel(object):
             
             for ii in range(len(inputVars)):
                 inputVars[ii]['value'] = str(x_opt[ii])
+                
             
-            outputVars, defaultValuesUsed, missingVar = self.evaluate(inputVars = inputVars, 
-                                                                     outputVars = outputVars, 
-                                                                     mdlName = mdlName)
-            
+            if CGType == 'python':
+                outputVars, defaultValuesUsed, missingVar = self.evaluatePy(inputVars = inputVars, 
+                                                                         outputVars = outputVars,
+                                                                         mdlName = mdlName)
+            else:
+                outputVars, defaultValuesUsed, missingVar = self.evaluate(inputVars = inputVars, 
+                                                                         outputVars = outputVars,
+                                                                         mdlName = mdlName)
+                
         else:
             x_opt = None
             fx_opt = None
@@ -787,14 +783,19 @@ class kChainModel(object):
         return x_opt, fx_opt, inputVars, outputVars, defaultValuesUsed, missingVar
         
 
-    def errC(self, x, tv, ti, mdlName, inputVars, outputVars):
+    def _errC(self, x, tv, ti, mdlName, inputVars, outputVars, CGType):
         
         for ii in range(len(inputVars)):
             inputVars[ii]['value'] = str(x[ii])
-            
-        outputVars,_,_ = self.evaluate(inputVars = inputVars, 
-             outputVars = outputVars, 
-             mdlName = mdlName)
+        
+        if CGType == 'python':
+            outputVars,_,_ = self.evaluatePy(inputVars = inputVars, 
+                 outputVars = outputVars, 
+                 mdlName = mdlName)
+        else:
+            outputVars,_,_ = self.evaluate(inputVars = inputVars, 
+                 outputVars = outputVars, 
+                 mdlName = mdlName)
         
         errval = []
         for ii in range(len(ti)):
@@ -1216,9 +1217,25 @@ class kChainModel(object):
             
             print(inputs)
             
-            #evaluate
-            y = pyFunc(**inputs)
-            
+            try:
+                #evaluate
+                y = pyFunc(**inputs)
+            except TypeError as err:
+                print(err)
+                es = str(err)
+                if 'missing' in es:
+                    missingVars = [s for ind, s in enumerate(es.split('\'')) if ind%2 == 1]
+                 
+                #assign none outputs
+                if len(outputVars) > 1:
+                    y = []
+                    for index, outputVar in enumerate(outputVars):
+                        y.append(None)
+                else:
+                    y = None
+            else:
+                missingVars = []
+        
             #assign outputs
             if len(outputVars) > 1:
                 for index, outputVar in enumerate(outputVars):
@@ -1232,9 +1249,14 @@ class kChainModel(object):
  
                 
         defaultValuesUsed = []
-        missingVar = ''
         
-        return outputVars, defaultValuesUsed, missingVar
+        if missingVars != []:
+            for ii, varName in enumerate(missingVars):
+                ind = varName.find('_val')
+                if ind != -1 and varName.endswith('_val'):
+                    missingVars[ii] = varName[0:ind]
+        
+        return outputVars, defaultValuesUsed, missingVars
             
         
     def evaluatePyGrad(self, inputVars, outputVars, mdlName):
