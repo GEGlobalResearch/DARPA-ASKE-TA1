@@ -4559,6 +4559,11 @@ public class AnswerCurationManager {
 		}
 		return inferenceProcessor;
 	}
+	
+	private void clearInferenceProcessor() {
+		inferenceProcessor = null;
+	}
+	
 
 	private StringBuilder addBlankNodeObject(org.eclipse.emf.ecore.resource.Resource resource, StringBuilder answer, String bNodeUri) throws ExecutionException, ConfigurationException, TranslationException, InvalidNameException, ReasonerNotFoundException, QueryParseException, QueryCancelledException {
 		String query = "select ?t ?p ?v where {<" + bNodeUri + "> ?p ?v }";
@@ -5587,6 +5592,8 @@ public class AnswerCurationManager {
 //			getDialogAnswerProvider().clearCumulatifeOffset();
 //		}
 		clearConceptsAdded();
+		getConfigurationManager().clearReasoner();
+		clearInferenceProcessor();
 	}
 
 	private boolean applyAnswerToUnansweredQuestion(StatementContent question, StatementContent sc) {
