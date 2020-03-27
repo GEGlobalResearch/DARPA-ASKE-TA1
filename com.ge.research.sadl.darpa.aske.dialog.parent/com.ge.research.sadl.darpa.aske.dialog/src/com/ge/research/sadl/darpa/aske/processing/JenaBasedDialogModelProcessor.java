@@ -692,6 +692,9 @@ public class JenaBasedDialogModelProcessor extends JenaBasedSadlModelProcessor {
 
 	private StatementContent processStatement(ExtractStatement element) {
 		EList<String> srcUris = element.getSourceURIs();
+		if (srcUris.size() > 1) {
+			addWarning("Extract statement currently only processes first source. Please use multiple statements.", element);
+		}
 		String str = projectHelper.toString();
 		for (String srcUri : srcUris) {
 			try {

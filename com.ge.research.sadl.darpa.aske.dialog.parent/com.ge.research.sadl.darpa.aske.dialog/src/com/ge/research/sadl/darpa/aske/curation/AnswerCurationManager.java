@@ -3201,17 +3201,26 @@ public class AnswerCurationManager {
 		String toTranslate = sc.getUrl();
 		String inputIdentifier = dialogModelName + "_temp";
 		String localityURI = inputIdentifier;
-		String extractedTxtModelName = inputIdentifier;
+		String extractedTxtModelName = inputIdentifier + "_dm";
 		String prefix = "temp";
 		try {
 			String cgResponse = getTextProcessor().clearGraph(localityURI);
-			String aDoResponse = getTextProcessor().addDomainOntology(dialogModelName, getDomainModelExtractForTextService());
+			String aDoResponse = getTextProcessor().addDomainOntology(extractedTxtModelName, getDomainModelExtractForTextService());
 			int[] results = getTextProcessor().processText(inputIdentifier, toTranslate, localityURI, extractedTxtModelName, prefix, false);
 			if (results == null || (results[0] == 0 && results[1] == 0)) {
 				throw new AnswerExtractionException("Text processing service returned no information");
 			}
+			if (results[0] > 0) {
+				// get the concept(s), if they aren't in the domain model?
+				String[] graphResults = getTextProcessor().retrieveGraph(localityURI);	
+				OntModel m = getTextProcessor().getTextModelConfigMgr().getOntModel(localityURI, graphResults[2], Scope.INCLUDEIMPORTS, graphResults[1]);
+				m.write(System.out, "N3");
+				String extract = displayExtractedConcepts(m);
+				notifyUser(getOwlModelsFolder(), extract, true);
+				return extract;
+			}
 			if (results[1] > 0) {
-				// get the equation.
+				// get the equation(s).
 				String[] graphResults = getTextProcessor().retrieveGraph(localityURI);	
 				if (graphResults != null && graphResults.length == 3) {
 					OntModel m = getTextProcessor().getTextModelConfigMgr().getOntModel(localityURI, graphResults[2], Scope.INCLUDEIMPORTS, graphResults[1]);
@@ -3249,9 +3258,53 @@ public class AnswerCurationManager {
 				}
 			}
 		} catch (Throwable t) {
+			notifyUser(getOwlModelsFolder(), t.getMessage(), true);
 			return t.getMessage();
 		}
 		return null;
+	}
+
+	private String displayExtractedConcepts(OntModel m) throws ConfigurationException {
+		StringBuilder sb = new StringBuilder("Found ");
+		// get everything with a label
+		int cntr = 0;
+		StmtIterator lblitr = m.listStatements(null, RDFS.label, (RDFNode)null);
+		while (lblitr.hasNext()) {
+			Statement lblstmt = lblitr.nextStatement();
+			Resource subj = lblstmt.getSubject();
+			String lbl = lblstmt.getObject().asLiteral().getValue().toString();
+			if (cntr++ > 0) {
+				sb.append(",");
+				sb.append(System.lineSeparator());
+			}
+			sb.append(lbl);
+			sb.append(",");
+			StmtIterator seeAlsoItr = m.listStatements(subj, RDFS.seeAlso, (RDFNode)null);
+			boolean needAnotherComma = false;
+			while (seeAlsoItr.hasNext()) {
+				RDFNode seeAlso = seeAlsoItr.nextStatement().getObject();
+				if (seeAlso.isURIResource()) {
+					String seeAlsoUri = seeAlso.asResource().getURI();
+					sb.append(" links to ");
+					sb.append(seeAlsoUri);
+					needAnotherComma = true;
+				}
+			}
+			StmtIterator subclassItr = m.listStatements(subj, RDFS.subClassOf, (RDFNode)null);
+			while (subclassItr.hasNext()) {
+				RDFNode sc = subclassItr.nextStatement().getObject();
+				if (sc.isURIResource()) {
+					String subClassOf = sc.asResource().getLocalName();
+					if (needAnotherComma) {
+						sb.append(", ");
+					}
+					needAnotherComma = true;
+					sb.append(" subclass of ");
+					sb.append(subClassOf);
+				}
+			}
+		}
+		return sb.toString();
 	}
 
 	private OntModel getDomainModelExtractForTextService() throws ConfigurationException {
@@ -3271,29 +3324,55 @@ public class AnswerCurationManager {
 		ExtendedIterator<OntClass> clssitr = dm.listClasses();
 		while (clssitr.hasNext()) {
 			OntClass cls = clssitr.next();
-			StmtIterator stmtitr = dm.listStatements(cls, RDFS.subClassOf, (RDFNode)null);
-			while (stmtitr.hasNext()) {
-				extractModel.add(stmtitr.nextStatement());
-			}
-			StmtIterator lstmtitr = dm.listStatements(cls, RDFS.label, (RDFNode)null);
-			while (lstmtitr.hasNext()) {
-				extractModel.add(lstmtitr.nextStatement());
+			if (cls.isURIResource() && !isAnIgnoredNamespace(cls.getNameSpace())) {
+				boolean stmtFound = false;
+				StmtIterator stmtitr = dm.listStatements(cls, RDFS.subClassOf, (RDFNode)null);
+				while (stmtitr.hasNext()) {
+					extractModel.add(stmtitr.nextStatement());
+					stmtFound = true;
+				}
+				StmtIterator lstmtitr = dm.listStatements(cls, RDFS.label, (RDFNode)null);
+				while (lstmtitr.hasNext()) {
+					extractModel.add(lstmtitr.nextStatement());
+					stmtFound = true;
+				}
+//				if (!stmtFound) {
+					extractModel.createClass(cls.getURI());
+//				}
 			}
 		}
 		ExtendedIterator<OntProperty> opropitr = dm.listAllOntProperties();
 		while (opropitr.hasNext()) {
 			OntProperty op = opropitr.next();
-			StmtIterator stmtitr = dm.listStatements(op, RDF.type, (RDFNode)null);
-			while (stmtitr.hasNext()) {
-				extractModel.add(stmtitr.nextStatement());
-			}
-			StmtIterator lstmtitr = dm.listStatements(op, RDF.type, (RDFNode)null);
-			while (lstmtitr.hasNext()) {
-				extractModel.add(lstmtitr.nextStatement());
+			if (op.isURIResource() && !isAnIgnoredNamespace(op.getNameSpace())) {
+				boolean stmtFound = false;
+				StmtIterator stmtitr = dm.listStatements(op, RDF.type, (RDFNode)null);
+				while (stmtitr.hasNext()) {
+					extractModel.add(stmtitr.nextStatement());
+					stmtFound = true;
+				}
+				StmtIterator lstmtitr = dm.listStatements(op, RDF.type, (RDFNode)null);
+				while (lstmtitr.hasNext()) {
+					extractModel.add(lstmtitr.nextStatement());
+					stmtFound = true;
+				}
+//				if (!stmtFound) {
+					extractModel.createOntProperty(op.getURI());
+//				}
 			}
 		}
 		extractModel.write(System.err, "N3");
 		return extractModel;
+	}
+
+	private boolean isAnIgnoredNamespace(String nameSpace) {
+		if (nameSpace.equals(SadlConstants.SADL_BASE_MODEL_URI) ||
+				nameSpace.equals(SadlConstants.SADL_LIST_MODEL_URI) ||
+				nameSpace.equals(SadlConstants.SADL_IMPLICIT_MODEL_URI) ||
+				nameSpace.equals(IReasoner.SADL_BUILTIN_FUNCTIONS_URI)) {
+			return true;
+		}
+		return false;
 	}
 
 	private Map<String, String> getEquationNamesFromTextServiceResults(String[] graphResults, OntModel m, String dialogModelName) throws ConfigurationException, IOException, ReasonerNotFoundException, InvalidNameException, QueryParseException, QueryCancelledException {
@@ -4559,11 +4638,6 @@ public class AnswerCurationManager {
 		}
 		return inferenceProcessor;
 	}
-	
-	private void clearInferenceProcessor() {
-		inferenceProcessor = null;
-	}
-	
 
 	private StringBuilder addBlankNodeObject(org.eclipse.emf.ecore.resource.Resource resource, StringBuilder answer, String bNodeUri) throws ExecutionException, ConfigurationException, TranslationException, InvalidNameException, ReasonerNotFoundException, QueryParseException, QueryCancelledException {
 		String query = "select ?t ?p ?v where {<" + bNodeUri + "> ?p ?v }";
@@ -5592,8 +5666,6 @@ public class AnswerCurationManager {
 //			getDialogAnswerProvider().clearCumulatifeOffset();
 //		}
 		clearConceptsAdded();
-		getConfigurationManager().clearReasoner();
-		clearInferenceProcessor();
 	}
 
 	private boolean applyAnswerToUnansweredQuestion(StatementContent question, StatementContent sc) {
