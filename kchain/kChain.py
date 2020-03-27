@@ -237,10 +237,9 @@ class kChainModel(object):
         
         if eqMdl.find('def ') == -1:
             #implies that str does not have a method but only a code block
-            in_dims = len(inputVar)
                     
             inStr = inputVar[0]['name']
-            for ii in range(1,in_dims):
+            for ii in range(1,len(inputVar)):
                 inStr = inStr + ', ' + inputVar[ii]['name']            
             
             outStr = outputVar[0]['name']
