@@ -559,9 +559,24 @@ public class DialogAnswerProvider extends BaseDialogAnswerProvider {
 			String lines[] = response.split("\\r\\n|\\n|\\r");
 			StringBuilder sb = new StringBuilder(lines[0]);
 			sb.append(System.lineSeparator());
+			boolean inQuotes = false;
 			for (int i = 1; i < lines.length; i++) {
-				for (int j = 0; j < numSpacesBeforeEachLine; j++) {
-					sb.append(" ");
+				String line = lines[i];
+				if (!inQuotes) {
+					for (int j = 0; j < numSpacesBeforeEachLine; j++) {
+						sb.append(" ");
+					}
+				}
+				int quoteLoc = line.indexOf("\"");
+				if (quoteLoc == 0 || quoteLoc > 0 && !(line.charAt(quoteLoc - 1) == '\\')) {
+					inQuotes = !inQuotes;
+					int nextQuoteLoc = quoteLoc;
+					while (nextQuoteLoc >= 0) {
+						 nextQuoteLoc = line.indexOf("\"", nextQuoteLoc + 1);
+						if (nextQuoteLoc >  quoteLoc && !(line.charAt(nextQuoteLoc - 1) == '\\')) {
+							inQuotes = !inQuotes;
+						}
+					}
 				}
 				sb.append(lines[i]);
 				if (i < lines.length - 1) {
