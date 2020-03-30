@@ -233,6 +233,7 @@ public class AnswerCurationManager {
 	private ExtractContent extractionContext = null;
 	private List<String> classesDeclared = new ArrayList<String>();
 	private List<StatementContent> failureCorrectingActions = new ArrayList<StatementContent>();
+	private HashMap<String, String> domainModelsLoaded = new HashMap<String,String>();
     
 	public AnswerCurationManager (String modelFolder, IConfigurationManagerForIDE configMgr, XtextResource resource, Map<String,String> prefs) {
 		setOwlModelsFolder(modelFolder);
@@ -3104,7 +3105,7 @@ public class AnswerCurationManager {
 		String returnStatus = null;
 		String scheme = sc.getScheme();
 		String source = sc.getScheme();
-		if (scheme.equals("text") && source.equals("text")) {
+		if ((scheme != null && scheme.equals("text")) || (source != null && source.equals("text"))) {
 			// actual text from which to extract has been provided
 			return processExtractionFromActualTextRequest(theModel, dialogModelName, sc);
 		}
@@ -3112,7 +3113,7 @@ public class AnswerCurationManager {
 		String content = null;
 		String outputModelName;
 		String prefix;
-		if (scheme.equals("file")) {
+		if (scheme != null && scheme.equals("file")) {
 			SadlUtils su =  new SadlUtils();
 			File f = new File(su.fileUrlToFileName(sc.getUrl()));
 			content =su.fileToString(f);
@@ -3205,7 +3206,10 @@ public class AnswerCurationManager {
 		String prefix = "temp";
 		try {
 			String cgResponse = getTextProcessor().clearGraph(localityURI);
-			String aDoResponse = getTextProcessor().addDomainOntology(extractedTxtModelName, getDomainModelExtractForTextService());
+			if (!isDomainModelLoaded(localityURI)) {
+				String aDoResponse = getTextProcessor().addDomainOntology(extractedTxtModelName, getDomainModelExtractForTextService());
+				setDomainModelLoaded(localityURI, extractedTxtModelName);
+			}
 			int[] results = getTextProcessor().processText(inputIdentifier, toTranslate, localityURI, extractedTxtModelName, prefix, false);
 			if (results == null || (results[0] == 0 && results[1] == 0)) {
 				throw new AnswerExtractionException("Text processing service returned no information");
@@ -3262,6 +3266,17 @@ public class AnswerCurationManager {
 			return t.getMessage();
 		}
 		return null;
+	}
+
+	private void setDomainModelLoaded(String localityURI, String domainModelUri) {
+		domainModelsLoaded.put(localityURI, domainModelUri);
+	}
+
+	private boolean isDomainModelLoaded(String localityURI) {
+		if(domainModelsLoaded.containsKey(localityURI)) {
+			return true;
+		}
+		return false;
 	}
 
 	private String displayExtractedConcepts(OntModel m) throws ConfigurationException {
@@ -3361,7 +3376,7 @@ public class AnswerCurationManager {
 //				}
 			}
 		}
-		extractModel.write(System.err, "N3");
+//		extractModel.write(System.err, "N3");
 		return extractModel;
 	}
 

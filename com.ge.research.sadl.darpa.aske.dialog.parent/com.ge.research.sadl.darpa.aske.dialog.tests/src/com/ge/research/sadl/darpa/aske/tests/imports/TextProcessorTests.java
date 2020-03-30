@@ -751,6 +751,78 @@ public class TextProcessorTests {
 		assertEquals("[http://darpa.aske.ta1.ge/sostest/mass, http://www.w3.org/2000/01/rdf-schema#seeAlso, http://www.wikidata.org/entity/Q11423]", stmtList.get(2));
 	}
 
+//	@Test
+//	public void testWithDomainOntolgoy_02() throws ConfigurationException, IOException {
+//		String content = 
+//				"The force f is defined as mass m divided by acceleration a. The equation is given as f = m*a.";
+//		File textFile = new File(getTextExtractionPrjFolder() + "/ExtractedModels/Sources/Isentrop.txt");
+//		IConfigurationManagerForIDE cm = ConfigurationManagerForIdeFactory.getConfigurationManagerForIDE(getDomainProjectModelFolder(), null);
+//		AnswerCurationManager acm = new AnswerCurationManager(getDomainProjectModelFolder(), cm, null, null);
+//		String domainModelName = "http://sadl.org/SpeedOfSound.sadl";
+//		acm.setDomainModelName(domainModelName);
+//		acm.setDomainModel(cm.loadOntModel(new SadlUtils().fileUrlToFileName(cm.getAltUrlFromPublicUri(domainModelName)), true));
+//		
+//		IDialogAnswerProvider dapcft = new DialogAnswerProviderConsoleForTest();
+//		cm.addPrivateKeyValuePair(DialogConstants.DIALOG_ANSWER_PROVIDER, dapcft);
+//		
+//		String defaultTextModelPrefix = "Isentrop";
+//		String defaultTextModelName = "http://com.ge.research.darpa.aske.ta1.explore/" + defaultTextModelPrefix;
+//		acm.getExtractionProcessor().getTextProcessor().setTextModelPrefix(defaultTextModelPrefix);
+//		acm.getExtractionProcessor().getTextProcessor().setTextModelName(defaultTextModelName);
+//		
+//		String genFolder = new File(acm.getOwlModelsFolder()).getParent() + 
+//		"/" + DialogConstants.EXTRACTED_MODELS_FOLDER_PATH_FRAGMENT;
+//		new File(genFolder).mkdirs();
+//
+//		acm.getExtractionProcessor().getTextProcessor().addFile(textFile);
+//		SaveAsSadl sas = SaveAsSadl.DoNotSaveAsSadl;
+////		SaveAsSadl sas = SaveAsSadl.SaveAsSadl;
+////		SaveAsSadl sas = SaveAsSadl.AskUserSaveAsSadl;
+//		String owlFileName = genFolder + "/" + textFile.getName() + ".owl";
+//		String sadlFileName = owlFileName + ".sadl";
+//		File sf = new File(sadlFileName);
+//		if (sf.exists()) {
+//			sf.delete();
+//		}
+//		String msg = acm.getExtractionProcessor().getTextProcessor().clearGraph(acm.getExtractionProcessor().getTextProcessor().getTextModelName());
+//		System.out.println("Clear graph response: " + msg);
+//		
+//		acm.getExtractionProcessor().getTextProcessor().addDomainOntology(dialogModelName, domainModel)
+//		acm.processImports(sas); 							// ***** this is where the work happens *****
+//		OntModel tm = acm.getExtractionProcessor().getTextModel();
+//		tm.write(System.out, "N3");
+//		tp.setTextModelPrefix("sos");
+//		String localityURI = "http://darpa.aske.ta1.ge/sostest/";
+//		tp.setTextModelName(localityURI);
+//		String msg = tp.clearGraph(localityURI);
+//		
+//		System.out.println("Clear graph response: " + msg);
+//		int[] result = tp.processText(localityURI, content, localityURI, localityURI, null, true);
+//		assertNotNull(result);
+////		assertEquals(0, result[0]);
+////		assertEquals(1, result[1]);
+//		System.out.println("nc=" + result[0] + ", neq=" + result[1]);
+//		OntModel om = tp.getTextModel(localityURI);
+//		String[] grph = tp.retrieveGraph(localityURI);
+//		assertTrue(grph.length == 3);
+//		OntModel newModel = tp.getTextModelConfigMgr().getOntModel(localityURI, grph[2], Scope.INCLUDEIMPORTS, grph[1]);	
+//		assertNotNull(newModel);
+//		StmtIterator stmtitr = newModel.listStatements(null, RDFS.seeAlso, (RDFNode)null);
+//		int cntr = 0;
+//		List<String> stmtList = new ArrayList<String>();
+//		while (stmtitr.hasNext()) {
+//			String stmt = stmtitr.next().toString();
+//			stmtList.add(stmt);
+//			System.out.println(stmt);
+//			cntr++;
+//		}
+//		assertEquals(3, cntr);
+//		Collections.sort(stmtList); 
+//		assertEquals("[http://darpa.aske.ta1.ge/sostest/acceleration, http://www.w3.org/2000/01/rdf-schema#seeAlso, http://www.wikidata.org/entity/Q11376]", stmtList.get(0));
+//		assertEquals("[http://darpa.aske.ta1.ge/sostest/force, http://www.w3.org/2000/01/rdf-schema#seeAlso, http://www.wikidata.org/entity/Q11402]", stmtList.get(1));
+//		assertEquals("[http://darpa.aske.ta1.ge/sostest/mass, http://www.w3.org/2000/01/rdf-schema#seeAlso, http://www.wikidata.org/entity/Q11423]", stmtList.get(2));
+//	}
+
 	private String readFile(File file) throws IOException {
 	    BufferedReader reader = new BufferedReader(new FileReader (file));
 	    String         line = null;

@@ -714,7 +714,9 @@ public class JenaBasedDialogModelProcessor extends JenaBasedSadlModelProcessor {
 				else {
 					source = srcUri;
 				}
-				return new ExtractContent(element, Agent.USER, scheme, source, srcUri);
+				if (scheme != null) {
+					return new ExtractContent(element, Agent.USER, scheme, source, srcUri);
+				}
 			} catch (URISyntaxException e) {
 			} catch (MalformedURLException e) {
 			} catch (IOException e) {
