@@ -380,7 +380,7 @@ public class DialogAnswerProvider extends BaseDialogAnswerProvider {
 									// error
 									System.err.println("document text doesn't match");
 								}
-								int loc = currentStart + 4 + System.lineSeparator().length(); 	// this is for "/r/nCM: "
+								int loc = currentStart + 4 + System.lineSeparator().length();
 								document.replace(loc, originalTxt.length(), replacementTxt);
 //								final int caretOffset = loc + modContent.length();
 //								setCaretOffsetInEditor(uri, caretOffset);
