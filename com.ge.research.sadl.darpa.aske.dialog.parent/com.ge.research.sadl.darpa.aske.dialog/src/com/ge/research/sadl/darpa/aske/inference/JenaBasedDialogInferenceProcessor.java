@@ -143,7 +143,7 @@ public class JenaBasedDialogInferenceProcessor extends JenaBasedSadlInferencePro
 //	public static final String qhModelName = "http://aske.ge.com/MetaData";
 //	public static final String qhOwlFileName = "MetaData.owl";
 
-	public static final boolean debugMode = true;
+	public static final boolean debugMode = false;
 	
 	
     private static final String KCHAIN_SERVICE_URL_FRAGMENT = "/darpa/aske/kchain/";
@@ -1771,7 +1771,7 @@ private Map<String, String> getInverseMap(Map<String, String> map) {
 private void analyzeSensitivityResults(String sensitivityResult, Individual cgIns, Map<String, String> lbl2class, List<RDFNode> outputsList, String queryModelPrefix, Map<String, Map<String, List<String>>> insightsMap) throws IOException {
 //	sensitivityResult = "{\"sensitivityData\":[{\"OATMatrix\":{\"fsmach\":[0,0.09232463,0.1766437,0.2464482,0.29775146,0.32939076,0.34265238,0.3404852,0.3266189,0.30482608,0.2784374,0.25010738,0.22177133,0.194718,0.1697141,0.14713784,0.12709871,0.10953298,0.09427574,0.08111054],\"altd\":[0,0.15789473684210525,0.3157894736842105,0.47368421052631576,0.631578947368421,0.7894736842105263,0.9473684210526315,1.1052631578947367,1.263157894736842,1.4210526315789473,1.5789473684210527,1.7368421052631577,1.894736842105263,2.052631578947368,2.2105263157894735,2.3684210526315788,2.526315789473684,2.6842105263157894,2.8421052631578947,3]},\"OATRSMatrix\":{\"fsmach\":[0.33210394,0.3332521,0.33433527,0.33535418,0.33630925,0.33720127,0.33803058,0.3387981,0.3395045,0.34015036,0.3407363,0.34126318,0.34173167,0.3421426,0.34249645,0.3427943,0.34303662,0.34322447,0.34335843,0.34343934],\"altd\":[0.81,0.8194736842105264,0.8289473684210527,0.838421052631579,0.8478947368421054,0.8573684210526317,0.866842105263158,0.8763157894736843,0.8857894736842106,0.8952631578947369,0.9047368421052633,0.9142105263157896,0.9236842105263159,0.9331578947368422,0.9426315789473685,0.9521052631578948,0.9615789473684211,0.9710526315789475,0.9805263157894738,0.9900000000000001]},\"name\":\"altd\",\"type\":\"float\",\"value\":\"0.9\"},{\"OATMatrix\":{\"fsmach\":[0.30224335,0.30802384,0.3135674,0.3188915,0.32401192,0.32894263,0.33369592,0.33828318,0.34271488,0.34699997,0.35114703,0.355164,0.35905787,0.36283517,0.36650208,0.3700641,0.37352648,0.37689403,0.38017118,0.3833621],\"u0d\":[1.01,1.0621052631578947,1.1142105263157895,1.1663157894736842,1.2184210526315788,1.2705263157894737,1.3226315789473684,1.3747368421052633,1.426842105263158,1.4789473684210526,1.5310526315789474,1.583157894736842,1.635263157894737,1.6873684210526316,1.7394736842105263,1.791578947368421,1.8436842105263158,1.8957894736842107,1.9478947368421053,2]},\"OATRSMatrix\":{\"fsmach\":[0.32796124,0.32933322,0.33069092,0.33203492,0.3333654,0.33468255,0.33598652,0.33727765,0.33855626,0.3398223,0.34107617,0.34231815,0.34354833,0.34476686,0.34597406,0.34717005,0.34835514,0.34952927,0.3506928,0.35184592],\"u0d\":[1.26,1.2747368421052632,1.2894736842105263,1.3042105263157895,1.3189473684210526,1.3336842105263158,1.348421052631579,1.3631578947368421,1.3778947368421053,1.3926315789473684,1.4073684210526316,1.4221052631578948,1.436842105263158,1.451578947368421,1.4663157894736842,1.4810526315789474,1.4957894736842106,1.5105263157894737,1.5252631578947369,1.54]},\"name\":\"u0d\",\"type\":\"float\",\"value\":\"1.4\"}],\"url\":\"http://localhost:1177\"}";
 	
-	System.out.println(sensitivityResult);
+	if(debugMode) {System.out.println(sensitivityResult);}
 	
 	JsonElement je = new JsonParser().parse(sensitivityResult);
 	if (je.isJsonObject()) {
@@ -1785,14 +1785,10 @@ private void analyzeSensitivityResults(String sensitivityResult, Individual cgIn
 		else {
 			throw new IOException("Sensitivity returned no data: " + je.toString());
 		}
-//		String  = jobj.get("url").getAsString();
 	}
 	else {
 		throw new IOException("Unexpected response from sensitivity: " + je.toString());
 	}
-	
-	
-	//	return null;
 }
 
 /**
@@ -1831,18 +1827,6 @@ private void extractVarInfluence(JsonObject sensitivityResult, Individual cgIns,
 	Iterator<Entry<String, JsonElement>> mtxitr = sensitivityResult.get(matrixType).getAsJsonObject().entrySet().iterator();  //input/output - data
 	
 	inputArray = sensitivityResult.get(matrixType).getAsJsonObject().get(input).getAsJsonArray();
-
-	
-//	while(mtxitr.hasNext()) {
-//		Entry<String, JsonElement> mtxe = mtxitr.next();
-//		if(mtxe.getKey().equals(input)) {
-//			inputArray = sensitivityResult.get("OATMatrix").getAsJsonObject().get(input).getAsJsonArray();
-//		} else {
-//			output = mtxe.getKey();
-//			outputArray = sensitivityResult.get("OATMatrix").getAsJsonObject().get(output).getAsJsonArray();
-//		}
-//	}	
-
 
 	while(mtxitr.hasNext()) {
 		Entry<String, JsonElement> mtxe = mtxitr.next();
@@ -1955,7 +1939,7 @@ private void extractVarInfluence(JsonObject sensitivityResult, Individual cgIns,
 		outputInsights.put(output,insightList);
 		insightsMap.put(input, outputInsights);
 		
-		ingestTrend(input.replace("_val", ""), output, increasingIncreases, increasingDecreases, decreasingIncreases, decreasingDecreases, lower, higher, independent, cgIns, lbl2class, outputsList);
+		ingestTrend(input, output, increasingIncreases, increasingDecreases, decreasingIncreases, decreasingDecreases, lower, higher, independent, cgIns, lbl2class, outputsList);
 	}	
 	
 }
