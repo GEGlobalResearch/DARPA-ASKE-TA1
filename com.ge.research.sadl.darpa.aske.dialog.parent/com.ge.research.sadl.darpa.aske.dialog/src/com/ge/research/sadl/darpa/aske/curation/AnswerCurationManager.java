@@ -5307,6 +5307,9 @@ public class AnswerCurationManager {
 							StatementContent nextSc = celements.get(i + 1).getStatement();
 							if (nextSc instanceof EquationStatementContent) {
 								if (((AddEquationContent)someSc).getEquationName().equals(((EquationStatementContent)nextSc).getEquationName())) {
+									if (((EquationStatementContent)nextSc).getQuestionsForUser() != null && ((EquationStatementContent)nextSc).getQuestionsForUser().size() > 0) {
+										return false;
+									}
 									if (!isFailureCorrectingAction(someSc)) {
 										addFailureCorrectingAction(someSc);
 										return true;
@@ -5550,7 +5553,7 @@ public class AnswerCurationManager {
 //		}
 		clearConceptsAdded();
 		getConfigurationManager().clearReasoner();
-		clearInferenceProcessor();
+//		clearInferenceProcessor();
 	}
 
 	private boolean applyAnswerToUnansweredQuestion(StatementContent question, StatementContent sc) {
