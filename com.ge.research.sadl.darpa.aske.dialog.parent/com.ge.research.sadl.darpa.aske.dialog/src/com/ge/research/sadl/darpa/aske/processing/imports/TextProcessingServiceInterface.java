@@ -214,7 +214,9 @@ public class TextProcessingServiceInterface extends JsonServiceInterface {
 	/**
 	 * Method to retrieve a specified graph from the text service.
 	 * @param locality -- identifies the graph to be retrieved
-	 * @return -- String[2], where first is the serialization of the triples returned and the second is the format in which they are serialized, e.g., "n3"
+	 * @return -- String[3], where first is the localityURI of the graph, 
+	 * 			the second is the format of the serialized graph, e.g., "n3", and 
+	 * 			the third is serialization of the triples returned
 	 * @throws IOException
 	 */
 	public String[] retrieveGraph(String locality) throws IOException {
