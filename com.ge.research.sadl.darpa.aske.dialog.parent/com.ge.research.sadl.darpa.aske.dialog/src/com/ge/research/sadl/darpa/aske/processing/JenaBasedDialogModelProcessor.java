@@ -85,6 +85,7 @@ import com.ge.research.sadl.darpa.aske.dialog.CompareWhen;
 import com.ge.research.sadl.darpa.aske.dialog.ComparisonTableStatement;
 import com.ge.research.sadl.darpa.aske.dialog.ExtractStatement;
 import com.ge.research.sadl.darpa.aske.dialog.HowManyValuesStatement;
+import com.ge.research.sadl.darpa.aske.dialog.InsightStatement;
 import com.ge.research.sadl.darpa.aske.dialog.ModifiedAskStatement;
 import com.ge.research.sadl.darpa.aske.dialog.MyNameIsStatement;
 import com.ge.research.sadl.darpa.aske.dialog.NewExpressionStatement;
@@ -603,6 +604,10 @@ public class JenaBasedDialogModelProcessor extends JenaBasedSadlModelProcessor {
 			else {
 				throw new TranslationException("NoModelFoundStatement has unsupported target class: '" + trgt.getClass().getCanonicalName() + "'");
 			}
+		}
+		else if (element instanceof InsightStatement) {
+			// nothing needs to be done? Display only?
+			return null;
 		}
 		else {
 			throw new TranslationException("Model element of type '" + element.getClass().getCanonicalName() + "' not handled.");
@@ -1522,6 +1527,9 @@ public class JenaBasedDialogModelProcessor extends JenaBasedSadlModelProcessor {
 						}
 					}
 				}
+				else if (lobj instanceof TripleElement) {
+					// I think this is OK
+				}
 				else {
 					addError("LHS is of a type not currently handled", lexpr);
 				}
@@ -1694,6 +1702,52 @@ public class JenaBasedDialogModelProcessor extends JenaBasedSadlModelProcessor {
 								nnArgs.add(nn);
 							}
 						}
+					}
+				}
+				else if (((ProxyNode)arg).getProxyFor() instanceof TripleElement) {
+					if (((TripleElement)((ProxyNode)arg).getProxyFor()).getObject() instanceof NamedNode) {
+						nnArgs.add((NamedNode) ((TripleElement)((ProxyNode)arg).getProxyFor()).getObject());
+					}
+					else if (((TripleElement)((ProxyNode)arg).getProxyFor()).getObject() == null) {
+						try {
+							Object cookedArg = getIfTranslator().cook(arg);
+							Node obj = ((TripleElement)((ProxyNode)arg).getProxyFor()).getObject();
+							if (obj instanceof VariableNode) {
+								nnArgs.add((NamedNode) obj);
+							}
+							else {
+								throw new TranslationException("Unable to find an argument from TripleElement " + arg.toString());
+							}
+						} catch (InvalidNameException e) {
+							// TODO Auto-generated catch block
+							e.printStackTrace();
+						} catch (InvalidTypeException e) {
+							// TODO Auto-generated catch block
+							e.printStackTrace();
+						}
+					}
+					else if (((TripleElement)((ProxyNode)arg).getProxyFor()).getSubject() instanceof ProxyNode) {
+						try {
+							Object cookedArg = getIfTranslator().cook(arg);
+							Node obj = ((TripleElement)((ProxyNode)arg).getProxyFor()).getObject();
+							if (obj instanceof VariableNode) {
+								nnArgs.add((NamedNode) obj);
+							}
+							else {
+								throw new TranslationException("Unable to find an argument from TripleElement " + arg.toString());
+							}
+						} catch (InvalidNameException e) {
+							// TODO Auto-generated catch block
+							e.printStackTrace();
+						} catch (InvalidTypeException e) {
+							// TODO Auto-generated catch block
+							e.printStackTrace();
+						}
+						
+					}
+					else {
+						throw new TranslationException("Add equation argument of type TripleElement does not have a NamedNode as subject (subject is of type " + 
+								((TripleElement)((ProxyNode)arg).getProxyFor()).getSubject().getClass().getCanonicalName() + ")");
 					}
 				}
 				else {
