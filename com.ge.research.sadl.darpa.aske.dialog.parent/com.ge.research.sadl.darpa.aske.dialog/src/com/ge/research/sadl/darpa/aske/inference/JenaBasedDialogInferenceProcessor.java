@@ -1488,7 +1488,9 @@ private ResultSet[] processWhatWhenQuery(Resource resource, String queryModelFil
 	Map<RDFNode, RDFNode> dbnOutput = new HashMap<RDFNode,RDFNode>();
 
 	ResultSet[] dbnResults = null;
-
+	
+	boolean inverseQuery=false;
+	
 	ConfigurationManagerForIDE cmgr = getConfigMgrForIDE(resource);
 	
 	
@@ -1498,7 +1500,7 @@ private ResultSet[] processWhatWhenQuery(Resource resource, String queryModelFil
 	System.out.print("Retrieving composite model eqns: ");
 	long startTime = System.currentTimeMillis();
 //	eqnsResults = retrieveCG(resource, inputsList, outputsList);
-	eqnsResults1 = retrieveCG1(resource, inputsList, outputsList);
+	eqnsResults1 = retrieveCG1(resource, inputsList, outputsList, inverseQuery);
 	if (eqnsResults1 == null) {
 		RDFNode rdfn = outputsList.get(0);
 		if (rdfn.isURIResource()) {
@@ -1616,22 +1618,23 @@ private ResultSet[] processWhatWhenQuery(Resource resource, String queryModelFil
 				    
 				    kchainResultsJson = executeKChain(kchainEvalJson); //call sensitivity service instead
 				    
-				    JsonObject sensitivityJson = generateKChainSensitivityJson(cgJson);
-			    
-				    kchainEvalJson = addKCserviceURL(sensitivityJson); //Add kchain eval service URL for invizin
+				    if(!inverseQuery) {
+					    
+					    JsonObject sensitivityJson = generateKChainSensitivityJson(cgJson);
 				    
-					System.out.print("Sensitivity analysis: ");
-					startTime = System.currentTimeMillis();
-					sensitivityResult = execKChainSensitivity(sensitivityJson);
-				    sensitivityURL = getVisualizationURL(sensitivityResult);
-					endTime = System.currentTimeMillis();
-					System.out.println((endTime - startTime)/1000.0 + " secs");
-				    //sensitivityURL = "http://localhost:1177";
-				    
-//				    if (isMac()) {
-//				    	String[] cmd = {"/usr/bin/python", "-m", "dashserve", "/path/to/myapp.dash"};
-//				    	Runtime.getRuntime().exec("open -a Calculator.app");
-//				    }
+					    kchainEvalJson = addKCserviceURL(sensitivityJson); //Add kchain eval service URL for invizin
+					    
+						System.out.print("Sensitivity analysis: ");
+						startTime = System.currentTimeMillis();
+						sensitivityResult = execKChainSensitivity(sensitivityJson);
+					    sensitivityURL = getVisualizationURL(sensitivityResult);
+						endTime = System.currentTimeMillis();
+						System.out.println((endTime - startTime)/1000.0 + " secs");
+						
+				    }
+				    else {
+				    	System.out.print("Model uses inverse submodels");
+				    }
 				}
 			}		
 		}
@@ -3293,11 +3296,12 @@ private RDFNode getObjectAsLiteralOrResource(Node property, Node object) {
 		return com.hp.hpl.jena.query.ResultSetFactory.makeRewindable(eqnsRes);
 	}
 
-	private ResultSet retrieveCG1(Resource resource, List<RDFNode> inputsList, List<RDFNode> outputsList) throws SadlInferenceException, ConfigurationException, ReasonerNotFoundException, InvalidNameException, QueryParseException, QueryCancelledException {
+	private ResultSet retrieveCG1(Resource resource, List<RDFNode> inputsList, List<RDFNode> outputsList, boolean inverseQuery) throws SadlInferenceException, ConfigurationException, ReasonerNotFoundException, InvalidNameException, QueryParseException, QueryCancelledException {
 		String queryStr, inpStr, outpStr;
 	
 		ResultSet equations = null;
 		ResultSet equationsRes = null;
+		inverseQuery = false;
 	
 	
 		for(RDFNode ic : inputsList) {
@@ -3311,6 +3315,9 @@ private RDFNode getObjectAsLiteralOrResource(Node property, Node object) {
 				if (equations == null || !equations.hasNext()) {
 					queryStr = BUILD_COMP_GRAPH.replaceAll("LISTOFOUTPUTS", inpStr).replaceAll("LISTOFINPUTS", outpStr);
 					equations = runReasonerQuery(resource, queryStr);
+					if (equations != null) {
+						inverseQuery = true;
+					}
 				}
 	
 				if (equations != null && equations.hasNext() ) {
