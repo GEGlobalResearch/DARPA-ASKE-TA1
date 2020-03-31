@@ -187,8 +187,8 @@ public class JenaBasedDialogInferenceProcessor extends JenaBasedSadlInferencePro
 	private static final String METAMODEL_TREND_DECRDECR = METAMODEL_PREFIX + "decreasingDecreases";
 	private static final String METAMODEL_TREND_INDEPENDENT = METAMODEL_PREFIX + "independent";
 	private static final String METAMODEL_SENS_TREND_LOC_PROP = METAMODEL_PREFIX + "locationWRTquery";
-	private static final String METAMODEL_TREND_AT_LOWER = METAMODEL_PREFIX + "lower_values";
-	private static final String METAMODEL_TREND_AT_HIGHER = METAMODEL_PREFIX + "higher_values";
+	private static final String METAMODEL_TREND_AT_LOWER = METAMODEL_PREFIX + "lower_value";
+	private static final String METAMODEL_TREND_AT_HIGHER = METAMODEL_PREFIX + "higher_value";
 	private static final String METAMODEL_TREND_LOCALMAX = METAMODEL_PREFIX + "local_maximum";
 	private static final String METAMODEL_TREND_LOCALMIN = METAMODEL_PREFIX + "local_minimum";
 	public static final String METAMODEL_ASSUMPTIONSSATISFIED_PROP = METAMODEL_PREFIX + "assumptionsSatisfied";
