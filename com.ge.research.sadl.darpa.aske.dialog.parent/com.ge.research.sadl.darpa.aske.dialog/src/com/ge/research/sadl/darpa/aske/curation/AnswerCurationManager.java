@@ -4176,7 +4176,7 @@ public class AnswerCurationManager {
 					}
 				} 
 				else if(rs.getResultAt(row, trendIdx).equals("local_minimum") || rs.getResultAt(row, trendIdx).equals("local_maximum")) {
-					if(rs.getResultAt(row, locIdx) != null && (rs.getResultAt(row, locIdx).equals("lower_value") || rs.getResultAt(row, locIdx).equals("higher_value"))) {
+					if(rs.getResultAt(row, locIdx) != null && (rs.getResultAt(row, locIdx).equals("lower_values") || rs.getResultAt(row, locIdx).equals("higher_values"))) {
 						sb.append(rs.getResultAt(row, ouputIdx).toString());
 						if(isTable) {
 							sb.append(" of the ");
@@ -4184,7 +4184,7 @@ public class AnswerCurationManager {
 						}
 						sb.append(" has a ");
 						sb.append(rs.getResultAt(row, trendIdx));
-						sb.append(" at a " );
+						sb.append(" at " );
 //						if(rs.getResultAt(row, locIdx).equals("lower_value")) {
 //							sb.append("lower value");
 //						}
