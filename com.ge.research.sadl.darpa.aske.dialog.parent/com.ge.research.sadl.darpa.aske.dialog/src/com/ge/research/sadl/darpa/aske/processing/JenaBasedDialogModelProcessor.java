@@ -722,9 +722,11 @@ public class JenaBasedDialogModelProcessor extends JenaBasedSadlModelProcessor {
 				if (scheme != null) {
 					return new ExtractContent(element, Agent.USER, scheme, source, srcUri);
 				}
-			} catch (URISyntaxException e) {
-			} catch (MalformedURLException e) {
-			} catch (IOException e) {
+			} catch (Exception e) {
+				if (srcUri.startsWith("file:/") || srcUri.startsWith("http:/")) {
+					addError(e.getMessage(), element);
+					return null;
+				}
 			}
 			addInfo("'" + srcUri + "' does not appear to be a URL so doing extraction from the text", element);
 			return new ExtractContent(element, Agent.USER, "text", srcUri, srcUri);
@@ -1431,77 +1433,80 @@ public class JenaBasedDialogModelProcessor extends JenaBasedSadlModelProcessor {
 				Object lobj = processExpression(lexpr);
 				String lexprtext = NodeModelUtils.findActualNodeFor(lexpr).getText();
 				Object robj = processExpression(rexpr);
-				if (lobj instanceof VariableNode) {			// LHS is a VariableNode
-					if (robj instanceof NamedNode) {		// RHS is a NamedNode
-						if (((NamedNode)robj).getNodeType().equals(NodeType.ClassNode)) {		// RHS NamedNode is a class name
-							// this is the addition of a named argument variable type
-							//  find prior Equation statement, find argument variable, add the type to the argument
-							List<ConversationElement> celements = getAnswerCurationManager(getCurrentResource()).getConversationElements();
-							if (celements != null) {
-								ConversationElement lastElement = celements.get(celements.size() - 1);
-								if (lastElement != null && lastElement.getStatement() instanceof WhatIsContent &&
-										lastElement.getStatement().getAgent().equals(Agent.CM) &&
-										((WhatIsContent)lastElement.getStatement()).getTarget() instanceof VariableNode) {
-									VariableNode argVar = (VariableNode) ((WhatIsContent)lastElement.getStatement()).getTarget();
-									// 2. find prior Equation statement to be able to add the type to the argument
-									for (int i = celements.size() - 1; i >= 0; i--) {
-										ConversationElement anElement = celements.get(i);
-										if (anElement.getStatement() instanceof EquationStatementContent) {
-											 EquationStatementContent eqContent = (EquationStatementContent)anElement.getStatement();
-											AddAugmentedTypeInfoContent mec = new AddAugmentedTypeInfoContent(element, Agent.USER, uptxt, eqContent, argVar, (Node)robj);
-											return mec;
+				boolean needsCooking = doesNewExpressionContainAugmentedTypeInfo(lobj, robj);
+				if (!needsCooking) {
+					if (lobj instanceof VariableNode) {			// LHS is a VariableNode
+						if (robj instanceof NamedNode) {		// RHS is a NamedNode
+							if (((NamedNode)robj).getNodeType().equals(NodeType.ClassNode)) {		// RHS NamedNode is a class name
+								// this is the addition of a named argument variable type
+								//  find prior Equation statement, find argument variable, add the type to the argument
+								List<ConversationElement> celements = getAnswerCurationManager(getCurrentResource()).getConversationElements();
+								if (celements != null) {
+									ConversationElement lastElement = celements.get(celements.size() - 1);
+									if (lastElement != null && lastElement.getStatement() instanceof WhatIsContent &&
+											lastElement.getStatement().getAgent().equals(Agent.CM) &&
+											((WhatIsContent)lastElement.getStatement()).getTarget() instanceof VariableNode) {
+										VariableNode argVar = (VariableNode) ((WhatIsContent)lastElement.getStatement()).getTarget();
+										// 2. find prior Equation statement to be able to add the type to the argument
+										for (int i = celements.size() - 1; i >= 0; i--) {
+											ConversationElement anElement = celements.get(i);
+											if (anElement.getStatement() instanceof EquationStatementContent) {
+												 EquationStatementContent eqContent = (EquationStatementContent)anElement.getStatement();
+												AddAugmentedTypeInfoContent mec = new AddAugmentedTypeInfoContent(element, Agent.USER, uptxt, eqContent, argVar, (Node)robj);
+												return mec;
+											}
 										}
+										addError("Addition of information missing preceding equation to be augmented", expr);
 									}
-									addError("Addition of information missing preceding equation to be augmented", expr);
+									else {
+										addError("Addition of information missing preceding question to be answered", expr);
+									}
 								}
 								else {
-									addError("Addition of information missing preceding question to be answered", expr);
+									addError("Addition of information missing preceding context", expr);
 								}
 							}
+							else if (robj instanceof VariableNode) {		// RHS NamedNode is a variable
+								// need to ask what this is
+								WhatIsContent wic = new WhatIsContent(element, Agent.USER, robj, null);
+								return wic;
+							}
 							else {
-								addError("Addition of information missing preceding context", expr);
+								addError("Unexpected right-hand side of Add expression", rexpr);
 							}
 						}
-						else if (robj instanceof VariableNode) {		// RHS NamedNode is a variable
-							// need to ask what this is
-							WhatIsContent wic = new WhatIsContent(element, Agent.USER, robj, null);
-							return wic;
-						}
-						else {
-							addError("Unexpected right-hand side of Add expression", rexpr);
-						}
-					}
-					String lhs = ((VariableNode)lobj).getName();
-//					String eqName = "calc_" + lhs;
-					String eqName = "func_" + lhs;
-					if (robj instanceof BuiltinElement) { // && isNumericOperator(((BuiltinElement)robj).getFuncName())) {
-						if (allArgumentsVariables((BuiltinElement)robj)) {
-							StringBuilder sb = new StringBuilder("Equation ");
-							sb.append(eqName);
-							sb.append(" (alias \"");
-							sb.append(lhs);
-							sb.append("\")");
-							sb.append(" (");
-							sb.append(generateArguments((BuiltinElement)robj));
-							sb.append(") returns double: ");
-							String sadlEqText;
-							try {
-								DialogIntermediateFormTranslator dift = new DialogIntermediateFormTranslator(this, getTheJenaModel());
-								sadlEqText = dift.intermediateFormToSadlExpression((BuiltinElement) robj);
+						String lhs = ((VariableNode)lobj).getName();
+	//					String eqName = "calc_" + lhs;
+						String eqName = "func_" + lhs;
+						if (robj instanceof BuiltinElement) { // && isNumericOperator(((BuiltinElement)robj).getFuncName())) {
+							if (allArgumentsVariables((BuiltinElement)robj)) {
+								StringBuilder sb = new StringBuilder("Equation ");
+								sb.append(eqName);
+								sb.append(" (alias \"");
+								sb.append(lhs);
+								sb.append("\")");
+								sb.append(" (");
+								sb.append(generateArguments((BuiltinElement)robj));
+								sb.append(") returns double: ");
+								String sadlEqText;
+								try {
+									DialogIntermediateFormTranslator dift = new DialogIntermediateFormTranslator(this, getTheJenaModel());
+									sadlEqText = dift.intermediateFormToSadlExpression((BuiltinElement) robj);
+								}
+								catch (TranslationException e) {
+									addError(e.getMessage(), expr);
+									sadlEqText = robj.toString();
+								}
+								sb.append(sadlEqText);
+								sb.append(".");
+								AddEquationContent nec = new AddEquationContent(element, Agent.USER, uptxt, eqName, sb.toString());
+								nec.setLhs(lhs);
+								nec.setEquationBody(sadlEqText);
+								return nec;
 							}
-							catch (TranslationException e) {
-								addError(e.getMessage(), expr);
-								sadlEqText = robj.toString();
+							else {
+								addError("Expected all arguments to be variables", rexpr);
 							}
-							sb.append(sadlEqText);
-							sb.append(".");
-							AddEquationContent nec = new AddEquationContent(element, Agent.USER, uptxt, eqName, sb.toString());
-							nec.setLhs(lhs);
-							nec.setEquationBody(sadlEqText);
-							return nec;
-						}
-						else {
-							addError("Expected all arguments to be variables", rexpr);
 						}
 					}
 				}
@@ -1530,25 +1535,27 @@ public class JenaBasedDialogModelProcessor extends JenaBasedSadlModelProcessor {
 				else if (lobj instanceof TripleElement) {
 					// I think this is OK
 				}
-				else {
+				else if (!(lobj instanceof VariableNode)){
 					addError("LHS is of a type not currently handled", lexpr);
 				}
-				if (lobj instanceof VariableNode) {
-					addWarning(((VariableNode)lobj).getName() + " is not defined.", lexpr);
-					WhatIsContent wic = new WhatIsContent(element, Agent.CM, lobj, null);
-					try {
-						wic.setExplicitQuestion("Concept " + getAnswerCurationManager(getCurrentResource()).checkForKeyword(((VariableNode)lobj).getName()) + " is not defined; please define or do extraction");
-					} catch (IOException e) {
-						// TODO Auto-generated catch block
-						e.printStackTrace();
+				if (!needsCooking) {
+					if (lobj instanceof VariableNode) {
+						addWarning(((VariableNode)lobj).getName() + " is not defined.", lexpr);
+						WhatIsContent wic = new WhatIsContent(element, Agent.CM, lobj, null);
+						try {
+							wic.setExplicitQuestion("Concept " + getAnswerCurationManager(getCurrentResource()).checkForKeyword(((VariableNode)lobj).getName()) + " is not defined; please define or do extraction");
+						} catch (IOException e) {
+							// TODO Auto-generated catch block
+							e.printStackTrace();
+						}
+						return wic;					
 					}
-					return wic;					
-				}
-				else if (!(lobj instanceof GraphPatternElement)) {
-					addError("LHS is not a Graph Pattern", lexpr);
-				}
-				else if (!(robj instanceof GraphPatternElement)) {
-					addError("RHS is not a Graph Pattern", lexpr);
+					else if (!(lobj instanceof GraphPatternElement)) {
+						addError("LHS is not a Graph Pattern", lexpr);
+					}
+					else if (!(robj instanceof GraphPatternElement)) {
+						addError("RHS is not a Graph Pattern", lexpr);
+					}
 				}
 				else {
 					String lhs = getNewEquationName(lobj);
@@ -1556,7 +1563,9 @@ public class JenaBasedDialogModelProcessor extends JenaBasedSadlModelProcessor {
 					String rn = "func_" + lhs;
 					Rule pseudoRule = new Rule(rn);
 					pseudoRule.addIf((GraphPatternElement) robj);
-					pseudoRule.addThen((GraphPatternElement) lobj);
+					if (lobj instanceof GraphPatternElement) {
+						pseudoRule.addThen((GraphPatternElement) lobj);
+					}
 					DialogIntermediateFormTranslator dift = new DialogIntermediateFormTranslator(this, getTheJenaModel());
 					dift.setStartingVariableNumber(getVariableNumber());
 					populateRuleVariables(pseudoRule);
@@ -1669,6 +1678,47 @@ public class JenaBasedDialogModelProcessor extends JenaBasedSadlModelProcessor {
 			}
 		}
 		return null;
+	}
+
+	/**
+	 * Method to determine if the new expression needs to be cooked and provides augmented type info
+	 * @param lobj
+	 * @param robj
+	 * @return
+	 */
+	private boolean doesNewExpressionContainAugmentedTypeInfo(Object lobj, Object robj) {
+		boolean leftAugmentedType = false;
+		boolean rightAugmentedType = doesExpressionContainAugmentedTypeInfo(robj);
+		if (lobj instanceof VariableNode && ((VariableNode)lobj).getType() != null) {
+			leftAugmentedType = true;
+		}
+		else if (!(lobj instanceof VariableNode)) {
+			leftAugmentedType = true;
+		}
+		if (leftAugmentedType || rightAugmentedType) {
+			return true;
+		}
+		return false;
+	}
+
+	private boolean doesExpressionContainAugmentedTypeInfo(Object exprObj) {
+		if (exprObj instanceof BuiltinElement) {
+			for (Node arg : ((BuiltinElement)exprObj).getArguments()) {
+				if (doesExpressionContainAugmentedTypeInfo(arg)) {
+					return true;
+				}
+			}
+		}
+		else if (exprObj instanceof TripleElement) {
+			return true;
+		}
+		else if (exprObj instanceof ProxyNode) {
+			return doesExpressionContainAugmentedTypeInfo(((ProxyNode)exprObj).getProxyFor());
+		}
+		else if (exprObj instanceof NamedNode) {
+			return true;
+		}
+		return false;
 	}
 
 	private String generateArguments(BuiltinElement be) throws TranslationException {
@@ -1823,7 +1873,7 @@ public class JenaBasedDialogModelProcessor extends JenaBasedSadlModelProcessor {
 
 	private String getAugmentedTypeOfReturn(Rule rule) {
 		List<GraphPatternElement> thens = rule.getThens();
-		if (thens.size() == 1 && thens.get(0) instanceof TripleElement) {
+		if (thens != null && thens.size() == 1 && thens.get(0) instanceof TripleElement) {
 			StringBuilder sb = new StringBuilder();
 			TripleElement tr = (TripleElement) thens.get(0);
 			sb.append(tr.getPredicate().getName());
@@ -1880,6 +1930,9 @@ public class JenaBasedDialogModelProcessor extends JenaBasedSadlModelProcessor {
 			}
 			Node pred = ((TripleElement)lhs).getPredicate();
 			return pred.getName();
+		}
+		else if (lhs instanceof VariableNode) {
+			return ((VariableNode)lhs).getName();
 		}
 		return "tbd";
 	}
