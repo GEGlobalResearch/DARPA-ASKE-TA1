@@ -77,7 +77,10 @@ public class P2Tests extends AbstractDialogTest {
 			val errors = issues.filter[severity === Severity.ERROR]
 			assertEquals(0, errors.size)
 			if (processor instanceof JenaBasedDialogModelProcessor) {
-				val conversation = (processor as JenaBasedDialogModelProcessor).answerCurationManager.conversation
+				val jbdp = (processor as JenaBasedDialogModelProcessor)
+				val resource = jbdp.currentResource
+				val acm = jbdp.getAnswerCurationManager(resource)
+				val conversation = acm.conversation
 				assertNotNull(conversation)
 				assertNotNull(conversation.statements);
 				assertEquals(2, conversation.statements.size)

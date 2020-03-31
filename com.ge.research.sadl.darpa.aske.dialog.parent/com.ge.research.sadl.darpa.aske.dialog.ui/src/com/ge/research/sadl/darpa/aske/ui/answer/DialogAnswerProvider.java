@@ -191,8 +191,8 @@ public class DialogAnswerProvider extends BaseDialogAnswerProvider {
 //			answerConfigurationManager.clearQuestionsAndAnsers();
 //		}
 		if (configManager != null) {
-			configManager.addPrivateKeyValuePair(DialogConstants.DIALOG_ANSWER_PROVIDER, null);
-			configManager.addPrivateKeyValuePair(DialogConstants.ANSWER_CURATION_MANAGER, null);
+			configManager.addPrivateKeyMapValueByResource(DialogConstants.DIALOG_ANSWER_PROVIDER, getResource(), null);
+			configManager.addPrivateKeyMapValueByResource(DialogConstants.ANSWER_CURATION_MANAGER, getResource(), null);
 		}
 		LOGGER.debug("[DialogAnswerProvider] >>> Disposed. [" + uri + "]");
 	}
@@ -260,7 +260,7 @@ public class DialogAnswerProvider extends BaseDialogAnswerProvider {
 	private IConfigurationManagerForIDE initializeConfigManager(Resource resource) throws ConfigurationException {
 		String modelFolder = SadlActionHandler.getModelFolderFromResource(resource);
 		ConfigurationManagerForIDE configManager = ConfigurationManagerForIdeFactory.getConfigurationManagerForIDE(modelFolder, null);
-		configManager.addPrivateKeyValuePair(DialogConstants.DIALOG_ANSWER_PROVIDER, this);
+		configManager.addPrivateKeyMapValueByResource(DialogConstants.DIALOG_ANSWER_PROVIDER, resource, this);
 		return configManager;
 	}
 
@@ -347,7 +347,7 @@ public class DialogAnswerProvider extends BaseDialogAnswerProvider {
 		LOGGER.debug("replacing '" + originalTxt + "' with '" + replacementTxt + "'");
 		Display.getDefault().asyncExec(() -> {
 //		Display.getDefault().syncExec(() -> {
-			Object elementInfos = getConfigMgr().getPrivateKeyValuePair("ElementInfo");
+			Object elementInfos = getConfigMgr().getPrivateKeyMapValueByResource("ElementInfo", getResource());
 			String docText = document.get();
 			int docLength = document.getLength();
 			int idx = 0;
@@ -435,7 +435,7 @@ public class DialogAnswerProvider extends BaseDialogAnswerProvider {
 		int loc = 0;
 		String lineSep = System.lineSeparator();
 		int lineSepLen = lineSep.length();
-		Object elementInfos = getConfigMgr().getPrivateKeyValuePair("ElementInfo");
+		Object elementInfos = getConfigMgr().getPrivateKeyMapValueByResource("ElementInfo", getResource());
 		String docText = document.get();
 		int docLength = document.getLength();
 		int idx = 0;

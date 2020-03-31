@@ -193,7 +193,7 @@ public class TextProcessorTests {
 		acm.setDomainModel(cm.loadOntModel(new SadlUtils().fileUrlToFileName(cm.getAltUrlFromPublicUri(domainModelName)), true));
 		
 		IDialogAnswerProvider dapcft = new DialogAnswerProviderConsoleForTest();
-		cm.addPrivateKeyValuePair(DialogConstants.DIALOG_ANSWER_PROVIDER, dapcft);
+		cm.addPrivateKeyMapValueByResource(DialogConstants.DIALOG_ANSWER_PROVIDER, acm.getResource(), dapcft);
 		
 		String defaultTextModelPrefix = "Sound";
 		String defaultTextModelName = "http://com.ge.research.darpa.aske.ta1.explore/" + defaultTextModelPrefix;
@@ -427,7 +427,7 @@ public class TextProcessorTests {
 		acm.setDomainModel(cm.loadOntModel(new SadlUtils().fileUrlToFileName(cm.getAltUrlFromPublicUri(domainModelName)), true));
 		
 		IDialogAnswerProvider dapcft = new DialogAnswerProviderConsoleForTest();
-		cm.addPrivateKeyValuePair(DialogConstants.DIALOG_ANSWER_PROVIDER, dapcft);
+		cm.addPrivateKeyMapValueByResource(DialogConstants.DIALOG_ANSWER_PROVIDER, acm.getResource(), dapcft);
 		
 		String defaultTextModelPrefix = "Isentrop";
 		String defaultTextModelName = "http://com.ge.research.darpa.aske.ta1.explore/" + defaultTextModelPrefix;

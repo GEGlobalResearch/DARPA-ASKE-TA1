@@ -232,8 +232,9 @@ class DialogUITest extends AbstractDialogPlatformTest {
 			assertNotNull(ontModel)
 			assertTrue(issues.filter[severity === Severity.ERROR].empty)
 			if (processor instanceof JenaBasedDialogModelProcessor) {
-				val jbdmp = (processor as JenaBasedDialogModelProcessor)
-				val acm = jbdmp.answerCurationManager
+				val jbdp = (processor as JenaBasedDialogModelProcessor)
+				val resource = jbdp.currentResource
+				val acm = jbdp.getAnswerCurationManager(resource)
 				val sadlContent = acm.getExtractionProcessor().getGeneratedSadlContent()
 				println("\n\n*****  New Dialog editor content *********")
 				println(sadlContent)
