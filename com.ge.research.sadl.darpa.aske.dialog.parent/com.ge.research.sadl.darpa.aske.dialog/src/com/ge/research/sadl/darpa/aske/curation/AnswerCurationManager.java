@@ -193,6 +193,7 @@ public class AnswerCurationManager {
 	
 	private Map<String, String> questionsAndAnswers = new HashMap<String, String>();	// question text is the key, answer text is the value
 	private Map<String, QuestionWithCallbackContent> unansweredQuestions = new HashMap<String, QuestionWithCallbackContent>();
+	private Map<String, String> augmentedTypeQuestionsAsked = new HashMap<String, String>();
 	
 	private IConfigurationManagerForIDE configurationManager;
 	private Map<String, String> preferences = null;
@@ -5111,7 +5112,7 @@ public class AnswerCurationManager {
 	 */
 	public void processConversation(org.eclipse.emf.ecore.resource.Resource resource, OntModel ontModel, String modelName) {
 		if (getDialogAnswerProvider(resource) == null) {
-			System.err.println("No DialogAnswerProvider registered for '" + resource.getURI().lastSegment() + "'.");
+//			System.err.println("No DialogAnswerProvider registered for '" + resource.getURI().lastSegment() + "'.");
 			return;
 		}
 		org.eclipse.emf.ecore.resource.Resource dapRsrc = getDialogAnswerProvider(resource).getResource();
@@ -5610,16 +5611,22 @@ public class AnswerCurationManager {
 		if (questions != null) {
 			for (StatementContent sc : questions) {
 				if (!questionHasBeenAsked(dialogStmts, eqsc, sc)) {
+					String questionKey = null;
 					String question = null;
 					if (sc instanceof RequestArgumentAugmentedTypeContent) {
 						question = ((RequestArgumentAugmentedTypeContent)sc).getQuestion();
+						questionKey = ((RequestArgumentAugmentedTypeContent)sc).getEquationName() + ((RequestArgumentAugmentedTypeContent)sc).getArgumentName();
 					}
 					else if (sc instanceof RequestReturnAugmentedTypeContent) {
 						question = ((RequestReturnAugmentedTypeContent)sc).getQuestion();
+						questionKey = ((RequestReturnAugmentedTypeContent)sc).getEquationName() + "_returns";
 					}
 					if (question != null) {
 						try {
-							askUser(getOwlModelsFolder(), question, false, sc.getHostEObject());
+							if (getAugmentedTypeQuestionAsked(questionKey) == null) {
+								askUser(getOwlModelsFolder(), question, false, sc.getHostEObject());
+								addAugmentedTypeQuestionAsked(questionKey, question);
+							}
 						} catch (ConfigurationException e) {
 							// TODO Auto-generated catch block
 							e.printStackTrace();
@@ -6101,5 +6108,17 @@ public class AnswerCurationManager {
 	
 	private ExtractContent getExtractionContext() {
 		return extractionContext;
+	}
+
+	private String getAugmentedTypeQuestionAsked(String questionKey) {
+		return augmentedTypeQuestionsAsked.get(questionKey);
+	}
+
+	private void addAugmentedTypeQuestionAsked(String questionKey, String questionText) {
+		augmentedTypeQuestionsAsked.put(questionKey, questionText);
+	}
+	
+	private void clearAugmentedTypeQuestionsAsked() {
+		augmentedTypeQuestionsAsked.clear();
 	}
 }
