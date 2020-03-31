@@ -370,7 +370,7 @@ public class AnswerCurationManager {
 		if (saveAsSadl != null) {
 			if (saveAsSadl.equals(SaveAsSadl.AskUserSaveAsSadl)) {
 				// ask user if they want a SADL file saved
-				IDialogAnswerProvider dap = getDialogAnswerProvider();
+				IDialogAnswerProvider dap = getDialogAnswerProvider(getResource());
 //				if (dap == null) {
 //					dap = new DialogAnswerProviderConsoleForTest();
 //				}
@@ -436,7 +436,7 @@ public class AnswerCurationManager {
 		String clearMsg = getExtractionProcessor().getTextProcessor().clearGraph(localityURI);
 		
 		if (getDomainModelName() == null || getDomainModel() == null) {
-			Object dap = getConfigurationManager().getPrivateKeyValuePair(DialogConstants.DIALOG_ANSWER_PROVIDER);
+			Object dap = getConfigurationManager().getPrivateKeyMapValueByResource(DialogConstants.DIALOG_ANSWER_PROVIDER, getResource());
 			if (dap instanceof IDialogAnswerProvider) {
 				String domainModelName = OntModelProvider.getModelName(((IDialogAnswerProvider)dap).getResource());
 				setDomainModelName(domainModelName);
@@ -1957,7 +1957,7 @@ public class AnswerCurationManager {
 		OntModel dm = getDomainModel();
 		if (dm != null) {
 			OntResource resourceFound = null;
-			if (getDialogAnswerProvider() instanceof DialogAnswerProviderConsoleForTest) {
+			if (getDialogAnswerProvider(getResource()) instanceof DialogAnswerProviderConsoleForTest) {
 				// only check the domain model if it is not generated from an Eclipse UI DialogAnswerProvider
 				ExtendedIterator<Ontology> oitr = dm.listOntologies();
 				while (oitr.hasNext()) {
@@ -2593,11 +2593,11 @@ public class AnswerCurationManager {
 		else {
 			sc.setHostEObject(getConversationHostObject(sc.getHostEObject()));
 		}
-		if (getDialogAnswerProvider() != null) {
+		if (getDialogAnswerProvider(getResource()) != null) {
 			// talk to the user via the Dialog editor
 			Method acmic = null;
 			try {
-				acmic = getDialogAnswerProvider().getClass().getMethod("addCurationManagerInitiatedContent", AnswerCurationManager.class, StatementContent.class);
+				acmic = getDialogAnswerProvider(getResource()).getClass().getMethod("addCurationManagerInitiatedContent", AnswerCurationManager.class, StatementContent.class);
 			} catch (NoSuchMethodException e1) {
 				// TODO Auto-generated catch block
 				e1.printStackTrace();
@@ -2608,7 +2608,7 @@ public class AnswerCurationManager {
 			if (acmic != null) {
 				acmic.setAccessible(true);
 				try {
-					acmic.invoke(getDialogAnswerProvider(), this, sc);
+					acmic.invoke(getDialogAnswerProvider(getResource()), this, sc);
 				} catch (IllegalAccessException e) {
 					// TODO Auto-generated catch block
 					e.printStackTrace();
@@ -2630,11 +2630,11 @@ public class AnswerCurationManager {
 	 * @param replacementTxt
 	 */
 	private void replaceDialogText(EObject eObject, String originalTxt, String replacementTxt) {
-		if (getDialogAnswerProvider() != null) {
+		if (getDialogAnswerProvider(getResource()) != null) {
 			// talk to the user via the Dialog editor
 			Method acmic = null;
 			try {
-				acmic = getDialogAnswerProvider().getClass().getMethod("replaceDialogText", AnswerCurationManager.class, EObject.class, String.class, String.class);
+				acmic = getDialogAnswerProvider(getResource()).getClass().getMethod("replaceDialogText", AnswerCurationManager.class, EObject.class, String.class, String.class);
 			} catch (NoSuchMethodException e1) {
 				// TODO Auto-generated catch block
 				e1.printStackTrace();
@@ -2645,7 +2645,7 @@ public class AnswerCurationManager {
 			if (acmic != null) {
 				acmic.setAccessible(true);
 				try {
-					acmic.invoke(getDialogAnswerProvider(), this, getConversationHostObject(eObject), originalTxt, replacementTxt);
+					acmic.invoke(getDialogAnswerProvider(getResource()), this, getConversationHostObject(eObject), originalTxt, replacementTxt);
 				} catch (IllegalAccessException e) {
 					// TODO Auto-generated catch block
 					e.printStackTrace();
@@ -2686,11 +2686,11 @@ public class AnswerCurationManager {
 		if (quote) {
 			msg = doubleQuoteContent(msg);
 		}
-		if (getDialogAnswerProvider() != null) {
+		if (getDialogAnswerProvider(getResource()) != null) {
 			// talk to the user via the Dialog editor
 			Method acmic = null;
 			try {
-				acmic = getDialogAnswerProvider().getClass().getMethod("addCurationManagerAnswerContent", AnswerCurationManager.class, String.class, Object.class);
+				acmic = getDialogAnswerProvider(getResource()).getClass().getMethod("addCurationManagerAnswerContent", AnswerCurationManager.class, String.class, Object.class);
 			} catch (NoSuchMethodException e1) {
 				// TODO Auto-generated catch block
 				e1.printStackTrace();
@@ -2699,7 +2699,7 @@ public class AnswerCurationManager {
 				e1.printStackTrace();
 			}
 			if (acmic == null) {
-				Method[] dapMethods = getDialogAnswerProvider().getClass().getDeclaredMethods();
+				Method[] dapMethods = getDialogAnswerProvider(getResource()).getClass().getDeclaredMethods();
 				if (dapMethods != null) {
 					for (Method m : dapMethods) {
 						if (m.getName().equals("addCurationManagerAnswerContent")) {
@@ -2712,7 +2712,7 @@ public class AnswerCurationManager {
 			if (acmic != null) {
 				acmic.setAccessible(true);
 				try {
-					Object retval = acmic.invoke(getDialogAnswerProvider(), this, msg, getConversationHostObject(ctx));
+					Object retval = acmic.invoke(getDialogAnswerProvider(getResource()), this, msg, getConversationHostObject(ctx));
 					if (retval != null) {
 						return retval.toString();
 					}
@@ -2775,16 +2775,16 @@ public class AnswerCurationManager {
 	 * Method to answer whether the DialogAnswerProvider has been initialized
 	 * @return
 	 */
-	public boolean dialogAnserProviderInitialized() {
+	public boolean dialogAnserProviderInitialized(org.eclipse.emf.ecore.resource.Resource resource) {
 		if (dialogAnswerProvider == null) {
-			setDialogAnswerProvider((IDialogAnswerProvider) getConfigurationManager().getPrivateKeyValuePair(DialogConstants.DIALOG_ANSWER_PROVIDER));
+			setDialogAnswerProvider((IDialogAnswerProvider) getConfigurationManager().getPrivateKeyMapValueByResource(DialogConstants.DIALOG_ANSWER_PROVIDER, resource));
 		}
 		return (dialogAnswerProvider != null);
 	}
 
-	protected IDialogAnswerProvider getDialogAnswerProvider() {
+	protected IDialogAnswerProvider getDialogAnswerProvider(org.eclipse.emf.ecore.resource.Resource resource) {
 		if (dialogAnswerProvider == null) {
-			IDialogAnswerProvider dapFound = (IDialogAnswerProvider) getConfigurationManager().getPrivateKeyValuePair(DialogConstants.DIALOG_ANSWER_PROVIDER);
+			IDialogAnswerProvider dapFound = (IDialogAnswerProvider) getConfigurationManager().getPrivateKeyMapValueByResource(DialogConstants.DIALOG_ANSWER_PROVIDER, resource);
 			if (dapFound != null) {
 				org.eclipse.emf.ecore.resource.Resource dapRsrc = dapFound.getResource();
 				XtextResource thisRsrc = getResource();
@@ -2797,7 +2797,7 @@ public class AnswerCurationManager {
 				}
 			}
 		} else if (dialogAnswerProvider instanceof DialogAnswerProviderConsoleForTest) {
-			IDialogAnswerProvider provider = (IDialogAnswerProvider) getConfigurationManager().getPrivateKeyValuePair(DialogConstants.DIALOG_ANSWER_PROVIDER);
+			IDialogAnswerProvider provider = (IDialogAnswerProvider) getConfigurationManager().getPrivateKeyMapValueByResource(DialogConstants.DIALOG_ANSWER_PROVIDER, resource);
 			if (provider != null && !(provider instanceof DialogAnswerProviderConsoleForTest)) {
 				dialogAnswerProvider.dispose(); // Dispose the current, console-based answer provider.
 				setDialogAnswerProvider(provider); // Updated with the`document`-aware dialog provider.
@@ -2868,7 +2868,7 @@ public class AnswerCurationManager {
 	
 	public DialogContent getConversation() {
 		if (conversation == null) {
-			conversation = new DialogContent(getDialogAnswerProvider().getResource(), this);
+			conversation = new DialogContent(getDialogAnswerProvider(getResource()).getResource(), this);
 		}
 		return conversation;
 	}
@@ -4396,11 +4396,11 @@ public class AnswerCurationManager {
  * @return
  */
 	private String displayGraph(IGraphVisualizer visualizer) {
-		if (getDialogAnswerProvider() != null) {
+		if (getDialogAnswerProvider(getResource()) != null) {
 			// talk to the user via the Dialog editor
 			Method acmic = null;
 			try {
-				acmic = getDialogAnswerProvider().getClass().getMethod("displayGraph", IGraphVisualizer.class);
+				acmic = getDialogAnswerProvider(getResource()).getClass().getMethod("displayGraph", IGraphVisualizer.class);
 			} catch (NoSuchMethodException e1) {
 				// TODO Auto-generated catch block
 				e1.printStackTrace();
@@ -4409,7 +4409,7 @@ public class AnswerCurationManager {
 				e1.printStackTrace();
 			}
 			if (acmic == null) {
-				Method[] dapMethods = getDialogAnswerProvider().getClass().getDeclaredMethods();
+				Method[] dapMethods = getDialogAnswerProvider(getResource()).getClass().getDeclaredMethods();
 				if (dapMethods != null) {
 					for (Method m : dapMethods) {
 						if (m.getName().equals("displayGraph")) {
@@ -4422,7 +4422,7 @@ public class AnswerCurationManager {
 			if (acmic != null) {
 				acmic.setAccessible(true);
 				try {
-					Object retVal = acmic.invoke(getDialogAnswerProvider(), visualizer);
+					Object retVal = acmic.invoke(getDialogAnswerProvider(getResource()), visualizer);
 					return retVal != null ? retVal.toString() : null;
 				} catch (IllegalAccessException e) {
 					// TODO Auto-generated catch block
@@ -4982,17 +4982,17 @@ public class AnswerCurationManager {
 	}
 
 	private Object[] insertRulesAndQuery(org.eclipse.emf.ecore.resource.Resource resource, List<Rule> rules) throws ExecutionException, SadlInferenceException {
-		getConfigurationManager().addPrivateKeyValuePair(DialogConstants.ANSWER_CURATION_MANAGER, this);
+		getConfigurationManager().addPrivateKeyMapValueByResource(DialogConstants.ANSWER_CURATION_MANAGER, resource, this);
 		return getInferenceProcessor().insertRulesAndQuery(resource, rules);
 	}
 
 	private Object[] insertTriplesAndQuery(org.eclipse.emf.ecore.resource.Resource resource, List<TripleElement[]> triples) throws ExecutionException, SadlInferenceException {
-		getConfigurationManager().addPrivateKeyValuePair(DialogConstants.ANSWER_CURATION_MANAGER, this);
+		getConfigurationManager().addPrivateKeyMapValueByResource(DialogConstants.ANSWER_CURATION_MANAGER, resource, this);
 		return getInferenceProcessor().insertTriplesAndQuery(resource, triples);
 	}
 	
 	private Object[] insertTriplesAndQuery(org.eclipse.emf.ecore.resource.Resource resource2, TripleElement[] triples) throws SadlInferenceException {
-		getConfigurationManager().addPrivateKeyValuePair(DialogConstants.ANSWER_CURATION_MANAGER, this);
+		getConfigurationManager().addPrivateKeyMapValueByResource(DialogConstants.ANSWER_CURATION_MANAGER, resource, this);
 		return getInferenceProcessor().insertTriplesAndQuery(resource2, triples);
 	}
 
@@ -5104,11 +5104,11 @@ public class AnswerCurationManager {
 	 * @param modelName 
 	 */
 	public void processConversation(org.eclipse.emf.ecore.resource.Resource resource, OntModel ontModel, String modelName) {
-		if (getDialogAnswerProvider() == null) {
+		if (getDialogAnswerProvider(resource) == null) {
 			System.err.println("No DialogAnswerProvider registered for '" + resource.getURI().lastSegment() + "'.");
 			return;
 		}
-		org.eclipse.emf.ecore.resource.Resource dapRsrc = getDialogAnswerProvider().getResource();
+		org.eclipse.emf.ecore.resource.Resource dapRsrc = getDialogAnswerProvider(resource).getResource();
 		if (dapRsrc != null && !resource.equals(dapRsrc)) {
 			// The DialogAnswerProvider has a Resource and this isn't the Resource for which this AnswerCurationManager is intended
 			return;
@@ -5184,7 +5184,7 @@ public class AnswerCurationManager {
 		else {
 			// additions is empty so there haven't been any other things added in this pass so now add any imports
 			if (getDelayedImportAdditions() != null && getDelayedImportAdditions().size() > 0) {
-				Object dap = getConfigurationManager().getPrivateKeyValuePair(DialogConstants.DIALOG_ANSWER_PROVIDER);
+				Object dap = getConfigurationManager().getPrivateKeyMapValueByResource(DialogConstants.DIALOG_ANSWER_PROVIDER, resource);
 				if (dap instanceof IDialogAnswerProvider) {
 					((IDialogAnswerProvider)dap).addImports(getDelayedImportAdditions());
 				}
@@ -5773,7 +5773,7 @@ public class AnswerCurationManager {
 											projectName = sf.getParentFile().getParentFile().getName();
 										}
 									}
-									getDialogAnswerProvider().updateProjectAndDisplaySadlFiles(projectName, getOwlModelsFolder(), sadlFiles);
+									getDialogAnswerProvider(getResource()).updateProjectAndDisplaySadlFiles(projectName, getOwlModelsFolder(), sadlFiles);
 								}
 								else {
 									while (owlFilesItr.hasNext()) {
@@ -5960,7 +5960,7 @@ public class AnswerCurationManager {
 		return false;
 	}
 
-	private XtextResource getResource() {
+	public XtextResource getResource() {
 		return resource;
 	}
 
@@ -6001,7 +6001,7 @@ public class AnswerCurationManager {
 			delayedImportAdditions = new ArrayList<String>();
 		}
 		delayedImportAdditions.add(delayedImportAddition + System.lineSeparator());
-		getDialogAnswerProvider().addImports(delayedImportAdditions);
+		getDialogAnswerProvider(getResource()).addImports(delayedImportAdditions);
 		delayedImportAdditions.clear();
 	}
 

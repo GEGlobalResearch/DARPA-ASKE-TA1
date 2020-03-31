@@ -625,7 +625,9 @@ class DialogTest extends AbstractDialogTest {
 		'''.assertValidatesTo [ ontModel, issues, processor |
 			assertNotNull(ontModel)
 			assertTrue(issues.filter[severity === Severity.ERROR].empty)
-			val secondLaw250 = (processor as JenaBasedDialogModelProcessor).answerCurationManager.getAnswerToQuestion("evaluate secondLaw(10, 25).")
+			val jbdp = (processor as JenaBasedDialogModelProcessor)
+			val resource = jbdp.currentResource
+			val secondLaw250 = jbdp.getAnswerCurationManager(resource).getAnswerToQuestion("evaluate secondLaw(10, 25).")
 			assertTrue(secondLaw250 !== null && secondLaw250.equals("[250.]"))
 		]
 	}
@@ -663,7 +665,9 @@ class DialogTest extends AbstractDialogTest {
 			val errors = issues.filter[severity === Severity.ERROR]
 			assertEquals(0, errors.size)
 			if (processor instanceof JenaBasedDialogModelProcessor) {
-				val conversation = (processor as JenaBasedDialogModelProcessor).answerCurationManager.conversation
+				val jbdp = (processor as JenaBasedDialogModelProcessor)
+				val resource = jbdp.currentResource
+				val conversation = jbdp.getAnswerCurationManager(resource).conversation
 				assertNotNull(conversation)
 				assertNotNull(conversation.statements);
 				assertEquals(1, conversation.statements.size)
@@ -736,7 +740,9 @@ class DialogTest extends AbstractDialogTest {
 			}
 			assertEquals(0, errors.size)
 			if (processor instanceof JenaBasedDialogModelProcessor) {
-				val conversation = (processor as JenaBasedDialogModelProcessor).answerCurationManager.conversation
+				val jbdp = (processor as JenaBasedDialogModelProcessor)
+				val resource = jbdp.currentResource
+				val conversation = jbdp.getAnswerCurationManager(resource).conversation
 				assertNotNull(conversation)
 				assertNotNull(conversation.statements);
 				assertEquals(1, conversation.statements.size)
@@ -786,7 +792,9 @@ class DialogTest extends AbstractDialogTest {
 			val errors = issues.filter[severity === Severity.ERROR]
 			assertEquals(0, errors.size)
 			if (processor instanceof JenaBasedDialogModelProcessor) {
-				val acm = (processor as JenaBasedDialogModelProcessor).answerCurationManager
+				val jbdp = (processor as JenaBasedDialogModelProcessor)
+				val resource = jbdp.currentResource
+				val acm = jbdp.getAnswerCurationManager(resource)
 				val conversation = acm.conversation
 				assertNotNull(conversation)
 				assertNotNull(conversation.statements);
@@ -828,7 +836,9 @@ class DialogTest extends AbstractDialogTest {
 			}
 			assertEquals(2, errors.size)
 			if (processor instanceof JenaBasedDialogModelProcessor) {
-				val acm = (processor as JenaBasedDialogModelProcessor).answerCurationManager
+				val jbdp = (processor as JenaBasedDialogModelProcessor)
+				val resource = jbdp.currentResource
+				val acm = jbdp.getAnswerCurationManager(resource)
 				val conversation = acm.conversation
 				assertNotNull(conversation)
 				assertNotNull(conversation.statements);
@@ -880,7 +890,9 @@ External CAL_SOS(double T, double G, double R, double Q, string us) returns doub
 			val errors = issues.filter[severity === Severity.ERROR]
 			assertEquals(0, errors.size)
 			if (processor instanceof JenaBasedDialogModelProcessor) {
-				val acm = (processor as JenaBasedDialogModelProcessor).answerCurationManager
+				val jbdp = (processor as JenaBasedDialogModelProcessor)
+				val resource = jbdp.currentResource
+				val acm = jbdp.getAnswerCurationManager(resource)
 				val conversation = acm.conversation
 				assertNotNull(conversation)
 				assertNotNull(conversation.statements);
@@ -920,7 +932,9 @@ External CAL_SOS(double T, double G, double R, double Q, string us) returns doub
 			val errors = issues.filter[severity === Severity.ERROR]
 			assertEquals(0, errors.size)
 			if (processor instanceof JenaBasedDialogModelProcessor) {
-				val acm = (processor as JenaBasedDialogModelProcessor).answerCurationManager
+				val jbdp = (processor as JenaBasedDialogModelProcessor)
+				val resource = jbdp.currentResource
+				val acm = jbdp.getAnswerCurationManager(resource)
 				val conversation = acm.conversation
 				assertNotNull(conversation)
 				assertNotNull(conversation.statements);
@@ -955,7 +969,9 @@ External CAL_SOS(double T, double G, double R, double Q, string us) returns doub
 			val errors = issues.filter[severity === Severity.ERROR]
 			assertEquals(0, errors.size)
 			if (processor instanceof JenaBasedDialogModelProcessor) {
-				val acm = (processor as JenaBasedDialogModelProcessor).answerCurationManager
+				val jbdp = (processor as JenaBasedDialogModelProcessor)
+				val resource = jbdp.currentResource
+				val acm = jbdp.getAnswerCurationManager(resource)
 				val conversation = acm.conversation
 				assertNotNull(conversation)
 				assertNotNull(conversation.statements);
@@ -1030,7 +1046,9 @@ External CAL_SOS(double T, double G, double R, double Q, string us) returns doub
 			}
 			assertEquals(0, errors.size)
 			if (processor instanceof JenaBasedDialogModelProcessor) {
-				val conversation = (processor as JenaBasedDialogModelProcessor).answerCurationManager.conversation
+				val jbdp = (processor as JenaBasedDialogModelProcessor)
+				val resource = jbdp.currentResource
+				val conversation = jbdp.getAnswerCurationManager(resource).conversation
 				assertNotNull(conversation)
 				assertNotNull(conversation.statements);
 				assertEquals(1, conversation.statements.size)
@@ -1078,7 +1096,10 @@ External CAL_SOS(double T, double G, double R, double Q, string us) returns doub
 			val errors = issues.filter[severity === Severity.ERROR]
 			assertEquals(0, errors.size)
 			if (processor instanceof JenaBasedDialogModelProcessor) {
-				val conversation = (processor as JenaBasedDialogModelProcessor).answerCurationManager.conversation
+				val jbdp = (processor as JenaBasedDialogModelProcessor)
+				val resource = jbdp.currentResource
+				val acm = jbdp.getAnswerCurationManager(resource)
+				val conversation = acm.conversation
 				assertNotNull(conversation)
 				assertNotNull(conversation.statements);
 				assertEquals(1, conversation.statements.size)
@@ -1124,7 +1145,10 @@ External CAL_SOS(double T, double G, double R, double Q, string us) returns doub
 			val errors = issues.filter[severity === Severity.ERROR]
 			assertEquals(0, errors.size)
 			if (processor instanceof JenaBasedDialogModelProcessor) {
-				val conversation = (processor as JenaBasedDialogModelProcessor).answerCurationManager.conversation
+				val jbdp = (processor as JenaBasedDialogModelProcessor)
+				val resource = jbdp.currentResource
+				val acm = jbdp.getAnswerCurationManager(resource)
+				val conversation = acm.conversation
 				assertNotNull(conversation)
 				assertNotNull(conversation.statements);
 				assertEquals(1, conversation.statements.size)
@@ -1167,7 +1191,10 @@ External CAL_SOS(double T, double G, double R, double Q, string us) returns doub
 			val errors = issues.filter[severity === Severity.ERROR]
 			assertEquals(0, errors.size)
 			if (processor instanceof JenaBasedDialogModelProcessor) {
-				val conversation = (processor as JenaBasedDialogModelProcessor).answerCurationManager.conversation
+				val jbdp = (processor as JenaBasedDialogModelProcessor)
+				val resource = jbdp.currentResource
+				val acm = jbdp.getAnswerCurationManager(resource)
+				val conversation = acm.conversation
 				assertNotNull(conversation)
 				assertNotNull(conversation.statements);
 				assertEquals(1, conversation.statements.size)
@@ -1212,7 +1239,10 @@ External CAL_SOS(double T, double G, double R, double Q, string us) returns doub
 			val errors = issues.filter[severity === Severity.ERROR]
 			assertEquals(0, errors.size)
 			if (processor instanceof JenaBasedDialogModelProcessor) {
-				val conversation = (processor as JenaBasedDialogModelProcessor).answerCurationManager.conversation
+				val jbdp = (processor as JenaBasedDialogModelProcessor)
+				val resource = jbdp.currentResource
+				val acm = jbdp.getAnswerCurationManager(resource)
+				val conversation = acm.conversation
 				assertNotNull(conversation)
 				assertNotNull(conversation.statements);
 				assertEquals(3, conversation.statements.size)
@@ -1258,7 +1288,10 @@ External CAL_SOS(double T, double G, double R, double Q, string us) returns doub
 			val errors = issues.filter[severity === Severity.ERROR]
 			assertEquals(0, errors.size)
 			if (processor instanceof JenaBasedDialogModelProcessor) {
-				val conversation = (processor as JenaBasedDialogModelProcessor).answerCurationManager.conversation
+				val jbdp = (processor as JenaBasedDialogModelProcessor)
+				val resource = jbdp.currentResource
+				val acm = jbdp.getAnswerCurationManager(resource)
+				val conversation = acm.conversation
 				assertNotNull(conversation)
 				assertNotNull(conversation.statements);
 				assertEquals(2, conversation.statements.size)
@@ -1307,7 +1340,10 @@ External CAL_SOS(double T, double G, double R, double Q, string us) returns doub
 			val errors = issues.filter[severity === Severity.ERROR]
 			assertEquals(0, errors.size)
 			if (processor instanceof JenaBasedDialogModelProcessor) {
-				val conversation = (processor as JenaBasedDialogModelProcessor).answerCurationManager.conversation
+				val jbdp = (processor as JenaBasedDialogModelProcessor)
+				val resource = jbdp.currentResource
+				val acm = jbdp.getAnswerCurationManager(resource)
+				val conversation = acm.conversation
 				assertNotNull(conversation)
 				assertNotNull(conversation.statements);
 				assertEquals(1, conversation.statements.size)
@@ -1361,7 +1397,10 @@ External CAL_SOS(double T, double G, double R, double Q, string us) returns doub
 			val errors = issues.filter[severity === Severity.ERROR]
 			assertEquals(0, errors.size)
 			if (processor instanceof JenaBasedDialogModelProcessor) {
-				val conversation = (processor as JenaBasedDialogModelProcessor).answerCurationManager.conversation
+				val jbdp = (processor as JenaBasedDialogModelProcessor)
+				val resource = jbdp.currentResource
+				val acm = jbdp.getAnswerCurationManager(resource)
+				val conversation = acm.conversation
 				assertNotNull(conversation)
 				assertNotNull(conversation.statements);
 				assertEquals(1, conversation.statements.size)
@@ -1808,7 +1847,10 @@ External CAL_SOS(double T, double G, double R, double Q, string us) returns doub
 			assertNotNull(ontModel)
 			assertTrue(issues.filter[severity === Severity.ERROR].empty)
 			if (processor instanceof JenaBasedDialogModelProcessor) {
-				val conversation = (processor as JenaBasedDialogModelProcessor).answerCurationManager.conversation
+				val jbdp = (processor as JenaBasedDialogModelProcessor)
+				val resource = jbdp.currentResource
+				val acm = jbdp.getAnswerCurationManager(resource)
+				val conversation = acm.conversation
 				assertNotNull(conversation)
 				assertNotNull(conversation.statements);
 //				assertEquals(1, conversation.statements.size)

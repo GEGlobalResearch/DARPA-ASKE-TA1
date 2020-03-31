@@ -696,7 +696,7 @@ public class JavaImportOperation extends WorkspaceModifyOperation {
     		// the AnswerCurationManager is stored in the domain project ConfigurationManager
 	    	String domainModelModelFolder = domainPrj.getFolder("OwlModels").getLocation().toOSString();
 	    	ConfigurationManagerForIDE domainModelConfigMgr = ConfigurationManagerForIdeFactory.getConfigurationManagerForIDE(domainModelModelFolder, null);
-    		acm = (AnswerCurationManager) domainModelConfigMgr.getPrivateKeyValuePair(DialogConstants.ANSWER_CURATION_MANAGER);
+    		acm = (AnswerCurationManager) domainModelConfigMgr.getPrivateKeyMapValueByResource(DialogConstants.ANSWER_CURATION_MANAGER, resource);
     		if (acm == null) {
 //        		Map<String, String> preferences = getPreferences(targetResource);
 //    			acm = new AnswerCurationManager(codeModelModelFolderUri, domainModelConfigMgr, preferences);
@@ -958,7 +958,7 @@ public class JavaImportOperation extends WorkspaceModifyOperation {
            	throw new CoreException(new Status(IStatus.ERROR, PlatformUI.PLUGIN_ID, 0, 
         			"Failed to get a curation manager. Are you trying to import into a different project than the open Dialog window?", null));
            }
-            Object dap = acm.getConfigurationManager().getPrivateKeyValuePair(DialogConstants.DIALOG_ANSWER_PROVIDER);
+            Object dap = acm.getConfigurationManager().getPrivateKeyMapValueByResource(DialogConstants.DIALOG_ANSWER_PROVIDER, acm.getResource());
             if (dap == null) {
             	throw new CoreException(new Status(IStatus.ERROR, PlatformUI.PLUGIN_ID, 0, 
             			"A Dialog Editor window must be opened and some activity in the window before imports can be processed", null));

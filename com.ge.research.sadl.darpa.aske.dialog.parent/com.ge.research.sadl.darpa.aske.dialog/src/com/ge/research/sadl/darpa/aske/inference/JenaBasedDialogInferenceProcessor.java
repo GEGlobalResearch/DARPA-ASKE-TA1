@@ -2164,7 +2164,7 @@ private void computeSensitivityAndAddToDialog(Resource resource, ConfigurationMa
 		}
 
 		saveMetaDataFile(resource,queryModelURI,queryModelFileName); //so we can query the the eqns in the CCG
-		AnswerCurationManager acm = (AnswerCurationManager) cmgr.getPrivateKeyValuePair(DialogConstants.ANSWER_CURATION_MANAGER);
+		AnswerCurationManager acm = (AnswerCurationManager) cmgr.getPrivateKeyMapValueByResource(DialogConstants.ANSWER_CURATION_MANAGER, resource);
 		addSensitivityResultsToDialog(resource, cgIns, acm);
 
 	}//assumptions satisfied
@@ -2688,7 +2688,7 @@ private ResultSet[] processModelsFromDataset(Resource resource, TripleElement[] 
 
 				numOfModels ++;
 
-				AnswerCurationManager acm = (AnswerCurationManager) cmgr.getPrivateKeyValuePair(DialogConstants.ANSWER_CURATION_MANAGER);
+				AnswerCurationManager acm = (AnswerCurationManager) cmgr.getPrivateKeyMapValueByResource(DialogConstants.ANSWER_CURATION_MANAGER, resource);
 
 				lbl2value = getLabelToMeanStdMapping(dbnResultsJson);
 				createCGsubgraphs(cgIns, dbnEqnMap, dbnOutput, listOfEqns, class2lbl, lbl2value, class2units, queryModelPrefix);
@@ -2931,7 +2931,7 @@ private void runInference(Resource resource, String query, String testQuery) thr
 		cmgr.addMapping(owlURL, queryModelURI, "", true, "JBDIP");
 		cmgr.addJenaMapping(queryModelURI, owlURL);	
 		
-		AnswerCurationManager acm = (AnswerCurationManager) cmgr.getPrivateKeyValuePair(DialogConstants.ANSWER_CURATION_MANAGER);
+		AnswerCurationManager acm = (AnswerCurationManager) cmgr.getPrivateKeyMapValueByResource(DialogConstants.ANSWER_CURATION_MANAGER, resource);
 		acm.addDelayedImportAddition("import \"" + queryModelURI + "\".");
 	}
 

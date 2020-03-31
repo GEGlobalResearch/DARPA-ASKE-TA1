@@ -396,10 +396,10 @@ public class JenaBasedDialogModelProcessor extends JenaBasedSadlModelProcessor {
 					logger.error("Error:", e);
 				}
 				try {
-					StatementContent sc = processDialogModelElement(element);
+					StatementContent sc = processDialogModelElement(element, resource);
 					if (sc != null) {
-						ConversationElement ce = new ConversationElement(getAnswerCurationManager().getConversation(), sc, sc.getAgent());
-						getAnswerCurationManager().addToConversation(ce);
+						ConversationElement ce = new ConversationElement(getAnswerCurationManager(resource).getConversation(), sc, sc.getAgent());
+						getAnswerCurationManager(resource).addToConversation(ce);
 					}
 					setLastStatementContent(sc);
 				} catch (Exception e1) {
@@ -435,7 +435,7 @@ public class JenaBasedDialogModelProcessor extends JenaBasedSadlModelProcessor {
 			
 			// Do this **after** setting the resource information in the OntModelProvider
 			try {
-				getAnswerCurationManager().processConversation(getCurrentResource(), getTheJenaModel(), getModelName());
+				getAnswerCurationManager(resource).processConversation(getCurrentResource(), getTheJenaModel(), getModelName());
 			} catch (IOException e2) {
 				// TODO Auto-generated catch block
 				e2.printStackTrace();
@@ -443,7 +443,7 @@ public class JenaBasedDialogModelProcessor extends JenaBasedSadlModelProcessor {
 			
 			logger.debug("At end of model processing, conversation is:");
 			try {
-				logger.debug(getAnswerCurationManager().getConversation().toString());
+				logger.debug(getAnswerCurationManager(resource).getConversation().toString());
 			} catch (IOException e1) {
 				// TODO Auto-generated catch block
 				e1.printStackTrace();
@@ -464,7 +464,7 @@ public class JenaBasedDialogModelProcessor extends JenaBasedSadlModelProcessor {
 		}
 	}
 
-	private StatementContent processDialogModelElement(EObject element) throws JenaProcessorException, InvalidNameException, InvalidTypeException, TranslationException, IOException, ConfigurationException, QueryParseException, QueryCancelledException, ReasonerNotFoundException, PrefixNotFoundException {
+	private StatementContent processDialogModelElement(EObject element, Resource resource) throws JenaProcessorException, InvalidNameException, InvalidTypeException, TranslationException, IOException, ConfigurationException, QueryParseException, QueryCancelledException, ReasonerNotFoundException, PrefixNotFoundException {
 		clearCruleVariables();
 		if (element instanceof AnswerCMStatement) {
 			return processAnswerCMStatement((AnswerCMStatement)element);
@@ -528,7 +528,7 @@ public class JenaBasedDialogModelProcessor extends JenaBasedSadlModelProcessor {
 				}
 			}
 			if (eqUri != null) {
-				getAnswerCurationManager().addEquationInformation(eqUri, NodeModelUtils.findActualNodeFor(element).getText());
+				getAnswerCurationManager(resource).addEquationInformation(eqUri, NodeModelUtils.findActualNodeFor(element).getText());
 			}
 			else {
 				addError("Unable to find URI of External equation", element);
@@ -551,7 +551,7 @@ public class JenaBasedDialogModelProcessor extends JenaBasedSadlModelProcessor {
 				}
 			}
 			if (eqUri != null) {
-				getAnswerCurationManager().addEquationInformation(eqUri, NodeModelUtils.findActualNodeFor(element).getText());
+				getAnswerCurationManager(resource).addEquationInformation(eqUri, NodeModelUtils.findActualNodeFor(element).getText());
 			}
 			else {
 				addError("Unable to find URI of External equation", element);
@@ -563,8 +563,8 @@ public class JenaBasedDialogModelProcessor extends JenaBasedSadlModelProcessor {
 			super.processModelElement((SadlStatement)element);
 			if (element instanceof SadlInstance) {
 				String srUri = getDeclarationExtensions().getConceptUri(sadlResourceFromSadlInstance((SadlInstance)element));
-				if (getAnswerCurationManager().getEquationInformation(srUri) != null) {
-					getAnswerCurationManager().addEquationInformation(srUri, NodeModelUtils.findActualNodeFor(element).getText());
+				if (getAnswerCurationManager(resource).getEquationInformation(srUri) != null) {
+					getAnswerCurationManager(resource).addEquationInformation(srUri, NodeModelUtils.findActualNodeFor(element).getText());
 				}
 				ssc.setConceptUri(srUri);
 			}
@@ -643,7 +643,7 @@ public class JenaBasedDialogModelProcessor extends JenaBasedSadlModelProcessor {
 			if (spd.getAugtype() == null) {
 				addWarning("Missing augmented type information", spd.getName());
 				String argName = getDeclarationExtensions().getConcreteName(spd.getName());
-				String prompt = "What type is " + getAnswerCurationManager().checkForKeyword(argName) + "?";
+				String prompt = "What type is " + getAnswerCurationManager(getCurrentResource()).checkForKeyword(argName) + "?";
 				if (missingInformation == null) {
 					missingInformation = new ArrayList<StatementContent>();
 				}
@@ -877,7 +877,7 @@ public class JenaBasedDialogModelProcessor extends JenaBasedSadlModelProcessor {
 					// this is Agent.CM because it houses a question/statement for the user from the CM
 					String msg;
 					try {
-						msg = "Concept " + getAnswerCurationManager().checkForKeyword(pvar.getName()) + " is not defined; please define or do extraction";
+						msg = "Concept " + getAnswerCurationManager(getCurrentResource()).checkForKeyword(pvar.getName()) + " is not defined; please define or do extraction";
 						wic.setExplicitQuestion(msg);
 					} catch (IOException e) {
 						// TODO Auto-generated catch block
@@ -1252,7 +1252,7 @@ public class JenaBasedDialogModelProcessor extends JenaBasedSadlModelProcessor {
 	}
 
 	private StatementContent processStatement(MyNameIsStatement element) throws IOException {
-		getAnswerCurationManager().setUserName(element.getAnswer());
+		getAnswerCurationManager(getCurrentResource()).setUserName(element.getAnswer());
 		AnswerContent ac = new AnswerContent(element, Agent.USER);
 		ac.setAnswer(element.getAnswer());
 		return ac;
@@ -1410,7 +1410,7 @@ public class JenaBasedDialogModelProcessor extends JenaBasedSadlModelProcessor {
 					String[] uris = new String[2];
 					uris[0] = targetUri;
 					uris[1] = null;
-					getAnswerCurationManager().addTargetModelToMap(aliasToUse, uris);
+					getAnswerCurationManager(getCurrentResource()).addTargetModelToMap(aliasToUse, uris);
 				}
 			}
 		}
@@ -1436,7 +1436,7 @@ public class JenaBasedDialogModelProcessor extends JenaBasedSadlModelProcessor {
 						if (((NamedNode)robj).getNodeType().equals(NodeType.ClassNode)) {		// RHS NamedNode is a class name
 							// this is the addition of a named argument variable type
 							//  find prior Equation statement, find argument variable, add the type to the argument
-							List<ConversationElement> celements = getAnswerCurationManager().getConversationElements();
+							List<ConversationElement> celements = getAnswerCurationManager(getCurrentResource()).getConversationElements();
 							if (celements != null) {
 								ConversationElement lastElement = celements.get(celements.size() - 1);
 								if (lastElement != null && lastElement.getStatement() instanceof WhatIsContent &&
@@ -1537,7 +1537,7 @@ public class JenaBasedDialogModelProcessor extends JenaBasedSadlModelProcessor {
 					addWarning(((VariableNode)lobj).getName() + " is not defined.", lexpr);
 					WhatIsContent wic = new WhatIsContent(element, Agent.CM, lobj, null);
 					try {
-						wic.setExplicitQuestion("Concept " + getAnswerCurationManager().checkForKeyword(((VariableNode)lobj).getName()) + " is not defined; please define or do extraction");
+						wic.setExplicitQuestion("Concept " + getAnswerCurationManager(getCurrentResource()).checkForKeyword(((VariableNode)lobj).getName()) + " is not defined; please define or do extraction");
 					} catch (IOException e) {
 						// TODO Auto-generated catch block
 						e.printStackTrace();
@@ -1628,7 +1628,7 @@ public class JenaBasedDialogModelProcessor extends JenaBasedSadlModelProcessor {
 						}
 					}
 					// 1. find prior statement asking about variable to get variable name
-					List<ConversationElement> celements = getAnswerCurationManager().getConversationElements();
+					List<ConversationElement> celements = getAnswerCurationManager(getCurrentResource()).getConversationElements();
 					if (celements != null) {
 						ConversationElement lastElement = celements.size() > 0 ? celements.get(celements.size() - 1) : null;
 						if (lastElement != null && lastElement.getStatement() instanceof WhatIsContent &&
@@ -1949,21 +1949,21 @@ public class JenaBasedDialogModelProcessor extends JenaBasedSadlModelProcessor {
 
 	private void initializeDialogContent() throws ConversationException, IOException {
 		Resource resource = getCurrentResource();
-		AnswerCurationManager cm = getAnswerCurationManager();
+		AnswerCurationManager cm = getAnswerCurationManager(resource);
 		DialogContent dc = new DialogContent(resource, cm);
 		cm.setConversation(dc);
 		if (modelElements == null) {
 			modelElements = new ArrayList<ModelElementInfo>();
-			getConfigMgr().addPrivateKeyValuePair("ElementInfo", modelElements);
+			getConfigMgr().addPrivateKeyMapValueByResource("ElementInfo", resource, modelElements);
 		}
 		else {
 			modelElements.clear();
 		}
 	}
 
-	public AnswerCurationManager getAnswerCurationManager() throws IOException {
+	public AnswerCurationManager getAnswerCurationManager(Resource resource) throws IOException {
 		if (answerCurationManager == null) {
-			Object cm = getConfigMgr().getPrivateKeyValuePair(DialogConstants.ANSWER_CURATION_MANAGER);
+			Object cm = getConfigMgr().getPrivateKeyMapValueByResource(DialogConstants.ANSWER_CURATION_MANAGER, resource);
 			if (cm != null) {
 				if (cm instanceof AnswerCurationManager) {
 					answerCurationManager  = (AnswerCurationManager) cm;
@@ -1971,11 +1971,11 @@ public class JenaBasedDialogModelProcessor extends JenaBasedSadlModelProcessor {
 			}
 			else {
 				Map<String, String> pmap = null;
-				Resource resource = Preconditions.checkNotNull(getCurrentResource(), "resource");
+//				Resource resource = Preconditions.checkNotNull(getCurrentResource(), "resource");
 				pmap = getPreferences(resource);
 				answerCurationManager = new AnswerCurationManager(getConfigMgr().getModelFolder(), getConfigMgr(),
 						(XtextResource) resource, pmap);
-				getConfigMgr().addPrivateKeyValuePair(DialogConstants.ANSWER_CURATION_MANAGER, answerCurationManager);
+				getConfigMgr().addPrivateKeyMapValueByResource(DialogConstants.ANSWER_CURATION_MANAGER, resource, answerCurationManager);
 			}
 		}
 		return answerCurationManager;
@@ -2077,7 +2077,7 @@ public class JenaBasedDialogModelProcessor extends JenaBasedSadlModelProcessor {
 	}
 
 	private IDialogAnswerProvider getDialogAnswerProvider(Resource resource) throws ConfigurationException {
-		Object dap = getConfigMgr(resource, null).getPrivateKeyValuePair(DialogConstants.DIALOG_ANSWER_PROVIDER);
+		Object dap = getConfigMgr(resource, null).getPrivateKeyMapValueByResource(DialogConstants.DIALOG_ANSWER_PROVIDER, resource);
 		if (dap instanceof IDialogAnswerProvider) {
 			return (IDialogAnswerProvider)dap;
 		}
@@ -2174,7 +2174,7 @@ public class JenaBasedDialogModelProcessor extends JenaBasedSadlModelProcessor {
 		}
 		super.onGenerate(resource, fsa, context);
 		try {
-			getAnswerCurationManager().saveQuestionsAndAnswersToFile();
+			getAnswerCurationManager(resource).saveQuestionsAndAnswersToFile();
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -2198,7 +2198,7 @@ public class JenaBasedDialogModelProcessor extends JenaBasedSadlModelProcessor {
 	private StatementContent  processAnswerCMStatement( AnswerCMStatement element) throws IOException, TranslationException, InvalidNameException, InvalidTypeException, ConfigurationException, JenaProcessorException, QueryParseException, QueryCancelledException, ReasonerNotFoundException, PrefixNotFoundException {
 		EObject stmt = element.getSstmt();
 		if (stmt != null) {
-			StatementContent sc = processDialogModelElement(stmt);
+			StatementContent sc = processDialogModelElement(stmt, getCurrentResource());
 //			AnswerContent ac = new AnswerContent(element, Agent.CM);
 //			ac.setAnswer(sc);
 //			return ac;
@@ -2242,7 +2242,7 @@ public class JenaBasedDialogModelProcessor extends JenaBasedSadlModelProcessor {
 		String targetModelUri = null;
 		String targetModelUrl = null;
 		String targetModelAlias = ((SaveStatement)element).getSaveTarget();
-		Map<String, String[]> targetModelMap = getAnswerCurationManager().getTargetModelMap();
+		Map<String, String[]> targetModelMap = getAnswerCurationManager(getCurrentResource()).getTargetModelMap();
 		if (targetModelMap == null || targetModelMap.size() < 1) {
 			addError("No target models have been identified. Cannot identify a model into which to save.", element);
 		}
@@ -2281,7 +2281,7 @@ public class JenaBasedDialogModelProcessor extends JenaBasedSadlModelProcessor {
 						return null;
 					}
 					else if (extractedModelInstance.getNameSpace().equals(targetModelAlias)) {
-						getAnswerCurationManager().notifyUser(getConfigMgr().getModelFolder(), "The equation with URI '" + equationUri + "' is already in the target model '" + targetModelAlias + "'", true);
+						getAnswerCurationManager(getCurrentResource()).notifyUser(getConfigMgr().getModelFolder(), "The equation with URI '" + equationUri + "' is already in the target model '" + targetModelAlias + "'", true);
 					}
 					sc.setSourceEquationUri(extractedModelInstance.getURI());
 				}
@@ -2501,7 +2501,7 @@ public class JenaBasedDialogModelProcessor extends JenaBasedSadlModelProcessor {
 						WhatIsContent wic = new WhatIsContent(udeobjs.get(0), Agent.CM, null, null);
 						try {
 							String name = getEObjectName(udeobjs.get(0));
-							wic.setExplicitQuestion("Concept " + getAnswerCurationManager().checkForKeyword(name) + " is not defined; please define or do extraction");
+							wic.setExplicitQuestion("Concept " + getAnswerCurationManager(getCurrentResource()).checkForKeyword(name) + " is not defined; please define or do extraction");
 						} catch (IOException e) {
 							// TODO Auto-generated catch block
 							e.printStackTrace();

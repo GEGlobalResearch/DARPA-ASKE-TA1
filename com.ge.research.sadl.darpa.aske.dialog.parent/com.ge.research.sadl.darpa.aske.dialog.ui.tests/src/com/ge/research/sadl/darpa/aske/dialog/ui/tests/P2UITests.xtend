@@ -78,7 +78,10 @@ public class P2UITests extends AbstractDialogPlatformTest {
 			val errors = issues.filter[severity === Severity.ERROR]
 			assertEquals(0, errors.size)
 			if (processor instanceof JenaBasedDialogModelProcessor) {
-				val conversation = (processor as JenaBasedDialogModelProcessor).answerCurationManager.conversation
+				val jbdp = (processor as JenaBasedDialogModelProcessor)
+				val resource = jbdp.currentResource
+				val acm = jbdp.getAnswerCurationManager(resource)
+				val conversation = acm.conversation
 				assertNotNull(conversation)
 				assertNotNull(conversation.statements);
 				assertEquals(2, conversation.statements.size)
@@ -146,7 +149,10 @@ public class P2UITests extends AbstractDialogPlatformTest {
 			val errors = issues.filter[severity === Severity.ERROR]
 			assertEquals(0, errors.size)
 			if (processor instanceof JenaBasedDialogModelProcessor) {
-				val conversation = (processor as JenaBasedDialogModelProcessor).answerCurationManager.conversation
+				val jbdp = (processor as JenaBasedDialogModelProcessor)
+				val resource = jbdp.currentResource
+				val acm = jbdp.getAnswerCurationManager(resource)
+				val conversation = acm.conversation
 				assertNotNull(conversation)
 				assertNotNull(conversation.statements);
 				assertEquals(2, conversation.statements.size)
@@ -215,7 +221,10 @@ public class P2UITests extends AbstractDialogPlatformTest {
 			val errors = issues.filter[severity === Severity.ERROR]
 			assertEquals(0, errors.size)
 			if (processor instanceof JenaBasedDialogModelProcessor) {
-				val conversation = (processor as JenaBasedDialogModelProcessor).answerCurationManager.conversation
+				val jbdp = (processor as JenaBasedDialogModelProcessor)
+				val resource = jbdp.currentResource
+				val acm = jbdp.getAnswerCurationManager(resource)
+				val conversation = acm.conversation
 				assertNotNull(conversation)
 				assertNotNull(conversation.statements);
 				assertEquals(2, conversation.statements.size)
@@ -283,7 +292,10 @@ public class P2UITests extends AbstractDialogPlatformTest {
 			val errors = issues.filter[severity === Severity.ERROR]
 			assertEquals(0, errors.size)
 			if (processor instanceof JenaBasedDialogModelProcessor) {
-				val conversation = (processor as JenaBasedDialogModelProcessor).answerCurationManager.conversation
+				val jbdp = (processor as JenaBasedDialogModelProcessor)
+				val resource = jbdp.currentResource
+				val acm = jbdp.getAnswerCurationManager(resource)
+				val conversation = acm.conversation
 				assertNotNull(conversation)
 				assertNotNull(conversation.statements);
 				assertEquals(1, conversation.statements.size)
