@@ -467,7 +467,7 @@ public class TextProcessor {
 				aggregateDomainModel.add(sm.getBaseModel());
 			}
 			String ontologyAsString = getCurationManager().ontModelToString(aggregateDomainModel);
-			(new SadlUtils()).stringToFile(new File("c:/tmp/isentrop_txt.owl"), ontologyAsString, false);	// temporary for debug purposes
+//			(new SadlUtils()).stringToFile(new File("c:/tmp/isentrop_txt.owl"), ontologyAsString, false);	// temporary for debug purposes
 			String serviceBaseUri = getPreference(DialogPreferences.ANSWER_TEXT_SERVICE_BASE_URI.getId());
 			TextProcessingServiceInterface tpsi = new TextProcessingServiceInterface(serviceBaseUri);
 			String response = tpsi.uploadDomainOntology(dialogModelName, dialogModelName, ontologyAsString);
