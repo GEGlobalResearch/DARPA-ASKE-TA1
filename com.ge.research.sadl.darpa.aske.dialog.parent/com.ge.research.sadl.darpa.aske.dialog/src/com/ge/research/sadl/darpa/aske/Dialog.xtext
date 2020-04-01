@@ -122,7 +122,7 @@ PLink:
 
 CompareStatement:
 //	('Compare'|'compare') toCompare=Expression compareConnective=('when' | 'for') whenExpr=Expression
-	('Compare'|'compare') toCompare=Expression (compareWhens+=CompareWhen ('and' compareWhens+=CompareWhen)*)?
+	('Compare'|'compare') 'their'? toCompare=Expression (compareWhens+=CompareWhen ('and' compareWhens+=CompareWhen)*)?
 ;
 
 CompareWhen:	
@@ -135,7 +135,7 @@ SuitabilityStatement:
 ;
 
 ExtractStatement:
-	('Extract'|'extract') 'from' sourceURIs+=STRING (',' sourceURIs+=STRING)*
+	('Extract'|'extract') 'from' sources+=STRING (',' sources+=STRING)*
 ;
 
 EvalStatement returns SadlEquationInvocation:
@@ -187,7 +187,7 @@ WhatStatement:
 	{WhatStatement} ('What'|'what') stmt=(WhatIsStatement | WhatValuesStatement | WhatTypeStatement)
 ;
 WhatIsStatement:
-	{WhatIsStatement} 'is' (('your' 'name') | target=Expression WhenPart?)
+	{WhatIsStatement} 'is' (('your' 'name') | ('its'? target=Expression WhenPart?))
 ;
 
 WhatTypeStatement:

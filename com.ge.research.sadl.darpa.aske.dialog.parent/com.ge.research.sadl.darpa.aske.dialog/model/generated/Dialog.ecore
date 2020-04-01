@@ -65,7 +65,7 @@
         eType="#//CompareWhen" containment="true"/>
   </eClassifiers>
   <eClassifiers xsi:type="ecore:EClass" name="ExtractStatement" eSuperTypes="platform:/resource/com.ge.research.sadl/model/generated/SADL.ecore#//SadlModelElement">
-    <eStructuralFeatures xsi:type="ecore:EAttribute" name="sourceURIs" unique="false"
+    <eStructuralFeatures xsi:type="ecore:EAttribute" name="sources" unique="false"
         upperBound="-1" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EString"/>
   </eClassifiers>
   <eClassifiers xsi:type="ecore:EClass" name="SadlEquationInvocation" eSuperTypes="platform:/resource/com.ge.research.sadl/model/generated/SADL.ecore#//SadlModelElement">

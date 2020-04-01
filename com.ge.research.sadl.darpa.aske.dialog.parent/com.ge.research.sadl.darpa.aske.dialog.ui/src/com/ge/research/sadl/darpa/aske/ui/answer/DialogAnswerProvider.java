@@ -302,12 +302,15 @@ public class DialogAnswerProvider extends BaseDialogAnswerProvider {
 	private synchronized boolean addCurationManagerContentToDialog(IXtextDocument document, IRegion reg, String content,
 			Object ctx, boolean quote, boolean prependAgent, boolean repositionCursor, boolean addLeadingSpaces) throws BadLocationException {
 		LOGGER.debug(content);
+		String ctxtxt = getNodeText((EObject)ctx);
+//		System.err.println("addCMContent: context=" + ctxtxt + ", content=" + content);
+		
 //		System.err.println("addCMContent: " + content);
 		Display.getDefault().asyncExec(() -> {
 //		Display.getDefault().syncExec(() -> {
 			try {
 				String modContent = generateModifiedContent(document, ctx, quote, prependAgent, content);
-				Object[] insertionInfo = generateInsertionLocation(document, ctx, modContent);
+				Object[] insertionInfo = generateInsertionLocation(document, ctx, ctxtxt, modContent);
 				modContent = (String) insertionInfo[0];
 				int loc = (int) insertionInfo[1];
 				if (loc >= 0) {
@@ -345,8 +348,8 @@ public class DialogAnswerProvider extends BaseDialogAnswerProvider {
 
 	private synchronized boolean replaceDialogText(IXtextDocument theDocument, EObject ctx, String originalTxt, String replacementTxt) throws BadLocationException {
 		LOGGER.debug("replacing '" + originalTxt + "' with '" + replacementTxt + "'");
-		Display.getDefault().asyncExec(() -> {
-//		Display.getDefault().syncExec(() -> {
+//		Display.getDefault().asyncExec(() -> {
+		Display.getDefault().syncExec(() -> {
 			Object elementInfos = getConfigMgr().getPrivateKeyMapValueByResource("ElementInfo", getResource());
 			String docText = document.get();
 			int docLength = document.getLength();
@@ -431,7 +434,16 @@ public class DialogAnswerProvider extends BaseDialogAnswerProvider {
 		return modContent;
 	}
 
-	private Object[] generateInsertionLocation(IXtextDocument document, Object ctx, String modContent) {
+	private String getNodeText(EObject element) {
+		INode node = NodeModelUtils.findActualNodeFor(element);
+		if (node != null) {
+			String txt = node.getText();
+			return txt;
+		}
+		return null;
+	}
+
+	private Object[] generateInsertionLocation(IXtextDocument document, Object ctx, String ctxtxt, String modContent) {
 		int loc = 0;
 		String lineSep = System.lineSeparator();
 		int lineSepLen = lineSep.length();
@@ -447,7 +459,8 @@ public class DialogAnswerProvider extends BaseDialogAnswerProvider {
 					if (mei.isInserted()) {
 						cumulativeOffset += mei.getLength();
 					}
-					else if (mei.getObject().equals(ctx)) {
+					else if (getNodeText(mei.getObject()) != null && ctxtxt != null && 
+							getNodeText(mei.getObject()).equals(ctxtxt)) {
 						try {
 							String origTxt = mei.getTxt();
 							int len = mei.getLength();									// length of original element

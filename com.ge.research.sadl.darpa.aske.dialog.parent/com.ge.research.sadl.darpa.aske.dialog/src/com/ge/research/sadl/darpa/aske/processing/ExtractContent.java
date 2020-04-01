@@ -8,6 +8,7 @@ public class ExtractContent extends ExpectsAnswerContent {
 	private String url = null;
 	private String scheme = null;
 	private String source = null;
+	private ExtractContent nextExtractContent = null;
 	
 	public ExtractContent(EObject host) {
 		super(host);
@@ -22,6 +23,7 @@ public class ExtractContent extends ExpectsAnswerContent {
 		setScheme(scheme);
 		setSource(source);
 		setUrl(url);
+		
 	}
 
 	public String getScheme() {
@@ -46,6 +48,14 @@ public class ExtractContent extends ExpectsAnswerContent {
 
 	public void setUrl(String url) {
 		this.url = url;
+	}
+
+	public ExtractContent getNextExtractContent() {
+		return nextExtractContent;
+	}
+
+	public void setNextExtractContent(ExtractContent nextExtractContent) {
+		this.nextExtractContent = nextExtractContent;
 	}
 
 }

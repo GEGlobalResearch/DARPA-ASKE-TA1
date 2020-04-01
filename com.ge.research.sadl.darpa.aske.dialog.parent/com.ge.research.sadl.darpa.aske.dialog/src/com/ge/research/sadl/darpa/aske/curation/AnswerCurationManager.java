@@ -2096,7 +2096,7 @@ public class AnswerCurationManager {
 				StringBuilder sb = new StringBuilder(e.getMessage());
 				sb.append(" to translate Java method '" + methodName + "' to Python. ");
 				System.err.println(sb.toString());
-				e.printStackTrace();
+//				e.printStackTrace();
 			}
 		}
 		List<String> returnSadlStatements = new ArrayList<String>();
@@ -3103,97 +3103,102 @@ public class AnswerCurationManager {
 
 	private String processExtractRequest(org.eclipse.emf.ecore.resource.Resource resource2, OntModel theModel,
 			String dialogModelName, ExtractContent sc) throws MalformedURLException, IOException, ConfigurationException, AnswerExtractionException {
-		String returnStatus = null;
-		String scheme = sc.getScheme();
-		String source = sc.getScheme();
-		if ((scheme != null && scheme.equals("text")) || (source != null && source.equals("text"))) {
-			// actual text from which to extract has been provided
-			return processExtractionFromActualTextRequest(theModel, dialogModelName, sc);
-		}
-
-		String content = null;
-		String outputModelName;
-		String prefix;
-		if (scheme != null && scheme.equals("file")) {
-			SadlUtils su =  new SadlUtils();
-			File f = new File(su.fileUrlToFileName(sc.getUrl()));
-			content =su.fileToString(f);
-			outputModelName = getModelNameFromInputFile(f);
-			prefix = getModelPrefixFromInputFile(f);
-			
-			String destPath = (new File(getOwlModelsFolder()).getParent() + "/" + DialogConstants.EXTRACTED_MODELS_FOLDER_PATH_FRAGMENT + "/Sources/" + f.getName());
-			File dest = new File(destPath);
-			if (dest.exists()) {
-				dest.delete();
+		String returnStatus = "";
+		while (sc != null) {
+			String scheme = sc.getScheme();
+			String source = sc.getScheme();
+			if ((scheme != null && scheme.equals("text")) || (source != null && source.equals("text"))) {
+				// actual text from which to extract has been provided
+				returnStatus += processExtractionFromActualTextRequest(theModel, dialogModelName, sc);
+				sc = sc.getNextExtractContent();
+				continue;
 			}
-			if (!dest.exists()) {
-				dest.getParentFile().mkdirs();
-				Files.copy(f, dest);
-//				file.createLink(location, IResource.NONE, null);
-			}
-		}
-		else {
-			content = downloadURL(sc.getUrl());
-			outputModelName = getModelNameFromInputUrl(sc.getUrl());
-			prefix = getModelPrefixFromInputUrl(sc.getUrl());
-		}
-//		System.out.println(content);	
-		setExtractionContext(sc);
-
-		if (sc.getUrl().endsWith(".java")) {
-			// code extraction
-			String outputOwlFileName = prefix + ".owl";
-			try {
-				File of = extractFromCodeAndSave(dialogModelName, content, sc.getUrl(), outputModelName, prefix, outputOwlFileName);
-				if (of != null) {
-					boolean useAllCodeExtractedMethods = true;
-					SaveAsSadl saveAsSadl = SaveAsSadl.DoNotSaveAsSadl;
-					
-					outputOwlFileName = of.getCanonicalPath();
-					// run inference on the model, interact with user to refine results
-					String queryString = useAllCodeExtractedMethods ? SparqlQueries.ALL_CODE_EXTRACTED_METHODS : SparqlQueries.INTERESTING_METHODS_DOING_COMPUTATION;	//?m ?b ?e ?s
-					ResultSet results = runInferenceFindInterestingCodeModelResults(outputOwlFileName, queryString, saveAsSadl, content);
-					if (results == null || results.getRowCount() == 0) {
-						notifyUser(getOwlModelsFolder(), "No equations were found in this extraction from code.", true);
-					}
-					else {
-						equationsFromCodeResultSetToSadlContent(results, getOwlModelsFolder(), content);
-					}
+	
+			String content = null;
+			String outputModelName;
+			String prefix;
+			if (scheme != null && scheme.equals("file")) {
+				SadlUtils su =  new SadlUtils();
+				File f = new File(su.fileUrlToFileName(sc.getUrl()));
+				content =su.fileToString(f);
+				outputModelName = getModelNameFromInputFile(f);
+				prefix = getModelPrefixFromInputFile(f);
+				
+				String destPath = (new File(getOwlModelsFolder()).getParent() + "/" + DialogConstants.EXTRACTED_MODELS_FOLDER_PATH_FRAGMENT + "/Sources/" + f.getName());
+				File dest = new File(destPath);
+				if (dest.exists()) {
+					dest.delete();
 				}
-				returnStatus = "Extracted from '" + sc.getUrl() + "' to OWL file '" + of.getCanonicalPath() + "'";
+				if (!dest.exists()) {
+					dest.getParentFile().mkdirs();
+					Files.copy(f, dest);
+	//				file.createLink(location, IResource.NONE, null);
+				}
 			}
-			catch (Throwable t) {
-				t.printStackTrace();
+			else {
+				content = downloadURL(sc.getUrl());
+				outputModelName = getModelNameFromInputUrl(sc.getUrl());
+				prefix = getModelPrefixFromInputUrl(sc.getUrl());
 			}
+	//		System.out.println(content);	
+			setExtractionContext(sc);
+	
+			if (sc.getUrl().endsWith(".java")) {
+				// code extraction
+				String outputOwlFileName = prefix + ".owl";
+				try {
+					File of = extractFromCodeAndSave(dialogModelName, content, sc.getUrl(), outputModelName, prefix, outputOwlFileName);
+					if (of != null) {
+						boolean useAllCodeExtractedMethods = true;
+						SaveAsSadl saveAsSadl = SaveAsSadl.DoNotSaveAsSadl;
+						
+						outputOwlFileName = of.getCanonicalPath();
+						// run inference on the model, interact with user to refine results
+						String queryString = useAllCodeExtractedMethods ? SparqlQueries.ALL_CODE_EXTRACTED_METHODS : SparqlQueries.INTERESTING_METHODS_DOING_COMPUTATION;	//?m ?b ?e ?s
+						ResultSet results = runInferenceFindInterestingCodeModelResults(outputOwlFileName, queryString, saveAsSadl, content);
+						if (results == null || results.getRowCount() == 0) {
+							notifyUser(getOwlModelsFolder(), "No equations were found in this extraction from code.", true);
+						}
+						else {
+							equationsFromCodeResultSetToSadlContent(results, getOwlModelsFolder(), content);
+						}
+					}
+					returnStatus += "Extracted from '" + sc.getUrl() + "' to OWL file '" + of.getCanonicalPath() + "'";
+				}
+				catch (Throwable t) {
+					t.printStackTrace();
+				}
+			}
+			else {
+				if (sc.getUrl().endsWith(".html")) {
+	//				Source src = new Source(content);
+	//				Renderer rndrr = src.getRenderer();
+	//				rndrr.setNewLine(System.lineSeparator());
+	//				rndrr.setIncludeHyperlinkURLs(false);
+	//				rndrr.setConvertNonBreakingSpaces(true);
+	//				content = rndrr.toString();
+	//				content = new Source(content).getRenderer().toString();
+	//				System.out.println(content);
+					throw new AnswerExtractionException("HTML files not currently supported");
+				}
+				//text extraction
+				String outputOwlFileName = prefix + ".owl";
+				try {
+					File of = extractFromTextAndSave(dialogModelName, content, sc.getUrl(), outputModelName, prefix, outputOwlFileName);
+					String owlFileForDisplay = "file:///" + of.getCanonicalPath().replace("\\", "/");
+					returnStatus += "Saved extracted model to OWL '" + owlFileForDisplay + "'";
+					answerUser(getOwlModelsFolder(), returnStatus, true, sc.getHostEObject());	
+					processExtractedText(outputModelName, outputOwlFileName, SaveAsSadl.DoNotSaveAsSadl);
+				} catch (Exception e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+					returnStatus += e.getMessage();
+				} 
+	
+			}
+			clearExtractionContext();
+			sc = sc.getNextExtractContent();
 		}
-		else {
-			if (sc.getUrl().endsWith(".html")) {
-//				Source src = new Source(content);
-//				Renderer rndrr = src.getRenderer();
-//				rndrr.setNewLine(System.lineSeparator());
-//				rndrr.setIncludeHyperlinkURLs(false);
-//				rndrr.setConvertNonBreakingSpaces(true);
-//				content = rndrr.toString();
-//				content = new Source(content).getRenderer().toString();
-//				System.out.println(content);
-				throw new AnswerExtractionException("HTML files not currently supported");
-			}
-			//text extraction
-			String outputOwlFileName = prefix + ".owl";
-			try {
-				File of = extractFromTextAndSave(dialogModelName, content, sc.getUrl(), outputModelName, prefix, outputOwlFileName);
-				String owlFileForDisplay = "file:///" + of.getCanonicalPath().replace("\\", "/");
-				returnStatus = "Saved extracted model to OWL '" + owlFileForDisplay + "'";
-				answerUser(getOwlModelsFolder(), returnStatus, true, sc.getHostEObject());	
-				processExtractedText(outputModelName, outputOwlFileName, SaveAsSadl.DoNotSaveAsSadl);
-			} catch (Exception e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-				returnStatus = e.getMessage();
-			} 
-
-		}
-		clearExtractionContext();
 		return returnStatus;
 	}
 

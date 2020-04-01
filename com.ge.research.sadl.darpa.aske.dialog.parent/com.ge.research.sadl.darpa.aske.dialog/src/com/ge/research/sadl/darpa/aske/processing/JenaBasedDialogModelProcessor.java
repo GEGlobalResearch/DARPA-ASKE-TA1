@@ -696,12 +696,15 @@ public class JenaBasedDialogModelProcessor extends JenaBasedSadlModelProcessor {
 	}
 
 	private StatementContent processStatement(ExtractStatement element) {
-		EList<String> srcUris = element.getSourceURIs();
+		EList<String> srcUris = element.getSources();
 		if (srcUris.size() > 1) {
 			addWarning("Extract statement currently only processes first source. Please use multiple statements.", element);
 		}
 		String str = projectHelper.toString();
+		ExtractContent theFirstContent = null;
+		ExtractContent theLastContent = null;
 		for (String srcUri : srcUris) {
+			ExtractContent newContent = null;
 			try {
 				String scheme = getUriScheme(srcUri);
 				String source;
@@ -720,7 +723,16 @@ public class JenaBasedDialogModelProcessor extends JenaBasedSadlModelProcessor {
 					source = srcUri;
 				}
 				if (scheme != null) {
-					return new ExtractContent(element, Agent.USER, scheme, source, srcUri);
+					newContent = new ExtractContent(element, Agent.USER, scheme, source, srcUri);
+					if (theFirstContent == null) {
+						theFirstContent = newContent;
+						theLastContent = theFirstContent;
+					}
+					else {
+						theLastContent.setNextExtractContent(newContent);
+						theLastContent = newContent;
+					}
+					continue;
 				}
 			} catch (Exception e) {
 				if (srcUri.startsWith("file:/") || srcUri.startsWith("http:/")) {
@@ -729,9 +741,17 @@ public class JenaBasedDialogModelProcessor extends JenaBasedSadlModelProcessor {
 				}
 			}
 			addInfo("'" + srcUri + "' does not appear to be a URL so doing extraction from the text", element);
-			return new ExtractContent(element, Agent.USER, "text", srcUri, srcUri);
+			newContent = new ExtractContent(element, Agent.USER, "text", srcUri, srcUri);
+			if (theFirstContent == null) {
+				theFirstContent = newContent;
+				theLastContent = theFirstContent;
+			}
+			else {
+				theLastContent.setNextExtractContent(newContent);
+				theLastContent = newContent;
+			}
 		}
-		return null;
+		return theFirstContent;
 	}
 
 	private StatementContent processStatement(CompareStatement element) throws InvalidNameException, InvalidTypeException, TranslationException, IOException, PrefixNotFoundException, ConfigurationException {
