@@ -172,7 +172,8 @@ AnswerCMStatement:
 		EquationStatement|
 		ComparisonTableStatement|
 		UndefinedConceptStatement |
-		NoModelFoundStatement
+		NoModelFoundStatement |
+		NewExpressionStatement
 	)) | str = STRING)
 ;
 
