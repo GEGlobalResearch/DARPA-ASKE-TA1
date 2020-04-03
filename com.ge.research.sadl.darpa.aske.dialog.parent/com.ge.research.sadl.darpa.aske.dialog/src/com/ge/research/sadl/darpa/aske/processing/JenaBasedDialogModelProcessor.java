@@ -1372,16 +1372,16 @@ public class JenaBasedDialogModelProcessor extends JenaBasedSadlModelProcessor {
 		Expression concept = element.getConcept();
 		if (concept instanceof SadlResource) {
 			String srName = getDeclarationExtensions().getConcreteName((SadlResource) concept);
-			return new MatchFoundStatementContent(element, Agent.CM, srName);
+			return new MatchFoundStatementContent(element, type, Agent.CM, srName);
 		}
 		else {
 			try {
 				Object exprObj = processExpression(concept);
-				return new MatchFoundStatementContent(element, Agent.CM, exprObj.toString());
+				return new MatchFoundStatementContent(element, type, Agent.CM, exprObj.toString());
 			} catch (Exception e) {
 				addError(e.getMessage(), concept);
 				e.printStackTrace();
-				return new MatchFoundStatementContent(element, Agent.CM, e.getMessage());
+				return new MatchFoundStatementContent(element, type, Agent.CM, e.getMessage());
 			} 
 		}
 	}

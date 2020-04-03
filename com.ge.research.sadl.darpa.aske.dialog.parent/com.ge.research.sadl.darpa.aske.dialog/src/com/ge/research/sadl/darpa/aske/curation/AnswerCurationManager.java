@@ -3465,13 +3465,12 @@ public class AnswerCurationManager {
 		}
 		else {
 			if (type.equals("expression")) {
-				sb.append("Inferred");
+				sb.append("Inferred match ");
 			}
 			else {
-				sb.append("Found");
+				sb.append("Found matching ");
+				sb.append(type);
 			}
-			sb.append(" matching ");
-			sb.append(type);
 		}
 		return sb.toString();
 	}
