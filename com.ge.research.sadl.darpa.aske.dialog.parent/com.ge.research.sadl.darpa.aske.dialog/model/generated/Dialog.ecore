@@ -100,6 +100,11 @@
         containment="true"/>
     <eStructuralFeatures xsi:type="ecore:EAttribute" name="str" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EString"/>
   </eClassifiers>
+  <eClassifiers xsi:type="ecore:EClass" name="MatchFoundStatement">
+    <eStructuralFeatures xsi:type="ecore:EAttribute" name="type" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EString"/>
+    <eStructuralFeatures xsi:type="ecore:EReference" name="concept" eType="ecore:EClass platform:/resource/com.ge.research.sadl/model/generated/SADL.ecore#//Expression"
+        containment="true"/>
+  </eClassifiers>
   <eClassifiers xsi:type="ecore:EClass" name="WhatStatement" eSuperTypes="platform:/resource/com.ge.research.sadl/model/generated/SADL.ecore#//SadlModelElement">
     <eStructuralFeatures xsi:type="ecore:EReference" name="stmt" eType="ecore:EClass http://www.eclipse.org/emf/2002/Ecore#//EObject"
         containment="true"/>

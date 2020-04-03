@@ -435,43 +435,44 @@ public class TextProcessor {
 	/** 
 	 * Method to add a domainOntology to the text to triples service
 	 * @param dialogModelName
+	 * @param extractedTxtModelName 
 	 * @param domainModel
 	 * @throws IOException 
 	 */
-	public String addDomainOntology(String dialogModelName, OntModel domainModel) throws IOException {
-//		if (getRegisteredDomainModel() == null) {
-			OntModelSpec spec = new OntModelSpec(OntModelSpec.OWL_MEM);
-			OntModel aggregateDomainModel = ModelFactory.createOntologyModel(spec);	
-			aggregateDomainModel.add(domainModel.getBaseModel());
-//			aggregateDomainModel.write(System.out);
-			ExtendedIterator<OntModel> smitr = domainModel.listSubModels();
-			for (OntModel sm : smitr.toList()) {
-				ExtendedIterator<Ontology> ontitr = sm.listOntologies();
-				String onturi = null;
-				while (ontitr.hasNext()) {
-					onturi = ontitr.next().getURI();
-//					System.out.println(onturi);
-					break;
-				}
-				if (onturi != null) {
-					if (onturi.equals(SadlConstants.SADL_BASE_MODEL_URI) ||
-							onturi.equals(SadlConstants.SADL_DEFAULTS_MODEL_URI) ||
-							onturi.equals(SadlConstants.SADL_IMPLICIT_MODEL_URI) ||
-							onturi.equals(SadlConstants.SADL_LIST_MODEL_URI) ||
-							onturi.equals(IReasoner.SADL_BUILTIN_FUNCTIONS_URI)) {
-						continue;
-					}
-				}
-//				System.out.println("*****************************************************************");
-//				sm.getBaseModel().write(System.out);
-				aggregateDomainModel.add(sm.getBaseModel());
-			}
-			String ontologyAsString = getCurationManager().ontModelToString(aggregateDomainModel);
-//			(new SadlUtils()).stringToFile(new File("c:/tmp/isentrop_txt.owl"), ontologyAsString, false);	// temporary for debug purposes
+	public String addDomainOntology(String localityURI, String domainModelURI, OntModel domainModel) throws IOException {
+////		if (getRegisteredDomainModel() == null) {
+//			OntModelSpec spec = new OntModelSpec(OntModelSpec.OWL_MEM);
+//			OntModel aggregateDomainModel = ModelFactory.createOntologyModel(spec);	
+//			aggregateDomainModel.add(domainModel.getBaseModel());
+////			aggregateDomainModel.write(System.out);
+//			ExtendedIterator<OntModel> smitr = domainModel.listSubModels();
+//			for (OntModel sm : smitr.toList()) {
+//				ExtendedIterator<Ontology> ontitr = sm.listOntologies();
+//				String onturi = null;
+//				while (ontitr.hasNext()) {
+//					onturi = ontitr.next().getURI();
+////					System.out.println(onturi);
+//					break;
+//				}
+//				if (onturi != null) {
+//					if (onturi.equals(SadlConstants.SADL_BASE_MODEL_URI) ||
+//							onturi.equals(SadlConstants.SADL_DEFAULTS_MODEL_URI) ||
+//							onturi.equals(SadlConstants.SADL_IMPLICIT_MODEL_URI) ||
+//							onturi.equals(SadlConstants.SADL_LIST_MODEL_URI) ||
+//							onturi.equals(IReasoner.SADL_BUILTIN_FUNCTIONS_URI)) {
+//						continue;
+//					}
+//				}
+////				System.out.println("*****************************************************************");
+////				sm.getBaseModel().write(System.out);
+//				aggregateDomainModel.add(sm.getBaseModel());
+//			}
+			String ontologyAsString = getCurationManager().ontModelToString(domainModel);
+			System.out.println(ontologyAsString);
 			String serviceBaseUri = getPreference(DialogPreferences.ANSWER_TEXT_SERVICE_BASE_URI.getId());
 			TextProcessingServiceInterface tpsi = new TextProcessingServiceInterface(serviceBaseUri);
-			String response = tpsi.uploadDomainOntology(dialogModelName, dialogModelName, ontologyAsString);
-			setRegisteredDomainModel(aggregateDomainModel);
+			String response = tpsi.uploadDomainOntology(localityURI, domainModelURI, ontologyAsString);
+			setRegisteredDomainModel(domainModel);
 			return response;
 //		}
 //		return "Domain ontology already uploaded";

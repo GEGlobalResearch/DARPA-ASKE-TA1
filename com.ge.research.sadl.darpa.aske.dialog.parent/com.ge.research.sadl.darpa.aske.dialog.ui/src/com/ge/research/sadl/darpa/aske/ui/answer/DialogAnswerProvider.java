@@ -40,9 +40,7 @@ import java.io.File;
 import java.io.IOException;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.concurrent.ExecutionException;
 
 import org.eclipse.core.filesystem.EFS;
@@ -61,15 +59,11 @@ import org.eclipse.emf.common.util.URI;
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.ecore.resource.Resource;
 import org.eclipse.jface.text.BadLocationException;
-import org.eclipse.jface.text.IDocument;
 import org.eclipse.jface.text.IRegion;
-import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.BusyIndicator;
 import org.eclipse.swt.custom.StyledText;
-import org.eclipse.swt.graphics.Cursor;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Display;
-import org.eclipse.swt.widgets.Shell;
 import org.eclipse.ui.IWorkbench;
 import org.eclipse.ui.IWorkbenchPage;
 import org.eclipse.ui.IWorkbenchPart;
@@ -77,16 +71,12 @@ import org.eclipse.ui.IWorkbenchWindow;
 import org.eclipse.ui.PartInitException;
 import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.ide.IDE;
-import org.eclipse.xtext.nodemodel.INode;
 import org.eclipse.xtext.nodemodel.util.NodeModelUtils;
-import org.eclipse.xtext.preferences.IPreferenceValues;
-import org.eclipse.xtext.preferences.IPreferenceValuesProvider;
 import org.eclipse.xtext.resource.XtextResource;
 import org.eclipse.xtext.ui.editor.model.IXtextDocument;
 import org.eclipse.xtext.ui.editor.model.IXtextModelListener;
 import org.eclipse.xtext.ui.editor.model.XtextDocument;
 import org.eclipse.xtext.util.CancelIndicator;
-import org.eclipse.xtext.util.Exceptions;
 import org.eclipse.xtext.validation.CheckMode;
 import org.eclipse.xtext.validation.IResourceValidator;
 import org.slf4j.Logger;
@@ -99,10 +89,8 @@ import com.ge.research.sadl.darpa.aske.curation.AnswerCurationManager;
 import com.ge.research.sadl.darpa.aske.curation.BaseDialogAnswerProvider;
 import com.ge.research.sadl.darpa.aske.curation.EquationNotFoundException;
 import com.ge.research.sadl.darpa.aske.dialog.ExtractStatement;
-import com.ge.research.sadl.darpa.aske.preferences.DialogPreferences;
 import com.ge.research.sadl.darpa.aske.processing.DialogConstants;
 import com.ge.research.sadl.darpa.aske.processing.ExpectsAnswerContent;
-import com.ge.research.sadl.darpa.aske.processing.JenaBasedDialogModelProcessor;
 import com.ge.research.sadl.darpa.aske.processing.ModelElementInfo;
 import com.ge.research.sadl.darpa.aske.processing.QuestionWithCallbackContent;
 import com.ge.research.sadl.darpa.aske.processing.StatementContent;
@@ -303,6 +291,7 @@ public class DialogAnswerProvider extends BaseDialogAnswerProvider {
 			Object ctx, boolean quote, boolean prependAgent, boolean repositionCursor, boolean addLeadingSpaces) throws BadLocationException {
 		LOGGER.debug(content);
 		String ctxtxt = getNodeText((EObject)ctx);
+		Resource resource = getResource();
 //		System.err.println("addCMContent: context=" + ctxtxt + ", content=" + content);
 		
 //		System.err.println("addCMContent: " + content);
@@ -310,7 +299,7 @@ public class DialogAnswerProvider extends BaseDialogAnswerProvider {
 //		Display.getDefault().syncExec(() -> {
 			try {
 				String modContent = generateModifiedContent(document, ctx, quote, prependAgent, content);
-				Object[] insertionInfo = generateInsertionLocation(document, ctx, ctxtxt, modContent);
+				Object[] insertionInfo = generateInsertionLocation(document, resource, ctx, ctxtxt, modContent);
 				modContent = (String) insertionInfo[0];
 				int loc = (int) insertionInfo[1];
 				if (loc >= 0) {
@@ -348,9 +337,10 @@ public class DialogAnswerProvider extends BaseDialogAnswerProvider {
 
 	private synchronized boolean replaceDialogText(IXtextDocument theDocument, EObject ctx, String originalTxt, String replacementTxt) throws BadLocationException {
 		LOGGER.debug("replacing '" + originalTxt + "' with '" + replacementTxt + "'");
-//		Display.getDefault().asyncExec(() -> {
-		Display.getDefault().syncExec(() -> {
-			Object elementInfos = getConfigMgr().getPrivateKeyMapValueByResource("ElementInfo", getResource());
+		Resource resource = getResource();
+		Display.getDefault().asyncExec(() -> {
+//		Display.getDefault().syncExec(() -> {
+			Object elementInfos = getConfigMgr().getPrivateKeyMapValueByResource("ElementInfo", resource);
 			String docText = document.get();
 			int docLength = document.getLength();
 			int idx = 0;
@@ -364,26 +354,46 @@ public class DialogAnswerProvider extends BaseDialogAnswerProvider {
 						}
 						else if (mei.getObject().equals(ctx)) {
 							String origTxt = mei.getTxt();
-							if(origTxt.endsWith(".")) {
+							String otherTxt = originalTxt;
+							String replTxt = replacementTxt;
+							int leadingCrudLen = origTxt.indexOf(otherTxt);
+							if (leadingCrudLen > 0) {
+								// there's stuff (comments, whitespace on the front of origTxt
+								origTxt = origTxt.substring(leadingCrudLen);
+							}
+							if(origTxt.endsWith(".") && !otherTxt.endsWith(".")) {
 								origTxt = origTxt.substring(0,origTxt.length()-1);
 							}
-							if (!origTxt.trim().substring(4).equals(originalTxt)) {
-								// error
-								System.err.println("equation text doesn't match");
+							if(otherTxt.endsWith(".") && !origTxt.endsWith(".")) {
+								otherTxt = otherTxt.substring(0,otherTxt.length()-1);
 							}
-							int len = mei.getLength();									// length of original element
+							int leadingPrefixLen = 0;
+							if (origTxt.trim().startsWith("CM: ")) {
+								leadingPrefixLen = 4;
+								if (!origTxt.trim().substring(leadingPrefixLen).equals(otherTxt)) {
+									// error
+									System.err.println("equation text doesn't match");
+								}
+							}
+							else {
+								if (!origTxt.trim().equals(otherTxt)) {
+									// error
+									System.err.println("equation text doesn't match");
+								}
+							}
+							int len = mei.getLength() - leadingCrudLen;									// length of original element
 							int currentStart = docText.indexOf(origTxt);				// start of element text in current document
 							String currentTxt;
 							try {
 								currentTxt = document.get(currentStart, len);
-								if(currentTxt.endsWith(".")) {
+								if(currentTxt.endsWith(".") && !replacementTxt.endsWith(".")) {
 									currentTxt = currentTxt.substring(0,currentTxt.length()-1);
 								}
-								if (!currentTxt.trim().substring(4).equals(originalTxt)) {
+								if (!currentTxt.trim().substring(leadingPrefixLen).equals(originalTxt)) {
 									// error
 									System.err.println("document text doesn't match");
 								}
-								int loc = currentStart + 4 + System.lineSeparator().length();
+								int loc = currentStart + leadingPrefixLen;
 								document.replace(loc, originalTxt.length(), replacementTxt);
 //								final int caretOffset = loc + modContent.length();
 //								setCaretOffsetInEditor(uri, caretOffset);
@@ -435,19 +445,14 @@ public class DialogAnswerProvider extends BaseDialogAnswerProvider {
 	}
 
 	private String getNodeText(EObject element) {
-		INode node = NodeModelUtils.findActualNodeFor(element);
-		if (node != null) {
-			String txt = node.getText();
-			return txt;
-		}
-		return null;
+		return NodeModelUtils.getTokenText(NodeModelUtils.getNode(element));
 	}
-
-	private Object[] generateInsertionLocation(IXtextDocument document, Object ctx, String ctxtxt, String modContent) {
+	
+	private Object[] generateInsertionLocation(IXtextDocument document, Resource resource, Object ctx, String ctxtxt, String modContent) {
 		int loc = 0;
 		String lineSep = System.lineSeparator();
 		int lineSepLen = lineSep.length();
-		Object elementInfos = getConfigMgr().getPrivateKeyMapValueByResource("ElementInfo", getResource());
+		Object elementInfos = getConfigMgr().getPrivateKeyMapValueByResource("ElementInfo", resource); // resource);
 		String docText = document.get();
 		int docLength = document.getLength();
 		int idx = 0;
@@ -463,8 +468,9 @@ public class DialogAnswerProvider extends BaseDialogAnswerProvider {
 							getNodeText(mei.getObject()).equals(ctxtxt)) {
 						try {
 							String origTxt = mei.getTxt();
-							int len = mei.getLength();									// length of original element
-							int currentStart = docText.indexOf(origTxt);				// start of element text in current document
+							int len = mei.getLength();	// length of original element
+							int start = mei.getStart(); // start of this ModelElementInfo
+							int currentStart = docText.indexOf(origTxt, start);				// start of element text in current document
 							if (currentStart >= 0) {
 								String currentTxt = document.get(currentStart, len);
 								if (!currentTxt.equals(origTxt)) {
@@ -498,6 +504,10 @@ public class DialogAnswerProvider extends BaseDialogAnswerProvider {
 								loc = expectedEndLoc + priorInsertionsOffset;
 								if (docLength - loc >= lineSepLen) {
 									String rightAfter = document.get(loc,lineSepLen);
+									if (rightAfter.startsWith(".") || rightAfter.startsWith("?")) {
+										loc++;
+										rightAfter = document.get(loc, lineSepLen);
+									}
 									if (rightAfter.equals(lineSep)) {
 										loc += lineSep.length();
 									}
@@ -514,8 +524,8 @@ public class DialogAnswerProvider extends BaseDialogAnswerProvider {
 			}
 		}
 		if (loc == 0) {
-			if (getResource() != null) {
-				System.err.println("Context EObject not found in list of ModelElementInfos for document '" + getResource().getURI() + "'!");
+			if (resource != null) {
+				System.err.println("Context EObject not found in list of ModelElementInfos for document '" + resource.getURI() + "'!");
 			}
 			else {
 				System.err.println("Context EObject not found in list of ModelElementInfos!");
@@ -638,7 +648,6 @@ public class DialogAnswerProvider extends BaseDialogAnswerProvider {
 					}
 					sb.append(importStatement);
 				}
-//				String precedingObjText = NodeModelUtils.getTokenText(NodeModelUtils.getNode(precedingObj));
 				try {
 					return addCurationManagerContentToDialog(document, null, sb.toString(), precedingObj, false, false, false, false);
 				} catch (BadLocationException e) {

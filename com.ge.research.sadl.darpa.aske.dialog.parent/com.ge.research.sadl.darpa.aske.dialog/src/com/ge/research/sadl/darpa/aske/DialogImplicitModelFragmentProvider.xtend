@@ -67,6 +67,9 @@ class DialogImplicitModelFragmentProvider implements ISadlImplicitModelFragmentP
 		implicitOutput describes ^Equation with values of type ImplicitDataDescriptor.
 		
 		{Python-TF, Python-NumPy} are instances of Language.
+		
+		matchingClass is a type of annotation.
+		matchingProperty is a type of annotation.
 	''';
 
 	@Override

@@ -172,8 +172,15 @@ AnswerCMStatement:
 		EquationStatement|
 		ComparisonTableStatement|
 		UndefinedConceptStatement |
-		NoModelFoundStatement
+		NoModelFoundStatement |
+		NewExpressionStatement |
+		MatchFoundStatement
 	)) | str = STRING)
+;
+
+MatchFoundStatement:
+	('Found' 'matching' type=('class'|'property') concept=SadlResource) |
+	(type='Inferred' 'match' concept=Expression)
 ;
 
 ModifiedAskStatement returns sadl::ExpressionScope:
