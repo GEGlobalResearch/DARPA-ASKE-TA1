@@ -179,8 +179,8 @@ AnswerCMStatement:
 ;
 
 MatchFoundStatement:
-	'Found' 'matching' (type=('class'|'property') concept=SadlResource) |
-	type='expression' concept=Expression
+	('Found' 'matching' type=('class'|'property') concept=SadlResource) |
+	('Inferred' 'matching' type='expression' concept=Expression)
 ;
 
 ModifiedAskStatement returns sadl::ExpressionScope:

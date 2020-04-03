@@ -468,8 +468,9 @@ public class DialogAnswerProvider extends BaseDialogAnswerProvider {
 							getNodeText(mei.getObject()).equals(ctxtxt)) {
 						try {
 							String origTxt = mei.getTxt();
-							int len = mei.getLength();									// length of original element
-							int currentStart = docText.indexOf(origTxt);				// start of element text in current document
+							int len = mei.getLength();	// length of original element
+							int start = mei.getStart(); // start of this ModelElementInfo
+							int currentStart = docText.indexOf(origTxt, start);				// start of element text in current document
 							if (currentStart >= 0) {
 								String currentTxt = document.get(currentStart, len);
 								if (!currentTxt.equals(origTxt)) {

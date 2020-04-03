@@ -1376,10 +1376,10 @@ public class JenaBasedDialogModelProcessor extends JenaBasedSadlModelProcessor {
 		}
 		else {
 			try {
-				Object exprObj = processExpression(element);
+				Object exprObj = processExpression(concept);
 				return new MatchFoundStatementContent(element, Agent.CM, exprObj.toString());
 			} catch (Exception e) {
-				addError(e.getMessage(), element);
+				addError(e.getMessage(), concept);
 				e.printStackTrace();
 				return new MatchFoundStatementContent(element, Agent.CM, e.getMessage());
 			} 

@@ -3464,7 +3464,13 @@ public class AnswerCurationManager {
 			sb.append("Add");
 		}
 		else {
-			sb.append("Found matching ");
+			if (type.equals("expression")) {
+				sb.append("Inferred");
+			}
+			else {
+				sb.append("Found");
+			}
+			sb.append(" matching ");
 			sb.append(type);
 		}
 		return sb.toString();
