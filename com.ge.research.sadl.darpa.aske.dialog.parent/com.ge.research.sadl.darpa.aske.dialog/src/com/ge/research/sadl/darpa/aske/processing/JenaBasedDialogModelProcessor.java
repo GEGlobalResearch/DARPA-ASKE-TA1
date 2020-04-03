@@ -85,6 +85,7 @@ import com.ge.research.sadl.darpa.aske.dialog.ComparisonTableStatement;
 import com.ge.research.sadl.darpa.aske.dialog.ExtractStatement;
 import com.ge.research.sadl.darpa.aske.dialog.HowManyValuesStatement;
 import com.ge.research.sadl.darpa.aske.dialog.InsightStatement;
+import com.ge.research.sadl.darpa.aske.dialog.MatchFoundStatement;
 import com.ge.research.sadl.darpa.aske.dialog.ModifiedAskStatement;
 import com.ge.research.sadl.darpa.aske.dialog.MyNameIsStatement;
 import com.ge.research.sadl.darpa.aske.dialog.NewExpressionStatement;
@@ -507,6 +508,9 @@ public class JenaBasedDialogModelProcessor extends JenaBasedSadlModelProcessor {
 		}
 		else if (element instanceof NewExpressionStatement) {
 			return processStatement((NewExpressionStatement)element);
+		}
+		else if (element instanceof MatchFoundStatement) {
+			return processStatement((MatchFoundStatement)element);
 		}
 		else if (element instanceof ExternalEquationStatement) {
 			EquationStatementContent ssc = new EquationStatementContent(element, Agent.USER);
@@ -1363,6 +1367,13 @@ public class JenaBasedDialogModelProcessor extends JenaBasedSadlModelProcessor {
 		return null;
 	}
 	
+	private StatementContent processStatement(MatchFoundStatement element) {
+		String type = element.getType();
+		SadlResource concept = element.getConcept();
+		String srName = getDeclarationExtensions().getConcreteName(concept);
+		return new MatchFoundStatementContent(element, Agent.CM, srName);
+	}
+
 	private StatementContent processStatement(NewExpressionStatement element) {
 		Expression expr = element.getNewExpr();
 		String uptxt = getSourceText(element);

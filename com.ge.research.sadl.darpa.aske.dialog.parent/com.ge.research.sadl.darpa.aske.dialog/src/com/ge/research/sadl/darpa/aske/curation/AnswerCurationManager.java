@@ -238,6 +238,7 @@ public class AnswerCurationManager {
 	private List<String> classesDeclared = new ArrayList<String>();
 	private List<StatementContent> failureCorrectingActions = new ArrayList<StatementContent>();
 	private HashMap<String, String> domainModelsLoaded = new HashMap<String,String>();
+	private StatementContent lastStatement = null;
     
 	public AnswerCurationManager (String modelFolder, IConfigurationManagerForIDE configMgr, XtextResource resource, Map<String,String> prefs) {
 		setOwlModelsFolder(modelFolder);
@@ -3228,7 +3229,7 @@ public class AnswerCurationManager {
 				String[] graphResults = getTextProcessor().retrieveGraph(localityURI);	
 				OntModel m = getTextProcessor().getTextModelConfigMgr().getOntModel(localityURI, graphResults[2], Scope.INCLUDEIMPORTS, graphResults[1]);
 				m.write(System.out, "N3");
-				List<String> extracts = displayExtractedConcepts(m);
+				List<String> extracts = retrieveExtractedConcepts(m);
 				StringBuilder sb = new StringBuilder();
 				if (extracts != null) {
 					for (String ex : extracts) {
@@ -3297,7 +3298,7 @@ public class AnswerCurationManager {
 		return false;
 	}
 
-	private List<String> displayExtractedConcepts(OntModel m) throws ConfigurationException {
+	private List<String> retrieveExtractedConcepts(OntModel m) throws ConfigurationException {
 		StringBuilder sb = new StringBuilder();
 		// get everything with a label
 		int cntr = 0;
@@ -3392,28 +3393,30 @@ public class AnswerCurationManager {
 			}
 		}
 		if (theProperty != null) {
-			StmtIterator rngItr = m.listStatements(theProperty, RDFS.range, (RDFNode)null);
-//			if (rngItr.hasNext()) {
-//				Resource rng = rngItr.nextStatement().getObject().asResource();
-//				if(theClass.equals(rng)) {
+			StmtIterator rngItr = getDomainModel().listStatements(theProperty, RDFS.range, (RDFNode)null);
+			if (rngItr.hasNext()) {
+				Resource rng = rngItr.nextStatement().getObject().asResource();
+				if(theClass.equals(rng)) {
 					// we have a property and we have a class and the class is the range of the property
 					// get the domain and do <property> of <domain> as the semantic type
-					StmtIterator dmnItr = m.listStatements(theProperty, RDFS.domain, (RDFNode)null);
+					StmtIterator dmnItr = getDomainModel().listStatements(theProperty, RDFS.domain, (RDFNode)null);
 					if (dmnItr.hasNext()) {
 						Resource dmn = dmnItr.nextStatement().getObject().asResource();
 						if (dmn.isURIResource()) {
-							sb.append("Add ");
+							sb.append(getExtractionPreamble("expression", theProperty));
+							sb.append(" ");
 							sb.append(checkForKeyword(theProperty.getLocalName()));
-							sb.append(" of ");
+							sb.append(" of an ");
 							sb.append(checkForKeyword(dmn.getLocalName()));
 						}
 					}
-//				}
-//			}
+				}
+			}
 		}
 		if (sb.length() == 0) {
 			if (theClass != null) {
-				sb.append("Add ");
+				sb.append(getExtractionPreamble("class", theClass));
+				sb.append(" ");
 				sb.append(checkForKeyword(theClass.getLocalName()));
 			}
 		}
@@ -3452,6 +3455,19 @@ public class AnswerCurationManager {
 			retvals.add(sb.toString());
 		}
 		return retvals;
+	}
+
+	private Object getExtractionPreamble(String type, Object theContent) {
+		StringBuilder sb = new StringBuilder();
+		StatementContent lastsc = getLastStatement();
+		if (lastsc instanceof WhatIsContent && ((WhatIsContent) lastsc).getTarget() instanceof VariableNode) {
+			sb.append("Add");
+		}
+		else {
+			sb.append("Found matching ");
+			sb.append(type);
+		}
+		return sb.toString();
 	}
 
 	/**
@@ -5355,6 +5371,7 @@ public class AnswerCurationManager {
 				}
 			}
 			lastStatement = sc;
+			setLastStatement(lastStatement);
 		}
 		if (!additions.isEmpty()) {
 			for (int i = additions.size() - 1; i >= 0; i--) {
@@ -5397,6 +5414,14 @@ public class AnswerCurationManager {
 			// there are no questions, clear qna
 			qna.clear();
 		}
+	}
+
+	private void setLastStatement(StatementContent lastStatement) {
+		this.lastStatement = lastStatement;
+	}
+	
+	private StatementContent getLastStatement() {
+		return this.lastStatement;
 	}
 
 	private void processSadlStatementContentInContextOfPreceedingWhatIs(SadlStatementContent sc,
@@ -5478,7 +5503,7 @@ public class AnswerCurationManager {
 			int insertLoc = argStart + argNameToUpdate.length();
 			StringBuilder newEqTxt = new StringBuilder(eqTxt.subSequence(0, insertLoc));
 			newEqTxt.append(" (");
-			newEqTxt.append(augTypeTxt);
+			newEqTxt.append(correctArticlesInAugmentedType(eqTxt, insertLoc, augTypeTxt));
 			newEqTxt.append(")");
 			newEqTxt.append(eqTxt.substring(insertLoc));
 			String replacementTxt = newEqTxt.toString();
@@ -5493,7 +5518,7 @@ public class AnswerCurationManager {
 			int insertLoc = eqTxt.indexOf(":", sigEnd);
 			StringBuilder newEqTxt = new StringBuilder(eqTxt.subSequence(0, insertLoc));
 			newEqTxt.append(" (");
-			newEqTxt.append(augTypeTxt);
+			newEqTxt.append(correctArticlesInAugmentedType(eqTxt, insertLoc, augTypeTxt));
 			newEqTxt.append(")");
 			newEqTxt.append(eqTxt.substring(insertLoc));
 			String replacementTxt = newEqTxt.toString();
@@ -5501,6 +5526,46 @@ public class AnswerCurationManager {
 			replaceDialogText(equationEObject, eqTxt, replacementTxt);
 			return;
 		}
+	}
+
+	private Object correctArticlesInAugmentedType(String eqTxt, int insertLoc, String augTypeTxt) {
+		// if the concept is already referenced in the equation before the insertion point, the article should be definite.
+		//	(if an independent additional reference is intended the human will need to collaboratively alter)
+		String eqBefore = eqTxt.substring(0, insertLoc);
+		eqBefore = eqBefore.replace('(',  ' ');
+		eqBefore = eqBefore.replace(')', ' ');
+		List<String> eqPieces = Arrays.asList(eqBefore.split("\\s+"));
+		String[] augPieces = augTypeTxt.split("\\s+");
+		if (augPieces != null && augPieces.length > 1) {
+			for (int i = 0; i < augPieces.length - 1; i++) {
+				String piece = augPieces[i];
+				if (piece.equals("an") || piece.equals("the")) {
+					String noun = augPieces[i+1];
+					if (eqPieces.contains(noun)) {
+						// make sure this noun has a definite article
+						augPieces[i] = "the";
+					}
+					else {
+						char ch = noun.toLowerCase().charAt(0);
+						if (ch == 'a' || ch == 'e' || ch == 'i' || ch == 'o' || ch == 'u') {
+							augPieces[i] = "an";
+						}
+						else {
+							augPieces[i] = "a";
+						}
+					}
+				}
+			}
+			StringBuilder sb = new StringBuilder();
+			for (int i = 0; i < augPieces.length; i++) {
+				if (i > 0) {
+					sb.append(" ");
+				}
+				sb.append(augPieces[i]);
+			}
+			return sb.toString();
+		}
+		return augTypeTxt;
 	}
 
 	private void processAddAugmentedTypeInfoContent(AddAugmentedTypeInfoContent sc) {
