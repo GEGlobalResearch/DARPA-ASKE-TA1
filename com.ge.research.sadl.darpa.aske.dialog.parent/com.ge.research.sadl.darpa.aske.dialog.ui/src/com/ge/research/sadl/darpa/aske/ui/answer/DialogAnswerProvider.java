@@ -287,10 +287,21 @@ public class DialogAnswerProvider extends BaseDialogAnswerProvider {
 		return addCurationManagerContentToDialog(document, reg, content, ctx, quote, true, true, true);
 	}
 	
+	@Override
+	public synchronized boolean addUserContentToDialog(AnswerCurationManager acm, String content, boolean quote) {
+		answerConfigurationManager = acm;
+		try {
+			return addCurationManagerContentToDialog(document, (IRegion)null,  content, (Object)null, quote, false, true, false);
+		} catch (BadLocationException e) {
+			// TODO Auto-generated catch block
+		}
+		return false;
+	}
+		
 	private synchronized boolean addCurationManagerContentToDialog(IXtextDocument document, IRegion reg, String content,
 			Object ctx, boolean quote, boolean prependAgent, boolean repositionCursor, boolean addLeadingSpaces) throws BadLocationException {
 		LOGGER.debug(content);
-		String ctxtxt = getNodeText((EObject)ctx);
+		String ctxtxt = ctx != null ? getNodeText((EObject)ctx) : null;
 		Resource resource = getResource();
 //		System.err.println("addCMContent: context=" + ctxtxt + ", content=" + content);
 		
@@ -524,11 +535,13 @@ public class DialogAnswerProvider extends BaseDialogAnswerProvider {
 			}
 		}
 		if (loc == 0) {
-			if (resource != null) {
-				System.err.println("Context EObject not found in list of ModelElementInfos for document '" + resource.getURI() + "'!");
-			}
-			else {
-				System.err.println("Context EObject not found in list of ModelElementInfos!");
+			if (ctx != null) {
+				if (resource != null) {
+					System.err.println("Context EObject not found in list of ModelElementInfos for document '" + resource.getURI() + "'!");
+				}
+				else {
+					System.err.println("Context EObject not found in list of ModelElementInfos!");
+				}
 			}
 			loc = docLength;
 		}

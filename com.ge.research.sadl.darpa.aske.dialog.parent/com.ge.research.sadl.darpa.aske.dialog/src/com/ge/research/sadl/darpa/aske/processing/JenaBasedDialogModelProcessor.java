@@ -1976,6 +1976,8 @@ public class JenaBasedDialogModelProcessor extends JenaBasedSadlModelProcessor {
 				pmap = getPreferences(resource);
 				answerCurationManager = new AnswerCurationManager(getConfigMgr().getModelFolder(), getConfigMgr(),
 						(XtextResource) resource, pmap);
+				answerCurationManager.setDomainModelName(getModelName());
+				answerCurationManager.setDomainModel(getTheJenaModel());
 				getConfigMgr().addPrivateKeyMapValueByResource(DialogConstants.ANSWER_CURATION_MANAGER, resource, answerCurationManager);
 			}
 		}

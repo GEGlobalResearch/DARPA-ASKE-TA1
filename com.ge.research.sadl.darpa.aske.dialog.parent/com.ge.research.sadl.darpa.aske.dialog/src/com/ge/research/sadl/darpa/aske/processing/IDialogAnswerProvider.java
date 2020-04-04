@@ -90,4 +90,6 @@ public interface IDialogAnswerProvider {
 	String replaceDialogText(AnswerCurationManager answerCurationManager, EObject eObject, String originalTxt,
 			String replacementTxt);
 
+	boolean addUserContentToDialog(AnswerCurationManager acm, String content, boolean quote);
+
 }

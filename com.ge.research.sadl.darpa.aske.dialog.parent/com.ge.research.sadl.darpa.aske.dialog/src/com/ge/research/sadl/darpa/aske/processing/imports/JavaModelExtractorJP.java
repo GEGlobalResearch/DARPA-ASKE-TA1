@@ -67,6 +67,7 @@ import com.ge.research.sadl.reasoner.ReasonerNotFoundException;
 import com.ge.research.sadl.reasoner.ResultSet;
 import com.ge.research.sadl.reasoner.TranslationException;
 import com.ge.research.sadl.reasoner.utils.SadlUtils;
+import com.ge.research.sadl.utils.ResourceManager;
 import com.github.javaparser.JavaParser;
 import com.github.javaparser.Range;
 import com.github.javaparser.ast.CompilationUnit;
@@ -233,28 +234,30 @@ public class JavaModelExtractorJP implements IModelFromCodeExtractor {
 				}
 			}
 			logger.debug("Constants:");
-			for (Individual inst : potentialConstants.keySet()) {
-				LiteralExpr value = potentialConstants.get(inst);
-				logger.debug("   " + inst.getLocalName() + "=" + value.toString());
-				Literal lval;
-				if (value instanceof IntegerLiteralExpr) {
-					lval = SadlUtils.getLiteralMatchingDataPropertyRange(getCurrentCodeModel(),XSD.xint.getURI(), value.toString());
+			if (potentialConstants.size() > 0) {
+				for (Individual inst : potentialConstants.keySet()) {
+					LiteralExpr value = potentialConstants.get(inst);
+					logger.debug("   " + inst.getLocalName() + "=" + value.toString());
+					Literal lval;
+					if (value instanceof IntegerLiteralExpr) {
+						lval = SadlUtils.getLiteralMatchingDataPropertyRange(getCurrentCodeModel(),XSD.xint.getURI(), value.toString());
+					}
+					else if (value instanceof DoubleLiteralExpr) {
+						lval = SadlUtils.getLiteralMatchingDataPropertyRange(getCurrentCodeModel(),XSD.xdouble.getURI(), value.toString());
+					}
+					else if (value instanceof LongLiteralExpr) {
+						lval = SadlUtils.getLiteralMatchingDataPropertyRange(getCurrentCodeModel(),XSD.xlong.getURI(), value.toString());
+					}
+					else if (value instanceof BooleanLiteralExpr) {
+						lval = SadlUtils.getLiteralMatchingDataPropertyRange(getCurrentCodeModel(),XSD.xboolean.getURI(), value.toString());
+					}
+					else {
+						lval = SadlUtils.getLiteralMatchingDataPropertyRange(getCurrentCodeModel(),XSD.xstring.getURI(), value.toString());
+					}
+					inst.addRDFType(getConstantVariableClass());
+					Individual uq = createUnittedQuantity(lval, null);
+					inst.addProperty(getConstantValueProperty(), uq);
 				}
-				else if (value instanceof DoubleLiteralExpr) {
-					lval = SadlUtils.getLiteralMatchingDataPropertyRange(getCurrentCodeModel(),XSD.xdouble.getURI(), value.toString());
-				}
-				else if (value instanceof LongLiteralExpr) {
-					lval = SadlUtils.getLiteralMatchingDataPropertyRange(getCurrentCodeModel(),XSD.xlong.getURI(), value.toString());
-				}
-				else if (value instanceof BooleanLiteralExpr) {
-					lval = SadlUtils.getLiteralMatchingDataPropertyRange(getCurrentCodeModel(),XSD.xboolean.getURI(), value.toString());
-				}
-				else {
-					lval = SadlUtils.getLiteralMatchingDataPropertyRange(getCurrentCodeModel(),XSD.xstring.getURI(), value.toString());
-				}
-				inst.addRDFType(getConstantVariableClass());
-				Individual uq = createUnittedQuantity(lval, null);
-				inst.addProperty(getConstantValueProperty(), uq);
 			}
 		}
 	}
@@ -559,9 +562,17 @@ public class JavaModelExtractorJP implements IModelFromCodeExtractor {
 			OntModel sadlImplicitModel = getCodeModelConfigMgr().getOntModel(getSadlImplicitModelUri(), Scope.INCLUDEIMPORTS);
 			addImportToJenaModel(getCodeModelName(), getSadlImplicitModelUri(), 
 					getCodeModelConfigMgr().getGlobalPrefix(getSadlImplicitModelUri()), sadlImplicitModel);
-			OntModel sadlListModel = getCodeModelConfigMgr().getOntModel(getSadlListModelUri(), Scope.INCLUDEIMPORTS);
-			addImportToJenaModel(getCodeModelName(), getSadlListModelUri(), 
-					getCodeModelConfigMgr().getGlobalPrefix(getSadlListModelUri()), sadlListModel);
+			String listmodelurl = getCodeModelConfigMgr().getAltUrlFromPublicUri(getSadlListModelUri());
+			if (listmodelurl != null && !listmodelurl.equals(getSadlListModelUri())) {
+				if (new File((new SadlUtils()).fileUrlToFileName(listmodelurl)).exists()) {
+					OntModel sadlListModel = getCodeModelConfigMgr().getOntModel(getSadlListModelUri(), Scope.INCLUDEIMPORTS);
+					addImportToJenaModel(getCodeModelName(), getSadlListModelUri(), 
+							getCodeModelConfigMgr().getGlobalPrefix(getSadlListModelUri()), sadlListModel);
+				}
+				else {
+					System.err.println("Project is missing SadlListModel. This should not happen.");
+				}
+			}
 			OntClass ctic = getClassesToIgnoreClass();
 			if (ctic != null) {
 				ExtendedIterator<OntClass> extitr = ctic.listSubClasses();
