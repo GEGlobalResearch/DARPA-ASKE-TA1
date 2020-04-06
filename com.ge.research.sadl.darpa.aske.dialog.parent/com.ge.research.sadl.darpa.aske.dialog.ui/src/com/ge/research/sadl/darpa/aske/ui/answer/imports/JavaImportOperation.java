@@ -15,6 +15,7 @@ package com.ge.research.sadl.darpa.aske.ui.answer.imports;
 
 import java.io.File;
 import java.io.IOException;
+import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -80,11 +81,13 @@ import com.ge.research.sadl.darpa.aske.preferences.DialogPreferences;
 import com.ge.research.sadl.darpa.aske.processing.DialogConstants;
 import com.ge.research.sadl.darpa.aske.processing.imports.AnswerExtractionException;
 import com.ge.research.sadl.darpa.aske.processing.imports.AnswerExtractionProcessor;
+import com.ge.research.sadl.darpa.aske.ui.answer.DialogAnswerProvider;
 import com.ge.research.sadl.reasoner.ConfigurationException;
 import com.ge.research.sadl.reasoner.InvalidNameException;
 import com.ge.research.sadl.reasoner.QueryCancelledException;
 import com.ge.research.sadl.reasoner.QueryParseException;
 import com.ge.research.sadl.reasoner.ReasonerNotFoundException;
+import com.ge.research.sadl.reasoner.utils.SadlUtils;
 import com.ge.research.sadl.utils.ResourceManager;
 import com.google.common.io.Files;
 import com.google.inject.Injector;
@@ -696,7 +699,12 @@ public class JavaImportOperation extends WorkspaceModifyOperation {
     		// the AnswerCurationManager is stored in the domain project ConfigurationManager
 	    	String domainModelModelFolder = domainPrj.getFolder("OwlModels").getLocation().toOSString();
 	    	ConfigurationManagerForIDE domainModelConfigMgr = ConfigurationManagerForIdeFactory.getConfigurationManagerForIDE(domainModelModelFolder, null);
-    		acm = (AnswerCurationManager) domainModelConfigMgr.getPrivateKeyMapValueByResource(DialogConstants.ANSWER_CURATION_MANAGER, resource);
+	    	Object acmMap = domainModelConfigMgr.getPrivateKeyValuePair(DialogConstants.ANSWER_CURATION_MANAGER);
+	    	if (acmMap instanceof Map<?,?>) {
+	    		if (((Map<?,?>)acmMap).values().iterator().hasNext()) {
+	    			acm = (AnswerCurationManager)((Map<?,?>)acmMap).values().iterator().next();
+	    		}
+	    	}
     		if (acm == null) {
 //        		Map<String, String> preferences = getPreferences(targetResource);
 //    			acm = new AnswerCurationManager(codeModelModelFolderUri, domainModelConfigMgr, preferences);
@@ -795,9 +803,53 @@ public class JavaImportOperation extends WorkspaceModifyOperation {
 	}
 
 	void importFiles(AnswerCurationManager acm) throws ConfigurationException, IOException, InvalidNameException, ReasonerNotFoundException, QueryParseException, QueryCancelledException, AnswerExtractionException {
-		acm.processImports(SaveAsSadl.AskUserSaveAsSadl);
+        Object dap = acm.getConfigurationManager().getPrivateKeyMapValueByResource(DialogConstants.DIALOG_ANSWER_PROVIDER, acm.getResource());
+        if (dap instanceof DialogAnswerProvider) {
+        	StringBuilder sb = new StringBuilder();
+        	List<File> textFiles = acm.getExtractionProcessor().getTextProcessor().getTextFiles();
+        	SadlUtils su = new SadlUtils();
+        	if (textFiles != null) {
+        		for (File tf : textFiles) {
+        			try {
+        				String tfurl = su.fileNameToFileUrl(tf.getCanonicalPath());
+            			sb.append("Extract from \"");
+						sb.append(tfurl);
+	        			sb.append("\".");
+	        			sb.append(System.lineSeparator());
+					} catch (URISyntaxException e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					} catch (IOException e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					}
+        		}
+        	}
+        	List<File> codeFiles = acm.getExtractionProcessor().getCodeExtractor(AnswerExtractionProcessor.CodeLanguage.JAVA).getCodeFiles();
+        	if (codeFiles != null) {
+        		for (File cf : codeFiles) {
+        			try {
+        				String cfurl = su.fileNameToFileUrl(cf.getCanonicalPath());
+            			sb.append("Extract from \"");
+						sb.append(cfurl);
+	        			sb.append("\".");
+	        			sb.append(System.lineSeparator());
+					} catch (URISyntaxException e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					} catch (IOException e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					}
+        		}
+        	}
+        	if (sb.length() > 0) {
+        		((DialogAnswerProvider)dap).addUserContentToDialog(acm, sb.toString(), false);
+        	}
+        }
+//		acm.processImports(SaveAsSadl.AskUserSaveAsSadl);
 //		
-		String newContent = acm.getExtractionProcessor().getGeneratedSadlContent();
+//		String newContent = acm.getExtractionProcessor().getGeneratedSadlContent();
 		
 //    	if (newContent != null) {
 //    		try {

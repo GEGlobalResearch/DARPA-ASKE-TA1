@@ -414,4 +414,10 @@ public class DialogAnswerProviderConsoleForTest extends BaseDialogAnswerProvider
 		return null;
 	}
 
+	@Override
+	public boolean addUserContentToDialog(AnswerCurationManager acm, String content, boolean quote) {
+		// TODO Auto-generated method stub
+		return false;
+	}
+
 }

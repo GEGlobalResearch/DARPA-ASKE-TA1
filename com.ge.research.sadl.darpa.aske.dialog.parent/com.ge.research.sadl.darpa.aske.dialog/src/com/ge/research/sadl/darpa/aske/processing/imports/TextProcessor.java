@@ -468,7 +468,7 @@ public class TextProcessor {
 //				aggregateDomainModel.add(sm.getBaseModel());
 //			}
 			String ontologyAsString = getCurationManager().ontModelToString(domainModel);
-			System.out.println(ontologyAsString);
+//			System.out.println(ontologyAsString);
 			String serviceBaseUri = getPreference(DialogPreferences.ANSWER_TEXT_SERVICE_BASE_URI.getId());
 			TextProcessingServiceInterface tpsi = new TextProcessingServiceInterface(serviceBaseUri);
 			String response = tpsi.uploadDomainOntology(localityURI, domainModelURI, ontologyAsString);

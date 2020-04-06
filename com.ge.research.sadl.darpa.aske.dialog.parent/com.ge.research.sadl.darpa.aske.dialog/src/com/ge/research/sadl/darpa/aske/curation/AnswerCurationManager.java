@@ -332,7 +332,7 @@ public class AnswerCurationManager {
 				String fPath = f.getCanonicalPath();
 				String fileIdentifier = ConfigurationManagerForIdeFactory.formatPathRemoveBackslashes(fPath);
 				
-				File of = extractFromTextAndSave(getDomainModelName(), content, fileIdentifier, prefix, outputModelName, outputOwlFileName);
+				File of = extractFromTextAndSave(getDomainModelName(), content, fileIdentifier, outputModelName, prefix, outputOwlFileName);
 				if (of != null) {
 					numSuccessfullyProcessed++;
 					outputOwlFilesBySourceType.put(of, false);
@@ -692,7 +692,8 @@ public class AnswerCurationManager {
 //									logger.debug(sadlDeclaration);
 //									logger.debug("SADL equation:");
 //									logger.debug(sadlDeclaration);
-								SadlStatementContent ssc = new SadlStatementContent(getExtractionContext().getHostEObject(), Agent.CM, sd);
+								EObject host = getExtractionContext() != null ? getExtractionContext().getHostEObject() : null;
+								SadlStatementContent ssc = new SadlStatementContent(host, Agent.CM, sd);
 								notifyUser(codeModelFolder, ssc, false);
 								getExtractionProcessor().addNewSadlContent(sd);
 							}
@@ -775,7 +776,8 @@ public class AnswerCurationManager {
 							}
 						}
 						for (String sd : sadlDeclaration) {
-							SadlStatementContent ssc = new SadlStatementContent(getExtractionContext().getHostEObject(), Agent.CM, sd);
+							EObject host = getExtractionContext() != null ? getExtractionContext().getHostEObject() : null;
+							SadlStatementContent ssc = new SadlStatementContent(host, Agent.CM, sd);
 							notifyUser(textModelFolder, ssc, false);
 							getExtractionProcessor().addNewSadlContent(sd);
 						}
@@ -3130,13 +3132,15 @@ public class AnswerCurationManager {
 				
 				String destPath = (new File(getOwlModelsFolder()).getParent() + "/" + DialogConstants.EXTRACTED_MODELS_FOLDER_PATH_FRAGMENT + "/Sources/" + f.getName());
 				File dest = new File(destPath);
-				if (dest.exists()) {
-					dest.delete();
-				}
-				if (!dest.exists()) {
-					dest.getParentFile().mkdirs();
-					Files.copy(f, dest);
-	//				file.createLink(location, IResource.NONE, null);
+				if (!f.equals(dest)) {
+					if (dest.exists()) {
+						dest.delete();
+					}
+					if (!dest.exists()) {
+						dest.getParentFile().mkdirs();
+						Files.copy(f, dest);
+		//				file.createLink(location, IResource.NONE, null);
+					}
 				}
 			}
 			else {
