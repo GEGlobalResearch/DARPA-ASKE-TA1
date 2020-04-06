@@ -1522,7 +1522,7 @@ public class AnswerCurationManager {
 		if (retName != null) {
 			sb.append(" (alias \"");
 			sb.append(retName);
-			sb.append("\") ");
+			sb.append("\")");
 		}
 
 		if (derivedFromMethodUri != null) {
@@ -1580,7 +1580,8 @@ public class AnswerCurationManager {
 //			if (numReturnValues > 1) {
 //				sb.append("[");
 //			}
-			for (int r = 0; r < numReturnValues; r++) {
+//			for (int r = 0; r < numReturnValues; r++) {
+			int r = 0;	// only handle 1 return type
 				Object rt = outputResults.getResultAt(r, 1);
 				if (rt != null) {
 					String retType = rt.toString();
@@ -1602,7 +1603,7 @@ public class AnswerCurationManager {
 						sb.append(")");
 					}
 				}
-			}
+//			}
 //			if (numReturnValues > 1) {
 //				sb.append("]");
 //			}	
@@ -1828,9 +1829,9 @@ public class AnswerCurationManager {
 					}
 				}
 			}
-			System.out.println("Unmapped concepts found for parameter '" + name + "':");
+//			System.out.println("Unmapped concepts found for parameter '" + name + "':");
 			if (getUnmatchedUrisAndLabels() == null) {
-				System.out.println("   none");
+//				System.out.println("   none");
 			}
 			else if (thisNamesUris != null) {
 				StringBuilder sb = null;
@@ -3590,7 +3591,8 @@ public class AnswerCurationManager {
 
 	private boolean isAnIgnoredNamespace(String nameSpace) {
 		nameSpace = nameSpace.endsWith("#") ? nameSpace.substring(0, nameSpace.length() - 1) : nameSpace;
-		if (nameSpace.equals(SadlConstants.SADL_BASE_MODEL_URI) ||
+		if (nameSpace.equals("http://aske.ge.com/metamodel") ||
+				nameSpace.equals(SadlConstants.SADL_BASE_MODEL_URI) ||
 				nameSpace.equals(SadlConstants.SADL_LIST_MODEL_URI) ||
 				nameSpace.equals(SadlConstants.SADL_IMPLICIT_MODEL_URI) ||
 				nameSpace.equals(IReasoner.SADL_BUILTIN_FUNCTIONS_URI)) {
@@ -5520,7 +5522,7 @@ public class AnswerCurationManager {
 			newEqTxt.append(")");
 			newEqTxt.append(eqTxt.substring(insertLoc));
 			String replacementTxt = newEqTxt.toString();
-			System.out.println(replacementTxt);
+//			System.out.println(replacementTxt);
 			replaceDialogText(equationEObject, eqTxt, replacementTxt);
 			return;
 		}
@@ -5535,7 +5537,7 @@ public class AnswerCurationManager {
 			newEqTxt.append(")");
 			newEqTxt.append(eqTxt.substring(insertLoc));
 			String replacementTxt = newEqTxt.toString();
-			System.out.println(replacementTxt);
+//			System.out.println(replacementTxt);
 			replaceDialogText(equationEObject, eqTxt, replacementTxt);
 			return;
 		}

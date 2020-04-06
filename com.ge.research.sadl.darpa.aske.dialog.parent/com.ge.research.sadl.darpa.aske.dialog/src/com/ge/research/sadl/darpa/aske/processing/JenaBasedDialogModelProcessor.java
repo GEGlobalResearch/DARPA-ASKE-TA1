@@ -451,13 +451,16 @@ public class JenaBasedDialogModelProcessor extends JenaBasedSadlModelProcessor {
 	}
 	
 	private void storeOriginalElementInfo(EObject element) {
-		String txt = getEObjectText(element);
 		int start = getEObjectOffset(element);
 		int length = getEObjectLength(element);
 		int end = getEObjectEndOffset(element);
 		if (!(start + length == end)) {
 			System.err.println("Inconsistent ModelElementInfo");
 		}
+		EObject root = getCurrentResource().getContents().get(0);
+		ICompositeNode node = NodeModelUtils.getNode(root);
+		String dsl = node.getText();
+		String txt = dsl.substring(start, start + length);
 		modelElements.add(new ModelElementInfo(element, txt, start, length, end, false));
 	}
 
@@ -620,7 +623,13 @@ public class JenaBasedDialogModelProcessor extends JenaBasedSadlModelProcessor {
 	}
 
 	private String getEObjectText(EObject element) {
-		return NodeModelUtils.getTokenText(NodeModelUtils.getNode(element));
+		EObject root = getCurrentResource().getContents().get(0);
+		ICompositeNode node = NodeModelUtils.getNode(root);
+		String dsl = node.getText();
+		int offset = NodeModelUtils.getNode(element).getOffset();
+		int len = NodeModelUtils.getNode(element).getLength();
+		String txt = dsl.substring(offset, offset + len);
+		return txt;
 	}
 	
 	private int getEObjectOffset(EObject element) {
@@ -1398,7 +1407,7 @@ public class JenaBasedDialogModelProcessor extends JenaBasedSadlModelProcessor {
 				addVariableAllowedInContainerType(UndefinedConceptStatement.class);
 				addVariableAllowedInContainerType(WhatTypeStatement.class);
 				Object lobj = processExpression(lexpr);
-				String lexprtext = getEObjectText(lexpr);
+//				String lexprtext = getEObjectText(lexpr);
 				Object robj = processExpression(rexpr);
 				boolean needsCooking = doesNewExpressionContainAugmentedTypeInfo(lobj, robj);
 				if (!needsCooking) {
