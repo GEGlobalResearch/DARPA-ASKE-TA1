@@ -4295,7 +4295,7 @@ public class AnswerCurationManager {
 			
 			for (int row = 0; row < rs.getRowCount(); row++) {
 				if(rs.getResultAt(row, trendIdx).equals("increasingIncreases")) {
-					if (rs.getResultAt(row, ouputIdx).toString().equals("FireFlag")) {
+					if (rs.getResultAt(row, ouputIdx).toString().equals("TemperatureLimitViolationFlag")) {
 						sb.append("Increasing ");
 						sb.append(rs.getResultAt(row, inputIdx).toString());
 						sb.append(" takes the ");
@@ -4317,7 +4317,7 @@ public class AnswerCurationManager {
 					}
 				} 
 				else if(rs.getResultAt(row, trendIdx).equals("increasingDecreases")) {
-					if (rs.getResultAt(row, ouputIdx).toString().equals("FireFlag")) {
+					if (rs.getResultAt(row, ouputIdx).toString().equals("TemperatureLimitViolationFlag")) {
 						sb.append("Increasing ");
 						sb.append(rs.getResultAt(row, inputIdx).toString());
 						sb.append(" takes the ");
@@ -4339,7 +4339,7 @@ public class AnswerCurationManager {
 					}
 				} 
 				else if(rs.getResultAt(row, trendIdx).equals("decreasingIncreases")) {
-					if (rs.getResultAt(row, ouputIdx).toString().equals("FireFlag")) {
+					if (rs.getResultAt(row, ouputIdx).toString().equals("TemperatureLimitViolationFlag")) {
 						sb.append("Decreasing ");
 						sb.append(rs.getResultAt(row, inputIdx).toString());
 						sb.append(" takes the ");
@@ -4361,7 +4361,7 @@ public class AnswerCurationManager {
 					}
 				} 
 				else if(rs.getResultAt(row, trendIdx).equals("decreasingDecreases")) {
-					if (rs.getResultAt(row, ouputIdx).toString().equals("FireFlag")) {
+					if (rs.getResultAt(row, ouputIdx).toString().equals("TemperatureLimitViolationFlag")) {
 						sb.append("Decreasing ");
 						sb.append(rs.getResultAt(row, inputIdx).toString());
 						sb.append(" takes the ");
@@ -4405,7 +4405,7 @@ public class AnswerCurationManager {
 						sb.append(System.lineSeparator());
 					}
 				}
-				else if(rs.getResultAt(row, trendIdx).equals("independent") && !rs.getResultAt(row, ouputIdx).toString().equals("FireFlag")) {
+				else if(rs.getResultAt(row, trendIdx).equals("independent") && !rs.getResultAt(row, ouputIdx).toString().equals("TemperatureLimitViolationFlag")) {
 					sb.append(rs.getResultAt(row, inputIdx).toString());
 					sb.append(" does not affect ");
 					sb.append(rs.getResultAt(row, ouputIdx).toString());
