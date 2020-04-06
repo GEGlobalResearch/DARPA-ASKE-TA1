@@ -452,7 +452,9 @@ public class JavaImportJPTests extends AbstractDialogTest {
 		SaveContent sc = new SaveContent(null, Agent.USER);
 		sc.setSourceEquationUri(equationToBuildUri);
 		try {
-			String result = acm.processSaveRequest(resource, om, modelName, sc );
+			acm.setDomainModel(om);
+			acm.setDomainModelName(modelName);
+			String result = acm.processSaveRequest(resource, sc );
 			fail("Headless test should not be able to save extraction");
 		}
 		catch(IOException e) {

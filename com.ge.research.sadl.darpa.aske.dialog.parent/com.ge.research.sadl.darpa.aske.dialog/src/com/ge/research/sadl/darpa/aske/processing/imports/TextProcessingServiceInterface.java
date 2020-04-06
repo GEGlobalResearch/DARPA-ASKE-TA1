@@ -305,14 +305,13 @@ public class TextProcessingServiceInterface extends JsonServiceInterface {
 
 	/**
 	 * Method to process a block of text via the textToTriples service to find equations and concepts
-	 * @param inputIdentifier -- the identifier, normally a model URI, of the source text
 	 * @param text --  the source text to be processed
 	 * @param locality -- the URI of the model to be used as context for the extraction
 	 * @return -- an array int[2], 0th element being the number of concepts found in the text, 1st element being the number of equations found in the text
 	 * @throws ConfigurationException
 	 * @throws IOException
 	 */
-	public int[] processText(String inputIdentifier, String text, String locality) throws ConfigurationException, IOException {
+	public int[] processText(String text, String locality) throws ConfigurationException, IOException {
 		String textToTripleServiceURL = getTextServiceURL() + "text2triples";
 		URL serviceUrl = new URL(textToTripleServiceURL);			
 		JsonObject json = new JsonObject();

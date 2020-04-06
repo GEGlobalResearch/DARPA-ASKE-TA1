@@ -491,6 +491,7 @@ public class DialogAnswerProvider extends BaseDialogAnswerProvider {
 								}
 							}
 							else {
+								String notFound = docText.substring(start, start + len);
 								currentStart = 0;
 							}
 							int currentEndLoc = currentStart+ origTxt.length();			// end of element text in current document
@@ -986,8 +987,10 @@ public class DialogAnswerProvider extends BaseDialogAnswerProvider {
 	 		@Override
 	 		public void run() {
 	 			long time1 = System.currentTimeMillis();				
-	 			try {		
-	 				String retstr = getAnswerConfigurationManager().processUserRequest(resource, theModel, modelName, sc);
+	 			try {	
+	 				getAnswerConfigurationManager().setDomainModel(theModel);
+	 				getAnswerConfigurationManager().setDomainModelName(modelName);
+	 				String retstr = getAnswerConfigurationManager().processUserRequest(resource, sc);
 	 				setRetvalue(retstr);
 	 			} catch (ConfigurationException e) {
 					// TODO Auto-generated catch block

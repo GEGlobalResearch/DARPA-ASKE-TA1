@@ -179,18 +179,8 @@ public class TextProcessor {
 	public int[] processText(String inputIdentifier, String text, String localityURI, String modelName, String modelPrefix, boolean notifyUser) throws ConfigurationException, IOException {
 		initializeTextModel(modelName, modelPrefix);
 		try {
-			String source = null;
-			if (inputIdentifier.lastIndexOf('/') > 0) {
-				source = inputIdentifier.substring(inputIdentifier.lastIndexOf('/') + 1);
-			}
-			else if (inputIdentifier.lastIndexOf('\\') > 0) {
-				source = inputIdentifier.substring(inputIdentifier.lastIndexOf('\\') + 1);
-			}
-			else {
-				source = inputIdentifier;
-			}
-			if (notifyUser) {
-				String msg = "Extracting text from '" + source + "' into locality '" + localityURI + "'.";
+			if (notifyUser && inputIdentifier != null) {
+				String msg = "Extracting text from '" + inputIdentifier + "' into locality '" + localityURI + "'.";
 				getCurationManager().notifyUser(getTextModelConfigMgr().getModelFolder(), msg, true);
 			}
 		} catch (ConfigurationException e) {
@@ -199,7 +189,7 @@ public class TextProcessor {
 		}
 		String serviceBaseUri = getPreference(DialogPreferences.ANSWER_TEXT_SERVICE_BASE_URI.getId());
 		TextProcessingServiceInterface tpsi = new TextProcessingServiceInterface(serviceBaseUri);
-		return tpsi.processText(inputIdentifier, text, localityURI);
+		return tpsi.processText(text, localityURI);
 	}
 	
 	public String[] retrieveGraph(String locality) throws IOException {
@@ -439,43 +429,13 @@ public class TextProcessor {
 	 * @param domainModel
 	 * @throws IOException 
 	 */
-	public String addDomainOntology(String localityURI, String domainModelURI, OntModel domainModel) throws IOException {
-////		if (getRegisteredDomainModel() == null) {
-//			OntModelSpec spec = new OntModelSpec(OntModelSpec.OWL_MEM);
-//			OntModel aggregateDomainModel = ModelFactory.createOntologyModel(spec);	
-//			aggregateDomainModel.add(domainModel.getBaseModel());
-////			aggregateDomainModel.write(System.out);
-//			ExtendedIterator<OntModel> smitr = domainModel.listSubModels();
-//			for (OntModel sm : smitr.toList()) {
-//				ExtendedIterator<Ontology> ontitr = sm.listOntologies();
-//				String onturi = null;
-//				while (ontitr.hasNext()) {
-//					onturi = ontitr.next().getURI();
-////					System.out.println(onturi);
-//					break;
-//				}
-//				if (onturi != null) {
-//					if (onturi.equals(SadlConstants.SADL_BASE_MODEL_URI) ||
-//							onturi.equals(SadlConstants.SADL_DEFAULTS_MODEL_URI) ||
-//							onturi.equals(SadlConstants.SADL_IMPLICIT_MODEL_URI) ||
-//							onturi.equals(SadlConstants.SADL_LIST_MODEL_URI) ||
-//							onturi.equals(IReasoner.SADL_BUILTIN_FUNCTIONS_URI)) {
-//						continue;
-//					}
-//				}
-////				System.out.println("*****************************************************************");
-////				sm.getBaseModel().write(System.out);
-//				aggregateDomainModel.add(sm.getBaseModel());
-//			}
+	public String uploadDomainModel(String localityURI, String domainModelURI, OntModel domainModel) throws IOException {
 			String ontologyAsString = getCurationManager().ontModelToString(domainModel);
-//			System.out.println(ontologyAsString);
 			String serviceBaseUri = getPreference(DialogPreferences.ANSWER_TEXT_SERVICE_BASE_URI.getId());
 			TextProcessingServiceInterface tpsi = new TextProcessingServiceInterface(serviceBaseUri);
 			String response = tpsi.uploadDomainOntology(localityURI, domainModelURI, ontologyAsString);
 			setRegisteredDomainModel(domainModel);
 			return response;
-//		}
-//		return "Domain ontology already uploaded";
 	}
 	
 	/**

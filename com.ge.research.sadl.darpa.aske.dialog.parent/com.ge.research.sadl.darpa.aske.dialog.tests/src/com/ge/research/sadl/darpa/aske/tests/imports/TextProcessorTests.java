@@ -676,7 +676,7 @@ public class TextProcessorTests {
 		File textFile = new File(getTextExtractionPrjFolder() + "/ExtractedModels/Sources/Sound.txt");
 		String textContent = readFile(textFile);
 
-		int[] result = tpsi.processText(localityURI, textContent, localityURI);
+		int[] result = tpsi.processText(textContent, localityURI);
 		if (result != null) {
 			System.out.println("nc=" + result[0] + ", neq=" + result[1]);
 		}

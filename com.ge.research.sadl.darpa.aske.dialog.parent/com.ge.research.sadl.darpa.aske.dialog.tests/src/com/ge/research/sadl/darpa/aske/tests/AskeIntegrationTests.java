@@ -102,7 +102,9 @@ public class AskeIntegrationTests {
 		SaveContent sc = new SaveContent(null, Agent.USER);
 		String equationToBuildUri = defaultCodeModelName + "#Mach.CAL_SOS";
 		sc.setSourceEquationUri(equationToBuildUri);
-		String result = acm.processSaveRequest(resource, interestingMethodOntModel, modelName, sc );
+		acm.setDomainModel(interestingMethodOntModel);
+		acm.setDomainModelName(modelName);
+		String result = acm.processSaveRequest(resource, sc );
 	}
 
 	private String getExtractionProjectModelFolder() {
