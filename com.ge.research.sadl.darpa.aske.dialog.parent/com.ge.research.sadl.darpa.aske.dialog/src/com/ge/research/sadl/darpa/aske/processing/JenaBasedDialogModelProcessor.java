@@ -460,7 +460,16 @@ public class JenaBasedDialogModelProcessor extends JenaBasedSadlModelProcessor {
 		EObject root = getCurrentResource().getContents().get(0);
 		ICompositeNode node = NodeModelUtils.getNode(root);
 		String dsl = node.getText();
-		String txt = dsl.substring(start, start + length);
+		int end2 = start + length;
+		String txt = dsl.substring(start, end2);
+		if (!txt.endsWith(".") && !txt.endsWith("?")) {
+			String after = dsl.substring(end2,end2+1);
+			if (after.equals(".") || after.equals("?")) {
+				txt = txt + after;
+				length++;
+				end++;
+			}
+		}
 		modelElements.add(new ModelElementInfo(element, txt, start, length, end, false));
 	}
 
@@ -1575,6 +1584,7 @@ public class JenaBasedDialogModelProcessor extends JenaBasedSadlModelProcessor {
 					sb.append(sadlEqText);
 					sb.append(".");
 					AddEquationContent nec = new AddEquationContent(element, Agent.USER, uptxt, rn, sb.toString());
+					nec.setLhs(lhs);
 					nec.setEquationBody(sadlEqText);
 					return nec;
 				}
@@ -1603,8 +1613,18 @@ public class JenaBasedDialogModelProcessor extends JenaBasedSadlModelProcessor {
 					nmObj = nodeCheck(nmObj);
 				}
 				if (nmObj instanceof Node) {
-					if (nmObj instanceof NamedNode && ((NamedNode)nmObj).getNodeType().equals(NodeType.ClassNode)) {
-						// this makes sense in the context of a prior question about type of a variable						
+					if (nmObj instanceof NamedNode) {
+						NodeType ntype = ((NamedNode)nmObj).getNodeType();
+						if (ntype.equals(NodeType.ClassNode)) {
+							// this makes sense in the context of a prior question about type of a variable						
+						}
+						else if (isProperty(ntype)) {
+							// return range
+							com.hp.hpl.jena.rdf.model.Resource rng = getUniquePropertyRange(((NamedNode)nmObj).getURI());
+							if (rng != null) {
+								nmObj = new NamedNode((String)rng.getURI(), NodeType.ClassNode);
+							}
+						}
 					}
 					else if (nmObj instanceof ProxyNode) {
 						uptxt = getSourceText(expr).trim();
@@ -2562,7 +2582,7 @@ public class JenaBasedDialogModelProcessor extends JenaBasedSadlModelProcessor {
 				for (Node arg : args) {
 					try {
 						if (arg instanceof Literal && 
-								(((Literal)arg).getUnits() != null)) {
+								((((Literal)arg).getUnits() != null || expectedUnittedQuantityClass != null))) {
 							OntClass unittedQuantitySubclass = getTheJenaModel().getOntClass(SadlConstants.SADL_IMPLICIT_MODEL_UNITTEDQUANTITY_URI);
 							if (expectedUnittedQuantityClass != null) {
 								if (SadlUtils.classIsSubclassOf(expectedUnittedQuantityClass, unittedQuantitySubclass, true, null)) {
@@ -2592,6 +2612,12 @@ public class JenaBasedDialogModelProcessor extends JenaBasedSadlModelProcessor {
 								TripleElement unitTriple = new TripleElement(var, unitProp, unitsLiteral);
 								gpes.add(unitTriple);
 							}	
+							if (args.get(0) instanceof NamedNode && ((NamedNode)args.get(0)).getImpliedPropertyNode() != null) {
+								NamedNode ipn = ((NamedNode)args.get(0)).getImpliedPropertyNode();
+								if (ipn.getURI().equals(SadlConstants.SADL_IMPLICIT_MODEL_VALUE_URI)) {
+									((NamedNode)args.get(0)).setImpliedPropertyNode(null);
+								}
+							}
 						}
 						else if ((arg instanceof ProxyNode &&									// this operand to the || is for when no unit is given but there is an implied property and 
 								// value of the UnittedQuantity is given
@@ -2603,7 +2629,7 @@ public class JenaBasedDialogModelProcessor extends JenaBasedSadlModelProcessor {
 						else if (arg instanceof NamedNode && isProperty(((NamedNode)arg).getNodeType())) {
 							if (((BuiltinElement)whenObj).getFuncType().equals(BuiltinType.Equal)) {
 								// find the range--that's the expected type of the next argument
-								expectedUnittedQuantityClass = getPropertyRange(((NamedNode)arg).getURI());
+								expectedUnittedQuantityClass = getUnittedQuantityOrSubclassPropertyRange(((NamedNode)arg).getURI());
 							}
 						}
 					} catch (CircularDependencyException e) {
@@ -2629,7 +2655,7 @@ public class JenaBasedDialogModelProcessor extends JenaBasedSadlModelProcessor {
 				((NamedNode)((TripleElement)((ProxyNode)((TripleElement)whenObj).getObject()).getProxyFor()).getPredicate()).getURI().equals(SadlConstants.SADL_IMPLICIT_MODEL_VALUE_URI)))) {
 				String propUri = ((TripleElement)whenObj).getPredicate().getURI();
 				// create a typed variable for the UnittedQuantity blank node, actual type range of prop
-				OntClass unittedQuantitySubclass = getPropertyRange(propUri);
+				OntClass unittedQuantitySubclass = getUnittedQuantityOrSubclassPropertyRange(propUri);
 				VariableNode var = new VariableNode(getNewVar(whatIsTarget));
 				NamedNode type = new NamedNode(unittedQuantitySubclass.getURI());
 				type.setNodeType(NodeType.ClassNode);
@@ -2686,23 +2712,51 @@ public class JenaBasedDialogModelProcessor extends JenaBasedSadlModelProcessor {
 		return gpes;
 	}
 
-	private OntClass getPropertyRange(String propUri) {
-		Property prop = getTheJenaModel().getProperty(propUri);
-		StmtIterator rngItr = getTheJenaModel().listStatements(prop.asResource(), RDFS.range, (RDFNode)null);
+	/**
+	 * Method to get the range of a property whose subclass should be UnittedQuantity or a subclass thereof
+	 * @param propUri
+	 * @return
+	 */
+	private OntClass getUnittedQuantityOrSubclassPropertyRange(String propUri) {
 		OntClass unittedQuantitySubclass = null;
-		if (rngItr.hasNext()) {
-			RDFNode rng = rngItr.nextStatement().getObject();
-			if (!rngItr.hasNext()) {
-				if (rng.isURIResource() && rng.canAs(OntClass.class)) {
-					unittedQuantitySubclass = rng.as(OntClass.class);
+		Property prop = getTheJenaModel().getProperty(propUri);
+		if (prop != null) {
+			StmtIterator rngItr = getTheJenaModel().listStatements(prop.asResource(), RDFS.range, (RDFNode)null);
+			if (rngItr.hasNext()) {
+				RDFNode rng = rngItr.nextStatement().getObject();
+				if (!rngItr.hasNext()) {
+					if (rng.isURIResource() && rng.canAs(OntClass.class)) {
+						unittedQuantitySubclass = rng.as(OntClass.class);
+					}
 				}
-			}
-			if (unittedQuantitySubclass == null) {
-				// apparently has more than 1 range, use UnittedQuantity
-				unittedQuantitySubclass = getTheJenaModel().getOntClass(SadlConstants.SADL_IMPLICIT_MODEL_UNITTEDQUANTITY_URI);
+				if (unittedQuantitySubclass == null) {
+					// apparently has more than 1 range, use UnittedQuantity
+					unittedQuantitySubclass = getTheJenaModel().getOntClass(SadlConstants.SADL_IMPLICIT_MODEL_UNITTEDQUANTITY_URI);
+				}
 			}
 		}
 		return unittedQuantitySubclass;
+	}
+	
+	/**
+	 * Method to get the range of a property by URI
+	 * @param propUri
+	 * @return 
+	 * @return
+	 */
+	private com.hp.hpl.jena.rdf.model.Resource getUniquePropertyRange(String propUri) {
+		Property prop = getTheJenaModel().getProperty(propUri);
+		if (prop != null) {
+			StmtIterator rngItr = getTheJenaModel().listStatements(prop.asResource(), RDFS.range, (RDFNode)null);
+			if (rngItr.hasNext()) {
+				RDFNode rng = rngItr.nextStatement().getObject();
+				if (rng.isURIResource()) {
+					com.hp.hpl.jena.rdf.model.Resource rngrsrc = rng.asResource();
+					return rngrsrc;
+				}
+			}
+		}
+		return null;
 	}
 	
 	private StatementContent processStatement(WhatValuesStatement stmt) {

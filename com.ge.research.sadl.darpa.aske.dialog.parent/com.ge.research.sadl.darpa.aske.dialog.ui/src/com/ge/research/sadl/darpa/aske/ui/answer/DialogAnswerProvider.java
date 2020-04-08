@@ -133,6 +133,10 @@ public class DialogAnswerProvider extends BaseDialogAnswerProvider {
 			// See: https://github.com/GEGlobalResearch/DARPA-ASKE-TA1/issues/37
 			if (SadlActionHandler.getModelFolderFromResource(resource) != null) {
 				doConfigure(resource);
+//				if (configManager != null) {
+//					configManager.addPrivateKeyMapValueByResource(DialogConstants.DIALOG_ANSWER_PROVIDER, resource, this);
+////					configManager.addPrivateKeyMapValueByResource(DialogConstants.ANSWER_CURATION_MANAGER, resource, null);
+//				}
 			} else {
 				modelListener = r -> {
 					if (SadlActionHandler.getModelFolderFromResource(r) != null) {
@@ -428,6 +432,9 @@ public class DialogAnswerProvider extends BaseDialogAnswerProvider {
 		if (!modContent.startsWith(lineSep) && loc > lineSepLen) {
 			try {
 				String before = document.get(loc - lineSepLen, lineSepLen);
+				if (before.startsWith(".") || before.startsWith("?")) {
+					before = document.get(loc + 1 - lineSepLen, lineSepLen);
+				}
 				if (!before.equals(lineSep)) {
 					modContent = lineSep + modContent;
 				}
@@ -522,6 +529,12 @@ public class DialogAnswerProvider extends BaseDialogAnswerProvider {
 									}
 									if (rightAfter.equals(lineSep)) {
 										loc += lineSep.length();
+									}
+								}
+								else if (docLength > loc) {
+									String nextChar = document.get(loc, 1);
+									if (nextChar.equals(".") || nextChar.equals("?")) {
+										loc++;
 									}
 								}
 							}							

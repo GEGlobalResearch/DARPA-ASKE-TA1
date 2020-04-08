@@ -1033,6 +1033,12 @@ public class JavaModelExtractorJP implements IModelFromCodeExtractor {
 		}
 		else if (containingInst != null && !isBuiltinType(clsname)) {
 			RDFNode tvtype = findDefinedVariableType(clsname, containingInst);
+			if (tvtype == null) {
+				String clsuri = getClassUriFromSimpleName(clsname);
+				if (clsuri != null) {
+					return false;
+				}
+			}
 			if ((nullIsIgnore || tvtype != null) && ignoreType(tvtype, containingInst)) {
 				return true;
 			}
