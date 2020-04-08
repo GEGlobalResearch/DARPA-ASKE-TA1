@@ -2343,15 +2343,19 @@ public class JenaBasedDialogModelProcessor extends JenaBasedSadlModelProcessor {
 	}
 
 	private StatementContent processStatement(WhatStatement stmt) {
-		EObject substmt = stmt.getStmt();
-		if (substmt instanceof WhatIsStatement) {
-			return processStatement((WhatIsStatement)substmt);
-		}
-		else if (substmt instanceof WhatValuesStatement) {
-			return processStatement((WhatValuesStatement)substmt);
-		}
-		else if (substmt instanceof WhatTypeStatement) {
-			return processStatement((WhatTypeStatement)substmt);
+		try {
+			EObject substmt = stmt.getStmt();
+			if (substmt instanceof WhatIsStatement) {
+				return processStatement((WhatIsStatement)substmt);
+			}
+			else if (substmt instanceof WhatValuesStatement) {
+				return processStatement((WhatValuesStatement)substmt);
+			}
+			else if (substmt instanceof WhatTypeStatement) {
+				return processStatement((WhatTypeStatement)substmt);
+			}
+		} catch (UndefinedConceptException e) {
+			return e.getWhatIsContent();
 		}
 		return null;
 	}
@@ -2389,7 +2393,7 @@ public class JenaBasedDialogModelProcessor extends JenaBasedSadlModelProcessor {
 		return null;
 	}
 
-	private StatementContent processStatement(WhatIsStatement stmt) {
+	private StatementContent processStatement(WhatIsStatement stmt) throws UndefinedConceptException {
 		EObject whatIsTarget = stmt.getTarget();
 		EObject when = stmt.getWhen();
 		if (whatIsTarget == null) {
@@ -2564,7 +2568,7 @@ public class JenaBasedDialogModelProcessor extends JenaBasedSadlModelProcessor {
 	}
 
 	private List<GraphPatternElement> unitSpecialConsiderations(List<GraphPatternElement> gpes, Object whenObj, EObject whatIsTarget)
-			throws TranslationException, InvalidNameException {
+			throws TranslationException, InvalidNameException, UndefinedConceptException {
 		if (!isIgnoreUnittedQuantities()) {
 			if (whenObj instanceof Junction) {
 				Object lhs = ((Junction)whenObj).getLhs();
@@ -2656,34 +2660,55 @@ public class JenaBasedDialogModelProcessor extends JenaBasedSadlModelProcessor {
 				String propUri = ((TripleElement)whenObj).getPredicate().getURI();
 				// create a typed variable for the UnittedQuantity blank node, actual type range of prop
 				OntClass unittedQuantitySubclass = getUnittedQuantityOrSubclassPropertyRange(propUri);
-				VariableNode var = new VariableNode(getNewVar(whatIsTarget));
-				NamedNode type = new NamedNode(unittedQuantitySubclass.getURI());
-				type.setNodeType(NodeType.ClassNode);
-				var.setType(validateNode(type));
-				Literal valueLiteral;
-				if (((TripleElement)whenObj).getObject() instanceof Literal) {
-					valueLiteral = (Literal) ((TripleElement)whenObj).getObject();
+				if (unittedQuantitySubclass == null) {
+					if (((TripleElement)whenObj).getPredicate() instanceof VariableNode) {
+						// predicate cannot be a variable--means the question has an undefined concept
+						VariableNode pvar = (VariableNode) ((TripleElement)whenObj).getPredicate();
+						addWarning(pvar.getName() + " is not defined.", (EObject) ((TripleElement)whenObj).getContext());
+						WhatIsContent wic = new WhatIsContent((EObject) ((TripleElement)whenObj).getContext(), Agent.CM, pvar, null);	
+						// this is Agent.CM because it houses a question/statement for the user from the CM
+						String msg;
+						try {
+							msg = "Concept " + getAnswerCurationManager(getCurrentResource()).checkForKeyword(pvar.getName()) + " is not defined; please define or do extraction";
+							wic.setExplicitQuestion(msg);
+						} catch (IOException e) {
+							// TODO Auto-generated catch block
+							msg = e.getMessage();
+							e.printStackTrace();
+						}
+						throw new UndefinedConceptException(msg, wic);
+					}
 				}
 				else {
-					valueLiteral = (Literal) ((TripleElement)((ProxyNode)((TripleElement)whenObj).getObject()).getProxyFor()).getObject();
-				}
-				((TripleElement)whenObj).setObject(var);
-				String units = valueLiteral.getUnits();
-				TripleElement varTypeTriple = new TripleElement(var, new RDFTypeNode(), type);
-				NamedNode predNode = new NamedNode(SadlConstants.SADL_IMPLICIT_MODEL_VALUE_URI);
-				predNode.setNodeType(NodeType.DataTypeProperty);
-				TripleElement valueTriple = new TripleElement(var, predNode, valueLiteral);
-				gpes.add(varTypeTriple);
-				gpes.add((TripleElement)whenObj);
-				gpes.add(valueTriple);
-				if (units != null) {
-					Literal unitsLiteral = new Literal();
-					unitsLiteral.setValue(units);
-					valueLiteral.setUnits(null);
-					NamedNode unitPred = new NamedNode(SadlConstants.SADL_IMPLICIT_MODEL_UNIT_URI);
-					unitPred.setNodeType(NodeType.DataTypeProperty);
-					TripleElement unitTriple = new TripleElement(var, unitPred, unitsLiteral);
-					gpes.add(unitTriple);
+					VariableNode var = new VariableNode(getNewVar(whatIsTarget));
+					NamedNode type = new NamedNode(unittedQuantitySubclass.getURI());
+					type.setNodeType(NodeType.ClassNode);
+					var.setType(validateNode(type));
+					Literal valueLiteral;
+					if (((TripleElement)whenObj).getObject() instanceof Literal) {
+						valueLiteral = (Literal) ((TripleElement)whenObj).getObject();
+					}
+					else {
+						valueLiteral = (Literal) ((TripleElement)((ProxyNode)((TripleElement)whenObj).getObject()).getProxyFor()).getObject();
+					}
+					((TripleElement)whenObj).setObject(var);
+					String units = valueLiteral.getUnits();
+					TripleElement varTypeTriple = new TripleElement(var, new RDFTypeNode(), type);
+					NamedNode predNode = new NamedNode(SadlConstants.SADL_IMPLICIT_MODEL_VALUE_URI);
+					predNode.setNodeType(NodeType.DataTypeProperty);
+					TripleElement valueTriple = new TripleElement(var, predNode, valueLiteral);
+					gpes.add(varTypeTriple);
+					gpes.add((TripleElement)whenObj);
+					gpes.add(valueTriple);
+					if (units != null) {
+						Literal unitsLiteral = new Literal();
+						unitsLiteral.setValue(units);
+						valueLiteral.setUnits(null);
+						NamedNode unitPred = new NamedNode(SadlConstants.SADL_IMPLICIT_MODEL_UNIT_URI);
+						unitPred.setNodeType(NodeType.DataTypeProperty);
+						TripleElement unitTriple = new TripleElement(var, unitPred, unitsLiteral);
+						gpes.add(unitTriple);
+					}
 				}
 			}
 			//				else if (!ignoreUnittedQuantities && whenObj instanceof BuiltinElement &&

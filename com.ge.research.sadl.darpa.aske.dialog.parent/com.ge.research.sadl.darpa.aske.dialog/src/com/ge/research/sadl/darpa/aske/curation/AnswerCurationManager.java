@@ -3328,11 +3328,20 @@ public class AnswerCurationManager {
 			if (results == null || (results[0] == 0 && results[1] == 0)) {
 				throw new AnswerExtractionException("Text processing service returned no information");
 			}
+			OntModel m = null;
+			String[] graphResults = null;
+			if (results[0] > 0 || results[1] > 0) {
+				graphResults = getTextProcessor().retrieveGraph(getLocalityURI());	
+				if (graphResults != null && graphResults.length == 3) {
+					m = getTextProcessor().getTextModelConfigMgr().getOntModel(getLocalityURI(), graphResults[2], Scope.INCLUDEIMPORTS, graphResults[1]);
+					m.write(System.out, "N3");
+				}
+				else {
+					throw new AnswerExtractionException("Unexpected failure getting results from text processing service");
+				}
+			}
 			if (results[0] > 0) {
 				// get the concept(s), if they aren't in the domain model?
-				String[] graphResults = getTextProcessor().retrieveGraph(getLocalityURI());	
-				OntModel m = getTextProcessor().getTextModelConfigMgr().getOntModel(getLocalityURI(), graphResults[2], Scope.INCLUDEIMPORTS, graphResults[1]);
-				m.write(System.out, "N3");
 				List<String> extracts = retrieveExtractedConcepts(m, true, false);
 				StringBuilder sb = new StringBuilder();
 				if (extracts != null) {
@@ -3348,23 +3357,16 @@ public class AnswerCurationManager {
 			}
 			if (results[1] > 0) {
 				// get the equation(s).
-				String[] graphResults = getTextProcessor().retrieveGraph(getLocalityURI());	
-				if (graphResults != null && graphResults.length == 3) {
-					OntModel m = getTextProcessor().getTextModelConfigMgr().getOntModel(getLocalityURI(), graphResults[2], Scope.INCLUDEIMPORTS, graphResults[1]);
-					String rememberDomainModelName = getDomainModelName();
-					try {
-						retVal += getEquationNamesFromTextServiceResults(graphResults, m, getDomainModelName());
-					} catch (Exception e) {
-						// TODO Auto-generated catch block
-						e.printStackTrace();
-						retVal += e.getMessage();
-					}
-					finally {
-						setDomainModelName(rememberDomainModelName);
-					}
+				String rememberDomainModelName = getDomainModelName();
+				try {
+					retVal += getEquationNamesFromTextServiceResults(graphResults, m, getDomainModelName());
+				} catch (Exception e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+					retVal += e.getMessage();
 				}
-				else {
-					throw new AnswerExtractionException("Failed to get OWL model from text service");
+				finally {
+					setDomainModelName(rememberDomainModelName);
 				}
 			}
 		} catch (Throwable t) {
@@ -3423,14 +3425,24 @@ public class AnswerCurationManager {
 				while (matchClassItr.hasNext()) {
 					RDFNode mc = matchClassItr.nextStatement().getObject();
 					if (mc.isURIResource()) {
-						addExtractToMap(matchingClasses, subj, mc.asResource());
+						if (mc.canAs(OntClass.class)) {
+							addExtractToMap(matchingClasses, subj, mc.as(OntClass.class));
+						}
+						else {
+							addExtractToMap(matchingClasses, subj, m.createClass(mc.asResource().getURI()));
+						}
 					}
 				}
 				StmtIterator matchPropItr = m.listStatements(subj, matchingPropertyProperty, (RDFNode)null);
 				while (matchPropItr.hasNext()) {
 					RDFNode mp = matchPropItr.nextStatement().getObject();
 					if (mp.isURIResource()) {
-						addExtractToMap(matchingProperties, subj, mp.asResource());
+						if (mp.canAs(Property.class)) {
+							addExtractToMap(matchingProperties, subj, mp.as(Property.class));
+						}
+						else {
+							addExtractToMap(matchingProperties, subj, m.createProperty(mp.asResource().getURI()));
+						}
 					}
 				}
 			}
@@ -3447,6 +3459,7 @@ public class AnswerCurationManager {
 				matchingClassList = matchingClasses.get(key);
 				if (keyItr.hasNext() || matchingClassList.size() > 1) {
 					multipleClassMatches = true;
+					break;
 				}
 			}
 		}
@@ -3458,6 +3471,7 @@ public class AnswerCurationManager {
 				matchingPropList = matchingProperties.get(key);
 				if (keyItr.hasNext() || matchingPropList.size() > 1) {
 					multiplePropertyMatches = true;
+					break;
 				}
 			}
 		}
@@ -3520,19 +3534,24 @@ public class AnswerCurationManager {
 		}
 		List<String> retvals = new ArrayList<String>();
 		if (sb.length() == 0) {
-			retvals.add("\"Ambiguous results did not allow automatic addition of semantic information.\"");
 			retvals.add("\"These domain ontology concepts were matched in the extraction:\"");
-			if (matchingClassList != null) {
-				for (Object o : matchingClassList) {
+			Iterator<Resource> clslstitr = matchingClasses.keySet().iterator();
+			while (clslstitr.hasNext()) {
+				Resource key = clslstitr.next();
+				List<Object> clslst = matchingClasses.get(key);
+				for (Object o : clslst) {
 					if (o instanceof Resource && ((Resource)o).isURIResource()) {
-						retvals.add(((Resource)o).getLocalName() + ".");
+						retvals.add(((Resource)o).getLocalName() + " is a class.");
 					}
-				}			
+				}
 			}
-			if (matchingPropList != null) {
-				for (Object o : matchingClassList) {
+			Iterator<Resource> proplstitr = matchingProperties.keySet().iterator();
+			while (proplstitr.hasNext()) {
+				Resource key = proplstitr.next();
+				List<Object> proplst = matchingProperties.get(key);
+				for (Object o : proplst) {
 					if (o instanceof Resource && ((Resource)o).isURIResource()) {
-						retvals.add(((Resource)o).getLocalName() + ".");
+						retvals.add(((Resource)o).getLocalName() + " is a property.");
 					}
 				}
 			}
