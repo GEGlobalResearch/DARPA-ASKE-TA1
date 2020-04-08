@@ -4270,6 +4270,7 @@ public class AnswerCurationManager {
 	 */
 	private String generateInsightsSADL(ResultSet rs, boolean isTable) {
 		StringBuilder sb = new StringBuilder();
+		Map<String,String> limitViolation = new HashMap<String,String>(); //Input->incr/decr
 		if (rs != null && rs.getRowCount() > 0) {
 			sb.append(System.lineSeparator());
 			int classIdx = rs.getColumnPosition("Class");
@@ -4306,16 +4307,19 @@ public class AnswerCurationManager {
 						sb.append(System.lineSeparator());
 					}
 					else {
-						sb.append("Increasing ");
-						sb.append(rs.getResultAt(row, inputIdx).toString());
-						sb.append(" increases ");
-						sb.append(rs.getResultAt(row, ouputIdx).toString());
-						if(isTable) {
-							sb.append(" of the ");
-							sb.append(rs.getResultAt(row, classIdx).toString());
+						if(! limitViolation.containsKey(rs.getResultAt(row, inputIdx).toString()) ||
+						   ! limitViolation.get(rs.getResultAt(row, inputIdx).toString()).equals("Increasing") ) {
+							sb.append("Increasing ");
+							sb.append(rs.getResultAt(row, inputIdx).toString());
+							sb.append(" increases ");
+							sb.append(rs.getResultAt(row, ouputIdx).toString());
+							if(isTable) {
+								sb.append(" of the ");
+								sb.append(rs.getResultAt(row, classIdx).toString());
+							}
+							sb.append(" .");
+							sb.append(System.lineSeparator());
 						}
-						sb.append(" .");
-						sb.append(System.lineSeparator());
 					}
 				} 
 				else if(rs.getResultAt(row, trendIdx).equals("increasingDecreases")) {
@@ -4326,18 +4330,22 @@ public class AnswerCurationManager {
 						sb.append(rs.getResultAt(row, classIdx).toString());
 						sb.append(" inside operating conditions.");
 						sb.append(System.lineSeparator());
+						limitViolation.put(rs.getResultAt(row, inputIdx).toString(), "Decreasing");
 					}
 					else {
-						sb.append("Increasing ");
-						sb.append(rs.getResultAt(row, inputIdx).toString());
-						sb.append(" decreases ");
-						sb.append(rs.getResultAt(row, ouputIdx).toString());
-						if(isTable) {
-							sb.append(" of the ");
-							sb.append(rs.getResultAt(row, classIdx).toString());
+						if(! limitViolation.containsKey(rs.getResultAt(row, inputIdx).toString()) ||
+						   ! limitViolation.get(rs.getResultAt(row, inputIdx).toString()).equals("Increasing") ) {
+							sb.append("Increasing ");
+							sb.append(rs.getResultAt(row, inputIdx).toString());
+							sb.append(" decreases ");
+							sb.append(rs.getResultAt(row, ouputIdx).toString());
+							if(isTable) {
+								sb.append(" of the ");
+								sb.append(rs.getResultAt(row, classIdx).toString());
+							}
+							sb.append(" .");
+							sb.append(System.lineSeparator());
 						}
-						sb.append(" .");
-						sb.append(System.lineSeparator());
 					}
 				} 
 				else if(rs.getResultAt(row, trendIdx).equals("decreasingIncreases")) {
@@ -4350,16 +4358,19 @@ public class AnswerCurationManager {
 						sb.append(System.lineSeparator());
 					}
 					else {
-						sb.append("Decreasing ");
-						sb.append(rs.getResultAt(row, inputIdx).toString());
-						sb.append(" increases ");
-						sb.append(rs.getResultAt(row, ouputIdx).toString());
-						if(isTable) {
-							sb.append(" of the ");
-							sb.append(rs.getResultAt(row, classIdx).toString());
+						if(! limitViolation.containsKey(rs.getResultAt(row, inputIdx).toString()) ||
+								   ! limitViolation.get(rs.getResultAt(row, inputIdx).toString()).equals("Decreasing") ) {
+							sb.append("Decreasing ");
+							sb.append(rs.getResultAt(row, inputIdx).toString());
+							sb.append(" increases ");
+							sb.append(rs.getResultAt(row, ouputIdx).toString());
+							if(isTable) {
+								sb.append(" of the ");
+								sb.append(rs.getResultAt(row, classIdx).toString());
+							}
+							sb.append(" .");
+							sb.append(System.lineSeparator());
 						}
-						sb.append(" .");
-						sb.append(System.lineSeparator());
 					}
 				} 
 				else if(rs.getResultAt(row, trendIdx).equals("decreasingDecreases")) {
@@ -4370,18 +4381,22 @@ public class AnswerCurationManager {
 						sb.append(rs.getResultAt(row, classIdx).toString());
 						sb.append(" inside operating conditions.");
 						sb.append(System.lineSeparator());
+						limitViolation.put(rs.getResultAt(row, inputIdx).toString(), "Increasing");
 					}
 					else {
-						sb.append("Decreasing ");
-						sb.append(rs.getResultAt(row, inputIdx).toString());
-						sb.append(" decreases ");
-						sb.append(rs.getResultAt(row, ouputIdx).toString());
-						if(isTable) {
-							sb.append(" of the ");
-							sb.append(rs.getResultAt(row, classIdx).toString());
+						if(! limitViolation.containsKey(rs.getResultAt(row, inputIdx).toString()) ||
+						   ! limitViolation.get(rs.getResultAt(row, inputIdx).toString()).equals("Decreasing") ) {
+							sb.append("Decreasing ");
+							sb.append(rs.getResultAt(row, inputIdx).toString());
+							sb.append(" decreases ");
+							sb.append(rs.getResultAt(row, ouputIdx).toString());
+							if(isTable) {
+								sb.append(" of the ");
+								sb.append(rs.getResultAt(row, classIdx).toString());
+							}
+							sb.append(" .");
+							sb.append(System.lineSeparator());
 						}
-						sb.append(" .");
-						sb.append(System.lineSeparator());
 					}
 				} 
 				else if(rs.getResultAt(row, trendIdx).equals("local_minimum") || rs.getResultAt(row, trendIdx).equals("local_maximum")) {
@@ -4415,6 +4430,28 @@ public class AnswerCurationManager {
 						sb.append(" of the ");
 						sb.append(rs.getResultAt(row, classIdx).toString());
 					}
+					sb.append(".");
+					sb.append(System.lineSeparator());
+				}
+				else if(rs.getResultAt(row, trendIdx).equals("pos_sensitive")) {
+					sb.append(rs.getResultAt(row, ouputIdx).toString());
+					if(isTable) {
+						sb.append(" of the ");
+						sb.append(rs.getResultAt(row, classIdx).toString());
+					}
+					sb.append(" is positively very sensitive to ");
+					sb.append(rs.getResultAt(row, inputIdx).toString());
+					sb.append(".");
+					sb.append(System.lineSeparator());
+				}
+				else if(rs.getResultAt(row, trendIdx).equals("neg_sensitive")) {
+					sb.append(rs.getResultAt(row, ouputIdx).toString());
+					if(isTable) {
+						sb.append(" of the ");
+						sb.append(rs.getResultAt(row, classIdx).toString());
+					}
+					sb.append(" is negatively very sensitive to ");
+					sb.append(rs.getResultAt(row, inputIdx).toString());
 					sb.append(".");
 					sb.append(System.lineSeparator());
 				}
