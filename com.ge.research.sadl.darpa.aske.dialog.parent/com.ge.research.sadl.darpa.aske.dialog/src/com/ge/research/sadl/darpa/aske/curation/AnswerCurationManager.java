@@ -413,7 +413,7 @@ public class AnswerCurationManager {
 		return numSuccessfullyProcessed;
 	}
 
-	private void processExtractedText(String outputModelName, String outputOwlFileName, SaveAsSadl saveAsSadl)
+	private String processExtractedText(String outputModelName, String outputOwlFileName, SaveAsSadl saveAsSadl)
 			throws ConfigurationException, IOException, ReasonerNotFoundException, InvalidNameException,
 			QueryParseException, QueryCancelledException {
 		// run inference on the model, interact with user to refine results
@@ -421,10 +421,12 @@ public class AnswerCurationManager {
 		String queryString = SparqlQueries.All_TEXT_EXTRACTED_METHODS;	 // SparqlQueries.ALL_EXTERNAL_EQUATIONS;
 		ResultSet results = runInferenceFindInterestingTextModelResults(outputOwlFileName, queryString, saveAsSadl, outputModelName);
 		if (results == null || results.getRowCount() == 0) {
-			notifyUser(textModelFolder, "No equations were found in this extraction from text.", true);
+			String msg = "No equations were found in this extraction from text.";
+			notifyUser(textModelFolder, msg, true);
+			return msg;
 		}
 		else {
-			equationsFromTextResultSetToSadlContent(results, textModelFolder, outputModelName);
+			return equationsFromTextResultSetToSadlContent(results, textModelFolder, outputModelName);
 		}
 	}
 
@@ -740,9 +742,10 @@ public class AnswerCurationManager {
 		return keywords;
 	}
 
-	private void equationsFromTextResultSetToSadlContent(ResultSet results, String textModelFolder, String locality)
+	private String equationsFromTextResultSetToSadlContent(ResultSet results, String textModelFolder, String locality)
 			throws ConfigurationException, InvalidNameException, ReasonerNotFoundException, QueryParseException,
 			QueryCancelledException, IOException {
+		StringBuilder sbResults = new StringBuilder("Equations: ");
 		results.setShowNamespaces(false);
 		String[] cns = ((ResultSet) results).getColumnNames();
 		if (cns[0].equals("m") && cns[2].equals("ts") && cns[3].equals("ps") && cns[4].equals("pstf") && cns[5].equals("psnp")) {
@@ -788,6 +791,10 @@ public class AnswerCurationManager {
 							SadlStatementContent ssc = new SadlStatementContent(host, Agent.CM, sd);
 							notifyUser(textModelFolder, ssc, false);
 							getExtractionProcessor().addNewSadlContent(sd);
+							if (sbResults.length() > 11) {
+								sbResults.append(", ");
+							}
+							sbResults.append(methodName);
 						}
 					} catch (AnswerExtractionException e) {
 						String msg = "Error converting method '" + methodName + "': " + e.getMessage();
@@ -802,7 +809,9 @@ public class AnswerCurationManager {
 		else {
 			String msg = "Results set columns not as expected, please report. Did the query change?";
 			notifyUser(textModelFolder, msg, true);
+			sbResults.append(msg);
 		}
+		return sbResults.toString();
 	}
 
 	private boolean useKCHAIN() {
@@ -1509,8 +1518,8 @@ public class AnswerCurationManager {
 		}
 
 		String outputTypeQuery = "select distinct ?retname ?rettyp ?alias ?st where {<";
-//		outputTypeQuery += getDomainModelName() + "#";
-		outputTypeQuery += getLocalityURI() + "#";
+		outputTypeQuery += getDomainModelName() + "#";
+//		outputTypeQuery += getLocalityURI() + "#";
 		outputTypeQuery += methodName.toString().trim();
 		outputTypeQuery += "> <returnTypes>/<rdf:rest>*/<rdf:first> ?rt . OPTIONAL{?rt <localDescriptorName> ?retname} . ";
 		outputTypeQuery += "?rt <dataType> ?rettyp . ";
@@ -1533,8 +1542,8 @@ public class AnswerCurationManager {
 
 		// get inputs and outputs and identify semantic meaning thereof
 		String inputQuery = "select distinct ?arg ?argName ?argtyp ?st where {<";
-//		inputQuery += getDomainModelName() + "#";
-		inputQuery += getLocalityURI() + "#";
+		inputQuery += getDomainModelName() + "#";
+//		inputQuery += getLocalityURI() + "#";
 		inputQuery += methodName.toString().trim();
 		inputQuery += "> <arguments>/<rdf:rest>*/<rdf:first> ?arg . ?arg <localDescriptorName> ?argName . ";
 		inputQuery += "OPTIONAL{?arg <dataType> ?argtyp} . ";
@@ -2181,10 +2190,6 @@ public class AnswerCurationManager {
 		else {
 			sb.append(":");
 		}
-//		else {
-//			// SADL doesn't currently support an equation that doesn't return anything
-//			throw new AnswerExtractionException("Equations that do not return a value are not supported.");
-//		}
 		String eqUri = getExtractionProcessor().getCodeModelName() + "#" + methodName.toString().trim();
 		sb.append(" \"");
 		sb.append(eqUri);
@@ -2282,6 +2287,12 @@ public class AnswerCurationManager {
 					String cvuri = impOut.getResultAt(r, 2).toString();
 					Individual cv = getExtractionProcessor().getCodeModel().getIndividual(cvuri);
 					if (cv != null) {
+						String augmentedType = getAugmentedTypeOfVariable(cv);
+						if (augmentedType != null) {
+							sb2.append("with augmentedType (a SemanticType with semType ");
+							sb2.append(augmentedType);
+							sb2.append(")");
+						}
 						sb2.append(getCodeVariableDeclaration(methodName, cv));
 					}
 				}
@@ -2342,6 +2353,53 @@ public class AnswerCurationManager {
 		sb2.append(".\n");
 		returnSadlStatements.add(sb2.toString());
 		return returnSadlStatements;
+	}
+
+	// Method to get the augmented type, if possible, for an implicit variable
+	private String getAugmentedTypeOfVariable(Individual cv) throws InvalidNameException, ConfigurationException, ReasonerNotFoundException, QueryParseException, QueryCancelledException {
+		String queryUri = DialogConstants.CODE_EXTRACTION_MODEL_URI + "#VarComment";
+		Resource qrsrc = getCodeExtractor().getCurrentCodeModel().getResource(queryUri);
+		if (qrsrc != null) {
+			StmtIterator qitr = getCodeExtractor().getCurrentCodeModel().listStatements(qrsrc, RDFS.isDefinedBy, (RDFNode) null);
+			if (qitr.hasNext()) {
+				RDFNode obj = qitr.nextStatement().getObject();
+				if (obj.isLiteral()) {
+					String query =obj.asLiteral().getValue().toString();
+					List<Object> pvals = new ArrayList<Object>();
+					pvals.add(new NamedNode(cv.getURI()));
+					String commentQuery = getInitializedCodeModelReasoner().parameterizeQuery(query, pvals);
+					ResultSet commentRs =  getInitializedCodeModelReasoner().ask(commentQuery);
+					if (commentRs != null) {
+						// comment, line#, usage, ordered by line#
+						for (int r = 0; r < commentRs.getRowCount(); r++) {
+							String usage = commentRs.getResultAt(r, 2).toString();
+							if (usage != null && !usage.equals("Used")) {
+								String comment = commentRs.getResultAt(r, 0).toString();
+								System.out.println("Comment to be processed for augmented type for variable " + cv.getLocalName() + ": " + comment);
+								try {
+									List<String> extractions = processExtractionFromText(comment, false);
+									if (extractions != null) {
+										for (String extract :extractions) {
+											System.out.println(extract);
+										}
+										return extractions.get(0);
+									}
+								} catch (AnswerExtractionException e) {
+									// OK to not find anything
+								} catch (IOException e) {
+									// TODO Auto-generated catch block
+									e.printStackTrace();
+								} catch (ConfigurationException e) {
+									// TODO Auto-generated catch block
+									e.printStackTrace();
+								}
+							}
+						}
+					}
+				}
+			}
+		}
+		return null;
 	}
 
 	/**
@@ -3003,8 +3061,9 @@ public class AnswerCurationManager {
 			if (((AddEquationContent)sc).getEquationBody() != null) {
 				// translate to Python using texttotriples service
 				String toTranslate = lhs + " = " + ((AddEquationContent)sc).getEquationBody();
-				String inputIdentifier = getDomainModelName() + "_temp";
-				String extractedTxtModelName = inputIdentifier;
+				String localityURI = getDomainModelName() + "_temp";
+				setLocalityURI(localityURI);
+				String extractedTxtModelName = localityURI;
 				String prefix = "temp";
 				try {
 					getTextProcessor().clearGraph(getLocalityURI());
@@ -3222,8 +3281,40 @@ public class AnswerCurationManager {
 		}
 		return returnStatus;
 	}
+	
+	/**
+	 * Method to extract from provided text and convert to semantic type or statement.
+	 * @param txt
+	 * @param bAsCompleteStatement
+	 * @return
+	 * @throws AnswerExtractionException
+	 * @throws IOException
+	 * @throws ConfigurationException
+	 */
+	private List<String> processExtractionFromText(String txt, boolean bAsCompleteStatement) throws AnswerExtractionException, IOException, ConfigurationException {
+		String cgResponse = getTextProcessor().clearGraph(getLocalityURI());
+		if (!isDomainModelLoaded(getLocalityURI())) {
+			String aDoResponse = getTextProcessor().uploadDomainModel(getLocalityURI(), getDomainModelName(), getDomainModelExtractForTextService(true));
+			setDomainModelLoaded(getLocalityURI(), getDomainModelName());
+		}
+		String prefix = "temp";
+		int[] results = getTextProcessor().processText("from text", txt, getLocalityURI(), getDomainModelName(), prefix, false);
+		if (results == null || (results[0] == 0 && results[1] == 0)) {
+			throw new AnswerExtractionException("Text processing service returned no information");
+		}
+		if (results[0] > 0) {
+			// get the concept(s), if they aren't in the domain model?
+			String[] graphResults = getTextProcessor().retrieveGraph(getLocalityURI());	
+			OntModel m = getTextProcessor().getTextModelConfigMgr().getOntModel(getLocalityURI(), graphResults[2], Scope.INCLUDEIMPORTS, graphResults[1]);
+			m.write(System.out, "N3");
+			List<String> extracts = retrieveExtractedConcepts(m, bAsCompleteStatement, false);
+			return extracts;
+		}
+		return null;
+	}
 
 	private String processExtractionFromActualTextRequest(ExtractContent sc) throws AnswerExtractionException, IOException, ConfigurationException {
+		String retVal = "";
 		setExtractionContext(sc);
 		String toTranslate = sc.getUrl();
 		try {
@@ -3242,7 +3333,7 @@ public class AnswerCurationManager {
 				String[] graphResults = getTextProcessor().retrieveGraph(getLocalityURI());	
 				OntModel m = getTextProcessor().getTextModelConfigMgr().getOntModel(getLocalityURI(), graphResults[2], Scope.INCLUDEIMPORTS, graphResults[1]);
 				m.write(System.out, "N3");
-				List<String> extracts = retrieveExtractedConcepts(m);
+				List<String> extracts = retrieveExtractedConcepts(m, true, false);
 				StringBuilder sb = new StringBuilder();
 				if (extracts != null) {
 					for (String ex : extracts) {
@@ -3253,7 +3344,7 @@ public class AnswerCurationManager {
 						sb.append(ex);
 					}
 				}
-				return sb.toString();
+				retVal += sb.toString();
 			}
 			if (results[1] > 0) {
 				// get the equation(s).
@@ -3261,28 +3352,12 @@ public class AnswerCurationManager {
 				if (graphResults != null && graphResults.length == 3) {
 					OntModel m = getTextProcessor().getTextModelConfigMgr().getOntModel(getLocalityURI(), graphResults[2], Scope.INCLUDEIMPORTS, graphResults[1]);
 					String rememberDomainModelName = getDomainModelName();
-					Map<String, String> equations;
 					try {
-						equations = getEquationNamesFromTextServiceResults(graphResults, m, getDomainModelName());
-	//					Iterator<String> eqItr = equations.keySet().iterator();
-	//					while (eqItr.hasNext()) {
-	//						String eqName = eqItr.next();
-	//						String eqStatement = equations.get(eqName);
-	//						// output equation statement
-	//						answerUser(getOwlModelsFolder(), eqStatement, ((StatementContent)sc).isQuoteResult(), sc.getHostEObject());
-	//						// output scripts
-	//						List<String> scriptStatements = getScriptStatementsFromTextService(graphResults, m, eqName);
-	//						if (scriptStatements != null) {
-	//							for (String scptstmt : scriptStatements) {
-	//								answerUser(getOwlModelsFolder(), scptstmt, false, sc.getHostEObject());
-	//							}
-	//						}
-	//					}
-						return "Extracted " + results[1] + " equations from the specified text";
+						retVal += getEquationNamesFromTextServiceResults(graphResults, m, getDomainModelName());
 					} catch (Exception e) {
 						// TODO Auto-generated catch block
 						e.printStackTrace();
-						return e.getMessage();
+						retVal += e.getMessage();
 					}
 					finally {
 						setDomainModelName(rememberDomainModelName);
@@ -3296,7 +3371,7 @@ public class AnswerCurationManager {
 			notifyUser(getOwlModelsFolder(), t.getMessage(), true);
 			return t.getMessage();
 		}
-		return null;
+		return retVal;
 	}
 
 	private void setDomainModelLoaded(String localityURI, String domainModelUri) {
@@ -3310,7 +3385,7 @@ public class AnswerCurationManager {
 		return false;
 	}
 
-	private List<String> retrieveExtractedConcepts(OntModel m) throws ConfigurationException {
+	private List<String> retrieveExtractedConcepts(OntModel m, boolean bAsCompleteStatements, boolean bInferPropOfSubj) throws ConfigurationException {
 		StringBuilder sb = new StringBuilder();
 		// get everything with a label
 		int cntr = 0;
@@ -3408,14 +3483,17 @@ public class AnswerCurationManager {
 			StmtIterator rngItr = getDomainModel().listStatements(theProperty, RDFS.range, (RDFNode)null);
 			if (rngItr.hasNext()) {
 				Resource rng = rngItr.nextStatement().getObject().asResource();
-				if(theClass.equals(rng)) {
-					// we have a property and we have a class and the class is the range of the property
+				if (bInferPropOfSubj && (theClass == null || (rng != null && theClass.equals(rng)))) {
+					// we have a property and we don't have a class  or
+					// we have a class and the class is the range of the property
 					// get the domain and do <property> of <domain> as the semantic type
 					StmtIterator dmnItr = getDomainModel().listStatements(theProperty, RDFS.domain, (RDFNode)null);
 					if (dmnItr.hasNext()) {
 						Resource dmn = dmnItr.nextStatement().getObject().asResource();
 						if (dmn.isURIResource()) {
-							sb.append(getExtractionPreamble("expression", theProperty));
+							if (bAsCompleteStatements) {
+								sb.append(getExtractionPreamble("expression", theProperty));
+							}
 							sb.append(" ");
 							sb.append(checkForKeyword(theProperty.getLocalName()));
 							sb.append(" of an ");
@@ -3423,18 +3501,26 @@ public class AnswerCurationManager {
 						}
 					}
 				}
+				else {
+					if (rng.isURIResource()) {
+						sb.append(" ");
+						sb.append(checkForKeyword(rng.getLocalName()));
+					}
+				}
 			}
 		}
 		if (sb.length() == 0) {
 			if (theClass != null) {
-				sb.append(getExtractionPreamble("class", theClass));
-				sb.append(" ");
+				if (bAsCompleteStatements) {
+					sb.append(getExtractionPreamble("class", theClass));
+					sb.append(" ");
+				}
 				sb.append(checkForKeyword(theClass.getLocalName()));
 			}
 		}
 		List<String> retvals = new ArrayList<String>();
 		if (sb.length() == 0) {
-			retvals.add("\"Umbiguous results did not allow automatic addition of semantic information.\"");
+			retvals.add("\"Ambiguous results did not allow automatic addition of semantic information.\"");
 			retvals.add("\"These domain ontology concepts were matched in the extraction:\"");
 			if (matchingClassList != null) {
 				for (Object o : matchingClassList) {
@@ -3462,8 +3548,10 @@ public class AnswerCurationManager {
 				}
 			}
 		}
-		else {			
-			sb.append(".");
+		else {	
+			if (bAsCompleteStatements) {
+				sb.append(".");
+			}
 			retvals.add(sb.toString());
 		}
 		return retvals;
@@ -3601,14 +3689,12 @@ public class AnswerCurationManager {
 		return false;
 	}
 
-	private Map<String, String> getEquationNamesFromTextServiceResults(String[] graphResults, OntModel m, String dialogModelName) throws ConfigurationException, IOException, ReasonerNotFoundException, InvalidNameException, QueryParseException, QueryCancelledException {
-//		Map<String,String> eqMap = new HashMap<String,String>();
+	private String getEquationNamesFromTextServiceResults(String[] graphResults, OntModel m, String dialogModelName) throws ConfigurationException, IOException, ReasonerNotFoundException, InvalidNameException, QueryParseException, QueryCancelledException {
 		OntModel theModel = getExtractionProcessor().getTextModel();
+		theModel.add(m);
 //		logger.debug("The existing model:");
 //		theModel.write(System.err, "N-TRIPLES");
-		theModel.add(m);
-		processExtractedText(dialogModelName, null, SaveAsSadl.DoNotSaveAsSadl);
-		return null;
+		return processExtractedText(dialogModelName, null, SaveAsSadl.DoNotSaveAsSadl);
 	}
 
 	private String getModelPrefixFromInputUrl(String url) {

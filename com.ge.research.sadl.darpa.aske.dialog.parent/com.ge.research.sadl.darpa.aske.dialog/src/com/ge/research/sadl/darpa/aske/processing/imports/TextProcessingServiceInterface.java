@@ -283,7 +283,10 @@ public class TextProcessingServiceInterface extends JsonServiceInterface {
 	 * @throws IOException
 	 */
 	public String uploadDomainOntology(String localityUri, String domainBaseUri, String ontologyAsString) throws IOException {
-		logger.debug("Uploading domain ontology '" + domainBaseUri + "' for locality '" + localityUri + "'");
+		if (!domainBaseUri.endsWith("#")) {
+			domainBaseUri = domainBaseUri + "#";
+		}
+		logger.debug("Uploading domain ontology with baseURI'" + domainBaseUri + "' for locality '" + localityUri + "'");
 		String uploadDomainOntologyServiceURL = getTextServiceURL() + "uploadDomainOntology";
 		URL serviceUrl = new URL(uploadDomainOntologyServiceURL);			
 		JsonObject json = new JsonObject();
