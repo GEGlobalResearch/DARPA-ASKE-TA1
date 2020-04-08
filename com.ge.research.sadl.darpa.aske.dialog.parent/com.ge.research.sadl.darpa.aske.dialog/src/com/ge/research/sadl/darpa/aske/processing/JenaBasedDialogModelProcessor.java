@@ -865,6 +865,23 @@ public class JenaBasedDialogModelProcessor extends JenaBasedSadlModelProcessor {
 		List<Node> whenObjects = new ArrayList<Node>();
 		for (EObject whenExpr : whenLst) {
 			Object wh = processExpression(whenExpr);
+			List<EObject> undefinedObjects = getUndefinedEObjects();
+			if (undefinedObjects != null && undefinedObjects.size() > 0) {
+				WhatIsContent wic = new WhatIsContent(undefinedObjects.get(0), Agent.CM, null, null);
+				// this is Agent.CM because it houses a question/statement for the user from the CM
+				String msg;
+				try {
+					String name = getEObjectName(undefinedObjects.get(0)).trim();
+					msg = "Concept " + getAnswerCurationManager(getCurrentResource()).checkForKeyword(name) + " is not defined; please define or do extraction";
+					wic.setExplicitQuestion(msg);
+				} catch (IOException e) {
+					// TODO Auto-generated catch block
+					msg = e.getMessage();
+					e.printStackTrace();
+				}
+				clearUndefinedEObjects();
+				throw new UndefinedConceptException(msg, wic);
+			}
 			dift.setStartingVariableNumber(getVariableNumber());
 			if (wh instanceof Object[]) {
 				if (((Object[])wh).length == 2 && ((Object[])wh)[1] instanceof GraphPatternElement) {
