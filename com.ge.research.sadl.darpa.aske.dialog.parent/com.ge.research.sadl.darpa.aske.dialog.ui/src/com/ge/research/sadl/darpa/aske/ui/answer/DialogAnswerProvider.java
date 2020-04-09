@@ -335,6 +335,7 @@ public class DialogAnswerProvider extends BaseDialogAnswerProvider {
 //				Exceptions.throwUncheckedException(e);
 			}
 		});
+		pause();
 		if (ctx instanceof ExtractStatement) {
 			try {
 				String mf = SadlActionHandler.getModelFolderFromResource(((ExtractStatement) ctx).eResource());
@@ -348,6 +349,15 @@ public class DialogAnswerProvider extends BaseDialogAnswerProvider {
 			}
 		}
 		return true;
+	}
+
+	private void pause() {
+		try {
+			Thread.sleep(200);
+		}
+		catch (InterruptedException e) {
+			System.out.println(e);
+		}
 	}
 
 	private synchronized boolean replaceDialogText(IXtextDocument theDocument, EObject ctx, String originalTxt, String replacementTxt) throws BadLocationException {
@@ -422,6 +432,7 @@ public class DialogAnswerProvider extends BaseDialogAnswerProvider {
 				}
 			}
 		});
+		pause();
 		return true;
 	}
 

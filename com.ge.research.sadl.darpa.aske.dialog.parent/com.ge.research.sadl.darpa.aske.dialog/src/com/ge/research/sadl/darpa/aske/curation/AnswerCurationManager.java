@@ -490,6 +490,7 @@ public class AnswerCurationManager {
 				String format = saveGraphResults[1];
 				String serializedGraph = saveGraphResults[2];
 				if (serializedGraph != null) {
+//					System.out.println(serializedGraph);	// debug only
 					try {
 						OntModel newModel = getTextProcessor().getTextModelConfigMgr().getOntModel(extractedTxtModelName, serializedGraph, Scope.INCLUDEIMPORTS, format);
 //								logger.debug("The new model:");
@@ -549,9 +550,9 @@ public class AnswerCurationManager {
 	 */
 	public String ontModelToString(OntModel domainModel) {
 		ExtendedIterator<Ontology> exOntItr = domainModel.listOntologies();
-		while (exOntItr.hasNext()) {
-			System.out.println(exOntItr.next().getURI());
-		}
+//		while (exOntItr.hasNext()) {
+//			System.out.println(exOntItr.next().getURI());
+//		}
 		String uri;
 		try {
 			Writer writer = new StringWriter();
@@ -2353,6 +2354,12 @@ public class AnswerCurationManager {
 					String cvuri = impIn.getResultAt(r, 2).toString();
 					Individual cv = getExtractionProcessor().getCodeModel().getIndividual(cvuri);
 					if (cv != null) {
+						String augmentedType = getAugmentedTypeOfVariable(cv);
+						if (augmentedType != null) {
+							sb2.append("with augmentedType (a SemanticType with semType ");
+							sb2.append(augmentedType);
+							sb2.append(")");
+						}
 						sb2.append(getCodeVariableDeclaration(methodName, cv));
 					}
 				}
@@ -2470,22 +2477,48 @@ public class AnswerCurationManager {
 						// comment, line#, usage, ordered by line#
 						for (int r = 0; r < commentRs.getRowCount(); r++) {
 							String usage = commentRs.getResultAt(r, 2).toString();
-							if (usage != null && !usage.equals("Used")) {
+							if (usage != null && !usage.equals("http://sadl.org/CodeExtractionModel.sadl#Used")) {
 								String comment = commentRs.getResultAt(r, 0).toString();
-								System.out.println("Comment to be processed for augmented type for variable " + cv.getLocalName() + ": " + comment);
+//								System.out.println("Comment to be processed for augmented type for variable " + cv.getLocalName() + ": " + comment);
 								try {
 									List<Object> extractions = processExtractionFromText(comment, false);
 									if (extractions != null) {
 										if (extractions.size() == 5) {
+											Object clses = extractions.get(3);
+											if (clses instanceof Map<?,?>) {
+												Iterator<?> clsitr = ((Map<?,?>)clses).keySet().iterator();
+												if (clsitr != null && clsitr.hasNext()) {
+													Object key = clsitr.next();
+													Object clslst = ((Map<?, ?>) clses).get(key);
+													if (clslst instanceof List<?>) {
+														String uri = ((List<?>)clslst).get(0).toString().trim();
+														return checkForKeyword(getLocalName(uri));
+													}
+												}
+											}
+											Object props = extractions.get(4);
+											if (props instanceof Map<?,?>) {
+												Iterator<?> propitr = ((Map<?,?>)props).keySet().iterator();
+												if (propitr != null && propitr.hasNext()) {
+													Object key = propitr.next();
+													Object proplst = ((Map<?, ?>) props).get(key);
+													if (proplst instanceof List<?>) {
+														String uri = ((List<?>)proplst).get(0).toString().trim();
+														return checkForKeyword(getLocalName(uri));
+													}
+												}
+											}
 											Object stmts = extractions.get(0);
 											String retVal = null;
 											if (stmts instanceof List<?>) {
 												retVal = ((List<?>)stmts).get(0).toString();
-												for (Object extract :(List<?>)stmts) {
-													System.out.println(extract.toString());
+//												for (Object extract :(List<?>)stmts) {
+//													System.out.println(extract.toString());
+//												}
+												if (!retVal.startsWith("\"")) {
+													return retVal.trim();
 												}
 											}
-											return retVal;
 										}
 									}
 								} catch (AnswerExtractionException e) {
@@ -3410,7 +3443,7 @@ public class AnswerCurationManager {
 			// get the concept(s), if they aren't in the domain model?
 			String[] graphResults = getTextProcessor().retrieveGraph(getLocalityURI());	
 			OntModel m = getTextProcessor().getTextModelConfigMgr().getOntModel(getLocalityURI(), graphResults[2], Scope.INCLUDEIMPORTS, graphResults[1]);
-			m.write(System.out, "N3");
+//			m.write(System.out, "N3");
 			List<Object> extracts = retrieveExtractedConcepts(m, bAsCompleteStatement, false);
 			return extracts;
 		}
@@ -3438,7 +3471,7 @@ public class AnswerCurationManager {
 				graphResults = getTextProcessor().retrieveGraph(getLocalityURI());	
 				if (graphResults != null && graphResults.length == 3) {
 					m = getTextProcessor().getTextModelConfigMgr().getOntModel(getLocalityURI(), graphResults[2], Scope.INCLUDEIMPORTS, graphResults[1]);
-					m.write(System.out, "N3");
+//					m.write(System.out, "N3");
 				}
 				else {
 					throw new AnswerExtractionException("Unexpected failure getting results from text processing service");
@@ -3842,7 +3875,7 @@ public class AnswerCurationManager {
 				}
 			}
 		}
-		extractModel.write(System.err, "N3");	// for debug only, remove when not needed
+//		extractModel.write(System.err, "N3");	// for debug only, remove when not needed
 		return extractModel;
 	}
 
@@ -3852,6 +3885,7 @@ public class AnswerCurationManager {
 				nameSpace.equals(SadlConstants.SADL_BASE_MODEL_URI) ||
 				nameSpace.equals(SadlConstants.SADL_LIST_MODEL_URI) ||
 				nameSpace.equals(SadlConstants.SADL_IMPLICIT_MODEL_URI) ||
+				nameSpace.equals("http://aske.ge.com/compgraphmodel") ||
 				nameSpace.equals(IReasoner.SADL_BUILTIN_FUNCTIONS_URI)) {
 			return true;
 		}
