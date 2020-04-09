@@ -443,7 +443,7 @@ public class DialogAnswerProvider extends BaseDialogAnswerProvider {
 		if (!modContent.startsWith(lineSep) && loc > lineSepLen) {
 			try {
 				String before = document.get(loc - lineSepLen, lineSepLen);
-				if (before.startsWith(".") || before.startsWith("?")) {
+				if (docLen > loc && (before.startsWith(".") || before.startsWith("?"))) {
 					before = document.get(loc + 1 - lineSepLen, lineSepLen);
 				}
 				if (!before.equals(lineSep)) {
