@@ -4439,9 +4439,9 @@ public class AnswerCurationManager {
 						sb.append(" of the ");
 						sb.append(rs.getResultAt(row, classIdx).toString());
 					}
-					sb.append(" is positively very sensitive to ");
+					sb.append(" is very sensitive to ");
 					sb.append(rs.getResultAt(row, inputIdx).toString());
-					sb.append(".");
+					sb.append(" with positive slope.");
 					sb.append(System.lineSeparator());
 				}
 				else if(rs.getResultAt(row, trendIdx).equals("neg_sensitive")) {
@@ -4450,9 +4450,9 @@ public class AnswerCurationManager {
 						sb.append(" of the ");
 						sb.append(rs.getResultAt(row, classIdx).toString());
 					}
-					sb.append(" is negatively very sensitive to ");
+					sb.append(" is very sensitive to ");
 					sb.append(rs.getResultAt(row, inputIdx).toString());
-					sb.append(".");
+					sb.append(" with negative slope.");
 					sb.append(System.lineSeparator());
 				}
 			}
