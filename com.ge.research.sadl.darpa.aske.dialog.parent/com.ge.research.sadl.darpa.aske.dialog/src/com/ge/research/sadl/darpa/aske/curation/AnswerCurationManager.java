@@ -244,6 +244,14 @@ public class AnswerCurationManager {
 	private List<StatementContent> failureCorrectingActions = new ArrayList<StatementContent>();
 	private HashMap<String, String> domainModelsLoaded = new HashMap<String,String>();
 	private StatementContent lastStatement = null;
+	
+	// Concepts from the latest extraction from text:
+	//	0: Dialog window statements from extraction,
+	//	1: labels, 
+	//	2: seeAlsos, 
+	//	3: matchingClasses, 
+	//	4: matchingProperties
+	private List<Object> currentTextExtractionExtracts = null;
     
 	public AnswerCurationManager (String modelFolder, IConfigurationManagerForIDE configMgr, XtextResource resource, Map<String,String> prefs) {
 		setOwlModelsFolder(modelFolder);
@@ -502,6 +510,26 @@ public class AnswerCurationManager {
 			}
 		}
 		File of = saveTextOwlFile(extractedTxtModelName, outputOwlFileName);
+		if (numConcepts > 0) {
+			OntModel tm = getExtractionProcessor().getTextModel();
+			List<Object> extracts = retrieveExtractedConcepts(tm, true, false);
+			StringBuilder sb = new StringBuilder();
+			if (extracts != null) {
+				if (extracts.size() == 5) {
+					Object statements = extracts.get(0);
+					if (statements instanceof List<?>) {
+						for (Object ex : (List<?>)statements) {
+							notifyUser(getOwlModelsFolder(), ex.toString(), false);
+							if (sb.length() > 0) {
+								sb.append(System.lineSeparator());
+							}
+							sb.append(ex);							
+						}
+					}
+				}
+				setCurrentTextExtractionExtracts(extracts);
+			}
+		}
 		return of;
 	}
 
@@ -1563,20 +1591,27 @@ public class AnswerCurationManager {
 				String argType = inputResults.getResultAt(r, 2).toString();
 				String argName = inputResults.getResultAt(r, 1).toString();
 				Object stobj = inputResults.getResultAt(r, 3);
-				String augtype = stobj != null ? processTextToTriplesAugType(stobj.toString()) : null;
 				if (r > 0) {
 					sb.append(", ");
 				}
 				sb.append(argType);
 				sb.append(" ");
 				sb.append(checkForKeyword(argName));
-				if (augtype == null) {
-					augtype = getAugmentedTypeFromLocalitySearch(argName, origScript, locality, articledClasses);
-				}
-				if (augtype != null) {
-					sb.append("(");
-					sb.append(augtype);
-					sb.append(")");
+				inputResults.setShowNamespaces(true);
+				Object rnobj =inputResults.getResultAt(r, 3); 
+				inputResults.setShowNamespaces(false);
+				String rn = rnobj != null ? rnobj.toString() : null;
+				if (rn != null) {
+					inputResults.setShowNamespaces(false);
+					String augtype = getAugmentedTypeFromLocalitySearch(rn, origScript, locality, articledClasses);
+					if (augtype == null) {
+						augtype = stobj != null ? processTextToTriplesAugType(rn) : null;
+					}
+					if (augtype != null) {
+						sb.append("(");
+						sb.append(augtype);
+						sb.append(")");
+					}
 				}
 			}
 		}
@@ -1599,17 +1634,23 @@ public class AnswerCurationManager {
 					}
 					sb.append(retType);
 					Object atobj = outputResults.getResultAt(r, 3);
-					String augtype = atobj != null ? processTextToTriplesAugType(atobj.toString()) : null;
-					if (augtype == null) {
-						String rn = outputResults.getResultAt(r, 0).toString();
-						if (rn != null) {
-							augtype = getAugmentedTypeFromLocalitySearch(rn, origScript, locality, articledClasses);
+					outputResults.setShowNamespaces(true);
+					Object rnobj = outputResults.getResultAt(r, 3);
+					outputResults.setShowNamespaces(false);
+					String rn = rnobj != null ? rnobj.toString() : null;
+					if (rn != null) {
+						outputResults.setShowNamespaces(false);
+						String augtype = getAugmentedTypeFromLocalitySearch(rn, origScript, locality, articledClasses);							
+						if (augtype == null) {
+							if (rn != null) {
+								augtype = atobj != null ? processTextToTriplesAugType(rn) : null;
+							}
 						}
-					}
-					if (augtype != null) {
-						sb.append("(");
-						sb.append(augtype);
-						sb.append(")");
+						if (augtype != null) {
+							sb.append("(");
+							sb.append(augtype);
+							sb.append(")");
+						}
 					}
 				}
 //			}
@@ -1672,36 +1713,54 @@ public class AnswerCurationManager {
 	}
 
 	private String processTextToTriplesAugType(String textToTriplesAugType) {
-		String conceptUri = null;
-		String conceptName = null;
-		int split = textToTriplesAugType.lastIndexOf("#");
-		if (split > 0) {
-			conceptName = textToTriplesAugType.substring(split + 1);
-			conceptUri = getDomainModelName() + "#" + conceptName;
-		}
-		split = textToTriplesAugType.lastIndexOf('/');
-		if (split > 0) {
-			conceptName = textToTriplesAugType.substring(split + 1);
-			conceptUri = getDomainModelName() + "#" + conceptName;
-		}
-		if (conceptName == null) {	// must be a localname already
-			conceptName = textToTriplesAugType;
-			conceptUri = getDomainModelName() + "#" + conceptName;
-		}
-		// find name in domain model else insert line in dialog
-		Resource dmnrsrc = getDomainModel().getOntResource(conceptUri);
-		if (dmnrsrc == null) {
-			try {
-				if (!isConceptAdded(conceptName)) {
-					notifyUser(getOwlModelsFolder(), checkForKeyword(conceptName) + " is a class.", false);
-					conceptAdded(conceptName);
-				}
-			} catch (ConfigurationException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
+		if (textToTriplesAugType.contains("#")) {
+			OntClass cls = getDomainModel().getOntClass(textToTriplesAugType);
+			if (cls != null) {
+				return checkForKeyword(cls.getLocalName());
+			}
+			Property prop = getDomainModel().getOntProperty(textToTriplesAugType);
+			if (prop != null) {
+				return checkForKeyword(prop.getLocalName());
 			}
 		}
-		return conceptName;
+		else if (1 == 1) {	// ignore the rest for now
+			return null;
+		}
+		else {
+			String conceptUri = null;
+			String conceptName = null;
+			int split = textToTriplesAugType.lastIndexOf("#");
+			if (split > 0) {
+				conceptName = textToTriplesAugType.substring(split + 1);
+				conceptUri = getDomainModelName() + "#" + conceptName;
+			}
+			if (conceptUri == null) {
+				split = textToTriplesAugType.lastIndexOf('/');
+				if (split > 0) {
+					conceptName = textToTriplesAugType.substring(split + 1);
+					conceptUri = getDomainModelName() + "#" + conceptName;
+				}
+			}
+			if (conceptName == null) {	// must be a localname already
+				conceptName = textToTriplesAugType;
+				conceptUri = getDomainModelName() + "#" + conceptName;
+			}
+			// find name in domain model else insert line in dialog
+			Resource dmnrsrc = getDomainModel().getOntResource(conceptUri);
+			if (dmnrsrc == null) {
+				try {
+					if (!isConceptAdded(conceptName)) {
+						notifyUser(getOwlModelsFolder(), checkForKeyword(conceptName) + " is a class.", false);
+						conceptAdded(conceptName);
+					}
+				} catch (ConfigurationException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+			}
+			return conceptName;
+		}
+		return null;
 	}
 
 	private void conceptAdded(String conceptName) {
@@ -1732,6 +1791,44 @@ public class AnswerCurationManager {
 		// check cache
 		if (equationVariableContextHasBeenCached(name, locality)) {
 			return getEquationVariableContextFromCache(name, locality);
+		}
+		List<Object> extractions = getCurrentTextExtractionExtracts();
+		// first try classes
+		Object clsmap = extractions != null ? extractions.get(3) : null;
+		if (clsmap instanceof Map<?,?>) {
+			Object clses = ((Map<?,?>)clsmap).get(name);
+			if (clses instanceof List<?>) {
+				Object cls = ((List<?>)clses).get(0);
+				if (cls != null) {
+					if (cls instanceof OntClass) {
+						return ((OntClass)cls).getLocalName();
+					}
+					else {
+						return cls.toString();
+					}
+				}
+			}
+		}
+		// next try properties
+		Object propmap = extractions != null ? extractions.get(3) : null;
+		if (propmap instanceof Map<?,?>) {
+			Object props = ((Map<?,?>)propmap).get(name);
+			if (props instanceof List<?>) {
+				Object prop = ((List<?>)props).get(0);
+				if (prop != null) {
+					OntProperty op = getDomainModel().getOntProperty(prop.toString());
+					if (op != null) {
+						String rng = getRange(op);
+						if (!rng.contains(" ")) {
+							return checkForKeyword(getLocalName(rng));
+						}
+					}
+					return checkForKeyword(getLocalName(prop.toString()));
+				}
+			}
+		}
+		if (1 == 1) {		// don't use code below for now
+			return null;
 		}
 		// 	search the locality for the argName
 		EquationVariableContextResponse evc = getTextProcessor().equationVariableContext(name, locality);
@@ -2377,12 +2474,19 @@ public class AnswerCurationManager {
 								String comment = commentRs.getResultAt(r, 0).toString();
 								System.out.println("Comment to be processed for augmented type for variable " + cv.getLocalName() + ": " + comment);
 								try {
-									List<String> extractions = processExtractionFromText(comment, false);
+									List<Object> extractions = processExtractionFromText(comment, false);
 									if (extractions != null) {
-										for (String extract :extractions) {
-											System.out.println(extract);
+										if (extractions.size() == 5) {
+											Object stmts = extractions.get(0);
+											String retVal = null;
+											if (stmts instanceof List<?>) {
+												retVal = ((List<?>)stmts).get(0).toString();
+												for (Object extract :(List<?>)stmts) {
+													System.out.println(extract.toString());
+												}
+											}
+											return retVal;
 										}
-										return extractions.get(0);
 									}
 								} catch (AnswerExtractionException e) {
 									// OK to not find anything
@@ -3291,7 +3395,7 @@ public class AnswerCurationManager {
 	 * @throws IOException
 	 * @throws ConfigurationException
 	 */
-	private List<String> processExtractionFromText(String txt, boolean bAsCompleteStatement) throws AnswerExtractionException, IOException, ConfigurationException {
+	private List<Object> processExtractionFromText(String txt, boolean bAsCompleteStatement) throws AnswerExtractionException, IOException, ConfigurationException {
 		String cgResponse = getTextProcessor().clearGraph(getLocalityURI());
 		if (!isDomainModelLoaded(getLocalityURI())) {
 			String aDoResponse = getTextProcessor().uploadDomainModel(getLocalityURI(), getDomainModelName(), getDomainModelExtractForTextService(true));
@@ -3307,7 +3411,7 @@ public class AnswerCurationManager {
 			String[] graphResults = getTextProcessor().retrieveGraph(getLocalityURI());	
 			OntModel m = getTextProcessor().getTextModelConfigMgr().getOntModel(getLocalityURI(), graphResults[2], Scope.INCLUDEIMPORTS, graphResults[1]);
 			m.write(System.out, "N3");
-			List<String> extracts = retrieveExtractedConcepts(m, bAsCompleteStatement, false);
+			List<Object> extracts = retrieveExtractedConcepts(m, bAsCompleteStatement, false);
 			return extracts;
 		}
 		return null;
@@ -3340,18 +3444,26 @@ public class AnswerCurationManager {
 					throw new AnswerExtractionException("Unexpected failure getting results from text processing service");
 				}
 			}
+			
+			List<Object> extracts = null;
 			if (results[0] > 0) {
 				// get the concept(s), if they aren't in the domain model?
-				List<String> extracts = retrieveExtractedConcepts(m, true, false);
+				extracts = retrieveExtractedConcepts(m, true, false);
 				StringBuilder sb = new StringBuilder();
 				if (extracts != null) {
-					for (String ex : extracts) {
-						notifyUser(getOwlModelsFolder(), ex, false);
-						if (sb.length() > 0) {
-							sb.append(System.lineSeparator());
+					if (extracts.size() == 5) {
+						Object statements = extracts.get(0);
+						if (statements instanceof List<?>) {
+							for (Object ex : (List<?>)statements) {
+								notifyUser(getOwlModelsFolder(), ex.toString(), false);
+								if (sb.length() > 0) {
+									sb.append(System.lineSeparator());
+								}
+								sb.append(ex);							
+							}
 						}
-						sb.append(ex);
 					}
+					setCurrentTextExtractionExtracts(extracts);
 				}
 				retVal += sb.toString();
 			}
@@ -3376,6 +3488,24 @@ public class AnswerCurationManager {
 		return retVal;
 	}
 
+	private void setCurrentTextExtractionExtracts(List<Object> extracts) {
+		this.currentTextExtractionExtracts = extracts;
+	}
+	
+	/**
+	 * Method to get the results of the latest text extraction as a List with elements:
+		0: Dialog window statements from extraction,
+		1: labels, 
+		2: seeAlsos, 
+		3: matchingClasses, 
+		4: matchingProperties
+
+	 * @return
+	 */
+	private List<Object> getCurrentTextExtractionExtracts() {
+		return this.currentTextExtractionExtracts;
+	}
+
 	private void setDomainModelLoaded(String localityURI, String domainModelUri) {
 		domainModelsLoaded.put(localityURI, domainModelUri);
 	}
@@ -3387,22 +3517,29 @@ public class AnswerCurationManager {
 		return false;
 	}
 
-	private List<String> retrieveExtractedConcepts(OntModel m, boolean bAsCompleteStatements, boolean bInferPropOfSubj) throws ConfigurationException {
+	/**
+	 * Method to pull concepts from text extraction model and map them according to the subject
+	 * @param m
+	 * @param bAsCompleteStatements
+	 * @param bInferPropOfSubj
+	 * @return -- list of 0) Dialog window statement, 1) labels, 2) seeAlsos, 3) matchingClasses, 4) matchingProperties
+	 * @throws ConfigurationException
+	 */
+	private List<Object> retrieveExtractedConcepts(OntModel m, boolean bAsCompleteStatements, boolean bInferPropOfSubj) throws ConfigurationException {
 		StringBuilder sb = new StringBuilder();
 		// get everything with a label
 		int cntr = 0;
 		Property mathcingClassProperty = m.getProperty(MATCHINGCLASS_PROPERTY_URI);
 		Property matchingPropertyProperty = m.getProperty(MATCHINGPROPERTY_PROPERTY_URI);
+		List<String> returnStatements = new ArrayList<String>();
 		if (mathcingClassProperty == null || matchingPropertyProperty == null) {
 			String msg = "\"Unable to find matching properties in SADL Implicit Model\"";
-			ArrayList<String> retval = new ArrayList<String>();
-			retval.add(msg);
-			return retval;
+			returnStatements.add(msg);
 		}
-		Map<Resource, List<Object>> labels = new HashMap<Resource, List<Object>>();
-		Map<Resource, List<Object>> seeAlsos = new HashMap<Resource, List<Object>>();
-		Map<Resource, List<Object>> matchingClasses = new HashMap<Resource, List<Object>>();
-		Map<Resource, List<Object>> matchingProperties = new HashMap<Resource, List<Object>>();
+		Map<String, List<Object>> labels = new HashMap<String, List<Object>>();
+		Map<String, List<Object>> seeAlsos = new HashMap<String, List<Object>>();
+		Map<String, List<Object>> matchingClasses = new HashMap<String, List<Object>>();
+		Map<String, List<Object>> matchingProperties = new HashMap<String, List<Object>>();
 		StmtIterator lblitr = m.listStatements(null, RDFS.label, (RDFNode)null);
 		while (lblitr.hasNext()) {
 			Statement lblstmt = lblitr.nextStatement();
@@ -3411,14 +3548,14 @@ public class AnswerCurationManager {
 			if (subjUri != null) {
 				String subjLocalName = subj.isURIResource() ? subj.getLocalName() : null;
 				String lbl = lblstmt.getObject().asLiteral().getValue().toString();
-				addExtractToMap(labels, subj, lbl);
+				addExtractToMap(labels, subjUri, lbl);
 				StmtIterator seeAlsoItr = m.listStatements(subj, RDFS.seeAlso, (RDFNode)null);
 				boolean needAnotherComma = false;
 				while (seeAlsoItr.hasNext()) {
 					RDFNode seeAlso = seeAlsoItr.nextStatement().getObject();
 					if (seeAlso.isURIResource()) {
 						Resource seeAlsoUri = seeAlso.asResource();
-						addExtractToMap(seeAlsos, subj, seeAlsoUri);
+						addExtractToMap(seeAlsos, subjUri, seeAlsoUri);
 					}
 				}
 				StmtIterator matchClassItr = m.listStatements(subj, mathcingClassProperty, (RDFNode)null);
@@ -3426,10 +3563,10 @@ public class AnswerCurationManager {
 					RDFNode mc = matchClassItr.nextStatement().getObject();
 					if (mc.isURIResource()) {
 						if (mc.canAs(OntClass.class)) {
-							addExtractToMap(matchingClasses, subj, mc.as(OntClass.class));
+							addExtractToMap(matchingClasses, subjUri, mc.as(OntClass.class));
 						}
 						else {
-							addExtractToMap(matchingClasses, subj, m.createClass(mc.asResource().getURI()));
+							addExtractToMap(matchingClasses, subjUri, m.createClass(mc.asResource().getURI()));
 						}
 					}
 				}
@@ -3438,10 +3575,10 @@ public class AnswerCurationManager {
 					RDFNode mp = matchPropItr.nextStatement().getObject();
 					if (mp.isURIResource()) {
 						if (mp.canAs(Property.class)) {
-							addExtractToMap(matchingProperties, subj, mp.as(Property.class));
+							addExtractToMap(matchingProperties, subjUri, mp.as(Property.class));
 						}
 						else {
-							addExtractToMap(matchingProperties, subj, m.createProperty(mp.asResource().getURI()));
+							addExtractToMap(matchingProperties, subjUri, m.createProperty(mp.asResource().getURI()));
 						}
 					}
 				}
@@ -3453,9 +3590,9 @@ public class AnswerCurationManager {
 		List<Object> matchingPropList = null;
 		boolean multiplePropertyMatches = false;
 		if (matchingClasses.size() > 0) {
-			Iterator<Resource> keyItr = matchingClasses.keySet().iterator();
+			Iterator<String> keyItr = matchingClasses.keySet().iterator();
 			while (keyItr.hasNext()) {
-				Resource key = keyItr.next();
+				String key = keyItr.next();
 				matchingClassList = matchingClasses.get(key);
 				if (keyItr.hasNext() || matchingClassList.size() > 1) {
 					multipleClassMatches = true;
@@ -3465,9 +3602,9 @@ public class AnswerCurationManager {
 		}
 
 		if (matchingProperties.size() > 0) {
-			Iterator<Resource> keyItr = matchingProperties.keySet().iterator();
+			Iterator<String> keyItr = matchingProperties.keySet().iterator();
 			while (keyItr.hasNext()) {
-				Resource key = keyItr.next();
+				String key = keyItr.next();
 				matchingPropList = matchingProperties.get(key);
 				if (keyItr.hasNext() || matchingPropList.size() > 1) {
 					multiplePropertyMatches = true;
@@ -3532,37 +3669,36 @@ public class AnswerCurationManager {
 				sb.append(checkForKeyword(theClass.getLocalName()));
 			}
 		}
-		List<String> retvals = new ArrayList<String>();
 		if (sb.length() == 0) {
-			retvals.add("\"These domain ontology concepts were matched in the extraction:\"");
-			Iterator<Resource> clslstitr = matchingClasses.keySet().iterator();
+			returnStatements.add("\"These domain ontology concepts were matched in the extraction:\"");
+			Iterator<String> clslstitr = matchingClasses.keySet().iterator();
 			while (clslstitr.hasNext()) {
-				Resource key = clslstitr.next();
+				String key = clslstitr.next();
 				List<Object> clslst = matchingClasses.get(key);
 				for (Object o : clslst) {
-					if (o instanceof Resource && ((Resource)o).isURIResource()) {
-						retvals.add(((Resource)o).getLocalName() + " is a class.");
+					if (o instanceof String) {
+						returnStatements.add(getLocalName((String)o) + " is a class.");
 					}
 				}
 			}
-			Iterator<Resource> proplstitr = matchingProperties.keySet().iterator();
+			Iterator<String> proplstitr = matchingProperties.keySet().iterator();
 			while (proplstitr.hasNext()) {
-				Resource key = proplstitr.next();
+				String key = proplstitr.next();
 				List<Object> proplst = matchingProperties.get(key);
 				for (Object o : proplst) {
-					if (o instanceof Resource && ((Resource)o).isURIResource()) {
-						retvals.add(((Resource)o).getLocalName() + " is a property.");
+					if (o instanceof String) {
+						returnStatements.add(getLocalName((String)o) + " is a property.");
 					}
 				}
 			}
 			if (seeAlsos != null && seeAlsos.size() > 0) {
-				retvals.add("\"Other concepts found:\"");
-				Iterator<Resource> saitr = seeAlsos.keySet().iterator();
+				returnStatements.add("\"Other concepts found:\"");
+				Iterator<String> saitr = seeAlsos.keySet().iterator();
 				while (saitr.hasNext()) {
-					Resource sar = saitr.next();
+					String sar = saitr.next();
 					List<Object> refs = seeAlsos.get(sar);
 					for (Object ref : refs) {
-						retvals.add("\"" + ref.toString() + "\"");
+						returnStatements.add("\"" + ref.toString() + "\"");
 					}
 				}
 			}
@@ -3571,9 +3707,22 @@ public class AnswerCurationManager {
 			if (bAsCompleteStatements) {
 				sb.append(".");
 			}
-			retvals.add(sb.toString());
+			returnStatements.add(sb.toString());
 		}
-		return retvals;
+		List<Object> returns = new ArrayList<Object>();
+		returns.add(returnStatements);
+		returns.add(labels);
+		returns.add(seeAlsos);
+		returns.add(matchingClasses);
+		returns.add(matchingProperties);
+		return returns;
+	}
+
+	private String getLocalName(String uri) {
+		if (uri.indexOf("#") > 0) {
+			return uri.substring(uri.indexOf("#") + 1);
+		}
+		return uri;
 	}
 
 	private Object getExtractionPreamble(String type, Object theContent) {
@@ -3598,9 +3747,9 @@ public class AnswerCurationManager {
 	 * Method to put a value into a Map with key and list of values
 	 * 
 	 */
-	private void addExtractToMap(Map<Resource, List<Object>> map, Resource key, Object value) {
-		if (map.containsKey(key)) {
-			List<Object> lbllst = map.get(key);
+	private void addExtractToMap(Map<String, List<Object>> labels, String subjUri, Object value) {
+		if (labels.containsKey(subjUri)) {
+			List<Object> lbllst = labels.get(subjUri);
 			if (!lbllst.contains(value)) {
 				lbllst.add(value);
 			}
@@ -3608,7 +3757,7 @@ public class AnswerCurationManager {
 		else {
 			List<Object> lbllst = new ArrayList<Object>();
 			lbllst.add(value);
-			map.put(key, lbllst);
+			labels.put(subjUri, lbllst);
 		}
 	}
 
@@ -3693,6 +3842,7 @@ public class AnswerCurationManager {
 				}
 			}
 		}
+		extractModel.write(System.err, "N3");	// for debug only, remove when not needed
 		return extractModel;
 	}
 
@@ -3918,7 +4068,20 @@ public class AnswerCurationManager {
 			}
 		}
 		if (!restrictionFound) {
-			StmtIterator stmtitr = getDomainModel().listStatements(theProp, RDFS.range, (RDFNode)null);
+			String rng = getRange(theProp);
+			if (rng != null) {
+				sb.append(rng);
+			}
+		}
+		String answer = sb.toString();
+		answerUser(getOwlModelsFolder(), answer, false, sc.getHostEObject());
+		return answer;
+	}
+
+	private String getRange(OntProperty theProp) {
+		StmtIterator stmtitr = getDomainModel().listStatements(theProp, RDFS.range, (RDFNode)null);
+		if (stmtitr.hasNext()) {
+			StringBuilder sb = new StringBuilder();
 			while (stmtitr.hasNext()) {
 				RDFNode obj = stmtitr.nextStatement().getObject();
 				if (obj.isURIResource()) {
@@ -3928,10 +4091,9 @@ public class AnswerCurationManager {
 					sb.append(obj.asResource().getLocalName());
 				}
 			}
+			return sb.toString();
 		}
-		String answer = sb.toString();
-		answerUser(getOwlModelsFolder(), answer, false, sc.getHostEObject());
-		return answer;
+		return null;
 	}
 
 	private String processHowManyValue(org.eclipse.emf.ecore.resource.Resource resource, HowManyValuesContent sc) throws ConfigurationException {
@@ -3958,15 +4120,9 @@ public class AnswerCurationManager {
 			}
 		}
 		if (!restrictionFound) {
-			StmtIterator stmtitr = getDomainModel().listStatements(theProp, RDFS.range, (RDFNode)null);
-			while (stmtitr.hasNext()) {
-				RDFNode obj = stmtitr.nextStatement().getObject();
-				if (obj.isURIResource()) {
-					if (sb.length() > 0) {
-						sb.append(" or");
-					}
-					sb.append(obj.asResource().getLocalName());
-				}
+			String rng = getRange(theProp);
+			if (rng != null) {
+				sb.append(rng);
 			}
 		}
 		sb.insert(0, "unlimited number of values of type ");
