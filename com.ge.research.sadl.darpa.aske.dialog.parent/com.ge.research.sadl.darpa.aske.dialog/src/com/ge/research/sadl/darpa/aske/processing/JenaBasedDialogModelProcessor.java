@@ -211,6 +211,9 @@ public class JenaBasedDialogModelProcessor extends JenaBasedSadlModelProcessor {
 		if (!isSupported(resource)) {
 			return;
 		}
+//		if (1 == 1) {
+//			return;
+//		}
 		resetProcessor();
 		logger.debug("JenaBasedDialogModelProcessor.onValidate called for Resource '" + resource.getURI() + "'"); 
 		CancelIndicator cancelIndicator = context.getCancelIndicator();
