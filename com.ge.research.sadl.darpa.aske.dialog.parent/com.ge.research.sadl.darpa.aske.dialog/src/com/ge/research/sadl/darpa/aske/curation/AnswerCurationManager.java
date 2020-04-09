@@ -5989,6 +5989,7 @@ public class AnswerCurationManager {
 				else {
 					try {
 						answerUser(getOwlModelsFolder(), ans, sc.isQuoteResult(), sc.getHostEObject());
+						addQuestionAndAnswer(question, ans);
 					} catch (ConfigurationException e) {
 						// TODO Auto-generated catch block
 						e.printStackTrace();
