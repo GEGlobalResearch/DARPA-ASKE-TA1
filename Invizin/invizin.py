@@ -134,19 +134,20 @@ class invizin(object):
             d['name'] = self._getVarName(var = inputVariable, aliasFlag = False)
             d['type'] = inputVariable['type']
             d['value'] = inputVariable['value']
-            xq = float(d['value'])
+            #xq = float(d['value'])
             
             MIN, MAX = self._getMinMax(pck, ii)
             MIN_RS, MAX_RS = self._getMinMax(pck, ii, plotType = 'Relative')
             
             if MIN != MIN_RS or MAX != MAX_RS:
-                #X = np.linspace(MIN, MAX, num=NUM)
-                X = np.concatenate((np.linspace(MIN, xq, num=int(np.floor(NUM/2)), endpoint=False), 
-                                    np.linspace(xq, MAX, num=int(np.ceil(NUM/2)))))
+                X = np.linspace(MIN, MAX, num=NUM)
+                # X = np.concatenate((np.linspace(MIN, xq, num=int(np.floor(NUM/2)), endpoint=False), 
+                #                     np.linspace(xq, MAX, num=int(np.ceil(NUM/2)))))
                 df = self._getOutputDataframe(copy.deepcopy(pck), X, index = ii)
                 d['OATMatrix'] = df.to_dict(orient='list')
                 XRS = np.linspace(MIN_RS, MAX_RS, num=NUM)
                 df = self._getOutputDataframe(copy.deepcopy(pck), XRS, index = ii)
+                d['OATRSMatrix'] = df.to_dict(orient='list')
             else:
                 X = np.linspace(MIN, MAX, num=NUM)
                 df = self._getOutputDataframe(copy.deepcopy(pck), X, index = ii)
