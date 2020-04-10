@@ -396,9 +396,12 @@ definitions:
     type: "object"
     required:
     - "localityURI"
+    - "baseURI"
     - "ontologyAsString"
     properties:
       localityURI:
+        type: "string"
+      baseURI:
         type: "string"
       ontologyAsString:
         type: "string"

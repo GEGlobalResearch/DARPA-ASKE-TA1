@@ -88,7 +88,7 @@ def clear_graph(body):
 
 
 def upload_domain_ontology(body):
-    return t2t_obj.upload_domain_ontology(body["localityURI"], body["ontologyAsString"])
+    return t2t_obj.upload_domain_ontology(body["localityURI"], body["baseURI"], body["ontologyAsString"])
 
 
 # TODO: Backward compatible method. Need to retire. Do not use.
