@@ -38,9 +38,8 @@
 
 # textdistance: https://github.com/orsinium/textdistance
 
-import config
+
 import textdistance as td
-import numpy as np
 import requests
 import xml.etree.ElementTree as ET
 import json
@@ -56,15 +55,16 @@ class EntityLinking:
         self.elastic_search_server = config.ElasticSearchServer
         self.elastic_search_index = config.ElasticSearchIndex
 
-    def rank_candidates_elastic_search(self, string, candidates):
+    @staticmethod
+    def rank_candidates_elastic_search(self, candidates):
+        sorted_candidates = {k: v for k, v in sorted(candidates.items(), key=lambda item: item[1][0], reverse=True)}
         ranked_candidates = []
-        for candidate_uri in candidates:
+        for candidate_uri in sorted_candidates:
             scored_candidate = {"uri": candidate_uri,
-                            "label": candidates[candidate_uri], "score": 1.0}
+                            "label": candidates[candidate_uri][1], "score": candidates[candidate_uri][0]}
             ranked_candidates.append(scored_candidate)
 
         return ranked_candidates
-
 
     def rank_candidates(self, string, candidates):
         ranked_candidates = []
@@ -78,7 +78,6 @@ class EntityLinking:
         # sort
         ranked_candidates = sorted(ranked_candidates, key=lambda i: i["score"], reverse=True)
         return ranked_candidates
-
 
     def get_candidates(self, search_str):
         candidates = {}
@@ -111,12 +110,11 @@ class EntityLinking:
             candidates[entity_uri] = label
         return candidates
 
-
     def get_candidates_elastic_search(self, search_str):
         candidates = {}
-        #URL = "http://localhost:9200/wikidata/_search"
         URL = self.elastic_search_server + "/" + self.elastic_search_index + "/_search"
         PARAMS = json.dumps(self.get_elastic_search_query(search_str))
+
         headers = {'content-type': 'application/json; charset=UTF-8'}
         r = requests.get(url=URL, data=PARAMS, headers=headers)
         results = r.json()
@@ -129,16 +127,14 @@ class EntityLinking:
         if "hits" in hits:
             matches = hits["hits"]
 
-        # print("\nsearch term:\t", search_str, "total results:\t", len(matches), "\n")
-
         for match in matches:
             match_info = match["_source"]
-            if match_info["x"] not in candidates:
-                candidates[match_info["x"]] = match_info["label"]
-                # print(match_info["label"], match_info["x"])
+            if match_info["wikidata_link"] not in candidates:
+                # candidates[match_info["x"]] = match_info["label"]
+                soren_dice_score = td.sorensen_dice(search_str, match_info["label"])
+                candidates[match_info["wikidata_link"]] = [soren_dice_score, match_info["label"]]
 
         return candidates
-
 
     def get_elastic_search_query(self, search_str):
         return {
@@ -148,7 +144,6 @@ class EntityLinking:
                 }
             }
         }
-
 
     def get_external_matching_entity(self, search_str):
         # Wikidata SPARQL
@@ -162,5 +157,9 @@ class EntityLinking:
         top_ranked_candidate = {}
         if len(scored_candidates) > 0:
             top_ranked_candidate = scored_candidates[0]
+            if "score" in top_ranked_candidate:
+                score = top_ranked_candidate["score"]
+                if score < 0.9:
+                    top_ranked_candidate = {}
 
         return top_ranked_candidate

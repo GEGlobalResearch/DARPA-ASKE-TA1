@@ -38,6 +38,7 @@
 
 import json
 import requests
+import re
 
 
 def get_noun_chunks(nlp_service_url: str, sent: str):
@@ -55,15 +56,18 @@ def get_noun_chunks(nlp_service_url: str, sent: str):
     for chunk_obj in response:
         if 'phrase' in chunk_obj:
             phrase_str = chunk_obj['phrase']
-            phrase_tokens = phrase_str.split('and')
+            phrase_tokens = re.split('and |times |on ', phrase_str)
             for p_str in phrase_tokens:
                 phrases.append(p_str)
     return phrases
 
+
+# TODO: Split on and, times etc.
 def get_phrase_tokens(phrase_str: str):
     split_terms = get_split_terms()
-    for term in split_terms
-    phrase_tokens = phrase_str.split('and')
+    for term in split_terms:
+        phrase_tokens = phrase_str.split('and')
+
 
 def get_split_terms():
     return ['times', 'and']
