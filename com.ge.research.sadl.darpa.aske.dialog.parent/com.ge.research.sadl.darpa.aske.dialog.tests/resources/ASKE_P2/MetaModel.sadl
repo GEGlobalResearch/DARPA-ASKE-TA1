@@ -85,7 +85,7 @@ OutputTrend is a class
 	described by locationWRTquery with a single value of type TrendLocation
 	.
 	
-TrendValue is a class must be one of {increasingDecreases, increasingIncreases, decreasingDecreases, decreasingIncreases, independent, local_minimum, local_maximum}.
+TrendValue is a class must be one of {increasingDecreases, increasingIncreases, decreasingDecreases, decreasingIncreases, independent, local_minimum, local_maximum, pos_sensitive, neg_sensitive}.
 TrendLocation is a class must be one of {lower_values,higher_values}.    
     
 InputSensitivity is a class
