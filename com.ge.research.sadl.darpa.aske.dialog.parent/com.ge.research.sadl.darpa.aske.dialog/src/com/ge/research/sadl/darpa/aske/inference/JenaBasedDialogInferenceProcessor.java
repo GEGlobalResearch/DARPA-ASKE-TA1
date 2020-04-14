@@ -143,7 +143,7 @@ public class JenaBasedDialogInferenceProcessor extends JenaBasedSadlInferencePro
 //	public static final String qhModelName = "http://aske.ge.com/MetaData";
 //	public static final String qhOwlFileName = "MetaData.owl";
 
-	public static final boolean debugMode = false;
+	public static final boolean debugMode = true;
 	
 	
     private static final String KCHAIN_SERVICE_URL_FRAGMENT = "/darpa/aske/kchain/";
@@ -325,7 +325,7 @@ public class JenaBasedDialogInferenceProcessor extends JenaBasedSadlInferencePro
 			"prefix list:<http://sadl.org/sadllistmodel#>\n" +
 			"\n" + 
 			"select distinct ?Model \n" + 
-			"(str(?expr) as ?ModelForm) (str(?Fun) as ?Function) \n" + 
+			"(str(?expr) as ?ModelForm) (str(?Fun) as ?Function) (str(?fname) as ?FunctionName)\n" + 
 			"?Initializer ?Dependency\n" + 
 			"where { \n" + 
 			"\n" + 
@@ -372,7 +372,7 @@ public class JenaBasedDialogInferenceProcessor extends JenaBasedSadlInferencePro
 			"  optional {\n" + 
 			"    ?Model imp:externalURI ?Fun.\n" + 
 			"  }\n" + 
-			"\n" + 
+			"  optional{?Model rdfs:label ?fname.}\n" + 
 			"}\n" + 
 			"order by ?Model";
 	public static final String RETRIEVE_MODELS_WEXP = "prefix hyper:<http://aske.ge.com/hypersonicsV2#>\n" + 
@@ -1668,18 +1668,18 @@ private ResultSet[] processWhatWhenQuery(Resource resource, String queryModelFil
 			
 			// Get the CG info for diagram
 			
-			dbnResults[i] = retrieveCompGraph(resource, cgIns); //+1 to accomodate dependency graph
+			dbnResults[i*3] = retrieveCompGraph(resource, cgIns); //+1 to accomodate dependency graph
 			
 			ResultSet rvalues = retrieveValues(resource, cgIns); //outputsList
 			
 			//ResultSet svalues = 
 		
-			dbnResults[i+1] = addSensitivityURLtoResults(rvalues, sensitivityURL);
+			dbnResults[i*3+1] = addSensitivityURLtoResults(rvalues, sensitivityURL);
 //			dbnResults[i+1] = retrieveValues(resource, cgIns);
 			
 			ResultSet insights = retrieveInsights(resource, cgIns);
 			
-			dbnResults[i+2] = insights;
+			dbnResults[i*3+2] = insights;
 
 //Temporarily commented out assumption check
 //			String assumpCheck = checkAssumptions(resource, queryModelURI, queryOwlFileWithPath, cgIns);
