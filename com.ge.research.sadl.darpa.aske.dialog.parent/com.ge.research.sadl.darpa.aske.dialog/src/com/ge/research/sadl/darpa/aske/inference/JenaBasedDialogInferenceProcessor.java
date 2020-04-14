@@ -1422,12 +1422,14 @@ public class JenaBasedDialogInferenceProcessor extends JenaBasedSadlInferencePro
 	
 //		infereDependencyGraph();
 	
-
+		int successfulModels=0;
+		
 		if (useDbn) {
 
 			if (outputsList.size() > 0 && docPatterns.size() <= 0) { 
 				dbnResults = processWhatWhenQuery(resource, queryModelFileName, queryModelURI, queryModelPrefix,
-						queryOwlFileWithPath, inputsList, outputsList, contextClassList, cgq, numOfQueries, queryNum, insightsMap);
+					queryOwlFileWithPath, inputsList, outputsList, contextClassList, cgq, numOfQueries, queryNum, 
+					successfulModels, insightsMap);
 
 
 
@@ -1441,7 +1443,7 @@ public class JenaBasedDialogInferenceProcessor extends JenaBasedSadlInferencePro
 
 		if (useKC) {
 			kcResults = processWhatWhenQuery(resource, queryModelFileName, queryModelURI, queryModelPrefix,
-					queryOwlFileWithPath, inputsList, outputsList, contextClassList, cgq, numOfQueries, queryNum, insightsMap);
+			queryOwlFileWithPath, inputsList, outputsList, contextClassList, cgq, numOfQueries, queryNum, successfulModels, insightsMap);
 
 		}
 
@@ -1460,7 +1462,7 @@ public class JenaBasedDialogInferenceProcessor extends JenaBasedSadlInferencePro
 
 private ResultSet[] processWhatWhenQuery(Resource resource, String queryModelFileName, String queryModelURI,
 		String queryModelPrefix, String queryOwlFileWithPath, List<RDFNode> inputsList, List<RDFNode> outputsList,
-		List<String> contextClassList, Individual cgq, int numOfQueries, int queryNum, Map<String, Map<String, List<String>>> insightsMap)
+		List<String> contextClassList, Individual cgq, int numOfQueries, int queryNum, int successfulModels, Map<String, Map<String, List<String>>> insightsMap)
 		throws TranslationException, Exception, IOException, URISyntaxException, ConfigurationException {
 	
 	com.hp.hpl.jena.query.ResultSetRewindable eqnsResults = null;
@@ -1532,7 +1534,7 @@ private ResultSet[] processWhatWhenQuery(Resource resource, String queryModelFil
 	String[] modelEqnList = buildEqnsLists(numOfModels, dbnEqnMap);
 
 	
-	Boolean foundAModel = false;
+	successfulModels = 0;
 	List<Individual> modelCCGs = new ArrayList<Individual>();
 	
 	
@@ -1553,7 +1555,7 @@ private ResultSet[] processWhatWhenQuery(Resource resource, String queryModelFil
 		
 //		contextClassList.
 		
-		String nodesModelsJSONStr = retrieveModelsAndNodes(resource, listOfEqns, cgIns, contextClassList, scriptLanguage, numOfQueries, queryNum);
+		String nodesModelsJSONStr = retrieveModelsAndNodes(resource, listOfEqns, cgIns, contextClassList, scriptLanguage, numOfQueries*numOfModels, queryNum);
 		
 		
 
@@ -1645,7 +1647,7 @@ private ResultSet[] processWhatWhenQuery(Resource resource, String queryModelFil
 	    //TODO: if exec was unsuccessful, ingest CG anyway and do something further
 	    
 	    if(resmsg != null && resmsg.equals("Success")) {
-	    	foundAModel = true;
+	    	successfulModels++;
 	    	
 	    	if (useDbn) {
 	    		lbl2value = getLabelToMeanStdMapping(dbnResultsJson);
@@ -1694,14 +1696,14 @@ private ResultSet[] processWhatWhenQuery(Resource resource, String queryModelFil
 
 	    }
 	    else {
-	    	dbnResults[i] = null;
+	    	dbnResults[i*3] = null;
 	    	System.err.println("DBN execution failed. Message: " + dbnResultsJson.toString());
 	    }
 	}// end of models loop
 	
 	
 	//If there were some results, create Eclipse resource, refresh, add mapping to ont-policy.rdf, add import stmt to dialog
-	if(foundAModel) {
+	if(successfulModels>0) {
 		//saveMetaDataFile(resource,queryModelURI,queryModelFileName); //to include sensitivity results
 		addQueryModelAsResource(resource, queryModelFileName, queryModelURI, queryOwlFileWithPath, cmgr);
 //		dbnResults[0] = runReasonerQuery(resource, DEPENDENCY_GRAPH);
