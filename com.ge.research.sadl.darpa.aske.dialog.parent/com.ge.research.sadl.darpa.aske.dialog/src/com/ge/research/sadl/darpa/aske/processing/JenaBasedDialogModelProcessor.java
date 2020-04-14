@@ -3093,7 +3093,10 @@ public class JenaBasedDialogModelProcessor extends JenaBasedSadlModelProcessor {
 				"doesComputation describes Method with a single value of type boolean.\r\n" + 
 				"incompleteInformation describes Method with a single value of type boolean.\r\n" + 
 				"calls describes Method with values of type MethodCall.\r\n" + 
+				"deadCode describes Method with values of type boolean.\r\n" + 
+				"isCalled describes Method with values of type boolean.\r\n" + 
 				"ExternalMethod is a type of Method.\r\n" + 
+				"Constructor is a type of Method.\r\n" + 
 				"\r\n" + 
 				"// The reference to a CodeVariable can be its definition (Defined),\r\n" + 
 				"//	an assignment or reassignment (Reassigned), or just a reference\r\n" + 
@@ -3185,6 +3188,23 @@ public class JenaBasedDialogModelProcessor extends JenaBasedSadlModelProcessor {
 				"//	and print(cb, cv, loc, \" implicit output\")\r\n" + 
 				"." + 
 				"\r\n" + 
+				"Rule IsCalled\r\n" + 
+				"if	m is a Method and\r\n" + 
+				"	mc is a MethodCall and\r\n" + 
+				"	mc codeBlock m\r\n" + 
+				"then m isCalled true.\r\n" + 
+				"\r\n" + 
+				"Rule DeadCode\r\n" + 
+				"if  m1 is a Method and\r\n" + 
+				"	m2 is a Method and\r\n" + 
+				"	m1 != m2 and\r\n" + 
+				"	m1 calls mc and\r\n" + 
+				"	mc codeBlock m2 and \r\n" + 
+				"	mc returnedMapping rm and\r\n" + 
+				"	rm callingVariable cv and\r\n" + 
+				"	noValue(cv, reference, ref, ref, usage, Used)\r\n" + 
+				"then deadCode of m2 is true.	\r\n" + 
+				"\r\n" +
 				"ClassesToIgnore is a type of Class.\r\n" + 
 				"{Canvas, CardLayout, Graphics, Insets, Panel, Image, cem:Event, Choice, Button,\r\n" + 
 				"	Viewer, GridLayout\r\n" + 
