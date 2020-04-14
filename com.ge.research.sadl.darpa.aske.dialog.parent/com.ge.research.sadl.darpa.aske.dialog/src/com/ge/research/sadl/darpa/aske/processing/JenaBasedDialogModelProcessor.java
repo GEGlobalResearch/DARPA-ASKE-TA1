@@ -334,6 +334,7 @@ public class JenaBasedDialogModelProcessor extends JenaBasedSadlModelProcessor {
 		}
 
 		if(!processModelImports(modelOntology, resource.getURI(), model)) {
+			addError("Failed to load model imports. Try cleaning and building the project.", model);
 			return;
 		}
 		EList<SadlImport> implist = model.getImports();
@@ -2004,7 +2005,7 @@ public class JenaBasedDialogModelProcessor extends JenaBasedSadlModelProcessor {
 		cm.setConversation(dc);
 		if (modelElements == null) {
 			modelElements = new ArrayList<ModelElementInfo>();
-			getConfigMgr().addPrivateKeyMapValueByResource("ElementInfo", resource, modelElements);
+			getConfigMgr().addPrivateKeyMapValueByResource(DialogConstants.DIALOG_ELEMENT_INFOS, resource, modelElements);
 		}
 		else {
 			modelElements.clear();
