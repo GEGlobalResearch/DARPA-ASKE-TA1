@@ -4613,7 +4613,7 @@ public class AnswerCurationManager {
 								sb.append(" of the ");
 								sb.append(rs.getResultAt(row, classIdx).toString());
 							}
-							sb.append(" .");
+							sb.append(".");
 							sb.append(System.lineSeparator());
 						}
 					}
@@ -4639,7 +4639,7 @@ public class AnswerCurationManager {
 								sb.append(" of the ");
 								sb.append(rs.getResultAt(row, classIdx).toString());
 							}
-							sb.append(" .");
+							sb.append(".");
 							sb.append(System.lineSeparator());
 						}
 					}
@@ -4664,7 +4664,7 @@ public class AnswerCurationManager {
 								sb.append(" of the ");
 								sb.append(rs.getResultAt(row, classIdx).toString());
 							}
-							sb.append(" .");
+							sb.append(".");
 							sb.append(System.lineSeparator());
 						}
 					}
@@ -4690,7 +4690,7 @@ public class AnswerCurationManager {
 								sb.append(" of the ");
 								sb.append(rs.getResultAt(row, classIdx).toString());
 							}
-							sb.append(" .");
+							sb.append(".");
 							sb.append(System.lineSeparator());
 						}
 					}
@@ -4714,7 +4714,7 @@ public class AnswerCurationManager {
 						sb.append(rs.getResultAt(row, locIdx));
 						sb.append(" of " );
 						sb.append(rs.getResultAt(row, inputIdx).toString());
-						sb.append(" .");
+						sb.append(".");
 						sb.append(System.lineSeparator());
 					}
 				}

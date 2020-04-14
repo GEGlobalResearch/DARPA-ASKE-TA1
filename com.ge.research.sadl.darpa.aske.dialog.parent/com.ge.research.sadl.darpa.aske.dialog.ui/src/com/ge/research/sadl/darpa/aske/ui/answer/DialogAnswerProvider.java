@@ -474,7 +474,10 @@ public class DialogAnswerProvider extends BaseDialogAnswerProvider {
 	}
 
 	private String getNodeText(EObject element) {
-		return NodeModelUtils.getTokenText(NodeModelUtils.getNode(element));
+		if (element != null) {
+			return NodeModelUtils.getTokenText(NodeModelUtils.getNode(element));
+		}
+		return null;
 	}
 	
 	private Object[] generateInsertionLocation(IXtextDocument document, Resource resource, Object ctx, String ctxtxt, String modContent) {
