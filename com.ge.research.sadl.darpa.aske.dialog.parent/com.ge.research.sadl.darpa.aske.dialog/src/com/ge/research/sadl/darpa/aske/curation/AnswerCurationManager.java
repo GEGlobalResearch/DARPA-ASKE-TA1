@@ -3315,6 +3315,7 @@ public class AnswerCurationManager {
 	private String processExtractRequest(org.eclipse.emf.ecore.resource.Resource resource2, 
 			ExtractContent sc) throws MalformedURLException, IOException, ConfigurationException, AnswerExtractionException {
 		String returnStatus = "";
+		getExtractionProcessor().reset();
 		while (sc != null) {
 			String scheme = sc.getScheme();
 			String source = sc.getScheme();
