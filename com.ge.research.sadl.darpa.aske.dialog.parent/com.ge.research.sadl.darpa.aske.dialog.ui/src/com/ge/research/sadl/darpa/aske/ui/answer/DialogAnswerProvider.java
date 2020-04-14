@@ -185,6 +185,7 @@ public class DialogAnswerProvider extends BaseDialogAnswerProvider {
 		if (configManager != null) {
 			configManager.addPrivateKeyMapValueByResource(DialogConstants.DIALOG_ANSWER_PROVIDER, getResource(), null);
 			configManager.addPrivateKeyMapValueByResource(DialogConstants.ANSWER_CURATION_MANAGER, getResource(), null);
+			configManager.addPrivateKeyMapValueByResource(DialogConstants.DIALOG_ELEMENT_INFOS, getResource(), null);
 		}
 		LOGGER.debug("[DialogAnswerProvider] >>> Disposed. [" + uri + "]");
 	}
@@ -365,7 +366,7 @@ public class DialogAnswerProvider extends BaseDialogAnswerProvider {
 		Resource resource = getResource();
 		Display.getDefault().asyncExec(() -> {
 //		Display.getDefault().syncExec(() -> {
-			Object elementInfos = getConfigMgr().getPrivateKeyMapValueByResource("ElementInfo", resource);
+			Object elementInfos = getConfigMgr().getPrivateKeyMapValueByResource(DialogConstants.DIALOG_ELEMENT_INFOS, resource);
 			String docText = document.get();
 			int docLength = document.getLength();
 			int idx = 0;
@@ -484,7 +485,7 @@ public class DialogAnswerProvider extends BaseDialogAnswerProvider {
 		int loc = 0;
 		String lineSep = System.lineSeparator();
 		int lineSepLen = lineSep.length();
-		Object elementInfos = getConfigMgr().getPrivateKeyMapValueByResource("ElementInfo", resource); // resource);
+		Object elementInfos = getConfigMgr().getPrivateKeyMapValueByResource(DialogConstants.DIALOG_ELEMENT_INFOS, resource); // resource);
 		String docText = document.get();
 		int docLength = document.getLength();
 		int idx = 0;

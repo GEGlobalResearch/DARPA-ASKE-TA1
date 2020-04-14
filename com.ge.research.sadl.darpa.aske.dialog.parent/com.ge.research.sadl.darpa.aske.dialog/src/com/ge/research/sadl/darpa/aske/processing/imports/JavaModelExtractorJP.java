@@ -149,7 +149,7 @@ public class JavaModelExtractorJP implements IModelFromCodeExtractor {
 	private String codeModelPrefix; // the prefix of the model being created by extraction
 
 	private Individual rootContainingInstance = null;
-	private boolean includeSerialization = true;
+	private boolean includeSerialization = false;
 	private String defaultCodeModelName = null;
 	private String defaultCodeModelPrefix = null;
 	private Map<Range, MethodCallMapping> postProcessingList = new HashMap<Range, MethodCallMapping>(); // key is the MethodCallExpr
@@ -444,6 +444,9 @@ public class JavaModelExtractorJP implements IModelFromCodeExtractor {
 			if (meth instanceof MethodDeclaration && ((MethodDeclaration) meth).getNameAsString().equals(node.getNameAsString())) {
 				return methodsFound.get(meth);
 			}
+			else if (meth instanceof ConstructorDeclaration && ((ConstructorDeclaration)meth).getNameAsString().equals(node.getNameAsString())) {
+				return methodsFound.get(meth);
+			}
 		}
 		// external reference; create instance.
 		String methName = node.getNameAsString();
@@ -680,6 +683,51 @@ public class JavaModelExtractorJP implements IModelFromCodeExtractor {
 				processBlockChild(var, containingInst, USAGE.Defined);
 			});
 		}
+		else if (childNode instanceof ConstructorDeclaration) {
+			ConstructorDeclaration m = (ConstructorDeclaration)childNode;
+			String rt = m.getNameAsString();
+			if (rt == null || !ignoreClass(rt, containingInst, false)) {
+				Comment cmnt = getComment(m);
+				Individual methInst = getOrCreateConstructor(m, containingInst);
+				methodsFound.put(m, methInst);
+				if (containingInst != null) {
+					getCurrentCodeModel().add(methInst, getContainedInProperty(), containingInst);
+				}
+				// Note that this local scope overrides any variable of the same name in a
+				//	more global scope. Therefore do not look for an existing variable
+				NodeList<Parameter> args = m.getParameters();
+				List<Individual> argList = args.size() > 0 ? new ArrayList<Individual>() : null;
+				for (int j = 0; j < args.size(); j++) {
+					Parameter param = args.get(j);
+					String nm = param.getNameAsString();
+					try {
+						Individual argCV = getOrCreateCodeVariable(param, methInst, getMethodVariableClass());
+						argList.add(argCV);
+					} catch (AnswerExtractionException e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					}
+				}
+				if (argList != null) {
+					try {
+						Individual typedList = addMembersToList(getCurrentCodeModel(), null, getCodeVariableListClass(), getCodeVariableClass(), argList.iterator());
+						methInst.addProperty(getArgumentsProperty(), typedList);
+					} catch (JenaProcessorException e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					} catch (TranslationException e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					}
+				}
+				addRange(methInst, m);
+				Individual prior = setMethodWithBodyInProcess(methInst);
+				processBlock(m, methInst);	// order matters--do this after parameters and before return
+				setMethodWithBodyInProcess(prior);
+				logger.debug(methInst.getURI() + " is a constructor");
+				addSerialization(methInst, ((ConstructorDeclaration) childNode).toString());
+			}
+		}
 		else if (childNode instanceof MethodDeclaration) {
 			MethodDeclaration m = (MethodDeclaration) childNode;
 			String rt = m.getTypeAsString();
@@ -851,6 +899,11 @@ public class JavaModelExtractorJP implements IModelFromCodeExtractor {
 			String nm = ((NameExpr)childNode).getNameAsString();
 			findCodeVariableAndAddReference(childNode, nm, containingInst, knownUsage, true, null, false);
 		}
+		else if (childNode instanceof FieldAccessExpr) {
+			FieldAccessExpr fae = (FieldAccessExpr)childNode;
+			String nm = fae.getNameAsString();
+			findCodeVariableAndAddReference(childNode, nm, containingInst, knownUsage, true, null, false);
+		}
 		else if (childNode instanceof ArrayAccessExpr) {
 			Expression nmexpr = ((ArrayAccessExpr)childNode).getName();
 			if (nmexpr instanceof NameExpr) {
@@ -927,7 +980,10 @@ public class JavaModelExtractorJP implements IModelFromCodeExtractor {
 			}
 			else if (scope instanceof NameExpr) {
 				RDFNode tvtype = findDefinedVariableType(((NameExpr)scope).getNameAsString(), containingInst);
-				if (ignoreType(tvtype, containingInst)) {
+				if (tvtype != null && ignoreType(tvtype, containingInst)) {
+					return true;
+				}
+				else if (ignoreClass(((NameExpr)scope).getNameAsString(), containingInst, false)){
 					return true;
 				}
 			}
@@ -1214,6 +1270,9 @@ public class JavaModelExtractorJP implements IModelFromCodeExtractor {
 					if (parent.get() instanceof MethodDeclaration) {
 						return getMethodVariableClass();
 					}
+					else if (parent.get() instanceof ConstructorDeclaration) {
+						return getMethodVariableClass();
+					}
 					else if (parent.get() instanceof ClassOrInterfaceDeclaration) {
 						return getClassFieldClass();
 					}
@@ -1286,13 +1345,32 @@ public class JavaModelExtractorJP implements IModelFromCodeExtractor {
 		return refInst;
 	}
 
+	private Individual getOrCreateConstructor(ConstructorDeclaration m, Individual containingInst) {
+		Individual methInst = null;
+    	String nm = m.getNameAsString();
+		String nnm = constructNestedElementUri(m, nm);
+    	methInst = getCurrentCodeModel().getIndividual(getCodeModelNamespace() + nnm);
+// TODO this needs to generate a unique name for this constructor as there may be other constructors with the same name but different signatures.    	
+    	if (methInst == null) {
+    		methInst = getCurrentCodeModel().createIndividual(getCodeModelNamespace() + nnm, getCodeBlockConstructorClass());
+    	}
+    	else {
+    		System.out.println("Is this a different constructor with a different signature?");
+    	}
+		return methInst;
+	}
+
 	private Individual getOrCreateMethod(MethodDeclaration m, Individual containingInst) {
 		Individual methInst = null;
     	String nm = m.getNameAsString();
 		String nnm = constructNestedElementUri(m, nm);
     	methInst = getCurrentCodeModel().getIndividual(getCodeModelNamespace() + nnm);
+    	// TODO this needs to generate a unique name for this constructor as there may be other constructors with the same name but different signatures.    	
     	if (methInst == null) {
     		methInst = getCurrentCodeModel().createIndividual(getCodeModelNamespace() + nnm, getCodeBlockMethodClass());
+    	}
+    	else {
+    		System.out.println("Is this a different method with a different signature?");
     	}
 		return methInst;
 	}
@@ -1422,6 +1500,9 @@ public class JavaModelExtractorJP implements IModelFromCodeExtractor {
 		while (parent.isPresent()) {
 			if (parent.get() instanceof MethodDeclaration) {
 				sb.insert(0,((MethodDeclaration)parent.get()).getNameAsString() + ".");
+			}
+			else if (parent.get() instanceof ConstructorDeclaration) {
+				sb.insert(0,((ConstructorDeclaration)parent.get()).getNameAsString() + ".");
 			}
 			else if (parent.get() instanceof ClassOrInterfaceDeclaration) {
 				sb.insert(0, ((ClassOrInterfaceDeclaration)parent.get()).getNameAsString() + ".");
@@ -1588,6 +1669,10 @@ public class JavaModelExtractorJP implements IModelFromCodeExtractor {
 
 	private com.hp.hpl.jena.rdf.model.Resource getCodeBlockMethodClass() {
 		return getCurrentCodeModel().getOntClass(getCodeMetaModelUri() + "#Method");
+	}
+
+	private com.hp.hpl.jena.rdf.model.Resource getCodeBlockConstructorClass() {
+		return getCurrentCodeModel().getOntClass(getCodeMetaModelUri() + "#Constructor");
 	}
 
 	private OntClass getClassesToIgnoreClass() {
