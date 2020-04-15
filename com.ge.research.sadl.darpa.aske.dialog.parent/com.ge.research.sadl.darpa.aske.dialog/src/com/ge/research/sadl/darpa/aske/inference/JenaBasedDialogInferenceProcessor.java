@@ -143,7 +143,7 @@ public class JenaBasedDialogInferenceProcessor extends JenaBasedSadlInferencePro
 //	public static final String qhModelName = "http://aske.ge.com/MetaData";
 //	public static final String qhOwlFileName = "MetaData.owl";
 
-	public static final boolean debugMode = true;
+	public static final boolean debugMode = false;
 	
 	
     private static final String KCHAIN_SERVICE_URL_FRAGMENT = "/darpa/aske/kchain/";
@@ -1631,7 +1631,7 @@ private ResultSet[] processWhatWhenQuery(Resource resource, String queryModelFil
 						System.out.print("Sensitivity analysis: ");
 						startTime = System.currentTimeMillis();
 						sensitivityResult = execKChainSensitivity(sensitivityJson);
-						System.out.println(sensitivityResult);
+						//System.out.println(sensitivityResult);
 					    sensitivityURL = getVisualizationURL(sensitivityResult);
 						endTime = System.currentTimeMillis();
 						System.out.println((endTime - startTime)/1000.0 + " secs");
