@@ -38,7 +38,6 @@ package com.ge.research.sadl.darpa.aske.processing.imports;
 
 import java.io.File;
 import java.io.IOException;
-import java.io.Writer;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -68,7 +67,6 @@ import com.hp.hpl.jena.ontology.OntModelSpec;
 import com.hp.hpl.jena.ontology.Ontology;
 import com.hp.hpl.jena.rdf.model.Model;
 import com.hp.hpl.jena.rdf.model.ModelFactory;
-import com.hp.hpl.jena.util.iterator.ExtendedIterator;
 
 public class TextProcessor {
 	private static final Logger logger = Logger.getLogger (TextProcessor.class) ;
@@ -79,18 +77,12 @@ public class TextProcessor {
 	
 	private AnswerCurationManager answerCurationManager;
 
-	private String textModelFolder;
 	private IConfigurationManagerForIDE textModelConfigMgr;
 
 	private OntModel textModel;
 	private Map<String, OntModel> textModels;
 	private String textModelName;	// the name of the model being created by extraction
 	private String textmodelPrefix;	// the prefix of the model being created by extraction
-
-	private OntModel registeredDomainModel = null;	// domain model registered with text to triples service
-
-//	private String defaultTextModelName = null;
-//	private String defaultTextModelPrefix = null;
 
 	public class MergedEquationVariableContext {
 		private String conceptUri;
@@ -722,12 +714,49 @@ public class TextProcessor {
 	    return false;
 	}
 
-	private OntModel getRegisteredDomainModel() {
-		return registeredDomainModel;
+	private void setRegisteredDomainModel(OntModel registeredDomainModel) {
 	}
 
-	private void setRegisteredDomainModel(OntModel registeredDomainModel) {
-		this.registeredDomainModel = registeredDomainModel;
+	public OntModel getOntModelFromText(String inputIdentifier, String content, String locality, String modelName, String modelPrefix, boolean notifyUser) throws IOException, ConfigurationException, AnswerExtractionException {
+		int[] results = processText(inputIdentifier, content,locality, modelName, modelPrefix, notifyUser);
+		if (results == null) {
+			throw new AnswerExtractionException("Text processing service returned no information");
+		}
+		int numConcepts = results[0];
+		int numEquations = results[1];
+		if (notifyUser) {
+			String msg = "Found " + numConcepts + " concepts and " + numEquations + " equations.";
+			getCurationManager().notifyUser(getCurationManager().getOwlModelsFolder(), msg, true);
+		}
+		OntModel theModel = null;
+		if (numEquations > 0) {
+			String[] saveGraphResults = retrieveGraph(locality);
+			if (saveGraphResults != null) {
+				locality = saveGraphResults[0];
+				String format = saveGraphResults[1];
+				String serializedGraph = saveGraphResults[2];
+				if (serializedGraph != null) {
+//					System.out.println(serializedGraph);	// debug only
+					try {
+						OntModel newModel = getTextModelConfigMgr().getOntModel(modelName, serializedGraph, Scope.INCLUDEIMPORTS, format);
+//								logger.debug("The new model:");
+//								newModel.write(System.err, "N-TRIPLES");
+						theModel = getCurationManager().getExtractionProcessor().getTextModel();
+//								logger.debug("The existing model:");
+//								theModel.write(System.err, "N-TRIPLES");
+						theModel.add(newModel);
+						getCurationManager().addToFileLocalityMap(inputIdentifier, modelName);
+						getCurationManager().addExtractionModel(modelName, theModel);
+					}
+					catch (Exception e) {
+						logger.debug("Failed to read triples into OntModel: " + e.getMessage());
+						logger.debug(serializedGraph);
+					}
+					
+				}
+			}
+		}
+		return theModel;
 	}
 
 }
