@@ -36,12 +36,15 @@
  ***********************************************************************/
 package com.ge.research.sadl.darpa.aske.processing.imports;
 
+import static com.github.javaparser.utils.PositionUtils.sortByBeginPosition;
+
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -67,7 +70,6 @@ import com.ge.research.sadl.reasoner.ReasonerNotFoundException;
 import com.ge.research.sadl.reasoner.ResultSet;
 import com.ge.research.sadl.reasoner.TranslationException;
 import com.ge.research.sadl.reasoner.utils.SadlUtils;
-import com.ge.research.sadl.utils.ResourceManager;
 import com.github.javaparser.JavaParser;
 import com.github.javaparser.Range;
 import com.github.javaparser.ast.CompilationUnit;
@@ -84,6 +86,7 @@ import com.github.javaparser.ast.body.Parameter;
 import com.github.javaparser.ast.body.VariableDeclarator;
 import com.github.javaparser.ast.comments.BlockComment;
 import com.github.javaparser.ast.comments.Comment;
+import com.github.javaparser.ast.comments.JavadocComment;
 import com.github.javaparser.ast.expr.ArrayAccessExpr;
 import com.github.javaparser.ast.expr.AssignExpr;
 import com.github.javaparser.ast.expr.BinaryExpr;
@@ -150,18 +153,18 @@ public class JavaModelExtractorJP implements IModelFromCodeExtractor {
 
 	private Individual rootContainingInstance = null;
 	private boolean includeSerialization = false;
-	private String defaultCodeModelName = null;
-	private String defaultCodeModelPrefix = null;
 	private Map<Range, MethodCallMapping> postProcessingList = new HashMap<Range, MethodCallMapping>(); // key is the MethodCallExpr
 	Map<String, String> classNameMap = new HashMap<String, String>();
 																						// value is the calling method instance
 	private Map<Node,Individual> methodsFound = new HashMap<Node, Individual>();
 	private Individual methodWithBodyInProcess = null;
-	private boolean sendCommentsToTextService = false;	// change to true to send comments to text-to-triples service
 	private Map<Individual, LiteralExpr> potentialConstants = new HashMap<Individual, LiteralExpr>();
 	private List<Individual> discountedPotentialConstants = new ArrayList<Individual>();
 	private List<String> classesToIgnore = new ArrayList<String>();
 	private List<String> primitiveTypesList = null;
+	private HashMap<String, String> methodJavadoc = new HashMap<String, String>();
+	private StringBuilder aggregatedComments = new StringBuilder();
+	private List<Node> nodesWithCommentInvestigated = new ArrayList<Node>();
 	
 	public class MethodCallMapping {
 		private Node methodCallNode;
@@ -209,6 +212,7 @@ public class JavaModelExtractorJP implements IModelFromCodeExtractor {
 		if (getCodeModelPrefix() == null) {
 			setCodeModelPrefix(modelPrefix);	// don't override a preset model name		
 		}
+		methodJavadoc.clear();
 	}
 
 	public boolean process(String inputIdentifier, String content, String modelName, String modelPrefix) throws ConfigurationException, IOException {
@@ -356,6 +360,15 @@ public class JavaModelExtractorJP implements IModelFromCodeExtractor {
 			}
 			else {
 				logger.debug("Unexprected node type in postProcessingList: " + node.getClass().getCanonicalName());
+			}
+		}
+		Iterator<Node> mitr = methodsFound.keySet().iterator();
+		while (mitr.hasNext()) {
+			Node mnode = mitr.next();
+			String jdComment = getOrphanJavadocCommentsBeforeThisChildNode(mnode);
+			if (jdComment != null) {
+				Individual minst = methodsFound.get(mnode);
+				getMethodJavadoc().put(minst.getURI(), jdComment);
 			}
 		}
 	}
@@ -652,12 +665,12 @@ public class JavaModelExtractorJP implements IModelFromCodeExtractor {
 	}
 
 	private void processBlock(Node blkNode, Individual containingInst) {
+		investigateComments(blkNode, containingInst);
 		List<Node> childNodes = blkNode.getChildNodes();
 		for (int i = 0; i < childNodes.size(); i++) {
 			Node childNode = childNodes.get(i);
 			processBlockChild(childNode, containingInst, null);
 		}
-		investigateComments(blkNode, containingInst);
 	}
 
 	private void processBlockChild(Node childNode, Individual containingInst, USAGE knownUsage) {
@@ -1155,21 +1168,79 @@ public class JavaModelExtractorJP implements IModelFromCodeExtractor {
 	}
 
 	private void investigateComments(Node childNode, Individual subject) {
-		Comment cmt = getComment(childNode);
-		investigateComment(childNode, subject, cmt);
-		List<Comment> ocmts = childNode.getOrphanComments();
-		for (int i = 0; ocmts != null && i < ocmts.size(); i++) {
-			cmt = ocmts.get(i);
-			Optional<Range> rng = cmt.getRange();
-			if (rng.isPresent()) {
-				logger.debug("Found orphaned comment at line " + rng.get().getLineCount() + "(" + rng.get().begin.toString() + " to " + rng.get().end.toString() + ")");
+		if (!areNodeCommentsInvestigated(childNode)) {
+			Comment cmt = getComment(childNode);
+			investigateComment(childNode, subject, cmt);
+			List<Comment> ocmts = childNode.getOrphanComments();
+			for (int i = 0; ocmts != null && i < ocmts.size(); i++) {
+				cmt = ocmts.get(i);
+				Optional<Range> rng = cmt.getRange();
+				if (rng.isPresent()) {
+					logger.debug("Found orphaned comment at line " + rng.get().getLineCount() + "(" + rng.get().begin.toString() + " to " + rng.get().end.toString() + ")");
+				}
+				else {
+					logger.debug("Found orphaned comment but range not known");
+				}
+				logger.debug("   " + cmt.getContent());
+				investigateComment(childNode, subject, cmt);
 			}
-			else {
-				logger.debug("Found orphaned comment but range not known");
-			}
-			logger.debug("   " + cmt.getContent());
+			nodeCommentsAreInvestigated(childNode);
 		}
 	}
+	
+	private void nodeCommentsAreInvestigated(Node childNode) {
+		if (!nodesWithCommentInvestigated.contains(childNode)) {
+			nodesWithCommentInvestigated.add(childNode);
+		}
+	}
+
+	private boolean areNodeCommentsInvestigated(Node childNode) {
+		return nodesWithCommentInvestigated.contains(childNode);
+	}
+
+	/**
+	 * Method to get orphaned Javadoc comments before this node.
+	 * Fashioned after PrettyPrintVisitor.printOrphanCommentsBeforeThisChildNode
+	 * @param node
+	 * @return--Javadoc comment before else null
+	 */
+    private String getOrphanJavadocCommentsBeforeThisChildNode(Node node) {
+        if (node instanceof Comment) return null;
+        Node parent = node.getParentNode().orElse(null);
+        if (parent == null) return null;
+        List<Node> everything = new LinkedList<>(parent.getChildNodes());
+        sortByBeginPosition(everything);
+        int positionOfTheChild = -1;
+        for (int i = 0; i < everything.size(); i++) {
+            if (everything.get(i) == node) positionOfTheChild = i;
+        }
+        if (positionOfTheChild == -1) {
+            throw new AssertionError("I am not a child of my parent.");
+        }
+        int positionOfPreviousChild = -1;
+        for (int i = positionOfTheChild - 1; i >= 0 && positionOfPreviousChild == -1; i--) {
+            if (!(everything.get(i) instanceof Comment)) positionOfPreviousChild = i;
+        }
+        if (positionOfPreviousChild >= 0) {
+	        StringBuilder sb = new StringBuilder();
+	        for (int i = positionOfPreviousChild + 1; i < positionOfTheChild; i++) {
+	            Node nodeToPrint = everything.get(i);
+	            if (!(nodeToPrint instanceof JavadocComment)) {
+	                System.out.println(
+	                        "Found comment: " + nodeToPrint.getClass() + ". Position of previous child: "
+	                                + positionOfPreviousChild + ", position of child " + positionOfTheChild);
+	            }
+	            else {
+	            	sb.append(nodeToPrint.toString());
+	            }
+	        }
+	        if (sb.length() > 0) {
+	        	return sb.toString();
+	        }
+        }
+        return null;
+    }
+
 
 	private void investigateComment(Node childNode, Individual subject, Comment cmt) {
 		if (cmt != null) {
@@ -1178,28 +1249,6 @@ public class JavaModelExtractorJP implements IModelFromCodeExtractor {
 			if (subject == null) {
 				subject = rootContainingInstance;
 			}
-			if (sendCommentsToTextService ) {
-				String locality = getCodeModelNamespace();
-				String inputIdentifier = "CodeComments";
-				int[] tpresult = null;
-				try {
-					tpresult = getCurationMgr().getTextProcessor().processText(inputIdentifier, cmt.getContent(), locality, null, getCodeModelPrefix(), true);
-				} catch (ConfigurationException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				} catch (IOException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				}
-				logger.debug("Text: " + cmt.getContent());
-				if (tpresult != null) {
-					logger.debug("nc=" + tpresult[0] + ", neq=" + tpresult[1]);
-				}
-				else {
-					logger.debug("Comment not processed successfully");
-				}
-			}
-
 			if (subject != null) {
 				subject.addProperty(getCommentProperty(), cmtInst);
 				cmtInst.addProperty(getCommentContentProperty(), getCurrentCodeModel().createTypedLiteral(cmt.getContent()));
@@ -1215,7 +1264,17 @@ public class JavaModelExtractorJP implements IModelFromCodeExtractor {
 			else {
 				logger.debug("Found comment but range not known");
 			}
+			this.aggregatedComments.append(cmt.toString());
 		}
+	}
+	
+	/**
+	 * Method to return the aggregated comments from the code extracted from
+	 * @return
+	 */
+	@Override
+	public String getAggregatedComments() {
+		return aggregatedComments.toString();
 	}
 
 	private Property getInputProperty() {
@@ -2135,4 +2194,87 @@ class Mach(object):
 		return null;
 	}
 
+	private HashMap<String, String> getMethodJavadoc() {
+		return methodJavadoc;
+	}
+
+	/**
+	 * Method to get the Javadoc comment, if any, for the method identified by URI
+	 * @param methodUri
+	 * @return -- Javadoc comment for method else null if none exists
+	 */
+	public String getMethodJavadoc(String methodUri) {
+		return methodJavadoc.get(methodUri);
+	}
+	
+	/**
+	 * Method to get the Javadoc comment associated with a specfic parameter, if it exists
+	 * @param methodUri
+	 * @param argName
+	 * @return -- Javadoc comment for the argument else null if none is found
+	 */
+	public String getParameterJavadoc(String methodUri, String argName) {
+		if (argName.indexOf('.') > 0) {
+			argName = argName.substring(argName.lastIndexOf('.') + 1);
+		}
+		String jd = getMethodJavadoc(methodUri);
+		if (jd != null) {
+			int paramIdx = jd.indexOf("@param");
+			while (paramIdx > -1) {
+				String rest = jd.substring(paramIdx + 6).trim();
+				int idx2 = 0;
+				char c;
+				do {
+					c = rest.charAt(idx2++);
+				} while (!Character.isWhitespace(c));
+				String an = rest.substring(0, idx2).trim();
+				if (an.equals(argName)) {
+					String cmt = rest.substring(idx2).trim();
+					int endCmt = cmt.indexOf("@");
+					if (endCmt > 0) {
+						cmt = cmt.substring(0, endCmt);
+					}
+					int end = cmt.length() - 1;
+					do {
+						c = cmt.charAt(end--);
+					} while (Character.isWhitespace(c) || c == '*' || c == '/' || c == '.');
+					if (end < cmt.length() - 1) {
+						cmt = cmt.substring(0, end + 2);
+					}
+					return cmt;
+				}	
+				paramIdx = jd.indexOf("@param", paramIdx + 6);
+			}
+		}
+		return null;
+	}
+	
+	/**
+	 * Method to get the Javadoc comment associated with the method return
+	 * @param methodUri
+	 * @return -- Javadoc comment for the method return else null if none found
+	 */
+	public String getReturnJavadoc(String methodUri) {
+		String jd = getMethodJavadoc(methodUri);
+		if (jd != null) {
+			int paramIdx = jd.indexOf("@return");
+			if (paramIdx > -1) {
+				String cmt = jd.substring(paramIdx + 7).trim();
+				int endCmt = cmt.indexOf("@");
+				if (endCmt > 0) {
+					cmt = cmt.substring(0, endCmt);
+				}
+				int end = cmt.length() - 1;
+				char c;
+				do {
+					c = cmt.charAt(end--);
+				} while (Character.isWhitespace(c) || c == '*' || c == '/' || c == '.');
+				if (end < cmt.length() - 2) {
+					cmt = cmt.substring(0, end + 2);
+				}
+				return cmt;
+			}
+		}
+		return null;
+	}
 }

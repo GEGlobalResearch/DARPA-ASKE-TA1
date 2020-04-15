@@ -103,4 +103,10 @@ public interface IModelFromCodeExtractor {
 
 	String getClassUriFromSimpleName(String name);
 
+	/**
+	 * Method to return the aggregated comments from the code extracted from
+	 * @return
+	 */
+	String getAggregatedComments();
+
 }
