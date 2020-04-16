@@ -152,7 +152,8 @@ public class JavaModelExtractorJP implements IModelFromCodeExtractor {
 	private String codeModelPrefix; // the prefix of the model being created by extraction
 
 	private Individual rootContainingInstance = null;
-	private boolean includeSerialization = false;
+	private boolean includeSerialization = false;	// if this is false, the scripts will not be included 
+													// in the extraction code model but will pulled from the code by location
 	private Map<Range, MethodCallMapping> postProcessingList = new HashMap<Range, MethodCallMapping>(); // key is the MethodCallExpr
 	Map<String, String> classNameMap = new HashMap<String, String>();
 																						// value is the calling method instance

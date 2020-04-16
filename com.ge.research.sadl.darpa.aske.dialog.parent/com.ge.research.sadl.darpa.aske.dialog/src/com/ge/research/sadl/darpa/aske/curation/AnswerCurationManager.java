@@ -85,6 +85,7 @@ import com.ge.research.sadl.darpa.aske.processing.AnswerContent;
 import com.ge.research.sadl.darpa.aske.processing.AnswerPendingContent;
 import com.ge.research.sadl.darpa.aske.processing.CompareContent;
 import com.ge.research.sadl.darpa.aske.processing.ConversationElement;
+import com.ge.research.sadl.darpa.aske.processing.ConversationException;
 import com.ge.research.sadl.darpa.aske.processing.DialogConstants;
 import com.ge.research.sadl.darpa.aske.processing.DialogContent;
 import com.ge.research.sadl.darpa.aske.processing.EquationStatementContent;
@@ -213,6 +214,7 @@ public class AnswerCurationManager {
 	private String userName;
 	private DialogContent conversation = null; 
 	private DialogContent lastConversation = null;
+	private Map<String, Boolean> equationCompleteness = null;
 
 	private Map<String, String[]> targetModelMap = null;
 	private OwlToSadl owl2sadl = null;
@@ -3469,7 +3471,13 @@ public class AnswerCurationManager {
 						String aggregatedComments = getExtractionProcessor().getCodeExtractor().getAggregatedComments();
 						String inputIdentifier = "from comments";
 						String modelPrefix = "cmts";
-						getTextProcessor().processText(inputIdentifier, aggregatedComments, getLocalityURI(), getDomainModelName(), modelPrefix, false);
+//						getTextProcessor().processText(inputIdentifier, aggregatedComments, getLocalityURI(), getDomainModelName(), modelPrefix, false);
+						OntModel commentModel = getTextProcessor().getOntModelFromText(inputIdentifier, aggregatedComments, getLocalityURI(), getDomainModelName(), modelPrefix, false);
+						if (commentModel != null) {
+							// find concepts that need to be added to the ontology. 
+							// Insert them before the extraction and abort the extraction, leaving it to be handled with the new domain ontology
+							commentModel.write(System.out, "N3");
+						}
 						boolean useAllCodeExtractedMethods = true;
 						SaveAsSadl saveAsSadl = SaveAsSadl.DoNotSaveAsSadl;
 						
@@ -6098,56 +6106,66 @@ public class AnswerCurationManager {
 
 	private boolean tryToAnswerAgain(ExpectsAnswerContent sc, String question, String ans) {
 		if (ans.startsWith("No model found to compute")) {
-			// has a new model been added or has extraction occurred between this question and the next since the last 
-			//	time we considered this?
+			// Has a new model been added by the user or 
+			//  has extraction occurred between this question and the next since the last time we considered this
+			//	or has an equation been edited so that it is now complete but was not before?
 			List<ConversationElement> celements = getConversationElements();
 			int idx = findStatementContentIndexInConversation(celements, sc);
 			if (idx >= 0) {
 				for (int i = idx + 1; i < celements.size(); i++) {
 					StatementContent someSc = celements.get(i).getStatement();
 					if (someSc instanceof WhatIsContent) {
-						// this is the next question
-						return false;
-					}
-					if (someSc instanceof  ExtractContent) {
-						if (((ExtractContent)someSc).getAnswer() != null) {
+						// this is the next question from the user 
+						if (((WhatIsContent)someSc).getAgent().equals(Agent.USER)) {
 							return false;
 						}
-						// must be followed by the equation 
-						//	(must already have been processed on previouis call to processConversation)
-						if (i < celements.size() - 1) {
-							StatementContent nextSc = celements.get(i + 1).getStatement();
-							if (nextSc instanceof EquationStatementContent) {
-								if (((AddEquationContent)someSc).getEquationName().equals(((EquationStatementContent)nextSc).getEquationName())) {
-									if (((EquationStatementContent)nextSc).getQuestionsForUser() != null && ((EquationStatementContent)nextSc).getQuestionsForUser().size() > 0) {
-										return false;
-									}
-									if (!isFailureCorrectingAction(someSc)) {
-										addFailureCorrectingAction(someSc);
-										return true;
-									}
-								}
-							}
+					}
+					if (someSc instanceof EquationStatementContent) {
+						if (isNewlyCompletedEquation((EquationStatementContent)someSc)) {
+							return true;
 						}
 					}
-					else if (someSc instanceof AddEquationContent) {
-						// must be followed by the equation 
-						//	(must already have been processed on previouis call to processConversation)
-						if (i < celements.size() - 1) {
-							StatementContent nextSc = celements.get(i + 1).getStatement();
-							if (nextSc instanceof EquationStatementContent) {
-								if (((AddEquationContent)someSc).getEquationName().equals(((EquationStatementContent)nextSc).getEquationName())) {
-									if (((EquationStatementContent)nextSc).getQuestionsForUser() != null && ((EquationStatementContent)nextSc).getQuestionsForUser().size() > 0) {
-										return false;
-									}
-									if (!isFailureCorrectingAction(someSc)) {
-										addFailureCorrectingAction(someSc);
-										return true;
-									}
-								}
-							}
-						}
-					}
+//					if (someSc instanceof  ExtractContent) {
+//						if (((ExtractContent)someSc).getAnswer() != null) {
+//							return false;
+//						}
+//						// must be followed by the equation 
+//						//	(must already have been processed on previouis call to processConversation)
+//						if (i < celements.size() - 1) {
+//							for (int j = i + 1; j < celements.size(); j++) {
+//								StatementContent nextSc = celements.get(j).getStatement();
+//								if (nextSc instanceof EquationStatementContent) {
+//									if (j < celements.size()) {	// placeholder for more conditionals...
+//										if (((EquationStatementContent)nextSc).getQuestionsForUser() != null && ((EquationStatementContent)nextSc).getQuestionsForUser().size() > 0) {
+//											return false;
+//										}
+//										if (!isFailureCorrectingAction(someSc)) {
+//											addFailureCorrectingAction(someSc);
+//											return true;
+//										}
+//									}
+//								}
+//							}
+//						}
+//					}
+//					else if (someSc instanceof AddEquationContent) {
+//						// must be followed by the equation 
+//						//	(must already have been processed on previouis call to processConversation)
+//						if (i < celements.size() - 1) {
+//							StatementContent nextSc = celements.get(i + 1).getStatement();
+//							if (nextSc instanceof EquationStatementContent) {
+//								if (((AddEquationContent)someSc).getEquationName().equals(((EquationStatementContent)nextSc).getEquationName())) {
+//									if (((EquationStatementContent)nextSc).getQuestionsForUser() != null && ((EquationStatementContent)nextSc).getQuestionsForUser().size() > 0) {
+//										return false;
+//									}
+//									if (!isFailureCorrectingAction(someSc)) {
+//										addFailureCorrectingAction(someSc);
+//										return true;
+//									}
+//								}
+//							}
+//						}
+//					}
 				}
 			}
 		}
@@ -6163,7 +6181,8 @@ public class AnswerCurationManager {
 
 	private boolean isFailureCorrectingAction(StatementContent someSc) {
 		for (StatementContent sc : failureCorrectingActions) {
-			if (sc.toString().equals(someSc.toString())) {
+			String scstr = sc.toString();
+			if (scstr != null && someSc != null && scstr.equals(someSc.toString())) {
 				return true;
 			}
 		}
@@ -6298,6 +6317,7 @@ public class AnswerCurationManager {
 	}
 		
 	private void processMissingEquationContent(EquationStatementContent eqsc, List<ConversationElement> dialogStmts) {
+		String eqUri = getDomainModelName() + "#" + eqsc.getEquationName();
 		List<StatementContent> questions = eqsc.getQuestionsForUser();
 		if (questions != null) {
 			for (StatementContent sc : questions) {
@@ -6324,7 +6344,12 @@ public class AnswerCurationManager {
 						}
 					}
 				}
+				recordEquationCompleteness(eqUri, false);
 			}
+		}
+		else {
+			// this equation is complete
+			recordEquationCompleteness(eqUri, true);
 		}
 	}
 
@@ -6836,4 +6861,34 @@ public class AnswerCurationManager {
 	private void setLocalityURI(String localityURI) {
 		this.localityURI = localityURI;
 	}
+	
+	private void recordEquationCompleteness(String eqUri, boolean isComplete) {
+		if (equationCompleteness == null) {
+			equationCompleteness = new HashMap<String, Boolean>();
+		}
+		equationCompleteness.put(eqUri, new Boolean(isComplete));
+	}
+	
+	private boolean getEquationCompleteness(String eqUri) throws ConversationException {
+		if (equationCompleteness == null || !equationCompleteness.containsKey(eqUri)) {
+			throw new ConversationException("Equation is not registered");
+		}
+		return equationCompleteness.get(eqUri);
+	}
+
+	private boolean isNewlyCompletedEquation(EquationStatementContent eqsc) {
+		if (eqsc.getQuestionsForUser() == null) {
+			String eqUri = getDomainModelName() + "#" + eqsc.getEquationName();
+			try {
+				if (!getEquationCompleteness(eqUri)) {
+					return true;
+				}
+			} catch (ConversationException e) {
+				// this is OK, just return true as we have a complete equation that wasn't here before
+				return true;
+			}
+		}
+		return false;
+	}
+
 }

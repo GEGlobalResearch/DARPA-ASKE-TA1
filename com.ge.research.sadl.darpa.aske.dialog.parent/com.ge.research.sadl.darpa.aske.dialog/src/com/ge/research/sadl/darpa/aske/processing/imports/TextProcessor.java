@@ -729,7 +729,7 @@ public class TextProcessor {
 			getCurationManager().notifyUser(getCurationManager().getOwlModelsFolder(), msg, true);
 		}
 		OntModel theModel = null;
-		if (numEquations > 0) {
+		if (numEquations > 0 || numConcepts > 0) {
 			String[] saveGraphResults = retrieveGraph(locality);
 			if (saveGraphResults != null) {
 				locality = saveGraphResults[0];

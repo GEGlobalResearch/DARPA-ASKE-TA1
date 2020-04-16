@@ -683,8 +683,16 @@ public class JenaBasedDialogModelProcessor extends JenaBasedSadlModelProcessor {
 		Iterator<SadlParameterDeclaration> spitr = element.getParameter().iterator();
 		while (spitr.hasNext()) {
 			SadlParameterDeclaration spd = spitr.next();
+			boolean isValid = true;
 			if (spd.getAugtype() == null) {
+				isValid = false;
 				addWarning("Missing augmented type information", spd.getName());
+			}
+			else if (!isAugmentedTypeValid(spd.getAugtype())) {
+				isValid = false;
+				addWarning("Augmented type information is not valid", spd.getName());
+			}
+			if (!isValid) {
 				String argName = getDeclarationExtensions().getConcreteName(spd.getName());
 				String prompt = "What type is " + getAnswerCurationManager(getCurrentResource()).checkForKeyword(argName) + "?";
 				if (missingInformation == null) {
@@ -696,8 +704,16 @@ public class JenaBasedDialogModelProcessor extends JenaBasedSadlModelProcessor {
 		Iterator<SadlReturnDeclaration> srtitr = element.getReturnType().iterator();
 		while (srtitr.hasNext()) {
 			SadlReturnDeclaration srd = srtitr.next();
+			boolean isValid = true;
 			if (srd.getAugtype() == null) {
+				isValid = false;
 				addWarning("Missing augmented return type information", srd.getType());
+			}
+			else if (!isAugmentedTypeValid(srd.getAugtype())) {
+				isValid = false;
+				addWarning("Augmented return type information is not valid", srd);
+			}
+			if (!isValid) {
 				String prompt = "What type does " + eq.getName() + " return?";
 				if (missingInformation == null) {
 					missingInformation = new ArrayList<StatementContent>();
@@ -706,6 +722,20 @@ public class JenaBasedDialogModelProcessor extends JenaBasedSadlModelProcessor {
 			}
 		}
 		return missingInformation;
+	}
+
+	private boolean isAugmentedTypeValid(Expression augtype) {
+		try {
+			Object atobj = processExpression(augtype);
+			if (atobj instanceof NamedNode && ((NamedNode)atobj).getNodeType().equals(NodeType.VariableNode)) {
+				return false;
+			}
+			// TODO what other conditions are invalid?
+		} catch (Exception e) {
+			addError(e.getMessage(), augtype);
+			return false;
+		} 
+		return true;
 	}
 
 	private List<StatementContent> validateEquationAugmentedTypes(EquationStatement element, Equation eq) {
