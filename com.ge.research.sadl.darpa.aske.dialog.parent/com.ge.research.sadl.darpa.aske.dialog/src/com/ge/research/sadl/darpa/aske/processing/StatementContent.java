@@ -79,7 +79,11 @@ public abstract class StatementContent {
 	}
 	
 	public String toString() {
-		return getText().trim();
+		String txt = getText();
+		if (txt != null) {
+			txt = txt.trim();
+		}
+		return txt;
 	}
 	
 	public String removeLeadingComments(String text) {
