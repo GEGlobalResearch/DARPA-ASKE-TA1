@@ -6125,47 +6125,6 @@ public class AnswerCurationManager {
 							return true;
 						}
 					}
-//					if (someSc instanceof  ExtractContent) {
-//						if (((ExtractContent)someSc).getAnswer() != null) {
-//							return false;
-//						}
-//						// must be followed by the equation 
-//						//	(must already have been processed on previouis call to processConversation)
-//						if (i < celements.size() - 1) {
-//							for (int j = i + 1; j < celements.size(); j++) {
-//								StatementContent nextSc = celements.get(j).getStatement();
-//								if (nextSc instanceof EquationStatementContent) {
-//									if (j < celements.size()) {	// placeholder for more conditionals...
-//										if (((EquationStatementContent)nextSc).getQuestionsForUser() != null && ((EquationStatementContent)nextSc).getQuestionsForUser().size() > 0) {
-//											return false;
-//										}
-//										if (!isFailureCorrectingAction(someSc)) {
-//											addFailureCorrectingAction(someSc);
-//											return true;
-//										}
-//									}
-//								}
-//							}
-//						}
-//					}
-//					else if (someSc instanceof AddEquationContent) {
-//						// must be followed by the equation 
-//						//	(must already have been processed on previouis call to processConversation)
-//						if (i < celements.size() - 1) {
-//							StatementContent nextSc = celements.get(i + 1).getStatement();
-//							if (nextSc instanceof EquationStatementContent) {
-//								if (((AddEquationContent)someSc).getEquationName().equals(((EquationStatementContent)nextSc).getEquationName())) {
-//									if (((EquationStatementContent)nextSc).getQuestionsForUser() != null && ((EquationStatementContent)nextSc).getQuestionsForUser().size() > 0) {
-//										return false;
-//									}
-//									if (!isFailureCorrectingAction(someSc)) {
-//										addFailureCorrectingAction(someSc);
-//										return true;
-//									}
-//								}
-//							}
-//						}
-//					}
 				}
 			}
 		}
