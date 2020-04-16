@@ -578,11 +578,13 @@ public class DialogAnswerProvider extends BaseDialogAnswerProvider {
 		modContent = checkForAdditionalNewlines(document, modContent, loc);
 
 		ModelElementInfo newMei = new ModelElementInfo(null, modContent, loc, modContent.length(), loc+modContent.length(), true);
-		if (idx + 1 < ((List<ModelElementInfo>)elementInfos).size()) {
-			((List<ModelElementInfo>)elementInfos).add(idx + 1, newMei);
-		}
-		else {
-			((List<ModelElementInfo>)elementInfos).add(newMei);
+		if (elementInfos != null) {
+			if (idx + 1 < ((List<ModelElementInfo>)elementInfos).size()) {
+				((List<ModelElementInfo>)elementInfos).add(idx + 1, newMei);
+			}
+			else {
+				((List<ModelElementInfo>)elementInfos).add(newMei);
+			}
 		}
 		Object[] returnvals = new Object[2];
 		returnvals[0] = modContent;
