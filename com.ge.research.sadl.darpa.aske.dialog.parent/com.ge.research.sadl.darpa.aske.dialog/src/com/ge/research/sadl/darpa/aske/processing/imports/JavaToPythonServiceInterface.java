@@ -3,6 +3,10 @@ package com.ge.research.sadl.darpa.aske.processing.imports;
 import java.io.IOException;
 import java.net.ConnectException;
 import java.net.URL;
+import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
+
+import org.eclipse.emf.ecore.xml.type.internal.DataValue.URI;
 
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
@@ -24,7 +28,8 @@ public class JavaToPythonServiceInterface extends JsonServiceInterface {
 
 		JsonObject json = new JsonObject();
 		json.addProperty("className", className);
-		json.addProperty("methodCode", methodCode);
+		String encodedMethodCode = URI.encode(methodCode);
+		json.addProperty("methodCode", encodedMethodCode);
 		
 		logger.debug(json.toString());
 	

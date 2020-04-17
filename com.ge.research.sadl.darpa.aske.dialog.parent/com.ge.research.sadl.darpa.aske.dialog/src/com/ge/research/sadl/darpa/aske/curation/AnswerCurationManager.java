@@ -189,6 +189,7 @@ import com.hp.hpl.jena.vocabulary.XSD;
 
 public class AnswerCurationManager {
 	
+	private static final String SUSPENDED_EXTRACTION_PENDING_DOMAIN_MODEL_ADDITIONS = "suspended extraction pending domain model additions";
 	private static final String MATCHINGCLASS_PROPERTY_URI = SadlConstants.SADL_IMPLICIT_MODEL_URI + "#matchingClass";
 	private static final String MATCHINGPROPERTY_PROPERTY_URI = SadlConstants.SADL_IMPLICIT_MODEL_URI + "#matchingProperty";;
 	protected static final Logger logger = LoggerFactory.getLogger(AnswerCurationManager.class);
@@ -214,8 +215,8 @@ public class AnswerCurationManager {
 	private String userName;
 	private DialogContent conversation = null; 
 	private DialogContent lastConversation = null;
-	private Map<String, Boolean> equationCompleteness = null;
-
+	private Map<String, String> equationCompleteness = null;	// holds text of complete equation on previous call,
+																// in order to detect changes to complete equations
 	private Map<String, String[]> targetModelMap = null;
 	private OwlToSadl owl2sadl = null;
 	
@@ -223,13 +224,14 @@ public class AnswerCurationManager {
 	private Boolean useKCHAIN = null;
 
 	private ISadlInferenceProcessor inferenceProcessor = null;
-	private Map<String, OntModel> extractionModelMap = new HashMap<String, OntModel>();
-	private Map<String, String> fileLocalityMap = new HashMap<String, String>();
+//	private Map<String, OntModel> extractionModelMap = new HashMap<String, OntModel>();
+//	private Map<String, String> fileLocalityMap = new HashMap<String, String>();
 	
 	private OntModel domainModel = null;
 	private String domainModelName = null;
 	private OntModel simplifiedDomainModelForTextService = null;
 	private String localityURI = null;
+	private String localityPrefix = null;
 	
 	private boolean lookForSubclassInArticledClasses = true;	// should a domain of a property be replaced with a subclass
 																// that has appeared in other arguments augmented types
@@ -240,10 +242,9 @@ public class AnswerCurationManager {
 	private Map<String, String> cachedEquationVariableContext = new HashMap<String, String>();
 	private Map<Individual, String> variableDeclarations = new HashMap<Individual, String>();
 	
-	private ExtractContent extractionContext = null;
+	private StatementContent extractionContext = null;
 	private List<String> classesDeclared = new ArrayList<String>();
 	private List<StatementContent> failureCorrectingActions = new ArrayList<StatementContent>();
-	private HashMap<String, String> domainModelsLoaded = new HashMap<String,String>();
 	private StatementContent lastStatement = null;
 	
 	// Concepts from the latest extraction from text:
@@ -253,6 +254,9 @@ public class AnswerCurationManager {
 	//	3: matchingClasses, 
 	//	4: matchingProperties
 	private List<Object> currentTextExtractionExtracts = null;
+	private boolean suspendConversationProcessing = false;
+	private String suspendedExtractionContent = null;
+	private OntModel suspendedCodeModel = null;
     
 	public AnswerCurationManager (String modelFolder, IConfigurationManagerForIDE configMgr, XtextResource resource, Map<String,String> prefs) {
 		setOwlModelsFolder(modelFolder);
@@ -347,7 +351,7 @@ public class AnswerCurationManager {
 				String fPath = f.getCanonicalPath();
 				String fileIdentifier = ConfigurationManagerForIdeFactory.formatPathRemoveBackslashes(fPath);
 				
-				File of = extractFromTextAndSave(content, fileIdentifier, outputModelName, prefix, outputOwlFileName);
+				File of = extractFromTextAndSave(content, fileIdentifier, outputModelName, outputOwlFileName);
 				if (of != null) {
 					numSuccessfullyProcessed++;
 					outputOwlFilesBySourceType.put(of, false);
@@ -377,7 +381,7 @@ public class AnswerCurationManager {
 					outputOwlFileName = of.getCanonicalPath();
 					// run inference on the model, interact with user to refine results
 					String queryString = useAllCodeExtractedMethods ? SparqlQueries.ALL_CODE_EXTRACTED_METHODS : SparqlQueries.INTERESTING_METHODS_DOING_COMPUTATION;	//?m ?b ?e ?s
-					ResultSet results = runInferenceFindInterestingCodeModelResults(outputOwlFileName, queryString, saveAsSadl, content);
+					ResultSet results = runInferenceFindInterestingCodeModelResults(queryString, saveAsSadl, content);
 					if (results == null || results.getRowCount() == 0) {
 						notifyUser(getOwlModelsFolder(), "No equations were found in this extraction from code.", true);
 					}
@@ -449,8 +453,7 @@ public class AnswerCurationManager {
 		return null;
 	}
 
-	private File extractFromTextAndSave(String content, String inputIdentifier, String extractedTxtModelName, String prefix,
-			String outputOwlFileName)
+	private File extractFromTextAndSave(String content, String inputIdentifier, String extractedTxtModelName, String outputOwlFileName)
 			throws IOException, ConfigurationException, AnswerExtractionException {
 		// clear any existing localityURI graph before processing text.
 // TODO this should eventually be a user choice?				
@@ -466,19 +469,8 @@ public class AnswerCurationManager {
 //				System.out.println(domainModel);
 			}
 		}
-		String response = getTextProcessor().uploadDomainModel(getLocalityURI(), getDomainModelName(), getSimplifiedDomainModelForTextService());
-		if (response.equalsIgnoreCase("ontology successfully uploaded")) {
-			notifyUser(getOwlModelsFolder(), "Domain " + response + " to text extraction service", true);
-			FileOutputStream fos = new FileOutputStream(new File("c:/TMP/domainmodel.n3"));
-			getSimplifiedDomainModelForTextService().write(fos, "N3");
-			fos.flush();
-			fos.close();
-		}
-		else {
-			notifyUser(getOwlModelsFolder(), response, true);
-		}
 		
-		OntModel txtModel = getTextProcessor().getOntModelFromText(inputIdentifier, content, getLocalityURI(), extractedTxtModelName, prefix, false);
+		OntModel txtModel = getOntModelFromText(inputIdentifier, content, getLocalityURI(), extractedTxtModelName, getLocalityPrefix(), false, false);
 		File of = saveTextOwlFile(extractedTxtModelName, outputOwlFileName);
 		if (txtModel != null) {
 			List<Object> extracts = retrieveExtractedConcepts(txtModel, true, false);
@@ -517,36 +509,19 @@ public class AnswerCurationManager {
 	 * @return
 	 */
 	public String ontModelToString(OntModel domainModel) {
-		ExtendedIterator<Ontology> exOntItr = domainModel.listOntologies();
-//		while (exOntItr.hasNext()) {
-//			System.out.println(exOntItr.next().getURI());
-//		}
-		String uri;
 		try {
 			Writer writer = new StringWriter();
 			domainModel.write(writer, "RDF/XML");
-			Optional<String> xmlbaseuri = new XMLHelper().tryReadBaseUri(writer.toString());
-			if (xmlbaseuri.isPresent()) {
-				uri = xmlbaseuri.get();
-			}
+//			Optional<String> xmlbaseuri = new XMLHelper().tryReadBaseUri(writer.toString());
+//			if (xmlbaseuri.isPresent()) {
+//				uri = xmlbaseuri.get();
+//			}
 			return writer.toString();
 		}
 		catch (Exception e) {
 			e.printStackTrace();
 		}
 		return null;
-	}
-
-	public void addToFileLocalityMap(String canonicalPath, String locality) {
-		fileLocalityMap.put(ConfigurationManagerForIdeFactory.formatPathRemoveBackslashes(canonicalPath), locality);
-	}
-	
-	public String getLocalityOfFileExtract(String filePath) {
-		return fileLocalityMap.get(ConfigurationManagerForIdeFactory.formatPathRemoveBackslashes(filePath));
-	}
-
-	public void addExtractionModel(String locality, OntModel theModel) {
-		extractionModelMap.put(locality, theModel);
 	}
 
 	/**
@@ -874,7 +849,7 @@ public class AnswerCurationManager {
 		getConfigurationManager().clearReasoner();
 	}
 
-	private ResultSet runInferenceFindInterestingCodeModelResults(String outputOwlFileName, String queryString, SaveAsSadl saveAsSadl, String fileContent)
+	private ResultSet runInferenceFindInterestingCodeModelResults(String queryString, SaveAsSadl saveAsSadl, String fileContent)
 			throws ConfigurationException, IOException, ReasonerNotFoundException, InvalidNameException, QueryParseException, QueryCancelledException {
 		ResultSet results = null;
 		// clear reasoner from any previous model
@@ -1575,14 +1550,22 @@ public class AnswerCurationManager {
 				inputResults.setShowNamespaces(false);
 				String rn = rnobj != null ? rnobj.toString() : null;
 				if (rn != null) {
-					inputResults.setShowNamespaces(false);
 					String augtype = null;
-					Object augtypeStuff = getAugmentedTypeFromLocalitySearch(methodName, rn, false, origScript, locality, articledClasses);
+					Object augtypeStuff = getAugmentedTypeFromLocalitySearch(methodName, argName, rn, false, origScript, locality, articledClasses);
 					if (augtypeStuff == null) {
 						augtype = stobj != null ? processTextToTriplesAugType(rn) : null;
+						if (augtype == null && stobj != null) {
+							// we have a non-domain concept suggested by textToTriples as semantic type; make note
+							sb.append(" (note \"text suggests possible type '");
+							sb.append(checkForKeyword(stobj.toString()));
+							sb.append("'\")");
+						}
 					}
 					else if (augtypeStuff instanceof String[]) {
 						augtype = ((String[])augtypeStuff)[0];
+					}
+					else if (augtypeStuff instanceof String) {
+						augtype = augtypeStuff.toString();
 					}
 					if (augtype != null) {
 						sb.append("(");
@@ -1621,12 +1604,15 @@ public class AnswerCurationManager {
 					outputResults.setShowNamespaces(false);
 					String rn = rnobj != null ? rnobj.toString() : null;
 					if (rn != null) {
-						outputResults.setShowNamespaces(false);
 						String augtype = null;
-						Object augtypeStuff = getAugmentedTypeFromLocalitySearch(methodName, rn, true, origScript, locality, articledClasses);							
+						Object augtypeStuff = getAugmentedTypeFromLocalitySearch(methodName, retName, rn, true, origScript, locality, articledClasses);							
 						if (augtypeStuff == null) {
-							if (rn != null) {
-								augtype = atobj != null ? processTextToTriplesAugType(rn) : null;
+							augtype = atobj != null ? processTextToTriplesAugType(rn) : null;
+							if (augtype == null && atobj != null) {
+								// we have a non-domain concept suggested by textToTriples as semantic type; make note
+								sb.append(" (note \"text suggests possible type '");
+								sb.append(checkForKeyword(atobj.toString()));
+								sb.append("'\")");
 							}
 						}
 						else if (augtypeStuff instanceof String[]){
@@ -1769,7 +1755,9 @@ public class AnswerCurationManager {
 
 	/**
 	 * Method to get the AugmentedType of a name from locality search and return a valid SADL AugmentedType expression
-	 * @param nameUri -- name for which information is desired
+	 * @param methodUri -- the URI of the method being processed
+	 * @param argName -- name of the argument for which information is desired
+	 * @param semType -- the semantic type returned by the text service
 	 * @param isMethodReturn -- true if looking for augmented type for method return else false for an argument
 	 * @param script -- the script (text) that is being processed 
 	 * @param locality -- the locality in which the search is to occur
@@ -1778,16 +1766,16 @@ public class AnswerCurationManager {
 	 * @throws IOException 
 	 * @throws InvalidInputException 
 	 */
-	private Object getAugmentedTypeFromLocalitySearch(String methodUri, String nameUri, boolean isMethodReturn, String script, String locality, List<OntResource> articledClasses) throws InvalidInputException, IOException {
+	private Object getAugmentedTypeFromLocalitySearch(String methodUri, String argName, String semType, boolean isMethodReturn, String script, String locality, List<OntResource> articledClasses) throws InvalidInputException, IOException {
 		// check cache
-		if (equationVariableContextHasBeenCached(nameUri, locality)) {
-			return getEquationVariableContextFromCache(nameUri, locality);
+		if (equationVariableContextHasBeenCached(argName, locality)) {
+			return getEquationVariableContextFromCache(argName, locality);
 		}
 		List<Object> extractions = getCurrentTextExtractionExtracts();
 		// first try classes
 		Object clsmap = extractions != null ? extractions.get(3) : null;
 		if (clsmap instanceof Map<?,?>) {
-			Object clses = ((Map<?,?>)clsmap).get(nameUri);
+			Object clses = ((Map<?,?>)clsmap).get(semType);
 			if (clses instanceof List<?>) {
 				Object cls = ((List<?>)clses).get(0);
 				if (cls != null) {
@@ -1803,7 +1791,7 @@ public class AnswerCurationManager {
 		// next try properties
 		Object propmap = extractions != null ? extractions.get(3) : null;
 		if (propmap instanceof Map<?,?>) {
-			Object props = ((Map<?,?>)propmap).get(nameUri);
+			Object props = ((Map<?,?>)propmap).get(semType);
 			if (props instanceof List<?>) {
 				Object prop = ((List<?>)props).get(0);
 				if (prop != null) {
@@ -1819,7 +1807,7 @@ public class AnswerCurationManager {
 			}
 		}
 		if (getExtractionProcessor().getCodeExtractor() != null) {
-			String argname = (nameUri != null && nameUri.contains("#")) ? nameUri.substring(nameUri.indexOf('#') + 1) : nameUri;
+			String argname = getLocalName(argName);
 			IModelFromCodeExtractor codeExtractor = getExtractionProcessor().getCodeExtractor();
 			if (codeExtractor instanceof JavaModelExtractorJP) {
 				if (isMethodReturn) {
@@ -1876,7 +1864,7 @@ public class AnswerCurationManager {
 			return null;
 		}
 		// 	search the locality for the argName
-		EquationVariableContextResponse evc = getTextProcessor().equationVariableContext(nameUri, locality);
+		EquationVariableContextResponse evc = getTextProcessor().equationVariableContext(argName, locality);
 		List<String[]> evcr = null;
 		if (evc != null) {
 			evcr = evc.getResults();
@@ -1898,7 +1886,7 @@ public class AnswerCurationManager {
 											if (subj.isURIResource()) {
 												if (subj.canAs(OntClass.class)) {
 													stmtItr.close();
-													cacheEquationVariableContext(nameUri, locality, subj.getLocalName());
+													cacheEquationVariableContext(argName, locality, subj.getLocalName());
 													return " (" + checkForKeyword(subj.getLocalName()) + ")";
 												}
 											}
@@ -1914,9 +1902,9 @@ public class AnswerCurationManager {
 					if (r[0].trim().equals(script.trim())) {
 						String conceptName = r[2];	// the label from the locality search
 						if (conceptName != null) {
-							String matchingRsrcQN = findOntModelResourceWithMatchingLocalname(conceptName, nameUri, articledClasses);
+							String matchingRsrcQN = findOntModelResourceWithMatchingLocalname(conceptName, argName, articledClasses);
 							if (matchingRsrcQN != null) {
-								cacheEquationVariableContext(nameUri, locality, matchingRsrcQN);
+								cacheEquationVariableContext(argName, locality, matchingRsrcQN);
 								return " (" + checkForKeyword(matchingRsrcQN) + ")";
 							}
 						}
@@ -1926,7 +1914,7 @@ public class AnswerCurationManager {
 		}
 		if (getDomainModel() != null) {
 			// look for something in the domain ontology that has a label matching the name
-			Literal lit = getDomainModel().createLiteral( nameUri, "en" );  	// this is how the literals are created in JenaBasedSadlModelProcessor; 
+			Literal lit = getDomainModel().createLiteral( argName, "en" );  	// this is how the literals are created in JenaBasedSadlModelProcessor; 
 																	// literals from elesewhere might not match
 			StmtIterator stmtItr = getDomainModel().listStatements(null, RDFS.label, lit);
 			if (stmtItr.hasNext()) {
@@ -1934,8 +1922,8 @@ public class AnswerCurationManager {
 					Resource subj = stmtItr.nextStatement().getSubject();
 					if (subj.isURIResource() && subj.canAs(OntResource.class)) {
 						stmtItr.close();
-						String concept = resourceToAugmentedTypeContent(getDomainModel(), nameUri, subj.as(OntResource.class), articledClasses);
-						cacheEquationVariableContext(nameUri, locality, concept);
+						String concept = resourceToAugmentedTypeContent(getDomainModel(), argName, subj.as(OntResource.class), articledClasses);
+						cacheEquationVariableContext(argName, locality, concept);
 						return " (" + concept + ")";
 					}
 				}
@@ -1943,9 +1931,9 @@ public class AnswerCurationManager {
 //			else {
 //				getDomainModel().write(System.err);
 //			}
-			String matchingRsrcQN = findOntModelResourceWithMatchingLocalname(nameUri, nameUri, articledClasses);
+			String matchingRsrcQN = findOntModelResourceWithMatchingLocalname(argName, argName, articledClasses);
 			if (matchingRsrcQN != null) {
-				cacheEquationVariableContext(nameUri, locality, matchingRsrcQN);
+				cacheEquationVariableContext(argName, locality, matchingRsrcQN);
 				return " (" + checkForKeyword(matchingRsrcQN) + ")";
 			}
 		}
@@ -1996,7 +1984,7 @@ public class AnswerCurationManager {
 				}
 				if (sb != null) sb.append(") ");
 				String concept = sb.toString();
-				cacheEquationVariableContext(nameUri, locality, concept);
+				cacheEquationVariableContext(argName, locality, concept);
 				return concept;
 			}
 //				Iterator<String> itr = getUnmatchedUrisAndLabels().keySet().iterator();
@@ -2023,18 +2011,87 @@ public class AnswerCurationManager {
 //				}
 //			}
 		}
-		cacheEquationVariableContext(nameUri, locality, null);
+		cacheEquationVariableContext(argName, locality, null);
 		return null;
 	}
 	
 	private String getAugmentedTypeFromComment(String locality, String comment) throws ConfigurationException, IOException, AnswerExtractionException {
-		TextProcessor tp = getExtractionProcessor().getTextProcessor();
 		String prefix = null;
-		OntModel cmtModel = tp.getOntModelFromText(getLocalityURI(), comment, locality, getDomainModelName(), prefix , false);
+		OntModel cmtModel = getOntModelFromText(getLocalityURI(), comment, locality, getDomainModelName(), prefix , false, false);
 		if (cmtModel != null) {
-			
+			StmtIterator mcpitr = cmtModel.listStatements(null, cmtModel.getProperty(MATCHINGCLASS_PROPERTY_URI), (RDFNode)null);
+			if (mcpitr.hasNext()) {
+				// we have matching classes from domain ontology
+				StringBuilder sb = new StringBuilder();
+				int cntr = 0;
+				List<String> added = new ArrayList<String>();
+				while (mcpitr.hasNext()) {
+					Statement mcpstmt = mcpitr.nextStatement();
+					String cls = checkForKeyword(mcpstmt.getObject().asResource().getLocalName());
+					if (!added.contains(cls)) {
+						if (cntr++ > 0) {
+							sb.append(" or ");
+						}
+						sb.append(cls);
+						added.add(cls);
+					}
+				}
+				if (cntr > 1) {
+					sb.insert(0,  "(");
+					sb.append(")");
+				}
+				return sb.toString();
+			}
+			StmtIterator mppitr = cmtModel.listStatements(null, cmtModel.getProperty(MATCHINGCLASS_PROPERTY_URI), (RDFNode)null);
+			if (mppitr.hasNext()) {
+				// we have matching classes from domain ontology
+				StringBuilder sb = new StringBuilder();
+				int cntr = 0;
+				List<String> added = new ArrayList<String>();
+				while (mppitr.hasNext()) {
+					Statement mcpstmt = mppitr.nextStatement();
+					String prop = checkForKeyword(mcpstmt.getObject().asResource().getLocalName());
+					if (!added.contains(prop)) {
+						if (cntr++ > 0) {
+							sb.append(" or ");
+						}
+						sb.append(prop);
+						added.add(prop);
+					}
+				}
+				
+				if (cntr > 1) {
+					sb.insert(0,  "(");
+					sb.append(")");
+				}
+				return sb.toString();
+			}
 		}
 		return null;
+	}
+	
+	private OntModel getOntModelFromText(String identifier, String content, String locality, 
+			String domainModelName, String prefix, boolean addToTextModel, boolean notifyUser) 
+					throws IOException, ConfigurationException, AnswerExtractionException {
+		if (!isDomainModelForTextSericeUploaded()) {
+			String response = getTextProcessor().uploadDomainModel(getLocalityURI(), getDomainModelName(), getSimplifiedDomainModelForTextService());
+			if (!response.equalsIgnoreCase("ontology successfully uploaded")) {
+				System.err.println("Failed to upload domain model to text service");
+//				notifyUser(getOwlModelsFolder(), "Domain " + response + " to text extraction service", true);
+//				FileOutputStream fos = new FileOutputStream(new File("c:/TMP/domainmodel.n3"));
+//				getSimplifiedDomainModelForTextService().write(fos, "N3");
+//				fos.flush();
+//				fos.close();
+			}
+			else if (notifyUser) {
+				notifyUser(getOwlModelsFolder(), response, true);
+			}
+		}
+		
+		TextProcessor tp = getExtractionProcessor().getTextProcessor();
+		OntModel txtModel = tp.getOntModelFromText(identifier, content, locality, domainModelName, prefix , addToTextModel, notifyUser);
+		String cgResponse = tp.clearGraph(locality);
+		return txtModel;
 	}
 
 	private boolean equationVariableContextHasBeenCached(String name, String locality) {
@@ -2312,29 +2369,25 @@ public class AnswerCurationManager {
 				sb.append(" ");
 				sb.append(checkForKeyword(argName));
 				inputResults.setShowNamespaces(true);
-				Object rnobj =inputResults.getResultAt(r, 0); 
+				Object argUri =inputResults.getResultAt(r, 0); 
 				inputResults.setShowNamespaces(false);
-				String rn = rnobj != null ? rnobj.toString() : null;
-				if (rn != null) {
-					inputResults.setShowNamespaces(false);
-					String augtype = null;
-					Object augtypeStuff = getAugmentedTypeFromLocalitySearch(methodUri, rn, false, null, locality, articledClasses);
-					if (augtypeStuff == null) {
-						augtype = stobj != null ? processTextToTriplesAugType(rn) : null;
-					}
-					else if (augtypeStuff instanceof String[]){
-						augtype = ((String[])augtypeStuff)[0];
-					}
-					if (augtype != null) {
-						sb.append("(");
-						sb.append(augtype);
-						sb.append(")");
-					}
-					else if (augtypeStuff != null && augtypeStuff instanceof String[] && ((String[])augtypeStuff)[1] != null) {
-						sb.append(" (note \"");
-						sb.append(((String[])augtypeStuff)[1]);
-						sb.append("\")");
-					}
+				String augtype = null;
+				Object augtypeStuff = getAugmentedTypeFromLocalitySearch(methodUri, argName, null, false, null, locality, articledClasses);
+				if (augtypeStuff == null && argUri != null) {
+					augtype = stobj != null ? processTextToTriplesAugType(argUri.toString()) : null;
+				}
+				else if (augtypeStuff instanceof String[]){
+					augtype = ((String[])augtypeStuff)[0];
+				}
+				if (augtype != null) {
+					sb.append("(");
+					sb.append(augtype);
+					sb.append(")");
+				}
+				else if (augtypeStuff != null && augtypeStuff instanceof String[] && ((String[])augtypeStuff)[1] != null) {
+					sb.append(" (note \"");
+					sb.append(((String[])augtypeStuff)[1]);
+					sb.append("\")");
 				}
 			}
 		}
@@ -2364,33 +2417,25 @@ public class AnswerCurationManager {
 					sb.append(", ");
 				}
 				sb.append(retType);
-				Object atobj = null; //outputResults.getResultAt(r, 3);
-//				outputResults.setShowNamespaces(true);
-				Object rnobj = null; //outputResults.getResultAt(r, 3);
-//				outputResults.setShowNamespaces(false);
-				String rn = rnobj != null ? rnobj.toString() : null;
-//				if (rn != null) {
-					outputResults.setShowNamespaces(false);
-					String augtype = null;
-					Object augtypeStuff = getAugmentedTypeFromLocalitySearch(methodUri, rn, true, null, locality, articledClasses);							
-					if (augtypeStuff == null) {
-						if (rn != null) {
-							augtype = atobj != null ? processTextToTriplesAugType(rn) : null;
-						}
-					}
-					else if (augtypeStuff instanceof String[]){
-						augtype = ((String[])augtypeStuff)[0];
-					}
-					if (augtype != null) {
-						sb.append("(");
-						sb.append(augtype);
-						sb.append(")");
-					}
-					else if (augtypeStuff != null && augtypeStuff instanceof String[] && ((String[])augtypeStuff)[1] != null) {
-						String note = " (note \"returns " + ((String[])augtypeStuff)[1] + "\")";
-						sb.insert(returnNoteLocation, note);
-					}
-//				}
+				String augtype = null;
+				Object augtypeStuff = getAugmentedTypeFromLocalitySearch(methodUri, null, null, true, null, locality, articledClasses);							
+				if (augtypeStuff == null) {
+//					if (rn != null) {
+//						augtype = atobj != null ? processTextToTriplesAugType(rn) : null;
+//					}
+				}
+				else if (augtypeStuff instanceof String[]){
+					augtype = ((String[])augtypeStuff)[0];
+				}
+				if (augtype != null) {
+					sb.append("(");
+					sb.append(augtype);
+					sb.append(")");
+				}
+				else if (augtypeStuff != null && augtypeStuff instanceof String[] && ((String[])augtypeStuff)[1] != null) {
+					String note = " (note \"returns " + ((String[])augtypeStuff)[1] + "\")";
+					sb.insert(returnNoteLocation, note);
+				}
 			}
 			sb.append(":");
 //			if (numReturnValues > 1) {
@@ -2442,7 +2487,7 @@ public class AnswerCurationManager {
 				int i = 0;
 			}
 		}
-		ResultSet impIn =getImplicitInputs(methodName);
+		ResultSet impIn = getImplicitInputs(methodName);
 		if (impIn != null) {
 			for (int r = 0; r < impIn.getRowCount(); r++) {
 				if (hasPriorTriple) {
@@ -3310,13 +3355,9 @@ public class AnswerCurationManager {
 			if (((AddEquationContent)sc).getEquationBody() != null) {
 				// translate to Python using texttotriples service
 				String toTranslate = lhs + " = " + ((AddEquationContent)sc).getEquationBody();
-				String localityURI = getDomainModelName() + "_temp";
-				setLocalityURI(localityURI);
-				String extractedTxtModelName = localityURI;
-				String prefix = "temp";
 				try {
 					getTextProcessor().clearGraph(getLocalityURI());
-					OntModel m = getTextProcessor().getOntModelFromText("user-added-equation", toTranslate, getLocalityURI(), extractedTxtModelName, prefix, false);
+					OntModel m = getOntModelFromText("user-added-equation", toTranslate, getLocalityURI(), getDomainModelName(), getLocalityPrefix(), false, false);
 					if (m != null) {
 						List<String> scriptStatements = getScriptStatementsFromTextService(getLocalityURI(), m, eqName);
 						if (scriptStatements != null) {
@@ -3422,8 +3463,6 @@ public class AnswerCurationManager {
 			String source = sc.getScheme();
 			if ((scheme != null && scheme.equals("text")) || (source != null && source.equals("text"))) {
 				// actual text from which to extract has been provided
-				String locality = getDomainModelName() + "_temp";
-				setLocalityURI(locality);
 				returnStatus += processExtractionFromActualTextRequest(sc);
 				sc = sc.getNextExtractContent();
 				continue;
@@ -3451,8 +3490,6 @@ public class AnswerCurationManager {
 		//				file.createLink(location, IResource.NONE, null);
 					}
 				}
-				String locality = getModelNameFromInputFile(f);
-				setLocalityURI(locality);
 			}
 			else {
 				content = downloadURL(sc.getUrl());
@@ -3466,33 +3503,40 @@ public class AnswerCurationManager {
 				// code extraction
 				String outputOwlFileName = prefix + ".owl";
 				try {
-					File of = extractFromCodeAndSave(content, sc.getUrl(), outputModelName, prefix, outputOwlFileName);
-					if (of != null) {
-						String aggregatedComments = getExtractionProcessor().getCodeExtractor().getAggregatedComments();
-						String inputIdentifier = "from comments";
-						String modelPrefix = "cmts";
-//						getTextProcessor().processText(inputIdentifier, aggregatedComments, getLocalityURI(), getDomainModelName(), modelPrefix, false);
-						OntModel commentModel = getTextProcessor().getOntModelFromText(inputIdentifier, aggregatedComments, getLocalityURI(), getDomainModelName(), modelPrefix, false);
-						if (commentModel != null) {
-							// find concepts that need to be added to the ontology. 
-							// Insert them before the extraction and abort the extraction, leaving it to be handled with the new domain ontology
-							commentModel.write(System.out, "N3");
-						}
-						boolean useAllCodeExtractedMethods = true;
-						SaveAsSadl saveAsSadl = SaveAsSadl.DoNotSaveAsSadl;
-						
-						outputOwlFileName = of.getCanonicalPath();
-						// run inference on the model, interact with user to refine results
-						String queryString = useAllCodeExtractedMethods ? SparqlQueries.ALL_CODE_EXTRACTED_METHODS : SparqlQueries.INTERESTING_METHODS_DOING_COMPUTATION;	//?m ?b ?e ?s
-						ResultSet results = runInferenceFindInterestingCodeModelResults(outputOwlFileName, queryString, saveAsSadl, content);
-						if (results == null || results.getRowCount() == 0) {
-							notifyUser(getOwlModelsFolder(), "No equations were found in this extraction from code.", true);
-						}
-						else {
-							equationsFromCodeResultSetToSadlContent(results, getOwlModelsFolder(), content);
+					if (getSuspendedExtractionContent() == null) {
+						File of = extractFromCodeAndSave(content, sc.getUrl(), outputModelName, prefix, outputOwlFileName);
+						if (of != null) {
+							String aggregatedComments = getExtractionProcessor().getCodeExtractor().getAggregatedComments();
+							String inputIdentifier = "from comments";
+							String modelPrefix = "cmts";
+							OntModel commentModel = getOntModelFromText(inputIdentifier, aggregatedComments, getLocalityURI(), getDomainModelName(), modelPrefix, false, false);
+							if (commentModel != null) {
+								// find concepts that need to be added to the ontology. 
+								// Insert them before the extraction and abort the extraction, leaving it to be handled with the new domain ontology
+								List<String> newSadlStatements = getNewOntologyConceptsAsSadlStatements(commentModel);
+								if (newSadlStatements != null) {
+									for (int i = 0; i < newSadlStatements.size(); i++) {
+										String sd = newSadlStatements.get(i);
+										EObject host = getExtractionContext() != null ? getExtractionContext().getHostEObject() : null;
+										SadlStatementContent ssc = new SadlStatementContent(host, Agent.CM, sd);
+										notifyUser(getOwlModelsFolder(), ssc, false);
+										getExtractionProcessor().addNewSadlContent(sd);
+									}
+									clearDomainModelForTextService();			// we'll have new model content so clear
+									saveSuspendedExtractionContent(content);	// save the extraction state for resuming with new domain model content
+									saveSuspendedCodeModel(getExtractionProcessor().getCodeModel());
+									setSuspendConversationProcessing(true);
+									return SUSPENDED_EXTRACTION_PENDING_DOMAIN_MODEL_ADDITIONS;
+								}
+							}
 						}
 					}
-					returnStatus += "Extracted from '" + sc.getUrl() + "' to OWL file '" + of.getCanonicalPath() + "'";
+					else {
+						getExtractionProcessor().setCodeModel(getSuspendedCodeModel());
+					}
+					returnStatus += continueExtraction(content);
+					saveSuspendedExtractionContent(null);
+					saveSuspendedCodeModel(null);
 				}
 				catch (Throwable t) {
 					t.printStackTrace();
@@ -3513,7 +3557,7 @@ public class AnswerCurationManager {
 				//text extraction
 				String outputOwlFileName = prefix + ".owl";
 				try {
-					File of = extractFromTextAndSave(content, sc.getUrl(), outputModelName, prefix, outputOwlFileName);
+					File of = extractFromTextAndSave(content, sc.getUrl(), outputModelName, outputOwlFileName);
 					String owlFileForDisplay = "file:///" + of.getCanonicalPath().replace("\\", "/");
 					returnStatus += "Saved extracted model to OWL '" + owlFileForDisplay + "'";
 					answerUser(getOwlModelsFolder(), returnStatus, true, sc.getHostEObject());	
@@ -3530,7 +3574,66 @@ public class AnswerCurationManager {
 		}
 		return returnStatus;
 	}
+
+	private String continueExtraction(String content)
+			throws IOException, ConfigurationException, ReasonerNotFoundException, InvalidNameException,
+			QueryParseException, QueryCancelledException, InvalidInputException {
+		String outputOwlFileName;
+		boolean useAllCodeExtractedMethods = true;
+		SaveAsSadl saveAsSadl = SaveAsSadl.DoNotSaveAsSadl;
+		
+		// run inference on the model, interact with user to refine results
+		String queryString = useAllCodeExtractedMethods ? SparqlQueries.ALL_CODE_EXTRACTED_METHODS : SparqlQueries.INTERESTING_METHODS_DOING_COMPUTATION;	//?m ?b ?e ?s
+		ResultSet results = runInferenceFindInterestingCodeModelResults(queryString, saveAsSadl, content);
+		if (results == null || results.getRowCount() == 0) {
+			notifyUser(getOwlModelsFolder(), "No equations were found in this extraction from code.", true);
+		}
+		else {
+			equationsFromCodeResultSetToSadlContent(results, getOwlModelsFolder(), content);
+		}
+		return "Suspended extraction completed";
+	}
 	
+	private List<String> getNewOntologyConceptsAsSadlStatements(OntModel commentModel) {
+		List<String> results = null;
+		if (commentModel != null) {
+			// find all of the triples with seeAlso as property
+			StmtIterator saitr = commentModel.listStatements(null, RDFS.seeAlso, (RDFNode)null);
+			while (saitr.hasNext()) {
+				Statement sastmt = saitr.nextStatement();
+				Resource subj = sastmt.getSubject();
+				if (!subj.isURIResource()) {
+					// only propose named Concepts for the domain ontoloyg
+					break;
+				}
+				StmtIterator mcpitr = commentModel.listStatements(subj, commentModel.getProperty(MATCHINGCLASS_PROPERTY_URI), (RDFNode)null);
+				if (mcpitr.hasNext()) {
+					// there's a matchingClass so this is already in the domain ontology
+					break;
+				}
+				StmtIterator mppitr = commentModel.listStatements(subj, commentModel.getProperty(MATCHINGPROPERTY_PROPERTY_URI), (RDFNode)null);
+				if (mppitr.hasNext()) {
+					// there's a metchingProperty so this is already in the domain ontology
+					break;
+				}
+				if (results == null) {
+					results = new ArrayList<String>();
+					results.add("\"The following classes are suggested for the domain model:\"");
+				}
+				String subjStr = subj.getLocalName();
+				subjStr = subjStr.substring(0,1).toUpperCase() + subjStr.substring(1);
+				StringBuilder sb = new StringBuilder();
+				sb.append(checkForKeyword(subjStr));
+				sb.append(" (see \"");
+				sb.append(checkForKeyword(sastmt.getObject().asResource().getURI()));
+				sb.append("\")");
+				sb.append(" is a type of ScientificConcept.");
+				results.add(sb.toString());
+			}
+		}
+		return results;
+	}
+
 	/**
 	 * Method to extract from provided text and convert to semantic type or statement.
 	 * @param txt
@@ -3541,13 +3644,8 @@ public class AnswerCurationManager {
 	 * @throws ConfigurationException
 	 */
 	private List<Object> processExtractionFromText(String txt, boolean bAsCompleteStatement) throws AnswerExtractionException, IOException, ConfigurationException {
-		String cgResponse = getTextProcessor().clearGraph(getLocalityURI());
-		if (!isDomainModelLoaded(getLocalityURI())) {
-			String aDoResponse = getTextProcessor().uploadDomainModel(getLocalityURI(), getDomainModelName(), getDomainModelExtractForTextService(true));
-			setDomainModelLoaded(getLocalityURI(), getDomainModelName()); 
-		}
 		String prefix = "temp";
-		OntModel m = getTextProcessor().getOntModelFromText("from text", txt, getLocalityURI(), getDomainModelName(), prefix, false);
+		OntModel m = getOntModelFromText("from text", txt, getLocalityURI(), getDomainModelName(), prefix, false, false);
 		if (m != null) {
 //			m.write(System.out, "N3");
 			List<Object> extracts = retrieveExtractedConcepts(m, bAsCompleteStatement, false);
@@ -3561,13 +3659,7 @@ public class AnswerCurationManager {
 		setExtractionContext(sc);
 		String toTranslate = sc.getUrl();
 		try {
-			String cgResponse = getTextProcessor().clearGraph(getLocalityURI());
-			if (!isDomainModelLoaded(getLocalityURI())) {
-				String aDoResponse = getTextProcessor().uploadDomainModel(getLocalityURI(), getDomainModelName(), getDomainModelExtractForTextService(true));
-				setDomainModelLoaded(getLocalityURI(), getDomainModelName());
-			}
-			String prefix = "temp";
-			OntModel m = getTextProcessor().getOntModelFromText("in-line text", toTranslate, getLocalityURI(), getDomainModelName(), prefix, false);
+			OntModel m = getOntModelFromText("in-line text", toTranslate, getLocalityURI(), getDomainModelName(), getLocalityPrefix(), false, false);
 			if (m != null) {
 				List<Object> extracts = null;
 				// get the concept(s), if they aren't in the domain model?
@@ -3625,17 +3717,6 @@ public class AnswerCurationManager {
 	 */
 	private List<Object> getCurrentTextExtractionExtracts() {
 		return this.currentTextExtractionExtracts;
-	}
-
-	private void setDomainModelLoaded(String localityURI, String domainModelUri) {
-		domainModelsLoaded.put(localityURI, domainModelUri);
-	}
-
-	private boolean isDomainModelLoaded(String localityURI) {
-		if(domainModelsLoaded.containsKey(localityURI)) {
-			return true;
-		}
-		return false;
 	}
 
 	/**
@@ -3791,35 +3872,46 @@ public class AnswerCurationManager {
 			}
 		}
 		if (sb.length() == 0) {
-			returnStatements.add("\"These domain ontology concepts were matched in the extraction:\"");
 			Iterator<String> clslstitr = matchingClasses.keySet().iterator();
+			Iterator<String> proplstitr = matchingProperties.keySet().iterator();
+			if (clslstitr.hasNext() || proplstitr.hasNext()) {
+				returnStatements.add("\"These domain ontology concepts were matched in the extraction:\"");
+			}
 			while (clslstitr.hasNext()) {
 				String key = clslstitr.next();
 				List<Object> clslst = matchingClasses.get(key);
 				for (Object o : clslst) {
-					if (o instanceof String) {
+					if (o instanceof OntClass) {
+						returnStatements.add(checkForKeyword(((OntClass)o).getLocalName()) + " is a class.");
+					}
+					else if (o instanceof String) {
 						returnStatements.add(getLocalName((String)o) + " is a class.");
 					}
 				}
 			}
-			Iterator<String> proplstitr = matchingProperties.keySet().iterator();
 			while (proplstitr.hasNext()) {
 				String key = proplstitr.next();
 				List<Object> proplst = matchingProperties.get(key);
 				for (Object o : proplst) {
+					if (o instanceof Property) {
+						returnStatements.add(checkForKeyword(((Property)o).getLocalName()) + " is a property.");
+					}
 					if (o instanceof String) {
 						returnStatements.add(getLocalName((String)o) + " is a property.");
 					}
 				}
 			}
 			if (seeAlsos != null && seeAlsos.size() > 0) {
-				returnStatements.add("\"Other concepts found:\"");
 				Iterator<String> saitr = seeAlsos.keySet().iterator();
-				while (saitr.hasNext()) {
-					String sar = saitr.next();
-					List<Object> refs = seeAlsos.get(sar);
-					for (Object ref : refs) {
-						returnStatements.add("\"" + ref.toString() + "\"");
+				if (saitr.hasNext()) {
+					returnStatements.add("\"Other concepts found with external references:\"");
+					while (saitr.hasNext()) {
+						String sar = saitr.next();
+						String sarln = getLocalName(sar);
+						List<Object> refs = seeAlsos.get(sar);
+						for (Object ref : refs) {
+							returnStatements.add("\" " + sarln + ", '" + ref.toString() + "'\"");
+						}
 					}
 				}
 			}
@@ -5764,54 +5856,60 @@ public class AnswerCurationManager {
 		List<String> currentQuestions = new ArrayList<String>();
 		StatementContent lastStatement = null;
 		for (ConversationElement ce : dialogStmts) {
-			int idx = dialogStmts.indexOf(ce);
-			StatementContent statementAfter = idx < dialogStmts.size() - 1 ? dialogStmts.get(idx + 1).getStatement() : null;
-			StatementContent sc = ce.getStatement();
-			if (sc instanceof SadlStatementContent) {
-				if (sc instanceof EquationStatementContent) {
-					// look for missing AugmentedType questions and if there are, and **they haven't already been displayed**,
-					//	display the questions.
-					processMissingEquationContent((EquationStatementContent) sc, dialogStmts);
-				}
-				// otherwise this might be the answer to a question from CM provided by the user
-				if (lastStatement instanceof WhatIsContent && lastStatement.getAgent().equals(Agent.CM)) {
-					Object trgt = ((WhatIsContent)lastStatement).getTarget();
-					if (trgt instanceof NamedNode) {
-						processSadlStatementContentInContextOfPreceedingWhatIs((SadlStatementContent)sc, (WhatIsContent)lastStatement, trgt, dialogStmts, idx);
+			if (!isSuspendConversationProcessing()) {
+				int idx = dialogStmts.indexOf(ce);
+				StatementContent statementAfter = idx < dialogStmts.size() - 1 ? dialogStmts.get(idx + 1).getStatement() : null;
+				StatementContent sc = ce.getStatement();
+				if (sc instanceof SadlStatementContent) {
+					if (sc instanceof EquationStatementContent) {
+						// look for missing AugmentedType questions and if there are, and **they haven't already been displayed**,
+						//	display the questions.
+						processMissingEquationContent((EquationStatementContent) sc, dialogStmts);
+					}
+					// otherwise this might be the answer to a question from CM provided by the user
+					if (lastStatement instanceof WhatIsContent && lastStatement.getAgent().equals(Agent.CM)) {
+						Object trgt = ((WhatIsContent)lastStatement).getTarget();
+						if (trgt instanceof NamedNode) {
+							processSadlStatementContentInContextOfPreceedingWhatIs((SadlStatementContent)sc, (WhatIsContent)lastStatement, trgt, dialogStmts, idx);
+						}
+					}
+					else {
+						// this is a SADL statement that could change the domain model
+						clearDomainModelForTextService();
 					}
 				}
+				else if (sc instanceof AnswerContent) {
+					if (sc instanceof AddEquationContent) {
+						// Insert new equation **unless it's already been inserted**. Response is an insertion into the 
+						//	Dialog window which, when parsed, will create an EquationStatementContent
+						processAddEquationContent(resource, dc, additionMap, additions, currentQuestions, ce, statementAfter, (AddEquationContent)sc);
+					}
+					else if (sc instanceof AddAugmentedTypeInfoContent) {
+						// Modify equation with new AugmentedType info **unless it has already been modified**. Response is to
+						//	modify the existing equation in the Dialog window which, when parsed, will create a modified EquationStatementContent
+						processAddAugmentedTypeInfoContent((AddAugmentedTypeInfoContent)sc);
+					}
+				}
+				else if (sc instanceof ExpectsAnswerContent) {
+					// Subclasses CompareContent, EvalContent, ExtractContent, HowManyValueContent, ModifiedAskContent, WhatIsContent, WhatValuesContent can 
+					//	come only from Agent.USER and will result in an insertion into the DialogWindow, **unless it has already been inserted**. If already
+					//	answered, there will be the resulting InformationContent already later in the conversation.
+					
+					// Subclasses RequestArgumentAugmentedTypeContent, RequestReturnAugmentedTypeContent come from Agent.CM and may or may not be
+					//	followed by an AddAugmentedTypeInfoContent.
+	
+					if (sc.getAgent().equals(Agent.USER)) {
+						processExpectsAnswerContent(resource, dc, additionMap, additions, currentQuestions, ce, statementAfter, (ExpectsAnswerContent) sc);
+					}
+					else if (sc instanceof QuestionContent){
+						// this is a question that was created for the CM to ask during JBDMP processing
+						//	if not already asked, ask it
+						processCMExpectsAnswerContent((QuestionContent)sc);
+					}
+				}
+				lastStatement = sc;
+				setLastStatement(lastStatement);
 			}
-			else if (sc instanceof AnswerContent) {
-				if (sc instanceof AddEquationContent) {
-					// Insert new equation **unless it's already been inserted**. Response is an insertion into the 
-					//	Dialog window which, when parsed, will create an EquationStatementContent
-					processAddEquationContent(resource, dc, additionMap, additions, currentQuestions, ce, statementAfter, (AddEquationContent)sc);
-				}
-				else if (sc instanceof AddAugmentedTypeInfoContent) {
-					// Modify equation with new AugmentedType info **unless it has already been modified**. Response is to
-					//	modify the existing equation in the Dialog window which, when parsed, will create a modified EquationStatementContent
-					processAddAugmentedTypeInfoContent((AddAugmentedTypeInfoContent)sc);
-				}
-			}
-			else if (sc instanceof ExpectsAnswerContent) {
-				// Subclasses CompareContent, EvalContent, ExtractContent, HowManyValueContent, ModifiedAskContent, WhatIsContent, WhatValuesContent can 
-				//	come only from Agent.USER and will result in an insertion into the DialogWindow, **unless it has already been inserted**. If already
-				//	answered, there will be the resulting InformationContent already later in the conversation.
-				
-				// Subclasses RequestArgumentAugmentedTypeContent, RequestReturnAugmentedTypeContent come from Agent.CM and may or may not be
-				//	followed by an AddAugmentedTypeInfoContent.
-
-				if (sc.getAgent().equals(Agent.USER)) {
-					processExpectsAnswerContent(resource, dc, additionMap, additions, currentQuestions, ce, statementAfter, (ExpectsAnswerContent) sc);
-				}
-				else if (sc instanceof QuestionContent){
-					// this is a question that was created for the CM to ask during JBDMP processing
-					//	if not already asked, ask it
-					processCMExpectsAnswerContent((QuestionContent)sc);
-				}
-			}
-			lastStatement = sc;
-			setLastStatement(lastStatement);
 		}
 		if (!additions.isEmpty()) {
 			for (int i = additions.size() - 1; i >= 0; i--) {
@@ -6013,7 +6111,8 @@ public class AnswerCurationManager {
 		int i = 0;
 	}
 
-	private void processAddEquationContent(org.eclipse.emf.ecore.resource.Resource resource2, DialogContent dc, Map<ConversationElement, ConversationElement> additionMap, List<ConversationElement> additions, List<String> currentQuestions, ConversationElement ce, StatementContent statementAfter, AddEquationContent sc) {
+	private void processAddEquationContent(org.eclipse.emf.ecore.resource.Resource resource2, DialogContent dc, Map<ConversationElement, ConversationElement> additionMap, List<ConversationElement> additions, List<String> currentQuestions, 
+			ConversationElement ce, StatementContent statementAfter, AddEquationContent sc) {
 		processExpectsAnswerContent(resource, dc, additionMap, additions, currentQuestions, ce, statementAfter, sc);
 	}
 
@@ -6064,6 +6163,52 @@ public class AnswerCurationManager {
 			if (getQuestionsAndAnswers().containsKey(question)) {
 				String ans = getQuestionsAndAnswers().get(question);
 	//					logger.debug(ans + " ? " + ((AnswerContent)statementAfter).getAnswer().toString().trim());
+				if (ans.equals(SUSPENDED_EXTRACTION_PENDING_DOMAIN_MODEL_ADDITIONS)) {
+					// We need to set the extractionContext to after the additions
+					List<ConversationElement> celements = getConversationElements();
+					int idx = findStatementContentIndexInConversation(celements, sc);
+					if (idx >= 0) {
+						idx++;
+						StatementContent lastSc = null;
+						while (idx < celements.size()) {
+							ConversationElement ace = celements.get(idx++);
+							if (ace.getAgent().equals(Agent.CM) || ace.getStatement() instanceof SadlStatementContent) {
+								lastSc = ace.getStatement();
+							}
+						}
+						if (lastSc != null) {
+							setExtractionContext(lastSc);
+						}
+					}
+					getExtractionProcessor().setCodeModel(getSuspendedCodeModel());
+					try {
+						String status = continueExtraction(getSuspendedExtractionContent());
+						getQuestionsAndAnswers().put(question, status);
+						saveSuspendedExtractionContent(null);
+						saveSuspendedCodeModel(null);
+					} catch (IOException e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					} catch (ConfigurationException e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					} catch (ReasonerNotFoundException e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					} catch (InvalidNameException e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					} catch (QueryParseException e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					} catch (QueryCancelledException e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					} catch (InvalidInputException e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					}
+				}
 				if (statementAfter != null && statementAfter != null) {
 					String val = statementAfter.toString().trim();
 					val = stripEOS(SadlUtils.stripQuotes(val));
@@ -6303,12 +6448,12 @@ public class AnswerCurationManager {
 						}
 					}
 				}
-				recordEquationCompleteness(eqUri, false);
+				recordEquationCompleteness(eqUri, null);	// replace as it might have been complete before
 			}
 		}
 		else {
 			// this equation is complete
-			recordEquationCompleteness(eqUri, true);
+			recordEquationCompleteness(eqUri, eqsc.getText());
 		}
 	}
 
@@ -6369,16 +6514,14 @@ public class AnswerCurationManager {
 	 */
 	private void resetForConversationProcessing(OntModel domainModel, String domainModelName) {
 		this.owl2sadl = null;
-//		if (getDialogAnswerProvider() != null) {
-//			getDialogAnswerProvider().clearCumulatifeOffset();
-//		}
 		clearConceptsAdded();
 		getConfigurationManager().clearReasoner();
-		domainModelsLoaded.clear();
 //		clearInferenceProcessor();
 		setDomainModel(domainModel);
 		setDomainModelName(domainModelName);
-		setSimplifiedDomainModelForTextService(null);
+		setLocalityURI(domainModelName + "_txt#");
+		setLocalityPrefix("txt");
+		setSuspendConversationProcessing(false);
 	}
 
 	private void setSimplifiedDomainModelForTextService(OntModel sdmfts) {
@@ -6387,9 +6530,30 @@ public class AnswerCurationManager {
 	
 	private OntModel getSimplifiedDomainModelForTextService() throws ConfigurationException {
 		if (simplifiedDomainModelForTextService == null) {
-			simplifiedDomainModelForTextService = getDomainModelExtractForTextService(true);
+			setSimplifiedDomainModelForTextService(getDomainModelExtractForTextService(true));
 		}
 		return simplifiedDomainModelForTextService;
+	}
+	
+	/** 
+	 * Method to clear the domain model uploaded to the textToTriples service so
+	 * that a new one wil be uploaded before the next use of the service
+	 * @return
+	 */
+	private boolean clearDomainModelForTextService() {
+		if (simplifiedDomainModelForTextService != null) {
+			simplifiedDomainModelForTextService = null;
+			return true;
+		}
+		return false;
+	}
+	
+	/**
+	 * Method to determine if the domain model for the dialog window has been uploaded since last change
+	 * @return
+	 */
+	private boolean isDomainModelForTextSericeUploaded() {
+		return (simplifiedDomainModelForTextService != null);
 	}
 
 	private boolean applyAnswerToUnansweredQuestion(StatementContent question, StatementContent sc) {
@@ -6793,11 +6957,11 @@ public class AnswerCurationManager {
 		extractionContext = null;
 	}
 
-	private void setExtractionContext(ExtractContent extractionContext) {
+	private void setExtractionContext(StatementContent extractionContext) {
 		this.extractionContext = extractionContext;
 	}
 	
-	private ExtractContent getExtractionContext() {
+	private StatementContent getExtractionContext() {
 		return extractionContext;
 	}
 
@@ -6813,7 +6977,7 @@ public class AnswerCurationManager {
 		augmentedTypeQuestionsAsked.clear();
 	}
 
-	private String getLocalityURI() {
+	public String getLocalityURI() {
 		return localityURI;
 	}
 
@@ -6821,33 +6985,68 @@ public class AnswerCurationManager {
 		this.localityURI = localityURI;
 	}
 	
-	private void recordEquationCompleteness(String eqUri, boolean isComplete) {
+	private void recordEquationCompleteness(String eqUri, String completeEqText) {
 		if (equationCompleteness == null) {
-			equationCompleteness = new HashMap<String, Boolean>();
+			equationCompleteness = new HashMap<String, String>();
 		}
-		equationCompleteness.put(eqUri, new Boolean(isComplete));
+		equationCompleteness.put(eqUri, completeEqText);
 	}
 	
-	private boolean getEquationCompleteness(String eqUri) throws ConversationException {
+	private String getEquationCompleteness(String eqUri) {
 		if (equationCompleteness == null || !equationCompleteness.containsKey(eqUri)) {
-			throw new ConversationException("Equation is not registered");
+			return null;
 		}
 		return equationCompleteness.get(eqUri);
 	}
 
 	private boolean isNewlyCompletedEquation(EquationStatementContent eqsc) {
 		if (eqsc.getQuestionsForUser() == null) {
+			// the equation is currently complete--no questions for user
 			String eqUri = getDomainModelName() + "#" + eqsc.getEquationName();
-			try {
-				if (!getEquationCompleteness(eqUri)) {
-					return true;
-				}
-			} catch (ConversationException e) {
-				// this is OK, just return true as we have a complete equation that wasn't here before
+			String lastCompleteText = getEquationCompleteness(eqUri);
+			if (lastCompleteText == null) {
+				// it wasn't complete on last call so it's newly complete
+				return true;
+			}
+			if (eqsc.getText() != null && !eqsc.getText().equals(lastCompleteText)) {
+				// the equation has changed
 				return true;
 			}
 		}
 		return false;
+	}
+
+	private String getLocalityPrefix() {
+		return localityPrefix;
+	}
+
+	private void setLocalityPrefix(String localityPrefix) {
+		this.localityPrefix = localityPrefix;
+	}
+
+	private void setSuspendConversationProcessing(boolean b) {
+		suspendConversationProcessing = b;
+	}
+
+	private boolean isSuspendConversationProcessing() {
+		return suspendConversationProcessing;
+	}
+
+	private String getSuspendedExtractionContent() {
+		return this.suspendedExtractionContent;
+	}
+	
+	private void saveSuspendedExtractionContent(String content) {
+		this.suspendedExtractionContent = content;
+	}
+
+	private void saveSuspendedCodeModel(OntModel codeModel) {
+		this.suspendedCodeModel  = codeModel;
+		
+	}
+
+	private OntModel getSuspendedCodeModel() {
+		return suspendedCodeModel;
 	}
 
 }
