@@ -320,7 +320,7 @@ public class TextProcessorTests {
 		// now look for variable information
 		
 		try {
-			EquationVariableContextResponse evcr = acm.getTextProcessor().equationVariableContext("R", acm.getLocalityOfFileExtract(textFile.getCanonicalPath()));
+			EquationVariableContextResponse evcr = acm.getTextProcessor().equationVariableContext("R", acm.getLocalityURI());
 			if (evcr != null) {
 				System.out.println(evcr.toString());
 			}
@@ -329,7 +329,7 @@ public class TextProcessorTests {
 			e.printStackTrace();
 		}
 		try {
-			EquationVariableContextResponse evcr = acm.getTextProcessor().equationVariableContext("T", acm.getLocalityOfFileExtract(textFile.getCanonicalPath()));
+			EquationVariableContextResponse evcr = acm.getTextProcessor().equationVariableContext("T", acm.getLocalityURI());
 			if (evcr != null) {
 				System.out.println(evcr.toString());
 			}

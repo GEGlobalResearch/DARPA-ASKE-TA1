@@ -213,7 +213,17 @@ public class JavaModelExtractorJP implements IModelFromCodeExtractor {
 		if (getCodeModelPrefix() == null) {
 			setCodeModelPrefix(modelPrefix);	// don't override a preset model name		
 		}
+		codeModel = null;
+		rootContainingInstance = null;
+		postProcessingList.clear();
+		classNameMap.clear();
+		methodWithBodyInProcess = null;
+		potentialConstants.clear();
+		discountedPotentialConstants.clear();
+		nodesWithCommentInvestigated.clear();
 		methodJavadoc.clear();
+		clearAggregatedComments();
+
 	}
 
 	public boolean process(String inputIdentifier, String content, String modelName, String modelPrefix) throws ConfigurationException, IOException {
@@ -1276,6 +1286,11 @@ public class JavaModelExtractorJP implements IModelFromCodeExtractor {
 	@Override
 	public String getAggregatedComments() {
 		return aggregatedComments.toString();
+	}
+	
+	@Override
+	public void clearAggregatedComments() {
+		aggregatedComments = new StringBuilder();
 	}
 
 	private Property getInputProperty() {

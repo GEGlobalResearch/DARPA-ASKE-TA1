@@ -475,7 +475,7 @@ public class DialogAnswerProvider extends BaseDialogAnswerProvider {
 	}
 
 	private String getNodeText(EObject element) {
-		if (element != null) {
+		if (element != null && NodeModelUtils.getNode(element) != null) {
 			return NodeModelUtils.getTokenText(NodeModelUtils.getNode(element));
 		}
 		return null;
