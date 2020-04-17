@@ -717,7 +717,9 @@ public class TextProcessor {
 	private void setRegisteredDomainModel(OntModel registeredDomainModel) {
 	}
 
-	public OntModel getOntModelFromText(String inputIdentifier, String content, String locality, String modelName, String modelPrefix, boolean notifyUser) throws IOException, ConfigurationException, AnswerExtractionException {
+	public OntModel getOntModelFromText(String inputIdentifier, String content, String locality, 
+			String modelName, String modelPrefix, boolean addToTextModel, boolean notifyUser) 
+					throws IOException, ConfigurationException, AnswerExtractionException {
 		int[] results = processText(inputIdentifier, content,locality, modelName, modelPrefix, notifyUser);
 		if (results == null) {
 			throw new AnswerExtractionException("Text processing service returned no information");
@@ -736,17 +738,16 @@ public class TextProcessor {
 				String format = saveGraphResults[1];
 				String serializedGraph = saveGraphResults[2];
 				if (serializedGraph != null) {
-//					System.out.println(serializedGraph);	// debug only
+					System.out.println("Graph extracted:\n" + serializedGraph);	// debug only
 					try {
 						OntModel newModel = getTextModelConfigMgr().getOntModel(modelName, serializedGraph, Scope.INCLUDEIMPORTS, format);
 //								logger.debug("The new model:");
-//								newModel.write(System.err, "N-TRIPLES");
-						theModel = getCurationManager().getExtractionProcessor().getTextModel();
+//								newModel.write(System.err, "N3");
+//						theModel = getCurationManager().getExtractionProcessor().getTextModel();
 //								logger.debug("The existing model:");
-//								theModel.write(System.err, "N-TRIPLES");
-						theModel.add(newModel);
-						getCurationManager().addToFileLocalityMap(inputIdentifier, modelName);
-						getCurationManager().addExtractionModel(modelName, theModel);
+//								theModel.write(System.err, "N3");
+//						theModel.add(newModel);
+						theModel = newModel;
 					}
 					catch (Exception e) {
 						logger.debug("Failed to read triples into OntModel: " + e.getMessage());
