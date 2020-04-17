@@ -1768,7 +1768,7 @@ public class AnswerCurationManager {
 	 */
 	private Object getAugmentedTypeFromLocalitySearch(String methodUri, String argName, String semType, boolean isMethodReturn, String script, String locality, List<OntResource> articledClasses) throws InvalidInputException, IOException {
 		// check cache
-		if (equationVariableContextHasBeenCached(argName, locality)) {
+		if (argName != null && equationVariableContextHasBeenCached(argName, locality)) {
 			return getEquationVariableContextFromCache(argName, locality);
 		}
 		List<Object> extractions = getCurrentTextExtractionExtracts();
@@ -2726,6 +2726,21 @@ public class AnswerCurationManager {
 					sb.append("\n   with declaration (a Script with script \"");
 					sb.append(pycode);
 					sb.append("\", with language Python)");
+
+					if (saveOtherPythonScripts() ) {
+						String tfPythonCode = pythonToTensorFlowPython(pycode);
+						String npPythonCode = pythonToNumPyPython(pycode);
+						sb.append(",\n   with declaration (a Script with script \"");
+						sb.append(tfPythonCode);
+						sb.append("\", with language ");
+						sb.append(getLocalNameFromUri(DialogConstants.TF_PYTHON_LANGUAGE));
+						sb.append(")");
+						sb.append(",\n   with declaration (a Script with script \"");
+						sb.append(npPythonCode);
+						sb.append("\", with language ");
+						sb.append(getLocalNameFromUri(DialogConstants.NUMPY_PYTHON_LANGUAGE));
+						sb.append(")");
+					}
 				}
 			} catch (IOException cause) {
 				if (cause instanceof ConnectException || cause instanceof UnknownHostException) {
@@ -3932,7 +3947,7 @@ public class AnswerCurationManager {
 	}
 
 	private String getLocalName(String uri) {
-		if (uri.indexOf("#") > 0) {
+		if (uri != null && uri.indexOf("#") > 0) {
 			return uri.substring(uri.indexOf("#") + 1);
 		}
 		return uri;
