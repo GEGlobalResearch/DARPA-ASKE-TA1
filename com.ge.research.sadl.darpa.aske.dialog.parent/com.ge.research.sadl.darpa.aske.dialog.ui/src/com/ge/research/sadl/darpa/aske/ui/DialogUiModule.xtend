@@ -50,6 +50,8 @@ import com.ge.research.sadl.darpa.aske.ui.syntaxcoloring.DialogSemanticHighlight
 import com.ge.research.sadl.darpa.aske.ui.syntaxcoloring.DialogTokenToAttributeIdMapper
 import com.ge.research.sadl.ide.editor.contentassist.IOntologyContextProvider
 import com.ge.research.sadl.ui.contentassist.SadlReferenceProposalCreator
+import com.ge.research.sadl.ui.refactoring.SadlReferenceUpdater
+import com.ge.research.sadl.ui.refactoring.SadlResourceRenameStrategy
 import com.google.inject.Binder
 import com.google.inject.name.Names
 import org.eclipse.xtend.lib.annotations.FinalFieldsConstructor
@@ -66,6 +68,7 @@ import org.eclipse.xtext.ui.editor.folding.IFoldingStructureProvider
 import org.eclipse.xtext.ui.editor.preferences.IPreferenceStoreInitializer
 import org.eclipse.xtext.ui.editor.preferences.LanguageRootPreferencePage
 import org.eclipse.xtext.ui.editor.syntaxcoloring.IHighlightingConfiguration
+import org.eclipse.xtext.ui.refactoring.IRenameStrategy
 
 /**
  * Use this class to register components to be used within the Eclipse IDE.
@@ -129,6 +132,14 @@ class DialogUiModule extends AbstractDialogUiModule {
 
 	def Class<? extends DefaultFoldingRegionProvider> bindDefaultFoldingRegionProvider() {
 		return DialogFoldingFoldingRegionProvider;
+	}
+
+	override Class<? extends IRenameStrategy> bindIRenameStrategy() {
+		return SadlResourceRenameStrategy;
+	}
+
+	override bindIReferenceUpdater() {
+		return SadlReferenceUpdater;
 	}
 
 }
