@@ -3932,7 +3932,7 @@ public class AnswerCurationManager {
 	}
 
 	private String getLocalName(String uri) {
-		if (uri.indexOf("#") > 0) {
+		if (uri != null && uri.indexOf("#") > 0) {
 			return uri.substring(uri.indexOf("#") + 1);
 		}
 		return uri;
