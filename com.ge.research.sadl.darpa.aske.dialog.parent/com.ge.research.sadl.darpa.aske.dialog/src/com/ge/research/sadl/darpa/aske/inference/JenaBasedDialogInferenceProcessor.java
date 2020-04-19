@@ -2825,7 +2825,7 @@ private void runInference(Resource resource, String query, String testQuery) thr
 	
 	if(debugMode) {
 		ResultSet insertTest = runReasonerQuery(resource, testQuery);
-		if (!insertTest.hasNext()) {
+		if (insertTest == null || !insertTest.hasNext()) {
 			throw new SadlInferenceException("Inference execution failed for " + query);
 		}
 	}
