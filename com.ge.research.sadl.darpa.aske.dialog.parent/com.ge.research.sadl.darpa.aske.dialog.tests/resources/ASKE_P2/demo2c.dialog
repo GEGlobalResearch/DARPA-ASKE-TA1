@@ -9,4 +9,4 @@ totalThrust describes Aircraft with values of type TotalThrust.
 
 what is totalThrust of an Aircraft when engine of the Aircraft is a CF6 and numEngines is 2 and the altitude is 32000 ft and the speed is 700 mph?
 
-//Extract from "The total thrust totThrust is the product of number of engines ne and thrust fnlb. The equation is tt = ne * fnlb".
+//Extract from "The total thrust totThrust is the product of number of engines ne and thrust fnlb. The equation is totThrust = ne * fnlb".
