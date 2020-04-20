@@ -51,6 +51,7 @@ import com.ge.research.sadl.darpa.aske.ui.syntaxcoloring.DialogTokenToAttributeI
 import com.ge.research.sadl.ide.editor.contentassist.IOntologyContextProvider
 import com.ge.research.sadl.ui.contentassist.SadlReferenceProposalCreator
 import com.ge.research.sadl.ui.refactoring.SadlReferenceUpdater
+import com.ge.research.sadl.ui.refactoring.SadlRenameContextFactory
 import com.ge.research.sadl.ui.refactoring.SadlResourceRenameStrategy
 import com.google.inject.Binder
 import com.google.inject.name.Names
@@ -69,6 +70,7 @@ import org.eclipse.xtext.ui.editor.preferences.IPreferenceStoreInitializer
 import org.eclipse.xtext.ui.editor.preferences.LanguageRootPreferencePage
 import org.eclipse.xtext.ui.editor.syntaxcoloring.IHighlightingConfiguration
 import org.eclipse.xtext.ui.refactoring.IRenameStrategy
+import org.eclipse.xtext.ui.refactoring.ui.IRenameContextFactory
 
 /**
  * Use this class to register components to be used within the Eclipse IDE.
@@ -140,6 +142,10 @@ class DialogUiModule extends AbstractDialogUiModule {
 
 	override bindIReferenceUpdater() {
 		return SadlReferenceUpdater;
+	}
+
+	def Class<? extends IRenameContextFactory> bindIRenameContextFactory() {
+		return SadlRenameContextFactory;
 	}
 
 }
