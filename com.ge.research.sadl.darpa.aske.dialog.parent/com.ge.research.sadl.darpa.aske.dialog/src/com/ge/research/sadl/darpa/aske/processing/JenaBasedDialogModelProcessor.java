@@ -467,11 +467,13 @@ public class JenaBasedDialogModelProcessor extends JenaBasedSadlModelProcessor {
 		int end2 = start + length;
 		String txt = dsl.substring(start, end2);
 		if (!txt.endsWith(".") && !txt.endsWith("?")) {
-			String after = dsl.substring(end2,end2+1);
-			if (after.equals(".") || after.equals("?")) {
-				txt = txt + after;
-				length++;
-				end++;
+			if (end2 + 1 < dsl.length()) {
+				String after = dsl.substring(end2,end2+1);
+				if (after.equals(".") || after.equals("?")) {
+					txt = txt + after;
+					length++;
+					end++;
+				}
 			}
 		}
 		modelElements.add(new ModelElementInfo(element, txt, start, length, end, false));
