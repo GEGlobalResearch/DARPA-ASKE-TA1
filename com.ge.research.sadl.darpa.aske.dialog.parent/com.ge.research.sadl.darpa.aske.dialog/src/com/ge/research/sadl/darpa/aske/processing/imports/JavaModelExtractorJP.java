@@ -1249,6 +1249,12 @@ public class JavaModelExtractorJP implements IModelFromCodeExtractor {
 	        	return sb.toString();
 	        }
         }
+        if (node instanceof MethodDeclaration) {
+        	Optional<JavadocComment> jdc = ((MethodDeclaration)node).getJavadocComment();
+        	if (jdc.isPresent()) {
+        		return jdc.get().toString().trim();
+        	}
+        }
         return null;
     }
 
