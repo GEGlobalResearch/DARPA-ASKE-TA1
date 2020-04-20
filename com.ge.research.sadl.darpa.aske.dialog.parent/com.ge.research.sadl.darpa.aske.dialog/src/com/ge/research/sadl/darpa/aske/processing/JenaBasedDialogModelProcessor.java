@@ -211,15 +211,12 @@ public class JenaBasedDialogModelProcessor extends JenaBasedSadlModelProcessor {
 		if (!isSupported(resource)) {
 			return;
 		}
-//		if (1 == 1) {
-//			return;
-//		}
 		resetProcessor();
 		logger.debug("JenaBasedDialogModelProcessor.onValidate called for Resource '" + resource.getURI() + "'"); 
 		CancelIndicator cancelIndicator = context.getCancelIndicator();
-		if (resource.getContents().size() < 1) {
-			return;
-		}
+//		if (resource.getContents().size() < 1) {
+//			return;
+//		}
 	
 		logger.debug("onValidate called for Resource '" + resource.getURI() + "'");
 		if (mode.shouldCheck(CheckType.EXPENSIVE)) {
@@ -363,9 +360,9 @@ public class JenaBasedDialogModelProcessor extends JenaBasedSadlModelProcessor {
 
 		// Check for a syntactically valid AST; if it isn't then don't process so that conversations will only be valid ones
 	    boolean validAST = isAstSyntaxValid(model);	
-	    if (!validAST) {
-	    	return;
-	    }
+//	    if (!validAST) {
+//	    	return;
+//	    }
 
 		// create validator for expressions
 		initializeModelValidator();
@@ -434,12 +431,14 @@ public class JenaBasedDialogModelProcessor extends JenaBasedSadlModelProcessor {
 				OntModelProvider.attach(model.eResource(), getTheJenaModel(), getModelName(), getModelAlias());
 			}
 			
-			// Do this **after** setting the resource information in the OntModelProvider
-			try {
-				getAnswerCurationManager(resource).processConversation(getCurrentResource(), getTheJenaModel(), getModelName());
-			} catch (IOException e2) {
-				// TODO Auto-generated catch block
-				e2.printStackTrace();
+			if (validAST) {
+				// Do this **after** setting the resource information in the OntModelProvider
+				try {
+					getAnswerCurationManager(resource).processConversation(getCurrentResource(), getTheJenaModel(), getModelName());
+				} catch (IOException e2) {
+					// TODO Auto-generated catch block
+					e2.printStackTrace();
+				}
 			}
 			
 			logger.debug("At end of model processing, conversation is:");
