@@ -467,11 +467,13 @@ public class JenaBasedDialogModelProcessor extends JenaBasedSadlModelProcessor {
 		int end2 = start + length;
 		String txt = dsl.substring(start, end2);
 		if (!txt.endsWith(".") && !txt.endsWith("?")) {
-			String after = dsl.substring(end2,end2+1);
-			if (after.equals(".") || after.equals("?")) {
-				txt = txt + after;
-				length++;
-				end++;
+			if (end2 + 1 < dsl.length()) {
+				String after = dsl.substring(end2,end2+1);
+				if (after.equals(".") || after.equals("?")) {
+					txt = txt + after;
+					length++;
+					end++;
+				}
 			}
 		}
 		modelElements.add(new ModelElementInfo(element, txt, start, length, end, false));
@@ -3128,6 +3130,7 @@ public class JenaBasedDialogModelProcessor extends JenaBasedSadlModelProcessor {
 				"isCalled describes Method with values of type boolean.\r\n" + 
 				"ExternalMethod is a type of Method.\r\n" + 
 				"Constructor is a type of Method.\r\n" + 
+				"Rule CisM: if x is a Constructor then x is a Method.\r\n" +
 				"\r\n" + 
 				"// The reference to a CodeVariable can be its definition (Defined),\r\n" + 
 				"//	an assignment or reassignment (Reassigned), or just a reference\r\n" + 
@@ -3238,7 +3241,7 @@ public class JenaBasedDialogModelProcessor extends JenaBasedSadlModelProcessor {
 				"\r\n" +
 				"ClassesToIgnore is a type of Class.\r\n" + 
 				"{Canvas, CardLayout, Graphics, Insets, Panel, Image, cem:Event, Choice, Button,\r\n" + 
-				"	Viewer, GridLayout\r\n" + 
+				"	Viewer, GridLayout, Math, Double, Float, String\r\n" + 
 				"} are types of ClassesToIgnore.\r\n" + 
 				"\r\n" + 
 				"Ask ImplicitMethodInputs: \"select distinct ?m ?cv ?vt ?vn where {?r <isImplicit> true . ?r <http://sadl.org/CodeExtractionModel.sadl#input> true . \r\n" + 
