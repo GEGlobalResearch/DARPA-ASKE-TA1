@@ -555,14 +555,14 @@ public class JenaBasedDialogInferenceProcessor extends JenaBasedSadlInferencePro
 			"   ?II imp:localDescriptorName ?ImpIn.\n" + 
 			"   #optional{?II imp:descriptorVariable  ?UniqueImpInputLabel.} #These are not being added to the extracted models\n" + 
 			"   optional{?II imp:augmentedType ?IT. ?IT imp:semType ?ImpInputAugType.}\n" + 
-			"   optional{?II imp:declaration ?ID. ?ID imp:language imp:Python. ?ID imp:script ?InpD}}\n" + 
+			"   optional{?II imp:declaration ?ID. ?ID imp:language imp:Python-NumPy. ?ID imp:script ?InpD}}\n" + 
 			"\n" + 
 			"  optional{\n" + 
 			"   ?Model imp:implicitOutput ?IO.\n" + 
 			"   ?IO imp:localDescriptorName ?ImpOut.\n" + 
 			"   optional{?IO imp:dataType ?DT.}\n" + 
 			"   optional{?IO imp:augmentedType ?OT. ?OT imp:semType ?ImpOutputAugType.}\n" + 
-			"   optional{?IO imp:declaration ?OD. ?OD imp:language imp:Python. ?OD imp:script ?OutpD}}\n" + 
+			"   optional{?IO imp:declaration ?OD. ?OD imp:language imp:Python-NumPy. ?OD imp:script ?OutpD}}\n" + 
 			"  \n" + 
 			"}order by ?Model";
 	
