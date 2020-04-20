@@ -2790,6 +2790,16 @@ public class AnswerCurationManager {
 					// TODO if rest is the name of a domain class
 					return rest;
 				}
+				else {
+					int firstDot = methodName.indexOf('.');
+					if (firstDot == lastDot) {	// there are only two dots
+						String firstSegment = methodName.substring(0, firstDot);
+						if (firstSegment.equals(lastSegment)) {
+							// this is a constructor, so it is an initializer
+							return firstSegment;
+						}
+					}
+				}
 			}
 		}
 		return null;
@@ -6947,6 +6957,11 @@ public class AnswerCurationManager {
 		else {
 			modifiedScript = pythonScript.replaceAll("Math.", "tf.math.");
 		}
+		modifiedScript = modifiedScript.replaceAll("tf.math.PI", "tf.pi");
+		modifiedScript = modifiedScript.replaceAll("tf.math.E", "tf.e");
+		modifiedScript = modifiedScript.replaceAll("tf.math.max", "tf.maximum");
+		modifiedScript = modifiedScript.replaceAll("tf.math.", "tf.");
+		modifiedScript = modifiedScript.replaceAll("Double.isNaN", "tf.is_nan");
 		return modifiedScript;
 	}
 
@@ -6963,8 +6978,14 @@ public class AnswerCurationManager {
 		else {
 			modifiedScript = pythonScript.replaceAll("Math.", "np.math.");
 		}
+		modifiedScript = modifiedScript.replaceAll("np.math.PI", "np.pi");
+		modifiedScript = modifiedScript.replaceAll("np.math.E", "np.e");
+		modifiedScript = modifiedScript.replaceAll("np.math.acos", "np.arccos");
+		modifiedScript = modifiedScript.replaceAll("np.math.atan", "np.arctan");
+		modifiedScript = modifiedScript.replaceAll("np.math.max", "np.maximum");
 		modifiedScript = modifiedScript.replaceAll("np.math.", "np.");
 		modifiedScript = modifiedScript.replaceAll("np.pow", "np.power");
+		modifiedScript = modifiedScript.replaceAll("Double.isNaN", "np.isnan");
 		return modifiedScript;
 	}
 
