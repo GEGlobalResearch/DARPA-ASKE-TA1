@@ -1225,7 +1225,9 @@ class kChainModel(object):
                 es = str(err)
                 if 'missing' in es:
                     missingVars = [s for ind, s in enumerate(es.split('\'')) if ind%2 == 1]
-                 
+                else:
+                    missingVars = []
+                    
                 #assign none outputs
                 if len(outputVars) > 1:
                     y = []

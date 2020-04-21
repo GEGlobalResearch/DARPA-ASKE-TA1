@@ -147,6 +147,7 @@ class invizin(object):
                 d['OATMatrix'] = df.to_dict(orient='list')
                 XRS = np.linspace(MIN_RS, MAX_RS, num=NUM)
                 df = self._getOutputDataframe(copy.deepcopy(pck), XRS, index = ii)
+                d['OATRSMatrix'] = df.to_dict(orient='list')
             else:
                 X = np.linspace(MIN, MAX, num=NUM)
                 df = self._getOutputDataframe(copy.deepcopy(pck), X, index = ii)

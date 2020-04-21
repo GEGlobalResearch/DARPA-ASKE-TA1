@@ -149,26 +149,28 @@ def evaluate(body):
     #construct output packet
     outputPacket = {}
     
+    if 'CGType' in body.keys():
+        CGType = body['CGType']
+    else:
+        CGType = ''
+        
     if inverseProblem:
-        x_opt, fx_opt, inputVar, outputVar, defaultValuesUsed, missingVar = ko.evaluateInverse(inputVar = body['inputVariables'], 
-                                                                                               outputVar = body['outputVariables'], 
-                                                                                               mdlName = body['modelName'])
+        x_opt, fx_opt, inputVar, outputVar, defaultValuesUsed, missingVar = ko.evaluateInverse(inputVars = body['inputVariables'], 
+                                                                                               outputVars = body['outputVariables'], 
+                                                                                               mdlName = body['modelName'],
+                                                                                               CGType = CGType)
         outputPacket["error"] = str(fx_opt)
     else:
         #call K-CHAIN evaluate function with necessary general inputs
-        if 'CGType' in body.keys():
-            if body['CGType'] == 'python':
-                outputVar, defaultValuesUsed, missingVar = ko.evaluatePy(inputVars = body['inputVariables'], 
-                                                                         outputVars = body['outputVariables'], 
-                                                                         mdlName = body['modelName'])
-            else:
-                outputVar, defaultValuesUsed, missingVar = ko.evaluate(inputVars = body['inputVariables'], 
-                                                                       outputVars = body['outputVariables'], 
-                                                                       mdlName = body['modelName'])
+        if CGType == 'python':
+            outputVar, defaultValuesUsed, missingVars = ko.evaluatePy(inputVars = body['inputVariables'], 
+                                                                     outputVars = body['outputVariables'], 
+                                                                     mdlName = body['modelName'])
         else:
-            outputVar, defaultValuesUsed, missingVar = ko.evaluate(inputVars = body['inputVariables'], 
+            outputVar, defaultValuesUsed, missingVars = ko.evaluate(inputVars = body['inputVariables'], 
                                                                    outputVars = body['outputVariables'], 
                                                                    mdlName = body['modelName'])
+
         inputVar = body['inputVariables']
         outputPacket["error"] = ''
         
@@ -181,10 +183,10 @@ def evaluate(body):
         print('Default Values Used: ',defaultValuesUsed)
         outputPacket["defaultsUsed"] = defaultValuesUsed
     
-    if missingVar != '':
+    if missingVars != []:
         #missing variable information is sent back to user
-        print('Need Value For: ',missingVar)
-        outputPacket["missingVar"] = missingVar
+        print('Need Value For: ',missingVars)
+        outputPacket["missingVar"] = str(missingVars)
 
     print(outputPacket)
     
