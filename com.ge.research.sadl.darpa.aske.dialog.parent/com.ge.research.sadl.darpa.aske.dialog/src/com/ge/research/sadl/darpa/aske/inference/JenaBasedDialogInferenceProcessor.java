@@ -1658,7 +1658,7 @@ private ResultSet[] processWhatWhenQuery(Resource resource, String queryModelFil
 	        createCEoutputInstances(outputsList, ce, class2lbl, lbl2class, lbl2value, class2units);
 
 
-			analyzeSensitivityResults(sensitivityResult, cgIns, lbl2class, outputsList, queryModelPrefix, insightsMap);			
+			analyzeSensitivityResults(sensitivityResult, cgIns, lbl2class, outputsList, queryModelPrefix, insightsMap);	
 
 	        
 	        saveMetaDataFile(resource,queryModelURI,queryModelFileName); //so we can query the the eqns in the CCG
@@ -1777,26 +1777,32 @@ private void analyzeSensitivityResults(String sensitivityResult, Individual cgIn
 
 	if(debugMode) {System.out.println(sensitivityResult);}
 	
-	JsonElement je = new JsonParser().parse(sensitivityResult);
-	if (je.isJsonObject()) {
-		JsonObject jobj = je.getAsJsonObject();
-		if (jobj.has("OATSensitivityData")) { //sensitivityData
-			JsonArray ja = jobj.getAsJsonArray("OATSensitivityData");
-			JsonArray jacobians = null;
-			if (jobj.has("normalizedSensitivityData")) {
-				jacobians = jobj.getAsJsonArray("normalizedSensitivityData");
+	if(sensitivityResult != null) {
+		JsonElement je = new JsonParser().parse(sensitivityResult);
+		if (je.isJsonObject()) {
+			JsonObject jobj = je.getAsJsonObject();
+			if (jobj.has("OATSensitivityData")) { //sensitivityData
+				JsonArray ja = jobj.getAsJsonArray("OATSensitivityData");
+				JsonArray jacobians = null;
+				if (jobj.has("normalizedSensitivityData")) {
+					jacobians = jobj.getAsJsonArray("normalizedSensitivityData");
+				}
+				for(int i=0; i<ja.size(); i++) { //for each input variable
+					extractVarInfluence(ja.get(i).getAsJsonObject(), i, jacobians, cgIns, lbl2class, outputsList, queryModelPrefix, insightsMap);
+				}
 			}
-			for(int i=0; i<ja.size(); i++) { //for each input variable
-				extractVarInfluence(ja.get(i).getAsJsonObject(), i, jacobians, cgIns, lbl2class, outputsList, queryModelPrefix, insightsMap);
+			else {
+				throw new IOException("Sensitivity returned no data: " + je.toString());
 			}
 		}
 		else {
-			throw new IOException("Sensitivity returned no data: " + je.toString());
+			throw new IOException("Unexpected response from sensitivity: " + je.toString());
 		}
 	}
-	else {
-		throw new IOException("Unexpected response from sensitivity: " + je.toString());
-	}
+//	else {
+//		throw new IOException("Sensitivity returned no data.");
+//	}
+	
 }
 
 /**
