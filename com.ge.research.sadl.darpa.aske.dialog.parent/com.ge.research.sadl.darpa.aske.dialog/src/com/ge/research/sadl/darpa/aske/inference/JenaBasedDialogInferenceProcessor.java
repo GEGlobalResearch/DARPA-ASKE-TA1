@@ -264,7 +264,7 @@ public class JenaBasedDialogInferenceProcessor extends JenaBasedSadlInferencePro
 			"   filter not exists{?Eq a imp:IntializerMethod} } \n" + 
 			"}";
 
-	public static final String CHECK_GENERICIOs = "select distinct ?Eq ?Out where { ?Eq <http://sadl.org/sadlimplicitmodel#genericOutput> ?Out}";
+	public static final String CHECK_GENERICIOs = "select distinct ?Eq ?In ?Out where { ?Eq <http://sadl.org/sadlimplicitmodel#genericInput> ?In. ?Eq <http://sadl.org/sadlimplicitmodel#genericOutput> ?Out.}order by ?Eq";
 	
 	public static final String DEPENDENCY_GRAPH_INSERT = "prefix cg:<http://aske.ge.com/compgraphmodel#>\n" +
 		    "prefix imp:<http://sadl.org/sadlimplicitmodel#>\n" +
@@ -555,14 +555,14 @@ public class JenaBasedDialogInferenceProcessor extends JenaBasedSadlInferencePro
 			"   ?II imp:localDescriptorName ?ImpIn.\n" + 
 			"   #optional{?II imp:descriptorVariable  ?UniqueImpInputLabel.} #These are not being added to the extracted models\n" + 
 			"   optional{?II imp:augmentedType ?IT. ?IT imp:semType ?ImpInputAugType.}\n" + 
-			"   optional{?II imp:declaration ?ID. ?ID imp:language imp:Python. ?ID imp:script ?InpD}}\n" + 
+			"   optional{?II imp:declaration ?ID. ?ID imp:language imp:Python-NumPy. ?ID imp:script ?InpD}}\n" + 
 			"\n" + 
 			"  optional{\n" + 
 			"   ?Model imp:implicitOutput ?IO.\n" + 
 			"   ?IO imp:localDescriptorName ?ImpOut.\n" + 
 			"   optional{?IO imp:dataType ?DT.}\n" + 
 			"   optional{?IO imp:augmentedType ?OT. ?OT imp:semType ?ImpOutputAugType.}\n" + 
-			"   optional{?IO imp:declaration ?OD. ?OD imp:language imp:Python. ?OD imp:script ?OutpD}}\n" + 
+			"   optional{?IO imp:declaration ?OD. ?OD imp:language imp:Python-NumPy. ?OD imp:script ?OutpD}}\n" + 
 			"  \n" + 
 			"}order by ?Model";
 	
@@ -1420,8 +1420,6 @@ public class JenaBasedDialogInferenceProcessor extends JenaBasedSadlInferencePro
 		List<String> contextClassList = getContextClassList(contextPatterns);
 		
 	
-//		infereDependencyGraph();
-	
 		int successfulModels=0;
 		
 		if (useDbn) {
@@ -1497,8 +1495,6 @@ private ResultSet[] processWhatWhenQuery(Resource resource, String queryModelFil
 	
 	ConfigurationManagerForIDE cmgr = getConfigMgrForIDE(resource);
 	
-	
-//	infereDependencyGraph(resource);
 	
 
 	System.out.print("Retrieving composite model eqns: ");
@@ -2825,7 +2821,7 @@ private void runInference(Resource resource, String query, String testQuery) thr
 	
 	if(debugMode) {
 		ResultSet insertTest = runReasonerQuery(resource, testQuery);
-		if (!insertTest.hasNext()) {
+		if (insertTest == null || !insertTest.hasNext()) {
 			throw new SadlInferenceException("Inference execution failed for " + query);
 		}
 	}
