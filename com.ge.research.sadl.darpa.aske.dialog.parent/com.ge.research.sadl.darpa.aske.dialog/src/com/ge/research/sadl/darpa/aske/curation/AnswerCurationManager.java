@@ -1618,6 +1618,9 @@ public class AnswerCurationManager {
 						else if (augtypeStuff instanceof String[]){
 							augtype = ((String[])augtypeStuff)[0];
 						}
+						else if (augtypeStuff instanceof String) {
+							augtype = augtypeStuff.toString();
+						}
 						if (augtype != null) {
 							sb.append("(");
 							sb.append(augtype);
