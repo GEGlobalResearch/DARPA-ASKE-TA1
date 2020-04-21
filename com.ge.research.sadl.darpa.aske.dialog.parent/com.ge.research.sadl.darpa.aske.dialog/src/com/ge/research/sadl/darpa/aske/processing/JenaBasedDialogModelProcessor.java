@@ -431,7 +431,7 @@ public class JenaBasedDialogModelProcessor extends JenaBasedSadlModelProcessor {
 				OntModelProvider.attach(model.eResource(), getTheJenaModel(), getModelName(), getModelAlias());
 			}
 			
-			if (validAST) {
+			if (validAST && !refactoringHelper.isInProgress()) {
 				// Do this **after** setting the resource information in the OntModelProvider
 				try {
 					getAnswerCurationManager(resource).processConversation(getCurrentResource(), getTheJenaModel(), getModelName());
