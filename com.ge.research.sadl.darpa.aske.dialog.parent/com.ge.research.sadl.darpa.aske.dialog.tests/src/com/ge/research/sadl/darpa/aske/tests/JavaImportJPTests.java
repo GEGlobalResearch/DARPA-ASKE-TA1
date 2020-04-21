@@ -304,7 +304,7 @@ public class JavaImportJPTests extends AbstractDialogTest {
 		acm.setOwlModelsFolder(getExtractionProjectModelFolder());
 		
 		IDialogAnswerProvider dapcft = new DialogAnswerProviderConsoleForTest();
-		cm.addPrivateKeyMapValueByResource(DialogConstants.DIALOG_ANSWER_PROVIDER, acm.getResource(), dapcft);
+		cm.addPrivateKeyMapValueByResource(DialogConstants.DIALOG_ANSWER_PROVIDER, acm.getResource().getURI(), dapcft);
 		
 		boolean includeSerialization = false;
 		
@@ -413,7 +413,7 @@ public class JavaImportJPTests extends AbstractDialogTest {
 		acm.setOwlModelsFolder(getExtractionProjectModelFolder());
 		
 		IDialogAnswerProvider dapcft = new DialogAnswerProviderConsoleForTest();
-		cm.addPrivateKeyMapValueByResource(DialogConstants.DIALOG_ANSWER_PROVIDER, acm.getResource(), dapcft);
+		cm.addPrivateKeyMapValueByResource(DialogConstants.DIALOG_ANSWER_PROVIDER, acm.getResource().getURI(), dapcft);
 		
 		boolean includeSerialization = false; //true;
 		
@@ -485,7 +485,7 @@ public class JavaImportJPTests extends AbstractDialogTest {
 		acm.setOwlModelsFolder(getExtractionProjectModelFolder());
 		
 		IDialogAnswerProvider dapcft = new DialogAnswerProviderConsoleForTest();
-		cm.addPrivateKeyMapValueByResource(DialogConstants.DIALOG_ANSWER_PROVIDER, acm.getResource(), dapcft);
+		cm.addPrivateKeyMapValueByResource(DialogConstants.DIALOG_ANSWER_PROVIDER, acm.getResource().getURI(), dapcft);
 		
 		boolean includeSerialization = false; //true;
 		
@@ -537,7 +537,7 @@ public class JavaImportJPTests extends AbstractDialogTest {
 		acm.setOwlModelsFolder(getExtractionProjectModelFolder());
 		
 		IDialogAnswerProvider dapcft = new DialogAnswerProviderConsoleForTest();
-		cm.addPrivateKeyMapValueByResource(DialogConstants.DIALOG_ANSWER_PROVIDER, acm.getResource(), dapcft);
+		cm.addPrivateKeyMapValueByResource(DialogConstants.DIALOG_ANSWER_PROVIDER, acm.getResource().getURI(), dapcft);
 		
 		boolean includeSerialization = false; //true;
 		
@@ -595,7 +595,7 @@ public class JavaImportJPTests extends AbstractDialogTest {
 		acm.setOwlModelsFolder(getExtractionProjectModelFolder());
 		
 		IDialogAnswerProvider dapcft = new DialogAnswerProviderConsoleForTest();
-		cm.addPrivateKeyMapValueByResource(DialogConstants.DIALOG_ANSWER_PROVIDER, acm.getResource(), dapcft);
+		cm.addPrivateKeyMapValueByResource(DialogConstants.DIALOG_ANSWER_PROVIDER, acm.getResource().getURI(), dapcft);
 		
 		boolean includeSerialization = true;
 		

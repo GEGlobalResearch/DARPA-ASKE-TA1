@@ -55,6 +55,9 @@ import org.eclipse.emf.ecore.resource.impl.ResourceSetImpl;
 import org.eclipse.osgi.util.NLS;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Shell;
+import org.eclipse.ui.IEditorInput;
+import org.eclipse.ui.IEditorPart;
+import org.eclipse.ui.IWorkbench;
 import org.eclipse.ui.IWorkbenchPage;
 import org.eclipse.ui.IWorkbenchPart;
 import org.eclipse.ui.IWorkbenchWindow;
@@ -67,6 +70,7 @@ import org.eclipse.ui.ide.IDE;
 import org.eclipse.ui.internal.wizards.datatransfer.DataTransferMessages;
 import org.eclipse.ui.internal.wizards.datatransfer.TarEntry;
 import org.eclipse.ui.internal.wizards.datatransfer.TarLeveledStructureProvider;
+import org.eclipse.ui.part.FileEditorInput;
 import org.eclipse.ui.wizards.datatransfer.IImportStructureProvider;
 import org.eclipse.xtext.preferences.IPreferenceValues;
 import org.eclipse.xtext.preferences.IPreferenceValuesProvider;
@@ -696,6 +700,14 @@ public class JavaImportOperation extends WorkspaceModifyOperation {
 //	    		throw new ConfigurationException("Unable to find the domain knowledge project targeted by import");
 //	    	}
 	    	
+	    	// get active document
+	    	IWorkbench wb = PlatformUI.getWorkbench();
+	    	IWorkbenchWindow window = wb.getActiveWorkbenchWindow();
+	    	IWorkbenchPage page = window.getActivePage();
+	    	IEditorPart editor = page.getActiveEditor();
+	    	IEditorInput input = editor.getEditorInput();
+	    	IPath path = ((FileEditorInput)input).getPath();
+
     		// the AnswerCurationManager is stored in the domain project ConfigurationManager
 	    	String domainModelModelFolder = domainPrj.getFolder("OwlModels").getLocation().toOSString();
 	    	ConfigurationManagerForIDE domainModelConfigMgr = ConfigurationManagerForIdeFactory.getConfigurationManagerForIDE(domainModelModelFolder, null);
@@ -803,7 +815,7 @@ public class JavaImportOperation extends WorkspaceModifyOperation {
 	}
 
 	void importFiles(AnswerCurationManager acm) throws ConfigurationException, IOException, InvalidNameException, ReasonerNotFoundException, QueryParseException, QueryCancelledException, AnswerExtractionException {
-        Object dap = acm.getConfigurationManager().getPrivateKeyMapValueByResource(DialogConstants.DIALOG_ANSWER_PROVIDER, acm.getResource());
+        Object dap = acm.getConfigurationManager().getPrivateKeyMapValueByResource(DialogConstants.DIALOG_ANSWER_PROVIDER, acm.getResource().getURI());
         if (dap instanceof DialogAnswerProvider) {
         	StringBuilder sb = new StringBuilder();
         	List<File> textFiles = acm.getExtractionProcessor().getTextProcessor().getTextFiles();
@@ -1010,7 +1022,7 @@ public class JavaImportOperation extends WorkspaceModifyOperation {
            	throw new CoreException(new Status(IStatus.ERROR, PlatformUI.PLUGIN_ID, 0, 
         			"Failed to get a curation manager. Are you trying to import into a different project than the open Dialog window?", null));
            }
-            Object dap = acm.getConfigurationManager().getPrivateKeyMapValueByResource(DialogConstants.DIALOG_ANSWER_PROVIDER, acm.getResource());
+            Object dap = acm.getConfigurationManager().getPrivateKeyMapValueByResource(DialogConstants.DIALOG_ANSWER_PROVIDER, acm.getResource().getURI());
             if (dap == null) {
             	throw new CoreException(new Status(IStatus.ERROR, PlatformUI.PLUGIN_ID, 0, 
             			"A Dialog Editor window must be opened and some activity in the window before imports can be processed", null));

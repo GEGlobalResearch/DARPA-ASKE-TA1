@@ -460,7 +460,7 @@ public class AnswerCurationManager {
 		String clearMsg = getExtractionProcessor().getTextProcessor().clearGraph(getLocalityURI());
 		
 		if (getDomainModelName() == null || getDomainModel() == null) {
-			Object dap = getConfigurationManager().getPrivateKeyMapValueByResource(DialogConstants.DIALOG_ANSWER_PROVIDER, getResource());
+			Object dap = getConfigurationManager().getPrivateKeyMapValueByResource(DialogConstants.DIALOG_ANSWER_PROVIDER, getResource().getURI());
 			if (dap instanceof IDialogAnswerProvider) {
 				String domainModelName = OntModelProvider.getModelName(((IDialogAnswerProvider)dap).getResource());
 				setDomainModelName(domainModelName);
@@ -3171,14 +3171,14 @@ public class AnswerCurationManager {
 	 */
 	public boolean dialogAnserProviderInitialized(org.eclipse.emf.ecore.resource.Resource resource) {
 		if (dialogAnswerProvider == null) {
-			setDialogAnswerProvider((IDialogAnswerProvider) getConfigurationManager().getPrivateKeyMapValueByResource(DialogConstants.DIALOG_ANSWER_PROVIDER, resource));
+			setDialogAnswerProvider((IDialogAnswerProvider) getConfigurationManager().getPrivateKeyMapValueByResource(DialogConstants.DIALOG_ANSWER_PROVIDER, resource.getURI()));
 		}
 		return (dialogAnswerProvider != null);
 	}
 
 	protected IDialogAnswerProvider getDialogAnswerProvider(org.eclipse.emf.ecore.resource.Resource resource) {
 		if (dialogAnswerProvider == null) {
-			IDialogAnswerProvider dapFound = (IDialogAnswerProvider) getConfigurationManager().getPrivateKeyMapValueByResource(DialogConstants.DIALOG_ANSWER_PROVIDER, resource);
+			IDialogAnswerProvider dapFound = (IDialogAnswerProvider) getConfigurationManager().getPrivateKeyMapValueByResource(DialogConstants.DIALOG_ANSWER_PROVIDER, resource.getURI());
 			if (dapFound != null) {
 				org.eclipse.emf.ecore.resource.Resource dapRsrc = dapFound.getResource();
 				XtextResource thisRsrc = getResource();
@@ -3191,7 +3191,7 @@ public class AnswerCurationManager {
 				}
 			}
 		} else if (dialogAnswerProvider instanceof DialogAnswerProviderConsoleForTest) {
-			IDialogAnswerProvider provider = (IDialogAnswerProvider) getConfigurationManager().getPrivateKeyMapValueByResource(DialogConstants.DIALOG_ANSWER_PROVIDER, resource);
+			IDialogAnswerProvider provider = (IDialogAnswerProvider) getConfigurationManager().getPrivateKeyMapValueByResource(DialogConstants.DIALOG_ANSWER_PROVIDER, resource.getURI());
 			if (provider != null && !(provider instanceof DialogAnswerProviderConsoleForTest)) {
 				dialogAnswerProvider.dispose(); // Dispose the current, console-based answer provider.
 				setDialogAnswerProvider(provider); // Updated with the`document`-aware dialog provider.
@@ -5739,17 +5739,17 @@ public class AnswerCurationManager {
 	}
 
 	private Object[] insertRulesAndQuery(org.eclipse.emf.ecore.resource.Resource resource, List<Rule> rules) throws ExecutionException, SadlInferenceException {
-		getConfigurationManager().addPrivateKeyMapValueByResource(DialogConstants.ANSWER_CURATION_MANAGER, resource, this);
+		getConfigurationManager().addPrivateKeyMapValueByResource(DialogConstants.ANSWER_CURATION_MANAGER, resource.getURI(), this);
 		return getInferenceProcessor().insertRulesAndQuery(resource, rules);
 	}
 
 	private Object[] insertTriplesAndQuery(org.eclipse.emf.ecore.resource.Resource resource, List<TripleElement[]> triples) throws ExecutionException, SadlInferenceException {
-		getConfigurationManager().addPrivateKeyMapValueByResource(DialogConstants.ANSWER_CURATION_MANAGER, resource, this);
+		getConfigurationManager().addPrivateKeyMapValueByResource(DialogConstants.ANSWER_CURATION_MANAGER, resource.getURI(), this);
 		return getInferenceProcessor().insertTriplesAndQuery(resource, triples);
 	}
 	
 	private Object[] insertTriplesAndQuery(org.eclipse.emf.ecore.resource.Resource resource2, TripleElement[] triples) throws SadlInferenceException {
-		getConfigurationManager().addPrivateKeyMapValueByResource(DialogConstants.ANSWER_CURATION_MANAGER, resource, this);
+		getConfigurationManager().addPrivateKeyMapValueByResource(DialogConstants.ANSWER_CURATION_MANAGER, resource.getURI(), this);
 		return getInferenceProcessor().insertTriplesAndQuery(resource2, triples);
 	}
 
@@ -5948,7 +5948,7 @@ public class AnswerCurationManager {
 		else {
 			// additions is empty so there haven't been any other things added in this pass so now add any imports
 			if (getDelayedImportAdditions() != null && getDelayedImportAdditions().size() > 0) {
-				Object dap = getConfigurationManager().getPrivateKeyMapValueByResource(DialogConstants.DIALOG_ANSWER_PROVIDER, resource);
+				Object dap = getConfigurationManager().getPrivateKeyMapValueByResource(DialogConstants.DIALOG_ANSWER_PROVIDER, resource.getURI());
 				if (dap instanceof IDialogAnswerProvider) {
 					((IDialogAnswerProvider)dap).addImports(getDelayedImportAdditions());
 				}
