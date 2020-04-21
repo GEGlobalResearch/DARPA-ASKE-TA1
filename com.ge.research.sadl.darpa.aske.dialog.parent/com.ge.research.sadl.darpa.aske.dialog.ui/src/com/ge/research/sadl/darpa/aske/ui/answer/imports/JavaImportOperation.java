@@ -701,12 +701,12 @@ public class JavaImportOperation extends WorkspaceModifyOperation {
 //	    	}
 	    	
 	    	// get active document
-	    	IWorkbench wb = PlatformUI.getWorkbench();
-	    	IWorkbenchWindow window = wb.getActiveWorkbenchWindow();
-	    	IWorkbenchPage page = window.getActivePage();
-	    	IEditorPart editor = page.getActiveEditor();
-	    	IEditorInput input = editor.getEditorInput();
-	    	IPath path = ((FileEditorInput)input).getPath();
+//	    	IWorkbench wb = PlatformUI.getWorkbench();
+//	    	IWorkbenchWindow window = wb.getActiveWorkbenchWindow();
+//	    	IWorkbenchPage page = window.getActivePage();
+//	    	IEditorPart editor = page.getActiveEditor();
+//	    	IEditorInput input = editor.getEditorInput();
+//	    	IPath path = ((FileEditorInput)input).getPath();
 
     		// the AnswerCurationManager is stored in the domain project ConfigurationManager
 	    	String domainModelModelFolder = domainPrj.getFolder("OwlModels").getLocation().toOSString();
