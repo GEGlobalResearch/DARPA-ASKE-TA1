@@ -3251,7 +3251,14 @@ public class JenaBasedDialogModelProcessor extends JenaBasedSadlModelProcessor {
 				"Ask ImplicitMethodOutputs: \"select distinct ?m ?cv ?vt ?vn where {?r <isImplicit> true . ?r <http://sadl.org/CodeExtractionModel.sadl#output> true . \r\n" + 
 				"	?r <codeBlock> ?m . ?cv <reference> ?r . ?cv <varType> ?vt. ?cv <varName> ?vn} order by ?m ?vn\".\r\n" + 
 				"Ask MethodsDoingComputation: \"select ?m where {?m <doesComputation> true}\".\r\n" + 
-				"Ask MethodCalls: \"select ?m ?mcalled where {?m <calls> ?mc . ?mc <codeBlock> ?mcalled} order by ?m ?mcalled\".";
+				"Ask MethodCalls: \"select ?m ?mcalled where {?m <calls> ?mc . ?mc <codeBlock> ?mcalled} order by ?m ?mcalled\"." + 
+				"Ask VarComment: \"select ?cmntcontent ?eln ?usage where { ? <http://sadl.org/CodeExtractionModel.sadl#reference> ?ref . \r\n" + 
+				"	?ref <http://sadl.org/CodeExtractionModel.sadl#endsAt> ?eln . \r\n" + 
+				"	?ref <http://sadl.org/CodeExtractionModel.sadl#usage> ?usage .\r\n" + 
+				"	?cmnt <rdf:type> <http://sadl.org/CodeExtractionModel.sadl#Comment> .\r\n" + 
+				"	?cmnt <http://sadl.org/CodeExtractionModel.sadl#endsAt> ?eln . \r\n" + 
+				"	?cmnt <http://sadl.org/CodeExtractionModel.sadl#commentContent> ?cmntcontent} order by ?eln\".\r\n"
+				;
 		return content;
 	}
 

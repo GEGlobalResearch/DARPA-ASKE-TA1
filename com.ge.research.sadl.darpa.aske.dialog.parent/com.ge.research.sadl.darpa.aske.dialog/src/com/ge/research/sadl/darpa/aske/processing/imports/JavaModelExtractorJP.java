@@ -167,6 +167,7 @@ public class JavaModelExtractorJP implements IModelFromCodeExtractor {
 	private HashMap<String, String> methodJavadoc = new HashMap<String, String>();
 	private StringBuilder aggregatedComments = new StringBuilder();
 	private List<Node> nodesWithCommentInvestigated = new ArrayList<Node>();
+	private HashMap<String, String> returnStatementComments = new HashMap<String, String>();
 	
 	public class MethodCallMapping {
 		private Node methodCallNode;
@@ -1327,12 +1328,46 @@ public class JavaModelExtractorJP implements IModelFromCodeExtractor {
 			String c = ((LineComment)cmt).toString().trim();
 			if (c.startsWith("//")) {
 				c = c.substring(2);
-				return minusRemovals(c.trim());
+				c = minusRemovals(c.trim());
 			}
+			Optional<Node> cmttedNode = ((LineComment)cmt).getCommentedNode();
+			if (cmttedNode.isPresent()) {
+				Node cmtnode = cmttedNode.get();
+				if (cmtnode instanceof ReturnStmt) {
+					addReturnstatementComment(getMethodNodeUri(cmtnode), c);
+				}
+				else if (cmtnode instanceof FieldDeclaration) {
+					
+				}
+			}
+			return c;
 		}
 		return cmt.toString();
 	}
 	
+	private void addReturnstatementComment(String methodNodeUri, String c) {
+		returnStatementComments.put(methodNodeUri, c);
+	}
+
+	private String getMethodNodeUri(Node cmtnode) {
+		Node parent = cmtnode;
+		do {
+			parent = parent.getParentNode().isPresent() ? parent.getParentNode().get() : null;
+		} while (parent != null && !(parent instanceof MethodDeclaration));
+		if (parent != null) {
+			Individual meth = methodsFound.get(parent);
+			if (meth != null) {
+				return meth.getURI();
+			}
+		}
+		return null;
+	}
+	
+	public String getReturnLineComment(String methodUri) {
+		return returnStatementComments.get(methodUri);
+	}
+
+
 	private String minusRemovals(String txt) {
 		if (txt.contains("@code")) {
 			int loc = txt.indexOf("@code");
@@ -2369,4 +2404,5 @@ class Mach(object):
 		}
 		return null;
 	}
+
 }
