@@ -1618,6 +1618,9 @@ public class AnswerCurationManager {
 						else if (augtypeStuff instanceof String[]){
 							augtype = ((String[])augtypeStuff)[0];
 						}
+						else if (augtypeStuff instanceof String) {
+							augtype = augtypeStuff.toString();
+						}
 						if (augtype != null) {
 							sb.append("(");
 							sb.append(augtype);
@@ -6064,6 +6067,26 @@ public class AnswerCurationManager {
 			int sigStart = eqTxt.indexOf("(");
 			int argStart = eqTxt.indexOf(argNameToUpdate, sigStart);
 			int insertLoc = argStart + argNameToUpdate.length();
+			String follows = eqTxt.substring(insertLoc + 1).trim();
+			if (follows.startsWith("(")) {
+				String fPlus1 = follows.substring(1).trim();
+				if (fPlus1.startsWith("note") || fPlus1.startsWith("alias") || fPlus1.startsWith("see")) {
+					char c;
+					do {
+						c = eqTxt.charAt(insertLoc);
+						insertLoc++;
+					} while (!(c == '"') && !(c == '\''));		// this gets us past the keyword to the opening quote
+					char qc = c;
+					do {
+						c = eqTxt.charAt(insertLoc);
+						insertLoc++;
+					} while (!(c == qc));
+					do {
+						c = eqTxt.charAt(insertLoc);
+						insertLoc++;
+					} while (!(c == ')'));
+				}
+			}
 			StringBuilder newEqTxt = new StringBuilder(eqTxt.subSequence(0, insertLoc));
 			newEqTxt.append(" (");
 			newEqTxt.append(correctArticlesInAugmentedType(eqTxt, insertLoc, augTypeTxt));
