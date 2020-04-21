@@ -1815,6 +1815,9 @@ public class AnswerCurationManager {
 			if (codeExtractor instanceof JavaModelExtractorJP) {
 				if (isMethodReturn) {
 					String retCmt = ((JavaModelExtractorJP)codeExtractor).getReturnJavadoc(methodUri);
+					if (retCmt == null) {
+						retCmt = ((JavaModelExtractorJP)codeExtractor).getReturnLineComment(methodUri);
+					}
 					if (retCmt != null) {
 						String retType;
 						try {
@@ -3789,28 +3792,50 @@ public class AnswerCurationManager {
 					}
 				}
 				StmtIterator matchClassItr = m.listStatements(subj, mathcingClassProperty, (RDFNode)null);
-				while (matchClassItr.hasNext()) {
-					RDFNode mc = matchClassItr.nextStatement().getObject();
-					if (mc.isURIResource()) {
-						if (mc.canAs(OntClass.class)) {
-							addExtractToMap(matchingClasses, subjUri, mc.as(OntClass.class));
+				if (matchClassItr.hasNext()) {
+					List<String> classesToCreate = null;
+					while (matchClassItr.hasNext()) {
+						RDFNode mc = matchClassItr.nextStatement().getObject();
+						if (mc.isURIResource()) {
+							if (mc.canAs(OntClass.class)) {
+								addExtractToMap(matchingClasses, subjUri, mc.as(OntClass.class));
+							}
+							else {
+								if (classesToCreate == null) {
+									classesToCreate = new ArrayList<String>();
+								}
+								classesToCreate.add(mc.asResource().getURI());
+							}
 						}
-						else {
-							addExtractToMap(matchingClasses, subjUri, m.createClass(mc.asResource().getURI()));
+					}
+					if (classesToCreate != null) {
+						for (String ccuri : classesToCreate) {
+							addExtractToMap(matchingClasses, subjUri, m.createClass(ccuri));
 						}
 					}
 				}
 				StmtIterator matchPropItr = m.listStatements(subj, matchingPropertyProperty, (RDFNode)null);
-				while (matchPropItr.hasNext()) {
-					RDFNode mp = matchPropItr.nextStatement().getObject();
-					if (mp.isURIResource()) {
-						if (mp.canAs(Property.class)) {
-							addExtractToMap(matchingProperties, subjUri, mp.as(Property.class));
-						}
-						else {
-							addExtractToMap(matchingProperties, subjUri, m.createProperty(mp.asResource().getURI()));
+				if (matchPropItr.hasNext()) {
+					List<String> propsToCreate = null;
+					while (matchPropItr.hasNext()) {
+						RDFNode mp = matchPropItr.nextStatement().getObject();
+						if (mp.isURIResource()) {
+							if (mp.canAs(Property.class)) {
+								addExtractToMap(matchingProperties, subjUri, mp.as(Property.class));
+							}
+							else {
+								if (propsToCreate == null) {
+									propsToCreate = new ArrayList<String>();
+								}
+								propsToCreate.add(mp.asResource().getURI());
+							}
 						}
 					}
+					if (propsToCreate != null) {
+						for (String pcuri : propsToCreate) {
+							addExtractToMap(matchingProperties, subjUri, m.createProperty(pcuri));
+						}
+					}					
 				}
 			}
 		}
