@@ -2035,9 +2035,9 @@ public class JenaBasedDialogModelProcessor extends JenaBasedSadlModelProcessor {
 		AnswerCurationManager cm = getAnswerCurationManager(resource);
 		DialogContent dc = new DialogContent(resource, cm);
 		cm.setConversation(dc);
-		if (modelElements == null) {
+		if (modelElements == null && resource != null) {
 			modelElements = new ArrayList<ModelElementInfo>();
-			getConfigMgr().addPrivateKeyMapValueByResource(DialogConstants.DIALOG_ELEMENT_INFOS, resource, modelElements);
+			getConfigMgr().addPrivateKeyMapValueByResource(DialogConstants.DIALOG_ELEMENT_INFOS, resource.getURI(), modelElements);
 		}
 		else {
 			modelElements.clear();
@@ -2046,21 +2046,23 @@ public class JenaBasedDialogModelProcessor extends JenaBasedSadlModelProcessor {
 
 	public AnswerCurationManager getAnswerCurationManager(Resource resource) throws IOException {
 		if (answerCurationManager == null) {
-			Object cm = getConfigMgr().getPrivateKeyMapValueByResource(DialogConstants.ANSWER_CURATION_MANAGER, resource);
-			if (cm != null) {
-				if (cm instanceof AnswerCurationManager) {
-					answerCurationManager  = (AnswerCurationManager) cm;
+			if (resource != null) {
+				Object cm = getConfigMgr().getPrivateKeyMapValueByResource(DialogConstants.ANSWER_CURATION_MANAGER, resource.getURI());
+				if (cm != null) {
+					if (cm instanceof AnswerCurationManager) {
+						answerCurationManager  = (AnswerCurationManager) cm;
+					}
 				}
-			}
-			else {
-				Map<String, String> pmap = null;
-//				Resource resource = Preconditions.checkNotNull(getCurrentResource(), "resource");
-				pmap = getPreferences(resource);
-				answerCurationManager = new AnswerCurationManager(getConfigMgr().getModelFolder(), getConfigMgr(),
-						(XtextResource) resource, pmap);
-				answerCurationManager.setDomainModelName(getModelName());
-				answerCurationManager.setDomainModel(getTheJenaModel());
-				getConfigMgr().addPrivateKeyMapValueByResource(DialogConstants.ANSWER_CURATION_MANAGER, resource, answerCurationManager);
+				else {
+					Map<String, String> pmap = null;
+	//				Resource resource = Preconditions.checkNotNull(getCurrentResource(), "resource");
+					pmap = getPreferences(resource);
+					answerCurationManager = new AnswerCurationManager(getConfigMgr().getModelFolder(), getConfigMgr(),
+							(XtextResource) resource, pmap);
+					answerCurationManager.setDomainModelName(getModelName());
+					answerCurationManager.setDomainModel(getTheJenaModel());
+					getConfigMgr().addPrivateKeyMapValueByResource(DialogConstants.ANSWER_CURATION_MANAGER, resource.getURI(), answerCurationManager);
+				}
 			}
 		}
 		return answerCurationManager;

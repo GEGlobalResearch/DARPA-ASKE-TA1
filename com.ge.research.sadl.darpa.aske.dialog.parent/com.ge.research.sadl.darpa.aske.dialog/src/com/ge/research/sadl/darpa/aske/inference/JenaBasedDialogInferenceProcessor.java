@@ -1616,13 +1616,10 @@ private ResultSet[] processWhatWhenQuery(Resource resource, String queryModelFil
 				    
 				    resmsg = getEvalKChainOutcome(kchainResultsJson);
 				    
-				    kchainResultsJson = executeKChain(kchainEvalJson); //call sensitivity service instead
-				    
 				    if(!inverseQuery) {
-					    
 					    JsonObject sensitivityJson = generateKChainSensitivityJson(cgJson);
 				    
-					    kchainEvalJson = addKCserviceURL(sensitivityJson); //Add kchain eval service URL for invizin
+					    sensitivityJson = addKCserviceURL(sensitivityJson); //Add kchain eval service URL for invizin
 					    
 						System.out.print("Sensitivity analysis: ");
 						startTime = System.currentTimeMillis();
@@ -2215,7 +2212,7 @@ private void computeSensitivityAndAddToDialog(Resource resource, ConfigurationMa
 		}
 
 		saveMetaDataFile(resource,queryModelURI,queryModelFileName); //so we can query the the eqns in the CCG
-		AnswerCurationManager acm = (AnswerCurationManager) cmgr.getPrivateKeyMapValueByResource(DialogConstants.ANSWER_CURATION_MANAGER, resource);
+		AnswerCurationManager acm = (AnswerCurationManager) cmgr.getPrivateKeyMapValueByResource(DialogConstants.ANSWER_CURATION_MANAGER, resource.getURI());
 		addSensitivityResultsToDialog(resource, cgIns, acm);
 
 	}//assumptions satisfied
@@ -2739,7 +2736,7 @@ private ResultSet[] processModelsFromDataset(Resource resource, TripleElement[] 
 
 				numOfModels ++;
 
-				AnswerCurationManager acm = (AnswerCurationManager) cmgr.getPrivateKeyMapValueByResource(DialogConstants.ANSWER_CURATION_MANAGER, resource);
+				AnswerCurationManager acm = (AnswerCurationManager) cmgr.getPrivateKeyMapValueByResource(DialogConstants.ANSWER_CURATION_MANAGER, resource.getURI());
 
 				lbl2value = getLabelToMeanStdMapping(dbnResultsJson);
 				createCGsubgraphs(cgIns, dbnEqnMap, dbnOutput, listOfEqns, class2lbl, lbl2value, class2units, queryModelPrefix);
@@ -2982,7 +2979,7 @@ private void runInference(Resource resource, String query, String testQuery) thr
 		cmgr.addMapping(owlURL, queryModelURI, "", true, "JBDIP");
 		cmgr.addJenaMapping(queryModelURI, owlURL);	
 		
-		AnswerCurationManager acm = (AnswerCurationManager) cmgr.getPrivateKeyMapValueByResource(DialogConstants.ANSWER_CURATION_MANAGER, resource);
+		AnswerCurationManager acm = (AnswerCurationManager) cmgr.getPrivateKeyMapValueByResource(DialogConstants.ANSWER_CURATION_MANAGER, resource.getURI());
 		acm.addDelayedImportAddition("import \"" + queryModelURI + "\".");
 	}
 

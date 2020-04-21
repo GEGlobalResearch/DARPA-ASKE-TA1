@@ -87,6 +87,7 @@ import com.github.javaparser.ast.body.VariableDeclarator;
 import com.github.javaparser.ast.comments.BlockComment;
 import com.github.javaparser.ast.comments.Comment;
 import com.github.javaparser.ast.comments.JavadocComment;
+import com.github.javaparser.ast.comments.LineComment;
 import com.github.javaparser.ast.expr.ArrayAccessExpr;
 import com.github.javaparser.ast.expr.AssignExpr;
 import com.github.javaparser.ast.expr.BinaryExpr;
@@ -1281,10 +1282,79 @@ public class JavaModelExtractorJP implements IModelFromCodeExtractor {
 			else {
 				logger.debug("Found comment but range not known");
 			}
-			this.aggregatedComments.append(cmt.toString());
+			this.aggregatedComments.append(preProcessCommentForAggregation(cmt));
 		}
 	}
 	
+	private String preProcessCommentForAggregation(Comment cmt) {
+		if (cmt instanceof JavadocComment) {
+			String c = ((JavadocComment)cmt).getContent().trim();
+			String[] lines = c.split("\\r?\\n");
+			StringBuilder sb = new StringBuilder();
+			int cntr = 0;
+			for (String line : lines) {
+				line = line.trim();
+				if (line.startsWith("*")) {
+					line = line.substring(1).trim();
+				}
+				if (line.startsWith("@author") || line.startsWith("@version") || 
+						line.startsWith("@deprecated") || line.startsWith("@exception") ||
+						line.startsWith("@since") || line.startsWith("@throws")) {				
+					continue;
+				}
+				if (line.startsWith("@")) {
+					if (line.startsWith("@param")) {
+						line = line.substring(6).trim();
+					}
+					else if (line.startsWith("@return")) {
+						line = line.substring(7).trim();
+					}
+					if (cntr++ > 0) {
+						sb.append(System.lineSeparator());
+					}
+					sb.append(line);
+				}
+				else {
+					if (cntr++ > 0) {
+						sb.append(" ");
+					}
+					sb.append(minusRemovals(line));
+				}
+			}
+			return sb.toString();
+		}
+		else if (cmt instanceof LineComment) {
+			String c = ((LineComment)cmt).toString().trim();
+			if (c.startsWith("//")) {
+				c = c.substring(2);
+				return minusRemovals(c.trim());
+			}
+		}
+		return cmt.toString();
+	}
+	
+	private String minusRemovals(String txt) {
+		if (txt.contains("@code")) {
+			int loc = txt.indexOf("@code");
+			StringBuilder sb = new StringBuilder(txt.substring(0, loc - 1));
+			for (int i = loc + 5; i< txt.length(); i++) {
+				char c = txt.charAt(i);
+				if (c == '}') {
+					String rest = minusRemovals(txt.substring(i + 1));
+					if (Character.isWhitespace(txt.charAt(loc - 2))) {
+						while (Character.isWhitespace(rest.charAt(0))) {
+							rest = rest.substring(1);
+						}
+					}
+					sb.append(rest);
+					break;
+				}
+			}
+			return sb.toString();
+		}
+		return txt;
+	}
+
 	/**
 	 * Method to return the aggregated comments from the code extracted from
 	 * @return
