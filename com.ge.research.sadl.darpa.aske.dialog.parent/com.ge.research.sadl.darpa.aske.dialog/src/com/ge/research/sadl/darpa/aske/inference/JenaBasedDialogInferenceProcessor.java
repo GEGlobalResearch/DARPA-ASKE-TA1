@@ -1616,13 +1616,10 @@ private ResultSet[] processWhatWhenQuery(Resource resource, String queryModelFil
 				    
 				    resmsg = getEvalKChainOutcome(kchainResultsJson);
 				    
-				    kchainResultsJson = executeKChain(kchainEvalJson); //call sensitivity service instead
-				    
 				    if(!inverseQuery) {
-					    
 					    JsonObject sensitivityJson = generateKChainSensitivityJson(cgJson);
 				    
-					    kchainEvalJson = addKCserviceURL(sensitivityJson); //Add kchain eval service URL for invizin
+					    sensitivityJson = addKCserviceURL(sensitivityJson); //Add kchain eval service URL for invizin
 					    
 						System.out.print("Sensitivity analysis: ");
 						startTime = System.currentTimeMillis();
