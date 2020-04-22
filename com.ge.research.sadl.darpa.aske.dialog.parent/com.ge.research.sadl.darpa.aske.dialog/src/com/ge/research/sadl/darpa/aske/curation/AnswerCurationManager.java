@@ -2517,15 +2517,15 @@ public class AnswerCurationManager {
 					String cvuri = impIn.getResultAt(r, 2).toString();
 					Individual cv = getExtractionProcessor().getCodeModel().getIndividual(cvuri);
 					if (cv != null) {
-						String[] augmentedTypes = getAugmentedTypesOfVariable(cv);
+						List<String> augmentedTypes = getAugmentedTypesOfVariable(cv);
 						if (augmentedTypes != null) {
 							sb2.append("with augmentedType (a SemanticType");
-							for (int i = 0 ;i < augmentedTypes.length; i++) {
+							for (int i = 0 ;i < augmentedTypes.size(); i++) {
 								if (i > 0) {
 									sb2.append(", ");
 								}
 								sb2.append(" with semType ");
-								sb2.append(augmentedTypes[i]);
+								sb2.append(augmentedTypes.get(i));
 							}
 							sb2.append(")");
 						}
@@ -2560,15 +2560,15 @@ public class AnswerCurationManager {
 					String cvuri = impOut.getResultAt(r, 2).toString();
 					Individual cv = getExtractionProcessor().getCodeModel().getIndividual(cvuri);
 					if (cv != null) {
-						String[] augmentedTypes = getAugmentedTypesOfVariable(cv);
+						List<String> augmentedTypes = getAugmentedTypesOfVariable(cv);
 						if (augmentedTypes != null) {
 							sb2.append("with augmentedType (a SemanticType");
-							for (int i = 0 ;i < augmentedTypes.length; i++) {
+							for (int i = 0 ;i < augmentedTypes.size(); i++) {
 								if (i > 0) {
 									sb2.append(", ");
 								}
 								sb2.append(" with semType ");
-								sb2.append(augmentedTypes[i]);
+								sb2.append(augmentedTypes.get(i));
 							}
 							sb2.append(")");
 						}
@@ -2635,11 +2635,12 @@ public class AnswerCurationManager {
 	}
 
 	// Method to get the augmented type, if possible, for an implicit variable
-	private String[] getAugmentedTypesOfVariable(Individual cv) throws InvalidNameException, ConfigurationException, ReasonerNotFoundException, QueryParseException, QueryCancelledException {
+	private List<String> getAugmentedTypesOfVariable(Individual cv) throws InvalidNameException, ConfigurationException, ReasonerNotFoundException, QueryParseException, QueryCancelledException {
 		String queryUri = DialogConstants.CODE_EXTRACTION_MODEL_URI + "#VarComment";
-		Resource qrsrc = getCodeExtractor().getCurrentCodeModel().getResource(queryUri);
+		OntModel codeModel = getCodeExtractor().getCurrentCodeModel();
+		Resource qrsrc = codeModel.getResource(queryUri);
 		if (qrsrc != null) {
-			StmtIterator qitr = getCodeExtractor().getCurrentCodeModel().listStatements(qrsrc, RDFS.isDefinedBy, (RDFNode) null);
+			StmtIterator qitr = codeModel.listStatements(qrsrc, RDFS.isDefinedBy, (RDFNode) null);
 			if (qitr.hasNext()) {
 				RDFNode obj = qitr.nextStatement().getObject();
 				if (obj.isLiteral()) {
@@ -2658,38 +2659,59 @@ public class AnswerCurationManager {
 								try {
 									List<Object> extractions = processExtractionFromText(comment, false);
 									if (extractions != null) {
+										OntClass uqcls = getDomainModel().getOntClass(SadlConstants.SADL_IMPLICIT_MODEL_UNITTEDQUANTITY_URI);
 										if (extractions.size() == 5) {
 											Object clses = extractions.get(3);
 											if (clses instanceof Map<?,?>) {
 												Iterator<?> clsitr = ((Map<?,?>)clses).keySet().iterator();
 												if (clsitr != null && clsitr.hasNext()) {
-													Object key = clsitr.next();
-													Object clslst = ((Map<?, ?>) clses).get(key);
-													if (clslst instanceof List<?>) {
-														int size = ((List<?>)clslst).size();
-														String[] semTypes = new String[size];
-														for (int i = 0; i < size; i++) {
-															String uri = ((List<?>)clslst).get(i).toString().trim();
-															semTypes[i] = checkForKeyword(getLocalName(uri));
+													List<String> semTypes = new ArrayList<String>();
+													while (clsitr.hasNext()) {
+														Object key = clsitr.next();
+														Object clslst = ((Map<?, ?>) clses).get(key);
+														if (clslst instanceof List<?>) {
+															int size = ((List<?>)clslst).size();
+															for (int i = 0; i < size; i++) {
+																String uri = ((List<?>)clslst).get(i).toString().trim();
+																OntResource cls = getDomainModel().getOntClass(uri);
+																if (cls != null && cls.canAs(OntClass.class)) {
+																	try {
+																		if (SadlUtils.classIsSubclassOf(cls.as(OntClass.class), uqcls, true, null)) {
+																			String ln = checkForKeyword(getLocalName(uri));
+																			if (!semTypes.contains(ln)) {
+																				semTypes.add(ln);
+																			}
+																		}
+																	} catch (CircularDependencyException e) {
+																		// TODO Auto-generated catch block
+																		e.printStackTrace();
+																	}
+																}
+															}
 														}
-														return semTypes;
 													}
+													return semTypes;
 												}
 											}
 											Object props = extractions.get(4);
 											if (props instanceof Map<?,?>) {
 												Iterator<?> propitr = ((Map<?,?>)props).keySet().iterator();
 												if (propitr != null && propitr.hasNext()) {
-													Object key = propitr.next();
-													Object proplst = ((Map<?, ?>) props).get(key);
-													if (proplst instanceof List<?>) {
-														int size = ((List<?>)proplst).size();
-														String[] semTypes = new String[size];
-														for (int i = 0; i < size; i++) {
-															String uri = ((List<?>)proplst).get(i).toString().trim();
-															semTypes[i] = checkForKeyword(getLocalName(uri));
+													List<String> semTypes = new ArrayList<String>();
+													while (propitr.hasNext()) {
+														Object key = propitr.next();
+														Object proplst = ((Map<?, ?>) props).get(key);
+														if (proplst instanceof List<?>) {
+															int size = ((List<?>)proplst).size();
+															for (int i = 0; i < size; i++) {
+																String uri = ((List<?>)proplst).get(i).toString().trim();
+																String ln = checkForKeyword(getLocalName(uri));
+																if (!semTypes.contains(ln)) {
+																	semTypes.add(ln);
+																}
+															}
+															return semTypes;
 														}
-														return semTypes;
 													}
 												}
 											}
@@ -2697,13 +2719,13 @@ public class AnswerCurationManager {
 											String retVal = null;
 											if (stmts instanceof List<?>) {
 												int size = ((List<?>)stmts).size();
-												String[] semTypes = new String[size];
+												List<String> semTypes = new ArrayList<String>();
 												for (int i = 0; i < size; i++) {
 													String stmt = ((List<?>)stmts).get(i).toString();
 													if (stmt.startsWith("\"")) {
 														stmt = stmt.trim();
 													}
-													semTypes[i] = stmt;
+													semTypes.add(stmt);
 												}
 												return semTypes;
 											}
@@ -2821,16 +2843,17 @@ public class AnswerCurationManager {
 					// TODO if rest is the name of a domain class
 					return rest;
 				}
-				else {
-					int firstDot = methodName.indexOf('.');
-					if (firstDot == lastDot) {	// there are only two dots
-						String firstSegment = methodName.substring(0, firstDot);
-						if (firstSegment.equals(lastSegment)) {
-							// this is a constructor, so it is an initializer
-							return firstSegment;
-						}
-					}
-				}
+// This is commented out per request to not have constructors as initializer methods awc 4/22/2020	
+//				else {
+//					int firstDot = methodName.indexOf('.');
+//					if (firstDot == lastDot) {	// there are only two dots
+//						String firstSegment = methodName.substring(0, firstDot);
+//						if (firstSegment.equals(lastSegment)) {
+//							// this is a constructor, so it is an initializer
+//							return firstSegment;
+//						}
+//					}
+//				}
 			}
 		}
 		return null;
