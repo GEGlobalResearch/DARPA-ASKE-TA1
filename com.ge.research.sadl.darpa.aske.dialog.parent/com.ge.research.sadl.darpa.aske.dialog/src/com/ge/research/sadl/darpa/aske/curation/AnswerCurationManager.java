@@ -2517,10 +2517,16 @@ public class AnswerCurationManager {
 					String cvuri = impIn.getResultAt(r, 2).toString();
 					Individual cv = getExtractionProcessor().getCodeModel().getIndividual(cvuri);
 					if (cv != null) {
-						String augmentedType = getAugmentedTypeOfVariable(cv);
-						if (augmentedType != null) {
-							sb2.append("with augmentedType (a SemanticType with semType ");
-							sb2.append(augmentedType);
+						String[] augmentedTypes = getAugmentedTypesOfVariable(cv);
+						if (augmentedTypes != null) {
+							sb2.append("with augmentedType (a SemanticType");
+							for (int i = 0 ;i < augmentedTypes.length; i++) {
+								if (i > 0) {
+									sb2.append(", ");
+								}
+								sb2.append(" with semType ");
+								sb2.append(augmentedTypes[i]);
+							}
 							sb2.append(")");
 						}
 						sb2.append(getCodeVariableDeclaration(methodName, cv));
@@ -2554,10 +2560,16 @@ public class AnswerCurationManager {
 					String cvuri = impOut.getResultAt(r, 2).toString();
 					Individual cv = getExtractionProcessor().getCodeModel().getIndividual(cvuri);
 					if (cv != null) {
-						String augmentedType = getAugmentedTypeOfVariable(cv);
-						if (augmentedType != null) {
-							sb2.append("with augmentedType (a SemanticType with semType ");
-							sb2.append(augmentedType);
+						String[] augmentedTypes = getAugmentedTypesOfVariable(cv);
+						if (augmentedTypes != null) {
+							sb2.append("with augmentedType (a SemanticType");
+							for (int i = 0 ;i < augmentedTypes.length; i++) {
+								if (i > 0) {
+									sb2.append(", ");
+								}
+								sb2.append(" with semType ");
+								sb2.append(augmentedTypes[i]);
+							}
 							sb2.append(")");
 						}
 						sb2.append(getCodeVariableDeclaration(methodName, cv));
@@ -2623,7 +2635,7 @@ public class AnswerCurationManager {
 	}
 
 	// Method to get the augmented type, if possible, for an implicit variable
-	private String getAugmentedTypeOfVariable(Individual cv) throws InvalidNameException, ConfigurationException, ReasonerNotFoundException, QueryParseException, QueryCancelledException {
+	private String[] getAugmentedTypesOfVariable(Individual cv) throws InvalidNameException, ConfigurationException, ReasonerNotFoundException, QueryParseException, QueryCancelledException {
 		String queryUri = DialogConstants.CODE_EXTRACTION_MODEL_URI + "#VarComment";
 		Resource qrsrc = getCodeExtractor().getCurrentCodeModel().getResource(queryUri);
 		if (qrsrc != null) {
@@ -2654,8 +2666,13 @@ public class AnswerCurationManager {
 													Object key = clsitr.next();
 													Object clslst = ((Map<?, ?>) clses).get(key);
 													if (clslst instanceof List<?>) {
-														String uri = ((List<?>)clslst).get(0).toString().trim();
-														return checkForKeyword(getLocalName(uri));
+														int size = ((List<?>)clslst).size();
+														String[] semTypes = new String[size];
+														for (int i = 0; i < size; i++) {
+															String uri = ((List<?>)clslst).get(i).toString().trim();
+															semTypes[i] = checkForKeyword(getLocalName(uri));
+														}
+														return semTypes;
 													}
 												}
 											}
@@ -2666,21 +2683,29 @@ public class AnswerCurationManager {
 													Object key = propitr.next();
 													Object proplst = ((Map<?, ?>) props).get(key);
 													if (proplst instanceof List<?>) {
-														String uri = ((List<?>)proplst).get(0).toString().trim();
-														return checkForKeyword(getLocalName(uri));
+														int size = ((List<?>)proplst).size();
+														String[] semTypes = new String[size];
+														for (int i = 0; i < size; i++) {
+															String uri = ((List<?>)proplst).get(i).toString().trim();
+															semTypes[i] = checkForKeyword(getLocalName(uri));
+														}
+														return semTypes;
 													}
 												}
 											}
 											Object stmts = extractions.get(0);
 											String retVal = null;
 											if (stmts instanceof List<?>) {
-												retVal = ((List<?>)stmts).get(0).toString();
-//												for (Object extract :(List<?>)stmts) {
-//													System.out.println(extract.toString());
-//												}
-												if (!retVal.startsWith("\"")) {
-													return retVal.trim();
+												int size = ((List<?>)stmts).size();
+												String[] semTypes = new String[size];
+												for (int i = 0; i < size; i++) {
+													String stmt = ((List<?>)stmts).get(i).toString();
+													if (stmt.startsWith("\"")) {
+														stmt = stmt.trim();
+													}
+													semTypes[i] = stmt;
 												}
+												return semTypes;
 											}
 										}
 									}
@@ -4676,9 +4701,12 @@ public class AnswerCurationManager {
 									String comparand = rset.getResultAt(i, 1).toString();
 									tableRow.put(comparand,  varVal); 
 									// see if there are any conditions to be added
-									List<HashMap<String, String>> conditionVals = getTableRowConditions(comparisonRules.get(cntr));
-									if (conditionVals != null) {
-										varVal.addAll(conditionVals);
+									// Note: if there are multiple models there will not be conditionals in every row, hence the test
+									if (cntr < comparisonRules.size()) {
+										List<HashMap<String, String>> conditionVals = getTableRowConditions(comparisonRules.get(cntr));
+										if (conditionVals != null) {
+											varVal.addAll(conditionVals);
+										}
 									}
 									
 									// now add the output of the computation
@@ -5003,30 +5031,56 @@ public class AnswerCurationManager {
 		String firstLinkColHdr = "\'Model diagram\'";
 		String secondLinkColHdr = "\'Sensitivity plot\'";
 
+		List<String> colHeaders = new ArrayList<String>();
 		// first column for comparanda
 		String firstColHeader = "'Options'";
+		colHeaders.add(firstColHeader);
 		List<Integer> colWidths = new ArrayList<Integer>();
 		colWidths.add(firstColHeader.length());
+		
+		boolean multiModelTable = false;
 
 		// next columns for properties to be compared
+		int rowIdx = 0;
 		for (HashMap<String, List<HashMap<String, String>>> tableRow : table) {
 			int colIdx = 1;
 			for(String c : tableRow.keySet()) {
 				List<HashMap<String, String>> colList = tableRow.get(c);
+				if (rowIdx > 0 && colList.size() < colHeaders.size()) {
+					multiModelTable = true;
+				}
 				for (int i = 0; i < colList.size(); i++) {
 					HashMap<String, String> m = colList.get(i);
 					int colWidth = 0;
+					int colIndex = -1;
 					for (String k : m.keySet()) {
+						if (rowIdx == 0) {
+							colHeaders.add(k);
+						}
+						else {
+							colIndex = colHeaders.indexOf(k);
+						}
 						colWidth = Math.max(k.length(), m.get(k).toString().length());
+					}
+					int effectiveI;
+					if (!multiModelTable) {
+						effectiveI = i;
+					}
+					else {
+						effectiveI = colIndex;
 					}
 					if (i+1 >= colWidths.size()) {
 						colWidths.add(colWidth);	
 					}
-					else if (colWidth > colWidths.get(i+1)) {
-						colWidths.set(i+1, colWidth);
+					else if (colWidth > colWidths.get(effectiveI+1)) {
+						colWidths.set(effectiveI+1, colWidth);
 					}
 					colIdx++;
 				}
+				rowIdx++;
+			}
+			if (multiModelTable) {
+				colIdx = colHeaders.size();
 			}
 			
 			// column for first links
@@ -5059,6 +5113,8 @@ public class AnswerCurationManager {
 				}
 			}
 		}
+		colHeaders.add(firstLinkColHdr);
+		colHeaders.add(secondLinkColHdr);
 	
 		StringBuilder sb = new StringBuilder("{");
 		// now output the header row
@@ -5096,6 +5152,30 @@ public class AnswerCurationManager {
 				List<HashMap<String, String>> tblelement = tableRow.get(c);
 				for (Map<String, String> m : tblelement) {
 					String v = m.keySet().toArray()[0].toString();
+					if (multiModelTable) {
+						int colLoc = colHeaders.indexOf(v);
+						if (colLoc != idx) {
+							while (idx < colLoc) {
+								sb.append(", ");
+								int cw = colWidths.get(idx++);
+								int aThird = (int) (cw/3.0);
+								StringBuilder sb2 = new StringBuilder();
+								for (int i = 0; i < aThird; i++) {
+									sb2.append(" ");
+								}
+								sb2.append("\"");
+								for (int i = 0; i < aThird - 1; i++) {
+									sb2.append(" ");
+								}
+								sb2.append("\"");
+								for (int i = 2*aThird; i < cw - 2; i++) {
+									sb2.append(" ");
+								}
+								formatStr = "%-" + cw + "s";
+								sb.append(String.format(formatStr, sb2.toString()));		// ditto marks
+							}
+						}
+					}
 					sb.append(", ");
 					formatStr = "%-" + colWidths.get(idx++) + "s";
 					sb.append(String.format(formatStr, m.get(v)));
