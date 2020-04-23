@@ -113,7 +113,13 @@ def visualize(body):
     figs.append(fig)
     labels.append(label)
     if body['plotType'] == '1':
-        layout = inviz.getSimpleLayout(figs)
+        #layout = inviz.getSimpleLayout(figs)
+        fig, label = inviz.createOATRelativeSensitivityGraph(body)
+        figs.append(fig)
+        labels.append(label)
+        
+        layout = inviz.getTabLayout(figs, labels)
+        
     else:
         fig, label = inviz.createOATRelativeSensitivityGraph(body)
         figs.append(fig)
@@ -153,7 +159,11 @@ def visualize(body):
     outputPacket['url'] = URL
     outputPacket['OATSensitivityData'] = OATSensitivityData
     
-    outputPacket['normalizedSensitivityData'] = JData
+    if body['plotType'] == '1':
+        outputPacket['normalizedSensitivityData'] = []
+    else:
+        outputPacket['normalizedSensitivityData'] = JData
+        
     #outputPacket = json.dump(outputPacket)
     
     return outputPacket
