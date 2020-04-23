@@ -2138,6 +2138,10 @@ public class JenaBasedDialogModelProcessor extends JenaBasedSadlModelProcessor {
 			if (shortgraphlink != null) {
 				modelProcessorPreferenceMap.put(DialogPreferences.SHORT_GRAPH_LINK.getId(), shortgraphlink);
 			}
+			String verboseExtraction = preferenceValues.getPreference(DialogPreferences.VERBOSE_EXTRACTION);
+			if (verboseExtraction != null) {
+				modelProcessorPreferenceMap.put(DialogPreferences.VERBOSE_EXTRACTION.getId(), verboseExtraction);
+			}
 			return modelProcessorPreferenceMap;
 		}
 		return null;
