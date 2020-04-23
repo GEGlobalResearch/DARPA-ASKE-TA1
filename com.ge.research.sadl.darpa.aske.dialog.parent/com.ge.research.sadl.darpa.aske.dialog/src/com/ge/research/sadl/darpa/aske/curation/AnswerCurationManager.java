@@ -5000,12 +5000,17 @@ public class AnswerCurationManager {
 					// this might be a condition variable
 					if (i < ifs.size()-2 && ifs.get(i+1) instanceof TripleElement && ifs.get(i+2) instanceof TripleElement && 
 							((TripleElement)ifs.get(i+1)).getSubject().equals(((TripleElement)gpe).getSubject()) && 
-							((TripleElement)ifs.get(i+1)).getPredicate().getURI().equals(SadlConstants.SADL_IMPLICIT_MODEL_VALUE_URI) &&
-							((TripleElement)ifs.get(i+2)).getSubject().equals(((TripleElement)gpe).getSubject()) && 
-							((TripleElement)ifs.get(i+2)).getPredicate().getURI().equals(SadlConstants.SADL_IMPLICIT_MODEL_UNIT_URI)) {
+							((TripleElement)ifs.get(i+1)).getPredicate().getURI().equals(SadlConstants.SADL_IMPLICIT_MODEL_VALUE_URI) //&&
+							//((TripleElement)ifs.get(i+2)).getSubject().equals(((TripleElement)gpe).getSubject()) && 
+							//((TripleElement)ifs.get(i+2)).getPredicate().getURI().equals(SadlConstants.SADL_IMPLICIT_MODEL_UNIT_URI)
+							) {
 						HashMap<String, String> condition = new HashMap<String, String>();
 						String colHeader = ((TripleElement)gpe).getObject().getName();
-						String condValue = ((TripleElement)ifs.get(i+1)).getObject().toString() + " " + ((TripleElement)ifs.get(i+2)).getObject().toString();
+						String condValue = ((TripleElement)ifs.get(i+1)).getObject().toString();
+						if (((TripleElement)ifs.get(i+2)).getSubject().equals(((TripleElement)gpe).getSubject()) && 
+						    ((TripleElement)ifs.get(i+2)).getPredicate().getURI().equals(SadlConstants.SADL_IMPLICIT_MODEL_UNIT_URI)) {
+							condValue += " " + ((TripleElement)ifs.get(i+2)).getObject().toString();
+						}
 						condition.put(colHeader, condValue);
 						conditions.add(condition);
 						i = i + 2;
