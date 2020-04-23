@@ -241,6 +241,26 @@ paths:
           description: OK
           schema:
             $ref: "#/definitions/Message"
+  /textToOntology:
+    post:
+      tags:
+      - "text2triples"
+      operationId: "app_text_to_triples.text_to_ontology"
+      consumes:
+      - application/json
+      produces:
+      - application/json
+      parameters:
+      - in: "body"
+        name: "body"
+        required: true
+        schema:
+          $ref: '#/definitions/TextToOntologyInfo'
+      responses:
+        200:
+          description: OK
+          schema:
+            $ref: "#/definitions/SaveGraph"
 
 
 
@@ -406,6 +426,19 @@ definitions:
       ontologyAsString:
         type: "string"
 
+  TextToOntologyInfo:
+    type: "object"
+    required:
+    - "serialization"
+    - "baseURI"
+    - "text"
+    properties:
+      serialization:
+        type: "string"
+      baseURI:
+        type: "string"
+      text:
+        type: "string"
 
 externalDocs:
   description: "Find out more about the ANSWER system"

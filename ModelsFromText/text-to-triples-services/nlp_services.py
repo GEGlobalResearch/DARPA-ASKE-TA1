@@ -41,6 +41,34 @@ import requests
 import re
 
 
+def get_sentences(nlp_service_url: str,  text: str):
+    payload = {'text': text}
+    text_to_sentence_service_url = nlp_service_url + '/breakTextIntoSentences'
+    r = requests.get(text_to_sentence_service_url, params=payload)
+    sentences = []
+    sentences.extend(r.json())
+    return sentences
+
+
+def get_tokens(nlp_service_url: str, text: str):
+    payload = {'text': text}
+    get_tokens_service_url = nlp_service_url + '/lemmatize'
+    r = requests.get(get_tokens_service_url, params=payload)
+    tokens = []
+    tokens.extend(r.json())
+    return tokens
+
+
+def get_noun_chunks_dict(nlp_service_url: str, sent: str):
+    input_info = {'phraseType': ['NP'], 'text': sent}
+    headers = {'Content-Type': 'application/json'}
+    get_chunks_service_url = nlp_service_url + '/chunkSelPhraseTypePOST'
+    input_info_json = (json.dumps(input_info))
+    r = requests.post(get_chunks_service_url, input_info_json, headers=headers)
+    response = r.json()
+    return response
+
+
 def get_noun_chunks(nlp_service_url: str, sent: str):
     get_chunks_service_url = nlp_service_url + '/chunkSelPhraseTypePOST'
 
