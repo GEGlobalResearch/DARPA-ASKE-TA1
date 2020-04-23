@@ -835,8 +835,12 @@ def convertToCode(inputStr):
     The main function that converts a text equation to equivalent code
     ''' 
 
-    currLine = inputStr.replace(' ','')
+    # If last character is a dot symbol, delete it
+    if inputStr[-1] == '.':
+        inputStr = inputStr[:len(inputStr)-1]
 
+    currLine = inputStr.replace(' ','')
+    
     gradientFlag = 0
     lhsRatio = 0
 
