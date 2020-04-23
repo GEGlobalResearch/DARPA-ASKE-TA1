@@ -1,6 +1,7 @@
 package com.ge.research.sadl.darpa.aske.processing.imports;
 
 import java.io.IOException;
+import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
@@ -293,6 +294,7 @@ public class TextProcessingServiceInterface extends JsonServiceInterface {
 		json.addProperty("localityURI", localityUri);
 		json.addProperty("baseURI", domainBaseUri);
 		json.addProperty("ontologyAsString", ontologyAsString);
+//		System.out.println(json.toString());
 		String response = makeConnectionAndGetResponse(serviceUrl, json);
 //		logger.debug(response);
 		if (response != null && response.length() > 0) {
@@ -329,12 +331,12 @@ public class TextProcessingServiceInterface extends JsonServiceInterface {
 					logger.debug(serviceUrl);
 					logger.debug(json);
 				}
-				System.out.println(response);
-				System.out.println(serviceUrl);
-				System.out.println(json);
 //				System.out.println(response);
-				System.out.println("\n");
-				System.out.flush();
+//				System.out.println(serviceUrl);
+//				System.out.println(json);
+////				System.out.println(response);
+//				System.out.println("\n");
+//				System.out.flush();
 				JsonElement je = new JsonParser().parse(response);
 				if (je.isJsonObject()) {
 					int nc = je.getAsJsonObject().get("numConceptsExtracted").getAsInt();
@@ -454,6 +456,64 @@ public class TextProcessingServiceInterface extends JsonServiceInterface {
 				}
 				return results;
 			}
+		}
+		return null;
+	}
+
+	public String[] textToOntology(String baseUri, String format, String text) throws MalformedURLException {
+		String textToTripleServiceURL = getTextServiceURL() + "textToOntology";
+		URL serviceUrl = new URL(textToTripleServiceURL);			
+		JsonObject json = new JsonObject();
+		json.addProperty("baseURI", baseUri);
+		json.addProperty("serialization", format);
+		text = text.replace("/*", " ");
+		text = text.replace("*/", " ");
+		text = text.replace("*", " ");
+		text = text.replaceAll("\\r?\\n", " ");
+		text = text.replaceAll("\\t", " ");
+		json.addProperty("text", text);
+		logger.debug(json.toString());
+		try {
+			String response = makeConnectionAndGetResponse(serviceUrl, json);
+			logger.debug(response);
+			if (response != null && response.length() > 0) {
+				if (logger.isDebugEnabled()) {
+					logger.debug(serviceUrl);
+					logger.debug(json);
+				}
+//				System.out.println(response);
+//				System.out.println(serviceUrl);
+//				System.out.println(json);
+////				System.out.println(response);
+//				System.out.println("\n");
+//				System.out.flush();
+				JsonElement je = new JsonParser().parse(response);
+				if (je.isJsonObject()) {
+					String format2 = je.getAsJsonObject().get("serializationFormat").getAsString();
+					String triples = je.getAsJsonObject().get("triples").getAsString();
+					logger.debug(triples);
+					String[] results = new String[2];
+					results[0] = format2;
+					triples = triples.trim();
+					triples = triples.startsWith("b") ? triples.substring(1) : triples;
+					if (triples.startsWith("'") && triples.endsWith("'")) {
+						triples = triples.substring(1, triples.length() - 1);
+					}
+					triples = triples.replace("\\n", "\n");
+					triples = triples.replace("\\\\", "\\");
+					results[1] = triples;
+					return results;
+				}
+			}
+			else {
+				throw new IOException("No response received from service " + textToTripleServiceURL);
+			}
+		}
+		catch (Throwable t) {
+			logger.error(serviceUrl);
+			logger.error(json);
+			logger.error(JsonServiceInterface.aggregateExceptionMessage(t));
+			logger.error("\n");
 		}
 		return null;
 	}

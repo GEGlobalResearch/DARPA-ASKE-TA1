@@ -56,6 +56,7 @@ public class DialogPreferences {
 	public static final PreferenceKey ANSWER_INVIZIN_SERVICE_BASE_URI = new PreferenceKey("InvizinServiceBaseUri", "http://localhost:12309");
 	public static final PreferenceKey ANSWER_CODE_EXTRACTION_KBASE_ROOT = new PreferenceKey("codeExtractionKbaseRoot", "resources/CodeModel");
 	public static final PreferenceKey SHORT_GRAPH_LINK = new PreferenceKey("shortGraphLink", "");
+	public static final PreferenceKey VERBOSE_EXTRACTION = new PreferenceKey("verboseExtraction", String.valueOf(false));
 	
 	private static final PreferenceKey[] allKeys = {
 			ORIGINAL_LANGUAGE,
@@ -70,7 +71,8 @@ public class DialogPreferences {
 			DBN_INPUT_JSON_GENERATION_SERVICE_BASE_URI,
 			ANSWER_INVIZIN_SERVICE_BASE_URI,
 			ANSWER_CODE_EXTRACTION_KBASE_ROOT,
-			SHORT_GRAPH_LINK
+			SHORT_GRAPH_LINK,
+			VERBOSE_EXTRACTION
 	};
 
 	public static final List<PreferenceKey> preferences() {
