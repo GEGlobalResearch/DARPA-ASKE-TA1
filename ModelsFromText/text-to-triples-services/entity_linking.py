@@ -157,9 +157,33 @@ class EntityLinking:
         top_ranked_candidate = {}
         if len(scored_candidates) > 0:
             top_ranked_candidate = scored_candidates[0]
+
+            if 'label' in top_ranked_candidate:
+                try:
+                    float(top_ranked_candidate['label'])
+                    top_ranked_candidate = {}
+                except ValueError:
+                    is_number = False
+
             if "score" in top_ranked_candidate:
                 score = top_ranked_candidate["score"]
                 if score < 0.9:
                     top_ranked_candidate = {}
 
         return top_ranked_candidate
+
+    def entity_linking_for_noun_phrases(self, search_str):
+        wikidata_entities: list = []
+        top_ranked_candidate = self.get_external_matching_entity(search_str)
+        if len(top_ranked_candidate) == 0:
+            tokens = search_str.strip().split(' ')
+            if len(tokens) > 1:
+                for token in tokens:
+                    wikidata_entity = self.get_external_matching_entity(token)
+                    if len(wikidata_entity) > 0:
+                        wikidata_entities.append({"text": token, "wikidata_entity": wikidata_entity})
+        else:
+            wikidata_entities.append({"text": search_str, "wikidata_entity": top_ranked_candidate})
+
+        return wikidata_entities
+

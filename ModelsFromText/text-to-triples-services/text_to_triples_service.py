@@ -114,6 +114,8 @@ class TextToTriples:
         automates_variable_definitions: list = []
         domain_concepts: list = []
         data_driven_concepts: list = []
+        np_concepts: list = []
+
         for sent in sentences:
             sent = sent.replace("\n", " ")
             sent = sent.strip()
@@ -143,7 +145,7 @@ class TextToTriples:
                         #                                         domain_ontology_info, base_uri)
                         self.extract_equation_context(entity, wikidata_entity, sent, symbols, line)
 
-                        concept_count = concept_count + 1
+                        # concept_count = concept_count + 1
                     else:
                         equation_string = entity["text"]
                         mod_sent = mod_sent.replace(equation_string, '')
@@ -155,6 +157,8 @@ class TextToTriples:
                 if mod_sent.strip() is not '':
                     # print(mod_sent)
                     phrase_list = nlp.get_noun_chunks(self.nlp_service_url, mod_sent)
+                    # get wikidata entities
+                    data_driven_concepts.extend(self.add_noun_phrase_scientific_concept(None, phrase_list, None))
                     phrases[line] = phrase_list
 
                 line = line + 1
@@ -324,23 +328,16 @@ class TextToTriples:
 
         # TODO: How to send error message
         return {"numConceptsExtracted": concept_count, "numEquationsExtracted": equation_count}
-
-    def add_phrase_scientific_concept(self, g: Graph, phrases, local_graph_uri: str):
-
-        for i in range(0, len(phrases)):
-            if i in phrases:
-                phrase_list = phrases[i]
-                for phrase in phrase_list:
-                    # find wikidata alignment
-
-                    wikidata_entity = self.get_wikidata_alignment({"text": phrase})
-
-                    # find domain ontology alignment
-                    domain_ontology_info = self.get_domain_ontology_alignment(local_graph_uri, phrase)
-
-                    # add to graph
-                    self.generate_scientific_concept_triples(g, {"text": phrase},
-                                                             wikidata_entity, domain_ontology_info)
+    
+    def add_noun_phrase_scientific_concept(self, g: Graph, phrases, local_graph_uri: str):
+        np_concepts: list = []
+        for phrase in phrases:
+            wikidata_entities = self.el.entity_linking_for_noun_phrases(phrase)
+            for w_e in wikidata_entities:
+                text_str = w_e['text']
+                wikidata_entity = w_e['wikidata_entity']
+                np_concepts.append({"entity": {"text": text_str}, "wikidata": wikidata_entity})
+        return np_concepts
 
     def get_domain_concepts(self, locality_uri: str, search_str: str):
         domain_concepts: list = []
@@ -752,12 +749,23 @@ class TextToTriples:
 
 def get_eq_uri_for_var(g: Graph, var_name: str):
     eq_uris = []
-    query_string = "SELECT ?uri where { ?uri <http://sadl.org/sadlimplicitmodel#localDescriptorName> \"" \
-                   + var_name + "\" }"
-    query_result = g.query(query_string)
-    for row in query_result:
-        if len(row) == 1:
-            eq_uris.append(row[0])
+
+    var_name_mod = pre_process(var_name)
+    if len(var_name_mod) == 0:
+        var_name = var_name_mod
+
+    if var_name is not '':
+        query_string = "SELECT ?uri where { ?uri <http://sadl.org/sadlimplicitmodel#localDescriptorName> \"" \
+                       + var_name + "\" }"
+
+        print("")
+        print(query_string)
+        print("\n")
+
+        query_result = g.query(query_string)
+        for row in query_result:
+            if len(row) == 1:
+                eq_uris.append(row[0])
 
     return set(eq_uris)
 

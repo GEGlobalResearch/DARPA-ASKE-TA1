@@ -44,6 +44,7 @@ import text_to_triples_service as t2t
 import text_to_triples_backward_compatible_service as t2tbcs
 import locality_search as locality
 import units_extraction as units
+import text_to_ontology as t2o
 import sys
 from flask_cors import CORS
 
@@ -89,6 +90,10 @@ def clear_graph(body):
 
 def upload_domain_ontology(body):
     return t2t_obj.upload_domain_ontology(body["localityURI"], body["baseURI"], body["ontologyAsString"])
+
+
+def text_to_ontology(body):
+    return t2o.get_ontology_from_text(body, application.config['config_obj'])
 
 
 # TODO: Backward compatible method. Need to retire. Do not use.
