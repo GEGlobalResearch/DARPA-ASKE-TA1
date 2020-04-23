@@ -33,6 +33,21 @@ class invizin(object):
         
     
     def _getOutputValue(self, evalPacket, inputVal, index):
+        """Compute an output using a model evaluation service 
+    
+        Using KCHAIN evaluation service, to get an output for a given input value 
+        inputVal, where JSON for evaluation service call is evalPacket.
+        
+    
+        Args:
+            evalPacket (JSON): JSON packet for call to evaluation service
+            inputVal (float): value of input
+            index (int): index of input variable to be modified
+    
+        Returns:
+            list:  
+    
+        """
         if inputVal is not None:
             evalPacket['inputVariables'][index]['value'] = str(inputVal)
         r = requests.post(self.url_evaluate, json=evalPacket)
