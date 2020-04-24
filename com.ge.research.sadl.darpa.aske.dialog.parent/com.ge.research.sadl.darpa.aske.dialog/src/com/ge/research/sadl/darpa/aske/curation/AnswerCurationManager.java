@@ -5243,6 +5243,9 @@ public class AnswerCurationManager {
 		for (HashMap<String, List<HashMap<String, String>>> tableRow : table) {
 			int colIdx = 1;
 			for(String c : tableRow.keySet()) {
+				if (c.length() > colWidths.get(0)) {
+					colWidths.set(0, c.length());
+				}
 				List<HashMap<String, String>> colList = tableRow.get(c);
 				if (rowIdx > 0 && colList.size() < colHeaders.size()) {
 					multiModelTable = true;
@@ -5267,7 +5270,7 @@ public class AnswerCurationManager {
 					else {
 						effectiveI = colIndex;
 					}
-					if (i+1 >= colWidths.size()) {
+					if (effectiveI+1 >= colWidths.size()) {
 						colWidths.add(colWidth);	
 					}
 					else if (colWidth > colWidths.get(effectiveI+1)) {
@@ -5281,31 +5284,33 @@ public class AnswerCurationManager {
 				colIdx = colHeaders.size();
 			}
 			
-			// column for first links
-			for(List<String> rowLinks : diagrams) {		// ranges over rows
-				for (int linkColIdx = 0; linkColIdx < rowLinks.size(); linkColIdx++) {
-					int maxLinkLen = 0;
-					if (linkColIdx == 0) {
-						maxLinkLen = firstLinkColHdr.length();
-					}
-					else if (linkColIdx == 1) {
-						maxLinkLen = secondLinkColHdr.length();
-					}
-					else {
-						System.err.println("Not expecting more than 2 link columns in table");
-					}
-		
-					String rowLink = rowLinks.get(linkColIdx);
-					int linkLen = rowLink.length();
-					if (linkLen > maxLinkLen) {
-						maxLinkLen = linkLen;
-					}
-					if (colIdx + linkColIdx >= colWidths.size()) {
-						colWidths.add(maxLinkLen);
-					}
-					else {
-						if (maxLinkLen > colWidths.get(colIdx + linkColIdx)) {
-							colWidths.set(colIdx + linkColIdx, maxLinkLen);
+			if (rowIdx == 1) {	// only need to do this part once for rowIdx == 1
+				// column for first links
+				for(List<String> rowLinks : diagrams) {		// ranges over rows
+					for (int linkColIdx = 0; linkColIdx < rowLinks.size(); linkColIdx++) {
+						int maxLinkLen = 0;
+						if (linkColIdx == 0) {
+							maxLinkLen = firstLinkColHdr.length();
+						}
+						else if (linkColIdx == 1) {
+							maxLinkLen = secondLinkColHdr.length();
+						}
+						else {
+							System.err.println("Not expecting more than 2 link columns in table");
+						}
+			
+						String rowLink = rowLinks.get(linkColIdx);
+						int linkLen = rowLink.length();
+						if (linkLen > maxLinkLen) {
+							maxLinkLen = linkLen;
+						}
+						if (colIdx + linkColIdx >= colWidths.size()) {
+							colWidths.add(maxLinkLen);
+						}
+						else {
+							if (maxLinkLen > colWidths.get(colIdx + linkColIdx)) {
+								colWidths.set(colIdx + linkColIdx, maxLinkLen);
+							}
 						}
 					}
 				}
@@ -5315,38 +5320,33 @@ public class AnswerCurationManager {
 		colHeaders.add(secondLinkColHdr);
 	
 		StringBuilder sb = new StringBuilder("{");
+
 		// now output the header row
 		HashMap<String, List<HashMap<String, String>>> tableRow0 = table.get(0);
-		String formatStr = "%" + colWidths.get(0) + "s";
 		sb.append("[");
-		sb.append(String.format(formatStr, firstColHeader));
+		sb.append(centerString(colWidths.get(0), firstColHeader));
 		
 		String someC = (String) tableRow0.keySet().toArray()[0];
 		int idx = 1;
 		List<HashMap<String, String>> headerRowList = tableRow0.get(someC);
 		for (HashMap<String, String> map : headerRowList) {
 			sb.append(", ");
-			formatStr = "%-" + colWidths.get(idx++) + "s";
-			sb.append(String.format(formatStr, map.keySet().toArray()[0]));
+			sb.append(centerString(colWidths.get(idx++), map.keySet().toArray()[0].toString()));
 		}
-		formatStr = "%-" + colWidths.get(idx++) + "s";
 		sb.append(", ");
-		sb.append(String.format(formatStr, firstLinkColHdr));
+		sb.append(centerString(colWidths.get(idx++), firstLinkColHdr));
 		sb.append(", ");
-		formatStr = "%-" + colWidths.get(idx++) + "s";
-		sb.append(String.format(formatStr, secondLinkColHdr));
+		sb.append(centerString(colWidths.get(idx++), secondLinkColHdr));
 		sb.append("],");
 		sb.append(System.lineSeparator());
+
+		// now output the table rows
 		int rowNum = 0;
 		for (HashMap<String, List<HashMap<String, String>>> tableRow : table) {			
-			// now output the table rows
-//			int rowNum = 0;
 			for(String c : tableRow.keySet()) {
-	//			sb.append("     [" + c + "\t ");
 				idx = 0;
 				sb.append(" [");
-				formatStr = "%-" + colWidths.get(idx++) + "s";
-				sb.append(String.format(formatStr, c));
+				sb.append(centerString(colWidths.get(idx++), c));				
 				List<HashMap<String, String>> tblelement = tableRow.get(c);
 				for (Map<String, String> m : tblelement) {
 					String v = m.keySet().toArray()[0].toString();
@@ -5356,38 +5356,23 @@ public class AnswerCurationManager {
 							while (idx < colLoc) {
 								sb.append(", ");
 								int cw = colWidths.get(idx++);
-								int aThird = (int) (cw/3.0);
-								StringBuilder sb2 = new StringBuilder();
-								for (int i = 0; i < aThird; i++) {
-									sb2.append(" ");
-								}
-								sb2.append("\"");
-								for (int i = 0; i < aThird - 1; i++) {
-									sb2.append(" ");
-								}
-								sb2.append("\"");
-								for (int i = 2*aThird; i < cw - 2; i++) {
-									sb2.append(" ");
-								}
-								formatStr = "%-" + cw + "s";
-								sb.append(String.format(formatStr, sb2.toString()));		// ditto marks
+								String ditto = centerString(cw, "''");
+								sb.append(ditto);
 							}
 						}
 					}
 					sb.append(", ");
-					formatStr = "%-" + colWidths.get(idx++) + "s";
-					sb.append(String.format(formatStr, m.get(v)));
+					sb.append(centerString(colWidths.get(idx++), m.get(v)));
 				}
-				formatStr = "%-" + colWidths.get(idx++) + "s";
 				sb.append(", ");
-				sb.append(String.format(formatStr, diagrams.get(rowNum).get(0)));
+				sb.append(centerString(colWidths.get(idx++), diagrams.get(rowNum).get(0)));
 				sb.append(", ");
-				formatStr = "%-" + colWidths.get(idx++) + "s";
+				int thisCW = colWidths.get(idx++);
 				if (diagrams.get(rowNum).size() > 1) {
-					sb.append(String.format(formatStr, diagrams.get(rowNum).get(1)));
+					sb.append(centerString(thisCW, diagrams.get(rowNum).get(1)));
 				}
 				else {
-					sb.append(String.format(formatStr, " "));
+					sb.append(centerString(thisCW, "''"));
 				}
 				sb.append("],");
 				sb.append(System.lineSeparator());
@@ -5401,6 +5386,10 @@ public class AnswerCurationManager {
 		return sb.toString();
 	}
 
+	private static String centerString (int width, String s) {
+	    return String.format("%-" + width  + "s", String.format("%" + (s.length() + (width - s.length()) / 2) + "s", s));
+	}
+	
 	private String addResultsToDialog(ResultSet rs) {
 		StringBuilder sb = new StringBuilder();
 		if (rs != null && rs.getRowCount() > 0) {
