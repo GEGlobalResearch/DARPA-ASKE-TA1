@@ -49,8 +49,17 @@ import com.ge.research.sadl.darpa.aske.ui.syntaxcoloring.DialogHighlightingConfi
 import com.ge.research.sadl.darpa.aske.ui.syntaxcoloring.DialogSemanticHighlightingCalculator
 import com.ge.research.sadl.darpa.aske.ui.syntaxcoloring.DialogTokenToAttributeIdMapper
 import com.ge.research.sadl.ide.editor.contentassist.IOntologyContextProvider
+import com.ge.research.sadl.refactoring.RefactoringHelper
 import com.ge.research.sadl.ui.contentassist.SadlReferenceProposalCreator
+import com.ge.research.sadl.ui.outline.NoopOutlineRefreshJob
+import com.ge.research.sadl.ui.refactoring.EclipseRefactoringHelper
+import com.ge.research.sadl.ui.refactoring.SadlReferenceUpdater
+import com.ge.research.sadl.ui.refactoring.SadlRenameContextFactory
+import com.ge.research.sadl.ui.refactoring.SadlRenameRefactoringController
+import com.ge.research.sadl.ui.refactoring.SadlRenameRefactoringExecuter
+import com.ge.research.sadl.ui.refactoring.SadlResourceRenameStrategy
 import com.google.inject.Binder
+import com.google.inject.Provider
 import com.google.inject.name.Names
 import org.eclipse.xtend.lib.annotations.FinalFieldsConstructor
 import org.eclipse.xtext.ide.editor.contentassist.IdeContentProposalProvider
@@ -63,9 +72,14 @@ import org.eclipse.xtext.ui.editor.folding.DefaultFoldingRegionProvider
 import org.eclipse.xtext.ui.editor.folding.DefaultFoldingStructureProvider
 import org.eclipse.xtext.ui.editor.folding.IFoldingRegionProvider
 import org.eclipse.xtext.ui.editor.folding.IFoldingStructureProvider
+import org.eclipse.xtext.ui.editor.outline.impl.OutlineRefreshJob
 import org.eclipse.xtext.ui.editor.preferences.IPreferenceStoreInitializer
 import org.eclipse.xtext.ui.editor.preferences.LanguageRootPreferencePage
 import org.eclipse.xtext.ui.editor.syntaxcoloring.IHighlightingConfiguration
+import org.eclipse.xtext.ui.refactoring.IRenameStrategy
+import org.eclipse.xtext.ui.refactoring.ui.IRenameContextFactory
+import org.eclipse.xtext.ui.refactoring.ui.RenameRefactoringController
+import org.eclipse.xtext.ui.refactoring.ui.RenameRefactoringExecuter
 
 /**
  * Use this class to register components to be used within the Eclipse IDE.
@@ -129,6 +143,42 @@ class DialogUiModule extends AbstractDialogUiModule {
 
 	def Class<? extends DefaultFoldingRegionProvider> bindDefaultFoldingRegionProvider() {
 		return DialogFoldingFoldingRegionProvider;
+	}
+
+	override Class<? extends IRenameStrategy> bindIRenameStrategy() {
+		return SadlResourceRenameStrategy;
+	}
+
+	override bindIReferenceUpdater() {
+		return SadlReferenceUpdater;
+	}
+
+	def Class<? extends IRenameContextFactory> bindIRenameContextFactory() {
+		return SadlRenameContextFactory;
+	}
+
+	def Provider<? extends RefactoringHelper> provideRefactoringHelper() {
+		return [
+			EclipseRefactoringHelper.INSTANCE
+		];
+	}
+
+	def Provider<? extends EclipseRefactoringHelper> provideEclipseRefactoringHelper() {
+		return [
+			EclipseRefactoringHelper.INSTANCE
+		];
+	}
+
+	def Class<? extends RenameRefactoringController> bindRenameRefactoringController() {
+		return SadlRenameRefactoringController;
+	}
+
+	def Class<? extends OutlineRefreshJob> bindOutlineRefreshJob() {
+		return NoopOutlineRefreshJob;
+	}
+
+	def Class<? extends RenameRefactoringExecuter> bindRenameRefactoringExecuter() {
+		return SadlRenameRefactoringExecuter;
 	}
 
 }

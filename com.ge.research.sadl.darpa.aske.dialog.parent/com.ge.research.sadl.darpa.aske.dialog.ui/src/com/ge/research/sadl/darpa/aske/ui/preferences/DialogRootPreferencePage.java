@@ -141,6 +141,7 @@ public class DialogRootPreferencePage extends LanguageRootPreferencePage {
 		addField(new BooleanFieldEditorExt(DialogPreferences.ORIGINAL_LANGUAGE.getId(), "Original language", scriptsToSaveSetting));
 		addField(new BooleanFieldEditorExt(DialogPreferences.PYTHON_LANGUAGE.getId(), "Python", scriptsToSaveSetting));
 		addField(new BooleanFieldEditorExt(DialogPreferences.OTHER_PYTHON_LANGUAGE.getId(), "Other Python Flavors", scriptsToSaveSetting));
+		addField(new BooleanFieldEditorExt(DialogPreferences.VERBOSE_EXTRACTION.getId(), "verboseExtraction", generalSettings));
 		addField(new StringFieldEditorExt(DialogPreferences.ANSWER_TEXT_SERVICE_BASE_URI.getId(), "Text to Triples Host and Port:", generalSettings));
 		addField(new StringFieldEditorExt(DialogPreferences.ANSWER_JAVA_TO_PYTHON_SERVICE_BASE_URI.getId(), "Java to Python Translation Service Host and Port:", generalSettings));
 		Composite computationalGraphSettings = createSettingsGroup(generalSettings, SWT.NONE, "Computational Graph Settings");
@@ -167,6 +168,7 @@ public class DialogRootPreferencePage extends LanguageRootPreferencePage {
 		store.setDefault(DialogPreferences.ORIGINAL_LANGUAGE.getId(), DialogPreferences.ORIGINAL_LANGUAGE.getDefaultValue());
 		store.setDefault(DialogPreferences.PYTHON_LANGUAGE.getId(), DialogPreferences.PYTHON_LANGUAGE.getDefaultValue());
 		store.setDefault(DialogPreferences.OTHER_PYTHON_LANGUAGE.getId(), DialogPreferences.OTHER_PYTHON_LANGUAGE.getDefaultValue());
+		store.setDefault(DialogPreferences.VERBOSE_EXTRACTION.getId(), DialogPreferences.VERBOSE_EXTRACTION.getDefaultValue());
 		store.setDefault(DialogPreferences.ANSWER_TEXT_SERVICE_BASE_URI.getId(), DialogPreferences.ANSWER_TEXT_SERVICE_BASE_URI.getDefaultValue());
 		store.setDefault(DialogPreferences.ANSWER_KCHAIN_CG_SERVICE_BASE_URI.getId(), DialogPreferences.ANSWER_KCHAIN_CG_SERVICE_BASE_URI.getDefaultValue());
 		store.setDefault(DialogPreferences.USE_ANSWER_KCHAIN_CG_SERVICE.getId(), DialogPreferences.USE_ANSWER_KCHAIN_CG_SERVICE.getDefaultValue());

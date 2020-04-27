@@ -7,11 +7,11 @@
         containment="true"/>
     <eStructuralFeatures xsi:type="ecore:EReference" name="dep" eType="ecore:EClass platform:/resource/com.ge.research.sadl/model/generated/SADL.ecore#//SadlResource"
         containment="true"/>
+    <eStructuralFeatures xsi:type="ecore:EReference" name="class" eType="ecore:EClass platform:/resource/com.ge.research.sadl/model/generated/SADL.ecore#//SadlResource"
+        containment="true"/>
     <eStructuralFeatures xsi:type="ecore:EReference" name="relDesc1" eType="#//RelationshipDescriptor1"
         containment="true"/>
     <eStructuralFeatures xsi:type="ecore:EReference" name="relDesc2" eType="#//RelationshipDescriptor2"
-        containment="true"/>
-    <eStructuralFeatures xsi:type="ecore:EReference" name="class" eType="ecore:EClass platform:/resource/com.ge.research.sadl/model/generated/SADL.ecore#//SadlResource"
         containment="true"/>
     <eStructuralFeatures xsi:type="ecore:EReference" name="localExtreme" eType="ecore:EClass platform:/resource/com.ge.research.sadl/model/generated/SADL.ecore#//SadlResource"
         containment="true"/>
