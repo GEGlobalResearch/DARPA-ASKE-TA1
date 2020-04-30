@@ -10,7 +10,7 @@ Require-Bundle: com.ge.research.sadl.darpa.aske.dialog,
  com.ge.research.sadl.ide,
  org.eclipse.xtext.ide,
  org.eclipse.xtext.xbase.ide,
- org.antlr.runtime,
+ org.antlr.runtime;bundle-version="[3.2.0,3.2.1)",
  com.ge.research.sadl;bundle-version="3.2.0"
 Bundle-RequiredExecutionEnvironment: JavaSE-1.8
 Export-Package: com.ge.research.sadl.darpa.aske.ide.contentassist.antlr,
@@ -18,4 +18,3 @@ Export-Package: com.ge.research.sadl.darpa.aske.ide.contentassist.antlr,
  com.ge.research.sadl.darpa.aske.ide.contentassist.antlr.lexer,
  com.ge.research.sadl.darpa.aske.ide.contentassist.antlr.lexer.jflex,
  com.ge.research.sadl.darpa.aske.ide.editor.contentassist
-
