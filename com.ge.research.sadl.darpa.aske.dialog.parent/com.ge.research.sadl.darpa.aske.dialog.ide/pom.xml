@@ -18,13 +18,6 @@
 				<artifactId>xtend-maven-plugin</artifactId>
 				<version>${xtextVersion}</version>
 			</plugin>
-			<!-- <plugin>
-				<groupId>org.eclipse.tycho</groupId>
-				<artifactId>target-platform-configuration</artifactId>
-				<configuration>
-					<pomDependencies>consider</pomDependencies>
-				</configuration>
-			</plugin> -->
 		</plugins>
 	</build>
 
