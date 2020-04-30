@@ -2897,13 +2897,15 @@ public class JenaBasedDialogModelProcessor extends JenaBasedSadlModelProcessor {
 		SadlTypeReference typ = stmt.getTyp(); 
 		try {
 			Object clsObj = cls != null ? processExpression(cls) : null;
-			Object propObj = processExpression(prop);
+			Object propObj = prop != null ? processExpression(prop) : null;
 			Object typObj = typ != null ? processExpression(typ) : null;
 //			System.out.println("HowManyValuesStatement: cls=" + (article!= null ? article : "") + " '" + 
 //					clsObj.toString() + "'; prop='" + propObj.toString() + 
 //					"'" + (typObj != null ? ("; type='" + typObj.toString() + "'") : ""));
 			HowManyValuesContent hmvc = new HowManyValuesContent(stmt, Agent.USER);
-			hmvc.setProp(nodeCheck(propObj));
+			if (propObj != null) {
+				hmvc.setProp(nodeCheck(propObj));
+			}
 			if (typObj != null) {
 				hmvc.setTyp(nodeCheck(typObj));
 			}
