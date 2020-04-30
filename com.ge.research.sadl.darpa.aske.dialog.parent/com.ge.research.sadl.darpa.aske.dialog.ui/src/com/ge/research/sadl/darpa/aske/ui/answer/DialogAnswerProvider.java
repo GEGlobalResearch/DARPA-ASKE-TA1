@@ -133,6 +133,10 @@ public class DialogAnswerProvider extends BaseDialogAnswerProvider {
 			// See: https://github.com/GEGlobalResearch/DARPA-ASKE-TA1/issues/37
 			if (SadlActionHandler.getModelFolderFromResource(resource) != null) {
 				doConfigure(resource);
+//				if (configManager != null) {
+//					configManager.addPrivateKeyMapValueByResource(DialogConstants.DIALOG_ANSWER_PROVIDER, resource, this);
+////					configManager.addPrivateKeyMapValueByResource(DialogConstants.ANSWER_CURATION_MANAGER, resource, null);
+//				}
 			} else {
 				modelListener = r -> {
 					if (SadlActionHandler.getModelFolderFromResource(r) != null) {
@@ -179,8 +183,12 @@ public class DialogAnswerProvider extends BaseDialogAnswerProvider {
 //			answerConfigurationManager.clearQuestionsAndAnsers();
 //		}
 		if (configManager != null) {
-			configManager.addPrivateKeyMapValueByResource(DialogConstants.DIALOG_ANSWER_PROVIDER, getResource(), null);
-			configManager.addPrivateKeyMapValueByResource(DialogConstants.ANSWER_CURATION_MANAGER, getResource(), null);
+			Resource rsrc = getResource();
+			if (rsrc != null) {
+				configManager.addPrivateKeyMapValueByResource(DialogConstants.DIALOG_ANSWER_PROVIDER, rsrc.getURI(), null);
+				configManager.addPrivateKeyMapValueByResource(DialogConstants.ANSWER_CURATION_MANAGER, rsrc.getURI(), null);
+				configManager.addPrivateKeyMapValueByResource(DialogConstants.DIALOG_ELEMENT_INFOS, rsrc.getURI(), null);
+			}
 		}
 		LOGGER.debug("[DialogAnswerProvider] >>> Disposed. [" + uri + "]");
 	}
@@ -248,7 +256,9 @@ public class DialogAnswerProvider extends BaseDialogAnswerProvider {
 	private IConfigurationManagerForIDE initializeConfigManager(Resource resource) throws ConfigurationException {
 		String modelFolder = SadlActionHandler.getModelFolderFromResource(resource);
 		ConfigurationManagerForIDE configManager = ConfigurationManagerForIdeFactory.getConfigurationManagerForIDE(modelFolder, null);
-		configManager.addPrivateKeyMapValueByResource(DialogConstants.DIALOG_ANSWER_PROVIDER, resource, this);
+		if (resource != null) {
+			configManager.addPrivateKeyMapValueByResource(DialogConstants.DIALOG_ANSWER_PROVIDER, resource.getURI(), this);
+		}
 		return configManager;
 	}
 
@@ -331,6 +341,7 @@ public class DialogAnswerProvider extends BaseDialogAnswerProvider {
 //				Exceptions.throwUncheckedException(e);
 			}
 		});
+		pause();
 		if (ctx instanceof ExtractStatement) {
 			try {
 				String mf = SadlActionHandler.getModelFolderFromResource(((ExtractStatement) ctx).eResource());
@@ -346,78 +357,90 @@ public class DialogAnswerProvider extends BaseDialogAnswerProvider {
 		return true;
 	}
 
+	private void pause() {
+		try {
+			Thread.sleep(200);
+		}
+		catch (InterruptedException e) {
+			System.out.println(e);
+		}
+	}
+
 	private synchronized boolean replaceDialogText(IXtextDocument theDocument, EObject ctx, String originalTxt, String replacementTxt) throws BadLocationException {
 		LOGGER.debug("replacing '" + originalTxt + "' with '" + replacementTxt + "'");
 		Resource resource = getResource();
 		Display.getDefault().asyncExec(() -> {
 //		Display.getDefault().syncExec(() -> {
-			Object elementInfos = getConfigMgr().getPrivateKeyMapValueByResource("ElementInfo", resource);
-			String docText = document.get();
-			int docLength = document.getLength();
-			int idx = 0;
-			if (elementInfos instanceof List<?>) {
-				int cumulativeOffset = 0;
-				for (Object einfo : ((List<?>)elementInfos)) {
-					if (einfo instanceof ModelElementInfo) {
-						ModelElementInfo mei = (ModelElementInfo) einfo;
-						if (mei.isInserted()) {
-							cumulativeOffset += mei.getLength();
-						}
-						else if (mei.getObject().equals(ctx)) {
-							String origTxt = mei.getTxt();
-							String otherTxt = originalTxt;
-							String replTxt = replacementTxt;
-							int leadingCrudLen = origTxt.indexOf(otherTxt);
-							if (leadingCrudLen > 0) {
-								// there's stuff (comments, whitespace on the front of origTxt
-								origTxt = origTxt.substring(leadingCrudLen);
+			if (resource != null) {
+				Object elementInfos = getConfigMgr().getPrivateKeyMapValueByResource(DialogConstants.DIALOG_ELEMENT_INFOS, resource.getURI());
+				String docText = document.get();
+				int docLength = document.getLength();
+				int idx = 0;
+				if (elementInfos instanceof List<?>) {
+					int cumulativeOffset = 0;
+					for (Object einfo : ((List<?>)elementInfos)) {
+						if (einfo instanceof ModelElementInfo) {
+							ModelElementInfo mei = (ModelElementInfo) einfo;
+							if (mei.isInserted()) {
+								cumulativeOffset += mei.getLength();
 							}
-							if(origTxt.endsWith(".") && !otherTxt.endsWith(".")) {
-								origTxt = origTxt.substring(0,origTxt.length()-1);
-							}
-							if(otherTxt.endsWith(".") && !origTxt.endsWith(".")) {
-								otherTxt = otherTxt.substring(0,otherTxt.length()-1);
-							}
-							int leadingPrefixLen = 0;
-							if (origTxt.trim().startsWith("CM: ")) {
-								leadingPrefixLen = 4;
-								if (!origTxt.trim().substring(leadingPrefixLen).equals(otherTxt)) {
-									// error
-									System.err.println("equation text doesn't match");
+							else if (mei.getObject().equals(ctx)) {
+								String origTxt = mei.getTxt();
+								String otherTxt = originalTxt;
+								String replTxt = replacementTxt;
+								int leadingCrudLen = origTxt.indexOf(otherTxt);
+								if (leadingCrudLen > 0) {
+									// there's stuff (comments, whitespace on the front of origTxt
+									origTxt = origTxt.substring(leadingCrudLen);
 								}
-							}
-							else {
-								if (!origTxt.trim().equals(otherTxt)) {
-									// error
-									System.err.println("equation text doesn't match");
+								if(origTxt.endsWith(".") && !otherTxt.endsWith(".")) {
+									origTxt = origTxt.substring(0,origTxt.length()-1);
 								}
-							}
-							int len = mei.getLength() - leadingCrudLen;									// length of original element
-							int currentStart = docText.indexOf(origTxt);				// start of element text in current document
-							String currentTxt;
-							try {
-								currentTxt = document.get(currentStart, len);
-								if(currentTxt.endsWith(".") && !replacementTxt.endsWith(".")) {
-									currentTxt = currentTxt.substring(0,currentTxt.length()-1);
+								if(otherTxt.endsWith(".") && !origTxt.endsWith(".")) {
+									otherTxt = otherTxt.substring(0,otherTxt.length()-1);
 								}
-								if (!currentTxt.trim().substring(leadingPrefixLen).equals(originalTxt)) {
-									// error
-									System.err.println("document text doesn't match");
+								int leadingPrefixLen = 0;
+								if (origTxt.trim().startsWith("CM: ")) {
+									leadingPrefixLen = 4;
+									if (!origTxt.trim().substring(leadingPrefixLen).equals(otherTxt)) {
+										// error
+										System.err.println("equation text doesn't match");
+									}
 								}
-								int loc = currentStart + leadingPrefixLen;
-								document.replace(loc, originalTxt.length(), replacementTxt);
-//								final int caretOffset = loc + modContent.length();
-//								setCaretOffsetInEditor(uri, caretOffset);
-								break;
-							} catch (BadLocationException e) {
-								// TODO Auto-generated catch block
-								e.printStackTrace();
+								else {
+									if (!origTxt.trim().equals(otherTxt)) {
+										// error
+										System.err.println("equation text doesn't match");
+									}
+								}
+								int len = mei.getLength() - leadingCrudLen;									// length of original element
+								int currentStart = docText.indexOf(origTxt);				// start of element text in current document
+								String currentTxt;
+								try {
+									currentTxt = document.get(currentStart, len);
+									if(currentTxt.endsWith(".") && !replacementTxt.endsWith(".")) {
+										currentTxt = currentTxt.substring(0,currentTxt.length()-1);
+									}
+									if (!currentTxt.trim().substring(leadingPrefixLen).equals(originalTxt)) {
+										// error
+										System.err.println("document text doesn't match");
+									}
+									int loc = currentStart + leadingPrefixLen;
+									document.replace(loc, originalTxt.length(), replacementTxt);
+	//								final int caretOffset = loc + modContent.length();
+	//								setCaretOffsetInEditor(uri, caretOffset);
+									break;
+								} catch (BadLocationException e) {
+									// TODO Auto-generated catch block
+									e.printStackTrace();
+								}
 							}
 						}
 					}
 				}
 			}
 		});
+		pause();
 		return true;
 	}
 
@@ -428,6 +451,9 @@ public class DialogAnswerProvider extends BaseDialogAnswerProvider {
 		if (!modContent.startsWith(lineSep) && loc > lineSepLen) {
 			try {
 				String before = document.get(loc - lineSepLen, lineSepLen);
+				if (docLen > loc && (before.startsWith(".") || before.startsWith("?"))) {
+					before = document.get(loc + 1 - lineSepLen, lineSepLen);
+				}
 				if (!before.equals(lineSep)) {
 					modContent = lineSep + modContent;
 				}
@@ -456,105 +482,120 @@ public class DialogAnswerProvider extends BaseDialogAnswerProvider {
 	}
 
 	private String getNodeText(EObject element) {
-		return NodeModelUtils.getTokenText(NodeModelUtils.getNode(element));
+		if (element != null && NodeModelUtils.getNode(element) != null) {
+			return NodeModelUtils.getTokenText(NodeModelUtils.getNode(element));
+		}
+		return null;
 	}
 	
 	private Object[] generateInsertionLocation(IXtextDocument document, Resource resource, Object ctx, String ctxtxt, String modContent) {
 		int loc = 0;
 		String lineSep = System.lineSeparator();
 		int lineSepLen = lineSep.length();
-		Object elementInfos = getConfigMgr().getPrivateKeyMapValueByResource("ElementInfo", resource); // resource);
-		String docText = document.get();
-		int docLength = document.getLength();
-		int idx = 0;
-		if (elementInfos instanceof List<?>) {
-			int cumulativeOffset = 0;
-			for (Object einfo : ((List<?>)elementInfos)) {
-				if (einfo instanceof ModelElementInfo) {
-					ModelElementInfo mei = (ModelElementInfo) einfo;
-					if (mei.isInserted()) {
-						cumulativeOffset += mei.getLength();
-					}
-					else if (getNodeText(mei.getObject()) != null && ctxtxt != null && 
-							getNodeText(mei.getObject()).equals(ctxtxt)) {
-						try {
-							String origTxt = mei.getTxt();
-							int len = mei.getLength();	// length of original element
-							int start = mei.getStart(); // start of this ModelElementInfo
-							int currentStart = docText.indexOf(origTxt, start);				// start of element text in current document
-							if (currentStart >= 0) {
-								String currentTxt = document.get(currentStart, len);
-								if (!currentTxt.equals(origTxt)) {
-									System.err.println("Error in Dialog text");
-									System.err.println("  currentTxt: " + currentTxt);
-									System.err.println("  origTxt: " + origTxt);
-								}
-							}
-							else {
-								String notFound = docText.substring(start, start + len);
-								currentStart = 0;
-							}
-							int currentEndLoc = currentStart+ origTxt.length();			// end of element text in current document
-							int expectedEndLoc = mei.getEnd() + cumulativeOffset;		// expected end of element text in current document
-							if (currentEndLoc != expectedEndLoc) {
-								System.err.println("currentLoc=" + currentEndLoc + ", expectedLoc=" + expectedEndLoc);
-							}
-							else {
-								// this is the original object after which the insertion is to occur
-								// but there could be other insertions before this, so roll forward through
-								// any follow-on insertions to get the actual point of insertion
-								int priorInsertionsOffset = 0;
-								for (int insertionIdx = idx + 1; insertionIdx < ((List<?>)elementInfos).size(); insertionIdx++) {
-									ModelElementInfo nextMei = ((List<ModelElementInfo>)elementInfos).get(insertionIdx);
-									if (nextMei.isInserted()) {
-										priorInsertionsOffset += nextMei.getLength();
-									}
-									else {
-										break;
-									}
-								}
-								loc = expectedEndLoc + priorInsertionsOffset;
-								if (docLength - loc >= lineSepLen) {
-									String rightAfter = document.get(loc,lineSepLen);
-									if (rightAfter.startsWith(".") || rightAfter.startsWith("?")) {
-										loc++;
-										rightAfter = document.get(loc, lineSepLen);
-									}
-									if (rightAfter.equals(lineSep)) {
-										loc += lineSep.length();
-									}
-								}
-							}							
-						} catch (BadLocationException e) {
-							// TODO Auto-generated catch block
-							e.printStackTrace();
+		if (resource != null) {
+			Object elementInfos = getConfigMgr().getPrivateKeyMapValueByResource(DialogConstants.DIALOG_ELEMENT_INFOS, resource.getURI());
+			String docText = document.get();
+			int docLength = document.getLength();
+			int idx = 0;
+			if (elementInfos instanceof List<?>) {
+				int cumulativeOffset = 0;
+				for (Object einfo : ((List<?>)elementInfos)) {
+					if (einfo instanceof ModelElementInfo) {
+						ModelElementInfo mei = (ModelElementInfo) einfo;
+						if (mei.isInserted()) {
+							cumulativeOffset += mei.getLength();
 						}
-						break;
+						else if (getNodeText(mei.getObject()) != null && ctxtxt != null && 
+								getNodeText(mei.getObject()).equals(ctxtxt)) {
+							try {
+								String origTxt = mei.getTxt();
+								int len = mei.getLength();	// length of original element
+								int start = mei.getStart(); // start of this ModelElementInfo
+								int currentStart = docText.indexOf(origTxt, start);				// start of element text in current document
+								if (currentStart >= 0) {
+									String currentTxt = document.get(currentStart, len);
+									if (!currentTxt.equals(origTxt)) {
+										System.err.println("Error in Dialog text");
+										System.err.println("  currentTxt: " + currentTxt);
+										System.err.println("  origTxt: " + origTxt);
+									}
+								}
+								else {
+									String notFound = docText.substring(start, start + len);
+									currentStart = 0;
+								}
+								int currentEndLoc = currentStart+ origTxt.length();			// end of element text in current document
+								int expectedEndLoc = mei.getEnd() + cumulativeOffset;		// expected end of element text in current document
+								if (currentEndLoc != expectedEndLoc) {
+									System.err.println("currentLoc=" + currentEndLoc + ", expectedLoc=" + expectedEndLoc);
+								}
+								else {
+									// this is the original object after which the insertion is to occur
+									// but there could be other insertions before this, so roll forward through
+									// any follow-on insertions to get the actual point of insertion
+									int priorInsertionsOffset = 0;
+									for (int insertionIdx = idx + 1; insertionIdx < ((List<?>)elementInfos).size(); insertionIdx++) {
+										ModelElementInfo nextMei = ((List<ModelElementInfo>)elementInfos).get(insertionIdx);
+										if (nextMei.isInserted()) {
+											priorInsertionsOffset += nextMei.getLength();
+										}
+										else {
+											break;
+										}
+									}
+									loc = expectedEndLoc + priorInsertionsOffset;
+									if (docLength - loc >= lineSepLen) {
+										String rightAfter = document.get(loc,lineSepLen);
+										if (rightAfter.startsWith(".") || rightAfter.startsWith("?")) {
+											loc++;
+											if (loc + lineSepLen <= docLength) {
+												rightAfter = document.get(loc, lineSepLen);
+											}
+										}
+										if (rightAfter.equals(lineSep)) {
+											loc += lineSep.length();
+										}
+									}
+									else if (docLength > loc) {
+										String nextChar = document.get(loc, 1);
+										if (nextChar.equals(".") || nextChar.equals("?")) {
+											loc++;
+										}
+									}
+								}							
+							} catch (BadLocationException e) {
+								// TODO Auto-generated catch block
+								e.printStackTrace();
+							}
+							break;
+						}
+					}
+					idx++;
+				}
+			}
+			if (loc == 0) {
+				if (ctx != null) {
+					if (resource != null) {
+						System.err.println("Context EObject not found in list of ModelElementInfos for document '" + resource.getURI() + "'!");
+					}
+					else {
+						System.err.println("Context EObject not found in list of ModelElementInfos!");
 					}
 				}
-				idx++;
+				loc = docLength;
 			}
-		}
-		if (loc == 0) {
-			if (ctx != null) {
-				if (resource != null) {
-					System.err.println("Context EObject not found in list of ModelElementInfos for document '" + resource.getURI() + "'!");
+			// should there be a newline at the beginning or a newline at the end of modContent?
+			modContent = checkForAdditionalNewlines(document, modContent, loc);
+	
+			ModelElementInfo newMei = new ModelElementInfo(null, modContent, loc, modContent.length(), loc+modContent.length(), true);
+			if (elementInfos != null) {
+				if (idx + 1 < ((List<ModelElementInfo>)elementInfos).size()) {
+					((List<ModelElementInfo>)elementInfos).add(idx + 1, newMei);
 				}
 				else {
-					System.err.println("Context EObject not found in list of ModelElementInfos!");
+					((List<ModelElementInfo>)elementInfos).add(newMei);
 				}
 			}
-			loc = docLength;
-		}
-		// should there be a newline at the beginning or a newline at the end of modContent?
-		modContent = checkForAdditionalNewlines(document, modContent, loc);
-
-		ModelElementInfo newMei = new ModelElementInfo(null, modContent, loc, modContent.length(), loc+modContent.length(), true);
-		if (idx + 1 < ((List<ModelElementInfo>)elementInfos).size()) {
-			((List<ModelElementInfo>)elementInfos).add(idx + 1, newMei);
-		}
-		else {
-			((List<ModelElementInfo>)elementInfos).add(newMei);
 		}
 		Object[] returnvals = new Object[2];
 		returnvals[0] = modContent;

@@ -134,6 +134,10 @@ public class AnswerExtractionProcessor {
 	public OntModel getCodeModel() {
 		return getCodeExtractor().getCurrentCodeModel();
 	}
+	
+	public void setCodeModel(OntModel m) {
+		getCodeExtractor().setCurrentCodeModel(m);
+	}
 
 //	public void setCodeModel(OntModel codeModel) {
 //		this.codeModel = codeModel;

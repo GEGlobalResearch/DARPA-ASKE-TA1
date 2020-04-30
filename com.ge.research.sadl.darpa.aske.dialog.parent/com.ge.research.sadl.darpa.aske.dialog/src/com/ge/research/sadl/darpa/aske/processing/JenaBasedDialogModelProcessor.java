@@ -214,9 +214,9 @@ public class JenaBasedDialogModelProcessor extends JenaBasedSadlModelProcessor {
 		resetProcessor();
 		logger.debug("JenaBasedDialogModelProcessor.onValidate called for Resource '" + resource.getURI() + "'"); 
 		CancelIndicator cancelIndicator = context.getCancelIndicator();
-		if (resource.getContents().size() < 1) {
-			return;
-		}
+//		if (resource.getContents().size() < 1) {
+//			return;
+//		}
 	
 		logger.debug("onValidate called for Resource '" + resource.getURI() + "'");
 		if (mode.shouldCheck(CheckType.EXPENSIVE)) {
@@ -331,6 +331,7 @@ public class JenaBasedDialogModelProcessor extends JenaBasedSadlModelProcessor {
 		}
 
 		if(!processModelImports(modelOntology, resource.getURI(), model)) {
+			addError("Failed to load model imports. Try cleaning and building the project.", model);
 			return;
 		}
 		EList<SadlImport> implist = model.getImports();
@@ -359,9 +360,9 @@ public class JenaBasedDialogModelProcessor extends JenaBasedSadlModelProcessor {
 
 		// Check for a syntactically valid AST; if it isn't then don't process so that conversations will only be valid ones
 	    boolean validAST = isAstSyntaxValid(model);	
-	    if (!validAST) {
-	    	return;
-	    }
+//	    if (!validAST) {
+//	    	return;
+//	    }
 
 		// create validator for expressions
 		initializeModelValidator();
@@ -430,12 +431,14 @@ public class JenaBasedDialogModelProcessor extends JenaBasedSadlModelProcessor {
 				OntModelProvider.attach(model.eResource(), getTheJenaModel(), getModelName(), getModelAlias());
 			}
 			
-			// Do this **after** setting the resource information in the OntModelProvider
-			try {
-				getAnswerCurationManager(resource).processConversation(getCurrentResource(), getTheJenaModel(), getModelName());
-			} catch (IOException e2) {
-				// TODO Auto-generated catch block
-				e2.printStackTrace();
+			if (validAST && !refactoringHelper.isInProgress()) {
+				// Do this **after** setting the resource information in the OntModelProvider
+				try {
+					getAnswerCurationManager(resource).processConversation(getCurrentResource(), getTheJenaModel(), getModelName());
+				} catch (IOException e2) {
+					// TODO Auto-generated catch block
+					e2.printStackTrace();
+				}
 			}
 			
 			logger.debug("At end of model processing, conversation is:");
@@ -460,7 +463,18 @@ public class JenaBasedDialogModelProcessor extends JenaBasedSadlModelProcessor {
 		EObject root = getCurrentResource().getContents().get(0);
 		ICompositeNode node = NodeModelUtils.getNode(root);
 		String dsl = node.getText();
-		String txt = dsl.substring(start, start + length);
+		int end2 = start + length;
+		String txt = dsl.substring(start, end2);
+		if (!txt.endsWith(".") && !txt.endsWith("?")) {
+			if (end2 + 1 < dsl.length()) {
+				String after = dsl.substring(end2,end2+1);
+				if (after.equals(".") || after.equals("?")) {
+					txt = txt + after;
+					length++;
+					end++;
+				}
+			}
+		}
 		modelElements.add(new ModelElementInfo(element, txt, start, length, end, false));
 	}
 
@@ -670,8 +684,16 @@ public class JenaBasedDialogModelProcessor extends JenaBasedSadlModelProcessor {
 		Iterator<SadlParameterDeclaration> spitr = element.getParameter().iterator();
 		while (spitr.hasNext()) {
 			SadlParameterDeclaration spd = spitr.next();
+			boolean isValid = true;
 			if (spd.getAugtype() == null) {
+				isValid = false;
 				addWarning("Missing augmented type information", spd.getName());
+			}
+			else if (!isAugmentedTypeValid(spd.getAugtype())) {
+				isValid = false;
+				addWarning("Augmented type information is not valid", spd.getName());
+			}
+			if (!isValid) {
 				String argName = getDeclarationExtensions().getConcreteName(spd.getName());
 				String prompt = "What type is " + getAnswerCurationManager(getCurrentResource()).checkForKeyword(argName) + "?";
 				if (missingInformation == null) {
@@ -683,8 +705,16 @@ public class JenaBasedDialogModelProcessor extends JenaBasedSadlModelProcessor {
 		Iterator<SadlReturnDeclaration> srtitr = element.getReturnType().iterator();
 		while (srtitr.hasNext()) {
 			SadlReturnDeclaration srd = srtitr.next();
+			boolean isValid = true;
 			if (srd.getAugtype() == null) {
+				isValid = false;
 				addWarning("Missing augmented return type information", srd.getType());
+			}
+			else if (!isAugmentedTypeValid(srd.getAugtype())) {
+				isValid = false;
+				addWarning("Augmented return type information is not valid", srd);
+			}
+			if (!isValid) {
 				String prompt = "What type does " + eq.getName() + " return?";
 				if (missingInformation == null) {
 					missingInformation = new ArrayList<StatementContent>();
@@ -693,6 +723,20 @@ public class JenaBasedDialogModelProcessor extends JenaBasedSadlModelProcessor {
 			}
 		}
 		return missingInformation;
+	}
+
+	private boolean isAugmentedTypeValid(Expression augtype) {
+		try {
+			Object atobj = processExpression(augtype);
+			if (atobj instanceof NamedNode && ((NamedNode)atobj).getNodeType().equals(NodeType.VariableNode)) {
+				return false;
+			}
+			// TODO what other conditions are invalid?
+		} catch (Exception e) {
+			addError(e.getMessage(), augtype);
+			return false;
+		} 
+		return true;
 	}
 
 	private List<StatementContent> validateEquationAugmentedTypes(EquationStatement element, Equation eq) {
@@ -856,6 +900,23 @@ public class JenaBasedDialogModelProcessor extends JenaBasedSadlModelProcessor {
 		List<Node> whenObjects = new ArrayList<Node>();
 		for (EObject whenExpr : whenLst) {
 			Object wh = processExpression(whenExpr);
+			List<EObject> undefinedObjects = getUndefinedEObjects();
+			if (undefinedObjects != null && undefinedObjects.size() > 0) {
+				WhatIsContent wic = new WhatIsContent(undefinedObjects.get(0), Agent.CM, null, null);
+				// this is Agent.CM because it houses a question/statement for the user from the CM
+				String msg;
+				try {
+					String name = getEObjectName(undefinedObjects.get(0)).trim();
+					msg = "Concept " + getAnswerCurationManager(getCurrentResource()).checkForKeyword(name) + " is not defined; please define or do extraction";
+					wic.setExplicitQuestion(msg);
+				} catch (IOException e) {
+					// TODO Auto-generated catch block
+					msg = e.getMessage();
+					e.printStackTrace();
+				}
+				clearUndefinedEObjects();
+				throw new UndefinedConceptException(msg, wic);
+			}
 			dift.setStartingVariableNumber(getVariableNumber());
 			if (wh instanceof Object[]) {
 				if (((Object[])wh).length == 2 && ((Object[])wh)[1] instanceof GraphPatternElement) {
@@ -1575,6 +1636,7 @@ public class JenaBasedDialogModelProcessor extends JenaBasedSadlModelProcessor {
 					sb.append(sadlEqText);
 					sb.append(".");
 					AddEquationContent nec = new AddEquationContent(element, Agent.USER, uptxt, rn, sb.toString());
+					nec.setLhs(lhs);
 					nec.setEquationBody(sadlEqText);
 					return nec;
 				}
@@ -1603,8 +1665,18 @@ public class JenaBasedDialogModelProcessor extends JenaBasedSadlModelProcessor {
 					nmObj = nodeCheck(nmObj);
 				}
 				if (nmObj instanceof Node) {
-					if (nmObj instanceof NamedNode && ((NamedNode)nmObj).getNodeType().equals(NodeType.ClassNode)) {
-						// this makes sense in the context of a prior question about type of a variable						
+					if (nmObj instanceof NamedNode) {
+						NodeType ntype = ((NamedNode)nmObj).getNodeType();
+						if (ntype.equals(NodeType.ClassNode)) {
+							// this makes sense in the context of a prior question about type of a variable						
+						}
+						else if (isProperty(ntype)) {
+							// return range
+							com.hp.hpl.jena.rdf.model.Resource rng = getUniquePropertyRange(((NamedNode)nmObj).getURI());
+							if (rng != null) {
+								nmObj = new NamedNode((String)rng.getURI(), NodeType.ClassNode);
+							}
+						}
 					}
 					else if (nmObj instanceof ProxyNode) {
 						uptxt = getSourceText(expr).trim();
@@ -1962,9 +2034,9 @@ public class JenaBasedDialogModelProcessor extends JenaBasedSadlModelProcessor {
 		AnswerCurationManager cm = getAnswerCurationManager(resource);
 		DialogContent dc = new DialogContent(resource, cm);
 		cm.setConversation(dc);
-		if (modelElements == null) {
+		if (modelElements == null && resource != null) {
 			modelElements = new ArrayList<ModelElementInfo>();
-			getConfigMgr().addPrivateKeyMapValueByResource("ElementInfo", resource, modelElements);
+			getConfigMgr().addPrivateKeyMapValueByResource(DialogConstants.DIALOG_ELEMENT_INFOS, resource.getURI(), modelElements);
 		}
 		else {
 			modelElements.clear();
@@ -1973,21 +2045,23 @@ public class JenaBasedDialogModelProcessor extends JenaBasedSadlModelProcessor {
 
 	public AnswerCurationManager getAnswerCurationManager(Resource resource) throws IOException {
 		if (answerCurationManager == null) {
-			Object cm = getConfigMgr().getPrivateKeyMapValueByResource(DialogConstants.ANSWER_CURATION_MANAGER, resource);
-			if (cm != null) {
-				if (cm instanceof AnswerCurationManager) {
-					answerCurationManager  = (AnswerCurationManager) cm;
+			if (resource != null) {
+				Object cm = getConfigMgr().getPrivateKeyMapValueByResource(DialogConstants.ANSWER_CURATION_MANAGER, resource.getURI());
+				if (cm != null) {
+					if (cm instanceof AnswerCurationManager) {
+						answerCurationManager  = (AnswerCurationManager) cm;
+					}
 				}
-			}
-			else {
-				Map<String, String> pmap = null;
-//				Resource resource = Preconditions.checkNotNull(getCurrentResource(), "resource");
-				pmap = getPreferences(resource);
-				answerCurationManager = new AnswerCurationManager(getConfigMgr().getModelFolder(), getConfigMgr(),
-						(XtextResource) resource, pmap);
-				answerCurationManager.setDomainModelName(getModelName());
-				answerCurationManager.setDomainModel(getTheJenaModel());
-				getConfigMgr().addPrivateKeyMapValueByResource(DialogConstants.ANSWER_CURATION_MANAGER, resource, answerCurationManager);
+				else {
+					Map<String, String> pmap = null;
+	//				Resource resource = Preconditions.checkNotNull(getCurrentResource(), "resource");
+					pmap = getPreferences(resource);
+					answerCurationManager = new AnswerCurationManager(getConfigMgr().getModelFolder(), getConfigMgr(),
+							(XtextResource) resource, pmap);
+					answerCurationManager.setDomainModelName(getModelName());
+					answerCurationManager.setDomainModel(getTheJenaModel());
+					getConfigMgr().addPrivateKeyMapValueByResource(DialogConstants.ANSWER_CURATION_MANAGER, resource.getURI(), answerCurationManager);
+				}
 			}
 		}
 		return answerCurationManager;
@@ -2063,6 +2137,10 @@ public class JenaBasedDialogModelProcessor extends JenaBasedSadlModelProcessor {
 			String shortgraphlink = preferenceValues.getPreference(DialogPreferences.SHORT_GRAPH_LINK);
 			if (shortgraphlink != null) {
 				modelProcessorPreferenceMap.put(DialogPreferences.SHORT_GRAPH_LINK.getId(), shortgraphlink);
+			}
+			String verboseExtraction = preferenceValues.getPreference(DialogPreferences.VERBOSE_EXTRACTION);
+			if (verboseExtraction != null) {
+				modelProcessorPreferenceMap.put(DialogPreferences.VERBOSE_EXTRACTION.getId(), verboseExtraction);
 			}
 			return modelProcessorPreferenceMap;
 		}
@@ -2323,15 +2401,19 @@ public class JenaBasedDialogModelProcessor extends JenaBasedSadlModelProcessor {
 	}
 
 	private StatementContent processStatement(WhatStatement stmt) {
-		EObject substmt = stmt.getStmt();
-		if (substmt instanceof WhatIsStatement) {
-			return processStatement((WhatIsStatement)substmt);
-		}
-		else if (substmt instanceof WhatValuesStatement) {
-			return processStatement((WhatValuesStatement)substmt);
-		}
-		else if (substmt instanceof WhatTypeStatement) {
-			return processStatement((WhatTypeStatement)substmt);
+		try {
+			EObject substmt = stmt.getStmt();
+			if (substmt instanceof WhatIsStatement) {
+				return processStatement((WhatIsStatement)substmt);
+			}
+			else if (substmt instanceof WhatValuesStatement) {
+				return processStatement((WhatValuesStatement)substmt);
+			}
+			else if (substmt instanceof WhatTypeStatement) {
+				return processStatement((WhatTypeStatement)substmt);
+			}
+		} catch (UndefinedConceptException e) {
+			return e.getWhatIsContent();
 		}
 		return null;
 	}
@@ -2369,7 +2451,7 @@ public class JenaBasedDialogModelProcessor extends JenaBasedSadlModelProcessor {
 		return null;
 	}
 
-	private StatementContent processStatement(WhatIsStatement stmt) {
+	private StatementContent processStatement(WhatIsStatement stmt) throws UndefinedConceptException {
 		EObject whatIsTarget = stmt.getTarget();
 		EObject when = stmt.getWhen();
 		if (whatIsTarget == null) {
@@ -2544,7 +2626,7 @@ public class JenaBasedDialogModelProcessor extends JenaBasedSadlModelProcessor {
 	}
 
 	private List<GraphPatternElement> unitSpecialConsiderations(List<GraphPatternElement> gpes, Object whenObj, EObject whatIsTarget)
-			throws TranslationException, InvalidNameException {
+			throws TranslationException, InvalidNameException, UndefinedConceptException {
 		if (!isIgnoreUnittedQuantities()) {
 			if (whenObj instanceof Junction) {
 				Object lhs = ((Junction)whenObj).getLhs();
@@ -2562,7 +2644,7 @@ public class JenaBasedDialogModelProcessor extends JenaBasedSadlModelProcessor {
 				for (Node arg : args) {
 					try {
 						if (arg instanceof Literal && 
-								(((Literal)arg).getUnits() != null)) {
+								((((Literal)arg).getUnits() != null || expectedUnittedQuantityClass != null))) {
 							OntClass unittedQuantitySubclass = getTheJenaModel().getOntClass(SadlConstants.SADL_IMPLICIT_MODEL_UNITTEDQUANTITY_URI);
 							if (expectedUnittedQuantityClass != null) {
 								if (SadlUtils.classIsSubclassOf(expectedUnittedQuantityClass, unittedQuantitySubclass, true, null)) {
@@ -2592,6 +2674,12 @@ public class JenaBasedDialogModelProcessor extends JenaBasedSadlModelProcessor {
 								TripleElement unitTriple = new TripleElement(var, unitProp, unitsLiteral);
 								gpes.add(unitTriple);
 							}	
+							if (args.get(0) instanceof NamedNode && ((NamedNode)args.get(0)).getImpliedPropertyNode() != null) {
+								NamedNode ipn = ((NamedNode)args.get(0)).getImpliedPropertyNode();
+								if (ipn.getURI().equals(SadlConstants.SADL_IMPLICIT_MODEL_VALUE_URI)) {
+									((NamedNode)args.get(0)).setImpliedPropertyNode(null);
+								}
+							}
 						}
 						else if ((arg instanceof ProxyNode &&									// this operand to the || is for when no unit is given but there is an implied property and 
 								// value of the UnittedQuantity is given
@@ -2603,7 +2691,7 @@ public class JenaBasedDialogModelProcessor extends JenaBasedSadlModelProcessor {
 						else if (arg instanceof NamedNode && isProperty(((NamedNode)arg).getNodeType())) {
 							if (((BuiltinElement)whenObj).getFuncType().equals(BuiltinType.Equal)) {
 								// find the range--that's the expected type of the next argument
-								expectedUnittedQuantityClass = getPropertyRange(((NamedNode)arg).getURI());
+								expectedUnittedQuantityClass = getUnittedQuantityOrSubclassPropertyRange(((NamedNode)arg).getURI());
 							}
 						}
 					} catch (CircularDependencyException e) {
@@ -2629,35 +2717,56 @@ public class JenaBasedDialogModelProcessor extends JenaBasedSadlModelProcessor {
 				((NamedNode)((TripleElement)((ProxyNode)((TripleElement)whenObj).getObject()).getProxyFor()).getPredicate()).getURI().equals(SadlConstants.SADL_IMPLICIT_MODEL_VALUE_URI)))) {
 				String propUri = ((TripleElement)whenObj).getPredicate().getURI();
 				// create a typed variable for the UnittedQuantity blank node, actual type range of prop
-				OntClass unittedQuantitySubclass = getPropertyRange(propUri);
-				VariableNode var = new VariableNode(getNewVar(whatIsTarget));
-				NamedNode type = new NamedNode(unittedQuantitySubclass.getURI());
-				type.setNodeType(NodeType.ClassNode);
-				var.setType(validateNode(type));
-				Literal valueLiteral;
-				if (((TripleElement)whenObj).getObject() instanceof Literal) {
-					valueLiteral = (Literal) ((TripleElement)whenObj).getObject();
+				OntClass unittedQuantitySubclass = getUnittedQuantityOrSubclassPropertyRange(propUri);
+				if (unittedQuantitySubclass == null) {
+					if (((TripleElement)whenObj).getPredicate() instanceof VariableNode) {
+						// predicate cannot be a variable--means the question has an undefined concept
+						VariableNode pvar = (VariableNode) ((TripleElement)whenObj).getPredicate();
+						addWarning(pvar.getName() + " is not defined.", (EObject) ((TripleElement)whenObj).getContext());
+						WhatIsContent wic = new WhatIsContent((EObject) ((TripleElement)whenObj).getContext(), Agent.CM, pvar, null);	
+						// this is Agent.CM because it houses a question/statement for the user from the CM
+						String msg;
+						try {
+							msg = "Concept " + getAnswerCurationManager(getCurrentResource()).checkForKeyword(pvar.getName()) + " is not defined; please define or do extraction";
+							wic.setExplicitQuestion(msg);
+						} catch (IOException e) {
+							// TODO Auto-generated catch block
+							msg = e.getMessage();
+							e.printStackTrace();
+						}
+						throw new UndefinedConceptException(msg, wic);
+					}
 				}
 				else {
-					valueLiteral = (Literal) ((TripleElement)((ProxyNode)((TripleElement)whenObj).getObject()).getProxyFor()).getObject();
-				}
-				((TripleElement)whenObj).setObject(var);
-				String units = valueLiteral.getUnits();
-				TripleElement varTypeTriple = new TripleElement(var, new RDFTypeNode(), type);
-				NamedNode predNode = new NamedNode(SadlConstants.SADL_IMPLICIT_MODEL_VALUE_URI);
-				predNode.setNodeType(NodeType.DataTypeProperty);
-				TripleElement valueTriple = new TripleElement(var, predNode, valueLiteral);
-				gpes.add(varTypeTriple);
-				gpes.add((TripleElement)whenObj);
-				gpes.add(valueTriple);
-				if (units != null) {
-					Literal unitsLiteral = new Literal();
-					unitsLiteral.setValue(units);
-					valueLiteral.setUnits(null);
-					NamedNode unitPred = new NamedNode(SadlConstants.SADL_IMPLICIT_MODEL_UNIT_URI);
-					unitPred.setNodeType(NodeType.DataTypeProperty);
-					TripleElement unitTriple = new TripleElement(var, unitPred, unitsLiteral);
-					gpes.add(unitTriple);
+					VariableNode var = new VariableNode(getNewVar(whatIsTarget));
+					NamedNode type = new NamedNode(unittedQuantitySubclass.getURI());
+					type.setNodeType(NodeType.ClassNode);
+					var.setType(validateNode(type));
+					Literal valueLiteral;
+					if (((TripleElement)whenObj).getObject() instanceof Literal) {
+						valueLiteral = (Literal) ((TripleElement)whenObj).getObject();
+					}
+					else {
+						valueLiteral = (Literal) ((TripleElement)((ProxyNode)((TripleElement)whenObj).getObject()).getProxyFor()).getObject();
+					}
+					((TripleElement)whenObj).setObject(var);
+					String units = valueLiteral.getUnits();
+					TripleElement varTypeTriple = new TripleElement(var, new RDFTypeNode(), type);
+					NamedNode predNode = new NamedNode(SadlConstants.SADL_IMPLICIT_MODEL_VALUE_URI);
+					predNode.setNodeType(NodeType.DataTypeProperty);
+					TripleElement valueTriple = new TripleElement(var, predNode, valueLiteral);
+					gpes.add(varTypeTriple);
+					gpes.add((TripleElement)whenObj);
+					gpes.add(valueTriple);
+					if (units != null) {
+						Literal unitsLiteral = new Literal();
+						unitsLiteral.setValue(units);
+						valueLiteral.setUnits(null);
+						NamedNode unitPred = new NamedNode(SadlConstants.SADL_IMPLICIT_MODEL_UNIT_URI);
+						unitPred.setNodeType(NodeType.DataTypeProperty);
+						TripleElement unitTriple = new TripleElement(var, unitPred, unitsLiteral);
+						gpes.add(unitTriple);
+					}
 				}
 			}
 			//				else if (!ignoreUnittedQuantities && whenObj instanceof BuiltinElement &&
@@ -2686,23 +2795,51 @@ public class JenaBasedDialogModelProcessor extends JenaBasedSadlModelProcessor {
 		return gpes;
 	}
 
-	private OntClass getPropertyRange(String propUri) {
-		Property prop = getTheJenaModel().getProperty(propUri);
-		StmtIterator rngItr = getTheJenaModel().listStatements(prop.asResource(), RDFS.range, (RDFNode)null);
+	/**
+	 * Method to get the range of a property whose subclass should be UnittedQuantity or a subclass thereof
+	 * @param propUri
+	 * @return
+	 */
+	private OntClass getUnittedQuantityOrSubclassPropertyRange(String propUri) {
 		OntClass unittedQuantitySubclass = null;
-		if (rngItr.hasNext()) {
-			RDFNode rng = rngItr.nextStatement().getObject();
-			if (!rngItr.hasNext()) {
-				if (rng.isURIResource() && rng.canAs(OntClass.class)) {
-					unittedQuantitySubclass = rng.as(OntClass.class);
+		Property prop = getTheJenaModel().getProperty(propUri);
+		if (prop != null) {
+			StmtIterator rngItr = getTheJenaModel().listStatements(prop.asResource(), RDFS.range, (RDFNode)null);
+			if (rngItr.hasNext()) {
+				RDFNode rng = rngItr.nextStatement().getObject();
+				if (!rngItr.hasNext()) {
+					if (rng.isURIResource() && rng.canAs(OntClass.class)) {
+						unittedQuantitySubclass = rng.as(OntClass.class);
+					}
 				}
-			}
-			if (unittedQuantitySubclass == null) {
-				// apparently has more than 1 range, use UnittedQuantity
-				unittedQuantitySubclass = getTheJenaModel().getOntClass(SadlConstants.SADL_IMPLICIT_MODEL_UNITTEDQUANTITY_URI);
+				if (unittedQuantitySubclass == null) {
+					// apparently has more than 1 range, use UnittedQuantity
+					unittedQuantitySubclass = getTheJenaModel().getOntClass(SadlConstants.SADL_IMPLICIT_MODEL_UNITTEDQUANTITY_URI);
+				}
 			}
 		}
 		return unittedQuantitySubclass;
+	}
+	
+	/**
+	 * Method to get the range of a property by URI
+	 * @param propUri
+	 * @return 
+	 * @return
+	 */
+	private com.hp.hpl.jena.rdf.model.Resource getUniquePropertyRange(String propUri) {
+		Property prop = getTheJenaModel().getProperty(propUri);
+		if (prop != null) {
+			StmtIterator rngItr = getTheJenaModel().listStatements(prop.asResource(), RDFS.range, (RDFNode)null);
+			if (rngItr.hasNext()) {
+				RDFNode rng = rngItr.nextStatement().getObject();
+				if (rng.isURIResource()) {
+					com.hp.hpl.jena.rdf.model.Resource rngrsrc = rng.asResource();
+					return rngrsrc;
+				}
+			}
+		}
+		return null;
 	}
 	
 	private StatementContent processStatement(WhatValuesStatement stmt) {
@@ -2994,7 +3131,11 @@ public class JenaBasedDialogModelProcessor extends JenaBasedSadlModelProcessor {
 				"doesComputation describes Method with a single value of type boolean.\r\n" + 
 				"incompleteInformation describes Method with a single value of type boolean.\r\n" + 
 				"calls describes Method with values of type MethodCall.\r\n" + 
+				"deadCode describes Method with values of type boolean.\r\n" + 
+				"isCalled describes Method with values of type boolean.\r\n" + 
 				"ExternalMethod is a type of Method.\r\n" + 
+				"Constructor is a type of Method.\r\n" + 
+				"Rule CisM: if x is a Constructor then x is a Method.\r\n" +
 				"\r\n" + 
 				"// The reference to a CodeVariable can be its definition (Defined),\r\n" + 
 				"//	an assignment or reassignment (Reassigned), or just a reference\r\n" + 
@@ -3086,9 +3227,26 @@ public class JenaBasedDialogModelProcessor extends JenaBasedSadlModelProcessor {
 				"//	and print(cb, cv, loc, \" implicit output\")\r\n" + 
 				"." + 
 				"\r\n" + 
+				"Rule IsCalled\r\n" + 
+				"if	m is a Method and\r\n" + 
+				"	mc is a MethodCall and\r\n" + 
+				"	mc codeBlock m\r\n" + 
+				"then m isCalled true.\r\n" + 
+				"\r\n" + 
+				"Rule DeadCode\r\n" + 
+				"if  m1 is a Method and\r\n" + 
+				"	m2 is a Method and\r\n" + 
+				"	m1 != m2 and\r\n" + 
+				"	m1 calls mc and\r\n" + 
+				"	mc codeBlock m2 and \r\n" + 
+				"	mc returnedMapping rm and\r\n" + 
+				"	rm callingVariable cv and\r\n" + 
+				"	noValue(cv, reference, ref, ref, usage, Used)\r\n" + 
+				"then deadCode of m2 is true.	\r\n" + 
+				"\r\n" +
 				"ClassesToIgnore is a type of Class.\r\n" + 
 				"{Canvas, CardLayout, Graphics, Insets, Panel, Image, cem:Event, Choice, Button,\r\n" + 
-				"	Viewer, GridLayout\r\n" + 
+				"	Viewer, GridLayout, Math, Double, Float, String\r\n" + 
 				"} are types of ClassesToIgnore.\r\n" + 
 				"\r\n" + 
 				"Ask ImplicitMethodInputs: \"select distinct ?m ?cv ?vt ?vn where {?r <isImplicit> true . ?r <http://sadl.org/CodeExtractionModel.sadl#input> true . \r\n" + 
@@ -3096,7 +3254,14 @@ public class JenaBasedDialogModelProcessor extends JenaBasedSadlModelProcessor {
 				"Ask ImplicitMethodOutputs: \"select distinct ?m ?cv ?vt ?vn where {?r <isImplicit> true . ?r <http://sadl.org/CodeExtractionModel.sadl#output> true . \r\n" + 
 				"	?r <codeBlock> ?m . ?cv <reference> ?r . ?cv <varType> ?vt. ?cv <varName> ?vn} order by ?m ?vn\".\r\n" + 
 				"Ask MethodsDoingComputation: \"select ?m where {?m <doesComputation> true}\".\r\n" + 
-				"Ask MethodCalls: \"select ?m ?mcalled where {?m <calls> ?mc . ?mc <codeBlock> ?mcalled} order by ?m ?mcalled\".";
+				"Ask MethodCalls: \"select ?m ?mcalled where {?m <calls> ?mc . ?mc <codeBlock> ?mcalled} order by ?m ?mcalled\"." + 
+				"Ask VarComment: \"select ?cmntcontent ?eln ?usage where { ? <http://sadl.org/CodeExtractionModel.sadl#reference> ?ref . \r\n" + 
+				"	?ref <http://sadl.org/CodeExtractionModel.sadl#endsAt> ?eln . \r\n" + 
+				"	?ref <http://sadl.org/CodeExtractionModel.sadl#usage> ?usage .\r\n" + 
+				"	?cmnt <rdf:type> <http://sadl.org/CodeExtractionModel.sadl#Comment> .\r\n" + 
+				"	?cmnt <http://sadl.org/CodeExtractionModel.sadl#endsAt> ?eln . \r\n" + 
+				"	?cmnt <http://sadl.org/CodeExtractionModel.sadl#commentContent> ?cmntcontent} order by ?eln\".\r\n"
+				;
 		return content;
 	}
 

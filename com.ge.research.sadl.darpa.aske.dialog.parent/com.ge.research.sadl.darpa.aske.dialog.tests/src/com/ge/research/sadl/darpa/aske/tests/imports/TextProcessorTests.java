@@ -184,7 +184,7 @@ public class TextProcessorTests {
 
 //	@Ignore
 	@Test
-	public void test4() throws ConfigurationException, IOException, InvalidNameException, ReasonerNotFoundException, QueryParseException, QueryCancelledException, AnswerExtractionException {
+	public void test4() throws ConfigurationException, IOException, InvalidNameException, ReasonerNotFoundException, QueryParseException, QueryCancelledException, AnswerExtractionException, InvalidInputException {
 		File textFile = new File(getTextExtractionPrjFolder() + "/ExtractedModels/Sources/Sound.txt");
 		IConfigurationManagerForIDE cm = ConfigurationManagerForIdeFactory.getConfigurationManagerForIDE(getDomainProjectModelFolder(), null);
 		AnswerCurationManager acm = new AnswerCurationManager(getDomainProjectModelFolder(), cm, null, null);
@@ -193,7 +193,7 @@ public class TextProcessorTests {
 		acm.setDomainModel(cm.loadOntModel(new SadlUtils().fileUrlToFileName(cm.getAltUrlFromPublicUri(domainModelName)), true));
 		
 		IDialogAnswerProvider dapcft = new DialogAnswerProviderConsoleForTest();
-		cm.addPrivateKeyMapValueByResource(DialogConstants.DIALOG_ANSWER_PROVIDER, acm.getResource(), dapcft);
+		cm.addPrivateKeyMapValueByResource(DialogConstants.DIALOG_ANSWER_PROVIDER, acm.getResource().getURI(), dapcft);
 		
 		String defaultTextModelPrefix = "Sound";
 		String defaultTextModelName = "http://com.ge.research.darpa.aske.ta1.explore/" + defaultTextModelPrefix;
@@ -320,7 +320,7 @@ public class TextProcessorTests {
 		// now look for variable information
 		
 		try {
-			EquationVariableContextResponse evcr = acm.getTextProcessor().equationVariableContext("R", acm.getLocalityOfFileExtract(textFile.getCanonicalPath()));
+			EquationVariableContextResponse evcr = acm.getTextProcessor().equationVariableContext("R", acm.getLocalityURI());
 			if (evcr != null) {
 				System.out.println(evcr.toString());
 			}
@@ -329,7 +329,7 @@ public class TextProcessorTests {
 			e.printStackTrace();
 		}
 		try {
-			EquationVariableContextResponse evcr = acm.getTextProcessor().equationVariableContext("T", acm.getLocalityOfFileExtract(textFile.getCanonicalPath()));
+			EquationVariableContextResponse evcr = acm.getTextProcessor().equationVariableContext("T", acm.getLocalityURI());
 			if (evcr != null) {
 				System.out.println(evcr.toString());
 			}
@@ -418,7 +418,7 @@ public class TextProcessorTests {
 	}
 
 	@Test
-	public void test7() throws ConfigurationException, IOException, InvalidNameException, ReasonerNotFoundException, QueryParseException, QueryCancelledException, AnswerExtractionException {
+	public void test7() throws ConfigurationException, IOException, InvalidNameException, ReasonerNotFoundException, QueryParseException, QueryCancelledException, AnswerExtractionException, InvalidInputException {
 		File textFile = new File(getTextExtractionPrjFolder() + "/ExtractedModels/Sources/Isentrop.txt");
 		IConfigurationManagerForIDE cm = ConfigurationManagerForIdeFactory.getConfigurationManagerForIDE(getDomainProjectModelFolder(), null);
 		AnswerCurationManager acm = new AnswerCurationManager(getDomainProjectModelFolder(), cm, null, null);
@@ -427,7 +427,7 @@ public class TextProcessorTests {
 		acm.setDomainModel(cm.loadOntModel(new SadlUtils().fileUrlToFileName(cm.getAltUrlFromPublicUri(domainModelName)), true));
 		
 		IDialogAnswerProvider dapcft = new DialogAnswerProviderConsoleForTest();
-		cm.addPrivateKeyMapValueByResource(DialogConstants.DIALOG_ANSWER_PROVIDER, acm.getResource(), dapcft);
+		cm.addPrivateKeyMapValueByResource(DialogConstants.DIALOG_ANSWER_PROVIDER, acm.getResource().getURI(), dapcft);
 		
 		String defaultTextModelPrefix = "Isentrop";
 		String defaultTextModelName = "http://com.ge.research.darpa.aske.ta1.explore/" + defaultTextModelPrefix;

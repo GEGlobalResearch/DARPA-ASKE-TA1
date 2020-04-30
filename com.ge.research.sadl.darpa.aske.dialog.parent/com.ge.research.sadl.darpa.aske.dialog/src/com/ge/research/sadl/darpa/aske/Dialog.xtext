@@ -73,7 +73,7 @@ SadlModelElement returns sadl::SadlModelElement :
 ;
 
 InsightStatement:
-	indep=SadlResource 'does' 'not' 'affect' dep=SadlResource |
+	indep=SadlResource 'does' 'not' 'affect' dep=SadlResource ('of' 'the' class=SadlResource)? |
 	relDesc1=RelationshipDescriptor1 indep=SadlResource relDesc2=RelationshipDescriptor2 dep=SadlResource ('of' 'the' class=SadlResource)?|
 	indep=SadlResource ('of' 'the' class=SadlResource)? 'has' 'a' localExtreme=SadlResource 'at' extremeLoc=SadlResource 'of' dep=SadlResource |
 	relDesc1=RelationshipDescriptor1 indep=SadlResource 'takes' 'the' class=SadlResource ('inside'|'outside') 'operating' 'conditions' |

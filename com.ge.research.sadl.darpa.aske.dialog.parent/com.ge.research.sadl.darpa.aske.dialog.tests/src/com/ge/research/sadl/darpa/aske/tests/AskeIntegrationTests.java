@@ -8,6 +8,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.eclipse.emf.ecore.resource.Resource;
+import org.eclipse.jdt.core.compiler.InvalidInputException;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Ignore;
@@ -62,7 +63,7 @@ public class AskeIntegrationTests {
 
 	@Ignore
 	@Test
-	public void test_01() throws ConfigurationException, IOException, QueryParseException, QueryCancelledException, ReasonerNotFoundException, InvalidNameException, AnswerExtractionException {
+	public void test_01() throws ConfigurationException, IOException, QueryParseException, QueryCancelledException, ReasonerNotFoundException, InvalidNameException, AnswerExtractionException, InvalidInputException {
 		// remove OWL file
 		File owlF = new File(getExtractionKbRoot() + "/ExtractedModels/Mach.java.owl");	
 		if (owlF.exists()) {
@@ -75,7 +76,7 @@ public class AskeIntegrationTests {
 		acm.setOwlModelsFolder(getExtractionProjectModelFolder());
 		
 		IDialogAnswerProvider dapcft = new DialogAnswerProviderConsoleForTest();
-		cm.addPrivateKeyMapValueByResource(DialogConstants.DIALOG_ANSWER_PROVIDER, acm.getResource(), dapcft);
+		cm.addPrivateKeyMapValueByResource(DialogConstants.DIALOG_ANSWER_PROVIDER, acm.getResource().getURI(), dapcft);
 		
 		boolean includeSerialization = true; //false; //true;	
 		String defaultCodeModelPrefix = includeSerialization ? "MachSz" : "Mach";
