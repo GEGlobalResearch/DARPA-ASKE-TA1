@@ -2,7 +2,7 @@
 <?eclipse version="3.0"?>
 <plugin>
 	<extension point="org.eclipse.emf.ecore.generated_package">
-		<package 
+		<package
 			uri = "http://www.ge.com/research/sadl/darpa/aske/Dialog"
 			class = "com.ge.research.sadl.darpa.aske.dialog.DialogPackage"
 			genModel = "model/generated/Dialog.genmodel" />

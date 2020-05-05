@@ -116,6 +116,7 @@ import com.ge.research.sadl.darpa.aske.processing.imports.JavaModelExtractorJP;
 import com.ge.research.sadl.darpa.aske.processing.imports.KChainServiceInterface;
 import com.ge.research.sadl.darpa.aske.processing.imports.TextProcessingServiceInterface.EquationVariableContextResponse;
 import com.ge.research.sadl.darpa.aske.processing.imports.TextProcessor;
+import com.ge.research.sadl.external.NetworkProxyConfigurator;
 import com.ge.research.sadl.external.XMLHelper;
 import com.ge.research.sadl.jena.JenaBasedSadlModelProcessor;
 import com.ge.research.sadl.jena.JenaProcessorException;
@@ -155,7 +156,6 @@ import com.ge.research.sadl.reasoner.SadlCommandResult;
 import com.ge.research.sadl.reasoner.TranslationException;
 import com.ge.research.sadl.reasoner.utils.SadlUtils;
 import com.ge.research.sadl.sADL.SadlModel;
-import com.ge.research.sadl.utils.NetworkProxySettingsProvider;
 import com.ge.research.sadl.utils.ResourceManager;
 import com.google.common.base.Optional;
 import com.google.common.io.Files;
@@ -3618,6 +3618,12 @@ public class AnswerCurationManager {
 				}
 			}
 			else {
+				if (resource2 instanceof XtextResource) {
+					NetworkProxyConfigurator proxyConfigurator = ((XtextResource) resource2).getResourceServiceProvider().get(NetworkProxyConfigurator.class);
+					if (proxyConfigurator != null) {
+						proxyConfigurator.configureProxies();
+					}
+				}
 				content = downloadURL(sc.getUrl());
 				outputModelName = getModelNameFromInputUrl(sc.getUrl());
 				prefix = getModelPrefixFromInputUrl(sc.getUrl());
@@ -4371,19 +4377,6 @@ public class AnswerCurationManager {
 	}
 
 	public String downloadURL(String downloadUrl) throws IOException {
-		Properties p = System.getProperties();
-		Iterator<Object> pitr = p.keySet().iterator();
-		while (pitr.hasNext()) {
-			Object key = pitr.next();
-			Object prop = p.get(key);
-			// System.out.println("Key=" + key.toString() + ", value = " + prop.toString());
-		}
-		if (EMFPlugin.IS_ECLIPSE_RUNNING) {
-			for (Entry<String, String> entry : new NetworkProxySettingsProvider().getConfigurations().entrySet()) {
-				p.put(entry.getKey(), entry.getValue());
-			}
-		}
-		System.setProperties(p);
         URL website = new URL(downloadUrl);
         URLConnection connection = website.openConnection();
         BufferedReader in = new BufferedReader(
