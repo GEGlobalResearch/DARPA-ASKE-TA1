@@ -227,7 +227,13 @@ public class JenaBasedDialogModelProcessor extends JenaBasedSadlModelProcessor {
 		setProcessorContext(context);
 		setCancelIndicator(cancelIndicator);
 		setCurrentResource(resource);
-		SadlModel model = (SadlModel) resource.getContents().get(0);
+		SadlModel model;
+		if (resource.getContents() != null && !resource.getContents().isEmpty()) {
+			model = (SadlModel) resource.getContents().get(0);
+		}
+		else {
+			return; // don't have any model yet
+		}
 		String modelActualUrl = resource.getURI().lastSegment();
 		validateResourcePathAndName(resource, model, modelActualUrl);
 		String modelName = model.getBaseUri();
