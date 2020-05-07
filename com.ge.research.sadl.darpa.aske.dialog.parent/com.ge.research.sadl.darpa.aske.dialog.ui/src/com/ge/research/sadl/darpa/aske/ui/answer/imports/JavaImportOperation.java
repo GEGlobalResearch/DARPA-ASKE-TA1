@@ -713,8 +713,15 @@ public class JavaImportOperation extends WorkspaceModifyOperation {
 	    	ConfigurationManagerForIDE domainModelConfigMgr = ConfigurationManagerForIdeFactory.getConfigurationManagerForIDE(domainModelModelFolder, null);
 	    	Object acmMap = domainModelConfigMgr.getPrivateKeyValuePair(DialogConstants.ANSWER_CURATION_MANAGER);
 	    	if (acmMap instanceof Map<?,?>) {
-	    		if (((Map<?,?>)acmMap).values().iterator().hasNext()) {
-	    			acm = (AnswerCurationManager)((Map<?,?>)acmMap).values().iterator().next();
+    			Iterator<?> acmitr = ((Map<?,?>)acmMap).values().iterator();
+	    		while (acmitr.hasNext()) {
+	    			AnswerCurationManager acmCandidate = (AnswerCurationManager)acmitr.next();
+	    			if (acmCandidate.getResource() != null) {
+	    				if (domainModelConfigMgr.getPrivateKeyMapValueByResource(DialogConstants.DIALOG_ANSWER_PROVIDER, acmCandidate.getResource().getURI()) != null) {
+	    					acm = acmCandidate;
+	    					break;
+	    				}
+	    			}
 	    		}
 	    	}
     		if (acm == null) {
