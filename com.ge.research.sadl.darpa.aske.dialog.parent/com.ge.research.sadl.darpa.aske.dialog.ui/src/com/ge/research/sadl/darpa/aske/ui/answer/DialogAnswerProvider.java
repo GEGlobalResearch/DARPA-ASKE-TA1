@@ -157,18 +157,18 @@ public class DialogAnswerProvider extends BaseDialogAnswerProvider {
 	 * exception.
 	 */
 	protected void doConfigure(XtextResource resource) {
-		uri = resource.getURI();
+		setUri(resource.getURI());
 		try {
-			LOGGER.debug("[DialogAnswerProvider] >>> Registering... [" + uri + "]");
+			LOGGER.debug("[DialogAnswerProvider] >>> Registering... [" + getUri() + "]");
 			this.configManager = initializeConfigManager(resource);
 			// If we validate here, we trigger the dialog model processor to register the answer curation manager.
 			IResourceValidator validator = resource.getResourceServiceProvider().getResourceValidator();
 			validator.validate(resource, CheckMode.ALL, CancelIndicator.NullImpl);
-			LOGGER.debug("[DialogAnswerProvider] <<< Registered. [" + uri + "]");
+			LOGGER.debug("[DialogAnswerProvider] <<< Registered. [" + getUri() + "]");
 		} catch (Exception e) {
-			System.err.println("[DialogAnswerProvider] <<< Failed to register answer provider. [" + uri + "]");
+			System.err.println("[DialogAnswerProvider] <<< Failed to register answer provider. [" + getUri() + "]");
 			e.printStackTrace();
-			throw new RuntimeException("Error occurred during the configuration for " + uri, e);
+			throw new RuntimeException("Error occurred during the configuration for " + getUri(), e);
 		}
 	}
 
@@ -327,13 +327,13 @@ public class DialogAnswerProvider extends BaseDialogAnswerProvider {
 					document.replace(loc, 0, modContent);
 					if (repositionCursor && document instanceof XtextDocument && ctx instanceof EObject) {
 						final int caretOffset = loc + modContent.length();
-						setCaretOffsetInEditor(uri, caretOffset);
+						setCaretOffsetInEditor(getUri(), caretOffset);
 					}
 				} else {
 					loc = document.getLength();
 					document.set(document.get() + System.lineSeparator() + modContent);
 					if (repositionCursor) {
-						setCaretOffsetInEditor(uri, document.get().length() - 1);
+						setCaretOffsetInEditor(getUri(), document.get().length() - 1);
 					}
 				}
 			} catch (BadLocationException e) {
@@ -1014,6 +1014,7 @@ public class DialogAnswerProvider extends BaseDialogAnswerProvider {
 		}
 	}
 
+	@Override
 	public Resource getResource() {
 		Preconditions.checkState(this.document != null, "Not initialized yet.");
 		return this.document.readOnly(resource -> resource);
@@ -1082,6 +1083,15 @@ public class DialogAnswerProvider extends BaseDialogAnswerProvider {
 
 	public void setRetvalue(String retvalue) {
 		this.retvalue = retvalue;
+	}
+
+	@Override
+	public URI getUri() {
+		return uri;
+	}
+
+	private void setUri(URI uri) {
+		this.uri = uri;
 	}
 	
 }

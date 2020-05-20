@@ -501,7 +501,7 @@ final double convdr = 3.14515926/180.;
         
         ncomp = (int) (1.0 + p3p2d / 1.5); 
         if (ncomp > 15) { 
-        	ncomp = 15 
+        	ncomp = 15; 
         }
         hblade = tf.math.sqrt(2.0/3.1415926);
         lburn = hblade;

@@ -194,6 +194,7 @@ public class AnswerCurationManager {
 	private static final String MATCHINGPROPERTY_PROPERTY_URI = SadlConstants.SADL_IMPLICIT_MODEL_URI + "#matchingProperty";;
 	protected static final Logger logger = LoggerFactory.getLogger(AnswerCurationManager.class);
 	private XtextResource resource = null;
+	private URI resourceUri = null;
 	private String owlModelsFolder;
 	
 	private Map<String, String> questionsAndAnswers = new HashMap<String, String>();	// question text is the key, answer text is the value
@@ -257,12 +258,14 @@ public class AnswerCurationManager {
 	private boolean suspendConversationProcessing = false;
 	private String suspendedExtractionContent = null;
 	private OntModel suspendedCodeModel = null;
+	private HashMap<String, List<String>> cachedAugmentedTypesOfCodeVariable = null;
     
 	public AnswerCurationManager (String modelFolder, IConfigurationManagerForIDE configMgr, XtextResource resource, Map<String,String> prefs) {
 		setOwlModelsFolder(modelFolder);
 		setConfigurationManager(configMgr);
 		setPreferences(prefs);
 		setResource(resource);
+		setResourceUri(resource.getURI());
 		loadQuestionsAndAnswersFromFile();
 	}
 
@@ -394,7 +397,7 @@ public class AnswerCurationManager {
 		if (saveAsSadl != null) {
 			if (saveAsSadl.equals(SaveAsSadl.AskUserSaveAsSadl)) {
 				// ask user if they want a SADL file saved
-				IDialogAnswerProvider dap = getDialogAnswerProvider(getResource());
+				IDialogAnswerProvider dap = getDialogAnswerProvider(getResourceUri());
 //				if (dap == null) {
 //					dap = new DialogAnswerProviderConsoleForTest();
 //				}
@@ -460,7 +463,7 @@ public class AnswerCurationManager {
 		String clearMsg = getExtractionProcessor().getTextProcessor().clearGraph(getLocalityURI());
 		
 		if (getDomainModelName() == null || getDomainModel() == null) {
-			Object dap = getConfigurationManager().getPrivateKeyMapValueByResource(DialogConstants.DIALOG_ANSWER_PROVIDER, getResource().getURI());
+			Object dap = getConfigurationManager().getPrivateKeyMapValueByResource(DialogConstants.DIALOG_ANSWER_PROVIDER, getResourceUri());
 			if (dap instanceof IDialogAnswerProvider) {
 				String domainModelName = OntModelProvider.getModelName(((IDialogAnswerProvider)dap).getResource());
 				setDomainModelName(domainModelName);
@@ -2245,7 +2248,7 @@ public class AnswerCurationManager {
 		OntModel dm = getDomainModel();
 		if (dm != null) {
 			OntResource resourceFound = null;
-			if (getDialogAnswerProvider(getResource()) instanceof DialogAnswerProviderConsoleForTest) {
+			if (getDialogAnswerProvider(getResourceUri()) instanceof DialogAnswerProviderConsoleForTest) {
 				// only check the domain model if it is not generated from an Eclipse UI DialogAnswerProvider
 				ExtendedIterator<Ontology> oitr = dm.listOntologies();
 				while (oitr.hasNext()) {
@@ -2683,6 +2686,10 @@ public class AnswerCurationManager {
 
 	// Method to get the augmented type, if possible, for an implicit variable
 	private List<String> getAugmentedTypesOfVariable(Individual cv) throws InvalidNameException, ConfigurationException, ReasonerNotFoundException, QueryParseException, QueryCancelledException {
+		if (augmentedTypesOfCodeVariableIsCached(cv)) {
+			return getCachedAugmentedTypesOfCodeVariable(cv);
+		}
+
 		String queryUri = DialogConstants.CODE_EXTRACTION_MODEL_URI + "#VarComment";
 		OntModel codeModel = getCodeExtractor().getCurrentCodeModel();
 		Resource qrsrc = codeModel.getResource(queryUri);
@@ -2737,6 +2744,7 @@ public class AnswerCurationManager {
 															}
 														}
 													}
+													cacheAugmentedTypesOfCodeVariable(cv, semTypes);
 													return semTypes;
 												}
 											}
@@ -2757,6 +2765,7 @@ public class AnswerCurationManager {
 																	semTypes.add(ln);
 																}
 															}
+															cacheAugmentedTypesOfCodeVariable(cv, semTypes);
 															return semTypes;
 														}
 													}
@@ -2793,7 +2802,41 @@ public class AnswerCurationManager {
 				}
 			}
 		}
+		cacheAugmentedTypesOfCodeVariable(cv, null);
 		return null;
+	}
+
+	/**
+	 * Method to get cached augmented types of a code variable extracted from the code comments
+	 * @param cv
+	 * @return
+	 */
+	private List<String> getCachedAugmentedTypesOfCodeVariable(Individual cv) {
+		return cachedAugmentedTypesOfCodeVariable != null ? cachedAugmentedTypesOfCodeVariable.get(cv.getURI()) : null;
+	}
+	
+	/**
+	 * Method to determine if the augmented types of a code variable extracted from code comments has been cached
+	 * @param cv
+	 * @return -- true if cached (null could be cached) else false
+	 */
+	private boolean augmentedTypesOfCodeVariableIsCached(Individual cv) {
+		if (cachedAugmentedTypesOfCodeVariable != null && cachedAugmentedTypesOfCodeVariable.containsKey(cv.getURI())) {
+			return true;
+		}
+		return false;
+	}
+
+	/**
+	 * Method to cache the augmented types of a code variable extracted from the code comments
+	 * @param cv
+	 * @param semTypes
+	 */
+	private void cacheAugmentedTypesOfCodeVariable(Individual cv, List<String> semTypes) {
+		if (this.cachedAugmentedTypesOfCodeVariable == null) {
+			this.cachedAugmentedTypesOfCodeVariable = new HashMap<String, List<String>>();
+		}
+		this.cachedAugmentedTypesOfCodeVariable.put(cv.getURI(), semTypes);
 	}
 
 	/**
@@ -3088,11 +3131,11 @@ public class AnswerCurationManager {
 		else {
 			sc.setHostEObject(getConversationHostObject(sc.getHostEObject()));
 		}
-		if (getDialogAnswerProvider(getResource()) != null) {
+		if (getDialogAnswerProvider(getResourceUri()) != null) {
 			// talk to the user via the Dialog editor
 			Method acmic = null;
 			try {
-				acmic = getDialogAnswerProvider(getResource()).getClass().getMethod("addCurationManagerInitiatedContent", AnswerCurationManager.class, StatementContent.class);
+				acmic = getDialogAnswerProvider(getResourceUri()).getClass().getMethod("addCurationManagerInitiatedContent", AnswerCurationManager.class, StatementContent.class);
 			} catch (NoSuchMethodException e1) {
 				// TODO Auto-generated catch block
 				e1.printStackTrace();
@@ -3103,7 +3146,7 @@ public class AnswerCurationManager {
 			if (acmic != null) {
 				acmic.setAccessible(true);
 				try {
-					acmic.invoke(getDialogAnswerProvider(getResource()), this, sc);
+					acmic.invoke(getDialogAnswerProvider(getResourceUri()), this, sc);
 				} catch (IllegalAccessException e) {
 					// TODO Auto-generated catch block
 					e.printStackTrace();
@@ -3125,11 +3168,11 @@ public class AnswerCurationManager {
 	 * @param replacementTxt
 	 */
 	private void replaceDialogText(EObject eObject, String originalTxt, String replacementTxt) {
-		if (getDialogAnswerProvider(getResource()) != null) {
+		if (getDialogAnswerProvider(getResourceUri()) != null) {
 			// talk to the user via the Dialog editor
 			Method acmic = null;
 			try {
-				acmic = getDialogAnswerProvider(getResource()).getClass().getMethod("replaceDialogText", AnswerCurationManager.class, EObject.class, String.class, String.class);
+				acmic = getDialogAnswerProvider(getResourceUri()).getClass().getMethod("replaceDialogText", AnswerCurationManager.class, EObject.class, String.class, String.class);
 			} catch (NoSuchMethodException e1) {
 				// TODO Auto-generated catch block
 				e1.printStackTrace();
@@ -3140,7 +3183,7 @@ public class AnswerCurationManager {
 			if (acmic != null) {
 				acmic.setAccessible(true);
 				try {
-					acmic.invoke(getDialogAnswerProvider(getResource()), this, getConversationHostObject(eObject), originalTxt, replacementTxt);
+					acmic.invoke(getDialogAnswerProvider(getResourceUri()), this, getConversationHostObject(eObject), originalTxt, replacementTxt);
 				} catch (IllegalAccessException e) {
 					// TODO Auto-generated catch block
 					e.printStackTrace();
@@ -3181,11 +3224,11 @@ public class AnswerCurationManager {
 		if (quote) {
 			msg = doubleQuoteContent(msg);
 		}
-		if (getDialogAnswerProvider(getResource()) != null) {
+		if (getDialogAnswerProvider(getResourceUri()) != null) {
 			// talk to the user via the Dialog editor
 			Method acmic = null;
 			try {
-				acmic = getDialogAnswerProvider(getResource()).getClass().getMethod("addCurationManagerAnswerContent", AnswerCurationManager.class, String.class, Object.class);
+				acmic = getDialogAnswerProvider(getResourceUri()).getClass().getMethod("addCurationManagerAnswerContent", AnswerCurationManager.class, String.class, Object.class);
 			} catch (NoSuchMethodException e1) {
 				// TODO Auto-generated catch block
 				e1.printStackTrace();
@@ -3194,7 +3237,7 @@ public class AnswerCurationManager {
 				e1.printStackTrace();
 			}
 			if (acmic == null) {
-				Method[] dapMethods = getDialogAnswerProvider(getResource()).getClass().getDeclaredMethods();
+				Method[] dapMethods = getDialogAnswerProvider(getResourceUri()).getClass().getDeclaredMethods();
 				if (dapMethods != null) {
 					for (Method m : dapMethods) {
 						if (m.getName().equals("addCurationManagerAnswerContent")) {
@@ -3207,7 +3250,7 @@ public class AnswerCurationManager {
 			if (acmic != null) {
 				acmic.setAccessible(true);
 				try {
-					Object retval = acmic.invoke(getDialogAnswerProvider(getResource()), this, msg, getConversationHostObject(ctx));
+					Object retval = acmic.invoke(getDialogAnswerProvider(getResourceUri()), this, msg, getConversationHostObject(ctx));
 					if (retval != null) {
 						return retval.toString();
 					}
@@ -3277,14 +3320,13 @@ public class AnswerCurationManager {
 		return (dialogAnswerProvider != null);
 	}
 
-	protected IDialogAnswerProvider getDialogAnswerProvider(org.eclipse.emf.ecore.resource.Resource resource) {
+	protected IDialogAnswerProvider getDialogAnswerProvider(URI resourceUri) {
 		if (dialogAnswerProvider == null) {
-			IDialogAnswerProvider dapFound = (IDialogAnswerProvider) getConfigurationManager().getPrivateKeyMapValueByResource(DialogConstants.DIALOG_ANSWER_PROVIDER, resource.getURI());
+			IDialogAnswerProvider dapFound = (IDialogAnswerProvider) getConfigurationManager().getPrivateKeyMapValueByResource(DialogConstants.DIALOG_ANSWER_PROVIDER, resourceUri);
 			if (dapFound != null) {
-				org.eclipse.emf.ecore.resource.Resource dapRsrc = dapFound.getResource();
-				XtextResource thisRsrc = getResource();
-				if (dapFound.getResource().getURI().equals(getResource().getURI()) && dapRsrc instanceof XtextResource) {
-					setResource((XtextResource) dapRsrc);
+//				org.eclipse.emf.ecore.resource.Resource dapRsrc = dapFound.getResource();
+				if (dapFound.getUri().equals(resourceUri)) {
+//					setResource((XtextResource) dapRsrc);
 					setDialogAnswerProvider(dapFound);
 					if (dialogAnswerProvider == null) {
 						setDialogAnswerProvider(new DialogAnswerProviderConsoleForTest());
@@ -3363,7 +3405,7 @@ public class AnswerCurationManager {
 	
 	public DialogContent getConversation() {
 		if (conversation == null) {
-			conversation = new DialogContent(getDialogAnswerProvider(getResource()).getResource(), this);
+			conversation = new DialogContent(getDialogAnswerProvider(getResourceUri()).getResource(), this);
 		}
 		return conversation;
 	}
@@ -5441,11 +5483,11 @@ public class AnswerCurationManager {
  * @return
  */
 	private String displayGraph(IGraphVisualizer visualizer) {
-		if (getDialogAnswerProvider(getResource()) != null) {
+		if (getDialogAnswerProvider(getResourceUri()) != null) {
 			// talk to the user via the Dialog editor
 			Method acmic = null;
 			try {
-				acmic = getDialogAnswerProvider(getResource()).getClass().getMethod("displayGraph", IGraphVisualizer.class);
+				acmic = getDialogAnswerProvider(getResourceUri()).getClass().getMethod("displayGraph", IGraphVisualizer.class);
 			} catch (NoSuchMethodException e1) {
 				// TODO Auto-generated catch block
 				e1.printStackTrace();
@@ -5454,7 +5496,7 @@ public class AnswerCurationManager {
 				e1.printStackTrace();
 			}
 			if (acmic == null) {
-				Method[] dapMethods = getDialogAnswerProvider(getResource()).getClass().getDeclaredMethods();
+				Method[] dapMethods = getDialogAnswerProvider(getResourceUri()).getClass().getDeclaredMethods();
 				if (dapMethods != null) {
 					for (Method m : dapMethods) {
 						if (m.getName().equals("displayGraph")) {
@@ -5467,7 +5509,7 @@ public class AnswerCurationManager {
 			if (acmic != null) {
 				acmic.setAccessible(true);
 				try {
-					Object retVal = acmic.invoke(getDialogAnswerProvider(getResource()), visualizer);
+					Object retVal = acmic.invoke(getDialogAnswerProvider(getResourceUri()), visualizer);
 					return retVal != null ? retVal.toString() : null;
 				} catch (IllegalAccessException e) {
 					// TODO Auto-generated catch block
@@ -6149,12 +6191,12 @@ public class AnswerCurationManager {
 	 * @param domainModelName 
 	 */
 	public void processConversation(org.eclipse.emf.ecore.resource.Resource resource, OntModel domainModel, String domainModelName) {
-		if (getDialogAnswerProvider(resource) == null) {
+		URI thisResourceUri = resource.getURI();
+		if (getDialogAnswerProvider(thisResourceUri) == null) {
 //			System.err.println("No DialogAnswerProvider registered for '" + resource.getURI().lastSegment() + "'.");
 			return;
 		}
-		org.eclipse.emf.ecore.resource.Resource dapRsrc = getDialogAnswerProvider(resource).getResource();
-		if (dapRsrc != null && !resource.equals(dapRsrc)) {
+		if (thisResourceUri != null && !thisResourceUri.equals(getResourceUri())) {
 			// The DialogAnswerProvider has a Resource and this isn't the Resource for which this AnswerCurationManager is intended
 			return;
 		}
@@ -6974,7 +7016,7 @@ public class AnswerCurationManager {
 											projectName = sf.getParentFile().getParentFile().getName();
 										}
 									}
-									getDialogAnswerProvider(getResource()).updateProjectAndDisplaySadlFiles(projectName, getOwlModelsFolder(), sadlFiles);
+									getDialogAnswerProvider(getResourceUri()).updateProjectAndDisplaySadlFiles(projectName, getOwlModelsFolder(), sadlFiles);
 								}
 								else {
 									while (owlFilesItr.hasNext()) {
@@ -7075,8 +7117,8 @@ public class AnswerCurationManager {
 	}
 	
 	public boolean saveQuestionsAndAnswersToFile() throws ConfigurationException, IOException {
-		if (getResource() != null) {
-			String rsrcFn = getResource().getURI().lastSegment();
+		if (getResourceUri() != null) {
+			String rsrcFn = getResourceUri().lastSegment();
 			String qnaFn = getOwlModelsFolder() + "/" + rsrcFn + ".qna.owl";
 			Map<String, String> qna = getQuestionsAndAnswers();
 			if (qna != null && !qna.isEmpty()) {
@@ -7129,8 +7171,8 @@ public class AnswerCurationManager {
 	}
 
 	public boolean loadQuestionsAndAnswersFromFile() {
-		if (getResource() != null) {
-			String rsrcFn = getResource().getURI().lastSegment();
+		if (getResourceUri() != null) {
+			String rsrcFn = getResourceUri().lastSegment();
 			String qnaFn = getOwlModelsFolder() + "/" + rsrcFn + ".qna.owl";
 			File qnaFile = new File(qnaFn);
 			if (qnaFile.exists()) {
@@ -7202,7 +7244,7 @@ public class AnswerCurationManager {
 			delayedImportAdditions = new ArrayList<String>();
 		}
 		delayedImportAdditions.add(delayedImportAddition + System.lineSeparator());
-		getDialogAnswerProvider(getResource()).addImports(delayedImportAdditions);
+		getDialogAnswerProvider(getResourceUri()).addImports(delayedImportAdditions);
 		delayedImportAdditions.clear();
 	}
 
@@ -7391,6 +7433,14 @@ public class AnswerCurationManager {
 
 	private OntModel getSuspendedCodeModel() {
 		return suspendedCodeModel;
+	}
+
+	public URI getResourceUri() {
+		return resourceUri;
+	}
+
+	private void setResourceUri(URI resourceUri) {
+		this.resourceUri = resourceUri;
 	}
 
 }

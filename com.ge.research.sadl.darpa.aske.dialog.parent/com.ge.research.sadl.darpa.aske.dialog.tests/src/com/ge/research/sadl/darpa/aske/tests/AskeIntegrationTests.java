@@ -76,7 +76,7 @@ public class AskeIntegrationTests {
 		acm.setOwlModelsFolder(getExtractionProjectModelFolder());
 		
 		IDialogAnswerProvider dapcft = new DialogAnswerProviderConsoleForTest();
-		cm.addPrivateKeyMapValueByResource(DialogConstants.DIALOG_ANSWER_PROVIDER, acm.getResource().getURI(), dapcft);
+		cm.addPrivateKeyMapValueByResource(DialogConstants.DIALOG_ANSWER_PROVIDER, acm.getResourceUri(), dapcft);
 		
 		boolean includeSerialization = true; //false; //true;	
 		String defaultCodeModelPrefix = includeSerialization ? "MachSz" : "Mach";

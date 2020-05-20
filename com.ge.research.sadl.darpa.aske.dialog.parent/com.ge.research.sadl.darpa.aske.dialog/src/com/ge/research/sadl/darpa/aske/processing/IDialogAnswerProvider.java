@@ -40,6 +40,7 @@ import java.io.File;
 import java.util.List;
 import java.util.Map;
 
+import org.eclipse.emf.common.util.URI;
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.ecore.resource.Resource;
 
@@ -92,4 +93,9 @@ public interface IDialogAnswerProvider {
 
 	boolean addUserContentToDialog(AnswerCurationManager acm, String content, boolean quote);
 
+	/**
+	 * Method to get the Resource URI, which will be constant even though the Resource may change
+	 * @return
+	 */
+	URI getUri();
 }
