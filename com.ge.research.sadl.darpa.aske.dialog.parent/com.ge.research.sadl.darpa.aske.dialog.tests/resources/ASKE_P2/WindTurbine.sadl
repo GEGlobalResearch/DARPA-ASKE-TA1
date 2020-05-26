@@ -1,0 +1,70 @@
+ uri "http://aske.ge.com/WindTurbine" alias WindTurbine.
+ 
+import "http://aske.ge.com/sciknow".
+
+WindTurbine is a type of PhysicalThing
+	described by radius with values of type Radius
+	described by numOfBlades with values of type NumOfBlades
+//	described by blade with values of type Blade
+	described by tipSpeedRatio with values of type TipSpeedRatio
+	described by powerCoefficient with values of type CoefficientOfPower
+	described by liftCoefficient with values of type LiftCoefficient
+	described by dragCoefficient with values of type DragCoefficient
+	described by angleOfAttack with values of type AngleOfAttack
+//
+//	described by rotationalSpeed with values of type RotationalSpeed
+//
+	described by radialPosition with values of type RadialPosition
+	described by twist  with values of type Twist
+	described by chordLength with values of type ChordLength
+	described by radiusIncrement  with values of type RadiusIncrement
+	.
+	
+Radius is a type of	UnittedQuantity.
+NumOfBlades (alias "number of blades") is a type of UnittedQuantity.
+TipSpeedRatio (alias "lambda") is a type of UnittedQuantity.
+CoefficientOfPower (alias "efficiency", "power coefficient") is a type of UnittedQuantity.
+
+//Blade is a type of PhysicalThing
+//	described by bladeSegment with values of type BladeSegment
+//	described by rotationalSpeed with values of type RotationalSpeed
+//	.
+	
+RotationalSpeed is a type of UnittedQuantity.	
+	
+//BladeSegment (alias "blade element") is a type of PhysicalThing
+//	described by radialPosition with values of type RadialPosition
+//	described by twist  with values of type Twist
+//	described by chordLength with values of type ChordLength
+//	described by radiusIncrement  with values of type RadiusIncrement
+//	.
+	
+RadialPosition is a type of UnittedQuantity.
+Twist (alias "local pitch angle") is a type of UnittedQuantity.
+ChordLength (alias "chord length") is a type of UnittedQuantity.
+RadiusIncrement is a type of UnittedQuantity.
+
+AngleOfAttack is a type of UnittedQuantity.
+LiftCoefficient (alias "coefficient of lift") is a type of UnittedQuantity.
+DragCoefficient (alias "coefficient of drag") is a type of UnittedQuantity.
+
+//PhysicalThing is a class,
+//	described by mass with values of type Mass
+//	described by volume with values of type Volume
+//	described by density with values of type Density
+//	described by temperature with values of type Temperature
+//	described by altitude with values of type Altitude
+//	described by speed with values of type Speed
+//   .
+//
+//Temperature is a type of UnittedQuantity.
+//Pressure is a type of UnittedQuantity.
+//
+//Speed is a type of UnittedQuantity.
+//Mass is a type of UnittedQuantity.
+//Volume is a type of UnittedQuantity.
+//Density is a type of UnittedQuantity.
+//Length is a type of UnittedQuantity.
+//Time is a type of UnittedQuantity.
+//
+//Altitude is a type of UnittedQuantity.
