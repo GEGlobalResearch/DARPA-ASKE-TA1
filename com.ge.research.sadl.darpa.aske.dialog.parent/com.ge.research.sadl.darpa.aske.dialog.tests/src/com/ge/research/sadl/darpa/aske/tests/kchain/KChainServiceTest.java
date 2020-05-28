@@ -71,7 +71,7 @@ public class KChainServiceTest {
 		kchainServiceBaseURL = "http://" + host + ":" + port;
 	}
 
-//	@Ignore
+	@Ignore("this test requires REST services at default URL")
 	@Test
 	public void testBuildEval_01() throws IOException {
 		/*
@@ -163,7 +163,7 @@ public class KChainServiceTest {
 
 	}
 
-	//	@Ignore
+	@Ignore("this test requires REST services at default URL")
 	@Test
 	public void testBuildEval_02() throws IOException {
 		/*
@@ -360,7 +360,7 @@ public class KChainServiceTest {
 //		return retLists;
 //	}
 
-	//	@Ignore
+	@Ignore("this test requires REST services at default URL")
 	@Test
 	public void testBuildEval_03() throws IOException {
 		List<String[]> inputs = new ArrayList<String[]>();
@@ -408,7 +408,7 @@ public class KChainServiceTest {
 		kcsi.evalCGModel(modelUri, eInputs, eOutputs);
 	}
 
-	//	@Ignore
+	@Ignore("this test requires REST services at default URL")
 	@Test
 	public void testBuildEval_04() throws IOException {
 		String modelUri = "CAL_SOS";
@@ -504,7 +504,7 @@ public class KChainServiceTest {
 		}
 	}
 
-	//	@Ignore
+	@Ignore("this test requires REST services at default URL")
 	@Test
 	public void testBuildJsonGetResponse_02() throws IOException {
 		/*
@@ -576,7 +576,7 @@ public class KChainServiceTest {
 		 */
 	}
 
-	//	@Ignore
+	@Ignore("this test requires REST services at default URL")
 	@Test
 	public void testBuildJsonGetResponse_01() throws IOException {
 		/*
@@ -648,7 +648,7 @@ public class KChainServiceTest {
 		 */
 	}
 
-//	@Ignore
+	@Ignore("this test requires REST services at default URL")
 	@Test
 	public void testBuildEval_Turbo_getGama() throws IOException {
 		String modelUri = "Turbo_getGama";
@@ -722,7 +722,7 @@ public class KChainServiceTest {
 		}
 	}
 
-//	@Ignore
+	@Ignore("this test requires REST services at default URL")
 	@Test
 	public void testBuildEval_Turbo_getGama2() throws IOException {
 		String modelUri = "getGama";

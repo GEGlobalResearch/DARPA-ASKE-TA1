@@ -14,6 +14,8 @@ class DialogUITest extends AbstractDialogPlatformTest {
 //	@IgnoresecondLaw
 	@Test
 	def void dummy_test() {
+		updatePreferences(new PreferenceKey(SadlPreferences.TYPE_CHECKING_WARNING_ONLY.id, "true"));
+
 		createFile('Model.sadl', '''
 			 uri "http://sadl.org/Model.sadl" alias mdl.
 			 
@@ -53,11 +55,10 @@ class DialogUITest extends AbstractDialogPlatformTest {
 			Ask unit of MyHulk?
 			
 			What is acceleration?
-			
-			«»			
+					
 			What type of values can acceleration of Mass have?
 			
-			How many values of acceleration of type Acceleration can a Mass have?
+			How many values of type Acceleration can acceleration have?
 			
 			 
 			 External secondLaw(double m, double acc) returns double: "http://sadl.org/secondlaw".
@@ -84,14 +85,14 @@ class DialogUITest extends AbstractDialogPlatformTest {
 			
 			Equation plusOne(int i) returns int: i+1.
 			
-			Evaluate plusOne(10).
+			// Evaluate plusOne(10).
 		''').resource.assertValidatesDialogTo[ontModel, rules, commands, issues, processor |
 			assertNotNull(ontModel)
 			assertTrue(issues.filter[severity === Severity.ERROR].empty)
 		]
 	}
 	
-	@Ignore
+	@Ignore("this attempt to extract from HTML has never worked")
 	@Test
 	def void testExtractHtml() {
 		var p = System.getProperties();
@@ -141,6 +142,7 @@ class DialogUITest extends AbstractDialogPlatformTest {
 		]
 	}
 
+	@Ignore("this test depends on the local file system location and on REST services being available")
 	@Test
 	def void testExtractTxtFile() {
 		

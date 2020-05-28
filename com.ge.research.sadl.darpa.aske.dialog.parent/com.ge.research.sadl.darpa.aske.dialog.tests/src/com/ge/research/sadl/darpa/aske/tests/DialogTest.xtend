@@ -683,7 +683,7 @@ class DialogTest extends AbstractDialogTest {
 	@Test
 	def void testWhatIsStatement_02() {
 			val grd = newArrayList(
-"Rule ComparePseudoRule0:  if rdf(v1, http://www.w3.org/1999/02/22-rdf-syntax-ns#type, http://sadl.org/sadlimplicitmodel#UnittedQuantity) and rdf(v1, http://sadl.org/sadlimplicitmodel#value, 300) and rdf(v1, http://sadl.org/sadlimplicitmodel#unit, \"mph\") and rdf(http://sadl.org/test4.dialog#v3, http://www.w3.org/1999/02/22-rdf-syntax-ns#type, http://aske.ge.com/hypersonicsV2#CF6) and rdf(http://sadl.org/test4.dialog#v3, http://aske.ge.com/hypersonicsV2#speed, v1) then rdf(http://sadl.org/test4.dialog#v3, http://aske.ge.com/hypersonicsV2#machSpeed, v2)."
+"Rule ComparePseudoRule0:  if rdf(v1, http://www.w3.org/1999/02/22-rdf-syntax-ns#type, http://aske.ge.com/hypersonicsV2#Speed) and rdf(v1, http://sadl.org/sadlimplicitmodel#value, 300) and rdf(v1, http://sadl.org/sadlimplicitmodel#unit, \"mph\") and rdf(http://sadl.org/test4.dialog#v3, http://www.w3.org/1999/02/22-rdf-syntax-ns#type, http://aske.ge.com/hypersonicsV2#CF6) and rdf(http://sadl.org/test4.dialog#v3, http://aske.ge.com/hypersonicsV2#speed, v1) then rdf(http://sadl.org/test4.dialog#v3, http://aske.ge.com/hypersonicsV2#machSpeed, v2)."
 )
 		'''
 			 uri "http://aske.ge.com/hypersonicsV2" alias hv2.
@@ -988,8 +988,8 @@ External CAL_SOS(double T, double G, double R, double Q, string us) returns doub
 	@Test
 	def void testCompareStatement_00() {
 		val grd = newArrayList(
-"Rule ComparePseudoRule0:  if rdf(v2, http://www.w3.org/1999/02/22-rdf-syntax-ns#type, http://sadl.org/sadlimplicitmodel#UnittedQuantity) and rdf(v2, http://sadl.org/sadlimplicitmodel#value, 300) and rdf(v2, http://sadl.org/sadlimplicitmodel#unit, \"mph\") and rdf(http://sadl.org/test4.dialog#v4, http://www.w3.org/1999/02/22-rdf-syntax-ns#type, http://aske.ge.com/hypersonicsV2#CF6) and rdf(http://sadl.org/test4.dialog#v4, http://aske.ge.com/hypersonicsV2#speed, v2) then rdf(http://sadl.org/test4.dialog#v4, http://aske.ge.com/hypersonicsV2#machSpeed, v3).",
-"Rule ComparePseudoRule1:  if rdf(v2, http://www.w3.org/1999/02/22-rdf-syntax-ns#type, http://sadl.org/sadlimplicitmodel#UnittedQuantity) and rdf(v2, http://sadl.org/sadlimplicitmodel#value, 300) and rdf(v2, http://sadl.org/sadlimplicitmodel#unit, \"mph\") and rdf(http://sadl.org/test4.dialog#v6, http://www.w3.org/1999/02/22-rdf-syntax-ns#type, http://aske.ge.com/hypersonicsV2#F100) and rdf(http://sadl.org/test4.dialog#v6, http://aske.ge.com/hypersonicsV2#speed, v2) then rdf(http://sadl.org/test4.dialog#v6, http://aske.ge.com/hypersonicsV2#machSpeed, v5)."
+"Rule ComparePseudoRule0:  if rdf(v2, http://www.w3.org/1999/02/22-rdf-syntax-ns#type, http://aske.ge.com/hypersonicsV2#Speed) and rdf(v2, http://sadl.org/sadlimplicitmodel#value, 300) and rdf(v2, http://sadl.org/sadlimplicitmodel#unit, \"mph\") and rdf(http://sadl.org/test4.dialog#v4, http://www.w3.org/1999/02/22-rdf-syntax-ns#type, http://aske.ge.com/hypersonicsV2#CF6) and rdf(http://sadl.org/test4.dialog#v4, http://aske.ge.com/hypersonicsV2#speed, v2) then rdf(http://sadl.org/test4.dialog#v4, http://aske.ge.com/hypersonicsV2#machSpeed, v3).",
+"Rule ComparePseudoRule1:  if rdf(v2, http://www.w3.org/1999/02/22-rdf-syntax-ns#type, http://aske.ge.com/hypersonicsV2#Speed) and rdf(v2, http://sadl.org/sadlimplicitmodel#value, 300) and rdf(v2, http://sadl.org/sadlimplicitmodel#unit, \"mph\") and rdf(http://sadl.org/test4.dialog#v6, http://www.w3.org/1999/02/22-rdf-syntax-ns#type, http://aske.ge.com/hypersonicsV2#F100) and rdf(http://sadl.org/test4.dialog#v6, http://aske.ge.com/hypersonicsV2#speed, v2) then rdf(http://sadl.org/test4.dialog#v6, http://aske.ge.com/hypersonicsV2#machSpeed, v5)."
 )
 		'''
 			 uri "http://aske.ge.com/hypersonicsV2" alias hv2.
@@ -1068,8 +1068,8 @@ External CAL_SOS(double T, double G, double R, double Q, string us) returns doub
 	@Test
 	def void testCompareStatement_01() {
 			val grd = newArrayList(
-"Rule ComparePseudoRule0:  if rdf(http://aske.ge.com/testdiag#v3, http://www.w3.org/1999/02/22-rdf-syntax-ns#type, http://sadl.org/Model.sadl#CF6) and rdf(http://aske.ge.com/testdiag#v3, http://sadl.org/Model.sadl#sfc, 0.35) then rdf(http://aske.ge.com/testdiag#v3, http://sadl.org/Model.sadl#thrust, v2).",
-"Rule ComparePseudoRule1:  if rdf(http://aske.ge.com/testdiag#v5, http://www.w3.org/1999/02/22-rdf-syntax-ns#type, http://sadl.org/Model.sadl#F100) and rdf(http://aske.ge.com/testdiag#v5, http://sadl.org/Model.sadl#sfc, 0.35) then rdf(http://aske.ge.com/testdiag#v5, http://sadl.org/Model.sadl#thrust, v4)."
+"Rule ComparePseudoRule0:  if rdf(v2, http://www.w3.org/1999/02/22-rdf-syntax-ns#type, http://sadl.org/sadlimplicitmodel#UnittedQuantity) and rdf(v2, http://sadl.org/sadlimplicitmodel#value, 0.35) and rdf(http://aske.ge.com/testdiag#v4, http://www.w3.org/1999/02/22-rdf-syntax-ns#type, http://sadl.org/Model.sadl#CF6) and rdf(http://aske.ge.com/testdiag#v4, http://sadl.org/Model.sadl#sfc, v2) then rdf(http://aske.ge.com/testdiag#v4, http://sadl.org/Model.sadl#thrust, v3).",
+"Rule ComparePseudoRule1:  if rdf(v2, http://www.w3.org/1999/02/22-rdf-syntax-ns#type, http://sadl.org/sadlimplicitmodel#UnittedQuantity) and rdf(v2, http://sadl.org/sadlimplicitmodel#value, 0.35) and rdf(http://aske.ge.com/testdiag#v6, http://www.w3.org/1999/02/22-rdf-syntax-ns#type, http://sadl.org/Model.sadl#F100) and rdf(http://aske.ge.com/testdiag#v6, http://sadl.org/Model.sadl#sfc, v2) then rdf(http://aske.ge.com/testdiag#v6, http://sadl.org/Model.sadl#thrust, v5)."
 )
 		'''
 			uri "http://sadl.org/Model.sadl" alias mdl.
@@ -1116,9 +1116,9 @@ External CAL_SOS(double T, double G, double R, double Q, string us) returns doub
 	@Test
 	def void testCompareStatement_02() {
 			val grd = newArrayList(
-"Rule ComparePseudoRule0:  if rdf(http://aske.ge.com/testdiag#v1, http://www.w3.org/1999/02/22-rdf-syntax-ns#type, http://sadl.org/Model.sadl#RamJet) and rdf(http://aske.ge.com/testdiag#v1, http://sadl.org/Model.sadl#sfc, 0.35) then rdf(http://aske.ge.com/testdiag#v1, http://sadl.org/Model.sadl#thrust, v0).",
-"Rule ComparePseudoRule1:  if rdf(http://aske.ge.com/testdiag#v3, http://www.w3.org/1999/02/22-rdf-syntax-ns#type, http://sadl.org/Model.sadl#F100) and rdf(http://aske.ge.com/testdiag#v3, http://sadl.org/Model.sadl#sfc, 0.35) then rdf(http://aske.ge.com/testdiag#v3, http://sadl.org/Model.sadl#thrust, v2).",
-"Rule ComparePseudoRule2:  if rdf(http://aske.ge.com/testdiag#v5, http://www.w3.org/1999/02/22-rdf-syntax-ns#type, http://sadl.org/Model.sadl#CF6) and rdf(http://aske.ge.com/testdiag#v5, http://sadl.org/Model.sadl#sfc, 0.35) then rdf(http://aske.ge.com/testdiag#v5, http://sadl.org/Model.sadl#thrust, v4)."
+"Rule ComparePseudoRule0:  if rdf(v0, http://www.w3.org/1999/02/22-rdf-syntax-ns#type, http://sadl.org/sadlimplicitmodel#UnittedQuantity) and rdf(v0, http://sadl.org/sadlimplicitmodel#value, 0.35) and rdf(http://aske.ge.com/testdiag#v2, http://www.w3.org/1999/02/22-rdf-syntax-ns#type, http://sadl.org/Model.sadl#RamJet) and rdf(http://aske.ge.com/testdiag#v2, http://sadl.org/Model.sadl#sfc, v0) then rdf(http://aske.ge.com/testdiag#v2, http://sadl.org/Model.sadl#thrust, v1).",
+"Rule ComparePseudoRule1:  if rdf(v0, http://www.w3.org/1999/02/22-rdf-syntax-ns#type, http://sadl.org/sadlimplicitmodel#UnittedQuantity) and rdf(v0, http://sadl.org/sadlimplicitmodel#value, 0.35) and rdf(http://aske.ge.com/testdiag#v4, http://www.w3.org/1999/02/22-rdf-syntax-ns#type, http://sadl.org/Model.sadl#F100) and rdf(http://aske.ge.com/testdiag#v4, http://sadl.org/Model.sadl#sfc, v0) then rdf(http://aske.ge.com/testdiag#v4, http://sadl.org/Model.sadl#thrust, v3).",
+"Rule ComparePseudoRule2:  if rdf(v0, http://www.w3.org/1999/02/22-rdf-syntax-ns#type, http://sadl.org/sadlimplicitmodel#UnittedQuantity) and rdf(v0, http://sadl.org/sadlimplicitmodel#value, 0.35) and rdf(http://aske.ge.com/testdiag#v6, http://www.w3.org/1999/02/22-rdf-syntax-ns#type, http://sadl.org/Model.sadl#CF6) and rdf(http://aske.ge.com/testdiag#v6, http://sadl.org/Model.sadl#sfc, v0) then rdf(http://aske.ge.com/testdiag#v6, http://sadl.org/Model.sadl#thrust, v5)."
 )
 		'''
 			uri "http://sadl.org/Model.sadl" alias mdl.
@@ -1166,9 +1166,9 @@ External CAL_SOS(double T, double G, double R, double Q, string us) returns doub
 	@Test
 	def void testCompareStatement_03() {
 			val grd = newArrayList(
-"Rule ComparePseudoRule0:  if rdf(http://aske.ge.com/testdiag#v1, http://www.w3.org/1999/02/22-rdf-syntax-ns#type, http://sadl.org/Model.sadl#RamJet) and rdf(http://aske.ge.com/testdiag#v1, http://sadl.org/Model.sadl#sfc, 0.35) then rdf(http://aske.ge.com/testdiag#v1, http://sadl.org/Model.sadl#thrust, v0).",
-"Rule ComparePseudoRule1:  if rdf(http://aske.ge.com/testdiag#v3, http://www.w3.org/1999/02/22-rdf-syntax-ns#type, http://sadl.org/Model.sadl#F100) and rdf(http://aske.ge.com/testdiag#v3, http://sadl.org/Model.sadl#sfc, 0.35) then rdf(http://aske.ge.com/testdiag#v3, http://sadl.org/Model.sadl#thrust, v2).",
-"Rule ComparePseudoRule2:  if rdf(http://aske.ge.com/testdiag#v5, http://www.w3.org/1999/02/22-rdf-syntax-ns#type, http://sadl.org/Model.sadl#CF6) and rdf(http://aske.ge.com/testdiag#v5, http://sadl.org/Model.sadl#sfc, 0.35) then rdf(http://aske.ge.com/testdiag#v5, http://sadl.org/Model.sadl#thrust, v4)."
+"Rule ComparePseudoRule0:  if rdf(v0, http://www.w3.org/1999/02/22-rdf-syntax-ns#type, http://sadl.org/sadlimplicitmodel#UnittedQuantity) and rdf(v0, http://sadl.org/sadlimplicitmodel#value, 0.35) and rdf(http://aske.ge.com/testdiag#v2, http://www.w3.org/1999/02/22-rdf-syntax-ns#type, http://sadl.org/Model.sadl#RamJet) and rdf(http://aske.ge.com/testdiag#v2, http://sadl.org/Model.sadl#sfc, v0) then rdf(http://aske.ge.com/testdiag#v2, http://sadl.org/Model.sadl#thrust, v1).",
+"Rule ComparePseudoRule1:  if rdf(v0, http://www.w3.org/1999/02/22-rdf-syntax-ns#type, http://sadl.org/sadlimplicitmodel#UnittedQuantity) and rdf(v0, http://sadl.org/sadlimplicitmodel#value, 0.35) and rdf(http://aske.ge.com/testdiag#v4, http://www.w3.org/1999/02/22-rdf-syntax-ns#type, http://sadl.org/Model.sadl#F100) and rdf(http://aske.ge.com/testdiag#v4, http://sadl.org/Model.sadl#sfc, v0) then rdf(http://aske.ge.com/testdiag#v4, http://sadl.org/Model.sadl#thrust, v3).",
+"Rule ComparePseudoRule2:  if rdf(v0, http://www.w3.org/1999/02/22-rdf-syntax-ns#type, http://sadl.org/sadlimplicitmodel#UnittedQuantity) and rdf(v0, http://sadl.org/sadlimplicitmodel#value, 0.35) and rdf(http://aske.ge.com/testdiag#v6, http://www.w3.org/1999/02/22-rdf-syntax-ns#type, http://sadl.org/Model.sadl#CF6) and rdf(http://aske.ge.com/testdiag#v6, http://sadl.org/Model.sadl#sfc, v0) then rdf(http://aske.ge.com/testdiag#v6, http://sadl.org/Model.sadl#thrust, v5)."
 )
 		'''
 			uri "http://sadl.org/Model.sadl" alias mdl.
@@ -1212,8 +1212,8 @@ External CAL_SOS(double T, double G, double R, double Q, string us) returns doub
 	@Test
 	def void testCompareStatement_04() {
 			val grd = newArrayList(
-"Rule ComparePseudoRule0:  if rdf(http://aske.ge.com/testdiag#YourF100, http://sadl.org/Model.sadl#sfc, 0.35) then rdf(http://aske.ge.com/testdiag#YourF100, http://sadl.org/Model.sadl#thrust, v0).",
-"Rule ComparePseudoRule1:  if rdf(http://aske.ge.com/testdiag#MyCF6, http://sadl.org/Model.sadl#sfc, 0.35) then rdf(http://aske.ge.com/testdiag#MyCF6, http://sadl.org/Model.sadl#thrust, v1)."
+"Rule ComparePseudoRule0:  if rdf(v0, http://www.w3.org/1999/02/22-rdf-syntax-ns#type, http://sadl.org/sadlimplicitmodel#UnittedQuantity) and rdf(v0, http://sadl.org/sadlimplicitmodel#value, 0.35) and rdf(http://aske.ge.com/testdiag#YourF100, http://sadl.org/Model.sadl#sfc, v0) then rdf(http://aske.ge.com/testdiag#YourF100, http://sadl.org/Model.sadl#thrust, v1).",
+"Rule ComparePseudoRule1:  if rdf(v0, http://www.w3.org/1999/02/22-rdf-syntax-ns#type, http://sadl.org/sadlimplicitmodel#UnittedQuantity) and rdf(v0, http://sadl.org/sadlimplicitmodel#value, 0.35) and rdf(http://aske.ge.com/testdiag#MyCF6, http://sadl.org/Model.sadl#sfc, v0) then rdf(http://aske.ge.com/testdiag#MyCF6, http://sadl.org/Model.sadl#thrust, v2)."
 )
 		'''
 			uri "http://sadl.org/Model.sadl" alias mdl.
@@ -1259,8 +1259,9 @@ External CAL_SOS(double T, double G, double R, double Q, string us) returns doub
 	@Test
 	def void testCompareStatement_05() {
 			val grd = newArrayList(
-"Rule ComparePseudoRule0:  if rdf(http://aske.ge.com/testdiag#CF6b, http://sadl.org/Model.sadl#sfc, 0.35) then rdf(http://aske.ge.com/testdiag#CF6b, http://sadl.org/Model.sadl#thrust, v0).",
-"Rule ComparePseudoRule1:  if rdf(http://aske.ge.com/testdiag#CF6a, http://sadl.org/Model.sadl#sfc, 0.35) then rdf(http://aske.ge.com/testdiag#CF6a, http://sadl.org/Model.sadl#thrust, v1).")
+"Rule ComparePseudoRule0:  if rdf(v0, http://www.w3.org/1999/02/22-rdf-syntax-ns#type, http://sadl.org/sadlimplicitmodel#UnittedQuantity) and rdf(v0, http://sadl.org/sadlimplicitmodel#value, 0.35) and rdf(http://aske.ge.com/testdiag#CF6b, http://sadl.org/Model.sadl#sfc, v0) then rdf(http://aske.ge.com/testdiag#CF6b, http://sadl.org/Model.sadl#thrust, v1).",
+"Rule ComparePseudoRule1:  if rdf(v0, http://www.w3.org/1999/02/22-rdf-syntax-ns#type, http://sadl.org/sadlimplicitmodel#UnittedQuantity) and rdf(v0, http://sadl.org/sadlimplicitmodel#value, 0.35) and rdf(http://aske.ge.com/testdiag#CF6a, http://sadl.org/Model.sadl#sfc, v0) then rdf(http://aske.ge.com/testdiag#CF6a, http://sadl.org/Model.sadl#thrust, v2)."
+)
 		'''
 			uri "http://sadl.org/Model.sadl" alias mdl.
 			
@@ -1311,9 +1312,9 @@ External CAL_SOS(double T, double G, double R, double Q, string us) returns doub
 	@Test
 	def void testCompareStatement_06() {
 			val grd = newArrayList(
-"Rule ComparePseudoRule0:  if rdf(http://aske.ge.com/testdiag#v4, http://www.w3.org/1999/02/22-rdf-syntax-ns#type, http://sadl.org/Model.sadl#CF6) and rdf(http://aske.ge.com/testdiag#v4, http://sadl.org/Model.sadl#sfc, 0.36) then rdf(http://aske.ge.com/testdiag#v4, http://sadl.org/Model.sadl#thrust, v3).",
-"Rule ComparePseudoRule1:  if rdf(http://aske.ge.com/testdiag#v6, http://www.w3.org/1999/02/22-rdf-syntax-ns#type, http://sadl.org/Model.sadl#F100) and rdf(http://aske.ge.com/testdiag#v6, http://sadl.org/Model.sadl#sfc, 0.36) then rdf(http://aske.ge.com/testdiag#v6, http://sadl.org/Model.sadl#thrust, v5).",
-"Rule ComparePseudoRule2:  if rdf(http://aske.ge.com/testdiag#v8, http://www.w3.org/1999/02/22-rdf-syntax-ns#type, http://sadl.org/Model.sadl#RamJet) and rdf(http://aske.ge.com/testdiag#v8, http://sadl.org/Model.sadl#sfc, 0.36) then rdf(http://aske.ge.com/testdiag#v8, http://sadl.org/Model.sadl#thrust, v7)."
+"Rule ComparePseudoRule0:  if rdf(v3, http://www.w3.org/1999/02/22-rdf-syntax-ns#type, http://sadl.org/sadlimplicitmodel#UnittedQuantity) and rdf(v3, http://sadl.org/sadlimplicitmodel#value, 0.36) and rdf(http://aske.ge.com/testdiag#v5, http://www.w3.org/1999/02/22-rdf-syntax-ns#type, http://sadl.org/Model.sadl#CF6) and rdf(http://aske.ge.com/testdiag#v5, http://sadl.org/Model.sadl#sfc, v3) then rdf(http://aske.ge.com/testdiag#v5, http://sadl.org/Model.sadl#thrust, v4).",
+"Rule ComparePseudoRule1:  if rdf(v3, http://www.w3.org/1999/02/22-rdf-syntax-ns#type, http://sadl.org/sadlimplicitmodel#UnittedQuantity) and rdf(v3, http://sadl.org/sadlimplicitmodel#value, 0.36) and rdf(http://aske.ge.com/testdiag#v7, http://www.w3.org/1999/02/22-rdf-syntax-ns#type, http://sadl.org/Model.sadl#F100) and rdf(http://aske.ge.com/testdiag#v7, http://sadl.org/Model.sadl#sfc, v3) then rdf(http://aske.ge.com/testdiag#v7, http://sadl.org/Model.sadl#thrust, v6).",
+"Rule ComparePseudoRule2:  if rdf(v3, http://www.w3.org/1999/02/22-rdf-syntax-ns#type, http://sadl.org/sadlimplicitmodel#UnittedQuantity) and rdf(v3, http://sadl.org/sadlimplicitmodel#value, 0.36) and rdf(http://aske.ge.com/testdiag#v9, http://www.w3.org/1999/02/22-rdf-syntax-ns#type, http://sadl.org/Model.sadl#RamJet) and rdf(http://aske.ge.com/testdiag#v9, http://sadl.org/Model.sadl#sfc, v3) then rdf(http://aske.ge.com/testdiag#v9, http://sadl.org/Model.sadl#thrust, v8)."
 )
 		'''
 			uri "http://sadl.org/Model.sadl" alias mdl.

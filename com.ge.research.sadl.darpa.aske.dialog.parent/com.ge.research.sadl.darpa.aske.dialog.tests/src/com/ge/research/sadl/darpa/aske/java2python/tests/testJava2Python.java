@@ -65,7 +65,7 @@ public class testJava2Python {
 		setDomainProjectModelFolder(codeExtractionPrjFolder.getCanonicalPath() + "/OwlModels");
 	}
 
-//	@Ignore
+	@Ignore("can only be run if the translation service is running at the default service URL")
 	@Test
 	public void test() throws IOException, ConfigurationException {
 		IConfigurationManagerForIDE cm = ConfigurationManagerForIdeFactory.getConfigurationManagerForIDE(getDomainProjectModelFolder(), null);

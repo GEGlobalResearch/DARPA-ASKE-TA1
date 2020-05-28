@@ -121,6 +121,7 @@ import com.ge.research.sadl.model.gp.BuiltinElement.BuiltinType;
 import com.ge.research.sadl.model.gp.Equation;
 import com.ge.research.sadl.model.gp.GraphPatternElement;
 import com.ge.research.sadl.model.gp.Junction;
+import com.ge.research.sadl.model.gp.JunctionNode;
 import com.ge.research.sadl.model.gp.Literal;
 import com.ge.research.sadl.model.gp.NamedNode;
 import com.ge.research.sadl.model.gp.NamedNode.NodeType;
@@ -967,6 +968,28 @@ public class JenaBasedDialogModelProcessor extends JenaBasedSadlModelProcessor {
 					
 				}
 			}
+			for (Node n : compareList) {
+				if (n instanceof VariableNode) {
+					originalThenObjects.add(((VariableNode)n).getType());
+				}
+				else if (n instanceof ProxyNode) {
+					originalThenObjects.add(((ProxyNode)n).getProxyFor());
+				}
+				else {
+					originalThenObjects.add(n);
+				}
+			}
+		}
+		else if (thenObj instanceof JunctionNode) {
+			List<Node> compareList = IntermediateFormTranslator.conjunctionToList((JunctionNode)thenObj);
+//			if (compareList != null && compareList.size() > 1) {
+//				for (int i = 0; i < compareList.size(); i++) {
+//					if (compareList.get(i) instanceof VariableNode) {
+//						Node replacement = nodeCheck(new TripleElement(compareList.get(i), new RDFTypeNode(), ((VariableNode)compareList.get(i)).getType()));
+//						compareList.set(i, replacement);
+//					}
+//				}
+//			}
 			for (Node n : compareList) {
 				if (n instanceof VariableNode) {
 					originalThenObjects.add(((VariableNode)n).getType());

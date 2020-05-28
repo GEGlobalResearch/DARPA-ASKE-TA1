@@ -61,7 +61,7 @@ public class AskeIntegrationTests {
 		setDomainProjectModelFolder(getExtractionProjectModelFolder());
 	}
 
-	@Ignore
+	@Ignore("this test requires text extraction and java to python services to be running at default URLs")
 	@Test
 	public void test_01() throws ConfigurationException, IOException, QueryParseException, QueryCancelledException, ReasonerNotFoundException, InvalidNameException, AnswerExtractionException, InvalidInputException {
 		// remove OWL file

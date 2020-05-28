@@ -46,7 +46,7 @@ public class P2Tests extends AbstractDialogTest {
 		this.projectModelFolder = projectModelFolder;
 	}
 
-	@Ignore
+	@Ignore("this test is obsolete")
 	@Test
 	def void test() {
 		reusableScienceKnowledge

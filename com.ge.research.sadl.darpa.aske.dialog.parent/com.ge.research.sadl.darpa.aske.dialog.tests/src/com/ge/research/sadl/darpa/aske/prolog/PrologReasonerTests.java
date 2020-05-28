@@ -7,6 +7,7 @@ import java.io.FilenameFilter;
 import java.io.IOException;
 
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 
 import com.ge.research.sadl.reasoner.ConfigurationException;
@@ -32,7 +33,7 @@ public class PrologReasonerTests {
 		setProjectModelFolder(getKbRoot() + "/OwlModels");
 	}
 
-
+	@Ignore("can only be run if SWIProlog is installed and configured properly")
 	@Test
 	public void test() throws ConfigurationException, ReasonerNotFoundException, IOException, QueryParseException, QueryCancelledException {
 		IConfigurationManager configMgr = new ConfigurationManager(getProjectModelFolder(), null);

@@ -65,6 +65,7 @@ import java.util.Properties;
 import java.util.Set;
 import java.util.concurrent.ExecutionException;
 
+import org.eclipse.core.internal.localstore.IsSynchronizedVisitor;
 import org.eclipse.emf.common.EMFPlugin;
 import org.eclipse.emf.common.util.URI;
 import org.eclipse.emf.ecore.EObject;
@@ -265,7 +266,7 @@ public class AnswerCurationManager {
 		setConfigurationManager(configMgr);
 		setPreferences(prefs);
 		setResource(resource);
-		setResourceUri(resource.getURI());
+		setResourceUri(resource != null ? resource.getURI() : null);
 		loadQuestionsAndAnswersFromFile();
 	}
 
@@ -3333,11 +3334,18 @@ public class AnswerCurationManager {
 					}
 				}
 			}
+			else if (resourceUri == null || ResourceManager.isSyntheticUri(null, resourceUri)) {
+				// this looks like a backend JUnit test so provide a console
+				setDialogAnswerProvider(new DialogAnswerProviderConsoleForTest());
+			}
 		} else if (dialogAnswerProvider instanceof DialogAnswerProviderConsoleForTest) {
-			IDialogAnswerProvider provider = (IDialogAnswerProvider) getConfigurationManager().getPrivateKeyMapValueByResource(DialogConstants.DIALOG_ANSWER_PROVIDER, resource.getURI());
-			if (provider != null && !(provider instanceof DialogAnswerProviderConsoleForTest)) {
-				dialogAnswerProvider.dispose(); // Dispose the current, console-based answer provider.
-				setDialogAnswerProvider(provider); // Updated with the`document`-aware dialog provider.
+			if (resourceUri != null && !ResourceManager.isSyntheticUri(null, resourceUri)) {
+				// this doesn't look like a backend JUnit test so get a real DAP
+				IDialogAnswerProvider provider = (IDialogAnswerProvider) getConfigurationManager().getPrivateKeyMapValueByResource(DialogConstants.DIALOG_ANSWER_PROVIDER, resource.getURI());
+				if (provider != null && !(provider instanceof DialogAnswerProviderConsoleForTest)) {
+					dialogAnswerProvider.dispose(); // Dispose the current, console-based answer provider.
+					setDialogAnswerProvider(provider); // Updated with the`document`-aware dialog provider.
+				}
 			}
 		}
 		return dialogAnswerProvider;

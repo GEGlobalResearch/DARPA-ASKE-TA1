@@ -99,7 +99,7 @@ public class TextProcessorTests {
 		setDomainProjectModelFolder(getExtractionProjectModelFolder());
 	}
 
-//	@Ignore
+	@Ignore("this test requires REST services at default URL")
 	@Test
 	public void test() throws ConfigurationException, IOException, InvalidInputException {
 		File sourceFile = new File(new File(".").getAbsolutePath() + "/resources/");
@@ -131,7 +131,7 @@ public class TextProcessorTests {
 //		tp.processUnitExtraciton("ft/sec", localityURI);
 	}
 
-//	@Ignore
+	@Ignore("this test requires REST services at default URL")
 	@Test
 	public void test2() throws ConfigurationException, IOException, InvalidInputException {
 		File sourceFile = new File(new File(".").getAbsolutePath() + "/resources/");
@@ -155,7 +155,7 @@ public class TextProcessorTests {
 		assertTrue(results.getResults().isEmpty());
 	}
 
-//	@Ignore
+	@Ignore("this test requires REST services at default URL")
 	@Test
 	public void test3() throws IOException, ConfigurationException, InvalidInputException {
 		File textFile = new File(getTextExtractionPrjFolder() + "/ExtractedModels/Sources/Sound.txt");
@@ -182,7 +182,7 @@ public class TextProcessorTests {
 		}
 	}
 
-//	@Ignore
+	@Ignore("this test requires REST services at default URL")
 	@Test
 	public void test4() throws ConfigurationException, IOException, InvalidNameException, ReasonerNotFoundException, QueryParseException, QueryCancelledException, AnswerExtractionException, InvalidInputException {
 		File textFile = new File(getTextExtractionPrjFolder() + "/ExtractedModels/Sources/Sound.txt");
@@ -339,6 +339,7 @@ public class TextProcessorTests {
 		}
 	}
 	
+	@Ignore("this test requires REST services at default URL")
 	@Test
 	public void test5() throws IOException, ConfigurationException, InvalidInputException {
 		File textFile = new File(getTextExtractionPrjFolder() + "/ExtractedModels/Sources/Sound.txt");
@@ -391,6 +392,7 @@ public class TextProcessorTests {
 		}
 	}
 	
+	@Ignore("this test requires REST services at default URL")
 	@Test
 	public void test6() throws IOException, ConfigurationException, InvalidInputException {
 		File textFile = new File(getTextExtractionPrjFolder() + "/ExtractedModels/Sources/Sound.txt");
@@ -417,6 +419,7 @@ public class TextProcessorTests {
 		}
 	}
 
+	@Ignore("this test requires REST services at default URL")
 	@Test
 	public void test7() throws ConfigurationException, IOException, InvalidNameException, ReasonerNotFoundException, QueryParseException, QueryCancelledException, AnswerExtractionException, InvalidInputException {
 		File textFile = new File(getTextExtractionPrjFolder() + "/ExtractedModels/Sources/Isentrop.txt");
@@ -637,6 +640,7 @@ public class TextProcessorTests {
 
 	}
 	
+	@Ignore("this test requires REST services at default URL")
 	@Test
 	public void testUploadDomainOntologyToService() throws IOException {
 		String baseServiceUri = "http://vesuvius063.crd.ge.com:4200";
@@ -654,6 +658,7 @@ public class TextProcessorTests {
 		System.out.println(response);
 	}
 	
+	@Ignore("this test requires REST services at default URL")
 	@Test
 	public void test6WithDomainOntology() throws IOException, ConfigurationException, InvalidInputException {
 		String baseServiceUri = "http://vesuvius063.crd.ge.com:4200";
@@ -714,6 +719,7 @@ public class TextProcessorTests {
 	    return null;
 	}
 
+	@Ignore("this test requires REST services at default URL")
 	@Test
 	public void testSeeAlso_01() throws ConfigurationException, IOException {
 		String content = 

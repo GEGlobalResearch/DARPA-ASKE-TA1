@@ -4,12 +4,14 @@ import static org.junit.Assert.*;
 
 import java.io.IOException;
 
+import org.junit.Ignore;
 import org.junit.Test;
 
 import com.ge.research.sadl.darpa.aske.processing.imports.JavaToPythonServiceInterface;
 
 public class JavaToPythonTests {
 
+	@Ignore("this test requires REST services at default URLs")
 	@Test
 	public void test() throws IOException {
 		String javaContent = 

@@ -58,6 +58,7 @@ import org.eclipse.xtext.xbase.lib.Procedures.Procedure3;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.BeforeClass;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -258,6 +259,7 @@ public class JavaImportJPTests extends AbstractDialogTest {
 		assertTrue(jme.process("PhysicalObject class", javaContent, defaultCodeModelName, defaultCodeModelPrefix));
 	}
 	
+	@Ignore("this test requires services to be running at default URLs")
 	@Test
 	public void test_04() throws IOException, ConfigurationException, InvalidNameException, ReasonerNotFoundException, QueryParseException, QueryCancelledException, AnswerExtractionException, InvalidInputException {
 		File sourceFile = new File(getCodeExtractionKbRoot() + "/ExtractedModels/Sources/Isentrop.java");
@@ -295,6 +297,7 @@ public class JavaImportJPTests extends AbstractDialogTest {
 		System.out.println(cirs.toString());
 	}
 	
+	@Ignore("this test requires REST services at default URLs")
 	@Test
 	public void test_05() throws IOException, ConfigurationException, OwlImportException, InvalidNameException, ReasonerNotFoundException, QueryParseException, QueryCancelledException, AnswerExtractionException, InvalidInputException {
 		File codeFile = new File(getCodeExtractionKbRoot() + "/ExtractedModels/Sources/Mach.java");
@@ -392,6 +395,7 @@ public class JavaImportJPTests extends AbstractDialogTest {
 		
 	}
 	
+	@Ignore("this test requires REST services at default URLs")
 	@Test
 	public void test_06() throws IOException, ConfigurationException, OwlImportException, InvalidNameException, ReasonerNotFoundException, QueryParseException, QueryCancelledException, AnswerExtractionException, InvalidInputException {
 		// remove OWL and SADL files
@@ -463,6 +467,7 @@ public class JavaImportJPTests extends AbstractDialogTest {
 		}
 	}
 
+	@Ignore("this test requires REST services at default URLs")
 	@Test
 	public void test_08() throws IOException, ConfigurationException, InvalidNameException, ReasonerNotFoundException, QueryParseException, QueryCancelledException, AnswerExtractionException, InvalidInputException {
 		File codeFile = new File(getCodeExtractionKbRoot() + "/ExtractedModels/Sources/Turbo.java");
@@ -515,6 +520,7 @@ public class JavaImportJPTests extends AbstractDialogTest {
 		System.out.println(sadlContent);
 	}
 
+	@Ignore("this test requires REST services at default URLs")
 	@Test
 	public void test_08_on_Turbo_modified() throws IOException, ConfigurationException, InvalidNameException, ReasonerNotFoundException, QueryParseException, QueryCancelledException, AnswerExtractionException, InvalidInputException {
 		File codeFile = new File(getCodeExtractionKbRoot() + "/ExtractedModels/Sources/TurboModified2.java");
@@ -567,6 +573,7 @@ public class JavaImportJPTests extends AbstractDialogTest {
 		System.out.println(sadlContent);
 	}
 
+	@Ignore("this test requires REST services at default URLs")
 	@Test
 	public void test_09() throws IOException, ConfigurationException, InvalidNameException, ReasonerNotFoundException, QueryParseException, QueryCancelledException, AnswerExtractionException, InvalidInputException {
 	    this.sadl(getContent(getScientificConcepts2Path())); 
@@ -647,6 +654,7 @@ public class JavaImportJPTests extends AbstractDialogTest {
 		this.assertValidatesTo(dialogModelContent, _function2);	
 	}
 	
+	@Ignore("this test requires REST services at default URLs")
 	@Test
 	public void test_10() throws IOException, ConfigurationException, InvalidNameException, ReasonerNotFoundException, QueryParseException, QueryCancelledException, AnswerExtractionException, InvalidInputException {
 		File sourceFile = new File(getCodeExtractionKbRoot() + "/ExtractedModels/Sources/TurboAnnotated.java");
@@ -683,6 +691,7 @@ public class JavaImportJPTests extends AbstractDialogTest {
 		assertTrue(owlF.exists());
 	}
 	
+	@Ignore("this test requires REST services at default URLs")
 	@Test
 	public void test_11() throws ConfigurationException, IOException, InvalidNameException, ReasonerNotFoundException, QueryParseException, QueryCancelledException, AnswerExtractionException, InvalidInputException {
 		String javaContent = 
