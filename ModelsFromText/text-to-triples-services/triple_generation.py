@@ -127,8 +127,12 @@ def populate_domain_info(g: Graph, local_name: str, domain_info, labels, base_ur
 
 def populate_graph_equation_triples(g: Graph, equation_string: str, parameters, base_uri: str):
 
-    for equation_info in parameters:
-        populate_eq_triples(g, equation_info, equation_string, base_uri)
+    # We will send an empty equation info object to in cases where text to python conversion fails
+    if len(parameters) == 0:
+        populate_eq_triples(g, {}, equation_string, base_uri)
+    else:
+        for equation_info in parameters:
+            populate_eq_triples(g, equation_info, equation_string, base_uri)
 
 
 def populate_eq_triples(g: Graph, equation_info, equation_string: str, base_uri: str):
