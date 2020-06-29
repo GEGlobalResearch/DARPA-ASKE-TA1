@@ -66,40 +66,104 @@ def populate_graph_entity_triples(g: Graph, entity_uri: str, label: str, similar
     match_text_uri_name = get_valid_uri(match_text)
 
     g.add((URIRef(match_text_uri_name), RDFS.subClassOf, sadl_implicit_model.ScientificConcept))
-    g.add((URIRef(match_text_uri_name), RDFS.seeAlso, URIRef(entity_uri)))
     g.add((URIRef(match_text_uri_name), RDFS.label, Literal(match_text)))
     g.add((URIRef(match_text_uri_name), RDFS.label, Literal(label)))
+
+    if entity_uri is not None:
+        g.add((URIRef(match_text_uri_name), RDFS.seeAlso, URIRef(entity_uri)))
 
     return g
 
 
-def populate_graph_equation_triples(g: Graph, equation_string: str, parameters, local_graph_uri: str):
+def populate_scientific_concept_triples(g: Graph, entity_uri: str, local_name: str, other_label: str, base_uri: str):
+    sadl_implicit_model: Namespace = Namespace("http://sadl.org/sadlimplicitmodel#")
+    local_name_uri = get_valid_uri(local_name)
+
+    g.add((URIRef(base_uri + local_name_uri), RDFS.subClassOf, sadl_implicit_model.ScientificConcept))
+    g.add((URIRef(base_uri + local_name_uri), RDFS.label, Literal(local_name)))
+
+    if other_label is not None:
+        g.add((URIRef(base_uri + local_name_uri), RDFS.label, Literal(other_label)))
+
+    if entity_uri is not None:
+        g.add((URIRef(base_uri + local_name_uri), RDFS.seeAlso, URIRef(entity_uri)))
+
+    return g
+
+
+def add_domain_concept_triples(g: Graph, local_name: str, uri_type: str, domain_concept, base_uri: str):
+    sadl_implicit_model: Namespace = Namespace("http://sadl.org/sadlimplicitmodel#")
+    local_name_uri = get_valid_uri(local_name)
+
+    domain_uri = domain_concept["uri"]
+
+    g.add((URIRef(base_uri + local_name_uri), RDFS.subClassOf, sadl_implicit_model.ScientificConcept))
+    g.add((URIRef(base_uri + local_name_uri), RDFS.label, Literal(local_name)))
+
+    if uri_type is 'class':
+        g.add((URIRef(base_uri + local_name_uri), sadl_implicit_model.matchingClass, URIRef(domain_uri)))
+    else:
+        g.add((URIRef(base_uri + local_name_uri), sadl_implicit_model.matchingProperty, URIRef(domain_uri)))
+
+
+def populate_domain_info(g: Graph, local_name: str, domain_info, labels, base_uri: str):
+    base_uri_namespace: Namespace = Namespace(base_uri)
+    sadl_implicit_model: Namespace = Namespace("http://sadl.org/sadlimplicitmodel#")
+    local_name_uri = get_valid_uri(local_name)
+
+    if 'uriInfo' in domain_info.keys():
+        uri_infos = domain_info['uriInfo']
+        for uri_info in uri_infos:
+            if uri_info['uri_type'] is 'class':
+                g.add((URIRef(base_uri + local_name_uri), sadl_implicit_model.matchingClass, URIRef(uri_info['uri'])))
+            else:  # it's a property
+                g.add((URIRef(base_uri + local_name_uri), sadl_implicit_model.matchingProperty, URIRef(uri_info['uri'])))
+
+    for label in labels:
+        g.add((URIRef(base_uri + local_name_uri), RDFS.label, Literal(label)))
+
+    return g
+
+
+def populate_graph_equation_triples(g: Graph, equation_string: str, parameters, base_uri: str):
+
+    # We will send an empty equation info object to in cases where text to python conversion fails
+    if len(parameters) == 0:
+        populate_eq_triples(g, {}, equation_string, base_uri)
+    else:
+        for equation_info in parameters:
+            populate_eq_triples(g, equation_info, equation_string, base_uri)
+
+
+def populate_eq_triples(g: Graph, equation_info, equation_string: str, base_uri: str):
     sadl_implicit_model = Namespace("http://sadl.org/sadlimplicitmodel#")
-    local_graph_uri = local_graph_uri + "#"
 
     python_code = "NA"
     tf_code = "NA"
+    np_code = "NA"
     equation_type = ''
     inputs = []
     return_var = []
 
-    if "type" in parameters:
-        equation_type = parameters["type"]
+    if "type" in equation_info:
+        equation_type = equation_info["type"]
 
     eq_num: int = get_equation_count(g) + 1
     base_eq_uri = "equation_" + str(eq_num)
 
-    base_eq_uri = local_graph_uri + base_eq_uri
+    base_eq_uri = base_uri + base_eq_uri
     g.add((URIRef(base_eq_uri), RDF.type, sadl_implicit_model.ExternalEquation))
     add_script_triples(g, sadl_implicit_model, base_eq_uri, "Text", equation_string)
 
-    if "code" in parameters:
-        codes = parameters["code"]
+    if "code" in equation_info:
+        codes = equation_info["code"]
         for code_equation_parameters in codes:
             if "pyCode" in code_equation_parameters:
                 python_code = code_equation_parameters["pyCode"]
             if "tfCode" in code_equation_parameters:
                 tf_code = code_equation_parameters["tfCode"]
+            if "npCode" in code_equation_parameters:
+                np_code = code_equation_parameters["npCode"]
             if "inputVars" in code_equation_parameters:
                 inputs = code_equation_parameters["inputVars"]
             if "outputVars" in code_equation_parameters:
@@ -108,7 +172,7 @@ def populate_graph_equation_triples(g: Graph, equation_string: str, parameters, 
             if equation_type == "lhs_has_operators":
                 eq_num: int = get_equation_count(g) + 1
                 eq_uri = "equation_" + str(eq_num)
-                eq_uri = local_graph_uri + eq_uri
+                eq_uri = base_uri + eq_uri
                 g.add((URIRef(eq_uri), RDF.type, sadl_implicit_model.ExternalEquation))
                 # triple for connecting original equation with interpreted equation
                 g.add((URIRef(eq_uri), sadl_implicit_model.derivedFrom, URIRef(base_eq_uri)))
@@ -120,24 +184,27 @@ def populate_graph_equation_triples(g: Graph, equation_string: str, parameters, 
 
             add_script_triples(g, sadl_implicit_model, eq_uri, "Python", python_code)
             add_script_triples(g, sadl_implicit_model, eq_uri, "Python-TF", tf_code)
+            add_script_triples(g, sadl_implicit_model, eq_uri, "Python-NumPy", np_code)
 
             add_variable_triple(g, eq_uri, inputs, sadl_implicit_model, "arguments")
             add_variable_triple(g, eq_uri, return_var, sadl_implicit_model, "returnTypes")
 
 
-def populate_augmented_type_triples(g: Graph, var_uri, wikidata_uri):
+def populate_augmented_type_triples(g: Graph, var_uri, local_name, base_uri):
     # TODO: Move this to constructor
     sadl_implicit_model = Namespace("http://sadl.org/sadlimplicitmodel#")
+    local_name_uri = get_valid_uri(local_name)
 
     augmented_type_uri = BNode()
     g.add((var_uri, sadl_implicit_model.augmentedType, augmented_type_uri))
     g.add((augmented_type_uri, RDF.type, sadl_implicit_model.SemanticType))
-    g.add((augmented_type_uri, sadl_implicit_model.semType, URIRef(wikidata_uri)))
+    g.add((augmented_type_uri, sadl_implicit_model.semType, (URIRef(base_uri + local_name_uri))))
 
 
 def add_script_triples(g: Graph, sadl_implicit_model: Namespace, eq_uri, script_language: str, script_string: str):
     # TODO: Get SADL model string from constructor
     python_tf_uri = "http://sadl.org/sadlimplicitmodel#Python-TF"
+    python_numpy_uri = "http://sadl.org/sadlimplicitmodel#Python-NumPy"
 
     script_uri = BNode()
     g.add((URIRef(eq_uri), sadl_implicit_model.expression, script_uri))
@@ -149,6 +216,8 @@ def add_script_triples(g: Graph, sadl_implicit_model: Namespace, eq_uri, script_
         g.add((script_uri, sadl_implicit_model.language, sadl_implicit_model.Python))
     elif script_language == "Python-TF":
         g.add((script_uri, sadl_implicit_model.language, URIRef(python_tf_uri)))
+    elif script_language == "Python-NumPy":
+        g.add((script_uri, sadl_implicit_model.language, URIRef(python_numpy_uri)))
 
     # if script_string is not "NA":
     g.add((script_uri, sadl_implicit_model.script, Literal(script_string)))
@@ -199,6 +268,7 @@ def get_valid_uri(uri_name: str) -> str:
             mod_uri_name = mod_uri_name + char
 
     return mod_uri_name
+
 
 # Backward compatible methods. To to be deprecated and removed #
 
