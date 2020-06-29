@@ -1,0 +1,148 @@
+uri "http://sadl.org/CodeExtractionModel.sadl" alias cem.
+ 
+// This is the code extraction meta-model
+CodeElement is a class described by beginsAt with a single value of type int,
+	described by endsAt with a single value of type int.
+
+CodeBlock is a type of CodeElement,
+	described by serialization with a single value of type string,
+	described by comment with values of type Comment,
+	described by containedIn with values of type CodeBlock.
+
+{Class, Method, ConditionalBlock, LoopBlock} are types of CodeBlock.
+
+cmArguments describes Method with a single value of type CodeVariable List.
+cmReturnTypes describes Method with a single value of type string List.
+cmSemanticReturnTypes describes Method with a single value of type string List.
+doesComputation describes Method with a single value of type boolean.
+incompleteInformation describes Method with a single value of type boolean.
+calls describes Method with values of type MethodCall.
+deadCode describes Method with values of type boolean.
+isCalled describes Method with values of type boolean.
+ExternalMethod is a type of Method.
+Constructor is a type of Method.
+Rule CisM: if x is a Constructor then x is a Method.
+
+// The reference to a CodeVariable can be its definition (Defined),
+//	an assignment or reassignment (Reassigned), or just a reference
+//	in the right-hand side of an assignment or a conditional (Used)
+Usage is a class, must be one of {Defined, Used, Reassigned}.
+
+Reference  is a type of CodeElement
+	described by firstRef (note "first reference in this CodeBlock") 
+		with a single value of type boolean
+	described by codeBlock with a single value of type CodeBlock
+	described by usage with values of type Usage
+ 	described by cem:input (note "CodeVariable is an input to codeBlock CodeBlock") 
+ 		with a single value of type boolean
+ 	described by output (note "CodeVariable is an output of codeBlock CodeBlock") 
+ 		with a single value of type boolean
+ 	described by isImplicit (note "the input or output of this reference is implicit (inferred), not explicit")
+ 		with a single value of type boolean
+ 	described by setterArgument (note "is this variable input to a setter?") with a single value of type boolean
+ 	described by comment with values of type Comment.
+ 	
+MethodCall is a type of CodeElement
+	described by codeBlock with a single value of type CodeBlock
+	described by inputMapping with values of type InputMapping,
+	described by returnedMapping with values of type OutputMapping.
+MethodCallMapping is a class,
+	described by callingVariable with a single value of type CodeVariable,
+	described by calledVariable with a single value of type CodeVariable.
+{InputMapping, OutputMapping} are types of MethodCallMapping.		
+	
+Comment (note "CodeBlock and Reference can have a Comment") is a type of CodeElement
+ 	described by commentContent with a single value of type string.	
+
+// what about Constant also? Note something maybe an input and then gets reassigned
+// Constant could be defined in terms of being set by equations that only involve Constants
+// Constants could also relate variables used in different equations as being same
+CodeVariable  is a type of CodeElement, 
+	described by varName with a single value of type string,
+	described by varType with a single value of type string,
+	described by semanticVarType with a single value of type string,
+	described by quantityKind (note "this should be qudt:QuantityKind") with a single value of type ScientificConcept,
+	described by reference with values of type Reference.   
+
+{ClassField, MethodArgument, MethodVariable, ConstantVariable} are types of CodeVariable. 	
+
+constantValue describes ConstantVariable with values of type UnittedQuantity.
+//External findFirstLocation (CodeVariable cv) returns int: "http://ToBeImplemented".
+
+Rule Transitive  
+if inst is a cls and 
+   cls is a type of CodeVariable
+then inst is a CodeVariable. 
+
+Rule Transitive2  
+if inst is a cls and 
+   cls is a type of CodeBlock
+then inst is a CodeBlock. 
+
+Rule FindFirstRef
+if c is a CodeVariable and
+   ref is reference of c and
+   ref has codeBlock cb and
+   l is beginsAt of ref and
+   minLoc = min(c, reference, r, r, codeBlock, cb, r, beginsAt) and
+   l = minLoc
+then firstRef of ref is true
+//	and print(c, " at ", minLoc, " is first reference.")
+.
+
+Rule ImplicitInput
+if cb is a CodeBlock and
+   ref has codeBlock cb and
+   ref has firstRef true and
+   ref has usage Used
+   and cv has reference ref
+//   and ref has beginsAt loc
+then input of ref is true and isImplicit of ref is true
+//	and print(cb, cv, loc, " implicit input")
+.
+
+Rule ImplicitOutput
+if cb is a CodeBlock and
+   ref has codeBlock cb and
+   ref has firstRef true and
+   ref has usage Reassigned
+   and cv has reference ref
+   and noValue(cv, reference, ref2, ref2, codeBlock, cb, ref2, usage, Defined)
+//   and ref has beginsAt loc
+then output of ref is true and isImplicit of ref is true
+//	and print(cb, cv, loc, " implicit output")
+.
+Rule IsCalled
+if	m is a Method and
+	mc is a MethodCall and
+	mc codeBlock m
+then m isCalled true.
+
+Rule DeadCode
+if  m1 is a Method and
+	m2 is a Method and
+	m1 != m2 and
+	m1 calls mc and
+	mc codeBlock m2 and 
+	mc returnedMapping rm and
+	rm callingVariable cv and
+	noValue(cv, reference, ref, ref, usage, Used)
+then deadCode of m2 is true.	
+
+ClassesToIgnore is a type of Class.
+{Canvas, CardLayout, Graphics, Insets, Panel, Image, cem:Event, Choice, Button,
+	Viewer, GridLayout, Math, Double, Float, String
+} are types of ClassesToIgnore.
+
+Ask ImplicitMethodInputs: "select distinct ?m ?cv ?vt ?vn where {?r <isImplicit> true . ?r <http://sadl.org/CodeExtractionModel.sadl#input> true . 
+	?r <codeBlock> ?m . ?cv <reference> ?r . ?cv <varType> ?vt . ?cv <varName> ?vn} order by ?m ?vn".
+Ask ImplicitMethodOutputs: "select distinct ?m ?cv ?vt ?vn where {?r <isImplicit> true . ?r <http://sadl.org/CodeExtractionModel.sadl#output> true . 
+	?r <codeBlock> ?m . ?cv <reference> ?r . ?cv <varType> ?vt. ?cv <varName> ?vn} order by ?m ?vn".
+Ask MethodsDoingComputation: "select ?m where {?m <doesComputation> true}".
+Ask MethodCalls: "select ?m ?mcalled where {?m <calls> ?mc . ?mc <codeBlock> ?mcalled} order by ?m ?mcalled".
+Ask VarComment: "select ?cmntcontent ?eln ?usage where { ? <http://sadl.org/CodeExtractionModel.sadl#reference> ?ref . 
+	?ref <http://sadl.org/CodeExtractionModel.sadl#endsAt> ?eln . 
+	?ref <http://sadl.org/CodeExtractionModel.sadl#usage> ?usage .
+	?cmnt <rdf:type> <http://sadl.org/CodeExtractionModel.sadl#Comment> .
+	?cmnt <http://sadl.org/CodeExtractionModel.sadl#endsAt> ?eln . 
+	?cmnt <http://sadl.org/CodeExtractionModel.sadl#commentContent> ?cmntcontent} order by ?eln".

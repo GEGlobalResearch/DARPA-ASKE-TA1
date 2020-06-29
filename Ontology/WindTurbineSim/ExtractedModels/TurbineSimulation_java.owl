@@ -1,0 +1,1290 @@
+<rdf:RDF
+    xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+    xmlns:cem="http://sadl.org/CodeExtractionModel.sadl#"
+    xmlns:sadllistmodel="http://sadl.org/sadllistmodel#"
+    xmlns:owl="http://www.w3.org/2002/07/owl#"
+    xmlns="http://windTurbine/TurbineSimulation#"
+    xmlns:sadlimplicitmodel="http://sadl.org/sadlimplicitmodel#"
+    xmlns:rdfs="http://www.w3.org/2000/01/rdf-schema#"
+    xmlns:xsd="http://www.w3.org/2001/XMLSchema#"
+  xml:base="http://windTurbine/TurbineSimulation">
+  <owl:Ontology rdf:about="http://windTurbine/TurbineSimulation">
+    <owl:imports rdf:resource="http://sadl.org/sadllistmodel"/>
+    <owl:imports rdf:resource="http://sadl.org/sadlimplicitmodel"/>
+    <owl:imports rdf:resource="http://sadl.org/CodeExtractionModel.sadl"/>
+    <rdfs:comment xml:lang="en">This ontology was created by extraction from code by the ANSWER JavaModelExtractorJP.</rdfs:comment>
+  </owl:Ontology>
+  <cem:MethodVariable rdf:ID="TurbineSimulation.printLambdaVsCp.powerCoefficientArrNoTip">
+    <cem:reference>
+      <cem:Reference>
+        <cem:endsAt rdf:datatype="http://www.w3.org/2001/XMLSchema#int"
+        >81</cem:endsAt>
+        <cem:beginsAt rdf:datatype="http://www.w3.org/2001/XMLSchema#int"
+        >81</cem:beginsAt>
+        <cem:usage rdf:resource="http://sadl.org/CodeExtractionModel.sadl#Reassigned"/>
+        <cem:codeBlock>
+          <cem:ClassField rdf:ID="TurbineSimulation.printLambdaVsCp">
+            <cem:beginsAt rdf:datatype="http://www.w3.org/2001/XMLSchema#int"
+            >64</cem:beginsAt>
+            <cem:varName rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+            >printLambdaVsCp</cem:varName>
+            <cem:reference>
+              <cem:Reference>
+                <cem:endsAt rdf:datatype="http://www.w3.org/2001/XMLSchema#int"
+                >47</cem:endsAt>
+                <cem:beginsAt rdf:datatype="http://www.w3.org/2001/XMLSchema#int"
+                >47</cem:beginsAt>
+                <cem:usage rdf:resource="http://sadl.org/CodeExtractionModel.sadl#Used"/>
+                <cem:codeBlock>
+                  <cem:Method rdf:ID="TurbineSimulation.main">
+                    <cem:calls>
+                      <cem:MethodCall>
+                        <cem:inputMapping>
+                          <cem:InputMapping>
+                            <cem:calledVariable>
+                              <cem:MethodArgument rdf:ID="TurbineSimulation.printLambdaVsCp.dlambda">
+                                <cem:reference>
+                                  <cem:Reference>
+                                    <cem:endsAt rdf:datatype=
+                                    "http://www.w3.org/2001/XMLSchema#int"
+                                    >73</cem:endsAt>
+                                    <cem:beginsAt rdf:datatype=
+                                    "http://www.w3.org/2001/XMLSchema#int"
+                                    >73</cem:beginsAt>
+                                    <cem:usage rdf:resource="http://sadl.org/CodeExtractionModel.sadl#Used"/>
+                                    <cem:codeBlock rdf:resource="http://windTurbine/TurbineSimulation#TurbineSimulation.printLambdaVsCp"/>
+                                  </cem:Reference>
+                                </cem:reference>
+                                <cem:reference>
+                                  <cem:Reference>
+                                    <cem:endsAt rdf:datatype=
+                                    "http://www.w3.org/2001/XMLSchema#int"
+                                    >73</cem:endsAt>
+                                    <cem:beginsAt rdf:datatype=
+                                    "http://www.w3.org/2001/XMLSchema#int"
+                                    >73</cem:beginsAt>
+                                    <cem:usage rdf:resource="http://sadl.org/CodeExtractionModel.sadl#Used"/>
+                                    <cem:codeBlock rdf:resource="http://windTurbine/TurbineSimulation#TurbineSimulation.printLambdaVsCp"/>
+                                  </cem:Reference>
+                                </cem:reference>
+                                <cem:varType rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+                                >double</cem:varType>
+                                <cem:varName rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+                                >dlambda</cem:varName>
+                                <cem:reference>
+                                  <cem:Reference>
+                                    <cem:input rdf:datatype="http://www.w3.org/2001/XMLSchema#boolean"
+                                    >true</cem:input>
+                                    <cem:endsAt rdf:datatype=
+                                    "http://www.w3.org/2001/XMLSchema#int"
+                                    >64</cem:endsAt>
+                                    <cem:beginsAt rdf:datatype=
+                                    "http://www.w3.org/2001/XMLSchema#int"
+                                    >64</cem:beginsAt>
+                                    <cem:usage rdf:resource="http://sadl.org/CodeExtractionModel.sadl#Defined"/>
+                                    <cem:codeBlock rdf:resource="http://windTurbine/TurbineSimulation#TurbineSimulation.printLambdaVsCp"/>
+                                  </cem:Reference>
+                                </cem:reference>
+                              </cem:MethodArgument>
+                            </cem:calledVariable>
+                            <cem:callingVariable>
+                              <cem:ClassField rdf:ID="TurbineSimulation.dlambda">
+                                <cem:reference>
+                                  <cem:Reference>
+                                    <cem:endsAt rdf:datatype=
+                                    "http://www.w3.org/2001/XMLSchema#int"
+                                    >48</cem:endsAt>
+                                    <cem:beginsAt rdf:datatype=
+                                    "http://www.w3.org/2001/XMLSchema#int"
+                                    >48</cem:beginsAt>
+                                    <cem:usage rdf:resource="http://sadl.org/CodeExtractionModel.sadl#Used"/>
+                                    <cem:codeBlock rdf:resource="http://windTurbine/TurbineSimulation#TurbineSimulation.main"/>
+                                  </cem:Reference>
+                                </cem:reference>
+                                <cem:varType rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+                                >double</cem:varType>
+                                <cem:varName rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+                                >dlambda</cem:varName>
+                                <rdfs:label xml:lang="Java">double dlambda = 0.25;</rdfs:label>
+                                <cem:reference>
+                                  <cem:Reference>
+                                    <cem:endsAt rdf:datatype=
+                                    "http://www.w3.org/2001/XMLSchema#int"
+                                    >26</cem:endsAt>
+                                    <cem:beginsAt rdf:datatype=
+                                    "http://www.w3.org/2001/XMLSchema#int"
+                                    >26</cem:beginsAt>
+                                    <cem:usage rdf:resource="http://sadl.org/CodeExtractionModel.sadl#Defined"/>
+                                    <cem:codeBlock>
+                                      <cem:Class rdf:ID="TurbineSimulation"/>
+                                    </cem:codeBlock>
+                                  </cem:Reference>
+                                </cem:reference>
+                              </cem:ClassField>
+                            </cem:callingVariable>
+                          </cem:InputMapping>
+                        </cem:inputMapping>
+                        <cem:inputMapping>
+                          <cem:InputMapping>
+                            <cem:calledVariable>
+                              <cem:MethodArgument rdf:ID="TurbineSimulation.printLambdaVsCp.lambdaMax">
+                                <cem:reference>
+                                  <cem:Reference>
+                                    <cem:endsAt rdf:datatype=
+                                    "http://www.w3.org/2001/XMLSchema#int"
+                                    >97</cem:endsAt>
+                                    <cem:beginsAt rdf:datatype=
+                                    "http://www.w3.org/2001/XMLSchema#int"
+                                    >97</cem:beginsAt>
+                                    <cem:usage rdf:resource="http://sadl.org/CodeExtractionModel.sadl#Used"/>
+                                    <cem:codeBlock rdf:resource="http://windTurbine/TurbineSimulation#TurbineSimulation.printLambdaVsCp"/>
+                                  </cem:Reference>
+                                </cem:reference>
+                                <cem:reference>
+                                  <cem:Reference>
+                                    <cem:setterArgument rdf:datatype=
+                                    "http://www.w3.org/2001/XMLSchema#boolean"
+                                    >true</cem:setterArgument>
+                                    <cem:output rdf:datatype=
+                                    "http://www.w3.org/2001/XMLSchema#boolean"
+                                    >true</cem:output>
+                                    <cem:endsAt rdf:datatype=
+                                    "http://www.w3.org/2001/XMLSchema#int"
+                                    >97</cem:endsAt>
+                                    <cem:beginsAt rdf:datatype=
+                                    "http://www.w3.org/2001/XMLSchema#int"
+                                    >97</cem:beginsAt>
+                                    <cem:usage rdf:resource="http://sadl.org/CodeExtractionModel.sadl#Used"/>
+                                    <cem:codeBlock rdf:resource="http://windTurbine/TurbineSimulation#TurbineSimulation.printLambdaVsCp"/>
+                                  </cem:Reference>
+                                </cem:reference>
+                                <cem:reference>
+                                  <cem:Reference>
+                                    <cem:endsAt rdf:datatype=
+                                    "http://www.w3.org/2001/XMLSchema#int"
+                                    >73</cem:endsAt>
+                                    <cem:beginsAt rdf:datatype=
+                                    "http://www.w3.org/2001/XMLSchema#int"
+                                    >73</cem:beginsAt>
+                                    <cem:usage rdf:resource="http://sadl.org/CodeExtractionModel.sadl#Used"/>
+                                    <cem:codeBlock rdf:resource="http://windTurbine/TurbineSimulation#TurbineSimulation.printLambdaVsCp"/>
+                                  </cem:Reference>
+                                </cem:reference>
+                                <cem:varType rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+                                >double</cem:varType>
+                                <cem:varName rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+                                >lambdaMax</cem:varName>
+                                <cem:reference>
+                                  <cem:Reference>
+                                    <cem:input rdf:datatype="http://www.w3.org/2001/XMLSchema#boolean"
+                                    >true</cem:input>
+                                    <cem:endsAt rdf:datatype=
+                                    "http://www.w3.org/2001/XMLSchema#int"
+                                    >64</cem:endsAt>
+                                    <cem:beginsAt rdf:datatype=
+                                    "http://www.w3.org/2001/XMLSchema#int"
+                                    >64</cem:beginsAt>
+                                    <cem:usage rdf:resource="http://sadl.org/CodeExtractionModel.sadl#Defined"/>
+                                    <cem:codeBlock rdf:resource="http://windTurbine/TurbineSimulation#TurbineSimulation.printLambdaVsCp"/>
+                                  </cem:Reference>
+                                </cem:reference>
+                              </cem:MethodArgument>
+                            </cem:calledVariable>
+                            <cem:callingVariable>
+                              <cem:ClassField rdf:ID="TurbineSimulation.lambdaMax">
+                                <cem:reference>
+                                  <cem:Reference>
+                                    <cem:endsAt rdf:datatype=
+                                    "http://www.w3.org/2001/XMLSchema#int"
+                                    >48</cem:endsAt>
+                                    <cem:beginsAt rdf:datatype=
+                                    "http://www.w3.org/2001/XMLSchema#int"
+                                    >48</cem:beginsAt>
+                                    <cem:usage rdf:resource="http://sadl.org/CodeExtractionModel.sadl#Used"/>
+                                    <cem:codeBlock rdf:resource="http://windTurbine/TurbineSimulation#TurbineSimulation.main"/>
+                                  </cem:Reference>
+                                </cem:reference>
+                                <cem:varType rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+                                >double</cem:varType>
+                                <cem:varName rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+                                >lambdaMax</cem:varName>
+                                <rdfs:label xml:lang="Java">double lambdaMax = 20.75;</rdfs:label>
+                                <cem:reference>
+                                  <cem:Reference>
+                                    <cem:endsAt rdf:datatype=
+                                    "http://www.w3.org/2001/XMLSchema#int"
+                                    >24</cem:endsAt>
+                                    <cem:beginsAt rdf:datatype=
+                                    "http://www.w3.org/2001/XMLSchema#int"
+                                    >24</cem:beginsAt>
+                                    <cem:usage rdf:resource="http://sadl.org/CodeExtractionModel.sadl#Defined"/>
+                                    <cem:codeBlock rdf:resource="http://windTurbine/TurbineSimulation#TurbineSimulation"/>
+                                  </cem:Reference>
+                                </cem:reference>
+                              </cem:ClassField>
+                            </cem:callingVariable>
+                          </cem:InputMapping>
+                        </cem:inputMapping>
+                        <cem:inputMapping>
+                          <cem:InputMapping>
+                            <cem:calledVariable>
+                              <cem:MethodArgument rdf:ID="TurbineSimulation.printLambdaVsCp.lambdaMin">
+                                <cem:reference>
+                                  <cem:Reference>
+                                    <cem:endsAt rdf:datatype=
+                                    "http://www.w3.org/2001/XMLSchema#int"
+                                    >97</cem:endsAt>
+                                    <cem:beginsAt rdf:datatype=
+                                    "http://www.w3.org/2001/XMLSchema#int"
+                                    >97</cem:beginsAt>
+                                    <cem:usage rdf:resource="http://sadl.org/CodeExtractionModel.sadl#Used"/>
+                                    <cem:codeBlock rdf:resource="http://windTurbine/TurbineSimulation#TurbineSimulation.printLambdaVsCp"/>
+                                  </cem:Reference>
+                                </cem:reference>
+                                <cem:reference>
+                                  <cem:Reference>
+                                    <cem:setterArgument rdf:datatype=
+                                    "http://www.w3.org/2001/XMLSchema#boolean"
+                                    >true</cem:setterArgument>
+                                    <cem:output rdf:datatype=
+                                    "http://www.w3.org/2001/XMLSchema#boolean"
+                                    >true</cem:output>
+                                    <cem:endsAt rdf:datatype=
+                                    "http://www.w3.org/2001/XMLSchema#int"
+                                    >97</cem:endsAt>
+                                    <cem:beginsAt rdf:datatype=
+                                    "http://www.w3.org/2001/XMLSchema#int"
+                                    >97</cem:beginsAt>
+                                    <cem:usage rdf:resource="http://sadl.org/CodeExtractionModel.sadl#Used"/>
+                                    <cem:codeBlock rdf:resource="http://windTurbine/TurbineSimulation#TurbineSimulation.printLambdaVsCp"/>
+                                  </cem:Reference>
+                                </cem:reference>
+                                <cem:varType rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+                                >double</cem:varType>
+                                <cem:varName rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+                                >lambdaMin</cem:varName>
+                                <cem:reference>
+                                  <cem:Reference>
+                                    <cem:input rdf:datatype="http://www.w3.org/2001/XMLSchema#boolean"
+                                    >true</cem:input>
+                                    <cem:endsAt rdf:datatype=
+                                    "http://www.w3.org/2001/XMLSchema#int"
+                                    >64</cem:endsAt>
+                                    <cem:beginsAt rdf:datatype=
+                                    "http://www.w3.org/2001/XMLSchema#int"
+                                    >64</cem:beginsAt>
+                                    <cem:usage rdf:resource="http://sadl.org/CodeExtractionModel.sadl#Defined"/>
+                                    <cem:codeBlock rdf:resource="http://windTurbine/TurbineSimulation#TurbineSimulation.printLambdaVsCp"/>
+                                  </cem:Reference>
+                                </cem:reference>
+                              </cem:MethodArgument>
+                            </cem:calledVariable>
+                            <cem:callingVariable>
+                              <cem:ClassField rdf:ID="TurbineSimulation.lambdaMin">
+                                <cem:reference>
+                                  <cem:Reference>
+                                    <cem:endsAt rdf:datatype=
+                                    "http://www.w3.org/2001/XMLSchema#int"
+                                    >48</cem:endsAt>
+                                    <cem:beginsAt rdf:datatype=
+                                    "http://www.w3.org/2001/XMLSchema#int"
+                                    >48</cem:beginsAt>
+                                    <cem:usage rdf:resource="http://sadl.org/CodeExtractionModel.sadl#Used"/>
+                                    <cem:codeBlock rdf:resource="http://windTurbine/TurbineSimulation#TurbineSimulation.main"/>
+                                  </cem:Reference>
+                                </cem:reference>
+                                <cem:varType rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+                                >double</cem:varType>
+                                <cem:varName rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+                                >lambdaMin</cem:varName>
+                                <rdfs:label xml:lang="Java">double lambdaMin = 0.25;</rdfs:label>
+                                <cem:reference>
+                                  <cem:Reference>
+                                    <cem:endsAt rdf:datatype=
+                                    "http://www.w3.org/2001/XMLSchema#int"
+                                    >25</cem:endsAt>
+                                    <cem:beginsAt rdf:datatype=
+                                    "http://www.w3.org/2001/XMLSchema#int"
+                                    >25</cem:beginsAt>
+                                    <cem:usage rdf:resource="http://sadl.org/CodeExtractionModel.sadl#Defined"/>
+                                    <cem:codeBlock rdf:resource="http://windTurbine/TurbineSimulation#TurbineSimulation"/>
+                                  </cem:Reference>
+                                </cem:reference>
+                              </cem:ClassField>
+                            </cem:callingVariable>
+                          </cem:InputMapping>
+                        </cem:inputMapping>
+                        <cem:inputMapping>
+                          <cem:InputMapping>
+                            <cem:calledVariable>
+                              <cem:MethodArgument rdf:ID="TurbineSimulation.printLambdaVsCp.numBlades">
+                                <cem:varType rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+                                >int</cem:varType>
+                                <cem:varName rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+                                >numBlades</cem:varName>
+                                <cem:reference>
+                                  <cem:Reference>
+                                    <cem:input rdf:datatype="http://www.w3.org/2001/XMLSchema#boolean"
+                                    >true</cem:input>
+                                    <cem:endsAt rdf:datatype=
+                                    "http://www.w3.org/2001/XMLSchema#int"
+                                    >64</cem:endsAt>
+                                    <cem:beginsAt rdf:datatype=
+                                    "http://www.w3.org/2001/XMLSchema#int"
+                                    >64</cem:beginsAt>
+                                    <cem:usage rdf:resource="http://sadl.org/CodeExtractionModel.sadl#Defined"/>
+                                    <cem:codeBlock rdf:resource="http://windTurbine/TurbineSimulation#TurbineSimulation.printLambdaVsCp"/>
+                                  </cem:Reference>
+                                </cem:reference>
+                              </cem:MethodArgument>
+                            </cem:calledVariable>
+                            <cem:callingVariable>
+                              <cem:ClassField rdf:ID="TurbineSimulation.numBlades">
+                                <cem:reference>
+                                  <cem:Reference>
+                                    <cem:endsAt rdf:datatype=
+                                    "http://www.w3.org/2001/XMLSchema#int"
+                                    >48</cem:endsAt>
+                                    <cem:beginsAt rdf:datatype=
+                                    "http://www.w3.org/2001/XMLSchema#int"
+                                    >48</cem:beginsAt>
+                                    <cem:usage rdf:resource="http://sadl.org/CodeExtractionModel.sadl#Used"/>
+                                    <cem:codeBlock rdf:resource="http://windTurbine/TurbineSimulation#TurbineSimulation.main"/>
+                                  </cem:Reference>
+                                </cem:reference>
+                                <cem:reference>
+                                  <cem:Reference>
+                                    <cem:endsAt rdf:datatype=
+                                    "http://www.w3.org/2001/XMLSchema#int"
+                                    >45</cem:endsAt>
+                                    <cem:beginsAt rdf:datatype=
+                                    "http://www.w3.org/2001/XMLSchema#int"
+                                    >45</cem:beginsAt>
+                                    <cem:usage rdf:resource="http://sadl.org/CodeExtractionModel.sadl#Used"/>
+                                    <cem:codeBlock rdf:resource="http://windTurbine/TurbineSimulation#TurbineSimulation.main"/>
+                                  </cem:Reference>
+                                </cem:reference>
+                                <cem:varType rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+                                >int</cem:varType>
+                                <cem:varName rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+                                >numBlades</cem:varName>
+                                <rdfs:label xml:lang="Java">int numBlades = 3;</rdfs:label>
+                                <cem:reference>
+                                  <cem:Reference>
+                                    <cem:endsAt rdf:datatype=
+                                    "http://www.w3.org/2001/XMLSchema#int"
+                                    >28</cem:endsAt>
+                                    <cem:beginsAt rdf:datatype=
+                                    "http://www.w3.org/2001/XMLSchema#int"
+                                    >28</cem:beginsAt>
+                                    <cem:usage rdf:resource="http://sadl.org/CodeExtractionModel.sadl#Defined"/>
+                                    <cem:codeBlock rdf:resource="http://windTurbine/TurbineSimulation#TurbineSimulation"/>
+                                  </cem:Reference>
+                                </cem:reference>
+                              </cem:ClassField>
+                            </cem:callingVariable>
+                          </cem:InputMapping>
+                        </cem:inputMapping>
+                        <cem:inputMapping>
+                          <cem:InputMapping>
+                            <cem:calledVariable>
+                              <cem:MethodArgument rdf:ID="TurbineSimulation.printLambdaVsCp.radius">
+                                <cem:varType rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+                                >double</cem:varType>
+                                <cem:varName rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+                                >radius</cem:varName>
+                                <cem:reference>
+                                  <cem:Reference>
+                                    <cem:input rdf:datatype="http://www.w3.org/2001/XMLSchema#boolean"
+                                    >true</cem:input>
+                                    <cem:endsAt rdf:datatype=
+                                    "http://www.w3.org/2001/XMLSchema#int"
+                                    >64</cem:endsAt>
+                                    <cem:beginsAt rdf:datatype=
+                                    "http://www.w3.org/2001/XMLSchema#int"
+                                    >64</cem:beginsAt>
+                                    <cem:usage rdf:resource="http://sadl.org/CodeExtractionModel.sadl#Defined"/>
+                                    <cem:codeBlock rdf:resource="http://windTurbine/TurbineSimulation#TurbineSimulation.printLambdaVsCp"/>
+                                  </cem:Reference>
+                                </cem:reference>
+                              </cem:MethodArgument>
+                            </cem:calledVariable>
+                            <cem:callingVariable>
+                              <cem:ClassField rdf:ID="TurbineSimulation.radius">
+                                <cem:reference>
+                                  <cem:Reference>
+                                    <cem:endsAt rdf:datatype=
+                                    "http://www.w3.org/2001/XMLSchema#int"
+                                    >48</cem:endsAt>
+                                    <cem:beginsAt rdf:datatype=
+                                    "http://www.w3.org/2001/XMLSchema#int"
+                                    >48</cem:beginsAt>
+                                    <cem:usage rdf:resource="http://sadl.org/CodeExtractionModel.sadl#Used"/>
+                                    <cem:codeBlock rdf:resource="http://windTurbine/TurbineSimulation#TurbineSimulation.main"/>
+                                  </cem:Reference>
+                                </cem:reference>
+                                <cem:reference>
+                                  <cem:Reference>
+                                    <cem:endsAt rdf:datatype=
+                                    "http://www.w3.org/2001/XMLSchema#int"
+                                    >45</cem:endsAt>
+                                    <cem:beginsAt rdf:datatype=
+                                    "http://www.w3.org/2001/XMLSchema#int"
+                                    >45</cem:beginsAt>
+                                    <cem:usage rdf:resource="http://sadl.org/CodeExtractionModel.sadl#Used"/>
+                                    <cem:codeBlock rdf:resource="http://windTurbine/TurbineSimulation#TurbineSimulation.main"/>
+                                  </cem:Reference>
+                                </cem:reference>
+                                <cem:varType rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+                                >double</cem:varType>
+                                <cem:varName rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+                                >radius</cem:varName>
+                                <rdfs:label xml:lang="Java">double radius = 3.0;</rdfs:label>
+                                <cem:reference>
+                                  <cem:Reference>
+                                    <cem:endsAt rdf:datatype=
+                                    "http://www.w3.org/2001/XMLSchema#int"
+                                    >27</cem:endsAt>
+                                    <cem:beginsAt rdf:datatype=
+                                    "http://www.w3.org/2001/XMLSchema#int"
+                                    >27</cem:beginsAt>
+                                    <cem:usage rdf:resource="http://sadl.org/CodeExtractionModel.sadl#Defined"/>
+                                    <cem:codeBlock rdf:resource="http://windTurbine/TurbineSimulation#TurbineSimulation"/>
+                                  </cem:Reference>
+                                </cem:reference>
+                              </cem:ClassField>
+                            </cem:callingVariable>
+                          </cem:InputMapping>
+                        </cem:inputMapping>
+                        <cem:endsAt rdf:datatype="http://www.w3.org/2001/XMLSchema#int"
+                        >48</cem:endsAt>
+                        <cem:beginsAt rdf:datatype="http://www.w3.org/2001/XMLSchema#int"
+                        >48</cem:beginsAt>
+                        <cem:codeBlock rdf:resource="http://windTurbine/TurbineSimulation#TurbineSimulation.printLambdaVsCp"/>
+                      </cem:MethodCall>
+                    </cem:calls>
+                    <cem:comment>
+                      <cem:Comment>
+                        <cem:endsAt rdf:datatype="http://www.w3.org/2001/XMLSchema#int"
+                        >36</cem:endsAt>
+                        <cem:beginsAt rdf:datatype="http://www.w3.org/2001/XMLSchema#int"
+                        >34</cem:beginsAt>
+                        <cem:commentContent rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+                        > Create a HAWT wind turbine with a blade radius of 3.0 m,
+		 * three blades and a max tip speed ratio of 6.0.
+		 </cem:commentContent>
+                      </cem:Comment>
+                    </cem:comment>
+                    <cem:doesComputation rdf:datatype="http://www.w3.org/2001/XMLSchema#boolean"
+                    >true</cem:doesComputation>
+                    <cem:comment>
+                      <cem:Comment>
+                        <cem:endsAt rdf:datatype="http://www.w3.org/2001/XMLSchema#int"
+                        >50</cem:endsAt>
+                        <cem:beginsAt rdf:datatype="http://www.w3.org/2001/XMLSchema#int"
+                        >32</cem:beginsAt>
+                        <cem:commentContent rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+                        > Create a HAWT wind turbine with a blade radius of 3.0 m,
+		 * three blades and a max tip speed ratio of 6.0.
+		 </cem:commentContent>
+                      </cem:Comment>
+                    </cem:comment>
+                    <cem:endsAt rdf:datatype="http://www.w3.org/2001/XMLSchema#int"
+                    >50</cem:endsAt>
+                    <cem:beginsAt rdf:datatype="http://www.w3.org/2001/XMLSchema#int"
+                    >32</cem:beginsAt>
+                    <cem:cmArguments rdf:parseType="Resource">
+                      <sadllistmodel:first>
+                        <cem:MethodArgument rdf:ID="TurbineSimulation.main.args">
+                          <cem:varType rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+                          >String[]</cem:varType>
+                          <cem:varName rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+                          >args</cem:varName>
+                          <cem:reference>
+                            <cem:Reference>
+                              <cem:input rdf:datatype="http://www.w3.org/2001/XMLSchema#boolean"
+                              >true</cem:input>
+                              <cem:endsAt rdf:datatype="http://www.w3.org/2001/XMLSchema#int"
+                              >32</cem:endsAt>
+                              <cem:beginsAt rdf:datatype="http://www.w3.org/2001/XMLSchema#int"
+                              >32</cem:beginsAt>
+                              <cem:usage rdf:resource="http://sadl.org/CodeExtractionModel.sadl#Defined"/>
+                              <cem:codeBlock rdf:resource="http://windTurbine/TurbineSimulation#TurbineSimulation.main"/>
+                            </cem:Reference>
+                          </cem:reference>
+                        </cem:MethodArgument>
+                      </sadllistmodel:first>
+                      <rdf:type rdf:nodeID="A0"/>
+                    </cem:cmArguments>
+                    <cem:containedIn rdf:resource="http://windTurbine/TurbineSimulation#TurbineSimulation"/>
+                  </cem:Method>
+                </cem:codeBlock>
+              </cem:Reference>
+            </cem:reference>
+            <cem:cmArguments rdf:parseType="Resource">
+              <sadllistmodel:rest rdf:parseType="Resource">
+                <sadllistmodel:rest rdf:parseType="Resource">
+                  <sadllistmodel:rest rdf:parseType="Resource">
+                    <sadllistmodel:rest rdf:parseType="Resource">
+                      <sadllistmodel:first rdf:resource="http://windTurbine/TurbineSimulation#TurbineSimulation.printLambdaVsCp.dlambda"/>
+                      <rdf:type rdf:nodeID="A0"/>
+                    </sadllistmodel:rest>
+                    <sadllistmodel:first rdf:resource="http://windTurbine/TurbineSimulation#TurbineSimulation.printLambdaVsCp.lambdaMax"/>
+                    <rdf:type rdf:nodeID="A0"/>
+                  </sadllistmodel:rest>
+                  <sadllistmodel:first rdf:resource="http://windTurbine/TurbineSimulation#TurbineSimulation.printLambdaVsCp.lambdaMin"/>
+                  <rdf:type rdf:nodeID="A0"/>
+                </sadllistmodel:rest>
+                <sadllistmodel:first rdf:resource="http://windTurbine/TurbineSimulation#TurbineSimulation.printLambdaVsCp.numBlades"/>
+                <rdf:type rdf:nodeID="A0"/>
+              </sadllistmodel:rest>
+              <sadllistmodel:first rdf:resource="http://windTurbine/TurbineSimulation#TurbineSimulation.printLambdaVsCp.radius"/>
+              <rdf:type rdf:nodeID="A0"/>
+            </cem:cmArguments>
+            <cem:comment>
+              <cem:Comment>
+                <cem:endsAt rdf:datatype="http://www.w3.org/2001/XMLSchema#int"
+                >114</cem:endsAt>
+                <cem:beginsAt rdf:datatype="http://www.w3.org/2001/XMLSchema#int"
+                >64</cem:beginsAt>
+                <cem:commentContent rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+                >-----------Create lambda vs. C_p plot-----------</cem:commentContent>
+              </cem:Comment>
+            </cem:comment>
+            <cem:endsAt rdf:datatype="http://www.w3.org/2001/XMLSchema#int"
+            >114</cem:endsAt>
+            <cem:comment>
+              <cem:Comment>
+                <cem:endsAt rdf:datatype="http://www.w3.org/2001/XMLSchema#int"
+                >91</cem:endsAt>
+                <cem:beginsAt rdf:datatype="http://www.w3.org/2001/XMLSchema#int"
+                >91</cem:beginsAt>
+                <cem:commentContent rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+                > Create a PlotPanel</cem:commentContent>
+              </cem:Comment>
+            </cem:comment>
+            <rdfs:label xml:lang="Java">boolean printLambdaVsCp = true;</rdfs:label>
+            <cem:calls>
+              <cem:MethodCall>
+                <cem:endsAt rdf:datatype="http://www.w3.org/2001/XMLSchema#int"
+                >99</cem:endsAt>
+                <cem:beginsAt rdf:datatype="http://www.w3.org/2001/XMLSchema#int"
+                >99</cem:beginsAt>
+                <cem:codeBlock>
+                  <cem:ExternalMethod rdf:about="http://windTurbine/TurbineSimulation#plot1.getAxis(0).setLabelPosition"/>
+                </cem:codeBlock>
+              </cem:MethodCall>
+            </cem:calls>
+            <cem:comment>
+              <cem:Comment>
+                <cem:endsAt rdf:datatype="http://www.w3.org/2001/XMLSchema#int"
+                >108</cem:endsAt>
+                <cem:beginsAt rdf:datatype="http://www.w3.org/2001/XMLSchema#int"
+                >108</cem:beginsAt>
+                <cem:commentContent rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+                > Put the PlotPanel in a JFrame, as a JPanel</cem:commentContent>
+              </cem:Comment>
+            </cem:comment>
+            <cem:comment>
+              <cem:Comment>
+                <cem:endsAt rdf:datatype="http://www.w3.org/2001/XMLSchema#int"
+                >94</cem:endsAt>
+                <cem:beginsAt rdf:datatype="http://www.w3.org/2001/XMLSchema#int"
+                >94</cem:beginsAt>
+                <cem:commentContent rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+                > Add a line plot and labels to the PlotPanel</cem:commentContent>
+              </cem:Comment>
+            </cem:comment>
+            <cem:doesComputation rdf:datatype="http://www.w3.org/2001/XMLSchema#boolean"
+            >true</cem:doesComputation>
+            <cem:calls>
+              <cem:MethodCall>
+                <cem:endsAt rdf:datatype="http://www.w3.org/2001/XMLSchema#int"
+                >101</cem:endsAt>
+                <cem:beginsAt rdf:datatype="http://www.w3.org/2001/XMLSchema#int"
+                >101</cem:beginsAt>
+                <cem:codeBlock>
+                  <cem:ExternalMethod rdf:about="http://windTurbine/TurbineSimulation#plot1.getAxis(1).setLabelPosition"/>
+                </cem:codeBlock>
+              </cem:MethodCall>
+            </cem:calls>
+            <cem:containedIn rdf:resource="http://windTurbine/TurbineSimulation#TurbineSimulation"/>
+            <cem:comment>
+              <cem:Comment>
+                <cem:endsAt rdf:datatype="http://www.w3.org/2001/XMLSchema#int"
+                >96</cem:endsAt>
+                <cem:beginsAt rdf:datatype="http://www.w3.org/2001/XMLSchema#int"
+                >96</cem:beginsAt>
+                <cem:commentContent rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+                > Add a line plot and labels to the PlotPanel</cem:commentContent>
+              </cem:Comment>
+            </cem:comment>
+            <cem:comment>
+              <cem:Comment>
+                <cem:endsAt rdf:datatype="http://www.w3.org/2001/XMLSchema#int"
+                >114</cem:endsAt>
+                <cem:beginsAt rdf:datatype="http://www.w3.org/2001/XMLSchema#int"
+                >64</cem:beginsAt>
+                <cem:commentContent rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+                >
+	 * Displays the tip speed ratio (lambda) vs. coefficient of power (C&lt;sub&gt;p&lt;/sub&gt;) curve for
+	 * a given turbine radius, number of blades, minimum lambda, maximum lambda and a lambda step size 
+	 * for determining the number of points to plot on the graph.
+	 * 
+	 * @param radius The radius of the turbine in m.
+	 * @param numBlades	The number of blades of the turbine.
+	 * @param lambdaMin	The starting lambda value for the graph.
+	 * @param lambdaMax	The final lambda value for the graph.
+	 * @param dlambda 	The step size in lambda, indicating the resolution and number of points on the
+	 * graph.
+	 </cem:commentContent>
+              </cem:Comment>
+            </cem:comment>
+            <cem:reference>
+              <cem:Reference>
+                <cem:endsAt rdf:datatype="http://www.w3.org/2001/XMLSchema#int"
+                >30</cem:endsAt>
+                <cem:beginsAt rdf:datatype="http://www.w3.org/2001/XMLSchema#int"
+                >30</cem:beginsAt>
+                <cem:usage rdf:resource="http://sadl.org/CodeExtractionModel.sadl#Defined"/>
+                <cem:codeBlock rdf:resource="http://windTurbine/TurbineSimulation#TurbineSimulation"/>
+              </cem:Reference>
+            </cem:reference>
+            <cem:varType rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+            >boolean</cem:varType>
+          </cem:ClassField>
+        </cem:codeBlock>
+      </cem:Reference>
+    </cem:reference>
+    <cem:reference>
+      <cem:Reference>
+        <cem:endsAt rdf:datatype="http://www.w3.org/2001/XMLSchema#int"
+        >70</cem:endsAt>
+        <cem:beginsAt rdf:datatype="http://www.w3.org/2001/XMLSchema#int"
+        >70</cem:beginsAt>
+        <cem:usage rdf:resource="http://sadl.org/CodeExtractionModel.sadl#Reassigned"/>
+        <cem:codeBlock rdf:resource="http://windTurbine/TurbineSimulation#TurbineSimulation.printLambdaVsCp"/>
+      </cem:Reference>
+    </cem:reference>
+    <cem:varType rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >double[]</cem:varType>
+    <cem:varName rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >powerCoefficientArrNoTip</cem:varName>
+    <rdfs:label xml:lang="Java">double[] powerCoefficientArrNoTip = new double[lambdaCount];</rdfs:label>
+    <cem:reference>
+      <cem:Reference>
+        <cem:endsAt rdf:datatype="http://www.w3.org/2001/XMLSchema#int"
+        >70</cem:endsAt>
+        <cem:beginsAt rdf:datatype="http://www.w3.org/2001/XMLSchema#int"
+        >70</cem:beginsAt>
+        <cem:usage rdf:resource="http://sadl.org/CodeExtractionModel.sadl#Defined"/>
+        <cem:codeBlock rdf:resource="http://windTurbine/TurbineSimulation#TurbineSimulation.printLambdaVsCp"/>
+      </cem:Reference>
+    </cem:reference>
+  </cem:MethodVariable>
+  <cem:MethodVariable rdf:ID="TurbineSimulation.printLambdaVsCp.lambdaVar">
+    <cem:reference>
+      <cem:Reference>
+        <cem:endsAt rdf:datatype="http://www.w3.org/2001/XMLSchema#int"
+        >79</cem:endsAt>
+        <cem:beginsAt rdf:datatype="http://www.w3.org/2001/XMLSchema#int"
+        >79</cem:beginsAt>
+        <cem:usage rdf:resource="http://sadl.org/CodeExtractionModel.sadl#Used"/>
+        <cem:codeBlock rdf:resource="http://windTurbine/TurbineSimulation#TurbineSimulation.printLambdaVsCp"/>
+      </cem:Reference>
+    </cem:reference>
+    <cem:reference>
+      <cem:Reference>
+        <cem:endsAt rdf:datatype="http://www.w3.org/2001/XMLSchema#int"
+        >73</cem:endsAt>
+        <cem:beginsAt rdf:datatype="http://www.w3.org/2001/XMLSchema#int"
+        >73</cem:beginsAt>
+        <cem:usage rdf:resource="http://sadl.org/CodeExtractionModel.sadl#Reassigned"/>
+        <cem:codeBlock rdf:resource="http://windTurbine/TurbineSimulation#TurbineSimulation.printLambdaVsCp"/>
+      </cem:Reference>
+    </cem:reference>
+    <cem:reference>
+      <cem:Reference>
+        <cem:endsAt rdf:datatype="http://www.w3.org/2001/XMLSchema#int"
+        >73</cem:endsAt>
+        <cem:beginsAt rdf:datatype="http://www.w3.org/2001/XMLSchema#int"
+        >73</cem:beginsAt>
+        <cem:usage rdf:resource="http://sadl.org/CodeExtractionModel.sadl#Used"/>
+        <cem:codeBlock rdf:resource="http://windTurbine/TurbineSimulation#TurbineSimulation.printLambdaVsCp"/>
+      </cem:Reference>
+    </cem:reference>
+    <cem:reference>
+      <cem:Reference>
+        <cem:endsAt rdf:datatype="http://www.w3.org/2001/XMLSchema#int"
+        >73</cem:endsAt>
+        <cem:beginsAt rdf:datatype="http://www.w3.org/2001/XMLSchema#int"
+        >73</cem:beginsAt>
+        <cem:usage rdf:resource="http://sadl.org/CodeExtractionModel.sadl#Reassigned"/>
+        <cem:codeBlock rdf:resource="http://windTurbine/TurbineSimulation#TurbineSimulation.printLambdaVsCp"/>
+      </cem:Reference>
+    </cem:reference>
+    <cem:varType rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >double</cem:varType>
+    <cem:varName rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >lambdaVar</cem:varName>
+    <rdfs:label xml:lang="Java">double lambdaVar = lambdaMin;</rdfs:label>
+    <cem:reference>
+      <cem:Reference>
+        <cem:endsAt rdf:datatype="http://www.w3.org/2001/XMLSchema#int"
+        >73</cem:endsAt>
+        <cem:beginsAt rdf:datatype="http://www.w3.org/2001/XMLSchema#int"
+        >73</cem:beginsAt>
+        <cem:usage rdf:resource="http://sadl.org/CodeExtractionModel.sadl#Defined"/>
+        <cem:codeBlock rdf:resource="http://windTurbine/TurbineSimulation#TurbineSimulation.printLambdaVsCp"/>
+      </cem:Reference>
+    </cem:reference>
+  </cem:MethodVariable>
+  <cem:MethodVariable rdf:ID="TurbineSimulation.printLambdaVsCp.lambdaArr">
+    <cem:reference>
+      <cem:Reference>
+        <cem:endsAt rdf:datatype="http://www.w3.org/2001/XMLSchema#int"
+        >94</cem:endsAt>
+        <cem:beginsAt rdf:datatype="http://www.w3.org/2001/XMLSchema#int"
+        >94</cem:beginsAt>
+        <cem:usage rdf:resource="http://sadl.org/CodeExtractionModel.sadl#Used"/>
+        <cem:codeBlock rdf:resource="http://windTurbine/TurbineSimulation#TurbineSimulation.printLambdaVsCp"/>
+      </cem:Reference>
+    </cem:reference>
+    <cem:reference>
+      <cem:Reference>
+        <cem:endsAt rdf:datatype="http://www.w3.org/2001/XMLSchema#int"
+        >79</cem:endsAt>
+        <cem:beginsAt rdf:datatype="http://www.w3.org/2001/XMLSchema#int"
+        >79</cem:beginsAt>
+        <cem:usage rdf:resource="http://sadl.org/CodeExtractionModel.sadl#Reassigned"/>
+        <cem:codeBlock rdf:resource="http://windTurbine/TurbineSimulation#TurbineSimulation.printLambdaVsCp"/>
+      </cem:Reference>
+    </cem:reference>
+    <cem:reference>
+      <cem:Reference>
+        <cem:endsAt rdf:datatype="http://www.w3.org/2001/XMLSchema#int"
+        >68</cem:endsAt>
+        <cem:beginsAt rdf:datatype="http://www.w3.org/2001/XMLSchema#int"
+        >68</cem:beginsAt>
+        <cem:usage rdf:resource="http://sadl.org/CodeExtractionModel.sadl#Reassigned"/>
+        <cem:codeBlock rdf:resource="http://windTurbine/TurbineSimulation#TurbineSimulation.printLambdaVsCp"/>
+      </cem:Reference>
+    </cem:reference>
+    <cem:varType rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >double[]</cem:varType>
+    <cem:varName rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >lambdaArr</cem:varName>
+    <rdfs:label xml:lang="Java">double[] lambdaArr = new double[lambdaCount];</rdfs:label>
+    <cem:reference>
+      <cem:Reference>
+        <cem:endsAt rdf:datatype="http://www.w3.org/2001/XMLSchema#int"
+        >68</cem:endsAt>
+        <cem:beginsAt rdf:datatype="http://www.w3.org/2001/XMLSchema#int"
+        >68</cem:beginsAt>
+        <cem:usage rdf:resource="http://sadl.org/CodeExtractionModel.sadl#Defined"/>
+        <cem:codeBlock rdf:resource="http://windTurbine/TurbineSimulation#TurbineSimulation.printLambdaVsCp"/>
+      </cem:Reference>
+    </cem:reference>
+  </cem:MethodVariable>
+  <cem:MethodVariable rdf:ID="TurbineSimulation.printLambdaVsCp.title1">
+    <cem:reference>
+      <cem:Reference>
+        <cem:endsAt rdf:datatype="http://www.w3.org/2001/XMLSchema#int"
+        >105</cem:endsAt>
+        <cem:beginsAt rdf:datatype="http://www.w3.org/2001/XMLSchema#int"
+        >105</cem:beginsAt>
+        <cem:usage rdf:resource="http://sadl.org/CodeExtractionModel.sadl#Used"/>
+        <cem:codeBlock rdf:resource="http://windTurbine/TurbineSimulation#TurbineSimulation.printLambdaVsCp"/>
+      </cem:Reference>
+    </cem:reference>
+    <cem:reference>
+      <cem:Reference>
+        <cem:endsAt rdf:datatype="http://www.w3.org/2001/XMLSchema#int"
+        >103</cem:endsAt>
+        <cem:beginsAt rdf:datatype="http://www.w3.org/2001/XMLSchema#int"
+        >103</cem:beginsAt>
+        <cem:usage rdf:resource="http://sadl.org/CodeExtractionModel.sadl#Reassigned"/>
+        <cem:codeBlock rdf:resource="http://windTurbine/TurbineSimulation#TurbineSimulation.printLambdaVsCp"/>
+      </cem:Reference>
+    </cem:reference>
+    <cem:varType rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >BaseLabel</cem:varType>
+    <cem:varName rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >title1</cem:varName>
+    <rdfs:label xml:lang="Java">BaseLabel title1 = new BaseLabel("lambda vs. C_p", Color.BLACK, 0.5, 1.1);</rdfs:label>
+    <cem:reference>
+      <cem:Reference>
+        <cem:endsAt rdf:datatype="http://www.w3.org/2001/XMLSchema#int"
+        >103</cem:endsAt>
+        <cem:beginsAt rdf:datatype="http://www.w3.org/2001/XMLSchema#int"
+        >103</cem:beginsAt>
+        <cem:usage rdf:resource="http://sadl.org/CodeExtractionModel.sadl#Defined"/>
+        <cem:codeBlock rdf:resource="http://windTurbine/TurbineSimulation#TurbineSimulation.printLambdaVsCp"/>
+      </cem:Reference>
+    </cem:reference>
+  </cem:MethodVariable>
+  <cem:MethodVariable rdf:ID="TurbineSimulation.printLambdaVsCp.powerCoefficientNoTip">
+    <cem:reference>
+      <cem:Reference>
+        <cem:endsAt rdf:datatype="http://www.w3.org/2001/XMLSchema#int"
+        >81</cem:endsAt>
+        <cem:beginsAt rdf:datatype="http://www.w3.org/2001/XMLSchema#int"
+        >81</cem:beginsAt>
+        <cem:usage rdf:resource="http://sadl.org/CodeExtractionModel.sadl#Used"/>
+        <cem:codeBlock rdf:resource="http://windTurbine/TurbineSimulation#TurbineSimulation.printLambdaVsCp"/>
+      </cem:Reference>
+    </cem:reference>
+    <cem:reference>
+      <cem:Reference>
+        <cem:endsAt rdf:datatype="http://www.w3.org/2001/XMLSchema#int"
+        >77</cem:endsAt>
+        <cem:beginsAt rdf:datatype="http://www.w3.org/2001/XMLSchema#int"
+        >77</cem:beginsAt>
+        <cem:usage rdf:resource="http://sadl.org/CodeExtractionModel.sadl#Reassigned"/>
+        <cem:codeBlock rdf:resource="http://windTurbine/TurbineSimulation#TurbineSimulation.printLambdaVsCp"/>
+      </cem:Reference>
+    </cem:reference>
+    <cem:varType rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >double</cem:varType>
+    <cem:varName rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >powerCoefficientNoTip</cem:varName>
+    <rdfs:label xml:lang="Java">double powerCoefficientNoTip = windTurbine.getPowerCoefficientNoTip();</rdfs:label>
+    <cem:reference>
+      <cem:Reference>
+        <cem:endsAt rdf:datatype="http://www.w3.org/2001/XMLSchema#int"
+        >77</cem:endsAt>
+        <cem:beginsAt rdf:datatype="http://www.w3.org/2001/XMLSchema#int"
+        >77</cem:beginsAt>
+        <cem:usage rdf:resource="http://sadl.org/CodeExtractionModel.sadl#Defined"/>
+        <cem:codeBlock rdf:resource="http://windTurbine/TurbineSimulation#TurbineSimulation.printLambdaVsCp"/>
+      </cem:Reference>
+    </cem:reference>
+  </cem:MethodVariable>
+  <cem:MethodVariable rdf:ID="TurbineSimulation.printLambdaVsCp.iter">
+    <cem:reference>
+      <cem:Reference>
+        <cem:endsAt rdf:datatype="http://www.w3.org/2001/XMLSchema#int"
+        >82</cem:endsAt>
+        <cem:beginsAt rdf:datatype="http://www.w3.org/2001/XMLSchema#int"
+        >82</cem:beginsAt>
+        <cem:usage rdf:resource="http://sadl.org/CodeExtractionModel.sadl#Used"/>
+        <cem:codeBlock rdf:resource="http://windTurbine/TurbineSimulation#TurbineSimulation.printLambdaVsCp"/>
+      </cem:Reference>
+    </cem:reference>
+    <cem:reference>
+      <cem:Reference>
+        <cem:endsAt rdf:datatype="http://www.w3.org/2001/XMLSchema#int"
+        >71</cem:endsAt>
+        <cem:beginsAt rdf:datatype="http://www.w3.org/2001/XMLSchema#int"
+        >71</cem:beginsAt>
+        <cem:usage rdf:resource="http://sadl.org/CodeExtractionModel.sadl#Reassigned"/>
+        <cem:codeBlock rdf:resource="http://windTurbine/TurbineSimulation#TurbineSimulation.printLambdaVsCp"/>
+      </cem:Reference>
+    </cem:reference>
+    <cem:varType rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >int</cem:varType>
+    <cem:varName rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >iter</cem:varName>
+    <rdfs:label xml:lang="Java">int iter = 0;</rdfs:label>
+    <cem:reference>
+      <cem:Reference>
+        <cem:endsAt rdf:datatype="http://www.w3.org/2001/XMLSchema#int"
+        >71</cem:endsAt>
+        <cem:beginsAt rdf:datatype="http://www.w3.org/2001/XMLSchema#int"
+        >71</cem:beginsAt>
+        <cem:usage rdf:resource="http://sadl.org/CodeExtractionModel.sadl#Defined"/>
+        <cem:codeBlock rdf:resource="http://windTurbine/TurbineSimulation#TurbineSimulation.printLambdaVsCp"/>
+      </cem:Reference>
+    </cem:reference>
+  </cem:MethodVariable>
+  <cem:ClassField rdf:ID="TurbineSimulation.windTurbine">
+    <cem:reference>
+      <cem:Reference>
+        <cem:endsAt rdf:datatype="http://www.w3.org/2001/XMLSchema#int"
+        >75</cem:endsAt>
+        <cem:beginsAt rdf:datatype="http://www.w3.org/2001/XMLSchema#int"
+        >75</cem:beginsAt>
+        <cem:usage rdf:resource="http://sadl.org/CodeExtractionModel.sadl#Reassigned"/>
+        <cem:codeBlock rdf:resource="http://windTurbine/TurbineSimulation#TurbineSimulation.printLambdaVsCp"/>
+      </cem:Reference>
+    </cem:reference>
+    <cem:reference>
+      <cem:Reference>
+        <cem:endsAt rdf:datatype="http://www.w3.org/2001/XMLSchema#int"
+        >38</cem:endsAt>
+        <cem:beginsAt rdf:datatype="http://www.w3.org/2001/XMLSchema#int"
+        >38</cem:beginsAt>
+        <cem:usage rdf:resource="http://sadl.org/CodeExtractionModel.sadl#Reassigned"/>
+        <cem:codeBlock rdf:resource="http://windTurbine/TurbineSimulation#TurbineSimulation.main"/>
+      </cem:Reference>
+    </cem:reference>
+    <cem:varType rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >WindTurbine</cem:varType>
+    <cem:varName rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >windTurbine</cem:varName>
+    <rdfs:label xml:lang="Java">WindTurbine windTurbine;</rdfs:label>
+    <cem:reference>
+      <cem:Reference>
+        <cem:endsAt rdf:datatype="http://www.w3.org/2001/XMLSchema#int"
+        >23</cem:endsAt>
+        <cem:beginsAt rdf:datatype="http://www.w3.org/2001/XMLSchema#int"
+        >23</cem:beginsAt>
+        <cem:usage rdf:resource="http://sadl.org/CodeExtractionModel.sadl#Defined"/>
+        <cem:codeBlock rdf:resource="http://windTurbine/TurbineSimulation#TurbineSimulation"/>
+      </cem:Reference>
+    </cem:reference>
+  </cem:ClassField>
+  <cem:MethodVariable rdf:ID="TurbineSimulation.main.powerCoefficient">
+    <cem:reference>
+      <cem:Reference>
+        <cem:endsAt rdf:datatype="http://www.w3.org/2001/XMLSchema#int"
+        >45</cem:endsAt>
+        <cem:beginsAt rdf:datatype="http://www.w3.org/2001/XMLSchema#int"
+        >45</cem:beginsAt>
+        <cem:usage rdf:resource="http://sadl.org/CodeExtractionModel.sadl#Used"/>
+        <cem:codeBlock rdf:resource="http://windTurbine/TurbineSimulation#TurbineSimulation.main"/>
+      </cem:Reference>
+    </cem:reference>
+    <cem:reference>
+      <cem:Reference>
+        <cem:endsAt rdf:datatype="http://www.w3.org/2001/XMLSchema#int"
+        >40</cem:endsAt>
+        <cem:beginsAt rdf:datatype="http://www.w3.org/2001/XMLSchema#int"
+        >40</cem:beginsAt>
+        <cem:usage rdf:resource="http://sadl.org/CodeExtractionModel.sadl#Reassigned"/>
+        <cem:codeBlock rdf:resource="http://windTurbine/TurbineSimulation#TurbineSimulation.main"/>
+      </cem:Reference>
+    </cem:reference>
+    <cem:varType rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >double</cem:varType>
+    <cem:varName rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >powerCoefficient</cem:varName>
+    <rdfs:label xml:lang="Java">double powerCoefficient = windTurbine.getPowerCoefficient();</rdfs:label>
+    <cem:reference>
+      <cem:Reference>
+        <cem:endsAt rdf:datatype="http://www.w3.org/2001/XMLSchema#int"
+        >40</cem:endsAt>
+        <cem:beginsAt rdf:datatype="http://www.w3.org/2001/XMLSchema#int"
+        >40</cem:beginsAt>
+        <cem:usage rdf:resource="http://sadl.org/CodeExtractionModel.sadl#Defined"/>
+        <cem:codeBlock rdf:resource="http://windTurbine/TurbineSimulation#TurbineSimulation.main"/>
+      </cem:Reference>
+    </cem:reference>
+  </cem:MethodVariable>
+  <cem:MethodVariable rdf:ID="TurbineSimulation.printLambdaVsCp.powerCoefficient">
+    <cem:reference>
+      <cem:Reference>
+        <cem:endsAt rdf:datatype="http://www.w3.org/2001/XMLSchema#int"
+        >80</cem:endsAt>
+        <cem:beginsAt rdf:datatype="http://www.w3.org/2001/XMLSchema#int"
+        >80</cem:beginsAt>
+        <cem:usage rdf:resource="http://sadl.org/CodeExtractionModel.sadl#Used"/>
+        <cem:codeBlock rdf:resource="http://windTurbine/TurbineSimulation#TurbineSimulation.printLambdaVsCp"/>
+      </cem:Reference>
+    </cem:reference>
+    <cem:reference>
+      <cem:Reference>
+        <cem:endsAt rdf:datatype="http://www.w3.org/2001/XMLSchema#int"
+        >76</cem:endsAt>
+        <cem:beginsAt rdf:datatype="http://www.w3.org/2001/XMLSchema#int"
+        >76</cem:beginsAt>
+        <cem:usage rdf:resource="http://sadl.org/CodeExtractionModel.sadl#Reassigned"/>
+        <cem:codeBlock rdf:resource="http://windTurbine/TurbineSimulation#TurbineSimulation.printLambdaVsCp"/>
+      </cem:Reference>
+    </cem:reference>
+    <cem:varType rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >double</cem:varType>
+    <cem:varName rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >powerCoefficient</cem:varName>
+    <rdfs:label xml:lang="Java">double powerCoefficient = windTurbine.getPowerCoefficient();</rdfs:label>
+    <cem:reference>
+      <cem:Reference>
+        <cem:endsAt rdf:datatype="http://www.w3.org/2001/XMLSchema#int"
+        >76</cem:endsAt>
+        <cem:beginsAt rdf:datatype="http://www.w3.org/2001/XMLSchema#int"
+        >76</cem:beginsAt>
+        <cem:usage rdf:resource="http://sadl.org/CodeExtractionModel.sadl#Defined"/>
+        <cem:codeBlock rdf:resource="http://windTurbine/TurbineSimulation#TurbineSimulation.printLambdaVsCp"/>
+      </cem:Reference>
+    </cem:reference>
+  </cem:MethodVariable>
+  <cem:Comment/>
+  <cem:MethodVariable rdf:ID="TurbineSimulation.printLambdaVsCp.powerCoefficientArr">
+    <cem:reference>
+      <cem:Reference>
+        <cem:endsAt rdf:datatype="http://www.w3.org/2001/XMLSchema#int"
+        >94</cem:endsAt>
+        <cem:beginsAt rdf:datatype="http://www.w3.org/2001/XMLSchema#int"
+        >94</cem:beginsAt>
+        <cem:usage rdf:resource="http://sadl.org/CodeExtractionModel.sadl#Used"/>
+        <cem:codeBlock rdf:resource="http://windTurbine/TurbineSimulation#TurbineSimulation.printLambdaVsCp"/>
+      </cem:Reference>
+    </cem:reference>
+    <cem:reference>
+      <cem:Reference>
+        <cem:endsAt rdf:datatype="http://www.w3.org/2001/XMLSchema#int"
+        >80</cem:endsAt>
+        <cem:beginsAt rdf:datatype="http://www.w3.org/2001/XMLSchema#int"
+        >80</cem:beginsAt>
+        <cem:usage rdf:resource="http://sadl.org/CodeExtractionModel.sadl#Reassigned"/>
+        <cem:codeBlock rdf:resource="http://windTurbine/TurbineSimulation#TurbineSimulation.printLambdaVsCp"/>
+      </cem:Reference>
+    </cem:reference>
+    <cem:reference>
+      <cem:Reference>
+        <cem:endsAt rdf:datatype="http://www.w3.org/2001/XMLSchema#int"
+        >69</cem:endsAt>
+        <cem:beginsAt rdf:datatype="http://www.w3.org/2001/XMLSchema#int"
+        >69</cem:beginsAt>
+        <cem:usage rdf:resource="http://sadl.org/CodeExtractionModel.sadl#Reassigned"/>
+        <cem:codeBlock rdf:resource="http://windTurbine/TurbineSimulation#TurbineSimulation.printLambdaVsCp"/>
+      </cem:Reference>
+    </cem:reference>
+    <cem:varType rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >double[]</cem:varType>
+    <cem:varName rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >powerCoefficientArr</cem:varName>
+    <rdfs:label xml:lang="Java">double[] powerCoefficientArr = new double[lambdaCount];</rdfs:label>
+    <cem:reference>
+      <cem:Reference>
+        <cem:endsAt rdf:datatype="http://www.w3.org/2001/XMLSchema#int"
+        >69</cem:endsAt>
+        <cem:beginsAt rdf:datatype="http://www.w3.org/2001/XMLSchema#int"
+        >69</cem:beginsAt>
+        <cem:usage rdf:resource="http://sadl.org/CodeExtractionModel.sadl#Defined"/>
+        <cem:codeBlock rdf:resource="http://windTurbine/TurbineSimulation#TurbineSimulation.printLambdaVsCp"/>
+      </cem:Reference>
+    </cem:reference>
+  </cem:MethodVariable>
+  <cem:MethodVariable rdf:ID="TurbineSimulation.printLambdaVsCp.plotFont">
+    <cem:reference>
+      <cem:Reference>
+        <cem:setterArgument rdf:datatype="http://www.w3.org/2001/XMLSchema#boolean"
+        >true</cem:setterArgument>
+        <cem:output rdf:datatype="http://www.w3.org/2001/XMLSchema#boolean"
+        >true</cem:output>
+        <cem:endsAt rdf:datatype="http://www.w3.org/2001/XMLSchema#int"
+        >100</cem:endsAt>
+        <cem:beginsAt rdf:datatype="http://www.w3.org/2001/XMLSchema#int"
+        >100</cem:beginsAt>
+        <cem:usage rdf:resource="http://sadl.org/CodeExtractionModel.sadl#Used"/>
+        <cem:codeBlock rdf:resource="http://windTurbine/TurbineSimulation#TurbineSimulation.printLambdaVsCp"/>
+      </cem:Reference>
+    </cem:reference>
+    <cem:reference>
+      <cem:Reference>
+        <cem:endsAt rdf:datatype="http://www.w3.org/2001/XMLSchema#int"
+        >104</cem:endsAt>
+        <cem:beginsAt rdf:datatype="http://www.w3.org/2001/XMLSchema#int"
+        >104</cem:beginsAt>
+        <cem:usage rdf:resource="http://sadl.org/CodeExtractionModel.sadl#Used"/>
+        <cem:codeBlock rdf:resource="http://windTurbine/TurbineSimulation#TurbineSimulation.printLambdaVsCp"/>
+      </cem:Reference>
+    </cem:reference>
+    <cem:reference>
+      <cem:Reference>
+        <cem:endsAt rdf:datatype="http://www.w3.org/2001/XMLSchema#int"
+        >100</cem:endsAt>
+        <cem:beginsAt rdf:datatype="http://www.w3.org/2001/XMLSchema#int"
+        >100</cem:beginsAt>
+        <cem:usage rdf:resource="http://sadl.org/CodeExtractionModel.sadl#Used"/>
+        <cem:codeBlock rdf:resource="http://windTurbine/TurbineSimulation#TurbineSimulation.printLambdaVsCp"/>
+      </cem:Reference>
+    </cem:reference>
+    <rdfs:label xml:lang="Java">Font plotFont = new Font(Font.MONOSPACED, Font.PLAIN, 12);</rdfs:label>
+    <cem:varName rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >plotFont</cem:varName>
+    <cem:reference>
+      <cem:Reference>
+        <cem:setterArgument rdf:datatype="http://www.w3.org/2001/XMLSchema#boolean"
+        >true</cem:setterArgument>
+        <cem:output rdf:datatype="http://www.w3.org/2001/XMLSchema#boolean"
+        >true</cem:output>
+        <cem:endsAt rdf:datatype="http://www.w3.org/2001/XMLSchema#int"
+        >102</cem:endsAt>
+        <cem:beginsAt rdf:datatype="http://www.w3.org/2001/XMLSchema#int"
+        >102</cem:beginsAt>
+        <cem:usage rdf:resource="http://sadl.org/CodeExtractionModel.sadl#Used"/>
+        <cem:codeBlock rdf:resource="http://windTurbine/TurbineSimulation#TurbineSimulation.printLambdaVsCp"/>
+      </cem:Reference>
+    </cem:reference>
+    <cem:reference>
+      <cem:Reference>
+        <cem:endsAt rdf:datatype="http://www.w3.org/2001/XMLSchema#int"
+        >86</cem:endsAt>
+        <cem:beginsAt rdf:datatype="http://www.w3.org/2001/XMLSchema#int"
+        >86</cem:beginsAt>
+        <cem:usage rdf:resource="http://sadl.org/CodeExtractionModel.sadl#Defined"/>
+        <cem:codeBlock rdf:resource="http://windTurbine/TurbineSimulation#TurbineSimulation.printLambdaVsCp"/>
+      </cem:Reference>
+    </cem:reference>
+    <cem:reference>
+      <cem:Reference>
+        <cem:endsAt rdf:datatype="http://www.w3.org/2001/XMLSchema#int"
+        >86</cem:endsAt>
+        <cem:beginsAt rdf:datatype="http://www.w3.org/2001/XMLSchema#int"
+        >86</cem:beginsAt>
+        <cem:usage rdf:resource="http://sadl.org/CodeExtractionModel.sadl#Reassigned"/>
+        <cem:codeBlock rdf:resource="http://windTurbine/TurbineSimulation#TurbineSimulation.printLambdaVsCp"/>
+      </cem:Reference>
+    </cem:reference>
+    <cem:varType rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >Font</cem:varType>
+    <cem:reference>
+      <cem:Reference>
+        <cem:setterArgument rdf:datatype="http://www.w3.org/2001/XMLSchema#boolean"
+        >true</cem:setterArgument>
+        <cem:output rdf:datatype="http://www.w3.org/2001/XMLSchema#boolean"
+        >true</cem:output>
+        <cem:endsAt rdf:datatype="http://www.w3.org/2001/XMLSchema#int"
+        >104</cem:endsAt>
+        <cem:beginsAt rdf:datatype="http://www.w3.org/2001/XMLSchema#int"
+        >104</cem:beginsAt>
+        <cem:usage rdf:resource="http://sadl.org/CodeExtractionModel.sadl#Used"/>
+        <cem:codeBlock rdf:resource="http://windTurbine/TurbineSimulation#TurbineSimulation.printLambdaVsCp"/>
+      </cem:Reference>
+    </cem:reference>
+    <cem:reference>
+      <cem:Reference>
+        <cem:endsAt rdf:datatype="http://www.w3.org/2001/XMLSchema#int"
+        >102</cem:endsAt>
+        <cem:beginsAt rdf:datatype="http://www.w3.org/2001/XMLSchema#int"
+        >102</cem:beginsAt>
+        <cem:usage rdf:resource="http://sadl.org/CodeExtractionModel.sadl#Used"/>
+        <cem:codeBlock rdf:resource="http://windTurbine/TurbineSimulation#TurbineSimulation.printLambdaVsCp"/>
+      </cem:Reference>
+    </cem:reference>
+  </cem:MethodVariable>
+  <cem:ClassField rdf:ID="TurbineSimulation.tipSpeedRatio">
+    <cem:reference>
+      <cem:Reference>
+        <cem:endsAt rdf:datatype="http://www.w3.org/2001/XMLSchema#int"
+        >45</cem:endsAt>
+        <cem:beginsAt rdf:datatype="http://www.w3.org/2001/XMLSchema#int"
+        >45</cem:beginsAt>
+        <cem:usage rdf:resource="http://sadl.org/CodeExtractionModel.sadl#Used"/>
+        <cem:codeBlock rdf:resource="http://windTurbine/TurbineSimulation#TurbineSimulation.main"/>
+      </cem:Reference>
+    </cem:reference>
+    <cem:varType rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >double</cem:varType>
+    <cem:varName rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >tipSpeedRatio</cem:varName>
+    <rdfs:label xml:lang="Java">double tipSpeedRatio = 6.0;</rdfs:label>
+    <cem:reference>
+      <cem:Reference>
+        <cem:endsAt rdf:datatype="http://www.w3.org/2001/XMLSchema#int"
+        >29</cem:endsAt>
+        <cem:beginsAt rdf:datatype="http://www.w3.org/2001/XMLSchema#int"
+        >29</cem:beginsAt>
+        <cem:usage rdf:resource="http://sadl.org/CodeExtractionModel.sadl#Defined"/>
+        <cem:codeBlock rdf:resource="http://windTurbine/TurbineSimulation#TurbineSimulation"/>
+      </cem:Reference>
+    </cem:reference>
+  </cem:ClassField>
+  <cem:MethodVariable rdf:ID="TurbineSimulation.printLambdaVsCp.lambdaCount">
+    <cem:reference>
+      <cem:Reference>
+        <cem:endsAt rdf:datatype="http://www.w3.org/2001/XMLSchema#int"
+        >66</cem:endsAt>
+        <cem:beginsAt rdf:datatype="http://www.w3.org/2001/XMLSchema#int"
+        >66</cem:beginsAt>
+        <cem:usage rdf:resource="http://sadl.org/CodeExtractionModel.sadl#Reassigned"/>
+        <cem:codeBlock rdf:resource="http://windTurbine/TurbineSimulation#TurbineSimulation.printLambdaVsCp"/>
+      </cem:Reference>
+    </cem:reference>
+    <cem:varType rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >int</cem:varType>
+    <cem:varName rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >lambdaCount</cem:varName>
+    <rdfs:label xml:lang="Java">int lambdaCount = (int) ((lambdaMax - lambdaMin) / dlambda) + 1;</rdfs:label>
+    <cem:reference>
+      <cem:Reference>
+        <cem:endsAt rdf:datatype="http://www.w3.org/2001/XMLSchema#int"
+        >66</cem:endsAt>
+        <cem:beginsAt rdf:datatype="http://www.w3.org/2001/XMLSchema#int"
+        >66</cem:beginsAt>
+        <cem:usage rdf:resource="http://sadl.org/CodeExtractionModel.sadl#Defined"/>
+        <cem:codeBlock rdf:resource="http://windTurbine/TurbineSimulation#TurbineSimulation.printLambdaVsCp"/>
+      </cem:Reference>
+    </cem:reference>
+  </cem:MethodVariable>
+  <cem:MethodVariable rdf:ID="TurbineSimulation.printLambdaVsCp.frame1">
+    <cem:reference>
+      <cem:Reference>
+        <cem:endsAt rdf:datatype="http://www.w3.org/2001/XMLSchema#int"
+        >108</cem:endsAt>
+        <cem:beginsAt rdf:datatype="http://www.w3.org/2001/XMLSchema#int"
+        >108</cem:beginsAt>
+        <cem:usage rdf:resource="http://sadl.org/CodeExtractionModel.sadl#Reassigned"/>
+        <cem:codeBlock rdf:resource="http://windTurbine/TurbineSimulation#TurbineSimulation.printLambdaVsCp"/>
+      </cem:Reference>
+    </cem:reference>
+    <cem:varType rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >JFrame</cem:varType>
+    <cem:varName rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >frame1</cem:varName>
+    <rdfs:label xml:lang="Java">JFrame frame1 = new JFrame("Output 1");</rdfs:label>
+    <cem:reference>
+      <cem:Reference>
+        <cem:endsAt rdf:datatype="http://www.w3.org/2001/XMLSchema#int"
+        >108</cem:endsAt>
+        <cem:beginsAt rdf:datatype="http://www.w3.org/2001/XMLSchema#int"
+        >108</cem:beginsAt>
+        <cem:usage rdf:resource="http://sadl.org/CodeExtractionModel.sadl#Defined"/>
+        <cem:codeBlock rdf:resource="http://windTurbine/TurbineSimulation#TurbineSimulation.printLambdaVsCp"/>
+      </cem:Reference>
+    </cem:reference>
+  </cem:MethodVariable>
+  <cem:MethodVariable rdf:ID="TurbineSimulation.printLambdaVsCp.plot1">
+    <cem:reference>
+      <cem:Reference>
+        <cem:endsAt rdf:datatype="http://www.w3.org/2001/XMLSchema#int"
+        >110</cem:endsAt>
+        <cem:beginsAt rdf:datatype="http://www.w3.org/2001/XMLSchema#int"
+        >110</cem:beginsAt>
+        <cem:usage rdf:resource="http://sadl.org/CodeExtractionModel.sadl#Used"/>
+        <cem:codeBlock rdf:resource="http://windTurbine/TurbineSimulation#TurbineSimulation.printLambdaVsCp"/>
+      </cem:Reference>
+    </cem:reference>
+    <cem:reference>
+      <cem:Reference>
+        <cem:setterArgument rdf:datatype="http://www.w3.org/2001/XMLSchema#boolean"
+        >true</cem:setterArgument>
+        <cem:output rdf:datatype="http://www.w3.org/2001/XMLSchema#boolean"
+        >true</cem:output>
+        <cem:endsAt rdf:datatype="http://www.w3.org/2001/XMLSchema#int"
+        >110</cem:endsAt>
+        <cem:beginsAt rdf:datatype="http://www.w3.org/2001/XMLSchema#int"
+        >110</cem:beginsAt>
+        <cem:usage rdf:resource="http://sadl.org/CodeExtractionModel.sadl#Used"/>
+        <cem:codeBlock rdf:resource="http://windTurbine/TurbineSimulation#TurbineSimulation.printLambdaVsCp"/>
+      </cem:Reference>
+    </cem:reference>
+    <cem:reference>
+      <cem:Reference>
+        <cem:endsAt rdf:datatype="http://www.w3.org/2001/XMLSchema#int"
+        >91</cem:endsAt>
+        <cem:beginsAt rdf:datatype="http://www.w3.org/2001/XMLSchema#int"
+        >91</cem:beginsAt>
+        <cem:usage rdf:resource="http://sadl.org/CodeExtractionModel.sadl#Reassigned"/>
+        <cem:codeBlock rdf:resource="http://windTurbine/TurbineSimulation#TurbineSimulation.printLambdaVsCp"/>
+      </cem:Reference>
+    </cem:reference>
+    <cem:varType rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >Plot2DPanel</cem:varType>
+    <cem:varName rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >plot1</cem:varName>
+    <rdfs:label xml:lang="Java">Plot2DPanel plot1 = new Plot2DPanel();</rdfs:label>
+    <cem:reference>
+      <cem:Reference>
+        <cem:endsAt rdf:datatype="http://www.w3.org/2001/XMLSchema#int"
+        >91</cem:endsAt>
+        <cem:beginsAt rdf:datatype="http://www.w3.org/2001/XMLSchema#int"
+        >91</cem:beginsAt>
+        <cem:usage rdf:resource="http://sadl.org/CodeExtractionModel.sadl#Defined"/>
+        <cem:codeBlock rdf:resource="http://windTurbine/TurbineSimulation#TurbineSimulation.printLambdaVsCp"/>
+      </cem:Reference>
+    </cem:reference>
+  </cem:MethodVariable>
+</rdf:RDF>

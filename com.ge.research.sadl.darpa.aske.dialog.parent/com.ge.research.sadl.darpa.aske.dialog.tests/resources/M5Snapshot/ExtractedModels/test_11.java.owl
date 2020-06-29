@@ -24,6 +24,17 @@
         <cem:usage rdf:resource="http://sadl.org/CodeExtractionModel.sadl#Used"/>
         <cem:codeBlock>
           <cem:Method rdf:ID="Test_11.getAir">
+            <cem:calls>
+              <cem:MethodCall>
+                <cem:endsAt rdf:datatype="http://www.w3.org/2001/XMLSchema#int"
+                >6</cem:endsAt>
+                <cem:beginsAt rdf:datatype="http://www.w3.org/2001/XMLSchema#int"
+                >6</cem:beginsAt>
+                <cem:codeBlock>
+                  <cem:ExternalMethod rdf:ID="Math.pow"/>
+                </cem:codeBlock>
+              </cem:MethodCall>
+            </cem:calls>
             <cem:serialization rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
             >public double getAir(double mach, double gamma) {&#xD;
     /* Utility to get the corrected airflow per area given the Mach number */&#xD;
@@ -33,28 +44,6 @@
     number = .50161 * Math.sqrt(gamma) * mach / fac1;&#xD;
     return (number);&#xD;
 }</cem:serialization>
-            <cem:cmReturnTypes rdf:parseType="Resource">
-              <sadllistmodel:first rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
-              >double</sadllistmodel:first>
-              <rdf:type rdf:parseType="Resource">
-              </rdf:type>
-            </cem:cmReturnTypes>
-            <cem:doesComputation rdf:datatype="http://www.w3.org/2001/XMLSchema#boolean"
-            >true</cem:doesComputation>
-            <cem:comment>
-              <cem:Comment>
-                <cem:endsAt rdf:datatype="http://www.w3.org/2001/XMLSchema#int"
-                >4</cem:endsAt>
-                <cem:beginsAt rdf:datatype="http://www.w3.org/2001/XMLSchema#int"
-                >4</cem:beginsAt>
-                <cem:commentContent rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
-                > Utility to get the corrected airflow per area given the Mach number </cem:commentContent>
-              </cem:Comment>
-            </cem:comment>
-            <cem:endsAt rdf:datatype="http://www.w3.org/2001/XMLSchema#int"
-            >9</cem:endsAt>
-            <cem:beginsAt rdf:datatype="http://www.w3.org/2001/XMLSchema#int"
-            >2</cem:beginsAt>
             <cem:cmArguments rdf:parseType="Resource">
               <sadllistmodel:rest rdf:parseType="Resource">
                 <sadllistmodel:first>
@@ -171,6 +160,12 @@
               </sadllistmodel:first>
               <rdf:type rdf:nodeID="A0"/>
             </cem:cmArguments>
+            <cem:cmReturnTypes rdf:parseType="Resource">
+              <sadllistmodel:first rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+              >double</sadllistmodel:first>
+              <rdf:type rdf:parseType="Resource">
+              </rdf:type>
+            </cem:cmReturnTypes>
             <cem:containedIn>
               <cem:Class rdf:ID="Test_11">
                 <cem:serialization rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
@@ -187,6 +182,33 @@
 }</cem:serialization>
               </cem:Class>
             </cem:containedIn>
+            <cem:endsAt rdf:datatype="http://www.w3.org/2001/XMLSchema#int"
+            >9</cem:endsAt>
+            <cem:calls>
+              <cem:MethodCall>
+                <cem:endsAt rdf:datatype="http://www.w3.org/2001/XMLSchema#int"
+                >7</cem:endsAt>
+                <cem:beginsAt rdf:datatype="http://www.w3.org/2001/XMLSchema#int"
+                >7</cem:beginsAt>
+                <cem:codeBlock>
+                  <cem:ExternalMethod rdf:ID="Math.sqrt"/>
+                </cem:codeBlock>
+              </cem:MethodCall>
+            </cem:calls>
+            <cem:doesComputation rdf:datatype="http://www.w3.org/2001/XMLSchema#boolean"
+            >true</cem:doesComputation>
+            <cem:comment>
+              <cem:Comment>
+                <cem:endsAt rdf:datatype="http://www.w3.org/2001/XMLSchema#int"
+                >4</cem:endsAt>
+                <cem:beginsAt rdf:datatype="http://www.w3.org/2001/XMLSchema#int"
+                >4</cem:beginsAt>
+                <cem:commentContent rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+                > Utility to get the corrected airflow per area given the Mach number </cem:commentContent>
+              </cem:Comment>
+            </cem:comment>
+            <cem:beginsAt rdf:datatype="http://www.w3.org/2001/XMLSchema#int"
+            >2</cem:beginsAt>
           </cem:Method>
         </cem:codeBlock>
       </cem:Reference>
