@@ -36,30 +36,66 @@
 ***********************************************************************/
 '''
 
-import configparser
+import json
+import requests
+import re
 
 
-class Config:
-    ElasticSearchServer = ''
-    ElasticSearchIndex = ''
-    NERModelFilePath = ''
-    TripleStoreURL = ''
-    NLPServiceURL = ''
-    UnitsOntologyPath = ''
-    # synonyms will be provided as 'pipe' | separated values
-    UnitsSynonymURIList = ''
-    UnitsOntologyGraphURI = ''
-    AutomatesServiceURL = ''
+def get_sentences(nlp_service_url: str,  text: str):
+    payload = {'text': text}
+    text_to_sentence_service_url = nlp_service_url + '/breakTextIntoSentences'
+    r = requests.get(text_to_sentence_service_url, params=payload)
+    sentences = []
+    sentences.extend(r.json())
+    return sentences
 
-    def __init__(self, config_file_path):
-        config = configparser.ConfigParser()
-        config.read(config_file_path)
-        self.ElasticSearchServer = config["DEFAULT"]["ElasticSearchServer"]
-        self.ElasticSearchIndex = config["DEFAULT"]["ElasticSearchIndex"]
-        self.NERModelFilePath = config["DEFAULT"]["NERModelFilePath"]
-        self.TripleStoreURL = config["DEFAULT"]["TripleStoreURL"]
-        self.NLPServiceURL = config["DEFAULT"]["NLPServiceURL"]
-        self.UnitsOntologyPath = config["DEFAULT"]["UnitsOntologyPath"]
-        self.UnitsSynonymURIList = config["DEFAULT"]["UnitsSynonymURIList"]
-        self.UnitsOntologyGraphURI = config["DEFAULT"]["UnitsOntologyGraphURI"]
-        self.AutomatesServiceURL = config["DEFAULT"]["AutomatesServiceURL"]
+
+def get_tokens(nlp_service_url: str, text: str):
+    payload = {'text': text}
+    get_tokens_service_url = nlp_service_url + '/lemmatize'
+    r = requests.get(get_tokens_service_url, params=payload)
+    tokens = []
+    tokens.extend(r.json())
+    return tokens
+
+
+def get_noun_chunks_dict(nlp_service_url: str, sent: str):
+    input_info = {'phraseType': ['NP'], 'text': sent}
+    headers = {'Content-Type': 'application/json'}
+    get_chunks_service_url = nlp_service_url + '/chunkSelPhraseTypePOST'
+    input_info_json = (json.dumps(input_info))
+    r = requests.post(get_chunks_service_url, input_info_json, headers=headers)
+    response = r.json()
+    return response
+
+
+def get_noun_chunks(nlp_service_url: str, sent: str):
+    get_chunks_service_url = nlp_service_url + '/chunkSelPhraseTypePOST'
+
+    input_info = {'phraseType': ['NP'], 'text': sent}
+
+    headers = {'Content-Type': 'application/json'}
+
+    input_info_json = (json.dumps(input_info))
+    r = requests.post(get_chunks_service_url, input_info_json, headers=headers)
+    # pprint.pprint(r.json())
+    response = r.json()
+    phrases = []
+    for chunk_obj in response:
+        if 'phrase' in chunk_obj:
+            phrase_str = chunk_obj['phrase']
+            phrase_tokens = re.split('and |times |on ', phrase_str)
+            for p_str in phrase_tokens:
+                phrases.append(p_str)
+    return phrases
+
+
+# TODO: Split on and, times etc.
+def get_phrase_tokens(phrase_str: str):
+    split_terms = get_split_terms()
+    for term in split_terms:
+        phrase_tokens = phrase_str.split('and')
+
+
+def get_split_terms():
+    return ['times', 'and']

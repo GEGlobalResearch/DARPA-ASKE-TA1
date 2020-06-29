@@ -27,7 +27,9 @@ docker run -it -d elasticsearch-aske
 
 6. Run `./getAndRunConceptMapperService.sh` to download and run the concept-mapper service.
 
-7. Run `./startServicesModelsFromText.sh` to start all the relevant text extraction services.
+7. We also leverage [AutoMATES](https://github.com/ml4ai/automates) Text Reading pipeline from University of Arizona. Installation instructions for starting their service can be found [here](https://github.com/ml4ai/automates/tree/master/src/text_reading). The service starts on port `9000`. If you use a different port, update `AutomatesServiceURL` property in `text-to-triples-services/app_resources/config.ini`.
+
+8. Run `./startServicesModelsFromText.sh` to start all the relevant text extraction services.
 
 ## Validation and Example Usage ##
 

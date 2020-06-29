@@ -1,0 +1,294 @@
+<rdf:RDF
+    xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+    xmlns:sadlbasemodel="http://sadl.org/sadlbasemodel"
+    xmlns:owl="http://www.w3.org/2002/07/owl#"
+    xmlns:sadlimplicitmodel="http://sadl.org/sadlimplicitmodel"
+    xmlns:builtinfunctions="http://sadl.org/builtinfunctions"
+    xmlns:hypersonicsV2="http://aske.ge.com/hypersonicsV2#"
+    xmlns:rdfs="http://www.w3.org/2000/01/rdf-schema#"
+    xmlns:xsd="http://www.w3.org/2001/XMLSchema#"
+  xml:base="http://aske.ge.com/hypersonicsV2">
+  <owl:Ontology rdf:about="">
+    <owl:imports rdf:resource="http://sadl.org/builtinfunctions"/>
+    <owl:imports rdf:resource="http://sadl.org/sadlimplicitmodel"/>
+    <owl:imports rdf:resource="http://sadl.org/sadlbasemodel"/>
+    <rdfs:comment xml:lang="en">This ontology was created from a SADL file 'Hypersonics_v2.sadl' and should not be directly edited.</rdfs:comment>
+  </owl:Ontology>
+  <owl:Class rdf:ID="EngineTemperatureRatio">
+    <rdfs:subClassOf>
+      <owl:Class rdf:ID="Ratio"/>
+    </rdfs:subClassOf>
+  </owl:Class>
+  <owl:Class rdf:ID="StaticTemperature">
+    <rdfs:subClassOf>
+      <owl:Class rdf:ID="AtmosphericTemperature"/>
+    </rdfs:subClassOf>
+  </owl:Class>
+  <owl:Class rdf:ID="StaticTemperatureEquation">
+    <rdfs:subClassOf rdf:resource="http://sadl.org/sadlimplicitmodel#Equation"/>
+  </owl:Class>
+  <owl:Class rdf:ID="F100">
+    <rdfs:subClassOf>
+      <owl:Class rdf:ID="AircraftEngine"/>
+    </rdfs:subClassOf>
+  </owl:Class>
+  <owl:Class rdf:about="#AtmosphericTemperature">
+    <rdfs:subClassOf>
+      <owl:Class rdf:ID="Temperature"/>
+    </rdfs:subClassOf>
+  </owl:Class>
+  <owl:Class rdf:about="#AircraftEngine">
+    <rdfs:subClassOf>
+      <owl:Class rdf:ID="PhysicalThing"/>
+    </rdfs:subClassOf>
+  </owl:Class>
+  <owl:Class rdf:ID="Air">
+    <rdfs:subClassOf>
+      <owl:Restriction>
+        <owl:allValuesFrom>
+          <owl:Class rdf:ID="Altitude"/>
+        </owl:allValuesFrom>
+        <owl:onProperty>
+          <owl:ObjectProperty rdf:ID="altitude"/>
+        </owl:onProperty>
+      </owl:Restriction>
+    </rdfs:subClassOf>
+    <rdfs:subClassOf>
+      <owl:Class rdf:ID="Gas"/>
+    </rdfs:subClassOf>
+  </owl:Class>
+  <owl:Class rdf:ID="Volume">
+    <rdfs:subClassOf rdf:resource="http://sadl.org/sadlimplicitmodel#UnittedQuantity"/>
+  </owl:Class>
+  <owl:Class rdf:about="#Gas">
+    <rdfs:subClassOf rdf:resource="#PhysicalThing"/>
+  </owl:Class>
+  <owl:Class rdf:ID="RayleighflowEquation">
+    <rdfs:subClassOf rdf:resource="http://sadl.org/sadlimplicitmodel#ExternalEquation"/>
+  </owl:Class>
+  <owl:Class rdf:ID="EngineTemperatureRatioEquation">
+    <rdfs:subClassOf rdf:resource="http://sadl.org/sadlimplicitmodel#Equation"/>
+  </owl:Class>
+  <owl:Class rdf:ID="RgasConstEquation">
+    <rdfs:subClassOf rdf:resource="http://sadl.org/sadlimplicitmodel#Equation"/>
+  </owl:Class>
+  <owl:Class rdf:ID="TotalTemperatureEquation">
+    <rdfs:subClassOf rdf:resource="http://sadl.org/sadlimplicitmodel#Equation"/>
+  </owl:Class>
+  <owl:Class rdf:ID="Speed">
+    <rdfs:subClassOf rdf:resource="http://sadl.org/sadlimplicitmodel#UnittedQuantity"/>
+  </owl:Class>
+  <owl:Class rdf:ID="TotalTemperature">
+    <rdfs:subClassOf rdf:resource="#AtmosphericTemperature"/>
+  </owl:Class>
+  <owl:Class rdf:ID="Mass">
+	<rdfs:label xml:lang="en">Mass</rdfs:label>
+    <rdfs:subClassOf rdf:resource="http://sadl.org/sadlimplicitmodel#UnittedQuantity"/>
+  </owl:Class>
+  <owl:Class rdf:ID="Pressure">
+    <rdfs:subClassOf rdf:resource="http://sadl.org/sadlimplicitmodel#UnittedQuantity"/>
+  </owl:Class>
+  <owl:Class rdf:about="#Ratio">
+    <rdfs:subClassOf rdf:resource="http://sadl.org/sadlimplicitmodel#UnittedQuantity"/>
+  </owl:Class>
+  <owl:Class rdf:ID="EnginePressureRatioEquation">
+    <rdfs:subClassOf rdf:resource="http://sadl.org/sadlimplicitmodel#Equation"/>
+  </owl:Class>
+  <owl:Class rdf:ID="Flow">
+    <rdfs:subClassOf rdf:resource="http://sadl.org/sadlimplicitmodel#UnittedQuantity"/>
+  </owl:Class>
+  <owl:Class rdf:ID="Density">
+    <rdfs:subClassOf rdf:resource="http://sadl.org/sadlimplicitmodel#UnittedQuantity"/>
+  </owl:Class>
+  <owl:Class rdf:ID="RamJet">
+    <rdfs:subClassOf rdf:resource="#AircraftEngine"/>
+  </owl:Class>
+  <owl:Class rdf:ID="Time">
+    <rdfs:subClassOf rdf:resource="http://sadl.org/sadlimplicitmodel#UnittedQuantity"/>
+  </owl:Class>
+  <owl:Class rdf:ID="CP">
+    <rdfs:subClassOf rdf:resource="http://sadl.org/sadlimplicitmodel#UnittedQuantity"/>
+  </owl:Class>
+  <owl:Class rdf:ID="SpecificNetThrust">
+    <rdfs:subClassOf rdf:resource="http://sadl.org/sadlimplicitmodel#UnittedQuantity"/>
+  </owl:Class>
+  <owl:Class rdf:ID="TotalPressure">
+    <rdfs:subClassOf>
+      <owl:Class rdf:ID="AtmosphericPressure"/>
+    </rdfs:subClassOf>
+  </owl:Class>
+  <owl:Class rdf:ID="StaticPressureEquation">
+    <rdfs:subClassOf rdf:resource="http://sadl.org/sadlimplicitmodel#Equation"/>
+  </owl:Class>
+  <owl:Class rdf:ID="GammaConstant">
+    <rdfs:subClassOf rdf:resource="http://sadl.org/sadlimplicitmodel#UnittedQuantity"/>
+  </owl:Class>
+  <owl:Class rdf:ID="SpeedOfSound">
+    <rdfs:subClassOf rdf:resource="http://sadl.org/sadlimplicitmodel#UnittedQuantity"/>
+  </owl:Class>
+  <owl:Class rdf:about="#Altitude">
+    <rdfs:subClassOf rdf:resource="http://sadl.org/sadlimplicitmodel#UnittedQuantity"/>
+  </owl:Class>
+  <owl:Class rdf:ID="CF6">
+    <rdfs:subClassOf rdf:resource="#AircraftEngine"/>
+  </owl:Class>
+  <owl:Class rdf:ID="GammaConstEquation">
+    <rdfs:subClassOf rdf:resource="http://sadl.org/sadlimplicitmodel#Equation"/>
+  </owl:Class>
+  <owl:Class rdf:ID="TotalPressureEquation">
+    <rdfs:subClassOf rdf:resource="http://sadl.org/sadlimplicitmodel#Equation"/>
+  </owl:Class>
+  <owl:Class rdf:ID="Length">
+    <rdfs:subClassOf rdf:resource="http://sadl.org/sadlimplicitmodel#UnittedQuantity"/>
+  </owl:Class>
+  <owl:Class rdf:ID="BurnerTemperature">
+    <rdfs:subClassOf>
+      <owl:Class rdf:about="#Temperature"/>
+    </rdfs:subClassOf>
+  </owl:Class>
+  <owl:Class rdf:ID="EnginePressureRatio">
+    <rdfs:subClassOf rdf:resource="#Ratio"/>
+  </owl:Class>
+  <owl:Class rdf:ID="MachSpeedEquation">
+    <rdfs:subClassOf rdf:resource="http://sadl.org/sadlimplicitmodel#Equation"/>
+  </owl:Class>
+  <owl:Class rdf:about="#Temperature">
+    <rdfs:subClassOf rdf:resource="http://sadl.org/sadlimplicitmodel#UnittedQuantity"/>
+  </owl:Class>
+  <owl:Class rdf:ID="SpeedOfSoundEquation">
+    <rdfs:subClassOf rdf:resource="http://sadl.org/sadlimplicitmodel#Equation"/>
+  </owl:Class>
+  <owl:Class rdf:ID="Rayleighflow">
+    <rdfs:subClassOf rdf:resource="#Flow"/>
+  </owl:Class>
+  <owl:Class rdf:ID="AirSpeed">
+    <rdfs:subClassOf rdf:resource="#Speed"/>
+  </owl:Class>
+  <owl:Class rdf:ID="J85">
+    <rdfs:subClassOf rdf:resource="#AircraftEngine"/>
+  </owl:Class>
+  <owl:Class rdf:about="#AtmosphericPressure">
+    <rdfs:subClassOf rdf:resource="#Pressure"/>
+  </owl:Class>
+  <owl:Class rdf:ID="MachSpeed">
+    <rdfs:subClassOf rdf:resource="#Speed"/>
+  </owl:Class>
+  <owl:Class rdf:ID="SpecificFuelConsumption">
+    <rdfs:subClassOf rdf:resource="http://sadl.org/sadlimplicitmodel#UnittedQuantity"/>
+  </owl:Class>
+  <owl:Class rdf:ID="RgasConstant">
+    <rdfs:subClassOf rdf:resource="http://sadl.org/sadlimplicitmodel#UnittedQuantity"/>
+  </owl:Class>
+  <owl:Class rdf:ID="StaticPressure">
+    <rdfs:subClassOf rdf:resource="#AtmosphericPressure"/>
+  </owl:Class>
+  <owl:ObjectProperty rdf:ID="temperature">
+    <rdfs:domain rdf:resource="#PhysicalThing"/>
+    <rdfs:range rdf:resource="#Temperature"/>
+  </owl:ObjectProperty>
+  <owl:ObjectProperty rdf:ID="gamma">
+    <rdfs:range rdf:resource="#GammaConstant"/>
+    <rdfs:domain rdf:resource="#Air"/>
+  </owl:ObjectProperty>
+  <owl:ObjectProperty rdf:ID="thrust">
+    <rdfs:domain rdf:resource="#AircraftEngine"/>
+    <rdfs:range rdf:resource="#SpecificNetThrust"/>
+  </owl:ObjectProperty>
+  <owl:ObjectProperty rdf:ID="staticPressure">
+    <rdfs:range rdf:resource="#StaticPressure"/>
+    <rdfs:domain rdf:resource="#Air"/>
+    <rdfs:subPropertyOf>
+      <owl:ObjectProperty rdf:ID="pressure"/>
+    </rdfs:subPropertyOf>
+  </owl:ObjectProperty>
+  <owl:ObjectProperty rdf:ID="rgas">
+    <rdfs:range rdf:resource="#RgasConstant"/>
+    <rdfs:domain rdf:resource="#Air"/>
+  </owl:ObjectProperty>
+  <owl:ObjectProperty rdf:ID="specificNetThrust">
+    <rdfs:range rdf:resource="#SpecificNetThrust"/>
+    <rdfs:domain rdf:resource="#AircraftEngine"/>
+  </owl:ObjectProperty>
+  <owl:ObjectProperty rdf:ID="speed">
+    <rdfs:domain rdf:resource="#PhysicalThing"/>
+    <rdfs:range rdf:resource="#Speed"/>
+  </owl:ObjectProperty>
+  <owl:ObjectProperty rdf:ID="totalPressure">
+    <rdfs:range rdf:resource="#TotalPressure"/>
+    <rdfs:domain rdf:resource="#Air"/>
+    <rdfs:subPropertyOf>
+      <owl:ObjectProperty rdf:about="#pressure"/>
+    </rdfs:subPropertyOf>
+  </owl:ObjectProperty>
+  <owl:ObjectProperty rdf:ID="mach">
+    <rdfs:domain rdf:resource="#AircraftEngine"/>
+    <rdfs:range rdf:resource="#MachSpeed"/>
+  </owl:ObjectProperty>
+  <owl:ObjectProperty rdf:ID="enginePressureRatio">
+    <rdfs:range rdf:resource="#EnginePressureRatio"/>
+    <rdfs:domain rdf:resource="#AircraftEngine"/>
+  </owl:ObjectProperty>
+  <owl:ObjectProperty rdf:ID="burnerTemperature">
+    <rdfs:range rdf:resource="#BurnerTemperature"/>
+    <rdfs:domain rdf:resource="#AircraftEngine"/>
+  </owl:ObjectProperty>
+  <owl:ObjectProperty rdf:ID="engineTemperatureRatio">
+    <rdfs:range rdf:resource="#EngineTemperatureRatio"/>
+    <rdfs:domain rdf:resource="#AircraftEngine"/>
+  </owl:ObjectProperty>
+  <owl:ObjectProperty rdf:ID="totalTemperature">
+    <rdfs:range rdf:resource="#TotalTemperature"/>
+    <rdfs:domain rdf:resource="#Air"/>
+    <rdfs:subPropertyOf rdf:resource="#temperature"/>
+  </owl:ObjectProperty>
+  <owl:ObjectProperty rdf:ID="machSpeed">
+    <rdfs:range rdf:resource="#MachSpeed"/>
+    <rdfs:domain rdf:resource="#Air"/>
+  </owl:ObjectProperty>
+  <owl:ObjectProperty rdf:ID="sfc">
+    <rdfs:domain rdf:resource="#AircraftEngine"/>
+    <rdfs:label xml:lang="en">specific fuel consumption</rdfs:label>
+    <rdfs:range rdf:resource="#SpecificFuelConsumption"/>
+  </owl:ObjectProperty>
+  <owl:ObjectProperty rdf:ID="density">
+    <rdfs:domain rdf:resource="#PhysicalThing"/>
+    <rdfs:range rdf:resource="#Density"/>
+  </owl:ObjectProperty>
+  <owl:ObjectProperty rdf:ID="airSpeed">
+    <rdfs:range rdf:resource="#AirSpeed"/>
+    <rdfs:domain rdf:resource="#Air"/>
+  </owl:ObjectProperty>
+  <owl:ObjectProperty rdf:ID="staticTemperature">
+    <rdfs:range rdf:resource="#StaticTemperature"/>
+    <rdfs:domain rdf:resource="#Air"/>
+    <rdfs:subPropertyOf rdf:resource="#temperature"/>
+  </owl:ObjectProperty>
+  <owl:ObjectProperty rdf:ID="speedOfSound">
+    <rdfs:range rdf:resource="#SpeedOfSound"/>
+    <rdfs:domain rdf:resource="#Air"/>
+  </owl:ObjectProperty>
+  <owl:ObjectProperty rdf:ID="cp">
+    <rdfs:range rdf:resource="#CP"/>
+    <rdfs:domain rdf:resource="#Air"/>
+  </owl:ObjectProperty>
+  <owl:ObjectProperty rdf:ID="volume">
+    <rdfs:domain rdf:resource="#PhysicalThing"/>
+    <rdfs:range rdf:resource="#Volume"/>
+  </owl:ObjectProperty>
+  <owl:ObjectProperty rdf:about="#pressure">
+    <rdfs:domain rdf:resource="#Gas"/>
+    <rdfs:range rdf:resource="#Pressure"/>
+  </owl:ObjectProperty>
+  <owl:ObjectProperty rdf:ID="mass">
+    <rdfs:domain rdf:resource="#PhysicalThing"/>
+    <rdfs:range rdf:resource="#Mass"/>
+  </owl:ObjectProperty>
+  <owl:ObjectProperty rdf:ID="rayleighflow">
+    <rdfs:range rdf:resource="#Rayleighflow"/>
+    <rdfs:domain rdf:resource="#AircraftEngine"/>
+  </owl:ObjectProperty>
+  <owl:ObjectProperty rdf:about="#altitude">
+    <rdfs:domain rdf:resource="#PhysicalThing"/>
+    <rdfs:range rdf:resource="#Altitude"/>
+  </owl:ObjectProperty>
+</rdf:RDF>

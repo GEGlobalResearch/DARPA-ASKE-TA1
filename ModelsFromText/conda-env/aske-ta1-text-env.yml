@@ -2,47 +2,12 @@ name: aske-ta1
 channels:
   - anaconda
   - conda-forge
+  - https://repo.anaconda.com/pkgs/free
   - defaults
 dependencies:
-  - configargparse=0.14.0=py37_0
-  - flask-cors=3.0.7=py37_0
-  - libedit=3.1.20181209=hc058e9b_0
-  - libffi=3.2.1=h4deb6c0_3
-  - libgcc-ng=9.1.0=hdf63c60_0
-  - ncurses=6.1=he6710b0_1
-  - pip=19.1.1=py37_0
-  - python=3.7.3=h0371630_0
-  - readline=7.0=h7b6447c_5
-  - setuptools=41.0.1=py37_0
-  - sqlite=3.29.0=h7b6447c_0
-  - tk=8.6.8=hbc83047_0
-  - wheel=0.33.4=py37_0
-  - xz=5.2.4=h14c3975_4
-  - zlib=1.2.11=h7b6447c_3
-  - ca-certificates=2019.9.11=hecc5488_0
-  - certifi=2019.9.11=py37_0
-  - clickclick=1.2.2=py_1
-  - connexion=1.5.3=py37_1000
-  - cymem=2.0.2=py37he1b5a44_0
-  - cython-blis=0.2.4=py37h516909a_1
-  - flask=1.0.2=py_2
-  - isodate=0.6.0=py_1
-  - keepalive=0.5=py_1
-  - murmurhash=1.0.0=py37hf484d3e_0
-  - openssl=1.1.1c=h516909a_0
-  - plac=0.9.6=py_1
-  - preshed=2.0.1=py37he1b5a44_0
-  - rdflib=4.2.2=py37_1000
-  - spacy=2.1.8=py37hc9558a2_0
-  - spacy-lookups-data=0.1.0=py_1
-  - sparqlwrapper=1.8.2=py37_1000
-  - srsly=0.1.0=py37he1b5a44_0
-  - swagger-spec-validator=2.4.3=py_0
-  - thinc=7.0.8=py37hc9558a2_0
-  - wasabi=0.2.2=py_0
   - alabaster=0.7.12=py37_0
-  - anaconda-client=1.7.2=py37_0
   - anaconda=custom=py37_0
+  - anaconda-client=1.7.2=py37_0
   - anaconda-project=0.8.2=py37_0
   - asn1crypto=0.24.0=py37_0
   - astroid=2.1.0=py37_0
@@ -65,18 +30,24 @@ dependencies:
   - boto=2.49.0=py37_0
   - bottleneck=1.2.1=py37h035aef0_1
   - bzip2=1.0.6=h14c3975_5
+  - ca-certificates=2019.9.11=hecc5488_0
   - cairo=1.14.12=h8948797_3
+  - certifi=2019.9.11=py37_0
   - cffi=1.11.5=py37he75722e_1
   - chardet=3.0.4=py37_1
-  - click=7.0=py37_0
+  - clickclick=1.2.2=py_1
   - cloudpickle=0.6.1=py37_0
   - clyent=1.2.2=py37_1
   - colorama=0.4.1=py37_0
+  - configargparse=0.14.0=py37_0
+  - connexion=1.5.3=py37_1000
   - contextlib2=0.5.5=py37_0
   - cryptography=2.4.2=py37h1ba5d50_0
   - curl=7.63.0=hbc83047_1000
   - cycler=0.10.0=py37_0
+  - cymem=2.0.2=py37he1b5a44_0
   - cython=0.29.2=py37he6710b0_0
+  - cython-blis=0.2.4=py37h516909a_1
   - cytoolz=0.9.0.1=py37h14c3975_1
   - dask=1.0.0=py37_0
   - dask-core=1.0.0=py37_0
@@ -91,6 +62,8 @@ dependencies:
   - expat=2.2.6=he6710b0_0
   - fastcache=1.0.2=py37h14c3975_2
   - filelock=3.0.10=py37_0
+  - flask=1.0.2=py_2
+  - flask-cors=3.0.7=py37_0
   - fontconfig=2.13.0=h9420a91_0
   - freetype=2.9.1=h8a8886c_1
   - fribidi=1.0.5=h7b6447c_0
@@ -120,6 +93,7 @@ dependencies:
   - ipython=7.2.0=py37h39e3cac_0
   - ipython_genutils=0.2.0=py37_0
   - ipywidgets=7.4.2=py37_0
+  - isodate=0.6.0=py_1
   - isort=4.3.4=py37_0
   - itsdangerous=1.1.0=py37_0
   - jbig=2.1=hdba287a_0
@@ -135,12 +109,16 @@ dependencies:
   - jupyter_core=4.4.0=py37_0
   - jupyterlab=0.35.3=py37_0
   - jupyterlab_server=0.2.0=py37_0
+  - keepalive=0.5=py_1
   - keyring=17.0.0=py37_0
   - kiwisolver=1.0.1=py37hf484d3e_0
   - krb5=1.16.1=h173b8e3_7
   - lazy-object-proxy=1.3.1=py37h14c3975_2
   - libarchive=3.3.3=h5d8350f_5
   - libcurl=7.63.0=h20c2e04_1000
+  - libedit=3.1.20181209=hc058e9b_0
+  - libffi=3.2.1=h4deb6c0_3
+  - libgcc-ng=9.1.0=hdf63c60_0
   - libgfortran-ng=7.3.0=hdf63c60_0
   - liblief=0.9.0=h7725739_1
   - libpng=1.6.35=hbc83047_0
@@ -159,7 +137,6 @@ dependencies:
   - lz4-c=1.8.1.2=h14c3975_0
   - lzo=2.10=h49e0be7_2
   - markupsafe=1.1.0=py37h7b6447c_0
-  - matplotlib=3.0.2=py37h5429711_0
   - mccabe=0.6.1=py37_1
   - mistune=0.8.4=py37h7b6447c_0
   - mkl=2019.1=144
@@ -172,8 +149,10 @@ dependencies:
   - mpmath=1.1.0=py37_0
   - msgpack-python=0.5.6=py37h6bb024c_1
   - multipledispatch=0.6.0=py37_0
+  - murmurhash=1.0.0=py37hf484d3e_0
   - nbconvert=5.4.0=py37_1
   - nbformat=4.4.0=py37_0
+  - ncurses=6.1=he6710b0_1
   - networkx=2.2=py37_1
   - nltk=3.4=py37_1
   - nose=1.3.7=py37_2
@@ -186,6 +165,7 @@ dependencies:
   - odo=0.5.1=py37_0
   - olefile=0.46=py37_0
   - openpyxl=2.5.12=py37_0
+  - openssl=1.1.1c=h516909a_0
   - packaging=18.0=py37_0
   - pandas=0.23.4=py37h04863e7_0
   - pandoc=1.19.2.1=hea2e7c5_1
@@ -202,10 +182,13 @@ dependencies:
   - pexpect=4.6.0=py37_0
   - pickleshare=0.7.5=py37_0
   - pillow=5.3.0=py37h34e0f95_0
+  - pip=19.1.1=py37_0
   - pixman=0.34.0=hceecf20_3
   - pkginfo=1.4.2=py37_1
+  - plac=0.9.6=py_1
   - pluggy=0.8.0=py37_0
   - ply=3.11=py37_0
+  - preshed=2.0.1=py37he1b5a44_0
   - prometheus_client=0.5.0=py37_0
   - prompt_toolkit=2.0.7=py37_0
   - psutil=5.4.8=py37h7b6447c_0
@@ -232,6 +215,7 @@ dependencies:
   - pytest-doctestplus=0.2.0=py37_0
   - pytest-openfiles=0.3.1=py37_0
   - pytest-remotedata=0.3.1=py37_0
+  - python=3.7.3=h0371630_0
   - python-dateutil=2.7.5=py37_0
   - python-libarchive-c=2.8=py37_6
   - pytz=2018.7=py37_0
@@ -242,6 +226,8 @@ dependencies:
   - qtawesome=0.5.3=py37_0
   - qtconsole=4.4.3=py37_0
   - qtpy=1.5.2=py37_0
+  - rdflib=4.2.2=py37_1000
+  - readline=7.0=h7b6447c_5
   - requests=2.21.0=py37_0
   - rope=0.11.0=py37_0
   - ruamel_yaml=0.15.46=py37h14c3975_0
@@ -251,6 +237,7 @@ dependencies:
   - seaborn=0.9.0=py37_0
   - secretstorage=3.1.0=py37_0
   - send2trash=1.5.0=py37_0
+  - setuptools=41.0.1=py37_0
   - simplegeneric=0.8.1=py37_2
   - singledispatch=3.4.0.3=py37_0
   - sip=4.19.8=py37hf484d3e_0
@@ -259,36 +246,96 @@ dependencies:
   - snowballstemmer=1.2.1=py37_0
   - sortedcollections=1.0.1=py37_0
   - sortedcontainers=2.1.0=py37_0
+  - spacy=2.1.8=py37hc9558a2_0
+  - spacy-lookups-data=0.1.0=py_1
+  - sparqlwrapper=1.8.2=py37_1000
   - sphinx=1.8.2=py37_0
   - sphinxcontrib=1.0=py37_1
   - sphinxcontrib-websupport=1.1.0=py37_1
   - spyder=3.3.2=py37_0
   - spyder-kernels=0.3.0=py37_0
   - sqlalchemy=1.2.15=py37h7b6447c_0
+  - sqlite=3.29.0=h7b6447c_0
+  - srsly=0.1.0=py37he1b5a44_0
   - statsmodels=0.9.0=py37h035aef0_0
+  - swagger-spec-validator=2.4.3=py_0
   - sympy=1.3=py37_0
   - tblib=1.3.2=py37_0
   - terminado=0.8.1=py37_1
   - testpath=0.4.2=py37_0
+  - thinc=7.0.8=py37hc9558a2_0
+  - tk=8.6.8=hbc83047_0
   - toolz=0.9.0=py37_0
   - tornado=5.1.1=py37h7b6447c_0
-  - tqdm=4.28.1=py37h28b3542_0
   - traitlets=4.3.2=py37_0
-  - typing=3.6.4=py37_0
   - unicodecsv=0.14.1=py37_0
   - unixodbc=2.3.7=h14c3975_0
   - urllib3=1.24.1=py37_0
+  - wasabi=0.2.2=py_0
   - wcwidth=0.1.7=py37_0
   - webencodings=0.5.1=py37_1
   - werkzeug=0.14.1=py37_0
+  - wheel=0.33.4=py37_0
   - widgetsnbextension=3.4.2=py37_0
   - wrapt=1.10.11=py37h14c3975_2
   - wurlitzer=1.0.2=py37_0
   - xlrd=1.2.0=py37_0
   - xlsxwriter=1.1.2=py37_0
   - xlwt=1.3.0=py37_0
+  - xz=5.2.4=h14c3975_4
   - yaml=0.1.7=had09818_2
   - zeromq=4.2.5=hf484d3e_1
   - zict=0.1.3=py37_0
+  - zlib=1.2.11=h7b6447c_3
   - zstd=1.3.7=h0b5b093_0
+  - pip:
+    - antlr-python-runtime==3.1.3
+    - appdirs==1.4.3
+    - boto3==1.9.80
+    - botocore==1.12.80
+    - bpemb==0.2.11
+    - bs4==0.0.1
+    - bz2file==0.98
+    - click==6.7
+    - click-conf==0.0.1
+    - click-stream==0.0.6
+    - cssselect==1.0.3
+    - deprecated==1.2.4
+    - elasticsearch==6.3.1
+    - elasticsearch-loader==0.2.24
+    - en-core-web-sm==2.1.0
+    - fake-useragent==0.1.11
+    - flair==0.4.1
+    - future==0.17.1
+    - gensim==3.4.0
+    - hyperopt==0.1.1
+    - java2python==0.5.0
+    - jmespath==0.9.3
+    - matplotlib==3.0.0
+    - mpld3==0.3
+    - parse==1.11.1
+    - pipenv==2018.11.26
+    - pyaml==18.11.0
+    - pyee==5.0.0
+    - pymongo==3.7.2
+    - pyppeteer==0.0.25
+    - pyquery==1.4.0
+    - python-string-utils==0.6.0
+    - pytorch-pretrained-bert==0.6.2
+    - regex==2018.1.10
+    - requests-html==0.10.0
+    - s3transfer==0.1.13
+    - segtok==1.5.7
+    - sentencepiece==0.1.82
+    - sklearn==0.0
+    - smart-open==1.8.0
+    - sqlitedict==1.6.0
+    - textdistance==4.0.0
+    - torch==1.0.0
+    - tqdm==4.26.0
+    - typing==3.6.4
+    - virtualenv==16.4.3
+    - virtualenv-clone==0.5.1
+    - w3lib==1.20.0
+    - websockets==7.0
 

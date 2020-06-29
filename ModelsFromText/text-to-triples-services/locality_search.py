@@ -41,7 +41,7 @@ import text_to_triples_service as t2t
 import triple_store_query_execution as query
 import xml.etree.ElementTree as ET
 
-variable_mappings = {0: 'variableName',  1: 'entityURI', 2: 'entityLabel', 3: 'equationString'}
+variable_mappings = {0: 'variableName',  1: 'entityURI', 2: 'entityLabel', 3: 'equationURI'}
 
 
 def local_variable_search(body, text_to_triples_obj: t2t.TextToTriples, config):
@@ -60,16 +60,16 @@ def local_variable_search(body, text_to_triples_obj: t2t.TextToTriples, config):
     # Execute against graph g
     query_result = g.query(query_string)
 
-    # If no reults for exact match, then fuzzy match
+    # If no results for exact match, then fuzzy match
     if len(query_result) == 0:
         query_string = get_query_string(body["variableName"], body["localityURI"])
         query_result = g.query(query_string)
 
     for row in query_result:
         context = {}
-        for i in range(0, len(row)):
+        for i in range(0, (len(row) - 1)):
             if row[i] is not None:
-                context[variable_mappings[i]] = row[i]
+                context[variable_mappings[i]] = str(row[i])
         context_list.append(context)
 
     return {"message": message, "results": context_list}
@@ -108,41 +108,29 @@ def temp(body):
 
 def get_query_string_exact_match(variable_name: str):
     variable_name = variable_name.lower()
-    return ("select distinct ?variableName ?entityURI ?entityLabel ?equationString "
-            # "from <" + locality_uri + "> "
+    return ("select distinct ?variableName ?entityURI ?entityLabel ?equation ?equationString" # equationString
             "where {"
-            "?x <http://sadl.org/sadlimplicitmodel#localDescriptorName> ?variableName."
-             # "VALUES ?variableName { '" + variable_name + "' }"
+            "?var_bnode <http://sadl.org/sadlimplicitmodel#localDescriptorName> ?variableName."
              "FILTER(lcase(?variableName) = '" + variable_name + "') ."
-             "OPTIONAL {?x <http://sadl.org/sadlimplicitmodel#augmentedType> ?augType ."
+             "OPTIONAL {?var_bnode <http://sadl.org/sadlimplicitmodel#augmentedType> ?augType ."
              "?augType <http://sadl.org/sadlimplicitmodel#semType> ?entityURI ."
              "?entityURI rdfs:label ?entityLabel  . }"
-             "?list rdf:rest*/rdf:first ?x ."
-             "?equation a <http://sadl.org/sadlimplicitmodel#ExternalEquation> ."
-             "{?equation <http://sadl.org/sadlimplicitmodel#arguments> ?list .}"
-             "UNION"
-             "{?equation <http://sadl.org/sadlimplicitmodel#returnTypes> ?list . }"
-             "?equation <http://sadl.org/sadlimplicitmodel#expression> ?script ."
-             "?script <http://sadl.org/sadlimplicitmodel#language> <http://sadl.org/sadlimplicitmodel#Text> ."
-             "?script <http://sadl.org/sadlimplicitmodel#script> ?equationString ."
+             "?list rdf:rest*/rdf:first ?var_bnode ."
+             "?equation ?prop ?list ."
+             "?equation rdf:type <http://sadl.org/sadlimplicitmodel#ExternalEquation> ."
              "}")
 
 
-def get_query_string(variable_name, locality_uri):
-    return ("select distinct ?variableName ?entityURI ?entityLabel ?equationString " 
-            # "from <" + locality_uri + "> "
+def get_query_string(variable_name: str):
+    variable_name = variable_name.lower()
+    return ("select distinct ?variableName ?entityURI ?entityLabel ?equation ?equationString" # equationString
             "where {"
-                "?x <http://sadl.org/sadlimplicitmodel#localDescriptorName> ?variableName."
-                "FILTER(REGEX(?variableName, '" + variable_name + "', 'i')) ."
-                "OPTIONAL {?x <http://sadl.org/sadlimplicitmodel#augmentedType> ?augType ."
-                "?augType <http://sadl.org/sadlimplicitmodel#semType> ?entityURI ."
-                "?entityURI rdfs:label ?entityLabel  . }"
-                "?list rdf:rest*/rdf:first ?x ."
-                "?equation a <http://sadl.org/sadlimplicitmodel#ExternalEquation> ."
-                "{?equation <http://sadl.org/sadlimplicitmodel#arguments> ?list .}" 
-                "UNION"
-                "{?equation <http://sadl.org/sadlimplicitmodel#returnTypes> ?list . }"
-                "?equation <http://sadl.org/sadlimplicitmodel#expression> ?script ."
-                "?script <http://sadl.org/sadlimplicitmodel#language> <http://sadl.org/sadlimplicitmodel#Text> ."
-                "?script <http://sadl.org/sadlimplicitmodel#script> ?equationString ."
-            "}")
+            "?var_bnode <http://sadl.org/sadlimplicitmodel#localDescriptorName> ?variableName."
+             "FILTER(REGEX(?variableName, '" + variable_name + "', 'i')) ."
+             "OPTIONAL {?var_bnode <http://sadl.org/sadlimplicitmodel#augmentedType> ?augType ."
+             "?augType <http://sadl.org/sadlimplicitmodel#semType> ?entityURI ."
+             "?entityURI rdfs:label ?entityLabel  . }"
+             "?list rdf:rest*/rdf:first ?var_bnode ."
+             "?equation ?prop ?list ."
+             "?equation rdf:type <http://sadl.org/sadlimplicitmodel#ExternalEquation> ."
+             "}")
