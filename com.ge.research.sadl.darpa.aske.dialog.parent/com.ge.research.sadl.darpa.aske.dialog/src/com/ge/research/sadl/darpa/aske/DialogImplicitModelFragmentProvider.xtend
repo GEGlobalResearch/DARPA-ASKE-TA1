@@ -2,7 +2,7 @@
  * Note: This license has also been called the "New BSD License" or 
  * "Modified BSD License". See also the 2-clause BSD License.
  *
- * Copyright © 2018-2019 - General Electric Company, All Rights Reserved
+ * Copyright ï¿½ 2018-2019 - General Electric Company, All Rights Reserved
  * 
  * Projects: ANSWER and KApEESH, developed with the support of the Defense 
  * Advanced Research Projects Agency (DARPA) under Agreement  No.  
@@ -50,9 +50,26 @@ class DialogImplicitModelFragmentProvider implements ISadlImplicitModelFragmentP
 
 	public static val DIALOG_IMPLICIT_MODEL_FRAGMENT = '''
 		/****** The following content comes from the Dialog implicit model fragment provider ******/
-		// these properties used by TA2
-		model describes DataTable with values of type ^Equation.
-		^data describes ^Equation with values of type DataTable.
+		dependsOn is a property with values of type class.
+		UnittedQuantity has impliedProperty ^value.
+		
+		IntializerMethod is a type of ExternalEquation,
+			described by initializes with values of type class.
+		initializerKeyword is a type of annotation.
+		IntializerMethod has initializerKeyword "load", has initializerKeyword "initialize".	
+		
+		minValue describes DataDescriptor. 
+		maxValue describes DataDescriptor. 
+		
+		ImplicitDataDescriptor is a type of DataDescriptor,
+			described by declaration with values of type Script.
+		implicitInput describes ^Equation with values of type ImplicitDataDescriptor.
+		implicitOutput describes ^Equation with values of type ImplicitDataDescriptor.
+		
+		{Python-TF, Python-NumPy} are instances of Language.
+		
+		matchingClass is a type of annotation.
+		matchingProperty is a type of annotation.
 	''';
 
 	@Override

@@ -1,0 +1,270 @@
+ uri "http://sadl.org/Coefficients.dialog" alias coefficients.
+ 
+ import "http://aske.ge.com/WindTurbine".
+ 
+//Extract from "file:///Users/alfredo/Documents/git/DARPA-ASKE-TA2/KnowledgeGraph/ASKE_P2/ExtractedModels/Sources/Coefficients-modified.java".
+CM: "The following classes are suggested for the domain model:".
+CM: Sum (see "http://www.wikidata.org/entity/Q55091460") is a type of ScientificConcept.
+CM: Lift (see "http://www.wikidata.org/entity/Q194433") is a type of ScientificConcept.
+CM: Coefficient (see "http://www.wikidata.org/entity/Q50700") is a type of ScientificConcept.
+CM: "Parsing code file 'Coefficients-modified.java'".
+CM: "The following methods were found in the extraction:".
+CM: External Coefficients.getCoefficientDrag(double alpha(AngleOfAttack)) returns double(DragCoefficient): "http://windTurbine/Coefficients#Coefficients.getCoefficientDrag".
+CM: Coefficients.getCoefficientDrag
+ has implicitInput (an ImplicitDataDescriptor with localDescriptorName "PI", with dataType "http://www.w3.org/2001/XMLSchema#double", 
+       with declaration (a Script with script "double PI = Math.PI;", with language Java)
+       with declaration (a Script with script "PI = Math.PI", with language Python),
+       with declaration (a Script with script "PI = tf.pi", with language Python-TF),
+       with declaration (a Script with script "PI = np.pi", with language Python-NumPy))
+    ,
+     has expression (a Script with language Java, with script 
+    "	public static double getCoefficientDrag (double alpha) {
+
+		while(alpha < -PI || alpha > PI) {
+			if (alpha < -PI) {
+				alpha = alpha+2*PI;
+			}
+			if(alpha > PI) {
+				alpha = alpha-2*PI;
+			}
+		}		
+
+		if (alpha >= -PI && alpha < -0.196350) {
+			return 0.661933637102-0.6336*Math.cos(alpha*1.992)-0.007707*Math.sin(alpha*1.992);
+		}
+		
+		if (alpha >= -0.196350 && alpha < 0.296706) {
+			return 18090*alpha*alpha*alpha*alpha*alpha*alpha*alpha*alpha-
+					6336*alpha*alpha*alpha*alpha*alpha*alpha*alpha-
+					434.3*alpha*alpha*alpha*alpha*alpha*alpha+
+					269.9*alpha*alpha*alpha*alpha*alpha*+
+					6.546*alpha*alpha*alpha*alpha-
+					3.696*alpha*alpha*alpha+
+					0.5564*alpha*alpha-
+					0.01205*alpha+0.009997;
+		} 
+
+		if (alpha >= 0.296706 && alpha <= 0.349066) {
+			return 0.7668*alpha-0.0894;
+		} else {
+			return 0.65978759232-0.6337*Math.cos(alpha*1.992)+0.007889*Math.sin(alpha*1.992);
+		}
+	}"),
+     has expression (a Script with language Python, with script 
+    "def getCoefficientDrag( alpha):
+    \"\"\" generated source for method getCoefficientDrag \"\"\"
+    while alpha < -PI or alpha > PI:
+        if alpha < -PI:
+            alpha = alpha + 2 * PI
+        if alpha > PI:
+            alpha = alpha - 2 * PI
+    if alpha >= -PI and alpha < -0.196350:
+        return 0.661933637102 - 0.6336 * Math.cos(alpha * 1.992) - 0.007707 * Math.sin(alpha * 1.992)
+    if alpha >= -0.196350 and alpha < 0.296706:
+        return 18090 * alpha * alpha * alpha * alpha * alpha * alpha * alpha * alpha - 6336 * alpha * alpha * alpha * alpha * alpha * alpha * alpha - 434.3 * alpha * alpha * alpha * alpha * alpha * alpha + 269.9 * alpha * alpha * alpha * alpha * alpha * +6.546 * alpha * alpha * alpha * alpha - 3.696 * alpha * alpha * alpha + 0.5564 * alpha * alpha - 0.01205 * alpha + 0.009997
+    if alpha >= 0.296706 and alpha <= 0.349066:
+        return 0.7668 * alpha - 0.0894
+    else:
+        return 0.65978759232 - 0.6337 * Math.cos(alpha * 1.992) + 0.007889 * Math.sin(alpha * 1.992)
+"),
+     has expression (a Script with language Python-TF, with script 
+    "def getCoefficientDrag( alpha):
+    \"\"\" generated source for method getCoefficientDrag \"\"\"
+    while alpha < -PI or alpha > PI:
+        if alpha < -PI:
+            alpha = alpha + 2 * PI
+        if alpha > PI:
+            alpha = alpha - 2 * PI
+    if alpha >= -PI and alpha < -0.196350:
+        return 0.661933637102 - 0.6336 * tf.cos(alpha * 1.992) - 0.007707 * tf.sin(alpha * 1.992)
+    if alpha >= -0.196350 and alpha < 0.296706:
+        return 18090 * alpha * alpha * alpha * alpha * alpha * alpha * alpha * alpha - 6336 * alpha * alpha * alpha * alpha * alpha * alpha * alpha - 434.3 * alpha * alpha * alpha * alpha * alpha * alpha + 269.9 * alpha * alpha * alpha * alpha * alpha * +6.546 * alpha * alpha * alpha * alpha - 3.696 * alpha * alpha * alpha + 0.5564 * alpha * alpha - 0.01205 * alpha + 0.009997
+    if alpha >= 0.296706 and alpha <= 0.349066:
+        return 0.7668 * alpha - 0.0894
+    else:
+        return 0.65978759232 - 0.6337 * tf.cos(alpha * 1.992) + 0.007889 * tf.sin(alpha * 1.992)
+"),
+     has expression (a Script with language Python-NumPy, with script 
+    "def getCoefficientDrag( alpha):
+    \"\"\" generated source for method getCoefficientDrag \"\"\"
+    while alpha < -PI or alpha > PI:
+        if alpha < -PI:
+            alpha = alpha + 2 * PI
+        if alpha > PI:
+            alpha = alpha - 2 * PI
+    if alpha >= -PI and alpha < -0.196350:
+        return 0.661933637102 - 0.6336 * np.cos(alpha * 1.992) - 0.007707 * np.sin(alpha * 1.992)
+    if alpha >= -0.196350 and alpha < 0.296706:
+        return 18090 * alpha * alpha * alpha * alpha * alpha * alpha * alpha * alpha - 6336 * alpha * alpha * alpha * alpha * alpha * alpha * alpha - 434.3 * alpha * alpha * alpha * alpha * alpha * alpha + 269.9 * alpha * alpha * alpha * alpha * alpha * +6.546 * alpha * alpha * alpha * alpha - 3.696 * alpha * alpha * alpha + 0.5564 * alpha * alpha - 0.01205 * alpha + 0.009997
+    if alpha >= 0.296706 and alpha <= 0.349066:
+        return 0.7668 * alpha - 0.0894
+    else:
+        return 0.65978759232 - 0.6337 * np.cos(alpha * 1.992) + 0.007889 * np.sin(alpha * 1.992)
+").
+CM: External Coefficients.getCoefficientLift(double alpha(AngleOfAttack)) returns double(LiftCoefficient): "http://windTurbine/Coefficients#Coefficients.getCoefficientLift".
+CM: Coefficients.getCoefficientLift
+ has implicitInput (an ImplicitDataDescriptor with localDescriptorName "PI", with dataType "http://www.w3.org/2001/XMLSchema#double", 
+       with declaration (a Script with script "double PI = Math.PI;", with language Java)
+       with declaration (a Script with script "PI = Math.PI", with language Python),
+       with declaration (a Script with script "PI = tf.pi", with language Python-TF),
+       with declaration (a Script with script "PI = np.pi", with language Python-NumPy))
+    ,
+     has expression (a Script with language Java, with script 
+    "	public static double getCoefficientLift (double alpha) {
+
+		while(alpha < -PI || alpha > PI) {
+			if (alpha < -PI) {
+				alpha = alpha+2*PI;
+			}
+			if(alpha > PI) {
+				alpha = alpha-2*PI;
+			}
+		}
+		
+		if (alpha >= -PI && alpha <= -2.617993878) {
+			return -4.53*alpha*alpha*alpha-43.18*alpha*alpha-134.5*alpha-136.8002-0.0331272294475;
+		}
+		
+		if (alpha > -2.617993878 && alpha < -0.34906585) {
+			return -0.1382*alpha*alpha*alpha*alpha*alpha-
+					1.0964*alpha*alpha*alpha*alpha-
+					3.0056*alpha*alpha*alpha-
+					3.2776*alpha*alpha-
+					1.788*alpha-
+					1.01973983808;
+		}
+		
+		if (alpha >= -0.34906585 && alpha <= -0.196349541) {
+			return 0.345*alpha-0.5632;
+		}
+		
+		if (alpha > -0.196349541 && alpha <= -0.161442956) {
+			return -0.7268+0.04089*Math.cos(alpha*90)+
+					0.06894*Math.sin(alpha*90)-
+					0.00935*Math.cos(180*alpha)+
+					0.01487*Math.sin(180*alpha);
+		}
+		
+		if (alpha > -0.161442956 && alpha <= 0) {
+			return 0.1978+0.5245*Math.cos(alpha*17.2)+0.9687*Math.sin(alpha*17.2)-
+					0.4208*Math.cos(2*alpha*17.2)+0.06007*Math.sin(2*alpha*17.2)-
+					0.016*Math.cos(3*alpha*17.2)-0.1282*Math.sin(3*alpha*17.2)+
+					0.00114686568;
+		}
+		
+		if (alpha > 0 && alpha <= 0.23536) {
+			return 1.01067*(14.48*Math.sin(11.01*alpha-0.1653)+
+					13.37*Math.sin(11.4*alpha+2.941)+
+					0.01288*Math.sin(55.38*alpha+1.35)
+					-0.01026235261);
+		}
+		
+		if (alpha > 0.23536 && alpha <= 0.248709) {
+			return 1.324566+0.01566*alpha;
+		}
+		
+		if (alpha > 0.248709 && alpha <= 0.296706) {
+			return 1.152+0.06825*Math.cos(alpha*54.38)+0.177*Math.sin(alpha*54.38)+
+					0.03451*Math.cos(2*alpha*54.38)+0.004357*Math.sin(2*alpha*54.38);
+		}
+		
+		if (alpha > 0.296706 && alpha <= 2.558) {
+			return 0.2249*alpha*alpha*alpha*alpha*alpha*alpha-
+					2.2324*alpha*alpha*alpha*alpha*alpha+
+					8.6871*alpha*alpha*alpha*alpha-
+					16.423*alpha*alpha*alpha+
+					15.184*alpha*alpha-
+					6.8925*alpha+2.1175079746;
+		} else {
+			return -0.3942-0.3309*Math.cos(alpha*4.744)+0.08493*Math.sin(alpha*4.744)
+					+0.08745*Math.cos(2*alpha*4.744)-0.1064*Math.sin(2*alpha*4.744);
+		}
+
+	}"),
+     has expression (a Script with language Python, with script 
+    "def getCoefficientLift( alpha):
+    \"\"\" generated source for method getCoefficientLift \"\"\"
+    while alpha < -PI or alpha > PI:
+        if alpha < -PI:
+            alpha = alpha + 2 * PI
+        if alpha > PI:
+            alpha = alpha - 2 * PI
+    if alpha >= -PI and alpha <= -2.617993878:
+        return -4.53 * alpha * alpha * alpha - 43.18 * alpha * alpha - 134.5 * alpha - 136.8002 - 0.0331272294475
+    if alpha > -2.617993878 and alpha < -0.34906585:
+        return -0.1382 * alpha * alpha * alpha * alpha * alpha - 1.0964 * alpha * alpha * alpha * alpha - 3.0056 * alpha * alpha * alpha - 3.2776 * alpha * alpha - 1.788 * alpha - 1.01973983808
+    if alpha >= -0.34906585 and alpha <= -0.196349541:
+        return 0.345 * alpha - 0.5632
+    if alpha > -0.196349541 and alpha <= -0.161442956:
+        return -0.7268 + 0.04089 * Math.cos(alpha * 90) + 0.06894 * Math.sin(alpha * 90) - 0.00935 * Math.cos(180 * alpha) + 0.01487 * Math.sin(180 * alpha)
+    if alpha > -0.161442956 and alpha <= 0:
+        return 0.1978 + 0.5245 * Math.cos(alpha * 17.2) + 0.9687 * Math.sin(alpha * 17.2) - 0.4208 * Math.cos(2 * alpha * 17.2) + 0.06007 * Math.sin(2 * alpha * 17.2) - 0.016 * Math.cos(3 * alpha * 17.2) - 0.1282 * Math.sin(3 * alpha * 17.2) + 0.00114686568
+    if alpha > 0 and alpha <= 0.23536:
+        return 1.01067 * (14.48 * Math.sin(11.01 * alpha - 0.1653) + 13.37 * Math.sin(11.4 * alpha + 2.941) + 0.01288 * Math.sin(55.38 * alpha + 1.35) - 0.01026235261)
+    if alpha > 0.23536 and alpha <= 0.248709:
+        return 1.324566 + 0.01566 * alpha
+    if alpha > 0.248709 and alpha <= 0.296706:
+        return 1.152 + 0.06825 * Math.cos(alpha * 54.38) + 0.177 * Math.sin(alpha * 54.38) + 0.03451 * Math.cos(2 * alpha * 54.38) + 0.004357 * Math.sin(2 * alpha * 54.38)
+    if alpha > 0.296706 and alpha <= 2.558:
+        return 0.2249 * alpha * alpha * alpha * alpha * alpha * alpha - 2.2324 * alpha * alpha * alpha * alpha * alpha + 8.6871 * alpha * alpha * alpha * alpha - 16.423 * alpha * alpha * alpha + 15.184 * alpha * alpha - 6.8925 * alpha + 2.1175079746
+    else:
+        return -0.3942 - 0.3309 * Math.cos(alpha * 4.744) + 0.08493 * Math.sin(alpha * 4.744) + 0.08745 * Math.cos(2 * alpha * 4.744) - 0.1064 * Math.sin(2 * alpha * 4.744)
+"),
+     has expression (a Script with language Python-TF, with script 
+    "def getCoefficientLift( alpha):
+    \"\"\" generated source for method getCoefficientLift \"\"\"
+    while alpha < -PI or alpha > PI:
+        if alpha < -PI:
+            alpha = alpha + 2 * PI
+        if alpha > PI:
+            alpha = alpha - 2 * PI
+    if alpha >= -PI and alpha <= -2.617993878:
+        return -4.53 * alpha * alpha * alpha - 43.18 * alpha * alpha - 134.5 * alpha - 136.8002 - 0.0331272294475
+    if alpha > -2.617993878 and alpha < -0.34906585:
+        return -0.1382 * alpha * alpha * alpha * alpha * alpha - 1.0964 * alpha * alpha * alpha * alpha - 3.0056 * alpha * alpha * alpha - 3.2776 * alpha * alpha - 1.788 * alpha - 1.01973983808
+    if alpha >= -0.34906585 and alpha <= -0.196349541:
+        return 0.345 * alpha - 0.5632
+    if alpha > -0.196349541 and alpha <= -0.161442956:
+        return -0.7268 + 0.04089 * tf.cos(alpha * 90) + 0.06894 * tf.sin(alpha * 90) - 0.00935 * tf.cos(180 * alpha) + 0.01487 * tf.sin(180 * alpha)
+    if alpha > -0.161442956 and alpha <= 0:
+        return 0.1978 + 0.5245 * tf.cos(alpha * 17.2) + 0.9687 * tf.sin(alpha * 17.2) - 0.4208 * tf.cos(2 * alpha * 17.2) + 0.06007 * tf.sin(2 * alpha * 17.2) - 0.016 * tf.cos(3 * alpha * 17.2) - 0.1282 * tf.sin(3 * alpha * 17.2) + 0.00114686568
+    if alpha > 0 and alpha <= 0.23536:
+        return 1.01067 * (14.48 * tf.sin(11.01 * alpha - 0.1653) + 13.37 * tf.sin(11.4 * alpha + 2.941) + 0.01288 * tf.sin(55.38 * alpha + 1.35) - 0.01026235261)
+    if alpha > 0.23536 and alpha <= 0.248709:
+        return 1.324566 + 0.01566 * alpha
+    if alpha > 0.248709 and alpha <= 0.296706:
+        return 1.152 + 0.06825 * tf.cos(alpha * 54.38) + 0.177 * tf.sin(alpha * 54.38) + 0.03451 * tf.cos(2 * alpha * 54.38) + 0.004357 * tf.sin(2 * alpha * 54.38)
+    if alpha > 0.296706 and alpha <= 2.558:
+        return 0.2249 * alpha * alpha * alpha * alpha * alpha * alpha - 2.2324 * alpha * alpha * alpha * alpha * alpha + 8.6871 * alpha * alpha * alpha * alpha - 16.423 * alpha * alpha * alpha + 15.184 * alpha * alpha - 6.8925 * alpha + 2.1175079746
+    else:
+        return -0.3942 - 0.3309 * tf.cos(alpha * 4.744) + 0.08493 * tf.sin(alpha * 4.744) + 0.08745 * tf.cos(2 * alpha * 4.744) - 0.1064 * tf.sin(2 * alpha * 4.744)
+"),
+     has expression (a Script with language Python-NumPy, with script 
+    "def getCoefficientLift( alpha):
+    \"\"\" generated source for method getCoefficientLift \"\"\"
+    while alpha < -PI or alpha > PI:
+        if alpha < -PI:
+            alpha = alpha + 2 * PI
+        if alpha > PI:
+            alpha = alpha - 2 * PI
+    if alpha >= -PI and alpha <= -2.617993878:
+        return -4.53 * alpha * alpha * alpha - 43.18 * alpha * alpha - 134.5 * alpha - 136.8002 - 0.0331272294475
+    if alpha > -2.617993878 and alpha < -0.34906585:
+        return -0.1382 * alpha * alpha * alpha * alpha * alpha - 1.0964 * alpha * alpha * alpha * alpha - 3.0056 * alpha * alpha * alpha - 3.2776 * alpha * alpha - 1.788 * alpha - 1.01973983808
+    if alpha >= -0.34906585 and alpha <= -0.196349541:
+        return 0.345 * alpha - 0.5632
+    if alpha > -0.196349541 and alpha <= -0.161442956:
+        return -0.7268 + 0.04089 * np.cos(alpha * 90) + 0.06894 * np.sin(alpha * 90) - 0.00935 * np.cos(180 * alpha) + 0.01487 * np.sin(180 * alpha)
+    if alpha > -0.161442956 and alpha <= 0:
+        return 0.1978 + 0.5245 * np.cos(alpha * 17.2) + 0.9687 * np.sin(alpha * 17.2) - 0.4208 * np.cos(2 * alpha * 17.2) + 0.06007 * np.sin(2 * alpha * 17.2) - 0.016 * np.cos(3 * alpha * 17.2) - 0.1282 * np.sin(3 * alpha * 17.2) + 0.00114686568
+    if alpha > 0 and alpha <= 0.23536:
+        return 1.01067 * (14.48 * np.sin(11.01 * alpha - 0.1653) + 13.37 * np.sin(11.4 * alpha + 2.941) + 0.01288 * np.sin(55.38 * alpha + 1.35) - 0.01026235261)
+    if alpha > 0.23536 and alpha <= 0.248709:
+        return 1.324566 + 0.01566 * alpha
+    if alpha > 0.248709 and alpha <= 0.296706:
+        return 1.152 + 0.06825 * np.cos(alpha * 54.38) + 0.177 * np.sin(alpha * 54.38) + 0.03451 * np.cos(2 * alpha * 54.38) + 0.004357 * np.sin(2 * alpha * 54.38)
+    if alpha > 0.296706 and alpha <= 2.558:
+        return 0.2249 * alpha * alpha * alpha * alpha * alpha * alpha - 2.2324 * alpha * alpha * alpha * alpha * alpha + 8.6871 * alpha * alpha * alpha * alpha - 16.423 * alpha * alpha * alpha + 15.184 * alpha * alpha - 6.8925 * alpha + 2.1175079746
+    else:
+        return -0.3942 - 0.3309 * np.cos(alpha * 4.744) + 0.08493 * np.sin(alpha * 4.744) + 0.08745 * np.cos(2 * alpha * 4.744) - 0.1064 * np.sin(2 * alpha * 4.744)
+").

@@ -1,0 +1,46 @@
+<rdf:RDF
+    xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+    xmlns="http://com.ge.research.sadl.darpa.aske.answer/Sound#"
+    xmlns:owl="http://www.w3.org/2002/07/owl#"
+    xmlns:sadlimplicitmodel="http://sadl.org/sadlimplicitmodel"
+    xmlns:j.0="http://sadl.org/sadlimplicitmodel#"
+    xmlns:rdfs="http://www.w3.org/2000/01/rdf-schema#"
+    xmlns:xsd="http://www.w3.org/2001/XMLSchema#"
+  xml:base="http://com.ge.research.sadl.darpa.aske.answer/Sound#">
+  <owl:Ontology rdf:about="http://com.ge.research.sadl.darpa.aske.answer/Sound">
+    <owl:imports rdf:resource="http://sadl.org/sadlimplicitmodel"/>
+    <rdfs:comment xml:lang="en">This ontology was created by extraction from text by the ANSWER TextProcessor.</rdfs:comment>
+  </owl:Ontology>
+  <j.0:ExternalEquation rdf:about="http://com.ge.research.sadl.darpa.aske.answer/Sound#_:eq_139890719773632">
+    <j.0:expression>
+      <j.0:Script>
+        <j.0:language rdf:resource="http://sadl.org/sadlimplicitmodel#Python"/>
+        <j.0:script rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+        >a = tf.math.pow( R * T *  (  1 + ( gamma-1 ) / ( 1 + ( gamma-1 ) *  (  ( theta/T ) ** 2 *  tf.math.exp( theta/T ) / (  tf.math.exp( theta/T ) - 1 ) ** 2 )  ) ) , 1/2)</j.0:script>
+      </j.0:Script>
+    </j.0:expression>
+    <j.0:expression>
+      <j.0:Script>
+        <j.0:language rdf:resource="http://sadl.org/sadlimplicitmodel#Text"/>
+        <j.0:script rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+        >a^2 = R * T * {1 + (gamma - 1) / ( 1 + (gamma-1) * [(theta/T)^2 * e^(theta/T) /(e^(theta/T) -1)^2]) }</j.0:script>
+      </j.0:Script>
+    </j.0:expression>
+  </j.0:ExternalEquation>
+  <j.0:ExternalEquation rdf:about="http://com.ge.research.sadl.darpa.aske.answer/Sound#_:eq_139889919393416">
+    <j.0:expression>
+      <j.0:Script>
+        <j.0:language rdf:resource="http://sadl.org/sadlimplicitmodel#Python"/>
+        <j.0:script rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+        >a = tf.math.pow( R * T * gamma, 1/2)</j.0:script>
+      </j.0:Script>
+    </j.0:expression>
+    <j.0:expression>
+      <j.0:Script>
+        <j.0:language rdf:resource="http://sadl.org/sadlimplicitmodel#Text"/>
+        <j.0:script rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+        >a^2 = R * T * gamma</j.0:script>
+      </j.0:Script>
+    </j.0:expression>
+  </j.0:ExternalEquation>
+</rdf:RDF>

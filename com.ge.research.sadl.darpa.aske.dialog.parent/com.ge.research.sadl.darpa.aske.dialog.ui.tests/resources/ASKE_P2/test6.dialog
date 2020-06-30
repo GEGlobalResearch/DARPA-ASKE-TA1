@@ -1,0 +1,15 @@
+uri "http://sadl.org/test6.dialog" alias test6.
+ 
+import "http://aske.ge.com/metamodel".
+import "http://aske.ge.com/hypersonicsV2".
+import "http://aske.ge.com/dbnnodes".
+import "http://sadl.org/TableAndEquation.sadl".
+import "http://aske.ge.com/turbo".
+
+//compare thrust of a CF6 and an F100 when the speed is 400 mph and the altitude is 20000 ft?
+//compare thrust of a CF6 and thrust of an F100 when the speed is 400 mph and the altitude of the CF6 is 20000 ft?
+//compare machSpeed of a CF6 and an F100 when the speed is 400 mph and the altitude is 20000 ft?
+
+//Long task 5000.
+
+//Compare thrust of a CF6 when the speed is 400 mph and the altitude is 20000 ft and when the speed is 600 mph and the altitude is 30000 ft?

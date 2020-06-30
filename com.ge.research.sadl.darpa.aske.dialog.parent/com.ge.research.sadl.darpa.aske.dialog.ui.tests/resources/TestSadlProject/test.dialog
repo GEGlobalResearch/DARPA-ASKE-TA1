@@ -1,0 +1,10 @@
+uri "http://com.ge.research/M3DemoDialog/test" alias meddt.
+
+import "http://sadl.org/model.sadl".
+
+// UnitCircle is a Circle with radius 1.
+// What is UnitCircle?
+// What is the area of UnitCircle?
+// What is the area of a Circle with radius 2?
+// What is the area of a Rectangle with width 2, with ^length 3?
+// What is ^value of speedOfSound when ^value of Altitude is 10000?

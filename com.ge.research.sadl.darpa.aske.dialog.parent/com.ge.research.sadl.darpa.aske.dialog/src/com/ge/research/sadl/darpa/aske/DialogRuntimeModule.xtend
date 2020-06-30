@@ -2,7 +2,7 @@
  * Note: This license has also been called the "New BSD License" or 
  * "Modified BSD License". See also the 2-clause BSD License.
  *
- * Copyright © 2018-2019 - General Electric Company, All Rights Reserved
+ * Copyright Â© 2018-2019 - General Electric Company, All Rights Reserved
  * 
  * Projects: ANSWER and KApEESH, developed with the support of the Defense 
  * Advanced Research Projects Agency (DARPA) under Agreement  No.  
@@ -38,9 +38,13 @@ package com.ge.research.sadl.darpa.aske
 
 import com.ge.research.sadl.ValueConverterService
 import com.ge.research.sadl.darpa.aske.processing.DialogModelProcessorProvider
+import com.ge.research.sadl.darpa.aske.processing.DialogProcessorContextPreferenceValuesProvider
 import com.ge.research.sadl.darpa.aske.scoping.DialogErrorAddingLinkingService
 import com.ge.research.sadl.generator.SADLOutputConfigurationProvider
+import com.ge.research.sadl.processing.IModelProcessor.ProcessorContextPreferenceValuesProvider
 import com.ge.research.sadl.processing.IModelProcessorProvider
+import com.ge.research.sadl.resource.SadlResourceDescriptionManager
+import com.ge.research.sadl.resource.SadlResourceDescriptionStrategy
 import com.ge.research.sadl.scoping.SadlQualifiedNameConverter
 import com.ge.research.sadl.scoping.SadlQualifiedNameProvider
 import com.ge.research.sadl.scoping.SilencedImportedNamesAdapter
@@ -57,6 +61,8 @@ import org.eclipse.xtext.linking.impl.LinkingDiagnosticMessageProvider
 import org.eclipse.xtext.naming.IQualifiedNameConverter
 import org.eclipse.xtext.parsetree.reconstr.IParseTreeConstructor
 import org.eclipse.xtext.parsetree.reconstr.ITokenStream
+import org.eclipse.xtext.resource.impl.DefaultResourceDescriptionManager
+import org.eclipse.xtext.resource.impl.DefaultResourceDescriptionStrategy
 import org.eclipse.xtext.validation.ResourceValidatorImpl
 
 /**
@@ -134,9 +140,21 @@ class DialogRuntimeModule extends AbstractDialogRuntimeModule {
 //	def Class<? extends IDeclarationExtensionsContribution> bindIDeclarationExtensionsContribution() {
 //    	return RequirementsDeclarationExtensionsContribution;
 //  	}
-	
+
+	def Class<? extends DefaultResourceDescriptionStrategy> bindResourceDescritpionStrategy() {
+		return SadlResourceDescriptionStrategy;
+	}
+
+	def Class<? extends DefaultResourceDescriptionManager> bindDefaultResourceDescriptionManager() {
+		return SadlResourceDescriptionManager;
+	}
+
 	def Class<? extends ImportedNamesAdapter> bindImportedNamesAdapter() {
 		return SilencedImportedNamesAdapter; 
+	}
+	
+	def Class<? extends ProcessorContextPreferenceValuesProvider> bindProcessorContextPreferenceValuesProvider() {
+		return DialogProcessorContextPreferenceValuesProvider;
 	}
 	
 }

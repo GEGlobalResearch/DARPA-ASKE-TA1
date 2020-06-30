@@ -1,0 +1,1792 @@
+<rdf:RDF
+    xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+    xmlns:cem="http://sadl.org/CodeExtractionModel.sadl#"
+    xmlns:sadllistmodel="http://sadl.org/sadllistmodel#"
+    xmlns:owl="http://www.w3.org/2002/07/owl#"
+    xmlns:sadlimplicitmodel="http://sadl.org/sadlimplicitmodel#"
+    xmlns:rdfs="http://www.w3.org/2000/01/rdf-schema#"
+    xmlns="http://windTurbine/Coefficients#"
+    xmlns:xsd="http://www.w3.org/2001/XMLSchema#"
+  xml:base="http://windTurbine/Coefficients">
+  <owl:Ontology rdf:about="http://windTurbine/Coefficients">
+    <owl:imports rdf:resource="http://sadl.org/sadllistmodel"/>
+    <owl:imports rdf:resource="http://sadl.org/sadlimplicitmodel"/>
+    <owl:imports rdf:resource="http://sadl.org/CodeExtractionModel.sadl"/>
+    <rdfs:comment xml:lang="en">This ontology was created by extraction from code by the ANSWER JavaModelExtractorJP.</rdfs:comment>
+  </owl:Ontology>
+  <cem:ClassField rdf:ID="Coefficients.PI">
+    <cem:reference>
+      <cem:Reference>
+        <cem:endsAt rdf:datatype="http://www.w3.org/2001/XMLSchema#int"
+        >136</cem:endsAt>
+        <cem:beginsAt rdf:datatype="http://www.w3.org/2001/XMLSchema#int"
+        >136</cem:beginsAt>
+        <cem:usage rdf:resource="http://sadl.org/CodeExtractionModel.sadl#Used"/>
+        <cem:codeBlock>
+          <cem:Method rdf:ID="Coefficients.getCoefficientDrag">
+            <cem:calls>
+              <cem:MethodCall>
+                <cem:endsAt rdf:datatype="http://www.w3.org/2001/XMLSchema#int"
+                >132</cem:endsAt>
+                <cem:beginsAt rdf:datatype="http://www.w3.org/2001/XMLSchema#int"
+                >132</cem:beginsAt>
+                <cem:codeBlock rdf:resource="http://windTurbine/Coefficients#Coefficients.getCoefficientDrag"/>
+              </cem:MethodCall>
+            </cem:calls>
+            <cem:beginsAt rdf:datatype="http://www.w3.org/2001/XMLSchema#int"
+            >129</cem:beginsAt>
+            <cem:cmArguments rdf:parseType="Resource">
+              <sadllistmodel:first>
+                <cem:MethodArgument rdf:ID="Coefficients.getCoefficientDrag.alpha">
+                  <cem:reference>
+                    <cem:Reference>
+                      <cem:endsAt rdf:datatype="http://www.w3.org/2001/XMLSchema#int"
+                      >145</cem:endsAt>
+                      <cem:beginsAt rdf:datatype="http://www.w3.org/2001/XMLSchema#int"
+                      >145</cem:beginsAt>
+                      <cem:usage rdf:resource="http://sadl.org/CodeExtractionModel.sadl#Used"/>
+                      <cem:codeBlock rdf:resource="http://windTurbine/Coefficients#Coefficients.getCoefficientDrag"/>
+                    </cem:Reference>
+                  </cem:reference>
+                  <cem:reference>
+                    <cem:Reference>
+                      <cem:endsAt rdf:datatype="http://www.w3.org/2001/XMLSchema#int"
+                      >146</cem:endsAt>
+                      <cem:beginsAt rdf:datatype="http://www.w3.org/2001/XMLSchema#int"
+                      >146</cem:beginsAt>
+                      <cem:usage rdf:resource="http://sadl.org/CodeExtractionModel.sadl#Used"/>
+                      <cem:codeBlock rdf:resource="http://windTurbine/Coefficients#Coefficients.getCoefficientDrag"/>
+                    </cem:Reference>
+                  </cem:reference>
+                  <cem:reference>
+                    <cem:Reference>
+                      <cem:endsAt rdf:datatype="http://www.w3.org/2001/XMLSchema#int"
+                      >146</cem:endsAt>
+                      <cem:beginsAt rdf:datatype="http://www.w3.org/2001/XMLSchema#int"
+                      >146</cem:beginsAt>
+                      <cem:usage rdf:resource="http://sadl.org/CodeExtractionModel.sadl#Used"/>
+                      <cem:codeBlock rdf:resource="http://windTurbine/Coefficients#Coefficients.getCoefficientDrag"/>
+                    </cem:Reference>
+                  </cem:reference>
+                  <cem:reference>
+                    <cem:Reference>
+                      <cem:endsAt rdf:datatype="http://www.w3.org/2001/XMLSchema#int"
+                      >147</cem:endsAt>
+                      <cem:beginsAt rdf:datatype="http://www.w3.org/2001/XMLSchema#int"
+                      >147</cem:beginsAt>
+                      <cem:usage rdf:resource="http://sadl.org/CodeExtractionModel.sadl#Used"/>
+                      <cem:codeBlock rdf:resource="http://windTurbine/Coefficients#Coefficients.getCoefficientDrag"/>
+                    </cem:Reference>
+                  </cem:reference>
+                  <cem:reference>
+                    <cem:Reference>
+                      <cem:endsAt rdf:datatype="http://www.w3.org/2001/XMLSchema#int"
+                      >154</cem:endsAt>
+                      <cem:beginsAt rdf:datatype="http://www.w3.org/2001/XMLSchema#int"
+                      >154</cem:beginsAt>
+                      <cem:usage rdf:resource="http://sadl.org/CodeExtractionModel.sadl#Used"/>
+                      <cem:codeBlock rdf:resource="http://windTurbine/Coefficients#Coefficients.getCoefficientDrag"/>
+                    </cem:Reference>
+                  </cem:reference>
+                  <cem:reference>
+                    <cem:Reference>
+                      <cem:endsAt rdf:datatype="http://www.w3.org/2001/XMLSchema#int"
+                      >151</cem:endsAt>
+                      <cem:beginsAt rdf:datatype="http://www.w3.org/2001/XMLSchema#int"
+                      >151</cem:beginsAt>
+                      <cem:usage rdf:resource="http://sadl.org/CodeExtractionModel.sadl#Used"/>
+                      <cem:codeBlock rdf:resource="http://windTurbine/Coefficients#Coefficients.getCoefficientDrag"/>
+                    </cem:Reference>
+                  </cem:reference>
+                  <cem:reference>
+                    <cem:Reference>
+                      <cem:endsAt rdf:datatype="http://www.w3.org/2001/XMLSchema#int"
+                      >154</cem:endsAt>
+                      <cem:beginsAt rdf:datatype="http://www.w3.org/2001/XMLSchema#int"
+                      >154</cem:beginsAt>
+                      <cem:usage rdf:resource="http://sadl.org/CodeExtractionModel.sadl#Used"/>
+                      <cem:codeBlock rdf:resource="http://windTurbine/Coefficients#Coefficients.getCoefficientDrag"/>
+                    </cem:Reference>
+                  </cem:reference>
+                  <cem:reference>
+                    <cem:Reference>
+                      <cem:endsAt rdf:datatype="http://www.w3.org/2001/XMLSchema#int"
+                      >157</cem:endsAt>
+                      <cem:beginsAt rdf:datatype="http://www.w3.org/2001/XMLSchema#int"
+                      >157</cem:beginsAt>
+                      <cem:usage rdf:resource="http://sadl.org/CodeExtractionModel.sadl#Used"/>
+                      <cem:codeBlock rdf:resource="http://windTurbine/Coefficients#Coefficients.getCoefficientDrag"/>
+                    </cem:Reference>
+                  </cem:reference>
+                  <cem:reference>
+                    <cem:Reference>
+                      <cem:endsAt rdf:datatype="http://www.w3.org/2001/XMLSchema#int"
+                      >132</cem:endsAt>
+                      <cem:beginsAt rdf:datatype="http://www.w3.org/2001/XMLSchema#int"
+                      >132</cem:beginsAt>
+                      <cem:usage rdf:resource="http://sadl.org/CodeExtractionModel.sadl#Used"/>
+                      <cem:codeBlock rdf:resource="http://windTurbine/Coefficients#Coefficients.getCoefficientDrag"/>
+                    </cem:Reference>
+                  </cem:reference>
+                  <cem:reference>
+                    <cem:Reference>
+                      <cem:endsAt rdf:datatype="http://www.w3.org/2001/XMLSchema#int"
+                      >157</cem:endsAt>
+                      <cem:beginsAt rdf:datatype="http://www.w3.org/2001/XMLSchema#int"
+                      >157</cem:beginsAt>
+                      <cem:usage rdf:resource="http://sadl.org/CodeExtractionModel.sadl#Used"/>
+                      <cem:codeBlock rdf:resource="http://windTurbine/Coefficients#Coefficients.getCoefficientDrag"/>
+                    </cem:Reference>
+                  </cem:reference>
+                  <cem:reference>
+                    <cem:Reference>
+                      <cem:endsAt rdf:datatype="http://www.w3.org/2001/XMLSchema#int"
+                      >146</cem:endsAt>
+                      <cem:beginsAt rdf:datatype="http://www.w3.org/2001/XMLSchema#int"
+                      >146</cem:beginsAt>
+                      <cem:usage rdf:resource="http://sadl.org/CodeExtractionModel.sadl#Used"/>
+                      <cem:codeBlock rdf:resource="http://windTurbine/Coefficients#Coefficients.getCoefficientDrag"/>
+                    </cem:Reference>
+                  </cem:reference>
+                  <cem:reference>
+                    <cem:Reference>
+                      <cem:endsAt rdf:datatype="http://www.w3.org/2001/XMLSchema#int"
+                      >147</cem:endsAt>
+                      <cem:beginsAt rdf:datatype="http://www.w3.org/2001/XMLSchema#int"
+                      >147</cem:beginsAt>
+                      <cem:usage rdf:resource="http://sadl.org/CodeExtractionModel.sadl#Used"/>
+                      <cem:codeBlock rdf:resource="http://windTurbine/Coefficients#Coefficients.getCoefficientDrag"/>
+                    </cem:Reference>
+                  </cem:reference>
+                  <cem:reference>
+                    <cem:Reference>
+                      <cem:endsAt rdf:datatype="http://www.w3.org/2001/XMLSchema#int"
+                      >148</cem:endsAt>
+                      <cem:beginsAt rdf:datatype="http://www.w3.org/2001/XMLSchema#int"
+                      >148</cem:beginsAt>
+                      <cem:usage rdf:resource="http://sadl.org/CodeExtractionModel.sadl#Used"/>
+                      <cem:codeBlock rdf:resource="http://windTurbine/Coefficients#Coefficients.getCoefficientDrag"/>
+                    </cem:Reference>
+                  </cem:reference>
+                  <cem:reference>
+                    <cem:Reference>
+                      <cem:endsAt rdf:datatype="http://www.w3.org/2001/XMLSchema#int"
+                      >148</cem:endsAt>
+                      <cem:beginsAt rdf:datatype="http://www.w3.org/2001/XMLSchema#int"
+                      >148</cem:beginsAt>
+                      <cem:usage rdf:resource="http://sadl.org/CodeExtractionModel.sadl#Used"/>
+                      <cem:codeBlock rdf:resource="http://windTurbine/Coefficients#Coefficients.getCoefficientDrag"/>
+                    </cem:Reference>
+                  </cem:reference>
+                  <cem:reference>
+                    <cem:Reference>
+                      <cem:endsAt rdf:datatype="http://www.w3.org/2001/XMLSchema#int"
+                      >148</cem:endsAt>
+                      <cem:beginsAt rdf:datatype="http://www.w3.org/2001/XMLSchema#int"
+                      >148</cem:beginsAt>
+                      <cem:usage rdf:resource="http://sadl.org/CodeExtractionModel.sadl#Used"/>
+                      <cem:codeBlock rdf:resource="http://windTurbine/Coefficients#Coefficients.getCoefficientDrag"/>
+                    </cem:Reference>
+                  </cem:reference>
+                  <cem:reference>
+                    <cem:Reference>
+                      <cem:endsAt rdf:datatype="http://www.w3.org/2001/XMLSchema#int"
+                      >144</cem:endsAt>
+                      <cem:beginsAt rdf:datatype="http://www.w3.org/2001/XMLSchema#int"
+                      >144</cem:beginsAt>
+                      <cem:usage rdf:resource="http://sadl.org/CodeExtractionModel.sadl#Used"/>
+                      <cem:codeBlock rdf:resource="http://windTurbine/Coefficients#Coefficients.getCoefficientDrag"/>
+                    </cem:Reference>
+                  </cem:reference>
+                  <cem:reference>
+                    <cem:Reference>
+                      <cem:endsAt rdf:datatype="http://www.w3.org/2001/XMLSchema#int"
+                      >139</cem:endsAt>
+                      <cem:beginsAt rdf:datatype="http://www.w3.org/2001/XMLSchema#int"
+                      >139</cem:beginsAt>
+                      <cem:usage rdf:resource="http://sadl.org/CodeExtractionModel.sadl#Used"/>
+                      <cem:codeBlock rdf:resource="http://windTurbine/Coefficients#Coefficients.getCoefficientDrag"/>
+                    </cem:Reference>
+                  </cem:reference>
+                  <cem:reference>
+                    <cem:Reference>
+                      <cem:endsAt rdf:datatype="http://www.w3.org/2001/XMLSchema#int"
+                      >140</cem:endsAt>
+                      <cem:beginsAt rdf:datatype="http://www.w3.org/2001/XMLSchema#int"
+                      >140</cem:beginsAt>
+                      <cem:usage rdf:resource="http://sadl.org/CodeExtractionModel.sadl#Used"/>
+                      <cem:codeBlock rdf:resource="http://windTurbine/Coefficients#Coefficients.getCoefficientDrag"/>
+                    </cem:Reference>
+                  </cem:reference>
+                  <cem:reference>
+                    <cem:Reference>
+                      <cem:endsAt rdf:datatype="http://www.w3.org/2001/XMLSchema#int"
+                      >140</cem:endsAt>
+                      <cem:beginsAt rdf:datatype="http://www.w3.org/2001/XMLSchema#int"
+                      >140</cem:beginsAt>
+                      <cem:usage rdf:resource="http://sadl.org/CodeExtractionModel.sadl#Used"/>
+                      <cem:codeBlock rdf:resource="http://windTurbine/Coefficients#Coefficients.getCoefficientDrag"/>
+                    </cem:Reference>
+                  </cem:reference>
+                  <cem:reference>
+                    <cem:Reference>
+                      <cem:endsAt rdf:datatype="http://www.w3.org/2001/XMLSchema#int"
+                      >143</cem:endsAt>
+                      <cem:beginsAt rdf:datatype="http://www.w3.org/2001/XMLSchema#int"
+                      >143</cem:beginsAt>
+                      <cem:usage rdf:resource="http://sadl.org/CodeExtractionModel.sadl#Used"/>
+                      <cem:codeBlock rdf:resource="http://windTurbine/Coefficients#Coefficients.getCoefficientDrag"/>
+                    </cem:Reference>
+                  </cem:reference>
+                  <cem:reference>
+                    <cem:Reference>
+                      <cem:endsAt rdf:datatype="http://www.w3.org/2001/XMLSchema#int"
+                      >146</cem:endsAt>
+                      <cem:beginsAt rdf:datatype="http://www.w3.org/2001/XMLSchema#int"
+                      >146</cem:beginsAt>
+                      <cem:usage rdf:resource="http://sadl.org/CodeExtractionModel.sadl#Used"/>
+                      <cem:codeBlock rdf:resource="http://windTurbine/Coefficients#Coefficients.getCoefficientDrag"/>
+                    </cem:Reference>
+                  </cem:reference>
+                  <cem:reference>
+                    <cem:Reference>
+                      <cem:endsAt rdf:datatype="http://www.w3.org/2001/XMLSchema#int"
+                      >146</cem:endsAt>
+                      <cem:beginsAt rdf:datatype="http://www.w3.org/2001/XMLSchema#int"
+                      >146</cem:beginsAt>
+                      <cem:usage rdf:resource="http://sadl.org/CodeExtractionModel.sadl#Used"/>
+                      <cem:codeBlock rdf:resource="http://windTurbine/Coefficients#Coefficients.getCoefficientDrag"/>
+                    </cem:Reference>
+                  </cem:reference>
+                  <cem:reference>
+                    <cem:Reference>
+                      <cem:endsAt rdf:datatype="http://www.w3.org/2001/XMLSchema#int"
+                      >147</cem:endsAt>
+                      <cem:beginsAt rdf:datatype="http://www.w3.org/2001/XMLSchema#int"
+                      >147</cem:beginsAt>
+                      <cem:usage rdf:resource="http://sadl.org/CodeExtractionModel.sadl#Used"/>
+                      <cem:codeBlock rdf:resource="http://windTurbine/Coefficients#Coefficients.getCoefficientDrag"/>
+                    </cem:Reference>
+                  </cem:reference>
+                  <cem:reference>
+                    <cem:Reference>
+                      <cem:endsAt rdf:datatype="http://www.w3.org/2001/XMLSchema#int"
+                      >149</cem:endsAt>
+                      <cem:beginsAt rdf:datatype="http://www.w3.org/2001/XMLSchema#int"
+                      >149</cem:beginsAt>
+                      <cem:usage rdf:resource="http://sadl.org/CodeExtractionModel.sadl#Used"/>
+                      <cem:codeBlock rdf:resource="http://windTurbine/Coefficients#Coefficients.getCoefficientDrag"/>
+                    </cem:Reference>
+                  </cem:reference>
+                  <cem:reference>
+                    <cem:Reference>
+                      <cem:endsAt rdf:datatype="http://www.w3.org/2001/XMLSchema#int"
+                      >144</cem:endsAt>
+                      <cem:beginsAt rdf:datatype="http://www.w3.org/2001/XMLSchema#int"
+                      >144</cem:beginsAt>
+                      <cem:usage rdf:resource="http://sadl.org/CodeExtractionModel.sadl#Used"/>
+                      <cem:codeBlock rdf:resource="http://windTurbine/Coefficients#Coefficients.getCoefficientDrag"/>
+                    </cem:Reference>
+                  </cem:reference>
+                  <cem:reference>
+                    <cem:Reference>
+                      <cem:endsAt rdf:datatype="http://www.w3.org/2001/XMLSchema#int"
+                      >144</cem:endsAt>
+                      <cem:beginsAt rdf:datatype="http://www.w3.org/2001/XMLSchema#int"
+                      >144</cem:beginsAt>
+                      <cem:usage rdf:resource="http://sadl.org/CodeExtractionModel.sadl#Used"/>
+                      <cem:codeBlock rdf:resource="http://windTurbine/Coefficients#Coefficients.getCoefficientDrag"/>
+                    </cem:Reference>
+                  </cem:reference>
+                  <cem:reference>
+                    <cem:Reference>
+                      <cem:endsAt rdf:datatype="http://www.w3.org/2001/XMLSchema#int"
+                      >144</cem:endsAt>
+                      <cem:beginsAt rdf:datatype="http://www.w3.org/2001/XMLSchema#int"
+                      >144</cem:beginsAt>
+                      <cem:usage rdf:resource="http://sadl.org/CodeExtractionModel.sadl#Used"/>
+                      <cem:codeBlock rdf:resource="http://windTurbine/Coefficients#Coefficients.getCoefficientDrag"/>
+                    </cem:Reference>
+                  </cem:reference>
+                  <cem:reference>
+                    <cem:Reference>
+                      <cem:endsAt rdf:datatype="http://www.w3.org/2001/XMLSchema#int"
+                      >144</cem:endsAt>
+                      <cem:beginsAt rdf:datatype="http://www.w3.org/2001/XMLSchema#int"
+                      >144</cem:beginsAt>
+                      <cem:usage rdf:resource="http://sadl.org/CodeExtractionModel.sadl#Used"/>
+                      <cem:codeBlock rdf:resource="http://windTurbine/Coefficients#Coefficients.getCoefficientDrag"/>
+                    </cem:Reference>
+                  </cem:reference>
+                  <cem:reference>
+                    <cem:Reference>
+                      <cem:endsAt rdf:datatype="http://www.w3.org/2001/XMLSchema#int"
+                      >147</cem:endsAt>
+                      <cem:beginsAt rdf:datatype="http://www.w3.org/2001/XMLSchema#int"
+                      >147</cem:beginsAt>
+                      <cem:usage rdf:resource="http://sadl.org/CodeExtractionModel.sadl#Used"/>
+                      <cem:codeBlock rdf:resource="http://windTurbine/Coefficients#Coefficients.getCoefficientDrag"/>
+                    </cem:Reference>
+                  </cem:reference>
+                  <cem:reference>
+                    <cem:Reference>
+                      <cem:endsAt rdf:datatype="http://www.w3.org/2001/XMLSchema#int"
+                      >149</cem:endsAt>
+                      <cem:beginsAt rdf:datatype="http://www.w3.org/2001/XMLSchema#int"
+                      >149</cem:beginsAt>
+                      <cem:usage rdf:resource="http://sadl.org/CodeExtractionModel.sadl#Used"/>
+                      <cem:codeBlock rdf:resource="http://windTurbine/Coefficients#Coefficients.getCoefficientDrag"/>
+                    </cem:Reference>
+                  </cem:reference>
+                  <cem:reference>
+                    <cem:Reference>
+                      <cem:endsAt rdf:datatype="http://www.w3.org/2001/XMLSchema#int"
+                      >135</cem:endsAt>
+                      <cem:beginsAt rdf:datatype="http://www.w3.org/2001/XMLSchema#int"
+                      >135</cem:beginsAt>
+                      <cem:usage rdf:resource="http://sadl.org/CodeExtractionModel.sadl#Used"/>
+                      <cem:codeBlock rdf:resource="http://windTurbine/Coefficients#Coefficients.getCoefficientDrag"/>
+                    </cem:Reference>
+                  </cem:reference>
+                  <cem:reference>
+                    <cem:Reference>
+                      <cem:endsAt rdf:datatype="http://www.w3.org/2001/XMLSchema#int"
+                      >143</cem:endsAt>
+                      <cem:beginsAt rdf:datatype="http://www.w3.org/2001/XMLSchema#int"
+                      >143</cem:beginsAt>
+                      <cem:usage rdf:resource="http://sadl.org/CodeExtractionModel.sadl#Used"/>
+                      <cem:codeBlock rdf:resource="http://windTurbine/Coefficients#Coefficients.getCoefficientDrag"/>
+                    </cem:Reference>
+                  </cem:reference>
+                  <cem:reference>
+                    <cem:Reference>
+                      <cem:endsAt rdf:datatype="http://www.w3.org/2001/XMLSchema#int"
+                      >145</cem:endsAt>
+                      <cem:beginsAt rdf:datatype="http://www.w3.org/2001/XMLSchema#int"
+                      >145</cem:beginsAt>
+                      <cem:usage rdf:resource="http://sadl.org/CodeExtractionModel.sadl#Used"/>
+                      <cem:codeBlock rdf:resource="http://windTurbine/Coefficients#Coefficients.getCoefficientDrag"/>
+                    </cem:Reference>
+                  </cem:reference>
+                  <cem:reference>
+                    <cem:Reference>
+                      <cem:endsAt rdf:datatype="http://www.w3.org/2001/XMLSchema#int"
+                      >148</cem:endsAt>
+                      <cem:beginsAt rdf:datatype="http://www.w3.org/2001/XMLSchema#int"
+                      >148</cem:beginsAt>
+                      <cem:usage rdf:resource="http://sadl.org/CodeExtractionModel.sadl#Used"/>
+                      <cem:codeBlock rdf:resource="http://windTurbine/Coefficients#Coefficients.getCoefficientDrag"/>
+                    </cem:Reference>
+                  </cem:reference>
+                  <cem:reference>
+                    <cem:Reference>
+                      <cem:endsAt rdf:datatype="http://www.w3.org/2001/XMLSchema#int"
+                      >149</cem:endsAt>
+                      <cem:beginsAt rdf:datatype="http://www.w3.org/2001/XMLSchema#int"
+                      >149</cem:beginsAt>
+                      <cem:usage rdf:resource="http://sadl.org/CodeExtractionModel.sadl#Used"/>
+                      <cem:codeBlock rdf:resource="http://windTurbine/Coefficients#Coefficients.getCoefficientDrag"/>
+                    </cem:Reference>
+                  </cem:reference>
+                  <cem:varType rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+                  >double</cem:varType>
+                  <cem:reference>
+                    <cem:Reference>
+                      <cem:endsAt rdf:datatype="http://www.w3.org/2001/XMLSchema#int"
+                      >145</cem:endsAt>
+                      <cem:beginsAt rdf:datatype="http://www.w3.org/2001/XMLSchema#int"
+                      >145</cem:beginsAt>
+                      <cem:usage rdf:resource="http://sadl.org/CodeExtractionModel.sadl#Used"/>
+                      <cem:codeBlock rdf:resource="http://windTurbine/Coefficients#Coefficients.getCoefficientDrag"/>
+                    </cem:Reference>
+                  </cem:reference>
+                  <cem:reference>
+                    <cem:Reference>
+                      <cem:endsAt rdf:datatype="http://www.w3.org/2001/XMLSchema#int"
+                      >145</cem:endsAt>
+                      <cem:beginsAt rdf:datatype="http://www.w3.org/2001/XMLSchema#int"
+                      >145</cem:beginsAt>
+                      <cem:usage rdf:resource="http://sadl.org/CodeExtractionModel.sadl#Used"/>
+                      <cem:codeBlock rdf:resource="http://windTurbine/Coefficients#Coefficients.getCoefficientDrag"/>
+                    </cem:Reference>
+                  </cem:reference>
+                  <cem:reference>
+                    <cem:Reference>
+                      <cem:endsAt rdf:datatype="http://www.w3.org/2001/XMLSchema#int"
+                      >145</cem:endsAt>
+                      <cem:beginsAt rdf:datatype="http://www.w3.org/2001/XMLSchema#int"
+                      >145</cem:beginsAt>
+                      <cem:usage rdf:resource="http://sadl.org/CodeExtractionModel.sadl#Used"/>
+                      <cem:codeBlock rdf:resource="http://windTurbine/Coefficients#Coefficients.getCoefficientDrag"/>
+                    </cem:Reference>
+                  </cem:reference>
+                  <cem:reference>
+                    <cem:Reference>
+                      <cem:endsAt rdf:datatype="http://www.w3.org/2001/XMLSchema#int"
+                      >150</cem:endsAt>
+                      <cem:beginsAt rdf:datatype="http://www.w3.org/2001/XMLSchema#int"
+                      >150</cem:beginsAt>
+                      <cem:usage rdf:resource="http://sadl.org/CodeExtractionModel.sadl#Used"/>
+                      <cem:codeBlock rdf:resource="http://windTurbine/Coefficients#Coefficients.getCoefficientDrag"/>
+                    </cem:Reference>
+                  </cem:reference>
+                  <cem:reference>
+                    <cem:Reference>
+                      <cem:endsAt rdf:datatype="http://www.w3.org/2001/XMLSchema#int"
+                      >155</cem:endsAt>
+                      <cem:beginsAt rdf:datatype="http://www.w3.org/2001/XMLSchema#int"
+                      >155</cem:beginsAt>
+                      <cem:usage rdf:resource="http://sadl.org/CodeExtractionModel.sadl#Used"/>
+                      <cem:codeBlock rdf:resource="http://windTurbine/Coefficients#Coefficients.getCoefficientDrag"/>
+                    </cem:Reference>
+                  </cem:reference>
+                  <cem:reference>
+                    <cem:Reference>
+                      <cem:endsAt rdf:datatype="http://www.w3.org/2001/XMLSchema#int"
+                      >146</cem:endsAt>
+                      <cem:beginsAt rdf:datatype="http://www.w3.org/2001/XMLSchema#int"
+                      >146</cem:beginsAt>
+                      <cem:usage rdf:resource="http://sadl.org/CodeExtractionModel.sadl#Used"/>
+                      <cem:codeBlock rdf:resource="http://windTurbine/Coefficients#Coefficients.getCoefficientDrag"/>
+                    </cem:Reference>
+                  </cem:reference>
+                  <cem:reference>
+                    <cem:Reference>
+                      <cem:endsAt rdf:datatype="http://www.w3.org/2001/XMLSchema#int"
+                      >147</cem:endsAt>
+                      <cem:beginsAt rdf:datatype="http://www.w3.org/2001/XMLSchema#int"
+                      >147</cem:beginsAt>
+                      <cem:usage rdf:resource="http://sadl.org/CodeExtractionModel.sadl#Used"/>
+                      <cem:codeBlock rdf:resource="http://windTurbine/Coefficients#Coefficients.getCoefficientDrag"/>
+                    </cem:Reference>
+                  </cem:reference>
+                  <cem:reference>
+                    <cem:Reference>
+                      <cem:input rdf:datatype="http://www.w3.org/2001/XMLSchema#boolean"
+                      >true</cem:input>
+                      <cem:endsAt rdf:datatype="http://www.w3.org/2001/XMLSchema#int"
+                      >129</cem:endsAt>
+                      <cem:beginsAt rdf:datatype="http://www.w3.org/2001/XMLSchema#int"
+                      >129</cem:beginsAt>
+                      <cem:usage rdf:resource="http://sadl.org/CodeExtractionModel.sadl#Defined"/>
+                      <cem:codeBlock rdf:resource="http://windTurbine/Coefficients#Coefficients.getCoefficientDrag"/>
+                    </cem:Reference>
+                  </cem:reference>
+                  <cem:reference>
+                    <cem:Reference>
+                      <cem:endsAt rdf:datatype="http://www.w3.org/2001/XMLSchema#int"
+                      >150</cem:endsAt>
+                      <cem:beginsAt rdf:datatype="http://www.w3.org/2001/XMLSchema#int"
+                      >150</cem:beginsAt>
+                      <cem:usage rdf:resource="http://sadl.org/CodeExtractionModel.sadl#Used"/>
+                      <cem:codeBlock rdf:resource="http://windTurbine/Coefficients#Coefficients.getCoefficientDrag"/>
+                    </cem:Reference>
+                  </cem:reference>
+                  <cem:reference>
+                    <cem:Reference>
+                      <cem:endsAt rdf:datatype="http://www.w3.org/2001/XMLSchema#int"
+                      >131</cem:endsAt>
+                      <cem:beginsAt rdf:datatype="http://www.w3.org/2001/XMLSchema#int"
+                      >131</cem:beginsAt>
+                      <cem:usage rdf:resource="http://sadl.org/CodeExtractionModel.sadl#Used"/>
+                      <cem:codeBlock rdf:resource="http://windTurbine/Coefficients#Coefficients.getCoefficientDrag"/>
+                    </cem:Reference>
+                  </cem:reference>
+                  <cem:reference>
+                    <cem:Reference>
+                      <cem:endsAt rdf:datatype="http://www.w3.org/2001/XMLSchema#int"
+                      >144</cem:endsAt>
+                      <cem:beginsAt rdf:datatype="http://www.w3.org/2001/XMLSchema#int"
+                      >144</cem:beginsAt>
+                      <cem:usage rdf:resource="http://sadl.org/CodeExtractionModel.sadl#Used"/>
+                      <cem:codeBlock rdf:resource="http://windTurbine/Coefficients#Coefficients.getCoefficientDrag"/>
+                    </cem:Reference>
+                  </cem:reference>
+                  <cem:reference>
+                    <cem:Reference>
+                      <cem:endsAt rdf:datatype="http://www.w3.org/2001/XMLSchema#int"
+                      >144</cem:endsAt>
+                      <cem:beginsAt rdf:datatype="http://www.w3.org/2001/XMLSchema#int"
+                      >144</cem:beginsAt>
+                      <cem:usage rdf:resource="http://sadl.org/CodeExtractionModel.sadl#Used"/>
+                      <cem:codeBlock rdf:resource="http://windTurbine/Coefficients#Coefficients.getCoefficientDrag"/>
+                    </cem:Reference>
+                  </cem:reference>
+                  <cem:reference>
+                    <cem:Reference>
+                      <cem:endsAt rdf:datatype="http://www.w3.org/2001/XMLSchema#int"
+                      >144</cem:endsAt>
+                      <cem:beginsAt rdf:datatype="http://www.w3.org/2001/XMLSchema#int"
+                      >144</cem:beginsAt>
+                      <cem:usage rdf:resource="http://sadl.org/CodeExtractionModel.sadl#Used"/>
+                      <cem:codeBlock rdf:resource="http://windTurbine/Coefficients#Coefficients.getCoefficientDrag"/>
+                    </cem:Reference>
+                  </cem:reference>
+                  <cem:reference>
+                    <cem:Reference>
+                      <cem:endsAt rdf:datatype="http://www.w3.org/2001/XMLSchema#int"
+                      >136</cem:endsAt>
+                      <cem:beginsAt rdf:datatype="http://www.w3.org/2001/XMLSchema#int"
+                      >136</cem:beginsAt>
+                      <cem:usage rdf:resource="http://sadl.org/CodeExtractionModel.sadl#Used"/>
+                      <cem:codeBlock rdf:resource="http://windTurbine/Coefficients#Coefficients.getCoefficientDrag"/>
+                    </cem:Reference>
+                  </cem:reference>
+                  <cem:reference>
+                    <cem:Reference>
+                      <cem:endsAt rdf:datatype="http://www.w3.org/2001/XMLSchema#int"
+                      >139</cem:endsAt>
+                      <cem:beginsAt rdf:datatype="http://www.w3.org/2001/XMLSchema#int"
+                      >139</cem:beginsAt>
+                      <cem:usage rdf:resource="http://sadl.org/CodeExtractionModel.sadl#Used"/>
+                      <cem:codeBlock rdf:resource="http://windTurbine/Coefficients#Coefficients.getCoefficientDrag"/>
+                    </cem:Reference>
+                  </cem:reference>
+                  <cem:reference>
+                    <cem:Reference>
+                      <cem:endsAt rdf:datatype="http://www.w3.org/2001/XMLSchema#int"
+                      >145</cem:endsAt>
+                      <cem:beginsAt rdf:datatype="http://www.w3.org/2001/XMLSchema#int"
+                      >145</cem:beginsAt>
+                      <cem:usage rdf:resource="http://sadl.org/CodeExtractionModel.sadl#Used"/>
+                      <cem:codeBlock rdf:resource="http://windTurbine/Coefficients#Coefficients.getCoefficientDrag"/>
+                    </cem:Reference>
+                  </cem:reference>
+                  <cem:reference>
+                    <cem:Reference>
+                      <cem:endsAt rdf:datatype="http://www.w3.org/2001/XMLSchema#int"
+                      >145</cem:endsAt>
+                      <cem:beginsAt rdf:datatype="http://www.w3.org/2001/XMLSchema#int"
+                      >145</cem:beginsAt>
+                      <cem:usage rdf:resource="http://sadl.org/CodeExtractionModel.sadl#Used"/>
+                      <cem:codeBlock rdf:resource="http://windTurbine/Coefficients#Coefficients.getCoefficientDrag"/>
+                    </cem:Reference>
+                  </cem:reference>
+                  <cem:varName rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+                  >alpha</cem:varName>
+                </cem:MethodArgument>
+              </sadllistmodel:first>
+              <rdf:type rdf:nodeID="A0"/>
+            </cem:cmArguments>
+            <cem:serialization rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+            >/**&#xD;
+ * Returns the drag coefficient of the airfoil as a function of&#xD;
+ * the angle of attack in radians. This is the curve-fitted representation of the&#xD;
+ * extended polar. The extended polar was generated by extrapolating the data taken&#xD;
+ * from the xFoil predicted polar for the airfoil under the given aerodynamic constraints using the&#xD;
+ * Viterna method to extend the alpha range from -pi to pi radians.&#xD;
+ *&#xD;
+ * The mathematical representation of this method is a piecewise function&#xD;
+ * consisting of a sum of sines and cosines generated through Fourier transform when&lt;br&gt;&lt;br&gt;&#xD;
+ * -pi rad &amp;lt;= alpha &amp;lt; -0.196350 rad, and when&lt;br&gt; 0.349066 rad &amp;lt; alpha &amp;lt;= pi rad.&lt;br&gt;&lt;br&gt;&#xD;
+ *&#xD;
+ * The function consists of polynomial terms when&lt;br&gt;&lt;br&gt;&#xD;
+ * -0.196350 rad &amp;lt;= alpha &amp;lt;= 0.349066 rad.&#xD;
+ *&#xD;
+ * @param alpha Angle of attack in radians (any real angle).&#xD;
+ * @return Coefficient of lift as function of angle alpha.&#xD;
+ *&#xD;
+ * @param alpha Angle of attack in radians (any real angle).&#xD;
+ * @return Coefficient of drag as function of angle alpha.&#xD;
+ */&#xD;
+public static double getCoefficientDrag(double alpha) {&#xD;
+    if (alpha &lt; -PI) {&#xD;
+        return getCoefficientDrag(alpha + 2 * PI);&#xD;
+    }&#xD;
+    if (alpha &gt; PI) {&#xD;
+        return getCoefficientDrag(alpha - 2 * PI);&#xD;
+    }&#xD;
+    if (alpha &gt;= -PI &amp;&amp; alpha &lt; -0.196350) {&#xD;
+        return 0.661933637102 - 0.6336 * Math.cos(alpha * 1.992) - 0.007707 * Math.sin(alpha * 1.992);&#xD;
+    }&#xD;
+    if (alpha &gt;= -0.196350 &amp;&amp; alpha &lt; 0.296706) {&#xD;
+        return 18090 * alpha * alpha * alpha * alpha * alpha * alpha * alpha * alpha - 6336 * alpha * alpha * alpha * alpha * alpha * alpha * alpha - 434.3 * alpha * alpha * alpha * alpha * alpha * alpha + 269.9 * alpha * alpha * alpha * alpha * alpha * +6.546 * alpha * alpha * alpha * alpha - 3.696 * alpha * alpha * alpha + 0.5564 * alpha * alpha - 0.01205 * alpha + 0.009997;&#xD;
+    }&#xD;
+    if (alpha &gt;= 0.296706 &amp;&amp; alpha &lt;= 0.349066) {&#xD;
+        return 0.7668 * alpha - 0.0894;&#xD;
+    } else {&#xD;
+        return 0.65978759232 - 0.6337 * Math.cos(alpha * 1.992) + 0.007889 * Math.sin(alpha * 1.992);&#xD;
+    }&#xD;
+}</cem:serialization>
+            <cem:cmReturnTypes rdf:parseType="Resource">
+              <sadllistmodel:first rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+              >double</sadllistmodel:first>
+              <rdf:type rdf:nodeID="A1"/>
+            </cem:cmReturnTypes>
+            <cem:containedIn>
+              <cem:Class rdf:ID="Coefficients">
+                <cem:serialization rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+                >public class Coefficients {&#xD;
+&#xD;
+    private static final double PI = Math.PI;&#xD;
+&#xD;
+    /**&#xD;
+     * Returns the lift coefficient of the airfoil as a function of&#xD;
+     * the angle of attack in radians. This is the curve-fitted representation of the&#xD;
+     * extended polar. The extended polar was generated by extrapolating the data taken&#xD;
+     * from the xFoil predicted polar for the airfoil under the given aerodynamic constraints using the&#xD;
+     * Viterna method to extend the alpha range from -pi to pi radians.&lt;br&gt;&lt;br&gt;&#xD;
+     *&#xD;
+     * The mathematical representation of this method is a piecewise function&#xD;
+     * consisting of a sum of sines and cosines generated through Fourier transform when&lt;br&gt;&lt;br&gt;&#xD;
+     * -0.196349541 rad &amp;lt; alpha &amp;lt;= -0.161442956 rad, when&lt;br&gt; -0.161442956 rad &amp;lt; alpha &amp;lt;= 0 rad,&#xD;
+     * when&lt;br&gt; 0 rad &amp;lt; alpha &amp;lt;= 0.23536 rad, when&lt;br&gt; 0.2487090 rad &amp;lt; alpha &amp;lt;= 0.296706 rad, and&#xD;
+     * when&lt;br&gt; 2.558 rad &amp;lt; alpha &amp;lt;= pi rad.&lt;br&gt;&lt;br&gt;&#xD;
+     *&#xD;
+     * The function consists of polynomial terms when&lt;br&gt;&lt;br&gt;&#xD;
+     * -pi rad &amp;lt;= alpha &amp;lt;= -0.196349541 rad, when&lt;br&gt;&#xD;
+     * 0.23536 rad &amp;lt; alpha &amp;lt;= 0.248709 rad, and when&lt;br&gt;&#xD;
+     * 0.296706 rad &amp;lt; alpha &amp;lt;= 2.558 rad.&lt;br&gt;&#xD;
+     *&#xD;
+     * @param alpha Angle of attack in radians (any real angle).&#xD;
+     * @return Coefficient of lift as function of angle alpha.&#xD;
+     */&#xD;
+    public static double getCoefficientLift(double alpha) {&#xD;
+        if (alpha &lt; -PI) {&#xD;
+            return getCoefficientLift(alpha + 2 * PI);&#xD;
+        }&#xD;
+        if (alpha &gt; PI) {&#xD;
+            return getCoefficientLift(alpha - 2 * PI);&#xD;
+        }&#xD;
+        if (alpha &gt;= -PI &amp;&amp; alpha &lt;= -2.617993878) {&#xD;
+            return -4.53 * alpha * alpha * alpha - 43.18 * alpha * alpha - 134.5 * alpha - 136.8002 - 0.0331272294475;&#xD;
+        }&#xD;
+        if (alpha &gt; -2.617993878 &amp;&amp; alpha &lt; -0.34906585) {&#xD;
+            return -0.1382 * alpha * alpha * alpha * alpha * alpha - 1.0964 * alpha * alpha * alpha * alpha - 3.0056 * alpha * alpha * alpha - 3.2776 * alpha * alpha - 1.788 * alpha - 1.01973983808;&#xD;
+        }&#xD;
+        if (alpha &gt;= -0.34906585 &amp;&amp; alpha &lt;= -0.196349541) {&#xD;
+            return 0.345 * alpha - 0.5632;&#xD;
+        }&#xD;
+        if (alpha &gt; -0.196349541 &amp;&amp; alpha &lt;= -0.161442956) {&#xD;
+            return -0.7268 + 0.04089 * Math.cos(alpha * 90) + 0.06894 * Math.sin(alpha * 90) - 0.00935 * Math.cos(180 * alpha) + 0.01487 * Math.sin(180 * alpha);&#xD;
+        }&#xD;
+        if (alpha &gt; -0.161442956 &amp;&amp; alpha &lt;= 0) {&#xD;
+            return 0.1978 + 0.5245 * Math.cos(alpha * 17.2) + 0.9687 * Math.sin(alpha * 17.2) - 0.4208 * Math.cos(2 * alpha * 17.2) + 0.06007 * Math.sin(2 * alpha * 17.2) - 0.016 * Math.cos(3 * alpha * 17.2) - 0.1282 * Math.sin(3 * alpha * 17.2) + 0.00114686568;&#xD;
+        }&#xD;
+        if (alpha &gt; 0 &amp;&amp; alpha &lt;= 0.23536) {&#xD;
+            return 1.01067 * (14.48 * Math.sin(11.01 * alpha - 0.1653) + 13.37 * Math.sin(11.4 * alpha + 2.941) + 0.01288 * Math.sin(55.38 * alpha + 1.35) - 0.01026235261);&#xD;
+        }&#xD;
+        if (alpha &gt; 0.23536 &amp;&amp; alpha &lt;= 0.248709) {&#xD;
+            return 1.324566 + 0.01566 * alpha;&#xD;
+        }&#xD;
+        if (alpha &gt; 0.248709 &amp;&amp; alpha &lt;= 0.296706) {&#xD;
+            return 1.152 + 0.06825 * Math.cos(alpha * 54.38) + 0.177 * Math.sin(alpha * 54.38) + 0.03451 * Math.cos(2 * alpha * 54.38) + 0.004357 * Math.sin(2 * alpha * 54.38);&#xD;
+        }&#xD;
+        if (alpha &gt; 0.296706 &amp;&amp; alpha &lt;= 2.558) {&#xD;
+            return 0.2249 * alpha * alpha * alpha * alpha * alpha * alpha - 2.2324 * alpha * alpha * alpha * alpha * alpha + 8.6871 * alpha * alpha * alpha * alpha - 16.423 * alpha * alpha * alpha + 15.184 * alpha * alpha - 6.8925 * alpha + 2.1175079746;&#xD;
+        } else {&#xD;
+            return -0.3942 - 0.3309 * Math.cos(alpha * 4.744) + 0.08493 * Math.sin(alpha * 4.744) + 0.08745 * Math.cos(2 * alpha * 4.744) - 0.1064 * Math.sin(2 * alpha * 4.744);&#xD;
+        }&#xD;
+    }&#xD;
+&#xD;
+    /**&#xD;
+     * Returns the drag coefficient of the airfoil as a function of&#xD;
+     * the angle of attack in radians. This is the curve-fitted representation of the&#xD;
+     * extended polar. The extended polar was generated by extrapolating the data taken&#xD;
+     * from the xFoil predicted polar for the airfoil under the given aerodynamic constraints using the&#xD;
+     * Viterna method to extend the alpha range from -pi to pi radians.&#xD;
+     *&#xD;
+     * The mathematical representation of this method is a piecewise function&#xD;
+     * consisting of a sum of sines and cosines generated through Fourier transform when&lt;br&gt;&lt;br&gt;&#xD;
+     * -pi rad &amp;lt;= alpha &amp;lt; -0.196350 rad, and when&lt;br&gt; 0.349066 rad &amp;lt; alpha &amp;lt;= pi rad.&lt;br&gt;&lt;br&gt;&#xD;
+     *&#xD;
+     * The function consists of polynomial terms when&lt;br&gt;&lt;br&gt;&#xD;
+     * -0.196350 rad &amp;lt;= alpha &amp;lt;= 0.349066 rad.&#xD;
+     *&#xD;
+     * @param alpha Angle of attack in radians (any real angle).&#xD;
+     * @return Coefficient of lift as function of angle alpha.&#xD;
+     *&#xD;
+     * @param alpha Angle of attack in radians (any real angle).&#xD;
+     * @return Coefficient of drag as function of angle alpha.&#xD;
+     */&#xD;
+    public static double getCoefficientDrag(double alpha) {&#xD;
+        if (alpha &lt; -PI) {&#xD;
+            return getCoefficientDrag(alpha + 2 * PI);&#xD;
+        }&#xD;
+        if (alpha &gt; PI) {&#xD;
+            return getCoefficientDrag(alpha - 2 * PI);&#xD;
+        }&#xD;
+        if (alpha &gt;= -PI &amp;&amp; alpha &lt; -0.196350) {&#xD;
+            return 0.661933637102 - 0.6336 * Math.cos(alpha * 1.992) - 0.007707 * Math.sin(alpha * 1.992);&#xD;
+        }&#xD;
+        if (alpha &gt;= -0.196350 &amp;&amp; alpha &lt; 0.296706) {&#xD;
+            return 18090 * alpha * alpha * alpha * alpha * alpha * alpha * alpha * alpha - 6336 * alpha * alpha * alpha * alpha * alpha * alpha * alpha - 434.3 * alpha * alpha * alpha * alpha * alpha * alpha + 269.9 * alpha * alpha * alpha * alpha * alpha * +6.546 * alpha * alpha * alpha * alpha - 3.696 * alpha * alpha * alpha + 0.5564 * alpha * alpha - 0.01205 * alpha + 0.009997;&#xD;
+        }&#xD;
+        if (alpha &gt;= 0.296706 &amp;&amp; alpha &lt;= 0.349066) {&#xD;
+            return 0.7668 * alpha - 0.0894;&#xD;
+        } else {&#xD;
+            return 0.65978759232 - 0.6337 * Math.cos(alpha * 1.992) + 0.007889 * Math.sin(alpha * 1.992);&#xD;
+        }&#xD;
+    }&#xD;
+}</cem:serialization>
+              </cem:Class>
+            </cem:containedIn>
+            <cem:endsAt rdf:datatype="http://www.w3.org/2001/XMLSchema#int"
+            >161</cem:endsAt>
+            <cem:doesComputation rdf:datatype="http://www.w3.org/2001/XMLSchema#boolean"
+            >true</cem:doesComputation>
+            <cem:calls>
+              <cem:MethodCall>
+                <cem:endsAt rdf:datatype="http://www.w3.org/2001/XMLSchema#int"
+                >136</cem:endsAt>
+                <cem:beginsAt rdf:datatype="http://www.w3.org/2001/XMLSchema#int"
+                >136</cem:beginsAt>
+                <cem:codeBlock rdf:resource="http://windTurbine/Coefficients#Coefficients.getCoefficientDrag"/>
+              </cem:MethodCall>
+            </cem:calls>
+          </cem:Method>
+        </cem:codeBlock>
+      </cem:Reference>
+    </cem:reference>
+    <cem:reference>
+      <cem:Reference>
+        <cem:endsAt rdf:datatype="http://www.w3.org/2001/XMLSchema#int"
+        >44</cem:endsAt>
+        <cem:beginsAt rdf:datatype="http://www.w3.org/2001/XMLSchema#int"
+        >44</cem:beginsAt>
+        <cem:usage rdf:resource="http://sadl.org/CodeExtractionModel.sadl#Used"/>
+        <cem:codeBlock>
+          <cem:Method rdf:ID="Coefficients.getCoefficientLift">
+            <cem:containedIn rdf:resource="http://windTurbine/Coefficients#Coefficients"/>
+            <cem:serialization rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+            >/**&#xD;
+ * Returns the lift coefficient of the airfoil as a function of&#xD;
+ * the angle of attack in radians. This is the curve-fitted representation of the&#xD;
+ * extended polar. The extended polar was generated by extrapolating the data taken&#xD;
+ * from the xFoil predicted polar for the airfoil under the given aerodynamic constraints using the&#xD;
+ * Viterna method to extend the alpha range from -pi to pi radians.&lt;br&gt;&lt;br&gt;&#xD;
+ *&#xD;
+ * The mathematical representation of this method is a piecewise function&#xD;
+ * consisting of a sum of sines and cosines generated through Fourier transform when&lt;br&gt;&lt;br&gt;&#xD;
+ * -0.196349541 rad &amp;lt; alpha &amp;lt;= -0.161442956 rad, when&lt;br&gt; -0.161442956 rad &amp;lt; alpha &amp;lt;= 0 rad,&#xD;
+ * when&lt;br&gt; 0 rad &amp;lt; alpha &amp;lt;= 0.23536 rad, when&lt;br&gt; 0.2487090 rad &amp;lt; alpha &amp;lt;= 0.296706 rad, and&#xD;
+ * when&lt;br&gt; 2.558 rad &amp;lt; alpha &amp;lt;= pi rad.&lt;br&gt;&lt;br&gt;&#xD;
+ *&#xD;
+ * The function consists of polynomial terms when&lt;br&gt;&lt;br&gt;&#xD;
+ * -pi rad &amp;lt;= alpha &amp;lt;= -0.196349541 rad, when&lt;br&gt;&#xD;
+ * 0.23536 rad &amp;lt; alpha &amp;lt;= 0.248709 rad, and when&lt;br&gt;&#xD;
+ * 0.296706 rad &amp;lt; alpha &amp;lt;= 2.558 rad.&lt;br&gt;&#xD;
+ *&#xD;
+ * @param alpha Angle of attack in radians (any real angle).&#xD;
+ * @return Coefficient of lift as function of angle alpha.&#xD;
+ */&#xD;
+public static double getCoefficientLift(double alpha) {&#xD;
+    if (alpha &lt; -PI) {&#xD;
+        return getCoefficientLift(alpha + 2 * PI);&#xD;
+    }&#xD;
+    if (alpha &gt; PI) {&#xD;
+        return getCoefficientLift(alpha - 2 * PI);&#xD;
+    }&#xD;
+    if (alpha &gt;= -PI &amp;&amp; alpha &lt;= -2.617993878) {&#xD;
+        return -4.53 * alpha * alpha * alpha - 43.18 * alpha * alpha - 134.5 * alpha - 136.8002 - 0.0331272294475;&#xD;
+    }&#xD;
+    if (alpha &gt; -2.617993878 &amp;&amp; alpha &lt; -0.34906585) {&#xD;
+        return -0.1382 * alpha * alpha * alpha * alpha * alpha - 1.0964 * alpha * alpha * alpha * alpha - 3.0056 * alpha * alpha * alpha - 3.2776 * alpha * alpha - 1.788 * alpha - 1.01973983808;&#xD;
+    }&#xD;
+    if (alpha &gt;= -0.34906585 &amp;&amp; alpha &lt;= -0.196349541) {&#xD;
+        return 0.345 * alpha - 0.5632;&#xD;
+    }&#xD;
+    if (alpha &gt; -0.196349541 &amp;&amp; alpha &lt;= -0.161442956) {&#xD;
+        return -0.7268 + 0.04089 * Math.cos(alpha * 90) + 0.06894 * Math.sin(alpha * 90) - 0.00935 * Math.cos(180 * alpha) + 0.01487 * Math.sin(180 * alpha);&#xD;
+    }&#xD;
+    if (alpha &gt; -0.161442956 &amp;&amp; alpha &lt;= 0) {&#xD;
+        return 0.1978 + 0.5245 * Math.cos(alpha * 17.2) + 0.9687 * Math.sin(alpha * 17.2) - 0.4208 * Math.cos(2 * alpha * 17.2) + 0.06007 * Math.sin(2 * alpha * 17.2) - 0.016 * Math.cos(3 * alpha * 17.2) - 0.1282 * Math.sin(3 * alpha * 17.2) + 0.00114686568;&#xD;
+    }&#xD;
+    if (alpha &gt; 0 &amp;&amp; alpha &lt;= 0.23536) {&#xD;
+        return 1.01067 * (14.48 * Math.sin(11.01 * alpha - 0.1653) + 13.37 * Math.sin(11.4 * alpha + 2.941) + 0.01288 * Math.sin(55.38 * alpha + 1.35) - 0.01026235261);&#xD;
+    }&#xD;
+    if (alpha &gt; 0.23536 &amp;&amp; alpha &lt;= 0.248709) {&#xD;
+        return 1.324566 + 0.01566 * alpha;&#xD;
+    }&#xD;
+    if (alpha &gt; 0.248709 &amp;&amp; alpha &lt;= 0.296706) {&#xD;
+        return 1.152 + 0.06825 * Math.cos(alpha * 54.38) + 0.177 * Math.sin(alpha * 54.38) + 0.03451 * Math.cos(2 * alpha * 54.38) + 0.004357 * Math.sin(2 * alpha * 54.38);&#xD;
+    }&#xD;
+    if (alpha &gt; 0.296706 &amp;&amp; alpha &lt;= 2.558) {&#xD;
+        return 0.2249 * alpha * alpha * alpha * alpha * alpha * alpha - 2.2324 * alpha * alpha * alpha * alpha * alpha + 8.6871 * alpha * alpha * alpha * alpha - 16.423 * alpha * alpha * alpha + 15.184 * alpha * alpha - 6.8925 * alpha + 2.1175079746;&#xD;
+    } else {&#xD;
+        return -0.3942 - 0.3309 * Math.cos(alpha * 4.744) + 0.08493 * Math.sin(alpha * 4.744) + 0.08745 * Math.cos(2 * alpha * 4.744) - 0.1064 * Math.sin(2 * alpha * 4.744);&#xD;
+    }&#xD;
+}</cem:serialization>
+            <cem:beginsAt rdf:datatype="http://www.w3.org/2001/XMLSchema#int"
+            >37</cem:beginsAt>
+            <cem:doesComputation rdf:datatype="http://www.w3.org/2001/XMLSchema#boolean"
+            >true</cem:doesComputation>
+            <cem:endsAt rdf:datatype="http://www.w3.org/2001/XMLSchema#int"
+            >106</cem:endsAt>
+            <cem:cmArguments rdf:parseType="Resource">
+              <sadllistmodel:first>
+                <cem:MethodArgument rdf:ID="Coefficients.getCoefficientLift.alpha">
+                  <cem:reference>
+                    <cem:Reference>
+                      <cem:endsAt rdf:datatype="http://www.w3.org/2001/XMLSchema#int"
+                      >78</cem:endsAt>
+                      <cem:beginsAt rdf:datatype="http://www.w3.org/2001/XMLSchema#int"
+                      >78</cem:beginsAt>
+                      <cem:usage rdf:resource="http://sadl.org/CodeExtractionModel.sadl#Used"/>
+                      <cem:codeBlock rdf:resource="http://windTurbine/Coefficients#Coefficients.getCoefficientLift"/>
+                    </cem:Reference>
+                  </cem:reference>
+                  <cem:reference>
+                    <cem:Reference>
+                      <cem:endsAt rdf:datatype="http://www.w3.org/2001/XMLSchema#int"
+                      >90</cem:endsAt>
+                      <cem:beginsAt rdf:datatype="http://www.w3.org/2001/XMLSchema#int"
+                      >90</cem:beginsAt>
+                      <cem:usage rdf:resource="http://sadl.org/CodeExtractionModel.sadl#Used"/>
+                      <cem:codeBlock rdf:resource="http://windTurbine/Coefficients#Coefficients.getCoefficientLift"/>
+                    </cem:Reference>
+                  </cem:reference>
+                  <cem:reference>
+                    <cem:Reference>
+                      <cem:endsAt rdf:datatype="http://www.w3.org/2001/XMLSchema#int"
+                      >48</cem:endsAt>
+                      <cem:beginsAt rdf:datatype="http://www.w3.org/2001/XMLSchema#int"
+                      >48</cem:beginsAt>
+                      <cem:usage rdf:resource="http://sadl.org/CodeExtractionModel.sadl#Used"/>
+                      <cem:codeBlock rdf:resource="http://windTurbine/Coefficients#Coefficients.getCoefficientLift"/>
+                    </cem:Reference>
+                  </cem:reference>
+                  <cem:reference>
+                    <cem:Reference>
+                      <cem:endsAt rdf:datatype="http://www.w3.org/2001/XMLSchema#int"
+                      >96</cem:endsAt>
+                      <cem:beginsAt rdf:datatype="http://www.w3.org/2001/XMLSchema#int"
+                      >96</cem:beginsAt>
+                      <cem:usage rdf:resource="http://sadl.org/CodeExtractionModel.sadl#Used"/>
+                      <cem:codeBlock rdf:resource="http://windTurbine/Coefficients#Coefficients.getCoefficientLift"/>
+                    </cem:Reference>
+                  </cem:reference>
+                  <cem:reference>
+                    <cem:Reference>
+                      <cem:endsAt rdf:datatype="http://www.w3.org/2001/XMLSchema#int"
+                      >66</cem:endsAt>
+                      <cem:beginsAt rdf:datatype="http://www.w3.org/2001/XMLSchema#int"
+                      >66</cem:beginsAt>
+                      <cem:usage rdf:resource="http://sadl.org/CodeExtractionModel.sadl#Used"/>
+                      <cem:codeBlock rdf:resource="http://windTurbine/Coefficients#Coefficients.getCoefficientLift"/>
+                    </cem:Reference>
+                  </cem:reference>
+                  <cem:reference>
+                    <cem:Reference>
+                      <cem:endsAt rdf:datatype="http://www.w3.org/2001/XMLSchema#int"
+                      >47</cem:endsAt>
+                      <cem:beginsAt rdf:datatype="http://www.w3.org/2001/XMLSchema#int"
+                      >47</cem:beginsAt>
+                      <cem:usage rdf:resource="http://sadl.org/CodeExtractionModel.sadl#Used"/>
+                      <cem:codeBlock rdf:resource="http://windTurbine/Coefficients#Coefficients.getCoefficientLift"/>
+                    </cem:Reference>
+                  </cem:reference>
+                  <cem:reference>
+                    <cem:Reference>
+                      <cem:endsAt rdf:datatype="http://www.w3.org/2001/XMLSchema#int"
+                      >53</cem:endsAt>
+                      <cem:beginsAt rdf:datatype="http://www.w3.org/2001/XMLSchema#int"
+                      >53</cem:beginsAt>
+                      <cem:usage rdf:resource="http://sadl.org/CodeExtractionModel.sadl#Used"/>
+                      <cem:codeBlock rdf:resource="http://windTurbine/Coefficients#Coefficients.getCoefficientLift"/>
+                    </cem:Reference>
+                  </cem:reference>
+                  <cem:reference>
+                    <cem:Reference>
+                      <cem:endsAt rdf:datatype="http://www.w3.org/2001/XMLSchema#int"
+                      >91</cem:endsAt>
+                      <cem:beginsAt rdf:datatype="http://www.w3.org/2001/XMLSchema#int"
+                      >91</cem:beginsAt>
+                      <cem:usage rdf:resource="http://sadl.org/CodeExtractionModel.sadl#Used"/>
+                      <cem:codeBlock rdf:resource="http://windTurbine/Coefficients#Coefficients.getCoefficientLift"/>
+                    </cem:Reference>
+                  </cem:reference>
+                  <cem:reference>
+                    <cem:Reference>
+                      <cem:endsAt rdf:datatype="http://www.w3.org/2001/XMLSchema#int"
+                      >54</cem:endsAt>
+                      <cem:beginsAt rdf:datatype="http://www.w3.org/2001/XMLSchema#int"
+                      >54</cem:beginsAt>
+                      <cem:usage rdf:resource="http://sadl.org/CodeExtractionModel.sadl#Used"/>
+                      <cem:codeBlock rdf:resource="http://windTurbine/Coefficients#Coefficients.getCoefficientLift"/>
+                    </cem:Reference>
+                  </cem:reference>
+                  <cem:reference>
+                    <cem:Reference>
+                      <cem:endsAt rdf:datatype="http://www.w3.org/2001/XMLSchema#int"
+                      >73</cem:endsAt>
+                      <cem:beginsAt rdf:datatype="http://www.w3.org/2001/XMLSchema#int"
+                      >73</cem:beginsAt>
+                      <cem:usage rdf:resource="http://sadl.org/CodeExtractionModel.sadl#Used"/>
+                      <cem:codeBlock rdf:resource="http://windTurbine/Coefficients#Coefficients.getCoefficientLift"/>
+                    </cem:Reference>
+                  </cem:reference>
+                  <cem:reference>
+                    <cem:Reference>
+                      <cem:endsAt rdf:datatype="http://www.w3.org/2001/XMLSchema#int"
+                      >53</cem:endsAt>
+                      <cem:beginsAt rdf:datatype="http://www.w3.org/2001/XMLSchema#int"
+                      >53</cem:beginsAt>
+                      <cem:usage rdf:resource="http://sadl.org/CodeExtractionModel.sadl#Used"/>
+                      <cem:codeBlock rdf:resource="http://windTurbine/Coefficients#Coefficients.getCoefficientLift"/>
+                    </cem:Reference>
+                  </cem:reference>
+                  <cem:varType rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+                  >double</cem:varType>
+                  <cem:reference>
+                    <cem:Reference>
+                      <cem:endsAt rdf:datatype="http://www.w3.org/2001/XMLSchema#int"
+                      >60</cem:endsAt>
+                      <cem:beginsAt rdf:datatype="http://www.w3.org/2001/XMLSchema#int"
+                      >60</cem:beginsAt>
+                      <cem:usage rdf:resource="http://sadl.org/CodeExtractionModel.sadl#Used"/>
+                      <cem:codeBlock rdf:resource="http://windTurbine/Coefficients#Coefficients.getCoefficientLift"/>
+                    </cem:Reference>
+                  </cem:reference>
+                  <cem:reference>
+                    <cem:Reference>
+                      <cem:endsAt rdf:datatype="http://www.w3.org/2001/XMLSchema#int"
+                      >81</cem:endsAt>
+                      <cem:beginsAt rdf:datatype="http://www.w3.org/2001/XMLSchema#int"
+                      >81</cem:beginsAt>
+                      <cem:usage rdf:resource="http://sadl.org/CodeExtractionModel.sadl#Used"/>
+                      <cem:codeBlock rdf:resource="http://windTurbine/Coefficients#Coefficients.getCoefficientLift"/>
+                    </cem:Reference>
+                  </cem:reference>
+                  <cem:reference>
+                    <cem:Reference>
+                      <cem:endsAt rdf:datatype="http://www.w3.org/2001/XMLSchema#int"
+                      >51</cem:endsAt>
+                      <cem:beginsAt rdf:datatype="http://www.w3.org/2001/XMLSchema#int"
+                      >51</cem:beginsAt>
+                      <cem:usage rdf:resource="http://sadl.org/CodeExtractionModel.sadl#Used"/>
+                      <cem:codeBlock rdf:resource="http://windTurbine/Coefficients#Coefficients.getCoefficientLift"/>
+                    </cem:Reference>
+                  </cem:reference>
+                  <cem:reference>
+                    <cem:Reference>
+                      <cem:endsAt rdf:datatype="http://www.w3.org/2001/XMLSchema#int"
+                      >73</cem:endsAt>
+                      <cem:beginsAt rdf:datatype="http://www.w3.org/2001/XMLSchema#int"
+                      >73</cem:beginsAt>
+                      <cem:usage rdf:resource="http://sadl.org/CodeExtractionModel.sadl#Used"/>
+                      <cem:codeBlock rdf:resource="http://windTurbine/Coefficients#Coefficients.getCoefficientLift"/>
+                    </cem:Reference>
+                  </cem:reference>
+                  <cem:reference>
+                    <cem:Reference>
+                      <cem:endsAt rdf:datatype="http://www.w3.org/2001/XMLSchema#int"
+                      >48</cem:endsAt>
+                      <cem:beginsAt rdf:datatype="http://www.w3.org/2001/XMLSchema#int"
+                      >48</cem:beginsAt>
+                      <cem:usage rdf:resource="http://sadl.org/CodeExtractionModel.sadl#Used"/>
+                      <cem:codeBlock rdf:resource="http://windTurbine/Coefficients#Coefficients.getCoefficientLift"/>
+                    </cem:Reference>
+                  </cem:reference>
+                  <cem:reference>
+                    <cem:Reference>
+                      <cem:endsAt rdf:datatype="http://www.w3.org/2001/XMLSchema#int"
+                      >39</cem:endsAt>
+                      <cem:beginsAt rdf:datatype="http://www.w3.org/2001/XMLSchema#int"
+                      >39</cem:beginsAt>
+                      <cem:usage rdf:resource="http://sadl.org/CodeExtractionModel.sadl#Used"/>
+                      <cem:codeBlock rdf:resource="http://windTurbine/Coefficients#Coefficients.getCoefficientLift"/>
+                    </cem:Reference>
+                  </cem:reference>
+                  <cem:reference>
+                    <cem:Reference>
+                      <cem:endsAt rdf:datatype="http://www.w3.org/2001/XMLSchema#int"
+                      >95</cem:endsAt>
+                      <cem:beginsAt rdf:datatype="http://www.w3.org/2001/XMLSchema#int"
+                      >95</cem:beginsAt>
+                      <cem:usage rdf:resource="http://sadl.org/CodeExtractionModel.sadl#Used"/>
+                      <cem:codeBlock rdf:resource="http://windTurbine/Coefficients#Coefficients.getCoefficientLift"/>
+                    </cem:Reference>
+                  </cem:reference>
+                  <cem:reference>
+                    <cem:Reference>
+                      <cem:endsAt rdf:datatype="http://www.w3.org/2001/XMLSchema#int"
+                      >99</cem:endsAt>
+                      <cem:beginsAt rdf:datatype="http://www.w3.org/2001/XMLSchema#int"
+                      >99</cem:beginsAt>
+                      <cem:usage rdf:resource="http://sadl.org/CodeExtractionModel.sadl#Used"/>
+                      <cem:codeBlock rdf:resource="http://windTurbine/Coefficients#Coefficients.getCoefficientLift"/>
+                    </cem:Reference>
+                  </cem:reference>
+                  <cem:reference>
+                    <cem:Reference>
+                      <cem:endsAt rdf:datatype="http://www.w3.org/2001/XMLSchema#int"
+                      >98</cem:endsAt>
+                      <cem:beginsAt rdf:datatype="http://www.w3.org/2001/XMLSchema#int"
+                      >98</cem:beginsAt>
+                      <cem:usage rdf:resource="http://sadl.org/CodeExtractionModel.sadl#Used"/>
+                      <cem:codeBlock rdf:resource="http://windTurbine/Coefficients#Coefficients.getCoefficientLift"/>
+                    </cem:Reference>
+                  </cem:reference>
+                  <cem:reference>
+                    <cem:Reference>
+                      <cem:endsAt rdf:datatype="http://www.w3.org/2001/XMLSchema#int"
+                      >52</cem:endsAt>
+                      <cem:beginsAt rdf:datatype="http://www.w3.org/2001/XMLSchema#int"
+                      >52</cem:beginsAt>
+                      <cem:usage rdf:resource="http://sadl.org/CodeExtractionModel.sadl#Used"/>
+                      <cem:codeBlock rdf:resource="http://windTurbine/Coefficients#Coefficients.getCoefficientLift"/>
+                    </cem:Reference>
+                  </cem:reference>
+                  <cem:reference>
+                    <cem:Reference>
+                      <cem:endsAt rdf:datatype="http://www.w3.org/2001/XMLSchema#int"
+                      >95</cem:endsAt>
+                      <cem:beginsAt rdf:datatype="http://www.w3.org/2001/XMLSchema#int"
+                      >95</cem:beginsAt>
+                      <cem:usage rdf:resource="http://sadl.org/CodeExtractionModel.sadl#Used"/>
+                      <cem:codeBlock rdf:resource="http://windTurbine/Coefficients#Coefficients.getCoefficientLift"/>
+                    </cem:Reference>
+                  </cem:reference>
+                  <cem:reference>
+                    <cem:Reference>
+                      <cem:endsAt rdf:datatype="http://www.w3.org/2001/XMLSchema#int"
+                      >97</cem:endsAt>
+                      <cem:beginsAt rdf:datatype="http://www.w3.org/2001/XMLSchema#int"
+                      >97</cem:beginsAt>
+                      <cem:usage rdf:resource="http://sadl.org/CodeExtractionModel.sadl#Used"/>
+                      <cem:codeBlock rdf:resource="http://windTurbine/Coefficients#Coefficients.getCoefficientLift"/>
+                    </cem:Reference>
+                  </cem:reference>
+                  <cem:reference>
+                    <cem:Reference>
+                      <cem:endsAt rdf:datatype="http://www.w3.org/2001/XMLSchema#int"
+                      >56</cem:endsAt>
+                      <cem:beginsAt rdf:datatype="http://www.w3.org/2001/XMLSchema#int"
+                      >56</cem:beginsAt>
+                      <cem:usage rdf:resource="http://sadl.org/CodeExtractionModel.sadl#Used"/>
+                      <cem:codeBlock rdf:resource="http://windTurbine/Coefficients#Coefficients.getCoefficientLift"/>
+                    </cem:Reference>
+                  </cem:reference>
+                  <cem:reference>
+                    <cem:Reference>
+                      <cem:endsAt rdf:datatype="http://www.w3.org/2001/XMLSchema#int"
+                      >89</cem:endsAt>
+                      <cem:beginsAt rdf:datatype="http://www.w3.org/2001/XMLSchema#int"
+                      >89</cem:beginsAt>
+                      <cem:usage rdf:resource="http://sadl.org/CodeExtractionModel.sadl#Used"/>
+                      <cem:codeBlock rdf:resource="http://windTurbine/Coefficients#Coefficients.getCoefficientLift"/>
+                    </cem:Reference>
+                  </cem:reference>
+                  <cem:reference>
+                    <cem:Reference>
+                      <cem:endsAt rdf:datatype="http://www.w3.org/2001/XMLSchema#int"
+                      >85</cem:endsAt>
+                      <cem:beginsAt rdf:datatype="http://www.w3.org/2001/XMLSchema#int"
+                      >85</cem:beginsAt>
+                      <cem:usage rdf:resource="http://sadl.org/CodeExtractionModel.sadl#Used"/>
+                      <cem:codeBlock rdf:resource="http://windTurbine/Coefficients#Coefficients.getCoefficientLift"/>
+                    </cem:Reference>
+                  </cem:reference>
+                  <cem:reference>
+                    <cem:Reference>
+                      <cem:endsAt rdf:datatype="http://www.w3.org/2001/XMLSchema#int"
+                      >43</cem:endsAt>
+                      <cem:beginsAt rdf:datatype="http://www.w3.org/2001/XMLSchema#int"
+                      >43</cem:beginsAt>
+                      <cem:usage rdf:resource="http://sadl.org/CodeExtractionModel.sadl#Used"/>
+                      <cem:codeBlock rdf:resource="http://windTurbine/Coefficients#Coefficients.getCoefficientLift"/>
+                    </cem:Reference>
+                  </cem:reference>
+                  <cem:reference>
+                    <cem:Reference>
+                      <cem:endsAt rdf:datatype="http://www.w3.org/2001/XMLSchema#int"
+                      >100</cem:endsAt>
+                      <cem:beginsAt rdf:datatype="http://www.w3.org/2001/XMLSchema#int"
+                      >100</cem:beginsAt>
+                      <cem:usage rdf:resource="http://sadl.org/CodeExtractionModel.sadl#Used"/>
+                      <cem:codeBlock rdf:resource="http://windTurbine/Coefficients#Coefficients.getCoefficientLift"/>
+                    </cem:Reference>
+                  </cem:reference>
+                  <cem:reference>
+                    <cem:Reference>
+                      <cem:input rdf:datatype="http://www.w3.org/2001/XMLSchema#boolean"
+                      >true</cem:input>
+                      <cem:endsAt rdf:datatype="http://www.w3.org/2001/XMLSchema#int"
+                      >37</cem:endsAt>
+                      <cem:beginsAt rdf:datatype="http://www.w3.org/2001/XMLSchema#int"
+                      >37</cem:beginsAt>
+                      <cem:usage rdf:resource="http://sadl.org/CodeExtractionModel.sadl#Defined"/>
+                      <cem:codeBlock rdf:resource="http://windTurbine/Coefficients#Coefficients.getCoefficientLift"/>
+                    </cem:Reference>
+                  </cem:reference>
+                  <cem:reference>
+                    <cem:Reference>
+                      <cem:endsAt rdf:datatype="http://www.w3.org/2001/XMLSchema#int"
+                      >74</cem:endsAt>
+                      <cem:beginsAt rdf:datatype="http://www.w3.org/2001/XMLSchema#int"
+                      >74</cem:beginsAt>
+                      <cem:usage rdf:resource="http://sadl.org/CodeExtractionModel.sadl#Used"/>
+                      <cem:codeBlock rdf:resource="http://windTurbine/Coefficients#Coefficients.getCoefficientLift"/>
+                    </cem:Reference>
+                  </cem:reference>
+                  <cem:reference>
+                    <cem:Reference>
+                      <cem:endsAt rdf:datatype="http://www.w3.org/2001/XMLSchema#int"
+                      >48</cem:endsAt>
+                      <cem:beginsAt rdf:datatype="http://www.w3.org/2001/XMLSchema#int"
+                      >48</cem:beginsAt>
+                      <cem:usage rdf:resource="http://sadl.org/CodeExtractionModel.sadl#Used"/>
+                      <cem:codeBlock rdf:resource="http://windTurbine/Coefficients#Coefficients.getCoefficientLift"/>
+                    </cem:Reference>
+                  </cem:reference>
+                  <cem:reference>
+                    <cem:Reference>
+                      <cem:endsAt rdf:datatype="http://www.w3.org/2001/XMLSchema#int"
+                      >48</cem:endsAt>
+                      <cem:beginsAt rdf:datatype="http://www.w3.org/2001/XMLSchema#int"
+                      >48</cem:beginsAt>
+                      <cem:usage rdf:resource="http://sadl.org/CodeExtractionModel.sadl#Used"/>
+                      <cem:codeBlock rdf:resource="http://windTurbine/Coefficients#Coefficients.getCoefficientLift"/>
+                    </cem:Reference>
+                  </cem:reference>
+                  <cem:varName rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+                  >alpha</cem:varName>
+                  <cem:reference>
+                    <cem:Reference>
+                      <cem:endsAt rdf:datatype="http://www.w3.org/2001/XMLSchema#int"
+                      >90</cem:endsAt>
+                      <cem:beginsAt rdf:datatype="http://www.w3.org/2001/XMLSchema#int"
+                      >90</cem:beginsAt>
+                      <cem:usage rdf:resource="http://sadl.org/CodeExtractionModel.sadl#Used"/>
+                      <cem:codeBlock rdf:resource="http://windTurbine/Coefficients#Coefficients.getCoefficientLift"/>
+                    </cem:Reference>
+                  </cem:reference>
+                  <cem:reference>
+                    <cem:Reference>
+                      <cem:endsAt rdf:datatype="http://www.w3.org/2001/XMLSchema#int"
+                      >96</cem:endsAt>
+                      <cem:beginsAt rdf:datatype="http://www.w3.org/2001/XMLSchema#int"
+                      >96</cem:beginsAt>
+                      <cem:usage rdf:resource="http://sadl.org/CodeExtractionModel.sadl#Used"/>
+                      <cem:codeBlock rdf:resource="http://windTurbine/Coefficients#Coefficients.getCoefficientLift"/>
+                    </cem:Reference>
+                  </cem:reference>
+                  <cem:reference>
+                    <cem:Reference>
+                      <cem:endsAt rdf:datatype="http://www.w3.org/2001/XMLSchema#int"
+                      >67</cem:endsAt>
+                      <cem:beginsAt rdf:datatype="http://www.w3.org/2001/XMLSchema#int"
+                      >67</cem:beginsAt>
+                      <cem:usage rdf:resource="http://sadl.org/CodeExtractionModel.sadl#Used"/>
+                      <cem:codeBlock rdf:resource="http://windTurbine/Coefficients#Coefficients.getCoefficientLift"/>
+                    </cem:Reference>
+                  </cem:reference>
+                  <cem:reference>
+                    <cem:Reference>
+                      <cem:endsAt rdf:datatype="http://www.w3.org/2001/XMLSchema#int"
+                      >94</cem:endsAt>
+                      <cem:beginsAt rdf:datatype="http://www.w3.org/2001/XMLSchema#int"
+                      >94</cem:beginsAt>
+                      <cem:usage rdf:resource="http://sadl.org/CodeExtractionModel.sadl#Used"/>
+                      <cem:codeBlock rdf:resource="http://windTurbine/Coefficients#Coefficients.getCoefficientLift"/>
+                    </cem:Reference>
+                  </cem:reference>
+                  <cem:reference>
+                    <cem:Reference>
+                      <cem:endsAt rdf:datatype="http://www.w3.org/2001/XMLSchema#int"
+                      >53</cem:endsAt>
+                      <cem:beginsAt rdf:datatype="http://www.w3.org/2001/XMLSchema#int"
+                      >53</cem:beginsAt>
+                      <cem:usage rdf:resource="http://sadl.org/CodeExtractionModel.sadl#Used"/>
+                      <cem:codeBlock rdf:resource="http://windTurbine/Coefficients#Coefficients.getCoefficientLift"/>
+                    </cem:Reference>
+                  </cem:reference>
+                  <cem:reference>
+                    <cem:Reference>
+                      <cem:endsAt rdf:datatype="http://www.w3.org/2001/XMLSchema#int"
+                      >91</cem:endsAt>
+                      <cem:beginsAt rdf:datatype="http://www.w3.org/2001/XMLSchema#int"
+                      >91</cem:beginsAt>
+                      <cem:usage rdf:resource="http://sadl.org/CodeExtractionModel.sadl#Used"/>
+                      <cem:codeBlock rdf:resource="http://windTurbine/Coefficients#Coefficients.getCoefficientLift"/>
+                    </cem:Reference>
+                  </cem:reference>
+                  <cem:reference>
+                    <cem:Reference>
+                      <cem:endsAt rdf:datatype="http://www.w3.org/2001/XMLSchema#int"
+                      >54</cem:endsAt>
+                      <cem:beginsAt rdf:datatype="http://www.w3.org/2001/XMLSchema#int"
+                      >54</cem:beginsAt>
+                      <cem:usage rdf:resource="http://sadl.org/CodeExtractionModel.sadl#Used"/>
+                      <cem:codeBlock rdf:resource="http://windTurbine/Coefficients#Coefficients.getCoefficientLift"/>
+                    </cem:Reference>
+                  </cem:reference>
+                  <cem:reference>
+                    <cem:Reference>
+                      <cem:endsAt rdf:datatype="http://www.w3.org/2001/XMLSchema#int"
+                      >102</cem:endsAt>
+                      <cem:beginsAt rdf:datatype="http://www.w3.org/2001/XMLSchema#int"
+                      >102</cem:beginsAt>
+                      <cem:usage rdf:resource="http://sadl.org/CodeExtractionModel.sadl#Used"/>
+                      <cem:codeBlock rdf:resource="http://windTurbine/Coefficients#Coefficients.getCoefficientLift"/>
+                    </cem:Reference>
+                  </cem:reference>
+                  <cem:reference>
+                    <cem:Reference>
+                      <cem:endsAt rdf:datatype="http://www.w3.org/2001/XMLSchema#int"
+                      >79</cem:endsAt>
+                      <cem:beginsAt rdf:datatype="http://www.w3.org/2001/XMLSchema#int"
+                      >79</cem:beginsAt>
+                      <cem:usage rdf:resource="http://sadl.org/CodeExtractionModel.sadl#Used"/>
+                      <cem:codeBlock rdf:resource="http://windTurbine/Coefficients#Coefficients.getCoefficientLift"/>
+                    </cem:Reference>
+                  </cem:reference>
+                  <cem:reference>
+                    <cem:Reference>
+                      <cem:endsAt rdf:datatype="http://www.w3.org/2001/XMLSchema#int"
+                      >72</cem:endsAt>
+                      <cem:beginsAt rdf:datatype="http://www.w3.org/2001/XMLSchema#int"
+                      >72</cem:beginsAt>
+                      <cem:usage rdf:resource="http://sadl.org/CodeExtractionModel.sadl#Used"/>
+                      <cem:codeBlock rdf:resource="http://windTurbine/Coefficients#Coefficients.getCoefficientLift"/>
+                    </cem:Reference>
+                  </cem:reference>
+                  <cem:reference>
+                    <cem:Reference>
+                      <cem:endsAt rdf:datatype="http://www.w3.org/2001/XMLSchema#int"
+                      >61</cem:endsAt>
+                      <cem:beginsAt rdf:datatype="http://www.w3.org/2001/XMLSchema#int"
+                      >61</cem:beginsAt>
+                      <cem:usage rdf:resource="http://sadl.org/CodeExtractionModel.sadl#Used"/>
+                      <cem:codeBlock rdf:resource="http://windTurbine/Coefficients#Coefficients.getCoefficientLift"/>
+                    </cem:Reference>
+                  </cem:reference>
+                  <cem:reference>
+                    <cem:Reference>
+                      <cem:endsAt rdf:datatype="http://www.w3.org/2001/XMLSchema#int"
+                      >96</cem:endsAt>
+                      <cem:beginsAt rdf:datatype="http://www.w3.org/2001/XMLSchema#int"
+                      >96</cem:beginsAt>
+                      <cem:usage rdf:resource="http://sadl.org/CodeExtractionModel.sadl#Used"/>
+                      <cem:codeBlock rdf:resource="http://windTurbine/Coefficients#Coefficients.getCoefficientLift"/>
+                    </cem:Reference>
+                  </cem:reference>
+                  <cem:reference>
+                    <cem:Reference>
+                      <cem:endsAt rdf:datatype="http://www.w3.org/2001/XMLSchema#int"
+                      >98</cem:endsAt>
+                      <cem:beginsAt rdf:datatype="http://www.w3.org/2001/XMLSchema#int"
+                      >98</cem:beginsAt>
+                      <cem:usage rdf:resource="http://sadl.org/CodeExtractionModel.sadl#Used"/>
+                      <cem:codeBlock rdf:resource="http://windTurbine/Coefficients#Coefficients.getCoefficientLift"/>
+                    </cem:Reference>
+                  </cem:reference>
+                  <cem:reference>
+                    <cem:Reference>
+                      <cem:endsAt rdf:datatype="http://www.w3.org/2001/XMLSchema#int"
+                      >96</cem:endsAt>
+                      <cem:beginsAt rdf:datatype="http://www.w3.org/2001/XMLSchema#int"
+                      >96</cem:beginsAt>
+                      <cem:usage rdf:resource="http://sadl.org/CodeExtractionModel.sadl#Used"/>
+                      <cem:codeBlock rdf:resource="http://windTurbine/Coefficients#Coefficients.getCoefficientLift"/>
+                    </cem:Reference>
+                  </cem:reference>
+                  <cem:reference>
+                    <cem:Reference>
+                      <cem:endsAt rdf:datatype="http://www.w3.org/2001/XMLSchema#int"
+                      >68</cem:endsAt>
+                      <cem:beginsAt rdf:datatype="http://www.w3.org/2001/XMLSchema#int"
+                      >68</cem:beginsAt>
+                      <cem:usage rdf:resource="http://sadl.org/CodeExtractionModel.sadl#Used"/>
+                      <cem:codeBlock rdf:resource="http://windTurbine/Coefficients#Coefficients.getCoefficientLift"/>
+                    </cem:Reference>
+                  </cem:reference>
+                  <cem:reference>
+                    <cem:Reference>
+                      <cem:endsAt rdf:datatype="http://www.w3.org/2001/XMLSchema#int"
+                      >40</cem:endsAt>
+                      <cem:beginsAt rdf:datatype="http://www.w3.org/2001/XMLSchema#int"
+                      >40</cem:beginsAt>
+                      <cem:usage rdf:resource="http://sadl.org/CodeExtractionModel.sadl#Used"/>
+                      <cem:codeBlock rdf:resource="http://windTurbine/Coefficients#Coefficients.getCoefficientLift"/>
+                    </cem:Reference>
+                  </cem:reference>
+                  <cem:reference>
+                    <cem:Reference>
+                      <cem:endsAt rdf:datatype="http://www.w3.org/2001/XMLSchema#int"
+                      >95</cem:endsAt>
+                      <cem:beginsAt rdf:datatype="http://www.w3.org/2001/XMLSchema#int"
+                      >95</cem:beginsAt>
+                      <cem:usage rdf:resource="http://sadl.org/CodeExtractionModel.sadl#Used"/>
+                      <cem:codeBlock rdf:resource="http://windTurbine/Coefficients#Coefficients.getCoefficientLift"/>
+                    </cem:Reference>
+                  </cem:reference>
+                  <cem:reference>
+                    <cem:Reference>
+                      <cem:endsAt rdf:datatype="http://www.w3.org/2001/XMLSchema#int"
+                      >52</cem:endsAt>
+                      <cem:beginsAt rdf:datatype="http://www.w3.org/2001/XMLSchema#int"
+                      >52</cem:beginsAt>
+                      <cem:usage rdf:resource="http://sadl.org/CodeExtractionModel.sadl#Used"/>
+                      <cem:codeBlock rdf:resource="http://windTurbine/Coefficients#Coefficients.getCoefficientLift"/>
+                    </cem:Reference>
+                  </cem:reference>
+                  <cem:reference>
+                    <cem:Reference>
+                      <cem:endsAt rdf:datatype="http://www.w3.org/2001/XMLSchema#int"
+                      >64</cem:endsAt>
+                      <cem:beginsAt rdf:datatype="http://www.w3.org/2001/XMLSchema#int"
+                      >64</cem:beginsAt>
+                      <cem:usage rdf:resource="http://sadl.org/CodeExtractionModel.sadl#Used"/>
+                      <cem:codeBlock rdf:resource="http://windTurbine/Coefficients#Coefficients.getCoefficientLift"/>
+                    </cem:Reference>
+                  </cem:reference>
+                  <cem:reference>
+                    <cem:Reference>
+                      <cem:endsAt rdf:datatype="http://www.w3.org/2001/XMLSchema#int"
+                      >97</cem:endsAt>
+                      <cem:beginsAt rdf:datatype="http://www.w3.org/2001/XMLSchema#int"
+                      >97</cem:beginsAt>
+                      <cem:usage rdf:resource="http://sadl.org/CodeExtractionModel.sadl#Used"/>
+                      <cem:codeBlock rdf:resource="http://windTurbine/Coefficients#Coefficients.getCoefficientLift"/>
+                    </cem:Reference>
+                  </cem:reference>
+                  <cem:reference>
+                    <cem:Reference>
+                      <cem:endsAt rdf:datatype="http://www.w3.org/2001/XMLSchema#int"
+                      >55</cem:endsAt>
+                      <cem:beginsAt rdf:datatype="http://www.w3.org/2001/XMLSchema#int"
+                      >55</cem:beginsAt>
+                      <cem:usage rdf:resource="http://sadl.org/CodeExtractionModel.sadl#Used"/>
+                      <cem:codeBlock rdf:resource="http://windTurbine/Coefficients#Coefficients.getCoefficientLift"/>
+                    </cem:Reference>
+                  </cem:reference>
+                  <cem:reference>
+                    <cem:Reference>
+                      <cem:endsAt rdf:datatype="http://www.w3.org/2001/XMLSchema#int"
+                      >52</cem:endsAt>
+                      <cem:beginsAt rdf:datatype="http://www.w3.org/2001/XMLSchema#int"
+                      >52</cem:beginsAt>
+                      <cem:usage rdf:resource="http://sadl.org/CodeExtractionModel.sadl#Used"/>
+                      <cem:codeBlock rdf:resource="http://windTurbine/Coefficients#Coefficients.getCoefficientLift"/>
+                    </cem:Reference>
+                  </cem:reference>
+                  <cem:reference>
+                    <cem:Reference>
+                      <cem:endsAt rdf:datatype="http://www.w3.org/2001/XMLSchema#int"
+                      >52</cem:endsAt>
+                      <cem:beginsAt rdf:datatype="http://www.w3.org/2001/XMLSchema#int"
+                      >52</cem:beginsAt>
+                      <cem:usage rdf:resource="http://sadl.org/CodeExtractionModel.sadl#Used"/>
+                      <cem:codeBlock rdf:resource="http://windTurbine/Coefficients#Coefficients.getCoefficientLift"/>
+                    </cem:Reference>
+                  </cem:reference>
+                  <cem:reference>
+                    <cem:Reference>
+                      <cem:endsAt rdf:datatype="http://www.w3.org/2001/XMLSchema#int"
+                      >97</cem:endsAt>
+                      <cem:beginsAt rdf:datatype="http://www.w3.org/2001/XMLSchema#int"
+                      >97</cem:beginsAt>
+                      <cem:usage rdf:resource="http://sadl.org/CodeExtractionModel.sadl#Used"/>
+                      <cem:codeBlock rdf:resource="http://windTurbine/Coefficients#Coefficients.getCoefficientLift"/>
+                    </cem:Reference>
+                  </cem:reference>
+                  <cem:reference>
+                    <cem:Reference>
+                      <cem:endsAt rdf:datatype="http://www.w3.org/2001/XMLSchema#int"
+                      >60</cem:endsAt>
+                      <cem:beginsAt rdf:datatype="http://www.w3.org/2001/XMLSchema#int"
+                      >60</cem:beginsAt>
+                      <cem:usage rdf:resource="http://sadl.org/CodeExtractionModel.sadl#Used"/>
+                      <cem:codeBlock rdf:resource="http://windTurbine/Coefficients#Coefficients.getCoefficientLift"/>
+                    </cem:Reference>
+                  </cem:reference>
+                  <cem:reference>
+                    <cem:Reference>
+                      <cem:endsAt rdf:datatype="http://www.w3.org/2001/XMLSchema#int"
+                      >71</cem:endsAt>
+                      <cem:beginsAt rdf:datatype="http://www.w3.org/2001/XMLSchema#int"
+                      >71</cem:beginsAt>
+                      <cem:usage rdf:resource="http://sadl.org/CodeExtractionModel.sadl#Used"/>
+                      <cem:codeBlock rdf:resource="http://windTurbine/Coefficients#Coefficients.getCoefficientLift"/>
+                    </cem:Reference>
+                  </cem:reference>
+                  <cem:reference>
+                    <cem:Reference>
+                      <cem:endsAt rdf:datatype="http://www.w3.org/2001/XMLSchema#int"
+                      >86</cem:endsAt>
+                      <cem:beginsAt rdf:datatype="http://www.w3.org/2001/XMLSchema#int"
+                      >86</cem:beginsAt>
+                      <cem:usage rdf:resource="http://sadl.org/CodeExtractionModel.sadl#Used"/>
+                      <cem:codeBlock rdf:resource="http://windTurbine/Coefficients#Coefficients.getCoefficientLift"/>
+                    </cem:Reference>
+                  </cem:reference>
+                  <cem:reference>
+                    <cem:Reference>
+                      <cem:endsAt rdf:datatype="http://www.w3.org/2001/XMLSchema#int"
+                      >74</cem:endsAt>
+                      <cem:beginsAt rdf:datatype="http://www.w3.org/2001/XMLSchema#int"
+                      >74</cem:beginsAt>
+                      <cem:usage rdf:resource="http://sadl.org/CodeExtractionModel.sadl#Used"/>
+                      <cem:codeBlock rdf:resource="http://windTurbine/Coefficients#Coefficients.getCoefficientLift"/>
+                    </cem:Reference>
+                  </cem:reference>
+                  <cem:reference>
+                    <cem:Reference>
+                      <cem:endsAt rdf:datatype="http://www.w3.org/2001/XMLSchema#int"
+                      >48</cem:endsAt>
+                      <cem:beginsAt rdf:datatype="http://www.w3.org/2001/XMLSchema#int"
+                      >48</cem:beginsAt>
+                      <cem:usage rdf:resource="http://sadl.org/CodeExtractionModel.sadl#Used"/>
+                      <cem:codeBlock rdf:resource="http://windTurbine/Coefficients#Coefficients.getCoefficientLift"/>
+                    </cem:Reference>
+                  </cem:reference>
+                  <cem:reference>
+                    <cem:Reference>
+                      <cem:endsAt rdf:datatype="http://www.w3.org/2001/XMLSchema#int"
+                      >96</cem:endsAt>
+                      <cem:beginsAt rdf:datatype="http://www.w3.org/2001/XMLSchema#int"
+                      >96</cem:beginsAt>
+                      <cem:usage rdf:resource="http://sadl.org/CodeExtractionModel.sadl#Used"/>
+                      <cem:codeBlock rdf:resource="http://windTurbine/Coefficients#Coefficients.getCoefficientLift"/>
+                    </cem:Reference>
+                  </cem:reference>
+                  <cem:reference>
+                    <cem:Reference>
+                      <cem:endsAt rdf:datatype="http://www.w3.org/2001/XMLSchema#int"
+                      >65</cem:endsAt>
+                      <cem:beginsAt rdf:datatype="http://www.w3.org/2001/XMLSchema#int"
+                      >65</cem:beginsAt>
+                      <cem:usage rdf:resource="http://sadl.org/CodeExtractionModel.sadl#Used"/>
+                      <cem:codeBlock rdf:resource="http://windTurbine/Coefficients#Coefficients.getCoefficientLift"/>
+                    </cem:Reference>
+                  </cem:reference>
+                  <cem:reference>
+                    <cem:Reference>
+                      <cem:endsAt rdf:datatype="http://www.w3.org/2001/XMLSchema#int"
+                      >95</cem:endsAt>
+                      <cem:beginsAt rdf:datatype="http://www.w3.org/2001/XMLSchema#int"
+                      >95</cem:beginsAt>
+                      <cem:usage rdf:resource="http://sadl.org/CodeExtractionModel.sadl#Used"/>
+                      <cem:codeBlock rdf:resource="http://windTurbine/Coefficients#Coefficients.getCoefficientLift"/>
+                    </cem:Reference>
+                  </cem:reference>
+                  <cem:reference>
+                    <cem:Reference>
+                      <cem:endsAt rdf:datatype="http://www.w3.org/2001/XMLSchema#int"
+                      >64</cem:endsAt>
+                      <cem:beginsAt rdf:datatype="http://www.w3.org/2001/XMLSchema#int"
+                      >64</cem:beginsAt>
+                      <cem:usage rdf:resource="http://sadl.org/CodeExtractionModel.sadl#Used"/>
+                      <cem:codeBlock rdf:resource="http://windTurbine/Coefficients#Coefficients.getCoefficientLift"/>
+                    </cem:Reference>
+                  </cem:reference>
+                  <cem:reference>
+                    <cem:Reference>
+                      <cem:endsAt rdf:datatype="http://www.w3.org/2001/XMLSchema#int"
+                      >53</cem:endsAt>
+                      <cem:beginsAt rdf:datatype="http://www.w3.org/2001/XMLSchema#int"
+                      >53</cem:beginsAt>
+                      <cem:usage rdf:resource="http://sadl.org/CodeExtractionModel.sadl#Used"/>
+                      <cem:codeBlock rdf:resource="http://windTurbine/Coefficients#Coefficients.getCoefficientLift"/>
+                    </cem:Reference>
+                  </cem:reference>
+                  <cem:reference>
+                    <cem:Reference>
+                      <cem:endsAt rdf:datatype="http://www.w3.org/2001/XMLSchema#int"
+                      >78</cem:endsAt>
+                      <cem:beginsAt rdf:datatype="http://www.w3.org/2001/XMLSchema#int"
+                      >78</cem:beginsAt>
+                      <cem:usage rdf:resource="http://sadl.org/CodeExtractionModel.sadl#Used"/>
+                      <cem:codeBlock rdf:resource="http://windTurbine/Coefficients#Coefficients.getCoefficientLift"/>
+                    </cem:Reference>
+                  </cem:reference>
+                  <cem:reference>
+                    <cem:Reference>
+                      <cem:endsAt rdf:datatype="http://www.w3.org/2001/XMLSchema#int"
+                      >94</cem:endsAt>
+                      <cem:beginsAt rdf:datatype="http://www.w3.org/2001/XMLSchema#int"
+                      >94</cem:beginsAt>
+                      <cem:usage rdf:resource="http://sadl.org/CodeExtractionModel.sadl#Used"/>
+                      <cem:codeBlock rdf:resource="http://windTurbine/Coefficients#Coefficients.getCoefficientLift"/>
+                    </cem:Reference>
+                  </cem:reference>
+                  <cem:reference>
+                    <cem:Reference>
+                      <cem:endsAt rdf:datatype="http://www.w3.org/2001/XMLSchema#int"
+                      >103</cem:endsAt>
+                      <cem:beginsAt rdf:datatype="http://www.w3.org/2001/XMLSchema#int"
+                      >103</cem:beginsAt>
+                      <cem:usage rdf:resource="http://sadl.org/CodeExtractionModel.sadl#Used"/>
+                      <cem:codeBlock rdf:resource="http://windTurbine/Coefficients#Coefficients.getCoefficientLift"/>
+                    </cem:Reference>
+                  </cem:reference>
+                  <cem:reference>
+                    <cem:Reference>
+                      <cem:endsAt rdf:datatype="http://www.w3.org/2001/XMLSchema#int"
+                      >54</cem:endsAt>
+                      <cem:beginsAt rdf:datatype="http://www.w3.org/2001/XMLSchema#int"
+                      >54</cem:beginsAt>
+                      <cem:usage rdf:resource="http://sadl.org/CodeExtractionModel.sadl#Used"/>
+                      <cem:codeBlock rdf:resource="http://windTurbine/Coefficients#Coefficients.getCoefficientLift"/>
+                    </cem:Reference>
+                  </cem:reference>
+                  <cem:reference>
+                    <cem:Reference>
+                      <cem:endsAt rdf:datatype="http://www.w3.org/2001/XMLSchema#int"
+                      >103</cem:endsAt>
+                      <cem:beginsAt rdf:datatype="http://www.w3.org/2001/XMLSchema#int"
+                      >103</cem:beginsAt>
+                      <cem:usage rdf:resource="http://sadl.org/CodeExtractionModel.sadl#Used"/>
+                      <cem:codeBlock rdf:resource="http://windTurbine/Coefficients#Coefficients.getCoefficientLift"/>
+                    </cem:Reference>
+                  </cem:reference>
+                  <cem:reference>
+                    <cem:Reference>
+                      <cem:endsAt rdf:datatype="http://www.w3.org/2001/XMLSchema#int"
+                      >44</cem:endsAt>
+                      <cem:beginsAt rdf:datatype="http://www.w3.org/2001/XMLSchema#int"
+                      >44</cem:beginsAt>
+                      <cem:usage rdf:resource="http://sadl.org/CodeExtractionModel.sadl#Used"/>
+                      <cem:codeBlock rdf:resource="http://windTurbine/Coefficients#Coefficients.getCoefficientLift"/>
+                    </cem:Reference>
+                  </cem:reference>
+                  <cem:reference>
+                    <cem:Reference>
+                      <cem:endsAt rdf:datatype="http://www.w3.org/2001/XMLSchema#int"
+                      >102</cem:endsAt>
+                      <cem:beginsAt rdf:datatype="http://www.w3.org/2001/XMLSchema#int"
+                      >102</cem:beginsAt>
+                      <cem:usage rdf:resource="http://sadl.org/CodeExtractionModel.sadl#Used"/>
+                      <cem:codeBlock rdf:resource="http://windTurbine/Coefficients#Coefficients.getCoefficientLift"/>
+                    </cem:Reference>
+                  </cem:reference>
+                  <cem:reference>
+                    <cem:Reference>
+                      <cem:endsAt rdf:datatype="http://www.w3.org/2001/XMLSchema#int"
+                      >80</cem:endsAt>
+                      <cem:beginsAt rdf:datatype="http://www.w3.org/2001/XMLSchema#int"
+                      >80</cem:beginsAt>
+                      <cem:usage rdf:resource="http://sadl.org/CodeExtractionModel.sadl#Used"/>
+                      <cem:codeBlock rdf:resource="http://windTurbine/Coefficients#Coefficients.getCoefficientLift"/>
+                    </cem:Reference>
+                  </cem:reference>
+                  <cem:reference>
+                    <cem:Reference>
+                      <cem:endsAt rdf:datatype="http://www.w3.org/2001/XMLSchema#int"
+                      >72</cem:endsAt>
+                      <cem:beginsAt rdf:datatype="http://www.w3.org/2001/XMLSchema#int"
+                      >72</cem:beginsAt>
+                      <cem:usage rdf:resource="http://sadl.org/CodeExtractionModel.sadl#Used"/>
+                      <cem:codeBlock rdf:resource="http://windTurbine/Coefficients#Coefficients.getCoefficientLift"/>
+                    </cem:Reference>
+                  </cem:reference>
+                  <cem:reference>
+                    <cem:Reference>
+                      <cem:endsAt rdf:datatype="http://www.w3.org/2001/XMLSchema#int"
+                      >48</cem:endsAt>
+                      <cem:beginsAt rdf:datatype="http://www.w3.org/2001/XMLSchema#int"
+                      >48</cem:beginsAt>
+                      <cem:usage rdf:resource="http://sadl.org/CodeExtractionModel.sadl#Used"/>
+                      <cem:codeBlock rdf:resource="http://windTurbine/Coefficients#Coefficients.getCoefficientLift"/>
+                    </cem:Reference>
+                  </cem:reference>
+                  <cem:reference>
+                    <cem:Reference>
+                      <cem:endsAt rdf:datatype="http://www.w3.org/2001/XMLSchema#int"
+                      >95</cem:endsAt>
+                      <cem:beginsAt rdf:datatype="http://www.w3.org/2001/XMLSchema#int"
+                      >95</cem:beginsAt>
+                      <cem:usage rdf:resource="http://sadl.org/CodeExtractionModel.sadl#Used"/>
+                      <cem:codeBlock rdf:resource="http://windTurbine/Coefficients#Coefficients.getCoefficientLift"/>
+                    </cem:Reference>
+                  </cem:reference>
+                  <cem:reference>
+                    <cem:Reference>
+                      <cem:endsAt rdf:datatype="http://www.w3.org/2001/XMLSchema#int"
+                      >98</cem:endsAt>
+                      <cem:beginsAt rdf:datatype="http://www.w3.org/2001/XMLSchema#int"
+                      >98</cem:beginsAt>
+                      <cem:usage rdf:resource="http://sadl.org/CodeExtractionModel.sadl#Used"/>
+                      <cem:codeBlock rdf:resource="http://windTurbine/Coefficients#Coefficients.getCoefficientLift"/>
+                    </cem:Reference>
+                  </cem:reference>
+                  <cem:reference>
+                    <cem:Reference>
+                      <cem:endsAt rdf:datatype="http://www.w3.org/2001/XMLSchema#int"
+                      >47</cem:endsAt>
+                      <cem:beginsAt rdf:datatype="http://www.w3.org/2001/XMLSchema#int"
+                      >47</cem:beginsAt>
+                      <cem:usage rdf:resource="http://sadl.org/CodeExtractionModel.sadl#Used"/>
+                      <cem:codeBlock rdf:resource="http://windTurbine/Coefficients#Coefficients.getCoefficientLift"/>
+                    </cem:Reference>
+                  </cem:reference>
+                  <cem:reference>
+                    <cem:Reference>
+                      <cem:endsAt rdf:datatype="http://www.w3.org/2001/XMLSchema#int"
+                      >71</cem:endsAt>
+                      <cem:beginsAt rdf:datatype="http://www.w3.org/2001/XMLSchema#int"
+                      >71</cem:beginsAt>
+                      <cem:usage rdf:resource="http://sadl.org/CodeExtractionModel.sadl#Used"/>
+                      <cem:codeBlock rdf:resource="http://windTurbine/Coefficients#Coefficients.getCoefficientLift"/>
+                    </cem:Reference>
+                  </cem:reference>
+                  <cem:reference>
+                    <cem:Reference>
+                      <cem:endsAt rdf:datatype="http://www.w3.org/2001/XMLSchema#int"
+                      >52</cem:endsAt>
+                      <cem:beginsAt rdf:datatype="http://www.w3.org/2001/XMLSchema#int"
+                      >52</cem:beginsAt>
+                      <cem:usage rdf:resource="http://sadl.org/CodeExtractionModel.sadl#Used"/>
+                      <cem:codeBlock rdf:resource="http://windTurbine/Coefficients#Coefficients.getCoefficientLift"/>
+                    </cem:Reference>
+                  </cem:reference>
+                  <cem:reference>
+                    <cem:Reference>
+                      <cem:endsAt rdf:datatype="http://www.w3.org/2001/XMLSchema#int"
+                      >51</cem:endsAt>
+                      <cem:beginsAt rdf:datatype="http://www.w3.org/2001/XMLSchema#int"
+                      >51</cem:beginsAt>
+                      <cem:usage rdf:resource="http://sadl.org/CodeExtractionModel.sadl#Used"/>
+                      <cem:codeBlock rdf:resource="http://windTurbine/Coefficients#Coefficients.getCoefficientLift"/>
+                    </cem:Reference>
+                  </cem:reference>
+                  <cem:reference>
+                    <cem:Reference>
+                      <cem:endsAt rdf:datatype="http://www.w3.org/2001/XMLSchema#int"
+                      >95</cem:endsAt>
+                      <cem:beginsAt rdf:datatype="http://www.w3.org/2001/XMLSchema#int"
+                      >95</cem:beginsAt>
+                      <cem:usage rdf:resource="http://sadl.org/CodeExtractionModel.sadl#Used"/>
+                      <cem:codeBlock rdf:resource="http://windTurbine/Coefficients#Coefficients.getCoefficientLift"/>
+                    </cem:Reference>
+                  </cem:reference>
+                  <cem:reference>
+                    <cem:Reference>
+                      <cem:endsAt rdf:datatype="http://www.w3.org/2001/XMLSchema#int"
+                      >55</cem:endsAt>
+                      <cem:beginsAt rdf:datatype="http://www.w3.org/2001/XMLSchema#int"
+                      >55</cem:beginsAt>
+                      <cem:usage rdf:resource="http://sadl.org/CodeExtractionModel.sadl#Used"/>
+                      <cem:codeBlock rdf:resource="http://windTurbine/Coefficients#Coefficients.getCoefficientLift"/>
+                    </cem:Reference>
+                  </cem:reference>
+                  <cem:reference>
+                    <cem:Reference>
+                      <cem:endsAt rdf:datatype="http://www.w3.org/2001/XMLSchema#int"
+                      >89</cem:endsAt>
+                      <cem:beginsAt rdf:datatype="http://www.w3.org/2001/XMLSchema#int"
+                      >89</cem:beginsAt>
+                      <cem:usage rdf:resource="http://sadl.org/CodeExtractionModel.sadl#Used"/>
+                      <cem:codeBlock rdf:resource="http://windTurbine/Coefficients#Coefficients.getCoefficientLift"/>
+                    </cem:Reference>
+                  </cem:reference>
+                  <cem:reference>
+                    <cem:Reference>
+                      <cem:endsAt rdf:datatype="http://www.w3.org/2001/XMLSchema#int"
+                      >85</cem:endsAt>
+                      <cem:beginsAt rdf:datatype="http://www.w3.org/2001/XMLSchema#int"
+                      >85</cem:beginsAt>
+                      <cem:usage rdf:resource="http://sadl.org/CodeExtractionModel.sadl#Used"/>
+                      <cem:codeBlock rdf:resource="http://windTurbine/Coefficients#Coefficients.getCoefficientLift"/>
+                    </cem:Reference>
+                  </cem:reference>
+                  <cem:reference>
+                    <cem:Reference>
+                      <cem:endsAt rdf:datatype="http://www.w3.org/2001/XMLSchema#int"
+                      >99</cem:endsAt>
+                      <cem:beginsAt rdf:datatype="http://www.w3.org/2001/XMLSchema#int"
+                      >99</cem:beginsAt>
+                      <cem:usage rdf:resource="http://sadl.org/CodeExtractionModel.sadl#Used"/>
+                      <cem:codeBlock rdf:resource="http://windTurbine/Coefficients#Coefficients.getCoefficientLift"/>
+                    </cem:Reference>
+                  </cem:reference>
+                  <cem:reference>
+                    <cem:Reference>
+                      <cem:endsAt rdf:datatype="http://www.w3.org/2001/XMLSchema#int"
+                      >97</cem:endsAt>
+                      <cem:beginsAt rdf:datatype="http://www.w3.org/2001/XMLSchema#int"
+                      >97</cem:beginsAt>
+                      <cem:usage rdf:resource="http://sadl.org/CodeExtractionModel.sadl#Used"/>
+                      <cem:codeBlock rdf:resource="http://windTurbine/Coefficients#Coefficients.getCoefficientLift"/>
+                    </cem:Reference>
+                  </cem:reference>
+                </cem:MethodArgument>
+              </sadllistmodel:first>
+              <rdf:type rdf:nodeID="A0"/>
+            </cem:cmArguments>
+            <cem:calls>
+              <cem:MethodCall>
+                <cem:endsAt rdf:datatype="http://www.w3.org/2001/XMLSchema#int"
+                >44</cem:endsAt>
+                <cem:beginsAt rdf:datatype="http://www.w3.org/2001/XMLSchema#int"
+                >44</cem:beginsAt>
+                <cem:codeBlock rdf:resource="http://windTurbine/Coefficients#Coefficients.getCoefficientLift"/>
+              </cem:MethodCall>
+            </cem:calls>
+            <cem:calls>
+              <cem:MethodCall>
+                <cem:endsAt rdf:datatype="http://www.w3.org/2001/XMLSchema#int"
+                >40</cem:endsAt>
+                <cem:beginsAt rdf:datatype="http://www.w3.org/2001/XMLSchema#int"
+                >40</cem:beginsAt>
+                <cem:codeBlock rdf:resource="http://windTurbine/Coefficients#Coefficients.getCoefficientLift"/>
+              </cem:MethodCall>
+            </cem:calls>
+            <cem:cmReturnTypes rdf:parseType="Resource">
+              <sadllistmodel:first rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+              >double</sadllistmodel:first>
+              <rdf:type rdf:nodeID="A1"/>
+            </cem:cmReturnTypes>
+          </cem:Method>
+        </cem:codeBlock>
+      </cem:Reference>
+    </cem:reference>
+    <cem:reference>
+      <cem:Reference>
+        <cem:endsAt rdf:datatype="http://www.w3.org/2001/XMLSchema#int"
+        >132</cem:endsAt>
+        <cem:beginsAt rdf:datatype="http://www.w3.org/2001/XMLSchema#int"
+        >132</cem:beginsAt>
+        <cem:usage rdf:resource="http://sadl.org/CodeExtractionModel.sadl#Used"/>
+        <cem:codeBlock rdf:resource="http://windTurbine/Coefficients#Coefficients.getCoefficientDrag"/>
+      </cem:Reference>
+    </cem:reference>
+    <cem:varType rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >double</cem:varType>
+    <rdfs:label xml:lang="Java">double PI = Math.PI;</rdfs:label>
+    <cem:reference>
+      <cem:Reference>
+        <cem:endsAt rdf:datatype="http://www.w3.org/2001/XMLSchema#int"
+        >43</cem:endsAt>
+        <cem:beginsAt rdf:datatype="http://www.w3.org/2001/XMLSchema#int"
+        >43</cem:beginsAt>
+        <cem:usage rdf:resource="http://sadl.org/CodeExtractionModel.sadl#Used"/>
+        <cem:codeBlock rdf:resource="http://windTurbine/Coefficients#Coefficients.getCoefficientLift"/>
+      </cem:Reference>
+    </cem:reference>
+    <cem:reference>
+      <cem:Reference>
+        <cem:endsAt rdf:datatype="http://www.w3.org/2001/XMLSchema#int"
+        >13</cem:endsAt>
+        <cem:beginsAt rdf:datatype="http://www.w3.org/2001/XMLSchema#int"
+        >13</cem:beginsAt>
+        <cem:usage rdf:resource="http://sadl.org/CodeExtractionModel.sadl#Defined"/>
+        <cem:codeBlock rdf:resource="http://windTurbine/Coefficients#Coefficients"/>
+      </cem:Reference>
+    </cem:reference>
+    <cem:reference>
+      <cem:Reference>
+        <cem:endsAt rdf:datatype="http://www.w3.org/2001/XMLSchema#int"
+        >40</cem:endsAt>
+        <cem:beginsAt rdf:datatype="http://www.w3.org/2001/XMLSchema#int"
+        >40</cem:beginsAt>
+        <cem:usage rdf:resource="http://sadl.org/CodeExtractionModel.sadl#Used"/>
+        <cem:codeBlock rdf:resource="http://windTurbine/Coefficients#Coefficients.getCoefficientLift"/>
+      </cem:Reference>
+    </cem:reference>
+    <cem:varName rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >PI</cem:varName>
+    <cem:reference>
+      <cem:Reference>
+        <cem:endsAt rdf:datatype="http://www.w3.org/2001/XMLSchema#int"
+        >135</cem:endsAt>
+        <cem:beginsAt rdf:datatype="http://www.w3.org/2001/XMLSchema#int"
+        >135</cem:beginsAt>
+        <cem:usage rdf:resource="http://sadl.org/CodeExtractionModel.sadl#Used"/>
+        <cem:codeBlock rdf:resource="http://windTurbine/Coefficients#Coefficients.getCoefficientDrag"/>
+      </cem:Reference>
+    </cem:reference>
+  </cem:ClassField>
+</rdf:RDF>

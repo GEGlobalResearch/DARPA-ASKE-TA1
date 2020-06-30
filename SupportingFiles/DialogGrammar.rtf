@@ -1,0 +1,228 @@
+{\rtf1\ansi\ansicpg1252\deff0\nouicompat\deflang1033{\fonttbl{\f0\fnil Consolas;}{\f1\fnil\fcharset0 Calibri;}}
+{\colortbl ;\red63\green127\blue95;\red127\green0\blue85;\red0\green0\blue0;\red42\green0\blue255;\red0\green0\blue255;\red128\green128\blue128;\red171\green48\blue0;\red0\green0\blue192;}
+{\*\generator Riched20 10.0.17763}\viewkind4\uc1 
+\pard\sl240\slmult1\cf1\f0\fs20\lang9 /********************************************************************** \cf0\par
+\cf1  * Note: This license has also been called the "New BSD License" or \cf0\par
+\cf1  * "Modified BSD License". See also the 2-clause BSD License.\cf0\par
+\cf1  *\cf0\par
+\cf1  * Copyright  2018-2019 - General Electric Company, All Rights Reserved\cf0\par
+\cf1  * \cf0\par
+\cf1  * Projects: ANSWER and KApEESH, developed with the support of the Defense \cf0\par
+\cf1  * Advanced Research Projects Agency (DARPA) under Agreement  No.  \cf0\par
+\cf1  * HR00111990006 and Agreement No. HR00111990007, respectively. \cf0\par
+\cf1  *\cf0\par
+\cf1  * Redistribution and use in source and binary forms, with or without \cf0\par
+\cf1  * modification, are permitted provided that the following conditions are met:\cf0\par
+\cf1  * 1. Redistributions of source code must retain the above copyright notice, \cf0\par
+\cf1  *    this list of conditions and the following disclaimer.\cf0\par
+\cf1  *\cf0\par
+\cf1  * 2. Redistributions in binary form must reproduce the above copyright notice, \cf0\par
+\cf1  *    this list of conditions and the following disclaimer in the documentation \cf0\par
+\cf1  *    and/or other materials provided with the distribution.\cf0\par
+\cf1  *\cf0\par
+\cf1  * 3. Neither the name of the copyright holder nor the names of its \cf0\par
+\cf1  *    contributors may be used to endorse or promote products derived \cf0\par
+\cf1  *    from this software without specific prior written permission.\cf0\par
+\cf1  *\cf0\par
+\cf1  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" \cf0\par
+\cf1  * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE \cf0\par
+\cf1  * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE \cf0\par
+\cf1  * ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE \cf0\par
+\cf1  * LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR \cf0\par
+\cf1  * CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF \cf0\par
+\cf1  * SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS \cf0\par
+\cf1  * INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN \cf0\par
+\cf1  * CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) \cf0\par
+\cf1  * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF \cf0\par
+\cf1  * THE POSSIBILITY OF SUCH DAMAGE.\cf0\par
+\cf1  *\cf0\par
+\cf1  ***********************************************************************/\cf0\par
+\cf1 /*\cf0\par
+\cf1  * SADL Extension for DARPA ASKE dialog\cf0\par
+\cf1  */\cf0\par
+\cf2\b grammar\cf3\b0  com.ge.research.sadl.darpa.aske.Dialog \cf2\b with\cf3\b0  com.ge.research.sadl.SADL\cf0\par
+\par
+\cf2\b import\cf3\b0  \cf4 "{{\field{\*\fldinst{HYPERLINK http://www.eclipse.org/emf/2002/Ecore }}{\fldrslt{http://www.eclipse.org/emf/2002/Ecore\ul0\cf0}}}}\f0\fs20 "\cf3  \cf2\b as\cf3\b0  ecore\cf0\par
+\cf2\b import\cf3\b0  \cf4 "{{\field{\*\fldinst{HYPERLINK http://www.ge.com/research/sadl/SADL }}{\fldrslt{http://www.ge.com/research/sadl/SADL\ul0\cf0}}}}\f0\fs20 "\cf3  \cf2\b as\cf3\b0  sadl\cf0\par
+\par
+\cf2\b generate\cf3\b0  dialog \cf4 "{{\field{\*\fldinst{HYPERLINK http://www.ge.com/research/sadl/darpa/aske/Dialog }}{\fldrslt{http://www.ge.com/research/sadl/darpa/aske/Dialog\ul0\cf0}}}}\f0\fs20 "\cf0\par
+\par
+\cf3 DialogModel \cf2\b returns\cf3\b0  \i sadl::SadlModel\i0  :\cf0\par
+\cf3     super::SadlModel\cf0\par
+\cf3 ;\cf0\par
+\par
+\cf3 @Override\cf0\par
+\cf3 SadlModelElement \cf2\b returns\cf3\b0  \i sadl::SadlModelElement\i0  :\cf0\par
+\cf3\tab super::SadlStatement \cf6 EOS\cf3\tab\tab\tab |\cf0\par
+\cf3\tab super::ExternalEquationStatement \cf6 EOS\cf3\tab |\cf0\par
+\cf3\tab super::EquationStatement \cf6 EOS\cf3\tab |\cf0\par
+\cf3\tab AnswerCMStatement \cf6 EOS\cf3  \tab\tab |\cf0\par
+\cf3\tab ModifiedAskStatement \cf6 EOS\cf3\tab |\cf0\par
+\cf3\tab WhatStatement \cf6 EOS\cf3\tab\tab\tab |\cf0\par
+\cf3\tab HowManyValuesStatement \cf6 EOS\cf3\tab |\cf0\par
+\cf3\tab SaveStatement \cf6 EOS\cf3\tab\tab\tab |\cf0\par
+\cf3\tab EvalStatement \cf6 EOS\cf3\tab\tab\tab |\cf0\par
+\cf3\tab YesNoAnswerStatement\tab\tab |\cf0\par
+\cf3\tab MyNameIsStatement \cf6 EOS\cf3\tab\tab |\cf0\par
+\cf3\tab TargetModelName \cf6 EOS\cf3\tab\tab\tab |\cf0\par
+\cf3\tab ExtractStatement \cf6 EOS\cf3\tab\tab |\cf0\par
+\cf3\tab CompareStatement \cf6 EOS\cf3  \tab  \tab |\cf0\par
+\cf3\tab SuitabilityStatement \cf6 EOS\cf3\tab |\cf0\par
+\cf3\tab SeeParentheticalLink \tab\tab |\cf0\par
+\cf3\tab TestLongrunningTask \cf6 EOS\cf3\tab\tab |\cf0\par
+\cf3\tab ComparisonTableStatement \cf6 EOS\cf3  |\cf0\par
+\cf3\tab NewExpressionStatement \cf6 EOS\cf3\tab |\cf0\par
+\cf3\tab InsightStatement \cf6 EOS\cf0\par
+\cf3 ;\cf0\par
+\par
+\cf3 InsightStatement:\cf0\par
+\cf3\tab indep=SadlResource \cf4 'does'\cf3  \cf4 'not'\cf3  \cf4 'affect'\cf3  dep=SadlResource (\cf4 'of'\cf3  \cf4 'the'\cf3  class=SadlResource)? |\cf0\par
+\cf3\tab relDesc1=RelationshipDescriptor1 indep=SadlResource relDesc2=RelationshipDescriptor2 dep=SadlResource (\cf4 'of'\cf3  \cf4 'the'\cf3  class=SadlResource)?|\cf0\par
+\cf3\tab indep=SadlResource (\cf4 'of'\cf3  \cf4 'the'\cf3  class=SadlResource)? \cf4 'has'\cf3  \cf4 'a'\cf3  localExtreme=SadlResource \cf4 'at'\cf3  extremeLoc=SadlResource \cf4 'of'\cf3  dep=SadlResource |\cf0\par
+\cf3\tab relDesc1=RelationshipDescriptor1 indep=SadlResource \cf4 'takes'\cf3  \cf4 'the'\cf3  class=SadlResource (\cf4 'inside'\cf3 |\cf4 'outside'\cf3 ) \cf4 'operating'\cf3  \cf4 'conditions'\cf3  |\cf0\par
+\cf3\tab dep=SadlResource (\cf4 'of'\cf3  \cf4 'the'\cf3  class=SadlResource)? \cf4 'is'\cf3  \cf4 'very'\cf3  \cf4 'sensitive'\cf3  \cf4 'to'\cf3  indep=SadlResource \cf4 'with'\cf3  (\cf4 'positive'\cf3 |\cf4 'negative'\cf3 ) \cf4 'slope'\cf0\par
+\cf3 ;\cf0\par
+\par
+\cf1 //LocalExtreme:\cf0\par
+\cf1 //\tab locExtreme=''\cf0\par
+\par
+\cf3 NewExpressionStatement:\cf0\par
+\cf3\tab (\cf4 'Add'\cf3 |\cf4 'add'\cf3 ) \cf0\par
+\cf3\tab (newExpr=Expression\cf0\par
+\cf3\tab )\cf0\par
+\cf3 ;\cf0\par
+\par
+\cf3 UndefinedConceptStatement:\cf0\par
+\cf3\tab\cf4 'Concept'\cf3  concept=SadlResource \cf4 'is'\cf3  \cf4 'not'\cf3  \cf4 'defined'\cf3  \cf4 ';'\cf3  \cf4 'please'\cf3  \cf4 'define'\cf3  \cf4 'or'\cf3  \cf4 'do'\cf3  \cf4 'extraction'\cf0\par
+\cf3 ;\cf0\par
+\par
+\cf3 NoModelFoundStatement:\cf0\par
+\cf3\tab\cf4 'No'\cf3  \cf4 'model'\cf3  \cf4 'found'\cf3  \cf4 'to'\cf3  \cf4 'compute'\cf3  target=PropOfSubject<\cf2\b false\cf3\b0 ,\cf2\b false\cf3\b0 > \cf4 ';'\cf3  \cf4 'please'\cf3  \cf4 'add'\cf3  \cf4 'a'\cf3  \cf4 'model'\cf3  \cf4 'or'\cf3  \cf4 'do'\cf3  \cf4 'extraction'\cf0\par
+\cf3 ;\cf0\par
+\par
+\cf3 RelationshipDescriptor1:\cf0\par
+\cf3\tab relDesc=\cf4 'Increasing'\cf3  | \{\i RelationshipDescriptor1\i0\} \cf4 'increasing'\cf3  | \{\i RelationshipDescriptor1\i0\} \cf4 'Decreasing'\cf3  | \{\i RelationshipDescriptor1\i0\} \cf4 'decreasing'\cf0\par
+\cf3 ;\cf0\par
+\par
+\cf3 RelationshipDescriptor2:\cf0\par
+\cf3\tab relDesc=\cf4 'increases'\cf3 |\{\i RelationshipDescriptor1\i0\} \cf4 'decreases'\cf0\par
+\cf3 ;\cf0\par
+\par
+\cf3 TestLongrunningTask:\cf0\par
+\cf3\tab\cf4 'Long'\cf3  \cf4 'task'\cf3  time=NUMBER\cf0\par
+\cf3 ;\cf0\par
+\par
+\cf3 ComparisonTableStatement:\cf0\par
+\cf3\tab comparisonTable = ValueTable\cf0\par
+\cf3 ;\cf0\par
+\par
+\cf3 SeeParentheticalLink:\cf0\par
+\cf3\tab\cf4 '('\cf3  \cf4 'See'\cf3  linkUris+=PLink (\cf4 ','\cf3  linkUris+=PLink)* \cf6 EOS\cf3  \cf4 ')'\cf0\par
+\cf3 ;\cf0\par
+\par
+\cf3 PLink:\cf0\par
+\cf3\tab linkUri=STRING\cf0\par
+\cf3 ;\cf0\par
+\par
+\cf3 CompareStatement:\cf0\par
+\cf1 //\tab ('Compare'|'compare') toCompare=Expression compareConnective=('when' | 'for') whenExpr=Expression\cf0\par
+\cf3\tab (\cf4 'Compare'\cf3 |\cf4 'compare'\cf3 ) \cf4 'their'\cf3 ? toCompare=Expression (compareWhens+=CompareWhen (\cf4 'and'\cf3  compareWhens+=CompareWhen)*)?\cf0\par
+\cf3 ;\cf0\par
+\par
+\cf3 CompareWhen:\tab\cf0\par
+\cf3\tab (\cf4 'when'\cf3  | \cf4 'for'\cf3 ) whenExpr=Expression\cf0\par
+\cf3 ;\cf0\par
+\par
+\cf3 SuitabilityStatement:\cf0\par
+\cf3\tab ((\cf4 'Which'\cf3 |\cf4 'which'\cf3 ) what=Expression \cf4 'is'\cf3  \cf4 'suitable'\cf3  suitableWhens+=CompareWhen) |\cf0\par
+\cf3\tab ((\cf4 'Is'\cf3 |\cf4 'is'\cf3 ) what=Expression \cf4 'suitable'\cf3  suitableWhens+=CompareWhen)\cf0\par
+\cf3 ;\cf0\par
+\par
+\cf3 ExtractStatement:\cf0\par
+\cf3\tab (\cf4 'Extract'\cf3 |\cf4 'extract'\cf3 ) \cf4 'from'\cf3  sources+=STRING (\cf4 ','\cf3  sources+=STRING)*\cf0\par
+\cf3 ;\cf0\par
+\par
+\cf3 EvalStatement \cf2\b returns\cf3\b0  \i SadlEquationInvocation\i0 :\cf0\par
+\cf3\tab\{\i SadlEquationInvocation\i0\} (\cf4 'Evaluate'\cf3 |\cf4 'evaluate'\cf3 ) \cf7 name\cf3 =SadlResource \cf4 '('\cf3  (parameters+=ParameterizedExpressionWithUnit (\cf4 ','\cf3  parameters+=ParameterizedExpressionWithUnit)* )?\cf4 ')'\cf0\par
+\cf3 ;\cf0\par
+\par
+\cf3 ParameterizedExpressionWithUnit:\cf0\par
+\cf3\tab expression=ExpressionParameterized<\cf2\b true\cf3\b0 ,\cf2\b false\cf3\b0 > (\cf4 '\{'\cf3 unit=UNIT\cf4 '\}'\cf3 )?\cf0\par
+\cf3 ;\cf0\par
+\par
+\cf3 TargetModelName:\cf0\par
+\cf3\tab\cf4 'target'\cf3  \cf4 'model'\cf3  targetResource=[\i sadl::SadlModel\i0 |STRING] (\cf4 'alias'\cf3  alias=ID)?\cf0\par
+\cf3 ;\cf0\par
+\par
+\cf3 MyNameIsStatement:\cf0\par
+\cf3\tab (\cf4 'My'\cf3 |\cf4 'my'\cf3 ) \cf4 'name'\cf3  \cf4 'is'\cf3  answer=ID\cf0\par
+\cf3 ;\cf0\par
+\par
+\cf3 YesNoAnswerStatement:\cf0\par
+\cf3\tab\{\i YesNoAnswerStatement\i0\} answer = (\cf4 'Y.'\cf3 |\cf4 'y.'\cf3 |\cf4 'Yes.'\cf3 |\cf4 'yes.'\cf3 |\cf4 'N.'\cf3 |\cf4 'n.'\cf3 |\cf4 'No.'\cf3 |\cf4 'no.'\cf3 )\cf0\par
+\cf3 ;\cf0\par
+\par
+\cf3 SaveStatement:\cf0\par
+\cf3\tab\{\i SaveStatement\i0\} (\cf4 'Save'\cf3  | \cf4 'save'\cf3 ) (target=SadlResource | all=\cf4 'all'\cf3 ) (\cf4 'to'\cf3  saveTarget=ID)?\cf0\par
+\cf3 ;\cf0\par
+\par
+\cf3 AnswerCMStatement:\cf0\par
+\cf3\tab\cf4 'CM:'\cf3  (sstmt = ((\cf0\par
+\cf3\tab\tab SadlStatement|\cf0\par
+\cf3\tab\tab ModifiedAskStatement|\cf0\par
+\cf3\tab\tab WhatStatement|\cf0\par
+\cf3\tab\tab YesNoAnswerStatement|\cf0\par
+\cf3\tab\tab ExternalEquationStatement|\cf0\par
+\cf3\tab\tab EquationStatement|\cf0\par
+\cf3\tab\tab ComparisonTableStatement|\cf0\par
+\cf3\tab\tab UndefinedConceptStatement |\cf0\par
+\cf3\tab\tab NoModelFoundStatement |\cf0\par
+\cf3\tab\tab NewExpressionStatement |\cf0\par
+\cf3\tab\tab MatchFoundStatement\cf0\par
+\cf3\tab )) | str = STRING)\cf0\par
+\cf3 ;\cf0\par
+\par
+\cf3 MatchFoundStatement:\cf0\par
+\cf3\tab (\cf4 'Found'\cf3  \cf4 'matching'\cf3  type=(\cf4 'class'\cf3 |\cf4 'property'\cf3 ) concept=SadlResource) |\cf0\par
+\cf3\tab (type=\cf4 'Inferred'\cf3  \cf4 'match'\cf3  concept=Expression)\cf0\par
+\cf3 ;\cf0\par
+\par
+\cf3 ModifiedAskStatement \cf2\b returns\cf3\b0  \i sadl::ExpressionScope\i0 :\cf0\par
+\cf3\tab\{\i ModifiedAskStatement\i0\} start = (\cf4 'Ask'\cf3  | \cf4 'ask'\cf3  | \cf4 'Find'\cf3  | \cf4 'find'\cf3  |\cf4 'Graph'\cf3  | \cf4 'graph'\cf3 ) \cf0\par
+\cf3\tab (\cf0\par
+\cf3\tab\tab expr=(ConstructExpression | AskExpression | Expression) (\cf4 ':'\cf3  \cf4 '['\cf3  parameterizedValues = ValueRow \cf4 ']'\cf3 )?\cf0\par
+\cf3\tab )\cf0\par
+\cf3 ;\cf0\par
+\par
+\cf3 WhatStatement:\cf0\par
+\cf3\tab\{\i WhatStatement\i0\} (\cf4 'What'\cf3 |\cf4 'what'\cf3 ) stmt=(WhatIsStatement | WhatValuesStatement | WhatTypeStatement)\cf0\par
+\cf3 ;\cf0\par
+\cf3 WhatIsStatement:\cf0\par
+\cf3\tab\{\i WhatIsStatement\i0\} \cf4 'is'\cf3  ((\cf4 'your'\cf3  \cf4 'name'\cf3 ) | (\cf4 'its'\cf3 ? target=Expression WhenPart?))\cf0\par
+\cf3 ;\cf0\par
+\par
+\cf3 WhatTypeStatement:\cf0\par
+\cf3\tab\{\i WhatTypeStatement\i0\} \cf4 'semantic'\cf3 ?\cf4 'type'\cf3  (\cf4 'is'\cf3  target=Expression | \cf4 'does'\cf3  equation=SadlResource \cf4 'return'\cf3 )\cf0\par
+\cf3 ;\cf0\par
+\par
+\cf2\b fragment\cf3\b0  WhenPart \cf2\b returns\cf3\b0  \i WithWhenPart\i0 :\cf0\par
+\cf3\tab\cf4 'when'\cf3  when=Expression\cf0\par
+\cf3 ;\cf0\par
+\par
+\cf3 WhatValuesStatement:\cf0\par
+\cf3\tab\{\i WhatValuesStatement\i0\} (typof=\cf4 'type'\cf3  \cf4 'of'\cf3 )? (\cf4 'value'\cf3 |\cf4 'values'\cf3 ) typ=(\cf4 'can'\cf3 |\cf4 'must'\cf3 ) prop=SadlResource (\cf4 'of'\cf3  article=AnArticle? cls=SadlPrimaryTypeReference)? \cf4 'have'\cf0\par
+\cf3 ;\cf0\par
+\par
+\cf3 HowManyValuesStatement:\cf0\par
+\cf1 //\tab\{HowManyValuesStatement\} ('How'|'how') 'many' 'values' 'of' prop=SadlResource ('of' 'type' \ul typ\ulnone =SadlPrimaryTypeReference)? 'can' article=AnArticle? \ul cls\ulnone =SadlPrimaryTypeReference 'have'\cf0\par
+\cf3\tab\{\i HowManyValuesStatement\i0\} (\cf4 'How'\cf3 |\cf4 'how'\cf3 ) \cf4 'many'\cf3  \cf4 'values'\cf3  (\cf4 'of'\cf3  \cf4 'type'\cf3  typ=SadlPrimaryTypeReference)? \cf4 'can'\cf3  prop=SadlResource (\cf4 'of'\cf3  article=AnArticle? cls=SadlPrimaryTypeReference)? \cf4 'have'\cf0\par
+\cf3 ;\cf0\par
+\par
+\cf3 @Override\cf0\par
+\cf8 EOS\cf3 :\cf0\par
+\cf3\tab super |\cf0\par
+\cf3\tab\cf4 '?'\cf0\par
+\cf3 ;\cf0\par
+\f1\fs22\par
+}
+ 

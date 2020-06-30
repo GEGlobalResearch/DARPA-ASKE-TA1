@@ -2,7 +2,7 @@
  * Note: This license has also been called the "New BSD License" or 
  * "Modified BSD License". See also the 2-clause BSD License.
  *
- * Copyright © 2018-2019 - General Electric Company, All Rights Reserved
+ * Copyright ï¿½ 2018-2019 - General Electric Company, All Rights Reserved
  * 
  * Projects: ANSWER and KApEESH, developed with the support of the Defense 
  * Advanced Research Projects Agency (DARPA) under Agreement  No.  
@@ -36,28 +36,28 @@
  ***********************************************************************/
 package com.ge.research.sadl.darpa.aske.processing.imports;
 
+import java.io.BufferedReader;
 import java.io.IOException;
-import java.net.URL;
+import java.io.StringReader;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import com.ge.research.sadl.darpa.aske.curation.AnswerCurationManager;
-import com.google.gson.JsonElement;
-import com.google.gson.JsonObject;
-import com.google.gson.JsonParser;
-import com.google.gson.JsonPrimitive;
+import com.ge.research.sadl.darpa.aske.preferences.DialogPreferences;
+import com.ge.research.sadl.reasoner.ResultSet;
+import com.hp.hpl.jena.ontology.Individual;
 import com.hp.hpl.jena.ontology.OntModel;
 
 public class AnswerExtractionProcessor {
+	protected static final Logger logger = LoggerFactory.getLogger(AnswerExtractionProcessor.class);
 	private String documentContent;
 	private CodeLanguage language;
 	private String serializedCode;
 	private OntModel contextModel;	// the knowledge graph to use during extraction
-	private OntModel textModel;		// the knowledge graph extension to the contextModel extracted from text
-	private String textModelName;
-	private String textModelPrefix;
-	private OntModel codeModel;		// the knowledge graph extension to the context model extracted from code
-	private String codeModelName;
-	private String codeModelPrefix;
 	private IModelFromCodeExtractor codeExtractor;
 	private TextProcessor textProcessor;
 	private Map<String, String> preferences = null;
@@ -65,7 +65,7 @@ public class AnswerExtractionProcessor {
 	private String sadlContent;
 	
 	public enum CodeLanguage {
-		JAVA
+		JAVA, PYTHON, PYTHON_TF, TEXT, OTHERLANGUAGE
 		}
 
 
@@ -89,15 +89,6 @@ public class AnswerExtractionProcessor {
 		int servicePort = 1234;
 		
 		return null;
-	}
-
-	public OntModel extractModelFromCode() {
-		OntModel extractedModel = null;
-		if (getTextModel() == null && getDocumentContent() != null) {
-			setTextModel(extractModelFromText());
-		}
-		
-		return extractedModel;
 	}
 
 	public CodeLanguage getLanguage() {
@@ -125,11 +116,11 @@ public class AnswerExtractionProcessor {
 	}
 
 	public OntModel getTextModel() {
-		return textModel;
+		return getTextProcessor().getCurrentTextModel();
 	}
 
 	public void setTextModel(OntModel textModel) {
-		this.textModel = textModel;
+		getTextProcessor().setTextModel(textModel);
 	}
 
 	private String getDocumentContent() {
@@ -141,12 +132,16 @@ public class AnswerExtractionProcessor {
 	}
 
 	public OntModel getCodeModel() {
-		return codeModel;
+		return getCodeExtractor().getCurrentCodeModel();
+	}
+	
+	public void setCodeModel(OntModel m) {
+		getCodeExtractor().setCurrentCodeModel(m);
 	}
 
-	public void setCodeModel(OntModel codeModel) {
-		this.codeModel = codeModel;
-	}
+//	public void setCodeModel(OntModel codeModel) {
+//		this.codeModel = codeModel;
+//	}
 
 	public IModelFromCodeExtractor getCodeExtractor(CodeLanguage language) {
 		if (codeExtractor == null) {
@@ -197,7 +192,11 @@ public class AnswerExtractionProcessor {
 
 	public void addNewSadlContent(String newContent) {
 		if (getGeneratedSadlContent() != null) {
-			setSadlContent(getGeneratedSadlContent() + newContent);
+			String gc = getGeneratedSadlContent();
+			if (!gc.endsWith(System.lineSeparator())) {
+				gc = gc + System.lineSeparator();
+			}
+			setSadlContent(gc + newContent);
 		}
 		else {
 			setSadlContent(newContent);
@@ -213,89 +212,228 @@ public class AnswerExtractionProcessor {
 	}
 
 	public String getTextModelName() {
-		return textModelName;
-	}
-
-	public void setTextModelName(String textModelName) {
-		getTextProcessor().setTextmodelName(textModelName);
-		this.textModelName = textModelName;
+		return getTextProcessor().getTextModelName();
 	}
 
 	public String getCodeModelName() {
-		return codeModelName;
-	}
-
-	public void setCodeModelName(String codeModelName) {
-		this.codeModelName = codeModelName;
+		return getCodeExtractor().getCodeModelName();
 	}
 
 	public String getCodeModelPrefix() {
-		return codeModelPrefix;
+		return getCodeExtractor().getCodeModelPrefix();
 	}
 
-	public void setCodeModelPrefix(String codeModelPrefix) {
-		this.codeModelPrefix = codeModelPrefix;
+	/**
+	 * method to get the namespace from the model name by adding a "#" to the end
+	 * @param modelName
+	 * @return
+	 */
+	public String getNamespaceFromModelName(String modelName) {
+		return modelName + "#";
 	}
 
+	/**
+	 * Method to translate a Java method into Python. The Python code will be wrapped in a class.
+	 * 
+	 * @param className -- the name of the class to use to wrap the code
+	 * @param methodCode -- the Java method method code 
+	 * @return -- the Python code
+	 * @throws IOException
+	 */
 	public String translateMethodJavaToPython(String className, String methodCode) throws IOException {
-		StringBuilder sb = new StringBuilder();
-//		String baseServiceUrl = "http://vesuvius-dev.crd.ge.com:19092/darpa/aske/";
-		String baseServiceUrl = "http://vesuvius063.crd.ge.com:19092/darpa/aske/";
-		
-		String translateMethodServiceURL = baseServiceUrl + "translate/method/";
-		URL serviceUrl = new URL(translateMethodServiceURL);			
+		String serviceBaseUrl = getCurationManager().getPreference(DialogPreferences.ANSWER_JAVA_TO_PYTHON_SERVICE_BASE_URI.getId());
+		JavaToPythonServiceInterface jtpsi = new JavaToPythonServiceInterface(serviceBaseUrl);
+		String pyCodeWrapped = jtpsi.translateMethodJavaToPython(className, methodCode);
+		String pyCodeUnwrapped = unwrapPythonMethodInClass(pyCodeWrapped);
+		return pyCodeUnwrapped;
+	}
 
-		JsonObject json = new JsonObject();
-		json.addProperty("className", className);
-		json.addProperty("methodCode", methodCode);
-		
-//		System.out.println(json.toString());
-	
-		String response = getCurationManager().makeConnectionAndGetResponse(serviceUrl, json);
-//		System.out.println(response);
-		if (response != null && response.length() > 0) {
-			JsonElement je = new JsonParser().parse(response);
-			if (je.isJsonObject()) {
-				JsonObject jobj = je.getAsJsonObject();
-				JsonElement status = jobj.get("status");
-				System.out.println("Status: " + status.getAsString());
-				if (!status.getAsString().equalsIgnoreCase("SUCCESS")) {
-					throw new IOException("Method translation failed: " + status.getAsString());
-				}
-				String pythonCode = jobj.get("code").getAsString();
-//				System.out.println(pythonCode);
-				sb.append(pythonCode);
+	private String unwrapPythonMethodInClass(String pyCodeWrapped) {
+        StringBuilder sb = new StringBuilder();
+        try (BufferedReader reader = new BufferedReader(new StringReader(pyCodeWrapped))) {
+        	boolean foundClass = false;
+        	boolean foundMethod = false;
+        	int lineCntr = 0;
+            String line = reader.readLine();
+            while (line != null) {
+                if (line.startsWith("class ")) {
+                	foundClass = true;
+                }
+                if (foundClass && line.startsWith("    def ")) {
+                	int stidx = 8;
+                	while (line.charAt(stidx) != '(') {
+                		stidx++;
+                	}
+                	String start = line.substring(0, ++stidx);
+                	String rest = line.substring(stidx);
+                	if (rest.startsWith("self")) {
+                		rest = rest.substring(4);
+                		if (rest.startsWith(",")) {
+                			rest = rest.substring(1);
+                		}
+                		line = start + rest;
+                	}
+                	foundMethod = true;
+                }
+            	if (foundMethod) {
+            		if (lineCntr++ > 0) {
+            			sb.append("\n");
+            		}
+            		if (line.length() >= 4) {
+            			sb.append(line.substring(4));
+            		}
+            	}
+                line = reader.readLine();
+            }
+        } catch (IOException exc) {
+            // quit
+        }
+        return sb.toString();
+	}
 
-			}
-			else if (je instanceof JsonPrimitive) {
-				String status = ((JsonPrimitive)je).getAsString();
-				System.err.println(status);
-			}
-		}
-		else {
-			throw new IOException("No response received from service " + translateMethodServiceURL);
-		}
-		return sb.toString();
+	/**
+	 * Method to translate a Java expression into Python.
+	 * 
+	 * @param className -- the name of the class to use to wrap the code
+	 * @param exprCode -- the Java method method code 
+	 * @return -- the Python code
+	 * @throws IOException
+	 */
+	public String translateExpressionJavaToPython(String className, String methodName, String exprCode) throws IOException {
+		String serviceBaseUrl = getCurationManager().getPreference(DialogPreferences.ANSWER_JAVA_TO_PYTHON_SERVICE_BASE_URI.getId());
+		JavaToPythonServiceInterface jtpsi = new JavaToPythonServiceInterface(serviceBaseUrl);
+		return jtpsi.translateExpressionJavaToPython(className, methodName, exprCode);
 	}
 
 	public void reset() {
-		setCodeModel(null);
+		getCodeExtractor().setCurrentCodeModel(null);
 		getCodeExtractor().setCodeModelName(null);
-		getCodeExtractor().setDefaultCodeModelName(null);
-		setCodeModelPrefix(null);
-		getCodeExtractor().setDefaultCodeModelPrefix(null);
-		setTextModel(null);
-		setTextModelName(null);
-		setTextModelPrefix(null);
+		getCodeExtractor().setCodeModelPrefix(null);
+		getTextProcessor().setTextModel(null);
+		getTextProcessor().setTextModelName(null);
+		getTextProcessor().setTextModelPrefix(null);
 	}
 
 	public String getTextModelPrefix() {
-		return textModelPrefix;
+		return getTextProcessor().getTextModelPrefix();
 	}
 
-	public void setTextModelPrefix(String textModelPrefix) {
-		getTextProcessor().setTextmodelPrefix(textModelPrefix);
-		this.textModelPrefix = textModelPrefix;
+	/**
+	 * Method to save a Python script as an equation in the target computational graph
+	 * @param modelToEvaluate--the equation to be saved
+	 * @param outputName--the name of the output of the calculation
+	 * @param rs--a ResultSet containing input names and types
+	 * @param rs2--a ResultSet containing output names (may be null) and types
+	 * @param modifiedPythonScript--the Python script of the equation for physics-based models
+	 * @param dataLocation--the location of the data for data-driven models
+	 * @return--the URI of the successfully created model in the computational graph or null if not successful
+	 * @throws IOException
+	 */
+	public String saveToComputationalGraph(Individual modelToEvaluate, String outputName, ResultSet rsInputs, ResultSet rsOutputs, String modifiedPythonScript, String dataLocation) throws IOException {
+		// construct String inputs to the service
+		/*
+		 * Construct after this manner:
+		 * 	String[] input1 = new String[3];
+			input1[0] = "T";
+			input1[1] = "double";
+			input1[2] = "508.788";
+			inputs.add(input1);
+			String[] input2 = new String[3];
+			input2[0] = "G";
+			input2[1] = "double";
+			input2[2] = "1.4";
+			inputs.add(input2);
+			String[] input3 = new String[3];
+			input3[0] = "R";
+			input3[1] = "double";
+			input3[2] = "53.3";
+			inputs.add(input3);
+			String[] input4 = new String[3];
+			input4[0] = "Q";
+			input4[1] = "double";
+			input4[2] = "5500";
+			inputs.add(input4);
+
+			String[] output1 = new String[2];
+			output1[0] = "CAL_SOS";
+			output1[1] = "double";
+			outputs.add(output1);
+
+		 */
+		List<String[]> inputs = rsInputs != null ? new ArrayList<String[]>() : null;
+		List<String[]> outputs = rsOutputs != null ? new ArrayList<String[]>() : null;
+		if (rsInputs != null) {
+			rsInputs.setShowNamespaces(false);
+			String[] colNames = rsInputs.getColumnNames();    		// check to make sure columns are as expected for robustness
+			if (!colNames[0].equals("argName")) {
+				throw new IOException("The ResultSet for inputs to the equation does not have 'argName' in the first column");
+			}
+			if (!colNames[1].equals("argType")) {
+				throw new IOException("The ResultSet for inputs to the equation does not have 'argType' in the second column");
+			}
+			String[] colNamesRet = rsOutputs.getColumnNames();
+			if (!colNamesRet[0].equals("retName")) {
+				throw new IOException("The ResultSet for returns from the equation does not have 'retName' in the first column");
+			}
+			if (!colNamesRet[1].equals("retType")) {
+				throw new IOException("The ResultSet for returns from the equation does not have 'retType' in the second column");
+			}
+		}
+		if (rsOutputs != null) {
+			rsOutputs.setShowNamespaces(false);
+		}
+		
+		int rsColCount = rsInputs != null ? rsInputs.getColumnCount() : 0;
+		int rsRowCount = rsInputs != null ? rsInputs.getRowCount() : 0;
+		for (int r = 0; r < rsRowCount; r++) {
+			String[] input = new String[rsColCount];
+			for (int c = 0; c < rsColCount; c++) {
+				input[c] = rsInputs.getResultAt(r, c).toString();
+			}
+			inputs.add(input);
+		}
+		
+		int rs2ColCount = rsOutputs != null ? rsOutputs.getColumnCount() : 0;
+		int rs2RowCount = rsOutputs != null ? rsOutputs.getRowCount() : 0;
+		if (rs2RowCount > 1) {
+			throw new IOException("Only one output is currently handled by  saveToComputationalGraph");
+		}
+		for (int r = 0; r < rs2RowCount; r++) {
+			String[] output = new String[rs2ColCount];
+			for (int c = 0; c < rs2ColCount; c++) {
+				String alias = modelToEvaluate.getLabel(null);
+				output[0] = alias != null ? alias : (outputName != null) ? outputName : modelToEvaluate.getLocalName();
+				output[1] = rsOutputs.getResultAt(r, 1).toString();
+			}
+			outputs.add(output);
+		}
+		
+		return saveToComputationalGraph(getCurationManager().pythonify(modelToEvaluate.getLocalName()), modifiedPythonScript, dataLocation, inputs, outputs);
 	}
 
+	/**
+	 * Method to save a Python script as an equation in the target computational graph
+	 * @param modelUri--the URI of the equation to be saved
+	 * @param modifiedPythonScript
+	 * @param dataLocation
+	 * @param inputs
+	 * @param outputs
+	 * @return
+	 * @throws IOException
+	 */
+	public String saveToComputationalGraph(String modelUri, String modifiedPythonScript, String dataLocation,
+			List<String[]> inputs, List<String[]> outputs) throws IOException {
+		String serviceBaseUri = getCurationManager().getPreference(DialogPreferences.ANSWER_KCHAIN_CG_SERVICE_BASE_URI.getId());
+		KChainServiceInterface kcService = new KChainServiceInterface(serviceBaseUri);
+		try {
+			Object[] results = kcService.buildCGModel(modelUri, modifiedPythonScript, dataLocation, inputs, outputs);
+			if (results != null && results.length == 3) {
+				return "Successfully built model '" + modelUri + "', type=" + results[0] + ", location=" + results[2];
+			}
+		}
+		catch (Exception e) {
+			return JsonServiceInterface.aggregateExceptionMessage(e);
+		}
+		return null;
+	}
 }

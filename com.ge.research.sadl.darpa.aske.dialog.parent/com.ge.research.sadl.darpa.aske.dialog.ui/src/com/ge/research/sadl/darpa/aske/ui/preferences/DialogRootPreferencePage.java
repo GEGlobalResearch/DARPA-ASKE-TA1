@@ -58,6 +58,7 @@ import com.ge.research.sadl.reasoner.ConfigurationItem;
 import com.ge.research.sadl.reasoner.ConfigurationItem.NameValuePair;
 import com.ge.research.sadl.reasoner.ConfigurationManager;
 import com.ge.research.sadl.reasoner.IConfigurationManager;
+import com.ge.research.sadl.ui.preferences.FieldEditorExtensions.BooleanFieldEditorExt;
 import com.ge.research.sadl.ui.preferences.FieldEditorExtensions.FieldEditorExt;
 import com.ge.research.sadl.ui.preferences.FieldEditorExtensions.StringFieldEditorExt;
 import com.google.common.collect.FluentIterable;
@@ -133,12 +134,25 @@ public class DialogRootPreferencePage extends LanguageRootPreferencePage {
 
 	@Override
 	protected void createFieldEditors() {
-		// General SADL Settings
+		// General Dialog Settings
 		Composite generalSettings = createSettingsGroup(getFieldEditorParent(), SWT.NONE, "Dialog Settings");
+		// Graph Settings
+		Composite scriptsToSaveSetting = createSettingsGroup(generalSettings, SWT.NONE, "Scripts to Extract");
+		addField(new BooleanFieldEditorExt(DialogPreferences.ORIGINAL_LANGUAGE.getId(), "Original language", scriptsToSaveSetting));
+		addField(new BooleanFieldEditorExt(DialogPreferences.PYTHON_LANGUAGE.getId(), "Python", scriptsToSaveSetting));
+		addField(new BooleanFieldEditorExt(DialogPreferences.OTHER_PYTHON_LANGUAGE.getId(), "Other Python Flavors", scriptsToSaveSetting));
+		addField(new BooleanFieldEditorExt(DialogPreferences.VERBOSE_EXTRACTION.getId(), "verboseExtraction", generalSettings));
 		addField(new StringFieldEditorExt(DialogPreferences.ANSWER_TEXT_SERVICE_BASE_URI.getId(), "Text to Triples Host and Port:", generalSettings));
-		addField(new StringFieldEditorExt(DialogPreferences.ANSWER_CG_SERVICE_BASE_URI.getId(), "Computational Graph Service Host and Port:", generalSettings));
 		addField(new StringFieldEditorExt(DialogPreferences.ANSWER_JAVA_TO_PYTHON_SERVICE_BASE_URI.getId(), "Java to Python Translation Service Host and Port:", generalSettings));
+		Composite computationalGraphSettings = createSettingsGroup(generalSettings, SWT.NONE, "Computational Graph Settings");
+		addField(new BooleanFieldEditorExt(DialogPreferences.USE_DBN_CG_SERVICE.getId(), "Use DBN", computationalGraphSettings));		
+		addField(new StringFieldEditorExt(DialogPreferences.ANSWER_DBN_CG_SERVICE_BASE_URI.getId(), "DBN Service Host and Port:", computationalGraphSettings));
+		addField(new StringFieldEditorExt(DialogPreferences.DBN_INPUT_JSON_GENERATION_SERVICE_BASE_URI.getId(), "DBN Json Generation Service Host and Port:", computationalGraphSettings));
+		addField(new BooleanFieldEditorExt(DialogPreferences.USE_ANSWER_KCHAIN_CG_SERVICE.getId(), "Use K-CHAIN", computationalGraphSettings));		
+		addField(new StringFieldEditorExt(DialogPreferences.ANSWER_KCHAIN_CG_SERVICE_BASE_URI.getId(), "K-CHAIN Service Host and Port:", computationalGraphSettings));
+		addField(new StringFieldEditorExt(DialogPreferences.ANSWER_INVIZIN_SERVICE_BASE_URI.getId(), "Invizin Service Host and Port:", computationalGraphSettings));
 //		addField(new StringFieldEditorExt(DialogPreferences.ANSWER_CODE_EXTRACTION_KBASE_ROOT.getId(), "Code Extraction KBase Root:", generalSettings));
+		addField(new StringFieldEditorExt(DialogPreferences.SHORT_GRAPH_LINK.getId(), "Short path to Graph folder:", generalSettings));
 	}
 
 	@Override
@@ -151,10 +165,20 @@ public class DialogRootPreferencePage extends LanguageRootPreferencePage {
 		IPreferenceStore store = this.getPreferenceStore();
 
 		//General Settings
+		store.setDefault(DialogPreferences.ORIGINAL_LANGUAGE.getId(), DialogPreferences.ORIGINAL_LANGUAGE.getDefaultValue());
+		store.setDefault(DialogPreferences.PYTHON_LANGUAGE.getId(), DialogPreferences.PYTHON_LANGUAGE.getDefaultValue());
+		store.setDefault(DialogPreferences.OTHER_PYTHON_LANGUAGE.getId(), DialogPreferences.OTHER_PYTHON_LANGUAGE.getDefaultValue());
+		store.setDefault(DialogPreferences.VERBOSE_EXTRACTION.getId(), DialogPreferences.VERBOSE_EXTRACTION.getDefaultValue());
 		store.setDefault(DialogPreferences.ANSWER_TEXT_SERVICE_BASE_URI.getId(), DialogPreferences.ANSWER_TEXT_SERVICE_BASE_URI.getDefaultValue());
-		store.setDefault(DialogPreferences.ANSWER_CG_SERVICE_BASE_URI.getId(), DialogPreferences.ANSWER_CG_SERVICE_BASE_URI.getDefaultValue());
+		store.setDefault(DialogPreferences.ANSWER_KCHAIN_CG_SERVICE_BASE_URI.getId(), DialogPreferences.ANSWER_KCHAIN_CG_SERVICE_BASE_URI.getDefaultValue());
+		store.setDefault(DialogPreferences.USE_ANSWER_KCHAIN_CG_SERVICE.getId(), DialogPreferences.USE_ANSWER_KCHAIN_CG_SERVICE.getDefaultValue());
+		store.setDefault(DialogPreferences.ANSWER_DBN_CG_SERVICE_BASE_URI.getId(), DialogPreferences.ANSWER_DBN_CG_SERVICE_BASE_URI.getDefaultValue());
+		store.setDefault(DialogPreferences.DBN_INPUT_JSON_GENERATION_SERVICE_BASE_URI.getId(), DialogPreferences.DBN_INPUT_JSON_GENERATION_SERVICE_BASE_URI.getDefaultValue());
+		store.setDefault(DialogPreferences.ANSWER_INVIZIN_SERVICE_BASE_URI.getId(), DialogPreferences.ANSWER_INVIZIN_SERVICE_BASE_URI.getDefaultValue());
+		store.setDefault(DialogPreferences.USE_DBN_CG_SERVICE.getId(), DialogPreferences.USE_DBN_CG_SERVICE.getDefaultValue());
 		store.setDefault(DialogPreferences.ANSWER_JAVA_TO_PYTHON_SERVICE_BASE_URI.getId(), DialogPreferences.ANSWER_JAVA_TO_PYTHON_SERVICE_BASE_URI.getDefaultValue());
 		store.setDefault(DialogPreferences.ANSWER_CODE_EXTRACTION_KBASE_ROOT.getId(), DialogPreferences.ANSWER_CODE_EXTRACTION_KBASE_ROOT.getDefaultValue());
+		store.setDefault(DialogPreferences.SHORT_GRAPH_LINK.getId(), DialogPreferences.SHORT_GRAPH_LINK.getDefaultValue());
 		setPreferenceStore(store);
 	}
 

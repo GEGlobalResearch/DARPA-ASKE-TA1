@@ -1,0 +1,11 @@
+ uri "http://sadl.org/ImportSound.sadl" alias ImportSound.
+ 
+ import "http://com.ge.research.sadl.darpa.aske.answer/Sound".
+ 
+ Ask: "select ?argName ?argType where {?eq <http://sadl.org/sadlimplicitmodel#expression> ?sc . ?sc <http://sadl.org/sadlimplicitmodel#language> <http://sadl.org/sadlimplicitmodel#Python> . 
+?sc <http://sadl.org/sadlimplicitmodel#script> 'a = tf.math.pow( R * T * gamma, 1/2)' . ?eq <http://sadl.org/sadlimplicitmodel#arguments> ?ddList . 
+?ddList <http://jena.hpl.hp.com/ARQ/list#member> ?member . ?member <http://sadl.org/sadlimplicitmodel#localDescriptorName> ?argName . ?member <http://sadl.org/sadlimplicitmodel#dataType> ?argType}".
+
+Ask: "select distinct ?argName where {?eq <expression> ?sc . ?sc <language> ?lang . ?sc <script> 'a = tf.math.pow( R * T * gamma, 1/2)' . 
+?eq <http://sadl.org/sadlimplicitmodel#arguments> ?ddList . 
+?ddList <http://jena.hpl.hp.com/ARQ/list#member> ?member . ?member <http://sadl.org/sadlimplicitmodel#descriptorName> ?argName}".

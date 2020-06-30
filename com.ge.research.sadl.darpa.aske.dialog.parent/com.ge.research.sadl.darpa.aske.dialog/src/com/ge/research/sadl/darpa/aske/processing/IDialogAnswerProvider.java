@@ -2,7 +2,7 @@
  * Note: This license has also been called the "New BSD License" or 
  * "Modified BSD License". See also the 2-clause BSD License.
  *
- * Copyright © 2018-2019 - General Electric Company, All Rights Reserved
+ * Copyright ï¿½ 2018-2019 - General Electric Company, All Rights Reserved
  * 
  * Projects: ANSWER and KApEESH, developed with the support of the Defense 
  * Advanced Research Projects Agency (DARPA) under Agreement  No.  
@@ -36,23 +36,66 @@
  ***********************************************************************/
 package com.ge.research.sadl.darpa.aske.processing;
 
+import java.io.File;
 import java.util.List;
+import java.util.Map;
+
+import org.eclipse.emf.common.util.URI;
+import org.eclipse.emf.ecore.EObject;
+import org.eclipse.emf.ecore.resource.Resource;
 
 import com.ge.research.sadl.darpa.aske.curation.AnswerCurationManager;
+import com.hp.hpl.jena.ontology.OntModel;
 
 public interface IDialogAnswerProvider {
 
-	String addCurationManagerInitiatedContent(String content);
+	String addCurationManagerInitiatedContent(AnswerCurationManager answerCurationManager, String content);
 
 	String addCurationManagerInitiatedContent(AnswerCurationManager answerCurationManager, String methodToCall,
 			List<Object> args, String content);
 
-	String initiateMixedInitiativeInteraction(MixedInitiativeElement element);
+	String addCurationManagerInitiatedContent(AnswerCurationManager answerCurationManager, StatementContent ssc);
 
-	void provideResponse(MixedInitiativeElement response);
+	String initiateMixedInitiativeInteraction(QuestionWithCallbackContent element);
+
+	void provideResponse(QuestionWithCallbackContent response);
 
 	public MixedInitiativeElement getMixedInitiativeElement(String key);
 
 	boolean removeMixedInitiativeElement(String key);
 
+	Resource getResource();
+
+	boolean addCurationManagerAnswerContent(AnswerCurationManager acm, String content, Object ctx);
+
+	void dispose();
+
+	void updateProjectAndDisplaySadlFiles(String projectName, String modelsFolder, List<File> sadlFiles);
+
+	/**
+	 * Method to add import statements to the Dialog model either after the last existing import statement
+	 * or, if none, after the model "uri" statement.
+	 * @param importStatements
+	 * @return true if successful else false if error, e.g., import already exists.
+	 */
+	boolean addImports(List<String> importStatements);
+	
+	/**
+	 * Method to process a user query on a new thread with a busy cursor
+	 * 
+	 * @return
+	 */
+	String processUserQueryNewThreadWithBusyIndicator(Resource resource, OntModel theModel, String modelName,
+			ExpectsAnswerContent sc);
+
+	String replaceDialogText(AnswerCurationManager answerCurationManager, EObject eObject, String originalTxt,
+			String replacementTxt);
+
+	boolean addUserContentToDialog(AnswerCurationManager acm, String content, boolean quote);
+
+	/**
+	 * Method to get the Resource URI, which will be constant even though the Resource may change
+	 * @return
+	 */
+	URI getUri();
 }

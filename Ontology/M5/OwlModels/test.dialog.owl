@@ -1,19 +1,555 @@
 <rdf:RDF
-    xmlns:tst="http://sadl.org/test.sadl"
     xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+    xmlns="http://baseUri#"
     xmlns:sadlbasemodel="http://sadl.org/sadlbasemodel"
+    xmlns:j.0="http://sadl.org/sadllistmodel#"
     xmlns:owl="http://www.w3.org/2002/07/owl#"
     xmlns:sadlimplicitmodel="http://sadl.org/sadlimplicitmodel"
+    xmlns:sos="http://sadl.org/SpeedOfSound.sadl"
     xmlns:builtinfunctions="http://sadl.org/builtinfunctions"
-    xmlns:tstdlg="http://darpa.aske/testdialog#"
+    xmlns:j.1="http://sadl.org/sadlimplicitmodel#"
     xmlns:rdfs="http://www.w3.org/2000/01/rdf-schema#"
+    xmlns:sadllistmodel="http://sadl.org/sadllistmodel"
     xmlns:xsd="http://www.w3.org/2001/XMLSchema#"
-  xml:base="http://darpa.aske/testdialog">
+  xml:base="http://baseUri">
   <owl:Ontology rdf:about="">
-    <owl:imports rdf:resource="http://sadl.org/test.sadl"/>
+    <owl:imports rdf:resource="http://sadl.org/SpeedOfSound.sadl"/>
+    <owl:imports rdf:resource="http://sadl.org/sadllistmodel"/>
     <owl:imports rdf:resource="http://sadl.org/builtinfunctions"/>
     <owl:imports rdf:resource="http://sadl.org/sadlimplicitmodel"/>
     <owl:imports rdf:resource="http://sadl.org/sadlbasemodel"/>
     <rdfs:comment xml:lang="en">This ontology was created from a DIALOG file 'test.dialog' and should not be directly edited.</rdfs:comment>
   </owl:Ontology>
+  <owl:Class rdf:nodeID="A0">
+    <rdfs:subClassOf>
+      <owl:Restriction>
+        <owl:allValuesFrom rdf:nodeID="A0"/>
+        <owl:onProperty rdf:resource="http://sadl.org/sadllistmodel#rest"/>
+      </owl:Restriction>
+    </rdfs:subClassOf>
+    <rdfs:subClassOf>
+      <owl:Restriction>
+        <owl:allValuesFrom rdf:resource="http://sadl.org/sadlimplicitmodel#DataDescriptor"/>
+        <owl:onProperty rdf:resource="http://sadl.org/sadllistmodel#first"/>
+      </owl:Restriction>
+    </rdfs:subClassOf>
+    <rdfs:subClassOf rdf:resource="http://sadl.org/sadllistmodel#List"/>
+  </owl:Class>
+  <j.1:ExternalEquation rdf:ID="Mach.CAL_SOS">
+    <j.1:expression>
+      <j.1:Script>
+        <j.1:script rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+        >#!/usr/bin/env python&#xD;
+""" generated source for module inputfile """&#xD;
+class Mach(object):&#xD;
+    """ generated source for class Mach """&#xD;
+    def CAL_SOS(self, T, G, R, Q):&#xD;
+        """ generated source for method CAL_SOS """&#xD;
+        WOW = 1 + (G - 1) / (1 + (G - 1) * Math.pow((Q / T), 2) * Math.exp(Q / T) / Math.pow((Math.exp(Q / T) - 1), 2))&#xD;
+        return (Math.sqrt(32.174 * T * R * WOW))&#xD;
+&#xD;
+</j.1:script>
+        <j.1:language rdf:resource="http://sadl.org/sadlimplicitmodel#Python"/>
+      </j.1:Script>
+    </j.1:expression>
+    <j.1:expression>
+      <j.1:Script>
+        <j.1:script rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+        >public double CAL_SOS(double T, double G, double R, double Q) {&#xD;
+    double WOW = 1 + (G - 1) / (1 + (G - 1) * Math.pow((Q / T), 2) * Math.exp(Q / T) / Math.pow((Math.exp(Q / T) - 1), 2));&#xD;
+    return (Math.sqrt(32.174 * T * R * WOW));&#xD;
+}</j.1:script>
+        <j.1:language rdf:resource="http://sadl.org/sadlimplicitmodel#Java"/>
+      </j.1:Script>
+    </j.1:expression>
+    <j.1:externalURI rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >http://com.ge.research.sadl.darpa.aske.answer/Mach_java#Mach.CAL_SOS</j.1:externalURI>
+    <j.1:returnTypes rdf:parseType="Resource">
+      <j.0:first>
+        <j.1:DataDescriptor>
+          <j.1:dataType>http://www.w3.org/2001/XMLSchema#double</j.1:dataType>
+        </j.1:DataDescriptor>
+      </j.0:first>
+      <rdf:type rdf:nodeID="A0"/>
+    </j.1:returnTypes>
+    <j.1:arguments rdf:parseType="Resource">
+      <j.0:rest rdf:parseType="Resource">
+        <j.0:rest rdf:parseType="Resource">
+          <j.0:rest rdf:parseType="Resource">
+            <j.0:first>
+              <j.1:DataDescriptor>
+                <j.1:dataType>http://www.w3.org/2001/XMLSchema#double</j.1:dataType>
+                <j.1:descriptorVariable>
+                  <j.1:GPVariable rdf:ID="Mach.CAL_SOS_Q"/>
+                </j.1:descriptorVariable>
+                <j.1:localDescriptorName>Q</j.1:localDescriptorName>
+              </j.1:DataDescriptor>
+            </j.0:first>
+            <rdf:type rdf:nodeID="A0"/>
+          </j.0:rest>
+          <j.0:first>
+            <j.1:DataDescriptor>
+              <j.1:dataType>http://www.w3.org/2001/XMLSchema#double</j.1:dataType>
+              <j.1:descriptorVariable>
+                <j.1:GPVariable rdf:ID="Mach.CAL_SOS_R"/>
+              </j.1:descriptorVariable>
+              <j.1:localDescriptorName>R</j.1:localDescriptorName>
+            </j.1:DataDescriptor>
+          </j.0:first>
+          <rdf:type rdf:nodeID="A0"/>
+        </j.0:rest>
+        <j.0:first>
+          <j.1:DataDescriptor>
+            <j.1:dataType>http://www.w3.org/2001/XMLSchema#double</j.1:dataType>
+            <j.1:descriptorVariable>
+              <j.1:GPVariable rdf:ID="Mach.CAL_SOS_G"/>
+            </j.1:descriptorVariable>
+            <j.1:localDescriptorName>G</j.1:localDescriptorName>
+          </j.1:DataDescriptor>
+        </j.0:first>
+        <rdf:type rdf:nodeID="A0"/>
+      </j.0:rest>
+      <j.0:first>
+        <j.1:DataDescriptor>
+          <j.1:dataType>http://www.w3.org/2001/XMLSchema#double</j.1:dataType>
+          <j.1:descriptorVariable>
+            <j.1:GPVariable rdf:ID="Mach.CAL_SOS_T"/>
+          </j.1:descriptorVariable>
+          <j.1:localDescriptorName>T</j.1:localDescriptorName>
+        </j.1:DataDescriptor>
+      </j.0:first>
+      <rdf:type rdf:nodeID="A0"/>
+    </j.1:arguments>
+    <j.1:expression>
+      <j.1:Script>
+        <j.1:language rdf:resource="http://sadl.org/sadlimplicitmodel#Text"/>
+        <j.1:script rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+        >double Mach.CAL_SOS(double T,double G,double R,double Q): uri("http://com.ge.research.sadl.darpa.aske.answer/Mach_java#Mach.CAL_SOS")</j.1:script>
+      </j.1:Script>
+    </j.1:expression>
+  </j.1:ExternalEquation>
+  <j.1:ExternalEquation rdf:ID="Mach.TQTT">
+    <j.1:expression>
+      <j.1:Script>
+        <j.1:script rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+        >#!/usr/bin/env python&#xD;
+""" generated source for module inputfile """&#xD;
+class Mach(object):&#xD;
+    """ generated source for class Mach """&#xD;
+    def TQTT(self, M, G):&#xD;
+        """ generated source for method TQTT """&#xD;
+        return Math.pow((1 + (G - 1) / 2 * Math.pow(M, 2)), -1)&#xD;
+&#xD;
+</j.1:script>
+        <j.1:language rdf:resource="http://sadl.org/sadlimplicitmodel#Python"/>
+      </j.1:Script>
+    </j.1:expression>
+    <j.1:expression>
+      <j.1:Script>
+        <j.1:script rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+        >public double TQTT(double M, double G) {&#xD;
+    return Math.pow((1 + (G - 1) / 2 * Math.pow(M, 2)), -1);&#xD;
+}</j.1:script>
+        <j.1:language rdf:resource="http://sadl.org/sadlimplicitmodel#Java"/>
+      </j.1:Script>
+    </j.1:expression>
+    <j.1:externalURI rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >http://com.ge.research.sadl.darpa.aske.answer/Mach_java#Mach.TQTT</j.1:externalURI>
+    <j.1:returnTypes rdf:parseType="Resource">
+      <j.0:first>
+        <j.1:DataDescriptor>
+          <j.1:dataType>http://www.w3.org/2001/XMLSchema#double</j.1:dataType>
+        </j.1:DataDescriptor>
+      </j.0:first>
+      <rdf:type rdf:nodeID="A0"/>
+    </j.1:returnTypes>
+    <j.1:arguments rdf:parseType="Resource">
+      <j.0:rest rdf:parseType="Resource">
+        <j.0:first>
+          <j.1:DataDescriptor>
+            <j.1:dataType>http://www.w3.org/2001/XMLSchema#double</j.1:dataType>
+            <j.1:descriptorVariable>
+              <j.1:GPVariable rdf:ID="Mach.TQTT_G"/>
+            </j.1:descriptorVariable>
+            <j.1:localDescriptorName>G</j.1:localDescriptorName>
+          </j.1:DataDescriptor>
+        </j.0:first>
+        <rdf:type rdf:nodeID="A0"/>
+      </j.0:rest>
+      <j.0:first>
+        <j.1:DataDescriptor>
+          <j.1:dataType>http://www.w3.org/2001/XMLSchema#double</j.1:dataType>
+          <j.1:descriptorVariable>
+            <j.1:GPVariable rdf:ID="Mach.TQTT_M"/>
+          </j.1:descriptorVariable>
+          <j.1:localDescriptorName>M</j.1:localDescriptorName>
+        </j.1:DataDescriptor>
+      </j.0:first>
+      <rdf:type rdf:nodeID="A0"/>
+    </j.1:arguments>
+    <j.1:expression>
+      <j.1:Script>
+        <j.1:language rdf:resource="http://sadl.org/sadlimplicitmodel#Text"/>
+        <j.1:script rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+        >double Mach.TQTT(double M,double G): uri("http://com.ge.research.sadl.darpa.aske.answer/Mach_java#Mach.TQTT")</j.1:script>
+      </j.1:Script>
+    </j.1:expression>
+  </j.1:ExternalEquation>
+  <j.1:ExternalEquation rdf:ID="Mach.CAL_TT">
+    <j.1:expression>
+      <j.1:Script>
+        <j.1:script rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+        >#!/usr/bin/env python&#xD;
+""" generated source for module inputfile """&#xD;
+class Mach(object):&#xD;
+    """ generated source for class Mach """&#xD;
+    def CAL_TT(self, T, M, G, Q):&#xD;
+        """ generated source for method CAL_TT """&#xD;
+        TT = T / TQTT(M, G)&#xD;
+        EPS = 0.00001&#xD;
+        Z = 1&#xD;
+        Z2 = 0&#xD;
+        TT2 = 0&#xD;
+        TT1 = float()&#xD;
+        Z1 = float()&#xD;
+        i = 1&#xD;
+        while Math.abs(Z) &gt; EPS:&#xD;
+            Z = Math.pow(M, 2) - 2 * TT / CAL_GAM(T, G, Q) / T * (G / (G - 1) * (1 - T / TT) + Q / TT * (1 / (Math.exp(Q / TT) - 1) - 1 / (Math.exp(Q / T) - 1)))&#xD;
+            if i == 1:&#xD;
+                Z2 = Z&#xD;
+                TT2 = TT&#xD;
+                TT = TT2 + 100&#xD;
+                i = 2&#xD;
+            else:&#xD;
+                TT1 = TT2&#xD;
+                Z1 = Z2&#xD;
+                TT2 = TT&#xD;
+                Z2 = Z&#xD;
+                TT = TT2 - Z2 * (TT2 - TT1) / (Z2 - Z1)&#xD;
+        if M &lt;= 0.1:&#xD;
+            TT = T / TQTT(M, G)&#xD;
+        return TT&#xD;
+&#xD;
+</j.1:script>
+        <j.1:language rdf:resource="http://sadl.org/sadlimplicitmodel#Python"/>
+      </j.1:Script>
+    </j.1:expression>
+    <j.1:expression>
+      <j.1:Script>
+        <j.1:script rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+        >public double CAL_TT(double T, double M, double G, double Q) {&#xD;
+    double TT = T / TQTT(M, G);&#xD;
+    double EPS = 0.00001;&#xD;
+    double Z = 1;&#xD;
+    double Z2 = 0;&#xD;
+    double TT2 = 0;&#xD;
+    double TT1;&#xD;
+    double Z1;&#xD;
+    double i = 1;&#xD;
+    while (Math.abs(Z) &gt; EPS) {&#xD;
+        Z = Math.pow(M, 2) - 2 * TT / CAL_GAM(T, G, Q) / T * (G / (G - 1) * (1 - T / TT) + Q / TT * (1 / (Math.exp(Q / TT) - 1) - 1 / (Math.exp(Q / T) - 1)));&#xD;
+        if (i == 1) {&#xD;
+            Z2 = Z;&#xD;
+            TT2 = TT;&#xD;
+            TT = TT2 + 100;&#xD;
+            i = 2;&#xD;
+        } else {&#xD;
+            TT1 = TT2;&#xD;
+            Z1 = Z2;&#xD;
+            TT2 = TT;&#xD;
+            Z2 = Z;&#xD;
+            TT = TT2 - Z2 * (TT2 - TT1) / (Z2 - Z1);&#xD;
+        }&#xD;
+    }&#xD;
+    if (M &lt;= .1)&#xD;
+        TT = T / TQTT(M, G);&#xD;
+    return TT;&#xD;
+}</j.1:script>
+        <j.1:language rdf:resource="http://sadl.org/sadlimplicitmodel#Java"/>
+      </j.1:Script>
+    </j.1:expression>
+    <j.1:externalURI rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >http://com.ge.research.sadl.darpa.aske.answer/Mach_java#Mach.CAL_TT</j.1:externalURI>
+    <j.1:returnTypes rdf:parseType="Resource">
+      <j.0:first>
+        <j.1:DataDescriptor>
+          <j.1:dataType>http://www.w3.org/2001/XMLSchema#double</j.1:dataType>
+        </j.1:DataDescriptor>
+      </j.0:first>
+      <rdf:type rdf:nodeID="A0"/>
+    </j.1:returnTypes>
+    <j.1:arguments rdf:parseType="Resource">
+      <j.0:rest rdf:parseType="Resource">
+        <j.0:rest rdf:parseType="Resource">
+          <j.0:rest rdf:parseType="Resource">
+            <j.0:first>
+              <j.1:DataDescriptor>
+                <j.1:dataType>http://www.w3.org/2001/XMLSchema#double</j.1:dataType>
+                <j.1:descriptorVariable>
+                  <j.1:GPVariable rdf:ID="Mach.CAL_TT_Q"/>
+                </j.1:descriptorVariable>
+                <j.1:localDescriptorName>Q</j.1:localDescriptorName>
+              </j.1:DataDescriptor>
+            </j.0:first>
+            <rdf:type rdf:nodeID="A0"/>
+          </j.0:rest>
+          <j.0:first>
+            <j.1:DataDescriptor>
+              <j.1:dataType>http://www.w3.org/2001/XMLSchema#double</j.1:dataType>
+              <j.1:descriptorVariable>
+                <j.1:GPVariable rdf:ID="Mach.CAL_TT_G"/>
+              </j.1:descriptorVariable>
+              <j.1:localDescriptorName>G</j.1:localDescriptorName>
+            </j.1:DataDescriptor>
+          </j.0:first>
+          <rdf:type rdf:nodeID="A0"/>
+        </j.0:rest>
+        <j.0:first>
+          <j.1:DataDescriptor>
+            <j.1:dataType>http://www.w3.org/2001/XMLSchema#double</j.1:dataType>
+            <j.1:descriptorVariable>
+              <j.1:GPVariable rdf:ID="Mach.CAL_TT_M"/>
+            </j.1:descriptorVariable>
+            <j.1:localDescriptorName>M</j.1:localDescriptorName>
+          </j.1:DataDescriptor>
+        </j.0:first>
+        <rdf:type rdf:nodeID="A0"/>
+      </j.0:rest>
+      <j.0:first>
+        <j.1:DataDescriptor>
+          <j.1:dataType>http://www.w3.org/2001/XMLSchema#double</j.1:dataType>
+          <j.1:descriptorVariable>
+            <j.1:GPVariable rdf:ID="Mach.CAL_TT_T"/>
+          </j.1:descriptorVariable>
+          <j.1:localDescriptorName>T</j.1:localDescriptorName>
+        </j.1:DataDescriptor>
+      </j.0:first>
+      <rdf:type rdf:nodeID="A0"/>
+    </j.1:arguments>
+    <j.1:expression>
+      <j.1:Script>
+        <j.1:language rdf:resource="http://sadl.org/sadlimplicitmodel#Text"/>
+        <j.1:script rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+        >double Mach.CAL_TT(double T,double M,double G,double Q): uri("http://com.ge.research.sadl.darpa.aske.answer/Mach_java#Mach.CAL_TT")</j.1:script>
+      </j.1:Script>
+    </j.1:expression>
+  </j.1:ExternalEquation>
+  <j.1:ExternalEquation rdf:ID="Mach.CAL_GAM">
+    <j.1:expression>
+      <j.1:Script>
+        <j.1:script rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+        >#!/usr/bin/env python&#xD;
+""" generated source for module inputfile """&#xD;
+class Mach(object):&#xD;
+    """ generated source for class Mach """&#xD;
+    def CAL_GAM(self, T, G, Q):&#xD;
+        """ generated source for method CAL_GAM """&#xD;
+        return (1 + (G - 1) / (1 + (G - 1) * (Math.pow((Q / T), 2) * Math.exp(Q / T) / Math.pow((Math.exp(Q / T) - 1), 2))))&#xD;
+&#xD;
+</j.1:script>
+        <j.1:language rdf:resource="http://sadl.org/sadlimplicitmodel#Python"/>
+      </j.1:Script>
+    </j.1:expression>
+    <j.1:expression>
+      <j.1:Script>
+        <j.1:script rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+        >public double CAL_GAM(double T, double G, double Q) {&#xD;
+    return (1 + (G - 1) / (1 + (G - 1) * (Math.pow((Q / T), 2) * Math.exp(Q / T) / Math.pow((Math.exp(Q / T) - 1), 2))));&#xD;
+}</j.1:script>
+        <j.1:language rdf:resource="http://sadl.org/sadlimplicitmodel#Java"/>
+      </j.1:Script>
+    </j.1:expression>
+    <j.1:externalURI rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >http://com.ge.research.sadl.darpa.aske.answer/Mach_java#Mach.CAL_GAM</j.1:externalURI>
+    <j.1:returnTypes rdf:parseType="Resource">
+      <j.0:first>
+        <j.1:DataDescriptor>
+          <j.1:dataType>http://www.w3.org/2001/XMLSchema#double</j.1:dataType>
+        </j.1:DataDescriptor>
+      </j.0:first>
+      <rdf:type rdf:nodeID="A0"/>
+    </j.1:returnTypes>
+    <j.1:arguments rdf:parseType="Resource">
+      <j.0:rest rdf:parseType="Resource">
+        <j.0:rest rdf:parseType="Resource">
+          <j.0:first>
+            <j.1:DataDescriptor>
+              <j.1:dataType>http://www.w3.org/2001/XMLSchema#double</j.1:dataType>
+              <j.1:descriptorVariable>
+                <j.1:GPVariable rdf:ID="Mach.CAL_GAM_Q"/>
+              </j.1:descriptorVariable>
+              <j.1:localDescriptorName>Q</j.1:localDescriptorName>
+            </j.1:DataDescriptor>
+          </j.0:first>
+          <rdf:type rdf:nodeID="A0"/>
+        </j.0:rest>
+        <j.0:first>
+          <j.1:DataDescriptor>
+            <j.1:dataType>http://www.w3.org/2001/XMLSchema#double</j.1:dataType>
+            <j.1:descriptorVariable>
+              <j.1:GPVariable rdf:ID="Mach.CAL_GAM_G"/>
+            </j.1:descriptorVariable>
+            <j.1:localDescriptorName>G</j.1:localDescriptorName>
+          </j.1:DataDescriptor>
+        </j.0:first>
+        <rdf:type rdf:nodeID="A0"/>
+      </j.0:rest>
+      <j.0:first>
+        <j.1:DataDescriptor>
+          <j.1:dataType>http://www.w3.org/2001/XMLSchema#double</j.1:dataType>
+          <j.1:descriptorVariable>
+            <j.1:GPVariable rdf:ID="Mach.CAL_GAM_T"/>
+          </j.1:descriptorVariable>
+          <j.1:localDescriptorName>T</j.1:localDescriptorName>
+        </j.1:DataDescriptor>
+      </j.0:first>
+      <rdf:type rdf:nodeID="A0"/>
+    </j.1:arguments>
+    <j.1:expression>
+      <j.1:Script>
+        <j.1:language rdf:resource="http://sadl.org/sadlimplicitmodel#Text"/>
+        <j.1:script rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+        >double Mach.CAL_GAM(double T,double G,double Q): uri("http://com.ge.research.sadl.darpa.aske.answer/Mach_java#Mach.CAL_GAM")</j.1:script>
+      </j.1:Script>
+    </j.1:expression>
+  </j.1:ExternalEquation>
+  <j.1:ExternalEquation rdf:ID="Mach.CAL_T">
+    <j.1:expression>
+      <j.1:Script>
+        <j.1:script rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+        >#!/usr/bin/env python&#xD;
+""" generated source for module inputfile """&#xD;
+class Mach(object):&#xD;
+    """ generated source for class Mach """&#xD;
+    def CAL_T(self, TT, M, G, Q):&#xD;
+        """ generated source for method CAL_T """&#xD;
+        T = TT * TQTT(M, G)&#xD;
+        EPS = 0.00001&#xD;
+        Z = 1&#xD;
+        Z2 = 0&#xD;
+        T2 = 0&#xD;
+        T1 = float()&#xD;
+        Z1 = float()&#xD;
+        i = 1&#xD;
+        while Math.abs(Z) &gt; EPS:&#xD;
+            Z = Math.pow(M, 2) - 2 * TT / CAL_GAM(T, G, Q) / T * (G / (G - 1) * (1 - T / TT) + Q / TT * (1 / (Math.exp(Q / TT) - 1) - 1 / (Math.exp(Q / T) - 1)))&#xD;
+            if i == 1:&#xD;
+                Z2 = Z&#xD;
+                T2 = T&#xD;
+                T = T2 + 100&#xD;
+                i = 2&#xD;
+            else:&#xD;
+                T1 = T2&#xD;
+                Z1 = Z2&#xD;
+                T2 = T&#xD;
+                Z2 = Z&#xD;
+                T = T2 - Z2 * (T2 - T1) / (Z2 - Z1)&#xD;
+        if M &lt;= 0.1:&#xD;
+            T = TT * TQTT(M, G)&#xD;
+        return T&#xD;
+&#xD;
+</j.1:script>
+        <j.1:language rdf:resource="http://sadl.org/sadlimplicitmodel#Python"/>
+      </j.1:Script>
+    </j.1:expression>
+    <j.1:expression>
+      <j.1:Script>
+        <j.1:script rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+        >double CAL_T(double TT, double M, double G, double Q) {&#xD;
+    double T = TT * TQTT(M, G);&#xD;
+    double EPS = 0.00001;&#xD;
+    double Z = 1;&#xD;
+    double Z2 = 0;&#xD;
+    double T2 = 0;&#xD;
+    double T1;&#xD;
+    double Z1;&#xD;
+    double i = 1;&#xD;
+    while (Math.abs(Z) &gt; EPS) {&#xD;
+        Z = Math.pow(M, 2) - 2 * TT / CAL_GAM(T, G, Q) / T * (G / (G - 1) * (1 - T / TT) + Q / TT * (1 / (Math.exp(Q / TT) - 1) - 1 / (Math.exp(Q / T) - 1)));&#xD;
+        if (i == 1) {&#xD;
+            Z2 = Z;&#xD;
+            T2 = T;&#xD;
+            T = T2 + 100;&#xD;
+            i = 2;&#xD;
+        } else {&#xD;
+            T1 = T2;&#xD;
+            Z1 = Z2;&#xD;
+            T2 = T;&#xD;
+            Z2 = Z;&#xD;
+            T = T2 - Z2 * (T2 - T1) / (Z2 - Z1);&#xD;
+        }&#xD;
+    }&#xD;
+    if (M &lt;= .1)&#xD;
+        T = TT * TQTT(M, G);&#xD;
+    return T;&#xD;
+}</j.1:script>
+        <j.1:language rdf:resource="http://sadl.org/sadlimplicitmodel#Java"/>
+      </j.1:Script>
+    </j.1:expression>
+    <j.1:externalURI rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >http://com.ge.research.sadl.darpa.aske.answer/Mach_java#Mach.CAL_T</j.1:externalURI>
+    <j.1:returnTypes rdf:parseType="Resource">
+      <j.0:first>
+        <j.1:DataDescriptor>
+          <j.1:dataType>http://www.w3.org/2001/XMLSchema#double</j.1:dataType>
+        </j.1:DataDescriptor>
+      </j.0:first>
+      <rdf:type rdf:nodeID="A0"/>
+    </j.1:returnTypes>
+    <j.1:arguments rdf:parseType="Resource">
+      <j.0:rest rdf:parseType="Resource">
+        <j.0:rest rdf:parseType="Resource">
+          <j.0:rest rdf:parseType="Resource">
+            <j.0:first>
+              <j.1:DataDescriptor>
+                <j.1:dataType>http://www.w3.org/2001/XMLSchema#double</j.1:dataType>
+                <j.1:descriptorVariable>
+                  <j.1:GPVariable rdf:ID="Mach.CAL_T_Q"/>
+                </j.1:descriptorVariable>
+                <j.1:localDescriptorName>Q</j.1:localDescriptorName>
+              </j.1:DataDescriptor>
+            </j.0:first>
+            <rdf:type rdf:nodeID="A0"/>
+          </j.0:rest>
+          <j.0:first>
+            <j.1:DataDescriptor>
+              <j.1:dataType>http://www.w3.org/2001/XMLSchema#double</j.1:dataType>
+              <j.1:descriptorVariable>
+                <j.1:GPVariable rdf:ID="Mach.CAL_T_G"/>
+              </j.1:descriptorVariable>
+              <j.1:localDescriptorName>G</j.1:localDescriptorName>
+            </j.1:DataDescriptor>
+          </j.0:first>
+          <rdf:type rdf:nodeID="A0"/>
+        </j.0:rest>
+        <j.0:first>
+          <j.1:DataDescriptor>
+            <j.1:dataType>http://www.w3.org/2001/XMLSchema#double</j.1:dataType>
+            <j.1:descriptorVariable>
+              <j.1:GPVariable rdf:ID="Mach.CAL_T_M"/>
+            </j.1:descriptorVariable>
+            <j.1:localDescriptorName>M</j.1:localDescriptorName>
+          </j.1:DataDescriptor>
+        </j.0:first>
+        <rdf:type rdf:nodeID="A0"/>
+      </j.0:rest>
+      <j.0:first>
+        <j.1:DataDescriptor>
+          <j.1:dataType>http://www.w3.org/2001/XMLSchema#double</j.1:dataType>
+          <j.1:descriptorVariable>
+            <j.1:GPVariable rdf:ID="Mach.CAL_T_TT"/>
+          </j.1:descriptorVariable>
+          <j.1:localDescriptorName>TT</j.1:localDescriptorName>
+        </j.1:DataDescriptor>
+      </j.0:first>
+      <rdf:type rdf:nodeID="A0"/>
+    </j.1:arguments>
+    <j.1:expression>
+      <j.1:Script>
+        <j.1:language rdf:resource="http://sadl.org/sadlimplicitmodel#Text"/>
+        <j.1:script rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+        >double Mach.CAL_T(double TT,double M,double G,double Q): uri("http://com.ge.research.sadl.darpa.aske.answer/Mach_java#Mach.CAL_T")</j.1:script>
+      </j.1:Script>
+    </j.1:expression>
+  </j.1:ExternalEquation>
 </rdf:RDF>

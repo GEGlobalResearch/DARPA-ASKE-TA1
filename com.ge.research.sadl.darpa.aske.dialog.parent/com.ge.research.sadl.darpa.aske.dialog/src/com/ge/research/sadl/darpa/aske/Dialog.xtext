@@ -2,7 +2,7 @@
  * Note: This license has also been called the "New BSD License" or 
  * "Modified BSD License". See also the 2-clause BSD License.
  *
- * Copyright © 2018-2019 - General Electric Company, All Rights Reserved
+ * Copyright ï¿½ 2018-2019 - General Electric Company, All Rights Reserved
  * 
  * Projects: ANSWER and KApEESH, developed with the support of the Defense 
  * Advanced Research Projects Agency (DARPA) under Agreement  No.  
@@ -50,25 +50,138 @@ DialogModel returns sadl::SadlModel :
 
 @Override
 SadlModelElement returns sadl::SadlModelElement :
-	SadlStatement EOS			|
-	AnswerCMStatement eos=EOS 	|
+	super::SadlStatement EOS			|
+	super::ExternalEquationStatement EOS	|
+	super::EquationStatement EOS	|
+	AnswerCMStatement EOS 		|
 	ModifiedAskStatement EOS	|
 	WhatStatement EOS			|
 	HowManyValuesStatement EOS	|
-	BuildStatement EOS			|
-	YesNoAnswerStatement EOS
+	SaveStatement EOS			|
+	EvalStatement EOS			|
+	YesNoAnswerStatement		|
+	MyNameIsStatement EOS		|
+	TargetModelName EOS			|
+	ExtractStatement EOS		|
+	CompareStatement EOS 	 	|
+	SuitabilityStatement EOS	|
+	SeeParentheticalLink 		|
+	TestLongrunningTask EOS		|
+	ComparisonTableStatement EOS |
+	NewExpressionStatement EOS	|
+	InsightStatement EOS
+;
+
+InsightStatement:
+	indep=SadlResource 'does' 'not' 'affect' dep=SadlResource ('of' 'the' class=SadlResource)? |
+	relDesc1=RelationshipDescriptor1 indep=SadlResource relDesc2=RelationshipDescriptor2 dep=SadlResource ('of' 'the' class=SadlResource)?|
+	indep=SadlResource ('of' 'the' class=SadlResource)? 'has' 'a' localExtreme=SadlResource 'at' extremeLoc=SadlResource 'of' dep=SadlResource |
+	relDesc1=RelationshipDescriptor1 indep=SadlResource 'takes' 'the' class=SadlResource ('inside'|'outside') 'operating' 'conditions' |
+	dep=SadlResource ('of' 'the' class=SadlResource)? 'is' 'very' 'sensitive' 'to' indep=SadlResource 'with' ('positive'|'negative') 'slope'
+;
+
+//LocalExtreme:
+//	locExtreme=''
+
+NewExpressionStatement:
+	('Add'|'add') 
+	(newExpr=Expression
+	)
+;
+
+UndefinedConceptStatement:
+	'Concept' concept=SadlResource 'is' 'not' 'defined' ';' 'please' 'define' 'or' 'do' 'extraction'
+;
+
+NoModelFoundStatement:
+	'No' 'model' 'found' 'to' 'compute' target=PropOfSubject<false,false> ';' 'please' 'add' 'a' 'model' 'or' 'do' 'extraction'
+;
+
+RelationshipDescriptor1:
+	relDesc='Increasing' | {RelationshipDescriptor1} 'increasing' | {RelationshipDescriptor1} 'Decreasing' | {RelationshipDescriptor1} 'decreasing'
+;
+
+RelationshipDescriptor2:
+	relDesc='increases'|{RelationshipDescriptor1} 'decreases'
+;
+
+TestLongrunningTask:
+	'Long' 'task' time=NUMBER
+;
+
+ComparisonTableStatement:
+	comparisonTable = ValueTable
+;
+
+SeeParentheticalLink:
+	'(' 'See' linkUris+=PLink (',' linkUris+=PLink)* EOS ')'
+;
+
+PLink:
+	linkUri=STRING
+;
+
+CompareStatement:
+//	('Compare'|'compare') toCompare=Expression compareConnective=('when' | 'for') whenExpr=Expression
+	('Compare'|'compare') 'their'? toCompare=Expression (compareWhens+=CompareWhen ('and' compareWhens+=CompareWhen)*)?
+;
+
+CompareWhen:	
+	('when' | 'for') whenExpr=Expression
+;
+
+SuitabilityStatement:
+	(('Which'|'which') what=Expression 'is' 'suitable' suitableWhens+=CompareWhen) |
+	(('Is'|'is') what=Expression 'suitable' suitableWhens+=CompareWhen)
+;
+
+ExtractStatement:
+	('Extract'|'extract') 'from' sources+=STRING (',' sources+=STRING)*
+;
+
+EvalStatement returns SadlEquationInvocation:
+	{SadlEquationInvocation} ('Evaluate'|'evaluate') name=SadlResource '(' (parameters+=ParameterizedExpressionWithUnit (',' parameters+=ParameterizedExpressionWithUnit)* )?')'
+;
+
+ParameterizedExpressionWithUnit:
+	expression=ExpressionParameterized<true,false> ('{'unit=UNIT'}')?
+;
+
+TargetModelName:
+	'target' 'model' targetResource=[sadl::SadlModel|STRING] ('alias' alias=ID)?
+;
+
+MyNameIsStatement:
+	('My'|'my') 'name' 'is' answer=ID
 ;
 
 YesNoAnswerStatement:
-	{YesNoAnswerStatement} answer = ('Y'|'y'|'Yes'|'yes'|'N'|'n'|'No'|'no')
+	{YesNoAnswerStatement} answer = ('Y.'|'y.'|'Yes.'|'yes.'|'N.'|'n.'|'No.'|'no.')
 ;
 
-BuildStatement:
-	{BuildStatement} ('Build' | 'build') target=SadlResource
+SaveStatement:
+	{SaveStatement} ('Save' | 'save') (target=SadlResource | all='all') ('to' saveTarget=ID)?
 ;
 
 AnswerCMStatement:
-	'CM:' (sstmt = ((SadlStatement|EquationStatement|ExternalEquationStatement)) | str = STRING)
+	'CM:' (sstmt = ((
+		SadlStatement|
+		ModifiedAskStatement|
+		WhatStatement|
+		YesNoAnswerStatement|
+		ExternalEquationStatement|
+		EquationStatement|
+		ComparisonTableStatement|
+		UndefinedConceptStatement |
+		NoModelFoundStatement |
+		NewExpressionStatement |
+		MatchFoundStatement
+	)) | str = STRING)
+;
+
+MatchFoundStatement:
+	('Found' 'matching' type=('class'|'property') concept=SadlResource) |
+	(type='Inferred' 'match' concept=Expression)
 ;
 
 ModifiedAskStatement returns sadl::ExpressionScope:
@@ -79,10 +192,14 @@ ModifiedAskStatement returns sadl::ExpressionScope:
 ;
 
 WhatStatement:
-	{WhatStatement} ('What'|'what') stmt=(WhatIsStatement | WhatValuesStatement)
+	{WhatStatement} ('What'|'what') stmt=(WhatIsStatement | WhatValuesStatement | WhatTypeStatement)
 ;
 WhatIsStatement:
-	{WhatIsStatement} 'is' target=Expression WhenPart?
+	{WhatIsStatement} 'is' (('your' 'name') | ('its'? target=Expression WhenPart?))
+;
+
+WhatTypeStatement:
+	{WhatTypeStatement} 'semantic'?'type' ('is' target=Expression | 'does' equation=SadlResource 'return')
 ;
 
 fragment WhenPart returns WithWhenPart:
@@ -90,11 +207,12 @@ fragment WhenPart returns WithWhenPart:
 ;
 
 WhatValuesStatement:
-	{WhatValuesStatement} (typof='type' 'of')? ('value'|'values') typ=('can'|'must') prop=SadlResource 'of' article=AnArticle? cls=SadlPrimaryTypeReference 'have'
+	{WhatValuesStatement} (typof='type' 'of')? ('value'|'values') typ=('can'|'must') prop=SadlResource ('of' article=AnArticle? cls=SadlPrimaryTypeReference)? 'have'
 ;
 
 HowManyValuesStatement:
-	{HowManyValuesStatement} ('How'|'how') 'many' 'values' 'of' prop=SadlResource ('of' 'type' typ=SadlPrimaryTypeReference)? 'can' article=AnArticle? cls=SadlPrimaryTypeReference 'have'
+//	{HowManyValuesStatement} ('How'|'how') 'many' 'values' 'of' prop=SadlResource ('of' 'type' typ=SadlPrimaryTypeReference)? 'can' article=AnArticle? cls=SadlPrimaryTypeReference 'have'
+	{HowManyValuesStatement} ('How'|'how') 'many' 'values' ('of' 'type' typ=SadlPrimaryTypeReference)? 'can' prop=SadlResource ('of' article=AnArticle? cls=SadlPrimaryTypeReference)? 'have'
 ;
 
 @Override

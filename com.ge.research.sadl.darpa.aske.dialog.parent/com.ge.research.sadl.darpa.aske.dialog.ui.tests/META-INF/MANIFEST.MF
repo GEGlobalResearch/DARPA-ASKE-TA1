@@ -2,7 +2,7 @@ Manifest-Version: 1.0
 Automatic-Module-Name: com.ge.research.sadl.darpa.aske.dialog.ui.tests
 Bundle-ManifestVersion: 2
 Bundle-Name: com.ge.research.sadl.darpa.aske.dialog.ui.tests
-Bundle-Vendor: My Company
+Bundle-Vendor: GE Research
 Bundle-Version: 1.0.0.qualifier
 Bundle-SymbolicName: com.ge.research.sadl.darpa.aske.dialog.ui.tests; singleton:=true
 Bundle-ActivationPolicy: lazy
@@ -16,7 +16,16 @@ Require-Bundle: com.ge.research.sadl.darpa.aske.dialog.ui,
  org.eclipse.jdt.core;bundle-version="3.9.2",
  org.eclipse.core.runtime,
  org.eclipse.ui.workbench;resolution:=optional,
- org.apache.log4j
+ com.ge.research.sadl.darpa.aske.dialog.tests,
+ org.eclipse.xtext.generator,
+ com.ge.research.sadl.ui.tests;bundle-version="3.1.0",
+ com.ge.research.jena;bundle-version="3.1.0",
+ com.ge.research.sadl;bundle-version="3.1.0",
+ com.ge.research.sadl.jena;bundle-version="3.1.0",
+ com.ge.research.sadl.tests,
+ org.apache.log4j,
+ com.ge.research.sadl.darpa.aske.dialog;bundle-version="1.0.0",
+ org.eclipse.xtext.ui.testing
 Bundle-RequiredExecutionEnvironment: JavaSE-1.8
 Export-Package: com.ge.research.sadl.darpa.aske.ui.tests;x-internal=true
 Import-Package: org.hamcrest.core,

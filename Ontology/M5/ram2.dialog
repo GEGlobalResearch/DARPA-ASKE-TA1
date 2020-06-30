@@ -1,0 +1,138 @@
+ uri "http://sadl.org/ram.dialog" alias ram.
+ 
+ import "http://sadl.org/SpeedOfSound.sadl".
+ 
+ Extract from "file:///c:/TMP/compute.java".
+CM: "Parsing code file 'compute.java'".
+CM: "The following methods were found in the extraction:".
+CM: External Compute.getCp(double temp, int opt) 
+	returns double: "http://.../compute_java#Compute.getCp".
+CM: What type is temp?
+CM: What type is opt?
+CM: What type does Compute.getCp return?
+CM: Compute.getCp has expression (a Script with language Java, with script 
+    "public double getCp(double temp, int opt) {
+        // Utility to get cp as a function of temp
+        double number, a, b, c, d;
+        /* BTU/R */
+        a = -4.4702130e-13;
+        b = -5.1286514e-10;
+        c = 2.8323331e-05;
+        d = 0.2245283;
+        if (opt == 0) {
+            number = .2399;
+        } else {
+            number = a * temp * temp * temp + b * temp * temp + c * temp + d;
+        }
+        return (number);
+    }"),
+     has expression (a Script with language Python, with script 
+    "def getCp( temp, opt):
+        \"\"\" generated source for method getCp \"\"\"
+        #  Utility to get cp as a function of temp
+        number = 0.0
+        a = 0.0
+        b = 0.0
+        c = 0.0
+        d = 0.0
+        # /* BTU/R */
+        a = -4.4702130e-13
+        b = -5.1286514e-10
+        c = 2.8323331e-05
+        d = 0.2245283
+        if opt == 0:
+            number = 0.2399
+        else:
+            number = a * temp * temp * temp + b * temp * temp + c * temp + d
+        return (number)
+    "),
+     has expression (a Script with language Python-TF, with script 
+    "def getCp( temp, opt):
+        \"\"\" generated source for method getCp \"\"\"
+        #  Utility to get cp as a function of temp
+        number = 0.0
+        a = 0.0
+        b = 0.0
+        c = 0.0
+        d = 0.0
+        # /* BTU/R */
+        a = -4.4702130e-13
+        b = -5.1286514e-10
+        c = 2.8323331e-05
+        d = 0.2245283
+        if opt == 0:
+            number = 0.2399
+        else:
+            number = a * temp * temp * temp + b * temp * temp + c * temp + d
+        return (number)
+    "),
+     has expression (a Script with language Python-NumPy, with script 
+    "def getCp( temp, opt):
+        \"\"\" generated source for method getCp \"\"\"
+        #  Utility to get cp as a function of temp
+        number = 0.0
+        a = 0.0
+        b = 0.0
+        c = 0.0
+        d = 0.0
+        # /* BTU/R */
+        a = -4.4702130e-13
+        b = -5.1286514e-10
+        c = 2.8323331e-05
+        d = 0.2245283
+        if opt == 0:
+            number = 0.2399
+        else:
+            number = a * temp * temp * temp + b * temp * temp + c * temp + d
+        return (number)
+    ").
+CM: External Compute.getAir(double mach, double gamma) 
+	returns double: "http://.../compute_java#Compute.getAir".
+CM: What type is mach?
+CM: What type is gamma?
+CM: What type does Compute.getAir return?
+CM: Compute.getAir has expression (a Script with language Java, with script 
+    "public double getAir(double mach, double gamma) {
+        /* Utility to get the corrected airflow per area given the Mach number */
+        double number, fac1, fac2;
+        fac2 = (gamma + 1.0) / (2.0 * (gamma - 1.0));
+        fac1 = Math.pow((1.0 + .5 * (gamma - 1.0) * mach * mach), fac2);
+        number = .50161 * Math.sqrt(gamma) * mach / fac1;
+        return (number);
+    }"),
+     has expression (a Script with language Python, with script 
+    "def getAir( mach, gamma):
+        \"\"\" generated source for method getAir \"\"\"
+        #  Utility to get the corrected airflow per area given the Mach number 
+        number = 0.0
+        fac1 = 0.0
+        fac2 = 0.0
+        fac2 = (gamma + 1.0) / (2.0 * (gamma - 1.0))
+        fac1 = Math.pow((1.0 + 0.5 * (gamma - 1.0) * mach * mach), fac2)
+        number = 0.50161 * Math.sqrt(gamma) * mach / fac1
+        return (number)
+    "),
+     has expression (a Script with language Python-TF, with script 
+    "def getAir( mach, gamma):
+        \"\"\" generated source for method getAir \"\"\"
+        #  Utility to get the corrected airflow per area given the Mach number 
+        number = 0.0
+        fac1 = 0.0
+        fac2 = 0.0
+        fac2 = (gamma + 1.0) / (2.0 * (gamma - 1.0))
+        fac1 = tf.math.pow((1.0 + 0.5 * (gamma - 1.0) * mach * mach), fac2)
+        number = 0.50161 * tf.math.sqrt(gamma) * mach / fac1
+        return (number)
+    "),
+     has expression (a Script with language Python-NumPy, with script 
+    "def getAir( mach, gamma):
+        \"\"\" generated source for method getAir \"\"\"
+        #  Utility to get the corrected airflow per area given the Mach number 
+        number = 0.0
+        fac1 = 0.0
+        fac2 = 0.0
+        fac2 = (gamma + 1.0) / (2.0 * (gamma - 1.0))
+        fac1 = np.power((1.0 + 0.5 * (gamma - 1.0) * mach * mach), fac2)
+        number = 0.50161 * np.sqrt(gamma) * mach / fac1
+        return (number)
+    ").

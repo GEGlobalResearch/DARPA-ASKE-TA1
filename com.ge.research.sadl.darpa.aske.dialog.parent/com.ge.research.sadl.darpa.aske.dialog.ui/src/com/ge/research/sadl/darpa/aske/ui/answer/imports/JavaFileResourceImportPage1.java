@@ -24,8 +24,10 @@ import java.util.List;
 import java.util.Map;
 
 import org.eclipse.core.resources.IContainer;
+import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IResource;
 import org.eclipse.core.resources.ResourcesPlugin;
+import org.eclipse.core.runtime.IAdaptable;
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
@@ -36,8 +38,11 @@ import org.eclipse.jface.dialogs.IDialogSettings;
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.dialogs.ProgressMonitorDialog;
 import org.eclipse.jface.operation.IRunnableWithProgress;
+import org.eclipse.jface.text.TextSelection;
+import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.jface.viewers.ITreeContentProvider;
+import org.eclipse.jface.wizard.IWizardContainer;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.BusyIndicator;
 import org.eclipse.swt.events.FocusEvent;
@@ -60,9 +65,13 @@ import org.eclipse.swt.widgets.Listener;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Text;
 import org.eclipse.ui.IWorkbench;
+import org.eclipse.ui.IWorkbenchPage;
+import org.eclipse.ui.IWorkbenchPart;
+import org.eclipse.ui.IWorkbenchWindow;
+import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.dialogs.FileSystemElement;
 import org.eclipse.ui.dialogs.WizardResourceImportPage;
-import org.eclipse.ui.internal.ide.dialogs.IElementFilter;
+import org.eclipse.ui.ide.dialogs.IElementFilter;
 import org.eclipse.ui.internal.ide.dialogs.RelativePathVariableGroup;
 import org.eclipse.ui.internal.ide.filesystem.FileSystemStructureProvider;
 import org.eclipse.ui.internal.progress.ProgressMonitorJobsDialog;
@@ -101,6 +110,7 @@ public class JavaFileResourceImportPage1 extends WizardResourceImportPage
     private IResource currentDomainDestinationResourceSelection;
 
     // dialog store id constants
+    private final static String STORE_SOURCE_DIRECTORY_NAME = "OwlFileResourceImportPage1.STORE_SOURCE_DIRECTORY_NAME";
     private final static String STORE_SOURCE_NAMES_ID = "OwlFileResourceImportPage1.STORE_SOURCE_NAMES_ID";//$NON-NLS-1$
     private final static String STORE_OVERWRITE_EXISTING_RESOURCES_ID = "OwlFileResourceImportPage1.STORE_OVERWRITE_EXISTING_RESOURCES_ID";//$NON-NLS-1$
     private final static String STORE_CREATE_CONTAINER_STRUCTURE_ID = "OwlFileResourceImportPage1.STORE_CREATE_CONTAINER_STRUCTURE_ID";//$NON-NLS-1$
@@ -833,10 +843,43 @@ public class JavaFileResourceImportPage1 extends WizardResourceImportPage
 			}
 
             // set filenames history
+            List<String> visited = new ArrayList<String>();
             for (int i = 0; i < sourceNames.length; i++) {
+            	if (visited.contains(sourceNames[i])) {
+            		// avoid duplicates
+            		continue;
+            	}
             	setSourceName(sourceNames[i]);
-//				sourceNameField.add(sourceNames[i]);
-			}
+ 			}
+            String sdn = settings.get(STORE_SOURCE_DIRECTORY_NAME);
+            if (sdn != null) {
+            	this.sourceNameField.setText(sdn);
+            }
+            
+            String target = settings.get(STORE_PATH_VARIABLE_SELECTED_ID);
+
+            IWorkbenchWindow window = PlatformUI.getWorkbench().getActiveWorkbenchWindow();
+            if (window != null)
+            {
+                ISelection selection = window.getSelectionService().getSelection();
+                if (selection instanceof IStructuredSelection) {
+	                Object firstElement = ((IStructuredSelection) selection).getFirstElement();
+	                if (firstElement instanceof IAdaptable)
+	                {
+	                    IProject project = (IProject)((IAdaptable)firstElement).getAdapter(IProject.class);
+	                    IPath path = project.getFullPath();
+	                    if (!target.startsWith(path.toString())) {
+	//                    	settings.put(STORE_PATH_VARIABLE_SELECTED_ID, target);
+	                    	this.setContainerFieldValue(path.toString()); // containerNameField.setText(target);
+	                    }
+	                }
+                }
+                else {
+                	IWorkbenchPage page = window.getActivePage();
+                	IWorkbenchPart part = page.getActivePart();
+                	part.toString();
+                }
+            }
 
             // radio buttons and checkboxes
             overwriteExistingResourcesCheckbox.setSelection(settings
@@ -862,8 +905,24 @@ public class JavaFileResourceImportPage1 extends WizardResourceImportPage
             if (sourceNames == null) {
 				sourceNames = new String[0];
 			}
-
-            sourceNames = addToHistory(sourceNames, getSourceDirectoryName());
+            else if (sourceNames.length > 5) {
+            	String[] newSourceNames = new String[5];
+            	for (int i = 0; i < 5; i++) {
+            		newSourceNames[i] = sourceNames[i];
+            	}
+            	sourceNames = newSourceNames;
+            }
+            String sdn = getSourceDirectoryName();
+            settings.put(STORE_SOURCE_DIRECTORY_NAME, sdn);
+            boolean add = true;
+            for (String sn : sourceNames) {
+            	if (sn.equals(sdn)) {
+            		add = false;
+            	}
+            }
+            if (add) {
+            	sourceNames = addToHistory(sourceNames, getSourceDirectoryName());
+            }
             settings.put(STORE_SOURCE_NAMES_ID, sourceNames);
 
             // radio buttons and checkboxes
@@ -951,7 +1010,7 @@ public class JavaFileResourceImportPage1 extends WizardResourceImportPage
         final Map selectionMap = new Hashtable();
 
         final IElementFilter filter = new IElementFilter() {
-
+        	@Override
             public void filterElements(Collection files,
                     IProgressMonitor monitor) throws InterruptedException {
                 if (files == null) {

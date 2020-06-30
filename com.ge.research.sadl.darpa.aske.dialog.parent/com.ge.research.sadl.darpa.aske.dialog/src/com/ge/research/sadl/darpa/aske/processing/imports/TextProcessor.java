@@ -2,7 +2,7 @@
  * Note: This license has also been called the "New BSD License" or 
  * "Modified BSD License". See also the 2-clause BSD License.
  *
- * Copyright © 2018-2019 - General Electric Company, All Rights Reserved
+ * Copyright ï¿½ 2018-2019 - General Electric Company, All Rights Reserved
  * 
  * Projects: ANSWER and KApEESH, developed with the support of the Defense 
  * Advanced Research Projects Agency (DARPA) under Agreement  No.  
@@ -38,26 +38,30 @@ package com.ge.research.sadl.darpa.aske.processing.imports;
 
 import java.io.File;
 import java.io.IOException;
-import java.net.URL;
+import java.net.MalformedURLException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 import org.apache.log4j.Logger;
+import org.eclipse.jdt.core.compiler.InvalidInputException;
 
 import com.ge.research.sadl.builder.IConfigurationManagerForIDE;
 import com.ge.research.sadl.darpa.aske.curation.AnswerCurationManager;
 import com.ge.research.sadl.darpa.aske.preferences.DialogPreferences;
-import com.ge.research.sadl.jena.UtilsForJena;
+import com.ge.research.sadl.darpa.aske.processing.imports.TextProcessingServiceInterface.EquationVariableContextResponse;
+import com.ge.research.sadl.darpa.aske.processing.imports.TextProcessingServiceInterface.UnitExtractionResponse;
 import com.ge.research.sadl.processing.SadlConstants;
 import com.ge.research.sadl.reasoner.ConfigurationException;
 import com.ge.research.sadl.reasoner.IConfigurationManagerForEditing.Scope;
-import com.google.gson.JsonArray;
-import com.google.gson.JsonElement;
-import com.google.gson.JsonObject;
-import com.google.gson.JsonParser;
-import com.hp.hpl.jena.ontology.Individual;
+import com.ge.research.sadl.reasoner.IReasoner;
+import com.ge.research.sadl.reasoner.InvalidNameException;
+import com.ge.research.sadl.reasoner.QueryCancelledException;
+import com.ge.research.sadl.reasoner.QueryParseException;
+import com.ge.research.sadl.reasoner.ReasonerNotFoundException;
+import com.ge.research.sadl.reasoner.ResultSet;
+import com.ge.research.sadl.reasoner.utils.SadlUtils;
 import com.hp.hpl.jena.ontology.OntDocumentManager;
 import com.hp.hpl.jena.ontology.OntModel;
 import com.hp.hpl.jena.ontology.OntModelSpec;
@@ -77,141 +81,157 @@ public class TextProcessor {
 	private IConfigurationManagerForIDE textModelConfigMgr;
 
 	private OntModel textModel;
-
-	private String textmodelName;
-
-	private String textmodelPrefix;
-
 	private Map<String, OntModel> textModels;
+	private String textModelName;	// the name of the model being created by extraction
+	private String textmodelPrefix;	// the prefix of the model being created by extraction
+
+	public class MergedEquationVariableContext {
+		private String conceptUri;
+		private List<String> labels = new ArrayList<String>();
+		private Map<String, String> equationsAndArguments = new HashMap<String, String>();
+		
+		public MergedEquationVariableContext(String uri) {
+			setConceptUri(uri);
+		}
+		
+		public MergedEquationVariableContext(List<List<String[]>> equationVariableContextResponses) throws AnswerExtractionException {
+			String uri = null;
+			for (List<String[]> response : equationVariableContextResponses) {
+				for (String[] content : response) {
+					if (uri == null) {
+						uri = content[3];
+					}
+					else if (!content[3].equals(uri)) {
+						throw new AnswerExtractionException("Cannot create MergedEquationVariableContext from contents with different URIs ('" +
+								content[3] + "' != '" + uri + "').");
+					}
+					addEquationAndArgument(content[0], content[1]);
+					addLabel(content[2]);
+				}
+			}
+			setConceptUri(uri);
+		}
+		
+		public String toString() {
+			StringBuilder sb = new StringBuilder("External concept uri: ");
+			sb.append(getConceptUri());
+			sb.append("\n  Labels: ");
+			boolean first = true;
+			for (String label : getLabels()) {
+				if (!first) sb.append(", ");
+				sb.append(label);
+			}
+			
+			return sb.toString();
+		}
+
+		public String getConceptUri() {
+			return conceptUri;
+		}
+		
+		private void setConceptUri(String conceptUri) {
+			this.conceptUri = conceptUri;
+		}
+
+		public List<String> getLabels() {
+			return labels;
+		}
+		
+		private void addLabel(String label) {
+			if (!labels.contains(label)) {
+				labels.add(label);
+			}
+		}
+		
+		private Map<String, String> getEquationsAndArguments() {
+			return equationsAndArguments;
+		}
+
+		private void addEquationAndArgument(String eq, String arg) {
+			if (!equationsAndArguments.containsKey(eq)) {
+				equationsAndArguments.put(eq, arg);
+			}
+		}
+	}
 
 	public TextProcessor(AnswerCurationManager answerCurationManager, Map<String, String> preferences) {
 		setCurationManager(answerCurationManager);
 		this.setPreferences(preferences);
 	}
 
-	public String process(String inputIdentifier, String text, String locality) throws ConfigurationException, IOException {
-		initializeTextModel();
+	/**
+	 * Method to process a block of text via the textToTriples service to find equations and concepts
+	 * @param inputIdentifier -- the identifier, normally a model URI, of the source text
+	 * @param text --  the source text to be processed
+	 * @param locality -- the URI of the model to be used as context for the extraction
+	 * @param prefix 
+	 * @return -- an array int[2], 0th element being the number of concepts found in the text, 1st element being the number of equations found in the text
+	 * @throws ConfigurationException
+	 * @throws IOException
+	 */
+	public int[] processText(String inputIdentifier, String text, String localityURI, String modelName, String modelPrefix, boolean notifyUser) throws ConfigurationException, IOException {
+		initializeTextModel(modelName, modelPrefix);
 		try {
-			String msg = "Importing text file '" + inputIdentifier + "'.";
-			getCurationManager().notifyUser(getTextModelConfigMgr().getModelFolder(), msg);
+			if (notifyUser && inputIdentifier != null) {
+				String msg = "Extracting text from '" + inputIdentifier + "' into locality '" + localityURI + "'.";
+				getCurationManager().notifyUser(getTextModelConfigMgr().getModelFolder(), msg, true);
+			}
 		} catch (ConfigurationException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-		StringBuilder sb = new StringBuilder();
-		String baseServiceUrl = "http://vesuvius-dev.crd.ge.com:4200/darpa/aske/";		// dev environment for stable development of other components
-//		String baseServiceUrl = "http://vesuvius-063.crd.ge.com:4200/darpa/aske/";		// test environment for service development
+		String serviceBaseUri = getPreference(DialogPreferences.ANSWER_TEXT_SERVICE_BASE_URI.getId());
+		TextProcessingServiceInterface tpsi = new TextProcessingServiceInterface(serviceBaseUri);
+		return tpsi.processText(text, localityURI);
+	}
+	
+	public String[] retrieveGraph(String locality) throws IOException {
+		logger.debug("Retrieving graph for locality '" + locality + "'");
+		String serviceBaseUri = getPreference(DialogPreferences.ANSWER_TEXT_SERVICE_BASE_URI.getId());
+		TextProcessingServiceInterface tpsi = new TextProcessingServiceInterface(serviceBaseUri);
+		return tpsi.retrieveGraph(locality);
+	}
+	
+	public String clearGraph(String locality) throws IOException {
+		logger.debug("Clearing graph for locality '" + locality + "'");
+		String serviceBaseUri = getPreference(DialogPreferences.ANSWER_TEXT_SERVICE_BASE_URI.getId());
+		TextProcessingServiceInterface tpsi = new TextProcessingServiceInterface(serviceBaseUri);
+		return tpsi.clearGraph(locality);
+	}
 		
-		String servicePreference = getPreference(DialogPreferences.ANSWER_TEXT_SERVICE_BASE_URI.getId());
-		if (servicePreference != null) {
-			baseServiceUrl = servicePreference + "/darpa/aske/";
+	/**
+	 * Method to find semantic content related to the name provided, e.g., if the locality were the text surrounding an equation, which contained the phrase
+	 * "where T is the temperature of the air", then a call with name "T" might return the 
+	 * @param name
+	 * @param locality
+	 * @return
+	 * @throws InvalidInputException 
+	 * @throws IOException 
+	 */
+	public EquationVariableContextResponse equationVariableContext(String name, String locality) throws InvalidInputException, IOException {
+//		try {
+//			String msg = "Searching for name '" + name + "' in locality '" + locality + "'.";
+//			getCurationManager().notifyUser(getTextModelConfigMgr().getModelFolder(), msg, true);
+//		} catch (ConfigurationException e) {
+//			// TODO Auto-generated catch block
+//			e.printStackTrace();
+//		}
+		String serviceUri = getPreference(DialogPreferences.ANSWER_TEXT_SERVICE_BASE_URI.getId());
+		TextProcessingServiceInterface tpsi = new TextProcessingServiceInterface(serviceUri);
+		return tpsi.equationVariableContext(name, locality);
+	}
+	
+	public List<UnitExtractionResponse> unitExtraction(String text, String locality) throws IOException, InvalidInputException {
+		try {
+			String msg = "Searching for units in text '" + text + "' in locality '" + locality + "'.";
+			getCurationManager().notifyUser(getTextModelConfigMgr().getModelFolder(), msg, true);
+		} catch (ConfigurationException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
 		}
-		String textToTripleServiceURL = baseServiceUrl + "text2triples";
-		URL serviceUrl = new URL(textToTripleServiceURL);			
-		if (text == null) {
-			text = "Hello world";
-		}
-		if (locality == null) {
-			locality = "NYI";
-		}
-		JsonObject json = new JsonObject();
-		json.addProperty("locality", locality);
-		json.addProperty("text", text);
-//		System.out.println(text);
-		String response = getCurationManager().makeConnectionAndGetResponse(serviceUrl, json);
-//		System.out.println(response);
-		if (response != null && response.length() > 0) {
-			OntModel theModel = getCurationManager().getExtractionProcessor().getTextModel();
-			JsonArray sentences = new JsonParser().parse(response).getAsJsonArray();
-			if (sentences != null) {
-				for (JsonElement element : sentences) {
-					if (element != null) {
-						JsonObject sentence = element.getAsJsonObject();
-						String originalText = sentence.get("text").getAsString();
-//						System.out.println("Extracted from text:" + originalText);
-						JsonArray concepts = sentence.get("concepts").getAsJsonArray();
-						for (JsonElement concept : concepts) {
-							String matchingText = concept.getAsJsonObject().get("string").getAsString();
-							int startInOrigText = concept.getAsJsonObject().get("start").getAsInt();
-							int endInOrigText = concept.getAsJsonObject().get("end").getAsInt();
-							double extractionConfidence = concept.getAsJsonObject().get("extractionConfScore").getAsDouble();
-//							System.out.println("  Match in substring '" + matchingText + "(" + startInOrigText + "," + endInOrigText + "):");
-							JsonArray triples = concept.getAsJsonObject().get("triples").getAsJsonArray();
-							String eqName = null;
-							String eqExpr1 = null;
-							String eqExpr2 = null;
-							String eqScript1 = null;
-							String eqScript2 = null;
-							String lang1 = null;
-							String lang2 = null;
-							for (JsonElement triple : triples) {
-								String subject = triple.getAsJsonObject().get("subject").getAsString();
-								String predicate = triple.getAsJsonObject().get("predicate").getAsString();
-								String object = triple.getAsJsonObject().get("object").getAsString();
-								double tripleConfidenceScore = triple.getAsJsonObject().get("tripleConfScore").getAsDouble();
-//								System.out.println("     <" + subject + ", " + predicate + ", " + object + "> (" + tripleConfidenceScore + ")");
-								if (object.equals("<http://sadl.org/sadlimplicitmodel#ExternalEquation>")) {
-									// equation found
-									eqName = subject;
-									// predicate assumed to be rdf:type
-								}
-								if (eqName != null && subject.equals(eqName)) {
-									if (predicate.equals("<http://sadl.org/sadlimplicitmodel#expression>")) {
-										if (eqExpr1 == null) {
-											eqExpr1 = object;
-										}
-										else {
-											eqExpr2 = object;
-										}
-									}
-								}
-								if (eqExpr1 != null && subject.equals(eqExpr1)) {
-									if (predicate.equals("<" + SadlConstants.SADL_IMPLICIT_MODEL_SCRIPT_PROPERTY_URI + ">")) {
-										eqScript1 = UtilsForJena.stripQuotes(object);
-									}
-									else if (predicate.equals("<" + SadlConstants.SADL_IMPLICIT_MODEL_LANGUAGE_PROPERTY_URI + ">")) {
-										lang1 = object;
-									}
-								}
-								if (eqExpr2 != null && subject.equals(eqExpr2)) {
-									if (predicate.equals("<" + SadlConstants.SADL_IMPLICIT_MODEL_SCRIPT_PROPERTY_URI + ">")) {
-										eqScript2 = UtilsForJena.stripQuotes(object);
-									}
-									else if (predicate.equals("<" + SadlConstants.SADL_IMPLICIT_MODEL_LANGUAGE_PROPERTY_URI + ">")) {
-										lang2 = object;
-									}
-								}
-							}
-							if (eqName != null) {
-								// add to model
-								Individual eqInst = theModel.createIndividual(getCurationManager().getExtractionProcessor().getTextModelName() + "#" + eqName,
-										theModel.getOntClass(SadlConstants.SADL_IMPLICIT_MODEL_EXTERNAL_EQUATION_CLASS_URI));
-								if (eqName.startsWith("_:")) {
-									eqName = eqName.substring(2);
-								}
-								if (eqScript1 != null) {
-									Individual script1 = theModel.createIndividual(theModel.getOntClass(SadlConstants.SADL_IMPLICIT_MODEL_SCRIPT_CLASS_URI));
-									script1.addProperty(theModel.getProperty(SadlConstants.SADL_IMPLICIT_MODEL_SCRIPT_PROPERTY_URI), theModel.createTypedLiteral(eqScript1));
-									script1.addProperty(theModel.getProperty(SadlConstants.SADL_IMPLICIT_MODEL_LANGUAGE_PROPERTY_URI), theModel.getIndividual(lang1.substring(1, lang1.length() - 1)));
-									eqInst.addProperty(theModel.getProperty(SadlConstants.SADL_IMPLICIT_MODEL_EXPRESSTION_PROPERTY_URI), script1);
-								}
-								if (eqScript2 != null) {
-									Individual script2 = theModel.createIndividual(theModel.getOntClass(SadlConstants.SADL_IMPLICIT_MODEL_SCRIPT_CLASS_URI));
-									script2.addProperty(theModel.getProperty(SadlConstants.SADL_IMPLICIT_MODEL_SCRIPT_PROPERTY_URI), theModel.createTypedLiteral(eqScript2));
-									script2.addProperty(theModel.getProperty(SadlConstants.SADL_IMPLICIT_MODEL_LANGUAGE_PROPERTY_URI), theModel.getIndividual(lang2.substring(1, lang2.length() - 1)));
-									eqInst.addProperty(theModel.getProperty(SadlConstants.SADL_IMPLICIT_MODEL_EXPRESSTION_PROPERTY_URI), script2);									
-								}
-							}
-						}
-					}
-				}
-			}
-//			theModel.write(System.out, "N3");
-		}
-		else {
-			System.err.println("No response received from service " + textToTripleServiceURL);
-		}
-		return sb.toString();
+		String serviceUri = getPreference(DialogPreferences.ANSWER_TEXT_SERVICE_BASE_URI.getId());
+		TextProcessingServiceInterface tpsi = new TextProcessingServiceInterface(serviceUri);
+		return tpsi.unitExtraction(text, locality);
 	}
 	
 	public void addTextModel(String key, OntModel textModel) {
@@ -228,20 +248,50 @@ public class TextProcessor {
 		return null;
 	}
 
-	private void initializeTextModel() throws ConfigurationException, IOException {
+	public Map<String, MergedEquationVariableContext> unifyEquationVariableContentResponses(List<EquationVariableContextResponse> responses) {
+		Map<String, MergedEquationVariableContext> results = new HashMap<String, MergedEquationVariableContext>();
+		for (EquationVariableContextResponse evcr : responses) {
+			List<String[]> contentList = evcr.getResults();
+			for (String[] content : contentList) {
+				MergedEquationVariableContext mevc;
+				String uri = content[3];
+				if (!results.containsKey(uri)) {
+					mevc = new MergedEquationVariableContext(uri);
+					results.put(uri, mevc);
+				}
+				else {
+					mevc = results.get(uri);
+				}
+				mevc.addLabel(content[2]);
+				mevc.addEquationAndArgument(content[0], content[1]);
+			}
+		}
+		return results;
+	}
+
+	private void initializeTextModel(String modelName, String modelPrefix) throws ConfigurationException, IOException {
 		if (getCurationManager().getExtractionProcessor().getTextModel() == null) {
 			// create new text model	
-			setTextModelConfigMgr(getCurationManager().getDomainModelConfigurationManager());
+			setTextModelConfigMgr(getCurationManager().getConfigurationManager());
 			OntDocumentManager owlDocMgr = getTextModelConfigMgr().getJenaDocumentMgr();
 			OntModelSpec spec = new OntModelSpec(OntModelSpec.OWL_MEM);
 			if (owlDocMgr != null) {
 				spec.setDocumentManager(owlDocMgr);
 				owlDocMgr.setProcessImports(true);
 			}
-			getCurationManager().getExtractionProcessor().setTextModel(ModelFactory.createOntologyModel(spec));	
-			setTextModel(getCurationManager().getExtractionProcessor().getTextModel());
-			getTextModel().setNsPrefix(getTextModelPrefix(), getTextModelNamespace());
-			Ontology modelOntology = getTextModel().createOntology(getTextModelName());
+			setTextModel(ModelFactory.createOntologyModel(spec));	
+			if (getTextModelName() == null) {
+				setTextModelName(modelName);	// don't override a preset model name
+			}
+			if (getTextModelPrefix() == null) {
+				if (modelPrefix == null) {
+					throw new ConfigurationException("Model prefix is required");
+				}
+				setTextModelPrefix(modelPrefix);	// don't override a preset model name
+			}
+			addTextModel(modelName, getCurrentTextModel());
+			getCurrentTextModel().setNsPrefix(getTextModelPrefix(), getCurationManager().getExtractionProcessor().getNamespaceFromModelName(getTextModelName()));
+			Ontology modelOntology = getCurrentTextModel().createOntology(getTextModelName());
 			logger.debug("Ontology '" + getTextModelName() + "' created");
 			modelOntology.addComment("This ontology was created by extraction from text by the ANSWER TextProcessor.", "en");
 			OntModel importedOntModel = getTextModelConfigMgr().getOntModel(SadlConstants.SADL_IMPLICIT_MODEL_URI, Scope.INCLUDEIMPORTS);
@@ -253,35 +303,15 @@ public class TextProcessor {
 	}
 	
 	private void addImportToJenaModel(String modelName, String importUri, String importPrefix, Model importedOntModel) {
-		getTextModel().getDocumentManager().addModel(importUri, importedOntModel, true);
-		Ontology modelOntology = getTextModel().createOntology(modelName);
+		getCurrentTextModel().getDocumentManager().addModel(importUri, importedOntModel, true);
+		Ontology modelOntology = getCurrentTextModel().createOntology(modelName);
 		if (importPrefix != null) {
-			getTextModel().setNsPrefix(importPrefix, importUri);
+			getCurrentTextModel().setNsPrefix(importPrefix, importUri);
 		}
-		com.hp.hpl.jena.rdf.model.Resource importedOntology = getTextModel().createResource(importUri);
+		com.hp.hpl.jena.rdf.model.Resource importedOntology = getCurrentTextModel().createResource(importUri);
 		modelOntology.addImport(importedOntology);
-		getTextModel().addSubModel(importedOntModel);
-		getTextModel().addLoadedImport(importUri);
-	}
-
-	private String getTextModelName() {
-		return this.getTextmodelName();
-	}
-
-	private String getTextModelNamespace() {
-		return getTextModelName() + "#";
-	}
-
-	private String getTextModelPrefix() {
-		return this.getTextmodelPrefix();
-	}
-
-	private void setTextModel(OntModel textModel) {
-		this.textModel = textModel;	
-	}
-	
-	private OntModel getTextModel() {
-		return textModel;
+		getCurrentTextModel().addSubModel(importedOntModel);
+		getCurrentTextModel().addLoadedImport(importUri);
 	}
 
 	public Map<String, String> getPreferences() {
@@ -338,6 +368,9 @@ public class TextProcessor {
 	}
 
 	public IConfigurationManagerForIDE getTextModelConfigMgr() {
+		if (textModelConfigMgr == null) {
+			setTextModelConfigMgr(getCurationManager().getConfigurationManager());
+		}
 		return textModelConfigMgr;
 	}
 
@@ -345,20 +378,406 @@ public class TextProcessor {
 		this.textModelConfigMgr = textMetaModelConfigMgr;
 	}
 
-	public String getTextmodelName() {
-		return textmodelName;
+	public void setTextModel(OntModel textModel) {
+		this.textModel = textModel;	
+	}
+	
+	public OntModel getCurrentTextModel() {
+		return textModel;
 	}
 
-	public void setTextmodelName(String textmodelName) {
-		this.textmodelName = textmodelName;
+	public String getTextModelName() {
+		return textModelName;
 	}
 
-	public String getTextmodelPrefix() {
+	public void setTextModelName(String textmodelName) {
+		this.textModelName = textmodelName;
+	}
+
+	public String getTextModelPrefix() {
 		return textmodelPrefix;
 	}
 
-	public void setTextmodelPrefix(String textmodelPrefix) {
+	public void setTextModelPrefix(String textmodelPrefix) {
 		this.textmodelPrefix = textmodelPrefix;
+	}
+
+	public ResultSet executeSparqlQuery(String query) throws ConfigurationException, ReasonerNotFoundException, IOException, InvalidNameException, QueryParseException, QueryCancelledException {
+//		ITranslator translator = getTextModelConfigMgr().getTranslator();
+		query = SadlUtils.stripQuotes(query);
+		IReasoner reasoner = getTextModelConfigMgr().getReasoner();
+		if (!reasoner.isInitialized()) {
+			reasoner.setConfigurationManager(getTextModelConfigMgr());
+			reasoner.initializeReasoner(getTextModelConfigMgr().getModelFolder(), getTextModelName(), null);
+		}
+		query = reasoner.prepareQuery(query);
+		ResultSet results =  reasoner.ask(query);
+		return results;
+	}
+
+	/** 
+	 * Method to add a domainOntology to the text to triples service
+	 * @param dialogModelName
+	 * @param extractedTxtModelName 
+	 * @param domainModel
+	 * @throws IOException 
+	 */
+	public String uploadDomainModel(String localityURI, String domainModelURI, OntModel domainModel) throws IOException {
+			String ontologyAsString = getCurationManager().ontModelToString(domainModel);
+			String serviceBaseUri = getPreference(DialogPreferences.ANSWER_TEXT_SERVICE_BASE_URI.getId());
+			TextProcessingServiceInterface tpsi = new TextProcessingServiceInterface(serviceBaseUri);
+			String response = tpsi.uploadDomainOntology(localityURI, domainModelURI, ontologyAsString);
+			setRegisteredDomainModel(domainModel);
+			return response;
+	}
+	
+	/**
+	 * Method to determine if a character is a vowel. 
+	 * Reference: https://stackoverflow.com/questions/26557604/whats-the-best-way-to-check-if-a-character-is-a-vowel-in-java
+	 * @param c
+	 * @return
+	 */
+	public static boolean isVowel(char c) {
+	    switch (c) {
+	        case 65:
+	        case 69:
+	        case 73:
+	        case 79:
+	        case 85:
+	        case 89:
+	        case 97:
+	        case 101:
+	        case 105:
+	        case 111:
+	        case 117:
+	        case 121:
+	        case 192:
+	        case 193:
+	        case 194:
+	        case 195:
+	        case 196:
+	        case 197:
+	        case 198:
+	        case 200:
+	        case 201:
+	        case 202:
+	        case 203:
+	        case 204:
+	        case 205:
+	        case 206:
+	        case 207:
+	        case 210:
+	        case 211:
+	        case 212:
+	        case 213:
+	        case 214:
+	        case 216:
+	        case 217:
+	        case 218:
+	        case 219:
+	        case 220:
+	        case 221:
+	        case 224:
+	        case 225:
+	        case 226:
+	        case 227:
+	        case 228:
+	        case 229:
+	        case 230:
+	        case 232:
+	        case 233:
+	        case 234:
+	        case 235:
+	        case 236:
+	        case 237:
+	        case 238:
+	        case 239:
+	        case 242:
+	        case 243:
+	        case 244:
+	        case 245:
+	        case 246:
+	        case 248:
+	        case 249:
+	        case 250:
+	        case 251:
+	        case 252:
+	        case 253:
+	        case 255:
+	        case 256:
+	        case 257:
+	        case 258:
+	        case 259:
+	        case 260:
+	        case 261:
+	        case 274:
+	        case 275:
+	        case 276:
+	        case 277:
+	        case 278:
+	        case 279:
+	        case 280:
+	        case 281:
+	        case 282:
+	        case 283:
+	        case 296:
+	        case 297:
+	        case 298:
+	        case 299:
+	        case 300:
+	        case 301:
+	        case 302:
+	        case 303:
+	        case 304:
+	        case 305:
+	        case 306:
+	        case 307:
+	        case 332:
+	        case 333:
+	        case 334:
+	        case 335:
+	        case 336:
+	        case 337:
+	        case 338:
+	        case 339:
+	        case 360:
+	        case 361:
+	        case 362:
+	        case 363:
+	        case 364:
+	        case 365:
+	        case 366:
+	        case 367:
+	        case 368:
+	        case 369:
+	        case 370:
+	        case 371:
+	        case 374:
+	        case 375:
+	        case 376:
+	        case 506:
+	        case 507:
+	        case 508:
+	        case 509:
+	        case 510:
+	        case 511:
+	        case 512:
+	        case 513:
+	        case 514:
+	        case 515:
+	        case 516:
+	        case 517:
+	        case 518:
+	        case 519:
+	        case 520:
+	        case 521:
+	        case 522:
+	        case 523:
+	        case 524:
+	        case 525:
+	        case 526:
+	        case 527:
+	        case 532:
+	        case 533:
+	        case 534:
+	        case 535:
+	            return true;
+	        default:
+	            switch (c) {
+	                case 7680:
+	                case 7681:
+	                case 7700:
+	                case 7701:
+	                case 7702:
+	                case 7703:
+	                case 7704:
+	                case 7705:
+	                case 7706:
+	                case 7707:
+	                case 7708:
+	                case 7709:
+	                case 7724:
+	                case 7725:
+	                case 7726:
+	                case 7727:
+	                case 7756:
+	                case 7757:
+	                case 7758:
+	                case 7759:
+	                case 7760:
+	                case 7761:
+	                case 7762:
+	                case 7763:
+	                case 7794:
+	                case 7795:
+	                case 7796:
+	                case 7797:
+	                case 7798:
+	                case 7799:
+	                case 7800:
+	                case 7801:
+	                case 7802:
+	                case 7803:
+	                case 7833:
+	                case 7840:
+	                case 7841:
+	                case 7842:
+	                case 7843:
+	                case 7844:
+	                case 7845:
+	                case 7846:
+	                case 7847:
+	                case 7848:
+	                case 7849:
+	                case 7850:
+	                case 7851:
+	                case 7852:
+	                case 7853:
+	                case 7854:
+	                case 7855:
+	                case 7856:
+	                case 7857:
+	                case 7858:
+	                case 7859:
+	                case 7860:
+	                case 7861:
+	                case 7862:
+	                case 7863:
+	                case 7864:
+	                case 7865:
+	                case 7866:
+	                case 7867:
+	                case 7868:
+	                case 7869:
+	                case 7870:
+	                case 7871:
+	                case 7872:
+	                case 7873:
+	                case 7874:
+	                case 7875:
+	                case 7876:
+	                case 7877:
+	                case 7878:
+	                case 7879:
+	                case 7880:
+	                case 7881:
+	                case 7882:
+	                case 7883:
+	                case 7884:
+	                case 7885:
+	                case 7886:
+	                case 7887:
+	                case 7888:
+	                case 7889:
+	                case 7890:
+	                case 7891:
+	                case 7892:
+	                case 7893:
+	                case 7894:
+	                case 7895:
+	                case 7896:
+	                case 7897:
+	                case 7898:
+	                case 7899:
+	                case 7900:
+	                case 7901:
+	                case 7902:
+	                case 7903:
+	                case 7904:
+	                case 7905:
+	                case 7906:
+	                case 7907:
+	                case 7908:
+	                case 7909:
+	                case 7910:
+	                case 7911:
+	                case 7912:
+	                case 7913:
+	                case 7914:
+	                case 7915:
+	                case 7916:
+	                case 7917:
+	                case 7918:
+	                case 7919:
+	                case 7920:
+	                case 7921:
+	                case 7922:
+	                case 7923:
+	                case 7924:
+	                case 7925:
+	                case 7926:
+	                case 7927:
+	                case 7928:
+	                case 7929:
+	                    return true;
+	            }
+	    }
+	    return false;
+	}
+
+	private void setRegisteredDomainModel(OntModel registeredDomainModel) {
+	}
+
+	public OntModel getOntModelFromText(String inputIdentifier, String content, String locality, 
+			String modelName, String modelPrefix, boolean addToTextModel, boolean notifyUser) 
+					throws IOException, ConfigurationException, AnswerExtractionException {
+		int[] results = processText(inputIdentifier, content,locality, modelName, modelPrefix, notifyUser);
+		if (results == null) {
+			throw new AnswerExtractionException("Text processing service returned no information");
+		}
+		int numConcepts = results[0];
+		int numEquations = results[1];
+		if (notifyUser) {
+			String msg = "Found " + numConcepts + " concepts and " + numEquations + " equations.";
+			getCurationManager().notifyUser(getCurationManager().getOwlModelsFolder(), msg, true);
+		}
+		OntModel theModel = null;
+		if (numEquations > 0 || numConcepts > 0) {
+			String[] saveGraphResults = retrieveGraph(locality);
+			if (saveGraphResults != null) {
+				locality = saveGraphResults[0];
+				String format = saveGraphResults[1];
+				String serializedGraph = saveGraphResults[2];
+				if (serializedGraph != null) {
+					theModel = serializedOwlModelToOntModel(modelName, serializedGraph, format);			
+				}
+			}
+		}
+		return theModel;
+	}
+	
+	public OntModel getDomainModelFromText(String modelName, String format, String text) throws MalformedURLException {
+		String serviceBaseUri = getPreference(DialogPreferences.ANSWER_TEXT_SERVICE_BASE_URI.getId());
+		TextProcessingServiceInterface tpsi = new TextProcessingServiceInterface(serviceBaseUri);
+		String[] results =  tpsi.textToOntology(modelName + "#", format, text);
+		if (results != null && results.length == 2 && results[1] != null) {
+			String format2 = results[0];
+			String serializedGraph = results[1];
+			if (serializedGraph != null) {
+				OntModel theModel = serializedOwlModelToOntModel(modelName, serializedGraph, format.toUpperCase());	
+				return theModel;
+			}
+		}
+		return null;
+	}
+
+	public OntModel serializedOwlModelToOntModel(String modelName, String serializedGraph, String format) {
+//		System.out.println("Graph extracted:\n" + serializedGraph);	// debug only
+		try {
+			OntModel newModel = getTextModelConfigMgr().getOntModel(modelName, serializedGraph, Scope.INCLUDEIMPORTS, format);
+//								logger.debug("The new model:");
+//								newModel.write(System.err, "N3");
+//						theModel = getCurationManager().getExtractionProcessor().getTextModel();
+//								logger.debug("The existing model:");
+//								theModel.write(System.err, "N3");
+//						theModel.add(newModel);
+			return newModel;
+		}
+		catch (Exception e) {
+			logger.debug("Failed to read triples into OntModel: " + e.getMessage());
+			logger.debug(serializedGraph);
+		}
+		return null;
 	}
 
 }

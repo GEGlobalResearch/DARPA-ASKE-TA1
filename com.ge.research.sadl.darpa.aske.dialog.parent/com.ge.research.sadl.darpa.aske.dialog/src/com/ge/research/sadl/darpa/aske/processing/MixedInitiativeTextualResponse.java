@@ -38,10 +38,18 @@ package com.ge.research.sadl.darpa.aske.processing;
 
 public class MixedInitiativeTextualResponse extends MixedInitiativeContent {
 	private String response = null;
+	private boolean quoteResponse = true;
 	private int insertionPoint = -1;
 	
 	public MixedInitiativeTextualResponse(String content) {
+		super();
 		setResponse(content);
+	}
+
+	public MixedInitiativeTextualResponse(String content, boolean bQuote) {
+		super();
+		setResponse(content);
+		setQuoteResponse(bQuote);
 	}
 
 	public String getResponse() {
@@ -62,5 +70,13 @@ public class MixedInitiativeTextualResponse extends MixedInitiativeContent {
 
 	public void setInsertionPoint(int insertionPoint) {
 		this.insertionPoint = insertionPoint;
+	}
+
+	public boolean isQuoteResponse() {
+		return quoteResponse;
+	}
+
+	public void setQuoteResponse(boolean quoteResponse) {
+		this.quoteResponse = quoteResponse;
 	}
 }

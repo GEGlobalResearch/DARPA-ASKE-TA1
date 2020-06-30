@@ -12,37 +12,17 @@
 	<name>DARPA-ASKE Tests</name>
 
 	<build>
+		<!-- We do not want to run the headless tests in an OSGi container. -->
+		<!-- We use Maven Surefire instead of Tycho Surefire to run the tests outside of the OSGi container. -->
+		<!-- Source: https://wiki.eclipse.org/Tycho/FAQ#Can_I_run_eclipse-plugin_tests_also_outside_an_OSGi_container.3F -->
+		<!-- GH issue: https://github.com/GEGlobalResearch/DARPA-ASKE-TA1/issues/59 -->
+		<!-- Maven Surefire expects test classes in ${project.build.directory}/test-classes by default. -->
+		<testOutputDirectory>${project.build.directory}/classes</testOutputDirectory>
 		<plugins>
 			<plugin>
 				<groupId>org.eclipse.xtend</groupId>
 				<artifactId>xtend-maven-plugin</artifactId>
-				<dependencies>
-					<dependency>
-						<groupId>org.eclipse.platform</groupId>
-						<artifactId>org.eclipse.equinox.common</artifactId>
-						<version>3.10.0</version>
-					</dependency>
-					<dependency>
-						<groupId>org.eclipse.jdt</groupId>
-						<artifactId>org.eclipse.jdt.core</artifactId>
-						<version>3.13.102</version>
-					</dependency>
-					<dependency>
-						<groupId>org.eclipse.jdt</groupId>
-						<artifactId>org.eclipse.jdt.compiler.apt</artifactId>
-						<version>1.3.110</version>
-					</dependency>
-					<dependency>
-						<groupId>org.eclipse.jdt</groupId>
-						<artifactId>org.eclipse.jdt.compiler.tool</artifactId>
-						<version>1.2.101</version>
-					</dependency>
-					<dependency>
-						<groupId>org.eclipse.emf</groupId>
-						<artifactId>org.eclipse.emf.codegen</artifactId>
-						<version>2.11.0</version>
-					</dependency>
-				</dependencies>
+				<version>${xtextVersion}</version>
 			</plugin>
 			<plugin>
 				<groupId>org.eclipse.tycho</groupId>
@@ -59,6 +39,28 @@
 				<configuration>
 					<compilerArgument>-err:-forbidden</compilerArgument>
 				</configuration>
+			</plugin>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-surefire-plugin</artifactId>
+				<version>2.21.0</version>
+				<dependencies>
+					<!-- Explicitly declare the Maven Surefire provider for JUnit4, see http://maven.apache.org/surefire/maven-surefire-plugin/examples/providers.html -->
+					<dependency>
+						<groupId>org.apache.maven.surefire</groupId>
+						<artifactId>surefire-junit4</artifactId>
+						<version>2.21.0</version>
+					</dependency>
+				</dependencies>
+				<executions>
+					<execution>
+						<id>default-test</id>
+						<phase>test</phase>
+						<goals>
+							<goal>test</goal>
+						</goals>
+					</execution>
+				</executions>
 			</plugin>
 		</plugins>
 	</build>

@@ -1,0 +1,372 @@
+/**********************************************************************
+* Note: This license has also been called the "New BSD License" or
+* "Modified BSD License". See also the 2-clause BSD License.
+*
+* Copyright © 2018-2019 - General Electric Company, All Rights Reserved
+*
+* Project: KApEESH, developed with the support of the Defense Advanced
+* Research Projects Agency (DARPA) under Agreement  No.  HR00111990007.
+*
+* Redistribution and use in source and binary forms, with or without
+* modification, are permitted provided that the following conditions are met:
+* 1. Redistributions of source code must retain the above copyright notice,
+*    this list of conditions and the following disclaimer.
+*
+* 2. Redistributions in binary form must reproduce the above copyright notice,
+*    this list of conditions and the following disclaimer in the documentation
+*    and/or other materials provided with the distribution.
+*
+* 3. Neither the name of the copyright holder nor the names of its
+*    contributors may be used to endorse or promote products derived
+*    from this software without specific prior written permission.
+*
+* THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
+* AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+* IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
+* ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE
+* LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR
+* CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF
+* SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS
+* INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN
+* CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
+* ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF
+* THE POSSIBILITY OF SUCH DAMAGE.
+*
+***********************************************************************/
+uri "http://aske.ge.com/hypersonicsV2" alias hypersonicsV2 .
+
+//import "http://aske.ge.com/sciknow".
+
+Temperature is a type of UnittedQuantity.
+Pressure is a type of UnittedQuantity.
+
+Speed is a type of UnittedQuantity.
+Mass is a type of UnittedQuantity.
+Volume is a type of UnittedQuantity.
+Density is a type of UnittedQuantity.
+Length is a type of UnittedQuantity.
+Time is a type of UnittedQuantity.
+
+Altitude is a type of UnittedQuantity.
+	
+PhysicalThing is a class,
+	described by mass with values of type Mass
+	described by volume with values of type Volume
+	described by density with values of type Density
+	described by temperature with values of type Temperature
+	described by altitude with values of type Altitude
+	described by speed with values of type Speed
+   .
+
+Gas is a type of PhysicalThing
+	described by pressure with values of type Pressure.
+Air is a type of Gas.
+//Engine is a class.
+//RamJet is a type of Engine
+//	described by afterburner with a single value of type boolean.
+
+Aircraft is a type of PhysicalThing
+	described by numEngines with values of type NumOfEngines
+//	described by totalThrust with values of type TotalThrust
+	described by engine with values of type AircraftEngine
+	.
+
+AircraftEngine is a type of PhysicalThing
+	described by machSpeed with values of type MachSpeed
+	described by sfc with values of type SpecificFuelConsumption
+	described by thrust with values of type Thrust
+	described by netThrust with values of type SpecificNetThrust
+	described by fireflag with values of type TemperatureLimitViolationFlag
+	described by massFlowRate with values of type MassFlowRate
+	.
+                    
+{CF6, F100, J85, RamJet} are types of AircraftEngine.
+
+TemperatureLimitViolationFlag (alias "temperature limit violation flag") is a type of UnittedQuantity.
+
+NumOfEngines (alias "number of engines") is a type of UnittedQuantity.
+
+BurnerTemperature is a type of Temperature.
+burnerTemperature describes AircraftEngine with values of type BurnerTemperature.
+Ratio is a type of UnittedQuantity.
+EngineTemperatureRatio is a type of Ratio.
+engineTemperatureRatio describes AircraftEngine with values of type EngineTemperatureRatio.
+EngineTemperatureRatioEquation is a type of ^Equation.
+EnginePressureRatio is a type of Ratio.
+enginePressureRatio describes AircraftEngine with values of type EnginePressureRatio.
+EnginePressureRatioEquation is a type of ^Equation.
+RayleighFlow (alias "Rayleigh loss") is a type of Flow.
+rayleighFlow describes AircraftEngine with values of type RayleighFlow.
+RayleighflowEquation is a type of ExternalEquation.
+
+AtmosphericTemperature is a type of Temperature.
+AtmosphericPressure is a type of Pressure.
+StaticTemperature is a type of AtmosphericTemperature.
+StaticPressure is a type of AtmosphericPressure.
+TotalTemperature is a type of AtmosphericTemperature.
+TotalPressure is a type of AtmosphericPressure.
+SpeedOfSound is a type of UnittedQuantity.
+Airspeed is a type of Speed.
+MachSpeed (alias "mach number") is a type of Speed.
+Gamma (alias "specific heats ratio") is a type of UnittedQuantity.
+GasConstant (alias "Gas constant R") is a type of UnittedQuantity.
+Flow is a type of UnittedQuantity.
+
+CP is a type of UnittedQuantity.
+Thrust (alias "thrust", "net thrust") is a type of UnittedQuantity.
+
+MassFlowRate (alias "mass flow rate") is a type of UnittedQuantity.
+
+SpecificNetThrust (alias "specific net thrust") is a type of UnittedQuantity.
+SpecificFuelConsumption (alias "specific fuel consumption") is a type of UnittedQuantity.
+
+//StaticTemperatureEquation is a type of ^Equation.
+//StaticPressureEquation is a type of ^Equation.
+//SpeedOfSoundEquation is a type of ^Equation.
+//MachSpeedEquation is a type of ^Equation.
+//TotalTemperatureEquation is a type of ^Equation.
+//TotalPressureEquation is a type of ^Equation.
+//TotalThrustEquation is a type of ^Equation.
+//
+//GammaConstEquation is a type of ^Equation.
+//RgasConstEquation is a type of ^Equation.
+
+//staticTemperature describes Air with values of type StaticTemperature.
+//totalTemperature describes Air with values of type TotalTemperature.
+//staticPressure describes Air with values of type StaticPressure.
+//totalPressure describes Air with values of type TotalPressure.
+
+staticTemperature describes PhysicalThing with values of type StaticTemperature.
+totalTemperature describes PhysicalThing with values of type TotalTemperature.
+staticPressure describes PhysicalThing with values of type StaticPressure.
+totalPressure describes PhysicalThing with values of type TotalPressure.
+
+
+
+speedOfSound describes Air with values of type SpeedOfSound.
+//airspeed describes Air with values of type Airspeed.
+
+gamma describes Air with values of type Gamma.
+rgas describes Air with values of type GasConstant.
+
+cp describes Air with values of type CP.
+
+
+//TotalThrust is a type of UnittedQuantity.
+//totalThrust describes Aircraft with values of type TotalThrust.
+
+//totalThrustFunc is a TotalThrustEquation.
+//Equation totalThrustFunc (alias "totalThrust") (double ne (numEngines of an Aircraft), double fnlb (thrust of engine of the Aircraft))
+//  returns double (totalThrust of the Aircraft): ne*fnlb.
+
+//Equation totalThrustFunc (alias "totalThrust") (double ne (NumOfEngines), double fnlb (Thrust))
+//  returns double (TotalThrust): ne*fnlb.
+
+
+//totalThrustFunc has expression (a Script with script "totalThrust=ne*fnlb" language Python-NumPy).
+
+
+//Equation calc_totalThrust (double numEngines, double thrust) returns double (totalThrust of the Aircraft): numEngines*thrust.
+
+//totalThrustFunc has expression (a Script with script 
+//"def totalThrustFunc(ne, fnlb):
+//    totalThrust=ne*fnlb
+//    return totalThrust"
+//language Python-NumPy).
+
+////Troposphere Constants
+//Equation tropo_C1_Eq() returns double (tropo_c1 of some Air {degF}) : return 59.0 .
+//Equation tropo_C2_Eq() returns double (tropo_c2 of some Air {"1/ft"}) : return .00356 .
+
+//gamma_const is a GammaConstEquation.
+//Equation gamma_const() returns double (gamma of some Air): return 1.4 . //unitless
+//gamma_const has expression (a Script script "1.4" language Python).
+//
+//
+//rgas_const is a RgasConstEquation.
+//Equation rgas_const() returns double (rgas of some Air): return 1718 . //ft*lb/slug/Rankine
+////ft*lb/slug/Rankine = ft^2/sec^2/Rankine
+//rgas_const has expression (a Script script "1718" language Python).
+
+//Equation mphToftpersec(double s (speed of a PhysicalThing {mph}))
+//		returns double (speed of the PhysicalThing {"ft/sec"}):
+//		return s*5280/3600.
+//mphToftpersec has expression (a Script script "s * 5280/3600" language Python).
+
+
+//st_temp_eq_tropo is a StaticTemperatureEquation.
+//Equation st_temp_eq_tropo(double alt (altitude of some Air and alt < 36152 {ft}) )
+//	returns double (staticTemperature of the Air {degF}) : 
+//	return 59 - 0.00356 * alt .
+//st_temp_eq_tropo has expression (a Script with script "st0 = 59 - 0.00356 * alt" language Python-NumPy).
+
+//st_temp_eq_lowerStrato is a StaticTemperatureEquation.
+//Equation st_temp_eq_lowerStrato(double alt (altitude of some Air and alt < 82345 and alt >= 36152 {ft}))
+//	returns double (staticTemperature of the Air {degF}) : 
+//	return -70 .
+//st_temp_eq_lowerStrato has expression (a Script with script "-70" language Python).
+//
+//st_temp_eq_upperStrato is a StaticTemperatureEquation.
+//Equation st_temp_eq_upperStrato(double alt (altitude of some Air and alt > 82345 {ft}) )
+//	returns double (staticTemperature of the Air {degF}) : 
+//	return -205.05 + .00164 * alt .
+//st_temp_eq_upperStrato has expression (a Script with script "-205.05 + .00164 * alt" language Python).
+//
+//
+//st_pressure_eq_tropo is a StaticPressureEquation.
+//Equation st_pressure_eq_tropo(double alt (altitude of some Air and alt < 36152 {ft}))
+//	returns double (staticPressure of the Air {"force_pound/ft**2"}) : 
+//	return 2116.0 * ((59 - 0.00356 * alt + 459.7) / 518.6)^5.256 .
+//
+//st_pressure_eq_tropo has expression (a Script with script "2116.0 * ((59 - 0.00356 * alt + 459.7) / 518.6)**5.256" language Python).
+//
+//st_pressure_eq_lowerStrato is a StaticPressureEquation.
+//Equation st_pressure_eq_lowerStrato(double alt (altitude of some Air and alt < 82345 and alt > 36152 {ft}) )
+//	returns double (staticPressure of the Air {"force_pound/ft**2"}) : 
+//	//return 473.1 * exp(1.73 - .000048 * alt) .
+//	return 473.1 * e^(1.73 - .000048 * alt) .
+//
+//st_pressure_eq_lowerStrato has expression (a Script with script "473.1 * math.exp(1.73 - .000048 * alt)" language Python).
+//
+//st_pressure_eq_upperStrato is a StaticPressureEquation.
+//Equation st_pressure_eq_upperStrato(double alt (altitude of some Air and alt > 82345 {ft}) )
+//	returns double (staticPressure of the Air {"force_pound/ft**2"}) : 
+//	return 51.97 * (((-205.05 + .00164 * alt) + 459.7)/ 389.98)^-11.388 .
+//	
+//st_pressure_eq_upperStrato has expression (a Script with script "51.97 * (((-205.05 + .00164 * alt) + 459.7)/ 389.98)**-11.388" language Python).
+	
+//sos_eq is a SpeedOfSoundEquation.
+//Equation sos_eq(double ts0 (staticTemperature of some Air {degR}),
+//				double g (gamma of the Air),
+//				double R (rgas of the Air)
+//				)
+//	returns double (speedOfSound of the Air {"ft/sec"}) :
+//	return sqrt(g * R * ts0) .
+//
+//sos_eq has expression (a Script with script "math.sqrt(g * R * ts0)" language Python).
+				
+
+//Extracted equations				
+//External equation_1 (alias "a") (decimal R (rgas of a Gas), 
+//	                             decimal T (temperature of the Gas), 
+//	                             decimal g (gamma of the Gas)) 
+//	returns decimal: "http://com.ge.research.sadl.darpa.aske.answer/Sound_txt#equation_1".
+//
+//equation_1 has expression (a Script with language Text, with script "a^2 = R * T * gamma"), 
+//           has expression (a Script with language Python, with script "math.pow(R * T * gamma, 1/2)").
+//
+//External equation_2 (alias "a") (decimal R (rgas of a Gas),
+//	                             decimal T (temperature of the Gas),
+//	                             decimal g (gamma of the Gas),
+//	                             decimal theta (Theta)) 
+//	returns decimal: "http://com.ge.research.sadl.darpa.aske.answer/Sound_txt#equation_2".
+//
+//equation_2 has expression (a Script with language Text, with script "a^2 = R * T * {1 + (gamma - 1) / ( 1 + (gamma-1) * [(theta/T)^2 * e^(theta/T) /(e^(theta/T) -1)^2]) }"),
+//           has expression (a Script with language Python, with script
+//"a = math.pow(R * T *  (  1 + ( gamma-1 ) / ( 1 + ( gamma-1 ) *  ( math.pow( theta/T,2) *  math.exp( theta/T ) /  math.pow( math.exp( theta/T ) - 1,2 ))  ) ), 1/2)").
+
+
+				
+//mach_speed_eq is a MachSpeedEquation.
+////Equation mach_speed_eq(double u0 (airSpeed of some Air {"mph"}),
+////					double a0 (speedOfSound of the Air {"ft/sec"}) )
+////			returns double (machSpeed of the Air) :
+////			//return u0 * 5280.0 / 3600.0 / a0 .
+////			// 1 mile = 5280 ft
+////			// 
+////			return u0*5280.0 * 3600.0 * a0 .
+//
+//Equation mach_speed_eq(double u0 (airSpeed of some Air {"ft/sec"}),
+//					double a0 (speedOfSound of the Air {"ft/sec"}) )
+//			returns double (machSpeed of the Air) :
+//			return u0 / a0 .
+//
+//mach_speed_eq has expression (a Script with script "u0 / a0" language Python).
+//
+//total_temp_eq is a TotalTemperatureEquation.
+//Equation total_temp_eq(double ts1 (staticTemperature of some Air {degF}),
+//					   double mach (machSpeed of the Air) )
+//			returns double (totalTemperature of the Air {degF}) :
+//			return ts1*(1.0 + 0.5*(1.4-1.0)*mach*mach).
+//
+//total_temp_eq has expression (a Script with script "ts1*(1.0 + 0.5*(1.4-1.0)*mach*mach)" language Python).
+//
+//
+//total_pressure_eq is a TotalPressureEquation.
+//Equation total_pressure_eq(double ps0 (staticPressure of some Air {"force_pound/ft**2"}),
+//					   double mach (machSpeed of the Air) )
+//			returns double (totalPressure of the Air {"force_pound/ft**2"}) :
+//			return ps0*(1.0 + 0.5*(1.4-1.0)*mach*mach)^(1.4/(1.4-1.0)).
+//
+//total_pressure_eq has expression (a Script with script "ps0*(1.0 + 0.5*(1.4-1.0)*mach*mach)**(1.4*(1.4-1.0))" language Python).
+
+
+
+
+//engineTemperatureRatioEq1 is a EngineTemperatureRatioEquation.
+//Equation engineTemperatureRatioEq1(int ab (afterburner of some RamJet and ab = 0),
+//								double tt4 (burnerTemperature of the RamJet {degF}),
+//								double tt3 (totalTemperature of some Air {degF}) )
+//		returns double (engineTemperatureRatio of the RamJet) :
+//		return tt4/tt3.
+//engineTemperatureRatioEq1 has expression (a Script with script "tt4/tt3" language Python).
+//
+//engineTemperatureRatioEq2 is a EngineTemperatureRatioEquation.
+//Equation engineTemperatureRatioEq2(int ab (afterburner of some RamJet and ab = 1),
+//								double tt4 (burnerTemperature of the RamJet {degF}),
+//								double tt3 (totalTemperature of some Air {degF}) )
+//		returns double (engineTemperatureRatio of the RamJet) :
+//		return 4000.0/tt3.
+//engineTemperatureRatioEq2 has expression (a Script with script "tt4/tt3" language Python).
+//
+//
+//
+//enginePressureRatioEq1 is a EnginePressureRatioEquation.
+//Equation enginePressureRatioEq1( boolean ab (afterburner of some RamJet and ab = false),
+//								double rf (rayleighflow of the RamJet ) ) 
+//		returns double (enginePressureRatio of the RamJet) :
+//		return 1.0.
+//enginePressureRatioEq1 has expression (a Script with script "1.0" language Python).
+//
+//enginePressureRatioEq2 is a EnginePressureRatioEquation.
+//Equation enginePressureRatioEq2( boolean ab (afterburner of some RamJet and ab = true),
+//								double rf (rayleighflow of the RamJet ) ) 
+//		returns double (enginePressureRatio of the RamJet) :
+//		return rf.
+//enginePressureRatioEq2 has expression (a Script with script "rf" language Python).
+//
+//
+//rayleighflowEq is a RayleighflowEquation.
+//External  rayleighflowEq( double mach (machSpeed of some Air),
+//						  double tt4 (burnerTemperature of some RamJet {degF}))
+//		  returns double (rayleighflow of the RamJet):
+//		  "rayleighflow".
+////rayleighflowEq has expression (a Script with script
+
+//Specific Heat at Constant Pressure
+
+//setDefaults is a ExternalEquation
+//  implicitOutput (a ImplicitDataDescriptor localDescriptorName "trat" declaration (a Script script "trat = [0]*20" language Python))
+//  implicitOutput (a ImplicitDataDescriptor localDescriptorName "altmt" declaration (a Script script "altmt=.0" language Python))
+//  implicitOutput (a ImplicitDataDescriptor localDescriptorName "tt" declaration (a Script script "tt = [0]*20" language Python)) . 
+//External setDefaults() returns boolean: "setDefaults".
+//
+//
+//loadCF6 is a ExternalEquation dependsOn setDefaults.
+//External loadCF6() returns boolean: "loadCF6".
+//loadCF6 implicitInput (a ImplicitDataDescriptor localDescriptorName "trat"  augmentedType Altitude).
+//loadCF6 implicitInput (a ImplicitDataDescriptor localDescriptorName "altmax").
+//loadCF6 implicitInput (a ImplicitDataDescriptor localDescriptorName "tt").
+//loadCF6 implicitOutput (a ImplicitDataDescriptor localDescriptorName "tt" 
+//												declaration (a Script script "tt = [0]*20" language Python)
+//												augmentedType TotalTemperature ). 
+//
+//getCP is a ExternalEquation dependsOn loadCF6.		  
+//External getCP( double temp (temperature of some Air),
+//				integer opt)
+//		returns double (cp of the Air): "getCP".
+//		
+//getPerform is a ExternalEquation dependsOn getCP.
+//
+//External getPerform()
+//	returns double (specificNetThrust of some Engine) : "getPerform".

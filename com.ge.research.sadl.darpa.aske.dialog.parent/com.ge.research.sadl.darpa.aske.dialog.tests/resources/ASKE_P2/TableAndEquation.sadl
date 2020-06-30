@@ -1,0 +1,304 @@
+/**********************************************************************
+* Note: This license has also been called the "New BSD License" or
+* "Modified BSD License". See also the 2-clause BSD License.
+*
+* Copyright © 2018-2019 - General Electric Company, All Rights Reserved
+*
+* Project: KApEESH, developed with the support of the Defense Advanced
+* Research Projects Agency (DARPA) under Agreement  No.  HR00111990007.
+*
+* Redistribution and use in source and binary forms, with or without
+* modification, are permitted provided that the following conditions are met:
+* 1. Redistributions of source code must retain the above copyright notice,
+*    this list of conditions and the following disclaimer.
+*
+* 2. Redistributions in binary form must reproduce the above copyright notice,
+*    this list of conditions and the following disclaimer in the documentation
+*    and/or other materials provided with the distribution.
+*
+* 3. Neither the name of the copyright holder nor the names of its
+*    contributors may be used to endorse or promote products derived
+*    from this software without specific prior written permission.
+*
+* THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
+* AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+* IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
+* ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE
+* LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR
+* CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF
+* SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS
+* INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN
+* CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
+* ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF
+* THE POSSIBILITY OF SUCH DAMAGE.
+*
+***********************************************************************/
+ uri "http://sadl.org/TableAndEquation.sadl" alias TableAndEquation.
+ 
+ import "http://aske.ge.com/hypersonicsV2".
+ 
+ External tteq(double ts0 (StaticTemperature), double mach (MachSpeed)) returns double (TotalTemperature): "http://someequri".
+ External tteq2(double ts02 (StaticTemperature), double mach2 (MachSpeed)) returns double (TotalTemperature): "http://someequri".
+ 
+ Doc4 is a table 
+       [double alt (alias "Altitude") (Altitude {"ft"}), 
+ 	    double u0 (AirSpeed {"mph"}),
+ 	    double tt (TotalTemperature {"degR"})] 
+ with data located at "file://Data/hypothesis.csv".
+ 
+// Doc4 is a table 
+//       [double altitude (alias "Altitude") (Altitude {"ft"}), 
+// 	    double u0 (AirSpeed {"mph"}),
+// 	    double tt1 (TotalTemperature {"R"})] 
+// with data located at "file://Data/hypothesis.csv".
+
+
+
+// Ask FindEquationMatchingSemanticType: "select ?sc where {? <rdfs:subClassOf> ?sc}". 
+// 
+//// Ask FindEquationMatchingSemanticType. 
+// 
+// Ask FindEquationMatchingSemanticType: [hypersonics:TotalTemperature]. 
+
+Ask FindEquationMatchingSemanticType: "select ?eq where {?eq <returnTypes> ?retlist . ?retlist <http://jena.hpl.hp.com/ARQ/list#member> ?member .
+	?member <augmentedType> ?augtype . ?augtype <semType> ?}".
+
+// Ask: "select ?eq ?name ?argsemtype where {
+//	{select ?eq ?name ?argsemtype where {?eq <arguments> ?arglist . ?arglist <http://jena.hpl.hp.com/ARQ/list#member> ?member .
+//	?member <descriptorName> ?name . ?member <augmentedType> ?augtype . ?augtype <semType> ?argsemtype}}
+//	UNION
+//	{select ?eq ?name ?argsemtype where {?eq <returnTypes> ?retlist . ?retlist <http://jena.hpl.hp.com/ARQ/list#member> ?member .
+//	OPTIONAL{?member <descriptorName> ?name} . ?member <augmentedType> ?augtype . ?augtype <semType> ?argsemtype}}
+//	}".
+//
+// 
+// Ask: "select ?datatable ?colname ?typ where {?datatable <columnDescriptors> ?cdlist . ?cdlist <http://jena.hpl.hp.com/ARQ/list#member> ?member . 
+//	?member <descriptorName> ?colname . ?member <augmentedType> ?augtype . ?augtype <semType> ?typ}".
+  
+// Ask: "select ?dt ?eq ?colname ?argname ?semType where {?dt <rdf:type> <DataTable> .
+//	?dt <columnDescriptors> ?cdlist . ?cdlist <http://jena.hpl.hp.com/ARQ/list#member> ?cdmember . ?cdmember <descriptorName> ?colname . 
+//	?cdmember <augmentedType> ?cdaugtype . ?cdaugtype <semType> ?semType .
+//	?eq <rdf:type> <ExternalEquation> . ?eq <arguments> ?arglist . ?arglist <http://jena.hpl.hp.com/ARQ/list#member> ?eqmember .
+//	?eqmember <descriptorName> ?argname . ?eqmember <augmentedType> ?eqaugtype . ?eqaugtype <semType> ?semType}".
+	
+//Ask: "select ?eq ?name ?argsemtype where {
+//	{select ?eq ?name ?argsemtype where {?eq <arguments> ?arglist . ?arglist <http://jena.hpl.hp.com/ARQ/list#member> ?member .
+//	?member <descriptorName> ?name . ?member <augmentedType> ?augtype . ?augtype <semType> ?argsemtype}}
+//	UNION
+//	{select ?eq ?name ?argsemtype where {?eq <returnTypes> ?retlist . ?retlist <http://jena.hpl.hp.com/ARQ/list#member> ?member .
+//	OPTIONAL{?member <descriptorName> ?name} . ?member <augmentedType> ?augtype . ?augtype <semType> ?argsemtype}}
+//	}".	
+//	
+//Ask: "select ?similar where {
+//  values ?movie { dbpedia:The_Matrix }
+//  ?similar ?p ?o . 
+//  ?similar <rdf:type> <dbpedia-owl:Film> .
+//  ?movie ?p ?o .
+//}
+//group by ?similar ?movie
+//having count(?p) > 0".
+//
+// Ask: "select ?eq ?argsemtype where {
+//	{select ?eq ?name ?argsemtype where {?eq <arguments> ?arglist . ?arglist <http://jena.hpl.hp.com/ARQ/list#member> ?member .
+//	?member <descriptorName> ?name . ?member <augmentedType> ?augtype . ?augtype <semType> ?argsemtype}}
+//	UNION
+//	{select ?eq ?argsemtype where {?eq <returnTypes> ?retlist . ?retlist <http://jena.hpl.hp.com/ARQ/list#member> ?member .
+//	OPTIONAL{?member <descriptorName> ?name} . ?member <augmentedType> ?augtype . ?augtype <semType> ?argsemtype}}
+//	}".
+//
+// 
+// Ask: "select ?datatable ?typ where {?datatable <columnDescriptors> ?cdlist . ?cdlist <http://jena.hpl.hp.com/ARQ/list#member> ?member . 
+//	?member <descriptorName> ?colname . ?member <augmentedType> ?augtype . ?augtype <semType> ?typ}".
+
+// Ask: "select * where{
+//	{select ?eq ?datatype ?argsemtype ?typ where {
+//	{select ?eq ?name ?argsemtype where {?eq <arguments> ?arglist . ?arglist <http://jena.hpl.hp.com/ARQ/list#member> ?member .
+//	?member <descriptorName> ?name . ?member <augmentedType> ?augtype . ?augtype <semType> ?argsemtype}}
+//	UNION
+//	{select ?eq ?argsemtype where {?eq <returnTypes> ?retlist . ?retlist <http://jena.hpl.hp.com/ARQ/list#member> ?member .
+//	OPTIONAL{?member <descriptorName> ?name} . ?member <augmentedType> ?augtype . ?augtype <semType> ?argsemtype}}
+//	UNION
+//	{select ?datatable ?typ where {?datatable <columnDescriptors> ?cdlist . ?cdlist <http://jena.hpl.hp.com/ARQ/list#member> ?member . 
+//	?member <descriptorName> ?colname . ?member <augmentedType> ?augtype . ?augtype <semType> ?typ}}
+//	}}
+//	}".
+
+// Ask: "select ?eq ?argsemtype where {
+//	{select ?eq ?name ?argsemtype where {?eq <arguments> ?arglist . ?arglist <http://jena.hpl.hp.com/ARQ/list#member> ?member .
+//	?member <descriptorName> ?name . ?member <augmentedType> ?augtype . ?augtype <semType> ?argsemtype}}
+//	UNION
+//	{select ?eq ?argsemtype where {?eq <returnTypes> ?retlist . ?retlist <http://jena.hpl.hp.com/ARQ/list#member> ?member .
+//	OPTIONAL{?member <descriptorName> ?name} . ?member <augmentedType> ?augtype . ?augtype <semType> ?argsemtype}}
+//	}".
+//
+// 
+// Ask: "select ?datatable ?typ where {?datatable <columnDescriptors> ?cdlist . ?cdlist <http://jena.hpl.hp.com/ARQ/list#member> ?member . 
+//	?member <descriptorName> ?colname . ?member <augmentedType> ?augtype . ?augtype <semType> ?typ}".
+
+//Ask: "select ?dt ?colname ?typ where {
+//		?dt <columnDescriptors> ?cdlist . ?cdlist <http://jena.hpl.hp.com/ARQ/list#member> ?member . 
+//		?member <descriptorName> ?colname . ?member <augmentedType> ?augtype . ?augtype <semType> ?typ
+//	{
+//	select ?typ where {
+//	{select ?typ where {?dt <columnDescriptors> ?cdlist . ?cdlist <http://jena.hpl.hp.com/ARQ/list#member> ?member . 
+//	?member <descriptorName> ?colname . ?member <augmentedType> ?augtype . ?augtype <semType> ?typ}}
+//	MINUS
+//	{	
+//	{select ?typ where {?dt <columnDescriptors> ?cdlist . ?cdlist <http://jena.hpl.hp.com/ARQ/list#member> ?member . 
+//	?member <descriptorName> ?colname . ?member <augmentedType> ?augtype . ?augtype <semType> ?typ}}
+//	MINUS
+//	{select ?typ where {
+//	{select ?eq ?name ?typ where {?eq <arguments> ?arglist . ?arglist <http://jena.hpl.hp.com/ARQ/list#member> ?member .
+//	?member <descriptorName> ?name . ?member <augmentedType> ?augtype . ?augtype <semType> ?typ}}
+//	UNION
+//	{select ?eq ?typ where {?eq <returnTypes> ?retlist . ?retlist <http://jena.hpl.hp.com/ARQ/list#member> ?member .
+//	OPTIONAL{?member <descriptorName> ?name} . ?member <augmentedType> ?augtype . ?augtype <semType> ?typ}}}}}
+//	}}}".
+
+//Ask: "select ?eq ?name ?typ where {
+//	{select ?eq ?name ?typ where {?eq <arguments> ?arglist . ?arglist <http://jena.hpl.hp.com/ARQ/list#member> ?member .
+//	?member <descriptorName> ?name . ?member <augmentedType> ?augtype . ?augtype <semType> ?typ}}
+//	UNION
+//	{select ?eq ?typ where {?eq <returnTypes> ?retlist . ?retlist <http://jena.hpl.hp.com/ARQ/list#member> ?member .
+//	OPTIONAL{?member <descriptorName> ?name} . ?member <augmentedType> ?augtype . ?augtype <semType> ?typ}}
+//	{
+//	select ?typ where {
+//	{select ?typ where {?dt <columnDescriptors> ?cdlist . ?cdlist <http://jena.hpl.hp.com/ARQ/list#member> ?member . 
+//	?member <descriptorName> ?colname . ?member <augmentedType> ?augtype . ?augtype <semType> ?typ}}
+//	MINUS
+//	{	
+//	{select ?typ where {?dt <columnDescriptors> ?cdlist . ?cdlist <http://jena.hpl.hp.com/ARQ/list#member> ?member . 
+//	?member <descriptorName> ?colname . ?member <augmentedType> ?augtype . ?augtype <semType> ?typ}}
+//	MINUS
+//	{select ?typ where {
+//	{select ?eq ?name ?typ where {?eq <arguments> ?arglist . ?arglist <http://jena.hpl.hp.com/ARQ/list#member> ?member .
+//	?member <descriptorName> ?name . ?member <augmentedType> ?augtype . ?augtype <semType> ?typ}}
+//	UNION
+//	{select ?eq ?typ where {?eq <returnTypes> ?retlist . ?retlist <http://jena.hpl.hp.com/ARQ/list#member> ?member .
+//	OPTIONAL{?member <descriptorName> ?name} . ?member <augmentedType> ?augtype . ?augtype <semType> ?typ}}}}}
+//	}}}".
+	
+//Ask: "select distinct ?dt ?colname ?eq ?name ?typ where {
+//	{
+//	select ?dt ?colname ?typ where {
+//		?dt <columnDescriptors> ?cdlist . ?cdlist <http://jena.hpl.hp.com/ARQ/list#member> ?member . 
+//		?member <descriptorName> ?colname . ?member <augmentedType> ?augtype . ?augtype <semType> ?typ
+//	{
+//	select ?typ where {
+//	{select ?typ where {?dt <columnDescriptors> ?cdlist . ?cdlist <http://jena.hpl.hp.com/ARQ/list#member> ?member . 
+//	?member <descriptorName> ?colname . ?member <augmentedType> ?augtype . ?augtype <semType> ?typ}}
+//	MINUS
+//	{	
+//	{select ?typ where {?dt <columnDescriptors> ?cdlist . ?cdlist <http://jena.hpl.hp.com/ARQ/list#member> ?member . 
+//	?member <descriptorName> ?colname . ?member <augmentedType> ?augtype . ?augtype <semType> ?typ}}
+//	MINUS
+//	{select ?typ where {
+//	{select ?eq ?name ?typ where {?eq <arguments> ?arglist . ?arglist <http://jena.hpl.hp.com/ARQ/list#member> ?member .
+//	?member <descriptorName> ?name . ?member <augmentedType> ?augtype . ?augtype <semType> ?typ}}
+//	UNION
+//	{select ?eq ?typ where {?eq <returnTypes> ?retlist . ?retlist <http://jena.hpl.hp.com/ARQ/list#member> ?member .
+//	OPTIONAL{?member <descriptorName> ?name} . ?member <augmentedType> ?augtype . ?augtype <semType> ?typ}}}}}
+//	}}}}
+//	UNION
+//	{select ?eq ?name ?typ where {
+//	{select ?eq ?name ?typ where {?eq <arguments> ?arglist . ?arglist <http://jena.hpl.hp.com/ARQ/list#member> ?member .
+//	?member <descriptorName> ?name . ?member <augmentedType> ?augtype . ?augtype <semType> ?typ}}
+//	UNION
+//	{select ?eq ?typ where {?eq <returnTypes> ?retlist . ?retlist <http://jena.hpl.hp.com/ARQ/list#member> ?member .
+//	OPTIONAL{?member <descriptorName> ?name} . ?member <augmentedType> ?augtype . ?augtype <semType> ?typ}}
+//	{
+//	select ?typ where {
+//	{select ?typ where {?dt <columnDescriptors> ?cdlist . ?cdlist <http://jena.hpl.hp.com/ARQ/list#member> ?member . 
+//	?member <descriptorName> ?colname . ?member <augmentedType> ?augtype . ?augtype <semType> ?typ}}
+//	MINUS
+//	{	
+//	{select ?typ where {?dt <columnDescriptors> ?cdlist . ?cdlist <http://jena.hpl.hp.com/ARQ/list#member> ?member . 
+//	?member <descriptorName> ?colname . ?member <augmentedType> ?augtype . ?augtype <semType> ?typ}}
+//	MINUS
+//	{select ?typ where {
+//	{select ?eq ?name ?typ where {?eq <arguments> ?arglist . ?arglist <http://jena.hpl.hp.com/ARQ/list#member> ?member .
+//	?member <descriptorName> ?name . ?member <augmentedType> ?augtype . ?augtype <semType> ?typ}}
+//	UNION
+//	{select ?eq ?typ where {?eq <returnTypes> ?retlist . ?retlist <http://jena.hpl.hp.com/ARQ/list#member> ?member .
+//	OPTIONAL{?member <descriptorName> ?name} . ?member <augmentedType> ?augtype . ?augtype <semType> ?typ}}}}}
+//	}}}}}".
+
+//Ask: "select distinct ?vn ?dt ?colname ?eq ?name ?typ where {
+//	{
+//	select ?dt ?colname ?typ where {
+//		?dt <columnDescriptors> ?cdlist . ?cdlist <http://jena.hpl.hp.com/ARQ/list#member> ?member . 
+//		?member <descriptorName> ?colname . ?member <augmentedType> ?augtype . ?augtype <semType> ?typ
+//	{
+//	select ?typ where {
+//	{select ?typ where {?dt <columnDescriptors> ?cdlist . ?cdlist <http://jena.hpl.hp.com/ARQ/list#member> ?member . 
+//	?member <descriptorName> ?colname . ?member <augmentedType> ?augtype . ?augtype <semType> ?typ}}
+//	MINUS
+//	{	
+//	{select ?typ where {?dt <columnDescriptors> ?cdlist . ?cdlist <http://jena.hpl.hp.com/ARQ/list#member> ?member . 
+//	?member <descriptorName> ?colname . ?member <augmentedType> ?augtype . ?augtype <semType> ?typ}}
+//	MINUS
+//	{select ?typ where {
+//	{select ?eq ?name ?typ where {?eq <arguments> ?arglist . ?arglist <http://jena.hpl.hp.com/ARQ/list#member> ?member .
+//	?member <descriptorName> ?name . ?member <augmentedType> ?augtype . ?augtype <semType> ?typ}}
+//	UNION
+//	{select ?eq ?typ where {?eq <returnTypes> ?retlist . ?retlist <http://jena.hpl.hp.com/ARQ/list#member> ?member .
+//	OPTIONAL{?member <descriptorName> ?name} . ?member <augmentedType> ?augtype . ?augtype <semType> ?typ}}}}}
+//	}}}}
+//	UNION
+//	{select ?eq ?name ?typ where {
+//	{select ?eq ?name ?typ where {?eq <arguments> ?arglist . ?arglist <http://jena.hpl.hp.com/ARQ/list#member> ?member .
+//	?member <descriptorName> ?name . ?member <augmentedType> ?augtype . ?augtype <semType> ?typ}}
+//	UNION
+//	{select ?eq ?typ where {?eq <returnTypes> ?retlist . ?retlist <http://jena.hpl.hp.com/ARQ/list#member> ?member .
+//	OPTIONAL{?member <descriptorName> ?name} . ?member <augmentedType> ?augtype . ?augtype <semType> ?typ}}
+//	{
+//	select ?typ where {
+//	{select ?typ where {?dt <columnDescriptors> ?cdlist . ?cdlist <http://jena.hpl.hp.com/ARQ/list#member> ?member . 
+//	?member <descriptorName> ?colname . ?member <augmentedType> ?augtype . ?augtype <semType> ?typ}}
+//	MINUS
+//	{	
+//	{select ?typ where {?dt <columnDescriptors> ?cdlist . ?cdlist <http://jena.hpl.hp.com/ARQ/list#member> ?member . 
+//	?member <descriptorName> ?colname . ?member <augmentedType> ?augtype . ?augtype <semType> ?typ}}
+//	MINUS
+//	{select ?typ where {
+//	{select ?eq ?name ?typ where {?eq <arguments> ?arglist . ?arglist <http://jena.hpl.hp.com/ARQ/list#member> ?member .
+//	?member <descriptorName> ?name . ?member <augmentedType> ?augtype . ?augtype <semType> ?typ}}
+//	UNION
+//	{select ?eq ?typ where {?eq <returnTypes> ?retlist . ?retlist <http://jena.hpl.hp.com/ARQ/list#member> ?member .
+//	OPTIONAL{?member <descriptorName> ?name} . ?member <augmentedType> ?augtype . ?augtype <semType> ?typ}}}}}
+//	}}}}
+//	. LET(?vn := COALESCE(?dt, ?eq))
+//	}".
+
+//Ask: "select distinct ?eq ?argname ?argsemtype where {
+//	{select ?eq ?argname ?argsemtype where {?eq <arguments> ?arglist . ?arglist <http://jena.hpl.hp.com/ARQ/list#member> ?member .
+//	?member <descriptorName> ?argname . ?member <augmentedType> ?augtype . ?augtype <semType> ?argsemtype .
+//	VALUES ?argsemtype {<TotalTemperature> <AirSpeed> <Altitude>}
+//	}}
+//	UNION
+//	{select ?eq ?argname ?argsemtype where {?eq <returnTypes> ?retlist . ?retlist <http://jena.hpl.hp.com/ARQ/list#member> ?member .
+//	OPTIONAL{?member <descriptorName> ?argname} . ?member <augmentedType> ?augtype . ?augtype <semType> ?argsemtype .
+//	VALUES ?argsemtype {<TotalTemperature> <AirSpeed> <Altitude>}	}}
+//	}".	
+//Ask: "select distinct ?eq ?argname ?argsemtype where {
+//	{select ?eq ?argname ?argsemtype where {?eq <arguments> ?arglist . ?arglist <http://jena.hpl.hp.com/ARQ/list#member> ?member .
+//	?member <descriptorName> ?argname . ?member <augmentedType> ?augtype . ?augtype <semType> ?argsemtype
+//	}}
+//	UNION
+//	{select ?eq ?argname ?argsemtype where {?eq <returnTypes> ?retlist . ?retlist <http://jena.hpl.hp.com/ARQ/list#member> ?member .
+//	OPTIONAL{?member <descriptorName> ?argname} . ?member <augmentedType> ?augtype . ?augtype <semType> ?argsemtype .
+//	}}
+//	. 	VALUES ?argsemtype {<TotalTemperature> <AirSpeed> <Altitude>}
+//	}".	
+//	
+//Ask: "select distinct ?eq ?argname ?argsemtype where {
+//	{select ?eq ?argname ?argsemtype where {?eq <arguments> ?arglist . ?arglist <http://jena.hpl.hp.com/ARQ/list#member> ?member . 	
+//	?member <descriptorName> ?argname . ?member <augmentedType> ?augtype . ?augtype <semType> ?argsemtype	
+//	}}	
+//	UNION	
+//	{select ?eq ?argname ?argsemtype where {?eq <returnTypes> ?retlist . ?retlist <http://jena.hpl.hp.com/ARQ/list#member> ?member . 	
+//	OPTIONAL{?member <descriptorName> ?argname} . ?member <augmentedType> ?augtype . ?augtype <semType> ?argsemtype .
+//	}}
+//	. 	VALUES ?argsemtype {<http://aske.ge.com/hypersonics#Altitude> <http://aske.ge.com/hypersonics#AirSpeed>}
+//	}".
+	

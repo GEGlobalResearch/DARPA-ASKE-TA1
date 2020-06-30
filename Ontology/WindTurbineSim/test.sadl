@@ -1,0 +1,22 @@
+ uri "http://sadl.org/test.sadl" alias tst.
+ 
+// import "http://windTurbine/Coefficients".
+ import "http://windTurbine/WindTurbine".
+ 
+// Ask: "select ?caller ?called ?callingVar ?calledVar ?usage where {?caller <calls> ?mc . ?mc <codeBlock> ?called . 
+//		?mc <returnedMapping> ?rm . ?rm <callingVariable> ?callingVar . ?rm <calledVariable> ?calledVar .
+//		OPTIONAL{?callingVar <reference> ?ref . ?ref <usage> ?usage}}".
+//		
+// Ask: "select ?caller ?called where {?caller <calls> ?mc . ?mc <codeBlock> ?called}".	
+		
+//Ask: select m where m isCalled true.
+//Ask: "select ?m ?b where {?m <http://sadl.org/CodeExtractionModel.sadl#isCalled> ?b}".
+//Ask: "select ?m where {?m <rdf:type> <Method> . OPTIONAL{?m <http://sadl.org/CodeExtractionModel.sadl#isCalled> ?b} . filter(!bound(?b))}".
+//Ask: select m where m deadCode true.
+	
+//Ask: "select distinct ?m ?b ?e ?s where {?m <rdf:type> <Method> . OPTIONAL {?m <beginsAt> ?b . ?m <endsAt> ?e . OPTIONAL{?m <serialization> ?s}} .
+//		MINUS {?m <rdf:type> <ExternalMethod>} }".
+//Ask: "select distinct ?m ?p ?v where {?m <rdf:type> <Constructor> . ?m ?p ?v}".
+			
+Ask: "select ?ivn ?ivt ?iv where {?ref <codeBlock> <WindTurbine.WindTurbine> . ?ref <isImplicit> true . ?ref <cem:input> true . 
+		?iv <reference> ?ref . ?iv <varName> ?ivn . ?iv <varType> ?ivt}".			

@@ -2,6 +2,7 @@
 #  Created from SADL model 'http://sadl.org/SpeedOfSound.sadl'
 
 @prefix sadlimplicitmodel: <http://sadl.org/sadlimplicitmodel#>
+@prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
 @prefix sos: <http://sadl.org/SpeedOfSound.sadl#>
 @prefix scicncpts2: <http://sadl.org/ScientificConcepts2.sadl#>
 

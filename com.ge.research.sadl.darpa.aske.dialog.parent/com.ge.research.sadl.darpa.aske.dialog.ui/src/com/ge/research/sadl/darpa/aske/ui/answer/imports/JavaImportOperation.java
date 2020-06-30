@@ -13,11 +13,9 @@
  *******************************************************************************/
 package com.ge.research.sadl.darpa.aske.ui.answer.imports;
 
-import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.IOException;
-import java.io.InputStream;
-import java.nio.charset.StandardCharsets;
+import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -57,6 +55,9 @@ import org.eclipse.emf.ecore.resource.impl.ResourceSetImpl;
 import org.eclipse.osgi.util.NLS;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Shell;
+import org.eclipse.ui.IEditorInput;
+import org.eclipse.ui.IEditorPart;
+import org.eclipse.ui.IWorkbench;
 import org.eclipse.ui.IWorkbenchPage;
 import org.eclipse.ui.IWorkbenchPart;
 import org.eclipse.ui.IWorkbenchWindow;
@@ -69,6 +70,7 @@ import org.eclipse.ui.ide.IDE;
 import org.eclipse.ui.internal.wizards.datatransfer.DataTransferMessages;
 import org.eclipse.ui.internal.wizards.datatransfer.TarEntry;
 import org.eclipse.ui.internal.wizards.datatransfer.TarLeveledStructureProvider;
+import org.eclipse.ui.part.FileEditorInput;
 import org.eclipse.ui.wizards.datatransfer.IImportStructureProvider;
 import org.eclipse.xtext.preferences.IPreferenceValues;
 import org.eclipse.xtext.preferences.IPreferenceValuesProvider;
@@ -81,8 +83,15 @@ import com.ge.research.sadl.darpa.aske.curation.AnswerCurationManager.SaveAsSadl
 import com.ge.research.sadl.darpa.aske.dialog.ui.internal.DialogActivator;
 import com.ge.research.sadl.darpa.aske.preferences.DialogPreferences;
 import com.ge.research.sadl.darpa.aske.processing.DialogConstants;
+import com.ge.research.sadl.darpa.aske.processing.imports.AnswerExtractionException;
 import com.ge.research.sadl.darpa.aske.processing.imports.AnswerExtractionProcessor;
+import com.ge.research.sadl.darpa.aske.ui.answer.DialogAnswerProvider;
 import com.ge.research.sadl.reasoner.ConfigurationException;
+import com.ge.research.sadl.reasoner.InvalidNameException;
+import com.ge.research.sadl.reasoner.QueryCancelledException;
+import com.ge.research.sadl.reasoner.QueryParseException;
+import com.ge.research.sadl.reasoner.ReasonerNotFoundException;
+import com.ge.research.sadl.reasoner.utils.SadlUtils;
 import com.ge.research.sadl.utils.ResourceManager;
 import com.google.common.io.Files;
 import com.google.inject.Injector;
@@ -112,8 +121,6 @@ public class JavaImportOperation extends WorkspaceModifyOperation {
 
     private List selectedFiles;
     
-    private String outputFilename;
-
     private IFile targetResource;
     
     private Object fileObject;
@@ -625,10 +632,7 @@ public class JavaImportOperation extends WorkspaceModifyOperation {
     	String fileObjectPath = provider.getFullPath(importFilePath.toFile());
     	monitor.subTask(fileObjectPath);
     	String fileObjectS = importFilePath.toFile().getName();  //((File)fileObject).getName();
-    	String outputfn = getOutputFilename();
-    	if (outputfn == null) {
-    		outputfn = fileObjectS.substring(0, fileObjectS.lastIndexOf(".")) + ".owl";
-    	}
+    	String outputfn = AnswerCurationManager.getImportOutputFilename(fileObjectS);
 
 		if (outputfn.lastIndexOf('.') > 0) {
 			int lio = ((String) outputfn).lastIndexOf('.');
@@ -696,14 +700,36 @@ public class JavaImportOperation extends WorkspaceModifyOperation {
 //	    		throw new ConfigurationException("Unable to find the domain knowledge project targeted by import");
 //	    	}
 	    	
+	    	// get active document
+//	    	IWorkbench wb = PlatformUI.getWorkbench();
+//	    	IWorkbenchWindow window = wb.getActiveWorkbenchWindow();
+//	    	IWorkbenchPage page = window.getActivePage();
+//	    	IEditorPart editor = page.getActiveEditor();
+//	    	IEditorInput input = editor.getEditorInput();
+//	    	IPath path = ((FileEditorInput)input).getPath();
+
     		// the AnswerCurationManager is stored in the domain project ConfigurationManager
 	    	String domainModelModelFolder = domainPrj.getFolder("OwlModels").getLocation().toOSString();
 	    	ConfigurationManagerForIDE domainModelConfigMgr = ConfigurationManagerForIdeFactory.getConfigurationManagerForIDE(domainModelModelFolder, null);
-    		acm = (AnswerCurationManager) domainModelConfigMgr.getPrivateKeyValuePair(DialogConstants.ANSWER_CURATION_MANAGER);
+	    	Object acmMap = domainModelConfigMgr.getPrivateKeyValuePair(DialogConstants.ANSWER_CURATION_MANAGER);
+	    	if (acmMap instanceof Map<?,?>) {
+    			Iterator<?> acmitr = ((Map<?,?>)acmMap).values().iterator();
+	    		while (acmitr.hasNext()) {
+	    			AnswerCurationManager acmCandidate = (AnswerCurationManager)acmitr.next();
+	    			if (acmCandidate.getResource() != null) {
+	    				if (domainModelConfigMgr.getPrivateKeyMapValueByResource(DialogConstants.DIALOG_ANSWER_PROVIDER, acmCandidate.getResource().getURI()) != null) {
+	    					acm = acmCandidate;
+	    					break;
+	    				}
+	    			}
+	    		}
+	    	}
     		if (acm == null) {
-        		Map<String, String> preferences = getPreferences(targetResource);
-    			acm = new AnswerCurationManager(codeModelModelFolderUri, domainModelConfigMgr, preferences);
-    			domainModelConfigMgr.addPrivateKeyValuePair(DialogConstants.ANSWER_CURATION_MANAGER, acm);
+//        		Map<String, String> preferences = getPreferences(targetResource);
+//    			acm = new AnswerCurationManager(codeModelModelFolderUri, domainModelConfigMgr, preferences);
+//    			domainModelConfigMgr.addPrivateKeyValuePair(DialogConstants.ANSWER_CURATION_MANAGER, acm);
+    			System.err.println("A Dialog Window must be open in order to do an an import of code and/or text");
+    			return null;
     		}
     		
     		List<File> txtFiles = getTextFilesInDir(null, importFilePath.toFile());
@@ -795,39 +821,83 @@ public class JavaImportOperation extends WorkspaceModifyOperation {
 		return destPath;
 	}
 
-	void importFiles(AnswerCurationManager acm) throws ConfigurationException, IOException {
-		acm.processImports(SaveAsSadl.AskUserSaveAsSadl);
+	void importFiles(AnswerCurationManager acm) throws ConfigurationException, IOException, InvalidNameException, ReasonerNotFoundException, QueryParseException, QueryCancelledException, AnswerExtractionException {
+        Object dap = acm.getConfigurationManager().getPrivateKeyMapValueByResource(DialogConstants.DIALOG_ANSWER_PROVIDER, acm.getResource().getURI());
+        if (dap instanceof DialogAnswerProvider) {
+        	StringBuilder sb = new StringBuilder();
+        	List<File> textFiles = acm.getExtractionProcessor().getTextProcessor().getTextFiles();
+        	SadlUtils su = new SadlUtils();
+        	if (textFiles != null) {
+        		for (File tf : textFiles) {
+        			try {
+        				String tfurl = su.fileNameToFileUrl(tf.getCanonicalPath());
+            			sb.append("Extract from \"");
+						sb.append(tfurl);
+	        			sb.append("\".");
+	        			sb.append(System.lineSeparator());
+					} catch (URISyntaxException e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					} catch (IOException e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					}
+        		}
+        	}
+        	List<File> codeFiles = acm.getExtractionProcessor().getCodeExtractor(AnswerExtractionProcessor.CodeLanguage.JAVA).getCodeFiles();
+        	if (codeFiles != null) {
+        		for (File cf : codeFiles) {
+        			try {
+        				String cfurl = su.fileNameToFileUrl(cf.getCanonicalPath());
+            			sb.append("Extract from \"");
+						sb.append(cfurl);
+	        			sb.append("\".");
+	        			sb.append(System.lineSeparator());
+					} catch (URISyntaxException e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					} catch (IOException e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					}
+        		}
+        	}
+        	if (sb.length() > 0) {
+        		((DialogAnswerProvider)dap).addUserContentToDialog(acm, sb.toString(), false);
+        	}
+        }
+//		acm.processImports(SaveAsSadl.AskUserSaveAsSadl);
 //		
-		String newContent = acm.getExtractionProcessor().getGeneratedSadlContent();
+//		String newContent = acm.getExtractionProcessor().getGeneratedSadlContent();
 		
-    	if (newContent != null) {
-    		try {
-    			InputStream is = new ByteArrayInputStream(newContent.getBytes(StandardCharsets.UTF_8));
-    			if (getTargetResource().exists()) {
-    				getTargetResource().setContents(is,
-    						IResource.KEEP_HISTORY, null);
-    			} else {
-    				if (createVirtualFolder || createLinks || createLinkFilesOnly)
-    					getTargetResource().createLink(createRelativePath(
-    							new Path(provider
-    									.getFullPath(getFileObject())), getTargetResource()), 0, null);
-    				else
-    					getTargetResource().create(is, false, null);
-    			}
-    			setResourceAttributes(getTargetResource(), getFileObject());
-
-    			if (provider instanceof TarLeveledStructureProvider) {
-    				try {
-    					getTargetResource().setResourceAttributes(((TarLeveledStructureProvider) provider).getResourceAttributes(getFileObject()));
-    				} catch (CoreException e) {
-    					errorTable.add(e.getStatus());
-    				}
-    			}
-    		} catch (CoreException e) {
-    			errorTable.add(e.getStatus());
-    		}
-    	}
-
+//    	if (newContent != null) {
+//    		try {
+//    			InputStream is = new ByteArrayInputStream(newContent.getBytes(StandardCharsets.UTF_8));
+//    			if (getTargetResource().exists()) {
+//    				getTargetResource().setContents(is,
+//    						IResource.KEEP_HISTORY, null);
+//    			} else {
+//    				if (createVirtualFolder || createLinks || createLinkFilesOnly)
+//    					getTargetResource().createLink(createRelativePath(
+//    							new Path(provider
+//    									.getFullPath(getFileObject())), getTargetResource()), 0, null);
+//    				else
+//    					getTargetResource().create(is, false, null);
+//    			}
+//    			setResourceAttributes(getTargetResource(), getFileObject());
+//
+//    			if (provider instanceof TarLeveledStructureProvider) {
+//    				try {
+//    					getTargetResource().setResourceAttributes(((TarLeveledStructureProvider) provider).getResourceAttributes(getFileObject()));
+//    				} catch (CoreException e) {
+//    					errorTable.add(e.getStatus());
+//    				}
+//    			}
+//    		} catch (CoreException e) {
+//    			errorTable.add(e.getStatus());
+//    		}
+//    	}
+//
     }
 
 	// get file list
@@ -955,15 +1025,22 @@ public class JavaImportOperation extends WorkspaceModifyOperation {
             	acm = localAcm;
             }
             String modelFolder = convertProjectRelativePathToAbsolutePath(destinationContainer.getProject().getFullPath().append("OwlModels").toPortableString());
-            Object dap = acm.getDomainModelConfigurationManager().getPrivateKeyValuePair(DialogConstants.DIALOG_ANSWER_PROVIDER);
+           if (acm == null) {
+           	throw new CoreException(new Status(IStatus.ERROR, PlatformUI.PLUGIN_ID, 0, 
+        			"Failed to get a curation manager. Are you trying to import into a different project than the open Dialog window?", null));
+           }
+            Object dap = acm.getConfigurationManager().getPrivateKeyMapValueByResource(DialogConstants.DIALOG_ANSWER_PROVIDER, acm.getResource().getURI());
             if (dap == null) {
             	throw new CoreException(new Status(IStatus.ERROR, PlatformUI.PLUGIN_ID, 0, 
             			"A Dialog Editor window must be opened and some activity in the window before imports can be processed", null));
             }
-            acm.getExtractionProcessor().getCodeExtractor().setCodeModelFolder(modelFolder);
+            acm.setOwlModelsFolder(modelFolder);
         }
         try {
         	importFiles(acm);
+        }
+        catch (Throwable t) {
+        	t.printStackTrace();
         }
         finally {
         	// must clear prior files so a following import won't do them again
@@ -1305,15 +1382,38 @@ public class JavaImportOperation extends WorkspaceModifyOperation {
 			if (tsburl != null) {
 				map.put(DialogPreferences.ANSWER_TEXT_SERVICE_BASE_URI.getId(), tsburl);
 			}
-			String cgsburl = preferenceValues.getPreference(DialogPreferences.ANSWER_CG_SERVICE_BASE_URI);
-			if (cgsburl != null) {
-				map.put(DialogPreferences.ANSWER_CG_SERVICE_BASE_URI.getId(), cgsburl);
-			}
 			String j2psburl = preferenceValues.getPreference(DialogPreferences.ANSWER_JAVA_TO_PYTHON_SERVICE_BASE_URI);
 			if (j2psburl != null) {
 				map.put(DialogPreferences.ANSWER_JAVA_TO_PYTHON_SERVICE_BASE_URI.getId(), j2psburl);
 			}
-//			preferenceValues.getPreference(DialogPreferences.)
+			String usekchain = preferenceValues.getPreference(DialogPreferences.USE_ANSWER_KCHAIN_CG_SERVICE);
+			if (usekchain != null) {
+				map.put(DialogPreferences.USE_ANSWER_KCHAIN_CG_SERVICE.getId(), usekchain);
+			}
+			String kchaincgsburl = preferenceValues.getPreference(DialogPreferences.ANSWER_KCHAIN_CG_SERVICE_BASE_URI);
+			if (kchaincgsburl != null) {
+				map.put(DialogPreferences.ANSWER_KCHAIN_CG_SERVICE_BASE_URI.getId(), kchaincgsburl);
+			}
+			String dbncgsburl = preferenceValues.getPreference(DialogPreferences.ANSWER_DBN_CG_SERVICE_BASE_URI);
+			if (dbncgsburl != null) {
+				map.put(DialogPreferences.ANSWER_DBN_CG_SERVICE_BASE_URI.getId(), dbncgsburl);
+			}
+			String dbnjsongensburl = preferenceValues.getPreference(DialogPreferences.DBN_INPUT_JSON_GENERATION_SERVICE_BASE_URI);
+			if (dbnjsongensburl != null) {
+				map.put(DialogPreferences.DBN_INPUT_JSON_GENERATION_SERVICE_BASE_URI.getId(), dbnjsongensburl);
+			}
+			String invizinserviceurl = preferenceValues.getPreference(DialogPreferences.ANSWER_INVIZIN_SERVICE_BASE_URI);
+			if (invizinserviceurl != null) {
+				map.put(DialogPreferences.ANSWER_INVIZIN_SERVICE_BASE_URI.getId(), invizinserviceurl);
+			}
+			String usedbn = preferenceValues.getPreference(DialogPreferences.USE_DBN_CG_SERVICE);
+			if (usedbn != null) {
+				map.put(DialogPreferences.USE_DBN_CG_SERVICE.getId(), usedbn);
+			}
+			String shortgraphlink = preferenceValues.getPreference(DialogPreferences.SHORT_GRAPH_LINK);
+			if (shortgraphlink != null) {
+				map.put(DialogPreferences.SHORT_GRAPH_LINK.getId(), shortgraphlink.trim());
+			}
 			return map;
 		}
 		return null;
@@ -1329,14 +1429,6 @@ public class JavaImportOperation extends WorkspaceModifyOperation {
 		});
 		
 		return i.get();
-	}
-
-	private String getOutputFilename() {
-		return outputFilename;
-	}
-
-	private void setOutputFilename(String fn) {
-		this.outputFilename = fn;
 	}
 
 	private IFile getTargetResource() {

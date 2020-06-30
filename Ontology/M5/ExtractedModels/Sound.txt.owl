@@ -1,0 +1,115 @@
+<rdf:RDF
+    xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+    xmlns="http://com.ge.research.sadl.darpa.aske.answer/Sound_txt#"
+    xmlns:owl="http://www.w3.org/2002/07/owl#"
+    xmlns:sadlimplicitmodel="http://sadl.org/sadlimplicitmodel"
+    xmlns:ns1="http://sadl.org/sadlimplicitmodel#"
+    xmlns:rdfs="http://www.w3.org/2000/01/rdf-schema#"
+    xmlns:xsd="http://www.w3.org/2001/XMLSchema#"
+  xml:base="http://com.ge.research.sadl.darpa.aske.answer/Sound_txt">
+  <owl:Ontology rdf:about="http://com.ge.research.sadl.darpa.aske.answer/Sound_txt">
+    <owl:imports rdf:resource="http://sadl.org/sadlimplicitmodel"/>
+    <rdfs:comment xml:lang="en">This ontology was created by extraction from text by the ANSWER TextProcessor.</rdfs:comment>
+  </owl:Ontology>
+  <rdf:Description rdf:about="http://com.ge.research.sadl.darpa.aske.answer/speedof">
+    <rdfs:label>speed of</rdfs:label>
+    <rdfs:label>speed of sound</rdfs:label>
+    <rdfs:seeAlso rdf:resource="http://www.wikidata.org/entity/Q124003"/>
+    <rdfs:subClassOf rdf:resource="http://sadl.org/sadlimplicitmodel#ScientificConcept"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://com.ge.research.sadl.darpa.aske.answer/momentum">
+    <rdfs:label>momentum</rdfs:label>
+    <rdfs:label>momentum indicator</rdfs:label>
+    <rdfs:seeAlso rdf:resource="http://www.wikidata.org/entity/Q2230241"/>
+    <rdfs:subClassOf rdf:resource="http://sadl.org/sadlimplicitmodel#ScientificConcept"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://com.ge.research.sadl.darpa.aske.answer/mass">
+    <rdfs:label>mass</rdfs:label>
+    <rdfs:seeAlso rdf:resource="http://www.wikidata.org/entity/Q11423"/>
+    <rdfs:subClassOf rdf:resource="http://sadl.org/sadlimplicitmodel#ScientificConcept"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://com.ge.research.sadl.darpa.aske.answer/heatcapacity">
+    <rdfs:label>heat capacity</rdfs:label>
+    <rdfs:seeAlso rdf:resource="http://www.wikidata.org/entity/Q179388"/>
+    <rdfs:subClassOf rdf:resource="http://sadl.org/sadlimplicitmodel#ScientificConcept"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://com.ge.research.sadl.darpa.aske.answer/speedofsound">
+    <rdfs:label>speed of "sound"</rdfs:label>
+    <rdfs:label>speed of sound</rdfs:label>
+    <rdfs:label>speed of sound?</rdfs:label>
+    <rdfs:seeAlso rdf:resource="http://www.wikidata.org/entity/Q124003"/>
+    <rdfs:subClassOf rdf:resource="http://sadl.org/sadlimplicitmodel#ScientificConcept"/>
+  </rdf:Description>
+  <ns1:ExternalEquation rdf:ID="equation_1">
+    <ns1:arguments rdf:parseType="Resource">
+    </ns1:arguments>
+    <ns1:expression>
+      <ns1:Script>
+        <ns1:language rdf:resource="http://sadl.org/sadlimplicitmodel#Text"/>
+        <ns1:script>a^2 = R * T * gamma</ns1:script>
+      </ns1:Script>
+    </ns1:expression>
+    <ns1:expression>
+      <ns1:Script>
+        <ns1:language rdf:resource="http://sadl.org/sadlimplicitmodel#Python-TF"/>
+        <ns1:script>a = tf.math.pow(R * T * gamma, 1/2)</ns1:script>
+      </ns1:Script>
+    </ns1:expression>
+    <ns1:expression>
+      <ns1:Script>
+        <ns1:language rdf:resource="http://sadl.org/sadlimplicitmodel#Python"/>
+        <ns1:script>a = math.pow(R * T * gamma, 1/2)</ns1:script>
+      </ns1:Script>
+    </ns1:expression>
+    <ns1:returnTypes rdf:parseType="Resource">
+    </ns1:returnTypes>
+  </ns1:ExternalEquation>
+  <rdf:Description rdf:about="http://com.ge.research.sadl.darpa.aske.answer/of">
+    <rdfs:label>Investigation of the mechanism of action of papain</rdfs:label>
+    <rdfs:label>of</rdfs:label>
+    <rdfs:seeAlso rdf:resource="http://www.wikidata.org/entity/Q28912099"/>
+    <rdfs:subClassOf rdf:resource="http://sadl.org/sadlimplicitmodel#ScientificConcept"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://com.ge.research.sadl.darpa.aske.answer/Speed">
+    <rdfs:label>Speed</rdfs:label>
+    <rdfs:label>rotational speed</rdfs:label>
+    <rdfs:seeAlso rdf:resource="http://www.wikidata.org/entity/Q1256787"/>
+    <rdfs:subClassOf rdf:resource="http://sadl.org/sadlimplicitmodel#ScientificConcept"/>
+  </rdf:Description>
+  <ns1:ExternalEquation rdf:ID="equation_2">
+    <ns1:arguments rdf:parseType="Resource">
+    </ns1:arguments>
+    <ns1:expression>
+      <ns1:Script>
+        <ns1:language rdf:resource="http://sadl.org/sadlimplicitmodel#Python-TF"/>
+        <ns1:script>a = tf.math.pow(R * T *  (  1 + ( gamma-1 ) / ( 1 + ( gamma-1 ) *  ( tf.math.pow( theta/T,2)* tf.math.exp( theta/T ) /  tf.math.pow( tf.math.exp( theta/T ) - 1,2) )  ) ), 1/2)</ns1:script>
+      </ns1:Script>
+    </ns1:expression>
+    <ns1:expression>
+      <ns1:Script>
+        <ns1:language rdf:resource="http://sadl.org/sadlimplicitmodel#Text"/>
+        <ns1:script>a^2 = R * T * {1 + (gamma - 1) / ( 1 + (gamma-1) * [(theta/T)^2 * e^(theta/T) /(e^(theta/T) -1)^2]) }</ns1:script>
+      </ns1:Script>
+    </ns1:expression>
+    <ns1:expression>
+      <ns1:Script>
+        <ns1:language rdf:resource="http://sadl.org/sadlimplicitmodel#Python"/>
+        <ns1:script>a = math.pow(R * T *  (  1 + ( gamma-1 ) / ( 1 + ( gamma-1 ) *  ( math.pow( theta/T,2)* math.exp( theta/T ) /  math.pow( math.exp( theta/T ) - 1,2) )  ) ), 1/2)</ns1:script>
+      </ns1:Script>
+    </ns1:expression>
+    <ns1:returnTypes rdf:parseType="Resource">
+    </ns1:returnTypes>
+  </ns1:ExternalEquation>
+  <rdf:Description rdf:about="http://com.ge.research.sadl.darpa.aske.answer/speed">
+    <rdfs:label>rotational speed</rdfs:label>
+    <rdfs:label>speed</rdfs:label>
+    <rdfs:seeAlso rdf:resource="http://www.wikidata.org/entity/Q1256787"/>
+    <rdfs:subClassOf rdf:resource="http://sadl.org/sadlimplicitmodel#ScientificConcept"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://com.ge.research.sadl.darpa.aske.answer/temperature">
+    <rdfs:label>color temperature</rdfs:label>
+    <rdfs:label>temperature</rdfs:label>
+    <rdfs:seeAlso rdf:resource="http://www.wikidata.org/entity/Q327408"/>
+    <rdfs:subClassOf rdf:resource="http://sadl.org/sadlimplicitmodel#ScientificConcept"/>
+  </rdf:Description>
+</rdf:RDF>

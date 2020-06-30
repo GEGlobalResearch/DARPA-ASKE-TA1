@@ -9,19 +9,16 @@
 	<name>DARPA-ASKE</name>
 
 	<properties>
-		<xtextVersion>2.15.0</xtextVersion>
-		<sadlOsgiVersion>3.2.0</sadlOsgiVersion>
+		<tycho-version>1.5.1</tycho-version>
+		<xtextVersion>2.21.0</xtextVersion>
+		<mwe2Version>2.11.2</mwe2Version>
+		<sadlOsgiVersion>3.3.0</sadlOsgiVersion>
 		<sadlVersion>${sadlOsgiVersion}-SNAPSHOT</sadlVersion>
+		<dialogOsgiVersion>2.2.1</dialogOsgiVersion>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<maven.compiler.source>1.8</maven.compiler.source>
 		<maven.compiler.target>1.8</maven.compiler.target>
-		<!-- Tycho settings -->
-		<tycho-version>1.3.0</tycho-version>
-		<!-- Define overridable properties for tycho-surefire-plugin -->
-		<platformSystemProperties></platformSystemProperties>
-		<moduleProperties></moduleProperties>
-		<systemProperties></systemProperties>
-		<tycho.testArgLine></tycho.testArgLine>
+		<maven.build.timestamp.format>yyyyMMddHHmm</maven.build.timestamp.format>
 	</properties>
 	<modules>
 		<module>com.ge.research.sadl.darpa.aske.dialog.dependencies</module>
@@ -33,7 +30,19 @@
 		<module>com.ge.research.sadl.darpa.aske.dialog.feature</module>
 		<module>com.ge.research.sadl.darpa.aske.dialog.update</module>
 	</modules>
+	<dependencyManagement>
+		<dependencies>
+			<dependency>
+				<groupId>org.eclipse.xtext</groupId>
+				<artifactId>xtext-dev-bom</artifactId>
+				<version>${xtextVersion}</version>
+				<type>pom</type>
+				<scope>import</scope>
+			</dependency>
+		</dependencies>
+	</dependencyManagement>
 	<build>
+		<finalName>${project.groupId}-${dialogOsgiVersion}.${maven.build.timestamp}</finalName>
 		<plugins>
 			<plugin>
 				<groupId>org.eclipse.tycho</groupId>

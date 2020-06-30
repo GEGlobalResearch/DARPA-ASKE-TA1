@@ -1,0 +1,48 @@
+ uri "http://sadl.org/QueryTurbo.sadl" alias QueryTurbo.
+ 
+// import "http://sadl.org/CodeExtractionModel.sadl".
+ import "http://com.ge.research.sadl.darpa.aske.answer/Turbo_java".  
+ //      http://com.ge.research.sadl.darpa.aske.answer/Turbo_java
+ 
+// Ask: ImplicitMethodInputs.
+// 
+// Ask: ImplicitMethodOutputs.
+// 
+//External comPute(): "http:bla/bla/bla".
+// Ask: MethodCalls.
+
+// Graph: "select distinct ?m ?p ?mc where {?m <rdf:type> <Method> . OPTIONAL{ ?m ?p ?mci . ?mci <codeBlock> ?mc } . values ?p {<calls>}}".
+ 
+// Ask: "select distinct ?m where {?m <rdf:type> <Method>}".
+
+//Ask: "select ?cb ?cv where { ?cb <rdf:type> <CodeBlock> . ?ref <codeBlock> ?cb . ?ref <firstRef> true . ?ref <usage> <Used> . ?cv <reference> ?ref}".
+//Ask: "select ?cb where { ?cb <rdf:type> <CodeBlock>}".
+//Ask: "select ?cb ?ref where { ?cb <rdf:type> <CodeBlock> . ?ref <codeBlock> ?cb}".
+//Explain: Rule FindFirstRef.
+//Ask: "select ?cv where {?cv <rdf:type> <CodeVariable>}".
+//Ask: "select ?cv where {?cv <rdf:type> <ClassField>}".
+//Ask: "select ?cv where {?cv <rdf:type> <MethodArgument>}".
+//Ask: "select ?cv where {?cv <rdf:type> <MethodVariable>}".
+//Ask: "select ?cv where {?cv <rdf:type> <ConstantVariable>}".
+//Explain: Rule Transitive.
+
+//Rule FindFirstRef
+//if c is a CodeVariable and
+//   ref is reference of c and
+//   ref has codeBlock cb and
+//   l is beginsAt of ref and
+//   minLoc = min(c, reference, r, r, codeBlock, cb, r, beginsAt) and
+//   l = minLoc
+//then firstRef of ref is true
+////	and print(c, " at ", minLoc, " is first reference.") 
+//.
+//Ask: "select ?cv where {?cv <reference> ?ref . ?ref <firstRef> true}".
+//Ask: select cv, cb, ba where cv has reference ref and ref has codeBlock cb and ref beginsAt ba order by cb, cv, ba.
+//Ask: select cv, cb, ba where cv has reference r and r has codeBlock cb and r beginsAt ba order by cb, ba.
+
+//Ask: select cv, ref where cv has reference ref and ref has firstRef true.
+ 
+Ask: ImplicitMethodInputs.
+Ask: ImplicitMethodOutputs.
+Ask: MethodsDoingComputation.
+Ask: MethodCalls.

@@ -1,0 +1,4 @@
+ uri "http://sadl.org/sandbox.dialog" alias sandboxdlg.
+ import "http://sadl.org/sandbox.sadl".
+ 
+ // what is speed?
