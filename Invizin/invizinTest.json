@@ -1,0 +1,31 @@
+{
+  "inputVariables": [
+    {
+      "name": "mach",
+      "alias": "MachNumber",
+      "type": "float",
+      "value": "0.9",
+      "minValue": "0.0",
+      "maxValue": "3.0"
+    },
+    {
+      "name": "gamma",
+      "type": "float",
+      "value": "1.4",
+      "minValue": "1.01",
+      "maxValue": "2.0"
+    }
+  ],
+  "outputVariables": [
+    {
+      "name": "aflow",
+      "alias": "Airflow",
+      "type": "float",
+      "unit": "lbs/ft^2"
+    }
+  ],
+  "modelName": "getAirPy",
+  "plotType": "2",
+  "url_evaluate": "http://localhost:12345/darpa/aske/kchain/evaluate",
+  "CGType": "python"
+}

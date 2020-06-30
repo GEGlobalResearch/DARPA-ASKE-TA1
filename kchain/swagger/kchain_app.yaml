@@ -1,0 +1,263 @@
+swagger: "2.0"
+info:
+  description: "Build, Append, and Execute K-CHAIN Models"
+  version: "1.0.0"
+  title: "K-CHAIN Model Services"
+host: "localhost:12345"
+basePath: "/darpa/aske"
+tags:
+- name: "K-CHAIN Model Services"
+  externalDocs:
+    description: "Part of GE DARPA ASKE program"
+    url: "https://github.com/GEGlobalResearch/DARPA-ASKE-TA1"
+
+paths:
+  /kchain/build:
+    post:
+      tags:
+      - "K-CHAIN"
+      summary: "Builds a K-CHAIN model for given input and output variables "
+      operationId: "kchain_app.build"
+      consumes:
+      - application/json
+      produces:
+      - application/json
+      parameters:
+      - in: "body"
+        name: "body"
+        required: true
+        schema:
+          $ref: "#/definitions/build_in"
+      responses:
+        200:
+          description: "success"
+          schema:
+            $ref: "#/definitions/build_out"
+  
+  /kchain/append:
+    post:
+      tags:
+      - "K-CHAIN"
+      summary: "Appends a K-CHAIN submodel with given input and output variables to target K-CHAIN model"
+      operationId: "kchain_app.append"
+      consumes:
+      - application/json
+      produces:
+      - application/json
+      parameters:
+      - in: "body"
+        name: "body"
+        required: true
+        schema:
+          $ref: "#/definitions/append_in"
+      responses:
+        200:
+          description: "success"
+          schema:
+            $ref: "#/definitions/append_out"
+            
+  /kchain/evaluate:
+    post:
+      tags:
+      - "K-CHAIN"
+      summary: "Runs a K-CHAIN model for given input variables and creates output values in forward mode and if certain output values are provided, then solves inverse problem and returns input values for variables of interest"
+      operationId: "kchain_app.evaluate"
+      consumes:
+      - application/json
+      produces:
+      - application/json
+      parameters:
+      - in: "body"
+        name: "body"
+        required: true
+        schema:
+          $ref: "#/definitions/evaluate_in"
+      responses:
+        200:
+          description: "success"
+          schema:
+            $ref: "#/definitions/evaluate_out"
+
+  /kchain/evaluateGrad:
+    post:
+      tags:
+      - "K-CHAIN"
+      summary: "Evaluates Jacobian at input values for input-output variables of interest"
+      operationId: "kchain_app.evaluateGrad"
+      consumes:
+      - application/json
+      produces:
+      - application/json
+      parameters:
+      - in: "body"
+        name: "body"
+        required: true
+        schema:
+          $ref: "#/definitions/evaluate_in"
+      responses:
+        200:
+          description: "success"
+          schema:
+            $ref: "#/definitions/evaluateGrad_out"
+            
+definitions:
+  build_in:
+    type: "object"
+    required:
+    - "inputVariables" 
+    - "outputVariables"
+    - "modelName"
+    properties:
+      inputVariables:
+        type: "array"
+        items: 
+          $ref: "#/definitions/variable"
+      outputVariables:
+        type: "array"
+        items: 
+          $ref: "#/definitions/variable"
+      dataLocation:
+        type: "string"
+      equationModel:
+        type: "string"
+      modelName:
+        type: "string"
+  
+  build_out:
+    type: "object"
+    required:
+    - "modelType"
+    - "trainedState"
+    - "metagraphLocation"
+    properties:
+      modelType:
+        type: "string"
+      trainedState:
+        type: "boolean"
+      metagraphLocation:
+        type: "string"
+  
+  append_in:
+    type: "object"
+    required:
+    - "inputVariables" 
+    - "outputVariables"
+    - "modelName"
+    properties:
+      inputVariables:
+        type: "array"
+        items: 
+          $ref: "#/definitions/variable"
+      outputVariables:
+        type: "array"
+        items: 
+          $ref: "#/definitions/variable"
+      dataLocation:
+        type: "string"
+      equationModel:
+        type: "string"
+      modelName:
+        type: "string"
+      targetModelName:
+        type: "string"
+  
+  append_out:
+    type: "object"
+    required:
+    - "modelType"
+    - "metagraphLocation"
+    properties:
+      modelType:
+        type: "string"
+      metagraphLocation:
+        type: "string"
+        
+  evaluate_in:
+    type: "object"
+    required:
+    - "inputVariables" 
+    - "outputVariables"
+    - "modelName"
+    properties:
+      inputVariables:
+        type: "array"
+        items: 
+          $ref: "#/definitions/variable"
+      outputVariables:
+        type: "array"
+        items: 
+          $ref: "#/definitions/variable"
+      modelName:
+        type: "string"
+  
+  evaluate_out:
+    type: "object"
+    required:
+    - "outputVariables"
+    properties:
+      outputVariables:
+        type: "array"
+        items: 
+          $ref: "#/definitions/variable"
+      inputVariables:
+        type: "array"
+        items: 
+          $ref: "#/definitions/variable"
+      defaultsUsed:
+        type: "array"
+        items: 
+          $ref: "#/definitions/dvariable"
+      missingVar:
+        type: "string"
+      error:
+        type: "string"
+  
+  evaluateGrad_out:
+    type: "object"
+    required: 
+    - "jacobian"
+    properties:
+      jacobian:
+        type: "array"
+        items:
+          type: "array"
+          items:
+            type: "number"
+      errorMessage:
+        type: "string"
+          
+      
+        
+  variable:
+    type: "object"
+    required:
+    - "name"
+    - "type"
+    properties:
+      name:
+        type: "string"
+      type:
+        type: "string"
+      value:
+        type: "string"
+      minValue:
+        type: "string"
+      maxValue:
+        type: "string"
+      unit:
+        type: "string"
+  
+  dvariable:
+    type: "object"
+    required:
+    - "name"
+    - "value"
+    properties:
+      name:
+        type: "string"
+      type:
+        type: "string"
+      value:
+        type: "string"
+      unit:
+        type: "string"
