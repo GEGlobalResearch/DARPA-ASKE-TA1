@@ -1,4 +1,4 @@
-FROM docker.elastic.co/elasticsearch/elasticsearch:7.4.0 AS builder
+FROM elasticsearch:7.6.2 AS builder
 COPY --chown=elasticsearch:elasticsearch elasticsearch.yml /usr/share/elasticsearch/config/
 
 # Install Pip package first
@@ -20,7 +20,7 @@ RUN pip install elasticsearch-loader
 
 # Add wikidata extract and loading script to image
 ADD load.sh /tmp/load.sh
-ADD all-terms-wikidata.json /tmp/wikidata.json
+ADD wikidata_entity_labels_04022020.csv /tmp/wikidata_entity_labels_04022020.csv
 
 # Launch container in detached mode and load wikidata extract into Elasticsearch index called 'wikidata'
 RUN time /usr/local/bin/docker-entrypoint.sh elasticsearch -d -E path.data=/tmp/data -E path.logs=/tmp/logs \
@@ -29,6 +29,6 @@ RUN time /usr/local/bin/docker-entrypoint.sh elasticsearch -d -E path.data=/tmp/
 		&& /tmp/load.sh
 
 # Build image of elastic search with data path pre-populated as above
-FROM docker.elastic.co/elasticsearch/elasticsearch:7.4.0
+FROM elasticsearch:7.6.2
 COPY --chown=elasticsearch:elasticsearch elasticsearch.yml /usr/share/elasticsearch/config/
 COPY --from=builder /tmp/data/ /esdata/

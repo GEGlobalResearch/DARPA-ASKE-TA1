@@ -49,6 +49,7 @@ class Config:
     # synonyms will be provided as 'pipe' | separated values
     UnitsSynonymURIList = ''
     UnitsOntologyGraphURI = ''
+    AutomatesServiceURL = ''
 
     def __init__(self, config_file_path):
         config = configparser.ConfigParser()
@@ -61,3 +62,4 @@ class Config:
         self.UnitsOntologyPath = config["DEFAULT"]["UnitsOntologyPath"]
         self.UnitsSynonymURIList = config["DEFAULT"]["UnitsSynonymURIList"]
         self.UnitsOntologyGraphURI = config["DEFAULT"]["UnitsOntologyGraphURI"]
+        self.AutomatesServiceURL = config["DEFAULT"]["AutomatesServiceURL"]

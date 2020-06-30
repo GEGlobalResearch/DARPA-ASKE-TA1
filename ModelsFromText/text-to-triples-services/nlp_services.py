@@ -38,6 +38,35 @@
 
 import json
 import requests
+import re
+
+
+def get_sentences(nlp_service_url: str,  text: str):
+    payload = {'text': text}
+    text_to_sentence_service_url = nlp_service_url + '/breakTextIntoSentences'
+    r = requests.get(text_to_sentence_service_url, params=payload)
+    sentences = []
+    sentences.extend(r.json())
+    return sentences
+
+
+def get_tokens(nlp_service_url: str, text: str):
+    payload = {'text': text}
+    get_tokens_service_url = nlp_service_url + '/lemmatize'
+    r = requests.get(get_tokens_service_url, params=payload)
+    tokens = []
+    tokens.extend(r.json())
+    return tokens
+
+
+def get_noun_chunks_dict(nlp_service_url: str, sent: str):
+    input_info = {'phraseType': ['NP'], 'text': sent}
+    headers = {'Content-Type': 'application/json'}
+    get_chunks_service_url = nlp_service_url + '/chunkSelPhraseTypePOST'
+    input_info_json = (json.dumps(input_info))
+    r = requests.post(get_chunks_service_url, input_info_json, headers=headers)
+    response = r.json()
+    return response
 
 
 def get_noun_chunks(nlp_service_url: str, sent: str):
@@ -54,5 +83,19 @@ def get_noun_chunks(nlp_service_url: str, sent: str):
     phrases = []
     for chunk_obj in response:
         if 'phrase' in chunk_obj:
-            phrases.append(chunk_obj['phrase'])
+            phrase_str = chunk_obj['phrase']
+            phrase_tokens = re.split('and |times |on ', phrase_str)
+            for p_str in phrase_tokens:
+                phrases.append(p_str)
     return phrases
+
+
+# TODO: Split on and, times etc.
+def get_phrase_tokens(phrase_str: str):
+    split_terms = get_split_terms()
+    for term in split_terms:
+        phrase_tokens = phrase_str.split('and')
+
+
+def get_split_terms():
+    return ['times', 'and']
