@@ -3,6 +3,7 @@ import json
 import os
 import subprocess
 import uuid
+import urllib.parse
 
 from flask import request
 
@@ -26,7 +27,19 @@ def translate(javaFilename, pythonFilename):
 
     status = True
     try:
-        subprocess.check_output(['j2py -k ' + javaFilename + ' ' + pythonFilename], stderr=subprocess.STDOUT, shell=True)
+        subprocess.check_output(['dos2unix ' + javaFilename], stderr=subprocess.STDOUT, shell=True)
+    except subprocess.CalledProcessError as e:
+        print("Error in running dos2unix on input Java file: {0}".format(e))
+        status = False
+
+    try:
+        subprocess.check_output(['iconv -o ' + javaFilename + '.new -f utf8 -t ascii//TRANSLIT//IGNORE ' + javaFilename], stderr=subprocess.STDOUT, shell=True)
+    except subprocess.CalledProcessError as e:
+        print("Error in running iconv on input Java file: {0}".format(e))
+        status = False
+
+    try:
+        subprocess.check_output(['j2py -k ' + javaFilename + '.new ' + pythonFilename], stderr=subprocess.STDOUT, shell=True)
     except subprocess.CalledProcessError as e:
         print("Error in translation to Python 2: {0}".format(e))
         status = False
@@ -61,7 +74,7 @@ def translateMethod(javaMethod):
 
     infilename, outfilename = createFilenames(generateUUID())
     with open(infilename, 'wt', encoding='utf-8') as file:
-        file.write(javaText)
+        file.write(urllib.parse.unquote(javaText))
     
     if translate(infilename, outfilename):
         outfile = open(outfilename)
@@ -85,7 +98,7 @@ def translateExpression(javaExpr):
 
     infilename, outfilename = createFilenames(generateUUID())
     with open(infilename, 'wt', encoding='utf-8') as file:
-        file.write(javaText)
+        file.write(urllib.parse.unquote(javaText))
 
     if translate(infilename, outfilename):
         outfile = open(outfilename)
