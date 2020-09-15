@@ -2382,11 +2382,13 @@ class Mach(object):
 						cmt = cmt.substring(0, endCmt);
 					}
 					int end = cmt.length() - 1;
-					do {
-						c = cmt.charAt(end--);
-					} while (Character.isWhitespace(c) || c == '*' || c == '/' || c == '.');
-					if (end < cmt.length() - 1) {
-						cmt = cmt.substring(0, end + 2);
+					if (end > 0) {
+						do {
+							c = cmt.charAt(end--);
+						} while (end >= 0 && Character.isWhitespace(c) || c == '*' || c == '/' || c == '.');
+						if (end < cmt.length() - 1) {
+							cmt = cmt.substring(0, end + 2);
+						}
 					}
 					return cmt;
 				}	
