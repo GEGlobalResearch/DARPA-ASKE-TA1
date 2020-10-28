@@ -38,6 +38,7 @@ package com.ge.research.sadl.darpa.aske.processing.imports;
 
 import java.io.File;
 import java.io.IOException;
+import java.net.MalformedURLException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -738,26 +739,45 @@ public class TextProcessor {
 				String format = saveGraphResults[1];
 				String serializedGraph = saveGraphResults[2];
 				if (serializedGraph != null) {
-					System.out.println("Graph extracted:\n" + serializedGraph);	// debug only
-					try {
-						OntModel newModel = getTextModelConfigMgr().getOntModel(modelName, serializedGraph, Scope.INCLUDEIMPORTS, format);
+					theModel = serializedOwlModelToOntModel(modelName, serializedGraph, format);			
+				}
+			}
+		}
+		return theModel;
+	}
+	
+	public OntModel getDomainModelFromText(String modelName, String format, String text) throws MalformedURLException {
+		String serviceBaseUri = getPreference(DialogPreferences.ANSWER_TEXT_SERVICE_BASE_URI.getId());
+		TextProcessingServiceInterface tpsi = new TextProcessingServiceInterface(serviceBaseUri);
+		String[] results =  tpsi.textToOntology(modelName + "#", format, text);
+		if (results != null && results.length == 2 && results[1] != null) {
+			String format2 = results[0];
+			String serializedGraph = results[1];
+			if (serializedGraph != null) {
+				OntModel theModel = serializedOwlModelToOntModel(modelName, serializedGraph, format.toUpperCase());	
+				return theModel;
+			}
+		}
+		return null;
+	}
+
+	public OntModel serializedOwlModelToOntModel(String modelName, String serializedGraph, String format) {
+//		System.out.println("Graph extracted:\n" + serializedGraph);	// debug only
+		try {
+			OntModel newModel = getTextModelConfigMgr().getOntModel(modelName, serializedGraph, Scope.INCLUDEIMPORTS, format);
 //								logger.debug("The new model:");
 //								newModel.write(System.err, "N3");
 //						theModel = getCurationManager().getExtractionProcessor().getTextModel();
 //								logger.debug("The existing model:");
 //								theModel.write(System.err, "N3");
 //						theModel.add(newModel);
-						theModel = newModel;
-					}
-					catch (Exception e) {
-						logger.debug("Failed to read triples into OntModel: " + e.getMessage());
-						logger.debug(serializedGraph);
-					}
-					
-				}
-			}
+			return newModel;
 		}
-		return theModel;
+		catch (Exception e) {
+			logger.debug("Failed to read triples into OntModel: " + e.getMessage());
+			logger.debug(serializedGraph);
+		}
+		return null;
 	}
 
 }

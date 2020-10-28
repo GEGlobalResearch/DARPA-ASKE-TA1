@@ -466,7 +466,10 @@ public class AnswerCurationManager {
 				setDomainModelName(domainModelName);
 				OntModel domainModel = OntModelProvider.find(((IDialogAnswerProvider)dap).getResource());
 				setDomainModel(domainModel);
-//				System.out.println(domainModel);
+				if (verboseExtraction()) {
+					System.out.println("Domain model:");
+					domainModel.write(System.out, "N3");
+				}
 			}
 		}
 		
@@ -829,6 +832,15 @@ public class AnswerCurationManager {
 			originalScript = Boolean.parseBoolean(str);
 		}
 		return originalScript;
+	}
+	
+	private boolean verboseExtraction() {
+		boolean verboseExtraction = false;
+		String str = getPreference(DialogPreferences.VERBOSE_EXTRACTION.getId());
+		if (str != null) {
+			verboseExtraction = Boolean.parseBoolean(str);
+		}
+		return verboseExtraction;
 	}
 
 	private IReasoner getInitializedTextModelReasoner() throws ConfigurationException, ReasonerNotFoundException {
@@ -2077,6 +2089,20 @@ public class AnswerCurationManager {
 		return null;
 	}
 	
+	/**
+	 * Method to get an OntModel of equations and concepts from a specific piece of text using the domain ontology as context
+	 * @param identifier
+	 * @param content
+	 * @param locality
+	 * @param domainModelName
+	 * @param prefix
+	 * @param addToTextModel
+	 * @param notifyUser
+	 * @return
+	 * @throws IOException
+	 * @throws ConfigurationException
+	 * @throws AnswerExtractionException
+	 */
 	private OntModel getOntModelFromText(String identifier, String content, String locality, 
 			String domainModelName, String prefix, boolean addToTextModel, boolean notifyUser) 
 					throws IOException, ConfigurationException, AnswerExtractionException {
@@ -2099,6 +2125,27 @@ public class AnswerCurationManager {
 		OntModel txtModel = tp.getOntModelFromText(identifier, content, locality, domainModelName, prefix , addToTextModel, notifyUser);
 		String cgResponse = tp.clearGraph(locality);
 		return txtModel;
+	}
+	
+	/**
+	 * Method to extract a domain ontology from text
+	 * @param identifier
+	 * @param content
+	 * @param locality
+	 * @param domainModelName
+	 * @param prefix
+	 * @param AddToTextModel
+	 * @param notifyUser
+	 * @return
+	 * @throws IOException
+	 * @throws ConfigurationException
+	 */
+	private OntModel getDomainOntologyFromText(String identifier, String textContent, String locality,
+			String domainModelName, String prefix, boolean addToTextModel, boolean notifyUser) throws IOException, ConfigurationException {
+		// Note: this service does not currently use the existing domain ontology so there is no need to upload it
+		TextProcessor tp = getExtractionProcessor().getTextProcessor();
+		OntModel theModel = tp.getDomainModelFromText(domainModelName, "n3", textContent);
+		return theModel;
 	}
 
 	private boolean equationVariableContextHasBeenCached(String name, String locality) {
@@ -2716,20 +2763,20 @@ public class AnswerCurationManager {
 													}
 												}
 											}
-											Object stmts = extractions.get(0);
-											String retVal = null;
-											if (stmts instanceof List<?>) {
-												int size = ((List<?>)stmts).size();
-												List<String> semTypes = new ArrayList<String>();
-												for (int i = 0; i < size; i++) {
-													String stmt = ((List<?>)stmts).get(i).toString();
-													if (stmt.startsWith("\"")) {
-														stmt = stmt.trim();
-													}
-													semTypes.add(stmt);
-												}
-												return semTypes;
-											}
+//											Object stmts = extractions.get(0);
+//											String retVal = null;
+//											if (stmts instanceof List<?>) {
+//												int size = ((List<?>)stmts).size();
+//												List<String> semTypes = new ArrayList<String>();
+//												for (int i = 0; i < size; i++) {
+//													String stmt = ((List<?>)stmts).get(i).toString();
+//													if (stmt.startsWith("\"")) {
+//														stmt = stmt.trim();
+//													}
+//													semTypes.add(stmt);
+//												}
+//												return semTypes;
+//											}
 										}
 									}
 								} catch (AnswerExtractionException e) {
@@ -3589,11 +3636,19 @@ public class AnswerCurationManager {
 							String aggregatedComments = getExtractionProcessor().getCodeExtractor().getAggregatedComments();
 							String inputIdentifier = "from comments";
 							String modelPrefix = "cmts";
-							OntModel commentModel = getOntModelFromText(inputIdentifier, aggregatedComments, getLocalityURI(), getDomainModelName(), modelPrefix, false, false);
+							OntModel commentModel;
+							
+							boolean useDomainOntologyService = true;
+							if (useDomainOntologyService ) {
+								commentModel = getDomainOntologyFromText(inputIdentifier, aggregatedComments, getLocalityURI(), getDomainModelName(), modelPrefix, false, false);
+							}
+							else {
+								commentModel = getOntModelFromText(inputIdentifier, aggregatedComments, getLocalityURI(), getDomainModelName(), modelPrefix, false, false);
+							}
 							if (commentModel != null) {
 								// find concepts that need to be added to the ontology. 
 								// Insert them before the extraction and abort the extraction, leaving it to be handled with the new domain ontology
-								List<String> newSadlStatements = getNewOntologyConceptsAsSadlStatements(commentModel);
+								List<String> newSadlStatements = getNewOntologyConceptsAsSadlStatements(commentModel, useDomainOntologyService);
 								if (newSadlStatements != null) {
 									for (int i = 0; i < newSadlStatements.size(); i++) {
 										String sd = newSadlStatements.get(i);
@@ -3674,41 +3729,156 @@ public class AnswerCurationManager {
 		return "Suspended extraction completed";
 	}
 	
-	private List<String> getNewOntologyConceptsAsSadlStatements(OntModel commentModel) {
+	private List<String> getNewOntologyConceptsAsSadlStatements(OntModel ttoModel, boolean fromDomainOntologyService) {
+		if (verboseExtraction()) {
+			if (fromDomainOntologyService) {
+				System.out.println("Model domain model additions extracted from textToOntology service");
+			}
+			else {
+				System.out.println("Model domain model additions extracted from text2Triples service");
+			}
+			ttoModel.write(System.err, "N3");
+		}
 		List<String> results = null;
-		if (commentModel != null) {
-			// find all of the triples with seeAlso as property
-			StmtIterator saitr = commentModel.listStatements(null, RDFS.seeAlso, (RDFNode)null);
-			while (saitr.hasNext()) {
-				Statement sastmt = saitr.nextStatement();
-				Resource subj = sastmt.getSubject();
-				if (!subj.isURIResource()) {
-					// only propose named Concepts for the domain ontoloyg
-					break;
+		if (ttoModel != null) {
+			OntModel dm = getDomainModel();
+			if (fromDomainOntologyService) {
+				// from textToOntology service
+				ExtendedIterator<OntClass> clsitr = ttoModel.listClasses();
+				while (clsitr.hasNext()) {
+					boolean alreadyDomainConcept = false;
+					String superClsStr = null;
+					String unitstr = null;
+					
+					String pstr = null;
+					String rngstr = null;
+					StringBuilder sb = new StringBuilder();
+					OntClass cls = clsitr.next();
+					String clsstr = checkForKeyword(cls.getLocalName());
+					if (dm.getOntResource(getDomainModelName() + "#" + cls.getLocalName()) != null) {
+						if (verboseExtraction()) System.out.println(clsstr + " is already a domain concept");
+						alreadyDomainConcept = true;
+					}
+					else {
+						ExtendedIterator<Ontology> ontitr = dm.listOntologies();
+						while (ontitr.hasNext()) {
+							Ontology ont = ontitr.next();
+							if (dm.getOntResource(ont.getURI() + "#" + cls.getLocalName()) != null) {
+								if (verboseExtraction()) System.out.println(clsstr + " is already a domain concept");
+								alreadyDomainConcept = true;
+								break;
+							}
+						}
+					}
+					StmtIterator superitr = ttoModel.listStatements(cls, RDFS.subClassOf, (RDFNode)null);
+					if (superitr.hasNext()) {
+						while (superitr.hasNext()) {
+							RDFNode supercls = superitr.nextStatement().getObject();
+							if (supercls.isResource() && supercls.asResource().isURIResource()) {
+								superClsStr = checkForKeyword(supercls.asResource().getLocalName());
+								if (verboseExtraction()) System.out.println(clsstr + " is a type of " + superClsStr);
+								if (supercls.asResource().getURI().equals(SadlConstants.SADL_IMPLICIT_MODEL_UNITTEDQUANTITY_URI)) {
+									StmtIterator unitItr = ttoModel.listStatements(cls, ttoModel.getProperty(SadlConstants.SADL_IMPLICIT_MODEL_UNIT_URI), (RDFNode)null);
+									if (unitItr.hasNext()) {
+										while (unitItr.hasNext()) {
+											RDFNode unit = unitItr.nextStatement().getObject();
+											if (unit.isLiteral()) {
+												unitstr = unit.asLiteral().getValue().toString();
+												if (verboseExtraction()) System.out.println("unit of " + clsstr + " always has value \"" + unitstr + "\"");
+											}
+										}
+									}
+								}
+							}
+						}
+					}
+					else {
+						if (verboseExtraction()) System.out.println(clsstr + " is a class");
+					}
+					StmtIterator propItr = ttoModel.listStatements(null, RDFS.domain, cls);
+					while (propItr.hasNext()) {
+						Resource p = propItr.nextStatement().getSubject();
+						pstr = checkForKeyword(p.getLocalName());
+						StmtIterator rngItr = ttoModel.listStatements(p, RDFS.range, (RDFNode)null);
+						while (rngItr.hasNext()) {
+							RDFNode rng = rngItr.next().getObject();
+							if (rng.isURIResource()) {
+								rngstr = checkForKeyword(rng.asResource().getLocalName());
+								if (verboseExtraction()) System.out.println(clsstr + " is described by " + pstr + " with values of type " + rngstr);
+							}
+						}
+					}
+					if (!alreadyDomainConcept) {
+// TODO this could be more sophisticated by looking to see if this model has more information about the class than exists in the domain ontology.
+						sb.append(clsstr);
+						if (superClsStr == null) {
+							sb.append(" is a class");
+						}
+						else {
+							sb.append(" is a type of ");
+							sb.append(superClsStr);
+						}
+						if (pstr != null) {
+							sb.append(", described by ");
+							sb.append(pstr);
+							if (rngstr != null) {
+								sb.append(" with values of type ");
+								sb.append(rngstr);
+							}
+						}
+						sb.append(".");
+						if (unitstr != null) {
+							sb.append(System.lineSeparator());
+							sb.append("unit of ");
+							sb.append(clsstr);
+							sb.append(" always has value \"");
+							sb.append(unitstr);
+							sb.append("\".");
+						}
+						if (results == null) {
+							results = new ArrayList<String>();
+							results.add("\"The following domain ontology contribution was extracted from code comments:\"");
+						}
+						results.add(sb.toString());
+					}
 				}
-				StmtIterator mcpitr = commentModel.listStatements(subj, commentModel.getProperty(MATCHINGCLASS_PROPERTY_URI), (RDFNode)null);
-				if (mcpitr.hasNext()) {
-					// there's a matchingClass so this is already in the domain ontology
-					break;
+					
+			}
+			else {
+				// from text2triples service
+				// find all of the triples with seeAlso as property
+				StmtIterator saitr = ttoModel.listStatements(null, RDFS.seeAlso, (RDFNode)null);
+				while (saitr.hasNext()) {
+					Statement sastmt = saitr.nextStatement();
+					Resource subj = sastmt.getSubject();
+					if (!subj.isURIResource()) {
+						// only propose named Concepts for the domain ontoloyg
+						break;
+					}
+					StmtIterator mcpitr = ttoModel.listStatements(subj, ttoModel.getProperty(MATCHINGCLASS_PROPERTY_URI), (RDFNode)null);
+					if (mcpitr.hasNext()) {
+						// there's a matchingClass so this is already in the domain ontology
+						break;
+					}
+					StmtIterator mppitr = ttoModel.listStatements(subj, ttoModel.getProperty(MATCHINGPROPERTY_PROPERTY_URI), (RDFNode)null);
+					if (mppitr.hasNext()) {
+						// there's a metchingProperty so this is already in the domain ontology
+						break;
+					}
+					if (results == null) {
+						results = new ArrayList<String>();
+						results.add("\"The following classes are suggested for the domain model:\"");
+					}
+					String subjStr = subj.getLocalName();
+					subjStr = subjStr.substring(0,1).toUpperCase() + subjStr.substring(1);
+					StringBuilder sb = new StringBuilder();
+					sb.append(checkForKeyword(subjStr));
+					sb.append(" (see \"");
+					sb.append(checkForKeyword(sastmt.getObject().asResource().getURI()));
+					sb.append("\")");
+					sb.append(" is a type of ScientificConcept.");
+					results.add(sb.toString());
 				}
-				StmtIterator mppitr = commentModel.listStatements(subj, commentModel.getProperty(MATCHINGPROPERTY_PROPERTY_URI), (RDFNode)null);
-				if (mppitr.hasNext()) {
-					// there's a metchingProperty so this is already in the domain ontology
-					break;
-				}
-				if (results == null) {
-					results = new ArrayList<String>();
-					results.add("\"The following classes are suggested for the domain model:\"");
-				}
-				String subjStr = subj.getLocalName();
-				subjStr = subjStr.substring(0,1).toUpperCase() + subjStr.substring(1);
-				StringBuilder sb = new StringBuilder();
-				sb.append(checkForKeyword(subjStr));
-				sb.append(" (see \"");
-				sb.append(checkForKeyword(sastmt.getObject().asResource().getURI()));
-				sb.append("\")");
-				sb.append(" is a type of ScientificConcept.");
-				results.add(sb.toString());
 			}
 		}
 		return results;
@@ -5223,8 +5393,7 @@ public class AnswerCurationManager {
 	private static String centerString (int width, String s) {
 	    return String.format("%-" + width  + "s", String.format("%" + (s.length() + (width - s.length()) / 2) + "s", s));
 	}
-	
-	
+
 	private String addResultsToDialog(ResultSet rs) {
 		StringBuilder sb = new StringBuilder();
 		if (rs != null && rs.getRowCount() > 0) {

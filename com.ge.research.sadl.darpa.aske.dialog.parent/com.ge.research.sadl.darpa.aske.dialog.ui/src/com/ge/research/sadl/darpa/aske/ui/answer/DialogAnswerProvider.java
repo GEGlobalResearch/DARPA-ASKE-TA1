@@ -548,7 +548,8 @@ public class DialogAnswerProvider extends BaseDialogAnswerProvider {
 										String rightAfter = document.get(loc,lineSepLen);
 										if (rightAfter.startsWith(".") || rightAfter.startsWith("?")) {
 											loc++;
-											if(loc + lineSepLen <= docLength) {
+//											if(loc + lineSepLen <= docLength) {
+											if (loc + lineSepLen <= docLength) {
 												rightAfter = document.get(loc, lineSepLen);
 											}
 										}

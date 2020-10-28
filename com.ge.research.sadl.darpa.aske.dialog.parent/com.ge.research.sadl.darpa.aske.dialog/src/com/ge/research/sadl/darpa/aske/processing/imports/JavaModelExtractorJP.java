@@ -1283,6 +1283,7 @@ public class JavaModelExtractorJP implements IModelFromCodeExtractor {
 			else {
 				logger.debug("Found comment but range not known");
 			}
+			this.aggregatedComments.append(" ");		// make sure there are spaces between the comments.
 			this.aggregatedComments.append(preProcessCommentForAggregation(cmt));
 		}
 	}
@@ -1341,6 +1342,25 @@ public class JavaModelExtractorJP implements IModelFromCodeExtractor {
 				}
 			}
 			return c;
+		}
+		else if (cmt instanceof BlockComment) {
+			String c = ((BlockComment)cmt).getContent();
+			String[] lines = c.split("\\r?\\n");
+			StringBuilder sb = new StringBuilder();
+			int cntr = 0;
+			for (String line : lines) {
+				line = line.trim();
+				if (line.startsWith("*")) {
+					line = line.substring(1).trim();
+				}
+				if (line.length() > 0) {
+					if (cntr++ > 0) {
+						sb.append(" ");
+					}
+					sb.append(minusRemovals(line));
+				}
+			}
+			return sb.toString();
 		}
 		return cmt.toString();
 	}
