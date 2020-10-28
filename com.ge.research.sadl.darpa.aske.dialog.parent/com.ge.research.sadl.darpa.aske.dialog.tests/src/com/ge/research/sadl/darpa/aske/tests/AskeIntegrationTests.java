@@ -1,12 +1,12 @@
 package com.ge.research.sadl.darpa.aske.tests;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
 
+import org.apache.jena.ontology.OntModel;
 import org.eclipse.emf.ecore.resource.Resource;
 import org.eclipse.jdt.core.compiler.InvalidInputException;
 import org.junit.Before;
@@ -19,20 +19,19 @@ import org.slf4j.LoggerFactory;
 import com.ge.research.sadl.builder.ConfigurationManagerForIdeFactory;
 import com.ge.research.sadl.builder.IConfigurationManagerForIDE;
 import com.ge.research.sadl.darpa.aske.curation.AnswerCurationManager;
-import com.ge.research.sadl.darpa.aske.curation.DialogAnswerProviderConsoleForTest;
 import com.ge.research.sadl.darpa.aske.curation.AnswerCurationManager.Agent;
 import com.ge.research.sadl.darpa.aske.curation.AnswerCurationManager.SaveAsSadl;
+import com.ge.research.sadl.darpa.aske.curation.DialogAnswerProviderConsoleForTest;
 import com.ge.research.sadl.darpa.aske.processing.DialogConstants;
 import com.ge.research.sadl.darpa.aske.processing.IDialogAnswerProvider;
 import com.ge.research.sadl.darpa.aske.processing.SaveContent;
 import com.ge.research.sadl.darpa.aske.processing.imports.AnswerExtractionException;
-import com.ge.research.sadl.darpa.aske.processing.imports.KChainServiceInterface;
+import com.ge.research.sadl.reasoner.AmbiguousNameException;
 import com.ge.research.sadl.reasoner.ConfigurationException;
 import com.ge.research.sadl.reasoner.InvalidNameException;
 import com.ge.research.sadl.reasoner.QueryCancelledException;
 import com.ge.research.sadl.reasoner.QueryParseException;
 import com.ge.research.sadl.reasoner.ReasonerNotFoundException;
-import com.hp.hpl.jena.ontology.OntModel;
 
 public class AskeIntegrationTests {
 	private static final Logger LOGGER = LoggerFactory.getLogger(AskeIntegrationTests.class);
@@ -63,7 +62,7 @@ public class AskeIntegrationTests {
 
 	@Ignore
 	@Test
-	public void test_01() throws ConfigurationException, IOException, QueryParseException, QueryCancelledException, ReasonerNotFoundException, InvalidNameException, AnswerExtractionException, InvalidInputException {
+	public void test_01() throws ConfigurationException, IOException, QueryParseException, QueryCancelledException, ReasonerNotFoundException, InvalidNameException, AnswerExtractionException, InvalidInputException, AmbiguousNameException {
 		// remove OWL file
 		File owlF = new File(getExtractionKbRoot() + "/ExtractedModels/Mach.java.owl");	
 		if (owlF.exists()) {

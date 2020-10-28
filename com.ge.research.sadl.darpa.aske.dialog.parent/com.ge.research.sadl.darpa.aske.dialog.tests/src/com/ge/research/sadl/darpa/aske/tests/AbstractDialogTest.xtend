@@ -5,8 +5,8 @@ import com.ge.research.sadl.model.gp.Rule
 import com.ge.research.sadl.model.gp.SadlCommand
 import com.ge.research.sadl.tests.AbstractSadlTest
 import com.ge.research.sadl.tests.SadlTestAssertions
-import com.hp.hpl.jena.ontology.OntModel
 import java.util.List
+import org.apache.jena.ontology.OntModel
 import org.eclipse.emf.ecore.resource.Resource
 import org.eclipse.xtext.resource.XtextResource
 import org.eclipse.xtext.testing.InjectWith

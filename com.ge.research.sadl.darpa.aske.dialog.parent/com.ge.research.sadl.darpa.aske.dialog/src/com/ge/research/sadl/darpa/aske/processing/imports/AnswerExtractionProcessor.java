@@ -49,8 +49,8 @@ import org.slf4j.LoggerFactory;
 import com.ge.research.sadl.darpa.aske.curation.AnswerCurationManager;
 import com.ge.research.sadl.darpa.aske.preferences.DialogPreferences;
 import com.ge.research.sadl.reasoner.ResultSet;
-import com.hp.hpl.jena.ontology.Individual;
-import com.hp.hpl.jena.ontology.OntModel;
+import org.apache.jena.ontology.Individual;
+import org.apache.jena.ontology.OntModel;
 
 public class AnswerExtractionProcessor {
 	protected static final Logger logger = LoggerFactory.getLogger(AnswerExtractionProcessor.class);

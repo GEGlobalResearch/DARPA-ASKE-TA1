@@ -89,6 +89,7 @@ import com.ge.research.sadl.jena.JenaBasedSadlInferenceProcessor;
 import com.ge.research.sadl.jena.JenaBasedSadlModelProcessor;
 import com.ge.research.sadl.jena.UtilsForJena;
 import com.ge.research.sadl.model.gp.GraphPatternElement;
+import com.ge.research.sadl.model.SadlSerializationFormat;
 import com.ge.research.sadl.model.gp.Literal;
 import com.ge.research.sadl.model.gp.NamedNode;
 import com.ge.research.sadl.model.gp.Node;
@@ -97,6 +98,7 @@ import com.ge.research.sadl.model.gp.TripleElement;
 import com.ge.research.sadl.processing.OntModelProvider;
 import com.ge.research.sadl.processing.SadlConstants;
 import com.ge.research.sadl.processing.SadlInferenceException;
+import com.ge.research.sadl.reasoner.AmbiguousNameException;
 import com.ge.research.sadl.reasoner.ConfigurationException;
 import com.ge.research.sadl.reasoner.ConfigurationManager;
 import com.ge.research.sadl.reasoner.IReasoner;
@@ -112,24 +114,24 @@ import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
-import com.hp.hpl.jena.ontology.Individual;
-import com.hp.hpl.jena.ontology.OntClass;
-import com.hp.hpl.jena.ontology.OntModel;
-import com.hp.hpl.jena.ontology.OntModelSpec;
-import com.hp.hpl.jena.ontology.OntProperty;
-import com.hp.hpl.jena.ontology.OntResource;
-import com.hp.hpl.jena.query.QueryExecution;
-import com.hp.hpl.jena.query.QueryExecutionFactory;
-import com.hp.hpl.jena.query.QueryFactory;
-import com.hp.hpl.jena.query.QuerySolution;
-import com.hp.hpl.jena.query.ResultSetRewindable;
-import com.hp.hpl.jena.rdf.model.Model;
-import com.hp.hpl.jena.rdf.model.ModelFactory;
-import com.hp.hpl.jena.rdf.model.Property;
-import com.hp.hpl.jena.rdf.model.RDFNode;
-import com.hp.hpl.jena.rdf.model.Statement;
-import com.hp.hpl.jena.update.UpdateAction;
-import com.hp.hpl.jena.vocabulary.RDF;
+import org.apache.jena.ontology.Individual;
+import org.apache.jena.ontology.OntClass;
+import org.apache.jena.ontology.OntModel;
+import org.apache.jena.ontology.OntModelSpec;
+import org.apache.jena.ontology.OntProperty;
+import org.apache.jena.ontology.OntResource;
+import org.apache.jena.query.QueryExecution;
+import org.apache.jena.query.QueryExecutionFactory;
+import org.apache.jena.query.QueryFactory;
+import org.apache.jena.query.QuerySolution;
+import org.apache.jena.query.ResultSetRewindable;
+import org.apache.jena.rdf.model.Model;
+import org.apache.jena.rdf.model.ModelFactory;
+import org.apache.jena.rdf.model.Property;
+import org.apache.jena.rdf.model.RDFNode;
+import org.apache.jena.rdf.model.Statement;
+import org.apache.jena.update.UpdateAction;
+import org.apache.jena.vocabulary.RDF;
 
 /**
  * @author 212438865
@@ -1474,7 +1476,7 @@ private ResultSet[] processWhatWhenQuery(Resource resource, String queryModelFil
 		List<String> contextClassList, Individual cgq, int numOfQueries, Map<String, Map<String, List<String>>> insightsMap)
 		throws TranslationException, Exception, IOException, URISyntaxException, ConfigurationException {
 	
-	com.hp.hpl.jena.query.ResultSetRewindable eqnsResults = null;
+	org.apache.jena.query.ResultSetRewindable eqnsResults = null;
 	ResultSet eqnsResults1 = null;
 //	QueryExecution qexec = null;
 	String listOfEqns = "";
@@ -2227,7 +2229,7 @@ private void computeSensitivityAndAddToDialog(Resource resource, ConfigurationMa
 	}//assumptions satisfied
 }
 
-private String retrieveModelsAndNodes(Resource resource, String listOfEqns, Individual cgIns, List<String> contextClassList, String scriptLanguage, int numOfQueries, int modelNum) throws SadlInferenceException, ConfigurationException, ReasonerNotFoundException, InvalidNameException, QueryParseException, QueryCancelledException {
+private String retrieveModelsAndNodes(Resource resource, String listOfEqns, Individual cgIns, List<String> contextClassList, String scriptLanguage, int numOfQueries, int modelNum) throws SadlInferenceException, ConfigurationException, ReasonerNotFoundException, InvalidNameException, QueryParseException, QueryCancelledException, AmbiguousNameException {
 	long startTime;
 	long endTime;
 	String modelsJSONString = "";
@@ -2432,7 +2434,7 @@ private void getOutputDocContextPatterns(TripleElement[] triples, List<Node> inp
 	}
 }
 
-private void inferDependencyGraph(Resource resource) throws SadlInferenceException, ConfigurationException, ReasonerNotFoundException, InvalidNameException, QueryParseException, QueryCancelledException {
+private void inferDependencyGraph(Resource resource) throws SadlInferenceException, ConfigurationException, ReasonerNotFoundException, InvalidNameException, QueryParseException, QueryCancelledException, AmbiguousNameException {
 	System.out.print("Dependency graph inference: ");
 	long startTime = System.currentTimeMillis();
 	// Insert dependency graph
@@ -2636,12 +2638,12 @@ private ResultSet[] processModelsFromDataset(Resource resource, TripleElement[] 
 	List<RDFNode> outputsList, List<String> contextClassList, Individual cgq) throws TranslationException,
 	Exception, FileNotFoundException, IOException, URISyntaxException, ConfigurationException {
 
-	com.hp.hpl.jena.query.ResultSetRewindable eqnsResults = null;
+	org.apache.jena.query.ResultSetRewindable eqnsResults = null;
 	QueryExecution qexec = null;
 	OntResource qtype;
 	OntProperty qtypeprop = getTheJenaModel().getOntProperty(METAMODEL_QUERYTYPE_PROP);
 	String listOfEqns = "";
-	com.hp.hpl.jena.query.ResultSetRewindable models, nodes;
+	org.apache.jena.query.ResultSetRewindable models, nodes;
 	String modelsJSONString = "";
 	String nodesJSONString = "";
 	Individual cgIns = null;
@@ -2826,7 +2828,7 @@ private void getInputPatterns(TripleElement[] triples, List<TripleElement[]> inp
 	}
 }
 
-private void runInference(Resource resource, String query, String testQuery) throws SadlInferenceException, ConfigurationException, ReasonerNotFoundException, InvalidNameException, QueryParseException, QueryCancelledException {
+private void runInference(Resource resource, String query, String testQuery) throws SadlInferenceException, ConfigurationException, ReasonerNotFoundException, InvalidNameException, QueryParseException, QueryCancelledException, AmbiguousNameException {
 
 //	UpdateAction.parseExecute(query , getTheJenaModel()); // use runReasonerQuery instead
 
@@ -2859,7 +2861,7 @@ private void runInference(Resource resource, String query, String testQuery) thr
 		String sp;
 		String so;
 		String ns;
-		com.hp.hpl.jena.rdf.model.Resource sss, ssc;
+		org.apache.jena.rdf.model.Resource sss, ssc;
 		Property ssp;
 		RDFNode sso;
 		Statement jtr;
@@ -2885,7 +2887,7 @@ private void runInference(Resource resource, String query, String testQuery) thr
 
 				ssc = getInputClass(ss, contextPatterns);
 				
-				//com.hp.hpl.jena.rdf.model.Resource foo = qhmodel.getResource(ns+so+cgq.ge);
+				//org.apache.jena.rdf.model.Resource foo = qhmodel.getResource(ns+so+cgq.ge);
 				
 				// Add property to list of inputs
 //				inputsList.add(ssp);
@@ -2954,8 +2956,8 @@ private void runInference(Resource resource, String query, String testQuery) thr
 	 * @param queryModelPrefix 
 	 * @return
 	 */
-	private com.hp.hpl.jena.rdf.model.Resource getInputClass(String ss, List<TripleElement> contextPatterns) {
-		com.hp.hpl.jena.rdf.model.Resource c=null;
+	private org.apache.jena.rdf.model.Resource getInputClass(String ss, List<TripleElement> contextPatterns) {
+		org.apache.jena.rdf.model.Resource c=null;
 		Node n=null;
 		for(int i=0; i<contextPatterns.size(); i++) {
 			n = contextPatterns.get(i).getSubject();
@@ -2972,7 +2974,7 @@ private void runInference(Resource resource, String query, String testQuery) thr
 		SimpleDateFormat sdf = new SimpleDateFormat(DATE_FORMAT_NOW);
 		String time = sdf.format(cal.getTime());
 		OntResource rng = timeProperty.as(OntProperty.class).getRange();
-		com.hp.hpl.jena.rdf.model.Literal timeLiteral = SadlUtils.getLiteralMatchingDataPropertyRange(getTheJenaModel(), rng.getURI(), time);
+		org.apache.jena.rdf.model.Literal timeLiteral = SadlUtils.getLiteralMatchingDataPropertyRange(getTheJenaModel(), rng.getURI(), time);
 		ingestKGTriple(execInstance, timeProperty, timeLiteral);
 	}
 
@@ -3184,9 +3186,9 @@ private void runInference(Resource resource, String query, String testQuery) thr
 		}
 	}
 
-	private String retrieveCGforDBNSpec(Resource resource, String listOfEqns, List<String> contextClassList, Individual cgIns, String queryTemplate) throws SadlInferenceException, ConfigurationException, ReasonerNotFoundException, InvalidNameException, QueryParseException, QueryCancelledException {
+	private String retrieveCGforDBNSpec(Resource resource, String listOfEqns, List<String> contextClassList, Individual cgIns, String queryTemplate) throws SadlInferenceException, ConfigurationException, ReasonerNotFoundException, InvalidNameException, QueryParseException, QueryCancelledException, AmbiguousNameException {
 		String queryStr;
-//		com.hp.hpl.jena.query.ResultSetRewindable rset;
+//		org.apache.jena.query.ResultSetRewindable rset;
 //		ResultSet resultSet;
 		//Object[] abridgedRes = new Object[rset.size()];
 		String resStr;
@@ -3303,11 +3305,11 @@ private RDFNode getObjectAsLiteralOrResource(Node property, Node object) {
 //		return null;
 //	}
 
-	private com.hp.hpl.jena.query.ResultSetRewindable retrieveCG(Resource resource, List<RDFNode> inputsList, List<RDFNode> outputsList) throws SadlInferenceException, ConfigurationException, ReasonerNotFoundException, InvalidNameException, QueryParseException, QueryCancelledException {
-		com.hp.hpl.jena.query.ResultSet eqns;
-		com.hp.hpl.jena.query.ResultSet eqnsRes = null;
+	private org.apache.jena.query.ResultSetRewindable retrieveCG(Resource resource, List<RDFNode> inputsList, List<RDFNode> outputsList) throws SadlInferenceException, ConfigurationException, ReasonerNotFoundException, InvalidNameException, QueryParseException, QueryCancelledException {
+		org.apache.jena.query.ResultSet eqns;
+		org.apache.jena.query.ResultSet eqnsRes = null;
 		String queryStr, inpStr, outpStr;
-		com.hp.hpl.jena.query.Query qinv;
+		org.apache.jena.query.Query qinv;
 		QueryExecution qexec;
 	
 		//		//This is a roundabout way to initialize eqnsRes. There must be a better way?
@@ -3343,15 +3345,15 @@ private RDFNode getObjectAsLiteralOrResource(Node property, Node object) {
 						eqnsRes = eqns;
 					}
 					else {
-						eqnsRes = com.hp.hpl.jena.sparql.util.ResultSetUtils.union(eqnsRes, eqns);
+						eqnsRes = org.apache.jena.sparql.util.ResultSetUtils.union(eqnsRes, eqns);
 					}
 				}
 			}
 		}
-		return com.hp.hpl.jena.query.ResultSetFactory.makeRewindable(eqnsRes);
+		return org.apache.jena.query.ResultSetFactory.makeRewindable(eqnsRes);
 	}
 
-	private ResultSet retrieveCG1(Resource resource, List<RDFNode> inputsList, List<RDFNode> outputsList, boolean inverseQuery) throws SadlInferenceException, ConfigurationException, ReasonerNotFoundException, InvalidNameException, QueryParseException, QueryCancelledException {
+	private ResultSet retrieveCG1(Resource resource, List<RDFNode> inputsList, List<RDFNode> outputsList, boolean inverseQuery) throws SadlInferenceException, ConfigurationException, ReasonerNotFoundException, InvalidNameException, QueryParseException, QueryCancelledException, AmbiguousNameException {
 		String queryStr, inpStr, outpStr;
 	
 		ResultSet equations = null;
@@ -3410,7 +3412,7 @@ private RDFNode getObjectAsLiteralOrResource(Node property, Node object) {
 	
 	
 	
-	private void ingestKGTriple(com.hp.hpl.jena.rdf.model.Resource s, Property pred, RDFNode o) {
+	private void ingestKGTriple(org.apache.jena.rdf.model.Resource s, Property pred, RDFNode o) {
 		queryModel.add(s,pred,o);
 		//getTheJenaModel().add(s,pred,o);
 	}
@@ -3637,7 +3639,7 @@ private RDFNode getObjectAsLiteralOrResource(Node property, Node object) {
 
 	private ResultSet runPrologQuery(Resource resource, String query, String instanceDataURI, String queryOwlFileWithPath) throws Exception {
 		String modelFolder = getModelFolderPath(resource); //getOwlModelsFolderPath(path).toString(); 
-		final String format = ConfigurationManager.RDF_XML_ABBREV_FORMAT;
+		final String format = SadlSerializationFormat.RDF_XML_ABBREV_FORMAT;
 		IConfigurationManagerForIDE configMgr;
 
 		
@@ -3712,9 +3714,9 @@ private RDFNode getObjectAsLiteralOrResource(Node property, Node object) {
 		return rulefn;
 	}
 
-	private ResultSet runReasonerQuery(Resource resource, String query) throws SadlInferenceException, ConfigurationException, ReasonerNotFoundException, InvalidNameException, QueryParseException, QueryCancelledException {
+	private ResultSet runReasonerQuery(Resource resource, String query) throws SadlInferenceException, ConfigurationException, ReasonerNotFoundException, InvalidNameException, QueryParseException, QueryCancelledException, AmbiguousNameException {
 		String modelFolderUri = getModelFolderPath(resource); //getOwlModelsFolderPath(path).toString(); 
-		final String format = ConfigurationManager.RDF_XML_ABBREV_FORMAT;
+		final String format = SadlSerializationFormat.RDF_XML_ABBREV_FORMAT;
 		IConfigurationManagerForIDE configMgr;
 
 		
@@ -3763,9 +3765,9 @@ private RDFNode getObjectAsLiteralOrResource(Node property, Node object) {
 		return res;
 	}
 
-	private String runReasonerQueryJson(Resource resource, String query) throws SadlInferenceException, ConfigurationException, ReasonerNotFoundException, InvalidNameException, QueryParseException, QueryCancelledException {
+	private String runReasonerQueryJson(Resource resource, String query) throws SadlInferenceException, ConfigurationException, ReasonerNotFoundException, InvalidNameException, QueryParseException, QueryCancelledException, AmbiguousNameException {
 		String modelFolderUri = getModelFolderPath(resource); 
-		final String format = ConfigurationManager.RDF_XML_ABBREV_FORMAT;
+		final String format = SadlSerializationFormat.RDF_XML_ABBREV_FORMAT;
 		IConfigurationManagerForIDE configMgr;
 
 		
@@ -4194,10 +4196,10 @@ private Map<String, String> getClassUnitsMappingFromModelsJson(String json) {
 	
 	private ResultSetRewindable queryKnowledgeGraph(String queryStr, Model model) {
 		//System.out.println(queryStr);
-		com.hp.hpl.jena.query.Query qm = QueryFactory.create(queryStr);
+		org.apache.jena.query.Query qm = QueryFactory.create(queryStr);
 		QueryExecution qe = QueryExecutionFactory.create(qm, model); 
-		//com.hp.hpl.jena.query.ResultSetRewindable 
-		return com.hp.hpl.jena.query.ResultSetFactory.makeRewindable(qe.execSelect()) ;
+		//org.apache.jena.query.ResultSetRewindable 
+		return org.apache.jena.query.ResultSetFactory.makeRewindable(qe.execSelect()) ;
 	}
 
 
@@ -4334,10 +4336,10 @@ private Map<String, String> getClassUnitsMappingFromModelsJson(String json) {
 		return true;
 	}
 	
-	private String convertResultSetToString(com.hp.hpl.jena.query.ResultSetRewindable results) {
+	private String convertResultSetToString(org.apache.jena.query.ResultSetRewindable results) {
 		ByteArrayOutputStream baos = new ByteArrayOutputStream();
-		//com.hp.hpl.jena.query.ResultSetFormatter.outputAsCSV(baos, results);
-		com.hp.hpl.jena.query.ResultSetFormatter.outputAsJSON(baos, results);
+		//org.apache.jena.query.ResultSetFormatter.outputAsCSV(baos, results);
+		org.apache.jena.query.ResultSetFormatter.outputAsJSON(baos, results);
 		return new String(baos.toByteArray(), Charset.defaultCharset()).replace(System.getProperty("line.separator"), "\n");		
 	}
 

@@ -48,6 +48,17 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.jena.ontology.Individual;
+import org.apache.jena.ontology.OntClass;
+import org.apache.jena.ontology.OntModel;
+import org.apache.jena.ontology.Ontology;
+import org.apache.jena.rdf.model.Property;
+import org.apache.jena.rdf.model.RDFNode;
+import org.apache.jena.rdf.model.RDFWriter;
+import org.apache.jena.rdf.model.StmtIterator;
+import org.apache.jena.util.iterator.ExtendedIterator;
+import org.apache.jena.vocabulary.RDF;
+import org.apache.jena.vocabulary.RDFS;
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IncrementalProjectBuilder;
 import org.eclipse.core.resources.ResourcesPlugin;
@@ -134,6 +145,7 @@ import com.ge.research.sadl.model.gp.VariableNode;
 import com.ge.research.sadl.processing.OntModelProvider;
 import com.ge.research.sadl.processing.SadlConstants;
 import com.ge.research.sadl.processing.ValidationAcceptor;
+import com.ge.research.sadl.reasoner.AmbiguousNameException;
 import com.ge.research.sadl.reasoner.CircularDependencyException;
 import com.ge.research.sadl.reasoner.ConfigurationException;
 import com.ge.research.sadl.reasoner.InvalidNameException;
@@ -169,17 +181,6 @@ import com.ge.research.sadl.sADL.ValueTable;
 import com.ge.research.sadl.utils.ResourceManager;
 import com.google.common.collect.Iterables;
 import com.google.inject.Inject;
-import com.hp.hpl.jena.ontology.Individual;
-import com.hp.hpl.jena.ontology.OntClass;
-import com.hp.hpl.jena.ontology.OntModel;
-import com.hp.hpl.jena.ontology.Ontology;
-import com.hp.hpl.jena.rdf.model.Property;
-import com.hp.hpl.jena.rdf.model.RDFNode;
-import com.hp.hpl.jena.rdf.model.RDFWriter;
-import com.hp.hpl.jena.rdf.model.StmtIterator;
-import com.hp.hpl.jena.util.iterator.ExtendedIterator;
-import com.hp.hpl.jena.vocabulary.RDF;
-import com.hp.hpl.jena.vocabulary.RDFS;
 
 public class JenaBasedDialogModelProcessor extends JenaBasedSadlModelProcessor {
 	private static final Logger logger = LoggerFactory.getLogger(JenaBasedDialogModelProcessor.class);
@@ -438,6 +439,9 @@ public class JenaBasedDialogModelProcessor extends JenaBasedSadlModelProcessor {
 				} catch (IOException e2) {
 					// TODO Auto-generated catch block
 					e2.printStackTrace();
+				} catch (AmbiguousNameException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
 				}
 			}
 			
@@ -1034,7 +1038,7 @@ public class JenaBasedDialogModelProcessor extends JenaBasedSadlModelProcessor {
 						}
 						StmtIterator stmtitr = getTheJenaModel().listStatements(prop, RDFS.domain, (RDFNode)null);
 						while (stmtitr.hasNext()) {
-							com.hp.hpl.jena.rdf.model.Resource dmn = stmtitr.nextStatement().getObject().asResource();
+							org.apache.jena.rdf.model.Resource dmn = stmtitr.nextStatement().getObject().asResource();
 							if (dmn.isURIResource()) {
 								nn = new NamedNode(dmn.getURI());
 								nn.setNodeType(NodeType.ClassNode);
@@ -1060,7 +1064,7 @@ public class JenaBasedDialogModelProcessor extends JenaBasedSadlModelProcessor {
 						NodeType ntype = null;
 						boolean comparisonsFound = false;
 						OntClass theClass = getTheJenaModel().getOntClass(nn.getURI());
-						List<com.hp.hpl.jena.rdf.model.Resource> instances = new ArrayList<com.hp.hpl.jena.rdf.model.Resource>();
+						List<org.apache.jena.rdf.model.Resource> instances = new ArrayList<org.apache.jena.rdf.model.Resource>();
 						// look for at least two instances of the class 
 						instances = getInstancesOfClass(theClass, instances);
 						if (instances.size() > 1) {
@@ -1221,7 +1225,7 @@ public class JenaBasedDialogModelProcessor extends JenaBasedSadlModelProcessor {
 		List<NamedNode> relevantProperties = new ArrayList<NamedNode>();
 		StmtIterator dmnitr = getTheJenaModel().listStatements(null, RDFS.domain, cls);
 		while (dmnitr.hasNext()) {
-			com.hp.hpl.jena.rdf.model.Resource propnode = dmnitr.nextStatement().getSubject();
+			org.apache.jena.rdf.model.Resource propnode = dmnitr.nextStatement().getSubject();
 			if (propnode.isURIResource()) {
 				NamedNode objNN = new NamedNode(propnode.asResource().getURI());
 				if (objNN != null  ) {
@@ -1326,11 +1330,11 @@ public class JenaBasedDialogModelProcessor extends JenaBasedSadlModelProcessor {
 	 * @param instances
 	 * @return
 	 */
-	private List<com.hp.hpl.jena.rdf.model.Resource> getInstancesOfClass(OntClass theClass, List<com.hp.hpl.jena.rdf.model.Resource> instances) {
+	private List<org.apache.jena.rdf.model.Resource> getInstancesOfClass(OntClass theClass, List<org.apache.jena.rdf.model.Resource> instances) {
 		StmtIterator stmtitr = getTheJenaModel().listStatements(null, RDF.type, theClass);
 		if (stmtitr.hasNext()) {
 			while (stmtitr.hasNext()) {
-				com.hp.hpl.jena.rdf.model.Resource inst = stmtitr.nextStatement().getSubject();
+				org.apache.jena.rdf.model.Resource inst = stmtitr.nextStatement().getSubject();
 				if (inst.isURIResource()) {
 					// don't include unnamed instances, at least for the time being (awc 1/29/2020)
 					instances.add(inst);					
@@ -1350,8 +1354,8 @@ public class JenaBasedDialogModelProcessor extends JenaBasedSadlModelProcessor {
 	 * @param instances
 	 * @return
 	 */
-	private List<com.hp.hpl.jena.rdf.model.Resource> getLeafSubclasses(OntClass theClass,
-			List<com.hp.hpl.jena.rdf.model.Resource> instances) {
+	private List<org.apache.jena.rdf.model.Resource> getLeafSubclasses(OntClass theClass,
+			List<org.apache.jena.rdf.model.Resource> instances) {
 		ExtendedIterator<OntClass> scitr = theClass.listSubClasses();
 		while (scitr.hasNext()) {
 			OntClass sc = scitr.next();
@@ -1672,7 +1676,7 @@ public class JenaBasedDialogModelProcessor extends JenaBasedSadlModelProcessor {
 						}
 						else if (isProperty(ntype)) {
 							// return range
-							com.hp.hpl.jena.rdf.model.Resource rng = getUniquePropertyRange(((NamedNode)nmObj).getURI());
+							org.apache.jena.rdf.model.Resource rng = getUniquePropertyRange(((NamedNode)nmObj).getURI());
 							if (rng != null) {
 								nmObj = new NamedNode((String)rng.getURI(), NodeType.ClassNode);
 							}
@@ -2247,7 +2251,7 @@ public class JenaBasedDialogModelProcessor extends JenaBasedSadlModelProcessor {
 		}
 	}
 
-	protected String getOwlFilename(URI lastSeg, String format) {
+	protected String getOwlFilename(URI lastSeg, String format) throws TranslationException {
 		String owlFN = lastSeg.appendFileExtension(ResourceManager.getOwlFileExtension(format))
 				.lastSegment().toString();
 		return owlFN;
@@ -2827,14 +2831,14 @@ public class JenaBasedDialogModelProcessor extends JenaBasedSadlModelProcessor {
 	 * @return 
 	 * @return
 	 */
-	private com.hp.hpl.jena.rdf.model.Resource getUniquePropertyRange(String propUri) {
+	private org.apache.jena.rdf.model.Resource getUniquePropertyRange(String propUri) {
 		Property prop = getTheJenaModel().getProperty(propUri);
 		if (prop != null) {
 			StmtIterator rngItr = getTheJenaModel().listStatements(prop.asResource(), RDFS.range, (RDFNode)null);
 			if (rngItr.hasNext()) {
 				RDFNode rng = rngItr.nextStatement().getObject();
 				if (rng.isURIResource()) {
-					com.hp.hpl.jena.rdf.model.Resource rngrsrc = rng.asResource();
+					org.apache.jena.rdf.model.Resource rngrsrc = rng.asResource();
 					return rngrsrc;
 				}
 			}

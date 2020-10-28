@@ -54,9 +54,9 @@ import org.eclipse.swt.widgets.Group;
 import org.eclipse.xtext.ui.editor.preferences.LanguageRootPreferencePage;
 
 import com.ge.research.sadl.darpa.aske.preferences.DialogPreferences;
+import com.ge.research.sadl.model.SadlSerializationFormat;
 import com.ge.research.sadl.reasoner.ConfigurationItem;
 import com.ge.research.sadl.reasoner.ConfigurationItem.NameValuePair;
-import com.ge.research.sadl.reasoner.ConfigurationManager;
 import com.ge.research.sadl.reasoner.IConfigurationManager;
 import com.ge.research.sadl.ui.preferences.FieldEditorExtensions.BooleanFieldEditorExt;
 import com.ge.research.sadl.ui.preferences.FieldEditorExtensions.FieldEditorExt;
@@ -189,12 +189,12 @@ public class DialogRootPreferencePage extends LanguageRootPreferencePage {
 		if (retVal && isPropertyPage()) {
 			// the changes apply only to the current project
 			IPreferencesService service = Platform.getPreferencesService();
-			String format = service.getString("com.ge.research.sadl.Sadl", "OWL_Format", ConfigurationManager.RDF_XML_ABBREV_FORMAT, null);
+			String format = service.getString("com.ge.research.sadl.Sadl", "OWL_Format", SadlSerializationFormat.RDF_XML_ABBREV_FORMAT, null);
 		}
 		else {
 			// the changes apply to all projects
 			IPreferencesService service = Platform.getPreferencesService();
-			String format = service.getString("com.ge.research.sadl.Sadl", "OWL_Format", ConfigurationManager.RDF_XML_ABBREV_FORMAT, null);
+			String format = service.getString("com.ge.research.sadl.Sadl", "OWL_Format", SadlSerializationFormat.RDF_XML_ABBREV_FORMAT, null);
 			String dmyOrder = service.getString("com.ge.research.sadl.Sadl", "dmyOrder", "mdy", null);
 			String[] itemContent = new String[1];
 			itemContent[0] = IConfigurationManager.DateFormat;

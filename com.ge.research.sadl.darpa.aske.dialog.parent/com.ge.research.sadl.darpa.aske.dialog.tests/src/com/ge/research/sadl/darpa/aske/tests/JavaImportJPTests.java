@@ -47,13 +47,15 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.util.List;
 
+import org.apache.jena.ontology.OntModel;
+import org.apache.jena.rdf.model.StmtIterator;
+import org.apache.jena.vocabulary.RDF;
 import org.eclipse.emf.ecore.resource.Resource;
 import org.eclipse.jdt.core.compiler.InvalidInputException;
 import org.eclipse.xtext.diagnostics.Severity;
-import org.eclipse.xtext.resource.XtextResource;
 import org.eclipse.xtext.validation.Issue;
-import org.eclipse.xtext.xbase.lib.IterableExtensions;
 import org.eclipse.xtext.xbase.lib.Functions.Function1;
+import org.eclipse.xtext.xbase.lib.IterableExtensions;
 import org.eclipse.xtext.xbase.lib.Procedures.Procedure3;
 import org.junit.Assert;
 import org.junit.Before;
@@ -76,8 +78,8 @@ import com.ge.research.sadl.darpa.aske.processing.imports.AnswerExtractionExcept
 import com.ge.research.sadl.darpa.aske.processing.imports.IModelFromCodeExtractor;
 import com.ge.research.sadl.darpa.aske.processing.imports.JavaModelExtractorJP;
 import com.ge.research.sadl.jena.IJenaBasedModelProcessor;
-import com.ge.research.sadl.jena.JenaBasedSadlModelProcessor;
 import com.ge.research.sadl.owl2sadl.OwlImportException;
+import com.ge.research.sadl.reasoner.AmbiguousNameException;
 import com.ge.research.sadl.reasoner.ConfigurationException;
 import com.ge.research.sadl.reasoner.InvalidNameException;
 import com.ge.research.sadl.reasoner.QueryCancelledException;
@@ -85,9 +87,6 @@ import com.ge.research.sadl.reasoner.QueryParseException;
 import com.ge.research.sadl.reasoner.ReasonerNotFoundException;
 import com.ge.research.sadl.reasoner.ResultSet;
 import com.ge.research.sadl.reasoner.utils.SadlUtils;
-import com.hp.hpl.jena.ontology.OntModel;
-import com.hp.hpl.jena.rdf.model.StmtIterator;
-import com.hp.hpl.jena.vocabulary.RDF;
 
 public class JavaImportJPTests extends AbstractDialogTest {
 	private static final Logger LOGGER = LoggerFactory.getLogger(JavaImportJPTests.class);
@@ -259,7 +258,7 @@ public class JavaImportJPTests extends AbstractDialogTest {
 	}
 	
 	@Test
-	public void test_04() throws IOException, ConfigurationException, InvalidNameException, ReasonerNotFoundException, QueryParseException, QueryCancelledException, AnswerExtractionException, InvalidInputException {
+	public void test_04() throws IOException, ConfigurationException, InvalidNameException, ReasonerNotFoundException, QueryParseException, QueryCancelledException, AnswerExtractionException, InvalidInputException, AmbiguousNameException {
 		File sourceFile = new File(getCodeExtractionKbRoot() + "/ExtractedModels/Sources/Isentrop.java");
 		assertTrue(sourceFile.exists());
 		IConfigurationManagerForIDE cm = ConfigurationManagerForIdeFactory.getConfigurationManagerForIDE(getDomainProjectModelFolder(), null);
@@ -296,7 +295,7 @@ public class JavaImportJPTests extends AbstractDialogTest {
 	}
 	
 	@Test
-	public void test_05() throws IOException, ConfigurationException, OwlImportException, InvalidNameException, ReasonerNotFoundException, QueryParseException, QueryCancelledException, AnswerExtractionException, InvalidInputException {
+	public void test_05() throws IOException, ConfigurationException, OwlImportException, InvalidNameException, ReasonerNotFoundException, QueryParseException, QueryCancelledException, AnswerExtractionException, InvalidInputException, AmbiguousNameException {
 		File codeFile = new File(getCodeExtractionKbRoot() + "/ExtractedModels/Sources/Mach.java");
 		assertTrue(codeFile.exists());
 		IConfigurationManagerForIDE cm = ConfigurationManagerForIdeFactory.getConfigurationManagerForIDE(getDomainProjectModelFolder(), null);
@@ -393,7 +392,7 @@ public class JavaImportJPTests extends AbstractDialogTest {
 	}
 	
 	@Test
-	public void test_06() throws IOException, ConfigurationException, OwlImportException, InvalidNameException, ReasonerNotFoundException, QueryParseException, QueryCancelledException, AnswerExtractionException, InvalidInputException {
+	public void test_06() throws IOException, ConfigurationException, OwlImportException, InvalidNameException, ReasonerNotFoundException, QueryParseException, QueryCancelledException, AnswerExtractionException, InvalidInputException, AmbiguousNameException {
 		// remove OWL and SADL files
 		File owlF = new File(getCodeExtractionKbRoot() + "/ExtractedModels\\Mach.java.owl");
 		
@@ -439,7 +438,7 @@ public class JavaImportJPTests extends AbstractDialogTest {
 	}
 	
 	@Test
-	public void test_07() throws IOException, ConfigurationException, OwlImportException, QueryParseException, QueryCancelledException, ReasonerNotFoundException, InvalidNameException, AnswerExtractionException {
+	public void test_07() throws IOException, ConfigurationException, OwlImportException, QueryParseException, QueryCancelledException, ReasonerNotFoundException, InvalidNameException, AnswerExtractionException, AmbiguousNameException {
 		// test save command given an OWL file generated from a .dialog file is available as input.
 		File owlF = new File(getCodeExtractionKbRoot() + "\\OwlModels\\test2.dialog.owl");
 		assertTrue(owlF.exists());
@@ -464,7 +463,7 @@ public class JavaImportJPTests extends AbstractDialogTest {
 	}
 
 	@Test
-	public void test_08() throws IOException, ConfigurationException, InvalidNameException, ReasonerNotFoundException, QueryParseException, QueryCancelledException, AnswerExtractionException, InvalidInputException {
+	public void test_08() throws IOException, ConfigurationException, InvalidNameException, ReasonerNotFoundException, QueryParseException, QueryCancelledException, AnswerExtractionException, InvalidInputException, AmbiguousNameException {
 		File codeFile = new File(getCodeExtractionKbRoot() + "/ExtractedModels/Sources/Turbo.java");
 		assertTrue(codeFile.exists());
 		// remove OWL and SADL files
@@ -516,7 +515,7 @@ public class JavaImportJPTests extends AbstractDialogTest {
 	}
 
 	@Test
-	public void test_08_on_Turbo_modified() throws IOException, ConfigurationException, InvalidNameException, ReasonerNotFoundException, QueryParseException, QueryCancelledException, AnswerExtractionException, InvalidInputException {
+	public void test_08_on_Turbo_modified() throws IOException, ConfigurationException, InvalidNameException, ReasonerNotFoundException, QueryParseException, QueryCancelledException, AnswerExtractionException, InvalidInputException, AmbiguousNameException {
 		File codeFile = new File(getCodeExtractionKbRoot() + "/ExtractedModels/Sources/TurboModified2.java");
 		assertTrue(codeFile.exists());
 		// remove OWL and SADL files
@@ -568,7 +567,7 @@ public class JavaImportJPTests extends AbstractDialogTest {
 	}
 
 	@Test
-	public void test_09() throws IOException, ConfigurationException, InvalidNameException, ReasonerNotFoundException, QueryParseException, QueryCancelledException, AnswerExtractionException, InvalidInputException {
+	public void test_09() throws IOException, ConfigurationException, InvalidNameException, ReasonerNotFoundException, QueryParseException, QueryCancelledException, AnswerExtractionException, InvalidInputException, AmbiguousNameException {
 	    this.sadl(getContent(getScientificConcepts2Path())); 
 	    this.sadl(getContent(getSpeedOfSoundPath()));
 
@@ -648,7 +647,7 @@ public class JavaImportJPTests extends AbstractDialogTest {
 	}
 	
 	@Test
-	public void test_10() throws IOException, ConfigurationException, InvalidNameException, ReasonerNotFoundException, QueryParseException, QueryCancelledException, AnswerExtractionException, InvalidInputException {
+	public void test_10() throws IOException, ConfigurationException, InvalidNameException, ReasonerNotFoundException, QueryParseException, QueryCancelledException, AnswerExtractionException, InvalidInputException, AmbiguousNameException {
 		File sourceFile = new File(getCodeExtractionKbRoot() + "/ExtractedModels/Sources/TurboAnnotated.java");
 		assertTrue(sourceFile.exists());
 		
@@ -684,7 +683,7 @@ public class JavaImportJPTests extends AbstractDialogTest {
 	}
 	
 	@Test
-	public void test_11() throws ConfigurationException, IOException, InvalidNameException, ReasonerNotFoundException, QueryParseException, QueryCancelledException, AnswerExtractionException, InvalidInputException {
+	public void test_11() throws ConfigurationException, IOException, InvalidNameException, ReasonerNotFoundException, QueryParseException, QueryCancelledException, AnswerExtractionException, InvalidInputException, AmbiguousNameException {
 		String javaContent = 
 				"public class Test_11 {\r\n" + 
 				"    public double getAir(double mach, double gamma) {\r\n" + 

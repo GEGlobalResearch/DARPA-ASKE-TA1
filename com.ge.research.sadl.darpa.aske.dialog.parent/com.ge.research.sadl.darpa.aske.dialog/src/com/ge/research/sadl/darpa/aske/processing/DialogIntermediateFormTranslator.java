@@ -15,8 +15,8 @@ import com.ge.research.sadl.model.gp.TripleElement;
 import com.ge.research.sadl.reasoner.InvalidNameException;
 import com.ge.research.sadl.reasoner.InvalidTypeException;
 import com.ge.research.sadl.reasoner.TranslationException;
-import com.hp.hpl.jena.ontology.Individual;
-import com.hp.hpl.jena.ontology.OntModel;
+import org.apache.jena.ontology.Individual;
+import org.apache.jena.ontology.OntModel;
 
 public class DialogIntermediateFormTranslator extends IntermediateFormTranslator {
 
