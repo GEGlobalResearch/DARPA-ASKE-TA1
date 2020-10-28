@@ -42,13 +42,14 @@ import java.util.List;
 import java.util.Map;
 
 import com.ge.research.sadl.builder.IConfigurationManagerForIDE;
+import com.ge.research.sadl.reasoner.AmbiguousNameException;
 import com.ge.research.sadl.reasoner.ConfigurationException;
 import com.ge.research.sadl.reasoner.InvalidNameException;
 import com.ge.research.sadl.reasoner.QueryCancelledException;
 import com.ge.research.sadl.reasoner.QueryParseException;
 import com.ge.research.sadl.reasoner.ReasonerNotFoundException;
 import com.ge.research.sadl.reasoner.ResultSet;
-import com.hp.hpl.jena.ontology.OntModel;
+import org.apache.jena.ontology.OntModel;
 
 public interface IModelFromCodeExtractor {
 
@@ -91,7 +92,7 @@ public interface IModelFromCodeExtractor {
 	void setIncludeSerialization(boolean includeSerialization);
 
 	ResultSet executeSparqlQuery(String query) throws ConfigurationException, ReasonerNotFoundException, IOException,
-			InvalidNameException, QueryParseException, QueryCancelledException;
+			InvalidNameException, QueryParseException, QueryCancelledException, AmbiguousNameException;
 
 	String[] extractPythonEquationFromCodeExtractionModel(String pythonScript);
 

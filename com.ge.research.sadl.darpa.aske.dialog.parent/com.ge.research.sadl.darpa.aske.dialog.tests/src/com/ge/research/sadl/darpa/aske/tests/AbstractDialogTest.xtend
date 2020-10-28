@@ -1,20 +1,20 @@
 package com.ge.research.sadl.darpa.aske.tests
 
+import com.ge.research.sadl.SADLStandaloneSetup
 import com.ge.research.sadl.jena.IJenaBasedModelProcessor
 import com.ge.research.sadl.model.gp.Rule
 import com.ge.research.sadl.model.gp.SadlCommand
 import com.ge.research.sadl.tests.AbstractSadlTest
 import com.ge.research.sadl.tests.SadlTestAssertions
-import com.hp.hpl.jena.ontology.OntModel
 import java.util.List
+import org.apache.jena.ontology.OntModel
 import org.eclipse.emf.ecore.resource.Resource
 import org.eclipse.xtext.resource.XtextResource
 import org.eclipse.xtext.testing.InjectWith
 import org.eclipse.xtext.testing.XtextRunner
 import org.eclipse.xtext.validation.Issue
-import org.junit.runner.RunWith
 import org.junit.Before
-import com.ge.research.sadl.SADLStandaloneSetup
+import org.junit.runner.RunWith
 
 @RunWith(XtextRunner)
 @InjectWith(DialogInjectorProvider)

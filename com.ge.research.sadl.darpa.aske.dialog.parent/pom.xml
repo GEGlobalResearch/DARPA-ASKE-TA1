@@ -12,7 +12,7 @@
 		<tycho-version>1.5.1</tycho-version>
 		<xtextVersion>2.21.0</xtextVersion>
 		<mwe2Version>2.11.2</mwe2Version>
-		<sadlOsgiVersion>3.3.0</sadlOsgiVersion>
+		<sadlOsgiVersion>3.4.1</sadlOsgiVersion>
 		<sadlVersion>${sadlOsgiVersion}-SNAPSHOT</sadlVersion>
 		<dialogOsgiVersion>2.2.1</dialogOsgiVersion>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>

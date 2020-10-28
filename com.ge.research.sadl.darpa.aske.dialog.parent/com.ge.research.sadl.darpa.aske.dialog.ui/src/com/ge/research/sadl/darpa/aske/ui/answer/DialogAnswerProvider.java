@@ -99,6 +99,7 @@ import com.ge.research.sadl.darpa.aske.ui.editor.DialogEditors;
 import com.ge.research.sadl.darpa.aske.ui.editor.DialogEditors.Options;
 import com.ge.research.sadl.model.visualizer.IGraphVisualizer;
 import com.ge.research.sadl.processing.SadlInferenceException;
+import com.ge.research.sadl.reasoner.AmbiguousNameException;
 import com.ge.research.sadl.reasoner.ConfigurationException;
 import com.ge.research.sadl.reasoner.InvalidNameException;
 import com.ge.research.sadl.reasoner.QueryCancelledException;
@@ -110,7 +111,7 @@ import com.ge.research.sadl.sADL.SadlImport;
 import com.ge.research.sadl.sADL.SadlModel;
 import com.ge.research.sadl.ui.handlers.SadlActionHandler;
 import com.google.common.base.Preconditions;
-import com.hp.hpl.jena.ontology.OntModel;
+import org.apache.jena.ontology.OntModel;
 
 public class DialogAnswerProvider extends BaseDialogAnswerProvider {
 
@@ -1065,6 +1066,9 @@ public class DialogAnswerProvider extends BaseDialogAnswerProvider {
 					// TODO Auto-generated catch block
 					e.printStackTrace();
 				} catch (AnswerExtractionException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				} catch (AmbiguousNameException e) {
 					// TODO Auto-generated catch block
 					e.printStackTrace();
 				} finally {

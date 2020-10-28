@@ -67,7 +67,7 @@ import com.ge.research.sadl.darpa.aske.processing.StatementContent;
 import com.ge.research.sadl.reasoner.ConfigurationException;
 import com.ge.research.sadl.reasoner.IConfigurationManager;
 import com.ge.research.sadl.reasoner.utils.SadlUtils;
-import com.hp.hpl.jena.ontology.OntModel;
+import org.apache.jena.ontology.OntModel;
 
 public class DialogAnswerProviderConsoleForTest extends BaseDialogAnswerProvider {
 

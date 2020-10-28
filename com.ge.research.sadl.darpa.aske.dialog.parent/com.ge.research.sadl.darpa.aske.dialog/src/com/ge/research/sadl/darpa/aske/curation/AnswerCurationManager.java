@@ -143,6 +143,7 @@ import com.ge.research.sadl.processing.ISadlInferenceProcessor;
 import com.ge.research.sadl.processing.OntModelProvider;
 import com.ge.research.sadl.processing.SadlConstants;
 import com.ge.research.sadl.processing.SadlInferenceException;
+import com.ge.research.sadl.reasoner.AmbiguousNameException;
 import com.ge.research.sadl.reasoner.CircularDependencyException;
 import com.ge.research.sadl.reasoner.ConfigurationException;
 import com.ge.research.sadl.reasoner.ConfigurationItem;
@@ -160,28 +161,28 @@ import com.ge.research.sadl.sADL.SadlModel;
 import com.ge.research.sadl.utils.ResourceManager;
 import com.google.common.base.Optional;
 import com.google.common.io.Files;
-import com.hp.hpl.jena.ontology.Individual;
-import com.hp.hpl.jena.ontology.OntClass;
-import com.hp.hpl.jena.ontology.OntDocumentManager;
-import com.hp.hpl.jena.ontology.OntModel;
-import com.hp.hpl.jena.ontology.OntModelSpec;
-import com.hp.hpl.jena.ontology.OntProperty;
-import com.hp.hpl.jena.ontology.OntResource;
-import com.hp.hpl.jena.ontology.Ontology;
-import com.hp.hpl.jena.ontology.Restriction;
-import com.hp.hpl.jena.rdf.model.Literal;
-import com.hp.hpl.jena.rdf.model.ModelFactory;
-import com.hp.hpl.jena.rdf.model.NodeIterator;
-import com.hp.hpl.jena.rdf.model.Property;
-import com.hp.hpl.jena.rdf.model.RDFNode;
-import com.hp.hpl.jena.rdf.model.Resource;
-import com.hp.hpl.jena.rdf.model.Statement;
-import com.hp.hpl.jena.rdf.model.StmtIterator;
-import com.hp.hpl.jena.util.iterator.ExtendedIterator;
-import com.hp.hpl.jena.vocabulary.OWL;
-import com.hp.hpl.jena.vocabulary.RDF;
-import com.hp.hpl.jena.vocabulary.RDFS;
-import com.hp.hpl.jena.vocabulary.XSD;
+import org.apache.jena.ontology.Individual;
+import org.apache.jena.ontology.OntClass;
+import org.apache.jena.ontology.OntDocumentManager;
+import org.apache.jena.ontology.OntModel;
+import org.apache.jena.ontology.OntModelSpec;
+import org.apache.jena.ontology.OntProperty;
+import org.apache.jena.ontology.OntResource;
+import org.apache.jena.ontology.Ontology;
+import org.apache.jena.ontology.Restriction;
+import org.apache.jena.rdf.model.Literal;
+import org.apache.jena.rdf.model.ModelFactory;
+import org.apache.jena.rdf.model.NodeIterator;
+import org.apache.jena.rdf.model.Property;
+import org.apache.jena.rdf.model.RDFNode;
+import org.apache.jena.rdf.model.Resource;
+import org.apache.jena.rdf.model.Statement;
+import org.apache.jena.rdf.model.StmtIterator;
+import org.apache.jena.util.iterator.ExtendedIterator;
+import org.apache.jena.vocabulary.OWL;
+import org.apache.jena.vocabulary.RDF;
+import org.apache.jena.vocabulary.RDFS;
+import org.apache.jena.vocabulary.XSD;
 
 //import net.htmlparser.jericho.Renderer;
 //import net.htmlparser.jericho.Source;
@@ -337,8 +338,9 @@ public class AnswerCurationManager {
 	 * @throws InvalidNameException 
 	 * @throws AnswerExtractionException 
 	 * @throws InvalidInputException 
+	 * @throws AmbiguousNameException 
 	 */
-	public int processImports(SaveAsSadl saveAsSadl) throws IOException, ConfigurationException, InvalidNameException, ReasonerNotFoundException, QueryParseException, QueryCancelledException, AnswerExtractionException, InvalidInputException {
+	public int processImports(SaveAsSadl saveAsSadl) throws IOException, ConfigurationException, InvalidNameException, ReasonerNotFoundException, QueryParseException, QueryCancelledException, AnswerExtractionException, InvalidInputException, AmbiguousNameException {
 		int numSuccessfullyProcessed = 0;
 		addedTypeDeclarations.clear();
 		Map<File, Boolean> outputOwlFilesBySourceType = new HashMap<File, Boolean>();	// Map of imports, value is true if code, false if text extraction
@@ -433,7 +435,7 @@ public class AnswerCurationManager {
 
 	private String processExtractedText(String outputModelName, String outputOwlFileName, SaveAsSadl saveAsSadl)
 			throws ConfigurationException, IOException, ReasonerNotFoundException, InvalidNameException,
-			QueryParseException, QueryCancelledException {
+			QueryParseException, QueryCancelledException, AmbiguousNameException {
 		// run inference on the model, interact with user to refine results
 		String textModelFolder = getOwlModelsFolder();		// same as code model folder, at least for now
 		String queryString = SparqlQueries.All_TEXT_EXTRACTED_METHODS;	 // SparqlQueries.ALL_EXTERNAL_EQUATIONS;
@@ -612,7 +614,7 @@ public class AnswerCurationManager {
 		return of;
 	}
 
-	private ResultSet runInferenceFindInterestingTextModelResults(String outputOwlFileName, String queryString, SaveAsSadl saveAsSadl, String locality) throws ConfigurationException, IOException, ReasonerNotFoundException, InvalidNameException, QueryParseException, QueryCancelledException {
+	private ResultSet runInferenceFindInterestingTextModelResults(String outputOwlFileName, String queryString, SaveAsSadl saveAsSadl, String locality) throws ConfigurationException, IOException, ReasonerNotFoundException, InvalidNameException, QueryParseException, QueryCancelledException, AmbiguousNameException {
 		ResultSet results = null;
 		// clear reasoner from any previous model
 		clearTextModelReasoner();
@@ -690,6 +692,9 @@ public class AnswerCurationManager {
 								getExtractionProcessor().addNewSadlContent(sd);
 							}
 						} catch (AnswerExtractionException e) {
+							// TODO Auto-generated catch block
+							e.printStackTrace();
+						} catch (AmbiguousNameException e) {
 							// TODO Auto-generated catch block
 							e.printStackTrace();
 						}
@@ -784,6 +789,9 @@ public class AnswerCurationManager {
 					} catch (InvalidInputException e) {
 						String msg = "Error converting method '" + methodName + "': " + e.getMessage();
 						notifyUser(textModelFolder, msg, true);
+					} catch (AmbiguousNameException e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
 					}								
 				}
 			}
@@ -866,7 +874,7 @@ public class AnswerCurationManager {
 	}
 
 	private ResultSet runInferenceFindInterestingCodeModelResults(String queryString, SaveAsSadl saveAsSadl, String fileContent)
-			throws ConfigurationException, IOException, ReasonerNotFoundException, InvalidNameException, QueryParseException, QueryCancelledException {
+			throws ConfigurationException, IOException, ReasonerNotFoundException, InvalidNameException, QueryParseException, QueryCancelledException, AmbiguousNameException {
 		ResultSet results = null;
 		// clear reasoner from any previous model
 		clearCodeModelReasoner();
@@ -902,8 +910,9 @@ public class AnswerCurationManager {
 	 * @throws ReasonerNotFoundException
 	 * @throws InvalidNameException 
 	 * @throws AnswerExtractionException 
+	 * @throws AmbiguousNameException 
 	 */
-	public String processSaveRequest(org.eclipse.emf.ecore.resource.Resource resource, SaveContent sc) throws ConfigurationException, IOException, QueryParseException, QueryCancelledException, ReasonerNotFoundException, InvalidNameException, AnswerExtractionException {
+	public String processSaveRequest(org.eclipse.emf.ecore.resource.Resource resource, SaveContent sc) throws ConfigurationException, IOException, QueryParseException, QueryCancelledException, ReasonerNotFoundException, InvalidNameException, AnswerExtractionException, AmbiguousNameException {
 		String returnValue = null;
 		if (resource == null) {
 			throw new IOException("Argument resource in processSaveRequest cannot be null");
@@ -1014,7 +1023,7 @@ public class AnswerCurationManager {
 		return null;
 	}
 
-	private String saveEquationInstanceToComputationalGraph(OntModel ontModel, IReasoner reasoner, Individual extractedModelInstance) throws IOException, QueryParseException, QueryCancelledException, InvalidNameException, ConfigurationException {
+	private String saveEquationInstanceToComputationalGraph(OntModel ontModel, IReasoner reasoner, Individual extractedModelInstance) throws IOException, QueryParseException, QueryCancelledException, InvalidNameException, ConfigurationException, AmbiguousNameException {
 		String returnValue = null;
 		Resource type = extractedModelInstance.getRDFType(true);
 		if (type != null && type.isURIResource() && 
@@ -1023,7 +1032,7 @@ public class AnswerCurationManager {
 			String retName =  null;
 			Statement argStmt = extractedModelInstance.getProperty(ontModel.getProperty(SadlConstants.SADL_IMPLICIT_MODEL_ARGUMENTS_PROPERTY_URI));
 			if (argStmt != null) {
-				com.hp.hpl.jena.rdf.model.Resource ddList = argStmt.getObject().asResource();
+				org.apache.jena.rdf.model.Resource ddList = argStmt.getObject().asResource();
 				if (ddList instanceof Resource) {
 					// there are method arguments
 					// TODO do what??
@@ -1132,7 +1141,7 @@ public class AnswerCurationManager {
 	}
 
 	private ResultSet getMethodReturns(OntModel ontModel, IReasoner reasoner, Individual extractedModelInstance)
-			throws InvalidNameException, ConfigurationException, QueryParseException, QueryCancelledException {
+			throws InvalidNameException, ConfigurationException, QueryParseException, QueryCancelledException, AmbiguousNameException {
 		//				String retQuery = "select ?retName ?retType where {<" + extractedModelInstance.getURI() + "> <" + 
 		//						SadlConstants.SADL_IMPLICIT_MODEL_RETURN_TYPES_PROPERTY_URI + 
 		//						">/<sadllistmodel:rest>*/<sadllistmodel:first> ?member . OPTIONAL{?member <" +
@@ -1172,7 +1181,7 @@ public class AnswerCurationManager {
 	}
 
 	private ResultSet getMethodArguments(OntModel ontModel, IReasoner reasoner, Individual extractedModelInstance)
-			throws InvalidNameException, ConfigurationException, QueryParseException, QueryCancelledException {
+			throws InvalidNameException, ConfigurationException, QueryParseException, QueryCancelledException, AmbiguousNameException {
 		//				String argQuery = "select ?argName ?argType where {<" + extractedModelInstance.getURI() + "> <" + 
 		//						SadlConstants.SADL_IMPLICIT_MODEL_ARGUMENTS_PROPERTY_URI + 
 		//						">/<sadllistmodel:rest>*/<sadllistmodel:first> ?member . ?member <" +
@@ -1241,7 +1250,7 @@ public class AnswerCurationManager {
 		return null;
 	}
 
-	private String processEvalRequest(org.eclipse.emf.ecore.resource.Resource resource, EvalContent sc) throws ConfigurationException, ReasonerNotFoundException, IOException, EquationNotFoundException, QueryParseException, QueryCancelledException, InvalidNameException {
+	private String processEvalRequest(org.eclipse.emf.ecore.resource.Resource resource, EvalContent sc) throws ConfigurationException, ReasonerNotFoundException, IOException, EquationNotFoundException, QueryParseException, QueryCancelledException, InvalidNameException, AmbiguousNameException {
 		String returnValue = "Evaluation failed";
 		URI resourceURI = resource.getURI();
 		IReasoner reasoner = null;
@@ -1259,7 +1268,7 @@ public class AnswerCurationManager {
 		}
 		Statement argStmt = modelInstance.getProperty(getDomainModel().getProperty(SadlConstants.SADL_IMPLICIT_MODEL_ARGUMENTS_PROPERTY_URI));
 		if (argStmt != null) {
-			com.hp.hpl.jena.rdf.model.Resource ddList = argStmt.getObject().asResource();
+			org.apache.jena.rdf.model.Resource ddList = argStmt.getObject().asResource();
 			if (ddList instanceof Resource) {
 				ResultSet rs = getMethodArguments(getDomainModel(), reasoner, modelInstance);
 				ResultSet rs2 = getMethodReturns(getDomainModel(), reasoner, modelInstance);
@@ -1437,7 +1446,7 @@ public class AnswerCurationManager {
 		return methodCode.toString();
 	}
 
-	public boolean importCodeSnippetToComputationalGraph(Object rs, String userInput) throws InvalidNameException, ConfigurationException, ReasonerNotFoundException, QueryParseException, QueryCancelledException, AnswerExtractionException, InvalidInputException, IOException {
+	public boolean importCodeSnippetToComputationalGraph(Object rs, String userInput) throws InvalidNameException, ConfigurationException, ReasonerNotFoundException, QueryParseException, QueryCancelledException, AnswerExtractionException, InvalidInputException, IOException, AmbiguousNameException {
 		boolean success = false;
 		if (rs instanceof ResultSet) {
 			List<String> initializerKeywords = getInitializerKeywords();
@@ -1496,9 +1505,10 @@ public class AnswerCurationManager {
 	 * @throws AnswerExtractionException 
 	 * @throws IOException 
 	 * @throws InvalidInputException 
+	 * @throws AmbiguousNameException 
 	 */
 	private List<String> convertTextExtractedMethodToExternalEquationInSadlSyntax(String methodName, String derivedFromMethodUri, Map<String,String> scriptMap, String locality) throws InvalidNameException, ConfigurationException,
-			ReasonerNotFoundException, QueryParseException, QueryCancelledException, AnswerExtractionException, InvalidInputException, IOException {
+			ReasonerNotFoundException, QueryParseException, QueryCancelledException, AnswerExtractionException, InvalidInputException, IOException, AmbiguousNameException {
 		List<String> returnSadlStatements = new ArrayList<String>();
 		StringBuilder sb = new StringBuilder("External ");
 		sb.append(methodName);
@@ -2353,9 +2363,10 @@ public class AnswerCurationManager {
 	 * @throws AnswerExtractionException 
 	 * @throws IOException 
 	 * @throws InvalidInputException 
+	 * @throws AmbiguousNameException 
 	 */
 	private List<String> convertCodeExtractedMethodToExternalEquationInSadlSyntax(List<String> initializerKeywords, String methodUri, String methodName, String originalLanguage, String originalScript) throws InvalidNameException, ConfigurationException,
-			ReasonerNotFoundException, QueryParseException, QueryCancelledException, AnswerExtractionException, InvalidInputException, IOException {
+			ReasonerNotFoundException, QueryParseException, QueryCancelledException, AnswerExtractionException, InvalidInputException, IOException, AmbiguousNameException {
 		String pythoncode = null;
 		String tfPythonCode = null;
 		String npPythonCode = null;
@@ -2686,7 +2697,7 @@ public class AnswerCurationManager {
 	}
 
 	// Method to get the augmented type, if possible, for an implicit variable
-	private List<String> getAugmentedTypesOfVariable(Individual cv) throws InvalidNameException, ConfigurationException, ReasonerNotFoundException, QueryParseException, QueryCancelledException {
+	private List<String> getAugmentedTypesOfVariable(Individual cv) throws InvalidNameException, ConfigurationException, ReasonerNotFoundException, QueryParseException, QueryCancelledException, AmbiguousNameException {
 		if (augmentedTypesOfCodeVariableIsCached(cv)) {
 			return getCachedAugmentedTypesOfCodeVariable(cv);
 		}
@@ -2967,7 +2978,7 @@ public class AnswerCurationManager {
 	}
 
 	private ResultSet getImplicitInputs(String methodName) throws InvalidNameException, ConfigurationException,
-			ReasonerNotFoundException, QueryParseException, QueryCancelledException {
+			ReasonerNotFoundException, QueryParseException, QueryCancelledException, AmbiguousNameException {
 		String q = "select ?ivn ?ivt ?iv where {?ref <codeBlock> <";
 		q += methodName.toString().trim();
 		q += "> . ?ref <isImplicit> true . ?ref <cem:input> true . ";
@@ -2978,7 +2989,7 @@ public class AnswerCurationManager {
 	}
 
 	private ResultSet getImplicitOutputs(String methodName) throws InvalidNameException, ConfigurationException,
-	ReasonerNotFoundException, QueryParseException, QueryCancelledException {
+	ReasonerNotFoundException, QueryParseException, QueryCancelledException, AmbiguousNameException {
 		String q = "select ?ivn ?ivt ?iv where {?ref <codeBlock> <";
 		q += methodName.toString().trim();
 		q += "> . ?ref <isImplicit> true . ?ref <output> true . ";
@@ -3479,7 +3490,7 @@ public class AnswerCurationManager {
 	
 	public String processUserRequest(org.eclipse.emf.ecore.resource.Resource resource, ExpectsAnswerContent sc) 
 			throws ConfigurationException, ExecutionException, IOException, TranslationException, InvalidNameException, 
-				ReasonerNotFoundException, QueryParseException, QueryCancelledException, SadlInferenceException, EquationNotFoundException, AnswerExtractionException {
+				ReasonerNotFoundException, QueryParseException, QueryCancelledException, SadlInferenceException, EquationNotFoundException, AnswerExtractionException, AmbiguousNameException {
 		String retVal;
 		if (sc instanceof WhatIsContent) {
     		retVal = processWhatIsContent(resource, (WhatIsContent) sc);
@@ -3767,7 +3778,7 @@ public class AnswerCurationManager {
 
 	private String continueExtraction(String content)
 			throws IOException, ConfigurationException, ReasonerNotFoundException, InvalidNameException,
-			QueryParseException, QueryCancelledException, InvalidInputException {
+			QueryParseException, QueryCancelledException, InvalidInputException, AmbiguousNameException {
 		String outputOwlFileName;
 		boolean useAllCodeExtractedMethods = true;
 		SaveAsSadl saveAsSadl = SaveAsSadl.DoNotSaveAsSadl;
@@ -4399,7 +4410,7 @@ public class AnswerCurationManager {
 		return false;
 	}
 
-	private String getEquationNamesFromTextServiceResults(OntModel m, String dialogModelName) throws ConfigurationException, IOException, ReasonerNotFoundException, InvalidNameException, QueryParseException, QueryCancelledException {
+	private String getEquationNamesFromTextServiceResults(OntModel m, String dialogModelName) throws ConfigurationException, IOException, ReasonerNotFoundException, InvalidNameException, QueryParseException, QueryCancelledException, AmbiguousNameException {
 		OntModel theModel = getExtractionProcessor().getTextModel();
 		if (theModel != null && m != null) {
 			theModel.add(m);
@@ -5534,7 +5545,7 @@ public class AnswerCurationManager {
 		return "Unable to find method to display graph";
 	}
 
-	private String whatIsNamedNode(org.eclipse.emf.ecore.resource.Resource resource, String modelFolder,  NamedNode lastcmd) throws ConfigurationException, ExecutionException, TranslationException, InvalidNameException, ReasonerNotFoundException, QueryParseException, QueryCancelledException, OwlImportException {
+	private String whatIsNamedNode(org.eclipse.emf.ecore.resource.Resource resource, String modelFolder,  NamedNode lastcmd) throws ConfigurationException, ExecutionException, TranslationException, InvalidNameException, ReasonerNotFoundException, QueryParseException, QueryCancelledException, OwlImportException, AmbiguousNameException {
 		// what is NamedNode?
 		NamedNode nn = (NamedNode) lastcmd;
 		NodeType typ = nn.getNodeType();
@@ -5637,7 +5648,7 @@ public class AnswerCurationManager {
 		return owl2sadl;
 	}
 
-	private void addInstanceDeclaration(org.eclipse.emf.ecore.resource.Resource resource, NamedNode nn, StringBuilder answer) throws ExecutionException, ConfigurationException, TranslationException, InvalidNameException, ReasonerNotFoundException, QueryParseException, QueryCancelledException {
+	private void addInstanceDeclaration(org.eclipse.emf.ecore.resource.Resource resource, NamedNode nn, StringBuilder answer) throws ExecutionException, ConfigurationException, TranslationException, InvalidNameException, ReasonerNotFoundException, QueryParseException, QueryCancelledException, AmbiguousNameException {
 		answer.append(checkForKeyword(nn.getName()));
 //		String query = "select ?type where {<" + nn.getURI() + ">  <" + ReasonerVocabulary.directRDFType + "> ?type}";
 		String query = "select ?type where {<" + nn.getURI() + ">  <rdf:type> ?type}";
@@ -5716,7 +5727,7 @@ public class AnswerCurationManager {
 		}
 	}
 
-	private ResultSet runQuery(org.eclipse.emf.ecore.resource.Resource resource, Query q) throws ConfigurationException, TranslationException, InvalidNameException, ReasonerNotFoundException, QueryParseException, QueryCancelledException {
+	private ResultSet runQuery(org.eclipse.emf.ecore.resource.Resource resource, Query q) throws ConfigurationException, TranslationException, InvalidNameException, ReasonerNotFoundException, QueryParseException, QueryCancelledException, AmbiguousNameException {
 		SadlCommandResult scr = getInferenceProcessor().processAdhocQuery(resource, q);
 		if (scr != null) {
 			Object rs = scr.getResults();
@@ -5749,7 +5760,7 @@ public class AnswerCurationManager {
 		return inferenceProcessor;
 	}
 
-	private StringBuilder addBlankNodeObject(org.eclipse.emf.ecore.resource.Resource resource, StringBuilder answer, String bNodeUri) throws ExecutionException, ConfigurationException, TranslationException, InvalidNameException, ReasonerNotFoundException, QueryParseException, QueryCancelledException {
+	private StringBuilder addBlankNodeObject(org.eclipse.emf.ecore.resource.Resource resource, StringBuilder answer, String bNodeUri) throws ExecutionException, ConfigurationException, TranslationException, InvalidNameException, ReasonerNotFoundException, QueryParseException, QueryCancelledException, AmbiguousNameException {
 		String query = "select ?t ?p ?v where {<" + bNodeUri + "> ?p ?v }";
 		Query q = new Query();
 		q.setSparqlQueryString(query);
@@ -5765,7 +5776,7 @@ public class AnswerCurationManager {
 	}
 
 	private StringBuilder addBlankNodeObject(org.eclipse.emf.ecore.resource.Resource resource2, StringBuilder answer,
-			NamedNode subjNN, String pobjURI) throws ConfigurationException, TranslationException, InvalidNameException, ReasonerNotFoundException, QueryParseException, QueryCancelledException {
+			NamedNode subjNN, String pobjURI) throws ConfigurationException, TranslationException, InvalidNameException, ReasonerNotFoundException, QueryParseException, QueryCancelledException, AmbiguousNameException {
 		String query = "select ?t ?p ?v where {<" + subjNN.getURI() + "> <" + pobjURI + "> ?bn . ?bn ?p ?v }";
 		Query q = new Query();
 		q.setSparqlQueryString(query);
@@ -5805,7 +5816,7 @@ public class AnswerCurationManager {
 	}
 
 	private void addPropertyWithDomainAndRange(org.eclipse.emf.ecore.resource.Resource resource, NamedNode nn, StringBuilder answer)
-			throws ExecutionException, ConfigurationException, TranslationException, InvalidNameException, ReasonerNotFoundException, QueryParseException, QueryCancelledException {
+			throws ExecutionException, ConfigurationException, TranslationException, InvalidNameException, ReasonerNotFoundException, QueryParseException, QueryCancelledException, AmbiguousNameException {
 		answer.append(checkForKeyword(nn.getName()));
 		String query = "select ?d where {<" + nn.getURI() + "> <rdfs:domain> ?d}";
 		Query q = new Query();
@@ -5870,7 +5881,7 @@ public class AnswerCurationManager {
 		boolean isFirstProperty = true;
 		StmtIterator sitr = m.listStatements(null, RDFS.domain, cls);
 		while (sitr.hasNext()) {
-			com.hp.hpl.jena.rdf.model.Resource p = sitr.nextStatement().getSubject();
+			org.apache.jena.rdf.model.Resource p = sitr.nextStatement().getSubject();
 			answer.append("\n      ");
 			answer.append("described by ");
 			if (p != null) {
@@ -5907,7 +5918,7 @@ public class AnswerCurationManager {
 		return isFirstProperty;
 	}
 
-	private StringBuilder getClassHierarchy(org.eclipse.emf.ecore.resource.Resource resource, NamedNode nn, StringBuilder answer) throws ExecutionException, ConfigurationException, TranslationException, InvalidNameException, ReasonerNotFoundException, QueryParseException, QueryCancelledException {
+	private StringBuilder getClassHierarchy(org.eclipse.emf.ecore.resource.Resource resource, NamedNode nn, StringBuilder answer) throws ExecutionException, ConfigurationException, TranslationException, InvalidNameException, ReasonerNotFoundException, QueryParseException, QueryCancelledException, AmbiguousNameException {
 		String query;
 		Query q;
 		ResultSet rs;
@@ -5938,7 +5949,7 @@ public class AnswerCurationManager {
 	}
 
 	private void addQualifiedCardinalityRestriction(org.eclipse.emf.ecore.resource.Resource resource, NamedNode nn, boolean isFirstProperty,
-			StringBuilder answer) throws ExecutionException, ConfigurationException, TranslationException, InvalidNameException, ReasonerNotFoundException, QueryParseException, QueryCancelledException {
+			StringBuilder answer) throws ExecutionException, ConfigurationException, TranslationException, InvalidNameException, ReasonerNotFoundException, QueryParseException, QueryCancelledException, AmbiguousNameException {
 		String query;
 		Query q;
 		ResultSet rs;
@@ -6113,7 +6124,7 @@ public class AnswerCurationManager {
 		return tripleLst;
 	}
 
-	private void addTripleQuestion(org.eclipse.emf.ecore.resource.Resource resource, TripleElement tr, StringBuilder answer) throws ExecutionException, ConfigurationException, TranslationException, InvalidNameException, ReasonerNotFoundException, QueryParseException, QueryCancelledException {
+	private void addTripleQuestion(org.eclipse.emf.ecore.resource.Resource resource, TripleElement tr, StringBuilder answer) throws ExecutionException, ConfigurationException, TranslationException, InvalidNameException, ReasonerNotFoundException, QueryParseException, QueryCancelledException, AmbiguousNameException {
 		List<String> vars = new ArrayList<String>();
 		StringBuilder sbwhere = new StringBuilder("where {");
 		if (tr.getSubject() == null) {
@@ -6590,6 +6601,9 @@ public class AnswerCurationManager {
 					} catch (InvalidInputException e) {
 						// TODO Auto-generated catch block
 						e.printStackTrace();
+					} catch (AmbiguousNameException e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
 					}
 				}
 				if (statementAfter != null && statementAfter != null) {
@@ -6780,6 +6794,9 @@ public class AnswerCurationManager {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		} catch (AnswerExtractionException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (AmbiguousNameException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}

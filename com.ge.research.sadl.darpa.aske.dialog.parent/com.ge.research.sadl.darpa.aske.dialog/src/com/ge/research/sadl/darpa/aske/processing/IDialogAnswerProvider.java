@@ -45,7 +45,7 @@ import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.ecore.resource.Resource;
 
 import com.ge.research.sadl.darpa.aske.curation.AnswerCurationManager;
-import com.hp.hpl.jena.ontology.OntModel;
+import org.apache.jena.ontology.OntModel;
 
 public interface IDialogAnswerProvider {
 

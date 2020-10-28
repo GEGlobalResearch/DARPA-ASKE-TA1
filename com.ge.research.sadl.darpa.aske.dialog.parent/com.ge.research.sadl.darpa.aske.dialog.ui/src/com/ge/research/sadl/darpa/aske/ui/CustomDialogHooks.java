@@ -48,9 +48,9 @@ import com.ge.research.sadl.ui.preferences.SadlPreferencesProvider;
 import com.ge.research.sadl.utils.ResourceManager;
 import com.ge.research.sadl.utils.SadlConsole;
 import com.google.inject.Inject;
-import com.hp.hpl.jena.ontology.OntModel;
-import com.hp.hpl.jena.ontology.OntModelSpec;
-import com.hp.hpl.jena.rdf.model.ModelFactory;
+import org.apache.jena.ontology.OntModel;
+import org.apache.jena.ontology.OntModelSpec;
+import org.apache.jena.rdf.model.ModelFactory;
 
 @SuppressWarnings("restriction")
 public class CustomDialogHooks implements IResourceChangeListener {

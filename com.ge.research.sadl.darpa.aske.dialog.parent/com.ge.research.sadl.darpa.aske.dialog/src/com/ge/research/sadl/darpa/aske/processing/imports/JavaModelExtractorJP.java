@@ -59,6 +59,7 @@ import com.ge.research.sadl.darpa.aske.processing.DialogConstants;
 import com.ge.research.sadl.jena.JenaProcessorException;
 import com.ge.research.sadl.jena.inference.SadlJenaModelGetterPutter;
 import com.ge.research.sadl.processing.SadlConstants;
+import com.ge.research.sadl.reasoner.AmbiguousNameException;
 import com.ge.research.sadl.reasoner.CircularDependencyException;
 import com.ge.research.sadl.reasoner.ConfigurationException;
 import com.ge.research.sadl.reasoner.IConfigurationManagerForEditing.Scope;
@@ -115,23 +116,23 @@ import com.github.javaparser.ast.type.Type;
 import com.github.javaparser.symbolsolver.JavaSymbolSolver;
 import com.github.javaparser.symbolsolver.resolution.typesolvers.CombinedTypeSolver;
 import com.github.javaparser.symbolsolver.resolution.typesolvers.ReflectionTypeSolver;
-import com.hp.hpl.jena.ontology.Individual;
-import com.hp.hpl.jena.ontology.OntClass;
-import com.hp.hpl.jena.ontology.OntDocumentManager;
-import com.hp.hpl.jena.ontology.OntModel;
-import com.hp.hpl.jena.ontology.OntModelSpec;
-import com.hp.hpl.jena.ontology.Ontology;
-import com.hp.hpl.jena.rdf.model.Literal;
-import com.hp.hpl.jena.rdf.model.Model;
-import com.hp.hpl.jena.rdf.model.ModelFactory;
-import com.hp.hpl.jena.rdf.model.Property;
-import com.hp.hpl.jena.rdf.model.RDFNode;
-import com.hp.hpl.jena.rdf.model.Resource;
-import com.hp.hpl.jena.rdf.model.Statement;
-import com.hp.hpl.jena.rdf.model.StmtIterator;
-import com.hp.hpl.jena.util.iterator.ExtendedIterator;
-import com.hp.hpl.jena.vocabulary.RDFS;
-import com.hp.hpl.jena.vocabulary.XSD;
+import org.apache.jena.ontology.Individual;
+import org.apache.jena.ontology.OntClass;
+import org.apache.jena.ontology.OntDocumentManager;
+import org.apache.jena.ontology.OntModel;
+import org.apache.jena.ontology.OntModelSpec;
+import org.apache.jena.ontology.Ontology;
+import org.apache.jena.rdf.model.Literal;
+import org.apache.jena.rdf.model.Model;
+import org.apache.jena.rdf.model.ModelFactory;
+import org.apache.jena.rdf.model.Property;
+import org.apache.jena.rdf.model.RDFNode;
+import org.apache.jena.rdf.model.Resource;
+import org.apache.jena.rdf.model.Statement;
+import org.apache.jena.rdf.model.StmtIterator;
+import org.apache.jena.util.iterator.ExtendedIterator;
+import org.apache.jena.vocabulary.RDFS;
+import org.apache.jena.vocabulary.XSD;
 
 public class JavaModelExtractorJP implements IModelFromCodeExtractor {
     private static final Logger logger = Logger.getLogger (JavaModelExtractorJP.class) ;
@@ -1853,7 +1854,7 @@ public class JavaModelExtractorJP implements IModelFromCodeExtractor {
 		return null;
 	}
 	
-	private com.hp.hpl.jena.rdf.model.Resource getInputMappingClass() {
+	private org.apache.jena.rdf.model.Resource getInputMappingClass() {
 		return getCurrentCodeModel().getOntClass(getCodeMetaModelUri() + "#InputMapping");
 	}
 
@@ -1861,7 +1862,7 @@ public class JavaModelExtractorJP implements IModelFromCodeExtractor {
 		return getCurrentCodeModel().getProperty(getCodeMetaModelUri() + "#inputMapping");
 	}
 
-	private com.hp.hpl.jena.rdf.model.Resource getOutputMappingClass() {
+	private org.apache.jena.rdf.model.Resource getOutputMappingClass() {
 		return getCurrentCodeModel().getOntClass(getCodeMetaModelUri() + "#OutputMapping");
 	}
 
@@ -1869,15 +1870,15 @@ public class JavaModelExtractorJP implements IModelFromCodeExtractor {
 		return getCurrentCodeModel().getProperty(getCodeMetaModelUri() + "#returnedMapping");
 	}
 
-	private com.hp.hpl.jena.rdf.model.Resource getReferenceClass() {
+	private org.apache.jena.rdf.model.Resource getReferenceClass() {
 		return getCurrentCodeModel().getOntClass(getCodeMetaModelUri() + "#Reference");
 	}
 
-	private com.hp.hpl.jena.rdf.model.Resource getCodeBlockMethodClass() {
+	private org.apache.jena.rdf.model.Resource getCodeBlockMethodClass() {
 		return getCurrentCodeModel().getOntClass(getCodeMetaModelUri() + "#Method");
 	}
 
-	private com.hp.hpl.jena.rdf.model.Resource getCodeBlockConstructorClass() {
+	private org.apache.jena.rdf.model.Resource getCodeBlockConstructorClass() {
 		return getCurrentCodeModel().getOntClass(getCodeMetaModelUri() + "#Constructor");
 	}
 
@@ -1885,7 +1886,7 @@ public class JavaModelExtractorJP implements IModelFromCodeExtractor {
 		return getCurrentCodeModel().getOntClass(getCodeMetaModelUri() + "#ClassesToIgnore");
 	}
 	
-	private com.hp.hpl.jena.rdf.model.Resource getCodeBlockClassClass() {
+	private org.apache.jena.rdf.model.Resource getCodeBlockClassClass() {
 		return getCurrentCodeModel().getOntClass(getCodeMetaModelUri() + "#Class");
 	}
 
@@ -2044,7 +2045,7 @@ public class JavaModelExtractorJP implements IModelFromCodeExtractor {
 		if (importPrefix != null) {
 			getCurrentCodeModel().setNsPrefix(importPrefix, ensureHashOnUri(importUri));
 		}
-		com.hp.hpl.jena.rdf.model.Resource importedOntology = getCurrentCodeModel().createResource(importUri);
+		org.apache.jena.rdf.model.Resource importedOntology = getCurrentCodeModel().createResource(importUri);
 		modelOntology.addImport(importedOntology);
 		getCurrentCodeModel().addSubModel(importedOntModel);
 		getCurrentCodeModel().addLoadedImport(importUri);
@@ -2121,7 +2122,7 @@ public class JavaModelExtractorJP implements IModelFromCodeExtractor {
 	}
 	
 	@Override
-	public ResultSet executeSparqlQuery(String query) throws ConfigurationException, ReasonerNotFoundException, IOException, InvalidNameException, QueryParseException, QueryCancelledException {
+	public ResultSet executeSparqlQuery(String query) throws ConfigurationException, ReasonerNotFoundException, IOException, InvalidNameException, QueryParseException, QueryCancelledException, AmbiguousNameException {
 		query = SadlUtils.stripQuotes(query);
 		IReasoner reasoner = getCodeModelConfigMgr().getReasoner();
 		if (!reasoner.isInitialized()) {
@@ -2145,7 +2146,7 @@ public class JavaModelExtractorJP implements IModelFromCodeExtractor {
 	 * @throws TranslationException
 	 */
 	protected Individual addMembersToList(OntModel model, Individual lastInst, OntClass cls,
-			com.hp.hpl.jena.rdf.model.Resource type, Iterator<?> memberIterator) throws JenaProcessorException, TranslationException {
+			org.apache.jena.rdf.model.Resource type, Iterator<?> memberIterator) throws JenaProcessorException, TranslationException {
 		if (lastInst == null) {
 			lastInst = model.createIndividual(cls);
 		}
@@ -2153,10 +2154,10 @@ public class JavaModelExtractorJP implements IModelFromCodeExtractor {
 		if (val instanceof Individual) {
 			Individual listInst = (Individual) val;
 			if (type.canAs(OntClass.class)) {
-				ExtendedIterator<com.hp.hpl.jena.rdf.model.Resource> itr = listInst.listRDFTypes(false);
+				ExtendedIterator<org.apache.jena.rdf.model.Resource> itr = listInst.listRDFTypes(false);
 				boolean match = false;
 				while (itr.hasNext()) {
-					com.hp.hpl.jena.rdf.model.Resource typ = itr.next();
+					org.apache.jena.rdf.model.Resource typ = itr.next();
 					if (typ.equals(type)) {
 						match = true;
 					} else {
