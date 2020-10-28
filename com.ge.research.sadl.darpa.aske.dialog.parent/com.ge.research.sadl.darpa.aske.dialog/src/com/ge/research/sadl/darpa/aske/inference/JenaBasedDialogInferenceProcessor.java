@@ -88,6 +88,7 @@ import com.ge.research.sadl.darpa.aske.processing.imports.KChainServiceInterface
 import com.ge.research.sadl.jena.JenaBasedSadlInferenceProcessor;
 import com.ge.research.sadl.jena.JenaBasedSadlModelProcessor;
 import com.ge.research.sadl.jena.UtilsForJena;
+import com.ge.research.sadl.model.gp.GraphPatternElement;
 import com.ge.research.sadl.model.gp.Literal;
 import com.ge.research.sadl.model.gp.NamedNode;
 import com.ge.research.sadl.model.gp.Node;
@@ -137,13 +138,14 @@ import com.hp.hpl.jena.vocabulary.RDF;
 public class JenaBasedDialogInferenceProcessor extends JenaBasedSadlInferenceProcessor {
 
 	private OntModel queryModel;
+	private int succModelCounter;
 //	private Map<String, String> preferenceMap;
 	
 //	public static final String queryHistoryKey = "MetaData";
 //	public static final String qhModelName = "http://aske.ge.com/MetaData";
 //	public static final String qhOwlFileName = "MetaData.owl";
 
-	public static final boolean debugMode = true;
+	public static final boolean debugMode = false;
 	
 	
     private static final String KCHAIN_SERVICE_URL_FRAGMENT = "/darpa/aske/kchain/";
@@ -988,8 +990,9 @@ public class JenaBasedDialogInferenceProcessor extends JenaBasedSadlInferencePro
 				}
 			}
 			for (int i = 0; rule.getIfs() != null && i < rule.getIfs().size(); i++) {
-				if (rule.getIfs().get(i) instanceof TripleElement) {
-					thisRulesTriples[idx++] = (TripleElement) rule.getIfs().get(i);
+				GraphPatternElement ruleIf = rule.getIfs().get(i);
+				if (ruleIf instanceof TripleElement) {
+					thisRulesTriples[idx++] = (TripleElement) ruleIf;
 				}
 				else {
 					throw new SadlInferenceException("insertTriplesAndQuery only handles TripleElements currently");
@@ -1152,16 +1155,17 @@ public class JenaBasedDialogInferenceProcessor extends JenaBasedSadlInferencePro
 			// TODO: handle exception
 		}
 
+		succModelCounter = 0;
 		int numOfQueries = triples.size();
 		
-		for (int i=0 ; i<triples.size(); i++) {
+		for (int i=0 ; i<numOfQueries; i++) {
 //			results = processSingleWhatWhenQuery(resource, triples.get(i), useDbn, useKC, queryModelFileName, queryModelURI,queryModelPrefix, queryInstanceName, queryOwlFileWithPath);
-			results = processSingleWhatWhenQuery(resource, triples.get(i), kgsDirectory, numOfQueries, i+1, insightsMap);
+			results = processSingleWhatWhenQuery(resource, triples.get(i), kgsDirectory, numOfQueries, insightsMap);
 			combinedResults.add(results);
 			
 		}
 		
-		if (triples.size() > 1) {
+		if (numOfQueries > 1) {
 			results = generateCompareResults(combinedResults);
 			//run sensitivity
 		}
@@ -1211,8 +1215,9 @@ public class JenaBasedDialogInferenceProcessor extends JenaBasedSadlInferencePro
 		
 		for(int i=0; i<numOfWhens; i++) {
 			singleCaseResults.clear();
-			for(int j=i; j<numOfClasses+i; j++) {
-				singleCaseResults.add( combinedResults.get(i+j));
+//			for(int j=i; j<numOfClasses+i; j++) {
+			for(int j=0; j<numOfClasses; j++) {
+				singleCaseResults.add( combinedResults.get(i*numOfClasses+j));
 			}
 			wres = generateCompareResults1(singleCaseResults);
 			for(int k=0; k<wres.size(); k++) {
@@ -1236,30 +1241,37 @@ public class JenaBasedDialogInferenceProcessor extends JenaBasedSadlInferencePro
 		int numOfClasses = combinedResults.size();
 
 		Object insights1, insights2;
-		
-		for(int i=0; i<numOfClasses; i++) {
-			if(combinedResults.get(i).length > 0) {
-				insights1 = combinedResults.get(i)[2];			
-				for(int j=0; j<numOfClasses; j++) {
-					if(j!=i) {
-						if(combinedResults.get(j).length > 0) {
-							insights2 = combinedResults.get(j)[2];
-							insights1 = getUniqueResults((ResultSet)insights1, (ResultSet)insights2);
+
+		if (numOfClasses > 1) {
+			for(int i=0; i<numOfClasses; i++) {
+				if(combinedResults.get(i).length > 0) {
+					insights1 = combinedResults.get(i)[2];			
+					for(int j=0; j<numOfClasses; j++) {
+						if(j!=i) {
+							if(combinedResults.get(j).length > 0) {
+								insights2 = combinedResults.get(j)[2];
+								insights1 = getUniqueResults((ResultSet)insights1, (ResultSet)insights2);
+							}
 						}
 					}
+					res.add(combinedResults.get(i)[0]);
+					res.add(combinedResults.get(i)[1]);
+					res.add(insights1);
 				}
-				res.add(combinedResults.get(i)[0]);
-				res.add(combinedResults.get(i)[1]);
-				res.add(insights1);
-			}
-			else {
-				ResultSet e1 = new ResultSet(new String[0]);
-				res.add(e1);
-//				res.add(e1);
-//				res.add(e1);
+				else {
+					ResultSet e1 = new ResultSet(new String[0]);
+					res.add(e1);
+				}
 			}
 		}
-		
+		else {
+			int l = combinedResults.get(0).length;
+			for(int i=0; i<l; i++) {
+				res.add(combinedResults.get(0)[i]);
+//				res.add(combinedResults.get(0)[1]);
+//				res.add(combinedResults.get(0)[2]);
+			}
+		}
 		
 		return res;
 	}
@@ -1356,7 +1368,7 @@ public class JenaBasedDialogInferenceProcessor extends JenaBasedSadlInferencePro
 
 
 
-	private Object[] processSingleWhatWhenQuery(Resource resource, TripleElement[] triples, String kgsDirectory, int numOfQueries, int queryNum, Map<String, Map<String, List<String>>> insightsMap) throws TranslationException, IOException, URISyntaxException, ConfigurationException, Exception {
+	private Object[] processSingleWhatWhenQuery(Resource resource, TripleElement[] triples, String kgsDirectory, int numOfQueries, Map<String, Map<String, List<String>>> insightsMap) throws TranslationException, IOException, URISyntaxException, ConfigurationException, Exception {
 		Object[] dbnResults = null;
 		Object[] kcResults = null;
 		Object[] results = null;
@@ -1420,14 +1432,13 @@ public class JenaBasedDialogInferenceProcessor extends JenaBasedSadlInferencePro
 		List<String> contextClassList = getContextClassList(contextPatterns);
 		
 	
-		int successfulModels=0;
+		//int successfulModels=0;
 		
 		if (useDbn) {
 
 			if (outputsList.size() > 0 && docPatterns.size() <= 0) { 
 				dbnResults = processWhatWhenQuery(resource, queryModelFileName, queryModelURI, queryModelPrefix,
-					queryOwlFileWithPath, inputsList, outputsList, contextClassList, cgq, numOfQueries, queryNum, 
-					successfulModels, insightsMap);
+					queryOwlFileWithPath, inputsList, outputsList, contextClassList, cgq, numOfQueries, insightsMap);
 
 
 
@@ -1441,7 +1452,7 @@ public class JenaBasedDialogInferenceProcessor extends JenaBasedSadlInferencePro
 
 		if (useKC) {
 			kcResults = processWhatWhenQuery(resource, queryModelFileName, queryModelURI, queryModelPrefix,
-			queryOwlFileWithPath, inputsList, outputsList, contextClassList, cgq, numOfQueries, queryNum, successfulModels, insightsMap);
+			queryOwlFileWithPath, inputsList, outputsList, contextClassList, cgq, numOfQueries, insightsMap);
 
 		}
 
@@ -1460,7 +1471,7 @@ public class JenaBasedDialogInferenceProcessor extends JenaBasedSadlInferencePro
 
 private ResultSet[] processWhatWhenQuery(Resource resource, String queryModelFileName, String queryModelURI,
 		String queryModelPrefix, String queryOwlFileWithPath, List<RDFNode> inputsList, List<RDFNode> outputsList,
-		List<String> contextClassList, Individual cgq, int numOfQueries, int queryNum, int successfulModels, Map<String, Map<String, List<String>>> insightsMap)
+		List<String> contextClassList, Individual cgq, int numOfQueries, Map<String, Map<String, List<String>>> insightsMap)
 		throws TranslationException, Exception, IOException, URISyntaxException, ConfigurationException {
 	
 	com.hp.hpl.jena.query.ResultSetRewindable eqnsResults = null;
@@ -1530,12 +1541,14 @@ private ResultSet[] processWhatWhenQuery(Resource resource, String queryModelFil
 	String[] modelEqnList = buildEqnsLists(numOfModels, dbnEqnMap);
 
 	
-	successfulModels = 0;
+	//successfulModels = 0;
 	List<Individual> modelCCGs = new ArrayList<Individual>();
 	
+	boolean modelSucceeded = false;
 	
 	
 	for(int i=0; i<numOfModels; i++) {
+		modelSucceeded = false;
 		listOfEqns = modelEqnList[i];
 
 		ce = createExecInstance(cgq);
@@ -1551,7 +1564,7 @@ private ResultSet[] processWhatWhenQuery(Resource resource, String queryModelFil
 		
 //		contextClassList.
 		
-		String nodesModelsJSONStr = retrieveModelsAndNodes(resource, listOfEqns, cgIns, contextClassList, scriptLanguage, numOfQueries*numOfModels, queryNum);
+		String nodesModelsJSONStr = retrieveModelsAndNodes(resource, listOfEqns, cgIns, contextClassList, scriptLanguage, numOfQueries*numOfModels, succModelCounter+1);
 		
 		
 
@@ -1598,7 +1611,7 @@ private ResultSet[] processWhatWhenQuery(Resource resource, String queryModelFil
 			kchainBuildJson = generateKChainBuildJson(cgJson);
 			
 			if (kchainBuildJson != null) {
-				System.out.print("Building KChain: ");
+				System.out.print("Building KChain for model " + (succModelCounter+1) + "/" + numOfModels*numOfQueries + " : ");
 				startTime = System.currentTimeMillis();
 				String buildResult = buildKChain(kchainBuildJson);
 				endTime = System.currentTimeMillis();
@@ -1640,7 +1653,8 @@ private ResultSet[] processWhatWhenQuery(Resource resource, String queryModelFil
 	    //TODO: if exec was unsuccessful, ingest CG anyway and do something further
 	    
 	    if(resmsg != null && resmsg.equals("Success")) {
-	    	successfulModels++;
+	    	succModelCounter++;
+	    	modelSucceeded = true;
 	    	
 	    	if (useDbn) {
 	    		lbl2value = getLabelToMeanStdMapping(dbnResultsJson);
@@ -1696,7 +1710,7 @@ private ResultSet[] processWhatWhenQuery(Resource resource, String queryModelFil
 	
 	
 	//If there were some results, create Eclipse resource, refresh, add mapping to ont-policy.rdf, add import stmt to dialog
-	if(successfulModels>0) {
+	if(modelSucceeded) {
 		//saveMetaDataFile(resource,queryModelURI,queryModelFileName); //to include sensitivity results
 		addQueryModelAsResource(resource, queryModelFileName, queryModelURI, queryOwlFileWithPath, cmgr);
 //		dbnResults[0] = runReasonerQuery(resource, DEPENDENCY_GRAPH);
@@ -1773,27 +1787,28 @@ private void analyzeSensitivityResults(String sensitivityResult, Individual cgIn
 //	sensitivityResult = "{\"sensitivityData\":[{\"OATMatrix\":{\"fsmach\":[0,0.09232463,0.1766437,0.2464482,0.29775146,0.32939076,0.34265238,0.3404852,0.3266189,0.30482608,0.2784374,0.25010738,0.22177133,0.194718,0.1697141,0.14713784,0.12709871,0.10953298,0.09427574,0.08111054],\"altd\":[0,0.15789473684210525,0.3157894736842105,0.47368421052631576,0.631578947368421,0.7894736842105263,0.9473684210526315,1.1052631578947367,1.263157894736842,1.4210526315789473,1.5789473684210527,1.7368421052631577,1.894736842105263,2.052631578947368,2.2105263157894735,2.3684210526315788,2.526315789473684,2.6842105263157894,2.8421052631578947,3]},\"OATRSMatrix\":{\"fsmach\":[0.33210394,0.3332521,0.33433527,0.33535418,0.33630925,0.33720127,0.33803058,0.3387981,0.3395045,0.34015036,0.3407363,0.34126318,0.34173167,0.3421426,0.34249645,0.3427943,0.34303662,0.34322447,0.34335843,0.34343934],\"altd\":[0.81,0.8194736842105264,0.8289473684210527,0.838421052631579,0.8478947368421054,0.8573684210526317,0.866842105263158,0.8763157894736843,0.8857894736842106,0.8952631578947369,0.9047368421052633,0.9142105263157896,0.9236842105263159,0.9331578947368422,0.9426315789473685,0.9521052631578948,0.9615789473684211,0.9710526315789475,0.9805263157894738,0.9900000000000001]},\"name\":\"altd\",\"type\":\"float\",\"value\":\"0.9\"},{\"OATMatrix\":{\"fsmach\":[0.30224335,0.30802384,0.3135674,0.3188915,0.32401192,0.32894263,0.33369592,0.33828318,0.34271488,0.34699997,0.35114703,0.355164,0.35905787,0.36283517,0.36650208,0.3700641,0.37352648,0.37689403,0.38017118,0.3833621],\"u0d\":[1.01,1.0621052631578947,1.1142105263157895,1.1663157894736842,1.2184210526315788,1.2705263157894737,1.3226315789473684,1.3747368421052633,1.426842105263158,1.4789473684210526,1.5310526315789474,1.583157894736842,1.635263157894737,1.6873684210526316,1.7394736842105263,1.791578947368421,1.8436842105263158,1.8957894736842107,1.9478947368421053,2]},\"OATRSMatrix\":{\"fsmach\":[0.32796124,0.32933322,0.33069092,0.33203492,0.3333654,0.33468255,0.33598652,0.33727765,0.33855626,0.3398223,0.34107617,0.34231815,0.34354833,0.34476686,0.34597406,0.34717005,0.34835514,0.34952927,0.3506928,0.35184592],\"u0d\":[1.26,1.2747368421052632,1.2894736842105263,1.3042105263157895,1.3189473684210526,1.3336842105263158,1.348421052631579,1.3631578947368421,1.3778947368421053,1.3926315789473684,1.4073684210526316,1.4221052631578948,1.436842105263158,1.451578947368421,1.4663157894736842,1.4810526315789474,1.4957894736842106,1.5105263157894737,1.5252631578947369,1.54]},\"name\":\"u0d\",\"type\":\"float\",\"value\":\"1.4\"}],\"url\":\"http://localhost:1177\"}";
 
 	if(debugMode) {System.out.println(sensitivityResult);}
-	
-	JsonElement je = new JsonParser().parse(sensitivityResult);
-	if (je.isJsonObject()) {
-		JsonObject jobj = je.getAsJsonObject();
-		if (jobj.has("OATSensitivityData")) { //sensitivityData
-			JsonArray ja = jobj.getAsJsonArray("OATSensitivityData");
-			JsonArray jacobians = null;
-			if (jobj.has("normalizedSensitivityData")) {
-				jacobians = jobj.getAsJsonArray("normalizedSensitivityData");
+		if (sensitivityResult != null) {
+			JsonElement je = new JsonParser().parse(sensitivityResult);
+			if (je.isJsonObject()) {
+				JsonObject jobj = je.getAsJsonObject();
+				if (jobj.has("OATSensitivityData")) { //sensitivityData
+					JsonArray ja = jobj.getAsJsonArray("OATSensitivityData");
+					JsonArray jacobians = null;
+					if (jobj.has("normalizedSensitivityData")) {
+						jacobians = jobj.getAsJsonArray("normalizedSensitivityData");
+					}
+					for(int i=0; i<ja.size(); i++) { //for each input variable
+						extractVarInfluence(ja.get(i).getAsJsonObject(), i, jacobians, cgIns, lbl2class, outputsList, queryModelPrefix, insightsMap);
+					}
+				}
+				else {
+					throw new IOException("Sensitivity returned no data: " + je.toString());
+				}
 			}
-			for(int i=0; i<ja.size(); i++) { //for each input variable
-				extractVarInfluence(ja.get(i).getAsJsonObject(), i, jacobians, cgIns, lbl2class, outputsList, queryModelPrefix, insightsMap);
+			else {
+				throw new IOException("Unexpected response from sensitivity: " + je.toString());
 			}
 		}
-		else {
-			throw new IOException("Sensitivity returned no data: " + je.toString());
-		}
-	}
-	else {
-		throw new IOException("Unexpected response from sensitivity: " + je.toString());
-	}
 }
 
 /**
@@ -2443,11 +2458,8 @@ private JsonObject generateKChainSensitivityJson(String cgJson) throws DialogInf
 		JsonElement je = jp.parse(cgJson);
 		keoJson = je.getAsJsonObject();
 		jo = keoJson.get("visualize").getAsJsonObject();
-		jo.remove("plotType");
-		jo.addProperty("plotType","2");
-
-
-//		jo = jp.parse(mach).getAsJsonObject();
+//		jo.remove("plotType");
+//		jo.addProperty("plotType","2");
 	}
 	catch (Throwable t) {
 		throw new DialogInferenceException(t.getMessage(), t);
@@ -2602,15 +2614,19 @@ private String getEvalKChainOutcome(String kchainResultsJson) {
  * @throws IOException 
  */
 private String getVisualizationURL(String sensitivityResult) throws IOException {
-	JsonElement je = new JsonParser().parse(sensitivityResult);
-	if (je.isJsonObject()) {
-		JsonObject jobj = je.getAsJsonObject();
-		String visualizationUrl = jobj.get("url").getAsString();
-		return visualizationUrl;
+	if (sensitivityResult != null) {
+		JsonElement je = new JsonParser().parse(sensitivityResult);
+		if (je.isJsonObject()) {
+			JsonObject jobj = je.getAsJsonObject();
+			String visualizationUrl = jobj.get("url").getAsString();
+			return visualizationUrl;
+		}
+		else {
+			throw new IOException("Unexpected response: " + je.toString());
+		}
 	}
-	else {
-		throw new IOException("Unexpected response: " + je.toString());
-	}
+	else
+		return "";
 }
 
 
