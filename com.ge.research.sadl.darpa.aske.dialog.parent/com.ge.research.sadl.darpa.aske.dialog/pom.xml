@@ -91,11 +91,6 @@
 						<artifactId>com.ge.research.sadl.xtextgenerator</artifactId>
 						<version>${sadlVersion}</version>
 					</dependency>
-					<dependency>
-						<groupId>com.ge.research.sadl</groupId>
-						<artifactId>com.ge.research.sadl.processing</artifactId>
-						<version>${sadlVersion}</version>
-					</dependency>
 				</dependencies>
 			</plugin>
 			<plugin>
