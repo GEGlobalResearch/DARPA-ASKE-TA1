@@ -4939,7 +4939,7 @@ public class AnswerCurationManager {
 							String graphFileName = baseFileName + ".svg";
 							String sourceName = graphsDirectory + "/" + graphFileName;
 							if (sglink != null && sglink.length() > 0) {
-								String targetName = sglink + "/" + className + baseFileName.substring(13);
+								String targetName = sglink + "/" + className + baseFileName.substring(13) + ".svg";
 								File srcFile = new File(sourceName);
 								if (srcFile.exists()) {
 									File trgtFile = new File(targetName);
