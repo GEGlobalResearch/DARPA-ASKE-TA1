@@ -38,6 +38,7 @@ package com.ge.research.sadl.darpa.aske.ui.syntaxcoloring
 
 import org.eclipse.xtext.ide.editor.syntaxcoloring.DefaultAntlrTokenToAttributeIdMapper
 import com.ge.research.sadl.darpa.aske.parser.antlr.internal.InternalDialogParser
+import org.eclipse.xtext.ide.editor.syntaxcoloring.HighlightingStyles
 
 class DialogTokenToAttributeIdMapper extends DefaultAntlrTokenToAttributeIdMapper {
 	// Sadl.xtext defines only two new token terminals: NUMBER and EOS.
@@ -51,7 +52,8 @@ class DialogTokenToAttributeIdMapper extends DefaultAntlrTokenToAttributeIdMappe
 			InternalDialogParser.tokenNames.get(_rdIndx_tmpNode)
 		}
 		if (ruleNumber.equals(tokenName)) {
-			return DialogHighlightingConfiguration.NUMBER_ID
+//			return DialogHighlightingConfiguration.NUMBER_ID		//shot in the dark awc 12/7/2020
+			return HighlightingStyles.NUMBER_ID
 		}
 		return super.calculateId(tokenName, tokenType)
 	}
