@@ -964,10 +964,25 @@ public class AnswerCurationManager {
 	
 	private boolean saveEquationInstanceToTargetSemanticModel(OntModel ontModel, IReasoner reasoner,
 			Individual extractedModelInstance, String targetModelAlias) throws AnswerExtractionException {
-		if (getTargetModelMap() == null || !getTargetModelMap().containsKey(targetModelAlias)) {
+		String[] target = null;
+		if (getTargetModelMap() == null) {
 			throw new AnswerExtractionException("No target found to which to save the equation model.");
 		}
-		String[] target = getTargetModelMap().get(targetModelAlias);
+		else {
+			if (targetModelAlias != null) {
+				if (getTargetModelMap().containsKey(targetModelAlias)) {
+					target = getTargetModelMap().get(targetModelAlias);
+				}
+				else {
+					// there is an alias specified but it is not in the target map
+					throw new AnswerExtractionException("Specified target '" + targetModelAlias + "' not found, unable to save the equation model.");
+				}
+			}
+			else if (getTargetModelMap().size() == 1){
+				// there's only one choice so use it
+				target = getTargetModelMap().values().iterator().next();
+			}
+		}
 		// if the target model is open in an editor insert at end of editor buffer?
 		
 		if (target[1] == null) {
@@ -1024,7 +1039,7 @@ public class AnswerCurationManager {
 	}
 
 	private String saveEquationInstanceToComputationalGraph(OntModel ontModel, IReasoner reasoner, Individual extractedModelInstance) throws IOException, QueryParseException, QueryCancelledException, InvalidNameException, ConfigurationException, AmbiguousNameException {
-		String returnValue = null;
+		String returnValue = "";
 		Resource type = extractedModelInstance.getRDFType(true);
 		if (type != null && type.isURIResource() && 
 				(type.getURI().equals(SadlConstants.SADL_IMPLICIT_MODEL_EQUATION_CLASS_URI) ||
@@ -1057,7 +1072,10 @@ public class AnswerCurationManager {
 				returnValue = e.getMessage();
 			}
 		}
-		returnValue = "Saving '" + extractedModelInstance.getLocalName();
+		if (returnValue != null) {
+			returnValue += " ";
+		}
+		returnValue += "Saving '" + extractedModelInstance.getLocalName();
 		return returnValue;
 	}
 
