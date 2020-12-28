@@ -2,8 +2,8 @@
 <feature
       id="com.ge.research.sadl.darpa.aske.dialog.feature"
       label="Dialog for DARPA ASKE ANSWER"
-      version="1.0.0.qualifier"
-      provider-name="GE">
+      version="1.1.0.qualifier"
+      provider-name="GE Research">
 
    <description url="https://github.com/GEGlobalResearch/DARPA-ASKE-TA1/wiki">
       Dialog grammar and IDE is Xtext-based and is an extension of
