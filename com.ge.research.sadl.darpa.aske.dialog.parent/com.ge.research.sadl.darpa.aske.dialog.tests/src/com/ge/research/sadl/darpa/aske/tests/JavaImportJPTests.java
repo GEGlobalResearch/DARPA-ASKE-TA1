@@ -444,7 +444,7 @@ public class JavaImportJPTests extends AbstractDialogTest {
 	@Test
 	public void test_07() throws IOException, ConfigurationException, OwlImportException, QueryParseException, QueryCancelledException, ReasonerNotFoundException, InvalidNameException, AnswerExtractionException, AmbiguousNameException {
 		// test save command given an OWL file generated from a .dialog file is available as input.
-		File owlF = new File(getCodeExtractionKbRoot() + "\\OwlModels\\test2.dialog.owl");
+		File owlF = new File(getCodeExtractionKbRoot() + "/OwlModels/test2.dialog.owl");
 		assertTrue(owlF.exists());
 		
 		IConfigurationManagerForIDE cm = ConfigurationManagerForIdeFactory.getConfigurationManagerForIDE(getDomainProjectModelFolder(), null);
