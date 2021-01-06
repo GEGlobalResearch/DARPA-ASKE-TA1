@@ -867,6 +867,18 @@ public class JavaModelExtractorJP implements IModelFromCodeExtractor {
 			try {
 				OntClass codeVarClass = getMethodVariableClass();
 				Individual vdInst = getOrCreateCodeVariable(vdecl, containingInst, codeVarClass);
+				
+				//AG: process the RHS like the RHS of an AssignExpr below
+				NodeList<VariableDeclarator> vars = ((VariableDeclarationExpr)childNode).getVariables();
+				for (int i = 0; i < vars.size(); i++) {
+					if (i > 0) {
+						logger.debug("Multiple vars (" + childNode.toString() + ") in VariableDeclarationExpr not current handled");
+					}
+					VariableDeclarator var = vars.get(i);
+					List<Node> children = var.getChildNodes();
+					Node rhs = children.get(2); //get the right-hand-side of the declaration
+					processBlockChild(rhs, containingInst, USAGE.Used);
+				}
 			} catch (AnswerExtractionException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
@@ -958,7 +970,7 @@ public class JavaModelExtractorJP implements IModelFromCodeExtractor {
 				processBlockChild(children.get(j), containingInst, null);
 			}
 		}
-		else if (childNode instanceof ReturnStmt) {
+		else if (childNode instanceof ReturnStmt) { //AG: does not consider that ReturnStmt may be a MethodCallExpr
 			List<Node> returnChildren = ((ReturnStmt)childNode).getChildNodes();
 			if (!returnChildren.isEmpty()) {
 				Node ret0 = returnChildren.get(0);
