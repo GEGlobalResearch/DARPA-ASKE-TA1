@@ -94,6 +94,8 @@ import com.github.javaparser.ast.expr.AssignExpr;
 import com.github.javaparser.ast.expr.BinaryExpr;
 import com.github.javaparser.ast.expr.BinaryExpr.Operator;
 import com.github.javaparser.ast.expr.BooleanLiteralExpr;
+import com.github.javaparser.ast.expr.CastExpr;
+import com.github.javaparser.ast.expr.ConditionalExpr;
 import com.github.javaparser.ast.expr.DoubleLiteralExpr;
 import com.github.javaparser.ast.expr.EnclosedExpr;
 import com.github.javaparser.ast.expr.Expression;
@@ -877,6 +879,16 @@ public class JavaModelExtractorJP implements IModelFromCodeExtractor {
 					VariableDeclarator var = vars.get(i);
 					List<Node> children = var.getChildNodes();
 					Node rhs = children.get(2); //get the right-hand-side of the declaration
+					if (rhs instanceof LiteralExpr) {
+						if (vdInst != null) {
+							logger.debug(vdInst.getLocalName() + ": " + vdecl.toString());
+							addPotentialConstant(vdInst, (LiteralExpr)rhs);
+						}
+					}
+					else {
+						removePotentalConstant(vdInst);
+//						processBlockChild(n1, containingInst, knownUsage);
+					}
 					processBlockChild(rhs, containingInst, USAGE.Used);
 				}
 			} catch (AnswerExtractionException e) {
@@ -933,6 +945,19 @@ public class JavaModelExtractorJP implements IModelFromCodeExtractor {
 				logger.debug("BinaryExpr: " + ((BinaryExpr)childNode).toString());
 			}
 			processBlock(childNode, containingInst);
+		}
+		else if (childNode instanceof ConditionalExpr) {
+			Expression cond = ((ConditionalExpr) childNode).getCondition();
+			processBlockChild(cond, containingInst, USAGE.Used);
+			List<Node> condChildren = ((ConditionalExpr)childNode).getChildNodes();
+			for (int j = 1; j < condChildren.size(); j++) {
+				processBlockChild(condChildren.get(j), containingInst, null);
+			}
+		}
+		else if (childNode instanceof CastExpr) {
+			CastExpr castexp = (CastExpr) childNode;
+			Expression cexp = castexp.getExpression();
+			processBlockChild(cexp, containingInst, null);
 		}
 		else if (childNode instanceof NameExpr) {
 			String nm = ((NameExpr)childNode).getNameAsString();
