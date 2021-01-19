@@ -2212,7 +2212,7 @@ public class JenaBasedDialogModelProcessor extends JenaBasedSadlModelProcessor {
 		List<ModelError> results = translateAndSaveModel(resource, saveFile.getName(), format, newMappings, "Dialog");
 		if (results != null) {
 			generationInProgress = false; // we need these errors to show up
-			modelErrorsToOutput(resource, results);
+			modelErrorsToOutput(resource, results, false);
 		}
 }
 
