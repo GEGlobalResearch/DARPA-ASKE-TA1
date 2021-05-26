@@ -46,3 +46,6 @@ kchain/log
 
 ModelsFromText/text-to-triples-services/.idea/
 ModelsFromText/text-to-triples-services/__pycache__/
+
+*.xml_gen
+*.ecore

@@ -59,6 +59,7 @@ public class AnswerExtractionProcessor {
 	private String serializedCode;
 	private OntModel contextModel;	// the knowledge graph to use during extraction
 	private IModelFromCodeExtractor codeExtractor;
+	private IModelFromCodeExtractor grFnExtractor;
 	private TextProcessor textProcessor;
 	private Map<String, String> preferences = null;
 	private AnswerCurationManager curationManager = null;
@@ -143,6 +144,15 @@ public class AnswerExtractionProcessor {
 //		this.codeModel = codeModel;
 //	}
 
+	public OntModel getGrFNModel() {
+		return getGrFNExtractor().getCurrentCodeModel();
+	}
+	
+	public void setGrFNModel(OntModel m) {
+		getGrFNExtractor().setCurrentCodeModel(m);
+	}
+
+	
 	public IModelFromCodeExtractor getCodeExtractor(CodeLanguage language) {
 		if (codeExtractor == null) {
 			if (language.equals(CodeLanguage.JAVA)) {
@@ -161,6 +171,17 @@ public class AnswerExtractionProcessor {
 
 	public void setCodeExtractor(IModelFromCodeExtractor codeExtractor) {
 		this.codeExtractor = codeExtractor;
+	}
+
+	public IModelFromCodeExtractor getGrFNExtractor() {
+		if (grFnExtractor == null) {
+			grFnExtractor = new GrFNModelExtractor(getCurationManager(), getPreferences());
+		}
+		return grFnExtractor;
+	}
+
+	public void setGrFNExtractor(IModelFromCodeExtractor grFnExtractor) {
+		this.grFnExtractor = grFnExtractor;
 	}
 
 	public TextProcessor getTextProcessor() {
@@ -223,6 +244,15 @@ public class AnswerExtractionProcessor {
 		return getCodeExtractor().getCodeModelPrefix();
 	}
 
+	public String getGrFNModelName() {
+		return getGrFNExtractor().getCodeModelName();
+	}
+
+	public String getGrFNModelPrefix() {
+		return getGrFNExtractor().getCodeModelPrefix();
+	}
+
+	
 	/**
 	 * method to get the namespace from the model name by adding a "#" to the end
 	 * @param modelName

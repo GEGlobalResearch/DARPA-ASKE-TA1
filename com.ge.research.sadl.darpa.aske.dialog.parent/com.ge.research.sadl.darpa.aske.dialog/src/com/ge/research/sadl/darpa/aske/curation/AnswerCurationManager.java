@@ -114,6 +114,7 @@ import com.ge.research.sadl.darpa.aske.processing.imports.AnswerExtractionExcept
 import com.ge.research.sadl.darpa.aske.processing.imports.AnswerExtractionProcessor;
 import com.ge.research.sadl.darpa.aske.processing.imports.IModelFromCodeExtractor;
 import com.ge.research.sadl.darpa.aske.processing.imports.JavaModelExtractorJP;
+import com.ge.research.sadl.darpa.aske.processing.imports.GrFNModelExtractor;
 import com.ge.research.sadl.darpa.aske.processing.imports.KChainServiceInterface;
 import com.ge.research.sadl.darpa.aske.processing.imports.TextProcessingServiceInterface.EquationVariableContextResponse;
 import com.ge.research.sadl.darpa.aske.processing.imports.TextProcessor;
@@ -315,6 +316,10 @@ public class AnswerCurationManager {
 		return getExtractionProcessor().getCodeExtractor();
 	}
 
+	public IModelFromCodeExtractor getGrFNExtractor() {
+		return getExtractionProcessor().getGrFNExtractor();
+	}
+
 	public AnswerExtractionProcessor getExtractionProcessor() {
 		if (extractionProcessor == null) {
 			extractionProcessor = new AnswerExtractionProcessor(this, getPreferences());
@@ -343,7 +348,7 @@ public class AnswerCurationManager {
 	public int processImports(SaveAsSadl saveAsSadl) throws IOException, ConfigurationException, InvalidNameException, ReasonerNotFoundException, QueryParseException, QueryCancelledException, AnswerExtractionException, InvalidInputException, AmbiguousNameException {
 		int numSuccessfullyProcessed = 0;
 		addedTypeDeclarations.clear();
-		Map<File, Boolean> outputOwlFilesBySourceType = new HashMap<File, Boolean>();	// Map of imports, value is true if code, false if text extraction
+		Map<File, Integer> outputOwlFilesBySourceType = new HashMap<File, Integer>();	// Map of imports, value is true if code, false if text extraction
 //		List<File> outputOwlFiles = new ArrayList<File>();
 		List<File> textFiles = getExtractionProcessor().getTextProcessor().getTextFiles();
 		if (textFiles != null) {
@@ -360,7 +365,7 @@ public class AnswerCurationManager {
 				File of = extractFromTextAndSave(content, fileIdentifier, outputModelName, outputOwlFileName);
 				if (of != null) {
 					numSuccessfullyProcessed++;
-					outputOwlFilesBySourceType.put(of, false);
+					outputOwlFilesBySourceType.put(of, 0);
 					outputOwlFileName = of.getCanonicalPath();
 					processExtractedText(outputModelName, outputOwlFileName, saveAsSadl);
 				}
@@ -383,7 +388,7 @@ public class AnswerCurationManager {
 				File of = extractFromCodeAndSave(content, fileIdentifier, outputModelName, prefix, outputOwlFileName);
 				if (of != null) {
 					numSuccessfullyProcessed++;
-					outputOwlFilesBySourceType.put(of, true);
+					outputOwlFilesBySourceType.put(of, 1);
 					outputOwlFileName = of.getCanonicalPath();
 					// run inference on the model, interact with user to refine results
 					String queryString = useAllCodeExtractedMethods ? SparqlQueries.ALL_CODE_EXTRACTED_METHODS : SparqlQueries.INTERESTING_METHODS_DOING_COMPUTATION;	//?m ?b ?e ?s
@@ -459,6 +464,19 @@ public class AnswerCurationManager {
 		return null;
 	}
 
+	private File extractFromGrFNAndSave(String content, String fileIdentifier, String outputModelName, String prefix,
+			String outputOwlFileName) throws ConfigurationException, IOException {
+		Map<File, Integer> outputOwlFilesBySourceType = new HashMap<File, Integer>();
+		if (getGrFNExtractor().process(fileIdentifier, content, outputModelName, prefix)) {			
+			File of = saveGrFNOwlFile(outputOwlFileName);
+			outputOwlFilesBySourceType.put(of, 2);
+			saveAsSadlFile(outputOwlFilesBySourceType, "yes");
+			return of;
+		}
+		return null;
+	}
+
+	
 	private File extractFromTextAndSave(String content, String inputIdentifier, String extractedTxtModelName, String outputOwlFileName)
 			throws IOException, ConfigurationException, AnswerExtractionException {
 		// clear any existing localityURI graph before processing text.
@@ -539,7 +557,7 @@ public class AnswerCurationManager {
 	 * @return
 	 */
 	public String getModelNameFromInputFile(File inputFile) {
-		String name = "http://com.ge.research.sadl.darpa.aske.answer/" + getModelPrefixFromInputFile(inputFile);
+		String name = "http://aske.ge.com/" + getModelPrefixFromInputFile(inputFile);
 		return name;
 	}
 	
@@ -614,6 +632,29 @@ public class AnswerCurationManager {
 		return of;
 	}
 
+	private File saveGrFNOwlFile(String outputFilename) throws ConfigurationException, IOException {
+		File of = new File(new File(getOwlModelsFolder()).getParent() + 
+				"/" + DialogConstants.EXTRACTED_MODELS_FOLDER_PATH_FRAGMENT + "/" + outputFilename);
+		of.getParentFile().mkdirs();
+		getExtractionProcessor().getGrFNExtractor().getCodeModelConfigMgr().saveOwlFile(getExtractionProcessor().getGrFNModel(), getExtractionProcessor().getGrFNModelName(), of.getCanonicalPath());
+		String outputOwlFileName = of.getCanonicalPath();			
+		getExtractionProcessor().getGrFNExtractor().addCodeModel(outputOwlFileName, getExtractionProcessor().getGrFNModel());
+
+		String altUrl;
+		try {
+			altUrl = (new SadlUtils()).fileNameToFileUrl(outputOwlFileName);
+			getExtractionProcessor().getGrFNExtractor().getCodeModelConfigMgr().addMapping(altUrl, getExtractionProcessor().getGrFNModelName(), getExtractionProcessor().getGrFNModelPrefix(), false, "AnswerCurationManager");
+			getExtractionProcessor().getGrFNExtractor().getCodeModelConfigMgr().addJenaMapping(getExtractionProcessor().getGrFNModelName(), altUrl);
+		} catch (URISyntaxException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		return of;
+	}
+	
+	
+	
+	
 	private ResultSet runInferenceFindInterestingTextModelResults(String outputOwlFileName, String queryString, SaveAsSadl saveAsSadl, String locality) throws ConfigurationException, IOException, ReasonerNotFoundException, InvalidNameException, QueryParseException, QueryCancelledException, AmbiguousNameException {
 		ResultSet results = null;
 		// clear reasoner from any previous model
@@ -3051,19 +3092,24 @@ public class AnswerCurationManager {
 	 * @return -- the sadl fully qualified file name
 	 * @throws IOException
 	 */
-	public List<String> saveAsSadlFile(Map<File, Boolean> outputOwlFiles, String response) throws IOException {
+	public List<String> saveAsSadlFile(Map<File, Integer> outputOwlFiles, String response) throws IOException {
 		if (isYes(response)) {
 			List<String> sadlFileNames = new ArrayList<String>();
 			for (File outputOwlFile : outputOwlFiles.keySet()) {
-				boolean isCodeExtract = outputOwlFiles.get(outputOwlFile);
+				int isCodeExtract = outputOwlFiles.get(outputOwlFile);
 				String key = outputOwlFile.getCanonicalPath();
 				OntModel mdl = null;
 				IConfigurationManagerForIDE cfgmgr = null;
 				String mdlName = null;
-				if (isCodeExtract) {
+				if (isCodeExtract == 1) {
 					mdl = getExtractionProcessor().getCodeExtractor().getCodeModel(key);
 					cfgmgr = getExtractionProcessor().getCodeExtractor().getCodeModelConfigMgr();
 					mdlName = getExtractionProcessor().getCodeModelName();
+				}
+				else if (isCodeExtract == 2) {
+					mdl = getExtractionProcessor().getGrFNExtractor().getCodeModel(key);
+					cfgmgr = getExtractionProcessor().getGrFNExtractor().getCodeModelConfigMgr();
+					mdlName = getExtractionProcessor().getGrFNModelName();
 				}
 				else {
 					mdl = getExtractionProcessor().getTextProcessor().getTextModel(key);
@@ -3758,6 +3804,26 @@ public class AnswerCurationManager {
 					saveSuspendedCodeModel(null);
 				}
 				catch (Throwable t) {
+					t.printStackTrace();
+				}
+			}
+			else if(sc.getUrl().endsWith("grfn.json")) {
+				//AG: extract from AUTOMATES GrFN json
+				String outputOwlFileName = prefix + ".owl";
+				try {
+					if (getSuspendedExtractionContent() == null) {
+						File of = extractFromGrFNAndSave(content, sc.getUrl(), outputModelName, prefix, outputOwlFileName);
+						if (of != null) {
+							
+						}
+					}
+					else {
+						getExtractionProcessor().setCodeModel(getSuspendedCodeModel());
+					}
+					returnStatus += "Extraction from GrFN Json completed";
+					saveSuspendedExtractionContent(null);
+//					saveSuspendedCodeModel(null);
+				} catch (Throwable t) {
 					t.printStackTrace();
 				}
 			}

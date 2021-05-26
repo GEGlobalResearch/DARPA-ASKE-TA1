@@ -609,7 +609,7 @@ public class JavaImportOperation extends WorkspaceModifyOperation {
     			importFilePath = copyAndDisplayImportFile(project, (File) fileObject);
     		}
     		else {
-        		IStatus status = new Status(IStatus.ERROR, null, 0, "Selected object is not a file", null);
+        		IStatus status = new Status(IStatus.ERROR, (String)null, 0, "Selected object is not a file", null);
         		errorTable.add(status);
         		return null;
     		}	
@@ -906,7 +906,7 @@ public class JavaImportOperation extends WorkspaceModifyOperation {
 			files = new ArrayList<File>();
 		}
 		if (file.isFile()) {
-			if (file.getName().endsWith(".java")) {
+			if (file.getName().endsWith(".java") || file.getName().endsWith(".grfn.json")) {
 				files.add(file);
 			}
 		}

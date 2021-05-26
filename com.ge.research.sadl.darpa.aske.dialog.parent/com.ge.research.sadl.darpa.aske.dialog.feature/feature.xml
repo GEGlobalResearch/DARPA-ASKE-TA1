@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <feature
       id="com.ge.research.sadl.darpa.aske.dialog.feature"
-      label="Dialog for DARPA ASKE ANSWER"
+      label="Dialog for DARPA ASKE"
       version="1.1.0.qualifier"
       provider-name="GE Research">
 

@@ -563,7 +563,7 @@ public class JavaModelExtractorJP implements IModelFromCodeExtractor {
 //			return pkg;
 //		}
 	}
-
+//TODO 
 	private void initializeCodeModel(String extractionMetaModelModelFolder) throws ConfigurationException, IOException {
 		if (getCurationMgr().getExtractionProcessor().getCodeModel() == null) {
 			// create new code model
