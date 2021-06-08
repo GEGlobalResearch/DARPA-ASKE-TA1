@@ -1,0 +1,32 @@
+uri "http://aske.ge.com/test_grfn_json" alias test_grfn_json
+    (note "This ontology was created by extraction from GrFN json by the GraSEN GrFNModelExtractor.").
+
+import "http://sadl.org/GrFNExtractionModel.sadl" as grfnem.
+
+
+// Individuals:
+_1846d424-c17c-6279-23c6-612f48268673 is a grfnem:Variable.
+_31d0b664-0589-f877-9b02-52440950fd13 is a grfnem:SubGraph,
+    has grfnem:namespace "GE_simple_PI_controller",
+    has grfnem:scope "GE_simple_PI_controller",
+    has grfnem:sg_type "FuncContainer",
+    has grfnem:uid "_31d0b664-0589-f877-9b02-52440950fd13".
+ba26d851-35e8-579a-7aaf-0e891fb797fa is a grfnem:Function,
+    has grfnem:metadata (a grfnem:Metadata
+    with grfnem:line_begin 10),
+    has grfnem:ftype "ASSIGN",
+    has grfnem:lambda "lambda Input_dmd,Input_sensed: (Input_dmd - Input_sensed)".
+eb1167b3-67a9-c378-7c65-c1e582e2e662 is a grfnem:Variable.
+ebe21368-98c7-5205-1e01-a934402d0baf is a grfnem:GrFN,
+    has grfnem:subgraphs _31d0b664-0589-f877-9b02-52440950fd13,
+    has grfnem:hyper_edges (a grfnem:HyperEdge
+    with grfnem:outputs _1846d424-c17c-6279-23c6-612f48268673,
+    with grfnem:inputs eb1167b3-67a9-c378-7c65-c1e582e2e662,
+    with grfnem:inputs f728b4fa-4248-5e3a-0a5d-2f346baa9455,
+    with grfnem:function ba26d851-35e8-579a-7aaf-0e891fb797fa),
+    has grfnem:date_created "2021-05-14".
+f728b4fa-4248-5e3a-0a5d-2f346baa9455 is a grfnem:Variable,
+    has grfnem:metadata (a grfnem:Metadata
+    with grfnem:line_begin 8),
+    has grfnem:uid "f728b4fa-4248-5e3a-0a5d-2f346baa9455",
+    has grfnem:identifier "GE_simple_PI_controller::GE_simple_PI_controller.PI_calc::Input_dmd::-1".

@@ -632,7 +632,7 @@ public class AnswerCurationManager {
 		return of;
 	}
 
-	private File saveGrFNOwlFile(String outputFilename) throws ConfigurationException, IOException {
+	public File saveGrFNOwlFile(String outputFilename) throws ConfigurationException, IOException {
 		File of = new File(new File(getOwlModelsFolder()).getParent() + 
 				"/" + DialogConstants.EXTRACTED_MODELS_FOLDER_PATH_FRAGMENT + "/" + outputFilename);
 		of.getParentFile().mkdirs();

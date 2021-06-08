@@ -1,0 +1,674 @@
+uri "http://aske.ge.com/GE_simple_PI_controller--GrFN_grfn_json" alias GE_simple_PI_controller--GrFN_grfn_json
+    (note "This ontology was created by extraction from GrFN json by the GraSEN GrFNModelExtractor.").
+
+import "http://sadl.org/GrFNExtractionModel.sadl" as grfnem.
+
+
+// Individuals:
+_0fa07a3f-2e29-5065-6fa2-31e959acdd98 is a grfnem:Function,
+    has grfnem:metadata (a grfnem:Metadata),
+    has grfnem:ftype "INTERFACE",
+    has grfnem:lambda "lambda plant_command_0,plant_gain_0:(plant_command_0,plant_gain_0)".
+_101fbccc-ded7-33e8-b421-eaeb534097ca is a grfnem:Variable,
+    has grfnem:metadata (a grfnem:Metadata
+    with grfnem:line_begin 48),
+    has grfnem:uid "_101fbccc-ded7-33e8-b421-eaeb534097ca",
+    has grfnem:identifier "GE_simple_PI_controller::GE_simple_PI_controller.main.LOOP_0::i::-1".
+_11ebcd49-428a-1c22-d5fd-b76a19fbeb1d is a grfnem:Function,
+    has grfnem:metadata (a grfnem:Metadata),
+    has grfnem:ftype "INTERFACE",
+    has grfnem:lambda "lambda RETURN_VAL,integrator_state:(RETURN_VAL,integrator_state)".
+_12e0c8b2-bad6-40fb-1948-8dec4f65d4d9 is a grfnem:Variable,
+    has grfnem:metadata (a grfnem:Metadata
+    with grfnem:line_begin 20),
+    has grfnem:uid "_12e0c8b2-bad6-40fb-1948-8dec4f65d4d9",
+    has grfnem:identifier "GE_simple_PI_controller::GE_simple_PI_controller.plant_model::input::-1".
+_148b2758-d7ab-7928-09e4-69e6ec62b2c8 is a grfnem:Variable,
+    has grfnem:metadata (a grfnem:Metadata),
+    has grfnem:uid "_148b2758-d7ab-7928-09e4-69e6ec62b2c8",
+    has grfnem:identifier "GE_simple_PI_controller::GE_simple_PI_controller.main.LOOP_0::integrator_state::1".
+_1759edc3-72ae-2244-8b01-63c1cd9d2b7d is a grfnem:Variable,
+    has grfnem:metadata (a grfnem:Metadata
+    with grfnem:line_begin 36),
+    has grfnem:uid "_1759edc3-72ae-2244-8b01-63c1cd9d2b7d",
+    has grfnem:identifier "GE_simple_PI_controller::GE_simple_PI_controller.main.LOOP_0::desired_output::-1".
+_176ea1b1-6426-4cd5-1ea4-5cd69371a71f is a grfnem:SubGraph,
+    has grfnem:nodes d67e55fd-642b-fa42-aef9-c00b8a64c1b9,
+    has grfnem:sg_type "LoopContainer",
+    has grfnem:namespace "GE_simple_PI_controller",
+    has grfnem:nodes _5129fb7c-6288-e1a5-cc45-782198a6416d,
+    has grfnem:nodes _4a84eb03-8d1f-d9b7-4d2b-9deb1beb3711,
+    has grfnem:uid "_176ea1b1-6426-4cd5-1ea4-5cd69371a71f",
+    has grfnem:nodes _148b2758-d7ab-7928-09e4-69e6ec62b2c8,
+    has grfnem:nodes _552f233a-8c25-166a-1ff3-9849b4e1357d,
+    has grfnem:nodes d450fe4a-ec4f-217b-b306-d1a8e5eeac76,
+    has grfnem:nodes d3447490-96fd-35d0-adf2-0806e5214606,
+    has grfnem:parent _30bcab0e-d857-0102-55d4-4936a1515607,
+    has grfnem:nodes e6fd68e8-d69c-91c2-7860-1602bb4a06cb,
+    has grfnem:nodes _2648ee38-e074-05eb-2156-63abc1f254b8,
+    has grfnem:metadata (a grfnem:Metadata
+    with grfnem:line_end 52),
+    has grfnem:nodes _878b9f6b-57a1-cb71-2975-d279d86dbf11,
+    has grfnem:nodes e786ab37-5bca-47be-4298-17c53308fb2e,
+    has grfnem:nodes _8c1745a7-9a6a-5f92-cca7-4147f6be1f72,
+    has grfnem:nodes _42930b33-a81a-d477-fb36-75b89cdeb3e6,
+    has grfnem:nodes _38c1962e-9148-624f-eac1-c14f30e9c5cc,
+    has grfnem:nodes _1759edc3-72ae-2244-8b01-63c1cd9d2b7d,
+    has grfnem:nodes e005b860-51ef-1922-fe43-c49e149818d1,
+    has grfnem:nodes c470f0e7-f76f-bfb8-3412-fc12ac322c12,
+    has grfnem:nodes _3405095c-8a50-06c1-ec18-8efbd080e66e,
+    has grfnem:nodes _37176e84-d977-e993-3c49-d76fcfc6e625,
+    has grfnem:nodes adc0da7a-16fe-baa0-11af-923d79fdef7c,
+    has grfnem:nodes _101fbccc-ded7-33e8-b421-eaeb534097ca,
+    has grfnem:nodes _28805c5d-ad1b-8f60-c9e4-dab20edc6d2b,
+    has grfnem:nodes _247a8333-f7b0-b7d2-cda8-056c3d15eef7,
+    has grfnem:nodes _7d41e602-eece-328b-ff7b-118e820865d6,
+    has grfnem:nodes _85940927-468f-f53d-864a-7a50b48d73f1,
+    has grfnem:nodes b29c467d-2b5f-6932-91dc-59efeb21a3f6,
+    has grfnem:scope "GE_simple_PI_controller.main",
+    has grfnem:nodes _1db53334-fb03-23a1-d576-d4155ec17dbe,
+    has grfnem:nodes _2f120554-4a53-08cc-3dfa-bc08935ddd72 .
+_17e0aa3c-0398-3ca8-ea7e-9d498c778ea6 is a grfnem:Variable,
+    has grfnem:metadata (a grfnem:Metadata
+    with grfnem:line_begin 34),
+    has grfnem:uid "_17e0aa3c-0398-3ca8-ea7e-9d498c778ea6",
+    has grfnem:identifier "GE_simple_PI_controller::GE_simple_PI_controller.main::num_steps::0".
+_1846d424-c17c-6279-23c6-612f48268673 is a grfnem:Variable,
+    has grfnem:metadata (a grfnem:Metadata
+    with grfnem:line_begin 10),
+    has grfnem:uid "_1846d424-c17c-6279-23c6-612f48268673",
+    has grfnem:identifier "GE_simple_PI_controller::GE_simple_PI_controller.PI_calc::error::0".
+_1db53334-fb03-23a1-d576-d4155ec17dbe is a grfnem:Function,
+    has grfnem:metadata (a grfnem:Metadata),
+    has grfnem:ftype "INTERFACE",
+    has grfnem:lambda "lambda i_0,num_steps_0,desired_output_0,sensed_output_0,Kp_M_0,Ki_M_0,time_step_0,integrator_state_0,plant_gain_0:(i_0,num_steps_0,desired_output_0,sensed_output_0,Kp_M_0,Ki_M_0,time_step_0,integrator_state_0,plant_gain_0)".
+_1fdb8b32-06d5-99e8-12f1-75ffae3b16ec is a grfnem:Function,
+    has grfnem:metadata (a grfnem:Metadata
+    with grfnem:line_begin 43),
+    has grfnem:ftype "LITERAL",
+    has grfnem:lambda "lambda : 0.0".
+_23a7711a-8133-2876-37eb-dcd9e87a1613 is a grfnem:Variable,
+    has grfnem:metadata (a grfnem:Metadata
+    with grfnem:line_begin 8),
+    has grfnem:uid "_23a7711a-8133-2876-37eb-dcd9e87a1613",
+    has grfnem:identifier "GE_simple_PI_controller::GE_simple_PI_controller.PI_calc::timestep::-1".
+_247a8333-f7b0-b7d2-cda8-056c3d15eef7 is a grfnem:Variable,
+    has grfnem:metadata (a grfnem:Metadata
+    with grfnem:line_begin 48),
+    has grfnem:uid "_247a8333-f7b0-b7d2-cda8-056c3d15eef7",
+    has grfnem:identifier "GE_simple_PI_controller::GE_simple_PI_controller.main.LOOP_0::COND_0_0::-1".
+_259f4329-e6f4-590b-9a16-4106cf6a659e is a grfnem:Variable,
+    has grfnem:metadata (a grfnem:Metadata
+    with grfnem:line_begin 14),
+    has grfnem:uid "_259f4329-e6f4-590b-9a16-4106cf6a659e",
+    has grfnem:identifier "GE_simple_PI_controller::GE_simple_PI_controller.PI_calc::RETURN_VAL::-1".
+_2648ee38-e074-05eb-2156-63abc1f254b8 is a grfnem:Variable,
+    has grfnem:metadata (a grfnem:Metadata
+    with grfnem:line_begin 48),
+    has grfnem:uid "_2648ee38-e074-05eb-2156-63abc1f254b8",
+    has grfnem:identifier "GE_simple_PI_controller::GE_simple_PI_controller.main.LOOP_0::EXIT::-1".
+_28805c5d-ad1b-8f60-c9e4-dab20edc6d2b is a grfnem:Function,
+    has grfnem:metadata (a grfnem:Metadata
+    with grfnem:line_begin 52),
+    has grfnem:ftype "DECISION",
+    has grfnem:lambda "lambda i_initial,sensed_output_initial,integrator_state_initial,i_updated,sensed_output_updated,integrator_state_updated: (i_initial,sensed_output_initial,integrator_state_initial) if i_updated is None and sensed_output_updated is None and integrator_state_updated is None else (i_updated,sensed_output_updated,integrator_state_updated)".
+_2f120554-4a53-08cc-3dfa-bc08935ddd72 is a grfnem:Variable,
+    has grfnem:metadata (a grfnem:Metadata
+    with grfnem:line_begin 41),
+    has grfnem:uid "_2f120554-4a53-08cc-3dfa-bc08935ddd72",
+    has grfnem:identifier "GE_simple_PI_controller::GE_simple_PI_controller.main.LOOP_0::plant_gain::-1".
+_30bcab0e-d857-0102-55d4-4936a1515607 is a grfnem:SubGraph,
+    has grfnem:nodes _9a27d858-88c1-32ad-efbf-c19ee8f6cf32,
+    has grfnem:scope "GE_simple_PI_controller",
+    has grfnem:nodes baf3897a-3e70-f16a-5548-5822de1b372a,
+    has grfnem:nodes eb2083e6-ce16-4dba-0ff1-8e0242af9fc3,
+    has grfnem:nodes _5f3f5638-3870-1a14-b490-b6081dfc8352,
+    has grfnem:nodes a425799a-a905-d750-7e1e-a9c573581a81,
+    has grfnem:nodes _4562be7f-bb42-e0b2-0426-465e3e37952d,
+    has grfnem:nodes _38018b47-b29a-8b06-daf6-6c5f2577bffa,
+    has grfnem:nodes a0116be5-ab0c-1681-c8f8-e3d0d3290a4c,
+    has grfnem:nodes _17e0aa3c-0398-3ca8-ea7e-9d498c778ea6,
+    has grfnem:nodes _8d723104-f773-83c1-3458-a748e9bb17bc,
+    has grfnem:nodes fb82860d-eabc-a8d0-b341-facdff0ac0f1,
+    has grfnem:nodes a25b59fd-92e8-e269-d12e-cbc40b9475b1,
+    has grfnem:nodes d3fbf47a-7e5b-1e7f-9ca5-499d004ae545,
+    has grfnem:nodes _5306f3f5-1516-6570-5b7c-709acb175a5a,
+    has grfnem:nodes a3f2c9bf-9c63-16b9-50f2-44556f25e2a2,
+    has grfnem:metadata (a grfnem:Metadata
+    with grfnem:line_end 61,
+    with grfnem:line_begin 26),
+    has grfnem:nodes b5d32b16-6619-4cb1-d710-37d1b83e90ec,
+    has grfnem:nodes _85776e9a-dd84-f39e-7154-5a137a1d5006,
+    has grfnem:uid "_30bcab0e-d857-0102-55d4-4936a1515607",
+    has grfnem:nodes _1fdb8b32-06d5-99e8-12f1-75ffae3b16ec,
+    has grfnem:sg_type "FuncContainer",
+    has grfnem:namespace "GE_simple_PI_controller",
+    has grfnem:nodes d480865f-9b38-fe80-3042-e325a28f5ab0,
+    has grfnem:nodes c87a7463-19c1-6a0d-0feb-d845d0dfae43,
+    has grfnem:nodes _6d16ee18-5521-16dd-2ba4-b180cb69ca38,
+    has grfnem:nodes _46743741-9466-e472-6b5f-5241f323ca74 .
+_31d0b664-0589-f877-9b02-52440950fd13 is a grfnem:SubGraph,
+    has grfnem:nodes _9edfa3da-6cf5-5b15-8b53-031d05d51433,
+    has grfnem:nodes f7c1bd87-4da5-e709-d471-3d60c8a70639,
+    has grfnem:nodes eb1167b3-67a9-c378-7c65-c1e582e2e662,
+    has grfnem:nodes f728b4fa-4248-5e3a-0a5d-2f346baa9455,
+    has grfnem:nodes ba26d851-35e8-579a-7aaf-0e891fb797fa,
+    has grfnem:scope "GE_simple_PI_controller",
+    has grfnem:nodes ade9b2b4-efdd-35f8-0fa3-4266ccfdba9b,
+    has grfnem:nodes _259f4329-e6f4-590b-9a16-4106cf6a659e,
+    has grfnem:nodes e443df78-9558-867f-5ba9-1faf7a024204,
+    has grfnem:namespace "GE_simple_PI_controller",
+    has grfnem:nodes b7d6467b-2f5a-522a-f87f-43fdf6062541,
+    has grfnem:metadata (a grfnem:Metadata
+    with grfnem:line_end 15,
+    with grfnem:line_begin 9),
+    has grfnem:nodes _23a7711a-8133-2876-37eb-dcd9e87a1613,
+    has grfnem:nodes fcbd04c3-4021-2ef7-cca5-a5a19e4d6e3c,
+    has grfnem:sg_type "FuncContainer",
+    has grfnem:uid "_31d0b664-0589-f877-9b02-52440950fd13",
+    has grfnem:parent _176ea1b1-6426-4cd5-1ea4-5cd69371a71f,
+    has grfnem:nodes _1846d424-c17c-6279-23c6-612f48268673,
+    has grfnem:nodes _11ebcd49-428a-1c22-d5fd-b76a19fbeb1d,
+    has grfnem:nodes b4862b21-fb97-d435-8856-1712e8e5216a.
+_3405095c-8a50-06c1-ec18-8efbd080e66e is a grfnem:Variable,
+    has grfnem:metadata (a grfnem:Metadata),
+    has grfnem:uid "_3405095c-8a50-06c1-ec18-8efbd080e66e",
+    has grfnem:identifier "GE_simple_PI_controller::GE_simple_PI_controller.main.LOOP_0::integrator_state::-1".
+_37176e84-d977-e993-3c49-d76fcfc6e625 is a grfnem:Variable,
+    has grfnem:metadata (a grfnem:Metadata
+    with grfnem:line_begin 52),
+    has grfnem:uid "_37176e84-d977-e993-3c49-d76fcfc6e625",
+    has grfnem:identifier "GE_simple_PI_controller::GE_simple_PI_controller.main.LOOP_0::sensed_output::2".
+_38018b47-b29a-8b06-daf6-6c5f2577bffa is a grfnem:Function,
+    has grfnem:metadata (a grfnem:Metadata
+    with grfnem:line_begin 34),
+    has grfnem:ftype "ASSIGN",
+    has grfnem:lambda "lambda t_final,time_step: (t_final / time_step)".
+_38c1962e-9148-624f-eac1-c14f30e9c5cc is a grfnem:Variable,
+    has grfnem:metadata (a grfnem:Metadata
+    with grfnem:line_begin 34),
+    has grfnem:uid "_38c1962e-9148-624f-eac1-c14f30e9c5cc",
+    has grfnem:identifier "GE_simple_PI_controller::GE_simple_PI_controller.main.LOOP_0::num_steps::-1".
+_42930b33-a81a-d477-fb36-75b89cdeb3e6 is a grfnem:Variable,
+    has grfnem:metadata (a grfnem:Metadata
+    with grfnem:line_begin 52),
+    has grfnem:uid "_42930b33-a81a-d477-fb36-75b89cdeb3e6",
+    has grfnem:identifier "GE_simple_PI_controller::GE_simple_PI_controller.main.LOOP_0::sensed_output::0".
+_4562be7f-bb42-e0b2-0426-465e3e37952d is a grfnem:Function,
+    has grfnem:metadata (a grfnem:Metadata
+    with grfnem:line_begin 28),
+    has grfnem:ftype "LITERAL",
+    has grfnem:lambda "lambda : 100.5".
+_46743741-9466-e472-6b5f-5241f323ca74 is a grfnem:Variable,
+    has grfnem:metadata (a grfnem:Metadata),
+    has grfnem:uid "_46743741-9466-e472-6b5f-5241f323ca74",
+    has grfnem:identifier "GE_simple_PI_controller::GE_simple_PI_controller.main::integrator_state::-1".
+_4a84eb03-8d1f-d9b7-4d2b-9deb1beb3711 is a grfnem:Variable,
+    has grfnem:metadata (a grfnem:Metadata
+    with grfnem:line_begin 31),
+    has grfnem:uid "_4a84eb03-8d1f-d9b7-4d2b-9deb1beb3711",
+    has grfnem:identifier "GE_simple_PI_controller::GE_simple_PI_controller.main.LOOP_0::Ki_M::-1".
+_4d125e7f-a59c-ec98-126c-bc8f38884479 is a grfnem:SubGraph,
+    has grfnem:metadata (a grfnem:Metadata
+    with grfnem:line_end 23,
+    with grfnem:line_begin 21),
+    has grfnem:uid "_4d125e7f-a59c-ec98-126c-bc8f38884479",
+    has grfnem:scope "GE_simple_PI_controller",
+    has grfnem:parent _176ea1b1-6426-4cd5-1ea4-5cd69371a71f,
+    has grfnem:nodes _5487ce1e-af19-922a-d9b8-a714e61a441c,
+    has grfnem:nodes _642aad48-fcfc-fa81-b306-d70019d5f970,
+    has grfnem:nodes _98b33c6e-0a14-b90a-7795-e98680ee526e,
+    has grfnem:nodes _5a921187-19c7-8df4-8f4f-f31e78de5857,
+    has grfnem:nodes _0fa07a3f-2e29-5065-6fa2-31e959acdd98,
+    has grfnem:nodes _12e0c8b2-bad6-40fb-1948-8dec4f65d4d9,
+    has grfnem:namespace "GE_simple_PI_controller",
+    has grfnem:sg_type "FuncContainer".
+_5129fb7c-6288-e1a5-cc45-782198a6416d is a grfnem:Variable,
+    has grfnem:metadata (a grfnem:Metadata
+    with grfnem:line_begin 50),
+    has grfnem:uid "_5129fb7c-6288-e1a5-cc45-782198a6416d",
+    has grfnem:identifier "GE_simple_PI_controller::GE_simple_PI_controller.main.LOOP_0::plant_command::-1".
+_5306f3f5-1516-6570-5b7c-709acb175a5a is a grfnem:Variable,
+    has grfnem:metadata (a grfnem:Metadata),
+    has grfnem:uid "_5306f3f5-1516-6570-5b7c-709acb175a5a",
+    has grfnem:identifier "GE_simple_PI_controller::GE_simple_PI_controller.main::integrator_state::0".
+_5487ce1e-af19-922a-d9b8-a714e61a441c is a grfnem:Variable,
+    has grfnem:metadata (a grfnem:Metadata
+    with grfnem:line_begin 20),
+    has grfnem:uid "_5487ce1e-af19-922a-d9b8-a714e61a441c",
+    has grfnem:identifier "GE_simple_PI_controller::GE_simple_PI_controller.plant_model::gain::-1".
+_552f233a-8c25-166a-1ff3-9849b4e1357d is a grfnem:Variable,
+    has grfnem:metadata (a grfnem:Metadata
+    with grfnem:line_begin 29),
+    has grfnem:uid "_552f233a-8c25-166a-1ff3-9849b4e1357d",
+    has grfnem:identifier "GE_simple_PI_controller::GE_simple_PI_controller.main.LOOP_0::time_step::-1".
+_5a921187-19c7-8df4-8f4f-f31e78de5857 is a grfnem:Variable,
+    has grfnem:metadata (a grfnem:Metadata
+    with grfnem:line_begin 22),
+    has grfnem:uid "_5a921187-19c7-8df4-8f4f-f31e78de5857",
+    has grfnem:identifier "GE_simple_PI_controller::GE_simple_PI_controller.plant_model::RETURN_VAL::-1".
+_5f3f5638-3870-1a14-b490-b6081dfc8352 is a grfnem:Function,
+    has grfnem:metadata (a grfnem:Metadata
+    with grfnem:line_begin 29),
+    has grfnem:ftype "LITERAL",
+    has grfnem:lambda "lambda : 0.015".
+_642aad48-fcfc-fa81-b306-d70019d5f970 is a grfnem:Function,
+    has grfnem:metadata (a grfnem:Metadata),
+    has grfnem:ftype "INTERFACE",
+    has grfnem:lambda "lambda RETURN_VAL:(RETURN_VAL)".
+_6d16ee18-5521-16dd-2ba4-b180cb69ca38 is a grfnem:Function,
+    has grfnem:metadata (a grfnem:Metadata
+    with grfnem:line_begin 31),
+    has grfnem:ftype "LITERAL",
+    has grfnem:lambda "lambda : 20.0".
+_7d41e602-eece-328b-ff7b-118e820865d6 is a grfnem:Variable,
+    has grfnem:metadata (a grfnem:Metadata
+    with grfnem:line_begin 32),
+    has grfnem:uid "_7d41e602-eece-328b-ff7b-118e820865d6",
+    has grfnem:identifier "GE_simple_PI_controller::GE_simple_PI_controller.main.LOOP_0::Kp_M::-1".
+_85776e9a-dd84-f39e-7154-5a137a1d5006 is a grfnem:Variable,
+    has grfnem:metadata (a grfnem:Metadata
+    with grfnem:line_begin 31),
+    has grfnem:uid "_85776e9a-dd84-f39e-7154-5a137a1d5006",
+    has grfnem:identifier "GE_simple_PI_controller::GE_simple_PI_controller.main::Ki_M::0".
+_85940927-468f-f53d-864a-7a50b48d73f1 is a grfnem:Variable,
+    has grfnem:metadata (a grfnem:Metadata
+    with grfnem:line_begin 48),
+    has grfnem:uid "_85940927-468f-f53d-864a-7a50b48d73f1",
+    has grfnem:identifier "GE_simple_PI_controller::GE_simple_PI_controller.main.LOOP_0::i::2".
+_878b9f6b-57a1-cb71-2975-d279d86dbf11 is a grfnem:Function,
+    has grfnem:metadata (a grfnem:Metadata),
+    has grfnem:ftype "INTERFACE",
+    has grfnem:lambda "lambda i,sensed_output,integrator_state:(i,sensed_output,integrator_state)".
+_8c1745a7-9a6a-5f92-cca7-4147f6be1f72 is a grfnem:Variable,
+    has grfnem:metadata (a grfnem:Metadata),
+    has grfnem:uid "_8c1745a7-9a6a-5f92-cca7-4147f6be1f72",
+    has grfnem:identifier "GE_simple_PI_controller::GE_simple_PI_controller.main.LOOP_0::integrator_state::0".
+_8d723104-f773-83c1-3458-a748e9bb17bc is a grfnem:Variable,
+    has grfnem:metadata (a grfnem:Metadata
+    with grfnem:line_begin 29),
+    has grfnem:uid "_8d723104-f773-83c1-3458-a748e9bb17bc",
+    has grfnem:identifier "GE_simple_PI_controller::GE_simple_PI_controller.main::time_step::0".
+_98b33c6e-0a14-b90a-7795-e98680ee526e is a grfnem:Function,
+    has grfnem:metadata (a grfnem:Metadata
+    with grfnem:line_begin 22),
+    has grfnem:ftype "ASSIGN",
+    has grfnem:lambda "lambda input,gain: (input * gain)".
+_9a27d858-88c1-32ad-efbf-c19ee8f6cf32 is a grfnem:Function,
+    has grfnem:metadata (a grfnem:Metadata
+    with grfnem:line_begin 41),
+    has grfnem:ftype "LITERAL",
+    has grfnem:lambda "lambda : 0.01".
+_9edfa3da-6cf5-5b15-8b53-031d05d51433 is a grfnem:Function,
+    has grfnem:metadata (a grfnem:Metadata
+    with grfnem:line_begin 14),
+    has grfnem:ftype "ASSIGN",
+    has grfnem:lambda "lambda error,Kp_M,Ki_M,integrator_state: ((error * Kp_M) + (Ki_M * integrator_state))".
+__sFILE is a grfnem:Type,
+    has grfnem:fields (a grfnem:Field
+    with grfnem:data_type "List",
+    with grfnem:name "_write"),
+    has grfnem:fields (a grfnem:Field
+    with grfnem:data_type "List",
+    with grfnem:name "_cookie"),
+    has grfnem:fields (a grfnem:Field
+    with grfnem:data_type "Number",
+    with grfnem:name "_ur"),
+    has grfnem:fields (a grfnem:Field
+    with grfnem:data_type "List",
+    with grfnem:name "_p"),
+    has grfnem:metadata (a grfnem:Metadata),
+    has grfnem:fields (a grfnem:Field
+    with grfnem:data_type "Number",
+    with grfnem:name "_r"),
+    has grfnem:fields (a grfnem:Field
+    with grfnem:data_type "Number",
+    with grfnem:name "_file"),
+    has grfnem:fields (a grfnem:Field
+    with grfnem:data_type "List",
+    with grfnem:name "_seek"),
+    has grfnem:fields (a grfnem:Field
+    with grfnem:data_type "List",
+    with grfnem:name "_extra"),
+    has grfnem:fields (a grfnem:Field
+    with grfnem:data_type "Number",
+    with grfnem:name "_blksize"),
+    has grfnem:fields (a grfnem:Field
+    with grfnem:data_type "List",
+    with grfnem:name "_read"),
+    has grfnem:fields (a grfnem:Field
+    with grfnem:data_type "object$__sbuf",
+    with grfnem:name "_lb"),
+    has grfnem:fields (a grfnem:Field
+    with grfnem:data_type "List",
+    with grfnem:name "_close"),
+    has grfnem:fields (a grfnem:Field
+    with grfnem:data_type "object$__sbuf",
+    with grfnem:name "_ub"),
+    has grfnem:name "__sFILE",
+    has grfnem:fields (a grfnem:Field
+    with grfnem:data_type "Number",
+    with grfnem:name "_flags"),
+    has grfnem:fields (a grfnem:Field
+    with grfnem:data_type "Number",
+    with grfnem:name "_offset"),
+    has grfnem:fields (a grfnem:Field
+    with grfnem:data_type "Number",
+    with grfnem:name "_lbfsize"),
+    has grfnem:fields (a grfnem:Field
+    with grfnem:data_type "List",
+    with grfnem:name "_ubuf"),
+    has grfnem:fields (a grfnem:Field
+    with grfnem:data_type "List",
+    with grfnem:name "_nbuf"),
+    has grfnem:fields (a grfnem:Field
+    with grfnem:data_type "Number",
+    with grfnem:name "_w"),
+    has grfnem:fields (a grfnem:Field
+    with grfnem:data_type "object$__sbuf",
+    with grfnem:name "_bf").
+__sFILEX is a grfnem:Type,
+    has grfnem:metadata (a grfnem:Metadata),
+    has grfnem:name "__sFILEX".
+__sbuf is a grfnem:Type,
+    has grfnem:metadata (a grfnem:Metadata),
+    has grfnem:fields (a grfnem:Field
+    with grfnem:data_type "Number",
+    with grfnem:name "_size"),
+    has grfnem:fields (a grfnem:Field
+    with grfnem:data_type "List",
+    with grfnem:name "_base"),
+    has grfnem:name "__sbuf".
+a0116be5-ab0c-1681-c8f8-e3d0d3290a4c is a grfnem:Variable,
+    has grfnem:metadata (a grfnem:Metadata
+    with grfnem:line_begin 41),
+    has grfnem:uid "a0116be5-ab0c-1681-c8f8-e3d0d3290a4c",
+    has grfnem:identifier "GE_simple_PI_controller::GE_simple_PI_controller.main::plant_gain::0".
+a25b59fd-92e8-e269-d12e-cbc40b9475b1 is a grfnem:Function,
+    has grfnem:metadata (a grfnem:Metadata
+    with grfnem:line_begin 36),
+    has grfnem:ftype "LITERAL",
+    has grfnem:lambda "lambda : 10.0".
+a3f2c9bf-9c63-16b9-50f2-44556f25e2a2 is a grfnem:Variable,
+    has grfnem:metadata (a grfnem:Metadata
+    with grfnem:line_begin 28),
+    has grfnem:uid "a3f2c9bf-9c63-16b9-50f2-44556f25e2a2",
+    has grfnem:identifier "GE_simple_PI_controller::GE_simple_PI_controller.main::t_final::0".
+a425799a-a905-d750-7e1e-a9c573581a81 is a grfnem:Variable,
+    has grfnem:metadata (a grfnem:Metadata
+    with grfnem:line_begin 48),
+    has grfnem:uid "a425799a-a905-d750-7e1e-a9c573581a81",
+    has grfnem:identifier "GE_simple_PI_controller::GE_simple_PI_controller.main::i::1".
+adc0da7a-16fe-baa0-11af-923d79fdef7c is a grfnem:Variable,
+    has grfnem:metadata (a grfnem:Metadata
+    with grfnem:line_begin 48),
+    has grfnem:uid "adc0da7a-16fe-baa0-11af-923d79fdef7c",
+    has grfnem:identifier "GE_simple_PI_controller::GE_simple_PI_controller.main.LOOP_0::i::0".
+ade9b2b4-efdd-35f8-0fa3-4266ccfdba9b is a grfnem:Function,
+    has grfnem:metadata (a grfnem:Metadata
+    with grfnem:line_begin 12),
+    has grfnem:ftype "ASSIGN",
+    has grfnem:lambda "lambda timestep,error,integrator_state: ((timestep * error) + integrator_state)".
+b29c467d-2b5f-6932-91dc-59efeb21a3f6 is a grfnem:Function,
+    has grfnem:metadata (a grfnem:Metadata
+    with grfnem:line_begin 48),
+    has grfnem:ftype "DECISION",
+    has grfnem:lambda "lambda COND_0_0: not COND_0_0".
+b4862b21-fb97-d435-8856-1712e8e5216a is a grfnem:Variable,
+    has grfnem:metadata (a grfnem:Metadata
+    with grfnem:line_begin 12),
+    has grfnem:uid "b4862b21-fb97-d435-8856-1712e8e5216a",
+    has grfnem:identifier "GE_simple_PI_controller::GE_simple_PI_controller.PI_calc::integrator_state::0".
+b5d32b16-6619-4cb1-d710-37d1b83e90ec is a grfnem:Variable,
+    has grfnem:metadata (a grfnem:Metadata
+    with grfnem:line_begin 36),
+    has grfnem:uid "b5d32b16-6619-4cb1-d710-37d1b83e90ec",
+    has grfnem:identifier "GE_simple_PI_controller::GE_simple_PI_controller.main::desired_output::0".
+b7d6467b-2f5a-522a-f87f-43fdf6062541 is a grfnem:Function,
+    has grfnem:metadata (a grfnem:Metadata),
+    has grfnem:ftype "INTERFACE",
+    has grfnem:lambda "lambda desired_output_0,sensed_output_0,Kp_M_0,Ki_M_0,time_step_0,integrator_state_0:(desired_output_0,sensed_output_0,Kp_M_0,Ki_M_0,time_step_0,integrator_state_0)".
+ba26d851-35e8-579a-7aaf-0e891fb797fa is a grfnem:Function,
+    has grfnem:metadata (a grfnem:Metadata
+    with grfnem:line_begin 10),
+    has grfnem:ftype "ASSIGN",
+    has grfnem:lambda "lambda Input_dmd,Input_sensed: (Input_dmd - Input_sensed)".
+baf3897a-3e70-f16a-5548-5822de1b372a is a grfnem:Variable,
+    has grfnem:metadata (a grfnem:Metadata
+    with grfnem:line_begin 48),
+    has grfnem:uid "baf3897a-3e70-f16a-5548-5822de1b372a",
+    has grfnem:identifier "GE_simple_PI_controller::GE_simple_PI_controller.main::i::0".
+c470f0e7-f76f-bfb8-3412-fc12ac322c12 is a grfnem:Function,
+    has grfnem:metadata (a grfnem:Metadata
+    with grfnem:line_begin 52),
+    has grfnem:ftype "DECISION",
+    has grfnem:lambda "lambda EXIT,i_initial,sensed_output_initial,integrator_state_initial,i_updated,sensed_output_updated,integrator_state_updated: (i_initial,sensed_output_initial,integrator_state_initial) if EXIT else (i_updated,sensed_output_updated,integrator_state_updated)".
+c87a7463-19c1-6a0d-0feb-d845d0dfae43 is a grfnem:Function,
+    has grfnem:metadata (a grfnem:Metadata
+    with grfnem:line_begin 32),
+    has grfnem:ftype "LITERAL",
+    has grfnem:lambda "lambda : 75.0".
+d3447490-96fd-35d0-adf2-0806e5214606 is a grfnem:Variable,
+    has grfnem:metadata (a grfnem:Metadata),
+    has grfnem:uid "d3447490-96fd-35d0-adf2-0806e5214606",
+    has grfnem:identifier "GE_simple_PI_controller::GE_simple_PI_controller.main.LOOP_0::integrator_state::2".
+d3fbf47a-7e5b-1e7f-9ca5-499d004ae545 is a grfnem:Variable,
+    has grfnem:metadata (a grfnem:Metadata
+    with grfnem:line_begin 43),
+    has grfnem:uid "d3fbf47a-7e5b-1e7f-9ca5-499d004ae545",
+    has grfnem:identifier "GE_simple_PI_controller::GE_simple_PI_controller.main::sensed_output::0".
+d450fe4a-ec4f-217b-b306-d1a8e5eeac76 is a grfnem:Variable,
+    has grfnem:metadata (a grfnem:Metadata
+    with grfnem:line_begin 52),
+    has grfnem:uid "d450fe4a-ec4f-217b-b306-d1a8e5eeac76",
+    has grfnem:identifier "GE_simple_PI_controller::GE_simple_PI_controller.main.LOOP_0::sensed_output::1".
+d480865f-9b38-fe80-3042-e325a28f5ab0 is a grfnem:Function,
+    has grfnem:metadata (a grfnem:Metadata
+    with grfnem:line_begin 48),
+    has grfnem:ftype "LITERAL",
+    has grfnem:lambda "lambda : 0".
+d67e55fd-642b-fa42-aef9-c00b8a64c1b9 is a grfnem:Variable,
+    has grfnem:metadata (a grfnem:Metadata
+    with grfnem:line_begin 48),
+    has grfnem:uid "d67e55fd-642b-fa42-aef9-c00b8a64c1b9",
+    has grfnem:identifier "GE_simple_PI_controller::GE_simple_PI_controller.main.LOOP_0::i::1".
+e005b860-51ef-1922-fe43-c49e149818d1 is a grfnem:Variable,
+    has grfnem:metadata (a grfnem:Metadata
+    with grfnem:line_begin 43),
+    has grfnem:uid "e005b860-51ef-1922-fe43-c49e149818d1",
+    has grfnem:identifier "GE_simple_PI_controller::GE_simple_PI_controller.main.LOOP_0::sensed_output::-1".
+e443df78-9558-867f-5ba9-1faf7a024204 is a grfnem:Variable,
+    has grfnem:metadata (a grfnem:Metadata
+    with grfnem:line_begin 8),
+    has grfnem:uid "e443df78-9558-867f-5ba9-1faf7a024204",
+    has grfnem:identifier "GE_simple_PI_controller::GE_simple_PI_controller.PI_calc::Ki_M::-1".
+e6fd68e8-d69c-91c2-7860-1602bb4a06cb is a grfnem:Function,
+    has grfnem:metadata (a grfnem:Metadata),
+    has grfnem:ftype "CONDITION",
+    has grfnem:lambda "lambda i,num_steps: not (i >= num_steps)".
+e786ab37-5bca-47be-4298-17c53308fb2e is a grfnem:Function,
+    has grfnem:metadata (a grfnem:Metadata
+    with grfnem:line_begin 48),
+    has grfnem:ftype "ASSIGN",
+    has grfnem:lambda "lambda i: (i + 1)".
+eb1167b3-67a9-c378-7c65-c1e582e2e662 is a grfnem:Variable,
+    has grfnem:metadata (a grfnem:Metadata
+    with grfnem:line_begin 8),
+    has grfnem:uid "eb1167b3-67a9-c378-7c65-c1e582e2e662",
+    has grfnem:identifier "GE_simple_PI_controller::GE_simple_PI_controller.PI_calc::Input_sensed::-1".
+eb2083e6-ce16-4dba-0ff1-8e0242af9fc3 is a grfnem:Variable,
+    has grfnem:metadata (a grfnem:Metadata
+    with grfnem:line_begin 32),
+    has grfnem:uid "eb2083e6-ce16-4dba-0ff1-8e0242af9fc3",
+    has grfnem:identifier "GE_simple_PI_controller::GE_simple_PI_controller.main::Kp_M::0".
+ebe21368-98c7-5205-1e01-a934402d0baf is a grfnem:GrFN,
+    has grfnem:hyper_edges (a grfnem:HyperEdge
+    with grfnem:outputs _5306f3f5-1516-6570-5b7c-709acb175a5a,
+    with grfnem:outputs fb82860d-eabc-a8d0-b341-facdff0ac0f1,
+    with grfnem:outputs a425799a-a905-d750-7e1e-a9c573581a81,
+    with grfnem:inputs d3447490-96fd-35d0-adf2-0806e5214606,
+    with grfnem:inputs _37176e84-d977-e993-3c49-d76fcfc6e625,
+    with grfnem:inputs _85940927-468f-f53d-864a-7a50b48d73f1,
+    with grfnem:function _878b9f6b-57a1-cb71-2975-d279d86dbf11),
+    has grfnem:hyper_edges (a grfnem:HyperEdge
+    with grfnem:outputs a0116be5-ab0c-1681-c8f8-e3d0d3290a4c,
+    with grfnem:function _9a27d858-88c1-32ad-efbf-c19ee8f6cf32),
+    has grfnem:subgraphs _176ea1b1-6426-4cd5-1ea4-5cd69371a71f,
+    has grfnem:hyper_edges (a grfnem:HyperEdge
+    with grfnem:outputs _247a8333-f7b0-b7d2-cda8-056c3d15eef7,
+    with grfnem:inputs _38c1962e-9148-624f-eac1-c14f30e9c5cc,
+    with grfnem:inputs adc0da7a-16fe-baa0-11af-923d79fdef7c,
+    with grfnem:function e6fd68e8-d69c-91c2-7860-1602bb4a06cb),
+    has grfnem:hyper_edges (a grfnem:HyperEdge
+    with grfnem:outputs a3f2c9bf-9c63-16b9-50f2-44556f25e2a2,
+    with grfnem:function _4562be7f-bb42-e0b2-0426-465e3e37952d),
+    has grfnem:hyper_edges (a grfnem:HyperEdge
+    with grfnem:outputs b5d32b16-6619-4cb1-d710-37d1b83e90ec,
+    with grfnem:function a25b59fd-92e8-e269-d12e-cbc40b9475b1),
+    has grfnem:hyper_edges (a grfnem:HyperEdge
+    with grfnem:outputs _8d723104-f773-83c1-3458-a748e9bb17bc,
+    with grfnem:function _5f3f5638-3870-1a14-b490-b6081dfc8352),
+    has grfnem:hyper_edges (a grfnem:HyperEdge
+    with grfnem:outputs _1846d424-c17c-6279-23c6-612f48268673,
+    with grfnem:inputs eb1167b3-67a9-c378-7c65-c1e582e2e662,
+    with grfnem:inputs f728b4fa-4248-5e3a-0a5d-2f346baa9455,
+    with grfnem:function ba26d851-35e8-579a-7aaf-0e891fb797fa),
+    has grfnem:hyper_edges (a grfnem:HyperEdge
+    with grfnem:outputs _2648ee38-e074-05eb-2156-63abc1f254b8,
+    with grfnem:inputs _247a8333-f7b0-b7d2-cda8-056c3d15eef7,
+    with grfnem:function b29c467d-2b5f-6932-91dc-59efeb21a3f6),
+    has grfnem:hyper_edges (a grfnem:HyperEdge
+    with grfnem:outputs d3fbf47a-7e5b-1e7f-9ca5-499d004ae545,
+    with grfnem:function _1fdb8b32-06d5-99e8-12f1-75ffae3b16ec),
+    has grfnem:subgraphs _30bcab0e-d857-0102-55d4-4936a1515607,
+    has grfnem:date_created "2021-05-14",
+    has grfnem:hyper_edges (a grfnem:HyperEdge
+    with grfnem:outputs _148b2758-d7ab-7928-09e4-69e6ec62b2c8,
+    with grfnem:outputs _5129fb7c-6288-e1a5-cc45-782198a6416d,
+    with grfnem:inputs b4862b21-fb97-d435-8856-1712e8e5216a,
+    with grfnem:inputs _259f4329-e6f4-590b-9a16-4106cf6a659e,
+    with grfnem:function _11ebcd49-428a-1c22-d5fd-b76a19fbeb1d),
+    has grfnem:hyper_edges (a grfnem:HyperEdge
+    with grfnem:inputs _7d41e602-eece-328b-ff7b-118e820865d6,
+    with grfnem:outputs f7c1bd87-4da5-e709-d471-3d60c8a70639,
+    with grfnem:outputs fcbd04c3-4021-2ef7-cca5-a5a19e4d6e3c,
+    with grfnem:outputs eb1167b3-67a9-c378-7c65-c1e582e2e662,
+    with grfnem:inputs _8c1745a7-9a6a-5f92-cca7-4147f6be1f72,
+    with grfnem:inputs _1759edc3-72ae-2244-8b01-63c1cd9d2b7d,
+    with grfnem:outputs e443df78-9558-867f-5ba9-1faf7a024204,
+    with grfnem:inputs _42930b33-a81a-d477-fb36-75b89cdeb3e6,
+    with grfnem:outputs _23a7711a-8133-2876-37eb-dcd9e87a1613,
+    with grfnem:inputs _552f233a-8c25-166a-1ff3-9849b4e1357d,
+    with grfnem:outputs f728b4fa-4248-5e3a-0a5d-2f346baa9455,
+    with grfnem:inputs _4a84eb03-8d1f-d9b7-4d2b-9deb1beb3711,
+    with grfnem:function b7d6467b-2f5a-522a-f87f-43fdf6062541),
+    has grfnem:hyper_edges (a grfnem:HyperEdge
+    with grfnem:outputs _7d41e602-eece-328b-ff7b-118e820865d6,
+    with grfnem:outputs _2f120554-4a53-08cc-3dfa-bc08935ddd72,
+    with grfnem:function _1db53334-fb03-23a1-d576-d4155ec17dbe,
+    with grfnem:inputs eb2083e6-ce16-4dba-0ff1-8e0242af9fc3,
+    with grfnem:inputs d3fbf47a-7e5b-1e7f-9ca5-499d004ae545,
+    with grfnem:outputs e005b860-51ef-1922-fe43-c49e149818d1,
+    with grfnem:outputs _101fbccc-ded7-33e8-b421-eaeb534097ca,
+    with grfnem:inputs a0116be5-ab0c-1681-c8f8-e3d0d3290a4c,
+    with grfnem:inputs _46743741-9466-e472-6b5f-5241f323ca74,
+    with grfnem:inputs _8d723104-f773-83c1-3458-a748e9bb17bc,
+    with grfnem:outputs _38c1962e-9148-624f-eac1-c14f30e9c5cc,
+    with grfnem:inputs baf3897a-3e70-f16a-5548-5822de1b372a,
+    with grfnem:inputs _85776e9a-dd84-f39e-7154-5a137a1d5006,
+    with grfnem:inputs _17e0aa3c-0398-3ca8-ea7e-9d498c778ea6,
+    with grfnem:outputs _1759edc3-72ae-2244-8b01-63c1cd9d2b7d,
+    with grfnem:inputs b5d32b16-6619-4cb1-d710-37d1b83e90ec,
+    with grfnem:outputs _552f233a-8c25-166a-1ff3-9849b4e1357d,
+    with grfnem:outputs _4a84eb03-8d1f-d9b7-4d2b-9deb1beb3711,
+    with grfnem:outputs _3405095c-8a50-06c1-ec18-8efbd080e66e),
+    has grfnem:hyper_edges (a grfnem:HyperEdge
+    with grfnem:outputs baf3897a-3e70-f16a-5548-5822de1b372a,
+    with grfnem:function d480865f-9b38-fe80-3042-e325a28f5ab0),
+    has grfnem:hyper_edges (a grfnem:HyperEdge
+    with grfnem:outputs _85940927-468f-f53d-864a-7a50b48d73f1,
+    with grfnem:inputs d67e55fd-642b-fa42-aef9-c00b8a64c1b9,
+    with grfnem:inputs adc0da7a-16fe-baa0-11af-923d79fdef7c,
+    with grfnem:inputs _42930b33-a81a-d477-fb36-75b89cdeb3e6,
+    with grfnem:inputs _8c1745a7-9a6a-5f92-cca7-4147f6be1f72,
+    with grfnem:function c470f0e7-f76f-bfb8-3412-fc12ac322c12,
+    with grfnem:inputs _2648ee38-e074-05eb-2156-63abc1f254b8,
+    with grfnem:outputs _37176e84-d977-e993-3c49-d76fcfc6e625,
+    with grfnem:inputs d450fe4a-ec4f-217b-b306-d1a8e5eeac76,
+    with grfnem:outputs d3447490-96fd-35d0-adf2-0806e5214606,
+    with grfnem:inputs _148b2758-d7ab-7928-09e4-69e6ec62b2c8),
+    has grfnem:hyper_edges (a grfnem:HyperEdge
+    with grfnem:outputs _5487ce1e-af19-922a-d9b8-a714e61a441c,
+    with grfnem:outputs _12e0c8b2-bad6-40fb-1948-8dec4f65d4d9,
+    with grfnem:inputs _2f120554-4a53-08cc-3dfa-bc08935ddd72,
+    with grfnem:inputs _5129fb7c-6288-e1a5-cc45-782198a6416d,
+    with grfnem:function _0fa07a3f-2e29-5065-6fa2-31e959acdd98),
+    has grfnem:hyper_edges (a grfnem:HyperEdge
+    with grfnem:inputs d67e55fd-642b-fa42-aef9-c00b8a64c1b9,
+    with grfnem:inputs d450fe4a-ec4f-217b-b306-d1a8e5eeac76,
+    with grfnem:outputs _42930b33-a81a-d477-fb36-75b89cdeb3e6,
+    with grfnem:function _28805c5d-ad1b-8f60-c9e4-dab20edc6d2b,
+    with grfnem:inputs _148b2758-d7ab-7928-09e4-69e6ec62b2c8,
+    with grfnem:outputs adc0da7a-16fe-baa0-11af-923d79fdef7c,
+    with grfnem:inputs e005b860-51ef-1922-fe43-c49e149818d1,
+    with grfnem:inputs _3405095c-8a50-06c1-ec18-8efbd080e66e,
+    with grfnem:inputs _101fbccc-ded7-33e8-b421-eaeb534097ca,
+    with grfnem:outputs _8c1745a7-9a6a-5f92-cca7-4147f6be1f72),
+    has grfnem:hyper_edges (a grfnem:HyperEdge
+    with grfnem:outputs _5a921187-19c7-8df4-8f4f-f31e78de5857,
+    with grfnem:inputs _5487ce1e-af19-922a-d9b8-a714e61a441c,
+    with grfnem:inputs _12e0c8b2-bad6-40fb-1948-8dec4f65d4d9,
+    with grfnem:function _98b33c6e-0a14-b90a-7795-e98680ee526e),
+    has grfnem:subgraphs _4d125e7f-a59c-ec98-126c-bc8f38884479,
+    has grfnem:hyper_edges (a grfnem:HyperEdge
+    with grfnem:outputs _85776e9a-dd84-f39e-7154-5a137a1d5006,
+    with grfnem:function _6d16ee18-5521-16dd-2ba4-b180cb69ca38),
+    has grfnem:subgraphs _31d0b664-0589-f877-9b02-52440950fd13,
+    has grfnem:hyper_edges (a grfnem:HyperEdge
+    with grfnem:outputs eb2083e6-ce16-4dba-0ff1-8e0242af9fc3,
+    with grfnem:function c87a7463-19c1-6a0d-0feb-d845d0dfae43),
+    has grfnem:hyper_edges (a grfnem:HyperEdge
+    with grfnem:outputs d450fe4a-ec4f-217b-b306-d1a8e5eeac76,
+    with grfnem:inputs _5a921187-19c7-8df4-8f4f-f31e78de5857,
+    with grfnem:function _642aad48-fcfc-fa81-b306-d70019d5f970),
+    has grfnem:hyper_edges (a grfnem:HyperEdge
+    with grfnem:outputs _259f4329-e6f4-590b-9a16-4106cf6a659e,
+    with grfnem:inputs b4862b21-fb97-d435-8856-1712e8e5216a,
+    with grfnem:inputs e443df78-9558-867f-5ba9-1faf7a024204,
+    with grfnem:inputs f7c1bd87-4da5-e709-d471-3d60c8a70639,
+    with grfnem:inputs _1846d424-c17c-6279-23c6-612f48268673,
+    with grfnem:function _9edfa3da-6cf5-5b15-8b53-031d05d51433),
+    has grfnem:hyper_edges (a grfnem:HyperEdge
+    with grfnem:outputs b4862b21-fb97-d435-8856-1712e8e5216a,
+    with grfnem:inputs fcbd04c3-4021-2ef7-cca5-a5a19e4d6e3c,
+    with grfnem:inputs _1846d424-c17c-6279-23c6-612f48268673,
+    with grfnem:inputs _23a7711a-8133-2876-37eb-dcd9e87a1613,
+    with grfnem:function ade9b2b4-efdd-35f8-0fa3-4266ccfdba9b),
+    has grfnem:hyper_edges (a grfnem:HyperEdge
+    with grfnem:outputs d67e55fd-642b-fa42-aef9-c00b8a64c1b9,
+    with grfnem:inputs adc0da7a-16fe-baa0-11af-923d79fdef7c,
+    with grfnem:function e786ab37-5bca-47be-4298-17c53308fb2e),
+    has grfnem:hyper_edges (a grfnem:HyperEdge
+    with grfnem:outputs _17e0aa3c-0398-3ca8-ea7e-9d498c778ea6,
+    with grfnem:inputs _8d723104-f773-83c1-3458-a748e9bb17bc,
+    with grfnem:inputs a3f2c9bf-9c63-16b9-50f2-44556f25e2a2,
+    with grfnem:function _38018b47-b29a-8b06-daf6-6c5f2577bffa).
+f728b4fa-4248-5e3a-0a5d-2f346baa9455 is a grfnem:Variable,
+    has grfnem:metadata (a grfnem:Metadata
+    with grfnem:line_begin 8),
+    has grfnem:uid "f728b4fa-4248-5e3a-0a5d-2f346baa9455",
+    has grfnem:identifier "GE_simple_PI_controller::GE_simple_PI_controller.PI_calc::Input_dmd::-1".
+f7c1bd87-4da5-e709-d471-3d60c8a70639 is a grfnem:Variable,
+    has grfnem:metadata (a grfnem:Metadata
+    with grfnem:line_begin 8),
+    has grfnem:uid "f7c1bd87-4da5-e709-d471-3d60c8a70639",
+    has grfnem:identifier "GE_simple_PI_controller::GE_simple_PI_controller.PI_calc::Kp_M::-1".
+fb82860d-eabc-a8d0-b341-facdff0ac0f1 is a grfnem:Variable,
+    has grfnem:metadata (a grfnem:Metadata
+    with grfnem:line_begin 52),
+    has grfnem:uid "fb82860d-eabc-a8d0-b341-facdff0ac0f1",
+    has grfnem:identifier "GE_simple_PI_controller::GE_simple_PI_controller.main::sensed_output::1".
+fcbd04c3-4021-2ef7-cca5-a5a19e4d6e3c is a grfnem:Variable,
+    has grfnem:metadata (a grfnem:Metadata),
+    has grfnem:uid "fcbd04c3-4021-2ef7-cca5-a5a19e4d6e3c",
+    has grfnem:identifier "GE_simple_PI_controller::GE_simple_PI_controller.PI_calc::integrator_state::-1".
