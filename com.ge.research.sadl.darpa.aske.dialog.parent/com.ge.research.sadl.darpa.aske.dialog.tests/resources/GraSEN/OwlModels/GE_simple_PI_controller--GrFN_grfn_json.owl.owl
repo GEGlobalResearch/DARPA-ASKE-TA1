@@ -1,0 +1,1255 @@
+<rdf:RDF
+    xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+    xmlns:GE_simple_PI_controller--GrFN_grfn_json="http://aske.ge.com/GE_simple_PI_controller--GrFN_grfn_json#"
+    xmlns:builtinfunctions="http://sadl.org/builtinfunctions#"
+    xmlns:owl="http://www.w3.org/2002/07/owl#"
+    xmlns:sadlimplicitmodel="http://sadl.org/sadlimplicitmodel#"
+    xmlns:grfnem="http://sadl.org/GrFNExtractionModel.sadl#"
+    xmlns:rdfs="http://www.w3.org/2000/01/rdf-schema#"
+    xmlns:sadlbasemodel="http://sadl.org/sadlbasemodel#"
+    xmlns:xsd="http://www.w3.org/2001/XMLSchema#"
+  xml:base="http://aske.ge.com/GE_simple_PI_controller--GrFN_grfn_json">
+  <owl:Ontology rdf:about="">
+    <owl:imports rdf:resource="http://sadl.org/GrFNExtractionModel.sadl"/>
+    <owl:imports rdf:resource="http://sadl.org/builtinfunctions"/>
+    <owl:imports rdf:resource="http://sadl.org/sadlimplicitmodel"/>
+    <owl:imports rdf:resource="http://sadl.org/sadlbasemodel"/>
+    <rdfs:comment xml:lang="en">This ontology was created by extraction from GrFN json by the GraSEN GrFNModelExtractor.</rdfs:comment>
+    <rdfs:comment xml:lang="en">This ontology was created from a SADL file 'GE_simple_PI_controller--GrFN_grfn_json.owl.sadl' and should not be directly edited.</rdfs:comment>
+  </owl:Ontology>
+  <grfnem:Type rdf:ID="__sFILE">
+    <grfnem:fields>
+      <grfnem:Field>
+        <grfnem:name>_write</grfnem:name>
+        <grfnem:data_type>List</grfnem:data_type>
+      </grfnem:Field>
+    </grfnem:fields>
+    <grfnem:fields>
+      <grfnem:Field>
+        <grfnem:name>_blksize</grfnem:name>
+        <grfnem:data_type>Number</grfnem:data_type>
+      </grfnem:Field>
+    </grfnem:fields>
+    <grfnem:fields>
+      <grfnem:Field>
+        <grfnem:name>_extra</grfnem:name>
+        <grfnem:data_type>List</grfnem:data_type>
+      </grfnem:Field>
+    </grfnem:fields>
+    <grfnem:fields>
+      <grfnem:Field>
+        <grfnem:name>_w</grfnem:name>
+        <grfnem:data_type>Number</grfnem:data_type>
+      </grfnem:Field>
+    </grfnem:fields>
+    <grfnem:fields>
+      <grfnem:Field>
+        <grfnem:name>_ubuf</grfnem:name>
+        <grfnem:data_type>List</grfnem:data_type>
+      </grfnem:Field>
+    </grfnem:fields>
+    <grfnem:fields>
+      <grfnem:Field>
+        <grfnem:name>_cookie</grfnem:name>
+        <grfnem:data_type>List</grfnem:data_type>
+      </grfnem:Field>
+    </grfnem:fields>
+    <grfnem:fields>
+      <grfnem:Field>
+        <grfnem:name>_close</grfnem:name>
+        <grfnem:data_type>List</grfnem:data_type>
+      </grfnem:Field>
+    </grfnem:fields>
+    <grfnem:fields>
+      <grfnem:Field>
+        <grfnem:name>_p</grfnem:name>
+        <grfnem:data_type>List</grfnem:data_type>
+      </grfnem:Field>
+    </grfnem:fields>
+    <grfnem:fields>
+      <grfnem:Field>
+        <grfnem:name>_bf</grfnem:name>
+        <grfnem:data_type>object$__sbuf</grfnem:data_type>
+      </grfnem:Field>
+    </grfnem:fields>
+    <grfnem:fields>
+      <grfnem:Field>
+        <grfnem:name>_offset</grfnem:name>
+        <grfnem:data_type>Number</grfnem:data_type>
+      </grfnem:Field>
+    </grfnem:fields>
+    <grfnem:fields>
+      <grfnem:Field>
+        <grfnem:name>_flags</grfnem:name>
+        <grfnem:data_type>Number</grfnem:data_type>
+      </grfnem:Field>
+    </grfnem:fields>
+    <grfnem:fields>
+      <grfnem:Field>
+        <grfnem:name>_ur</grfnem:name>
+        <grfnem:data_type>Number</grfnem:data_type>
+      </grfnem:Field>
+    </grfnem:fields>
+    <grfnem:fields>
+      <grfnem:Field>
+        <grfnem:name>_nbuf</grfnem:name>
+        <grfnem:data_type>List</grfnem:data_type>
+      </grfnem:Field>
+    </grfnem:fields>
+    <grfnem:name>__sFILE</grfnem:name>
+    <grfnem:fields>
+      <grfnem:Field>
+        <grfnem:name>_ub</grfnem:name>
+        <grfnem:data_type>object$__sbuf</grfnem:data_type>
+      </grfnem:Field>
+    </grfnem:fields>
+    <grfnem:fields>
+      <grfnem:Field>
+        <grfnem:name>_lb</grfnem:name>
+        <grfnem:data_type>object$__sbuf</grfnem:data_type>
+      </grfnem:Field>
+    </grfnem:fields>
+    <grfnem:metadata>
+      <grfnem:Metadata/>
+    </grfnem:metadata>
+    <grfnem:fields>
+      <grfnem:Field>
+        <grfnem:name>_seek</grfnem:name>
+        <grfnem:data_type>List</grfnem:data_type>
+      </grfnem:Field>
+    </grfnem:fields>
+    <grfnem:fields>
+      <grfnem:Field>
+        <grfnem:name>_r</grfnem:name>
+        <grfnem:data_type>Number</grfnem:data_type>
+      </grfnem:Field>
+    </grfnem:fields>
+    <grfnem:fields>
+      <grfnem:Field>
+        <grfnem:name>_lbfsize</grfnem:name>
+        <grfnem:data_type>Number</grfnem:data_type>
+      </grfnem:Field>
+    </grfnem:fields>
+    <grfnem:fields>
+      <grfnem:Field>
+        <grfnem:name>_file</grfnem:name>
+        <grfnem:data_type>Number</grfnem:data_type>
+      </grfnem:Field>
+    </grfnem:fields>
+    <grfnem:fields>
+      <grfnem:Field>
+        <grfnem:name>_read</grfnem:name>
+        <grfnem:data_type>List</grfnem:data_type>
+      </grfnem:Field>
+    </grfnem:fields>
+  </grfnem:Type>
+  <grfnem:Type rdf:ID="__sbuf">
+    <grfnem:name>__sbuf</grfnem:name>
+    <grfnem:fields>
+      <grfnem:Field>
+        <grfnem:name>_base</grfnem:name>
+        <grfnem:data_type>List</grfnem:data_type>
+      </grfnem:Field>
+    </grfnem:fields>
+    <grfnem:fields>
+      <grfnem:Field>
+        <grfnem:name>_size</grfnem:name>
+        <grfnem:data_type>Number</grfnem:data_type>
+      </grfnem:Field>
+    </grfnem:fields>
+    <grfnem:metadata>
+      <grfnem:Metadata/>
+    </grfnem:metadata>
+  </grfnem:Type>
+  <grfnem:GrFN rdf:ID="ebe21368-98c7-5205-1e01-a934402d0baf">
+    <grfnem:hyper_edges>
+      <grfnem:HyperEdge>
+        <grfnem:outputs>
+          <grfnem:Variable rdf:ID="f7c1bd87-4da5-e709-d471-3d60c8a70639">
+            <grfnem:identifier>GE_simple_PI_controller::GE_simple_PI_controller.PI_calc::Kp_M::-1</grfnem:identifier>
+            <grfnem:uid>f7c1bd87-4da5-e709-d471-3d60c8a70639</grfnem:uid>
+            <grfnem:metadata>
+              <grfnem:Metadata>
+                <grfnem:line_begin rdf:datatype="http://www.w3.org/2001/XMLSchema#int"
+                >8</grfnem:line_begin>
+              </grfnem:Metadata>
+            </grfnem:metadata>
+          </grfnem:Variable>
+        </grfnem:outputs>
+        <grfnem:inputs>
+          <grfnem:Variable rdf:ID="_8c1745a7-9a6a-5f92-cca7-4147f6be1f72">
+            <grfnem:identifier>GE_simple_PI_controller::GE_simple_PI_controller.main.LOOP_0::integrator_state::0</grfnem:identifier>
+            <grfnem:uid>_8c1745a7-9a6a-5f92-cca7-4147f6be1f72</grfnem:uid>
+            <grfnem:metadata>
+              <grfnem:Metadata/>
+            </grfnem:metadata>
+          </grfnem:Variable>
+        </grfnem:inputs>
+        <grfnem:inputs>
+          <grfnem:Variable rdf:ID="_7d41e602-eece-328b-ff7b-118e820865d6">
+            <grfnem:identifier>GE_simple_PI_controller::GE_simple_PI_controller.main.LOOP_0::Kp_M::-1</grfnem:identifier>
+            <grfnem:uid>_7d41e602-eece-328b-ff7b-118e820865d6</grfnem:uid>
+            <grfnem:metadata>
+              <grfnem:Metadata>
+                <grfnem:line_begin rdf:datatype="http://www.w3.org/2001/XMLSchema#int"
+                >32</grfnem:line_begin>
+              </grfnem:Metadata>
+            </grfnem:metadata>
+          </grfnem:Variable>
+        </grfnem:inputs>
+        <grfnem:outputs>
+          <grfnem:Variable rdf:ID="f728b4fa-4248-5e3a-0a5d-2f346baa9455">
+            <grfnem:identifier>GE_simple_PI_controller::GE_simple_PI_controller.PI_calc::Input_dmd::-1</grfnem:identifier>
+            <grfnem:uid>f728b4fa-4248-5e3a-0a5d-2f346baa9455</grfnem:uid>
+            <grfnem:metadata>
+              <grfnem:Metadata>
+                <grfnem:line_begin rdf:datatype="http://www.w3.org/2001/XMLSchema#int"
+                >8</grfnem:line_begin>
+              </grfnem:Metadata>
+            </grfnem:metadata>
+          </grfnem:Variable>
+        </grfnem:outputs>
+        <grfnem:outputs>
+          <grfnem:Variable rdf:ID="_23a7711a-8133-2876-37eb-dcd9e87a1613">
+            <grfnem:identifier>GE_simple_PI_controller::GE_simple_PI_controller.PI_calc::timestep::-1</grfnem:identifier>
+            <grfnem:uid>_23a7711a-8133-2876-37eb-dcd9e87a1613</grfnem:uid>
+            <grfnem:metadata>
+              <grfnem:Metadata>
+                <grfnem:line_begin rdf:datatype="http://www.w3.org/2001/XMLSchema#int"
+                >8</grfnem:line_begin>
+              </grfnem:Metadata>
+            </grfnem:metadata>
+          </grfnem:Variable>
+        </grfnem:outputs>
+        <grfnem:outputs>
+          <grfnem:Variable rdf:ID="fcbd04c3-4021-2ef7-cca5-a5a19e4d6e3c">
+            <grfnem:identifier>GE_simple_PI_controller::GE_simple_PI_controller.PI_calc::integrator_state::-1</grfnem:identifier>
+            <grfnem:uid>fcbd04c3-4021-2ef7-cca5-a5a19e4d6e3c</grfnem:uid>
+            <grfnem:metadata>
+              <grfnem:Metadata/>
+            </grfnem:metadata>
+          </grfnem:Variable>
+        </grfnem:outputs>
+        <grfnem:inputs>
+          <grfnem:Variable rdf:ID="_42930b33-a81a-d477-fb36-75b89cdeb3e6">
+            <grfnem:identifier>GE_simple_PI_controller::GE_simple_PI_controller.main.LOOP_0::sensed_output::0</grfnem:identifier>
+            <grfnem:uid>_42930b33-a81a-d477-fb36-75b89cdeb3e6</grfnem:uid>
+            <grfnem:metadata>
+              <grfnem:Metadata>
+                <grfnem:line_begin rdf:datatype="http://www.w3.org/2001/XMLSchema#int"
+                >52</grfnem:line_begin>
+              </grfnem:Metadata>
+            </grfnem:metadata>
+          </grfnem:Variable>
+        </grfnem:inputs>
+        <grfnem:outputs>
+          <grfnem:Variable rdf:ID="e443df78-9558-867f-5ba9-1faf7a024204">
+            <grfnem:identifier>GE_simple_PI_controller::GE_simple_PI_controller.PI_calc::Ki_M::-1</grfnem:identifier>
+            <grfnem:uid>e443df78-9558-867f-5ba9-1faf7a024204</grfnem:uid>
+            <grfnem:metadata>
+              <grfnem:Metadata>
+                <grfnem:line_begin rdf:datatype="http://www.w3.org/2001/XMLSchema#int"
+                >8</grfnem:line_begin>
+              </grfnem:Metadata>
+            </grfnem:metadata>
+          </grfnem:Variable>
+        </grfnem:outputs>
+        <grfnem:function>
+          <grfnem:Function rdf:ID="b7d6467b-2f5a-522a-f87f-43fdf6062541">
+            <grfnem:lambda>lambda desired_output_0,sensed_output_0,Kp_M_0,Ki_M_0,time_step_0,integrator_state_0:(desired_output_0,sensed_output_0,Kp_M_0,Ki_M_0,time_step_0,integrator_state_0)</grfnem:lambda>
+            <grfnem:ftype>INTERFACE</grfnem:ftype>
+            <grfnem:metadata>
+              <grfnem:Metadata/>
+            </grfnem:metadata>
+          </grfnem:Function>
+        </grfnem:function>
+        <grfnem:inputs>
+          <grfnem:Variable rdf:ID="_4a84eb03-8d1f-d9b7-4d2b-9deb1beb3711">
+            <grfnem:identifier>GE_simple_PI_controller::GE_simple_PI_controller.main.LOOP_0::Ki_M::-1</grfnem:identifier>
+            <grfnem:uid>_4a84eb03-8d1f-d9b7-4d2b-9deb1beb3711</grfnem:uid>
+            <grfnem:metadata>
+              <grfnem:Metadata>
+                <grfnem:line_begin rdf:datatype="http://www.w3.org/2001/XMLSchema#int"
+                >31</grfnem:line_begin>
+              </grfnem:Metadata>
+            </grfnem:metadata>
+          </grfnem:Variable>
+        </grfnem:inputs>
+        <grfnem:outputs>
+          <grfnem:Variable rdf:ID="eb1167b3-67a9-c378-7c65-c1e582e2e662">
+            <grfnem:identifier>GE_simple_PI_controller::GE_simple_PI_controller.PI_calc::Input_sensed::-1</grfnem:identifier>
+            <grfnem:uid>eb1167b3-67a9-c378-7c65-c1e582e2e662</grfnem:uid>
+            <grfnem:metadata>
+              <grfnem:Metadata>
+                <grfnem:line_begin rdf:datatype="http://www.w3.org/2001/XMLSchema#int"
+                >8</grfnem:line_begin>
+              </grfnem:Metadata>
+            </grfnem:metadata>
+          </grfnem:Variable>
+        </grfnem:outputs>
+        <grfnem:inputs>
+          <grfnem:Variable rdf:ID="_552f233a-8c25-166a-1ff3-9849b4e1357d">
+            <grfnem:identifier>GE_simple_PI_controller::GE_simple_PI_controller.main.LOOP_0::time_step::-1</grfnem:identifier>
+            <grfnem:uid>_552f233a-8c25-166a-1ff3-9849b4e1357d</grfnem:uid>
+            <grfnem:metadata>
+              <grfnem:Metadata>
+                <grfnem:line_begin rdf:datatype="http://www.w3.org/2001/XMLSchema#int"
+                >29</grfnem:line_begin>
+              </grfnem:Metadata>
+            </grfnem:metadata>
+          </grfnem:Variable>
+        </grfnem:inputs>
+        <grfnem:inputs>
+          <grfnem:Variable rdf:ID="_1759edc3-72ae-2244-8b01-63c1cd9d2b7d">
+            <grfnem:identifier>GE_simple_PI_controller::GE_simple_PI_controller.main.LOOP_0::desired_output::-1</grfnem:identifier>
+            <grfnem:uid>_1759edc3-72ae-2244-8b01-63c1cd9d2b7d</grfnem:uid>
+            <grfnem:metadata>
+              <grfnem:Metadata>
+                <grfnem:line_begin rdf:datatype="http://www.w3.org/2001/XMLSchema#int"
+                >36</grfnem:line_begin>
+              </grfnem:Metadata>
+            </grfnem:metadata>
+          </grfnem:Variable>
+        </grfnem:inputs>
+      </grfnem:HyperEdge>
+    </grfnem:hyper_edges>
+    <grfnem:hyper_edges>
+      <grfnem:HyperEdge>
+        <grfnem:function>
+          <grfnem:Function rdf:ID="_98b33c6e-0a14-b90a-7795-e98680ee526e">
+            <grfnem:lambda>lambda input,gain: (input * gain)</grfnem:lambda>
+            <grfnem:ftype>ASSIGN</grfnem:ftype>
+            <grfnem:metadata>
+              <grfnem:Metadata>
+                <grfnem:line_begin rdf:datatype="http://www.w3.org/2001/XMLSchema#int"
+                >22</grfnem:line_begin>
+              </grfnem:Metadata>
+            </grfnem:metadata>
+          </grfnem:Function>
+        </grfnem:function>
+        <grfnem:inputs>
+          <grfnem:Variable rdf:ID="_12e0c8b2-bad6-40fb-1948-8dec4f65d4d9">
+            <grfnem:identifier>GE_simple_PI_controller::GE_simple_PI_controller.plant_model::input::-1</grfnem:identifier>
+            <grfnem:uid>_12e0c8b2-bad6-40fb-1948-8dec4f65d4d9</grfnem:uid>
+            <grfnem:metadata>
+              <grfnem:Metadata>
+                <grfnem:line_begin rdf:datatype="http://www.w3.org/2001/XMLSchema#int"
+                >20</grfnem:line_begin>
+              </grfnem:Metadata>
+            </grfnem:metadata>
+          </grfnem:Variable>
+        </grfnem:inputs>
+        <grfnem:inputs>
+          <grfnem:Variable rdf:ID="_5487ce1e-af19-922a-d9b8-a714e61a441c">
+            <grfnem:identifier>GE_simple_PI_controller::GE_simple_PI_controller.plant_model::gain::-1</grfnem:identifier>
+            <grfnem:uid>_5487ce1e-af19-922a-d9b8-a714e61a441c</grfnem:uid>
+            <grfnem:metadata>
+              <grfnem:Metadata>
+                <grfnem:line_begin rdf:datatype="http://www.w3.org/2001/XMLSchema#int"
+                >20</grfnem:line_begin>
+              </grfnem:Metadata>
+            </grfnem:metadata>
+          </grfnem:Variable>
+        </grfnem:inputs>
+        <grfnem:outputs>
+          <grfnem:Variable rdf:ID="_5a921187-19c7-8df4-8f4f-f31e78de5857">
+            <grfnem:identifier>GE_simple_PI_controller::GE_simple_PI_controller.plant_model::RETURN_VAL::-1</grfnem:identifier>
+            <grfnem:uid>_5a921187-19c7-8df4-8f4f-f31e78de5857</grfnem:uid>
+            <grfnem:metadata>
+              <grfnem:Metadata>
+                <grfnem:line_begin rdf:datatype="http://www.w3.org/2001/XMLSchema#int"
+                >22</grfnem:line_begin>
+              </grfnem:Metadata>
+            </grfnem:metadata>
+          </grfnem:Variable>
+        </grfnem:outputs>
+      </grfnem:HyperEdge>
+    </grfnem:hyper_edges>
+    <grfnem:hyper_edges>
+      <grfnem:HyperEdge>
+        <grfnem:function>
+          <grfnem:Function rdf:ID="a25b59fd-92e8-e269-d12e-cbc40b9475b1">
+            <grfnem:lambda>lambda : 10.0</grfnem:lambda>
+            <grfnem:ftype>LITERAL</grfnem:ftype>
+            <grfnem:metadata>
+              <grfnem:Metadata>
+                <grfnem:line_begin rdf:datatype="http://www.w3.org/2001/XMLSchema#int"
+                >36</grfnem:line_begin>
+              </grfnem:Metadata>
+            </grfnem:metadata>
+          </grfnem:Function>
+        </grfnem:function>
+        <grfnem:outputs>
+          <grfnem:Variable rdf:ID="b5d32b16-6619-4cb1-d710-37d1b83e90ec">
+            <grfnem:identifier>GE_simple_PI_controller::GE_simple_PI_controller.main::desired_output::0</grfnem:identifier>
+            <grfnem:uid>b5d32b16-6619-4cb1-d710-37d1b83e90ec</grfnem:uid>
+            <grfnem:metadata>
+              <grfnem:Metadata>
+                <grfnem:line_begin rdf:datatype="http://www.w3.org/2001/XMLSchema#int"
+                >36</grfnem:line_begin>
+              </grfnem:Metadata>
+            </grfnem:metadata>
+          </grfnem:Variable>
+        </grfnem:outputs>
+      </grfnem:HyperEdge>
+    </grfnem:hyper_edges>
+    <grfnem:subgraphs>
+      <grfnem:SubGraph rdf:ID="_176ea1b1-6426-4cd5-1ea4-5cd69371a71f">
+        <grfnem:nodes>
+          <grfnem:Variable rdf:ID="d67e55fd-642b-fa42-aef9-c00b8a64c1b9">
+            <grfnem:identifier>GE_simple_PI_controller::GE_simple_PI_controller.main.LOOP_0::i::1</grfnem:identifier>
+            <grfnem:uid>d67e55fd-642b-fa42-aef9-c00b8a64c1b9</grfnem:uid>
+            <grfnem:metadata>
+              <grfnem:Metadata>
+                <grfnem:line_begin rdf:datatype="http://www.w3.org/2001/XMLSchema#int"
+                >48</grfnem:line_begin>
+              </grfnem:Metadata>
+            </grfnem:metadata>
+          </grfnem:Variable>
+        </grfnem:nodes>
+        <grfnem:sg_type>LoopContainer</grfnem:sg_type>
+        <grfnem:metadata>
+          <grfnem:Metadata>
+            <grfnem:line_end rdf:datatype="http://www.w3.org/2001/XMLSchema#int"
+            >52</grfnem:line_end>
+          </grfnem:Metadata>
+        </grfnem:metadata>
+        <grfnem:namespace>GE_simple_PI_controller</grfnem:namespace>
+        <grfnem:nodes>
+          <grfnem:Variable rdf:ID="_5129fb7c-6288-e1a5-cc45-782198a6416d">
+            <grfnem:identifier>GE_simple_PI_controller::GE_simple_PI_controller.main.LOOP_0::plant_command::-1</grfnem:identifier>
+            <grfnem:uid>_5129fb7c-6288-e1a5-cc45-782198a6416d</grfnem:uid>
+            <grfnem:metadata>
+              <grfnem:Metadata>
+                <grfnem:line_begin rdf:datatype="http://www.w3.org/2001/XMLSchema#int"
+                >50</grfnem:line_begin>
+              </grfnem:Metadata>
+            </grfnem:metadata>
+          </grfnem:Variable>
+        </grfnem:nodes>
+        <grfnem:nodes rdf:resource="#_4a84eb03-8d1f-d9b7-4d2b-9deb1beb3711"/>
+        <grfnem:uid>_176ea1b1-6426-4cd5-1ea4-5cd69371a71f</grfnem:uid>
+        <grfnem:nodes>
+          <grfnem:Variable rdf:ID="_148b2758-d7ab-7928-09e4-69e6ec62b2c8">
+            <grfnem:identifier>GE_simple_PI_controller::GE_simple_PI_controller.main.LOOP_0::integrator_state::1</grfnem:identifier>
+            <grfnem:uid>_148b2758-d7ab-7928-09e4-69e6ec62b2c8</grfnem:uid>
+            <grfnem:metadata>
+              <grfnem:Metadata/>
+            </grfnem:metadata>
+          </grfnem:Variable>
+        </grfnem:nodes>
+        <grfnem:nodes rdf:resource="#_552f233a-8c25-166a-1ff3-9849b4e1357d"/>
+        <grfnem:nodes>
+          <grfnem:Variable rdf:ID="d450fe4a-ec4f-217b-b306-d1a8e5eeac76">
+            <grfnem:identifier>GE_simple_PI_controller::GE_simple_PI_controller.main.LOOP_0::sensed_output::1</grfnem:identifier>
+            <grfnem:uid>d450fe4a-ec4f-217b-b306-d1a8e5eeac76</grfnem:uid>
+            <grfnem:metadata>
+              <grfnem:Metadata>
+                <grfnem:line_begin rdf:datatype="http://www.w3.org/2001/XMLSchema#int"
+                >52</grfnem:line_begin>
+              </grfnem:Metadata>
+            </grfnem:metadata>
+          </grfnem:Variable>
+        </grfnem:nodes>
+        <grfnem:nodes>
+          <grfnem:Variable rdf:ID="d3447490-96fd-35d0-adf2-0806e5214606">
+            <grfnem:identifier>GE_simple_PI_controller::GE_simple_PI_controller.main.LOOP_0::integrator_state::2</grfnem:identifier>
+            <grfnem:uid>d3447490-96fd-35d0-adf2-0806e5214606</grfnem:uid>
+            <grfnem:metadata>
+              <grfnem:Metadata/>
+            </grfnem:metadata>
+          </grfnem:Variable>
+        </grfnem:nodes>
+        <grfnem:parent>
+          <grfnem:SubGraph rdf:ID="_30bcab0e-d857-0102-55d4-4936a1515607">
+            <grfnem:nodes>
+              <grfnem:Function rdf:ID="_9a27d858-88c1-32ad-efbf-c19ee8f6cf32">
+                <grfnem:lambda>lambda : 0.01</grfnem:lambda>
+                <grfnem:ftype>LITERAL</grfnem:ftype>
+                <grfnem:metadata>
+                  <grfnem:Metadata>
+                    <grfnem:line_begin rdf:datatype="http://www.w3.org/2001/XMLSchema#int"
+                    >41</grfnem:line_begin>
+                  </grfnem:Metadata>
+                </grfnem:metadata>
+              </grfnem:Function>
+            </grfnem:nodes>
+            <grfnem:scope>GE_simple_PI_controller</grfnem:scope>
+            <grfnem:nodes>
+              <grfnem:Variable rdf:ID="baf3897a-3e70-f16a-5548-5822de1b372a">
+                <grfnem:identifier>GE_simple_PI_controller::GE_simple_PI_controller.main::i::0</grfnem:identifier>
+                <grfnem:uid>baf3897a-3e70-f16a-5548-5822de1b372a</grfnem:uid>
+                <grfnem:metadata>
+                  <grfnem:Metadata>
+                    <grfnem:line_begin rdf:datatype="http://www.w3.org/2001/XMLSchema#int"
+                    >48</grfnem:line_begin>
+                  </grfnem:Metadata>
+                </grfnem:metadata>
+              </grfnem:Variable>
+            </grfnem:nodes>
+            <grfnem:nodes>
+              <grfnem:Variable rdf:ID="eb2083e6-ce16-4dba-0ff1-8e0242af9fc3">
+                <grfnem:identifier>GE_simple_PI_controller::GE_simple_PI_controller.main::Kp_M::0</grfnem:identifier>
+                <grfnem:uid>eb2083e6-ce16-4dba-0ff1-8e0242af9fc3</grfnem:uid>
+                <grfnem:metadata>
+                  <grfnem:Metadata>
+                    <grfnem:line_begin rdf:datatype="http://www.w3.org/2001/XMLSchema#int"
+                    >32</grfnem:line_begin>
+                  </grfnem:Metadata>
+                </grfnem:metadata>
+              </grfnem:Variable>
+            </grfnem:nodes>
+            <grfnem:metadata>
+              <grfnem:Metadata>
+                <grfnem:line_begin rdf:datatype="http://www.w3.org/2001/XMLSchema#int"
+                >26</grfnem:line_begin>
+                <grfnem:line_end rdf:datatype="http://www.w3.org/2001/XMLSchema#int"
+                >61</grfnem:line_end>
+              </grfnem:Metadata>
+            </grfnem:metadata>
+            <grfnem:nodes>
+              <grfnem:Function rdf:ID="_5f3f5638-3870-1a14-b490-b6081dfc8352">
+                <grfnem:lambda>lambda : 0.015</grfnem:lambda>
+                <grfnem:ftype>LITERAL</grfnem:ftype>
+                <grfnem:metadata>
+                  <grfnem:Metadata>
+                    <grfnem:line_begin rdf:datatype="http://www.w3.org/2001/XMLSchema#int"
+                    >29</grfnem:line_begin>
+                  </grfnem:Metadata>
+                </grfnem:metadata>
+              </grfnem:Function>
+            </grfnem:nodes>
+            <grfnem:nodes>
+              <grfnem:Variable rdf:ID="a425799a-a905-d750-7e1e-a9c573581a81">
+                <grfnem:identifier>GE_simple_PI_controller::GE_simple_PI_controller.main::i::1</grfnem:identifier>
+                <grfnem:uid>a425799a-a905-d750-7e1e-a9c573581a81</grfnem:uid>
+                <grfnem:metadata>
+                  <grfnem:Metadata>
+                    <grfnem:line_begin rdf:datatype="http://www.w3.org/2001/XMLSchema#int"
+                    >48</grfnem:line_begin>
+                  </grfnem:Metadata>
+                </grfnem:metadata>
+              </grfnem:Variable>
+            </grfnem:nodes>
+            <grfnem:nodes>
+              <grfnem:Function rdf:ID="_4562be7f-bb42-e0b2-0426-465e3e37952d">
+                <grfnem:lambda>lambda : 100.5</grfnem:lambda>
+                <grfnem:ftype>LITERAL</grfnem:ftype>
+                <grfnem:metadata>
+                  <grfnem:Metadata>
+                    <grfnem:line_begin rdf:datatype="http://www.w3.org/2001/XMLSchema#int"
+                    >28</grfnem:line_begin>
+                  </grfnem:Metadata>
+                </grfnem:metadata>
+              </grfnem:Function>
+            </grfnem:nodes>
+            <grfnem:nodes>
+              <grfnem:Function rdf:ID="_38018b47-b29a-8b06-daf6-6c5f2577bffa">
+                <grfnem:lambda>lambda t_final,time_step: (t_final / time_step)</grfnem:lambda>
+                <grfnem:ftype>ASSIGN</grfnem:ftype>
+                <grfnem:metadata>
+                  <grfnem:Metadata>
+                    <grfnem:line_begin rdf:datatype="http://www.w3.org/2001/XMLSchema#int"
+                    >34</grfnem:line_begin>
+                  </grfnem:Metadata>
+                </grfnem:metadata>
+              </grfnem:Function>
+            </grfnem:nodes>
+            <grfnem:nodes>
+              <grfnem:Variable rdf:ID="_17e0aa3c-0398-3ca8-ea7e-9d498c778ea6">
+                <grfnem:identifier>GE_simple_PI_controller::GE_simple_PI_controller.main::num_steps::0</grfnem:identifier>
+                <grfnem:uid>_17e0aa3c-0398-3ca8-ea7e-9d498c778ea6</grfnem:uid>
+                <grfnem:metadata>
+                  <grfnem:Metadata>
+                    <grfnem:line_begin rdf:datatype="http://www.w3.org/2001/XMLSchema#int"
+                    >34</grfnem:line_begin>
+                  </grfnem:Metadata>
+                </grfnem:metadata>
+              </grfnem:Variable>
+            </grfnem:nodes>
+            <grfnem:nodes>
+              <grfnem:Variable rdf:ID="a0116be5-ab0c-1681-c8f8-e3d0d3290a4c">
+                <grfnem:identifier>GE_simple_PI_controller::GE_simple_PI_controller.main::plant_gain::0</grfnem:identifier>
+                <grfnem:uid>a0116be5-ab0c-1681-c8f8-e3d0d3290a4c</grfnem:uid>
+                <grfnem:metadata>
+                  <grfnem:Metadata>
+                    <grfnem:line_begin rdf:datatype="http://www.w3.org/2001/XMLSchema#int"
+                    >41</grfnem:line_begin>
+                  </grfnem:Metadata>
+                </grfnem:metadata>
+              </grfnem:Variable>
+            </grfnem:nodes>
+            <grfnem:nodes>
+              <grfnem:Variable rdf:ID="_8d723104-f773-83c1-3458-a748e9bb17bc">
+                <grfnem:identifier>GE_simple_PI_controller::GE_simple_PI_controller.main::time_step::0</grfnem:identifier>
+                <grfnem:uid>_8d723104-f773-83c1-3458-a748e9bb17bc</grfnem:uid>
+                <grfnem:metadata>
+                  <grfnem:Metadata>
+                    <grfnem:line_begin rdf:datatype="http://www.w3.org/2001/XMLSchema#int"
+                    >29</grfnem:line_begin>
+                  </grfnem:Metadata>
+                </grfnem:metadata>
+              </grfnem:Variable>
+            </grfnem:nodes>
+            <grfnem:nodes>
+              <grfnem:Variable rdf:ID="fb82860d-eabc-a8d0-b341-facdff0ac0f1">
+                <grfnem:identifier>GE_simple_PI_controller::GE_simple_PI_controller.main::sensed_output::1</grfnem:identifier>
+                <grfnem:uid>fb82860d-eabc-a8d0-b341-facdff0ac0f1</grfnem:uid>
+                <grfnem:metadata>
+                  <grfnem:Metadata>
+                    <grfnem:line_begin rdf:datatype="http://www.w3.org/2001/XMLSchema#int"
+                    >52</grfnem:line_begin>
+                  </grfnem:Metadata>
+                </grfnem:metadata>
+              </grfnem:Variable>
+            </grfnem:nodes>
+            <grfnem:nodes rdf:resource="#a25b59fd-92e8-e269-d12e-cbc40b9475b1"/>
+            <grfnem:nodes>
+              <grfnem:Variable rdf:ID="d3fbf47a-7e5b-1e7f-9ca5-499d004ae545">
+                <grfnem:identifier>GE_simple_PI_controller::GE_simple_PI_controller.main::sensed_output::0</grfnem:identifier>
+                <grfnem:uid>d3fbf47a-7e5b-1e7f-9ca5-499d004ae545</grfnem:uid>
+                <grfnem:metadata>
+                  <grfnem:Metadata>
+                    <grfnem:line_begin rdf:datatype="http://www.w3.org/2001/XMLSchema#int"
+                    >43</grfnem:line_begin>
+                  </grfnem:Metadata>
+                </grfnem:metadata>
+              </grfnem:Variable>
+            </grfnem:nodes>
+            <grfnem:nodes>
+              <grfnem:Variable rdf:ID="_5306f3f5-1516-6570-5b7c-709acb175a5a">
+                <grfnem:identifier>GE_simple_PI_controller::GE_simple_PI_controller.main::integrator_state::0</grfnem:identifier>
+                <grfnem:uid>_5306f3f5-1516-6570-5b7c-709acb175a5a</grfnem:uid>
+                <grfnem:metadata>
+                  <grfnem:Metadata/>
+                </grfnem:metadata>
+              </grfnem:Variable>
+            </grfnem:nodes>
+            <grfnem:nodes>
+              <grfnem:Variable rdf:ID="a3f2c9bf-9c63-16b9-50f2-44556f25e2a2">
+                <grfnem:identifier>GE_simple_PI_controller::GE_simple_PI_controller.main::t_final::0</grfnem:identifier>
+                <grfnem:uid>a3f2c9bf-9c63-16b9-50f2-44556f25e2a2</grfnem:uid>
+                <grfnem:metadata>
+                  <grfnem:Metadata>
+                    <grfnem:line_begin rdf:datatype="http://www.w3.org/2001/XMLSchema#int"
+                    >28</grfnem:line_begin>
+                  </grfnem:Metadata>
+                </grfnem:metadata>
+              </grfnem:Variable>
+            </grfnem:nodes>
+            <grfnem:nodes rdf:resource="#b5d32b16-6619-4cb1-d710-37d1b83e90ec"/>
+            <grfnem:nodes>
+              <grfnem:Variable rdf:ID="_85776e9a-dd84-f39e-7154-5a137a1d5006">
+                <grfnem:identifier>GE_simple_PI_controller::GE_simple_PI_controller.main::Ki_M::0</grfnem:identifier>
+                <grfnem:uid>_85776e9a-dd84-f39e-7154-5a137a1d5006</grfnem:uid>
+                <grfnem:metadata>
+                  <grfnem:Metadata>
+                    <grfnem:line_begin rdf:datatype="http://www.w3.org/2001/XMLSchema#int"
+                    >31</grfnem:line_begin>
+                  </grfnem:Metadata>
+                </grfnem:metadata>
+              </grfnem:Variable>
+            </grfnem:nodes>
+            <grfnem:uid>_30bcab0e-d857-0102-55d4-4936a1515607</grfnem:uid>
+            <grfnem:nodes>
+              <grfnem:Function rdf:ID="_1fdb8b32-06d5-99e8-12f1-75ffae3b16ec">
+                <grfnem:lambda>lambda : 0.0</grfnem:lambda>
+                <grfnem:ftype>LITERAL</grfnem:ftype>
+                <grfnem:metadata>
+                  <grfnem:Metadata>
+                    <grfnem:line_begin rdf:datatype="http://www.w3.org/2001/XMLSchema#int"
+                    >43</grfnem:line_begin>
+                  </grfnem:Metadata>
+                </grfnem:metadata>
+              </grfnem:Function>
+            </grfnem:nodes>
+            <grfnem:sg_type>FuncContainer</grfnem:sg_type>
+            <grfnem:namespace>GE_simple_PI_controller</grfnem:namespace>
+            <grfnem:nodes>
+              <grfnem:Function rdf:ID="_6d16ee18-5521-16dd-2ba4-b180cb69ca38">
+                <grfnem:lambda>lambda : 20.0</grfnem:lambda>
+                <grfnem:ftype>LITERAL</grfnem:ftype>
+                <grfnem:metadata>
+                  <grfnem:Metadata>
+                    <grfnem:line_begin rdf:datatype="http://www.w3.org/2001/XMLSchema#int"
+                    >31</grfnem:line_begin>
+                  </grfnem:Metadata>
+                </grfnem:metadata>
+              </grfnem:Function>
+            </grfnem:nodes>
+            <grfnem:nodes>
+              <grfnem:Function rdf:ID="c87a7463-19c1-6a0d-0feb-d845d0dfae43">
+                <grfnem:lambda>lambda : 75.0</grfnem:lambda>
+                <grfnem:ftype>LITERAL</grfnem:ftype>
+                <grfnem:metadata>
+                  <grfnem:Metadata>
+                    <grfnem:line_begin rdf:datatype="http://www.w3.org/2001/XMLSchema#int"
+                    >32</grfnem:line_begin>
+                  </grfnem:Metadata>
+                </grfnem:metadata>
+              </grfnem:Function>
+            </grfnem:nodes>
+            <grfnem:nodes>
+              <grfnem:Function rdf:ID="d480865f-9b38-fe80-3042-e325a28f5ab0">
+                <grfnem:lambda>lambda : 0</grfnem:lambda>
+                <grfnem:ftype>LITERAL</grfnem:ftype>
+                <grfnem:metadata>
+                  <grfnem:Metadata>
+                    <grfnem:line_begin rdf:datatype="http://www.w3.org/2001/XMLSchema#int"
+                    >48</grfnem:line_begin>
+                  </grfnem:Metadata>
+                </grfnem:metadata>
+              </grfnem:Function>
+            </grfnem:nodes>
+            <grfnem:nodes>
+              <grfnem:Variable rdf:ID="_46743741-9466-e472-6b5f-5241f323ca74">
+                <grfnem:identifier>GE_simple_PI_controller::GE_simple_PI_controller.main::integrator_state::-1</grfnem:identifier>
+                <grfnem:uid>_46743741-9466-e472-6b5f-5241f323ca74</grfnem:uid>
+                <grfnem:metadata>
+                  <grfnem:Metadata/>
+                </grfnem:metadata>
+              </grfnem:Variable>
+            </grfnem:nodes>
+          </grfnem:SubGraph>
+        </grfnem:parent>
+        <grfnem:nodes>
+          <grfnem:Function rdf:ID="e6fd68e8-d69c-91c2-7860-1602bb4a06cb">
+            <grfnem:lambda>lambda i,num_steps: not (i &gt;= num_steps)</grfnem:lambda>
+            <grfnem:ftype>CONDITION</grfnem:ftype>
+            <grfnem:metadata>
+              <grfnem:Metadata/>
+            </grfnem:metadata>
+          </grfnem:Function>
+        </grfnem:nodes>
+        <grfnem:nodes>
+          <grfnem:Variable rdf:ID="_2648ee38-e074-05eb-2156-63abc1f254b8">
+            <grfnem:identifier>GE_simple_PI_controller::GE_simple_PI_controller.main.LOOP_0::EXIT::-1</grfnem:identifier>
+            <grfnem:uid>_2648ee38-e074-05eb-2156-63abc1f254b8</grfnem:uid>
+            <grfnem:metadata>
+              <grfnem:Metadata>
+                <grfnem:line_begin rdf:datatype="http://www.w3.org/2001/XMLSchema#int"
+                >48</grfnem:line_begin>
+              </grfnem:Metadata>
+            </grfnem:metadata>
+          </grfnem:Variable>
+        </grfnem:nodes>
+        <grfnem:nodes>
+          <grfnem:Function rdf:ID="e786ab37-5bca-47be-4298-17c53308fb2e">
+            <grfnem:lambda>lambda i: (i + 1)</grfnem:lambda>
+            <grfnem:ftype>ASSIGN</grfnem:ftype>
+            <grfnem:metadata>
+              <grfnem:Metadata>
+                <grfnem:line_begin rdf:datatype="http://www.w3.org/2001/XMLSchema#int"
+                >48</grfnem:line_begin>
+              </grfnem:Metadata>
+            </grfnem:metadata>
+          </grfnem:Function>
+        </grfnem:nodes>
+        <grfnem:nodes>
+          <grfnem:Function rdf:ID="_878b9f6b-57a1-cb71-2975-d279d86dbf11">
+            <grfnem:lambda>lambda i,sensed_output,integrator_state:(i,sensed_output,integrator_state)</grfnem:lambda>
+            <grfnem:ftype>INTERFACE</grfnem:ftype>
+            <grfnem:metadata>
+              <grfnem:Metadata/>
+            </grfnem:metadata>
+          </grfnem:Function>
+        </grfnem:nodes>
+        <grfnem:nodes rdf:resource="#_8c1745a7-9a6a-5f92-cca7-4147f6be1f72"/>
+        <grfnem:nodes rdf:resource="#_42930b33-a81a-d477-fb36-75b89cdeb3e6"/>
+        <grfnem:nodes rdf:resource="#_1759edc3-72ae-2244-8b01-63c1cd9d2b7d"/>
+        <grfnem:nodes>
+          <grfnem:Variable rdf:ID="_38c1962e-9148-624f-eac1-c14f30e9c5cc">
+            <grfnem:identifier>GE_simple_PI_controller::GE_simple_PI_controller.main.LOOP_0::num_steps::-1</grfnem:identifier>
+            <grfnem:uid>_38c1962e-9148-624f-eac1-c14f30e9c5cc</grfnem:uid>
+            <grfnem:metadata>
+              <grfnem:Metadata>
+                <grfnem:line_begin rdf:datatype="http://www.w3.org/2001/XMLSchema#int"
+                >34</grfnem:line_begin>
+              </grfnem:Metadata>
+            </grfnem:metadata>
+          </grfnem:Variable>
+        </grfnem:nodes>
+        <grfnem:nodes>
+          <grfnem:Variable rdf:ID="e005b860-51ef-1922-fe43-c49e149818d1">
+            <grfnem:identifier>GE_simple_PI_controller::GE_simple_PI_controller.main.LOOP_0::sensed_output::-1</grfnem:identifier>
+            <grfnem:uid>e005b860-51ef-1922-fe43-c49e149818d1</grfnem:uid>
+            <grfnem:metadata>
+              <grfnem:Metadata>
+                <grfnem:line_begin rdf:datatype="http://www.w3.org/2001/XMLSchema#int"
+                >43</grfnem:line_begin>
+              </grfnem:Metadata>
+            </grfnem:metadata>
+          </grfnem:Variable>
+        </grfnem:nodes>
+        <grfnem:nodes>
+          <grfnem:Function rdf:ID="c470f0e7-f76f-bfb8-3412-fc12ac322c12">
+            <grfnem:lambda>lambda EXIT,i_initial,sensed_output_initial,integrator_state_initial,i_updated,sensed_output_updated,integrator_state_updated: (i_initial,sensed_output_initial,integrator_state_initial) if EXIT else (i_updated,sensed_output_updated,integrator_state_updated)</grfnem:lambda>
+            <grfnem:ftype>DECISION</grfnem:ftype>
+            <grfnem:metadata>
+              <grfnem:Metadata>
+                <grfnem:line_begin rdf:datatype="http://www.w3.org/2001/XMLSchema#int"
+                >52</grfnem:line_begin>
+              </grfnem:Metadata>
+            </grfnem:metadata>
+          </grfnem:Function>
+        </grfnem:nodes>
+        <grfnem:nodes>
+          <grfnem:Variable rdf:ID="_3405095c-8a50-06c1-ec18-8efbd080e66e">
+            <grfnem:identifier>GE_simple_PI_controller::GE_simple_PI_controller.main.LOOP_0::integrator_state::-1</grfnem:identifier>
+            <grfnem:uid>_3405095c-8a50-06c1-ec18-8efbd080e66e</grfnem:uid>
+            <grfnem:metadata>
+              <grfnem:Metadata/>
+            </grfnem:metadata>
+          </grfnem:Variable>
+        </grfnem:nodes>
+        <grfnem:nodes>
+          <grfnem:Variable rdf:ID="_37176e84-d977-e993-3c49-d76fcfc6e625">
+            <grfnem:identifier>GE_simple_PI_controller::GE_simple_PI_controller.main.LOOP_0::sensed_output::2</grfnem:identifier>
+            <grfnem:uid>_37176e84-d977-e993-3c49-d76fcfc6e625</grfnem:uid>
+            <grfnem:metadata>
+              <grfnem:Metadata>
+                <grfnem:line_begin rdf:datatype="http://www.w3.org/2001/XMLSchema#int"
+                >52</grfnem:line_begin>
+              </grfnem:Metadata>
+            </grfnem:metadata>
+          </grfnem:Variable>
+        </grfnem:nodes>
+        <grfnem:nodes>
+          <grfnem:Variable rdf:ID="adc0da7a-16fe-baa0-11af-923d79fdef7c">
+            <grfnem:identifier>GE_simple_PI_controller::GE_simple_PI_controller.main.LOOP_0::i::0</grfnem:identifier>
+            <grfnem:uid>adc0da7a-16fe-baa0-11af-923d79fdef7c</grfnem:uid>
+            <grfnem:metadata>
+              <grfnem:Metadata>
+                <grfnem:line_begin rdf:datatype="http://www.w3.org/2001/XMLSchema#int"
+                >48</grfnem:line_begin>
+              </grfnem:Metadata>
+            </grfnem:metadata>
+          </grfnem:Variable>
+        </grfnem:nodes>
+        <grfnem:nodes>
+          <grfnem:Variable rdf:ID="_101fbccc-ded7-33e8-b421-eaeb534097ca">
+            <grfnem:identifier>GE_simple_PI_controller::GE_simple_PI_controller.main.LOOP_0::i::-1</grfnem:identifier>
+            <grfnem:uid>_101fbccc-ded7-33e8-b421-eaeb534097ca</grfnem:uid>
+            <grfnem:metadata>
+              <grfnem:Metadata>
+                <grfnem:line_begin rdf:datatype="http://www.w3.org/2001/XMLSchema#int"
+                >48</grfnem:line_begin>
+              </grfnem:Metadata>
+            </grfnem:metadata>
+          </grfnem:Variable>
+        </grfnem:nodes>
+        <grfnem:nodes rdf:resource="#_7d41e602-eece-328b-ff7b-118e820865d6"/>
+        <grfnem:nodes>
+          <grfnem:Function rdf:ID="_28805c5d-ad1b-8f60-c9e4-dab20edc6d2b">
+            <grfnem:lambda>lambda i_initial,sensed_output_initial,integrator_state_initial,i_updated,sensed_output_updated,integrator_state_updated: (i_initial,sensed_output_initial,integrator_state_initial) if i_updated is None and sensed_output_updated is None and integrator_state_updated is None else (i_updated,sensed_output_updated,integrator_state_updated)</grfnem:lambda>
+            <grfnem:ftype>DECISION</grfnem:ftype>
+            <grfnem:metadata>
+              <grfnem:Metadata>
+                <grfnem:line_begin rdf:datatype="http://www.w3.org/2001/XMLSchema#int"
+                >52</grfnem:line_begin>
+              </grfnem:Metadata>
+            </grfnem:metadata>
+          </grfnem:Function>
+        </grfnem:nodes>
+        <grfnem:nodes>
+          <grfnem:Variable rdf:ID="_247a8333-f7b0-b7d2-cda8-056c3d15eef7">
+            <grfnem:identifier>GE_simple_PI_controller::GE_simple_PI_controller.main.LOOP_0::COND_0_0::-1</grfnem:identifier>
+            <grfnem:uid>_247a8333-f7b0-b7d2-cda8-056c3d15eef7</grfnem:uid>
+            <grfnem:metadata>
+              <grfnem:Metadata>
+                <grfnem:line_begin rdf:datatype="http://www.w3.org/2001/XMLSchema#int"
+                >48</grfnem:line_begin>
+              </grfnem:Metadata>
+            </grfnem:metadata>
+          </grfnem:Variable>
+        </grfnem:nodes>
+        <grfnem:nodes>
+          <grfnem:Function rdf:ID="b29c467d-2b5f-6932-91dc-59efeb21a3f6">
+            <grfnem:lambda>lambda COND_0_0: not COND_0_0</grfnem:lambda>
+            <grfnem:ftype>DECISION</grfnem:ftype>
+            <grfnem:metadata>
+              <grfnem:Metadata>
+                <grfnem:line_begin rdf:datatype="http://www.w3.org/2001/XMLSchema#int"
+                >48</grfnem:line_begin>
+              </grfnem:Metadata>
+            </grfnem:metadata>
+          </grfnem:Function>
+        </grfnem:nodes>
+        <grfnem:nodes>
+          <grfnem:Variable rdf:ID="_85940927-468f-f53d-864a-7a50b48d73f1">
+            <grfnem:identifier>GE_simple_PI_controller::GE_simple_PI_controller.main.LOOP_0::i::2</grfnem:identifier>
+            <grfnem:uid>_85940927-468f-f53d-864a-7a50b48d73f1</grfnem:uid>
+            <grfnem:metadata>
+              <grfnem:Metadata>
+                <grfnem:line_begin rdf:datatype="http://www.w3.org/2001/XMLSchema#int"
+                >48</grfnem:line_begin>
+              </grfnem:Metadata>
+            </grfnem:metadata>
+          </grfnem:Variable>
+        </grfnem:nodes>
+        <grfnem:scope>GE_simple_PI_controller.main</grfnem:scope>
+        <grfnem:nodes>
+          <grfnem:Function rdf:ID="_1db53334-fb03-23a1-d576-d4155ec17dbe">
+            <grfnem:lambda>lambda i_0,num_steps_0,desired_output_0,sensed_output_0,Kp_M_0,Ki_M_0,time_step_0,integrator_state_0,plant_gain_0:(i_0,num_steps_0,desired_output_0,sensed_output_0,Kp_M_0,Ki_M_0,time_step_0,integrator_state_0,plant_gain_0)</grfnem:lambda>
+            <grfnem:ftype>INTERFACE</grfnem:ftype>
+            <grfnem:metadata>
+              <grfnem:Metadata/>
+            </grfnem:metadata>
+          </grfnem:Function>
+        </grfnem:nodes>
+        <grfnem:nodes>
+          <grfnem:Variable rdf:ID="_2f120554-4a53-08cc-3dfa-bc08935ddd72">
+            <grfnem:identifier>GE_simple_PI_controller::GE_simple_PI_controller.main.LOOP_0::plant_gain::-1</grfnem:identifier>
+            <grfnem:uid>_2f120554-4a53-08cc-3dfa-bc08935ddd72</grfnem:uid>
+            <grfnem:metadata>
+              <grfnem:Metadata>
+                <grfnem:line_begin rdf:datatype="http://www.w3.org/2001/XMLSchema#int"
+                >41</grfnem:line_begin>
+              </grfnem:Metadata>
+            </grfnem:metadata>
+          </grfnem:Variable>
+        </grfnem:nodes>
+      </grfnem:SubGraph>
+    </grfnem:subgraphs>
+    <grfnem:hyper_edges>
+      <grfnem:HyperEdge>
+        <grfnem:outputs rdf:resource="#d3447490-96fd-35d0-adf2-0806e5214606"/>
+        <grfnem:inputs rdf:resource="#_148b2758-d7ab-7928-09e4-69e6ec62b2c8"/>
+        <grfnem:outputs rdf:resource="#_37176e84-d977-e993-3c49-d76fcfc6e625"/>
+        <grfnem:inputs rdf:resource="#adc0da7a-16fe-baa0-11af-923d79fdef7c"/>
+        <grfnem:inputs rdf:resource="#d67e55fd-642b-fa42-aef9-c00b8a64c1b9"/>
+        <grfnem:inputs rdf:resource="#d450fe4a-ec4f-217b-b306-d1a8e5eeac76"/>
+        <grfnem:outputs rdf:resource="#_85940927-468f-f53d-864a-7a50b48d73f1"/>
+        <grfnem:function rdf:resource="#c470f0e7-f76f-bfb8-3412-fc12ac322c12"/>
+        <grfnem:inputs rdf:resource="#_8c1745a7-9a6a-5f92-cca7-4147f6be1f72"/>
+        <grfnem:inputs rdf:resource="#_2648ee38-e074-05eb-2156-63abc1f254b8"/>
+        <grfnem:inputs rdf:resource="#_42930b33-a81a-d477-fb36-75b89cdeb3e6"/>
+      </grfnem:HyperEdge>
+    </grfnem:hyper_edges>
+    <grfnem:hyper_edges>
+      <grfnem:HyperEdge>
+        <grfnem:function>
+          <grfnem:Function rdf:ID="_11ebcd49-428a-1c22-d5fd-b76a19fbeb1d">
+            <grfnem:lambda>lambda RETURN_VAL,integrator_state:(RETURN_VAL,integrator_state)</grfnem:lambda>
+            <grfnem:ftype>INTERFACE</grfnem:ftype>
+            <grfnem:metadata>
+              <grfnem:Metadata/>
+            </grfnem:metadata>
+          </grfnem:Function>
+        </grfnem:function>
+        <grfnem:inputs>
+          <grfnem:Variable rdf:ID="_259f4329-e6f4-590b-9a16-4106cf6a659e">
+            <grfnem:identifier>GE_simple_PI_controller::GE_simple_PI_controller.PI_calc::RETURN_VAL::-1</grfnem:identifier>
+            <grfnem:uid>_259f4329-e6f4-590b-9a16-4106cf6a659e</grfnem:uid>
+            <grfnem:metadata>
+              <grfnem:Metadata>
+                <grfnem:line_begin rdf:datatype="http://www.w3.org/2001/XMLSchema#int"
+                >14</grfnem:line_begin>
+              </grfnem:Metadata>
+            </grfnem:metadata>
+          </grfnem:Variable>
+        </grfnem:inputs>
+        <grfnem:inputs>
+          <grfnem:Variable rdf:ID="b4862b21-fb97-d435-8856-1712e8e5216a">
+            <grfnem:identifier>GE_simple_PI_controller::GE_simple_PI_controller.PI_calc::integrator_state::0</grfnem:identifier>
+            <grfnem:uid>b4862b21-fb97-d435-8856-1712e8e5216a</grfnem:uid>
+            <grfnem:metadata>
+              <grfnem:Metadata>
+                <grfnem:line_begin rdf:datatype="http://www.w3.org/2001/XMLSchema#int"
+                >12</grfnem:line_begin>
+              </grfnem:Metadata>
+            </grfnem:metadata>
+          </grfnem:Variable>
+        </grfnem:inputs>
+        <grfnem:outputs rdf:resource="#_5129fb7c-6288-e1a5-cc45-782198a6416d"/>
+        <grfnem:outputs rdf:resource="#_148b2758-d7ab-7928-09e4-69e6ec62b2c8"/>
+      </grfnem:HyperEdge>
+    </grfnem:hyper_edges>
+    <grfnem:hyper_edges>
+      <grfnem:HyperEdge>
+        <grfnem:function rdf:resource="#_878b9f6b-57a1-cb71-2975-d279d86dbf11"/>
+        <grfnem:inputs rdf:resource="#_85940927-468f-f53d-864a-7a50b48d73f1"/>
+        <grfnem:inputs rdf:resource="#_37176e84-d977-e993-3c49-d76fcfc6e625"/>
+        <grfnem:inputs rdf:resource="#d3447490-96fd-35d0-adf2-0806e5214606"/>
+        <grfnem:outputs rdf:resource="#a425799a-a905-d750-7e1e-a9c573581a81"/>
+        <grfnem:outputs rdf:resource="#fb82860d-eabc-a8d0-b341-facdff0ac0f1"/>
+        <grfnem:outputs rdf:resource="#_5306f3f5-1516-6570-5b7c-709acb175a5a"/>
+      </grfnem:HyperEdge>
+    </grfnem:hyper_edges>
+    <grfnem:hyper_edges>
+      <grfnem:HyperEdge>
+        <grfnem:function rdf:resource="#_5f3f5638-3870-1a14-b490-b6081dfc8352"/>
+        <grfnem:outputs rdf:resource="#_8d723104-f773-83c1-3458-a748e9bb17bc"/>
+      </grfnem:HyperEdge>
+    </grfnem:hyper_edges>
+    <grfnem:hyper_edges>
+      <grfnem:HyperEdge>
+        <grfnem:function rdf:resource="#d480865f-9b38-fe80-3042-e325a28f5ab0"/>
+        <grfnem:outputs rdf:resource="#baf3897a-3e70-f16a-5548-5822de1b372a"/>
+      </grfnem:HyperEdge>
+    </grfnem:hyper_edges>
+    <grfnem:hyper_edges>
+      <grfnem:HyperEdge>
+        <grfnem:function>
+          <grfnem:Function rdf:ID="ade9b2b4-efdd-35f8-0fa3-4266ccfdba9b">
+            <grfnem:lambda>lambda timestep,error,integrator_state: ((timestep * error) + integrator_state)</grfnem:lambda>
+            <grfnem:ftype>ASSIGN</grfnem:ftype>
+            <grfnem:metadata>
+              <grfnem:Metadata>
+                <grfnem:line_begin rdf:datatype="http://www.w3.org/2001/XMLSchema#int"
+                >12</grfnem:line_begin>
+              </grfnem:Metadata>
+            </grfnem:metadata>
+          </grfnem:Function>
+        </grfnem:function>
+        <grfnem:inputs rdf:resource="#_23a7711a-8133-2876-37eb-dcd9e87a1613"/>
+        <grfnem:inputs>
+          <grfnem:Variable rdf:ID="_1846d424-c17c-6279-23c6-612f48268673">
+            <grfnem:identifier>GE_simple_PI_controller::GE_simple_PI_controller.PI_calc::error::0</grfnem:identifier>
+            <grfnem:uid>_1846d424-c17c-6279-23c6-612f48268673</grfnem:uid>
+            <grfnem:metadata>
+              <grfnem:Metadata>
+                <grfnem:line_begin rdf:datatype="http://www.w3.org/2001/XMLSchema#int"
+                >10</grfnem:line_begin>
+              </grfnem:Metadata>
+            </grfnem:metadata>
+          </grfnem:Variable>
+        </grfnem:inputs>
+        <grfnem:inputs rdf:resource="#fcbd04c3-4021-2ef7-cca5-a5a19e4d6e3c"/>
+        <grfnem:outputs rdf:resource="#b4862b21-fb97-d435-8856-1712e8e5216a"/>
+      </grfnem:HyperEdge>
+    </grfnem:hyper_edges>
+    <grfnem:subgraphs rdf:resource="#_30bcab0e-d857-0102-55d4-4936a1515607"/>
+    <grfnem:hyper_edges>
+      <grfnem:HyperEdge>
+        <grfnem:function>
+          <grfnem:Function rdf:ID="ba26d851-35e8-579a-7aaf-0e891fb797fa">
+            <grfnem:lambda>lambda Input_dmd,Input_sensed: (Input_dmd - Input_sensed)</grfnem:lambda>
+            <grfnem:ftype>ASSIGN</grfnem:ftype>
+            <grfnem:metadata>
+              <grfnem:Metadata>
+                <grfnem:line_begin rdf:datatype="http://www.w3.org/2001/XMLSchema#int"
+                >10</grfnem:line_begin>
+              </grfnem:Metadata>
+            </grfnem:metadata>
+          </grfnem:Function>
+        </grfnem:function>
+        <grfnem:inputs rdf:resource="#f728b4fa-4248-5e3a-0a5d-2f346baa9455"/>
+        <grfnem:inputs rdf:resource="#eb1167b3-67a9-c378-7c65-c1e582e2e662"/>
+        <grfnem:outputs rdf:resource="#_1846d424-c17c-6279-23c6-612f48268673"/>
+      </grfnem:HyperEdge>
+    </grfnem:hyper_edges>
+    <grfnem:hyper_edges>
+      <grfnem:HyperEdge>
+        <grfnem:function rdf:resource="#c87a7463-19c1-6a0d-0feb-d845d0dfae43"/>
+        <grfnem:outputs rdf:resource="#eb2083e6-ce16-4dba-0ff1-8e0242af9fc3"/>
+      </grfnem:HyperEdge>
+    </grfnem:hyper_edges>
+    <grfnem:hyper_edges>
+      <grfnem:HyperEdge>
+        <grfnem:function rdf:resource="#e6fd68e8-d69c-91c2-7860-1602bb4a06cb"/>
+        <grfnem:inputs rdf:resource="#adc0da7a-16fe-baa0-11af-923d79fdef7c"/>
+        <grfnem:inputs rdf:resource="#_38c1962e-9148-624f-eac1-c14f30e9c5cc"/>
+        <grfnem:outputs rdf:resource="#_247a8333-f7b0-b7d2-cda8-056c3d15eef7"/>
+      </grfnem:HyperEdge>
+    </grfnem:hyper_edges>
+    <grfnem:date_created rdf:datatype="http://www.w3.org/2001/XMLSchema#dateTime"
+    >2021-05-14T00:00:00-04:00</grfnem:date_created>
+    <grfnem:hyper_edges>
+      <grfnem:HyperEdge>
+        <grfnem:function>
+          <grfnem:Function rdf:ID="_9edfa3da-6cf5-5b15-8b53-031d05d51433">
+            <grfnem:lambda>lambda error,Kp_M,Ki_M,integrator_state: ((error * Kp_M) + (Ki_M * integrator_state))</grfnem:lambda>
+            <grfnem:ftype>ASSIGN</grfnem:ftype>
+            <grfnem:metadata>
+              <grfnem:Metadata>
+                <grfnem:line_begin rdf:datatype="http://www.w3.org/2001/XMLSchema#int"
+                >14</grfnem:line_begin>
+              </grfnem:Metadata>
+            </grfnem:metadata>
+          </grfnem:Function>
+        </grfnem:function>
+        <grfnem:inputs rdf:resource="#_1846d424-c17c-6279-23c6-612f48268673"/>
+        <grfnem:inputs rdf:resource="#f7c1bd87-4da5-e709-d471-3d60c8a70639"/>
+        <grfnem:inputs rdf:resource="#e443df78-9558-867f-5ba9-1faf7a024204"/>
+        <grfnem:inputs rdf:resource="#b4862b21-fb97-d435-8856-1712e8e5216a"/>
+        <grfnem:outputs rdf:resource="#_259f4329-e6f4-590b-9a16-4106cf6a659e"/>
+      </grfnem:HyperEdge>
+    </grfnem:hyper_edges>
+    <grfnem:hyper_edges>
+      <grfnem:HyperEdge>
+        <grfnem:function rdf:resource="#_6d16ee18-5521-16dd-2ba4-b180cb69ca38"/>
+        <grfnem:outputs rdf:resource="#_85776e9a-dd84-f39e-7154-5a137a1d5006"/>
+      </grfnem:HyperEdge>
+    </grfnem:hyper_edges>
+    <grfnem:subgraphs>
+      <grfnem:SubGraph rdf:ID="_4d125e7f-a59c-ec98-126c-bc8f38884479">
+        <grfnem:uid>_4d125e7f-a59c-ec98-126c-bc8f38884479</grfnem:uid>
+        <grfnem:scope>GE_simple_PI_controller</grfnem:scope>
+        <grfnem:parent rdf:resource="#_176ea1b1-6426-4cd5-1ea4-5cd69371a71f"/>
+        <grfnem:metadata>
+          <grfnem:Metadata>
+            <grfnem:line_begin rdf:datatype="http://www.w3.org/2001/XMLSchema#int"
+            >21</grfnem:line_begin>
+            <grfnem:line_end rdf:datatype="http://www.w3.org/2001/XMLSchema#int"
+            >23</grfnem:line_end>
+          </grfnem:Metadata>
+        </grfnem:metadata>
+        <grfnem:nodes rdf:resource="#_5487ce1e-af19-922a-d9b8-a714e61a441c"/>
+        <grfnem:nodes>
+          <grfnem:Function rdf:ID="_642aad48-fcfc-fa81-b306-d70019d5f970">
+            <grfnem:lambda>lambda RETURN_VAL:(RETURN_VAL)</grfnem:lambda>
+            <grfnem:ftype>INTERFACE</grfnem:ftype>
+            <grfnem:metadata>
+              <grfnem:Metadata/>
+            </grfnem:metadata>
+          </grfnem:Function>
+        </grfnem:nodes>
+        <grfnem:nodes rdf:resource="#_98b33c6e-0a14-b90a-7795-e98680ee526e"/>
+        <grfnem:nodes rdf:resource="#_5a921187-19c7-8df4-8f4f-f31e78de5857"/>
+        <grfnem:nodes>
+          <grfnem:Function rdf:ID="_0fa07a3f-2e29-5065-6fa2-31e959acdd98">
+            <grfnem:lambda>lambda plant_command_0,plant_gain_0:(plant_command_0,plant_gain_0)</grfnem:lambda>
+            <grfnem:ftype>INTERFACE</grfnem:ftype>
+            <grfnem:metadata>
+              <grfnem:Metadata/>
+            </grfnem:metadata>
+          </grfnem:Function>
+        </grfnem:nodes>
+        <grfnem:nodes rdf:resource="#_12e0c8b2-bad6-40fb-1948-8dec4f65d4d9"/>
+        <grfnem:namespace>GE_simple_PI_controller</grfnem:namespace>
+        <grfnem:sg_type>FuncContainer</grfnem:sg_type>
+      </grfnem:SubGraph>
+    </grfnem:subgraphs>
+    <grfnem:subgraphs>
+      <grfnem:SubGraph rdf:ID="_31d0b664-0589-f877-9b02-52440950fd13">
+        <grfnem:nodes rdf:resource="#_9edfa3da-6cf5-5b15-8b53-031d05d51433"/>
+        <grfnem:nodes rdf:resource="#f7c1bd87-4da5-e709-d471-3d60c8a70639"/>
+        <grfnem:nodes rdf:resource="#eb1167b3-67a9-c378-7c65-c1e582e2e662"/>
+        <grfnem:nodes rdf:resource="#f728b4fa-4248-5e3a-0a5d-2f346baa9455"/>
+        <grfnem:nodes rdf:resource="#ba26d851-35e8-579a-7aaf-0e891fb797fa"/>
+        <grfnem:scope>GE_simple_PI_controller</grfnem:scope>
+        <grfnem:metadata>
+          <grfnem:Metadata>
+            <grfnem:line_begin rdf:datatype="http://www.w3.org/2001/XMLSchema#int"
+            >9</grfnem:line_begin>
+            <grfnem:line_end rdf:datatype="http://www.w3.org/2001/XMLSchema#int"
+            >15</grfnem:line_end>
+          </grfnem:Metadata>
+        </grfnem:metadata>
+        <grfnem:nodes rdf:resource="#ade9b2b4-efdd-35f8-0fa3-4266ccfdba9b"/>
+        <grfnem:nodes rdf:resource="#_259f4329-e6f4-590b-9a16-4106cf6a659e"/>
+        <grfnem:nodes rdf:resource="#e443df78-9558-867f-5ba9-1faf7a024204"/>
+        <grfnem:namespace>GE_simple_PI_controller</grfnem:namespace>
+        <grfnem:nodes rdf:resource="#b7d6467b-2f5a-522a-f87f-43fdf6062541"/>
+        <grfnem:nodes rdf:resource="#_23a7711a-8133-2876-37eb-dcd9e87a1613"/>
+        <grfnem:uid>_31d0b664-0589-f877-9b02-52440950fd13</grfnem:uid>
+        <grfnem:sg_type>FuncContainer</grfnem:sg_type>
+        <grfnem:nodes rdf:resource="#fcbd04c3-4021-2ef7-cca5-a5a19e4d6e3c"/>
+        <grfnem:parent rdf:resource="#_176ea1b1-6426-4cd5-1ea4-5cd69371a71f"/>
+        <grfnem:nodes rdf:resource="#_1846d424-c17c-6279-23c6-612f48268673"/>
+        <grfnem:nodes rdf:resource="#_11ebcd49-428a-1c22-d5fd-b76a19fbeb1d"/>
+        <grfnem:nodes rdf:resource="#b4862b21-fb97-d435-8856-1712e8e5216a"/>
+      </grfnem:SubGraph>
+    </grfnem:subgraphs>
+    <grfnem:hyper_edges>
+      <grfnem:HyperEdge>
+        <grfnem:function rdf:resource="#_4562be7f-bb42-e0b2-0426-465e3e37952d"/>
+        <grfnem:outputs rdf:resource="#a3f2c9bf-9c63-16b9-50f2-44556f25e2a2"/>
+      </grfnem:HyperEdge>
+    </grfnem:hyper_edges>
+    <grfnem:hyper_edges>
+      <grfnem:HyperEdge>
+        <grfnem:function rdf:resource="#_9a27d858-88c1-32ad-efbf-c19ee8f6cf32"/>
+        <grfnem:outputs rdf:resource="#a0116be5-ab0c-1681-c8f8-e3d0d3290a4c"/>
+      </grfnem:HyperEdge>
+    </grfnem:hyper_edges>
+    <grfnem:hyper_edges>
+      <grfnem:HyperEdge>
+        <grfnem:function rdf:resource="#e786ab37-5bca-47be-4298-17c53308fb2e"/>
+        <grfnem:inputs rdf:resource="#adc0da7a-16fe-baa0-11af-923d79fdef7c"/>
+        <grfnem:outputs rdf:resource="#d67e55fd-642b-fa42-aef9-c00b8a64c1b9"/>
+      </grfnem:HyperEdge>
+    </grfnem:hyper_edges>
+    <grfnem:hyper_edges>
+      <grfnem:HyperEdge>
+        <grfnem:function rdf:resource="#_642aad48-fcfc-fa81-b306-d70019d5f970"/>
+        <grfnem:inputs rdf:resource="#_5a921187-19c7-8df4-8f4f-f31e78de5857"/>
+        <grfnem:outputs rdf:resource="#d450fe4a-ec4f-217b-b306-d1a8e5eeac76"/>
+      </grfnem:HyperEdge>
+    </grfnem:hyper_edges>
+    <grfnem:hyper_edges>
+      <grfnem:HyperEdge>
+        <grfnem:inputs rdf:resource="#_148b2758-d7ab-7928-09e4-69e6ec62b2c8"/>
+        <grfnem:inputs rdf:resource="#e005b860-51ef-1922-fe43-c49e149818d1"/>
+        <grfnem:inputs rdf:resource="#_3405095c-8a50-06c1-ec18-8efbd080e66e"/>
+        <grfnem:inputs rdf:resource="#_101fbccc-ded7-33e8-b421-eaeb534097ca"/>
+        <grfnem:inputs rdf:resource="#d450fe4a-ec4f-217b-b306-d1a8e5eeac76"/>
+        <grfnem:outputs rdf:resource="#adc0da7a-16fe-baa0-11af-923d79fdef7c"/>
+        <grfnem:outputs rdf:resource="#_8c1745a7-9a6a-5f92-cca7-4147f6be1f72"/>
+        <grfnem:function rdf:resource="#_28805c5d-ad1b-8f60-c9e4-dab20edc6d2b"/>
+        <grfnem:outputs rdf:resource="#_42930b33-a81a-d477-fb36-75b89cdeb3e6"/>
+        <grfnem:inputs rdf:resource="#d67e55fd-642b-fa42-aef9-c00b8a64c1b9"/>
+      </grfnem:HyperEdge>
+    </grfnem:hyper_edges>
+    <grfnem:hyper_edges>
+      <grfnem:HyperEdge>
+        <grfnem:function rdf:resource="#_38018b47-b29a-8b06-daf6-6c5f2577bffa"/>
+        <grfnem:inputs rdf:resource="#a3f2c9bf-9c63-16b9-50f2-44556f25e2a2"/>
+        <grfnem:inputs rdf:resource="#_8d723104-f773-83c1-3458-a748e9bb17bc"/>
+        <grfnem:outputs rdf:resource="#_17e0aa3c-0398-3ca8-ea7e-9d498c778ea6"/>
+      </grfnem:HyperEdge>
+    </grfnem:hyper_edges>
+    <grfnem:hyper_edges>
+      <grfnem:HyperEdge>
+        <grfnem:function rdf:resource="#_0fa07a3f-2e29-5065-6fa2-31e959acdd98"/>
+        <grfnem:inputs rdf:resource="#_5129fb7c-6288-e1a5-cc45-782198a6416d"/>
+        <grfnem:inputs rdf:resource="#_2f120554-4a53-08cc-3dfa-bc08935ddd72"/>
+        <grfnem:outputs rdf:resource="#_12e0c8b2-bad6-40fb-1948-8dec4f65d4d9"/>
+        <grfnem:outputs rdf:resource="#_5487ce1e-af19-922a-d9b8-a714e61a441c"/>
+      </grfnem:HyperEdge>
+    </grfnem:hyper_edges>
+    <grfnem:hyper_edges>
+      <grfnem:HyperEdge>
+        <grfnem:function rdf:resource="#_1fdb8b32-06d5-99e8-12f1-75ffae3b16ec"/>
+        <grfnem:outputs rdf:resource="#d3fbf47a-7e5b-1e7f-9ca5-499d004ae545"/>
+      </grfnem:HyperEdge>
+    </grfnem:hyper_edges>
+    <grfnem:hyper_edges>
+      <grfnem:HyperEdge>
+        <grfnem:function rdf:resource="#b29c467d-2b5f-6932-91dc-59efeb21a3f6"/>
+        <grfnem:inputs rdf:resource="#_247a8333-f7b0-b7d2-cda8-056c3d15eef7"/>
+        <grfnem:outputs rdf:resource="#_2648ee38-e074-05eb-2156-63abc1f254b8"/>
+      </grfnem:HyperEdge>
+    </grfnem:hyper_edges>
+    <grfnem:hyper_edges>
+      <grfnem:HyperEdge>
+        <grfnem:inputs rdf:resource="#_46743741-9466-e472-6b5f-5241f323ca74"/>
+        <grfnem:inputs rdf:resource="#_8d723104-f773-83c1-3458-a748e9bb17bc"/>
+        <grfnem:inputs rdf:resource="#d3fbf47a-7e5b-1e7f-9ca5-499d004ae545"/>
+        <grfnem:outputs rdf:resource="#_4a84eb03-8d1f-d9b7-4d2b-9deb1beb3711"/>
+        <grfnem:outputs rdf:resource="#_1759edc3-72ae-2244-8b01-63c1cd9d2b7d"/>
+        <grfnem:outputs rdf:resource="#e005b860-51ef-1922-fe43-c49e149818d1"/>
+        <grfnem:outputs rdf:resource="#_552f233a-8c25-166a-1ff3-9849b4e1357d"/>
+        <grfnem:inputs rdf:resource="#a0116be5-ab0c-1681-c8f8-e3d0d3290a4c"/>
+        <grfnem:outputs rdf:resource="#_38c1962e-9148-624f-eac1-c14f30e9c5cc"/>
+        <grfnem:outputs rdf:resource="#_2f120554-4a53-08cc-3dfa-bc08935ddd72"/>
+        <grfnem:inputs rdf:resource="#b5d32b16-6619-4cb1-d710-37d1b83e90ec"/>
+        <grfnem:outputs rdf:resource="#_3405095c-8a50-06c1-ec18-8efbd080e66e"/>
+        <grfnem:inputs rdf:resource="#eb2083e6-ce16-4dba-0ff1-8e0242af9fc3"/>
+        <grfnem:outputs rdf:resource="#_7d41e602-eece-328b-ff7b-118e820865d6"/>
+        <grfnem:inputs rdf:resource="#baf3897a-3e70-f16a-5548-5822de1b372a"/>
+        <grfnem:inputs rdf:resource="#_17e0aa3c-0398-3ca8-ea7e-9d498c778ea6"/>
+        <grfnem:inputs rdf:resource="#_85776e9a-dd84-f39e-7154-5a137a1d5006"/>
+        <grfnem:function rdf:resource="#_1db53334-fb03-23a1-d576-d4155ec17dbe"/>
+        <grfnem:outputs rdf:resource="#_101fbccc-ded7-33e8-b421-eaeb534097ca"/>
+      </grfnem:HyperEdge>
+    </grfnem:hyper_edges>
+  </grfnem:GrFN>
+  <grfnem:Type rdf:ID="__sFILEX">
+    <grfnem:name>__sFILEX</grfnem:name>
+    <grfnem:metadata>
+      <grfnem:Metadata/>
+    </grfnem:metadata>
+  </grfnem:Type>
+</rdf:RDF>

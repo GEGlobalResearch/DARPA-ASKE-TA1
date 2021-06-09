@@ -1,0 +1,108 @@
+<rdf:RDF
+    xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+    xmlns:GE_simple_PI_controller--GrFN_grfn_jsonCombined="http://aske.ge.com/GE_simple_PI_controller--GrFN_grfn_jsonCombined#"
+    xmlns:builtinfunctions="http://sadl.org/builtinfunctions#"
+    xmlns:owl="http://www.w3.org/2002/07/owl#"
+    xmlns:draftannotator="http://sadl.org/draftAnnotator.sadl#"
+    xmlns:sadlimplicitmodel="http://sadl.org/sadlimplicitmodel#"
+    xmlns:rdfs="http://www.w3.org/2000/01/rdf-schema#"
+    xmlns:sadlbasemodel="http://sadl.org/sadlbasemodel#"
+    xmlns:xsd="http://www.w3.org/2001/XMLSchema#"
+  xml:base="http://sadl.org/draftAnnotator.sadl">
+  <owl:Ontology rdf:about="">
+    <owl:imports rdf:resource="http://aske.ge.com/GE_simple_PI_controller--GrFN_grfn_jsonCombined"/>
+    <owl:imports rdf:resource="builtinfunctions"/>
+    <owl:imports rdf:resource="sadlimplicitmodel"/>
+    <owl:imports rdf:resource="sadlbasemodel"/>
+    <rdfs:comment xml:lang="en">This ontology was created from a SADL file 'draftAnnotator.sadl' and should not be directly edited.</rdfs:comment>
+  </owl:Ontology>
+  <owl:Class rdf:ID="NotConstant">
+    <rdfs:subClassOf rdf:resource="GrFNExtractionModel.sadl#Variable"/>
+  </owl:Class>
+  <owl:Class rdf:ID="ReferenceSignal">
+    <rdfs:subClassOf rdf:resource="GrFNExtractionModel.sadl#Variable"/>
+  </owl:Class>
+  <owl:Class rdf:ID="MeasurementSignal">
+    <rdfs:subClassOf rdf:resource="GrFNExtractionModel.sadl#Variable"/>
+  </owl:Class>
+  <owl:Class rdf:ID="LiteralInitialized">
+    <rdfs:subClassOf rdf:resource="GrFNExtractionModel.sadl#Variable"/>
+  </owl:Class>
+  <owl:Class rdf:ID="Constant">
+    <rdfs:subClassOf rdf:resource="GrFNExtractionModel.sadl#Variable"/>
+  </owl:Class>
+  <owl:Class rdf:ID="ExplicitVariable">
+    <rdfs:subClassOf rdf:resource="GrFNExtractionModel.sadl#Variable"/>
+  </owl:Class>
+  <owl:Class rdf:ID="ErrorSignal">
+    <rdfs:subClassOf>
+      <owl:Restriction>
+        <owl:onClass rdf:resource="#ReferenceSignal"/>
+        <owl:qualifiedCardinality rdf:datatype="http://www.w3.org/2001/XMLSchema#long"
+        >1</owl:qualifiedCardinality>
+        <owl:onProperty>
+          <owl:ObjectProperty rdf:ID="measurementSignal"/>
+        </owl:onProperty>
+      </owl:Restriction>
+    </rdfs:subClassOf>
+    <rdfs:subClassOf>
+      <owl:Restriction>
+        <owl:onClass rdf:resource="#ReferenceSignal"/>
+        <owl:qualifiedCardinality rdf:datatype="http://www.w3.org/2001/XMLSchema#long"
+        >1</owl:qualifiedCardinality>
+        <owl:onProperty>
+          <owl:ObjectProperty rdf:ID="referenceSignal"/>
+        </owl:onProperty>
+      </owl:Restriction>
+    </rdfs:subClassOf>
+    <rdfs:subClassOf rdf:resource="GrFNExtractionModel.sadl#Variable"/>
+  </owl:Class>
+  <owl:Class rdf:ID="LoopBlock">
+    <rdfs:subClassOf rdf:resource="GrFNExtractionModel.sadl#SubGraph"/>
+  </owl:Class>
+  <owl:Class rdf:ID="FunctionBlock">
+    <rdfs:subClassOf rdf:resource="GrFNExtractionModel.sadl#SubGraph"/>
+  </owl:Class>
+  <owl:Class rdf:ID="LHS">
+    <rdfs:subClassOf rdf:resource="GrFNExtractionModel.sadl#Variable"/>
+  </owl:Class>
+  <owl:Class rdf:ID="Parameter">
+    <rdfs:subClassOf rdf:resource="GrFNExtractionModel.sadl#Variable"/>
+  </owl:Class>
+  <owl:ObjectProperty rdf:about="#referenceSignal">
+    <rdfs:domain rdf:resource="#ErrorSignal"/>
+    <rdfs:range rdf:resource="#ReferenceSignal"/>
+  </owl:ObjectProperty>
+  <owl:ObjectProperty rdf:ID="inBlock">
+    <rdfs:range rdf:resource="GrFNExtractionModel.sadl#SubGraph"/>
+    <rdfs:domain rdf:resource="GrFNExtractionModel.sadl#Variable"/>
+  </owl:ObjectProperty>
+  <owl:ObjectProperty rdf:ID="sameVar">
+    <rdfs:range rdf:resource="GrFNExtractionModel.sadl#Variable"/>
+    <rdfs:domain rdf:resource="GrFNExtractionModel.sadl#Variable"/>
+  </owl:ObjectProperty>
+  <owl:ObjectProperty rdf:about="#measurementSignal">
+    <rdfs:domain rdf:resource="#ErrorSignal"/>
+    <rdfs:range rdf:resource="#ReferenceSignal"/>
+  </owl:ObjectProperty>
+  <owl:DatatypeProperty rdf:ID="varName">
+    <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+    <rdfs:domain rdf:resource="GrFNExtractionModel.sadl#Variable"/>
+  </owl:DatatypeProperty>
+  <sadlimplicitmodel:Rule rdf:ID="sameVarStructureR"/>
+  <sadlimplicitmodel:Rule rdf:ID="implicitVarR"/>
+  <sadlimplicitmodel:Rule rdf:ID="sameVarR"/>
+  <sadlimplicitmodel:Rule rdf:ID="varNameR"/>
+  <sadlimplicitmodel:Rule rdf:ID="funcBlockR"/>
+  <sadlimplicitmodel:Rule rdf:ID="loopBlockR"/>
+  <sadlimplicitmodel:Rule rdf:ID="sameVarInterfaceR"/>
+  <sadlimplicitmodel:Rule rdf:ID="notConstantR3"/>
+  <sadlimplicitmodel:Rule rdf:ID="notConstantR1"/>
+  <sadlimplicitmodel:Rule rdf:ID="constantR"/>
+  <sadlimplicitmodel:Rule rdf:ID="parameterr"/>
+  <sadlimplicitmodel:Rule rdf:ID="lhsR"/>
+  <sadlimplicitmodel:Rule rdf:ID="ErrorSignalCandidate"/>
+  <sadlimplicitmodel:Rule rdf:ID="literalInitializedR"/>
+  <sadlimplicitmodel:Rule rdf:ID="notConstantR2"/>
+  <sadlimplicitmodel:Rule rdf:ID="varInBlockR"/>
+</rdf:RDF>

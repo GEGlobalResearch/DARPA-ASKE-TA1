@@ -1,0 +1,2117 @@
+<rdf:RDF
+    xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+    xmlns:builtinfunctions="http://sadl.org/builtinfunctions#"
+    xmlns:j.0="http://sadl.org/sadllistmodel#"
+    xmlns:owl="http://www.w3.org/2002/07/owl#"
+    xmlns:sadlimplicitmodel="http://sadl.org/sadlimplicitmodel#"
+    xmlns:grfnem="http://sadl.org/GrFNExtractionModel.sadl#"
+    xmlns:GE_simple_PI_controller--GrFN_grfn_jsonCombined13May="http://aske.ge.com/GE_simple_PI_controller--GrFN_grfn_jsonCombined13May#"
+    xmlns:rdfs="http://www.w3.org/2000/01/rdf-schema#"
+    xmlns:sadlbasemodel="http://sadl.org/sadlbasemodel#"
+    xmlns:xsd="http://www.w3.org/2001/XMLSchema#"
+  xml:base="http://aske.ge.com/GE_simple_PI_controller--GrFN_grfn_jsonCombined13May">
+  <owl:Ontology rdf:about="">
+    <owl:imports rdf:resource="http://sadl.org/GrFNExtractionModel.sadl"/>
+    <owl:imports rdf:resource="http://sadl.org/builtinfunctions"/>
+    <owl:imports rdf:resource="http://sadl.org/sadlimplicitmodel"/>
+    <owl:imports rdf:resource="http://sadl.org/sadlbasemodel"/>
+    <rdfs:comment xml:lang="en">This ontology was created by extraction from GrFN json by the GraSEN GrFNModelExtractor.</rdfs:comment>
+    <rdfs:comment xml:lang="en">This ontology was created from a SADL file 'GE_simple_PI_controller--GrFN_grfn_json.owlCombined13May.sadl' and should not be directly edited.</rdfs:comment>
+  </owl:Ontology>
+  <grfnem:GrFN rdf:ID="b29c467d-2b5f-6932-91dc-59efeb21a3f6">
+    <grfnem:hyper_edges>
+      <grfnem:HyperEdge>
+        <grfnem:function>
+          <grfnem:Function rdf:ID="_46743741-9466-e472-6b5f-5241f323ca74">
+            <grfnem:lambda>lambda timestep,error,integrator_state: ((timestep * error) + integrator_state)</grfnem:lambda>
+            <grfnem:ftype>ASSIGN</grfnem:ftype>
+            <grfnem:metadata>
+              <grfnem:Metadata/>
+            </grfnem:metadata>
+          </grfnem:Function>
+        </grfnem:function>
+        <grfnem:inputs>
+          <grfnem:ExpressionTree rdf:ID="d450fe4a-ec4f-217b-b306-d1a8e5eeac76">
+            <grfnem:metadata>
+              <grfnem:Metadata/>
+            </grfnem:metadata>
+            <grfnem:nodes>
+              <grfnem:Variable rdf:ID="_7a520230-8bf3-64be-a354-becd9332fe5f">
+                <grfnem:var_name>gain</grfnem:var_name>
+                <grfnem:grfn_uid>
+                  <grfnem:Variable rdf:ID="_2648ee38-e074-05eb-2156-63abc1f254b8">
+                    <grfnem:identifier>GE_simple_PI_controller::GE_simple_PI_controller.PI_calc::Kp_M::-1</grfnem:identifier>
+                    <grfnem:uid>_2648ee38-e074-05eb-2156-63abc1f254b8</grfnem:uid>
+                    <grfnem:data_type>integer</grfnem:data_type>
+                    <grfnem:metadata>
+                      <grfnem:Metadata/>
+                    </grfnem:metadata>
+                  </grfnem:Variable>
+                </grfnem:grfn_uid>
+                <grfnem:exp_node_type>VARIABLE</grfnem:exp_node_type>
+                <rdf:type rdf:resource="http://sadl.org/GrFNExtractionModel.sadl#ExpNode"/>
+              </grfnem:Variable>
+            </grfnem:nodes>
+            <grfnem:data_type>integer</grfnem:data_type>
+            <grfnem:nodes>
+              <grfnem:Variable rdf:ID="_92b99ee5-2bea-8759-b4c4-0cc8e12fbc9f">
+                <grfnem:var_name>input</grfnem:var_name>
+                <grfnem:grfn_uid>
+                  <grfnem:Variable rdf:ID="adc0da7a-16fe-baa0-11af-923d79fdef7c">
+                    <grfnem:identifier>GE_simple_PI_controller::GE_simple_PI_controller.PI_calc::Input_sensed::-1</grfnem:identifier>
+                    <grfnem:uid>adc0da7a-16fe-baa0-11af-923d79fdef7c</grfnem:uid>
+                    <grfnem:data_type>integer</grfnem:data_type>
+                    <grfnem:metadata>
+                      <grfnem:Metadata/>
+                    </grfnem:metadata>
+                  </grfnem:Variable>
+                </grfnem:grfn_uid>
+                <grfnem:exp_node_type>VARIABLE</grfnem:exp_node_type>
+                <rdf:type rdf:resource="http://sadl.org/GrFNExtractionModel.sadl#ExpNode"/>
+              </grfnem:Variable>
+            </grfnem:nodes>
+            <grfnem:uid>d450fe4a-ec4f-217b-b306-d1a8e5eeac76</grfnem:uid>
+            <grfnem:nodes>
+              <grfnem:ExpNode rdf:ID="aa35529f-6c7a-b03c-2e7d-3a8bde630689">
+                <grfnem:var_name>input</grfnem:var_name>
+                <grfnem:grfn_uid rdf:resource="#adc0da7a-16fe-baa0-11af-923d79fdef7c"/>
+                <grfnem:exp_node_type>VARIABLE</grfnem:exp_node_type>
+                <rdf:type rdf:resource="http://sadl.org/GrFNExtractionModel.sadl#Variable"/>
+              </grfnem:ExpNode>
+            </grfnem:nodes>
+            <rdf:type rdf:resource="http://sadl.org/GrFNExtractionModel.sadl#Variable"/>
+            <grfnem:nodes>
+              <grfnem:ExpNode rdf:ID="_6fe9f3eb-628d-93de-d962-728f3743b067">
+                <grfnem:var_name>gain</grfnem:var_name>
+                <grfnem:grfn_uid rdf:resource="#_2648ee38-e074-05eb-2156-63abc1f254b8"/>
+                <grfnem:exp_node_type>VARIABLE</grfnem:exp_node_type>
+                <rdf:type rdf:resource="http://sadl.org/GrFNExtractionModel.sadl#Variable"/>
+              </grfnem:ExpNode>
+            </grfnem:nodes>
+            <grfnem:nodes>
+              <grfnem:ExpNode rdf:ID="d86b0d65-5d8c-a89e-407d-39e8b9dbf3c5">
+                <grfnem:operator>RETURN</grfnem:operator>
+                <grfnem:exp_node_type>OPERATOR</grfnem:exp_node_type>
+                <grfnem:children rdf:parseType="Resource">
+                  <j.0:first>
+                    <grfnem:ExpNode rdf:ID="_74956f79-2f0e-8055-3930-5e0e62d4bf04">
+                      <grfnem:operator>Mult</grfnem:operator>
+                      <grfnem:exp_node_type>OPERATOR</grfnem:exp_node_type>
+                      <grfnem:children rdf:parseType="Resource">
+                        <j.0:rest rdf:parseType="Resource">
+                          <j.0:first rdf:resource="#_7a520230-8bf3-64be-a354-becd9332fe5f"/>
+                          <rdf:type rdf:nodeID="A0"/>
+                        </j.0:rest>
+                        <j.0:first rdf:resource="#_92b99ee5-2bea-8759-b4c4-0cc8e12fbc9f"/>
+                        <rdf:type rdf:nodeID="A0"/>
+                      </grfnem:children>
+                    </grfnem:ExpNode>
+                  </j.0:first>
+                  <rdf:type rdf:nodeID="A0"/>
+                </grfnem:children>
+              </grfnem:ExpNode>
+            </grfnem:nodes>
+            <grfnem:nodes>
+              <grfnem:ExpNode rdf:ID="_1175bdbb-d1a7-7d6a-a76f-b3f9829fc089">
+                <grfnem:exp_node_type>DEFINITION</grfnem:exp_node_type>
+                <grfnem:children rdf:parseType="Resource">
+                  <j.0:rest rdf:parseType="Resource">
+                    <j.0:first rdf:resource="#d86b0d65-5d8c-a89e-407d-39e8b9dbf3c5"/>
+                    <rdf:type rdf:nodeID="A0"/>
+                  </j.0:rest>
+                  <j.0:first>
+                    <grfnem:ExpNode rdf:ID="db135c66-aa1c-b7c8-f13a-0d10be83e452">
+                      <grfnem:exp_node_type>DEFINITION</grfnem:exp_node_type>
+                      <grfnem:children rdf:parseType="Resource">
+                        <j.0:rest rdf:parseType="Resource">
+                          <j.0:first rdf:resource="#_6fe9f3eb-628d-93de-d962-728f3743b067"/>
+                          <rdf:type rdf:nodeID="A0"/>
+                        </j.0:rest>
+                        <j.0:first rdf:resource="#aa35529f-6c7a-b03c-2e7d-3a8bde630689"/>
+                        <rdf:type rdf:nodeID="A0"/>
+                      </grfnem:children>
+                    </grfnem:ExpNode>
+                  </j.0:first>
+                  <rdf:type rdf:nodeID="A0"/>
+                </grfnem:children>
+              </grfnem:ExpNode>
+            </grfnem:nodes>
+            <grfnem:identifier>GE_simple_PI_controller::GE_simple_PI_controller.PI_calc::timestep::-1</grfnem:identifier>
+            <grfnem:nodes rdf:resource="#db135c66-aa1c-b7c8-f13a-0d10be83e452"/>
+            <grfnem:nodes rdf:resource="#_74956f79-2f0e-8055-3930-5e0e62d4bf04"/>
+          </grfnem:ExpressionTree>
+        </grfnem:inputs>
+        <grfnem:inputs>
+          <grfnem:Variable rdf:ID="_85940927-468f-f53d-864a-7a50b48d73f1">
+            <grfnem:identifier>GE_simple_PI_controller::GE_simple_PI_controller.PI_calc::error::0</grfnem:identifier>
+            <grfnem:uid>_85940927-468f-f53d-864a-7a50b48d73f1</grfnem:uid>
+            <grfnem:data_type>integer</grfnem:data_type>
+            <grfnem:metadata>
+              <grfnem:Metadata/>
+            </grfnem:metadata>
+          </grfnem:Variable>
+        </grfnem:inputs>
+        <grfnem:inputs>
+          <grfnem:Variable rdf:ID="d67e55fd-642b-fa42-aef9-c00b8a64c1b9">
+            <grfnem:nodes>
+              <grfnem:ExpNode rdf:ID="e5f80789-a231-7d0d-33ae-fd91f7a89bd4">
+                <grfnem:exp_node_type>DEFINITION</grfnem:exp_node_type>
+                <grfnem:children rdf:parseType="Resource">
+                  <j.0:rest rdf:parseType="Resource">
+                    <j.0:first>
+                      <grfnem:ExpNode rdf:ID="_999951e6-d561-3f7c-6d7c-ddbcb8b4c5d6">
+                        <grfnem:operator>RETURN</grfnem:operator>
+                        <grfnem:exp_node_type>OPERATOR</grfnem:exp_node_type>
+                        <grfnem:children rdf:parseType="Resource">
+                          <j.0:first>
+                            <grfnem:ExpNode rdf:ID="_29a336e4-1f66-8b32-a082-69882808b40f">
+                              <grfnem:var_name>RETURN_VAL</grfnem:var_name>
+                              <grfnem:grfn_uid>
+                                <grfnem:Variable rdf:ID="_148b2758-d7ab-7928-09e4-69e6ec62b2c8">
+                                  <grfnem:identifier>GE_simple_PI_controller::GE_simple_PI_controller.PI_calc::Ki_M::-1</grfnem:identifier>
+                                  <grfnem:uid>_148b2758-d7ab-7928-09e4-69e6ec62b2c8</grfnem:uid>
+                                  <grfnem:data_type>integer</grfnem:data_type>
+                                  <grfnem:metadata>
+                                    <grfnem:Metadata/>
+                                  </grfnem:metadata>
+                                </grfnem:Variable>
+                              </grfnem:grfn_uid>
+                              <grfnem:exp_node_type>VARIABLE</grfnem:exp_node_type>
+                              <rdf:type rdf:resource="http://sadl.org/GrFNExtractionModel.sadl#Variable"/>
+                            </grfnem:ExpNode>
+                          </j.0:first>
+                          <rdf:type rdf:nodeID="A0"/>
+                        </grfnem:children>
+                      </grfnem:ExpNode>
+                    </j.0:first>
+                    <rdf:type rdf:nodeID="A0"/>
+                  </j.0:rest>
+                  <j.0:first>
+                    <grfnem:ExpNode rdf:ID="_1e0adf6c-c144-b9ac-a742-9dbaeccf1183">
+                      <grfnem:exp_node_type>DEFINITION</grfnem:exp_node_type>
+                      <grfnem:children rdf:parseType="Resource">
+                        <j.0:first>
+                          <grfnem:Variable rdf:ID="_8f68bb9b-c8e9-f5ac-76f5-fdbbcd458d83">
+                            <grfnem:var_name>RETURN_VAL</grfnem:var_name>
+                            <grfnem:grfn_uid rdf:resource="#_148b2758-d7ab-7928-09e4-69e6ec62b2c8"/>
+                            <grfnem:exp_node_type>VARIABLE</grfnem:exp_node_type>
+                            <rdf:type rdf:resource="http://sadl.org/GrFNExtractionModel.sadl#ExpNode"/>
+                          </grfnem:Variable>
+                        </j.0:first>
+                        <rdf:type rdf:nodeID="A0"/>
+                      </grfnem:children>
+                    </grfnem:ExpNode>
+                  </j.0:first>
+                  <rdf:type rdf:nodeID="A0"/>
+                </grfnem:children>
+              </grfnem:ExpNode>
+            </grfnem:nodes>
+            <grfnem:data_type>integer</grfnem:data_type>
+            <grfnem:uid>d67e55fd-642b-fa42-aef9-c00b8a64c1b9</grfnem:uid>
+            <grfnem:metadata>
+              <grfnem:Metadata/>
+            </grfnem:metadata>
+            <rdf:type rdf:resource="http://sadl.org/GrFNExtractionModel.sadl#ExpressionTree"/>
+            <grfnem:nodes rdf:resource="#_1e0adf6c-c144-b9ac-a742-9dbaeccf1183"/>
+            <grfnem:nodes rdf:resource="#_8f68bb9b-c8e9-f5ac-76f5-fdbbcd458d83"/>
+            <grfnem:identifier>GE_simple_PI_controller::GE_simple_PI_controller.PI_calc::integrator_state::-1</grfnem:identifier>
+            <grfnem:nodes rdf:resource="#_999951e6-d561-3f7c-6d7c-ddbcb8b4c5d6"/>
+            <grfnem:nodes rdf:resource="#_29a336e4-1f66-8b32-a082-69882808b40f"/>
+          </grfnem:Variable>
+        </grfnem:inputs>
+        <grfnem:outputs>
+          <grfnem:ExpressionTree rdf:ID="d3447490-96fd-35d0-adf2-0806e5214606">
+            <grfnem:nodes>
+              <grfnem:ExpNode rdf:ID="_4f439732-5e18-4bd1-52c7-4fdcb9192bec">
+                <grfnem:exp_node_type>DEFINITION</grfnem:exp_node_type>
+                <grfnem:children rdf:parseType="Resource">
+                  <j.0:first>
+                    <grfnem:Variable rdf:ID="cc9620c9-df56-732a-e183-a592010ab82f">
+                      <grfnem:var_name>plant_model_RESULT</grfnem:var_name>
+                      <grfnem:grfn_uid rdf:resource="#_85940927-468f-f53d-864a-7a50b48d73f1"/>
+                      <grfnem:exp_node_type>VARIABLE</grfnem:exp_node_type>
+                      <rdf:type rdf:resource="http://sadl.org/GrFNExtractionModel.sadl#ExpNode"/>
+                    </grfnem:Variable>
+                  </j.0:first>
+                  <rdf:type rdf:nodeID="A0"/>
+                </grfnem:children>
+              </grfnem:ExpNode>
+            </grfnem:nodes>
+            <grfnem:metadata>
+              <grfnem:Metadata/>
+            </grfnem:metadata>
+            <grfnem:uid>d3447490-96fd-35d0-adf2-0806e5214606</grfnem:uid>
+            <grfnem:identifier>GE_simple_PI_controller::GE_simple_PI_controller.PI_calc::integrator_state::0</grfnem:identifier>
+            <grfnem:nodes rdf:resource="#cc9620c9-df56-732a-e183-a592010ab82f"/>
+            <rdf:type rdf:resource="http://sadl.org/GrFNExtractionModel.sadl#Variable"/>
+            <grfnem:data_type>integer</grfnem:data_type>
+            <grfnem:nodes>
+              <grfnem:ExpNode rdf:ID="e71d9aba-d70d-0980-05dc-81f795a236e8">
+                <grfnem:exp_node_type>DEFINITION</grfnem:exp_node_type>
+                <grfnem:children rdf:parseType="Resource">
+                  <j.0:rest rdf:parseType="Resource">
+                    <j.0:first>
+                      <grfnem:ExpNode rdf:ID="c7c2a9bc-b274-bebf-7584-7c38ef987b67">
+                        <grfnem:operator>RETURN</grfnem:operator>
+                        <grfnem:exp_node_type>OPERATOR</grfnem:exp_node_type>
+                        <grfnem:children rdf:parseType="Resource">
+                          <j.0:first>
+                            <grfnem:ExpNode rdf:ID="b8bf64ed-9e36-8cb8-2a3c-3f475d778b84">
+                              <grfnem:var_name>plant_model_RESULT</grfnem:var_name>
+                              <grfnem:grfn_uid rdf:resource="#_85940927-468f-f53d-864a-7a50b48d73f1"/>
+                              <grfnem:exp_node_type>VARIABLE</grfnem:exp_node_type>
+                              <rdf:type rdf:resource="http://sadl.org/GrFNExtractionModel.sadl#Variable"/>
+                            </grfnem:ExpNode>
+                          </j.0:first>
+                          <rdf:type rdf:nodeID="A0"/>
+                        </grfnem:children>
+                      </grfnem:ExpNode>
+                    </j.0:first>
+                    <rdf:type rdf:nodeID="A0"/>
+                  </j.0:rest>
+                  <j.0:first rdf:resource="#_4f439732-5e18-4bd1-52c7-4fdcb9192bec"/>
+                  <rdf:type rdf:nodeID="A0"/>
+                </grfnem:children>
+              </grfnem:ExpNode>
+            </grfnem:nodes>
+            <grfnem:nodes rdf:resource="#b8bf64ed-9e36-8cb8-2a3c-3f475d778b84"/>
+            <grfnem:nodes rdf:resource="#c7c2a9bc-b274-bebf-7584-7c38ef987b67"/>
+          </grfnem:ExpressionTree>
+        </grfnem:outputs>
+      </grfnem:HyperEdge>
+    </grfnem:hyper_edges>
+    <grfnem:hyper_edges>
+      <grfnem:HyperEdge>
+        <grfnem:function>
+          <grfnem:Function rdf:ID="_98b33c6e-0a14-b90a-7795-e98680ee526e">
+            <grfnem:lambda>lambda i,sensed_output,integrator_state:(i,sensed_output,integrator_state)</grfnem:lambda>
+            <grfnem:ftype>INTERFACE</grfnem:ftype>
+            <grfnem:metadata>
+              <grfnem:Metadata/>
+            </grfnem:metadata>
+          </grfnem:Function>
+        </grfnem:function>
+        <grfnem:inputs>
+          <grfnem:Variable rdf:ID="ade9b2b4-efdd-35f8-0fa3-4266ccfdba9b">
+            <grfnem:identifier>GE_simple_PI_controller::GE_simple_PI_controller.main.LOOP_0::i::2</grfnem:identifier>
+            <grfnem:uid>ade9b2b4-efdd-35f8-0fa3-4266ccfdba9b</grfnem:uid>
+            <grfnem:data_type>integer</grfnem:data_type>
+            <grfnem:metadata>
+              <grfnem:Metadata/>
+            </grfnem:metadata>
+          </grfnem:Variable>
+        </grfnem:inputs>
+        <grfnem:inputs>
+          <grfnem:Variable rdf:ID="_9edfa3da-6cf5-5b15-8b53-031d05d51433">
+            <grfnem:identifier>GE_simple_PI_controller::GE_simple_PI_controller.main.LOOP_0::sensed_output::2</grfnem:identifier>
+            <grfnem:uid>_9edfa3da-6cf5-5b15-8b53-031d05d51433</grfnem:uid>
+            <grfnem:data_type>integer</grfnem:data_type>
+            <grfnem:metadata>
+              <grfnem:Metadata/>
+            </grfnem:metadata>
+          </grfnem:Variable>
+        </grfnem:inputs>
+        <grfnem:inputs>
+          <grfnem:Variable rdf:ID="_11ebcd49-428a-1c22-d5fd-b76a19fbeb1d">
+            <grfnem:identifier>GE_simple_PI_controller::GE_simple_PI_controller.main.LOOP_0::integrator_state::2</grfnem:identifier>
+            <grfnem:uid>_11ebcd49-428a-1c22-d5fd-b76a19fbeb1d</grfnem:uid>
+            <grfnem:data_type>integer</grfnem:data_type>
+            <grfnem:metadata>
+              <grfnem:Metadata/>
+            </grfnem:metadata>
+          </grfnem:Variable>
+        </grfnem:inputs>
+        <grfnem:outputs>
+          <grfnem:Variable rdf:ID="_642aad48-fcfc-fa81-b306-d70019d5f970">
+            <grfnem:identifier>GE_simple_PI_controller::GE_simple_PI_controller.main::i::1</grfnem:identifier>
+            <grfnem:uid>_642aad48-fcfc-fa81-b306-d70019d5f970</grfnem:uid>
+            <grfnem:data_type>integer</grfnem:data_type>
+            <grfnem:metadata>
+              <grfnem:Metadata/>
+            </grfnem:metadata>
+          </grfnem:Variable>
+        </grfnem:outputs>
+        <grfnem:outputs>
+          <grfnem:Variable rdf:ID="e786ab37-5bca-47be-4298-17c53308fb2e">
+            <grfnem:identifier>GE_simple_PI_controller::GE_simple_PI_controller.main::sensed_output::1</grfnem:identifier>
+            <grfnem:uid>e786ab37-5bca-47be-4298-17c53308fb2e</grfnem:uid>
+            <grfnem:data_type>integer</grfnem:data_type>
+            <grfnem:metadata>
+              <grfnem:Metadata/>
+            </grfnem:metadata>
+          </grfnem:Variable>
+        </grfnem:outputs>
+        <grfnem:outputs>
+          <grfnem:Variable rdf:ID="e6fd68e8-d69c-91c2-7860-1602bb4a06cb">
+            <grfnem:identifier>GE_simple_PI_controller::GE_simple_PI_controller.main::integrator_state::0</grfnem:identifier>
+            <grfnem:uid>e6fd68e8-d69c-91c2-7860-1602bb4a06cb</grfnem:uid>
+            <grfnem:data_type>integer</grfnem:data_type>
+            <grfnem:metadata>
+              <grfnem:Metadata/>
+            </grfnem:metadata>
+          </grfnem:Variable>
+        </grfnem:outputs>
+      </grfnem:HyperEdge>
+    </grfnem:hyper_edges>
+    <grfnem:subgraphs>
+      <grfnem:SubGraph rdf:ID="_4562be7f-bb42-e0b2-0426-465e3e37952d">
+        <grfnem:nodes>
+          <grfnem:Variable rdf:ID="c87a7463-19c1-6a0d-0feb-d845d0dfae43">
+            <grfnem:identifier>GE_simple_PI_controller::GE_simple_PI_controller.plant_model::gain::-1</grfnem:identifier>
+            <grfnem:uid>c87a7463-19c1-6a0d-0feb-d845d0dfae43</grfnem:uid>
+            <grfnem:data_type>integer</grfnem:data_type>
+            <grfnem:metadata>
+              <grfnem:Metadata/>
+            </grfnem:metadata>
+          </grfnem:Variable>
+        </grfnem:nodes>
+        <grfnem:uid>_4562be7f-bb42-e0b2-0426-465e3e37952d</grfnem:uid>
+        <grfnem:nodes>
+          <grfnem:Function rdf:ID="a25b59fd-92e8-e269-d12e-cbc40b9475b1">
+            <grfnem:lambda>lambda input,gain: (input * gain)</grfnem:lambda>
+            <grfnem:ftype>ASSIGN</grfnem:ftype>
+            <grfnem:metadata>
+              <grfnem:Metadata/>
+            </grfnem:metadata>
+          </grfnem:Function>
+        </grfnem:nodes>
+        <grfnem:nodes>
+          <grfnem:Function rdf:ID="_5f3f5638-3870-1a14-b490-b6081dfc8352">
+            <grfnem:lambda>lambda plant_command_0,plant_gain_0:(plant_command_0,plant_gain_0)</grfnem:lambda>
+            <grfnem:ftype>INTERFACE</grfnem:ftype>
+            <grfnem:metadata>
+              <grfnem:Metadata/>
+            </grfnem:metadata>
+          </grfnem:Function>
+        </grfnem:nodes>
+        <grfnem:metadata>
+          <grfnem:Metadata/>
+        </grfnem:metadata>
+        <grfnem:nodes>
+          <grfnem:Function rdf:ID="_9a27d858-88c1-32ad-efbf-c19ee8f6cf32">
+            <grfnem:lambda>lambda RETURN_VAL:(RETURN_VAL)</grfnem:lambda>
+            <grfnem:ftype>INTERFACE</grfnem:ftype>
+            <grfnem:metadata>
+              <grfnem:Metadata/>
+            </grfnem:metadata>
+          </grfnem:Function>
+        </grfnem:nodes>
+        <grfnem:nodes>
+          <grfnem:Variable rdf:ID="_38018b47-b29a-8b06-daf6-6c5f2577bffa">
+            <grfnem:identifier>GE_simple_PI_controller::GE_simple_PI_controller.plant_model::RETURN_VAL::-1</grfnem:identifier>
+            <grfnem:uid>_38018b47-b29a-8b06-daf6-6c5f2577bffa</grfnem:uid>
+            <grfnem:data_type>none</grfnem:data_type>
+            <grfnem:metadata>
+              <grfnem:Metadata/>
+            </grfnem:metadata>
+          </grfnem:Variable>
+        </grfnem:nodes>
+        <grfnem:nodes>
+          <grfnem:Variable rdf:ID="_6d16ee18-5521-16dd-2ba4-b180cb69ca38">
+            <grfnem:identifier>GE_simple_PI_controller::GE_simple_PI_controller.plant_model::input::-1</grfnem:identifier>
+            <grfnem:uid>_6d16ee18-5521-16dd-2ba4-b180cb69ca38</grfnem:uid>
+            <grfnem:data_type>integer</grfnem:data_type>
+            <grfnem:metadata>
+              <grfnem:Metadata/>
+            </grfnem:metadata>
+          </grfnem:Variable>
+        </grfnem:nodes>
+        <grfnem:namespace>GE_simple_PI_controller</grfnem:namespace>
+        <grfnem:sg_type>FuncContainer</grfnem:sg_type>
+        <grfnem:parent>
+          <grfnem:SubGraph rdf:ID="d3fbf47a-7e5b-1e7f-9ca5-499d004ae545">
+            <grfnem:nodes>
+              <grfnem:Function rdf:ID="_176ea1b1-6426-4cd5-1ea4-5cd69371a71f">
+                <grfnem:lambda>lambda i: (i + 1)</grfnem:lambda>
+                <grfnem:ftype>ASSIGN</grfnem:ftype>
+                <grfnem:metadata>
+                  <grfnem:Metadata/>
+                </grfnem:metadata>
+              </grfnem:Function>
+            </grfnem:nodes>
+            <grfnem:nodes>
+              <grfnem:Variable rdf:ID="_964a870c-7c87-9b74-1d87-8f9f9cdf5a86">
+                <grfnem:identifier>GE_simple_PI_controller::GE_simple_PI_controller.main.LOOP_0::plant_command::-1</grfnem:identifier>
+                <grfnem:uid>_964a870c-7c87-9b74-1d87-8f9f9cdf5a86</grfnem:uid>
+                <grfnem:data_type>integer</grfnem:data_type>
+                <grfnem:metadata>
+                  <grfnem:Metadata/>
+                </grfnem:metadata>
+              </grfnem:Variable>
+            </grfnem:nodes>
+            <grfnem:nodes>
+              <grfnem:Variable rdf:ID="_30bcab0e-d857-0102-55d4-4936a1515607">
+                <grfnem:identifier>GE_simple_PI_controller::GE_simple_PI_controller.main.LOOP_0::integrator_state::1</grfnem:identifier>
+                <grfnem:uid>_30bcab0e-d857-0102-55d4-4936a1515607</grfnem:uid>
+                <grfnem:data_type>integer</grfnem:data_type>
+                <grfnem:metadata>
+                  <grfnem:Metadata/>
+                </grfnem:metadata>
+              </grfnem:Variable>
+            </grfnem:nodes>
+            <grfnem:nodes>
+              <grfnem:Variable rdf:ID="b7d6467b-2f5a-522a-f87f-43fdf6062541">
+                <grfnem:identifier>GE_simple_PI_controller::GE_simple_PI_controller.main.LOOP_0::EXIT::-1</grfnem:identifier>
+                <grfnem:uid>b7d6467b-2f5a-522a-f87f-43fdf6062541</grfnem:uid>
+                <grfnem:data_type>boolean</grfnem:data_type>
+                <grfnem:metadata>
+                  <grfnem:Metadata/>
+                </grfnem:metadata>
+              </grfnem:Variable>
+            </grfnem:nodes>
+            <grfnem:nodes rdf:resource="#_9edfa3da-6cf5-5b15-8b53-031d05d51433"/>
+            <grfnem:nodes>
+              <grfnem:ExpressionTree rdf:ID="_1759edc3-72ae-2244-8b01-63c1cd9d2b7d">
+                <grfnem:nodes>
+                  <grfnem:ExpNode rdf:ID="e6d059f0-95f5-2135-600b-1e1a0b847185">
+                    <grfnem:operator>Sub</grfnem:operator>
+                    <grfnem:exp_node_type>OPERATOR</grfnem:exp_node_type>
+                    <grfnem:children rdf:parseType="Resource">
+                      <j.0:rest rdf:parseType="Resource">
+                        <j.0:first>
+                          <grfnem:Variable rdf:ID="e9e8858f-3a95-b573-7cd3-403ccd178e96">
+                            <grfnem:var_name>Input_sensed</grfnem:var_name>
+                            <grfnem:grfn_uid>
+                              <grfnem:Variable rdf:ID="a0116be5-ab0c-1681-c8f8-e3d0d3290a4c">
+                                <grfnem:lambda>lambda : 0</grfnem:lambda>
+                                <grfnem:ftype>LITERAL</grfnem:ftype>
+                                <grfnem:metadata>
+                                  <grfnem:Metadata/>
+                                </grfnem:metadata>
+                                <rdf:type rdf:resource="http://sadl.org/GrFNExtractionModel.sadl#Function"/>
+                              </grfnem:Variable>
+                            </grfnem:grfn_uid>
+                            <grfnem:exp_node_type>VARIABLE</grfnem:exp_node_type>
+                            <rdf:type rdf:resource="http://sadl.org/GrFNExtractionModel.sadl#ExpNode"/>
+                          </grfnem:Variable>
+                        </j.0:first>
+                        <rdf:type rdf:nodeID="A0"/>
+                      </j.0:rest>
+                      <j.0:first>
+                        <grfnem:ExpNode rdf:ID="_80ad0b84-829c-4bce-94d2-ee866da9886a">
+                          <grfnem:var_name>Input_dmd</grfnem:var_name>
+                          <grfnem:grfn_uid>
+                            <grfnem:Variable rdf:ID="b5d32b16-6619-4cb1-d710-37d1b83e90ec">
+                              <grfnem:identifier>GE_simple_PI_controller::GE_simple_PI_controller.main::i::0</grfnem:identifier>
+                              <grfnem:uid>b5d32b16-6619-4cb1-d710-37d1b83e90ec</grfnem:uid>
+                              <grfnem:data_type>integer</grfnem:data_type>
+                              <grfnem:metadata>
+                                <grfnem:Metadata/>
+                              </grfnem:metadata>
+                            </grfnem:Variable>
+                          </grfnem:grfn_uid>
+                          <grfnem:exp_node_type>VARIABLE</grfnem:exp_node_type>
+                          <rdf:type rdf:resource="http://sadl.org/GrFNExtractionModel.sadl#Variable"/>
+                        </grfnem:ExpNode>
+                      </j.0:first>
+                      <rdf:type rdf:nodeID="A0"/>
+                    </grfnem:children>
+                  </grfnem:ExpNode>
+                </grfnem:nodes>
+                <grfnem:identifier>GE_simple_PI_controller::GE_simple_PI_controller.main.LOOP_0::sensed_output::-1</grfnem:identifier>
+                <grfnem:uid>_1759edc3-72ae-2244-8b01-63c1cd9d2b7d</grfnem:uid>
+                <grfnem:data_type>integer</grfnem:data_type>
+                <grfnem:nodes>
+                  <grfnem:ExpNode rdf:ID="ce19defc-1db5-ef8b-7bfb-897dab36968f">
+                    <grfnem:var_name>Input_sensed</grfnem:var_name>
+                    <grfnem:grfn_uid rdf:resource="#a0116be5-ab0c-1681-c8f8-e3d0d3290a4c"/>
+                    <grfnem:exp_node_type>VARIABLE</grfnem:exp_node_type>
+                    <rdf:type rdf:resource="http://sadl.org/GrFNExtractionModel.sadl#Variable"/>
+                  </grfnem:ExpNode>
+                </grfnem:nodes>
+                <rdf:type rdf:resource="http://sadl.org/GrFNExtractionModel.sadl#Variable"/>
+                <grfnem:metadata>
+                  <grfnem:Metadata/>
+                </grfnem:metadata>
+                <grfnem:nodes>
+                  <grfnem:ExpNode rdf:ID="_97b62b6c-59d5-82f8-26be-ae164e53683b">
+                    <grfnem:operator>RETURN</grfnem:operator>
+                    <grfnem:exp_node_type>OPERATOR</grfnem:exp_node_type>
+                    <grfnem:children rdf:parseType="Resource">
+                      <j.0:first rdf:resource="#e6d059f0-95f5-2135-600b-1e1a0b847185"/>
+                      <rdf:type rdf:nodeID="A0"/>
+                    </grfnem:children>
+                  </grfnem:ExpNode>
+                </grfnem:nodes>
+                <grfnem:nodes>
+                  <grfnem:ExpNode rdf:ID="e9714a5d-5c1f-fa59-e44d-b47fb12b0dde">
+                    <grfnem:exp_node_type>DEFINITION</grfnem:exp_node_type>
+                    <grfnem:children rdf:parseType="Resource">
+                      <j.0:rest rdf:parseType="Resource">
+                        <j.0:first rdf:resource="#ce19defc-1db5-ef8b-7bfb-897dab36968f"/>
+                        <rdf:type rdf:nodeID="A0"/>
+                      </j.0:rest>
+                      <j.0:first>
+                        <grfnem:ExpNode rdf:ID="c6d6b6c9-f6ee-cd99-e540-834f9eff57b8">
+                          <grfnem:var_name>Input_dmd</grfnem:var_name>
+                          <grfnem:grfn_uid rdf:resource="#b5d32b16-6619-4cb1-d710-37d1b83e90ec"/>
+                          <grfnem:exp_node_type>VARIABLE</grfnem:exp_node_type>
+                          <rdf:type rdf:resource="http://sadl.org/GrFNExtractionModel.sadl#Variable"/>
+                        </grfnem:ExpNode>
+                      </j.0:first>
+                      <rdf:type rdf:nodeID="A0"/>
+                    </grfnem:children>
+                  </grfnem:ExpNode>
+                </grfnem:nodes>
+                <grfnem:nodes rdf:resource="#_80ad0b84-829c-4bce-94d2-ee866da9886a"/>
+                <grfnem:nodes rdf:resource="#c6d6b6c9-f6ee-cd99-e540-834f9eff57b8"/>
+                <grfnem:nodes>
+                  <grfnem:ExpNode rdf:ID="b9798652-add0-fd0a-5514-0947bc26e8fa">
+                    <grfnem:exp_node_type>DEFINITION</grfnem:exp_node_type>
+                    <grfnem:children rdf:parseType="Resource">
+                      <j.0:rest rdf:parseType="Resource">
+                        <j.0:first rdf:resource="#_97b62b6c-59d5-82f8-26be-ae164e53683b"/>
+                        <rdf:type rdf:nodeID="A0"/>
+                      </j.0:rest>
+                      <j.0:first rdf:resource="#e9714a5d-5c1f-fa59-e44d-b47fb12b0dde"/>
+                      <rdf:type rdf:nodeID="A0"/>
+                    </grfnem:children>
+                  </grfnem:ExpNode>
+                </grfnem:nodes>
+                <grfnem:nodes rdf:resource="#e9e8858f-3a95-b573-7cd3-403ccd178e96"/>
+              </grfnem:ExpressionTree>
+            </grfnem:nodes>
+            <grfnem:nodes>
+              <grfnem:Variable rdf:ID="_5129fb7c-6288-e1a5-cc45-782198a6416d">
+                <grfnem:identifier>GE_simple_PI_controller::GE_simple_PI_controller.main.LOOP_0::integrator_state::0</grfnem:identifier>
+                <grfnem:uid>_5129fb7c-6288-e1a5-cc45-782198a6416d</grfnem:uid>
+                <grfnem:data_type>integer</grfnem:data_type>
+                <grfnem:metadata>
+                  <grfnem:Metadata/>
+                </grfnem:metadata>
+              </grfnem:Variable>
+            </grfnem:nodes>
+            <grfnem:nodes>
+              <grfnem:Variable rdf:ID="_4a84eb03-8d1f-d9b7-4d2b-9deb1beb3711">
+                <grfnem:identifier>GE_simple_PI_controller::GE_simple_PI_controller.main.LOOP_0::time_step::-1</grfnem:identifier>
+                <grfnem:uid>_4a84eb03-8d1f-d9b7-4d2b-9deb1beb3711</grfnem:uid>
+                <grfnem:data_type>integer</grfnem:data_type>
+                <grfnem:metadata>
+                  <grfnem:Metadata/>
+                </grfnem:metadata>
+              </grfnem:Variable>
+            </grfnem:nodes>
+            <grfnem:namespace>GE_simple_PI_controller</grfnem:namespace>
+            <grfnem:nodes rdf:resource="#_11ebcd49-428a-1c22-d5fd-b76a19fbeb1d"/>
+            <grfnem:nodes>
+              <grfnem:Variable rdf:ID="_247a8333-f7b0-b7d2-cda8-056c3d15eef7">
+                <grfnem:identifier>GE_simple_PI_controller::GE_simple_PI_controller.main.LOOP_0::desired_output::-1</grfnem:identifier>
+                <grfnem:uid>_247a8333-f7b0-b7d2-cda8-056c3d15eef7</grfnem:uid>
+                <grfnem:data_type>integer</grfnem:data_type>
+                <grfnem:metadata>
+                  <grfnem:Metadata/>
+                </grfnem:metadata>
+              </grfnem:Variable>
+            </grfnem:nodes>
+            <grfnem:nodes rdf:resource="#_98b33c6e-0a14-b90a-7795-e98680ee526e"/>
+            <grfnem:nodes>
+              <grfnem:Variable rdf:ID="baf3897a-3e70-f16a-5548-5822de1b372a">
+                <grfnem:lambda>lambda i_0,num_steps_0,desired_output_0,sensed_output_0,Kp_M_0,Ki_M_0,time_step_0,integrator_state_0,plant_gain_0:(i_0,num_steps_0,desired_output_0,sensed_output_0,Kp_M_0,Ki_M_0,time_step_0,integrator_state_0,plant_gain_0)</grfnem:lambda>
+                <grfnem:ftype>INTERFACE</grfnem:ftype>
+                <grfnem:metadata>
+                  <grfnem:Metadata/>
+                </grfnem:metadata>
+                <rdf:type rdf:resource="http://sadl.org/GrFNExtractionModel.sadl#Function"/>
+              </grfnem:Variable>
+            </grfnem:nodes>
+            <grfnem:nodes>
+              <grfnem:Variable rdf:ID="_1db53334-fb03-23a1-d576-d4155ec17dbe">
+                <grfnem:identifier>GE_simple_PI_controller::GE_simple_PI_controller.main.LOOP_0::COND_0_0::-1</grfnem:identifier>
+                <grfnem:uid>_1db53334-fb03-23a1-d576-d4155ec17dbe</grfnem:uid>
+                <grfnem:data_type>boolean</grfnem:data_type>
+                <grfnem:metadata>
+                  <grfnem:Metadata/>
+                </grfnem:metadata>
+              </grfnem:Variable>
+            </grfnem:nodes>
+            <grfnem:nodes>
+              <grfnem:Variable rdf:ID="_1fdb8b32-06d5-99e8-12f1-75ffae3b16ec">
+                <grfnem:identifier>GE_simple_PI_controller::GE_simple_PI_controller.main.LOOP_0::sensed_output::1</grfnem:identifier>
+                <grfnem:uid>_1fdb8b32-06d5-99e8-12f1-75ffae3b16ec</grfnem:uid>
+                <grfnem:data_type>integer</grfnem:data_type>
+                <grfnem:metadata>
+                  <grfnem:Metadata/>
+                </grfnem:metadata>
+              </grfnem:Variable>
+            </grfnem:nodes>
+            <grfnem:nodes>
+              <grfnem:Variable rdf:ID="_38c1962e-9148-624f-eac1-c14f30e9c5cc">
+                <grfnem:identifier>GE_simple_PI_controller::GE_simple_PI_controller.main.LOOP_0::num_steps::-1</grfnem:identifier>
+                <grfnem:uid>_38c1962e-9148-624f-eac1-c14f30e9c5cc</grfnem:uid>
+                <grfnem:data_type>integer</grfnem:data_type>
+                <grfnem:metadata>
+                  <grfnem:Metadata/>
+                </grfnem:metadata>
+              </grfnem:Variable>
+            </grfnem:nodes>
+            <grfnem:nodes>
+              <grfnem:Function rdf:ID="_0fa07a3f-2e29-5065-6fa2-31e959acdd98">
+                <grfnem:lambda>lambda i_initial,sensed_output_initial,integrator_state_initial,i_updated,sensed_output_updated,integrator_state_updated: (i_initial,sensed_output_initial,integrator_state_initial) if i_updated is None and sensed_output_updated is None and integrator_state_updated is None else (i_updated,sensed_output_updated,integrator_state_updated)</grfnem:lambda>
+                <grfnem:ftype>DECISION</grfnem:ftype>
+                <grfnem:metadata>
+                  <grfnem:Metadata/>
+                </grfnem:metadata>
+              </grfnem:Function>
+            </grfnem:nodes>
+            <grfnem:metadata>
+              <grfnem:Metadata/>
+            </grfnem:metadata>
+            <grfnem:nodes>
+              <grfnem:Variable rdf:ID="_8c1745a7-9a6a-5f92-cca7-4147f6be1f72">
+                <grfnem:identifier>GE_simple_PI_controller::GE_simple_PI_controller.main.LOOP_0::i::0</grfnem:identifier>
+                <grfnem:uid>_8c1745a7-9a6a-5f92-cca7-4147f6be1f72</grfnem:uid>
+                <grfnem:data_type>integer</grfnem:data_type>
+                <grfnem:metadata>
+                  <grfnem:Metadata/>
+                </grfnem:metadata>
+              </grfnem:Variable>
+            </grfnem:nodes>
+            <grfnem:nodes>
+              <grfnem:Function rdf:ID="_4d125e7f-a59c-ec98-126c-bc8f38884479">
+                <grfnem:lambda>lambda EXIT,i_initial,sensed_output_initial,integrator_state_initial,i_updated,sensed_output_updated,integrator_state_updated: (i_initial,sensed_output_initial,integrator_state_initial) if EXIT else (i_updated,sensed_output_updated,integrator_state_updated)</grfnem:lambda>
+                <grfnem:ftype>DECISION</grfnem:ftype>
+                <grfnem:metadata>
+                  <grfnem:Metadata/>
+                </grfnem:metadata>
+              </grfnem:Function>
+            </grfnem:nodes>
+            <grfnem:nodes rdf:resource="#ade9b2b4-efdd-35f8-0fa3-4266ccfdba9b"/>
+            <grfnem:nodes>
+              <grfnem:Variable rdf:ID="_7d41e602-eece-328b-ff7b-118e820865d6">
+                <grfnem:nodes>
+                  <grfnem:ExpNode rdf:ID="_65151a38-3a7c-cfa2-13f4-cba3957ec309">
+                    <grfnem:var_name>error</grfnem:var_name>
+                    <grfnem:grfn_uid rdf:resource="#_247a8333-f7b0-b7d2-cda8-056c3d15eef7"/>
+                    <grfnem:exp_node_type>VARIABLE</grfnem:exp_node_type>
+                    <rdf:type rdf:resource="http://sadl.org/GrFNExtractionModel.sadl#Variable"/>
+                  </grfnem:ExpNode>
+                </grfnem:nodes>
+                <grfnem:nodes>
+                  <grfnem:ExpNode rdf:ID="_19cab7f3-959f-2b84-f8ee-d89527084422">
+                    <grfnem:var_name>integrator_state</grfnem:var_name>
+                    <grfnem:grfn_uid rdf:resource="#_38c1962e-9148-624f-eac1-c14f30e9c5cc"/>
+                    <grfnem:exp_node_type>VARIABLE</grfnem:exp_node_type>
+                    <rdf:type rdf:resource="http://sadl.org/GrFNExtractionModel.sadl#Variable"/>
+                  </grfnem:ExpNode>
+                </grfnem:nodes>
+                <grfnem:nodes>
+                  <grfnem:ExpNode rdf:ID="_6e6ecddb-4f84-fa18-5b32-329da523ee18">
+                    <grfnem:operator>Mult</grfnem:operator>
+                    <grfnem:exp_node_type>OPERATOR</grfnem:exp_node_type>
+                    <grfnem:children rdf:parseType="Resource">
+                      <j.0:rest rdf:parseType="Resource">
+                        <j.0:first rdf:resource="#_65151a38-3a7c-cfa2-13f4-cba3957ec309"/>
+                        <rdf:type rdf:nodeID="A0"/>
+                      </j.0:rest>
+                      <j.0:first>
+                        <grfnem:ExpNode rdf:ID="_38235e1e-06b6-7d0f-3101-8dca3538d3f0">
+                          <grfnem:var_name>timestep</grfnem:var_name>
+                          <grfnem:grfn_uid>
+                            <grfnem:Variable rdf:ID="_101fbccc-ded7-33e8-b421-eaeb534097ca">
+                              <grfnem:identifier>GE_simple_PI_controller::GE_simple_PI_controller.main.LOOP_0::i::-1</grfnem:identifier>
+                              <grfnem:uid>_101fbccc-ded7-33e8-b421-eaeb534097ca</grfnem:uid>
+                              <grfnem:data_type>integer</grfnem:data_type>
+                              <grfnem:metadata>
+                                <grfnem:Metadata/>
+                              </grfnem:metadata>
+                            </grfnem:Variable>
+                          </grfnem:grfn_uid>
+                          <grfnem:exp_node_type>VARIABLE</grfnem:exp_node_type>
+                          <rdf:type rdf:resource="http://sadl.org/GrFNExtractionModel.sadl#Variable"/>
+                        </grfnem:ExpNode>
+                      </j.0:first>
+                      <rdf:type rdf:nodeID="A0"/>
+                    </grfnem:children>
+                  </grfnem:ExpNode>
+                </grfnem:nodes>
+                <grfnem:nodes>
+                  <grfnem:Variable rdf:ID="d2baf034-daea-ae0a-18c3-4918c75e4c80">
+                    <grfnem:var_name>error</grfnem:var_name>
+                    <grfnem:grfn_uid rdf:resource="#_247a8333-f7b0-b7d2-cda8-056c3d15eef7"/>
+                    <grfnem:exp_node_type>VARIABLE</grfnem:exp_node_type>
+                    <rdf:type rdf:resource="http://sadl.org/GrFNExtractionModel.sadl#ExpNode"/>
+                  </grfnem:Variable>
+                </grfnem:nodes>
+                <grfnem:nodes>
+                  <grfnem:ExpNode rdf:ID="_089b5a60-3c4a-5478-84ed-9c6878f1776d">
+                    <grfnem:exp_node_type>DEFINITION</grfnem:exp_node_type>
+                    <grfnem:children rdf:parseType="Resource">
+                      <j.0:rest rdf:parseType="Resource">
+                        <j.0:rest rdf:parseType="Resource">
+                          <j.0:first>
+                            <grfnem:Variable rdf:ID="c1ddbc46-4880-b3bb-0fa6-7c5ef5e250cf">
+                              <grfnem:var_name>integrator_state</grfnem:var_name>
+                              <grfnem:grfn_uid rdf:resource="#_38c1962e-9148-624f-eac1-c14f30e9c5cc"/>
+                              <grfnem:exp_node_type>VARIABLE</grfnem:exp_node_type>
+                              <rdf:type rdf:resource="http://sadl.org/GrFNExtractionModel.sadl#ExpNode"/>
+                            </grfnem:Variable>
+                          </j.0:first>
+                          <rdf:type rdf:nodeID="A0"/>
+                        </j.0:rest>
+                        <j.0:first rdf:resource="#d2baf034-daea-ae0a-18c3-4918c75e4c80"/>
+                        <rdf:type rdf:nodeID="A0"/>
+                      </j.0:rest>
+                      <j.0:first>
+                        <grfnem:Variable rdf:ID="d8a8d3ad-153a-189c-2670-db183495d0c0">
+                          <grfnem:var_name>timestep</grfnem:var_name>
+                          <grfnem:grfn_uid rdf:resource="#_101fbccc-ded7-33e8-b421-eaeb534097ca"/>
+                          <grfnem:exp_node_type>VARIABLE</grfnem:exp_node_type>
+                          <rdf:type rdf:resource="http://sadl.org/GrFNExtractionModel.sadl#ExpNode"/>
+                        </grfnem:Variable>
+                      </j.0:first>
+                      <rdf:type rdf:nodeID="A0"/>
+                    </grfnem:children>
+                  </grfnem:ExpNode>
+                </grfnem:nodes>
+                <grfnem:nodes>
+                  <grfnem:ExpNode rdf:ID="_6b1e0630-8f98-650d-4159-b6439bf35cea">
+                    <grfnem:operator>RETURN</grfnem:operator>
+                    <grfnem:exp_node_type>OPERATOR</grfnem:exp_node_type>
+                    <grfnem:children rdf:parseType="Resource">
+                      <j.0:first>
+                        <grfnem:ExpNode rdf:ID="d60f43d1-f792-d4fe-a4e6-5edb9fe0ac51">
+                          <grfnem:operator>Add</grfnem:operator>
+                          <grfnem:exp_node_type>OPERATOR</grfnem:exp_node_type>
+                          <grfnem:children rdf:parseType="Resource">
+                            <j.0:rest rdf:parseType="Resource">
+                              <j.0:first rdf:resource="#_19cab7f3-959f-2b84-f8ee-d89527084422"/>
+                              <rdf:type rdf:nodeID="A0"/>
+                            </j.0:rest>
+                            <j.0:first rdf:resource="#_6e6ecddb-4f84-fa18-5b32-329da523ee18"/>
+                            <rdf:type rdf:nodeID="A0"/>
+                          </grfnem:children>
+                        </grfnem:ExpNode>
+                      </j.0:first>
+                      <rdf:type rdf:nodeID="A0"/>
+                    </grfnem:children>
+                  </grfnem:ExpNode>
+                </grfnem:nodes>
+                <grfnem:uid>_7d41e602-eece-328b-ff7b-118e820865d6</grfnem:uid>
+                <grfnem:data_type>integer</grfnem:data_type>
+                <grfnem:nodes rdf:resource="#_38235e1e-06b6-7d0f-3101-8dca3538d3f0"/>
+                <grfnem:nodes rdf:resource="#d60f43d1-f792-d4fe-a4e6-5edb9fe0ac51"/>
+                <rdf:type rdf:resource="http://sadl.org/GrFNExtractionModel.sadl#ExpressionTree"/>
+                <grfnem:nodes rdf:resource="#c1ddbc46-4880-b3bb-0fa6-7c5ef5e250cf"/>
+                <grfnem:nodes rdf:resource="#d8a8d3ad-153a-189c-2670-db183495d0c0"/>
+                <grfnem:identifier>GE_simple_PI_controller::GE_simple_PI_controller.main.LOOP_0::Ki_M::-1</grfnem:identifier>
+                <grfnem:metadata>
+                  <grfnem:Metadata/>
+                </grfnem:metadata>
+                <grfnem:nodes>
+                  <grfnem:ExpNode rdf:ID="_704d790d-c92a-d77b-090c-0593418d54c7">
+                    <grfnem:exp_node_type>DEFINITION</grfnem:exp_node_type>
+                    <grfnem:children rdf:parseType="Resource">
+                      <j.0:rest rdf:parseType="Resource">
+                        <j.0:first rdf:resource="#_6b1e0630-8f98-650d-4159-b6439bf35cea"/>
+                        <rdf:type rdf:nodeID="A0"/>
+                      </j.0:rest>
+                      <j.0:first rdf:resource="#_089b5a60-3c4a-5478-84ed-9c6878f1776d"/>
+                      <rdf:type rdf:nodeID="A0"/>
+                    </grfnem:children>
+                  </grfnem:ExpNode>
+                </grfnem:nodes>
+              </grfnem:Variable>
+            </grfnem:nodes>
+            <grfnem:nodes>
+              <grfnem:Variable rdf:ID="_552f233a-8c25-166a-1ff3-9849b4e1357d">
+                <grfnem:nodes>
+                  <grfnem:Variable rdf:ID="_977a3f5e-7019-6ac9-b15b-6be2aec8acbe">
+                    <grfnem:var_name>integrator_state</grfnem:var_name>
+                    <grfnem:grfn_uid>
+                      <grfnem:Variable rdf:ID="e005b860-51ef-1922-fe43-c49e149818d1">
+                        <grfnem:identifier>GE_simple_PI_controller::GE_simple_PI_controller.main.LOOP_0::Kp_M::-1</grfnem:identifier>
+                        <grfnem:uid>e005b860-51ef-1922-fe43-c49e149818d1</grfnem:uid>
+                        <grfnem:data_type>integer</grfnem:data_type>
+                        <grfnem:metadata>
+                          <grfnem:Metadata/>
+                        </grfnem:metadata>
+                      </grfnem:Variable>
+                    </grfnem:grfn_uid>
+                    <grfnem:exp_node_type>VARIABLE</grfnem:exp_node_type>
+                    <rdf:type rdf:resource="http://sadl.org/GrFNExtractionModel.sadl#ExpNode"/>
+                  </grfnem:Variable>
+                </grfnem:nodes>
+                <grfnem:nodes>
+                  <grfnem:Variable rdf:ID="aac0ff56-87da-8753-8732-3c560cf8b68b">
+                    <grfnem:var_name>integrator_state</grfnem:var_name>
+                    <grfnem:grfn_uid rdf:resource="#e005b860-51ef-1922-fe43-c49e149818d1"/>
+                    <grfnem:exp_node_type>VARIABLE</grfnem:exp_node_type>
+                    <rdf:type rdf:resource="http://sadl.org/GrFNExtractionModel.sadl#ExpNode"/>
+                  </grfnem:Variable>
+                </grfnem:nodes>
+                <grfnem:nodes>
+                  <grfnem:ExpNode rdf:ID="_851a89bb-a0d3-6bd8-6275-287d4db5ee4e">
+                    <grfnem:operator>Mult</grfnem:operator>
+                    <grfnem:exp_node_type>OPERATOR</grfnem:exp_node_type>
+                    <grfnem:children rdf:parseType="Resource">
+                      <j.0:rest rdf:parseType="Resource">
+                        <j.0:first rdf:resource="#_977a3f5e-7019-6ac9-b15b-6be2aec8acbe"/>
+                        <rdf:type rdf:nodeID="A0"/>
+                      </j.0:rest>
+                      <j.0:first>
+                        <grfnem:Variable rdf:ID="c0e6d0b3-55d0-b84e-30b1-91cd10b6dbff">
+                          <grfnem:var_name>Ki_M</grfnem:var_name>
+                          <grfnem:grfn_uid rdf:resource="#baf3897a-3e70-f16a-5548-5822de1b372a"/>
+                          <grfnem:exp_node_type>VARIABLE</grfnem:exp_node_type>
+                          <rdf:type rdf:resource="http://sadl.org/GrFNExtractionModel.sadl#ExpNode"/>
+                        </grfnem:Variable>
+                      </j.0:first>
+                      <rdf:type rdf:nodeID="A0"/>
+                    </grfnem:children>
+                  </grfnem:ExpNode>
+                </grfnem:nodes>
+                <grfnem:nodes>
+                  <grfnem:ExpNode rdf:ID="_2d7bf7e2-e665-a4f4-f953-df931091ffce">
+                    <grfnem:operator>Add</grfnem:operator>
+                    <grfnem:exp_node_type>OPERATOR</grfnem:exp_node_type>
+                    <grfnem:children rdf:parseType="Resource">
+                      <j.0:rest rdf:parseType="Resource">
+                        <j.0:first rdf:resource="#_851a89bb-a0d3-6bd8-6275-287d4db5ee4e"/>
+                        <rdf:type rdf:nodeID="A0"/>
+                      </j.0:rest>
+                      <j.0:first>
+                        <grfnem:ExpNode rdf:ID="_441d360e-cc1e-9c28-80f8-de71a12880ab">
+                          <grfnem:operator>Mult</grfnem:operator>
+                          <grfnem:exp_node_type>OPERATOR</grfnem:exp_node_type>
+                          <grfnem:children rdf:parseType="Resource">
+                            <j.0:rest rdf:parseType="Resource">
+                              <j.0:first>
+                                <grfnem:ExpNode rdf:ID="_233aef47-d1f6-8003-4875-da2db558622b">
+                                  <grfnem:var_name>Kp_M</grfnem:var_name>
+                                  <grfnem:grfn_uid rdf:resource="#d3fbf47a-7e5b-1e7f-9ca5-499d004ae545"/>
+                                  <grfnem:exp_node_type>VARIABLE</grfnem:exp_node_type>
+                                  <rdf:type rdf:resource="http://sadl.org/GrFNExtractionModel.sadl#Variable"/>
+                                </grfnem:ExpNode>
+                              </j.0:first>
+                              <rdf:type rdf:nodeID="A0"/>
+                            </j.0:rest>
+                            <j.0:first>
+                              <grfnem:ExpNode rdf:ID="_16e0725c-8231-10af-bf5c-b0eb6d406c3d">
+                                <grfnem:var_name>error</grfnem:var_name>
+                                <grfnem:grfn_uid rdf:resource="#_247a8333-f7b0-b7d2-cda8-056c3d15eef7"/>
+                                <grfnem:exp_node_type>VARIABLE</grfnem:exp_node_type>
+                                <rdf:type rdf:resource="http://sadl.org/GrFNExtractionModel.sadl#Variable"/>
+                              </grfnem:ExpNode>
+                            </j.0:first>
+                            <rdf:type rdf:nodeID="A0"/>
+                          </grfnem:children>
+                        </grfnem:ExpNode>
+                      </j.0:first>
+                      <rdf:type rdf:nodeID="A0"/>
+                    </grfnem:children>
+                  </grfnem:ExpNode>
+                </grfnem:nodes>
+                <rdf:type rdf:resource="http://sadl.org/GrFNExtractionModel.sadl#ExpressionTree"/>
+                <grfnem:nodes rdf:resource="#_16e0725c-8231-10af-bf5c-b0eb6d406c3d"/>
+                <grfnem:nodes rdf:resource="#c0e6d0b3-55d0-b84e-30b1-91cd10b6dbff"/>
+                <grfnem:nodes rdf:resource="#_233aef47-d1f6-8003-4875-da2db558622b"/>
+                <grfnem:nodes>
+                  <grfnem:ExpNode rdf:ID="a32b8305-d149-ce32-6487-a06d1a14fa2e">
+                    <grfnem:exp_node_type>DEFINITION</grfnem:exp_node_type>
+                    <grfnem:children rdf:parseType="Resource">
+                      <j.0:rest rdf:parseType="Resource">
+                        <j.0:first>
+                          <grfnem:ExpNode rdf:ID="_5ed35969-e84c-230f-f6ed-1a7cb117e1f4">
+                            <grfnem:operator>RETURN</grfnem:operator>
+                            <grfnem:exp_node_type>OPERATOR</grfnem:exp_node_type>
+                            <grfnem:children rdf:parseType="Resource">
+                              <j.0:first rdf:resource="#_2d7bf7e2-e665-a4f4-f953-df931091ffce"/>
+                              <rdf:type rdf:nodeID="A0"/>
+                            </grfnem:children>
+                          </grfnem:ExpNode>
+                        </j.0:first>
+                        <rdf:type rdf:nodeID="A0"/>
+                      </j.0:rest>
+                      <j.0:first>
+                        <grfnem:ExpNode rdf:ID="a9e83031-b6f2-9eb4-9c01-9b85e80eeaac">
+                          <grfnem:exp_node_type>DEFINITION</grfnem:exp_node_type>
+                          <grfnem:children rdf:parseType="Resource">
+                            <j.0:rest rdf:parseType="Resource">
+                              <j.0:rest rdf:parseType="Resource">
+                                <j.0:rest rdf:parseType="Resource">
+                                  <j.0:first rdf:resource="#aac0ff56-87da-8753-8732-3c560cf8b68b"/>
+                                  <rdf:type rdf:nodeID="A0"/>
+                                </j.0:rest>
+                                <j.0:first>
+                                  <grfnem:ExpNode rdf:ID="_2ccc0f7c-75ec-ddce-1f31-6c5325003805">
+                                    <grfnem:var_name>Ki_M</grfnem:var_name>
+                                    <grfnem:grfn_uid rdf:resource="#baf3897a-3e70-f16a-5548-5822de1b372a"/>
+                                    <grfnem:exp_node_type>VARIABLE</grfnem:exp_node_type>
+                                    <rdf:type rdf:resource="http://sadl.org/GrFNExtractionModel.sadl#Variable"/>
+                                  </grfnem:ExpNode>
+                                </j.0:first>
+                                <rdf:type rdf:nodeID="A0"/>
+                              </j.0:rest>
+                              <j.0:first>
+                                <grfnem:Variable rdf:ID="e2429d0c-561b-11c0-3f9e-ff001ae89ea3">
+                                  <grfnem:var_name>Kp_M</grfnem:var_name>
+                                  <grfnem:grfn_uid rdf:resource="#d3fbf47a-7e5b-1e7f-9ca5-499d004ae545"/>
+                                  <grfnem:exp_node_type>VARIABLE</grfnem:exp_node_type>
+                                  <rdf:type rdf:resource="http://sadl.org/GrFNExtractionModel.sadl#ExpNode"/>
+                                </grfnem:Variable>
+                              </j.0:first>
+                              <rdf:type rdf:nodeID="A0"/>
+                            </j.0:rest>
+                            <j.0:first>
+                              <grfnem:Variable rdf:ID="dd2f8881-0072-5580-a253-fc2b50d16c3b">
+                                <grfnem:var_name>error</grfnem:var_name>
+                                <grfnem:grfn_uid rdf:resource="#_247a8333-f7b0-b7d2-cda8-056c3d15eef7"/>
+                                <grfnem:exp_node_type>VARIABLE</grfnem:exp_node_type>
+                                <rdf:type rdf:resource="http://sadl.org/GrFNExtractionModel.sadl#ExpNode"/>
+                              </grfnem:Variable>
+                            </j.0:first>
+                            <rdf:type rdf:nodeID="A0"/>
+                          </grfnem:children>
+                        </grfnem:ExpNode>
+                      </j.0:first>
+                      <rdf:type rdf:nodeID="A0"/>
+                    </grfnem:children>
+                  </grfnem:ExpNode>
+                </grfnem:nodes>
+                <grfnem:data_type>integer</grfnem:data_type>
+                <grfnem:nodes rdf:resource="#dd2f8881-0072-5580-a253-fc2b50d16c3b"/>
+                <grfnem:nodes rdf:resource="#e2429d0c-561b-11c0-3f9e-ff001ae89ea3"/>
+                <grfnem:uid>_552f233a-8c25-166a-1ff3-9849b4e1357d</grfnem:uid>
+                <grfnem:nodes rdf:resource="#a9e83031-b6f2-9eb4-9c01-9b85e80eeaac"/>
+                <grfnem:nodes rdf:resource="#_2ccc0f7c-75ec-ddce-1f31-6c5325003805"/>
+                <grfnem:nodes rdf:resource="#_441d360e-cc1e-9c28-80f8-de71a12880ab"/>
+                <grfnem:metadata>
+                  <grfnem:Metadata/>
+                </grfnem:metadata>
+                <grfnem:nodes rdf:resource="#_5ed35969-e84c-230f-f6ed-1a7cb117e1f4"/>
+                <grfnem:identifier>GE_simple_PI_controller::GE_simple_PI_controller.main.LOOP_0::integrator_state::-1</grfnem:identifier>
+              </grfnem:Variable>
+            </grfnem:nodes>
+            <grfnem:parent>
+              <grfnem:SubGraph rdf:ID="e3e70682-c209-4cac-629f-6fbed82c07cd">
+                <grfnem:scope>GE_simple_PI_controller</grfnem:scope>
+                <grfnem:nodes>
+                  <grfnem:Variable rdf:ID="_12e0c8b2-bad6-40fb-1948-8dec4f65d4d9">
+                    <grfnem:identifier>GE_simple_PI_controller::GE_simple_PI_controller.main::num_steps::0</grfnem:identifier>
+                    <grfnem:uid>_12e0c8b2-bad6-40fb-1948-8dec4f65d4d9</grfnem:uid>
+                    <grfnem:data_type>integer</grfnem:data_type>
+                    <grfnem:metadata>
+                      <grfnem:Metadata/>
+                    </grfnem:metadata>
+                  </grfnem:Variable>
+                </grfnem:nodes>
+                <grfnem:nodes>
+                  <grfnem:ExpressionTree rdf:ID="_5487ce1e-af19-922a-d9b8-a714e61a441c">
+                    <grfnem:nodes>
+                      <grfnem:ExpNode rdf:ID="_5b63c01a-23db-5f73-610d-7eb63d4e175d">
+                        <grfnem:exp_node_type>DEFINITION</grfnem:exp_node_type>
+                      </grfnem:ExpNode>
+                    </grfnem:nodes>
+                    <grfnem:nodes>
+                      <grfnem:ExpNode rdf:ID="e8e530ee-fb6b-8a83-1b03-84be204f3dbd">
+                        <grfnem:node_value>10</grfnem:node_value>
+                        <grfnem:exp_node_type>VALUE</grfnem:exp_node_type>
+                      </grfnem:ExpNode>
+                    </grfnem:nodes>
+                    <grfnem:nodes>
+                      <grfnem:ExpNode rdf:ID="_084fd90f-d726-17b0-0e70-a660b2cca764">
+                        <grfnem:operator>RETURN</grfnem:operator>
+                        <grfnem:exp_node_type>OPERATOR</grfnem:exp_node_type>
+                        <grfnem:children rdf:parseType="Resource">
+                          <j.0:first rdf:resource="#e8e530ee-fb6b-8a83-1b03-84be204f3dbd"/>
+                          <rdf:type rdf:nodeID="A0"/>
+                        </grfnem:children>
+                      </grfnem:ExpNode>
+                    </grfnem:nodes>
+                    <grfnem:nodes>
+                      <grfnem:ExpNode rdf:ID="_36d9b018-06d8-aa8c-1d03-773558c8535d">
+                        <grfnem:exp_node_type>DEFINITION</grfnem:exp_node_type>
+                        <grfnem:children rdf:parseType="Resource">
+                          <j.0:rest rdf:parseType="Resource">
+                            <j.0:first rdf:resource="#_084fd90f-d726-17b0-0e70-a660b2cca764"/>
+                            <rdf:type rdf:nodeID="A0"/>
+                          </j.0:rest>
+                          <j.0:first rdf:resource="#_5b63c01a-23db-5f73-610d-7eb63d4e175d"/>
+                          <rdf:type rdf:nodeID="A0"/>
+                        </grfnem:children>
+                      </grfnem:ExpNode>
+                    </grfnem:nodes>
+                    <grfnem:lambda>lambda t_final,time_step: (t_final / time_step)</grfnem:lambda>
+                    <grfnem:ftype>ASSIGN</grfnem:ftype>
+                    <grfnem:metadata>
+                      <grfnem:Metadata/>
+                    </grfnem:metadata>
+                    <rdf:type rdf:resource="http://sadl.org/GrFNExtractionModel.sadl#Function"/>
+                  </grfnem:ExpressionTree>
+                </grfnem:nodes>
+                <grfnem:uid>e3e70682-c209-4cac-629f-6fbed82c07cd</grfnem:uid>
+                <grfnem:nodes>
+                  <grfnem:ExpressionTree rdf:ID="_259f4329-e6f4-590b-9a16-4106cf6a659e">
+                    <grfnem:nodes>
+                      <grfnem:ExpNode rdf:ID="dd206498-24ac-538a-86f5-107c436aa6b2">
+                        <grfnem:exp_node_type>DEFINITION</grfnem:exp_node_type>
+                      </grfnem:ExpNode>
+                    </grfnem:nodes>
+                    <grfnem:nodes>
+                      <grfnem:ExpNode rdf:ID="_69de9234-c68d-316c-f28d-ac7539621e75">
+                        <grfnem:node_value>75</grfnem:node_value>
+                        <grfnem:exp_node_type>VALUE</grfnem:exp_node_type>
+                      </grfnem:ExpNode>
+                    </grfnem:nodes>
+                    <grfnem:nodes>
+                      <grfnem:ExpNode rdf:ID="_59db35ec-3a83-a13b-9542-b1dbffb84787">
+                        <grfnem:operator>RETURN</grfnem:operator>
+                        <grfnem:exp_node_type>OPERATOR</grfnem:exp_node_type>
+                        <grfnem:children rdf:parseType="Resource">
+                          <j.0:first rdf:resource="#_69de9234-c68d-316c-f28d-ac7539621e75"/>
+                          <rdf:type rdf:nodeID="A0"/>
+                        </grfnem:children>
+                      </grfnem:ExpNode>
+                    </grfnem:nodes>
+                    <grfnem:nodes>
+                      <grfnem:ExpNode rdf:ID="d1be6bac-f505-b8db-fe36-f94fca1438ab">
+                        <grfnem:exp_node_type>DEFINITION</grfnem:exp_node_type>
+                        <grfnem:children rdf:parseType="Resource">
+                          <j.0:rest rdf:parseType="Resource">
+                            <j.0:first rdf:resource="#_59db35ec-3a83-a13b-9542-b1dbffb84787"/>
+                            <rdf:type rdf:nodeID="A0"/>
+                          </j.0:rest>
+                          <j.0:first rdf:resource="#dd206498-24ac-538a-86f5-107c436aa6b2"/>
+                          <rdf:type rdf:nodeID="A0"/>
+                        </grfnem:children>
+                      </grfnem:ExpNode>
+                    </grfnem:nodes>
+                    <grfnem:lambda>lambda : 75.0</grfnem:lambda>
+                    <grfnem:ftype>LITERAL</grfnem:ftype>
+                    <grfnem:metadata>
+                      <grfnem:Metadata/>
+                    </grfnem:metadata>
+                    <rdf:type rdf:resource="http://sadl.org/GrFNExtractionModel.sadl#Function"/>
+                  </grfnem:ExpressionTree>
+                </grfnem:nodes>
+                <grfnem:nodes rdf:resource="#e6fd68e8-d69c-91c2-7860-1602bb4a06cb"/>
+                <grfnem:nodes>
+                  <grfnem:Variable rdf:ID="e443df78-9558-867f-5ba9-1faf7a024204">
+                    <grfnem:identifier>GE_simple_PI_controller::GE_simple_PI_controller.main::time_step::0</grfnem:identifier>
+                    <grfnem:uid>e443df78-9558-867f-5ba9-1faf7a024204</grfnem:uid>
+                    <grfnem:data_type>integer</grfnem:data_type>
+                    <grfnem:metadata>
+                      <grfnem:Metadata/>
+                    </grfnem:metadata>
+                  </grfnem:Variable>
+                </grfnem:nodes>
+                <grfnem:nodes>
+                  <grfnem:Variable rdf:ID="eb1167b3-67a9-c378-7c65-c1e582e2e662">
+                    <grfnem:identifier>GE_simple_PI_controller::GE_simple_PI_controller.main::t_final::0</grfnem:identifier>
+                    <grfnem:uid>eb1167b3-67a9-c378-7c65-c1e582e2e662</grfnem:uid>
+                    <grfnem:data_type>integer</grfnem:data_type>
+                    <grfnem:metadata>
+                      <grfnem:Metadata/>
+                    </grfnem:metadata>
+                  </grfnem:Variable>
+                </grfnem:nodes>
+                <grfnem:nodes rdf:resource="#a0116be5-ab0c-1681-c8f8-e3d0d3290a4c"/>
+                <grfnem:nodes>
+                  <grfnem:Variable rdf:ID="b4862b21-fb97-d435-8856-1712e8e5216a">
+                    <grfnem:identifier>GE_simple_PI_controller::GE_simple_PI_controller.main::Kp_M::0</grfnem:identifier>
+                    <grfnem:uid>b4862b21-fb97-d435-8856-1712e8e5216a</grfnem:uid>
+                    <grfnem:data_type>integer</grfnem:data_type>
+                    <grfnem:metadata>
+                      <grfnem:Metadata/>
+                    </grfnem:metadata>
+                  </grfnem:Variable>
+                </grfnem:nodes>
+                <grfnem:nodes rdf:resource="#b5d32b16-6619-4cb1-d710-37d1b83e90ec"/>
+                <grfnem:nodes>
+                  <grfnem:Variable rdf:ID="_8d723104-f773-83c1-3458-a748e9bb17bc">
+                    <grfnem:identifier>GE_simple_PI_controller::GE_simple_PI_controller.main::plant_gain::0</grfnem:identifier>
+                    <grfnem:uid>_8d723104-f773-83c1-3458-a748e9bb17bc</grfnem:uid>
+                    <grfnem:data_type>integer</grfnem:data_type>
+                    <grfnem:metadata>
+                      <grfnem:Metadata/>
+                    </grfnem:metadata>
+                  </grfnem:Variable>
+                </grfnem:nodes>
+                <grfnem:nodes>
+                  <grfnem:ExpressionTree rdf:ID="_23a7711a-8133-2876-37eb-dcd9e87a1613">
+                    <grfnem:nodes>
+                      <grfnem:ExpNode rdf:ID="fbac6963-bba8-6a7c-ad65-72bff2701999">
+                        <grfnem:exp_node_type>DEFINITION</grfnem:exp_node_type>
+                      </grfnem:ExpNode>
+                    </grfnem:nodes>
+                    <grfnem:nodes>
+                      <grfnem:ExpNode rdf:ID="d0b2445e-8431-afcd-0de1-df7b50c157a4">
+                        <grfnem:node_value>0.015</grfnem:node_value>
+                        <grfnem:exp_node_type>VALUE</grfnem:exp_node_type>
+                      </grfnem:ExpNode>
+                    </grfnem:nodes>
+                    <grfnem:nodes>
+                      <grfnem:ExpNode rdf:ID="_1b683c74-c94c-94b0-9029-39bf6c45aabf">
+                        <grfnem:operator>RETURN</grfnem:operator>
+                        <grfnem:exp_node_type>OPERATOR</grfnem:exp_node_type>
+                        <grfnem:children rdf:parseType="Resource">
+                          <j.0:first rdf:resource="#d0b2445e-8431-afcd-0de1-df7b50c157a4"/>
+                          <rdf:type rdf:nodeID="A0"/>
+                        </grfnem:children>
+                      </grfnem:ExpNode>
+                    </grfnem:nodes>
+                    <grfnem:nodes>
+                      <grfnem:ExpNode rdf:ID="_69f77d23-3db3-3b86-21e9-defd1dd99336">
+                        <grfnem:exp_node_type>DEFINITION</grfnem:exp_node_type>
+                        <grfnem:children rdf:parseType="Resource">
+                          <j.0:rest rdf:parseType="Resource">
+                            <j.0:first rdf:resource="#_1b683c74-c94c-94b0-9029-39bf6c45aabf"/>
+                            <rdf:type rdf:nodeID="A0"/>
+                          </j.0:rest>
+                          <j.0:first rdf:resource="#fbac6963-bba8-6a7c-ad65-72bff2701999"/>
+                          <rdf:type rdf:nodeID="A0"/>
+                        </grfnem:children>
+                      </grfnem:ExpNode>
+                    </grfnem:nodes>
+                    <grfnem:lambda>lambda : 0.015</grfnem:lambda>
+                    <grfnem:ftype>LITERAL</grfnem:ftype>
+                    <grfnem:metadata>
+                      <grfnem:Metadata/>
+                    </grfnem:metadata>
+                    <rdf:type rdf:resource="http://sadl.org/GrFNExtractionModel.sadl#Function"/>
+                  </grfnem:ExpressionTree>
+                </grfnem:nodes>
+                <grfnem:sg_type>FuncContainer</grfnem:sg_type>
+                <grfnem:nodes>
+                  <grfnem:Variable rdf:ID="_5a921187-19c7-8df4-8f4f-f31e78de5857">
+                    <grfnem:identifier>GE_simple_PI_controller::GE_simple_PI_controller.main::desired_output::0</grfnem:identifier>
+                    <grfnem:uid>_5a921187-19c7-8df4-8f4f-f31e78de5857</grfnem:uid>
+                    <grfnem:data_type>integer</grfnem:data_type>
+                    <grfnem:metadata>
+                      <grfnem:Metadata/>
+                    </grfnem:metadata>
+                  </grfnem:Variable>
+                </grfnem:nodes>
+                <grfnem:nodes>
+                  <grfnem:Variable rdf:ID="f7c1bd87-4da5-e709-d471-3d60c8a70639">
+                    <grfnem:lambda>lambda : 100.5</grfnem:lambda>
+                    <grfnem:ftype>LITERAL</grfnem:ftype>
+                    <grfnem:metadata>
+                      <grfnem:Metadata/>
+                    </grfnem:metadata>
+                    <rdf:type rdf:resource="http://sadl.org/GrFNExtractionModel.sadl#Function"/>
+                  </grfnem:Variable>
+                </grfnem:nodes>
+                <grfnem:nodes>
+                  <grfnem:Function rdf:ID="_17e0aa3c-0398-3ca8-ea7e-9d498c778ea6">
+                    <grfnem:nodes>
+                      <grfnem:ExpNode rdf:ID="_4c0d10d6-58dc-4d83-e1c2-cd69f315b730">
+                        <grfnem:var_name>desired_output_0</grfnem:var_name>
+                        <grfnem:grfn_uid rdf:resource="#_12e0c8b2-bad6-40fb-1948-8dec4f65d4d9"/>
+                        <grfnem:exp_node_type>VARIABLE</grfnem:exp_node_type>
+                        <rdf:type rdf:resource="http://sadl.org/GrFNExtractionModel.sadl#Variable"/>
+                      </grfnem:ExpNode>
+                    </grfnem:nodes>
+                    <grfnem:nodes>
+                      <grfnem:ExpNode rdf:ID="_4d314f30-e986-f5a8-1c4f-06559c113d48">
+                        <grfnem:var_name>time_step_0</grfnem:var_name>
+                        <grfnem:grfn_uid rdf:resource="#e443df78-9558-867f-5ba9-1faf7a024204"/>
+                        <grfnem:exp_node_type>VARIABLE</grfnem:exp_node_type>
+                        <rdf:type rdf:resource="http://sadl.org/GrFNExtractionModel.sadl#Variable"/>
+                      </grfnem:ExpNode>
+                    </grfnem:nodes>
+                    <grfnem:lambda>lambda : 0.0</grfnem:lambda>
+                    <grfnem:nodes>
+                      <grfnem:ExpNode rdf:ID="_8d12b2c0-041d-0bf6-650b-affb0d210527">
+                        <grfnem:operator>RETURN</grfnem:operator>
+                        <grfnem:exp_node_type>OPERATOR</grfnem:exp_node_type>
+                        <grfnem:children rdf:parseType="Resource">
+                          <j.0:first>
+                            <grfnem:ExpNode rdf:ID="_2c8429c3-abe6-c656-dce9-21fc02f1ef90">
+                              <grfnem:var_name>TUPLE</grfnem:var_name>
+                              <grfnem:exp_node_type>VARIABLE</grfnem:exp_node_type>
+                              <grfnem:children rdf:parseType="Resource">
+                                <j.0:rest rdf:parseType="Resource">
+                                  <j.0:rest rdf:parseType="Resource">
+                                    <j.0:rest rdf:parseType="Resource">
+                                      <j.0:rest rdf:parseType="Resource">
+                                        <j.0:rest rdf:parseType="Resource">
+                                          <j.0:first>
+                                            <grfnem:Variable rdf:ID="_77576a39-694b-5086-2047-a6c8c951c59d">
+                                              <grfnem:var_name
+                                              >integrator_state_0</grfnem:var_name>
+                                              <grfnem:grfn_uid rdf:resource="#f7c1bd87-4da5-e709-d471-3d60c8a70639"/>
+                                              <grfnem:exp_node_type
+                                              >VARIABLE</grfnem:exp_node_type>
+                                              <rdf:type rdf:resource="http://sadl.org/GrFNExtractionModel.sadl#ExpNode"/>
+                                            </grfnem:Variable>
+                                          </j.0:first>
+                                          <rdf:type rdf:nodeID="A0"/>
+                                        </j.0:rest>
+                                        <j.0:first>
+                                          <grfnem:ExpNode rdf:ID="_0d77611a-b5f6-4cfa-0679-00c1d38f5fdb">
+                                            <grfnem:var_name>time_step_0</grfnem:var_name>
+                                            <grfnem:grfn_uid rdf:resource="#e443df78-9558-867f-5ba9-1faf7a024204"/>
+                                            <grfnem:exp_node_type
+                                            >VARIABLE</grfnem:exp_node_type>
+                                            <rdf:type rdf:resource="http://sadl.org/GrFNExtractionModel.sadl#Variable"/>
+                                          </grfnem:ExpNode>
+                                        </j.0:first>
+                                        <rdf:type rdf:nodeID="A0"/>
+                                      </j.0:rest>
+                                      <j.0:first>
+                                        <grfnem:Variable rdf:ID="cb8b7aa9-1001-08ef-3c0b-ad79312d25f7">
+                                          <grfnem:var_name>Ki_M_0</grfnem:var_name>
+                                          <grfnem:grfn_uid>
+                                            <grfnem:Variable rdf:ID="_1846d424-c17c-6279-23c6-612f48268673">
+                                              <grfnem:identifier
+                                              >GE_simple_PI_controller::GE_simple_PI_controller.main::Ki_M::0</grfnem:identifier>
+                                              <grfnem:uid>_1846d424-c17c-6279-23c6-612f48268673</grfnem:uid>
+                                              <grfnem:data_type
+                                              >integer</grfnem:data_type>
+                                              <grfnem:metadata>
+                                                <grfnem:Metadata/>
+                                              </grfnem:metadata>
+                                            </grfnem:Variable>
+                                          </grfnem:grfn_uid>
+                                          <grfnem:exp_node_type
+                                          >VARIABLE</grfnem:exp_node_type>
+                                          <rdf:type rdf:resource="http://sadl.org/GrFNExtractionModel.sadl#ExpNode"/>
+                                        </grfnem:Variable>
+                                      </j.0:first>
+                                      <rdf:type rdf:nodeID="A0"/>
+                                    </j.0:rest>
+                                    <j.0:first>
+                                      <grfnem:Variable rdf:ID="_496f6bbd-cf48-fa24-388c-25e3f09280fe">
+                                        <grfnem:var_name>Kp_M_0</grfnem:var_name>
+                                        <grfnem:grfn_uid rdf:resource="#b4862b21-fb97-d435-8856-1712e8e5216a"/>
+                                        <grfnem:exp_node_type
+                                        >VARIABLE</grfnem:exp_node_type>
+                                        <rdf:type rdf:resource="http://sadl.org/GrFNExtractionModel.sadl#ExpNode"/>
+                                      </grfnem:Variable>
+                                    </j.0:first>
+                                    <rdf:type rdf:nodeID="A0"/>
+                                  </j.0:rest>
+                                  <j.0:first>
+                                    <grfnem:Variable rdf:ID="_2f79f34d-acea-ff7f-aac3-e1150883fdd1">
+                                      <grfnem:var_name>sensed_output_0</grfnem:var_name>
+                                      <grfnem:grfn_uid rdf:resource="#_8d723104-f773-83c1-3458-a748e9bb17bc"/>
+                                      <grfnem:exp_node_type>VARIABLE</grfnem:exp_node_type>
+                                      <rdf:type rdf:resource="http://sadl.org/GrFNExtractionModel.sadl#ExpNode"/>
+                                    </grfnem:Variable>
+                                  </j.0:first>
+                                  <rdf:type rdf:nodeID="A0"/>
+                                </j.0:rest>
+                                <j.0:first>
+                                  <grfnem:Variable rdf:ID="_89c6297b-62e7-b7ea-ff38-64c74d4b508c">
+                                    <grfnem:var_name>desired_output_0</grfnem:var_name>
+                                    <grfnem:grfn_uid rdf:resource="#_12e0c8b2-bad6-40fb-1948-8dec4f65d4d9"/>
+                                    <grfnem:exp_node_type>VARIABLE</grfnem:exp_node_type>
+                                    <rdf:type rdf:resource="http://sadl.org/GrFNExtractionModel.sadl#ExpNode"/>
+                                  </grfnem:Variable>
+                                </j.0:first>
+                                <rdf:type rdf:nodeID="A0"/>
+                              </grfnem:children>
+                              <rdf:type rdf:resource="http://sadl.org/GrFNExtractionModel.sadl#Variable"/>
+                            </grfnem:ExpNode>
+                          </j.0:first>
+                          <rdf:type rdf:nodeID="A0"/>
+                        </grfnem:children>
+                      </grfnem:ExpNode>
+                    </grfnem:nodes>
+                    <grfnem:ftype>LITERAL</grfnem:ftype>
+                    <grfnem:nodes>
+                      <grfnem:ExpNode rdf:ID="b78bc517-4c0e-40f2-1b02-99c41323edfc">
+                        <grfnem:exp_node_type>DEFINITION</grfnem:exp_node_type>
+                        <grfnem:children rdf:parseType="Resource">
+                          <j.0:rest rdf:parseType="Resource">
+                            <j.0:rest rdf:parseType="Resource">
+                              <j.0:rest rdf:parseType="Resource">
+                                <j.0:rest rdf:parseType="Resource">
+                                  <j.0:rest rdf:parseType="Resource">
+                                    <j.0:first>
+                                      <grfnem:ExpNode rdf:ID="_0068b27c-462a-9f57-c43c-cf08c0cb8fcf">
+                                        <grfnem:var_name>integrator_state_0</grfnem:var_name>
+                                        <grfnem:grfn_uid rdf:resource="#f7c1bd87-4da5-e709-d471-3d60c8a70639"/>
+                                        <grfnem:exp_node_type
+                                        >VARIABLE</grfnem:exp_node_type>
+                                        <rdf:type rdf:resource="http://sadl.org/GrFNExtractionModel.sadl#Variable"/>
+                                      </grfnem:ExpNode>
+                                    </j.0:first>
+                                    <rdf:type rdf:nodeID="A0"/>
+                                  </j.0:rest>
+                                  <j.0:first rdf:resource="#_4d314f30-e986-f5a8-1c4f-06559c113d48"/>
+                                  <rdf:type rdf:nodeID="A0"/>
+                                </j.0:rest>
+                                <j.0:first>
+                                  <grfnem:ExpNode rdf:ID="_398aac88-ae03-ecdd-f34e-d57354c6b900">
+                                    <grfnem:var_name>Ki_M_0</grfnem:var_name>
+                                    <grfnem:grfn_uid rdf:resource="#_1846d424-c17c-6279-23c6-612f48268673"/>
+                                    <grfnem:exp_node_type>VARIABLE</grfnem:exp_node_type>
+                                    <rdf:type rdf:resource="http://sadl.org/GrFNExtractionModel.sadl#Variable"/>
+                                  </grfnem:ExpNode>
+                                </j.0:first>
+                                <rdf:type rdf:nodeID="A0"/>
+                              </j.0:rest>
+                              <j.0:first>
+                                <grfnem:ExpNode rdf:ID="_7b076674-424d-972e-5d96-80f39444a790">
+                                  <grfnem:var_name>Kp_M_0</grfnem:var_name>
+                                  <grfnem:grfn_uid rdf:resource="#b4862b21-fb97-d435-8856-1712e8e5216a"/>
+                                  <grfnem:exp_node_type>VARIABLE</grfnem:exp_node_type>
+                                  <rdf:type rdf:resource="http://sadl.org/GrFNExtractionModel.sadl#Variable"/>
+                                </grfnem:ExpNode>
+                              </j.0:first>
+                              <rdf:type rdf:nodeID="A0"/>
+                            </j.0:rest>
+                            <j.0:first>
+                              <grfnem:ExpNode rdf:ID="_491a4a74-70a6-8f13-b30c-c7e3751750ce">
+                                <grfnem:var_name>sensed_output_0</grfnem:var_name>
+                                <grfnem:grfn_uid rdf:resource="#_8d723104-f773-83c1-3458-a748e9bb17bc"/>
+                                <grfnem:exp_node_type>VARIABLE</grfnem:exp_node_type>
+                                <rdf:type rdf:resource="http://sadl.org/GrFNExtractionModel.sadl#Variable"/>
+                              </grfnem:ExpNode>
+                            </j.0:first>
+                            <rdf:type rdf:nodeID="A0"/>
+                          </j.0:rest>
+                          <j.0:first rdf:resource="#_4c0d10d6-58dc-4d83-e1c2-cd69f315b730"/>
+                          <rdf:type rdf:nodeID="A0"/>
+                        </grfnem:children>
+                      </grfnem:ExpNode>
+                    </grfnem:nodes>
+                    <grfnem:nodes rdf:resource="#_77576a39-694b-5086-2047-a6c8c951c59d"/>
+                    <grfnem:nodes rdf:resource="#_2c8429c3-abe6-c656-dce9-21fc02f1ef90"/>
+                    <grfnem:nodes rdf:resource="#_89c6297b-62e7-b7ea-ff38-64c74d4b508c"/>
+                    <grfnem:nodes rdf:resource="#_7b076674-424d-972e-5d96-80f39444a790"/>
+                    <grfnem:nodes rdf:resource="#_0d77611a-b5f6-4cfa-0679-00c1d38f5fdb"/>
+                    <grfnem:nodes rdf:resource="#_0068b27c-462a-9f57-c43c-cf08c0cb8fcf"/>
+                    <rdf:type rdf:resource="http://sadl.org/GrFNExtractionModel.sadl#ExpressionTree"/>
+                    <grfnem:nodes rdf:resource="#_398aac88-ae03-ecdd-f34e-d57354c6b900"/>
+                    <grfnem:nodes rdf:resource="#_2f79f34d-acea-ff7f-aac3-e1150883fdd1"/>
+                    <grfnem:nodes>
+                      <grfnem:ExpNode rdf:ID="_91eb160d-fa4c-266d-5c28-4c4cacc6599f">
+                        <grfnem:exp_node_type>DEFINITION</grfnem:exp_node_type>
+                        <grfnem:children rdf:parseType="Resource">
+                          <j.0:rest rdf:parseType="Resource">
+                            <j.0:first rdf:resource="#_8d12b2c0-041d-0bf6-650b-affb0d210527"/>
+                            <rdf:type rdf:nodeID="A0"/>
+                          </j.0:rest>
+                          <j.0:first rdf:resource="#b78bc517-4c0e-40f2-1b02-99c41323edfc"/>
+                          <rdf:type rdf:nodeID="A0"/>
+                        </grfnem:children>
+                      </grfnem:ExpNode>
+                    </grfnem:nodes>
+                    <grfnem:metadata>
+                      <grfnem:Metadata/>
+                    </grfnem:metadata>
+                    <grfnem:nodes rdf:resource="#cb8b7aa9-1001-08ef-3c0b-ad79312d25f7"/>
+                    <grfnem:nodes rdf:resource="#_491a4a74-70a6-8f13-b30c-c7e3751750ce"/>
+                    <grfnem:nodes rdf:resource="#_496f6bbd-cf48-fa24-388c-25e3f09280fe"/>
+                  </grfnem:Function>
+                </grfnem:nodes>
+                <grfnem:metadata>
+                  <grfnem:Metadata/>
+                </grfnem:metadata>
+                <grfnem:nodes>
+                  <grfnem:ExpressionTree rdf:ID="a3f2c9bf-9c63-16b9-50f2-44556f25e2a2">
+                    <grfnem:nodes>
+                      <grfnem:ExpNode rdf:ID="c023e6c2-5434-df5a-063f-e94d5af8c59d">
+                        <grfnem:exp_node_type>DEFINITION</grfnem:exp_node_type>
+                      </grfnem:ExpNode>
+                    </grfnem:nodes>
+                    <grfnem:nodes>
+                      <grfnem:ExpNode rdf:ID="_154ec88e-2831-84fe-4547-8d2bb2d90097">
+                        <grfnem:node_value>0.01</grfnem:node_value>
+                        <grfnem:exp_node_type>VALUE</grfnem:exp_node_type>
+                      </grfnem:ExpNode>
+                    </grfnem:nodes>
+                    <grfnem:nodes>
+                      <grfnem:ExpNode rdf:ID="d8d36cef-c129-a144-13e6-525cb92bee87">
+                        <grfnem:operator>RETURN</grfnem:operator>
+                        <grfnem:exp_node_type>OPERATOR</grfnem:exp_node_type>
+                        <grfnem:children rdf:parseType="Resource">
+                          <j.0:first rdf:resource="#_154ec88e-2831-84fe-4547-8d2bb2d90097"/>
+                          <rdf:type rdf:nodeID="A0"/>
+                        </grfnem:children>
+                      </grfnem:ExpNode>
+                    </grfnem:nodes>
+                    <grfnem:nodes>
+                      <grfnem:ExpNode rdf:ID="a3bed662-acac-e923-f91f-38ddd4157767">
+                        <grfnem:exp_node_type>DEFINITION</grfnem:exp_node_type>
+                        <grfnem:children rdf:parseType="Resource">
+                          <j.0:rest rdf:parseType="Resource">
+                            <j.0:first rdf:resource="#d8d36cef-c129-a144-13e6-525cb92bee87"/>
+                            <rdf:type rdf:nodeID="A0"/>
+                          </j.0:rest>
+                          <j.0:first rdf:resource="#c023e6c2-5434-df5a-063f-e94d5af8c59d"/>
+                          <rdf:type rdf:nodeID="A0"/>
+                        </grfnem:children>
+                      </grfnem:ExpNode>
+                    </grfnem:nodes>
+                    <grfnem:lambda>lambda : 10.0</grfnem:lambda>
+                    <grfnem:ftype>LITERAL</grfnem:ftype>
+                    <grfnem:metadata>
+                      <grfnem:Metadata/>
+                    </grfnem:metadata>
+                    <rdf:type rdf:resource="http://sadl.org/GrFNExtractionModel.sadl#Function"/>
+                  </grfnem:ExpressionTree>
+                </grfnem:nodes>
+                <grfnem:nodes>
+                  <grfnem:ExpressionTree rdf:ID="_85776e9a-dd84-f39e-7154-5a137a1d5006">
+                    <grfnem:nodes>
+                      <grfnem:ExpNode rdf:ID="_49373878-1731-e355-8b29-c7fb8e896606">
+                        <grfnem:exp_node_type>DEFINITION</grfnem:exp_node_type>
+                      </grfnem:ExpNode>
+                    </grfnem:nodes>
+                    <grfnem:nodes>
+                      <grfnem:ExpNode rdf:ID="_6961eb95-082d-ca87-5294-7c49ff901956">
+                        <grfnem:node_value>0</grfnem:node_value>
+                        <grfnem:exp_node_type>VALUE</grfnem:exp_node_type>
+                      </grfnem:ExpNode>
+                    </grfnem:nodes>
+                    <grfnem:nodes>
+                      <grfnem:ExpNode rdf:ID="_864b83a9-7a5e-c5b0-157d-d1d41a3f64ed">
+                        <grfnem:operator>RETURN</grfnem:operator>
+                        <grfnem:exp_node_type>OPERATOR</grfnem:exp_node_type>
+                        <grfnem:children rdf:parseType="Resource">
+                          <j.0:first rdf:resource="#_6961eb95-082d-ca87-5294-7c49ff901956"/>
+                          <rdf:type rdf:nodeID="A0"/>
+                        </grfnem:children>
+                      </grfnem:ExpNode>
+                    </grfnem:nodes>
+                    <grfnem:nodes>
+                      <grfnem:ExpNode rdf:ID="f4753338-9643-cab2-64a1-6c890095b4e4">
+                        <grfnem:exp_node_type>DEFINITION</grfnem:exp_node_type>
+                        <grfnem:children rdf:parseType="Resource">
+                          <j.0:rest rdf:parseType="Resource">
+                            <j.0:first rdf:resource="#_864b83a9-7a5e-c5b0-157d-d1d41a3f64ed"/>
+                            <rdf:type rdf:nodeID="A0"/>
+                          </j.0:rest>
+                          <j.0:first rdf:resource="#_49373878-1731-e355-8b29-c7fb8e896606"/>
+                          <rdf:type rdf:nodeID="A0"/>
+                        </grfnem:children>
+                      </grfnem:ExpNode>
+                    </grfnem:nodes>
+                    <grfnem:lambda>lambda : 0.01</grfnem:lambda>
+                    <grfnem:ftype>LITERAL</grfnem:ftype>
+                    <grfnem:metadata>
+                      <grfnem:Metadata/>
+                    </grfnem:metadata>
+                    <rdf:type rdf:resource="http://sadl.org/GrFNExtractionModel.sadl#Function"/>
+                  </grfnem:ExpressionTree>
+                </grfnem:nodes>
+                <grfnem:nodes>
+                  <grfnem:Variable rdf:ID="eb2083e6-ce16-4dba-0ff1-8e0242af9fc3">
+                    <grfnem:identifier>GE_simple_PI_controller::GE_simple_PI_controller.main::sensed_output::0</grfnem:identifier>
+                    <grfnem:uid>eb2083e6-ce16-4dba-0ff1-8e0242af9fc3</grfnem:uid>
+                    <grfnem:data_type>integer</grfnem:data_type>
+                    <grfnem:metadata>
+                      <grfnem:Metadata/>
+                    </grfnem:metadata>
+                  </grfnem:Variable>
+                </grfnem:nodes>
+                <grfnem:nodes>
+                  <grfnem:ExpressionTree rdf:ID="fcbd04c3-4021-2ef7-cca5-a5a19e4d6e3c">
+                    <grfnem:nodes>
+                      <grfnem:ExpNode rdf:ID="de102025-b659-b760-ef27-3911fc54b9ce">
+                        <grfnem:exp_node_type>DEFINITION</grfnem:exp_node_type>
+                      </grfnem:ExpNode>
+                    </grfnem:nodes>
+                    <grfnem:nodes>
+                      <grfnem:ExpNode rdf:ID="d268febd-1a83-7b64-9aab-7a328a7e0fe6">
+                        <grfnem:node_value>20</grfnem:node_value>
+                        <grfnem:exp_node_type>VALUE</grfnem:exp_node_type>
+                      </grfnem:ExpNode>
+                    </grfnem:nodes>
+                    <grfnem:nodes>
+                      <grfnem:ExpNode rdf:ID="d6fb5fda-f21d-a831-a3a6-eccb4650e7c3">
+                        <grfnem:operator>RETURN</grfnem:operator>
+                        <grfnem:exp_node_type>OPERATOR</grfnem:exp_node_type>
+                        <grfnem:children rdf:parseType="Resource">
+                          <j.0:first rdf:resource="#d268febd-1a83-7b64-9aab-7a328a7e0fe6"/>
+                          <rdf:type rdf:nodeID="A0"/>
+                        </grfnem:children>
+                      </grfnem:ExpNode>
+                    </grfnem:nodes>
+                    <grfnem:nodes>
+                      <grfnem:ExpNode rdf:ID="_104c0805-17a2-9d6a-2a43-667c166f4ed8">
+                        <grfnem:exp_node_type>DEFINITION</grfnem:exp_node_type>
+                        <grfnem:children rdf:parseType="Resource">
+                          <j.0:rest rdf:parseType="Resource">
+                            <j.0:first rdf:resource="#d6fb5fda-f21d-a831-a3a6-eccb4650e7c3"/>
+                            <rdf:type rdf:nodeID="A0"/>
+                          </j.0:rest>
+                          <j.0:first rdf:resource="#de102025-b659-b760-ef27-3911fc54b9ce"/>
+                          <rdf:type rdf:nodeID="A0"/>
+                        </grfnem:children>
+                      </grfnem:ExpNode>
+                    </grfnem:nodes>
+                    <grfnem:lambda>lambda : 20.0</grfnem:lambda>
+                    <grfnem:ftype>LITERAL</grfnem:ftype>
+                    <grfnem:metadata>
+                      <grfnem:Metadata/>
+                    </grfnem:metadata>
+                    <rdf:type rdf:resource="http://sadl.org/GrFNExtractionModel.sadl#Function"/>
+                  </grfnem:ExpressionTree>
+                </grfnem:nodes>
+                <grfnem:nodes rdf:resource="#_642aad48-fcfc-fa81-b306-d70019d5f970"/>
+                <grfnem:nodes>
+                  <grfnem:Variable rdf:ID="f728b4fa-4248-5e3a-0a5d-2f346baa9455">
+                    <grfnem:identifier>GE_simple_PI_controller::GE_simple_PI_controller.main::integrator_state::-1</grfnem:identifier>
+                    <grfnem:uid>f728b4fa-4248-5e3a-0a5d-2f346baa9455</grfnem:uid>
+                    <grfnem:data_type>integer</grfnem:data_type>
+                    <grfnem:metadata>
+                      <grfnem:Metadata/>
+                    </grfnem:metadata>
+                  </grfnem:Variable>
+                </grfnem:nodes>
+                <grfnem:namespace>GE_simple_PI_controller</grfnem:namespace>
+                <grfnem:nodes rdf:resource="#_1846d424-c17c-6279-23c6-612f48268673"/>
+                <grfnem:nodes rdf:resource="#e786ab37-5bca-47be-4298-17c53308fb2e"/>
+              </grfnem:SubGraph>
+            </grfnem:parent>
+            <grfnem:sg_type>LoopContainer</grfnem:sg_type>
+            <grfnem:scope>GE_simple_PI_controller.main</grfnem:scope>
+            <grfnem:nodes>
+              <grfnem:Function rdf:ID="_31d0b664-0589-f877-9b02-52440950fd13">
+                <grfnem:lambda>lambda i,num_steps: not (i &gt;= num_steps)</grfnem:lambda>
+                <grfnem:ftype>CONDITION</grfnem:ftype>
+                <grfnem:metadata>
+                  <grfnem:Metadata/>
+                </grfnem:metadata>
+              </grfnem:Function>
+            </grfnem:nodes>
+            <rdf:type rdf:resource="http://sadl.org/GrFNExtractionModel.sadl#Variable"/>
+            <grfnem:nodes rdf:resource="#_101fbccc-ded7-33e8-b421-eaeb534097ca"/>
+            <grfnem:nodes>
+              <grfnem:Variable rdf:ID="d480865f-9b38-fe80-3042-e325a28f5ab0">
+                <grfnem:identifier>GE_simple_PI_controller::GE_simple_PI_controller.main.LOOP_0::i::1</grfnem:identifier>
+                <grfnem:uid>d480865f-9b38-fe80-3042-e325a28f5ab0</grfnem:uid>
+                <grfnem:data_type>integer</grfnem:data_type>
+                <grfnem:metadata>
+                  <grfnem:Metadata/>
+                </grfnem:metadata>
+              </grfnem:Variable>
+            </grfnem:nodes>
+            <grfnem:uid>d3fbf47a-7e5b-1e7f-9ca5-499d004ae545</grfnem:uid>
+            <grfnem:nodes>
+              <grfnem:Variable rdf:ID="_1775336d-71ea-cd05-49a3-e80e966e1277">
+                <grfnem:identifier>GE_simple_PI_controller::GE_simple_PI_controller.main.LOOP_0::sensed_output::0</grfnem:identifier>
+                <grfnem:uid>_1775336d-71ea-cd05-49a3-e80e966e1277</grfnem:uid>
+                <grfnem:data_type>integer</grfnem:data_type>
+                <grfnem:metadata>
+                  <grfnem:Metadata/>
+                </grfnem:metadata>
+              </grfnem:Variable>
+            </grfnem:nodes>
+            <grfnem:nodes rdf:resource="#e005b860-51ef-1922-fe43-c49e149818d1"/>
+            <grfnem:nodes>
+              <grfnem:Function rdf:ID="ba26d851-35e8-579a-7aaf-0e891fb797fa">
+                <grfnem:lambda>lambda COND_0_0: not COND_0_0</grfnem:lambda>
+                <grfnem:ftype>DECISION</grfnem:ftype>
+                <grfnem:metadata>
+                  <grfnem:Metadata/>
+                </grfnem:metadata>
+              </grfnem:Function>
+            </grfnem:nodes>
+            <grfnem:nodes>
+              <grfnem:Variable rdf:ID="_3405095c-8a50-06c1-ec18-8efbd080e66e">
+                <grfnem:nodes>
+                  <grfnem:Variable rdf:ID="_6004ff54-a923-41b6-2a2c-85ed3d2171b1">
+                    <grfnem:var_name>TUPLE</grfnem:var_name>
+                    <grfnem:exp_node_type>VARIABLE</grfnem:exp_node_type>
+                    <grfnem:children rdf:parseType="Resource">
+                      <j.0:rest rdf:parseType="Resource">
+                        <j.0:first>
+                          <grfnem:Variable rdf:ID="cc42d440-87e8-261e-d140-30275d91dad1">
+                            <grfnem:var_name>integrator_state</grfnem:var_name>
+                            <grfnem:grfn_uid rdf:resource="#e005b860-51ef-1922-fe43-c49e149818d1"/>
+                            <grfnem:exp_node_type>VARIABLE</grfnem:exp_node_type>
+                            <rdf:type rdf:resource="http://sadl.org/GrFNExtractionModel.sadl#ExpNode"/>
+                          </grfnem:Variable>
+                        </j.0:first>
+                        <rdf:type rdf:nodeID="A0"/>
+                      </j.0:rest>
+                      <j.0:first>
+                        <grfnem:ExpNode rdf:ID="_1ab6fa94-36b1-1706-a603-52a2a86cde39">
+                          <grfnem:var_name>RETURN_VAL</grfnem:var_name>
+                          <grfnem:grfn_uid rdf:resource="#_4a84eb03-8d1f-d9b7-4d2b-9deb1beb3711"/>
+                          <grfnem:exp_node_type>VARIABLE</grfnem:exp_node_type>
+                          <rdf:type rdf:resource="http://sadl.org/GrFNExtractionModel.sadl#Variable"/>
+                        </grfnem:ExpNode>
+                      </j.0:first>
+                      <rdf:type rdf:nodeID="A0"/>
+                    </grfnem:children>
+                    <rdf:type rdf:resource="http://sadl.org/GrFNExtractionModel.sadl#ExpNode"/>
+                  </grfnem:Variable>
+                </grfnem:nodes>
+                <grfnem:nodes>
+                  <grfnem:ExpNode rdf:ID="c15c09cd-db77-1535-5984-45f4586b1c2d">
+                    <grfnem:exp_node_type>DEFINITION</grfnem:exp_node_type>
+                    <grfnem:children rdf:parseType="Resource">
+                      <j.0:rest rdf:parseType="Resource">
+                        <j.0:first>
+                          <grfnem:ExpNode rdf:ID="_42be3058-4aaa-7f93-5635-40377a7312cd">
+                            <grfnem:var_name>integrator_state</grfnem:var_name>
+                            <grfnem:grfn_uid rdf:resource="#e005b860-51ef-1922-fe43-c49e149818d1"/>
+                            <grfnem:exp_node_type>VARIABLE</grfnem:exp_node_type>
+                            <rdf:type rdf:resource="http://sadl.org/GrFNExtractionModel.sadl#Variable"/>
+                          </grfnem:ExpNode>
+                        </j.0:first>
+                        <rdf:type rdf:nodeID="A0"/>
+                      </j.0:rest>
+                      <j.0:first>
+                        <grfnem:ExpNode rdf:ID="_01519bea-feb3-d21c-f5d0-facebd4d1d34">
+                          <grfnem:var_name>RETURN_VAL</grfnem:var_name>
+                          <grfnem:grfn_uid rdf:resource="#_4a84eb03-8d1f-d9b7-4d2b-9deb1beb3711"/>
+                          <grfnem:exp_node_type>VARIABLE</grfnem:exp_node_type>
+                          <rdf:type rdf:resource="http://sadl.org/GrFNExtractionModel.sadl#Variable"/>
+                        </grfnem:ExpNode>
+                      </j.0:first>
+                      <rdf:type rdf:nodeID="A0"/>
+                    </grfnem:children>
+                  </grfnem:ExpNode>
+                </grfnem:nodes>
+                <grfnem:nodes rdf:resource="#_01519bea-feb3-d21c-f5d0-facebd4d1d34"/>
+                <grfnem:nodes>
+                  <grfnem:ExpNode rdf:ID="_239c2ffa-036c-3542-bb3e-fd71a2c9d5d9">
+                    <grfnem:operator>RETURN</grfnem:operator>
+                    <grfnem:exp_node_type>OPERATOR</grfnem:exp_node_type>
+                    <grfnem:children rdf:parseType="Resource">
+                      <j.0:first rdf:resource="#_6004ff54-a923-41b6-2a2c-85ed3d2171b1"/>
+                      <rdf:type rdf:nodeID="A0"/>
+                    </grfnem:children>
+                  </grfnem:ExpNode>
+                </grfnem:nodes>
+                <grfnem:nodes rdf:resource="#_1ab6fa94-36b1-1706-a603-52a2a86cde39"/>
+                <grfnem:data_type>integer</grfnem:data_type>
+                <rdf:type rdf:resource="http://sadl.org/GrFNExtractionModel.sadl#ExpressionTree"/>
+                <grfnem:uid>_3405095c-8a50-06c1-ec18-8efbd080e66e</grfnem:uid>
+                <grfnem:nodes>
+                  <grfnem:ExpNode rdf:ID="c5d0dddb-e6fd-6655-23ae-29b362e86fbc">
+                    <grfnem:exp_node_type>DEFINITION</grfnem:exp_node_type>
+                    <grfnem:children rdf:parseType="Resource">
+                      <j.0:rest rdf:parseType="Resource">
+                        <j.0:first rdf:resource="#_239c2ffa-036c-3542-bb3e-fd71a2c9d5d9"/>
+                        <rdf:type rdf:nodeID="A0"/>
+                      </j.0:rest>
+                      <j.0:first rdf:resource="#c15c09cd-db77-1535-5984-45f4586b1c2d"/>
+                      <rdf:type rdf:nodeID="A0"/>
+                    </grfnem:children>
+                  </grfnem:ExpNode>
+                </grfnem:nodes>
+                <grfnem:metadata>
+                  <grfnem:Metadata/>
+                </grfnem:metadata>
+                <grfnem:identifier>GE_simple_PI_controller::GE_simple_PI_controller.main.LOOP_0::plant_gain::-1</grfnem:identifier>
+                <grfnem:nodes rdf:resource="#_42be3058-4aaa-7f93-5635-40377a7312cd"/>
+                <grfnem:nodes rdf:resource="#cc42d440-87e8-261e-d140-30275d91dad1"/>
+              </grfnem:Variable>
+            </grfnem:nodes>
+          </grfnem:SubGraph>
+        </grfnem:parent>
+        <grfnem:scope>GE_simple_PI_controller</grfnem:scope>
+      </grfnem:SubGraph>
+    </grfnem:subgraphs>
+    <grfnem:hyper_edges>
+      <grfnem:HyperEdge>
+        <grfnem:function rdf:resource="#_17e0aa3c-0398-3ca8-ea7e-9d498c778ea6"/>
+        <grfnem:outputs rdf:resource="#eb2083e6-ce16-4dba-0ff1-8e0242af9fc3"/>
+      </grfnem:HyperEdge>
+    </grfnem:hyper_edges>
+    <grfnem:hyper_edges>
+      <grfnem:HyperEdge>
+        <grfnem:function rdf:resource="#_23a7711a-8133-2876-37eb-dcd9e87a1613"/>
+        <grfnem:outputs rdf:resource="#e443df78-9558-867f-5ba9-1faf7a024204"/>
+      </grfnem:HyperEdge>
+    </grfnem:hyper_edges>
+    <grfnem:hyper_edges>
+      <grfnem:HyperEdge>
+        <grfnem:function rdf:resource="#_31d0b664-0589-f877-9b02-52440950fd13"/>
+        <grfnem:inputs rdf:resource="#_8c1745a7-9a6a-5f92-cca7-4147f6be1f72"/>
+        <grfnem:inputs rdf:resource="#_38c1962e-9148-624f-eac1-c14f30e9c5cc"/>
+        <grfnem:outputs rdf:resource="#_1db53334-fb03-23a1-d576-d4155ec17dbe"/>
+      </grfnem:HyperEdge>
+    </grfnem:hyper_edges>
+    <grfnem:hyper_edges>
+      <grfnem:HyperEdge>
+        <grfnem:function>
+          <grfnem:Function rdf:ID="_5306f3f5-1516-6570-5b7c-709acb175a5a">
+            <grfnem:lambda>lambda RETURN_VAL,integrator_state:(RETURN_VAL,integrator_state)</grfnem:lambda>
+            <grfnem:ftype>INTERFACE</grfnem:ftype>
+            <grfnem:metadata>
+              <grfnem:Metadata/>
+            </grfnem:metadata>
+          </grfnem:Function>
+        </grfnem:function>
+        <grfnem:inputs>
+          <grfnem:Variable rdf:ID="a425799a-a905-d750-7e1e-a9c573581a81">
+            <grfnem:identifier>GE_simple_PI_controller::GE_simple_PI_controller.PI_calc::RETURN_VAL::-1</grfnem:identifier>
+            <grfnem:uid>a425799a-a905-d750-7e1e-a9c573581a81</grfnem:uid>
+            <grfnem:data_type>none</grfnem:data_type>
+            <grfnem:metadata>
+              <grfnem:Metadata/>
+            </grfnem:metadata>
+          </grfnem:Variable>
+        </grfnem:inputs>
+        <grfnem:inputs rdf:resource="#d3447490-96fd-35d0-adf2-0806e5214606"/>
+        <grfnem:outputs rdf:resource="#_964a870c-7c87-9b74-1d87-8f9f9cdf5a86"/>
+        <grfnem:outputs rdf:resource="#_30bcab0e-d857-0102-55d4-4936a1515607"/>
+      </grfnem:HyperEdge>
+    </grfnem:hyper_edges>
+    <grfnem:hyper_edges>
+      <grfnem:HyperEdge>
+        <grfnem:function rdf:resource="#_5487ce1e-af19-922a-d9b8-a714e61a441c"/>
+        <grfnem:inputs rdf:resource="#eb1167b3-67a9-c378-7c65-c1e582e2e662"/>
+        <grfnem:inputs rdf:resource="#e443df78-9558-867f-5ba9-1faf7a024204"/>
+        <grfnem:outputs rdf:resource="#_12e0c8b2-bad6-40fb-1948-8dec4f65d4d9"/>
+      </grfnem:HyperEdge>
+    </grfnem:hyper_edges>
+    <grfnem:hyper_edges>
+      <grfnem:HyperEdge>
+        <grfnem:inputs rdf:resource="#d480865f-9b38-fe80-3042-e325a28f5ab0"/>
+        <grfnem:inputs rdf:resource="#_1fdb8b32-06d5-99e8-12f1-75ffae3b16ec"/>
+        <grfnem:inputs rdf:resource="#_8c1745a7-9a6a-5f92-cca7-4147f6be1f72"/>
+        <grfnem:inputs rdf:resource="#_5129fb7c-6288-e1a5-cc45-782198a6416d"/>
+        <grfnem:inputs rdf:resource="#_1775336d-71ea-cd05-49a3-e80e966e1277"/>
+        <grfnem:outputs rdf:resource="#_11ebcd49-428a-1c22-d5fd-b76a19fbeb1d"/>
+        <grfnem:function rdf:resource="#_4d125e7f-a59c-ec98-126c-bc8f38884479"/>
+        <grfnem:inputs rdf:resource="#_30bcab0e-d857-0102-55d4-4936a1515607"/>
+        <grfnem:outputs rdf:resource="#_9edfa3da-6cf5-5b15-8b53-031d05d51433"/>
+        <grfnem:inputs rdf:resource="#b7d6467b-2f5a-522a-f87f-43fdf6062541"/>
+        <grfnem:outputs rdf:resource="#ade9b2b4-efdd-35f8-0fa3-4266ccfdba9b"/>
+      </grfnem:HyperEdge>
+    </grfnem:hyper_edges>
+    <grfnem:hyper_edges>
+      <grfnem:HyperEdge>
+        <grfnem:function rdf:resource="#_9a27d858-88c1-32ad-efbf-c19ee8f6cf32"/>
+        <grfnem:inputs rdf:resource="#_38018b47-b29a-8b06-daf6-6c5f2577bffa"/>
+        <grfnem:outputs rdf:resource="#_1fdb8b32-06d5-99e8-12f1-75ffae3b16ec"/>
+      </grfnem:HyperEdge>
+    </grfnem:hyper_edges>
+    <grfnem:hyper_edges>
+      <grfnem:HyperEdge>
+        <grfnem:outputs rdf:resource="#d450fe4a-ec4f-217b-b306-d1a8e5eeac76"/>
+        <grfnem:inputs rdf:resource="#_1775336d-71ea-cd05-49a3-e80e966e1277"/>
+        <grfnem:inputs rdf:resource="#_7d41e602-eece-328b-ff7b-118e820865d6"/>
+        <grfnem:inputs rdf:resource="#_4a84eb03-8d1f-d9b7-4d2b-9deb1beb3711"/>
+        <grfnem:outputs rdf:resource="#adc0da7a-16fe-baa0-11af-923d79fdef7c"/>
+        <grfnem:outputs>
+          <grfnem:ExpressionTree rdf:ID="_42930b33-a81a-d477-fb36-75b89cdeb3e6">
+            <grfnem:nodes>
+              <grfnem:ExpNode rdf:ID="_38afa5a8-fc3e-a554-9612-80b766a55dbc">
+                <grfnem:exp_node_type>DEFINITION</grfnem:exp_node_type>
+                <grfnem:children rdf:parseType="Resource">
+                  <j.0:rest rdf:parseType="Resource">
+                    <j.0:first>
+                      <grfnem:ExpNode rdf:ID="_21a43e4e-e92a-b22e-056f-bbb709b933e8">
+                        <grfnem:operator>RETURN</grfnem:operator>
+                        <grfnem:exp_node_type>OPERATOR</grfnem:exp_node_type>
+                        <grfnem:children rdf:parseType="Resource">
+                          <j.0:first>
+                            <grfnem:Variable rdf:ID="_80f50c8c-4bc1-10e0-9637-fca59f590ddc">
+                              <grfnem:var_name>TUPLE</grfnem:var_name>
+                              <grfnem:exp_node_type>VARIABLE</grfnem:exp_node_type>
+                              <grfnem:children rdf:parseType="Resource">
+                                <j.0:rest rdf:parseType="Resource">
+                                  <j.0:first>
+                                    <grfnem:ExpNode rdf:ID="_3f0e2335-648a-d137-a6a7-bd65f8b1532a">
+                                      <grfnem:var_name>plant_gain_0</grfnem:var_name>
+                                      <grfnem:grfn_uid rdf:resource="#_5a921187-19c7-8df4-8f4f-f31e78de5857"/>
+                                      <grfnem:exp_node_type>VARIABLE</grfnem:exp_node_type>
+                                      <rdf:type rdf:resource="http://sadl.org/GrFNExtractionModel.sadl#Variable"/>
+                                    </grfnem:ExpNode>
+                                  </j.0:first>
+                                  <rdf:type rdf:nodeID="A0"/>
+                                </j.0:rest>
+                                <j.0:first>
+                                  <grfnem:ExpNode rdf:ID="_4710998c-9fff-59be-e3cd-c0f129ff7e78">
+                                    <grfnem:var_name>plant_command_0</grfnem:var_name>
+                                    <grfnem:grfn_uid rdf:resource="#_5129fb7c-6288-e1a5-cc45-782198a6416d"/>
+                                    <grfnem:exp_node_type>VARIABLE</grfnem:exp_node_type>
+                                    <rdf:type rdf:resource="http://sadl.org/GrFNExtractionModel.sadl#Variable"/>
+                                  </grfnem:ExpNode>
+                                </j.0:first>
+                                <rdf:type rdf:nodeID="A0"/>
+                              </grfnem:children>
+                              <rdf:type rdf:resource="http://sadl.org/GrFNExtractionModel.sadl#ExpNode"/>
+                            </grfnem:Variable>
+                          </j.0:first>
+                          <rdf:type rdf:nodeID="A0"/>
+                        </grfnem:children>
+                      </grfnem:ExpNode>
+                    </j.0:first>
+                    <rdf:type rdf:nodeID="A0"/>
+                  </j.0:rest>
+                  <j.0:first>
+                    <grfnem:ExpNode rdf:ID="d7de8e58-2a9b-3c9a-197e-85e155250a6f">
+                      <grfnem:exp_node_type>DEFINITION</grfnem:exp_node_type>
+                      <grfnem:children rdf:parseType="Resource">
+                        <j.0:rest rdf:parseType="Resource">
+                          <j.0:first>
+                            <grfnem:ExpNode rdf:ID="_0db2d6f8-5d6b-a191-c6a7-7bb3dd871dcf">
+                              <grfnem:var_name>plant_gain_0</grfnem:var_name>
+                              <grfnem:grfn_uid rdf:resource="#_5a921187-19c7-8df4-8f4f-f31e78de5857"/>
+                              <grfnem:exp_node_type>VARIABLE</grfnem:exp_node_type>
+                              <rdf:type rdf:resource="http://sadl.org/GrFNExtractionModel.sadl#Variable"/>
+                            </grfnem:ExpNode>
+                          </j.0:first>
+                          <rdf:type rdf:nodeID="A0"/>
+                        </j.0:rest>
+                        <j.0:first>
+                          <grfnem:ExpNode rdf:ID="_98d124a9-39b7-cd21-bc50-d2346a7601de">
+                            <grfnem:var_name>plant_command_0</grfnem:var_name>
+                            <grfnem:grfn_uid rdf:resource="#_5129fb7c-6288-e1a5-cc45-782198a6416d"/>
+                            <grfnem:exp_node_type>VARIABLE</grfnem:exp_node_type>
+                            <rdf:type rdf:resource="http://sadl.org/GrFNExtractionModel.sadl#Variable"/>
+                          </grfnem:ExpNode>
+                        </j.0:first>
+                        <rdf:type rdf:nodeID="A0"/>
+                      </grfnem:children>
+                    </grfnem:ExpNode>
+                  </j.0:first>
+                  <rdf:type rdf:nodeID="A0"/>
+                </grfnem:children>
+              </grfnem:ExpNode>
+            </grfnem:nodes>
+            <grfnem:metadata>
+              <grfnem:Metadata/>
+            </grfnem:metadata>
+            <grfnem:uid>_42930b33-a81a-d477-fb36-75b89cdeb3e6</grfnem:uid>
+            <grfnem:nodes rdf:resource="#_3f0e2335-648a-d137-a6a7-bd65f8b1532a"/>
+            <grfnem:nodes rdf:resource="#_0db2d6f8-5d6b-a191-c6a7-7bb3dd871dcf"/>
+            <grfnem:data_type>integer</grfnem:data_type>
+            <grfnem:nodes rdf:resource="#_80f50c8c-4bc1-10e0-9637-fca59f590ddc"/>
+            <grfnem:nodes rdf:resource="#_98d124a9-39b7-cd21-bc50-d2346a7601de"/>
+            <rdf:type rdf:resource="http://sadl.org/GrFNExtractionModel.sadl#Variable"/>
+            <grfnem:nodes rdf:resource="#d7de8e58-2a9b-3c9a-197e-85e155250a6f"/>
+            <grfnem:nodes rdf:resource="#_21a43e4e-e92a-b22e-056f-bbb709b933e8"/>
+            <grfnem:nodes rdf:resource="#_4710998c-9fff-59be-e3cd-c0f129ff7e78"/>
+            <grfnem:identifier>GE_simple_PI_controller::GE_simple_PI_controller.PI_calc::Input_dmd::-1</grfnem:identifier>
+          </grfnem:ExpressionTree>
+        </grfnem:outputs>
+        <grfnem:inputs rdf:resource="#_5129fb7c-6288-e1a5-cc45-782198a6416d"/>
+        <grfnem:inputs rdf:resource="#e005b860-51ef-1922-fe43-c49e149818d1"/>
+        <grfnem:function>
+          <grfnem:Function rdf:ID="_0870e15c-2fcd-81b5-d24b-ace4307bf326">
+            <grfnem:lambda>lambda desired_output_0,sensed_output_0,Kp_M_0,Ki_M_0,time_step_0,integrator_state_0:(desired_output_0,sensed_output_0,Kp_M_0,Ki_M_0,time_step_0,integrator_state_0)</grfnem:lambda>
+            <grfnem:ftype>INTERFACE</grfnem:ftype>
+            <grfnem:metadata>
+              <grfnem:Metadata/>
+            </grfnem:metadata>
+          </grfnem:Function>
+        </grfnem:function>
+        <grfnem:outputs rdf:resource="#_2648ee38-e074-05eb-2156-63abc1f254b8"/>
+        <grfnem:outputs rdf:resource="#d67e55fd-642b-fa42-aef9-c00b8a64c1b9"/>
+        <grfnem:outputs rdf:resource="#_148b2758-d7ab-7928-09e4-69e6ec62b2c8"/>
+        <grfnem:inputs rdf:resource="#_247a8333-f7b0-b7d2-cda8-056c3d15eef7"/>
+      </grfnem:HyperEdge>
+    </grfnem:hyper_edges>
+    <grfnem:hyper_edges>
+      <grfnem:HyperEdge>
+        <grfnem:function rdf:resource="#fcbd04c3-4021-2ef7-cca5-a5a19e4d6e3c"/>
+        <grfnem:outputs rdf:resource="#_1846d424-c17c-6279-23c6-612f48268673"/>
+      </grfnem:HyperEdge>
+    </grfnem:hyper_edges>
+    <grfnem:hyper_edges>
+      <grfnem:HyperEdge>
+        <grfnem:function rdf:resource="#_5f3f5638-3870-1a14-b490-b6081dfc8352"/>
+        <grfnem:inputs rdf:resource="#_964a870c-7c87-9b74-1d87-8f9f9cdf5a86"/>
+        <grfnem:inputs rdf:resource="#_3405095c-8a50-06c1-ec18-8efbd080e66e"/>
+        <grfnem:outputs rdf:resource="#_6d16ee18-5521-16dd-2ba4-b180cb69ca38"/>
+        <grfnem:outputs rdf:resource="#c87a7463-19c1-6a0d-0feb-d845d0dfae43"/>
+      </grfnem:HyperEdge>
+    </grfnem:hyper_edges>
+    <grfnem:hyper_edges>
+      <grfnem:HyperEdge>
+        <grfnem:function rdf:resource="#_85776e9a-dd84-f39e-7154-5a137a1d5006"/>
+        <grfnem:outputs rdf:resource="#_8d723104-f773-83c1-3458-a748e9bb17bc"/>
+      </grfnem:HyperEdge>
+    </grfnem:hyper_edges>
+    <grfnem:subgraphs>
+      <grfnem:SubGraph rdf:ID="_2f120554-4a53-08cc-3dfa-bc08935ddd72">
+        <grfnem:nodes>
+          <grfnem:Variable rdf:ID="_52698a31-abab-4165-807e-2616acb15344">
+            <grfnem:var_name>PI_calc_RESULT</grfnem:var_name>
+            <grfnem:grfn_uid rdf:resource="#_8c1745a7-9a6a-5f92-cca7-4147f6be1f72"/>
+            <grfnem:exp_node_type>VARIABLE</grfnem:exp_node_type>
+            <rdf:type rdf:resource="http://sadl.org/GrFNExtractionModel.sadl#ExpNode"/>
+          </grfnem:Variable>
+        </grfnem:nodes>
+        <grfnem:nodes>
+          <grfnem:ExpNode rdf:ID="_1aaf6b5e-d4c9-e6bf-c037-a790466108d4">
+            <grfnem:exp_node_type>DEFINITION</grfnem:exp_node_type>
+            <grfnem:children rdf:parseType="Resource">
+              <j.0:rest rdf:parseType="Resource">
+                <j.0:first>
+                  <grfnem:ExpNode rdf:ID="_02a5dbf4-0da1-1fb8-d821-f6ac81efff7e">
+                    <grfnem:operator>RETURN</grfnem:operator>
+                    <grfnem:exp_node_type>OPERATOR</grfnem:exp_node_type>
+                    <grfnem:children rdf:parseType="Resource">
+                      <j.0:first rdf:resource="#_52698a31-abab-4165-807e-2616acb15344"/>
+                      <rdf:type rdf:nodeID="A0"/>
+                    </grfnem:children>
+                  </grfnem:ExpNode>
+                </j.0:first>
+                <rdf:type rdf:nodeID="A0"/>
+              </j.0:rest>
+              <j.0:first>
+                <grfnem:ExpNode rdf:ID="b6513782-b650-7653-efd9-e235bbd6f65f">
+                  <grfnem:exp_node_type>DEFINITION</grfnem:exp_node_type>
+                  <grfnem:children rdf:parseType="Resource">
+                    <j.0:first>
+                      <grfnem:Variable rdf:ID="c5b26f58-f7ad-5721-5214-f590da81b74a">
+                        <grfnem:var_name>PI_calc_RESULT</grfnem:var_name>
+                        <grfnem:grfn_uid rdf:resource="#_8c1745a7-9a6a-5f92-cca7-4147f6be1f72"/>
+                        <grfnem:exp_node_type>VARIABLE</grfnem:exp_node_type>
+                        <rdf:type rdf:resource="http://sadl.org/GrFNExtractionModel.sadl#ExpNode"/>
+                      </grfnem:Variable>
+                    </j.0:first>
+                    <rdf:type rdf:nodeID="A0"/>
+                  </grfnem:children>
+                </grfnem:ExpNode>
+              </j.0:first>
+              <rdf:type rdf:nodeID="A0"/>
+            </grfnem:children>
+          </grfnem:ExpNode>
+        </grfnem:nodes>
+        <grfnem:uid>_2f120554-4a53-08cc-3dfa-bc08935ddd72</grfnem:uid>
+        <grfnem:nodes rdf:resource="#d3447490-96fd-35d0-adf2-0806e5214606"/>
+        <grfnem:nodes rdf:resource="#c5b26f58-f7ad-5721-5214-f590da81b74a"/>
+        <grfnem:sg_type>FuncContainer</grfnem:sg_type>
+        <grfnem:nodes rdf:resource="#b6513782-b650-7653-efd9-e235bbd6f65f"/>
+        <grfnem:nodes rdf:resource="#d450fe4a-ec4f-217b-b306-d1a8e5eeac76"/>
+        <grfnem:nodes rdf:resource="#_5306f3f5-1516-6570-5b7c-709acb175a5a"/>
+        <grfnem:nodes>
+          <grfnem:Function rdf:ID="fb82860d-eabc-a8d0-b341-facdff0ac0f1">
+            <grfnem:lambda>lambda error,Kp_M,Ki_M,integrator_state: ((error * Kp_M) + (Ki_M * integrator_state))</grfnem:lambda>
+            <grfnem:ftype>ASSIGN</grfnem:ftype>
+            <grfnem:metadata>
+              <grfnem:Metadata/>
+            </grfnem:metadata>
+          </grfnem:Function>
+        </grfnem:nodes>
+        <grfnem:namespace>GE_simple_PI_controller</grfnem:namespace>
+        <grfnem:nodes rdf:resource="#adc0da7a-16fe-baa0-11af-923d79fdef7c"/>
+        <grfnem:nodes rdf:resource="#_02a5dbf4-0da1-1fb8-d821-f6ac81efff7e"/>
+        <grfnem:nodes>
+          <grfnem:Function rdf:ID="_37176e84-d977-e993-3c49-d76fcfc6e625">
+            <grfnem:lambda>lambda Input_dmd,Input_sensed: (Input_dmd - Input_sensed)</grfnem:lambda>
+            <grfnem:ftype>ASSIGN</grfnem:ftype>
+            <grfnem:metadata>
+              <grfnem:Metadata/>
+            </grfnem:metadata>
+          </grfnem:Function>
+        </grfnem:nodes>
+        <grfnem:nodes rdf:resource="#a425799a-a905-d750-7e1e-a9c573581a81"/>
+        <grfnem:nodes rdf:resource="#_46743741-9466-e472-6b5f-5241f323ca74"/>
+        <grfnem:nodes rdf:resource="#_148b2758-d7ab-7928-09e4-69e6ec62b2c8"/>
+        <grfnem:nodes rdf:resource="#d67e55fd-642b-fa42-aef9-c00b8a64c1b9"/>
+        <grfnem:nodes rdf:resource="#_2648ee38-e074-05eb-2156-63abc1f254b8"/>
+        <grfnem:parent rdf:resource="#d3fbf47a-7e5b-1e7f-9ca5-499d004ae545"/>
+        <grfnem:nodes rdf:resource="#_85940927-468f-f53d-864a-7a50b48d73f1"/>
+        <grfnem:nodes rdf:resource="#_0870e15c-2fcd-81b5-d24b-ace4307bf326"/>
+        <rdf:type rdf:resource="http://sadl.org/GrFNExtractionModel.sadl#ExpressionTree"/>
+        <grfnem:metadata>
+          <grfnem:Metadata/>
+        </grfnem:metadata>
+        <grfnem:scope>GE_simple_PI_controller</grfnem:scope>
+        <grfnem:nodes rdf:resource="#_42930b33-a81a-d477-fb36-75b89cdeb3e6"/>
+      </grfnem:SubGraph>
+    </grfnem:subgraphs>
+    <grfnem:hyper_edges>
+      <grfnem:HyperEdge>
+        <grfnem:outputs rdf:resource="#_4a84eb03-8d1f-d9b7-4d2b-9deb1beb3711"/>
+        <grfnem:outputs rdf:resource="#_247a8333-f7b0-b7d2-cda8-056c3d15eef7"/>
+        <grfnem:outputs rdf:resource="#e005b860-51ef-1922-fe43-c49e149818d1"/>
+        <grfnem:inputs rdf:resource="#_5a921187-19c7-8df4-8f4f-f31e78de5857"/>
+        <grfnem:function rdf:resource="#baf3897a-3e70-f16a-5548-5822de1b372a"/>
+        <grfnem:inputs rdf:resource="#e443df78-9558-867f-5ba9-1faf7a024204"/>
+        <grfnem:inputs rdf:resource="#f728b4fa-4248-5e3a-0a5d-2f346baa9455"/>
+        <grfnem:outputs rdf:resource="#_3405095c-8a50-06c1-ec18-8efbd080e66e"/>
+        <grfnem:inputs rdf:resource="#b5d32b16-6619-4cb1-d710-37d1b83e90ec"/>
+        <grfnem:outputs rdf:resource="#_1759edc3-72ae-2244-8b01-63c1cd9d2b7d"/>
+        <grfnem:inputs rdf:resource="#eb2083e6-ce16-4dba-0ff1-8e0242af9fc3"/>
+        <grfnem:outputs rdf:resource="#_38c1962e-9148-624f-eac1-c14f30e9c5cc"/>
+        <grfnem:inputs rdf:resource="#_12e0c8b2-bad6-40fb-1948-8dec4f65d4d9"/>
+        <grfnem:outputs rdf:resource="#_101fbccc-ded7-33e8-b421-eaeb534097ca"/>
+        <grfnem:inputs rdf:resource="#b4862b21-fb97-d435-8856-1712e8e5216a"/>
+        <grfnem:outputs rdf:resource="#_552f233a-8c25-166a-1ff3-9849b4e1357d"/>
+        <grfnem:outputs rdf:resource="#_7d41e602-eece-328b-ff7b-118e820865d6"/>
+        <grfnem:inputs rdf:resource="#_1846d424-c17c-6279-23c6-612f48268673"/>
+        <grfnem:inputs rdf:resource="#_8d723104-f773-83c1-3458-a748e9bb17bc"/>
+      </grfnem:HyperEdge>
+    </grfnem:hyper_edges>
+    <grfnem:hyper_edges>
+      <grfnem:HyperEdge>
+        <grfnem:function rdf:resource="#a3f2c9bf-9c63-16b9-50f2-44556f25e2a2"/>
+        <grfnem:outputs rdf:resource="#_5a921187-19c7-8df4-8f4f-f31e78de5857"/>
+      </grfnem:HyperEdge>
+    </grfnem:hyper_edges>
+    <grfnem:hyper_edges>
+      <grfnem:HyperEdge>
+        <grfnem:function rdf:resource="#_37176e84-d977-e993-3c49-d76fcfc6e625"/>
+        <grfnem:inputs rdf:resource="#_42930b33-a81a-d477-fb36-75b89cdeb3e6"/>
+        <grfnem:inputs rdf:resource="#adc0da7a-16fe-baa0-11af-923d79fdef7c"/>
+        <grfnem:outputs rdf:resource="#_85940927-468f-f53d-864a-7a50b48d73f1"/>
+      </grfnem:HyperEdge>
+    </grfnem:hyper_edges>
+    <grfnem:date_created rdf:datatype="http://www.w3.org/2001/XMLSchema#dateTime"
+    >2021-05-10T00:00:00-04:00</grfnem:date_created>
+    <grfnem:hyper_edges>
+      <grfnem:HyperEdge>
+        <grfnem:inputs rdf:resource="#d480865f-9b38-fe80-3042-e325a28f5ab0"/>
+        <grfnem:outputs rdf:resource="#_8c1745a7-9a6a-5f92-cca7-4147f6be1f72"/>
+        <grfnem:inputs rdf:resource="#_552f233a-8c25-166a-1ff3-9849b4e1357d"/>
+        <grfnem:inputs rdf:resource="#_30bcab0e-d857-0102-55d4-4936a1515607"/>
+        <grfnem:inputs rdf:resource="#_101fbccc-ded7-33e8-b421-eaeb534097ca"/>
+        <grfnem:function rdf:resource="#_0fa07a3f-2e29-5065-6fa2-31e959acdd98"/>
+        <grfnem:outputs rdf:resource="#_5129fb7c-6288-e1a5-cc45-782198a6416d"/>
+        <grfnem:inputs rdf:resource="#_1759edc3-72ae-2244-8b01-63c1cd9d2b7d"/>
+        <grfnem:inputs rdf:resource="#_1fdb8b32-06d5-99e8-12f1-75ffae3b16ec"/>
+        <grfnem:outputs rdf:resource="#_1775336d-71ea-cd05-49a3-e80e966e1277"/>
+      </grfnem:HyperEdge>
+    </grfnem:hyper_edges>
+    <grfnem:hyper_edges>
+      <grfnem:HyperEdge>
+        <grfnem:function rdf:resource="#ba26d851-35e8-579a-7aaf-0e891fb797fa"/>
+        <grfnem:inputs rdf:resource="#_1db53334-fb03-23a1-d576-d4155ec17dbe"/>
+        <grfnem:outputs rdf:resource="#b7d6467b-2f5a-522a-f87f-43fdf6062541"/>
+      </grfnem:HyperEdge>
+    </grfnem:hyper_edges>
+    <grfnem:hyper_edges>
+      <grfnem:HyperEdge>
+        <grfnem:function rdf:resource="#_259f4329-e6f4-590b-9a16-4106cf6a659e"/>
+        <grfnem:outputs rdf:resource="#b4862b21-fb97-d435-8856-1712e8e5216a"/>
+      </grfnem:HyperEdge>
+    </grfnem:hyper_edges>
+    <grfnem:hyper_edges>
+      <grfnem:HyperEdge>
+        <grfnem:function rdf:resource="#f7c1bd87-4da5-e709-d471-3d60c8a70639"/>
+        <grfnem:outputs rdf:resource="#eb1167b3-67a9-c378-7c65-c1e582e2e662"/>
+      </grfnem:HyperEdge>
+    </grfnem:hyper_edges>
+    <grfnem:hyper_edges>
+      <grfnem:HyperEdge>
+        <grfnem:function rdf:resource="#a25b59fd-92e8-e269-d12e-cbc40b9475b1"/>
+        <grfnem:inputs rdf:resource="#_6d16ee18-5521-16dd-2ba4-b180cb69ca38"/>
+        <grfnem:inputs rdf:resource="#c87a7463-19c1-6a0d-0feb-d845d0dfae43"/>
+        <grfnem:outputs rdf:resource="#_38018b47-b29a-8b06-daf6-6c5f2577bffa"/>
+      </grfnem:HyperEdge>
+    </grfnem:hyper_edges>
+    <grfnem:subgraphs rdf:resource="#e3e70682-c209-4cac-629f-6fbed82c07cd"/>
+    <grfnem:hyper_edges>
+      <grfnem:HyperEdge>
+        <grfnem:function rdf:resource="#fb82860d-eabc-a8d0-b341-facdff0ac0f1"/>
+        <grfnem:inputs rdf:resource="#_85940927-468f-f53d-864a-7a50b48d73f1"/>
+        <grfnem:inputs rdf:resource="#_2648ee38-e074-05eb-2156-63abc1f254b8"/>
+        <grfnem:inputs rdf:resource="#_148b2758-d7ab-7928-09e4-69e6ec62b2c8"/>
+        <grfnem:inputs rdf:resource="#d3447490-96fd-35d0-adf2-0806e5214606"/>
+        <grfnem:outputs rdf:resource="#a425799a-a905-d750-7e1e-a9c573581a81"/>
+      </grfnem:HyperEdge>
+    </grfnem:hyper_edges>
+    <grfnem:subgraphs rdf:resource="#d3fbf47a-7e5b-1e7f-9ca5-499d004ae545"/>
+    <grfnem:hyper_edges>
+      <grfnem:HyperEdge>
+        <grfnem:function rdf:resource="#a0116be5-ab0c-1681-c8f8-e3d0d3290a4c"/>
+        <grfnem:outputs rdf:resource="#b5d32b16-6619-4cb1-d710-37d1b83e90ec"/>
+      </grfnem:HyperEdge>
+    </grfnem:hyper_edges>
+    <grfnem:hyper_edges>
+      <grfnem:HyperEdge>
+        <grfnem:function rdf:resource="#_176ea1b1-6426-4cd5-1ea4-5cd69371a71f"/>
+        <grfnem:inputs rdf:resource="#_8c1745a7-9a6a-5f92-cca7-4147f6be1f72"/>
+        <grfnem:outputs rdf:resource="#d480865f-9b38-fe80-3042-e325a28f5ab0"/>
+      </grfnem:HyperEdge>
+    </grfnem:hyper_edges>
+  </grfnem:GrFN>
+</rdf:RDF>

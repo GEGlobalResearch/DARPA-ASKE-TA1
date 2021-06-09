@@ -1,0 +1,62 @@
+<rdf:RDF
+    xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+    xmlns:sadllistmodel="http://sadl.org/sadllistmodel#"
+    xmlns="http://aske.ge.com/test_grfn_json#"
+    xmlns:owl="http://www.w3.org/2002/07/owl#"
+    xmlns:sadlimplicitmodel="http://sadl.org/sadlimplicitmodel#"
+    xmlns:grfnem="http://sadl.org/GrFNExtractionModel.sadl#"
+    xmlns:rdfs="http://www.w3.org/2000/01/rdf-schema#"
+    xmlns:xsd="http://www.w3.org/2001/XMLSchema#"
+  xml:base="http://aske.ge.com/test_grfn_json">
+  <owl:Ontology rdf:about="http://aske.ge.com/test_grfn_json">
+    <owl:imports rdf:resource="http://sadl.org/sadllistmodel"/>
+    <owl:imports rdf:resource="http://sadl.org/sadlimplicitmodel"/>
+    <owl:imports rdf:resource="http://sadl.org/GrFNExtractionModel.sadl"/>
+    <rdfs:comment xml:lang="en">This ontology was created by extraction from GrFN json by the GraSEN GrFNModelExtractor.</rdfs:comment>
+  </owl:Ontology>
+  <grfnem:GrFN rdf:ID="ebe21368-98c7-5205-1e01-a934402d0baf">
+    <grfnem:subgraphs>
+      <grfnem:SubGraph rdf:ID="_31d0b664-0589-f877-9b02-52440950fd13">
+        <grfnem:namespace>GE_simple_PI_controller</grfnem:namespace>
+        <grfnem:scope>GE_simple_PI_controller</grfnem:scope>
+        <grfnem:sg_type>FuncContainer</grfnem:sg_type>
+        <grfnem:uid>_31d0b664-0589-f877-9b02-52440950fd13</grfnem:uid>
+      </grfnem:SubGraph>
+    </grfnem:subgraphs>
+    <grfnem:hyper_edges>
+      <grfnem:HyperEdge>
+        <grfnem:outputs>
+          <grfnem:Variable rdf:ID="_1846d424-c17c-6279-23c6-612f48268673"/>
+        </grfnem:outputs>
+        <grfnem:inputs>
+          <grfnem:Variable rdf:ID="eb1167b3-67a9-c378-7c65-c1e582e2e662"/>
+        </grfnem:inputs>
+        <grfnem:inputs>
+          <grfnem:Variable rdf:ID="f728b4fa-4248-5e3a-0a5d-2f346baa9455">
+            <grfnem:metadata>
+              <grfnem:Metadata>
+                <grfnem:line_begin rdf:datatype="http://www.w3.org/2001/XMLSchema#long"
+                >8</grfnem:line_begin>
+              </grfnem:Metadata>
+            </grfnem:metadata>
+            <grfnem:uid>f728b4fa-4248-5e3a-0a5d-2f346baa9455</grfnem:uid>
+            <grfnem:identifier>GE_simple_PI_controller::GE_simple_PI_controller.PI_calc::Input_dmd::-1</grfnem:identifier>
+          </grfnem:Variable>
+        </grfnem:inputs>
+        <grfnem:function>
+          <grfnem:Function rdf:ID="ba26d851-35e8-579a-7aaf-0e891fb797fa">
+            <grfnem:metadata>
+              <grfnem:Metadata>
+                <grfnem:line_begin rdf:datatype="http://www.w3.org/2001/XMLSchema#long"
+                >10</grfnem:line_begin>
+              </grfnem:Metadata>
+            </grfnem:metadata>
+            <grfnem:ftype>ASSIGN</grfnem:ftype>
+            <grfnem:lambda>lambda Input_dmd,Input_sensed: (Input_dmd - Input_sensed)</grfnem:lambda>
+          </grfnem:Function>
+        </grfnem:function>
+      </grfnem:HyperEdge>
+    </grfnem:hyper_edges>
+    <grfnem:date_created>2021-05-14</grfnem:date_created>
+  </grfnem:GrFN>
+</rdf:RDF>

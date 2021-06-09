@@ -1,0 +1,6 @@
+# Jena Rule file for default values, level 0
+# Created by the JenaAugmentedTranslator
+
+@prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+
+[http://sadl.imp/testsadlide/testdefaults#Thingy_dp_default_lvl0: (?i rdf:type http://sadl.imp/testsadlide/testdefaults#Thingy), noValue(?i,http://sadl.imp/testsadlide/testdefaults#dp) -> (?i http://sadl.imp/testsadlide/testdefaults#dp '1'^^http://www.w3.org/2001/XMLSchema#int)]
