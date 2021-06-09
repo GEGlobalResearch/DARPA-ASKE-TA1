@@ -12,14 +12,12 @@
   <artifactId>com.ge.research.sadl.darpa.aske.dialog.ide</artifactId>
   <packaging>eclipse-plugin</packaging>
 
-  <name>DARPA-ASKE IDE</name>
-
   <build>
     <plugins>
+      <!-- Compile Xtend sources -->
       <plugin>
         <groupId>org.eclipse.xtend</groupId>
         <artifactId>xtend-maven-plugin</artifactId>
-        <version>${xtextVersion}</version>
       </plugin>
     </plugins>
   </build>

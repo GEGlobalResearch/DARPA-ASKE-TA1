@@ -12,76 +12,25 @@
   <artifactId>com.ge.research.sadl.darpa.aske.dialog</artifactId>
   <packaging>eclipse-plugin</packaging>
 
-  <name>DARPA-ASKE Core</name>
-
   <build>
     <plugins>
+      <!-- Generate META-INF/services -->
       <plugin>
         <groupId>eu.somatik.serviceloader-maven-plugin</groupId>
         <artifactId>serviceloader-maven-plugin</artifactId>
-        <version>1.1.0</version>
         <configuration>
           <services>
             <param>com.ge.research.sadl.processing.IModelProcessor</param>
             <param>com.ge.research.sadl.processing.ISadlImplicitModelFragmentProvider</param>
           </services>
         </configuration>
-        <executions>
-          <execution>
-            <goals>
-              <goal>generate</goal>
-            </goals>
-          </execution>
-        </executions>
       </plugin>
-      <plugin>
-        <groupId>org.apache.maven.plugins</groupId>
-        <artifactId>maven-clean-plugin</artifactId>
-        <configuration>
-          <filesets combine.children="append">
-            <fileset>
-              <directory>${basedir}/../com.ge.research.sadl.darpa.aske.dialog/src-gen/</directory>
-              <includes>
-                <include>**/*</include>
-              </includes>
-            </fileset>
-            <fileset>
-              <directory>${basedir}/../com.ge.research.sadl.darpa.aske.dialog.tests/src-gen/</directory>
-              <includes>
-                <include>**/*</include>
-              </includes>
-            </fileset>
-            <fileset>
-              <directory>${basedir}/../com.ge.research.sadl.darpa.aske.dialog.ide/src-gen/</directory>
-              <includes>
-                <include>**/*</include>
-              </includes>
-            </fileset>
-            <fileset>
-              <directory>${basedir}/../com.ge.research.sadl.darpa.aske.dialog.ui/src-gen/</directory>
-              <includes>
-                <include>**/*</include>
-              </includes>
-            </fileset>
-            <fileset>
-              <directory>${basedir}/../com.ge.research.sadl.darpa.aske.dialog.ui.tests/src-gen/</directory>
-              <includes>
-                <include>**/*</include>
-              </includes>
-            </fileset>
-            <fileset>
-              <directory>${basedir}/model/generated/</directory>
-            </fileset>
-          </filesets>
-        </configuration>
-      </plugin>
+      <!-- Generate additional files -->
       <plugin>
         <groupId>org.codehaus.mojo</groupId>
         <artifactId>exec-maven-plugin</artifactId>
-        <version>1.4.0</version>
         <configuration>
           <mainClass>org.eclipse.emf.mwe2.launch.runtime.Mwe2Launcher</mainClass>
-          <classpathScope>compile</classpathScope>
           <arguments>
             <argument>/${project.basedir}/src/com/ge/research/sadl/darpa/aske/GenerateDialog.mwe2</argument>
             <argument>-p</argument>
@@ -89,58 +38,18 @@
             <argument>toBeScanned1=.</argument>
             <argument>toBeScanned2=.</argument>
           </arguments>
+          <classpathScope>compile</classpathScope>
           <includePluginDependencies>true</includePluginDependencies>
+          <!-- https://bugs.eclipse.org/bugs/show_bug.cgi?id=475098#c3 -->
           <cleanupDaemonThreads>false</cleanupDaemonThreads>
-          <!-- see https://bugs.eclipse.org/bugs/show_bug.cgi?id=475098#c3 -->
         </configuration>
-        <dependencies>
-          <dependency>
-            <groupId>com.ge.research.sadl</groupId>
-            <artifactId>com.ge.research.sadl.xtextgenerator</artifactId>
-            <version>${sadlVersion}</version>
-          </dependency>
-          <dependency>
-            <groupId>org.eclipse.emf</groupId>
-            <artifactId>org.eclipse.emf.mwe2.launch</artifactId>
-            <version>${mwe2Version}</version>
-          </dependency>
-          <dependency>
-            <groupId>org.eclipse.xtext</groupId>
-            <artifactId>org.eclipse.xtext.common.types</artifactId>
-            <version>${xtextVersion}</version>
-          </dependency>
-          <dependency>
-            <groupId>org.eclipse.xtext</groupId>
-            <artifactId>org.eclipse.xtext.xbase</artifactId>
-            <version>${xtextVersion}</version>
-          </dependency>
-          <dependency>
-            <groupId>org.eclipse.xtext</groupId>
-            <artifactId>org.eclipse.xtext.xtext.generator</artifactId>
-            <version>${xtextVersion}</version>
-          </dependency>
-          <dependency>
-            <groupId>org.eclipse.xtext</groupId>
-            <artifactId>xtext-antlr-generator</artifactId>
-            <version>2.1.1</version>
-          </dependency>
-        </dependencies>
-        <executions>
-          <execution>
-            <?m2e ignore?>
-            <id>mwe2Launcher</id>
-            <goals>
-              <goal>java</goal>
-            </goals>
-            <phase>generate-sources</phase>
-          </execution>
-        </executions>
       </plugin>
+      <!-- Compile Xtend sources -->
       <plugin>
         <groupId>org.eclipse.xtend</groupId>
         <artifactId>xtend-maven-plugin</artifactId>
-        <version>${xtextVersion}</version>
       </plugin>
     </plugins>
   </build>
+
 </project>

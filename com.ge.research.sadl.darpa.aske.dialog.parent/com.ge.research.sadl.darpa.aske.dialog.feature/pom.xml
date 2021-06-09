@@ -12,6 +12,4 @@
   <artifactId>com.ge.research.sadl.darpa.aske.dialog.feature</artifactId>
   <packaging>eclipse-feature</packaging>
 
-  <name>DARPA-ASKE Eclipse Feature</name>
-
 </project>
