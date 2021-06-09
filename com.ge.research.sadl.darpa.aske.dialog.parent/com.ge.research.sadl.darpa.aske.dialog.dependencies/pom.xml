@@ -12,6 +12,4 @@
   <artifactId>com.ge.research.sadl.darpa.aske.dialog.dependencies</artifactId>
   <packaging>eclipse-plugin</packaging>
 
-  <name>DARPA-ASKE Dependencies</name>
-
 </project>
