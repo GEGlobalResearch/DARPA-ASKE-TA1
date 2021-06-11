@@ -3,11 +3,13 @@
      xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
   <modelVersion>4.0.0</modelVersion>
 
+  <!-- Define ourselves -->
   <groupId>com.ge.research.sadl.darpa.aske.dialog</groupId>
   <artifactId>com.ge.research.sadl.darpa.aske.dialog.parent</artifactId>
   <version>1.1.0-SNAPSHOT</version>
   <packaging>pom</packaging>
 
+  <!-- Build ourselves -->
   <modules>
     <module>com.ge.research.sadl.darpa.aske.dialog</module>
     <module>com.ge.research.sadl.darpa.aske.dialog.dependencies</module>
@@ -19,30 +21,30 @@
     <module>com.ge.research.sadl.darpa.aske.dialog.update</module>
   </modules>
 
-  <!-- Set all properties here -->
+  <!-- Set all properties in one place -->
   <properties>
-    <dep.mwe2.version>2.12.0</dep.mwe2.version>
-    <dep.sadl.version>3.5.0-SNAPSHOT</dep.sadl.version>
-    <dep.surefire.version>3.0.0-M5</dep.surefire.version>
-    <dep.tycho.version>2.3.0</dep.tycho.version>
-    <dep.xtext-antlr.version>2.1.1</dep.xtext-antlr.version>
-    <dep.xtext.version>2.24.0</dep.xtext.version>
     <maven.compiler.showDeprecation>true</maven.compiler.showDeprecation>
     <maven.compiler.showWarnings>true</maven.compiler.showWarnings>
     <maven.compiler.source>1.8</maven.compiler.source>
     <maven.compiler.target>1.8</maven.compiler.target>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
+    <version.mwe2>2.12.0</version.mwe2>
+    <version.sadl>3.5.0-SNAPSHOT</version.sadl>
+    <version.surefire>3.0.0-M5</version.surefire>
+    <version.tycho>2.3.0</version.tycho>
+    <version.xtext>2.24.0</version.xtext>
+    <version.xtext-antlr>2.1.1</version.xtext-antlr>
   </properties>
 
-  <!-- Set all dependency versions here -->
+  <!-- Set all dependency versions in one place -->
   <dependencyManagement>
     <dependencies>
       <!-- Import Xtext dependencies from Xtext BOM -->
       <dependency>
         <groupId>org.eclipse.xtext</groupId>
         <artifactId>xtext-dev-bom</artifactId>
-        <version>${dep.xtext.version}</version>
+        <version>${version.xtext}</version>
         <type>pom</type>
         <scope>import</scope>
       </dependency>
@@ -50,7 +52,7 @@
   </dependencyManagement>
 
   <build>
-    <!-- Set all plugin versions here -->
+    <!-- Set all plugin versions in one place -->
     <pluginManagement>
       <plugins>
         <plugin>
@@ -158,7 +160,7 @@
         <plugin>
           <groupId>org.apache.maven.plugins</groupId>
           <artifactId>maven-failsafe-plugin</artifactId>
-          <version>${dep.surefire.version}</version>
+          <version>${version.surefire}</version>
           <configuration>
             <argLine>-Dfile.encoding=${project.build.sourceEncoding}</argLine>
           </configuration>
@@ -199,11 +201,12 @@
         <plugin>
           <groupId>org.apache.maven.plugins</groupId>
           <artifactId>maven-surefire-plugin</artifactId>
-          <version>${dep.surefire.version}</version>
+          <version>${version.surefire}</version>
           <configuration>
             <argLine>-Dfile.encoding=${project.build.sourceEncoding}</argLine>
           </configuration>
         </plugin>
+        <!-- Define classpath and configuration needed to run Mwe2Launcher -->
         <plugin>
           <groupId>org.codehaus.mojo</groupId>
           <artifactId>exec-maven-plugin</artifactId>
@@ -212,32 +215,32 @@
             <dependency>
               <groupId>com.ge.research.sadl</groupId>
               <artifactId>com.ge.research.sadl.log4j.conf</artifactId>
-              <version>${dep.sadl.version}</version>
+              <version>${version.sadl}</version>
             </dependency>
             <dependency>
               <groupId>com.ge.research.sadl</groupId>
               <artifactId>com.ge.research.sadl.xtextgenerator</artifactId>
-              <version>${dep.sadl.version}</version>
+              <version>${version.sadl}</version>
             </dependency>
             <dependency>
               <groupId>org.eclipse.emf</groupId>
               <artifactId>org.eclipse.emf.mwe2.launch</artifactId>
-              <version>${dep.mwe2.version}</version>
+              <version>${version.mwe2}</version>
             </dependency>
             <dependency>
               <groupId>org.eclipse.xtext</groupId>
               <artifactId>org.eclipse.xtext.common.types</artifactId>
-              <version>${dep.xtext.version}</version>
+              <version>${version.xtext}</version>
             </dependency>
             <dependency>
               <groupId>org.eclipse.xtext</groupId>
               <artifactId>org.eclipse.xtext.xtext.generator</artifactId>
-              <version>${dep.xtext.version}</version>
+              <version>${version.xtext}</version>
             </dependency>
             <dependency>
               <groupId>org.eclipse.xtext</groupId>
               <artifactId>xtext-antlr-generator</artifactId>
-              <version>${dep.xtext-antlr.version}</version>
+              <version>${version.xtext-antlr}</version>
             </dependency>
           </dependencies>
           <executions>
@@ -251,6 +254,7 @@
             </execution>
           </executions>
         </plugin>
+        <!-- Goals: mvn -N versions:display-{dependency,plugin,property}-updates -->
         <plugin>
           <groupId>org.codehaus.mojo</groupId>
           <artifactId>versions-maven-plugin</artifactId>
@@ -259,7 +263,7 @@
         <plugin>
           <groupId>org.eclipse.tycho</groupId>
           <artifactId>target-platform-configuration</artifactId>
-          <version>${dep.tycho.version}</version>
+          <version>${version.tycho}</version>
           <configuration>
             <environments>
               <environment>
@@ -283,7 +287,7 @@
               <artifact>
                 <groupId>com.ge.research.sadl</groupId>
                 <artifactId>com.ge.research.sadl.target</artifactId>
-                <version>${dep.sadl.version}</version>
+                <version>${version.sadl}</version>
               </artifact>
             </target>
           </configuration>
@@ -291,7 +295,7 @@
         <plugin>
           <groupId>org.eclipse.tycho</groupId>
           <artifactId>tycho-compiler-plugin</artifactId>
-          <version>${dep.tycho.version}</version>
+          <version>${version.tycho}</version>
           <configuration>
             <compilerArgument>-err:-forbidden</compilerArgument>
             <useProjectSettings>false</useProjectSettings>
@@ -300,13 +304,13 @@
         <plugin>
           <groupId>org.eclipse.tycho</groupId>
           <artifactId>tycho-maven-plugin</artifactId>
-          <version>${dep.tycho.version}</version>
+          <version>${version.tycho}</version>
           <extensions>true</extensions>
         </plugin>
         <plugin>
           <groupId>org.eclipse.tycho</groupId>
           <artifactId>tycho-p2-director-plugin</artifactId>
-          <version>${dep.tycho.version}</version>
+          <version>${version.tycho}</version>
           <executions>
             <execution>
               <id>default-materialize-products</id>
@@ -325,7 +329,7 @@
         <plugin>
           <groupId>org.eclipse.tycho</groupId>
           <artifactId>tycho-p2-plugin</artifactId>
-          <version>${dep.tycho.version}</version>
+          <version>${version.tycho}</version>
           <executions>
             <execution>
               <id>default-p2-metadata</id>
@@ -339,12 +343,12 @@
         <plugin>
           <groupId>org.eclipse.tycho</groupId>
           <artifactId>tycho-p2-publisher-plugin</artifactId>
-          <version>${dep.tycho.version}</version>
+          <version>${version.tycho}</version>
         </plugin>
         <plugin>
           <groupId>org.eclipse.tycho</groupId>
           <artifactId>tycho-p2-repository-plugin</artifactId>
-          <version>${dep.tycho.version}</version>
+          <version>${version.tycho}</version>
           <configuration>
             <includeAllDependencies>true</includeAllDependencies>
           </configuration>
@@ -352,7 +356,7 @@
         <plugin>
           <groupId>org.eclipse.tycho</groupId>
           <artifactId>tycho-packaging-plugin</artifactId>
-          <version>${dep.tycho.version}</version>
+          <version>${version.tycho}</version>
           <configuration>
             <!-- Replace SNAPSHOT version when packaging the final product -->
             <finalName>${project.artifactId}_${unqualifiedVersion}.${buildQualifier}</finalName>
@@ -361,7 +365,7 @@
         <plugin>
           <groupId>org.eclipse.tycho</groupId>
           <artifactId>tycho-source-plugin</artifactId>
-          <version>${dep.tycho.version}</version>
+          <version>${version.tycho}</version>
           <executions>
             <execution>
               <id>default-plugin-source</id>
@@ -377,7 +381,7 @@
         <plugin>
           <groupId>org.eclipse.tycho</groupId>
           <artifactId>tycho-surefire-plugin</artifactId>
-          <version>${dep.tycho.version}</version>
+          <version>${version.tycho}</version>
           <configuration>
             <failIfNoTests>false</failIfNoTests>
           </configuration>
@@ -385,7 +389,7 @@
         <plugin>
           <groupId>org.eclipse.xtend</groupId>
           <artifactId>xtend-maven-plugin</artifactId>
-          <version>${dep.xtext.version}</version>
+          <version>${version.xtext}</version>
           <configuration>
             <outputDirectory>${basedir}/xtend-gen</outputDirectory>
             <testOutputDirectory>${basedir}/xtend-gen</testOutputDirectory>
@@ -401,18 +405,6 @@
               <id>default-xtend-install-debug-info</id>
               <goals>
                 <goal>xtend-install-debug-info</goal>
-              </goals>
-            </execution>
-            <execution>
-              <id>default-testCompile</id>
-              <goals>
-                <goal>testCompile</goal>
-              </goals>
-            </execution>
-            <execution>
-              <id>default-xtend-test-install-debug-info</id>
-              <goals>
-                <goal>xtend-test-install-debug-info</goal>
               </goals>
             </execution>
           </executions>
@@ -436,11 +428,10 @@
         <groupId>org.eclipse.tycho</groupId>
         <artifactId>target-platform-configuration</artifactId>
       </plugin>
-      <!-- Build OSGI bundles -->
+      <!-- Build Eclipse bundles with Tycho -->
       <plugin>
         <groupId>org.eclipse.tycho</groupId>
         <artifactId>tycho-maven-plugin</artifactId>
-        <extensions>true</extensions>
       </plugin>
     </plugins>
   </build>
