@@ -214,11 +214,6 @@
           <dependencies>
             <dependency>
               <groupId>com.ge.research.sadl</groupId>
-              <artifactId>com.ge.research.sadl.log4j.conf</artifactId>
-              <version>${version.sadl}</version>
-            </dependency>
-            <dependency>
-              <groupId>com.ge.research.sadl</groupId>
               <artifactId>com.ge.research.sadl.xtextgenerator</artifactId>
               <version>${version.sadl}</version>
             </dependency>
