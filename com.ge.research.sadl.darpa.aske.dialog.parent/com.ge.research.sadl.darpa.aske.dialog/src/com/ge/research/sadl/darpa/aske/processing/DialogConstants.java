@@ -70,10 +70,6 @@ public class DialogConstants {
 	public static final String CODE_EXTRACTION_MODEL_PREFIX = "cem";
 	public static final String CODE_EXTRACTION_MODEL_SERIALIZATION_PROPERTY_URI = CODE_EXTRACTION_MODEL_URI + "#serialization";
 
-	public static final String GRFN_EXTRACTION_MODEL_URI = "http://sadl.org/GrFNExtractionModel.sadl";
-	public static final String GRFN_EXTRACTION_MODEL_PREFIX = "grfnem";
-
-	
 	public static final String PYTHON_LANGUAGE = "Python";
 	public static final String TF_PYTHON_LANGUAGE = "Python-TF";
 	public static final String NUMPY_PYTHON_LANGUAGE = "Python-NumPy";

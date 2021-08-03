@@ -65,6 +65,8 @@ public interface IModelFromCodeExtractor {
 
 	IConfigurationManagerForIDE getCodeModelConfigMgr();
 
+	void setCodeModelConfigMgr(IConfigurationManagerForIDE codeMetaModelConfigMgr);
+	
 	boolean process(String inputIdentifier, String content, String modelName, String modelPrefix) throws ConfigurationException, IOException;
 
 	String getCodeModelName();

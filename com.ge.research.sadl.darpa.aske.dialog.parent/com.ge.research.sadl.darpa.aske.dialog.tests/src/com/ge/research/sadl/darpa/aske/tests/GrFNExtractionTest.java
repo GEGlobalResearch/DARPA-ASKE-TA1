@@ -8,19 +8,22 @@ import static org.junit.Assert.assertTrue;
 import java.io.File;
 import java.io.IOException;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
-import org.apache.jena.ontology.OntModel;
+//import org.apache.jena.ontology.OntModel;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.ge.research.sadl.builder.ConfigurationManagerForIdeFactory;
-import com.ge.research.sadl.builder.IConfigurationManagerForIDE;
-import com.ge.research.sadl.darpa.aske.curation.AnswerCurationManager;
-import com.ge.research.sadl.darpa.aske.processing.imports.IModelFromCodeExtractor;
+//import com.ge.research.sadl.builder.ConfigurationManagerForIdeFactory;
+//import com.ge.research.sadl.builder.IConfigurationManagerForIDE;
+//import com.ge.research.sadl.darpa.aske.curation.AnswerCurationManager;
+//import com.ge.research.sadl.darpa.aske.processing.imports.IModelFromCodeExtractor;
+//import com.ge.research.sadl.darpa.aske.processing.imports.AnswerExtractionProcessor.CodeLanguage;
+import com.ge.research.sadl.darpa.aske.processing.imports.GrFNModelExtractor;
 import com.ge.research.sadl.reasoner.ConfigurationException;
 
 /**
@@ -143,20 +146,20 @@ public class GrFNExtractionTest {
 				+ "      \"type\": \"FuncContainer\",\n"
 				+ "      \"border_color\": \"forestgreen\",\n"
 				+ "      \"nodes\": [\n"
-				+ "        \"b7d6467b-2f5a-522a-f87f-43fdf6062541\",\n"
-				+ "        \"f728b4fa-4248-5e3a-0a5d-2f346baa9455\",\n"
-				+ "        \"eb1167b3-67a9-c378-7c65-c1e582e2e662\",\n"
-				+ "        \"f7c1bd87-4da5-e709-d471-3d60c8a70639\",\n"
-				+ "        \"e443df78-9558-867f-5ba9-1faf7a024204\",\n"
-				+ "        \"23a7711a-8133-2876-37eb-dcd9e87a1613\",\n"
-				+ "        \"fcbd04c3-4021-2ef7-cca5-a5a19e4d6e3c\",\n"
-				+ "        \"1846d424-c17c-6279-23c6-612f48268673\",\n"
-				+ "        \"ba26d851-35e8-579a-7aaf-0e891fb797fa\",\n"
-				+ "        \"b4862b21-fb97-d435-8856-1712e8e5216a\",\n"
-				+ "        \"ade9b2b4-efdd-35f8-0fa3-4266ccfdba9b\",\n"
-				+ "        \"259f4329-e6f4-590b-9a16-4106cf6a659e\",\n"
-				+ "        \"9edfa3da-6cf5-5b15-8b53-031d05d51433\",\n"
-				+ "        \"11ebcd49-428a-1c22-d5fd-b76a19fbeb1d\"\n"
+//				+ "        \"b7d6467b-2f5a-522a-f87f-43fdf6062541\",\n"
+				+ "        \"f728b4fa-4248-5e3a-0a5d-2f346baa9455\",\n" 
+//				+ "        \"eb1167b3-67a9-c378-7c65-c1e582e2e662\",\n"
+//				+ "        \"f7c1bd87-4da5-e709-d471-3d60c8a70639\",\n"
+//				+ "        \"e443df78-9558-867f-5ba9-1faf7a024204\",\n"
+//				+ "        \"23a7711a-8133-2876-37eb-dcd9e87a1613\",\n"
+//				+ "        \"fcbd04c3-4021-2ef7-cca5-a5a19e4d6e3c\",\n"
+//				+ "        \"1846d424-c17c-6279-23c6-612f48268673\",\n"
+				+ "        \"ba26d851-35e8-579a-7aaf-0e891fb797fa\"\n" 
+//				+ "        \"b4862b21-fb97-d435-8856-1712e8e5216a\",\n"
+//				+ "        \"ade9b2b4-efdd-35f8-0fa3-4266ccfdba9b\",\n"
+//				+ "        \"259f4329-e6f4-590b-9a16-4106cf6a659e\",\n"
+//				+ "        \"9edfa3da-6cf5-5b15-8b53-031d05d51433\",\n"
+//				+ "        \"11ebcd49-428a-1c22-d5fd-b76a19fbeb1d\"\n"
 				+ "      ],\n"
 				+ "      \"metadata\": [\n"
 				+ "        {\n"
@@ -178,22 +181,38 @@ public class GrFNExtractionTest {
 				+ "    }\n"
 				+ "  ]\n"
 				+ "}";
-		IConfigurationManagerForIDE cm = ConfigurationManagerForIdeFactory.getConfigurationManagerForIDE(getDomainProjectModelFolder(), null);
-		AnswerCurationManager acm = new AnswerCurationManager(getDomainProjectModelFolder(), cm, null, null);
-		IModelFromCodeExtractor jme = acm.getGrFNExtractor();
-		acm.setOwlModelsFolder(getExtractionProjectModelFolder());
+//		IConfigurationManagerForIDE cm = ConfigurationManagerForIdeFactory.getConfigurationManagerForIDE(getDomainProjectModelFolder(), null);
+//		AnswerCurationManager acm = new AnswerCurationManager(getDomainProjectModelFolder(), cm, null, null);
+//		AnswerCurationManager acm = new AnswerCurationManager(getDomainProjectModelFolder(), null, null, null);
+//		acm.getCodeExtractor(CodeLanguage.GrFN);
+//		acm.setOwlModelsFolder(getExtractionProjectModelFolder());
 		String defaultCodeModelPrefix = "test_grfn_json";
 		String defaultCodeModelName = "http://aske.ge.com/" + defaultCodeModelPrefix;
 		String outputOwlFileName = "test_grfn_json.owl";
-		jme.setCodeModelPrefix(defaultCodeModelPrefix);
-		jme.setCodeModelName(defaultCodeModelName);
-		assertTrue(jme.process("some grfn file identifier", grFNJsonContent, defaultCodeModelName, defaultCodeModelPrefix));
-		OntModel codeModel = acm.getExtractionProcessor().getGrFNModel();
-		codeModel.write(System.out);
-		File of = acm.saveGrFNOwlFile(outputOwlFileName);
+//		acm.getCodeExtractor().setCodeModelPrefix(defaultCodeModelPrefix);
+//		acm.getCodeExtractor().setCodeModelName(defaultCodeModelName);
+
+		GrFNModelExtractor grfnExtractor = new GrFNModelExtractor(null,null);
+		grfnExtractor.setOwlModelsFolder(getExtractionProjectModelFolder());
+		grfnExtractor.setCodeModelPrefix(defaultCodeModelPrefix);
+		grfnExtractor.setCodeModelName(defaultCodeModelName);
+		
+		
+//		assertTrue(acm.getCodeExtractor().process("some grfn file identifier", grFNJsonContent, defaultCodeModelName, defaultCodeModelPrefix));
+		assertTrue(grfnExtractor.process("some grfn file identifier", grFNJsonContent, defaultCodeModelName, defaultCodeModelPrefix));
+		
+//		OntModel codeModel = acm.getExtractionProcessor().getCodeModel();
+//		OntModel codeModel = acm.getCodeExtractor().getCurrentCodeModel(); //use this line
+//		codeModel = acm.getCodeExtractor().getCurrentCodeModel(); //alternative to above line
+//		codeModel.write(System.out);
+//		File of = acm.saveCodeOwlFile(outputOwlFileName);
+		File of = grfnExtractor.saveGrFNOwlFile(outputOwlFileName);
+
 		Map<File, Integer> outputOwlFilesBySourceType = new HashMap<File, Integer>();
 		outputOwlFilesBySourceType.put(of, 2);
-		acm.saveAsSadlFile(outputOwlFilesBySourceType, "yes");
+//		List<String> sadlFilenames = acm.saveAsSadlFile(outputOwlFilesBySourceType, "yes");
+		List<String> sadlFilenames = grfnExtractor.saveAsSadlFile(outputOwlFilesBySourceType, "yes");
+		assertTrue(sadlFilenames.size() > 0);
 	}
 	
 

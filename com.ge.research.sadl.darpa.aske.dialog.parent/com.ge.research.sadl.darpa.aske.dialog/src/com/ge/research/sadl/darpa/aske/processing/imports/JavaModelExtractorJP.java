@@ -2078,7 +2078,7 @@ public class JavaModelExtractorJP implements IModelFromCodeExtractor {
 		return codeModelConfigMgr;
 	}
 
-	private void setCodeModelConfigMgr(IConfigurationManagerForIDE codeMetaModelConfigMgr) {
+	public void setCodeModelConfigMgr(IConfigurationManagerForIDE codeMetaModelConfigMgr) {
 		this.codeModelConfigMgr = codeMetaModelConfigMgr;
 	}
 

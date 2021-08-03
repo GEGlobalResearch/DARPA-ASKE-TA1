@@ -1,6 +1,0 @@
-# Jena Rule file for default values, level 0
-# Created by the JenaAugmentedTranslator
-
-@prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
-
-[http://sadl.org/query.sadl#Thing_p1_default_lvl0: (?i rdf:type http://sadl.org/query.sadl#Thing), noValue(?i,http://sadl.org/query.sadl#p1) -> (?i http://sadl.org/query.sadl#p1 'false'^^http://www.w3.org/2001/XMLSchema#boolean)]

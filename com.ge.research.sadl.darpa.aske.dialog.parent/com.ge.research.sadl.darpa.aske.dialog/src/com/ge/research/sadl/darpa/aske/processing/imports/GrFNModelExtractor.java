@@ -6,6 +6,7 @@ package com.ge.research.sadl.darpa.aske.processing.imports;
 import java.io.File;
 import java.io.IOException;
 import java.lang.reflect.Type;
+import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -43,6 +44,8 @@ import com.ge.research.sadl.darpa.aske.processing.imports.JavaModelExtractorJP.M
 import com.ge.research.sadl.jena.JenaProcessorException;
 import com.ge.research.sadl.jena.inference.SadlJenaModelGetterPutter;
 import com.ge.research.sadl.model.gp.RDFTypeNode;
+import com.ge.research.sadl.owl2sadl.OwlImportException;
+import com.ge.research.sadl.owl2sadl.OwlToSadl;
 import com.ge.research.sadl.processing.SadlConstants;
 import com.ge.research.sadl.reasoner.AmbiguousNameException;
 import com.ge.research.sadl.reasoner.CircularDependencyException;
@@ -67,34 +70,42 @@ import com.google.gson.InstanceCreator;
 
 /**
  * @author 212438865
+ * Based on the JavaModelExtractor
  *
  */
 public class GrFNModelExtractor implements IModelFromCodeExtractor {
+	
+	public static final String GRFN_EXTRACTION_MODEL_URI = "http://sadl.org/GrFNExtractionModel.sadl";
+	public static final String GRFN_EXTRACTION_MODEL_PREFIX = "grfnem";
+	
     private static final Logger logger = Logger.getLogger (GrFNModelExtractor.class) ;
-	private String packageName = "";
+    
+	private String owlModelsFolder;
+    
+//	private String packageName = "";
 	private AnswerCurationManager curationMgr = null;
-	private Map<String, String> preferences;
+//	private Map<String, String> preferences;
 
 	// Assumption: the GrFN meta model and the GrFN model extracted are in the same folder (same kbase)
-	private IConfigurationManagerForIDE codeModelConfigMgr;	// the ConfigurationManager used to access the code extraction model
-	private String codeMetaModelUri;	// the name of the grFN extraction metamodel
+	private IConfigurationManagerForIDE grFNExtractionModelConfigMgr;	// the ConfigurationManager used to access the grFN extraction model
+	private String grFNExtractionModelUri;	// the name of the grFN extraction model
 
-	private String codeMetaModelPrefix;	// the prefix of the grFN extraction metamodel
+	private String grFNExtractionModelPrefix;	// the prefix of the grFN extraction model
 
-	private OntModel codeModel;
+	private OntModel codeModel;  //The model being created
 	private Map<String,OntModel> codeModels = null;
 	private String codeModelName;	// the name of the model  being created by extraction
 	private String codeModelPrefix; // the prefix of the model being created by extraction
 
-	private Individual rootContainingInstance = null;
+//	private Individual rootContainingInstance = null;
 
 //	private Map<Range, MethodCallMapping> postProcessingList = new HashMap<Range, MethodCallMapping>(); // key is the MethodCallExpr
-	Map<String, String> classNameMap = new HashMap<String, String>();
+//	Map<String, String> classNameMap = new HashMap<String, String>();
 
 	
 	public GrFNModelExtractor(AnswerCurationManager acm, Map<String, String> preferences) {
 		setCurationMgr(acm);
-		setPreferences(preferences);
+//		setPreferences(preferences);
 	}
 	
 	private void setCurationMgr(AnswerCurationManager curationMgr) {
@@ -103,12 +114,12 @@ public class GrFNModelExtractor implements IModelFromCodeExtractor {
 	private AnswerCurationManager getCurationMgr() {
 		return curationMgr;
 	}
-	private void setPreferences(Map<String, String> preferences) {
-		this.preferences = preferences;
-	}
+//	private void setPreferences(Map<String, String> preferences) {
+//		this.preferences = preferences;
+//	}
 	
 	private void initializeContent(String modelName, String modelPrefix) {
-		packageName = "";
+//		packageName = "";
 //		postProcessingList.clear();
 		if (getCodeModelName() == null) {	// don't override a preset model name
 			setCodeModelName(modelName);
@@ -117,9 +128,9 @@ public class GrFNModelExtractor implements IModelFromCodeExtractor {
 			setCodeModelPrefix(modelPrefix);	// don't override a preset model name		
 		}
 		codeModel = null;
-		rootContainingInstance = null;
+//		rootContainingInstance = null;
 //		postProcessingList.clear();
-		classNameMap.clear();
+//		classNameMap.clear();
 //		clearAggregatedComments();
 
 	}
@@ -134,12 +145,15 @@ public class GrFNModelExtractor implements IModelFromCodeExtractor {
 	public boolean process(String inputIdentifier, String content, String modelName, String modelPrefix)
 			throws ConfigurationException, IOException {
 	    initializeContent(modelName, modelPrefix);
-		String defName = getCodeModelName() + "_comments";
-		getCurationMgr().getTextProcessor().setTextModelName(defName);
-		String defPrefix = getCodeModelPrefix() + "_cmnt";
-		getCurationMgr().getTextProcessor().setTextModelPrefix(defPrefix);
+//		String defName = getCodeModelName() + "_comments";
+//		getCurationMgr().getTextProcessor().setTextModelName(defName);
+//		String defPrefix = getCodeModelPrefix() + "_cmnt";
+//		getCurationMgr().getTextProcessor().setTextModelPrefix(defPrefix);
 
+	    
+	    //TODO: replace getCurationMgr().getOwlModelsFolder() with some temp folder in the service
 		parse(inputIdentifier, getCurationMgr().getOwlModelsFolder(), content);
+//		parse(inputIdentifier, getOwlModelsFolder(), content); //for use with GrFNExtractionTest
 
 		return true;
 	}
@@ -151,31 +165,36 @@ public class GrFNModelExtractor implements IModelFromCodeExtractor {
 //	}
 
 	
-	private void parse(String inputIdentifier, String modelFolder, String jsonASTContent) throws IOException, ConfigurationException {
-		try {
-			String source = null;
-			if (inputIdentifier.lastIndexOf('/') > 0) {
-				source = inputIdentifier.substring(inputIdentifier.lastIndexOf('/') + 1);
-			}
-			else if (inputIdentifier.lastIndexOf('\\') > 0) {
-				source = inputIdentifier.substring(inputIdentifier.lastIndexOf('\\') + 1);
-			}
-			else {
-				source = inputIdentifier;
-			}
-			String msg = "Parsing GrFN Json file '" + source + "'.";
-			getCurationMgr().notifyUser(modelFolder, msg, true);
-		} catch (ConfigurationException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
+	private void parse(String inputIdentifier, String modelFolder, String grFNjsonContent) throws IOException, ConfigurationException {
+
+		//TODO: this try block can be removed for microservice
+//		try {
+//			String source = null;
+//			if (inputIdentifier.lastIndexOf('/') > 0) {
+//				source = inputIdentifier.substring(inputIdentifier.lastIndexOf('/') + 1);
+//			}
+//			else if (inputIdentifier.lastIndexOf('\\') > 0) {
+//				source = inputIdentifier.substring(inputIdentifier.lastIndexOf('\\') + 1);
+//			}
+//			else {
+//				source = inputIdentifier;
+//			}
+//			String msg = "Parsing GrFN Json file '" + source + "'.";
+//			getCurationMgr().notifyUser(modelFolder, msg, true);
+//		} catch (ConfigurationException e) {
+//			// TODO Auto-generated catch block
+//			e.printStackTrace();
+//		}
+		//**********************************************************
+		
 		if (logger.isDebugEnabled()) {
-			logger.debug("***************** code to process ******************");
-			logger.debug(jsonASTContent);
-			logger.debug("****************************************************");
+			logger.debug("***************** GrFN Json to process ******************");
+			logger.debug(grFNjsonContent);
+			logger.debug("*********************************************************");
 		}
 				
         initializeGrFNModel(getCurationMgr().getOwlModelsFolder());
+//        initializeGrFNModel(getOwlModelsFolder()); //for use with GrFNExtractionTest
 		
 		Gson gson = new Gson();
 		
@@ -183,7 +202,7 @@ public class GrFNModelExtractor implements IModelFromCodeExtractor {
 		GrFN_ExpressionTree[] expr;
 
 		try {
-			gr = gson.fromJson(jsonASTContent, GrFN_Graph.class);
+			gr = gson.fromJson(grFNjsonContent, GrFN_Graph.class);
 			if (gr.getUid() != null) {
 				processGrFN(gr);     	
 			} 
@@ -197,7 +216,7 @@ public class GrFNModelExtractor implements IModelFromCodeExtractor {
 		}
 			
 		try {
-			expr = gson.fromJson(jsonASTContent, GrFN_ExpressionTree[].class);
+			expr = gson.fromJson(grFNjsonContent, GrFN_ExpressionTree[].class);
 			for (GrFN_ExpressionTree e : expr) {
 				processGrFN_ExpressionTree(e);
 			}
@@ -773,64 +792,44 @@ public class GrFNModelExtractor implements IModelFromCodeExtractor {
 	}
 
 
-	private void initializeGrFNModel(String extractionMetaModelModelFolder) throws ConfigurationException, IOException {
-		if (getCurationMgr().getExtractionProcessor().getGrFNModel() == null) {
-			// create new code model
-			
-			setCodeModelConfigMgr(ConfigurationManagerForIdeFactory.getConfigurationManagerForIDE(extractionMetaModelModelFolder, null)); //getCurationMgr().getProjectConfigurationManager());
-			OntDocumentManager owlDocMgr = getCodeModelConfigMgr().getJenaDocumentMgr();
-			OntModelSpec spec = new OntModelSpec(OntModelSpec.OWL_MEM);
-			if (extractionMetaModelModelFolder != null) { // && !modelFolderPathname.startsWith(SYNTHETIC_FROM_TEST)) {
-				File mff = new File(extractionMetaModelModelFolder);
-				mff.mkdirs();
-				spec.setImportModelGetter(new SadlJenaModelGetterPutter(spec, extractionMetaModelModelFolder));
-			}
-			if (owlDocMgr != null) {
-				spec.setDocumentManager(owlDocMgr);
-				owlDocMgr.setProcessImports(true);
-			}
-			setCurrentCodeModel(ModelFactory.createOntologyModel(spec));	
-			getCurrentCodeModel().setNsPrefix(getCodeModelPrefix(), getCodeModelNamespace());
-			Ontology modelOntology = getCurrentCodeModel().createOntology(getCodeModelName());
-			logger.debug("Ontology '" + getCodeModelName() + "' created");
-			modelOntology.addComment("This ontology was created by extraction from GrFN json by the GraSEN GrFNModelExtractor.", "en");
-			setCodeMetaModelUri(DialogConstants.GRFN_EXTRACTION_MODEL_URI);
-			setCodeMetaModelPrefix(DialogConstants.GRFN_EXTRACTION_MODEL_PREFIX);
-			OntModel importedOntModel = getCodeModelConfigMgr().getOntModel(getCodeMetaModelUri(), Scope.INCLUDEIMPORTS);
-			addImportToJenaModel(getCodeModelName(), getCodeMetaModelUri(), getCodeMetaModelPrefix(), importedOntModel);
-			OntModel sadlImplicitModel = getCodeModelConfigMgr().getOntModel(getSadlImplicitModelUri(), Scope.INCLUDEIMPORTS);
-			addImportToJenaModel(getCodeModelName(), getSadlImplicitModelUri(), 
-					getCodeModelConfigMgr().getGlobalPrefix(getSadlImplicitModelUri()), sadlImplicitModel);
-			String listmodelurl = getCodeModelConfigMgr().getAltUrlFromPublicUri(getSadlListModelUri());
-			if (listmodelurl != null && !listmodelurl.equals(getSadlListModelUri())) {
-				if (new File((new SadlUtils()).fileUrlToFileName(listmodelurl)).exists()) {
-					OntModel sadlListModel = getCodeModelConfigMgr().getOntModel(getSadlListModelUri(), Scope.INCLUDEIMPORTS);
-					addImportToJenaModel(getCodeModelName(), getSadlListModelUri(), 
-							getCodeModelConfigMgr().getGlobalPrefix(getSadlListModelUri()), sadlListModel);
-				}
-				else {
-					System.err.println("Project is missing SadlListModel. This should not happen.");
-				}
-			}
-			//For Java: get the subclasses of the class ClassesToIgnore and makes a list.
-			//These subclasses just define the type of Java classes to ignore, e.g. Graphics, Button, etc.
-			//For GrFN we probably don't need to ignore any type of node.
-//			OntClass ctic = getClassesToIgnoreClass();
-//			if (ctic != null) {
-//				ExtendedIterator<OntClass> extitr = ctic.listSubClasses();
-//				if (extitr != null && extitr.hasNext()) {
-//					while (extitr.hasNext()) {
-//						Resource cti = extitr.next();
-//						classesToIgnore.add(cti.getLocalName());
-//					}
-//					extitr.close();
-//				}
-//			}
-		}
-		else {
-			setCurrentCodeModel(getCurationMgr().getExtractionProcessor().getCodeModel());
-		}
+	private void initializeGrFNModel(String extractionModelModelFolder) throws ConfigurationException, IOException {
+		// create new code model
 		
+		setCodeModelConfigMgr(ConfigurationManagerForIdeFactory.getConfigurationManagerForIDE(extractionModelModelFolder, null)); 
+		OntDocumentManager owlDocMgr = getCodeModelConfigMgr().getJenaDocumentMgr();
+		OntModelSpec spec = new OntModelSpec(OntModelSpec.OWL_MEM);
+		if (extractionModelModelFolder != null) { 
+			File mff = new File(extractionModelModelFolder);
+			mff.mkdirs();
+			spec.setImportModelGetter(new SadlJenaModelGetterPutter(spec, extractionModelModelFolder));
+		}
+		if (owlDocMgr != null) {
+			spec.setDocumentManager(owlDocMgr);
+			owlDocMgr.setProcessImports(true);
+		}
+		setCurrentCodeModel(ModelFactory.createOntologyModel(spec));	
+		getCurrentCodeModel().setNsPrefix(getCodeModelPrefix(), getCodeModelNamespace());
+		Ontology modelOntology = getCurrentCodeModel().createOntology(getCodeModelName());
+		logger.debug("Ontology '" + getCodeModelName() + "' created");
+		modelOntology.addComment("This ontology was created by extraction from GrFN json by the GraSEN GrFNModelExtractor.", "en");
+		setCodeMetaModelUri(GRFN_EXTRACTION_MODEL_URI);
+		setCodeMetaModelPrefix(GRFN_EXTRACTION_MODEL_PREFIX);
+		OntModel importedOntModel = getCodeModelConfigMgr().getOntModel(getCodeMetaModelUri(), Scope.INCLUDEIMPORTS);
+		addImportToJenaModel(getCodeModelName(), getCodeMetaModelUri(), getCodeMetaModelPrefix(), importedOntModel);
+		OntModel sadlImplicitModel = getCodeModelConfigMgr().getOntModel(getSadlImplicitModelUri(), Scope.INCLUDEIMPORTS);
+		addImportToJenaModel(getCodeModelName(), getSadlImplicitModelUri(), 
+				getCodeModelConfigMgr().getGlobalPrefix(getSadlImplicitModelUri()), sadlImplicitModel);
+		String listmodelurl = getCodeModelConfigMgr().getAltUrlFromPublicUri(getSadlListModelUri());
+		if (listmodelurl != null && !listmodelurl.equals(getSadlListModelUri())) {
+			if (new File((new SadlUtils()).fileUrlToFileName(listmodelurl)).exists()) {
+				OntModel sadlListModel = getCodeModelConfigMgr().getOntModel(getSadlListModelUri(), Scope.INCLUDEIMPORTS);
+				addImportToJenaModel(getCodeModelName(), getSadlListModelUri(), 
+						getCodeModelConfigMgr().getGlobalPrefix(getSadlListModelUri()), sadlListModel);
+			}
+			else {
+				System.err.println("Project is missing SadlListModel. This should not happen.");
+			}
+		}
 	}
 
 	
@@ -869,19 +868,19 @@ public class GrFNModelExtractor implements IModelFromCodeExtractor {
 
 	
 	public String getCodeMetaModelUri() {
-		return codeMetaModelUri;
+		return grFNExtractionModelUri;
 	}
 
 	public void setCodeMetaModelUri(String codeMetaModelUri) {
-		this.codeMetaModelUri = codeMetaModelUri;
+		this.grFNExtractionModelUri = codeMetaModelUri;
 	}
 	
 	public String getCodeMetaModelPrefix() {
-		return codeMetaModelPrefix;
+		return grFNExtractionModelPrefix;
 	}
 
 	public void setCodeMetaModelPrefix(String codeMetaModelPrefix) {
-		this.codeMetaModelPrefix = codeMetaModelPrefix;
+		this.grFNExtractionModelPrefix = codeMetaModelPrefix;
 	}
 	
 
@@ -1114,45 +1113,139 @@ public class GrFNModelExtractor implements IModelFromCodeExtractor {
 
 	
 	
-	@Override
+	public File saveGrFNOwlFile(String outputFilename) throws ConfigurationException, IOException {
+		File of = new File(new File(getOwlModelsFolder()).getParent() + 
+				"/" + DialogConstants.EXTRACTED_MODELS_FOLDER_PATH_FRAGMENT + "/" + outputFilename);
+		of.getParentFile().mkdirs();
+		getCodeModelConfigMgr().saveOwlFile(getCurrentCodeModel(), getCodeModelName(), of.getCanonicalPath());
+		String outputOwlFileName = of.getCanonicalPath();			
+		addCodeModel(outputOwlFileName, getCurrentCodeModel());
+
+		String altUrl;
+		try {
+			altUrl = (new SadlUtils()).fileNameToFileUrl(outputOwlFileName);
+			getCodeModelConfigMgr().addMapping(altUrl, getCodeModelName(), getCodeModelPrefix(), false, "GrFNModelExtractor");
+			getCodeModelConfigMgr().addJenaMapping(getCodeModelName(), altUrl);
+		} catch (URISyntaxException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		return of;
+	}
+
+	
+	/**
+	 * Method to save the OWL model created from code extraction as a SADL file
+	 * @param outputOwlFiles -- List of names of the OWL file created
+	 * @return -- the sadl fully qualified file name
+	 * @throws IOException
+	 */
+	public List<String> saveAsSadlFile(Map<File, Integer> outputOwlFiles, String response) throws IOException {
+		List<String> sadlFileNames = new ArrayList<String>();
+		for (File outputOwlFile : outputOwlFiles.keySet()) {
+			int isCodeExtract = outputOwlFiles.get(outputOwlFile);
+			String key = outputOwlFile.getCanonicalPath();
+			OntModel mdl = null;
+			IConfigurationManagerForIDE cfgmgr = null;
+			String mdlName = null;
+			if (isCodeExtract == 1) {
+				mdl = getCodeModel(key);
+				cfgmgr = getCodeModelConfigMgr();
+				mdlName = getCodeModelName();
+			}
+			else if (isCodeExtract == 2) {
+				mdl = getCodeModel(key);
+//				cfgmgr = getExtractionProcessor().getCodeExtractor().getCodeModelConfigMgr();
+				cfgmgr = getCodeModelConfigMgr();
+				mdlName = getCodeModelName();
+			}
+			if (mdl != null) {
+				OwlToSadl ots = new OwlToSadl(mdl, mdlName);
+				String sadlFN = outputOwlFile.getCanonicalPath() + ".sadl";
+				File sf = new File(sadlFN);
+				if (sf.exists()) {
+					sf.delete();
+				}
+				try {
+					boolean status = ots.saveSadlModel(sadlFN);
+					if (status) {
+						sadlFileNames.add(sadlFN);
+						/* We want to move the OWL file to the OwlModels folder so that it will exist,
+						 * and change the mappings. If we aren't in the SADL IDE (e.g., JUnit tests),
+						 * the .sadl file will not get rebuilt. If we are, it should be replaced(?).
+						 */
+						String newOwlFileName = cfgmgr.getModelFolder() + "/" + SadlUtils.replaceFileExtension(sf.getName(), "sadl", "owl");
+						File newOwlFile = new File(newOwlFileName);
+						if (newOwlFile.exists()) {
+							newOwlFile.delete();
+						}
+						if (outputOwlFile.renameTo(newOwlFile)) {
+							String altUrl;
+							try {
+								String prefix = cfgmgr.getGlobalPrefix(mdlName);
+								altUrl = (new SadlUtils()).fileNameToFileUrl(newOwlFile.getCanonicalPath());
+								cfgmgr.deleteMapping(altUrl,mdlName);
+								cfgmgr.addMapping(altUrl, mdlName, prefix, true, "GrFNModelExtractor");
+								cfgmgr.addJenaMapping(mdlName, altUrl);		// this will replace old mapping?
+							} catch (URISyntaxException e) {
+								// TODO Auto-generated catch block
+								e.printStackTrace();
+							} catch (ConfigurationException e) {
+								// TODO Auto-generated catch block
+								e.printStackTrace();
+							}
+						}
+					}
+				} catch (OwlImportException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				} catch (InvalidNameException e1) {
+					// TODO Auto-generated catch block
+					e1.printStackTrace();
+				}
+			}
+		}
+		return sadlFileNames;
+	}
+
+	
 	public String getPackageName() {
 		// TODO Auto-generated method stub
 		return null;
 	}
 
-	@Override
 	public void addCodeFile(File javaFile) {
 		// TODO Auto-generated method stub
-
 	}
 
-	@Override
 	public void addCodeFiles(List<File> javaFiles) {
 		// TODO Auto-generated method stub
-
 	}
 
-	@Override
 	public List<File> getCodeFiles() {
 		// TODO Auto-generated method stub
 		return null;
 	}
 
-	@Override
 	public void setCodeFiles(List<File> codeFiles) {
 		// TODO Auto-generated method stub
-
 	}
 
-	@Override
 	public IConfigurationManagerForIDE getCodeModelConfigMgr() {
-		return codeModelConfigMgr;
+		return grFNExtractionModelConfigMgr;
 	}
 
-	private void setCodeModelConfigMgr(IConfigurationManagerForIDE codeMetaModelConfigMgr) {
-		this.codeModelConfigMgr = codeMetaModelConfigMgr;
+	public void setCodeModelConfigMgr(IConfigurationManagerForIDE grFNExtractionModelConfigMgr) {
+		this.grFNExtractionModelConfigMgr = grFNExtractionModelConfigMgr;
 	}
 
+	public String getOwlModelsFolder() {
+		return owlModelsFolder;
+	}
+
+	public void setOwlModelsFolder(String owlModelsFolder) {
+		this.owlModelsFolder = owlModelsFolder;
+	}
 	
 	@Override
 	public String getCodeModelName() {
@@ -1206,7 +1299,6 @@ public class GrFNModelExtractor implements IModelFromCodeExtractor {
 	@Override
 	public void setCurrentCodeModel(OntModel m) {
 		this.codeModel = m;
-
 	}
 
 	@Override

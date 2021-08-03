@@ -59,14 +59,13 @@ public class AnswerExtractionProcessor {
 	private String serializedCode;
 	private OntModel contextModel;	// the knowledge graph to use during extraction
 	private IModelFromCodeExtractor codeExtractor;
-	private IModelFromCodeExtractor grFnExtractor;
 	private TextProcessor textProcessor;
 	private Map<String, String> preferences = null;
 	private AnswerCurationManager curationManager = null;
 	private String sadlContent;
 	
 	public enum CodeLanguage {
-		JAVA, PYTHON, PYTHON_TF, TEXT, OTHERLANGUAGE
+		JAVA, PYTHON, PYTHON_TF, TEXT, OTHERLANGUAGE, GrFN
 		}
 
 
@@ -144,45 +143,54 @@ public class AnswerExtractionProcessor {
 //		this.codeModel = codeModel;
 //	}
 
-	public OntModel getGrFNModel() {
-		return getGrFNExtractor().getCurrentCodeModel();
-	}
-	
-	public void setGrFNModel(OntModel m) {
-		getGrFNExtractor().setCurrentCodeModel(m);
-	}
+//	public OntModel getGrFNModel() {
+//		return getGrFNExtractor().getCurrentCodeModel();
+//	}
+//	
+//	public void setGrFNModel(OntModel m) {
+//		getGrFNExtractor().setCurrentCodeModel(m);
+//	}
 
 	
 	public IModelFromCodeExtractor getCodeExtractor(CodeLanguage language) {
 		if (codeExtractor == null) {
+			setLanguage(language);
 			if (language.equals(CodeLanguage.JAVA)) {
 				codeExtractor = new JavaModelExtractorJP(getCurationManager(), getPreferences());
+			}
+			if (language.equals(CodeLanguage.GrFN)) {
+				codeExtractor = new GrFNModelExtractor(getCurationManager(), getPreferences());
 			}
 		}
 		return codeExtractor;
 	}
 
-	public IModelFromCodeExtractor getCodeExtractor() {
-		if (codeExtractor == null) {
-			codeExtractor = new JavaModelExtractorJP(getCurationManager(), getPreferences());
-		}
-		return codeExtractor;
-	}
+//	public IModelFromCodeExtractor getCodeExtractor() {
+//		if (codeExtractor == null) {
+//			codeExtractor = new JavaModelExtractorJP(getCurationManager(), getPreferences());
+//		}
+//		return codeExtractor;
+//	}
 
+	public IModelFromCodeExtractor getCodeExtractor() {
+		return codeExtractor;
+}
+
+	
 	public void setCodeExtractor(IModelFromCodeExtractor codeExtractor) {
 		this.codeExtractor = codeExtractor;
 	}
 
-	public IModelFromCodeExtractor getGrFNExtractor() {
-		if (grFnExtractor == null) {
-			grFnExtractor = new GrFNModelExtractor(getCurationManager(), getPreferences());
-		}
-		return grFnExtractor;
-	}
-
-	public void setGrFNExtractor(IModelFromCodeExtractor grFnExtractor) {
-		this.grFnExtractor = grFnExtractor;
-	}
+//	public IModelFromCodeExtractor getGrFNExtractor() {
+//		if (grFnExtractor == null) {
+//			grFnExtractor = new GrFNModelExtractor(getCurationManager(), getPreferences());
+//		}
+//		return grFnExtractor;
+//	}
+//
+//	public void setGrFNExtractor(IModelFromCodeExtractor grFnExtractor) {
+//		this.grFnExtractor = grFnExtractor;
+//	}
 
 	public TextProcessor getTextProcessor() {
 		if (textProcessor == null) {
@@ -244,15 +252,6 @@ public class AnswerExtractionProcessor {
 		return getCodeExtractor().getCodeModelPrefix();
 	}
 
-	public String getGrFNModelName() {
-		return getGrFNExtractor().getCodeModelName();
-	}
-
-	public String getGrFNModelPrefix() {
-		return getGrFNExtractor().getCodeModelPrefix();
-	}
-
-	
 	/**
 	 * method to get the namespace from the model name by adding a "#" to the end
 	 * @param modelName
@@ -335,10 +334,10 @@ public class AnswerExtractionProcessor {
 		return jtpsi.translateExpressionJavaToPython(className, methodName, exprCode);
 	}
 
-	public void reset() {
-		getCodeExtractor().setCurrentCodeModel(null);
-		getCodeExtractor().setCodeModelName(null);
-		getCodeExtractor().setCodeModelPrefix(null);
+	public void reset(CodeLanguage language) {
+		getCodeExtractor(language).setCurrentCodeModel(null);
+		getCodeExtractor(language).setCodeModelName(null);
+		getCodeExtractor(language).setCodeModelPrefix(null);
 		getTextProcessor().setTextModel(null);
 		getTextProcessor().setTextModelName(null);
 		getTextProcessor().setTextModelPrefix(null);

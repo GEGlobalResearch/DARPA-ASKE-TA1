@@ -118,6 +118,7 @@ import com.ge.research.sadl.darpa.aske.processing.imports.GrFNModelExtractor;
 import com.ge.research.sadl.darpa.aske.processing.imports.KChainServiceInterface;
 import com.ge.research.sadl.darpa.aske.processing.imports.TextProcessingServiceInterface.EquationVariableContextResponse;
 import com.ge.research.sadl.darpa.aske.processing.imports.TextProcessor;
+import com.ge.research.sadl.darpa.aske.processing.imports.AnswerExtractionProcessor.CodeLanguage;
 import com.ge.research.sadl.external.NetworkProxyConfigurator;
 import com.ge.research.sadl.external.XMLHelper;
 import com.ge.research.sadl.jena.JenaBasedSadlModelProcessor;
@@ -316,9 +317,14 @@ public class AnswerCurationManager {
 		return getExtractionProcessor().getCodeExtractor();
 	}
 
-	public IModelFromCodeExtractor getGrFNExtractor() {
-		return getExtractionProcessor().getGrFNExtractor();
+	public IModelFromCodeExtractor getCodeExtractor(CodeLanguage language) {
+		return getExtractionProcessor().getCodeExtractor(language);
 	}
+
+	
+//	public IModelFromCodeExtractor getGrFNExtractor() {
+//		return getExtractionProcessor().getGrFNExtractor();
+//	}
 
 	public AnswerExtractionProcessor getExtractionProcessor() {
 		if (extractionProcessor == null) {
@@ -353,7 +359,7 @@ public class AnswerCurationManager {
 		List<File> textFiles = getExtractionProcessor().getTextProcessor().getTextFiles();
 		if (textFiles != null) {
 			for (File f : textFiles) {
-				getExtractionProcessor().reset();
+				getExtractionProcessor().reset(CodeLanguage.TEXT);
 				String outputOwlFileName =  getOutputFilenameFromIputFile(f);
 				String outputModelName = getModelNameFromInputFile(f);
 				String prefix = getModelPrefixFromInputFile(f);
@@ -377,7 +383,7 @@ public class AnswerCurationManager {
 			boolean useAllCodeExtractedMethods = true;
 			for (File f : codeFiles) {
 				// reset code extractor and text processor from any previous file
-				getExtractionProcessor().reset();
+				getExtractionProcessor().reset(CodeLanguage.JAVA);
 				String outputOwlFileName =  getOutputFilenameFromIputFile(f);
 				String outputModelName = getModelNameFromInputFile(f);
 				String prefix = getModelPrefixFromInputFile(f);
@@ -464,17 +470,17 @@ public class AnswerCurationManager {
 		return null;
 	}
 
-	private File extractFromGrFNAndSave(String content, String fileIdentifier, String outputModelName, String prefix,
-			String outputOwlFileName) throws ConfigurationException, IOException {
-		Map<File, Integer> outputOwlFilesBySourceType = new HashMap<File, Integer>();
-		if (getGrFNExtractor().process(fileIdentifier, content, outputModelName, prefix)) {			
-			File of = saveGrFNOwlFile(outputOwlFileName);
-			outputOwlFilesBySourceType.put(of, 2);
-			saveAsSadlFile(outputOwlFilesBySourceType, "yes");
-			return of;
-		}
-		return null;
-	}
+//	private File extractFromGrFNAndSave(String content, String fileIdentifier, String outputModelName, String prefix,
+//			String outputOwlFileName) throws ConfigurationException, IOException {
+////		Map<File, Integer> outputOwlFilesBySourceType = new HashMap<File, Integer>();
+//		if (getCodeExtractor().process(fileIdentifier, content, outputModelName, prefix)) {			
+//			File of = saveCodeOwlFile(outputOwlFileName);
+////			outputOwlFilesBySourceType.put(of, 2);
+////			saveAsSadlFile(outputOwlFilesBySourceType, "yes");
+//			return of;
+//		}
+//		return null;
+//	}
 
 	
 	private File extractFromTextAndSave(String content, String inputIdentifier, String extractedTxtModelName, String outputOwlFileName)
@@ -612,7 +618,7 @@ public class AnswerCurationManager {
 		return of;
 	}
 
-	private File saveCodeOwlFile(String outputFilename) throws ConfigurationException, IOException {
+	public File saveCodeOwlFile(String outputFilename) throws ConfigurationException, IOException {
 		File of = new File(new File(getOwlModelsFolder()).getParent() + 
 				"/" + DialogConstants.EXTRACTED_MODELS_FOLDER_PATH_FRAGMENT + "/" + outputFilename);
 		of.getParentFile().mkdirs();
@@ -632,27 +638,6 @@ public class AnswerCurationManager {
 		return of;
 	}
 
-	public File saveGrFNOwlFile(String outputFilename) throws ConfigurationException, IOException {
-		File of = new File(new File(getOwlModelsFolder()).getParent() + 
-				"/" + DialogConstants.EXTRACTED_MODELS_FOLDER_PATH_FRAGMENT + "/" + outputFilename);
-		of.getParentFile().mkdirs();
-		getExtractionProcessor().getGrFNExtractor().getCodeModelConfigMgr().saveOwlFile(getExtractionProcessor().getGrFNModel(), getExtractionProcessor().getGrFNModelName(), of.getCanonicalPath());
-		String outputOwlFileName = of.getCanonicalPath();			
-		getExtractionProcessor().getGrFNExtractor().addCodeModel(outputOwlFileName, getExtractionProcessor().getGrFNModel());
-
-		String altUrl;
-		try {
-			altUrl = (new SadlUtils()).fileNameToFileUrl(outputOwlFileName);
-			getExtractionProcessor().getGrFNExtractor().getCodeModelConfigMgr().addMapping(altUrl, getExtractionProcessor().getGrFNModelName(), getExtractionProcessor().getGrFNModelPrefix(), false, "AnswerCurationManager");
-			getExtractionProcessor().getGrFNExtractor().getCodeModelConfigMgr().addJenaMapping(getExtractionProcessor().getGrFNModelName(), altUrl);
-		} catch (URISyntaxException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-		return of;
-	}
-	
-	
 	
 	
 	private ResultSet runInferenceFindInterestingTextModelResults(String outputOwlFileName, String queryString, SaveAsSadl saveAsSadl, String locality) throws ConfigurationException, IOException, ReasonerNotFoundException, InvalidNameException, QueryParseException, QueryCancelledException, AmbiguousNameException {
@@ -3107,9 +3092,9 @@ public class AnswerCurationManager {
 					mdlName = getExtractionProcessor().getCodeModelName();
 				}
 				else if (isCodeExtract == 2) {
-					mdl = getExtractionProcessor().getGrFNExtractor().getCodeModel(key);
-					cfgmgr = getExtractionProcessor().getGrFNExtractor().getCodeModelConfigMgr();
-					mdlName = getExtractionProcessor().getGrFNModelName();
+					mdl = getExtractionProcessor().getCodeExtractor().getCodeModel(key);
+					cfgmgr = getExtractionProcessor().getCodeExtractor().getCodeModelConfigMgr();
+					mdlName = getExtractionProcessor().getCodeModelName();
 				}
 				else {
 					mdl = getExtractionProcessor().getTextProcessor().getTextModel(key);
@@ -3708,10 +3693,11 @@ public class AnswerCurationManager {
 	private String processExtractRequest(org.eclipse.emf.ecore.resource.Resource resource2, 
 			ExtractContent sc) throws MalformedURLException, IOException, ConfigurationException, AnswerExtractionException {
 		String returnStatus = "";
-		getExtractionProcessor().reset();
+		//AG: get a new extraction processor or reset the existing one to process the request.
+//		getExtractionProcessor().reset(); 
 		while (sc != null) {
 			String scheme = sc.getScheme();
-			String source = sc.getScheme();
+			String source = sc.getScheme(); //AG: shouldn't this be sc.getSource() ?
 			if ((scheme != null && scheme.equals("text")) || (source != null && source.equals("text"))) {
 				// actual text from which to extract has been provided
 				returnStatus += processExtractionFromActualTextRequest(sc);
@@ -3758,6 +3744,9 @@ public class AnswerCurationManager {
 	
 			if (sc.getUrl().endsWith(".java")) {
 				// code extraction
+				//AG: get a new extraction processor or reset the existing one to process the request.
+				getExtractionProcessor().reset(CodeLanguage.JAVA); 
+
 				String outputOwlFileName = prefix + ".owl";
 				try {
 					if (getSuspendedExtractionContent() == null) {
@@ -3809,12 +3798,17 @@ public class AnswerCurationManager {
 			}
 			else if(sc.getUrl().endsWith("grfn.json")) {
 				//AG: extract from AUTOMATES GrFN json
+				//AG: get a new extraction processor or reset the existing one to process the request.
+				getExtractionProcessor().reset(CodeLanguage.GrFN); 
+
 				String outputOwlFileName = prefix + ".owl";
 				try {
 					if (getSuspendedExtractionContent() == null) {
-						File of = extractFromGrFNAndSave(content, sc.getUrl(), outputModelName, prefix, outputOwlFileName);
+						File of = extractFromCodeAndSave(content, sc.getUrl(), outputModelName, prefix, outputOwlFileName);
 						if (of != null) {
-							
+							Map<File, Integer> outputOwlFilesBySourceType = new HashMap<File, Integer>();
+							outputOwlFilesBySourceType.put(of, 2);
+							saveAsSadlFile(outputOwlFilesBySourceType, "yes");
 						}
 					}
 					else {
@@ -3840,6 +3834,9 @@ public class AnswerCurationManager {
 					throw new AnswerExtractionException("HTML files not currently supported");
 				}
 				//text extraction
+				//AG: get a new extraction processor or reset the existing one to process the request.
+				getExtractionProcessor().reset(CodeLanguage.TEXT); 
+
 				String outputOwlFileName = prefix + ".owl";
 				try {
 					File of = extractFromTextAndSave(content, sc.getUrl(), outputModelName, outputOwlFileName);
