@@ -126,6 +126,7 @@ import com.ge.research.sadl.jena.MetricsProcessor;
 import com.ge.research.sadl.jena.UtilsForJena;
 import com.ge.research.sadl.model.CircularDefinitionException;
 import com.ge.research.sadl.model.ModelError;
+import com.ge.research.sadl.model.OntConceptType;
 import com.ge.research.sadl.model.PrefixNotFoundException;
 import com.ge.research.sadl.model.gp.BuiltinElement;
 import com.ge.research.sadl.model.gp.BuiltinElement.BuiltinType;
@@ -3361,4 +3362,23 @@ public class JenaBasedDialogModelProcessor extends JenaBasedSadlModelProcessor {
 		this.lastStatementContent = lastStatementContent;
 	}
 
+	@Override
+	protected void redeclarationHandler(SadlResource sr, SadlResource decl) {
+		//	if contained in a CM statement then redeclaration is OK
+		if (EcoreUtil2.getContainerOfType(sr, AnswerCMStatement.class) != null) {
+			return;
+		}
+
+		try {
+			if (getDeclarationExtensions().getOntConceptType(decl).equals(OntConceptType.STRUCTURE_NAME)) {
+				addError("This is already a Named Structure", sr);
+			}
+			if (!getDeclarationExtensions().getConceptNamespace(sr).equals(getModelNamespace())) {
+				addError("Declaration of concepts in another namespace not supported", sr);
+			}
+		} catch (CircularDefinitionException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+	}
 }
