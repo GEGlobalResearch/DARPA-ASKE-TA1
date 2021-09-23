@@ -91,6 +91,11 @@
 						<artifactId>com.ge.research.sadl.xtextgenerator</artifactId>
 						<version>${sadlVersion}</version>
 					</dependency>
+					<dependency>
+						<groupId>com.ge.research.semtk</groupId>
+						<artifactId>semtk-sparqlx-min</artifactId>
+						<version>0.0.1-SNAPSHOT</version>
+					</dependency>
 				</dependencies>
 			</plugin>
 			<plugin>

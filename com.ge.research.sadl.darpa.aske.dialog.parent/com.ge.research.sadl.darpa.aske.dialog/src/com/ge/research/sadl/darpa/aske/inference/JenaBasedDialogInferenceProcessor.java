@@ -132,6 +132,9 @@ import org.apache.jena.rdf.model.Statement;
 import org.apache.jena.update.UpdateAction;
 import org.apache.jena.vocabulary.RDF;
 
+import com.ge.research.semtk.sparqlx.min.*;
+
+
 /**
  * @author 212438865
  *
@@ -146,7 +149,8 @@ public class JenaBasedDialogInferenceProcessor extends JenaBasedSadlInferencePro
 //	public static final String qhOwlFileName = "MetaData.owl";
 
 	public static final boolean debugMode = true;
-	
+	public static final boolean performSensitivity = false;
+
 	
     private static final String KCHAIN_SERVICE_URL_FRAGMENT = "/darpa/aske/kchain/";
 
@@ -1618,7 +1622,7 @@ private ResultSet[] processWhatWhenQuery(Resource resource, String queryModelFil
 				    
 				    resmsg = getEvalKChainOutcome(kchainResultsJson);
 				    
-				    if(!inverseQuery) {
+				    if(!inverseQuery && performSensitivity) {
 					    JsonObject sensitivityJson = generateKChainSensitivityJson(cgJson);
 				    
 					    sensitivityJson = addKCserviceURL(sensitivityJson); //Add kchain eval service URL for invizin
@@ -1656,9 +1660,9 @@ private ResultSet[] processWhatWhenQuery(Resource resource, String queryModelFil
 			//There may be multiple outputs, need to loop through them
 	        createCEoutputInstances(outputsList, ce, class2lbl, lbl2class, lbl2value, class2units);
 
-
-			analyzeSensitivityResults(sensitivityResult, cgIns, lbl2class, outputsList, queryModelPrefix, insightsMap);			
-
+	        if (performSensitivity) {
+	        	analyzeSensitivityResults(sensitivityResult, cgIns, lbl2class, outputsList, queryModelPrefix, insightsMap);			
+	        }
 	        
 	        saveMetaDataFile(resource,queryModelURI,queryModelFileName); //so we can query the the eqns in the CCG
 			
@@ -3351,7 +3355,9 @@ private RDFNode getObjectAsLiteralOrResource(Node property, Node object) {
 				outpStr = "<" + oc.toString() + ">";
 				queryStr = BUILD_COMP_GRAPH.replaceAll("LISTOFOUTPUTS", outpStr).replaceAll("LISTOFINPUTS", inpStr);
 	
-				equations = runReasonerQuery(resource, queryStr);
+				//TODO
+//				equations = runReasonerQuery(resource, queryStr);
+				SparqlEndpointInterface sei;
 	
 				if (equations == null || !equations.hasNext()) {
 					queryStr = BUILD_COMP_GRAPH.replaceAll("LISTOFOUTPUTS", inpStr).replaceAll("LISTOFINPUTS", outpStr);
@@ -4210,7 +4216,31 @@ private Map<String, String> getClassUnitsMappingFromModelsJson(String json) {
 //		}
 //	}
 
+	//TODO
+	@SuppressWarnings("deprecation")
+	private String querySemTK(String Url, String query)  {
+		DefaultHttpClient httpclient = new DefaultHttpClient();
+        HttpPost httppost = new HttpPost(Url);
+        httppost.setHeader("Accept", "*/*");
+        httppost.setHeader("Content-type", "application/txt");
+        
+        try {
+			httppost.setEntity(new StringEntity("\"" + query.replace("\"", "\\\"") + "\""));
+			CloseableHttpResponse response = httpclient.execute(httppost);
+	        HttpEntity respEntity = response.getEntity();
+	        String responseTxt = EntityUtils.toString(respEntity, "UTF-8");
+	        if (debugMode) {System.out.println(responseTxt);}
+	        httpclient.close();
+	        return responseTxt;
+		} catch (IOException e) {
+			System.err.println("SemTK query request failed.");
+	        httpclient.close();
+			return "";
+		}
+	}
 
+	
+	
 	@SuppressWarnings("deprecation")
 	private String executeDBN(String jsonTxt)  {
 		DefaultHttpClient httpclient = new DefaultHttpClient();
