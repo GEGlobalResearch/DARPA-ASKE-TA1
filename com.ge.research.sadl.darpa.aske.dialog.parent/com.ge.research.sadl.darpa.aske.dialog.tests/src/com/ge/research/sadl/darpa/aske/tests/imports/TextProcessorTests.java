@@ -82,6 +82,7 @@ import com.ge.research.sadl.reasoner.QueryCancelledException;
 import com.ge.research.sadl.reasoner.QueryParseException;
 import com.ge.research.sadl.reasoner.ReasonerNotFoundException;
 import com.ge.research.sadl.reasoner.ResultSet;
+import com.ge.research.sadl.reasoner.TranslationException;
 import com.ge.research.sadl.reasoner.utils.SadlUtils;
 
 public class TextProcessorTests {
@@ -102,7 +103,7 @@ public class TextProcessorTests {
 
 	@Ignore("this test requires REST services at default URL")
 	@Test
-	public void test() throws ConfigurationException, IOException, InvalidInputException {
+	public void test() throws ConfigurationException, IOException, InvalidInputException, TranslationException {
 		File sourceFile = new File(new File(".").getAbsolutePath() + "/resources/");
 		File domainProjectFolder = new File(sourceFile + "/TestSadlProject");
 		File domainModelFolder = new File(domainProjectFolder.getAbsoluteFile() + "/OwlModels");
@@ -134,7 +135,7 @@ public class TextProcessorTests {
 
 	@Ignore("this test requires REST services at default URL")
 	@Test
-	public void test2() throws ConfigurationException, IOException, InvalidInputException {
+	public void test2() throws ConfigurationException, IOException, InvalidInputException, TranslationException {
 		File sourceFile = new File(new File(".").getAbsolutePath() + "/resources/");
 		File domainProjectFolder = new File(sourceFile + "/TestSadlProject");
 		File domainModelFolder = new File(domainProjectFolder.getAbsoluteFile() + "/OwlModels");
@@ -158,7 +159,7 @@ public class TextProcessorTests {
 
 	@Ignore("this test requires REST services at default URL")
 	@Test
-	public void test3() throws IOException, ConfigurationException, InvalidInputException {
+	public void test3() throws IOException, ConfigurationException, InvalidInputException, TranslationException {
 		File textFile = new File(getTextExtractionPrjFolder() + "/ExtractedModels/Sources/Sound.txt");
 		String javaContent = readFile(textFile);
 		TextProcessor tp = new TextProcessor(new AnswerCurationManager(getDomainProjectModelFolder(), 
@@ -185,7 +186,7 @@ public class TextProcessorTests {
 
 	@Ignore("this test requires REST services at default URL")
 	@Test
-	public void test4() throws ConfigurationException, IOException, InvalidNameException, ReasonerNotFoundException, QueryParseException, QueryCancelledException, AnswerExtractionException, InvalidInputException, AmbiguousNameException {
+	public void test4() throws ConfigurationException, IOException, InvalidNameException, ReasonerNotFoundException, QueryParseException, QueryCancelledException, AnswerExtractionException, InvalidInputException, AmbiguousNameException, TranslationException {
 		File textFile = new File(getTextExtractionPrjFolder() + "/ExtractedModels/Sources/Sound.txt");
 		IConfigurationManagerForIDE cm = ConfigurationManagerForIdeFactory.getConfigurationManagerForIDE(getDomainProjectModelFolder(), null);
 		AnswerCurationManager acm = new AnswerCurationManager(getDomainProjectModelFolder(), cm, null, null);
@@ -249,16 +250,12 @@ public class TextProcessorTests {
 				System.out.println("   none");
 			}
 		} catch (ReasonerNotFoundException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		} catch (InvalidNameException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		} catch (QueryParseException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		} catch (QueryCancelledException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 		
@@ -291,19 +288,14 @@ public class TextProcessorTests {
 						System.out.println("   none");
 					}
 				} catch (ReasonerNotFoundException e) {
-					// TODO Auto-generated catch block
 					e.printStackTrace();
 				} catch (InvalidNameException e) {
-					// TODO Auto-generated catch block
 					e.printStackTrace();
 				} catch (QueryParseException e) {
-					// TODO Auto-generated catch block
 					e.printStackTrace();
 				} catch (QueryCancelledException e) {
-					// TODO Auto-generated catch block
 					e.printStackTrace();
 				} catch (InvalidInputException e) {
-					// TODO Auto-generated catch block
 					e.printStackTrace();
 				}
 				
@@ -326,7 +318,6 @@ public class TextProcessorTests {
 				System.out.println(evcr.toString());
 			}
 		} catch (InvalidInputException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 		try {
@@ -335,14 +326,13 @@ public class TextProcessorTests {
 				System.out.println(evcr.toString());
 			}
 		} catch (InvalidInputException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 	}
 	
 	@Ignore("this test requires REST services at default URL")
 	@Test
-	public void test5() throws IOException, ConfigurationException, InvalidInputException {
+	public void test5() throws IOException, ConfigurationException, InvalidInputException, TranslationException {
 		File textFile = new File(getTextExtractionPrjFolder() + "/ExtractedModels/Sources/Sound.txt");
 		String javaContent = readFile(textFile);
 		TextProcessor tp = new TextProcessor(new AnswerCurationManager(getDomainProjectModelFolder(), 
@@ -395,7 +385,7 @@ public class TextProcessorTests {
 	
 	@Ignore("this test requires REST services at default URL")
 	@Test
-	public void test6() throws IOException, ConfigurationException, InvalidInputException {
+	public void test6() throws IOException, ConfigurationException, InvalidInputException, TranslationException {
 		File textFile = new File(getTextExtractionPrjFolder() + "/ExtractedModels/Sources/Sound.txt");
 		String javaContent = readFile(textFile);
 		TextProcessor tp = new TextProcessor(new AnswerCurationManager(getDomainProjectModelFolder(), 
@@ -422,7 +412,7 @@ public class TextProcessorTests {
 
 	@Ignore("this test requires REST services at default URL")
 	@Test
-	public void test7() throws ConfigurationException, IOException, InvalidNameException, ReasonerNotFoundException, QueryParseException, QueryCancelledException, AnswerExtractionException, InvalidInputException, AmbiguousNameException {
+	public void test7() throws ConfigurationException, IOException, InvalidNameException, ReasonerNotFoundException, QueryParseException, QueryCancelledException, AnswerExtractionException, InvalidInputException, AmbiguousNameException, TranslationException {
 		File textFile = new File(getTextExtractionPrjFolder() + "/ExtractedModels/Sources/Isentrop.txt");
 		IConfigurationManagerForIDE cm = ConfigurationManagerForIdeFactory.getConfigurationManagerForIDE(getDomainProjectModelFolder(), null);
 		AnswerCurationManager acm = new AnswerCurationManager(getDomainProjectModelFolder(), cm, null, null);
@@ -491,23 +481,19 @@ public class TextProcessorTests {
 //				System.out.println("   none");
 //			}
 //		} catch (ReasonerNotFoundException e) {
-//			// TODO Auto-generated catch block
 //			e.printStackTrace();
 //		} catch (InvalidNameException e) {
-//			// TODO Auto-generated catch block
 //			e.printStackTrace();
 //		} catch (QueryParseException e) {
-//			// TODO Auto-generated catch block
 //			e.printStackTrace();
 //		} catch (QueryCancelledException e) {
-//			// TODO Auto-generated catch block
 //			e.printStackTrace();
 //		}
 	}
 
 	@Ignore ("This has spaces missing and is known to cause issues in the service")
 	@Test
-	public void testTextToTriples_01() throws ConfigurationException, IOException {
+	public void testTextToTriples_01() throws ConfigurationException, IOException, TranslationException {
 		String content = 
 				"As a gas is forced through a tube, the gas molecules are deflectedby the \n" + 
 				"walls of the tube. If the speed of the gas is much less thanthe speed of \n" + 
@@ -720,43 +706,42 @@ public class TextProcessorTests {
 	    return null;
 	}
 
-	@Ignore("this test requires REST services at default URL")
-	@Test
-	public void testSeeAlso_01() throws ConfigurationException, IOException {
-		String content = 
-				"The force f is defined as mass m divided by acceleration a. The equation is given as f = m*a.";
-		TextProcessor tp = new TextProcessor(new AnswerCurationManager(domainProjectModelFolder, 
-				ConfigurationManagerForIdeFactory.getConfigurationManagerForIDE(domainProjectModelFolder, null), null, null), null);
-		tp.setTextModelPrefix("sos");
-		String localityURI = "http://darpa.aske.ta1.ge/sostest/";
-		tp.setTextModelName(localityURI);
-		String msg = tp.clearGraph(localityURI);
-		System.out.println("Clear graph response: " + msg);
-		int[] result = tp.processText(localityURI, content, localityURI, localityURI, null, true);
-		assertNotNull(result);
-//		assertEquals(0, result[0]);
-//		assertEquals(1, result[1]);
-		System.out.println("nc=" + result[0] + ", neq=" + result[1]);
-		OntModel om = tp.getTextModel(localityURI);
-		String[] grph = tp.retrieveGraph(localityURI);
-		assertTrue(grph.length == 3);
-		OntModel newModel = tp.getTextModelConfigMgr().getOntModel(localityURI, grph[2], Scope.INCLUDEIMPORTS, grph[1]);	
-		assertNotNull(newModel);
-		StmtIterator stmtitr = newModel.listStatements(null, RDFS.seeAlso, (RDFNode)null);
-		int cntr = 0;
-		List<String> stmtList = new ArrayList<String>();
-		while (stmtitr.hasNext()) {
-			String stmt = stmtitr.next().toString();
-			stmtList.add(stmt);
-			System.out.println(stmt);
-			cntr++;
-		}
-		assertEquals(3, cntr);
-		Collections.sort(stmtList); 
-		assertEquals("[http://darpa.aske.ta1.ge/sostest/acceleration, http://www.w3.org/2000/01/rdf-schema#seeAlso, http://www.wikidata.org/entity/Q11376]", stmtList.get(0));
-		assertEquals("[http://darpa.aske.ta1.ge/sostest/force, http://www.w3.org/2000/01/rdf-schema#seeAlso, http://www.wikidata.org/entity/Q11402]", stmtList.get(1));
-		assertEquals("[http://darpa.aske.ta1.ge/sostest/mass, http://www.w3.org/2000/01/rdf-schema#seeAlso, http://www.wikidata.org/entity/Q11423]", stmtList.get(2));
-	}
+//TODO: commented out, waiting to hear what should replace the 4-argument getOntModel
+//	@Ignore("this test requires REST services at default URL")
+//	@Test
+//	public void testSeeAlso_01() throws ConfigurationException, IOException {
+//		String content = 
+//				"The force f is defined as mass m divided by acceleration a. The equation is given as f = m*a.";
+//		TextProcessor tp = new TextProcessor(new AnswerCurationManager(domainProjectModelFolder, 
+//				ConfigurationManagerForIdeFactory.getConfigurationManagerForIDE(domainProjectModelFolder, null), null, null), null);
+//		tp.setTextModelPrefix("sos");
+//		String localityURI = "http://darpa.aske.ta1.ge/sostest/";
+//		tp.setTextModelName(localityURI);
+//		String msg = tp.clearGraph(localityURI);
+//		System.out.println("Clear graph response: " + msg);
+//		int[] result = tp.processText(localityURI, content, localityURI, localityURI, null, true);
+//		assertNotNull(result);
+//		System.out.println("nc=" + result[0] + ", neq=" + result[1]);
+//		OntModel om = tp.getTextModel(localityURI);
+//		String[] grph = tp.retrieveGraph(localityURI);
+//		assertTrue(grph.length == 3);
+//		OntModel newModel = tp.getTextModelConfigMgr().getOntModel(localityURI, grph[2], Scope.INCLUDEIMPORTS, grph[1]);
+//		assertNotNull(newModel);
+//		StmtIterator stmtitr = newModel.listStatements(null, RDFS.seeAlso, (RDFNode)null);
+//		int cntr = 0;
+//		List<String> stmtList = new ArrayList<String>();
+//		while (stmtitr.hasNext()) {
+//			String stmt = stmtitr.next().toString();
+//			stmtList.add(stmt);
+//			System.out.println(stmt);
+//			cntr++;
+//		}
+//		assertEquals(3, cntr);
+//		Collections.sort(stmtList); 
+//		assertEquals("[http://darpa.aske.ta1.ge/sostest/acceleration, http://www.w3.org/2000/01/rdf-schema#seeAlso, http://www.wikidata.org/entity/Q11376]", stmtList.get(0));
+//		assertEquals("[http://darpa.aske.ta1.ge/sostest/force, http://www.w3.org/2000/01/rdf-schema#seeAlso, http://www.wikidata.org/entity/Q11402]", stmtList.get(1));
+//		assertEquals("[http://darpa.aske.ta1.ge/sostest/mass, http://www.w3.org/2000/01/rdf-schema#seeAlso, http://www.wikidata.org/entity/Q11423]", stmtList.get(2));
+//	}
 
 //	@Test
 //	public void testWithDomainOntolgoy_02() throws ConfigurationException, IOException {

@@ -247,7 +247,7 @@ public class JenaBasedDialogModelProcessor extends JenaBasedSadlModelProcessor {
 		}
 
 		try {
-			theJenaModel = prepareEmptyOntModel(resource);
+			theJenaModel = prepareEmptyOntModel(resource, context);
 		} catch (ConfigurationException e1) {
 			e1.printStackTrace();
 			addError(SadlErrorMessages.CONFIGURATION_ERROR.get(e1.getMessage()), model);
@@ -443,7 +443,7 @@ public class JenaBasedDialogModelProcessor extends JenaBasedSadlModelProcessor {
 				// Do this **after** setting the resource information in the OntModelProvider
 				try {
 					getAnswerCurationManager(resource).processConversation(getCurrentResource(), getTheJenaModel(), getModelName());
-				} catch (IOException e2) {
+				} catch (Exception e2) {
 					// TODO Auto-generated catch block
 					e2.printStackTrace();
 				}

@@ -18,6 +18,7 @@ import com.ge.research.sadl.darpa.aske.processing.IDialogAnswerProvider;
 import com.ge.research.sadl.darpa.aske.processing.MixedInitiativeElement;
 import com.ge.research.sadl.darpa.aske.processing.MixedInitiativeTextualResponse;
 import com.ge.research.sadl.reasoner.IConfigurationManager;
+import com.ge.research.sadl.reasoner.TranslationException;
 import com.ge.research.sadl.reasoner.utils.SadlUtils;
 
 public abstract class BaseDialogAnswerProvider implements IDialogAnswerProvider {
@@ -38,7 +39,7 @@ public abstract class BaseDialogAnswerProvider implements IDialogAnswerProvider 
 
 	@Override
 	public String addCurationManagerInitiatedContent(AnswerCurationManager acm, String methodToCall, List<Object> args,
-			String content) {
+			String content) throws TranslationException {
 
 		answerConfigurationManager = acm;
 //		Consumer<MixedInitiativeElement> respond = a -> this.provideResponse(a);

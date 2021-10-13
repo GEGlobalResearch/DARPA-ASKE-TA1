@@ -121,7 +121,8 @@ import com.ge.research.sadl.external.NetworkProxyConfigurator;
 import com.ge.research.sadl.external.XMLHelper;
 import com.ge.research.sadl.jena.JenaBasedSadlModelProcessor;
 import com.ge.research.sadl.jena.JenaProcessorException;
-import com.ge.research.sadl.jena.inference.SadlJenaModelGetterPutter;
+//import com.ge.research.sadl.jena.inference.SadlJenaModelGetterPutter;
+import com.ge.research.sadl.model.persistence.SadlJenaFileGetterPutter;
 import com.ge.research.sadl.model.gp.GraphPatternElement;
 import com.ge.research.sadl.model.gp.Junction;
 import com.ge.research.sadl.model.gp.Junction.JunctionType;
@@ -339,8 +340,9 @@ public class AnswerCurationManager {
 	 * @throws AnswerExtractionException 
 	 * @throws InvalidInputException 
 	 * @throws AmbiguousNameException 
+	 * @throws TranslationException 
 	 */
-	public int processImports(SaveAsSadl saveAsSadl) throws IOException, ConfigurationException, InvalidNameException, ReasonerNotFoundException, QueryParseException, QueryCancelledException, AnswerExtractionException, InvalidInputException, AmbiguousNameException {
+	public int processImports(SaveAsSadl saveAsSadl) throws IOException, ConfigurationException, InvalidNameException, ReasonerNotFoundException, QueryParseException, QueryCancelledException, AnswerExtractionException, InvalidInputException, AmbiguousNameException, TranslationException {
 		int numSuccessfullyProcessed = 0;
 		addedTypeDeclarations.clear();
 		Map<File, Boolean> outputOwlFilesBySourceType = new HashMap<File, Boolean>();	// Map of imports, value is true if code, false if text extraction
@@ -435,7 +437,7 @@ public class AnswerCurationManager {
 
 	private String processExtractedText(String outputModelName, String outputOwlFileName, SaveAsSadl saveAsSadl)
 			throws ConfigurationException, IOException, ReasonerNotFoundException, InvalidNameException,
-			QueryParseException, QueryCancelledException, AmbiguousNameException {
+			QueryParseException, QueryCancelledException, AmbiguousNameException, TranslationException {
 		// run inference on the model, interact with user to refine results
 		String textModelFolder = getOwlModelsFolder();		// same as code model folder, at least for now
 		String queryString = SparqlQueries.All_TEXT_EXTRACTED_METHODS;	 // SparqlQueries.ALL_EXTERNAL_EQUATIONS;
@@ -451,7 +453,7 @@ public class AnswerCurationManager {
 	}
 
 	private File extractFromCodeAndSave(String content, String fileIdentifier, String outputModelName, String prefix,
-			String outputOwlFileName) throws ConfigurationException, IOException {
+			String outputOwlFileName) throws ConfigurationException, IOException, TranslationException {
 		if (getCodeExtractor().process(fileIdentifier, content, outputModelName, prefix)) {			
 			File of = saveCodeOwlFile(outputOwlFileName);
 			return of;
@@ -460,7 +462,7 @@ public class AnswerCurationManager {
 	}
 
 	private File extractFromTextAndSave(String content, String inputIdentifier, String extractedTxtModelName, String outputOwlFileName)
-			throws IOException, ConfigurationException, AnswerExtractionException {
+			throws IOException, ConfigurationException, AnswerExtractionException, TranslationException {
 		// clear any existing localityURI graph before processing text.
 // TODO this should eventually be a user choice?				
 		String clearMsg = getExtractionProcessor().getTextProcessor().clearGraph(getLocalityURI());
@@ -588,7 +590,6 @@ public class AnswerCurationManager {
 			getExtractionProcessor().getTextProcessor().getTextModelConfigMgr().addMapping(altUrl, getExtractionProcessor().getTextModelName(), getExtractionProcessor().getTextModelPrefix(), false, "AnswerCurationManager");
 			getExtractionProcessor().getTextProcessor().getTextModelConfigMgr().addJenaMapping(getExtractionProcessor().getTextModelName(), altUrl);
 		} catch (URISyntaxException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 		return of;
@@ -608,7 +609,6 @@ public class AnswerCurationManager {
 			getExtractionProcessor().getCodeExtractor().getCodeModelConfigMgr().addMapping(altUrl, getExtractionProcessor().getCodeModelName(), getExtractionProcessor().getCodeModelPrefix(), false, "AnswerCurationManager");
 			getExtractionProcessor().getCodeExtractor().getCodeModelConfigMgr().addJenaMapping(getExtractionProcessor().getCodeModelName(), altUrl);
 		} catch (URISyntaxException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 		return of;
@@ -637,7 +637,7 @@ public class AnswerCurationManager {
 		return results;
 	}
 	
-	private void equationsFromCodeResultSetToSadlContent(ResultSet results, String codeModelFolder, String fileContent) throws ConfigurationException, InvalidNameException, ReasonerNotFoundException, QueryParseException, QueryCancelledException, InvalidInputException, IOException {
+	private void equationsFromCodeResultSetToSadlContent(ResultSet results, String codeModelFolder, String fileContent) throws ConfigurationException, InvalidNameException, ReasonerNotFoundException, QueryParseException, QueryCancelledException, InvalidInputException, IOException, TranslationException {
 //		results.setShowNamespaces(false);
 //		System.out.println(results.toString());
 		if (results != null && results.getRowCount() > 0) {
@@ -692,10 +692,8 @@ public class AnswerCurationManager {
 								getExtractionProcessor().addNewSadlContent(sd);
 							}
 						} catch (AnswerExtractionException e) {
-							// TODO Auto-generated catch block
 							e.printStackTrace();
 						} catch (AmbiguousNameException e) {
-							// TODO Auto-generated catch block
 							e.printStackTrace();
 						}
 					}
@@ -731,7 +729,7 @@ public class AnswerCurationManager {
 
 	private String equationsFromTextResultSetToSadlContent(ResultSet results, String textModelFolder, String locality)
 			throws ConfigurationException, InvalidNameException, ReasonerNotFoundException, QueryParseException,
-			QueryCancelledException, IOException {
+			QueryCancelledException, IOException, TranslationException {
 		StringBuilder sbResults = new StringBuilder("Equations: ");
 		results.setShowNamespaces(false);
 		String[] cns = ((ResultSet) results).getColumnNames();
@@ -790,7 +788,7 @@ public class AnswerCurationManager {
 						String msg = "Error converting method '" + methodName + "': " + e.getMessage();
 						notifyUser(textModelFolder, msg, true);
 					} catch (AmbiguousNameException e) {
-						// TODO Auto-generated catch block
+
 						e.printStackTrace();
 					}								
 				}
@@ -989,7 +987,6 @@ public class AnswerCurationManager {
 			try {
 				target[1] = getConfigurationManager().getAltUrlFromPublicUri(target[0]);
 			} catch (ConfigurationException e) {
-				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
 		}
@@ -1016,10 +1013,8 @@ public class AnswerCurationManager {
 					throw new AnswerExtractionException("Saving of equations to an OWL file with no SADL file not yet supported.");
 				}
 			} catch (MalformedURLException e) {
-				// TODO Auto-generated catch block
 				e.printStackTrace();
 			} catch (IOException e) {
-				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
 		}
@@ -1464,7 +1459,7 @@ public class AnswerCurationManager {
 		return methodCode.toString();
 	}
 
-	public boolean importCodeSnippetToComputationalGraph(Object rs, String userInput) throws InvalidNameException, ConfigurationException, ReasonerNotFoundException, QueryParseException, QueryCancelledException, AnswerExtractionException, InvalidInputException, IOException, AmbiguousNameException {
+	public boolean importCodeSnippetToComputationalGraph(Object rs, String userInput) throws InvalidNameException, ConfigurationException, ReasonerNotFoundException, QueryParseException, QueryCancelledException, AnswerExtractionException, InvalidInputException, IOException, AmbiguousNameException, TranslationException {
 		boolean success = false;
 		if (rs instanceof ResultSet) {
 			List<String> initializerKeywords = getInitializerKeywords();
@@ -1524,9 +1519,10 @@ public class AnswerCurationManager {
 	 * @throws IOException 
 	 * @throws InvalidInputException 
 	 * @throws AmbiguousNameException 
+	 * @throws TranslationException 
 	 */
 	private List<String> convertTextExtractedMethodToExternalEquationInSadlSyntax(String methodName, String derivedFromMethodUri, Map<String,String> scriptMap, String locality) throws InvalidNameException, ConfigurationException,
-			ReasonerNotFoundException, QueryParseException, QueryCancelledException, AnswerExtractionException, InvalidInputException, IOException, AmbiguousNameException {
+			ReasonerNotFoundException, QueryParseException, QueryCancelledException, AnswerExtractionException, InvalidInputException, IOException, AmbiguousNameException, TranslationException {
 		List<String> returnSadlStatements = new ArrayList<String>();
 		StringBuilder sb = new StringBuilder("External ");
 		sb.append(methodName);
@@ -1777,7 +1773,6 @@ public class AnswerCurationManager {
 						conceptAdded(conceptName);
 					}
 				} catch (ConfigurationException e) {
-					// TODO Auto-generated catch block
 					e.printStackTrace();
 				}
 			}
@@ -1812,8 +1807,9 @@ public class AnswerCurationManager {
 	 * @return -- augmented type information in SADL format. This could be an augmented type as string or a String[2] with a note as element 1.
 	 * @throws IOException 
 	 * @throws InvalidInputException 
+	 * @throws TranslationException 
 	 */
-	private Object getAugmentedTypeFromLocalitySearch(String methodUri, String argName, String semType, boolean isMethodReturn, String script, String locality, List<OntResource> articledClasses) throws InvalidInputException, IOException {
+	private Object getAugmentedTypeFromLocalitySearch(String methodUri, String argName, String semType, boolean isMethodReturn, String script, String locality, List<OntResource> articledClasses) throws InvalidInputException, IOException, TranslationException {
 		// check cache
 		if (argName != null && equationVariableContextHasBeenCached(argName, locality)) {
 			return getEquationVariableContextFromCache(argName, locality);
@@ -1873,13 +1869,10 @@ public class AnswerCurationManager {
 								return returns;
 //							}
 						} catch (ConfigurationException e) {
-							// TODO Auto-generated catch block
 							e.printStackTrace();
 						} catch (IOException e) {
-							// TODO Auto-generated catch block
 							e.printStackTrace();
 						} catch (AnswerExtractionException e) {
-							// TODO Auto-generated catch block
 							e.printStackTrace();
 						}
 					}
@@ -1897,13 +1890,10 @@ public class AnswerCurationManager {
 								return returns;
 //							}
 						} catch (ConfigurationException e) {
-							// TODO Auto-generated catch block
 							e.printStackTrace();
 						} catch (IOException e) {
-							// TODO Auto-generated catch block
 							e.printStackTrace();
 						} catch (AnswerExtractionException e) {
-							// TODO Auto-generated catch block
 							e.printStackTrace();
 						}
 					}
@@ -2065,7 +2055,7 @@ public class AnswerCurationManager {
 		return null;
 	}
 	
-	private String getAugmentedTypeFromComment(String locality, String comment) throws ConfigurationException, IOException, AnswerExtractionException {
+	private String getAugmentedTypeFromComment(String locality, String comment) throws ConfigurationException, IOException, AnswerExtractionException, TranslationException {
 		String prefix = null;
 		OntModel cmtModel = getOntModelFromText(getLocalityURI(), comment, locality, getDomainModelName(), prefix , false, false);
 		if (cmtModel != null) {
@@ -2133,10 +2123,11 @@ public class AnswerCurationManager {
 	 * @throws IOException
 	 * @throws ConfigurationException
 	 * @throws AnswerExtractionException
+	 * @throws TranslationException 
 	 */
 	private OntModel getOntModelFromText(String identifier, String content, String locality, 
 			String domainModelName, String prefix, boolean addToTextModel, boolean notifyUser) 
-					throws IOException, ConfigurationException, AnswerExtractionException {
+					throws IOException, ConfigurationException, AnswerExtractionException, TranslationException {
 		if (!isDomainModelForTextSericeUploaded()) {
 			String response = getTextProcessor().uploadDomainModel(getLocalityURI(), getDomainModelName(), getSimplifiedDomainModelForTextService());
 			if (!response.equalsIgnoreCase("ontology successfully uploaded")) {
@@ -2358,7 +2349,6 @@ public class AnswerCurationManager {
 					return or;
 				}
 			} catch (CircularDependencyException e) {
-				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
 		}
@@ -2382,9 +2372,10 @@ public class AnswerCurationManager {
 	 * @throws IOException 
 	 * @throws InvalidInputException 
 	 * @throws AmbiguousNameException 
+	 * @throws TranslationException 
 	 */
 	private List<String> convertCodeExtractedMethodToExternalEquationInSadlSyntax(List<String> initializerKeywords, String methodUri, String methodName, String originalLanguage, String originalScript) throws InvalidNameException, ConfigurationException,
-			ReasonerNotFoundException, QueryParseException, QueryCancelledException, AnswerExtractionException, InvalidInputException, IOException, AmbiguousNameException {
+			ReasonerNotFoundException, QueryParseException, QueryCancelledException, AnswerExtractionException, InvalidInputException, IOException, AmbiguousNameException, TranslationException {
 		String pythoncode = null;
 		String tfPythonCode = null;
 		String npPythonCode = null;
@@ -2715,7 +2706,7 @@ public class AnswerCurationManager {
 	}
 
 	// Method to get the augmented type, if possible, for an implicit variable
-	private List<String> getAugmentedTypesOfVariable(Individual cv) throws InvalidNameException, ConfigurationException, ReasonerNotFoundException, QueryParseException, QueryCancelledException, AmbiguousNameException {
+	private List<String> getAugmentedTypesOfVariable(Individual cv) throws InvalidNameException, ConfigurationException, ReasonerNotFoundException, QueryParseException, QueryCancelledException, AmbiguousNameException, TranslationException {
 		if (augmentedTypesOfCodeVariableIsCached(cv)) {
 			return getCachedAugmentedTypesOfCodeVariable(cv);
 		}
@@ -2767,7 +2758,6 @@ public class AnswerCurationManager {
 																			}
 																		}
 																	} catch (CircularDependencyException e) {
-																		// TODO Auto-generated catch block
 																		e.printStackTrace();
 																	}
 																}
@@ -2820,10 +2810,8 @@ public class AnswerCurationManager {
 								} catch (AnswerExtractionException e) {
 									// OK to not find anything
 								} catch (IOException e) {
-									// TODO Auto-generated catch block
 									e.printStackTrace();
 								} catch (ConfigurationException e) {
-									// TODO Auto-generated catch block
 									e.printStackTrace();
 								}
 							}
@@ -3099,19 +3087,15 @@ public class AnswerCurationManager {
 									cfgmgr.addMapping(altUrl, mdlName, prefix, true, "AnswerCurationManager");
 									cfgmgr.addJenaMapping(mdlName, altUrl);		// this will replace old mapping?
 								} catch (URISyntaxException e) {
-									// TODO Auto-generated catch block
 									e.printStackTrace();
 								} catch (ConfigurationException e) {
-									// TODO Auto-generated catch block
 									e.printStackTrace();
 								}
 							}
 						}
 					} catch (OwlImportException e) {
-						// TODO Auto-generated catch block
 						e.printStackTrace();
 					} catch (InvalidNameException e1) {
-						// TODO Auto-generated catch block
 						e1.printStackTrace();
 					}
 				}
@@ -3119,7 +3103,6 @@ public class AnswerCurationManager {
 					try {
 						notifyUser(getConfigurationManager().getModelFolder(), "Failed to save " + outputOwlFile.getName() + " as SADL file.", true);
 					} catch (ConfigurationException e) {
-						// TODO Auto-generated catch block
 						e.printStackTrace();
 					}
 				}
@@ -3167,10 +3150,8 @@ public class AnswerCurationManager {
 			try {
 				acmic = getDialogAnswerProvider(getResourceUri()).getClass().getMethod("addCurationManagerInitiatedContent", AnswerCurationManager.class, StatementContent.class);
 			} catch (NoSuchMethodException e1) {
-				// TODO Auto-generated catch block
 				e1.printStackTrace();
 			} catch (SecurityException e1) {
-				// TODO Auto-generated catch block
 				e1.printStackTrace();
 			}
 			if (acmic != null) {
@@ -3178,13 +3159,10 @@ public class AnswerCurationManager {
 				try {
 					acmic.invoke(getDialogAnswerProvider(getResourceUri()), this, sc);
 				} catch (IllegalAccessException e) {
-					// TODO Auto-generated catch block
 					e.printStackTrace();
 				} catch (IllegalArgumentException e) {
-					// TODO Auto-generated catch block
 					e.printStackTrace();
 				} catch (InvocationTargetException e) {
-					// TODO Auto-generated catch block
 					e.printStackTrace();
 				}
 			}
@@ -3204,10 +3182,8 @@ public class AnswerCurationManager {
 			try {
 				acmic = getDialogAnswerProvider(getResourceUri()).getClass().getMethod("replaceDialogText", AnswerCurationManager.class, EObject.class, String.class, String.class);
 			} catch (NoSuchMethodException e1) {
-				// TODO Auto-generated catch block
 				e1.printStackTrace();
 			} catch (SecurityException e1) {
-				// TODO Auto-generated catch block
 				e1.printStackTrace();
 			}
 			if (acmic != null) {
@@ -3215,13 +3191,10 @@ public class AnswerCurationManager {
 				try {
 					acmic.invoke(getDialogAnswerProvider(getResourceUri()), this, getConversationHostObject(eObject), originalTxt, replacementTxt);
 				} catch (IllegalAccessException e) {
-					// TODO Auto-generated catch block
 					e.printStackTrace();
 				} catch (IllegalArgumentException e) {
-					// TODO Auto-generated catch block
 					e.printStackTrace();
 				} catch (InvocationTargetException e) {
-					// TODO Auto-generated catch block
 					e.printStackTrace();
 				}
 			}
@@ -3260,10 +3233,8 @@ public class AnswerCurationManager {
 			try {
 				acmic = getDialogAnswerProvider(getResourceUri()).getClass().getMethod("addCurationManagerAnswerContent", AnswerCurationManager.class, String.class, Object.class);
 			} catch (NoSuchMethodException e1) {
-				// TODO Auto-generated catch block
 				e1.printStackTrace();
 			} catch (SecurityException e1) {
-				// TODO Auto-generated catch block
 				e1.printStackTrace();
 			}
 			if (acmic == null) {
@@ -3285,13 +3256,10 @@ public class AnswerCurationManager {
 						return retval.toString();
 					}
 				} catch (IllegalAccessException e) {
-					// TODO Auto-generated catch block
 					e.printStackTrace();
 				} catch (IllegalArgumentException e) {
-					// TODO Auto-generated catch block
 					e.printStackTrace();
 				} catch (InvocationTargetException e) {
-					// TODO Auto-generated catch block
 					e.printStackTrace();
 				}
 			}
@@ -3483,7 +3451,6 @@ public class AnswerCurationManager {
 	}
 
 	public AnswerCMStatement getLastACMQuestion() {
-		// TODO Auto-generated method stub
 		return null;
 	}
 
@@ -3782,7 +3749,6 @@ public class AnswerCurationManager {
 					answerUser(getOwlModelsFolder(), returnStatus, true, sc.getHostEObject());	
 					processExtractedText(outputModelName, outputOwlFileName, SaveAsSadl.DoNotSaveAsSadl);
 				} catch (Exception e) {
-					// TODO Auto-generated catch block
 					e.printStackTrace();
 					returnStatus += e.getMessage();
 				} 
@@ -3796,7 +3762,7 @@ public class AnswerCurationManager {
 
 	private String continueExtraction(String content)
 			throws IOException, ConfigurationException, ReasonerNotFoundException, InvalidNameException,
-			QueryParseException, QueryCancelledException, InvalidInputException, AmbiguousNameException {
+			QueryParseException, QueryCancelledException, InvalidInputException, AmbiguousNameException, TranslationException {
 		String outputOwlFileName;
 		boolean useAllCodeExtractedMethods = true;
 		SaveAsSadl saveAsSadl = SaveAsSadl.DoNotSaveAsSadl;
@@ -3976,8 +3942,9 @@ public class AnswerCurationManager {
 	 * @throws AnswerExtractionException
 	 * @throws IOException
 	 * @throws ConfigurationException
+	 * @throws TranslationException 
 	 */
-	private List<Object> processExtractionFromText(String txt, boolean bAsCompleteStatement) throws AnswerExtractionException, IOException, ConfigurationException {
+	private List<Object> processExtractionFromText(String txt, boolean bAsCompleteStatement) throws AnswerExtractionException, IOException, ConfigurationException, TranslationException {
 		String prefix = "temp";
 		OntModel m = getOntModelFromText("from text", txt, getLocalityURI(), getDomainModelName(), prefix, false, false);
 		if (m != null) {
@@ -4021,7 +3988,6 @@ public class AnswerCurationManager {
 			try {
 				retVal += getEquationNamesFromTextServiceResults(m, getDomainModelName());
 			} catch (Exception e) {
-				// TODO Auto-generated catch block
 				e.printStackTrace();
 				retVal += e.getMessage();
 			}
@@ -4330,7 +4296,7 @@ public class AnswerCurationManager {
 		}
 	}
 
-	private OntModel getDomainModelExtractForTextService(boolean useSimplifiedDomainOntology) throws ConfigurationException {
+	private OntModel getDomainModelExtractForTextService(boolean useSimplifiedDomainOntology) throws ConfigurationException, TranslationException, IOException {
 		OntModel dm = getDomainModel();
 		if (!useSimplifiedDomainOntology) {
 //			try {
@@ -4338,10 +4304,8 @@ public class AnswerCurationManager {
 //				dm.write(System.err, "N3");
 //				return dm;
 //			} catch (ConfigurationException e) {
-//				// TODO Auto-generated catch block
 //				e.printStackTrace();
 //			} catch (IOException e) {
-//				// TODO Auto-generated catch block
 //				e.printStackTrace();
 //			}
 			return dm;
@@ -4351,7 +4315,12 @@ public class AnswerCurationManager {
 		if (getOwlModelsFolder() != null && !getOwlModelsFolder().startsWith(IModelProcessor.SYNTHETIC_FROM_TEST)) {
 			File mff = new File(getOwlModelsFolder());
 			mff.mkdirs();
-			spec.setImportModelGetter(new SadlJenaModelGetterPutter(spec, getOwlModelsFolder()));
+			
+			//TODO: what's the right call here?
+			
+			spec.setImportModelGetter(getConfigurationManager().getSadlModelGetterPutter(getConfigurationManager().getRepoType()));
+//			spec.setImportModelGetter(getConfigurationManager().getSadlModelGetter(getConfigurationManager().getRepoType()));
+//			spec.setImportModelGetter(new SadlJenaModelGetterPutter(spec, getOwlModelsFolder()));
 		}
 		if (owlDocMgr != null) {
 			spec.setDocumentManager(owlDocMgr);
@@ -4428,7 +4397,7 @@ public class AnswerCurationManager {
 		return false;
 	}
 
-	private String getEquationNamesFromTextServiceResults(OntModel m, String dialogModelName) throws ConfigurationException, IOException, ReasonerNotFoundException, InvalidNameException, QueryParseException, QueryCancelledException, AmbiguousNameException {
+	private String getEquationNamesFromTextServiceResults(OntModel m, String dialogModelName) throws ConfigurationException, IOException, ReasonerNotFoundException, InvalidNameException, QueryParseException, QueryCancelledException, AmbiguousNameException, TranslationException {
 		OntModel theModel = getExtractionProcessor().getTextModel();
 		if (theModel != null && m != null) {
 			theModel.add(m);
@@ -5002,7 +4971,7 @@ public class AnswerCurationManager {
 									try {
 										Files.copy(srcFile, trgtFile);
 									} catch (IOException e) {
-										// TODO Auto-generated catch block
+				
 										e.printStackTrace();
 										graphicUrl = "file://" + sourceName; //file url
 									}
@@ -6213,8 +6182,6 @@ public class AnswerCurationManager {
 	}
 
 	public void setUserName(String answer) {
-		// TODO Auto-generated method stub
-		
 	}
 
 	public String getUserName() {
@@ -6226,8 +6193,9 @@ public class AnswerCurationManager {
 	 * @param resource 
 	 * @param domainModel 
 	 * @param domainModelName 
+	 * @throws TranslationException 
 	 */
-	public void processConversation(org.eclipse.emf.ecore.resource.Resource resource, OntModel domainModel, String domainModelName) {
+	public void processConversation(org.eclipse.emf.ecore.resource.Resource resource, OntModel domainModel, String domainModelName) throws TranslationException {
 		URI thisResourceUri = resource.getURI();
 		if (getDialogAnswerProvider(thisResourceUri) == null) {
 //			System.err.println("No DialogAnswerProvider registered for '" + resource.getURI().lastSegment() + "'.");
@@ -6524,14 +6492,14 @@ public class AnswerCurationManager {
 	}
 
 	private void processAddEquationContent(org.eclipse.emf.ecore.resource.Resource resource2, DialogContent dc, Map<ConversationElement, ConversationElement> additionMap, List<ConversationElement> additions, List<String> currentQuestions, 
-			ConversationElement ce, StatementContent statementAfter, AddEquationContent sc) {
+			ConversationElement ce, StatementContent statementAfter, AddEquationContent sc) throws TranslationException {
 		processExpectsAnswerContent(resource, dc, additionMap, additions, currentQuestions, ce, statementAfter, sc);
 	}
 
 	private void processExpectsAnswerContent(org.eclipse.emf.ecore.resource.Resource resource,
 			DialogContent dc, Map<ConversationElement, ConversationElement> additionMap,
 			List<ConversationElement> additions, List<String> currentQuestions, ConversationElement ce,
-			StatementContent statementAfter, ExpectsAnswerContent sc) {
+			StatementContent statementAfter, ExpectsAnswerContent sc) throws TranslationException {
 		StatementContent lastStatement;
 		String question = sc.getText().trim();
 		currentQuestions.add(question);
@@ -6599,28 +6567,28 @@ public class AnswerCurationManager {
 						saveSuspendedExtractionContent(null);
 						saveSuspendedCodeModel(null);
 					} catch (IOException e) {
-						// TODO Auto-generated catch block
+
 						e.printStackTrace();
 					} catch (ConfigurationException e) {
-						// TODO Auto-generated catch block
+
 						e.printStackTrace();
 					} catch (ReasonerNotFoundException e) {
-						// TODO Auto-generated catch block
+
 						e.printStackTrace();
 					} catch (InvalidNameException e) {
-						// TODO Auto-generated catch block
+
 						e.printStackTrace();
 					} catch (QueryParseException e) {
-						// TODO Auto-generated catch block
+
 						e.printStackTrace();
 					} catch (QueryCancelledException e) {
-						// TODO Auto-generated catch block
+
 						e.printStackTrace();
 					} catch (InvalidInputException e) {
-						// TODO Auto-generated catch block
+
 						e.printStackTrace();
 					} catch (AmbiguousNameException e) {
-						// TODO Auto-generated catch block
+
 						e.printStackTrace();
 					}
 				}
@@ -6644,7 +6612,7 @@ public class AnswerCurationManager {
 						answerUser(getOwlModelsFolder(), ans, sc.isQuoteResult(), sc.getHostEObject());
 						addQuestionAndAnswer(question, ans);
 					} catch (ConfigurationException e) {
-						// TODO Auto-generated catch block
+
 						e.printStackTrace();
 					}	
 				}
@@ -6861,7 +6829,7 @@ public class AnswerCurationManager {
 								addAugmentedTypeQuestionAsked(questionKey, question);
 							}
 						} catch (ConfigurationException e) {
-							// TODO Auto-generated catch block
+	
 							e.printStackTrace();
 						}
 					}
@@ -6946,7 +6914,7 @@ public class AnswerCurationManager {
 		simplifiedDomainModelForTextService = sdmfts;
 	}
 	
-	private OntModel getSimplifiedDomainModelForTextService() throws ConfigurationException {
+	private OntModel getSimplifiedDomainModelForTextService() throws ConfigurationException, TranslationException, IOException {
 		if (simplifiedDomainModelForTextService == null) {
 			setSimplifiedDomainModelForTextService(getDomainModelExtractForTextService(true));
 		}
@@ -6974,7 +6942,7 @@ public class AnswerCurationManager {
 		return (simplifiedDomainModelForTextService != null);
 	}
 
-	private boolean applyAnswerToUnansweredQuestion(StatementContent question, StatementContent sc) {
+	private boolean applyAnswerToUnansweredQuestion(StatementContent question, StatementContent sc) throws TranslationException {
 		if (question instanceof QuestionWithCallbackContent && sc instanceof AnswerContent) {
 			List<Object> args = ((QuestionWithCallbackContent)question).getArguments();
 			if (args != null) {
@@ -6997,7 +6965,7 @@ public class AnswerCurationManager {
 		return false;
 	}
 
-	public void provideResponse(QuestionWithCallbackContent question) {
+	public void provideResponse(QuestionWithCallbackContent question) throws TranslationException {
 		String methodToCall = question.getMethodToCall();
 		Method[] methods = this.getClass().getMethods();
 		for (Method m : methods) {
@@ -7038,13 +7006,13 @@ public class AnswerCurationManager {
 													getConfigurationManager().deleteMapping(altUrl, publicUri);
 												}
 											} catch (ConfigurationException e) {
-												// TODO Auto-generated catch block
+						
 												e.printStackTrace();
 											} catch (URISyntaxException e) {
-												// TODO Auto-generated catch block
+						
 												e.printStackTrace();
 											} catch (IOException e) {
-												// TODO Auto-generated catch block
+						
 												e.printStackTrace();
 											}
 										}
@@ -7073,13 +7041,13 @@ public class AnswerCurationManager {
 											getConfigurationManager().addMapping(importActualUrl, importPublicUri, prefix, false, "AnswerCurationManager");
 											String prjname = owlFile.getParentFile().getParentFile().getName();
 										} catch (IOException e) {
-											// TODO Auto-generated catch block
+					
 											e.printStackTrace();
 										} catch (URISyntaxException e) {
-											// TODO Auto-generated catch block
+					
 											e.printStackTrace();
 										} catch (ConfigurationException e) {
-											// TODO Auto-generated catch block
+					
 											e.printStackTrace();
 										}
 									}
@@ -7172,7 +7140,8 @@ public class AnswerCurationManager {
 				if (getOwlModelsFolder() != null && !getOwlModelsFolder().startsWith(IModelProcessor.SYNTHETIC_FROM_TEST)) {
 					File mff = new File(getOwlModelsFolder());
 					mff.mkdirs();
-					spec.setImportModelGetter(new SadlJenaModelGetterPutter(spec, getOwlModelsFolder()));
+					spec.setImportModelGetter(new SadlJenaFileGetterPutter(getConfigurationManager(), ""));
+//					spec.setImportModelGetter(new SadlJenaModelGetterPutter(spec, getOwlModelsFolder()));
 				}
 				if (owlDocMgr != null) {
 					spec.setDocumentManager(owlDocMgr);

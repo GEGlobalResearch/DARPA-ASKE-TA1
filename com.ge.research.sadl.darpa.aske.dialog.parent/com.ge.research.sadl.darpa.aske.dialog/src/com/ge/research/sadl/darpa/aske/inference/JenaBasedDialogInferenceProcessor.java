@@ -88,7 +88,7 @@ import com.ge.research.sadl.darpa.aske.processing.imports.KChainServiceInterface
 import com.ge.research.sadl.jena.JenaBasedSadlInferenceProcessor;
 import com.ge.research.sadl.jena.JenaBasedSadlModelProcessor;
 import com.ge.research.sadl.jena.UtilsForJena;
-import com.ge.research.sadl.model.SadlSerializationFormat;
+import com.ge.research.sadl.model.persistence.SadlPersistenceFormat;
 import com.ge.research.sadl.model.gp.Literal;
 import com.ge.research.sadl.model.gp.NamedNode;
 import com.ge.research.sadl.model.gp.Node;
@@ -132,6 +132,7 @@ import org.apache.jena.rdf.model.Statement;
 import org.apache.jena.update.UpdateAction;
 import org.apache.jena.vocabulary.RDF;
 
+import com.ge.research.semtk.resultSet.min.Table;
 import com.ge.research.semtk.sparqlx.min.*;
 
 
@@ -2423,16 +2424,26 @@ private void getOutputDocContextPatterns(TripleElement[] triples, List<Node> inp
 	}
 }
 
-private void inferDependencyGraph(Resource resource) throws SadlInferenceException, ConfigurationException, ReasonerNotFoundException, InvalidNameException, QueryParseException, QueryCancelledException, AmbiguousNameException {
+private void inferDependencyGraph(Resource resource) throws Exception {
 	System.out.print("Dependency graph inference: ");
-	long startTime = System.currentTimeMillis();
-	// Insert dependency graph
-	runInference(resource, GENERICIOs, CHECK_GENERICIOs);
+//	long startTime = System.currentTimeMillis();
+//	// Insert dependency graph
+//	runInference(resource, GENERICIOs, CHECK_GENERICIOs);
 	
-	//String tmp = DEPENDENCY_GRAPH_INSERT
-	runInference(resource, DEPENDENCY_GRAPH_INSERT,CHECK_DEPENDENCY);
-	long endTime = System.currentTimeMillis();
-	System.out.println((endTime - startTime)/1000.0 + " secs" );
+//	//String tmp = DEPENDENCY_GRAPH_INSERT
+//	runInference(resource, DEPENDENCY_GRAPH_INSERT,CHECK_DEPENDENCY);
+//	long endTime = System.currentTimeMillis();
+//	System.out.println((endTime - startTime)/1000.0 + " secs" );
+
+	String retrieveGraphQry = "CONSTRUCT {?s ?p ?o} FROM <http://aske.ge.com/turbo> WHERE {?s ?p ?o}";
+
+	SparqlEndpointInterface sei = SparqlEndpointInterface.getInstance(SparqlEndpointInterface.FUSEKI_SERVER, "http://leb1acdev.hpc.ge.com:3030/ML4M", "http://aske.ge.com/turbo");
+	String res = sei.executeQueryToRdf(retrieveGraphQry);
+
+	if (res != null) {
+		System.out.print("Graph retrieved");
+	}
+
 }
 
 /**
@@ -2836,9 +2847,8 @@ private void runInference(Resource resource, String query, String testQuery) thr
 		ConfigurationManagerForIDE cmgr = null;
 		try {
 			//String p = getModelFolderPath(resource);
-			cmgr = ConfigurationManagerForIdeFactory.getConfigurationManagerForIDE(getModelFolderPath(resource), ConfigurationManagerForIDE.getOWLFormat());
+			cmgr = ConfigurationManagerForIdeFactory.getConfigurationManagerForIDE(getModelFolderPath(resource), ConfigurationManagerForIDE.getPersistenceFormatFromPreferences());
 		} catch (ConfigurationException e1) {
-			//  Auto-generated catch block
 			e1.printStackTrace();
 		}
 		return cmgr;
@@ -3341,7 +3351,7 @@ private RDFNode getObjectAsLiteralOrResource(Node property, Node object) {
 		return org.apache.jena.query.ResultSetFactory.makeRewindable(eqnsRes);
 	}
 
-	private ResultSet retrieveCG1(Resource resource, List<RDFNode> inputsList, List<RDFNode> outputsList, boolean inverseQuery) throws SadlInferenceException, ConfigurationException, ReasonerNotFoundException, InvalidNameException, QueryParseException, QueryCancelledException, AmbiguousNameException {
+	private ResultSet retrieveCG1(Resource resource, List<RDFNode> inputsList, List<RDFNode> outputsList, boolean inverseQuery) throws Exception, SadlInferenceException, ConfigurationException, ReasonerNotFoundException, InvalidNameException, QueryParseException, QueryCancelledException, AmbiguousNameException {
 		String queryStr, inpStr, outpStr;
 	
 		ResultSet equations = null;
@@ -3356,9 +3366,30 @@ private RDFNode getObjectAsLiteralOrResource(Node property, Node object) {
 				queryStr = BUILD_COMP_GRAPH.replaceAll("LISTOFOUTPUTS", outpStr).replaceAll("LISTOFINPUTS", inpStr);
 	
 				//TODO
+				queryStr = "prefix hyper:<http://aske.ge.com/hypersonicsV2#>\n"
+						+ "prefix imp:<http://sadl.org/sadlimplicitmodel#> \n"
+						+ "prefix owl:<http://www.w3.org/2002/07/owl#> \n"
+						+ "prefix rdfs:<http://www.w3.org/2000/01/rdf-schema#>\n"
+						+ "prefix rdf:<http://www.w3.org/1999/02/22-rdf-syntax-ns#>prefix sci:<http://aske.ge.com/sciknow#>\n"
+						+ "prefix cg:<http://aske.ge.com/compgraphmodel#>\n"
+						+ "prefix list:<http://sadl.org/sadllistmodel#>\n"
+						+ "\n"
+						+ "select distinct *\n"
+						+ "FROM <http://aske.ge.com/turbo>\n"
+						+ "where {\n"
+						+ " ?eq rdf:type imp:ExternalEquation.\n"
+						+ "}";
+				
+				
+//				SparqlEndpointInterface sei = SparqlEndpointInterface.getInstance(SparqlEndpointInterface.FUSEKI_SERVER, "http://leb1acdev.hpc.ge.com:3030/ML4M", "http://aske.ge.com/turbo");
+//				Table tab = sei.executeQueryToTable(queryStr);
+//				equations = new ResultSet(tab.getColumnNames(),tab.getDataArray());
+
+
+
+
 //				equations = runReasonerQuery(resource, queryStr);
-				SparqlEndpointInterface sei;
-	
+				
 				if (equations == null || !equations.hasNext()) {
 					queryStr = BUILD_COMP_GRAPH.replaceAll("LISTOFOUTPUTS", inpStr).replaceAll("LISTOFINPUTS", outpStr);
 					equations = runReasonerQuery(resource, queryStr);
@@ -3629,7 +3660,7 @@ private RDFNode getObjectAsLiteralOrResource(Node property, Node object) {
 
 	private ResultSet runPrologQuery(Resource resource, String query, String instanceDataURI, String queryOwlFileWithPath) throws Exception {
 		String modelFolder = getModelFolderPath(resource); //getOwlModelsFolderPath(path).toString(); 
-		final String format = SadlSerializationFormat.RDF_XML_ABBREV_FORMAT;
+		final String format = SadlPersistenceFormat.RDF_XML_ABBREV_FORMAT;
 		IConfigurationManagerForIDE configMgr;
 
 		
@@ -3706,7 +3737,7 @@ private RDFNode getObjectAsLiteralOrResource(Node property, Node object) {
 
 	private ResultSet runReasonerQuery(Resource resource, String query) throws SadlInferenceException, ConfigurationException, ReasonerNotFoundException, InvalidNameException, QueryParseException, QueryCancelledException, AmbiguousNameException {
 		String modelFolderUri = getModelFolderPath(resource); //getOwlModelsFolderPath(path).toString(); 
-		final String format = SadlSerializationFormat.RDF_XML_ABBREV_FORMAT;
+		final String format = SadlPersistenceFormat.RDF_XML_ABBREV_FORMAT;
 		IConfigurationManagerForIDE configMgr;
 
 		
@@ -3757,7 +3788,7 @@ private RDFNode getObjectAsLiteralOrResource(Node property, Node object) {
 
 	private String runReasonerQueryJson(Resource resource, String query) throws SadlInferenceException, ConfigurationException, ReasonerNotFoundException, InvalidNameException, QueryParseException, QueryCancelledException, AmbiguousNameException {
 		String modelFolderUri = getModelFolderPath(resource); 
-		final String format = SadlSerializationFormat.RDF_XML_ABBREV_FORMAT;
+		final String format = SadlPersistenceFormat.RDF_XML_ABBREV_FORMAT;
 		IConfigurationManagerForIDE configMgr;
 
 		

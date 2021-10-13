@@ -2,6 +2,8 @@ name: aske-ta1-kchain-py36
 channels:
   - conda-forge
   - anaconda-fusion
+  - https://repo.anaconda.com/pkgs/free
+  - prometeia
   - defaults
 dependencies:
   - absl-py=0.9.0=py36_0
@@ -115,7 +117,6 @@ dependencies:
   - python-jsonrpc-server=0.3.2=py_0
   - python-language-server=0.31.4=py36_0
   - pytz=2019.3=py_0
-  - pywin32-ctypes=0.2.0=py36_1000
   - pyyaml=5.2=py36hfa6e2cd_0
   - qdarkstyle=2.7=py_0
   - qt=5.12.5=h7ef1ec2_0
@@ -152,8 +153,6 @@ dependencies:
   - watchdog=0.9.0=py36_1
   - werkzeug=0.16.0=py_0
   - wheel=0.33.6=py36_0
-  - win_inet_pton=1.1.0=py36_0
-  - wincertstore=0.2=py36_1003
   - wrapt=1.11.2=py36hfa6e2cd_0
   - yaml=0.2.2=hfa6e2cd_1
   - yapf=0.28.0=py_0
