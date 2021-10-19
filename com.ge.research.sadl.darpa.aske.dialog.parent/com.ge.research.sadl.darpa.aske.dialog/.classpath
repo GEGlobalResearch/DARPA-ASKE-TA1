@@ -5,36 +5,5 @@
 	<classpathentry kind="src" path="src/"/>
 	<classpathentry kind="src" path="src-gen/"/>
 	<classpathentry kind="src" path="xtend-gen/"/>
-	<classpathentry exported="true" kind="lib" path="lib/semtk-sparqlx-min.jar" sourcepath="/semtk-sparqlX-min"/>
-	<classpathentry exported="true" kind="lib" path="lib/httpclient.jar">
-		<attributes>
-			<attribute name="javadoc_location" value="file:/Users/alfredo/Documents/git/DARPA-ASKE-TA1/com.ge.research.sadl.darpa.aske.dialog.parent/com.ge.research.sadl.darpa.aske.dialog/doc/"/>
-		</attributes>
-	</classpathentry>
-	<classpathentry exported="true" kind="lib" path="lib/http-client-spi.jar">
-		<attributes>
-			<attribute name="javadoc_location" value="file:/Users/alfredo/Documents/git/DARPA-ASKE-TA1/com.ge.research.sadl.darpa.aske.dialog.parent/com.ge.research.sadl.darpa.aske.dialog/doc/"/>
-		</attributes>
-	</classpathentry>
-	<classpathentry exported="true" kind="lib" path="lib/httpclient-cache.jar">
-		<attributes>
-			<attribute name="javadoc_location" value="file:/Users/alfredo/Documents/git/DARPA-ASKE-TA1/com.ge.research.sadl.darpa.aske.dialog.parent/com.ge.research.sadl.darpa.aske.dialog/doc/"/>
-		</attributes>
-	</classpathentry>
-	<classpathentry exported="true" kind="lib" path="lib/httpcore.jar">
-		<attributes>
-			<attribute name="javadoc_location" value="file:/Users/alfredo/Documents/git/DARPA-ASKE-TA1/com.ge.research.sadl.darpa.aske.dialog.parent/com.ge.research.sadl.darpa.aske.dialog/doc/"/>
-		</attributes>
-	</classpathentry>
-	<classpathentry exported="true" kind="lib" path="lib/httpmime.jar">
-		<attributes>
-			<attribute name="javadoc_location" value="file:/Users/alfredo/Documents/git/DARPA-ASKE-TA1/com.ge.research.sadl.darpa.aske.dialog.parent/com.ge.research.sadl.darpa.aske.dialog/doc/"/>
-		</attributes>
-	</classpathentry>
-	<classpathentry exported="true" kind="lib" path="lib/json-simple.jar">
-		<attributes>
-			<attribute name="javadoc_location" value="file:/Users/alfredo/Documents/git/DARPA-ASKE-TA1/com.ge.research.sadl.darpa.aske.dialog.parent/com.ge.research.sadl.darpa.aske.dialog/doc/"/>
-		</attributes>
-	</classpathentry>
 	<classpathentry kind="output" path="target/classes"/>
 </classpath>

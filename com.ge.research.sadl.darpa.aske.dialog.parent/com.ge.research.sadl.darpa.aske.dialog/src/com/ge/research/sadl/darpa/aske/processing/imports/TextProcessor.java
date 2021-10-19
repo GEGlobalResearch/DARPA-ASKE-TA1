@@ -768,6 +768,7 @@ public class TextProcessor {
 	public OntModel serializedOwlModelToOntModel(String modelName, String serializedGraph, String format) {
 //		System.out.println("Graph extracted:\n" + serializedGraph);	// debug only
 		//TODO: commented out, waiting to hear what should replace the 4-argument getOntModel
+		// 	To fix this, need to switch to SADL branch integrateSemTK
 		try {
 //			OntModel newModel = getTextModelConfigMgr().getOntModel(modelName, serializedGraph, Scope.INCLUDEIMPORTS, format);
 			OntModel newModel = getTextModelConfigMgr().getOntModel(modelName, serializedGraph, format);

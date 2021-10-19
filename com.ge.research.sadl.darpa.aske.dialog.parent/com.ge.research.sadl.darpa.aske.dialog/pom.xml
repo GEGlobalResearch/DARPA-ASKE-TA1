@@ -11,38 +11,15 @@
 
 	<name>DARPA-ASKE Core</name>
 
-<dependencies>
+<!-- dependencies>
 	<dependency>
 		<groupId>com.ge.research.semtk</groupId>
 		<artifactId>semtk-sparqlx-min</artifactId>
 		<version>0.0.1-SNAPSHOT</version>
 	</dependency>
-</dependencies>
+</dependencies-->
 	<build>
 		<plugins>
-			<!-- Copy dependencies to lib directory -->
-			<plugin>
-				<groupId>org.apache.maven.plugins</groupId>
-				<artifactId>maven-dependency-plugin</artifactId>
-				<version>3.2.0</version>
-				<configuration>
-					<excludeScope>system</excludeScope>
-					<outputDirectory>${project.basedir}/lib</outputDirectory>
-					<overWriteReleases>true</overWriteReleases>
-					<overWriteSnapshots>true</overWriteSnapshots>
-					<stripVersion>true</stripVersion>
-				</configuration>
-				<executions>
-					<execution>
-						<?m2e ignore?>
-						<id>default-copy-dependencies</id>
-						<goals>
-							<goal>copy-dependencies</goal>
-						</goals>
-						<phase>generate-resources</phase>
-					</execution>
-				</executions>
-			</plugin>
 			<plugin>
 				<groupId>eu.somatik.serviceloader-maven-plugin</groupId>
 				<artifactId>serviceloader-maven-plugin</artifactId>

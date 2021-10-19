@@ -132,10 +132,6 @@ import org.apache.jena.rdf.model.Statement;
 import org.apache.jena.update.UpdateAction;
 import org.apache.jena.vocabulary.RDF;
 
-import com.ge.research.semtk.resultSet.min.Table;
-import com.ge.research.semtk.sparqlx.min.*;
-
-
 /**
  * @author 212438865
  *
@@ -2426,23 +2422,14 @@ private void getOutputDocContextPatterns(TripleElement[] triples, List<Node> inp
 
 private void inferDependencyGraph(Resource resource) throws Exception {
 	System.out.print("Dependency graph inference: ");
-//	long startTime = System.currentTimeMillis();
-//	// Insert dependency graph
-//	runInference(resource, GENERICIOs, CHECK_GENERICIOs);
+	long startTime = System.currentTimeMillis();
+	// Insert dependency graph
+	runInference(resource, GENERICIOs, CHECK_GENERICIOs);
 	
-//	//String tmp = DEPENDENCY_GRAPH_INSERT
-//	runInference(resource, DEPENDENCY_GRAPH_INSERT,CHECK_DEPENDENCY);
-//	long endTime = System.currentTimeMillis();
-//	System.out.println((endTime - startTime)/1000.0 + " secs" );
-
-	String retrieveGraphQry = "CONSTRUCT {?s ?p ?o} FROM <http://aske.ge.com/turbo> WHERE {?s ?p ?o}";
-
-	SparqlEndpointInterface sei = SparqlEndpointInterface.getInstance(SparqlEndpointInterface.FUSEKI_SERVER, "http://leb1acdev.hpc.ge.com:3030/ML4M", "http://aske.ge.com/turbo");
-	String res = sei.executeQueryToRdf(retrieveGraphQry);
-
-	if (res != null) {
-		System.out.print("Graph retrieved");
-	}
+	//String tmp = DEPENDENCY_GRAPH_INSERT
+	runInference(resource, DEPENDENCY_GRAPH_INSERT,CHECK_DEPENDENCY);
+	long endTime = System.currentTimeMillis();
+	System.out.println((endTime - startTime)/1000.0 + " secs" );
 
 }
 
@@ -3365,30 +3352,7 @@ private RDFNode getObjectAsLiteralOrResource(Node property, Node object) {
 				outpStr = "<" + oc.toString() + ">";
 				queryStr = BUILD_COMP_GRAPH.replaceAll("LISTOFOUTPUTS", outpStr).replaceAll("LISTOFINPUTS", inpStr);
 	
-				//TODO
-				queryStr = "prefix hyper:<http://aske.ge.com/hypersonicsV2#>\n"
-						+ "prefix imp:<http://sadl.org/sadlimplicitmodel#> \n"
-						+ "prefix owl:<http://www.w3.org/2002/07/owl#> \n"
-						+ "prefix rdfs:<http://www.w3.org/2000/01/rdf-schema#>\n"
-						+ "prefix rdf:<http://www.w3.org/1999/02/22-rdf-syntax-ns#>prefix sci:<http://aske.ge.com/sciknow#>\n"
-						+ "prefix cg:<http://aske.ge.com/compgraphmodel#>\n"
-						+ "prefix list:<http://sadl.org/sadllistmodel#>\n"
-						+ "\n"
-						+ "select distinct *\n"
-						+ "FROM <http://aske.ge.com/turbo>\n"
-						+ "where {\n"
-						+ " ?eq rdf:type imp:ExternalEquation.\n"
-						+ "}";
-				
-				
-//				SparqlEndpointInterface sei = SparqlEndpointInterface.getInstance(SparqlEndpointInterface.FUSEKI_SERVER, "http://leb1acdev.hpc.ge.com:3030/ML4M", "http://aske.ge.com/turbo");
-//				Table tab = sei.executeQueryToTable(queryStr);
-//				equations = new ResultSet(tab.getColumnNames(),tab.getDataArray());
-
-
-
-
-//				equations = runReasonerQuery(resource, queryStr);
+				equations = runReasonerQuery(resource, queryStr);
 				
 				if (equations == null || !equations.hasNext()) {
 					queryStr = BUILD_COMP_GRAPH.replaceAll("LISTOFOUTPUTS", inpStr).replaceAll("LISTOFINPUTS", outpStr);
@@ -4247,30 +4211,30 @@ private Map<String, String> getClassUnitsMappingFromModelsJson(String json) {
 //		}
 //	}
 
-	//TODO
-	@SuppressWarnings("deprecation")
-	private String querySemTK(String Url, String query)  {
-		DefaultHttpClient httpclient = new DefaultHttpClient();
-        HttpPost httppost = new HttpPost(Url);
-        httppost.setHeader("Accept", "*/*");
-        httppost.setHeader("Content-type", "application/txt");
-        
-        try {
-			httppost.setEntity(new StringEntity("\"" + query.replace("\"", "\\\"") + "\""));
-			CloseableHttpResponse response = httpclient.execute(httppost);
-	        HttpEntity respEntity = response.getEntity();
-	        String responseTxt = EntityUtils.toString(respEntity, "UTF-8");
-	        if (debugMode) {System.out.println(responseTxt);}
-	        httpclient.close();
-	        return responseTxt;
-		} catch (IOException e) {
-			System.err.println("SemTK query request failed.");
-	        httpclient.close();
-			return "";
-		}
-	}
-
-	
+//	//TODO
+//	@SuppressWarnings("deprecation")
+//	private String querySemTK(String Url, String query)  {
+//		DefaultHttpClient httpclient = new DefaultHttpClient();
+//        HttpPost httppost = new HttpPost(Url);
+//        httppost.setHeader("Accept", "*/*");
+//        httppost.setHeader("Content-type", "application/txt");
+//        
+//        try {
+//			httppost.setEntity(new StringEntity("\"" + query.replace("\"", "\\\"") + "\""));
+//			CloseableHttpResponse response = httpclient.execute(httppost);
+//	        HttpEntity respEntity = response.getEntity();
+//	        String responseTxt = EntityUtils.toString(respEntity, "UTF-8");
+//	        if (debugMode) {System.out.println(responseTxt);}
+//	        httpclient.close();
+//	        return responseTxt;
+//		} catch (IOException e) {
+//			System.err.println("SemTK query request failed.");
+//	        httpclient.close();
+//			return "";
+//		}
+//	}
+//
+//	
 	
 	@SuppressWarnings("deprecation")
 	private String executeDBN(String jsonTxt)  {

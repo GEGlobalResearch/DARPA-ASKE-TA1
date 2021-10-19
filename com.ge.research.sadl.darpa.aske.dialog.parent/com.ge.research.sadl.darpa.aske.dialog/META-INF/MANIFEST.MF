@@ -69,14 +69,7 @@ Export-Package: com.ge.research.sadl.darpa.aske,
  com.ge.research.sadl.darpa.aske.scoping,
  com.ge.research.sadl.darpa.aske.services,
  com.ge.research.sadl.darpa.aske.validation
-Bundle-ClassPath: .,
- lib/semtk-sparqlx-min.jar,
- lib/httpclient.jar,
- lib/http-client-spi.jar,
- lib/httpclient-cache.jar,
- lib/httpcore.jar,
- lib/httpmime.jar,
- lib/json-simple.jar
+Bundle-ClassPath: .
 Import-Package: com.ge.research.sadl.jena.inference,
  com.ge.research.sadl.processing,
  com.google.gson;version="2.7.0",

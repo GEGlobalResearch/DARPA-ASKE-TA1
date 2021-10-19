@@ -39,6 +39,8 @@ kchain/log
 *~
 *.genmodel
 
+.classpath
+
 .settings
 .gitignore
 \#*\#
