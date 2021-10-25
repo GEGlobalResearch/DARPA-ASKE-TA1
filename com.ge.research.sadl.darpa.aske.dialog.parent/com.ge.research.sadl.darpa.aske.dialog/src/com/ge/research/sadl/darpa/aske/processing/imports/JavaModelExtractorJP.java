@@ -57,7 +57,7 @@ import com.ge.research.sadl.builder.IConfigurationManagerForIDE;
 import com.ge.research.sadl.darpa.aske.curation.AnswerCurationManager;
 import com.ge.research.sadl.darpa.aske.processing.DialogConstants;
 import com.ge.research.sadl.jena.JenaProcessorException;
-import com.ge.research.sadl.jena.inference.SadlJenaModelGetterPutter;
+//import com.ge.research.sadl.jena.inference.SadlJenaModelGetterPutter;
 import com.ge.research.sadl.processing.SadlConstants;
 import com.ge.research.sadl.reasoner.AmbiguousNameException;
 import com.ge.research.sadl.reasoner.CircularDependencyException;
@@ -229,7 +229,7 @@ public class JavaModelExtractorJP implements IModelFromCodeExtractor {
 
 	}
 
-	public boolean process(String inputIdentifier, String content, String modelName, String modelPrefix) throws ConfigurationException, IOException {
+	public boolean process(String inputIdentifier, String content, String modelName, String modelPrefix) throws ConfigurationException, IOException, TranslationException {
 	    initializeContent(modelName, modelPrefix);
 		String defName = getCodeModelName() + "_comments";
 		getCurationMgr().getTextProcessor().setTextModelName(defName);
@@ -291,7 +291,7 @@ public class JavaModelExtractorJP implements IModelFromCodeExtractor {
 	}
 
 	//use ASTParse to parse string
-	private void parse(String inputIdentifier, String modelFolder, String javaCodeContent) throws IOException, ConfigurationException {
+	private void parse(String inputIdentifier, String modelFolder, String javaCodeContent) throws IOException, ConfigurationException, TranslationException {
 		try {
 			String source = null;
 			if (inputIdentifier.lastIndexOf('/') > 0) {
@@ -306,7 +306,6 @@ public class JavaModelExtractorJP implements IModelFromCodeExtractor {
 			String msg = "Parsing code file '" + source + "'.";
 			getCurationMgr().notifyUser(modelFolder, msg, true);
 		} catch (ConfigurationException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 		if (logger.isDebugEnabled()) {
@@ -564,7 +563,7 @@ public class JavaModelExtractorJP implements IModelFromCodeExtractor {
 //		}
 	}
 
-	private void initializeCodeModel(String extractionMetaModelModelFolder) throws ConfigurationException, IOException {
+	private void initializeCodeModel(String extractionMetaModelModelFolder) throws ConfigurationException, IOException, TranslationException {
 		if (getCurationMgr().getExtractionProcessor().getCodeModel() == null) {
 			// create new code model
 			
@@ -574,7 +573,8 @@ public class JavaModelExtractorJP implements IModelFromCodeExtractor {
 			if (extractionMetaModelModelFolder != null) { // && !modelFolderPathname.startsWith(SYNTHETIC_FROM_TEST)) {
 				File mff = new File(extractionMetaModelModelFolder);
 				mff.mkdirs();
-				spec.setImportModelGetter(new SadlJenaModelGetterPutter(spec, extractionMetaModelModelFolder));
+//				spec.setImportModelGetter(new SadlJenaModelGetterPutter(spec, extractionMetaModelModelFolder));
+				spec.setImportModelGetter(getCodeModelConfigMgr().getSadlModelGetterPutter(getCodeModelConfigMgr().getRepoType()));
 			}
 			if (owlDocMgr != null) {
 				spec.setDocumentManager(owlDocMgr);
@@ -731,7 +731,6 @@ public class JavaModelExtractorJP implements IModelFromCodeExtractor {
 						Individual argCV = getOrCreateCodeVariable(param, methInst, getMethodVariableClass());
 						argList.add(argCV);
 					} catch (AnswerExtractionException e) {
-						// TODO Auto-generated catch block
 						e.printStackTrace();
 					}
 				}
@@ -740,10 +739,8 @@ public class JavaModelExtractorJP implements IModelFromCodeExtractor {
 						Individual typedList = addMembersToList(getCurrentCodeModel(), null, getCodeVariableListClass(), getCodeVariableClass(), argList.iterator());
 						methInst.addProperty(getArgumentsProperty(), typedList);
 					} catch (JenaProcessorException e) {
-						// TODO Auto-generated catch block
 						e.printStackTrace();
 					} catch (TranslationException e) {
-						// TODO Auto-generated catch block
 						e.printStackTrace();
 					}
 				}
@@ -776,7 +773,6 @@ public class JavaModelExtractorJP implements IModelFromCodeExtractor {
 						Individual argCV = getOrCreateCodeVariable(param, methInst, getMethodVariableClass());
 						argList.add(argCV);
 					} catch (AnswerExtractionException e) {
-						// TODO Auto-generated catch block
 						e.printStackTrace();
 					}
 				}
@@ -785,10 +781,8 @@ public class JavaModelExtractorJP implements IModelFromCodeExtractor {
 						Individual typedList = addMembersToList(getCurrentCodeModel(), null, getCodeVariableListClass(), getCodeVariableClass(), argList.iterator());
 						methInst.addProperty(getArgumentsProperty(), typedList);
 					} catch (JenaProcessorException e) {
-						// TODO Auto-generated catch block
 						e.printStackTrace();
 					} catch (TranslationException e) {
-						// TODO Auto-generated catch block
 						e.printStackTrace();
 					}
 				}
@@ -805,10 +799,8 @@ public class JavaModelExtractorJP implements IModelFromCodeExtractor {
 						returnTypes = addMembersToList(getCurrentCodeModel(), null, getStringListClass(), XSD.xstring, rtypes.iterator());
 						methInst.addProperty(getReturnTypeProperty(), returnTypes);
 					} catch (JenaProcessorException e) {
-						// TODO Auto-generated catch block
 						e.printStackTrace();
 					} catch (TranslationException e) {
-						// TODO Auto-generated catch block
 						e.printStackTrace();
 					}
 				}
@@ -830,7 +822,6 @@ public class JavaModelExtractorJP implements IModelFromCodeExtractor {
 						setSetterArgument(mc, (NameExpr)expr, containingInst);
 						processBlockChild(expr, containingInst, USAGE.Used);
 					} catch (AnswerExtractionException e) {
-						// TODO Auto-generated catch block
 						e.printStackTrace();
 					}
         		}
@@ -878,7 +869,6 @@ public class JavaModelExtractorJP implements IModelFromCodeExtractor {
 				OntClass codeVarClass = getClassFieldClass();	// TODO is this always field or only in a class?
 				Individual fdInst = getOrCreateCodeVariable(childNode, containingInst, codeVarClass);
 			} catch (AnswerExtractionException e) {
-				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
 		}
@@ -1441,7 +1431,6 @@ public class JavaModelExtractorJP implements IModelFromCodeExtractor {
 			try {
 				varInst = getOrCreateCodeVariable(childNode, nm, nnm, containingInst, getCodeVariableClass(childNode), inputOutput);
 			} catch (AnswerExtractionException e) {
-				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
 		}
@@ -1453,7 +1442,6 @@ public class JavaModelExtractorJP implements IModelFromCodeExtractor {
 	          		ref.setPropertyValue(getSetterArgumentProperty(), getCurrentCodeModel().createTypedLiteral(true));
 	          	}
 			} catch (AnswerExtractionException e) {
-				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
 		}
@@ -2166,7 +2154,6 @@ public class JavaModelExtractorJP implements IModelFromCodeExtractor {
 								match = true;
 							}
 						} catch (CircularDependencyException e) {
-							// TODO Auto-generated catch block
 							e.printStackTrace();
 						}
 					}

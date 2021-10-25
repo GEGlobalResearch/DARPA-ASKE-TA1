@@ -88,7 +88,7 @@ import com.ge.research.sadl.darpa.aske.processing.imports.KChainServiceInterface
 import com.ge.research.sadl.jena.JenaBasedSadlInferenceProcessor;
 import com.ge.research.sadl.jena.JenaBasedSadlModelProcessor;
 import com.ge.research.sadl.jena.UtilsForJena;
-import com.ge.research.sadl.model.SadlSerializationFormat;
+import com.ge.research.sadl.model.persistence.SadlPersistenceFormat;
 import com.ge.research.sadl.model.gp.Literal;
 import com.ge.research.sadl.model.gp.NamedNode;
 import com.ge.research.sadl.model.gp.Node;
@@ -2832,7 +2832,8 @@ private void runInference(Resource resource, String query, String testQuery) thr
 		ConfigurationManagerForIDE cmgr = null;
 		try {
 			//String p = getModelFolderPath(resource);
-			cmgr = ConfigurationManagerForIdeFactory.getConfigurationManagerForIDE(getModelFolderPath(resource), ConfigurationManagerForIDE.getOWLFormat());
+//			cmgr = ConfigurationManagerForIdeFactory.getConfigurationManagerForIDE(getModelFolderPath(resource), ConfigurationManagerForIDE.getOWLFormat());
+			cmgr = ConfigurationManagerForIdeFactory.getConfigurationManagerForIDE(getModelFolderPath(resource), ConfigurationManagerForIDE.getPersistenceFormatFromPreferences());
 		} catch (ConfigurationException e1) {
 			//  Auto-generated catch block
 			e1.printStackTrace();
@@ -3623,7 +3624,7 @@ private RDFNode getObjectAsLiteralOrResource(Node property, Node object) {
 
 	private ResultSet runPrologQuery(Resource resource, String query, String instanceDataURI, String queryOwlFileWithPath) throws Exception {
 		String modelFolder = getModelFolderPath(resource); //getOwlModelsFolderPath(path).toString(); 
-		final String format = SadlSerializationFormat.RDF_XML_ABBREV_FORMAT;
+		final String format = SadlPersistenceFormat.RDF_XML_ABBREV_FORMAT;
 		IConfigurationManagerForIDE configMgr;
 
 		
@@ -3700,7 +3701,7 @@ private RDFNode getObjectAsLiteralOrResource(Node property, Node object) {
 
 	private ResultSet runReasonerQuery(Resource resource, String query) throws SadlInferenceException, ConfigurationException, ReasonerNotFoundException, InvalidNameException, QueryParseException, QueryCancelledException, AmbiguousNameException {
 		String modelFolderUri = getModelFolderPath(resource); //getOwlModelsFolderPath(path).toString(); 
-		final String format = SadlSerializationFormat.RDF_XML_ABBREV_FORMAT;
+		final String format = SadlPersistenceFormat.RDF_XML_ABBREV_FORMAT;
 		IConfigurationManagerForIDE configMgr;
 
 		
@@ -3751,7 +3752,7 @@ private RDFNode getObjectAsLiteralOrResource(Node property, Node object) {
 
 	private String runReasonerQueryJson(Resource resource, String query) throws SadlInferenceException, ConfigurationException, ReasonerNotFoundException, InvalidNameException, QueryParseException, QueryCancelledException, AmbiguousNameException {
 		String modelFolderUri = getModelFolderPath(resource); 
-		final String format = SadlSerializationFormat.RDF_XML_ABBREV_FORMAT;
+		final String format = SadlPersistenceFormat.RDF_XML_ABBREV_FORMAT;
 		IConfigurationManagerForIDE configMgr;
 
 		

@@ -62,6 +62,7 @@ import com.ge.research.sadl.reasoner.QueryCancelledException;
 import com.ge.research.sadl.reasoner.QueryParseException;
 import com.ge.research.sadl.reasoner.ReasonerNotFoundException;
 import com.ge.research.sadl.reasoner.ResultSet;
+import com.ge.research.sadl.reasoner.TranslationException;
 import com.ge.research.sadl.reasoner.utils.SadlUtils;
 import org.apache.jena.ontology.OntDocumentManager;
 import org.apache.jena.ontology.OntModel;
@@ -169,8 +170,9 @@ public class TextProcessor {
 	 * @return -- an array int[2], 0th element being the number of concepts found in the text, 1st element being the number of equations found in the text
 	 * @throws ConfigurationException
 	 * @throws IOException
+	 * @throws TranslationException 
 	 */
-	public int[] processText(String inputIdentifier, String text, String localityURI, String modelName, String modelPrefix, boolean notifyUser) throws ConfigurationException, IOException {
+	public int[] processText(String inputIdentifier, String text, String localityURI, String modelName, String modelPrefix, boolean notifyUser) throws ConfigurationException, IOException, TranslationException {
 		initializeTextModel(modelName, modelPrefix);
 		try {
 			if (notifyUser && inputIdentifier != null) {
@@ -270,7 +272,7 @@ public class TextProcessor {
 		return results;
 	}
 
-	private void initializeTextModel(String modelName, String modelPrefix) throws ConfigurationException, IOException {
+	private void initializeTextModel(String modelName, String modelPrefix) throws ConfigurationException, IOException, TranslationException {
 		if (getCurationManager().getExtractionProcessor().getTextModel() == null) {
 			// create new text model	
 			setTextModelConfigMgr(getCurationManager().getConfigurationManager());
@@ -721,7 +723,7 @@ public class TextProcessor {
 
 	public OntModel getOntModelFromText(String inputIdentifier, String content, String locality, 
 			String modelName, String modelPrefix, boolean addToTextModel, boolean notifyUser) 
-					throws IOException, ConfigurationException, AnswerExtractionException {
+					throws IOException, ConfigurationException, AnswerExtractionException, TranslationException {
 		int[] results = processText(inputIdentifier, content,locality, modelName, modelPrefix, notifyUser);
 		if (results == null) {
 			throw new AnswerExtractionException("Text processing service returned no information");
@@ -765,7 +767,8 @@ public class TextProcessor {
 	public OntModel serializedOwlModelToOntModel(String modelName, String serializedGraph, String format) {
 //		System.out.println("Graph extracted:\n" + serializedGraph);	// debug only
 		try {
-			OntModel newModel = getTextModelConfigMgr().getOntModel(modelName, serializedGraph, Scope.INCLUDEIMPORTS, format);
+//			OntModel newModel = getTextModelConfigMgr().getOntModel(modelName, serializedGraph, Scope.INCLUDEIMPORTS, format);
+			OntModel newModel = getTextModelConfigMgr().getOntModel(modelName, serializedGraph, format);
 //								logger.debug("The new model:");
 //								newModel.write(System.err, "N3");
 //						theModel = getCurationManager().getExtractionProcessor().getTextModel();

@@ -32,6 +32,7 @@ import com.ge.research.sadl.reasoner.InvalidNameException;
 import com.ge.research.sadl.reasoner.QueryCancelledException;
 import com.ge.research.sadl.reasoner.QueryParseException;
 import com.ge.research.sadl.reasoner.ReasonerNotFoundException;
+import com.ge.research.sadl.reasoner.TranslationException;
 
 public class AskeIntegrationTests {
 	private static final Logger LOGGER = LoggerFactory.getLogger(AskeIntegrationTests.class);
@@ -62,7 +63,7 @@ public class AskeIntegrationTests {
 
 	@Ignore("this test requires text extraction and java to python services to be running at default URLs")
 	@Test
-	public void test_01() throws ConfigurationException, IOException, QueryParseException, QueryCancelledException, ReasonerNotFoundException, InvalidNameException, AnswerExtractionException, InvalidInputException, AmbiguousNameException {
+	public void test_01() throws ConfigurationException, IOException, QueryParseException, QueryCancelledException, ReasonerNotFoundException, InvalidNameException, AnswerExtractionException, InvalidInputException, AmbiguousNameException, TranslationException {
 		// remove OWL file
 		File owlF = new File(getExtractionKbRoot() + "/ExtractedModels/Mach.java.owl");	
 		if (owlF.exists()) {

@@ -45,6 +45,8 @@ import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.ecore.resource.Resource;
 
 import com.ge.research.sadl.darpa.aske.curation.AnswerCurationManager;
+import com.ge.research.sadl.reasoner.TranslationException;
+
 import org.apache.jena.ontology.OntModel;
 
 public interface IDialogAnswerProvider {
@@ -52,13 +54,13 @@ public interface IDialogAnswerProvider {
 	String addCurationManagerInitiatedContent(AnswerCurationManager answerCurationManager, String content);
 
 	String addCurationManagerInitiatedContent(AnswerCurationManager answerCurationManager, String methodToCall,
-			List<Object> args, String content);
+			List<Object> args, String content) throws TranslationException;
 
 	String addCurationManagerInitiatedContent(AnswerCurationManager answerCurationManager, StatementContent ssc);
 
-	String initiateMixedInitiativeInteraction(QuestionWithCallbackContent element);
+	String initiateMixedInitiativeInteraction(QuestionWithCallbackContent element) throws TranslationException;
 
-	void provideResponse(QuestionWithCallbackContent response);
+	void provideResponse(QuestionWithCallbackContent response) throws TranslationException;
 
 	public MixedInitiativeElement getMixedInitiativeElement(String key);
 

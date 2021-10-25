@@ -87,6 +87,7 @@ import com.ge.research.sadl.reasoner.QueryCancelledException;
 import com.ge.research.sadl.reasoner.QueryParseException;
 import com.ge.research.sadl.reasoner.ReasonerNotFoundException;
 import com.ge.research.sadl.reasoner.ResultSet;
+import com.ge.research.sadl.reasoner.TranslationException;
 import com.ge.research.sadl.reasoner.utils.SadlUtils;
 
 public class JavaImportJPTests extends AbstractDialogTest {
@@ -121,7 +122,7 @@ public class JavaImportJPTests extends AbstractDialogTest {
 	}
 
 	@Test
-	public void test_01() throws ConfigurationException, IOException {
+	public void test_01() throws ConfigurationException, IOException, TranslationException {
 		String javaContent = 
 				"/**\r\n" + 
 				" * Copyright 2018 General Electric Company\r\n" + 
@@ -167,7 +168,7 @@ public class JavaImportJPTests extends AbstractDialogTest {
 	}
 
 	@Test
-	public void test_02() throws ConfigurationException, IOException {
+	public void test_02() throws ConfigurationException, IOException, TranslationException {
 		String javaContent = 
 				"/*\r\n" + 
 				" * Copyright 2018 General Electric Company\r\n" + 
@@ -212,7 +213,7 @@ public class JavaImportJPTests extends AbstractDialogTest {
 	}
 
 	@Test
-	public void test_03() throws ConfigurationException, IOException {
+	public void test_03() throws ConfigurationException, IOException, TranslationException {
 		String javaContent = 
 				"package com.research.ge.darpa.answer.imports;\r\n" + 
 				"\r\n" + 
@@ -260,7 +261,7 @@ public class JavaImportJPTests extends AbstractDialogTest {
 	
 	@Ignore("this test requires services to be running at default URLs")
 	@Test
-	public void test_04() throws IOException, ConfigurationException, InvalidNameException, ReasonerNotFoundException, QueryParseException, QueryCancelledException, AnswerExtractionException, InvalidInputException, AmbiguousNameException {
+	public void test_04() throws IOException, ConfigurationException, InvalidNameException, ReasonerNotFoundException, QueryParseException, QueryCancelledException, AnswerExtractionException, InvalidInputException, AmbiguousNameException, TranslationException {
 		File sourceFile = new File(getCodeExtractionKbRoot() + "/ExtractedModels/Sources/Isentrop.java");
 		assertTrue(sourceFile.exists());
 		IConfigurationManagerForIDE cm = ConfigurationManagerForIdeFactory.getConfigurationManagerForIDE(getDomainProjectModelFolder(), null);
@@ -298,7 +299,7 @@ public class JavaImportJPTests extends AbstractDialogTest {
 	
 	@Ignore("this test requires REST services at default URLs")
 	@Test
-	public void test_05() throws IOException, ConfigurationException, OwlImportException, InvalidNameException, ReasonerNotFoundException, QueryParseException, QueryCancelledException, AnswerExtractionException, InvalidInputException, AmbiguousNameException {
+	public void test_05() throws IOException, ConfigurationException, OwlImportException, InvalidNameException, ReasonerNotFoundException, QueryParseException, QueryCancelledException, AnswerExtractionException, InvalidInputException, AmbiguousNameException, TranslationException {
 		File codeFile = new File(getCodeExtractionKbRoot() + "/ExtractedModels/Sources/Mach.java");
 		assertTrue(codeFile.exists());
 		IConfigurationManagerForIDE cm = ConfigurationManagerForIdeFactory.getConfigurationManagerForIDE(getDomainProjectModelFolder(), null);
@@ -396,7 +397,7 @@ public class JavaImportJPTests extends AbstractDialogTest {
 	
 	@Ignore("this test requires REST services at default URLs")
 	@Test
-	public void test_06() throws IOException, ConfigurationException, OwlImportException, InvalidNameException, ReasonerNotFoundException, QueryParseException, QueryCancelledException, AnswerExtractionException, InvalidInputException, AmbiguousNameException {
+	public void test_06() throws IOException, ConfigurationException, OwlImportException, InvalidNameException, ReasonerNotFoundException, QueryParseException, QueryCancelledException, AnswerExtractionException, InvalidInputException, AmbiguousNameException, TranslationException {
 		// remove OWL and SADL files
 		File owlF = new File(getCodeExtractionKbRoot() + "/ExtractedModels\\Mach.java.owl");
 		
@@ -468,7 +469,7 @@ public class JavaImportJPTests extends AbstractDialogTest {
 
 	@Ignore("this test requires REST services at default URLs")
 	@Test
-	public void test_08() throws IOException, ConfigurationException, InvalidNameException, ReasonerNotFoundException, QueryParseException, QueryCancelledException, AnswerExtractionException, InvalidInputException, AmbiguousNameException {
+	public void test_08() throws IOException, ConfigurationException, InvalidNameException, ReasonerNotFoundException, QueryParseException, QueryCancelledException, AnswerExtractionException, InvalidInputException, AmbiguousNameException, TranslationException {
 		File codeFile = new File(getCodeExtractionKbRoot() + "/ExtractedModels/Sources/Turbo.java");
 		assertTrue(codeFile.exists());
 		// remove OWL and SADL files
@@ -521,7 +522,7 @@ public class JavaImportJPTests extends AbstractDialogTest {
 
 	@Ignore("this test requires REST services at default URLs")
 	@Test
-	public void test_08_on_Turbo_modified() throws IOException, ConfigurationException, InvalidNameException, ReasonerNotFoundException, QueryParseException, QueryCancelledException, AnswerExtractionException, InvalidInputException, AmbiguousNameException {
+	public void test_08_on_Turbo_modified() throws IOException, ConfigurationException, InvalidNameException, ReasonerNotFoundException, QueryParseException, QueryCancelledException, AnswerExtractionException, InvalidInputException, AmbiguousNameException, TranslationException {
 		File codeFile = new File(getCodeExtractionKbRoot() + "/ExtractedModels/Sources/TurboModified2.java");
 		assertTrue(codeFile.exists());
 		// remove OWL and SADL files
@@ -574,7 +575,7 @@ public class JavaImportJPTests extends AbstractDialogTest {
 
 	@Ignore("this test requires REST services at default URLs")
 	@Test
-	public void test_09() throws IOException, ConfigurationException, InvalidNameException, ReasonerNotFoundException, QueryParseException, QueryCancelledException, AnswerExtractionException, InvalidInputException, AmbiguousNameException {
+	public void test_09() throws IOException, ConfigurationException, InvalidNameException, ReasonerNotFoundException, QueryParseException, QueryCancelledException, AnswerExtractionException, InvalidInputException, AmbiguousNameException, TranslationException {
 	    this.sadl(getContent(getScientificConcepts2Path())); 
 	    this.sadl(getContent(getSpeedOfSoundPath()));
 
@@ -655,7 +656,7 @@ public class JavaImportJPTests extends AbstractDialogTest {
 	
 	@Ignore("this test requires REST services at default URLs")
 	@Test
-	public void test_10() throws IOException, ConfigurationException, InvalidNameException, ReasonerNotFoundException, QueryParseException, QueryCancelledException, AnswerExtractionException, InvalidInputException, AmbiguousNameException {
+	public void test_10() throws IOException, ConfigurationException, InvalidNameException, ReasonerNotFoundException, QueryParseException, QueryCancelledException, AnswerExtractionException, InvalidInputException, AmbiguousNameException, TranslationException {
 		File sourceFile = new File(getCodeExtractionKbRoot() + "/ExtractedModels/Sources/TurboAnnotated.java");
 		assertTrue(sourceFile.exists());
 		
@@ -692,7 +693,7 @@ public class JavaImportJPTests extends AbstractDialogTest {
 	
 	@Ignore("this test requires REST services at default URLs")
 	@Test
-	public void test_11() throws ConfigurationException, IOException, InvalidNameException, ReasonerNotFoundException, QueryParseException, QueryCancelledException, AnswerExtractionException, InvalidInputException, AmbiguousNameException {
+	public void test_11() throws ConfigurationException, IOException, InvalidNameException, ReasonerNotFoundException, QueryParseException, QueryCancelledException, AnswerExtractionException, InvalidInputException, AmbiguousNameException, TranslationException {
 		String javaContent = 
 				"public class Test_11 {\r\n" + 
 				"    public double getAir(double mach, double gamma) {\r\n" + 
