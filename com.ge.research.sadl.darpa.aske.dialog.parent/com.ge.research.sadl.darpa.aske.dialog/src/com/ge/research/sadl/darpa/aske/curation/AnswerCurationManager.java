@@ -860,7 +860,7 @@ public class AnswerCurationManager {
 				List<ConfigurationItem> configItems = null;  // TODO map preferences to configItems
 				//				getTextModelReasoner().initializeReasoner(codeModelFolder, getExtractionProcessor().getCodeModelName(), null);
 				getTextModelReasoner().initializeReasoner(getExtractionProcessor().getTextModel(), 
-						getExtractionProcessor().getCodeModelName(), null, configItems);
+						getExtractionProcessor().getCodeModelName(), null, configItems, textModelConfigMgr.getRepoType());
 			}
 		}
 		return textModelReasoner;
@@ -3390,7 +3390,7 @@ public class AnswerCurationManager {
 			IConfigurationManagerForIDE cm, OntModel ontModel, String modelName) throws ConfigurationException, ReasonerNotFoundException {
 		IReasoner reasoner = cm.getReasoner();
 		if (!reasoner.isInitialized()) {
-			reasoner.initializeReasoner(ontModel, modelName, null, null);
+			reasoner.initializeReasoner(ontModel, modelName, null, null, cm.getRepoType());
 		}
 		return reasoner;
 	}

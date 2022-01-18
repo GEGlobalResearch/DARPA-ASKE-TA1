@@ -2835,7 +2835,6 @@ private void runInference(Resource resource, String query, String testQuery) thr
 //			cmgr = ConfigurationManagerForIdeFactory.getConfigurationManagerForIDE(getModelFolderPath(resource), ConfigurationManagerForIDE.getOWLFormat());
 			cmgr = ConfigurationManagerForIdeFactory.getConfigurationManagerForIDE(getModelFolderPath(resource), ConfigurationManagerForIDE.getPersistenceFormatFromPreferences());
 		} catch (ConfigurationException e1) {
-			//  Auto-generated catch block
 			e1.printStackTrace();
 		}
 		return cmgr;
@@ -3715,8 +3714,8 @@ private RDFNode getObjectAsLiteralOrResource(Node property, Node object) {
 			//String modelName = configMgr.getPublicUriFromActualUrl(new SadlUtils().fileNameToFileUrl(modelFolderUri + File.separator + owlFileName));
 			//model name something like http://aske.ge.com/metamodel
 			//String mname = getModelName();
-//			reasoner.initializeReasoner(modelFolderUri, getModelName(), format); 
-			reasoner.initializeReasoner(getTheJenaModel(), getModelName(), null, null); 
+			reasoner.initializeReasoner(modelFolderUri, getModelName(), format); 
+//			reasoner.initializeReasoner(getTheJenaModel(), getModelName(), null, null); 
 //			getTheJenaModel().write(System.err,"N3");
 			//reasoner.loadInstanceData(qhmodel);
 			//System.out.print("reasoner is not initialized");
@@ -3746,7 +3745,7 @@ private RDFNode getObjectAsLiteralOrResource(Node property, Node object) {
 		
 		String pquery = reasoner.prepareQuery(query);
 
-		ResultSet res = reasoner.ask(pquery);
+		ResultSet res = reasoner.ask(pquery); //if query is insert, returns null
 		return res;
 	}
 
@@ -3762,7 +3761,7 @@ private RDFNode getObjectAsLiteralOrResource(Node property, Node object) {
 		
 		if (!reasoner.isInitialized()) {
 			reasoner.setConfigurationManager(configMgr);
-			reasoner.initializeReasoner(getTheJenaModel(), getModelName(), null, null); 
+			reasoner.initializeReasoner(getTheJenaModel(), getModelName(), null, null, configMgr.getRepoType()); 
 		}
 
 		reasoner.loadInstanceData(queryModel);	//Need to load new metadata
