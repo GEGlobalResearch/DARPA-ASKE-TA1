@@ -1421,32 +1421,42 @@ public class JenaBasedDialogInferenceProcessor extends JenaBasedSadlInferencePro
 		
 		List<String> contextClassList = getContextClassList(contextPatterns);
 		
-	
-		int successfulModels=0;
+		//TODO: HERE: check if query can be answered from current KG
 		
-		if (useDbn) {
-
-			if (outputsList.size() > 0 && docPatterns.size() <= 0) { 
-				dbnResults = processWhatWhenQuery(resource, queryModelFileName, queryModelURI, queryModelPrefix,
-					queryOwlFileWithPath, inputsList, outputsList, contextClassList, cgq, numOfQueries, queryNum, 
-					successfulModels, insightsMap);
-
-
-
-			} else if (outputsList.size() > 0 && docPatterns.size() > 0) { //models from dataset
-
-				dbnResults = processModelsFromDataset(resource, triples, queryModelFileName, queryModelURI, queryModelPrefix,
-						queryOwlFileWithPath, inputsList, outputsList, contextClassList, cgq);
-
+		// If inputPatterns is empty, try to get an answer to outputPatterns from current KG. 
+	
+		if (inputsList.isEmpty()) {
+			TripleElement te = new TripleElement(null, null, null);
+			kcResults = retrieveValueFromCurrentKG(resource, outputsList, outputPatterns, contextClassList);
+		}
+		else {
+		
+			int successfulModels=0;
+			
+			if (useDbn) {
+	
+				if (outputsList.size() > 0 && docPatterns.size() <= 0) { 
+					dbnResults = processWhatWhenQuery(resource, queryModelFileName, queryModelURI, queryModelPrefix,
+						queryOwlFileWithPath, inputsList, outputsList, contextClassList, cgq, numOfQueries, queryNum, 
+						successfulModels, insightsMap);
+	
+	
+	
+				} else if (outputsList.size() > 0 && docPatterns.size() > 0) { //models from dataset
+	
+					dbnResults = processModelsFromDataset(resource, triples, queryModelFileName, queryModelURI, queryModelPrefix,
+							queryOwlFileWithPath, inputsList, outputsList, contextClassList, cgq);
+	
+				}
 			}
+	
+			if (useKC) {
+				kcResults = processWhatWhenQuery(resource, queryModelFileName, queryModelURI, queryModelPrefix,
+				queryOwlFileWithPath, inputsList, outputsList, contextClassList, cgq, numOfQueries, queryNum, successfulModels, insightsMap);
+	
+			}
+
 		}
-
-		if (useKC) {
-			kcResults = processWhatWhenQuery(resource, queryModelFileName, queryModelURI, queryModelPrefix,
-			queryOwlFileWithPath, inputsList, outputsList, contextClassList, cgq, numOfQueries, queryNum, successfulModels, insightsMap);
-
-		}
-
 			
 			// Save metadata owl file
 			// Don't need to save at this point?
@@ -1459,6 +1469,157 @@ public class JenaBasedDialogInferenceProcessor extends JenaBasedSadlInferencePro
 
 
 
+
+private ResultSet[] retrieveValueFromCurrentKG(Resource resource, List<RDFNode> outputsList, List<TripleElement> outputPatterns,
+			List<String> contextClassList) throws SadlInferenceException, ConfigurationException, ReasonerNotFoundException, InvalidNameException, QueryParseException, QueryCancelledException, AmbiguousNameException {
+		ResultSet[] results = new ResultSet[3];
+		String queryStr = null;
+		String queryPrefix = 
+				"prefix imp:<http://sadl.org/sadlimplicitmodel#>\n" +
+				"prefix rdf:<http://www.w3.org/1999/02/22-rdf-syntax-ns#>\n" + 
+				"prefix rdfs:<http://www.w3.org/2000/01/rdf-schema#>\n" +
+				"select distinct (strafter(str(?CCG),'#') as ?Model) (strafter(str(?C),'#') as ?Class) (strafter(str(?Var),'#') as ?Variable) ?Mean ?StdDev ?Units";
+		StringBuilder qb = new StringBuilder(queryPrefix);
+		ResultSet qres = null;
+//		List<String> variables = new ArrayList<String>();
+//		Map<String,String> varTypes = new HashMap<String,String>();
+		List<String> tripleStrings = new ArrayList<String>();
+
+		List<String> subject_variables = new ArrayList<String>();
+
+		//Make list of vars that appear as Subject
+		for(TripleElement tr : outputPatterns) {
+			if(tr.getSubject().getURI() == null) {
+				subject_variables.add(tr.getSubject().toString());
+			}
+		}
+		
+		for(TripleElement tr : outputPatterns) {
+			StringBuilder graphPattern = new StringBuilder();
+			String subj = tr.getSubject().getURI();
+			String pred = tr.getPredicate().getURI();
+			String obj = tr.getObject().getURI();
+			String svar = tr.getSubject().toString();
+			String ovar = tr.getObject().toString();
+
+			if(subj == null) {
+				subject_variables.add(svar);
+				graphPattern.append("?" + svar);
+			}
+			else {
+				graphPattern.append("<"+subj+"> ");
+			}
+			
+			graphPattern.append(" <"+pred+"> ");
+			
+			if(obj == null) {
+				if (subject_variables.contains(ovar)) {
+					graphPattern.append("?" + ovar + ".\n");
+				} 
+				else {
+					//Make a UQ variable to get the Mean, StdDev, and Units
+					String uqinst = "?uqinst_" + ovar; //var for a UnittedQuantity variable
+					graphPattern.append(uqinst + ".\n");
+					graphPattern.append(uqinst + " imp:value ?Mean.\n");
+					graphPattern.append("optional{" + uqinst + " imp:stddev ?StdDev}.\n");
+					graphPattern.append("optional{" + uqinst + " imp:unit ?Units}.\n");
+					//Triple to get the subject's class:
+					if(subj == null) {
+						graphPattern.append("?" + svar);
+					}
+					else {
+						graphPattern.append("<"+subj+"> ");
+					}
+					
+					graphPattern.append(" rdf:type ?C.\n");
+					
+					tripleStrings.add(graphPattern.toString());
+//					variables.add(ovar);
+					String rangeTriple = "<"+pred+"> " + " rdfs:range ?Var.\n";
+					tripleStrings.add(rangeTriple);
+//					variables.add(ovar + "Type"); //???
+				}
+			}
+			else {
+				graphPattern.append("<"+obj+"> ");
+			}
+
+			tripleStrings.add(graphPattern.toString());
+			System.out.print("Triple: " + graphPattern.toString());
+		}
+		
+//		for(TripleElement tr : outputPatterns) {
+//			String subj = tr.getSubject().getURI();
+//			String pred = tr.getPredicate().getURI();
+//			String obj = tr.getObject().getURI();
+//			StringBuilder graphPattern = new StringBuilder();
+//
+//			graphPattern.append("<"+subj+"> ");
+//			graphPattern.append("<"+pred+"> ");
+//			
+//			if(obj == null) {
+//				String ovar = tr.getObject().toString();
+//				//Make a UQ variable to get the Mean, StdDev, and Units
+//				String uqinst = "?uqinst_" + ovar; //var for a UnittedQuantity variable
+//				graphPattern.append(uqinst + ".\n");
+//				graphPattern.append(uqinst + " imp:value ?Mean.\n");
+//				graphPattern.append("optional{" + uqinst + " imp:stddev ?StdDev}.\n");
+//				graphPattern.append("optional{" + uqinst + " imp:unit ?Units}.\n");
+//				//Triple to get the subject's class:
+//				graphPattern.append("<"+subj+"> ");
+//				graphPattern.append(" rdf:type ?C.\n");
+//				
+//				tripleStrings.add(graphPattern.toString());
+//				variables.add(ovar);
+//				String rangeTriple = "<"+pred+"> " + " rdfs:range ?Var.\n";
+//				tripleStrings.add(rangeTriple);
+//				variables.add(ovar + "Type");
+//			}
+//			else {
+//				graphPattern.append("<"+obj+"> ");
+//				tripleStrings.add(graphPattern.toString());
+//			}
+//			System.out.print("Triple: " + graphPattern.toString());
+//		}
+
+//		qb.append(queryPrefix);
+//		for(String v : variables) {
+//			qb.append(" ?"+v);
+//		}
+		qb.append(" where {\n");
+		for(String tr : tripleStrings) {
+			qb.append(tr);
+		}
+		qb.append("}\n");
+		
+		queryStr = qb.toString();
+		
+		
+		System.out.print("Query: " + queryStr);
+		
+		qres = runReasonerQuery(resource, queryStr);
+//		qres.
+//		String[] cols = new String[2];
+//		cols[0] = "";
+//		cols[1] = "SensitivityURL";
+//
+//		Object[][] newData = new Object[1][2];
+//		newData[0][0] = "";
+//		newData[0][1] = "";
+//		
+//		ResultSet res = new ResultSet(cols, newData);
+		String[] diagramData = "?Model ?X ?Y ?Z ?X_style ?X_color ?Z_shape ?Z_tooltip".split(" ");
+
+		results[0] = new ResultSet(diagramData); 
+		
+		results[1] = addSensitivityURLtoResults(qres, "");
+		
+		String[] insightsData = "?Class ?Input ?Trend ?Output ?Location".split(" ");
+		
+		results[2] = new ResultSet(insightsData);
+		
+		return results;
+	}
 
 private ResultSet[] processWhatWhenQuery(Resource resource, String queryModelFileName, String queryModelURI,
 		String queryModelPrefix, String queryOwlFileWithPath, List<RDFNode> inputsList, List<RDFNode> outputsList,
@@ -1497,6 +1658,11 @@ private ResultSet[] processWhatWhenQuery(Resource resource, String queryModelFil
 	
 	ConfigurationManagerForIDE cmgr = getConfigMgrForIDE(resource);
 	
+	//TODO: first check if values are already in the KG data or in a previous execution
+	//      Execution instances (ce) are linked to outputs (see line 3159 below)
+	
+//	if (inputsList == [] && dbnResults = retrieveValueFromCurrentKG(outputsList, contextClassList))
+		
 	
 
 	System.out.print("Retrieving composite model eqns: ");
@@ -1569,7 +1735,8 @@ private ResultSet[] processWhatWhenQuery(Resource resource, String queryModelFil
 		cgJson = kgResultsToJson(nodesModelsJSONStr, "prognostic", "");
 		endTime = System.currentTimeMillis();
 		System.out.println((endTime - startTime)/1000.0 + " secs"); // + "  Payload size: " + cgJson.length());
-		
+		if (debugMode) {System.out.println(cgJson);}
+
 		if (useDbn) {
 		
 			dbnJson 	= generateDBNjson(cgJson);
@@ -1665,7 +1832,7 @@ private ResultSet[] processWhatWhenQuery(Resource resource, String queryModelFil
 			
 			// Get the CG info for diagram
 			
-			dbnResults[i*3] = retrieveCompGraph(resource, cgIns); //+1 to accomodate dependency graph
+			dbnResults[i*3] = retrieveCompGraph(resource, cgIns); //+1 to accommodate dependency graph
 			
 			ResultSet rvalues = retrieveValues(resource, cgIns); //outputsList
 			

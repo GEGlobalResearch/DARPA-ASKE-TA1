@@ -4847,6 +4847,8 @@ public class AnswerCurationManager {
 			//	and the value is the value to be displayed in that column.
 		
 		boolean isTable = false;
+		boolean hasDiagrams = false;
+		boolean hasInsights = false;
 		String insights = "";
 		
 		if (rss != null) {
@@ -4858,51 +4860,54 @@ public class AnswerCurationManager {
 				if (rs instanceof ResultSet) {
 		 			String[] colnames = ((ResultSet) rs).getColumnNames();
 					String cols = String.join(" ",colnames);
-					if ( cols.contains("_style") || cols.contains("_shape") ) {
-						ResultSet rstemp = ((ResultSet)rs).deleteResultSetColumn("Model");
-
-						IGraphVisualizer visualizer = new GraphVizVisualizer();
-						if (visualizer != null) {
-							//String graphsDirectory = new File(getOwlModelsFolder()).getParent() + "/Graphs";
-							new File(graphsDirectory).mkdir();
-//							if(cntr == 0) {
-//								baseFileName = "EquationDependencyGraph";
-//
-//								visualizer.initialize(
-//										graphsDirectory,
-//										baseFileName,
-//										baseFileName,
-//										null,
-//										IGraphVisualizer.Orientation.TD,
-//										"Equation Dependency Graph"
-//										);
-//								cntr++;
-//							}
-//							else {
-								baseFileName = "QueryMetadata_" + ((ResultSet)rs).getResultAt(0, 0).toString();
-
-								visualizer.initialize(
-										graphsDirectory,
-										baseFileName,
-										baseFileName,
-										null,
-										IGraphVisualizer.Orientation.TD,
-										"Composed Model " + ((ResultSet)rs).getResultAt(0, 0).toString()
-										);
-//							}
-							((ResultSet) rstemp).setShowNamespaces(false);
-							try {
-								visualizer.graphResultSetData(rstemp);	
-							}
-							catch (Exception e) {
-								e.printStackTrace();
-							}
-				        }
-						//Don't pop up model diagram. User can choose to click on a link to see.
-//						String errorMsg = null; //displayGraph(visualizer); 
-//						if (errorMsg != null) {
-//							notifyUser(getOwlModelsFolder(), errorMsg, true);
-//						}
+					if ( cols.contains("_style") || cols.contains("_shape") ) {//It's a model diagram
+						if(((ResultSet) rs).getRowCount() > 0) {//Check there is acually diagram data there
+							hasDiagrams = true;
+							ResultSet rstemp = ((ResultSet)rs).deleteResultSetColumn("Model");
+	
+							IGraphVisualizer visualizer = new GraphVizVisualizer();
+							if (visualizer != null) {
+								//String graphsDirectory = new File(getOwlModelsFolder()).getParent() + "/Graphs";
+								new File(graphsDirectory).mkdir();
+	//							if(cntr == 0) {
+	//								baseFileName = "EquationDependencyGraph";
+	//
+	//								visualizer.initialize(
+	//										graphsDirectory,
+	//										baseFileName,
+	//										baseFileName,
+	//										null,
+	//										IGraphVisualizer.Orientation.TD,
+	//										"Equation Dependency Graph"
+	//										);
+	//								cntr++;
+	//							}
+	//							else {
+									baseFileName = "QueryMetadata_" + ((ResultSet)rs).getResultAt(0, 0).toString();
+	
+									visualizer.initialize(
+											graphsDirectory,
+											baseFileName,
+											baseFileName,
+											null,
+											IGraphVisualizer.Orientation.TD,
+											"Composed Model " + ((ResultSet)rs).getResultAt(0, 0).toString()
+											);
+	//							}
+								((ResultSet) rstemp).setShowNamespaces(false);
+								try {
+									visualizer.graphResultSetData(rstemp);	
+								}
+								catch (Exception e) {
+									e.printStackTrace();
+								}
+					        }
+							//Don't pop up model diagram. User can choose to click on a link to see.
+	//						String errorMsg = null; //displayGraph(visualizer); 
+	//						if (errorMsg != null) {
+	//							notifyUser(getOwlModelsFolder(), errorMsg, true);
+	//						}
+						}
 					}
 					else if(cols.contains("Trend")) {//the "insights" section
 						insights += generateInsightsSADL((ResultSet)rs, isTable);
@@ -4963,38 +4968,39 @@ public class AnswerCurationManager {
 								answer.append(addResultsToDialog((ResultSet) rs));
 	
 							}
-							String graphicUrl;
-							String sglink = getPreference(DialogPreferences.SHORT_GRAPH_LINK.getId());
-							String graphFileName = baseFileName + ".svg";
-							String sourceName = graphsDirectory + "/" + graphFileName;
-							if (sglink != null && sglink.length() > 0) {
-								String targetName = sglink + "/" + className + baseFileName.substring(13);
-								File srcFile = new File(sourceName);
-								if (srcFile.exists()) {
-									File trgtFile = new File(targetName);
-									try {
-										Files.copy(srcFile, trgtFile);
-									} catch (IOException e) {
-										// TODO Auto-generated catch block
-										e.printStackTrace();
-										graphicUrl = "file://" + sourceName; //file url
+							if(!baseFileName.isEmpty()) {//If empty, there's no model/sensitivity diagrams
+								String graphicUrl;
+								String sglink = getPreference(DialogPreferences.SHORT_GRAPH_LINK.getId());
+								String graphFileName = baseFileName + ".svg";
+								String sourceName = graphsDirectory + "/" + graphFileName;
+								if (sglink != null && sglink.length() > 0) {
+									String targetName = sglink + "/" + className + baseFileName.substring(13);
+									File srcFile = new File(sourceName);
+									if (srcFile.exists()) {
+										File trgtFile = new File(targetName);
+										try {
+											Files.copy(srcFile, trgtFile);
+										} catch (IOException e) {
+											e.printStackTrace();
+											graphicUrl = "file://" + sourceName; //file url
+										}
 									}
+									graphicUrl = "file://" + targetName;
 								}
-								graphicUrl = "file://" + targetName;
+								else {
+									graphicUrl = "file://" + sourceName; //file url
+								}
+								//sadlAnswer += 
+								String seeStmt = "\"" + graphicUrl + "\"";
+								List<String> rowUrls = new ArrayList<String>();
+								rowUrls.add(seeStmt);
+								if (rset.getResultAt(0, 6) != null) {
+									String sensitivityUrl = rset.getResultAt(0, 6).toString();
+									rowUrls.add("\"" + sensitivityUrl + "\"");
+								}
+								diagrams.add(rowUrls);
+		//						answer.append(sadlAnswer);
 							}
-							else {
-								graphicUrl = "file://" + sourceName; //file url
-							}
-							//sadlAnswer += 
-							String seeStmt = "\"" + graphicUrl + "\"";
-							List<String> rowUrls = new ArrayList<String>();
-							rowUrls.add(seeStmt);
-							if (rset.getResultAt(0, 6) != null) {
-								String sensitivityUrl = rset.getResultAt(0, 6).toString();
-								rowUrls.add("\"" + sensitivityUrl + "\"");
-							}
-							diagrams.add(rowUrls);
-	//						answer.append(sadlAnswer);
 							cntr++;
 						}
 						else {
@@ -5012,7 +5018,7 @@ public class AnswerCurationManager {
 				if(isTable) {
 					answer.append(generateSadlTable(table, diagrams));
 				}
-				else {
+				else if(!diagrams.isEmpty()) {
 					StringBuilder sadlAnswer = new StringBuilder();
 					sadlAnswer.append("  (See \'model diagram: " + diagrams.get(0).get(0) +  "\'");
 					if (diagrams.get(0).size()> 1) {

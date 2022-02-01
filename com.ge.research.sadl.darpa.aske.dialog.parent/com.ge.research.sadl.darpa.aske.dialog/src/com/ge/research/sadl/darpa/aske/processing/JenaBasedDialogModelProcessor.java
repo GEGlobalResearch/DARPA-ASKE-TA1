@@ -864,7 +864,7 @@ public class JenaBasedDialogModelProcessor extends JenaBasedSadlModelProcessor {
 
 	private List<Rule> whenAndThenToCookedRules(EObject when, EObject whatIsTarget) throws InvalidNameException, InvalidTypeException, TranslationException, UndefinedConceptException {
 		List<EObject> whenLst = new ArrayList<EObject>();
-		whenLst.add(when);
+		whenLst.add(when); //TODO: only if when is not null
 		return whenAndThenToCookedRules(whenLst, whatIsTarget);
 	}
 
@@ -988,6 +988,7 @@ public class JenaBasedDialogModelProcessor extends JenaBasedSadlModelProcessor {
 			originalThenObjects.add(thenObj);
 
 		}
+		//Check if the Predicate or the Subject in Then triples are variables
 		for (Object origThenObj : originalThenObjects) {
 			if (origThenObj instanceof NamedNode) {
 				thenObjects.add((Node) origThenObj);
@@ -2563,13 +2564,6 @@ public class JenaBasedDialogModelProcessor extends JenaBasedSadlModelProcessor {
 			} catch (InvalidNameException | InvalidTypeException | TranslationException e) {
 				e.printStackTrace();
 			}
-	//		} catch (TranslationException e) {
-	//			e.printStackTrace();
-	//		} catch (InvalidNameException e) {
-	//			e.printStackTrace();
-	//		} catch (InvalidTypeException e) {
-	//			e.printStackTrace();
-	//		}
 		}
 		return null;
 	}
