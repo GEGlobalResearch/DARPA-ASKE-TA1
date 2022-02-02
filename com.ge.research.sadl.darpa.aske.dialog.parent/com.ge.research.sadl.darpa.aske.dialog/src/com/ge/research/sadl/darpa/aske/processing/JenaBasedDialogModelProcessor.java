@@ -54,7 +54,7 @@ import org.apache.jena.ontology.OntModel;
 import org.apache.jena.ontology.Ontology;
 import org.apache.jena.rdf.model.Property;
 import org.apache.jena.rdf.model.RDFNode;
-import org.apache.jena.rdf.model.RDFWriter;
+import org.apache.jena.rdf.model.RDFWriterI;
 import org.apache.jena.rdf.model.StmtIterator;
 import org.apache.jena.util.iterator.ExtendedIterator;
 import org.apache.jena.vocabulary.RDF;
@@ -2148,7 +2148,7 @@ public class JenaBasedDialogModelProcessor extends JenaBasedSadlModelProcessor {
 
 	private void autoSaveModel(Resource resource, String modelFolder, File saveFile, ProcessorContext context) throws IOException, URISyntaxException {
 		String format = getOwlModelFormat(context);
-		RDFWriter w = getTheJenaModel().getWriter(format);
+		RDFWriterI w = getTheJenaModel().getWriter(format);
 		w.setProperty("xmlbase", getModelName());
 		ByteArrayOutputStream out = new ByteArrayOutputStream();
 		w.write(getTheJenaModel().getBaseModel(), out, getModelName());
