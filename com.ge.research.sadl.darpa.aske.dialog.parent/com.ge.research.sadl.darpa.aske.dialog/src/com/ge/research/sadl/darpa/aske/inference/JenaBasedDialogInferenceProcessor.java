@@ -1503,7 +1503,7 @@ private ResultSet[] retrieveValueFromCurrentKG(Resource resource, List<RDFNode> 
 			String ovar = tr.getObject().toString();
 
 			if(subj == null) {
-				subject_variables.add(svar);
+//				subject_variables.add(svar);
 				graphPattern.append("?" + svar);
 			}
 			else {
@@ -1530,14 +1530,10 @@ private ResultSet[] retrieveValueFromCurrentKG(Resource resource, List<RDFNode> 
 					else {
 						graphPattern.append("<"+subj+"> ");
 					}
-					
 					graphPattern.append(" rdf:type ?C.\n");
 					
-					tripleStrings.add(graphPattern.toString());
-//					variables.add(ovar);
-					String rangeTriple = "<"+pred+"> " + " rdfs:range ?Var.\n";
-					tripleStrings.add(rangeTriple);
-//					variables.add(ovar + "Type"); //???
+					//Add property range triple
+					graphPattern.append("<"+pred+"> " + " rdfs:range ?Var.\n");
 				}
 			}
 			else {
