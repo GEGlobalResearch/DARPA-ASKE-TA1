@@ -66,6 +66,7 @@ import com.ge.research.sadl.darpa.aske.processing.QuestionWithCallbackContent;
 import com.ge.research.sadl.darpa.aske.processing.StatementContent;
 import com.ge.research.sadl.reasoner.ConfigurationException;
 import com.ge.research.sadl.reasoner.IConfigurationManager;
+import com.ge.research.sadl.reasoner.TranslationException;
 import com.ge.research.sadl.reasoner.utils.SadlUtils;
 import org.apache.jena.ontology.OntModel;
 
@@ -95,7 +96,7 @@ public class DialogAnswerProviderConsoleForTest extends BaseDialogAnswerProvider
 
 	@Override
 	public String addCurationManagerInitiatedContent(AnswerCurationManager answerCurationManager, String methodToCall,
-			List<Object> args, String content) {
+			List<Object> args, String content) throws TranslationException {
 		setAnswerConfigurationManager(answerCurationManager);
 //        Consumer<MixedInitiativeElement> respond = a -> this.provideResponse(a);
         MixedInitiativeTextualResponse question = new MixedInitiativeTextualResponse(content);
@@ -240,7 +241,7 @@ public class DialogAnswerProviderConsoleForTest extends BaseDialogAnswerProvider
 	}
 
 	@Override
-	public String initiateMixedInitiativeInteraction(QuestionWithCallbackContent element) {
+	public String initiateMixedInitiativeInteraction(QuestionWithCallbackContent element) throws TranslationException {
 		String output = element.getTheQuestion();
 		System.out.println("CM: " + output);
 		String answer = null;
@@ -265,7 +266,7 @@ public class DialogAnswerProviderConsoleForTest extends BaseDialogAnswerProvider
 	 * @see com.ge.research.sadl.darpa.aske.tests.IDialogAnswerProvider#provideResponse(com.ge.research.sadl.darpa.aske.processing.MixedInitiativeElement)
 	 */
 	@Override
-	public void provideResponse(QuestionWithCallbackContent question) {
+	public void provideResponse(QuestionWithCallbackContent question) throws TranslationException {
 //		System.out.println("Response: " + response.toString());
 		StatementContent answer = question.getAnswer();
 //		if (response.getCurationManager() != null) {

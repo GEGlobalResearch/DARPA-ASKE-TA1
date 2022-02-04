@@ -49,6 +49,8 @@ import com.ge.research.sadl.reasoner.QueryCancelledException;
 import com.ge.research.sadl.reasoner.QueryParseException;
 import com.ge.research.sadl.reasoner.ReasonerNotFoundException;
 import com.ge.research.sadl.reasoner.ResultSet;
+import com.ge.research.sadl.reasoner.TranslationException;
+
 import org.apache.jena.ontology.OntModel;
 
 public interface IModelFromCodeExtractor {
@@ -65,7 +67,7 @@ public interface IModelFromCodeExtractor {
 
 	IConfigurationManagerForIDE getCodeModelConfigMgr();
 
-	boolean process(String inputIdentifier, String content, String modelName, String modelPrefix) throws ConfigurationException, IOException;
+	boolean process(String inputIdentifier, String content, String modelName, String modelPrefix) throws ConfigurationException, IOException, TranslationException;
 
 	String getCodeModelName();
 	

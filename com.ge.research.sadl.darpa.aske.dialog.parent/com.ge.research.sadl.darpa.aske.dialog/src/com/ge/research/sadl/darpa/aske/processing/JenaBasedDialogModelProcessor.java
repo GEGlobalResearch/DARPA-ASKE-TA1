@@ -54,7 +54,7 @@ import org.apache.jena.ontology.OntModel;
 import org.apache.jena.ontology.Ontology;
 import org.apache.jena.rdf.model.Property;
 import org.apache.jena.rdf.model.RDFNode;
-import org.apache.jena.rdf.model.RDFWriter;
+import org.apache.jena.rdf.model.RDFWriterI;
 import org.apache.jena.rdf.model.StmtIterator;
 import org.apache.jena.util.iterator.ExtendedIterator;
 import org.apache.jena.vocabulary.RDF;
@@ -126,6 +126,7 @@ import com.ge.research.sadl.jena.MetricsProcessor;
 import com.ge.research.sadl.jena.UtilsForJena;
 import com.ge.research.sadl.model.CircularDefinitionException;
 import com.ge.research.sadl.model.ModelError;
+import com.ge.research.sadl.model.OntConceptType;
 import com.ge.research.sadl.model.PrefixNotFoundException;
 import com.ge.research.sadl.model.gp.BuiltinElement;
 import com.ge.research.sadl.model.gp.BuiltinElement.BuiltinType;
@@ -246,7 +247,7 @@ public class JenaBasedDialogModelProcessor extends JenaBasedSadlModelProcessor {
 		}
 
 		try {
-			theJenaModel = prepareEmptyOntModel(resource);
+			theJenaModel = prepareEmptyOntModel(resource, context);
 		} catch (ConfigurationException e1) {
 			e1.printStackTrace();
 			addError(SadlErrorMessages.CONFIGURATION_ERROR.get(e1.getMessage()), model);
@@ -286,10 +287,8 @@ public class JenaBasedDialogModelProcessor extends JenaBasedSadlModelProcessor {
 		try {
 			initializeDialogContent();
 		} catch (ConversationException e1) {
-			// TODO Auto-generated catch block
 			e1.printStackTrace();
 		} catch (IOException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 
@@ -310,10 +309,8 @@ public class JenaBasedDialogModelProcessor extends JenaBasedSadlModelProcessor {
 				try {
 					importSadlServicesConfigConceptsModel(resource);
 				} catch (JenaProcessorException e) {
-					// TODO Auto-generated catch block
 					e.printStackTrace();
 				} catch (ConfigurationException e) {
-					// TODO Auto-generated catch block
 					e.printStackTrace();
 				}
 			}
@@ -356,10 +353,8 @@ public class JenaBasedDialogModelProcessor extends JenaBasedSadlModelProcessor {
 				}
 			}
 		} catch (JenaProcessorException e1) {
-			// TODO Auto-generated catch block
 			e1.printStackTrace();
 		} catch (ConfigurationException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 
@@ -397,7 +392,6 @@ public class JenaBasedDialogModelProcessor extends JenaBasedSadlModelProcessor {
 				try {
 					resetProcessorState(element);
 				} catch (InvalidTypeException e) {
-					// TODO Auto-generated catch block
 					logger.error("Error:", e);
 				}
 				try {
@@ -422,13 +416,10 @@ public class JenaBasedDialogModelProcessor extends JenaBasedSadlModelProcessor {
 					// refresh resource ?
 				}
 			} catch (IOException e) {
-				// TODO Auto-generated catch block
 				e.printStackTrace();
 			} catch (ConfigurationException e) {
-				// TODO Auto-generated catch block
 				e.printStackTrace();
 			} catch (URISyntaxException e) {
-				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
 			if (getSadlCommands() != null && getSadlCommands().size() > 0) {
@@ -442,8 +433,7 @@ public class JenaBasedDialogModelProcessor extends JenaBasedSadlModelProcessor {
 				// Do this **after** setting the resource information in the OntModelProvider
 				try {
 					getAnswerCurationManager(resource).processConversation(getCurrentResource(), getTheJenaModel(), getModelName());
-				} catch (IOException e2) {
-					// TODO Auto-generated catch block
+				} catch (Exception e2) {
 					e2.printStackTrace();
 				}
 			}
@@ -452,7 +442,6 @@ public class JenaBasedDialogModelProcessor extends JenaBasedSadlModelProcessor {
 			try {
 				logger.debug(getAnswerCurationManager(resource).getConversation().toString());
 			} catch (IOException e1) {
-				// TODO Auto-generated catch block
 				e1.printStackTrace();
 			}
 			
@@ -844,13 +833,10 @@ public class JenaBasedDialogModelProcessor extends JenaBasedSadlModelProcessor {
 		} catch (UndefinedConceptException e) {
 			return e.getWhatIsContent();
 		} catch (InvalidNameException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		} catch (InvalidTypeException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		} catch (TranslationException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 		
@@ -867,13 +853,10 @@ public class JenaBasedDialogModelProcessor extends JenaBasedSadlModelProcessor {
 		} catch (UndefinedConceptException e) {
 			return e.getWhatIsContent();
 		} catch (InvalidNameException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		} catch (InvalidTypeException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		} catch (TranslationException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 		return new CompareContent(element, Agent.USER, comparisonRules);
@@ -917,7 +900,6 @@ public class JenaBasedDialogModelProcessor extends JenaBasedSadlModelProcessor {
 					msg = "Concept " + getAnswerCurationManager(getCurrentResource()).checkForKeyword(name) + " is not defined; please define or do extraction";
 					wic.setExplicitQuestion(msg);
 				} catch (IOException e) {
-					// TODO Auto-generated catch block
 					msg = e.getMessage();
 					e.printStackTrace();
 				}
@@ -1022,7 +1004,6 @@ public class JenaBasedDialogModelProcessor extends JenaBasedSadlModelProcessor {
 						msg = "Concept " + getAnswerCurationManager(getCurrentResource()).checkForKeyword(pvar.getName()) + " is not defined; please define or do extraction";
 						wic.setExplicitQuestion(msg);
 					} catch (IOException e) {
-						// TODO Auto-generated catch block
 						msg = e.getMessage();
 						e.printStackTrace();
 					}
@@ -1591,7 +1572,6 @@ public class JenaBasedDialogModelProcessor extends JenaBasedSadlModelProcessor {
 										break;
 									}
 								} catch (Exception e) {
-									// TODO Auto-generated catch block
 									e.printStackTrace();
 								} 
 							}
@@ -1611,7 +1591,6 @@ public class JenaBasedDialogModelProcessor extends JenaBasedSadlModelProcessor {
 						try {
 							wic.setExplicitQuestion("Concept " + getAnswerCurationManager(getCurrentResource()).checkForKeyword(((VariableNode)lobj).getName()) + " is not defined; please define or do extraction");
 						} catch (IOException e) {
-							// TODO Auto-generated catch block
 							e.printStackTrace();
 						}
 						return wic;					
@@ -1670,16 +1649,12 @@ public class JenaBasedDialogModelProcessor extends JenaBasedSadlModelProcessor {
 					return nec;
 				}
 			} catch (InvalidNameException e) {
-				// TODO Auto-generated catch block
 				e.printStackTrace();
 			} catch (InvalidTypeException e) {
-				// TODO Auto-generated catch block
 				e.printStackTrace();
 			} catch (TranslationException e) {
-				// TODO Auto-generated catch block
 				e.printStackTrace();
 			} catch (IOException e) {
-				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
 		}
@@ -1744,16 +1719,12 @@ public class JenaBasedDialogModelProcessor extends JenaBasedSadlModelProcessor {
 					}
 				}
 			} catch (TranslationException e) {
-				// TODO Auto-generated catch block
 				e.printStackTrace();
 			} catch (InvalidNameException e) {
-				// TODO Auto-generated catch block
 				e.printStackTrace();
 			} catch (InvalidTypeException e) {
-				// TODO Auto-generated catch block
 				e.printStackTrace();
 			} catch (IOException e) {
-				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
 		}
@@ -1867,10 +1838,8 @@ public class JenaBasedDialogModelProcessor extends JenaBasedSadlModelProcessor {
 								throw new TranslationException("Unable to find an argument from TripleElement " + arg.toString());
 							}
 						} catch (InvalidNameException e) {
-							// TODO Auto-generated catch block
 							e.printStackTrace();
 						} catch (InvalidTypeException e) {
-							// TODO Auto-generated catch block
 							e.printStackTrace();
 						}
 						
@@ -2178,7 +2147,7 @@ public class JenaBasedDialogModelProcessor extends JenaBasedSadlModelProcessor {
 
 	private void autoSaveModel(Resource resource, String modelFolder, File saveFile, ProcessorContext context) throws IOException, URISyntaxException {
 		String format = getOwlModelFormat(context);
-		RDFWriter w = getTheJenaModel().getWriter(format);
+		RDFWriterI w = getTheJenaModel().getWriter(format);
 		w.setProperty("xmlbase", getModelName());
 		ByteArrayOutputStream out = new ByteArrayOutputStream();
 		w.write(getTheJenaModel().getBaseModel(), out, getModelName());
@@ -2268,10 +2237,8 @@ public class JenaBasedDialogModelProcessor extends JenaBasedSadlModelProcessor {
 		try {
 			getAnswerCurationManager(resource).saveQuestionsAndAnswersToFile();
 		} catch (IOException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		} catch (ConfigurationException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 	}
@@ -2408,22 +2375,16 @@ public class JenaBasedDialogModelProcessor extends JenaBasedSadlModelProcessor {
 			mac.setQuery(query);
 			return mac;
 		} catch (CircularDefinitionException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		} catch (InvalidNameException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		} catch (InvalidTypeException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		} catch (TranslationException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		} catch (JenaProcessorException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 //		} catch (IOException e) {
-//			// TODO Auto-generated catch block
 //			e.printStackTrace();
 		}
 		return null;
@@ -2468,13 +2429,10 @@ public class JenaBasedDialogModelProcessor extends JenaBasedSadlModelProcessor {
 				}
 			}
 		} catch (InvalidNameException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		} catch (InvalidTypeException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		} catch (TranslationException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 		return null;
@@ -2570,10 +2528,8 @@ public class JenaBasedDialogModelProcessor extends JenaBasedSadlModelProcessor {
 			catch (TranslationException e) {
 				
 			} catch (InvalidNameException e) {
-				// TODO Auto-generated catch block
 				e.printStackTrace();
 			} catch (InvalidTypeException e) {
-				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
 		}
@@ -2599,24 +2555,19 @@ public class JenaBasedDialogModelProcessor extends JenaBasedSadlModelProcessor {
 							String name = getEObjectName(udeobjs.get(0));
 							wic.setExplicitQuestion("Concept " + getAnswerCurationManager(getCurrentResource()).checkForKeyword(name) + " is not defined; please define or do extraction");
 						} catch (IOException e) {
-							// TODO Auto-generated catch block
 							e.printStackTrace();
 						}
 						return wic;					
 					}
 				}
 			} catch (InvalidNameException | InvalidTypeException | TranslationException e) {
-				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
 	//		} catch (TranslationException e) {
-	//			// TODO Auto-generated catch block
 	//			e.printStackTrace();
 	//		} catch (InvalidNameException e) {
-	//			// TODO Auto-generated catch block
 	//			e.printStackTrace();
 	//		} catch (InvalidTypeException e) {
-	//			// TODO Auto-generated catch block
 	//			e.printStackTrace();
 	//		}
 		}
@@ -2724,13 +2675,10 @@ public class JenaBasedDialogModelProcessor extends JenaBasedSadlModelProcessor {
 							}
 						}
 					} catch (CircularDependencyException e) {
-						// TODO Auto-generated catch block
 						e.printStackTrace();
 					} catch (TranslationException e) {
-						// TODO Auto-generated catch block
 						e.printStackTrace();
 					} catch (InvalidNameException e) {
-						// TODO Auto-generated catch block
 						e.printStackTrace();
 					}
 				}
@@ -2759,7 +2707,6 @@ public class JenaBasedDialogModelProcessor extends JenaBasedSadlModelProcessor {
 							msg = "Concept " + getAnswerCurationManager(getCurrentResource()).checkForKeyword(pvar.getName()) + " is not defined; please define or do extraction";
 							wic.setExplicitQuestion(msg);
 						} catch (IOException e) {
-							// TODO Auto-generated catch block
 							msg = e.getMessage();
 							e.printStackTrace();
 						}
@@ -2888,13 +2835,10 @@ public class JenaBasedDialogModelProcessor extends JenaBasedSadlModelProcessor {
 			wvc.setTypeof(typ);
 			return wvc;
 		} catch (TranslationException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		} catch (InvalidNameException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		} catch (InvalidTypeException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 		return null;
@@ -3050,7 +2994,6 @@ public class JenaBasedDialogModelProcessor extends JenaBasedSadlModelProcessor {
 //					}
 //				}
 //			} catch (IOException e1) {
-//				// TODO Auto-generated catch block
 //				e1.printStackTrace();
 //			}
 			File sgl = new File(shortgraphlink.trim());
@@ -3361,4 +3304,22 @@ public class JenaBasedDialogModelProcessor extends JenaBasedSadlModelProcessor {
 		this.lastStatementContent = lastStatementContent;
 	}
 
+	@Override
+	protected void redeclarationHandler(SadlResource sr, SadlResource decl) {
+		//	if contained in a CM statement then redeclaration is OK
+		if (EcoreUtil2.getContainerOfType(sr, AnswerCMStatement.class) != null) {
+			return;
+		}
+
+		try {
+			if (getDeclarationExtensions().getOntConceptType(decl).equals(OntConceptType.STRUCTURE_NAME)) {
+				addError("This is already a Named Structure", sr);
+			}
+			if (!getDeclarationExtensions().getConceptNamespace(sr).equals(getModelNamespace())) {
+				addError("Declaration of concepts in another namespace not supported", sr);
+			}
+		} catch (CircularDefinitionException e) {
+			e.printStackTrace();
+		}
+	}
 }
