@@ -609,7 +609,7 @@ public class JavaImportOperation extends WorkspaceModifyOperation {
     			importFilePath = copyAndDisplayImportFile(project, (File) fileObject);
     		}
     		else {
-        		IStatus status = new Status(IStatus.ERROR, null, 0, "Selected object is not a file", null);
+        		IStatus status = new Status(IStatus.ERROR, (String)null, 0, "Selected object is not a file", null);
         		errorTable.add(status);
         		return null;
     		}	
