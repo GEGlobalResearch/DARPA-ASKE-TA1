@@ -876,6 +876,17 @@ public class JenaBasedDialogModelProcessor extends JenaBasedSadlModelProcessor {
 		return whenAndThenToCookedRules(whenObjLst, thenExpr);
 	}
 
+	@Override
+	protected Object postProcessTranslationResult(Object result) throws TranslationException, InvalidNameException, InvalidTypeException {
+		// 	if this is a result with a "rest" of the results, switch rest to beginning
+		if (result instanceof Object[] && ((Object[])result).length == 2) {
+			Object saved = ((Object[])result)[0];
+			((Object[])result)[0] = ((Object[])result)[1];
+			((Object[])result)[1] = saved;
+		}
+		return super.postProcessTranslationResult(result);
+	}
+	
 	private List<Rule> whenAndThenToCookedRules(List<EObject> whenLst, EObject thenExpr)
 			throws InvalidNameException, InvalidTypeException, TranslationException, UndefinedConceptException {
 		if (whenLst == null && (thenExpr instanceof Declaration || thenExpr instanceof Name)) {
@@ -886,6 +897,7 @@ public class JenaBasedDialogModelProcessor extends JenaBasedSadlModelProcessor {
 
 		addVariableAllowedInContainerType(WhatStatement.class);
 		Object thenObj = processExpression(thenExpr);	// do this first for article checking conformance
+		thenObj = postProcessTranslationResult(thenObj);
 
 		List<Node> whenObjects = new ArrayList<Node>();
 		for (EObject whenExpr : whenLst) {
