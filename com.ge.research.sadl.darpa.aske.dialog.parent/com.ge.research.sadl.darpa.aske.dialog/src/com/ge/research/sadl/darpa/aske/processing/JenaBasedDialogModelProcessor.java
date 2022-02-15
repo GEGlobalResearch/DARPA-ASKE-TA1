@@ -133,6 +133,7 @@ import com.ge.research.sadl.model.gp.BuiltinElement.BuiltinType;
 import com.ge.research.sadl.model.gp.Equation;
 import com.ge.research.sadl.model.gp.GraphPatternElement;
 import com.ge.research.sadl.model.gp.Junction;
+import com.ge.research.sadl.model.gp.JunctionList;
 import com.ge.research.sadl.model.gp.JunctionNode;
 import com.ge.research.sadl.model.gp.Literal;
 import com.ge.research.sadl.model.gp.NamedNode;
@@ -864,7 +865,9 @@ public class JenaBasedDialogModelProcessor extends JenaBasedSadlModelProcessor {
 
 	private List<Rule> whenAndThenToCookedRules(EObject when, EObject whatIsTarget) throws InvalidNameException, InvalidTypeException, TranslationException, UndefinedConceptException {
 		List<EObject> whenLst = new ArrayList<EObject>();
-		whenLst.add(when);
+		if (when != null) {
+			whenLst.add(when);
+		}
 		return whenAndThenToCookedRules(whenLst, whatIsTarget);
 	}
 
@@ -879,11 +882,13 @@ public class JenaBasedDialogModelProcessor extends JenaBasedSadlModelProcessor {
 	@Override
 	protected Object postProcessTranslationResult(Object result) throws TranslationException, InvalidNameException, InvalidTypeException {
 		// 	if this is a result with a "rest" of the results, switch rest to beginning
-		if (result instanceof Object[] && ((Object[])result).length == 2) {
-			Object saved = ((Object[])result)[0];
-			((Object[])result)[0] = ((Object[])result)[1];
-			((Object[])result)[1] = saved;
-		}
+		
+// switch is now done by super.postProcessTranslationResult awc 2/15/22		
+//		if (result instanceof Object[] && ((Object[])result).length == 2) {
+//			Object saved = ((Object[])result)[0];
+//			((Object[])result)[0] = ((Object[])result)[1];
+//			((Object[])result)[1] = saved;
+//		}
 		return super.postProcessTranslationResult(result);
 	}
 	
@@ -896,8 +901,17 @@ public class JenaBasedDialogModelProcessor extends JenaBasedSadlModelProcessor {
 		DialogIntermediateFormTranslator dift = new DialogIntermediateFormTranslator(this, getTheJenaModel());
 
 		addVariableAllowedInContainerType(WhatStatement.class);
-		Object thenObj = processExpression(thenExpr);	// do this first for article checking conformance
-		thenObj = postProcessTranslationResult(thenObj);
+		Query query = new Query();
+		setTarget(query);
+		Object thenObj = processAsk(thenExpr); // processExpression(thenExpr);	// do this first for article checking conformance
+//		thenObj = postProcessTranslationResult(thenObj);	// now done in processAsk
+		if (thenObj instanceof Query) {
+			List<GraphPatternElement> patterns = ((Query)thenObj).getPatterns();
+			if (patterns instanceof JunctionList && ((JunctionList)patterns).size() == 1 && 
+					((JunctionList)patterns).get(0) instanceof Junction) {
+				thenObj = ((JunctionList)patterns).get(0);
+			}
+		}
 
 		List<Node> whenObjects = new ArrayList<Node>();
 		for (EObject whenExpr : whenLst) {
