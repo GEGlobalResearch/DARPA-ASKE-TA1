@@ -5,5 +5,6 @@
 	<classpathentry exported="true" kind="lib" path="lib/javaparser-core-3.11.0.jar"/>
 	<classpathentry exported="true" kind="lib" path="lib/javaparser-symbol-solver-core-3.11.0.jar"/>
 	<classpathentry exported="true" kind="lib" path="lib/javaparser-symbol-solver-model-3.11.0.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/jericho-html-3.4.jar"/>
 	<classpathentry kind="output" path="target/classes"/>
 </classpath>

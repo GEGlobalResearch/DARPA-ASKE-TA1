@@ -52,8 +52,11 @@ Export-Package: com.github.javaparser,
  com.github.javaparser.symbolsolver.resolution.typesolvers,
  com.github.javaparser.symbolsolver.utils,
  com.github.javaparser.utils,
- com.github.javaparser.version
+ com.github.javaparser.version,
+ net.htmlparser.jericho,
+ net.htmlparser.jericho.nodoc
 Bundle-ClassPath: .,
  lib/javaparser-core-3.11.0.jar,
  lib/javaparser-symbol-solver-core-3.11.0.jar,
- lib/javaparser-symbol-solver-model-3.11.0.jar
+ lib/javaparser-symbol-solver-model-3.11.0.jar,
+ lib/jericho-html-3.4.jar

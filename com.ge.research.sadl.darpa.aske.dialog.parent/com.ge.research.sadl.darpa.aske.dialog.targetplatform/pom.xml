@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-     xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+     xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
   <modelVersion>4.0.0</modelVersion>
 
   <parent>
@@ -9,9 +9,9 @@
     <version>1.1.0-SNAPSHOT</version>
   </parent>
 
-  <artifactId>com.ge.research.sadl.darpa.aske.dialog.update</artifactId>
-  <packaging>eclipse-repository</packaging>
+  <artifactId>com.ge.research.sadl.darpa.aske.dialog.targetplatform</artifactId>
+  <packaging>eclipse-target-definition</packaging>
 
-  <name>DARPA-ASKE p2 Update Site</name>
+  <name>DARPA-ASKE Target Platform</name>
 
 </project>
