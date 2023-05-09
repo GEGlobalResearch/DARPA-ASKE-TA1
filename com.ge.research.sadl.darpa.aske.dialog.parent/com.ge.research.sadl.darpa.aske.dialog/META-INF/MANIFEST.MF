@@ -40,7 +40,7 @@ Require-Bundle: com.ge.research.jena,
  org.eclipse.xtext.xtext.generator,
  org.slf4j.api
 Eclipse-RegisterBuddy: com.ge.research.sadl
-Bundle-RequiredExecutionEnvironment: JavaSE-1.8
+Bundle-RequiredExecutionEnvironment: JavaSE-17
 Export-Package: com.ge.research.sadl.darpa.aske,
  com.ge.research.sadl.darpa.aske.curation,
  com.ge.research.sadl.darpa.aske.dialog,

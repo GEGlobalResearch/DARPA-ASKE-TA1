@@ -46,7 +46,6 @@ import com.ge.research.sadl.darpa.aske.ui.editor.folding.DialogFoldingStructureP
 import com.ge.research.sadl.darpa.aske.ui.preferences.DialogPreferencesInitializer
 import com.ge.research.sadl.darpa.aske.ui.preferences.DialogRootPreferencePage
 import com.ge.research.sadl.darpa.aske.ui.syntaxcoloring.DialogHighlightingConfiguration
-import com.ge.research.sadl.darpa.aske.ui.syntaxcoloring.DialogSemanticHighlightingCalculator
 import com.ge.research.sadl.darpa.aske.ui.syntaxcoloring.DialogTokenToAttributeIdMapper
 import com.ge.research.sadl.ide.editor.contentassist.IOntologyContextProvider
 import com.ge.research.sadl.refactoring.RefactoringHelper
@@ -89,10 +88,6 @@ class DialogUiModule extends AbstractDialogUiModule {
 
 	def Class<? extends IHighlightingConfiguration> bindILexicalHighlightingConfiguration() {
 		return DialogHighlightingConfiguration
-	}
-
-	def Class<? extends ISemanticHighlightingCalculator> bindISemanticHighlightingCalculator() {
-		return DialogSemanticHighlightingCalculator
 	}
 
 	def Class<? extends AbstractAntlrTokenToAttributeIdMapper> bindTokenToAttributeIdMapper() {

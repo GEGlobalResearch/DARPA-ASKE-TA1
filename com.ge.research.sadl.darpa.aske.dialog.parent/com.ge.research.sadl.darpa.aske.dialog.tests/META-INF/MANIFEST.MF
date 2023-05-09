@@ -20,7 +20,7 @@ Require-Bundle: com.ge.research.jena,
  org.eclipse.xtext.xbase.testing,
  org.junit,
  org.slf4j.api
-Bundle-RequiredExecutionEnvironment: JavaSE-1.8
+Bundle-RequiredExecutionEnvironment: JavaSE-17
 Export-Package: com.ge.research.sadl.darpa.aske.tests;x-internal=true
 Import-Package: com.ge.research.sadl.reasoner,
  org.apache.jena.ontology

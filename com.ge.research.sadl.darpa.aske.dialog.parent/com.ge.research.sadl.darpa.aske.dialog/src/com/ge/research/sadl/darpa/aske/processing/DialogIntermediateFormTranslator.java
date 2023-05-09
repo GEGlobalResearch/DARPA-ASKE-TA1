@@ -24,8 +24,8 @@ public class DialogIntermediateFormTranslator extends IntermediateFormTranslator
 		super(processor, ontModel);
 	}
 	
-	public void addImpliedAndExpandedProperties(List<GraphPatternElement> fgpes) throws InvalidNameException, InvalidTypeException, TranslationException {
-		super.addImpliedAndExpandedProperties(fgpes);
+	public List<GraphPatternElement> addImpliedAndExpandedProperties(List<GraphPatternElement> fgpes) throws InvalidNameException, InvalidTypeException, TranslationException {
+		return super.addImpliedAndExpandedProperties(fgpes);
 	}
 
 	public GraphPatternElement addImpliedAndExpandedProperties(GraphPatternElement gpe) throws InvalidNameException, InvalidTypeException, TranslationException {
@@ -88,7 +88,7 @@ public class DialogIntermediateFormTranslator extends IntermediateFormTranslator
 		else {
 			String beuri = be.getFuncUri();
 			if (beuri != null) {
-				Individual funcInst = getTheJenaModel().getIndividual(beuri);
+				Individual funcInst = getTheModel().getIndividual(beuri);
 				if (funcInst != null) {
 					StringBuilder sb = new StringBuilder();
 					sb.append(op);

@@ -30,7 +30,7 @@ Require-Bundle: com.ge.research.jena,
  org.eclipse.xtext.xbase.lib;bundle-version="2.14.0",
  org.slf4j.api
 Import-Package: org.apache.log4j
-Bundle-RequiredExecutionEnvironment: JavaSE-1.8
+Bundle-RequiredExecutionEnvironment: JavaSE-17
 Export-Package: com.ge.research.sadl.darpa.aske.dialog.ui.internal,
  com.ge.research.sadl.darpa.aske.ui.answer.imports,
  com.ge.research.sadl.darpa.aske.ui.contentassist,

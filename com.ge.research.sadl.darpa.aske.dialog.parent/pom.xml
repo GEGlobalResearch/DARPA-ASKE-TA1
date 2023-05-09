@@ -1,16 +1,16 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-     xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+     xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
   <modelVersion>4.0.0</modelVersion>
 
-  <!-- Define GAV coordinates -->
+  <!-- Define our GAV coordinates -->
   <groupId>com.ge.research.sadl.darpa.aske.dialog</groupId>
   <artifactId>com.ge.research.sadl.darpa.aske.dialog.parent</artifactId>
   <version>1.1.0-SNAPSHOT</version>
   <packaging>pom</packaging>
-
-  <!-- Build all modules in one place -->
   <name>DARPA-ASKE</name>
+
+  <!-- Build our modules -->
   <modules>
     <module>com.ge.research.sadl.darpa.aske.dialog</module>
     <module>com.ge.research.sadl.darpa.aske.dialog.dependencies</module>
@@ -25,32 +25,31 @@
 
   <!-- Set all properties in one place -->
   <properties>
-    <!-- Properties of Maven plugins -->
-    <maven.build.timestamp.format>yyyyMMddHHmm</maven.build.timestamp.format>
-    <maven.compiler.release>8</maven.compiler.release>
+    <!-- Settings of Maven plugins -->
+    <maven.compiler.release>17</maven.compiler.release>
     <maven.compiler.showDeprecation>true</maven.compiler.showDeprecation>
     <maven.compiler.showWarnings>true</maven.compiler.showWarnings>
-    <maven.compiler.source>8</maven.compiler.source>
-    <maven.compiler.target>8</maven.compiler.target>
+    <maven.compiler.source>17</maven.compiler.source>
+    <maven.compiler.target>17</maven.compiler.target>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
     <!-- Versions of plugins/dependencies -->
-    <version.mwe2>2.12.1</version.mwe2>
-    <version.sadl>3.5.0-SNAPSHOT</version.sadl>
-    <version.surefire>3.0.0-M7</version.surefire>
-    <version.tycho>2.7.5</version.tycho>
-    <version.xtext>2.25.0</version.xtext>
+    <version.mwe2>2.14.0</version.mwe2>
+    <version.sadl>3.6.0-SNAPSHOT</version.sadl>
+    <version.surefire>3.1.0</version.surefire>
+    <version.tycho>3.0.4</version.tycho>
+    <version.xtext>2.30.0</version.xtext>
     <version.xtext-antlr>2.1.1</version.xtext-antlr>
   </properties>
 
   <build>
-    <!-- Configure all plugins in one place -->
+    <!-- Set all plugin versions in one place -->
     <pluginManagement>
       <plugins>
         <plugin>
           <groupId>com.github.ekryd.sortpom</groupId>
           <artifactId>sortpom-maven-plugin</artifactId>
-          <version>3.2.0</version>
+          <version>3.2.1</version>
           <configuration>
             <createBackupFile>false</createBackupFile>
             <indentSchemaLocation>true</indentSchemaLocation>
@@ -93,9 +92,6 @@
             <filesets>
               <fileset>
                 <directory>${project.basedir}/xtend-gen</directory>
-                <includes>
-                  <include>**/*</include>
-                </includes>
               </fileset>
             </filesets>
           </configuration>
@@ -103,7 +99,7 @@
         <plugin>
           <groupId>org.apache.maven.plugins</groupId>
           <artifactId>maven-compiler-plugin</artifactId>
-          <version>3.10.1</version>
+          <version>3.11.0</version>
           <configuration>
             <compilerArgs>
               <arg>-Xlint:all</arg>
@@ -113,12 +109,22 @@
         <plugin>
           <groupId>org.apache.maven.plugins</groupId>
           <artifactId>maven-dependency-plugin</artifactId>
-          <version>3.3.0</version>
+          <version>3.5.0</version>
+          <executions>
+            <execution>
+              <?m2e ignore?>
+              <id>default-copy-dependencies</id>
+              <goals>
+                <goal>copy-dependencies</goal>
+              </goals>
+              <phase>prepare-package</phase>
+            </execution>
+          </executions>
         </plugin>
         <plugin>
           <groupId>org.apache.maven.plugins</groupId>
           <artifactId>maven-deploy-plugin</artifactId>
-          <version>3.0.0</version>
+          <version>3.1.1</version>
         </plugin>
         <plugin>
           <groupId>org.apache.maven.plugins</groupId>
@@ -131,7 +137,7 @@
         <plugin>
           <groupId>org.apache.maven.plugins</groupId>
           <artifactId>maven-install-plugin</artifactId>
-          <version>3.1.0</version>
+          <version>3.1.1</version>
         </plugin>
         <plugin>
           <groupId>org.apache.maven.plugins</groupId>
@@ -141,7 +147,7 @@
         <plugin>
           <groupId>org.apache.maven.plugins</groupId>
           <artifactId>maven-resources-plugin</artifactId>
-          <version>3.3.0</version>
+          <version>3.3.1</version>
         </plugin>
         <plugin>
           <groupId>org.apache.maven.plugins</groupId>
@@ -198,32 +204,7 @@
         <plugin>
           <groupId>org.codehaus.mojo</groupId>
           <artifactId>versions-maven-plugin</artifactId>
-          <version>2.13.0</version>
-        </plugin>
-        <!--This plugin's configuration is used to store Eclipse m2e settings only. It has no influence on the Maven build itself.-->
-        <plugin>
-          <groupId>org.eclipse.m2e</groupId>
-          <artifactId>lifecycle-mapping</artifactId>
-          <version>1.0.0</version>
-          <configuration>
-            <lifecycleMappingMetadata>
-              <pluginExecutions>
-                <pluginExecution>
-                  <pluginExecutionFilter>
-                    <groupId>org.eclipse.tycho</groupId>
-                    <artifactId>tycho-compiler-plugin</artifactId>
-                    <versionRange>[2.7.0,)</versionRange>
-                    <goals>
-                      <goal>validate-classpath</goal>
-                    </goals>
-                  </pluginExecutionFilter>
-                  <action>
-                    <ignore></ignore>
-                  </action>
-                </pluginExecution>
-              </pluginExecutions>
-            </lifecycleMappingMetadata>
-          </configuration>
+          <version>2.15.0</version>
         </plugin>
         <plugin>
           <?m2e ignore?>
@@ -262,7 +243,6 @@
           <artifactId>tycho-compiler-plugin</artifactId>
           <version>${version.tycho}</version>
           <configuration>
-            <compilerArgument>-err:-forbidden</compilerArgument>
             <useProjectSettings>false</useProjectSettings>
           </configuration>
         </plugin>
@@ -274,15 +254,48 @@
         </plugin>
         <plugin>
           <groupId>org.eclipse.tycho</groupId>
+          <artifactId>tycho-p2-director-plugin</artifactId>
+          <version>${version.tycho}</version>
+        </plugin>
+        <plugin>
+          <groupId>org.eclipse.tycho</groupId>
+          <artifactId>tycho-p2-plugin</artifactId>
+          <version>${version.tycho}</version>
+        </plugin>
+        <plugin>
+          <groupId>org.eclipse.tycho</groupId>
+          <artifactId>tycho-p2-publisher-plugin</artifactId>
+          <version>${version.tycho}</version>
+        </plugin>
+        <plugin>
+          <groupId>org.eclipse.tycho</groupId>
           <artifactId>tycho-p2-repository-plugin</artifactId>
           <version>${version.tycho}</version>
           <configuration>
             <includeAllDependencies>true</includeAllDependencies>
           </configuration>
         </plugin>
-        <!-- To skip running (and compiling) tests, use: -Dmaven.test.skip
-             To skip tests, but still compile them, use: -DskipTests
-             To run all tests but only fail at end, use: -fae -->
+        <plugin>
+          <groupId>org.eclipse.tycho</groupId>
+          <artifactId>tycho-packaging-plugin</artifactId>
+          <version>${version.tycho}</version>
+        </plugin>
+        <plugin>
+          <groupId>org.eclipse.tycho</groupId>
+          <artifactId>tycho-source-plugin</artifactId>
+          <version>${version.tycho}</version>
+          <executions>
+            <execution>
+              <id>default-plugin-source</id>
+              <goals>
+                <goal>plugin-source</goal>
+              </goals>
+            </execution>
+          </executions>
+        </plugin>
+        <!-- To skip running (and compiling) tests, use: -Dmaven.test.skip -->
+        <!-- To skip tests, but still compile them, use: -DskipTests -->
+        <!-- To run all tests but only fail at end, use: -fae -->
         <plugin>
           <groupId>org.eclipse.tycho</groupId>
           <artifactId>tycho-surefire-plugin</artifactId>
